@@ -7,7 +7,7 @@
   "extends": [
     "plugin:react/recommended",
     "eslint:recommended",
-    "prettier/@typescript-eslint",
+    "prettier",
     "plugin:prettier/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:json/recommended"
