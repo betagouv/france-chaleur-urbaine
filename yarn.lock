@@ -428,6 +428,11 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@gouvfr/dsfr@^1.0.0-rc1.0":
+  version "1.0.0-rc1.0"
+  resolved "https://registry.yarnpkg.com/@gouvfr/dsfr/-/dsfr-1.0.0-rc1.0.tgz#a7d0f8e047322f0b63371d9e35ffcfc29c6bb85d"
+  integrity sha512-mXfun0FzqeSgfyti6SsdPQHSpNsQBOJNkzZtvoN8KfaUGP3asupaMXe2CbRgrkV3ogqM0n/vToWjYjLzBwPxuQ==
+
 "@hapi/accept@5.0.2":
   version "5.0.2"
   resolved "https://registry.npmjs.org/@hapi/accept/-/accept-5.0.2.tgz"

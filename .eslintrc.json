@@ -10,6 +10,7 @@
     "prettier",
     "plugin:prettier/recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:json/recommended"
   ],
   "parser": "@typescript-eslint/parser",

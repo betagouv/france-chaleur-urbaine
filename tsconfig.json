@@ -13,14 +13,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@utils/*": ["utils/*"],
-      "@components/*": ["components/*"],
-      "@constants": ["constants"],
-      "@pages/*": ["pages/*"],
-      "@libs/*": ["libs/*"],
-      "@styles/*": ["styles/*"]
+      "@utils/*": ["src/utils/*"],
+      "@components/*": ["src/components/*"],
+      "@constants": ["src/constants"],
+      "@pages/*": ["src/pages/*"],
+      "@libs/*": ["src/libs/*"],
+      "@styles/*": ["src/styles/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
