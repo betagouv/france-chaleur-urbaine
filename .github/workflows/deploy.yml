@@ -1,0 +1,93 @@
+name: Build, test, and deploy
+
+# Controls when the action will run. 
+on: [push, pull_request]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  prepare:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+      
+      - name: Install Dependencies 🔧
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+          
+      - run: |
+            npm install -g yarn
+            yarn install --frozen-lockfile
+            
+      - name: Cache  💾  
+        uses: actions/cache@v2.1.6
+        id: cache-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}
+          
+      
+  Audit:
+      runs-on: ubuntu-latest
+      needs: prepare
+      steps:
+        - uses: actions/cache@v2
+          id: restore-build
+          with:
+            path: ./*
+            key: ${{ github.sha }}
+        - run: yarn audit
+        
+  lint:
+      runs-on: ubuntu-latest
+      needs: prepare
+      steps:
+        - uses: actions/cache@v2
+          id: restore-build
+          with:
+            path: ./*
+            key: ${{ github.sha }}
+        - uses: wearerequired/lint-action@v1
+          with:
+            eslint: true
+            prettier: true
+        
+  preBuild:
+      runs-on: ubuntu-latest
+      needs: prepare
+      steps:
+        - uses: actions/cache@v2
+          id: restore-build
+          with:
+            path: ./*
+            key: ${{ github.sha }}
+        - run: |
+                yarn build
+                yarn export
+
+  deploy:
+        runs-on: ubuntu-latest
+        needs: preBuild
+        steps:
+          - uses: actions/cache@v2
+            id: restore-build
+            with:
+              path: ./*
+              key: ${{ github.sha }}
+              
+          - name: deploy 🚀
+            if: github.ref == 'refs/heads/main'
+            uses: JamesIves/github-pages-deploy-action@3.6.2
+            with:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              BRANCH: gh-pages  # The branch the action should deploy to.
+              FOLDER: out       # The folder the action should deploy.
+              CLEAN: true       # Automatically remove deleted files from the deploy branch
