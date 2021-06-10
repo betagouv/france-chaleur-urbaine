@@ -55,11 +55,14 @@ jobs:
           with:
             path: ./*
             key: ${{ github.sha }}
-        - run: yarn lint
+        - uses: wearerequired/lint-action@v1
+          with:
+            eslint: true
+            prettier: true
         
   preBuild:
       runs-on: ubuntu-latest
-      needs: build
+      needs: prepare
       steps:
         - uses: actions/cache@v2
           id: restore-build
