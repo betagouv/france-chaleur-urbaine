@@ -1,0 +1,99 @@
+name: Build, test, and deploy
+
+# Controls when the action will run.
+on: [push, pull_request]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  Prepare:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: Cache  💾
+        uses: actions/cache@v2.1.6
+        id: cache-deps
+        with:
+          path: |
+            **/.yarn
+            **/node_modules/
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install Dependencies 🔧
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12'
+      - run: yarn --frozen-lockfile
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+
+  Audit:
+    runs-on: ubuntu-latest
+    needs: Prepare
+    steps:
+      - run: yarn audit
+
+  Lint:
+    runs-on: ubuntu-latest
+    needs: Prepare
+    steps:
+      - name: Cache  💾
+        uses: actions/cache@v2.1.6
+        id: cache-deps
+        with:
+          path: |
+            **/.yarn
+            **/node_modules/
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn lint
+
+  TestUnit:
+    runs-on: ubuntu-latest
+    needs: [Audit, Lint]
+    steps:
+      - run: yarn test
+
+  Build:
+    runs-on: ubuntu-latest
+    needs: TestUnit
+    steps:
+      - run: |
+          yarn build
+          yarn export
+          touch ./out/.nojekyll
+        env:
+          CI: true
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: next-build-artifact
+          path: |
+            out
+          retention-days: 5
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: next-build-artifact
+
+      - name: deploy 🚀
+        if: github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@3.6.2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: out # The folder the action should deploy.
+          CLEAN: true # Automatically remove deleted files from the deploy branch
