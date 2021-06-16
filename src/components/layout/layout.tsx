@@ -37,6 +37,55 @@ const Layout: React.FC = ({ children }) => {
             </div>
           </div>
         </div>
+        <div
+          className="fr-header__menu fr-modal"
+          id="modal-870"
+          aria-labelledby="fr-btn-menu-mobile-2"
+        >
+          <div className="fr-container">
+            <button
+              className="fr-link--close fr-link"
+              aria-controls="modal-870"
+            >
+              Fermer
+            </button>
+            <div className="fr-header__menu-links"></div>
+            <nav
+              className="fr-nav"
+              id="header-navigation"
+              role="navigation"
+              aria-label="Menu principal"
+            >
+              <ul className="fr-nav__list">
+                <li className="fr-nav__item">
+                  <a
+                    className="fr-nav__link"
+                    href="#"
+                    target="_self"
+                    aria-current="page"
+                  >
+                    Copropriété{' '}
+                  </a>
+                </li>
+                <li className="fr-nav__item">
+                  <a className="fr-nav__link" href="#" target="_self">
+                    Ressources
+                  </a>
+                </li>
+                <li className="fr-nav__item">
+                  <a className="fr-nav__link" href="#" target="_self">
+                    Partenaires
+                  </a>
+                </li>
+                <li className="fr-nav__item">
+                  <a className="fr-nav__link" href="#" target="_self">
+                    Cartographie
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
       </header>
       <div className="fr-container">
         <Main className="fr-grid-row fr-grid-row--center">{children}</Main>

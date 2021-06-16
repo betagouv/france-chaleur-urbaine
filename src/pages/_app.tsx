@@ -1,7 +1,7 @@
 import '@gouvfr/dsfr/dist/css/dsfr.min.css';
+import '@reach/combobox/styles.css';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
-import React from 'react';
 
 const DynamicComponentWithNoSSR = dynamic(
   () =>
