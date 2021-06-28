@@ -65,7 +65,6 @@ const ContactSource = () => {
           label="Les données collectées sont uniquement utilisées à des fins d’annalyse par le minitère de la transition écologique"
           component={Checkbox}
         />
-
         <ErrorMessage
           name="collectDataAgreement"
           component={'p'}

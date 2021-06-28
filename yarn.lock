@@ -347,6 +347,16 @@
     regenerator-runtime "^0.13.4"
 
 "@babel/runtime@^7.10.2", "@babel/runtime@^7.10.5", "@babel/runtime@^7.12.5", "@babel/runtime@^7.9.2":
+<<<<<<< HEAD
+=======
+  version "7.14.6"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.14.6.tgz#535203bc0892efc7dec60bdc27b2ecf6e409062d"
+  integrity sha512-/PCB2uJ7oM44tz8YhC4Z/6PeOKXp4K588f+5M3clr1M4zbqztlo0XEfJ2LEzj/FgwfgGcIdl8n7YYjTCI0BYwg==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
+"@babel/runtime@^7.10.5":
+>>>>>>> contact form
   version "7.14.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.14.6.tgz#535203bc0892efc7dec60bdc27b2ecf6e409062d"
   integrity sha512-/PCB2uJ7oM44tz8YhC4Z/6PeOKXp4K588f+5M3clr1M4zbqztlo0XEfJ2LEzj/FgwfgGcIdl8n7YYjTCI0BYwg==
@@ -503,6 +513,7 @@
     jest-util "^27.0.6"
     slash "^3.0.0"
 
+<<<<<<< HEAD
 "@jest/core@^27.0.6":
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/@jest/core/-/core-27.0.6.tgz#c5f642727a0b3bf0f37c4b46c675372d0978d4a1"
@@ -513,12 +524,25 @@
     "@jest/test-result" "^27.0.6"
     "@jest/transform" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+"@jest/core@^27.0.5":
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/@jest/core/-/core-27.0.5.tgz#59e9e69e7374d65dbb22e3fc1bd52e80991eae72"
+  integrity sha512-g73//jF0VwsOIrWUC9Cqg03lU3QoAMFxVjsm6n6yNmwZcQPN/o8w+gLWODw5VfKNFZT38otXHWxc6b8eGDUpEA==
+  dependencies:
+    "@jest/console" "^27.0.2"
+    "@jest/reporters" "^27.0.5"
+    "@jest/test-result" "^27.0.2"
+    "@jest/transform" "^27.0.5"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/node" "*"
     ansi-escapes "^4.2.1"
     chalk "^4.0.0"
     emittery "^0.8.1"
     exit "^0.1.2"
     graceful-fs "^4.2.4"
+<<<<<<< HEAD
     jest-changed-files "^27.0.6"
     jest-config "^27.0.6"
     jest-haste-map "^27.0.6"
@@ -532,12 +556,28 @@
     jest-util "^27.0.6"
     jest-validate "^27.0.6"
     jest-watcher "^27.0.6"
+=======
+    jest-changed-files "^27.0.2"
+    jest-config "^27.0.5"
+    jest-haste-map "^27.0.5"
+    jest-message-util "^27.0.2"
+    jest-regex-util "^27.0.1"
+    jest-resolve "^27.0.5"
+    jest-resolve-dependencies "^27.0.5"
+    jest-runner "^27.0.5"
+    jest-runtime "^27.0.5"
+    jest-snapshot "^27.0.5"
+    jest-util "^27.0.2"
+    jest-validate "^27.0.2"
+    jest-watcher "^27.0.2"
+>>>>>>> contact form
     micromatch "^4.0.4"
     p-each-series "^2.1.0"
     rimraf "^3.0.0"
     slash "^3.0.0"
     strip-ansi "^6.0.0"
 
+<<<<<<< HEAD
 "@jest/environment@^27.0.6":
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/@jest/environment/-/environment-27.0.6.tgz#ee293fe996db01d7d663b8108fa0e1ff436219d2"
@@ -545,13 +585,29 @@
   dependencies:
     "@jest/fake-timers" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+"@jest/environment@^27.0.5":
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/@jest/environment/-/environment-27.0.5.tgz#a294ad4acda2e250f789fb98dc667aad33d3adc9"
+  integrity sha512-IAkJPOT7bqn0GiX5LPio6/e1YpcmLbrd8O5EFYpAOZ6V+9xJDsXjdgN2vgv9WOKIs/uA1kf5WeD96HhlBYO+FA==
+  dependencies:
+    "@jest/fake-timers" "^27.0.5"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/node" "*"
     jest-mock "^27.0.6"
 
+<<<<<<< HEAD
 "@jest/fake-timers@^27.0.6":
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/@jest/fake-timers/-/fake-timers-27.0.6.tgz#cbad52f3fe6abe30e7acb8cd5fa3466b9588e3df"
   integrity sha512-sqd+xTWtZ94l3yWDKnRTdvTeZ+A/V7SSKrxsrOKSqdyddb9CeNRF8fbhAU0D7ZJBpTTW2nbp6MftmKJDZfW2LQ==
+=======
+"@jest/fake-timers@^27.0.5":
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/@jest/fake-timers/-/fake-timers-27.0.5.tgz#304d5aedadf4c75cff3696995460b39d6c6e72f6"
+  integrity sha512-d6Tyf7iDoKqeUdwUKrOBV/GvEZRF67m7lpuWI0+SCD9D3aaejiOQZxAOxwH2EH/W18gnfYaBPLi0VeTGBHtQBg==
+>>>>>>> contact form
   dependencies:
     "@jest/types" "^27.0.6"
     "@sinonjs/fake-timers" "^7.0.2"
@@ -560,6 +616,7 @@
     jest-mock "^27.0.6"
     jest-util "^27.0.6"
 
+<<<<<<< HEAD
 "@jest/globals@^27.0.6":
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/@jest/globals/-/globals-27.0.6.tgz#48e3903f99a4650673d8657334d13c9caf0e8f82"
@@ -579,6 +636,27 @@
     "@jest/test-result" "^27.0.6"
     "@jest/transform" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+"@jest/globals@^27.0.5":
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/@jest/globals/-/globals-27.0.5.tgz#f63b8bfa6ea3716f8df50f6a604b5c15b36ffd20"
+  integrity sha512-qqKyjDXUaZwDuccpbMMKCCMBftvrbXzigtIsikAH/9ca+kaae8InP2MDf+Y/PdCSMuAsSpHS6q6M25irBBUh+Q==
+  dependencies:
+    "@jest/environment" "^27.0.5"
+    "@jest/types" "^27.0.2"
+    expect "^27.0.2"
+
+"@jest/reporters@^27.0.5":
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/@jest/reporters/-/reporters-27.0.5.tgz#cd730b77d9667b8ff700ad66d4edc293bb09716a"
+  integrity sha512-4uNg5+0eIfRafnpgu3jCZws3NNcFzhu5JdRd1mKQ4/53+vkIqwB6vfZ4gn5BdGqOaLtYhlOsPaL5ATkKzyBrJw==
+  dependencies:
+    "@bcoe/v8-coverage" "^0.2.3"
+    "@jest/console" "^27.0.2"
+    "@jest/test-result" "^27.0.2"
+    "@jest/transform" "^27.0.5"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     chalk "^4.0.0"
     collect-v8-coverage "^1.0.0"
     exit "^0.1.2"
@@ -589,10 +667,17 @@
     istanbul-lib-report "^3.0.0"
     istanbul-lib-source-maps "^4.0.0"
     istanbul-reports "^3.0.2"
+<<<<<<< HEAD
     jest-haste-map "^27.0.6"
     jest-resolve "^27.0.6"
     jest-util "^27.0.6"
     jest-worker "^27.0.6"
+=======
+    jest-haste-map "^27.0.5"
+    jest-resolve "^27.0.5"
+    jest-util "^27.0.2"
+    jest-worker "^27.0.2"
+>>>>>>> contact form
     slash "^3.0.0"
     source-map "^0.6.0"
     string-length "^4.0.1"
@@ -618,13 +703,21 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     collect-v8-coverage "^1.0.0"
 
+<<<<<<< HEAD
 "@jest/test-sequencer@^27.0.6":
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/@jest/test-sequencer/-/test-sequencer-27.0.6.tgz#80a913ed7a1130545b1cd777ff2735dd3af5d34b"
   integrity sha512-bISzNIApazYOlTHDum9PwW22NOyDa6VI31n6JucpjTVM0jD6JDgqEZ9+yn575nDdPF0+4csYDxNNW13NvFQGZA==
+=======
+"@jest/test-sequencer@^27.0.5":
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/@jest/test-sequencer/-/test-sequencer-27.0.5.tgz#c58b21db49afc36c0e3921d7ddf1fb7954abfded"
+  integrity sha512-opztnGs+cXzZ5txFG2+omBaV5ge/0yuJNKbhE3DREMiXE0YxBuzyEa6pNv3kk2JuucIlH2Xvgmn9kEEHSNt/SA==
+>>>>>>> contact form
   dependencies:
     "@jest/test-result" "^27.0.6"
     graceful-fs "^4.2.4"
+<<<<<<< HEAD
     jest-haste-map "^27.0.6"
     jest-runtime "^27.0.6"
 
@@ -632,6 +725,15 @@
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/@jest/transform/-/transform-27.0.6.tgz#189ad7107413208f7600f4719f81dd2f7278cc95"
   integrity sha512-rj5Dw+mtIcntAUnMlW/Vju5mr73u8yg+irnHwzgtgoeI6cCPOvUwQ0D1uQtc/APmWgvRweEb1g05pkUpxH3iCA==
+=======
+    jest-haste-map "^27.0.5"
+    jest-runtime "^27.0.5"
+
+"@jest/transform@^27.0.5":
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/@jest/transform/-/transform-27.0.5.tgz#2dcb78953708af713941ac845b06078bc74ed873"
+  integrity sha512-lBD6OwKXSc6JJECBNk4mVxtSVuJSBsQrJ9WCBisfJs7EZuYq4K6vM9HmoB7hmPiLIDGeyaerw3feBV/bC4z8tg==
+>>>>>>> contact form
   dependencies:
     "@babel/core" "^7.1.0"
     "@jest/types" "^27.0.6"
@@ -640,9 +742,15 @@
     convert-source-map "^1.4.0"
     fast-json-stable-stringify "^2.0.0"
     graceful-fs "^4.2.4"
+<<<<<<< HEAD
     jest-haste-map "^27.0.6"
     jest-regex-util "^27.0.6"
     jest-util "^27.0.6"
+=======
+    jest-haste-map "^27.0.5"
+    jest-regex-util "^27.0.1"
+    jest-util "^27.0.2"
+>>>>>>> contact form
     micromatch "^4.0.4"
     pirates "^4.0.1"
     slash "^3.0.0"
@@ -877,6 +985,13 @@
   dependencies:
     "@babel/runtime" "^7.12.5"
 
+"@testing-library/user-event@^13.1.9":
+  version "13.1.9"
+  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-13.1.9.tgz#29e49a42659ac3c1023565ff56819e0153a82e99"
+  integrity sha512-NZr0zL2TMOs2qk+dNlqrAdbaRW5dAmYwd1yuQ4r7HpkVEOj0MWuUjDWwKhcLd/atdBy8ZSMHSKp+kXSQe47ezg==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -934,9 +1049,15 @@
     "@babel/types" "^7.0.0"
 
 "@types/babel__traverse@*", "@types/babel__traverse@^7.0.4", "@types/babel__traverse@^7.0.6":
+<<<<<<< HEAD
   version "7.14.1"
   resolved "https://registry.yarnpkg.com/@types/babel__traverse/-/babel__traverse-7.14.1.tgz#46c2f9501a7a8f0596ddfd365e08c15285a47cce"
   integrity sha512-DomsDK/nX3XXHs6jlQ8/YYE6jZAuhmoGAFfcYi1h1jbBNGS7Efdx74FKLTO3HCCyLqQyLlNbql87xqa7C3M/FQ==
+=======
+  version "7.14.0"
+  resolved "https://registry.yarnpkg.com/@types/babel__traverse/-/babel__traverse-7.14.0.tgz#a34277cf8acbd3185ea74129e1f100491eb1da7f"
+  integrity sha512-IilJZ1hJBUZwMOVDNTdflOOLzJB/ZtljYVa7k3gEZN/jqIJIPkWHC6dvbX+DD2CwZDHB9wAKzZPzzqMIkW37/w==
+>>>>>>> contact form
   dependencies:
     "@babel/types" "^7.3.0"
 
@@ -999,6 +1120,7 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.171.tgz#f01b3a5fe3499e34b622c362a46a609fdb23573b"
   integrity sha512-7eQ2xYLLI/LsicL2nejW9Wyko3lcpN6O/z0ZLHrEQsg280zIdCv1t/0m6UtBjUHokCGBQ3gYTbHzDkZ1xOBwwg==
 
+<<<<<<< HEAD
 "@types/node@*":
   version "16.0.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.0.0.tgz#067a6c49dc7a5c2412a505628e26902ae967bf6f"
@@ -1008,6 +1130,12 @@
   version "15.14.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-15.14.1.tgz#4f9d3689532499fdda1c898e19f4593718655e36"
   integrity sha512-wF6hazbsnwaW3GhK4jFuw5NaLDQVRQ6pWQUGAUrJzxixFkTaODSiAKMPXuHwPEPkAKQWHAzj6uJ5h+3zU9gQxg==
+=======
+"@types/node@*", "@types/node@^15.12.2":
+  version "15.12.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.12.5.tgz#9a78318a45d75c9523d2396131bd3cca54b2d185"
+  integrity sha512-se3yX7UHv5Bscf8f1ERKvQOD6sTyycH3hdaoozvaLxgUiY5lIGEeH37AD0G0Qi9kPqihPn0HOfd2yaIEN9VwEg==
+>>>>>>> contact form
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -1015,9 +1143,15 @@
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
 "@types/prettier@^2.1.5":
+<<<<<<< HEAD
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.3.1.tgz#54dd88bdc7f49958329666af3779561e47d5dab3"
   integrity sha512-NVkb4p4YjI8E3O6+1m8I+8JlMpFZwfSbPGdaw0wXuyPRTEz0SLKwBUWNSO7Maoi8tQMPC8JLZNWkrcKPI7/sLA==
+=======
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.3.0.tgz#2e8332cc7363f887d32ec5496b207d26ba8052bb"
+  integrity sha512-hkc1DATxFLQo4VxPDpMH1gCkPpBbpOoJ/4nhuXw4n63/0R6bCpQECj4+K226UJ4JO/eJQz+1mC2I7JsWanAdQw==
+>>>>>>> contact form
 
 "@types/prop-types@*":
   version "15.7.3"
@@ -1102,18 +1236,28 @@
     "@types/yargs-parser" "*"
 
 "@typescript-eslint/eslint-plugin@^4.26.0":
+<<<<<<< HEAD
   version "4.28.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.28.2.tgz#7a8320f00141666813d0ae43b49ee8244f7cf92a"
   integrity sha512-PGqpLLzHSxq956rzNGasO3GsAPf2lY9lDUBXhS++SKonglUmJypaUtcKzRtUte8CV7nruwnDxtLUKpVxs0wQBw==
   dependencies:
     "@typescript-eslint/experimental-utils" "4.28.2"
     "@typescript-eslint/scope-manager" "4.28.2"
+=======
+  version "4.28.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.28.0.tgz#1a66f03b264844387beb7dc85e1f1d403bd1803f"
+  integrity sha512-KcF6p3zWhf1f8xO84tuBailV5cN92vhS+VT7UJsPzGBm9VnQqfI9AsiMUFUCYHTYPg1uCCo+HyiDnpDuvkAMfQ==
+  dependencies:
+    "@typescript-eslint/experimental-utils" "4.28.0"
+    "@typescript-eslint/scope-manager" "4.28.0"
+>>>>>>> contact form
     debug "^4.3.1"
     functional-red-black-tree "^1.0.1"
     regexpp "^3.1.0"
     semver "^7.3.5"
     tsutils "^3.21.0"
 
+<<<<<<< HEAD
 "@typescript-eslint/experimental-utils@4.28.2":
   version "4.28.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-4.28.2.tgz#4ebdec06a10888e9326e1d51d81ad52a361bd0b0"
@@ -1123,10 +1267,22 @@
     "@typescript-eslint/scope-manager" "4.28.2"
     "@typescript-eslint/types" "4.28.2"
     "@typescript-eslint/typescript-estree" "4.28.2"
+=======
+"@typescript-eslint/experimental-utils@4.28.0":
+  version "4.28.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/experimental-utils/-/experimental-utils-4.28.0.tgz#13167ed991320684bdc23588135ae62115b30ee0"
+  integrity sha512-9XD9s7mt3QWMk82GoyUpc/Ji03vz4T5AYlHF9DcoFNfJ/y3UAclRsfGiE2gLfXtyC+JRA3trR7cR296TEb1oiQ==
+  dependencies:
+    "@types/json-schema" "^7.0.7"
+    "@typescript-eslint/scope-manager" "4.28.0"
+    "@typescript-eslint/types" "4.28.0"
+    "@typescript-eslint/typescript-estree" "4.28.0"
+>>>>>>> contact form
     eslint-scope "^5.1.1"
     eslint-utils "^3.0.0"
 
 "@typescript-eslint/parser@^4.26.0":
+<<<<<<< HEAD
   version "4.28.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-4.28.2.tgz#6aff11bf4b91eb67ca7517962eede951e9e2a15d"
   integrity sha512-Q0gSCN51eikAgFGY+gnd5p9bhhCUAl0ERMiDKrTzpSoMYRubdB8MJrTTR/BBii8z+iFwz8oihxd0RAdP4l8w8w==
@@ -1156,18 +1312,58 @@
   dependencies:
     "@typescript-eslint/types" "4.28.2"
     "@typescript-eslint/visitor-keys" "4.28.2"
+=======
+  version "4.28.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-4.28.0.tgz#2404c16751a28616ef3abab77c8e51d680a12caa"
+  integrity sha512-7x4D22oPY8fDaOCvkuXtYYTQ6mTMmkivwEzS+7iml9F9VkHGbbZ3x4fHRwxAb5KeuSkLqfnYjs46tGx2Nour4A==
+  dependencies:
+    "@typescript-eslint/scope-manager" "4.28.0"
+    "@typescript-eslint/types" "4.28.0"
+    "@typescript-eslint/typescript-estree" "4.28.0"
+    debug "^4.3.1"
+
+"@typescript-eslint/scope-manager@4.28.0":
+  version "4.28.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-4.28.0.tgz#6a3009d2ab64a30fc8a1e257a1a320067f36a0ce"
+  integrity sha512-eCALCeScs5P/EYjwo6se9bdjtrh8ByWjtHzOkC4Tia6QQWtQr3PHovxh3TdYTuFcurkYI4rmFsRFpucADIkseg==
+  dependencies:
+    "@typescript-eslint/types" "4.28.0"
+    "@typescript-eslint/visitor-keys" "4.28.0"
+
+"@typescript-eslint/types@4.28.0":
+  version "4.28.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-4.28.0.tgz#a33504e1ce7ac51fc39035f5fe6f15079d4dafb0"
+  integrity sha512-p16xMNKKoiJCVZY5PW/AfILw2xe1LfruTcfAKBj3a+wgNYP5I9ZEKNDOItoRt53p4EiPV6iRSICy8EPanG9ZVA==
+
+"@typescript-eslint/typescript-estree@4.28.0":
+  version "4.28.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-4.28.0.tgz#e66d4e5aa2ede66fec8af434898fe61af10c71cf"
+  integrity sha512-m19UQTRtxMzKAm8QxfKpvh6OwQSXaW1CdZPoCaQuLwAq7VZMNuhJmZR4g5281s2ECt658sldnJfdpSZZaxUGMQ==
+  dependencies:
+    "@typescript-eslint/types" "4.28.0"
+    "@typescript-eslint/visitor-keys" "4.28.0"
+>>>>>>> contact form
     debug "^4.3.1"
     globby "^11.0.3"
     is-glob "^4.0.1"
     semver "^7.3.5"
     tsutils "^3.21.0"
 
+<<<<<<< HEAD
 "@typescript-eslint/visitor-keys@4.28.2":
   version "4.28.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-4.28.2.tgz#bf56a400857bb68b59b311e6d0a5fbef5c3b5130"
   integrity sha512-aT2B4PLyyRDUVUafXzpZFoc0C9t0za4BJAKP5sgWIhG+jHECQZUEjuQSCIwZdiJJ4w4cgu5r3Kh20SOdtEBl0w==
   dependencies:
     "@typescript-eslint/types" "4.28.2"
+=======
+"@typescript-eslint/visitor-keys@4.28.0":
+  version "4.28.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-4.28.0.tgz#255c67c966ec294104169a6939d96f91c8a89434"
+  integrity sha512-PjJyTWwrlrvM5jazxYF5ZPs/nl0kHDZMVbuIcbpawVXaDPelp3+S9zpOz5RmVUfS/fD5l5+ZXNKnWhNYjPzCvw==
+  dependencies:
+    "@typescript-eslint/types" "4.28.0"
+>>>>>>> contact form
     eslint-visitor-keys "^2.0.0"
 
 abab@^2.0.3, abab@^2.0.5:
@@ -1433,6 +1629,7 @@ babel-helper-get-function-arity@^6.24.1:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
 
+<<<<<<< HEAD
 babel-jest@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-27.0.6.tgz#e99c6e0577da2655118e3608b68761a5a69bd0d8"
@@ -1440,6 +1637,15 @@ babel-jest@^27.0.6:
   dependencies:
     "@jest/transform" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+babel-jest@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-27.0.5.tgz#cd34c033ada05d1362211e5152391fd7a88080c8"
+  integrity sha512-bTMAbpCX7ldtfbca2llYLeSFsDM257aspyAOpsdrdSrBqoLkWCy4HPYTXtXWaSLgFPjrJGACL65rzzr4RFGadw==
+  dependencies:
+    "@jest/transform" "^27.0.5"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/babel__core" "^7.1.14"
     babel-plugin-istanbul "^6.0.0"
     babel-preset-jest "^27.0.6"
@@ -1796,9 +2002,15 @@ camelize@^1.0.0:
   integrity sha1-FkpUg+Yw+kMh5a8HAg5TGDGyYJs=
 
 caniuse-lite@^1.0.30001202, caniuse-lite@^1.0.30001219, caniuse-lite@^1.0.30001228:
+<<<<<<< HEAD
   version "1.0.30001243"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001243.tgz#d9250155c91e872186671c523f3ae50cfc94a3aa"
   integrity sha512-vNxw9mkTBtkmLFnJRv/2rhs1yufpDfCkBZexG3Y0xdOH2Z/eE/85E4Dl5j1YUN34nZVsSp6vVRFQRrez9wJMRA==
+=======
+  version "1.0.30001240"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001240.tgz#ec15d125b590602c8731545c5351ff054ad2d52f"
+  integrity sha512-nb8mDzfMdxBDN7ZKx8chWafAdBp5DAAlpWvNyUGe5tcDWd838zpzDN3Rah9cjCqhfOKkrvx40G2SDtP0qiWX/w==
+>>>>>>> contact form
 
 chalk@2.4.2, chalk@^2.0.0:
   version "2.4.2"
@@ -2002,9 +2214,15 @@ convert-source-map@^1.4.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
     safe-buffer "~5.1.1"
 
 core-js-pure@^3.15.0:
+<<<<<<< HEAD
   version "3.15.2"
   resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.15.2.tgz#c8e0874822705f3385d3197af9348f7c9ae2e3ce"
   integrity sha512-D42L7RYh1J2grW8ttxoY1+17Y4wXZeKe7uyplAI3FkNQyI5OgBIAjUfFiTPfL1rs0qLpxaabITNbjKl1Sp82tA==
+=======
+  version "3.15.1"
+  resolved "https://registry.yarnpkg.com/core-js-pure/-/core-js-pure-3.15.1.tgz#8356f6576fa2aa8e54ca6fe02620968ff010eed7"
+  integrity sha512-OZuWHDlYcIda8sJLY4Ec6nWq2hRjlyCqCZ+jCflyleMkVt3tPedDVErvHslyS2nbO+SlBFMSBJYvtLMwxnrzjA==
+>>>>>>> contact form
 
 core-js@^2.4.0:
   version "2.6.12"
@@ -2316,9 +2534,15 @@ domexception@^2.0.1:
     webidl-conversions "^5.0.0"
 
 electron-to-chromium@^1.3.723:
+<<<<<<< HEAD
   version "1.3.769"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.769.tgz#73ad7e3f2d435810b6f8b29617ec344c782fcbed"
   integrity sha512-B+3hW8D76/uoTPSobWI3D/CFn2S4jPn88dVJ+BkD88Lz6LijQpL+hfdzIFJGTQK4KdE0XwmNbjUQFH1OQVwKdQ==
+=======
+  version "1.3.759"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.759.tgz#b0d652d376831470a4c230ba721da2427bfb996a"
+  integrity sha512-nM76xH0t2FBH5iMEZDVc3S/qbdKjGH7TThezxC8k1Q7w7WHvIAyJh8lAe2UamGfdRqBTjHfPDn82LJ0ksCiB9g==
+>>>>>>> contact form
 
 elliptic@^6.5.3:
   version "6.5.4"
@@ -2588,9 +2812,15 @@ eslint-visitor-keys@^2.0.0:
   integrity sha512-0rSmRBzXgDzIsD6mGdJgevzgezI534Cer5L/vyMX0kHzT/jiB43jRhd9YUlMGYLQy2zprNmoT8qasCGtY+QaKw==
 
 eslint@^7.28.0:
+<<<<<<< HEAD
   version "7.30.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-7.30.0.tgz#6d34ab51aaa56112fd97166226c9a97f505474f8"
   integrity sha512-VLqz80i3as3NdloY44BQSJpFw534L9Oh+6zJOUaViV4JPd+DaHwutqP7tcpkW3YiXbK6s05RZl7yl7cQn+lijg==
+=======
+  version "7.29.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-7.29.0.tgz#ee2a7648f2e729485e4d0bd6383ec1deabc8b3c0"
+  integrity sha512-82G/JToB9qIy/ArBzIWG9xvvwL3R86AlCjtGw+A29OMZDqhTybz/MByORSukGxeI+YPCR4coYyITKk8BFH9nDA==
+>>>>>>> contact form
   dependencies:
     "@babel/code-frame" "7.12.11"
     "@eslint/eslintrc" "^0.4.2"
@@ -3420,6 +3650,7 @@ jest-changed-files@^27.0.6:
     execa "^5.0.0"
     throat "^6.0.1"
 
+<<<<<<< HEAD
 jest-circus@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-circus/-/jest-circus-27.0.6.tgz#dd4df17c4697db6a2c232aaad4e9cec666926668"
@@ -3428,12 +3659,23 @@ jest-circus@^27.0.6:
     "@jest/environment" "^27.0.6"
     "@jest/test-result" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+jest-circus@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-circus/-/jest-circus-27.0.5.tgz#b5e327f1d6857c8485126f8e364aefa4378debaa"
+  integrity sha512-p5rO90o1RTh8LPOG6l0Fc9qgp5YGv+8M5CFixhMh7gGHtGSobD1AxX9cjFZujILgY8t30QZ7WVvxlnuG31r8TA==
+  dependencies:
+    "@jest/environment" "^27.0.5"
+    "@jest/test-result" "^27.0.2"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/node" "*"
     chalk "^4.0.0"
     co "^4.6.0"
     dedent "^0.7.0"
     expect "^27.0.6"
     is-generator-fn "^2.0.0"
+<<<<<<< HEAD
     jest-each "^27.0.6"
     jest-matcher-utils "^27.0.6"
     jest-message-util "^27.0.6"
@@ -3441,10 +3683,20 @@ jest-circus@^27.0.6:
     jest-snapshot "^27.0.6"
     jest-util "^27.0.6"
     pretty-format "^27.0.6"
+=======
+    jest-each "^27.0.2"
+    jest-matcher-utils "^27.0.2"
+    jest-message-util "^27.0.2"
+    jest-runtime "^27.0.5"
+    jest-snapshot "^27.0.5"
+    jest-util "^27.0.2"
+    pretty-format "^27.0.2"
+>>>>>>> contact form
     slash "^3.0.0"
     stack-utils "^2.0.3"
     throat "^6.0.1"
 
+<<<<<<< HEAD
 jest-cli@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-cli/-/jest-cli-27.0.6.tgz#d021e5f4d86d6a212450d4c7b86cb219f1e6864f"
@@ -3453,10 +3705,21 @@ jest-cli@^27.0.6:
     "@jest/core" "^27.0.6"
     "@jest/test-result" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+jest-cli@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-cli/-/jest-cli-27.0.5.tgz#f359ba042624cffb96b713010a94bffb7498a37c"
+  integrity sha512-kZqY020QFOFQKVE2knFHirTBElw3/Q0kUbDc3nMfy/x+RQ7zUY89SUuzpHHJoSX1kX7Lq569ncvjNqU3Td/FCA==
+  dependencies:
+    "@jest/core" "^27.0.5"
+    "@jest/test-result" "^27.0.2"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     chalk "^4.0.0"
     exit "^0.1.2"
     graceful-fs "^4.2.4"
     import-local "^3.0.2"
+<<<<<<< HEAD
     jest-config "^27.0.6"
     jest-util "^27.0.6"
     jest-validate "^27.0.6"
@@ -3472,11 +3735,29 @@ jest-config@^27.0.6:
     "@jest/test-sequencer" "^27.0.6"
     "@jest/types" "^27.0.6"
     babel-jest "^27.0.6"
+=======
+    jest-config "^27.0.5"
+    jest-util "^27.0.2"
+    jest-validate "^27.0.2"
+    prompts "^2.0.1"
+    yargs "^16.0.3"
+
+jest-config@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-config/-/jest-config-27.0.5.tgz#683da3b0d8237675c29c817f6e3aba1481028e19"
+  integrity sha512-zCUIXag7QIXKEVN4kUKbDBDi9Q53dV5o3eNhGqe+5zAbt1vLs4VE3ceWaYrOub0L4Y7E9pGfM84TX/0ARcE+Qw==
+  dependencies:
+    "@babel/core" "^7.1.0"
+    "@jest/test-sequencer" "^27.0.5"
+    "@jest/types" "^27.0.2"
+    babel-jest "^27.0.5"
+>>>>>>> contact form
     chalk "^4.0.0"
     deepmerge "^4.2.2"
     glob "^7.1.1"
     graceful-fs "^4.2.4"
     is-ci "^3.0.0"
+<<<<<<< HEAD
     jest-circus "^27.0.6"
     jest-environment-jsdom "^27.0.6"
     jest-environment-node "^27.0.6"
@@ -3487,6 +3768,18 @@ jest-config@^27.0.6:
     jest-runner "^27.0.6"
     jest-util "^27.0.6"
     jest-validate "^27.0.6"
+=======
+    jest-circus "^27.0.5"
+    jest-environment-jsdom "^27.0.5"
+    jest-environment-node "^27.0.5"
+    jest-get-type "^27.0.1"
+    jest-jasmine2 "^27.0.5"
+    jest-regex-util "^27.0.1"
+    jest-resolve "^27.0.5"
+    jest-runner "^27.0.5"
+    jest-util "^27.0.2"
+    jest-validate "^27.0.2"
+>>>>>>> contact form
     micromatch "^4.0.4"
     pretty-format "^27.0.6"
 
@@ -3524,6 +3817,7 @@ jest-each@^27.0.6:
   dependencies:
     "@jest/types" "^27.0.6"
     chalk "^4.0.0"
+<<<<<<< HEAD
     jest-get-type "^27.0.6"
     jest-util "^27.0.6"
     pretty-format "^27.0.6"
@@ -3536,11 +3830,26 @@ jest-environment-jsdom@^27.0.6:
     "@jest/environment" "^27.0.6"
     "@jest/fake-timers" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+    jest-get-type "^27.0.1"
+    jest-util "^27.0.2"
+    pretty-format "^27.0.2"
+
+jest-environment-jsdom@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-environment-jsdom/-/jest-environment-jsdom-27.0.5.tgz#c36771977cf4490a9216a70473b39161d193c212"
+  integrity sha512-ToWhViIoTl5738oRaajTMgYhdQL73UWPoV4GqHGk2DPhs+olv8OLq5KoQW8Yf+HtRao52XLqPWvl46dPI88PdA==
+  dependencies:
+    "@jest/environment" "^27.0.5"
+    "@jest/fake-timers" "^27.0.5"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/node" "*"
     jest-mock "^27.0.6"
     jest-util "^27.0.6"
     jsdom "^16.6.0"
 
+<<<<<<< HEAD
 jest-environment-node@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-environment-node/-/jest-environment-node-27.0.6.tgz#a6699b7ceb52e8d68138b9808b0c404e505f3e07"
@@ -3549,6 +3858,16 @@ jest-environment-node@^27.0.6:
     "@jest/environment" "^27.0.6"
     "@jest/fake-timers" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+jest-environment-node@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-environment-node/-/jest-environment-node-27.0.5.tgz#b7238fc2b61ef2fb9563a3b7653a95fa009a6a54"
+  integrity sha512-47qqScV/WMVz5OKF5TWpAeQ1neZKqM3ySwNveEnLyd+yaE/KT6lSMx/0SOx60+ZUcVxPiESYS+Kt2JS9y4PpkQ==
+  dependencies:
+    "@jest/environment" "^27.0.5"
+    "@jest/fake-timers" "^27.0.5"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/node" "*"
     jest-mock "^27.0.6"
     jest-util "^27.0.6"
@@ -3563,10 +3882,17 @@ jest-get-type@^27.0.6:
   resolved "https://registry.yarnpkg.com/jest-get-type/-/jest-get-type-27.0.6.tgz#0eb5c7f755854279ce9b68a9f1a4122f69047cfe"
   integrity sha512-XTkK5exIeUbbveehcSR8w0bhH+c0yloW/Wpl+9vZrjzztCPWrxhHwkIFpZzCt71oRBsgxmuUfxEqOYoZI2macg==
 
+<<<<<<< HEAD
 jest-haste-map@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-27.0.6.tgz#4683a4e68f6ecaa74231679dca237279562c8dc7"
   integrity sha512-4ldjPXX9h8doB2JlRzg9oAZ2p6/GpQUNAeiYXqcpmrKbP0Qev0wdZlxSMOmz8mPOEnt4h6qIzXFLDi8RScX/1w==
+=======
+jest-haste-map@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-haste-map/-/jest-haste-map-27.0.5.tgz#2e1e55073b5328410a2c0d74b334e513d71f3470"
+  integrity sha512-3LFryGSHxwPFHzKIs6W0BGA2xr6g1MvzSjR3h3D8K8Uqy4vbRm/grpGHzbPtIbOPLC6wFoViRrNEmd116QWSkw==
+>>>>>>> contact form
   dependencies:
     "@jest/types" "^27.0.6"
     "@types/graceful-fs" "^4.1.2"
@@ -3583,6 +3909,7 @@ jest-haste-map@^27.0.6:
   optionalDependencies:
     fsevents "^2.3.2"
 
+<<<<<<< HEAD
 jest-jasmine2@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-jasmine2/-/jest-jasmine2-27.0.6.tgz#fd509a9ed3d92bd6edb68a779f4738b100655b37"
@@ -3593,11 +3920,24 @@ jest-jasmine2@^27.0.6:
     "@jest/source-map" "^27.0.6"
     "@jest/test-result" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+jest-jasmine2@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-jasmine2/-/jest-jasmine2-27.0.5.tgz#8a6eb2a685cdec3af13881145c77553e4e197776"
+  integrity sha512-m3TojR19sFmTn79QoaGy1nOHBcLvtLso6Zh7u+gYxZWGcza4rRPVqwk1hciA5ZOWWZIJOukAcore8JRX992FaA==
+  dependencies:
+    "@babel/traverse" "^7.1.0"
+    "@jest/environment" "^27.0.5"
+    "@jest/source-map" "^27.0.1"
+    "@jest/test-result" "^27.0.2"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/node" "*"
     chalk "^4.0.0"
     co "^4.6.0"
     expect "^27.0.6"
     is-generator-fn "^2.0.0"
+<<<<<<< HEAD
     jest-each "^27.0.6"
     jest-matcher-utils "^27.0.6"
     jest-message-util "^27.0.6"
@@ -3605,6 +3945,15 @@ jest-jasmine2@^27.0.6:
     jest-snapshot "^27.0.6"
     jest-util "^27.0.6"
     pretty-format "^27.0.6"
+=======
+    jest-each "^27.0.2"
+    jest-matcher-utils "^27.0.2"
+    jest-message-util "^27.0.2"
+    jest-runtime "^27.0.5"
+    jest-snapshot "^27.0.5"
+    jest-util "^27.0.2"
+    pretty-format "^27.0.2"
+>>>>>>> contact form
     throat "^6.0.1"
 
 jest-leak-detector@^27.0.6:
@@ -3658,6 +4007,7 @@ jest-regex-util@^27.0.6:
   resolved "https://registry.yarnpkg.com/jest-regex-util/-/jest-regex-util-27.0.6.tgz#02e112082935ae949ce5d13b2675db3d8c87d9c5"
   integrity sha512-SUhPzBsGa1IKm8hx2F4NfTGGp+r7BXJ4CulsZ1k2kI+mGLG+lxGrs76veN2LF/aUdGosJBzKgXmNCw+BzFqBDQ==
 
+<<<<<<< HEAD
 jest-resolve-dependencies@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-resolve-dependencies/-/jest-resolve-dependencies-27.0.6.tgz#3e619e0ef391c3ecfcf6ef4056207a3d2be3269f"
@@ -3671,6 +4021,21 @@ jest-resolve@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-resolve/-/jest-resolve-27.0.6.tgz#e90f436dd4f8fbf53f58a91c42344864f8e55bff"
   integrity sha512-yKmIgw2LgTh7uAJtzv8UFHGF7Dm7XfvOe/LQ3Txv101fLM8cx2h1QVwtSJ51Q/SCxpIiKfVn6G2jYYMDNHZteA==
+=======
+jest-resolve-dependencies@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-resolve-dependencies/-/jest-resolve-dependencies-27.0.5.tgz#819ccdddd909c65acddb063aac3a49e4ba1ed569"
+  integrity sha512-xUj2dPoEEd59P+nuih4XwNa4nJ/zRd/g4rMvjHrZPEBWeWRq/aJnnM6mug+B+Nx+ILXGtfWHzQvh7TqNV/WbuA==
+  dependencies:
+    "@jest/types" "^27.0.2"
+    jest-regex-util "^27.0.1"
+    jest-snapshot "^27.0.5"
+
+jest-resolve@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-resolve/-/jest-resolve-27.0.5.tgz#937535a5b481ad58e7121eaea46d1424a1e0c507"
+  integrity sha512-Md65pngRh8cRuWVdWznXBB5eDt391OJpdBaJMxfjfuXCvOhM3qQBtLMCMTykhuUKiBMmy5BhqCW7AVOKmPrW+Q==
+>>>>>>> contact form
   dependencies:
     "@jest/types" "^27.0.6"
     chalk "^4.0.0"
@@ -3682,6 +4047,7 @@ jest-resolve@^27.0.6:
     resolve "^1.20.0"
     slash "^3.0.0"
 
+<<<<<<< HEAD
 jest-runner@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-runner/-/jest-runner-27.0.6.tgz#1325f45055539222bbc7256a6976e993ad2f9520"
@@ -3692,11 +4058,24 @@ jest-runner@^27.0.6:
     "@jest/test-result" "^27.0.6"
     "@jest/transform" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+jest-runner@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-runner/-/jest-runner-27.0.5.tgz#b6fdc587e1a5056339205914294555c554efc08a"
+  integrity sha512-HNhOtrhfKPArcECgBTcWOc+8OSL8GoFoa7RsHGnfZR1C1dFohxy9eLtpYBS+koybAHlJLZzNCx2Y/Ic3iEtJpQ==
+  dependencies:
+    "@jest/console" "^27.0.2"
+    "@jest/environment" "^27.0.5"
+    "@jest/test-result" "^27.0.2"
+    "@jest/transform" "^27.0.5"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/node" "*"
     chalk "^4.0.0"
     emittery "^0.8.1"
     exit "^0.1.2"
     graceful-fs "^4.2.4"
+<<<<<<< HEAD
     jest-docblock "^27.0.6"
     jest-environment-jsdom "^27.0.6"
     jest-environment-node "^27.0.6"
@@ -3723,6 +4102,34 @@ jest-runtime@^27.0.6:
     "@jest/test-result" "^27.0.6"
     "@jest/transform" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+    jest-docblock "^27.0.1"
+    jest-environment-jsdom "^27.0.5"
+    jest-environment-node "^27.0.5"
+    jest-haste-map "^27.0.5"
+    jest-leak-detector "^27.0.2"
+    jest-message-util "^27.0.2"
+    jest-resolve "^27.0.5"
+    jest-runtime "^27.0.5"
+    jest-util "^27.0.2"
+    jest-worker "^27.0.2"
+    source-map-support "^0.5.6"
+    throat "^6.0.1"
+
+jest-runtime@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-runtime/-/jest-runtime-27.0.5.tgz#cd5d1aa9754d30ddf9f13038b3cb7b95b46f552d"
+  integrity sha512-V/w/+VasowPESbmhXn5AsBGPfb35T7jZPGZybYTHxZdP7Gwaa+A0EXE6rx30DshHKA98lVCODbCO8KZpEW3hiQ==
+  dependencies:
+    "@jest/console" "^27.0.2"
+    "@jest/environment" "^27.0.5"
+    "@jest/fake-timers" "^27.0.5"
+    "@jest/globals" "^27.0.5"
+    "@jest/source-map" "^27.0.1"
+    "@jest/test-result" "^27.0.2"
+    "@jest/transform" "^27.0.5"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
     cjs-module-lexer "^1.0.0"
@@ -3730,6 +4137,7 @@ jest-runtime@^27.0.6:
     exit "^0.1.2"
     glob "^7.1.3"
     graceful-fs "^4.2.4"
+<<<<<<< HEAD
     jest-haste-map "^27.0.6"
     jest-message-util "^27.0.6"
     jest-mock "^27.0.6"
@@ -3738,6 +4146,16 @@ jest-runtime@^27.0.6:
     jest-snapshot "^27.0.6"
     jest-util "^27.0.6"
     jest-validate "^27.0.6"
+=======
+    jest-haste-map "^27.0.5"
+    jest-message-util "^27.0.2"
+    jest-mock "^27.0.3"
+    jest-regex-util "^27.0.1"
+    jest-resolve "^27.0.5"
+    jest-snapshot "^27.0.5"
+    jest-util "^27.0.2"
+    jest-validate "^27.0.2"
+>>>>>>> contact form
     slash "^3.0.0"
     strip-bom "^4.0.0"
     yargs "^16.0.3"
@@ -3750,10 +4168,17 @@ jest-serializer@^27.0.6:
     "@types/node" "*"
     graceful-fs "^4.2.4"
 
+<<<<<<< HEAD
 jest-snapshot@^27.0.6:
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest-snapshot/-/jest-snapshot-27.0.6.tgz#f4e6b208bd2e92e888344d78f0f650bcff05a4bf"
   integrity sha512-NTHaz8He+ATUagUgE7C/UtFcRoHqR2Gc+KDfhQIyx+VFgwbeEMjeP+ILpUTLosZn/ZtbNdCF5LkVnN/l+V751A==
+=======
+jest-snapshot@^27.0.5:
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest-snapshot/-/jest-snapshot-27.0.5.tgz#6e3b9e8e193685372baff771ba34af631fe4d4d5"
+  integrity sha512-H1yFYdgnL1vXvDqMrnDStH6yHFdMEuzYQYc71SnC/IJnuuhW6J16w8GWG1P+qGd3Ag3sQHjbRr0TcwEo/vGS+g==
+>>>>>>> contact form
   dependencies:
     "@babel/core" "^7.7.2"
     "@babel/generator" "^7.7.2"
@@ -3761,14 +4186,20 @@ jest-snapshot@^27.0.6:
     "@babel/plugin-syntax-typescript" "^7.7.2"
     "@babel/traverse" "^7.7.2"
     "@babel/types" "^7.0.0"
+<<<<<<< HEAD
     "@jest/transform" "^27.0.6"
     "@jest/types" "^27.0.6"
+=======
+    "@jest/transform" "^27.0.5"
+    "@jest/types" "^27.0.2"
+>>>>>>> contact form
     "@types/babel__traverse" "^7.0.4"
     "@types/prettier" "^2.1.5"
     babel-preset-current-node-syntax "^1.0.0"
     chalk "^4.0.0"
     expect "^27.0.6"
     graceful-fs "^4.2.4"
+<<<<<<< HEAD
     jest-diff "^27.0.6"
     jest-get-type "^27.0.6"
     jest-haste-map "^27.0.6"
@@ -3776,6 +4207,15 @@ jest-snapshot@^27.0.6:
     jest-message-util "^27.0.6"
     jest-resolve "^27.0.6"
     jest-util "^27.0.6"
+=======
+    jest-diff "^27.0.2"
+    jest-get-type "^27.0.1"
+    jest-haste-map "^27.0.5"
+    jest-matcher-utils "^27.0.2"
+    jest-message-util "^27.0.2"
+    jest-resolve "^27.0.5"
+    jest-util "^27.0.2"
+>>>>>>> contact form
     natural-compare "^1.4.0"
     pretty-format "^27.0.6"
     semver "^7.3.2"
@@ -3836,6 +4276,7 @@ jest-worker@^27.0.6:
     supports-color "^8.0.0"
 
 jest@^27.0.4:
+<<<<<<< HEAD
   version "27.0.6"
   resolved "https://registry.yarnpkg.com/jest/-/jest-27.0.6.tgz#10517b2a628f0409087fbf473db44777d7a04505"
   integrity sha512-EjV8aETrsD0wHl7CKMibKwQNQc3gIRBXlTikBmmHUeVMKaPFxdcUIBfoDqTSXDoGJIivAYGqCWVlzCSaVjPQsA==
@@ -3843,6 +4284,15 @@ jest@^27.0.4:
     "@jest/core" "^27.0.6"
     import-local "^3.0.2"
     jest-cli "^27.0.6"
+=======
+  version "27.0.5"
+  resolved "https://registry.yarnpkg.com/jest/-/jest-27.0.5.tgz#141825e105514a834cc8d6e44670509e8d74c5f2"
+  integrity sha512-4NlVMS29gE+JOZvgmSAsz3eOjkSsHqjTajlIsah/4MVSmKvf3zFP/TvgcLoWe2UVHiE9KF741sReqhF0p4mqbQ==
+  dependencies:
+    "@jest/core" "^27.0.5"
+    import-local "^3.0.2"
+    jest-cli "^27.0.5"
+>>>>>>> contact form
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
@@ -5637,7 +6087,11 @@ timers-browserify@2.0.12, timers-browserify@^2.0.4:
   dependencies:
     setimmediate "^1.0.4"
 
+<<<<<<< HEAD
 tiny-warning@^1.0.2, tiny-warning@^1.0.3:
+=======
+tiny-warning@^1.0.2:
+>>>>>>> contact form
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/tiny-warning/-/tiny-warning-1.0.3.tgz#94a30db453df4c643d0fd566060d60a875d84754"
   integrity sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==
@@ -6109,9 +6563,15 @@ write-file-atomic@^3.0.0:
     typedarray-to-buffer "^3.1.5"
 
 ws@^7.4.5:
+<<<<<<< HEAD
   version "7.5.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.2.tgz#09cc8fea3bec1bc5ed44ef51b42f945be36900f6"
   integrity sha512-lkF7AWRicoB9mAgjeKbGqVUekLnSNO4VjKVnuPHpQeOxZOErX6BPXwJk70nFslRCEEA8EVW7ZjKwXaP9N+1sKQ==
+=======
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.0.tgz#0033bafea031fb9df041b2026fc72a571ca44691"
+  integrity sha512-6ezXvzOZupqKj4jUqbQ9tXuJNo+BR2gU8fFRk3XCP3e0G6WT414u5ELe6Y0vtp7kmSJ3F7YWObSNr1ESsgi4vw==
+>>>>>>> contact form
 
 xml-name-validator@^3.0.0:
   version "3.0.0"
