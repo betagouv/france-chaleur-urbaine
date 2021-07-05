@@ -22,7 +22,7 @@ export type SuggestionItem = {
     street: string;
   };
 };
-
+export type Point = number[];
 export type SuggestionResponse = {
   type: 'FeatureCollection';
   version: string;

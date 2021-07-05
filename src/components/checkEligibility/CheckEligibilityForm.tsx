@@ -1,21 +1,47 @@
-import AutocompleteAddress from '@components/autocompleteAddress/autocompleteAddress';
-import React, { useState } from 'react';
+import AddressAutocomplete from '@components/addressAutocomplete/addressAutocomplete';
+import { Button } from '@components/shared/button';
+import { useRouter } from 'next/dist/client/router';
+import React from 'react';
+import { Coords, Point } from 'src/types';
 import AlertEligibility from './AlertEligibility';
+import { useHeatNetworks } from './useHeatNetworks';
 
 const CheckEligibilityForm = () => {
-  const [displayEligibilityState, setDisplayEligibilityState] = useState(false);
-  const [displayEligibility, setDisplayEligibility] = useState(false);
-  const handleEligibilityChecked = (isEligible: boolean) => {
-    setDisplayEligibilityState(true);
-    setDisplayEligibility(isEligible);
+  const { status, checkEligibility, isEligible } = useHeatNetworks();
+  const showAlert = status === 'success';
+  const isButtonDisabled = status !== 'success';
+  const { push } = useRouter();
+  const handleAddressSelected = async (point: Point) => {
+    checkEligibility(getCoords(point));
   };
+  const getCoords = (point: number[]): Coords => ({
+    lon: point[0],
+    lat: point[1],
+  });
   return (
     <div className="fr-col-12 fr-col-md-8">
       <h1>Tester votre éligibilité</h1>
-      {displayEligibilityState && (
-        <AlertEligibility isEligible={displayEligibility} />
-      )}
-      <AutocompleteAddress onEligibilityChecked={handleEligibilityChecked} />
+      {showAlert && <AlertEligibility isEligible={isEligible} />}
+      <p>
+        Votre copropriété peut-elle être raccordée à un réseau de chauffage
+        urbain en France ?Découvrez s’il existe un réseau de chaleur proche de
+        votre copropriété.
+      </p>
+      <AddressAutocomplete onAddressSelected={handleAddressSelected} />
+
+      <div className="fr-col-offset-4">
+        <Button
+          onClick={() =>
+            push({
+              pathname: '/demande-contact',
+              query: { isEligible },
+            })
+          }
+          disabled={isButtonDisabled}
+        >
+          Nous contacter
+        </Button>
+      </div>
     </div>
   );
 };

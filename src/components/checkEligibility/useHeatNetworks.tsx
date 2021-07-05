@@ -15,22 +15,20 @@ export const useHeatNetworks = (
       setStatus('loading');
       try {
         const network = await heatNetworkService.findByCoords(coords);
-        setStatus('success');
         setNearNetwork(network);
+        setStatus('success');
       } catch (e) {
         setStatus('error');
       }
     },
     [heatNetworkService]
   );
-  const _isEligible =
-    !!nearNetwork && _IsOutOfThreshold(nearNetwork, threshold);
 
   return {
-    checkEligibility: async (coords: Coords) => {
+    checkEligibility: async (coords: Coords): Promise<void> => {
       await findNearHeatNetwork(coords);
     },
-    isEligible: _isEligible,
+    isEligible: !!nearNetwork && _IsOutOfThreshold(nearNetwork, threshold),
     status,
   };
 };
