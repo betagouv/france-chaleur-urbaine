@@ -9,12 +9,13 @@ import React from 'react';
 
 export default function EligibilityResult() {
   const { query } = useRouter();
+  const isAddressEligible = query.isEligible === 'true';
 
   return (
     <Layout>
       <div className="fr-col-12">
         <CallOut>
-          {query.isEligible === 'true' ? (
+          {isAddressEligible ? (
             <>
               <CallOutTitle>
                 Votre copropriété est éligible à la chaleur urbaine.
