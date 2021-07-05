@@ -1,5 +1,5 @@
 import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
-import Layout from '@components/shared/layout/layout';
+import Layout from '@components/shared/layout/Layout';
 import React from 'react';
 
 export default function Home() {

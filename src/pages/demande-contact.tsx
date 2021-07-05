@@ -3,7 +3,7 @@ import {
   CallOutBody,
   CallOutTitle,
 } from '@components/shared/callOut/CallOut';
-import Layout from '@components/shared/layout/layout';
+import Layout from '@components/shared/layout/Layout';
 import { useRouter } from 'next/dist/client/router';
 import React from 'react';
 

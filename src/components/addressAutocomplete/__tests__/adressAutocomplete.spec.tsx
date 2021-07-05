@@ -3,7 +3,7 @@ import { customRender } from '@utils/contextProvider';
 import { someSuggestions } from '@utils/fixtures/suggestions';
 import { screen, waitFor } from '@utils/test-utils';
 import React from 'react';
-import AddressAutocomplete from '../addressAutocomplete';
+import AddressAutocomplete from '../AddressAutocomplete';
 
 describe('Address autocomplete', () => {
   const fakeSuggestion = someSuggestions();

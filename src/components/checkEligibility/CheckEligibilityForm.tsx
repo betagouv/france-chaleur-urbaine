@@ -1,6 +1,6 @@
-import AddressAutocomplete from '@components/addressAutocomplete/addressAutocomplete';
-import { Button } from '@components/shared/button';
-import { useRouter } from 'next/dist/client/router';
+import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
+import { Button } from '@components/shared/Button';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { Coords, Point } from 'src/types';
 import AlertEligibility from './AlertEligibility';
