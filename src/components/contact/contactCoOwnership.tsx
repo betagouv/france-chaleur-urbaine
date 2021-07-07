@@ -1,5 +1,4 @@
 import Input from '@components/input';
-import Select from '@components/select';
 import { ErrorMessage, Field } from 'formik';
 import * as Yup from 'yup';
 
@@ -41,8 +40,25 @@ const ContactCoOwnership = () => {
           name="heatingMethod"
           id="heatingMethod"
           label="Votre mode de chauffage actuel"
-          component={Select}
-        />
+        >
+          {({
+            field, // { name, value, onChange, onBlur }
+            ...props
+          }: any) => (
+            <>
+              <label className="fr-label" htmlFor={field.id}>
+                Votre mode de chauffage actuel
+              </label>
+              <select className="fr-select" {...field} {...props}>
+                <option defaultValue="">Selectionnez une option</option>
+                <option value="fioul">Fioul</option>
+                <option value="gaz">Gaz</option>
+                <option value="electricite">Electricité</option>
+                <option value="autre">Autre</option>
+              </select>
+            </>
+          )}
+        </Field>
         <ErrorMessage
           name="heatingMethod"
           component={'p'}
@@ -55,8 +71,28 @@ const ContactCoOwnership = () => {
           name="coOwnershipStatus"
           id="coOwnershipStatus"
           label="Votre statut au sein de la copropriété"
-          component={Select}
-        />
+        >
+          {({
+            field, // { name, value, onChange, onBlur }
+            ...props
+          }: any) => (
+            <>
+              <label className="fr-label" htmlFor={field.id}>
+                Votre statut au sein de la copropriété
+              </label>
+
+              <select className="fr-select" {...field} {...props}>
+                <option defaultValue="">Selectionnez une option</option>
+                <option value="membre du conseil">
+                  Membre du conseil syndical
+                </option>
+                <option value="syndic">Syndic</option>
+                <option value="habitant">habitant</option>
+                <option value="autre">Autre</option>
+              </select>
+            </>
+          )}
+        </Field>
         <ErrorMessage
           name="coOwnershipStatus"
           component={'p'}

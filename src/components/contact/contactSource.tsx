@@ -1,5 +1,4 @@
 import Checkbox from '@components/checkbox';
-import Select from '@components/select';
 import { ErrorMessage, Field } from 'formik';
 import * as Yup from 'yup';
 
@@ -24,8 +23,27 @@ const ContactSource = () => {
           name="contactOrigin"
           id="contactOrigin"
           label="Comment avez-vous entendu parlé de France chaleur urbaine"
-          component={Select}
-        />
+        >
+          {({
+            field, // { name, value, onChange, onBlur }
+            ...props
+          }: any) => (
+            <>
+              <label className="fr-label" htmlFor={field.id}>
+                Comment avez-vous entendu parlé de France chaleur urbaine
+              </label>
+
+              <select className="fr-select" {...field} {...props}>
+                <option defaultValue="">Selectionnez une option</option>
+                <option value="mail">Mail</option>
+                <option value="bouche à oreille">Bouche à oreille</option>
+                <option value="linkedin">Linkedin</option>
+                <option value="google">Google</option>
+                <option value="autre">Autre</option>
+              </select>
+            </>
+          )}
+        </Field>
         <ErrorMessage
           name="contactOrigin"
           component={'p'}
@@ -41,6 +59,7 @@ const ContactSource = () => {
           label="Les données collectées sont uniquement utilisées à des fins d’annalyse par le minitère de la transition écologique"
           component={Checkbox}
         />
+
         <ErrorMessage
           name="collectDataAgreement"
           component={'p'}

@@ -1,15 +1,38 @@
-import ContactForm from '@components/../container/contactForm/contactForm';
+import ContactForm from '@components/contactForm/contactForm';
+import {
+  CallOut,
+  CallOutBody,
+  CallOutTitle,
+} from '@components/shared/callOut/CallOut';
+import MainLayout from '@components/shared/layout/MainLayout';
+import { useRouter } from 'next/router';
+import React from 'react';
 
-function DemandeDeContact() {
+export default function DemandeDeContact() {
+  const { query } = useRouter();
+  const isAddressEligible = query.isEligible === 'true';
   return (
-    <div className="fr-container fr-container--fluid">
-      <div className="fr-grid-row fr-grid-row--center">
-        <div className="fr-col-sm-12">
-          <ContactForm />
-        </div>
+    <MainLayout>
+      <div className="fr-col-12">
+        <CallOut>
+          {isAddressEligible ? (
+            <>
+              <CallOutTitle>
+                Votre copropriété est éligible à la chaleur urbaine.
+              </CallOutTitle>
+              <CallOutBody>
+                Un réseau de chaleur urbaine passe à moins de 300 métres de
+                votre adresse
+              </CallOutBody>
+            </>
+          ) : (
+            <CallOutTitle>
+              Votre copropriété n'est éligible à la chaleur urbaine.
+            </CallOutTitle>
+          )}
+        </CallOut>
+        <ContactForm />
       </div>
-    </div>
+    </MainLayout>
   );
 }
-
-export default DemandeDeContact;
