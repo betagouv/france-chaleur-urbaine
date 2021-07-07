@@ -55,6 +55,7 @@ test('rendering and submitting contact form', async () => {
     'Comment avez-vous entendu parlé de France chaleur urbaine',
     filledInData.contactOrigin
   );
+
   userFillIn(
     'Les données collectées sont uniquement utilisées à des fins d’annalyse par le minitère de la transition écologique',
     filledInData.collectDataAgreement
