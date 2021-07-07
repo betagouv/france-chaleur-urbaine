@@ -1,11 +1,12 @@
 import ResourceCard from '@components/resources/resourceCard';
 import Data from '@components/resources/resourcesData.json';
 import ResourceSection from '@components/resources/resourceSection';
+import MainLayout from '@components/shared/layout/MainLayout';
 import React from 'react';
 
 function Resources() {
   return (
-    <>
+    <MainLayout>
       <div className="fr-container fr-mt-2w">
         <div className="fr-grid-row">
           <div className="fr-col-lg-4 fr-col-sm-12">
@@ -27,7 +28,7 @@ function Resources() {
           ))}
         </ResourceSection>
       ))}
-    </>
+    </MainLayout>
   );
 }
 export default Resources;

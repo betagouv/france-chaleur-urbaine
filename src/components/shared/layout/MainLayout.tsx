@@ -68,12 +68,12 @@ const MainLayout: React.FC = ({ children }) => {
                   </a>
                 </li>
                 <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="#" target="_self">
+                  <a className="fr-nav__link" href="ressources" target="_self">
                     Ressources
                   </a>
                 </li>
                 <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="#" target="_self">
+                  <a className="fr-nav__link" href="partenaires" target="_self">
                     Partenaires
                   </a>
                 </li>
