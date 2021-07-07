@@ -36,20 +36,21 @@ const ContactCoOwnership = () => {
       </div>
 
       <div className="fr-my-3w">
-        <Field
-          name="heatingMethod"
-          id="heatingMethod"
-          label="Votre mode de chauffage actuel"
-        >
+        <Field name="heatingMethod" label="Votre mode de chauffage actuel">
           {({
             field, // { name, value, onChange, onBlur }
             ...props
           }: any) => (
             <>
-              <label className="fr-label" htmlFor={field.id}>
+              <label className="fr-label" htmlFor={field.name}>
                 Votre mode de chauffage actuel
               </label>
-              <select className="fr-select" {...field} {...props}>
+              <select
+                className="fr-select"
+                {...field}
+                {...props}
+                id={field.name}
+              >
                 <option defaultValue="">Selectionnez une option</option>
                 <option value="fioul">Fioul</option>
                 <option value="gaz">Gaz</option>
@@ -69,7 +70,6 @@ const ContactCoOwnership = () => {
       <div className="fr-my-3w">
         <Field
           name="coOwnershipStatus"
-          id="coOwnershipStatus"
           label="Votre statut au sein de la copropriété"
         >
           {({
@@ -77,11 +77,16 @@ const ContactCoOwnership = () => {
             ...props
           }: any) => (
             <>
-              <label className="fr-label" htmlFor={field.id}>
+              <label className="fr-label" htmlFor={field.name}>
                 Votre statut au sein de la copropriété
               </label>
 
-              <select className="fr-select" {...field} {...props}>
+              <select
+                className="fr-select"
+                {...field}
+                {...props}
+                id={field.name}
+              >
                 <option defaultValue="">Selectionnez une option</option>
                 <option value="membre du conseil">
                   Membre du conseil syndical

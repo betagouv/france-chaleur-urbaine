@@ -14,9 +14,9 @@ test('rendering and submitting contact form', async () => {
     email: 'test@test.com',
     phoneNumber: '0606060606',
     housingNumber: 1,
-    heatingMethod: 'Option 1',
-    coOwnershipStatus: 'Option 2',
-    contactOrigin: 'Option 3',
+    heatingMethod: 'fioul',
+    coOwnershipStatus: 'syndic',
+    contactOrigin: 'mail',
     collectDataAgreement: true,
   };
 
@@ -55,6 +55,7 @@ test('rendering and submitting contact form', async () => {
     'Comment avez-vous entendu parlé de France chaleur urbaine',
     filledInData.contactOrigin
   );
+
   userFillIn(
     'Les données collectées sont uniquement utilisées à des fins d’annalyse par le minitère de la transition écologique',
     filledInData.collectDataAgreement

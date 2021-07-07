@@ -21,19 +21,25 @@ const ContactSource = () => {
       <div className="fr-my-3w">
         <Field
           name="contactOrigin"
-          id="contactOrigin"
           label="Comment avez-vous entendu parlé de France chaleur urbaine"
         >
           {({
             field, // { name, value, onChange, onBlur }
+            id,
             ...props
           }: any) => (
             <>
-              <label className="fr-label" htmlFor={field.id}>
-                Comment avez-vous entendu parlé de France chaleur urbaine
+              <label className="fr-label" htmlFor={field.name}>
+                Comment avez-vous entendu parlé de France chaleur urbaine{' '}
+                {field.id}
               </label>
 
-              <select className="fr-select" {...field} {...props}>
+              <select
+                className="fr-select"
+                {...field}
+                {...props}
+                id={field.name}
+              >
                 <option defaultValue="">Selectionnez une option</option>
                 <option value="mail">Mail</option>
                 <option value="bouche à oreille">Bouche à oreille</option>
