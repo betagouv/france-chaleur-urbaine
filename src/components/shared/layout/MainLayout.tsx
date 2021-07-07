@@ -64,16 +64,6 @@ const MainLayout: React.FC = ({ children }) => {
             >
               <ul className="fr-nav__list">
                 <li className="fr-nav__item">
-                  <a
-                    className="fr-nav__link"
-                    href="#"
-                    target="_self"
-                    aria-current="page"
-                  >
-                    Copropriété{' '}
-                  </a>
-                </li>
-                <li className="fr-nav__item">
                   <a className="fr-nav__link" href="ressources" target="_self">
                     Ressources
                   </a>
