@@ -1,0 +1,33 @@
+import ResourceCard from '@components/resources/resourceCard';
+import Data from '@components/resources/resourcesData.json';
+import ResourceSection from '@components/resources/resourceSection';
+import React from 'react';
+
+function Resources() {
+  return (
+    <>
+      <div className="fr-container fr-mt-2w">
+        <div className="fr-grid-row">
+          <div className="fr-col-lg-4 fr-col-sm-12">
+            <h2>{Data.title}</h2>
+            <p className="fr-m-0">{Data.description}</p>
+          </div>
+        </div>
+      </div>
+      {Data.resources.map((resource, index) => (
+        <ResourceSection key={index} title={resource.title}>
+          {resource.items.map((item, index) => (
+            <ResourceCard
+              key={index}
+              image={item.image}
+              title={item.title}
+              description={item.description}
+              fileLink={item.fileLink}
+            />
+          ))}
+        </ResourceSection>
+      ))}
+    </>
+  );
+}
+export default Resources;

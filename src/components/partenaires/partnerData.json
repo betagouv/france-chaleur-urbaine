@@ -1,0 +1,71 @@
+{
+  "title": "Partenaires",
+  "description": "Vous trouverez ci-dessous un ensemble ressoures concernant le chauffage urbain : raccordement, aide public, relation avec les exploitants des réseaux, réglementation.",
+  "partners": [
+    {
+      "title": "Partenaires principaux",
+      "items": [
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": ""
+          },
+
+          "title": "Ademe",
+          "description": "L’Agence de l’Environnement et de la Maîtrise de l’Energie est un établissement public du ministère de la Transition Ecologique qui participe à la mise en œuvre des politiques publiques dans les domaines de l’environnement, de l’énergie et du développement durable. Elle met à disposition des entreprises, des collectivités locales, des pouvoirs publics et du grand public, ses capacités d’expertise, de conseil et aide au financement de projets ainsi qu’à la mobilisation des acteurs, notamment dans le domaine des réseaux de chaleur.",
+          "link": "https://www.ademe.fr/"
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": ""
+          },
+
+          "title": "Cereme",
+          "description": "Le Centre d’études et d’expertise sur les risques, l’environnement, la mobilité et l’aménagement est un établissement public du Ministère de la Transition Ecologique qui dispose d'expertises transversales pluridisciplinaires pour contribuer à relever le défi du développement durable des territoires. Il peut accompagner les territoires dans la réalisation de leurs projets. Le site Réseaux de Chaleur et Territoires du CEREMA met à disposition ses ressources documentaires et études sur les réseaux de chaleur.",
+          "link": "http://reseaux-chaleur.cerema.fr/"
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": ""
+          },
+
+          "title": "Métropole du Grand Paris",
+          "description": "La Métropole du Grand Paris a vu le jour le 1er janvier 2016. Elle regroupe 131 communes : Paris, les 123 villes des trois départements des Hauts-de-Seine, de la Seine-Saint-Denis et du Val-de-Marne et 7 communes des départements limitrophes de l’Essonne et du Val d’Oise, soit près de 7,2 millions d’ habitants. Elle agit pour faciliter la mise en œuvre de la transition énergétique sur son territoire (notamment pour les 104 000 copropriétés représentant 2,2 millions de logements) en mobilisant la Fédération Métropolitaine des Agences Locales de l’Energie (ALEC).",
+          "link": "https://metropolegrandparis.fr/fr"
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": ""
+          },
+
+          "title": "Coriance",
+          "description": "Coriance est un opérateur français indépendant au service de la transition énergétique. Fort de ses 20 ans d’expérience, Coriance est devenu un acteur global du secteur énergétique. Ses offres diversifiées et son savoir-faire lui permettent de concevoir, exploiter, optimiser mais aussi de faire progresser des réseaux de chaleur ou de froid, de la production jusqu’à nos clients. Capable d’exploiter toutes les énergies du territoire et présentant le mix énergétique le plus vert de la profession, Coriance accompagne ses clients dans leurs projets. Ses deux métiers sont complémentaires : développer des réseaux de chaleur et de froid urbains et optimiser l’efficacité énergétique des bâtiments publics et privés.",
+          "link": "https://www.groupe-coriance.fr/"
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": ""
+          },
+
+          "title": "Idex",
+          "description": "Créée en 1963, Idex est devenu un acteur de l’exploitation des énergies renouvelables. Le groupe a su au fil des années anticiper et s’engager autour des enjeux climatiques. Idex est la première ETI (Entreprise de Taille Intermédiaire) indépendante française de services énergétiques. Idex maîtrise aujourd’hui l’ensemble des solutions énergétiques et incarne une alternative aux opérateurs liés aux grands producteurs d’énergies fossiles (gaz et électricité).",
+          "link": "https://www.idex.fr/"
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": ""
+          },
+
+          "title": "Fnccr",
+          "description": "La Fédération nationale des collectivités concédantes et régies (FNCCR) est une association (de type loi de 1901) créée en 1934, forte de plus de 800 adhérents. Elle regroupe des collectivités territoriales et leurs établissements publics chargés de l’organisation et/ou de l’exploitation de certains services publics, regroupés dans trois secteurs d’activité principaux : énergie, cycle de l’eau, numérique. Le service réseau de chaleur agit pour le respect de grands principes tels que : qualité et efficacité du service rendu, égalité de traitement entre les usagers-consommateurs, organisation et contrôle du service par les autorités locales compétentes",
+          "link": "https://www.fnccr.asso.fr/"
+        }
+      ]
+    }
+  ]
+}
