@@ -30,6 +30,7 @@ jobs:
           path: |
             **/.yarn
             **/node_modules/
+            ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install Dependencies 🔧

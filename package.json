@@ -2,6 +2,7 @@
   "name": "front-app",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://chauffurbain.herokuapp.com",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,16 +16,22 @@
   },
   "dependencies": {
     "@gouvfr/dsfr": "^1.0.0-rc1.0",
+    "@reach/combobox": "^0.15.1",
+    "@types/lodash.debounce": "^4.0.6",
+    "formik": "^2.2.9",
+    "lodash.debounce": "^4.0.8",
     "next": "10.2.3",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@babel/core": "^7.14.5",
     "@babel/preset-react": "^7.13.13",
     "@testing-library/jest-dom": "^5.13.0",
-    "@testing-library/react": "^11.2.7",
+    "@testing-library/react": "^12.0.0",
     "@testing-library/react-hooks": "^7.0.0",
+    "@testing-library/user-event": "^13.1.9",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.12.2",
     "@types/react": "17.0.9",
