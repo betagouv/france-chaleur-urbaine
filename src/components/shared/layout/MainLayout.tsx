@@ -5,7 +5,7 @@ const Main = styled.section`
   margin: 2em 0;
   min-height: 70vh;
 `;
-const Layout: React.FC = ({ children }) => {
+const MainLayout: React.FC = ({ children }) => {
   return (
     <>
       <header role="banner" className="fr-header">
@@ -195,4 +195,4 @@ const Layout: React.FC = ({ children }) => {
     </>
   );
 };
-export default Layout;
+export default MainLayout;
