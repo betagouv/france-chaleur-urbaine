@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Main = styled.div`
+const Main = styled.section`
   margin: 2em 0;
   min-height: 70vh;
 `;
