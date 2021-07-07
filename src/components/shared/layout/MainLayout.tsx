@@ -21,6 +21,13 @@ const MainLayout: React.FC = ({ children }) => {
                       Française
                     </p>
                   </div>
+                  <div className="fr-header__operator">
+                    <img
+                      className="fr-footer__logo"
+                      src="./defaultPic.jpeg"
+                      alt="logo france chaleur urbaine"
+                    />
+                  </div>
                 </div>
                 <div className="fr-header__service">
                   <a
@@ -31,7 +38,6 @@ const MainLayout: React.FC = ({ children }) => {
                       France Chaleur Urbaine
                     </p>
                   </a>
-                  <p className="fr-header__service-tagline">-</p>
                 </div>
               </div>
             </div>
@@ -57,16 +63,6 @@ const MainLayout: React.FC = ({ children }) => {
               aria-label="Menu principal"
             >
               <ul className="fr-nav__list">
-                <li className="fr-nav__item">
-                  <a
-                    className="fr-nav__link"
-                    href="#"
-                    target="_self"
-                    aria-current="page"
-                  >
-                    Copropriété{' '}
-                  </a>
-                </li>
                 <li className="fr-nav__item">
                   <a className="fr-nav__link" href="ressources" target="_self">
                     Ressources
@@ -106,13 +102,18 @@ const MainLayout: React.FC = ({ children }) => {
               >
                 <img
                   className="fr-footer__logo"
-                  src="/img/logo-operator-h.png"
-                  alt="[A MODIFIER | text alternatif de l’image]"
+                  src="./defaultPic.jpeg"
+                  alt="logo france chaleur urbaine"
                 />
               </a>
             </div>
             <div className="fr-footer__content">
-              <p className="fr-footer__content-desc">Lorem [...] elit ut.</p>
+              <p className="fr-footer__content-desc">
+                Texte optionnel 3 lignes maximum.
+                <br /> Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Consectetur et vel quam auctor semper. Cras si amet mollis
+                dolor.
+              </p>
               <ul className="fr-footer__content-list">
                 <li className="fr-footer__content-item">
                   <a
@@ -158,7 +159,7 @@ const MainLayout: React.FC = ({ children }) => {
               </li>
               <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href="#">
-                  Accessibilité: non/partiellement/totalement conforme
+                  Accessibilité: partiellement
                 </a>
               </li>
               <li className="fr-footer__bottom-item">

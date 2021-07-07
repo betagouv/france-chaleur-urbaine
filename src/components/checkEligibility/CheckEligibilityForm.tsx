@@ -33,7 +33,7 @@ const CheckEligibilityForm = () => {
         <Button
           onClick={() =>
             push({
-              pathname: '/demande-contact',
+              pathname: '/demande-de-contact',
               query: { isEligible },
             })
           }
