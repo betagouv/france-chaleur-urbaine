@@ -163,7 +163,7 @@ const MainLayout: React.FC = ({ children }) => {
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="#">
+                <a className="fr-footer__bottom-link" href="/mentions-legales">
                   Mentions légales
                 </a>
               </li>
@@ -175,6 +175,14 @@ const MainLayout: React.FC = ({ children }) => {
               <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href="#">
                   Gestion des cookies
+                </a>
+              </li>
+              <li className="fr-footer__bottom-item">
+                <a
+                  className="fr-footer__bottom-link"
+                  href="/politique-de-confidentialite"
+                >
+                  Politique de confidentialité
                 </a>
               </li>
             </ul>
