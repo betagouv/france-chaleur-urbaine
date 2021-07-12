@@ -1,15 +1,15 @@
-import Checkbox from '@components/checkbox';
-import Textarea from '@components/textarea';
-import { ErrorMessage, Field } from 'formik';
+import Checkbox from '@components/shared/checkbox';
+import Textarea from '@components/shared/textarea';
+import { Field } from 'formik';
 import * as Yup from 'yup';
 
 export const defaultValuesContactTopic = {
-  needTopic: '',
-  contactOperator: false,
+  besoin: '',
+  contacterUnOperateur: false,
 };
 export const validationSchemasContactTopic = {
-  needTopic: Yup.string().required('Required'),
-  contactOperator: Yup.boolean().required('Required'),
+  besoin: Yup.string().required('Veuillez indiquer le motif de votre demande'),
+  contacterUnOperateur: Yup.boolean(),
 };
 
 const ContactTopic = () => {
@@ -21,30 +21,17 @@ const ContactTopic = () => {
 
       <div className="fr-my-3w">
         <Field
-          name="needTopic"
-          id="needTopic"
+          name="besoin"
           label="Quel est votre besoin ?"
           component={Textarea}
         />
-        <ErrorMessage
-          name="needTopic"
-          component={'p'}
-          className="fr-error-text"
-        />
       </div>
 
-      <div className="fr-my-3w fr-checkbox-group">
+      <div className="fr-my-3w">
         <Field
-          type="checkbox"
-          name="contactOperator"
-          id="contactOperator"
+          name="contacterUnOperateur"
           label="Vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier"
           component={Checkbox}
-        />
-        <ErrorMessage
-          name="contactOperator"
-          component={'p'}
-          className="fr-error-text"
         />
       </div>
     </fieldset>

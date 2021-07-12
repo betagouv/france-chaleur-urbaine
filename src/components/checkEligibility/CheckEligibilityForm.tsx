@@ -1,5 +1,6 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { Button } from '@components/shared/Button';
+import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { Coords, Point } from 'src/types';
@@ -11,8 +12,15 @@ const CheckEligibilityForm = () => {
   const showAlert = status === 'success';
   const isButtonDisabled = status !== 'success';
   const { push } = useRouter();
-  const handleAddressSelected = async (point: Point) => {
-    checkEligibility(getCoords(point));
+  const [, saveInStorage] = useLocalStorageState('');
+
+  const handleAddressSelected = async (
+    address: string,
+    coordinates: Point
+  ): Promise<void> => {
+    const coords = getCoords(coordinates);
+    await checkEligibility(coords);
+    saveInStorage({ coords: [coords.lat, coords.lon], label: address });
   };
   const getCoords = (point: number[]): Coords => ({
     lon: point[0],

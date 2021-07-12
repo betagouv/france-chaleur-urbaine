@@ -1,25 +1,26 @@
-import Input from '@components/input';
-import { ErrorMessage, Field } from 'formik';
+import Input from '@components/shared/input';
+import InputHidden from '@components/shared/InputHidden';
+import { Field } from 'formik';
 import * as Yup from 'yup';
 
 export const defaultValuesContactInformation = {
-  firstName: '',
-  lastName: '',
+  prenom: '',
+  nom: '',
   email: '',
-  phoneNumber: '',
+  telephone: '',
+  _acceptCGV: false,
 };
 export const validationSchemasContactInformation = {
-  firstName: Yup.string()
-    .matches(/^[a-z]+$/, 'No Numbers allow')
-    .required('Required'),
-  lastName: Yup.string()
-    .matches(/^[a-z]+$/, 'numbers are not allow')
-    .required('Required'),
-  email: Yup.string().email('Invalid email address').required('Required'),
-  phoneNumber: Yup.string()
+  prenom: Yup.string().required('Veuillez indiquer votre prénom'),
+  nom: Yup.string().required('Veuillez indiquer votre nom'),
+  email: Yup.string()
+    .email('Votre adresse email n‘est pas valide')
+    .required('Veuillez renseigner votre adresse email'),
+  telephone: Yup.string()
     .length(10)
-    .matches(/^[0-9]+$/, 'Letters are not allow')
-    .required('Required'),
+    .matches(/^[0-9]+$/, 'Veuillez indiquer un numéro de téléphone valide')
+    .required('Veuillez indiquer votre numéro de téléphone'),
+  _acceptCGV: Yup.boolean(),
 };
 
 const ContactInformation = () => {
@@ -28,44 +29,26 @@ const ContactInformation = () => {
       <legend className="fr-fieldset__legend fr-text--bold">Coordonnées</legend>
 
       <div className="fr-my-3w">
+        <Field name="prenom" label="Prénom" component={Input} />
+      </div>
+
+      <div className="fr-my-3w">
+        <Field name="nom" label="Nom" component={Input} />
+      </div>
+
+      <div className="fr-my-3w">
+        <Field name="email" label="Email" component={Input} />
+      </div>
+
+      <div className="fr-my-3w">
+        <Field name="telephone" label="Téléphone" component={Input} />
+      </div>
+      <div className="fr-my-3w fr-checkbox-group">
         <Field
-          name="firstName"
-          id="firstName"
-          label="Prénom"
-          component={Input}
-        />
-        <ErrorMessage
-          name="firstName"
-          component={'p'}
-          className="fr-error-text"
-        />
-      </div>
-
-      <div className="fr-my-3w">
-        <Field name="lastName" id="lastName" label="Nom" component={Input} />
-        <ErrorMessage
-          name="lastName"
-          component={'p'}
-          className="fr-error-text"
-        />
-      </div>
-
-      <div className="fr-my-3w">
-        <Field name="email" id="email" label="Email" component={Input} />
-        <ErrorMessage name="email" component={'p'} className="fr-error-text" />
-      </div>
-
-      <div className="fr-my-3w">
-        <Field
-          name="phoneNumber"
-          id="phoneNumber"
-          label="Téléphone"
-          component={Input}
-        />
-        <ErrorMessage
-          name="phoneNumber"
-          component={'p'}
-          className="fr-error-text"
+          name="_acceptCGV"
+          tabIndex="-1"
+          autoComplete="off"
+          component={InputHidden}
         />
       </div>
     </fieldset>

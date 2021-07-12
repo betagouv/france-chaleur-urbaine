@@ -1,16 +1,23 @@
-import Input from '@components/input';
-import { ErrorMessage, Field } from 'formik';
+import Input from '@components/shared/input';
+import Select from '@components/shared/select';
+import { Field } from 'formik';
 import * as Yup from 'yup';
 
 export const defaultValuesContactCoOwnership = {
-  housingNumber: '',
-  heatingMethod: '',
-  coOwnershipStatus: '',
+  nombreDeLogement: '',
+  modeDeChauffage: '',
+  status: '',
 };
 export const validationSchemasContactCoOwnership = {
-  housingNumber: Yup.number().moreThan(0).required('Required'),
-  heatingMethod: Yup.string().required('Required'),
-  coOwnershipStatus: Yup.string().required('Required'),
+  nombreDeLogement: Yup.number()
+    .moreThan(0)
+    .required('Veuillez indiquer le nombre de logement dans votre copropriété'),
+  modeDeChauffage: Yup.string().required(
+    'Veuillez indiquer votre mode de chauffage'
+  ),
+  status: Yup.string().required(
+    'Veuillez indiquer votre status dans la copropriété'
+  ),
 };
 
 const ContactCoOwnership = () => {
@@ -19,90 +26,44 @@ const ContactCoOwnership = () => {
       <legend className="fr-fieldset__legend fr-text--bold">
         Votre copropriété
       </legend>
-
       <div className="fr-my-3w">
         <Field
           type="number"
-          name="housingNumber"
-          id="housingNumber"
+          name="nombreDeLogement"
+          id="nombreDeLogement"
           label="Nombre de logement"
           component={Input}
         />
-        <ErrorMessage
-          name="housingNumber"
-          component={'p'}
-          className="fr-error-text"
-        />
       </div>
-
-      <div className="fr-my-3w">
-        <Field name="heatingMethod" label="Votre mode de chauffage actuel">
-          {({
-            field, // { name, value, onChange, onBlur }
-            ...props
-          }: any) => (
-            <>
-              <label className="fr-label" htmlFor={field.name}>
-                Votre mode de chauffage actuel
-              </label>
-              <select
-                className="fr-select"
-                {...field}
-                {...props}
-                id={field.name}
-              >
-                <option defaultValue="">Selectionnez une option</option>
-                <option value="fioul">Fioul</option>
-                <option value="gaz">Gaz</option>
-                <option value="electricite">Electricité</option>
-                <option value="autre">Autre</option>
-              </select>
-            </>
-          )}
-        </Field>
-        <ErrorMessage
-          name="heatingMethod"
-          component={'p'}
-          className="fr-error-text"
-        />
-      </div>
-
       <div className="fr-my-3w">
         <Field
-          name="coOwnershipStatus"
-          label="Votre statut au sein de la copropriété"
+          name="modeDeChauffage"
+          label="Votre mode de chauffage actuel"
+          component={Select}
         >
-          {({
-            field, // { name, value, onChange, onBlur }
-            ...props
-          }: any) => (
-            <>
-              <label className="fr-label" htmlFor={field.name}>
-                Votre statut au sein de la copropriété
-              </label>
-
-              <select
-                className="fr-select"
-                {...field}
-                {...props}
-                id={field.name}
-              >
-                <option defaultValue="">Selectionnez une option</option>
-                <option value="membre du conseil">
-                  Membre du conseil syndical
-                </option>
-                <option value="syndic">Syndic</option>
-                <option value="habitant">habitant</option>
-                <option value="autre">Autre</option>
-              </select>
-            </>
-          )}
+          <option defaultValue="" hidden>
+            Selectionnez une option
+          </option>
+          <option value="fioul">Fioul</option>
+          <option value="gaz">Gaz</option>
+          <option value="electricite">Electricité</option>
+          <option value="autre">Autre</option>
         </Field>
-        <ErrorMessage
-          name="coOwnershipStatus"
-          component={'p'}
-          className="fr-error-text"
-        />
+      </div>{' '}
+      <div className="fr-my-3w">
+        <Field
+          name="status"
+          label="Votre statut au sein de la copropriété"
+          component={Select}
+        >
+          <option defaultValue="" hidden>
+            Selectionnez une option
+          </option>
+          <option value="membre du conseil">Membre du conseil syndical</option>
+          <option value="syndic">Syndic</option>
+          <option value="habitant">habitant</option>
+          <option value="autre">Autre</option>
+        </Field>
       </div>
     </fieldset>
   );
