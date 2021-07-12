@@ -436,6 +436,13 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@formspark/use-formspark@^0.1.32":
+  version "0.1.32"
+  resolved "https://registry.yarnpkg.com/@formspark/use-formspark/-/use-formspark-0.1.32.tgz#c81b6cc2e8cd886017187035d198c23d9015e2a6"
+  integrity sha512-4wTYYX7Sw+FoTiFHTT0GzSZ/jDhjxoh7nIK8fCIJxFAuTAvDspkK8rDphF+nsMJ7EzMovowuzqvL/5rrvVty3Q==
+  dependencies:
+    whatwg-fetch "^3.6.2"
+
 "@gouvfr/dsfr@^1.0.0-rc1.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@gouvfr/dsfr/-/dsfr-1.0.0.tgz#825cba4aef5ebe5da1980cbe4b7d102315710f51"
@@ -6015,6 +6022,11 @@ whatwg-encoding@^1.0.5:
   integrity sha512-b5lim54JOPN9HtzvK9HFXvBma/rnfFeqsic0hSpjtDbVxR3dJKLc+KB4V6GgiGOvl7CY/KNh8rxSo9DKQrnUEw==
   dependencies:
     iconv-lite "0.4.24"
+
+whatwg-fetch@^3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.6.2.tgz#dced24f37f2624ed0281725d51d0e2e3fe677f8c"
+  integrity sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==
 
 whatwg-mimetype@^2.3.0:
   version "2.3.0"

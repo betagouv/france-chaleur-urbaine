@@ -4,7 +4,7 @@ import ContactForm from '../contactForm';
 
 test('rendering and submitting contact form', async () => {
   const handleSubmit = jest.fn();
-  render(<ContactForm onSubmit={handleSubmit} />);
+  render(<ContactForm onSubmit={handleSubmit} isSubmitting={false} />);
 
   const filledInData = {
     needTopic: 'mon besoin',
@@ -18,6 +18,21 @@ test('rendering and submitting contact form', async () => {
     coOwnershipStatus: 'syndic',
     contactOrigin: 'mail',
     collectDataAgreement: true,
+  };
+
+  const expected = {
+    _acceptCGV: false,
+    besoin: filledInData.needTopic,
+    collecterMesDonnees: filledInData.collectDataAgreement,
+    contacterUnOperateur: filledInData.contactOperator,
+    email: filledInData.email,
+    modeDeChauffage: filledInData.heatingMethod,
+    nom: filledInData.lastName,
+    nombreDeLogement: filledInData.housingNumber,
+    prenom: filledInData.firstName,
+    source: filledInData.contactOrigin,
+    status: filledInData.coOwnershipStatus,
+    telephone: filledInData.phoneNumber,
   };
 
   const userFillIn = (
@@ -57,11 +72,11 @@ test('rendering and submitting contact form', async () => {
   );
 
   userFillIn(
-    'Les données collectées sont uniquement utilisées à des fins d’annalyse par le minitère de la transition écologique',
+    'Les données collectées sont uniquement utilisées à des fins d’analyse par le ministère de la transition écologique',
     filledInData.collectDataAgreement
   );
 
   userEvent.click(screen.getByRole('button', { name: /Envoyer ma demande/i }));
 
-  await waitFor(() => expect(handleSubmit).toHaveBeenCalledWith(filledInData));
+  await waitFor(() => expect(handleSubmit).toHaveBeenCalledWith(expected));
 });

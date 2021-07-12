@@ -1,5 +1,9 @@
-const Alert: React.FC = ({ children }) => {
-  return <div className="fr-highlight">{children}</div>;
+const Alert: React.FC = (props) => {
+  return (
+    <div className="fr-callout fr-fi-information-line">
+      <header className="fr-callout__title" {...props} />
+    </div>
+  );
 };
 
 export default Alert;

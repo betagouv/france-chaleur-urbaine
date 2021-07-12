@@ -7,7 +7,7 @@ import { Suggestions } from './Suggestions';
 import useBan from './useBan';
 
 type AddressProps = {
-  onAddressSelected: (point: Point) => void;
+  onAddressSelected: (address: string, coordinates: Point) => void;
 };
 const AddressAutocomplete: React.FC<AddressProps> = ({ onAddressSelected }) => {
   const [address, setAddress] = useState('');
@@ -18,6 +18,9 @@ const AddressAutocomplete: React.FC<AddressProps> = ({ onAddressSelected }) => {
     );
     return suggestion?.geometry.coordinates || [0, 0];
   };
+  const handleSelect = (address: string) => {
+    onAddressSelected(address, getCoordinates(address));
+  };
   return (
     <div className="fr-input-group">
       <label className="fr-label" htmlFor="address">
@@ -27,7 +30,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({ onAddressSelected }) => {
         aria-label="address"
         aria-labelledby="address"
         className="fr-input-wrap fr-fi-search-line"
-        onSelect={(address) => onAddressSelected(getCoordinates(address))}
+        onSelect={handleSelect}
       >
         <AddressInput
           onChange={(event) => {

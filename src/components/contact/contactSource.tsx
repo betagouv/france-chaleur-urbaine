@@ -1,14 +1,15 @@
-import Checkbox from '@components/checkbox';
-import { ErrorMessage, Field } from 'formik';
+import Checkbox from '@components/shared/checkbox';
+import Select from '@components/shared/select';
+import { Field } from 'formik';
 import * as Yup from 'yup';
 
-export const defaultValuesContactOriginAndDataSection = {
-  contactOrigin: '',
-  collectDataAgreement: undefined,
+export const defaultValuesSourceAndDataSection = {
+  source: '',
+  collecterMesDonnees: false,
 };
 export const validationSchemasContactSource = {
-  contactOrigin: Yup.string().required('Required'),
-  collectDataAgreement: Yup.boolean().required('Required'),
+  source: Yup.string(),
+  collecterMesDonnees: Yup.boolean().required('Ce champs est requis'),
 };
 
 const ContactSource = () => {
@@ -20,56 +21,26 @@ const ContactSource = () => {
 
       <div className="fr-my-3w">
         <Field
-          name="contactOrigin"
+          name="source"
           label="Comment avez-vous entendu parlé de France chaleur urbaine"
+          component={Select}
         >
-          {({
-            field, // { name, value, onChange, onBlur }
-            id,
-            ...props
-          }: any) => (
-            <>
-              <label className="fr-label" htmlFor={field.name}>
-                Comment avez-vous entendu parlé de France chaleur urbaine{' '}
-                {field.id}
-              </label>
-
-              <select
-                className="fr-select"
-                {...field}
-                {...props}
-                id={field.name}
-              >
-                <option defaultValue="">Selectionnez une option</option>
-                <option value="mail">Mail</option>
-                <option value="bouche à oreille">Bouche à oreille</option>
-                <option value="linkedin">Linkedin</option>
-                <option value="google">Google</option>
-                <option value="autre">Autre</option>
-              </select>
-            </>
-          )}
+          <option defaultValue="" hidden>
+            Sélectionnez une option
+          </option>
+          <option value="mail">Mail</option>
+          <option value="bouche à oreille">Bouche à oreille</option>
+          <option value="linkedin">Linkedin</option>
+          <option value="google">Google</option>
+          <option value="autre">Autre</option>
         </Field>
-        <ErrorMessage
-          name="contactOrigin"
-          component={'p'}
-          className="fr-error-text"
-        />
       </div>
 
       <div className="fr-my-3w fr-checkbox-group">
         <Field
-          type="checkbox"
-          name="collectDataAgreement"
-          id="collectDataAgreement"
-          label="Les données collectées sont uniquement utilisées à des fins d’annalyse par le minitère de la transition écologique"
+          name="collecterMesDonnees"
+          label="Les données collectées sont uniquement utilisées à des fins d’analyse par le ministère de la transition écologique"
           component={Checkbox}
-        />
-
-        <ErrorMessage
-          name="collectDataAgreement"
-          component={'p'}
-          className="fr-error-text"
         />
       </div>
     </fieldset>

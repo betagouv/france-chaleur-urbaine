@@ -51,6 +51,9 @@ describe('Address autocomplete', () => {
       screen.getByRole('option', { name: /90 Rue Lecourbe 75015 Paris/i })
     );
 
-    expect(handleAddressSelected).toHaveBeenCalledWith([2.304422, 48.843246]);
+    expect(handleAddressSelected).toHaveBeenCalledWith(
+      '90 Rue Lecourbe 75015 Paris',
+      [2.304422, 48.843246]
+    );
   });
 });
