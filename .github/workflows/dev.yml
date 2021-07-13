@@ -1,4 +1,4 @@
-name: Build, test, and deploy
+name: Build, test, and deploy on DEV
 
 # Controls when the action will run.
 on: [push, pull_request]
@@ -88,22 +88,3 @@ jobs:
           BRANCH: gh-pages # The branch the action should deploy to.
           FOLDER: . # The folder the action should deploy.
           CLEAN: true # Automatically remove deleted files from the deploy branch
-
-on:
-  workflow_dispatch:
-    branches:
-      - 'main'
-
-jobs:
-  merge-branch:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-
-      - name: Merge dev -> main
-        uses: devmasx/merge-branch@v1.3.1
-        with:
-          type: now
-          from_branch: dev
-          target_branch: main
-          github_token: ${{ github.token }}

@@ -1,0 +1,65 @@
+name: Build, test, and deploy on PROD
+
+# Controls when the action will run.
+on:
+  workflow_dispatch:
+    branches:
+      - 'main'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  Prepare:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@master 🛎️
+
+      - name: Cache  💾
+        uses: actions/cache@v2.1.6
+        id: cache-deps
+        with:
+          path: |
+            **/.yarn
+            **/node_modules/
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install Dependencies 🔧
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+      - run: yarn --frozen-lockfile
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+
+      - name: Audit 🛡️
+        run: yarn audit
+
+      - name: Lint 🧹
+        run: yarn lint
+
+      - name: Units tests 🐛
+        run: yarn test
+
+      - name: Build 📦
+        run: |
+          yarn build
+          yarn export
+          touch ./out/.nojekyll
+        env:
+          CI: true
+
+      - name: Merge dev -> main
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          from_branch: dev
+          target_branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
