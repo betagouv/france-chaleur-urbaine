@@ -1,14 +1,19 @@
-import { ExplainCard } from '@components/howIsItWorking/howIsItworking.style';
+import {
+  ExplainCard,
+  PageTitle,
+} from '@components/howIsItWorking/howIsItworking.style';
 import React from 'react';
 
 function HowIsItWorking() {
   return (
     <div className="fr-mb-4w">
-      <h2>Comment ça marche ?</h2>
-      <p>
-        France Chaleur Urbaine est une solution numérique qui vise à faciliter
-        et accélérer le raccordement des copropriétés aux réseaux de chaleur.{' '}
-      </p>
+      <PageTitle>Comment ça marche ?</PageTitle>
+      <div className="fr-col-lg-5 fr-col-sm-10">
+        <p>
+          France Chaleur Urbaine est une solution numérique qui vise à faciliter
+          et accélérer le raccordement des copropriétés aux réseaux de chaleur.{' '}
+        </p>
+      </div>
       <div className="fr-container">
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-lg-3 fr-col-sm-6">

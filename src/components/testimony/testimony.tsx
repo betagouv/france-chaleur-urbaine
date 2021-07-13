@@ -1,9 +1,10 @@
+import { PageTitle } from '@components/testimony/testimony.style';
 import React from 'react';
 
 function Testimony() {
   return (
     <>
-      <h3>Ils témoignent...</h3>
+      <PageTitle>Ils témoignent...</PageTitle>
       <p>
         “Grâce à notre raccordement au réseau géothermique, nous sommes fiers de
         contribuer à notre niveau à la transition énergétique. Nous apprécions
