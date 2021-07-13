@@ -5,4 +5,5 @@ module.exports = {
     webpack5: true,
   },
   assetPrefix: isProd ? '/france-chaleur-urbaine/' : '',
+  basePath: isProd ? '/france-chaleur-urbaine' : '',
 };
