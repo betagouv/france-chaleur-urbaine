@@ -92,7 +92,7 @@ function CallOutWithAddress({
   address: Record<string, string | number[]>;
 }) {
   return (
-    <CallOut>
+    <CallOut variant="success">
       {isAddressEligible ? (
         <>
           <CallOutTitle>
