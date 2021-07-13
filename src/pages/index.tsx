@@ -10,8 +10,8 @@ export default function Home() {
     <>
       <MainLayout>
         <div className="fr-container fr-mt-2w">
-          <div className="fr-grid-row">
-            <div className="fr-col-12">
+          <div className="fr-grid-row fr-grid-row--center">
+            <div className="fr-col-11">
               <Banner />
               <HowIsItWorking />
               <Adventage />

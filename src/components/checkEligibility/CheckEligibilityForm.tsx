@@ -29,7 +29,7 @@ const CheckEligibilityForm = () => {
   });
   return (
     <>
-      <PageTitle>
+      <PageTitle className="fr-mb-4w">
         Votre copropriété peut-elle être raccordée à un réseau de chaleur ? Un
         chauffage économique et écologique
       </PageTitle>

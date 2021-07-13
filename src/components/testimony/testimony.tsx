@@ -3,8 +3,8 @@ import React from 'react';
 
 function Testimony() {
   return (
-    <>
-      <PageTitle>Ils témoignent...</PageTitle>
+    <div className="fr-my-2w">
+      <PageTitle className="fr-mb-4w">Ils témoignent...</PageTitle>
       <p>
         “Grâce à notre raccordement au réseau géothermique, nous sommes fiers de
         contribuer à notre niveau à la transition énergétique. Nous apprécions
@@ -25,7 +25,7 @@ function Testimony() {
           Seine
         </strong>
       </p>
-    </>
+    </div>
   );
 }
 

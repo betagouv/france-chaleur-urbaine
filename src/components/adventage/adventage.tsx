@@ -4,9 +4,11 @@ import Highlight from '../highlight/highlight';
 
 function Adventage() {
   return (
-    <>
-      <PageTitle>Les atouts des réseaux de chaleur ? </PageTitle>
-      <p>
+    <div className="fr-my-5w">
+      <PageTitle className="fr-mb-4w">
+        Les atouts des réseaux de chaleur ?{' '}
+      </PageTitle>
+      <p className="fr-mb-3w">
         Un réseau de chaleur est un système de distribution de chaleur produite
         de façon centralisée qui permet de desservir un grand nombre d’usagers
         (bâtiments tertiaires publics ou privés, copropriétés, logements
@@ -35,7 +37,7 @@ function Adventage() {
         icon="./pictoConfort.png"
         altIcon="icon"
       />
-    </>
+    </div>
   );
 }
 
