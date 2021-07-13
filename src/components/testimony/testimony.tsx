@@ -1,0 +1,31 @@
+import React from 'react';
+
+function Testimony() {
+  return (
+    <>
+      <h3>Ils témoignent...</h3>
+      <p>
+        “Grâce à notre raccordement au réseau géothermique, nous sommes fiers de
+        contribuer à notre niveau à la transition énergétique. Nous apprécions
+        le service apporté par l’exploitant du réseau depuis près de 20 ans
+        déjà”
+        <br />
+        <strong>
+          M. Maury, président de conseil syndical, Le Prieuré, Fresnes
+        </strong>
+      </p>
+      <p>
+        “Belle satisfaction pour un confort thermique inégalé, aucun problème
+        technique, correspondants CGCU compétents et disponibles. Confiance
+        totale à ce jour et promesses tenues sur l’ensemble du dossier”
+        <br />
+        <strong>
+          M. Pierrot, membre du conseil syndical, les Peupliers, Le Mée sur
+          Seine
+        </strong>
+      </p>
+    </>
+  );
+}
+
+export default Testimony;
