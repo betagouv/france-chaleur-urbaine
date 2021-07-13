@@ -7,12 +7,9 @@ import React from 'react';
 function Partner() {
   return (
     <MainLayout>
-      <div className="fr-container fr-mt-2w">
+      <div className="fr-container fr-my-2w">
         <div className="fr-grid-row">
-          <div className="fr-col-lg-4 fr-col-sm-12">
-            <h2>{Data.title}</h2>
-            <p className="fr-m-0">{Data.description}</p>
-          </div>
+          <h2>{Data.title}</h2>
         </div>
       </div>
       {Data.partners.map((partner, index) => (

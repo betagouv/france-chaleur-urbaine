@@ -11,5 +11,5 @@ export const CallOutBody: React.FC = (props) => (
 );
 
 export const CallOut: React.FC<CallOutProps> = ({ children }) => {
-  return <div className="fr-callout fr-fi-information-line">{children}</div>;
+  return <div className="fr-callout">{children}</div>;
 };

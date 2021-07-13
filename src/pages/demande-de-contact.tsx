@@ -116,7 +116,21 @@ function CallOutWithAddress({
         </>
       ) : (
         <CallOutTitle>
-          Votre copropriété n'est pas éligible à la chaleur urbaine.
+          Votre copropriété n'est pour le moment pas raccordable à un réseau de
+          chaleur.
+          <CallOutBody>
+            <p>
+              Toutefois, les réseaux se développent et elle pourrait le devenir.
+            </p>
+            <a
+              href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address.coords}&zoom=15`}
+              target="_blank"
+              className="fr-link fr-link--icon-right"
+              rel="noreferrer"
+            >
+              Visualiser les réseaux à proximité
+            </a>
+          </CallOutBody>
         </CallOutTitle>
       )}
     </CallOut>
