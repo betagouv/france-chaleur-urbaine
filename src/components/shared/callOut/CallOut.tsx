@@ -1,4 +1,5 @@
-import { Error, Success } from '@components/shared/callOut/CallOut.style';
+import React from 'react';
+import { CallOutContainer } from './CallOut.style';
 
 type CallOutProps = {
   children?: React.ReactNode;
@@ -16,12 +17,8 @@ export const CallOutBody: React.FC = (props) => (
 export const CallOut: React.FC<CallOutProps> = ({
   children,
   variant = 'default',
-}) => {
-  return variant == 'success' ? (
-    <Success className="fr-callout">{children}</Success>
-  ) : variant == 'error' ? (
-    <Error className="fr-callout">{children}</Error>
-  ) : (
-    <div className="fr-callout">{children}</div>
-  );
-};
+}) => (
+  <CallOutContainer className="fr-callout" variant={variant}>
+    {children}
+  </CallOutContainer>
+);

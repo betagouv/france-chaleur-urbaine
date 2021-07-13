@@ -28,15 +28,15 @@ const ContactInformation = () => {
       <legend className="fr-fieldset__legend fr-text--bold">Coordonnées</legend>
 
       <div className="fr-my-3w">
-        <Field name="prenom" label="Prénom" component={Input} />
+        <Field name="prenom" label="Prénom (*)" component={Input} />
       </div>
 
       <div className="fr-my-3w">
-        <Field name="nom" label="Nom" component={Input} />
+        <Field name="nom" label="Nom (*)" component={Input} />
       </div>
 
       <div className="fr-my-3w">
-        <Field name="email" label="Email" component={Input} />
+        <Field name="email" label="Email (*)" component={Input} />
       </div>
 
       <div className="fr-my-3w">

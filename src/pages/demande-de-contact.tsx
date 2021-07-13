@@ -91,8 +91,9 @@ function CallOutWithAddress({
   isAddressEligible: boolean;
   address: Record<string, string | number[]>;
 }) {
+  const variant = isAddressEligible ? 'success' : 'error';
   return (
-    <CallOut variant="success">
+    <CallOut variant={variant}>
       {isAddressEligible ? (
         <>
           <CallOutTitle>
@@ -115,9 +116,11 @@ function CallOutWithAddress({
           </CallOutBody>
         </>
       ) : (
-        <CallOutTitle>
-          Votre copropriété n'est pour le moment pas raccordable à un réseau de
-          chaleur.
+        <>
+          <CallOutTitle>
+            Votre copropriété n'est pour le moment pas raccordable à un réseau
+            de chaleur.{' '}
+          </CallOutTitle>
           <CallOutBody>
             <p>
               Toutefois, les réseaux se développent et elle pourrait le devenir.
@@ -131,7 +134,7 @@ function CallOutWithAddress({
               Visualiser les réseaux à proximité
             </a>
           </CallOutBody>
-        </CallOutTitle>
+        </>
       )}
     </CallOut>
   );

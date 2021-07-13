@@ -9,15 +9,9 @@ export const defaultValuesContactCoOwnership = {
   status: '',
 };
 export const validationSchemasContactCoOwnership = {
-  nombreDeLogement: Yup.number()
-    .moreThan(0)
-    .required('Veuillez indiquer le nombre de logement dans votre copropriété'),
-  modeDeChauffage: Yup.string().required(
-    'Veuillez indiquer votre mode de chauffage'
-  ),
-  status: Yup.string().required(
-    'Veuillez indiquer votre status dans la copropriété'
-  ),
+  nombreDeLogement: Yup.number(),
+  modeDeChauffage: Yup.string(),
+  status: Yup.string(),
 };
 
 const ContactCoOwnership = () => {
