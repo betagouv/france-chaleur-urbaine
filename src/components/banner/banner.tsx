@@ -1,18 +1,28 @@
+import {
+  BannerContainer,
+  ImageContainer,
+} from '@components/banner/banner.style';
 import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
 import React from 'react';
-// banner rename
+
 function Banner() {
   return (
-    <div className="fr-container--fluid fr-mb-8w">
+    <BannerContainer className="fr-container--fluid fr-py-11w">
       <div className="fr-grid-row fr-grid-row--center">
-        <div className="fr-col-lg-4 fr-col-md-8 fr-mr-11w">
-          <img src="./pictoBuilding.png" alt="" />
-        </div>
-        <div className="fr-col-lg-7 fr-col-md-12">
-          <CheckEligibilityForm />
+        <div className="fr-col-lg-8">
+          <div className="fr-container--fluid">
+            <div className="fr-grid-row fr-grid-row--center">
+              <ImageContainer className="fr-col-lg-4">
+                <img src="./pictoBuilding.png" alt="" />
+              </ImageContainer>
+              <div className="fr-col-lg-6 fr-col-md-12 fr-ml-6w">
+                <CheckEligibilityForm />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </BannerContainer>
   );
 }
 

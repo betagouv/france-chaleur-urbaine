@@ -6,7 +6,7 @@ import React from 'react';
 
 function HowIsItWorking() {
   return (
-    <div className="fr-my-7w">
+    <div className="fr-my-4w">
       <PageTitle>Comment ça marche ?</PageTitle>
       <div className="fr-col-lg-5 fr-col-sm-10">
         <p>
