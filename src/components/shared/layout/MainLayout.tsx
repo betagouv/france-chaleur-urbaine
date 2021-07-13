@@ -1,5 +1,5 @@
 import Banner from '@components/banner/banner';
-import React, { ReactElement } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const Main = styled.section`
@@ -8,11 +8,11 @@ const Main = styled.section`
 `;
 
 type MainLayout = {
-  children: ReactElement;
-  banner: boolean;
+  children: React.ReactNode;
+  banner?: boolean;
 };
 
-const MainLayout: React.FC<MainLayout> = ({ children, banner }) => {
+const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
   return (
     <>
       <header role="banner" className="fr-header">
