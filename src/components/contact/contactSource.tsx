@@ -9,7 +9,7 @@ export const defaultValuesSourceAndDataSection = {
 };
 export const validationSchemasContactSource = {
   source: Yup.string(),
-  collecterMesDonnees: Yup.boolean().required('Ce champs est requis'),
+  collecterMesDonnees: Yup.boolean().oneOf([true], 'Ce champ est requis'),
 };
 
 const ContactSource = () => {
