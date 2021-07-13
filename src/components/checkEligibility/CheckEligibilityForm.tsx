@@ -1,4 +1,5 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
+import { PageTitle } from '@components/checkEligibility/checkElegibility.style';
 import { Button } from '@components/shared/Button';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
@@ -27,30 +28,32 @@ const CheckEligibilityForm = () => {
     lat: point[1],
   });
   return (
-    <div className="fr-col-12 fr-col-md-8">
-      <h1>Tester votre éligibilité</h1>
+    <>
+      <PageTitle className="fr-mb-4w">
+        Votre copropriété peut-elle être raccordée à un réseau de chaleur ? Un
+        chauffage économique et écologique
+      </PageTitle>
       {showAlert && <AlertEligibility isEligible={isEligible} />}
-      <p>
-        Votre copropriété peut-elle être raccordée à un réseau de chauffage
-        urbain en France ?Découvrez s’il existe un réseau de chaleur proche de
-        votre copropriété.
-      </p>
       <AddressAutocomplete onAddressSelected={handleAddressSelected} />
 
-      <div className="fr-col-offset-4">
-        <Button
-          onClick={() =>
-            push({
-              pathname: '/demande-de-contact',
-              query: { isEligible },
-            })
-          }
-          disabled={isButtonDisabled}
-        >
-          Nous contacter
-        </Button>
+      <div className="fr-container--fluid">
+        <div className="fr-grid-row fr-grid-row--right">
+          <div className="fr-col-offset-6">
+            <Button
+              onClick={() =>
+                push({
+                  pathname: '/demande-de-contact',
+                  query: { isEligible },
+                })
+              }
+              disabled={isButtonDisabled}
+            >
+              Nous contacter
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
