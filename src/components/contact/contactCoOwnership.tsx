@@ -54,8 +54,9 @@ const ContactCoOwnership = () => {
             Selectionnez une option
           </option>
           <option value="membre du conseil">Membre du conseil syndical</option>
+          <option value="syndic">Locataire</option>
           <option value="syndic">Syndic</option>
-          <option value="habitant">habitant</option>
+          <option value="habitant">Copropriétaire</option>
           <option value="autre">Autre</option>
         </Field>
       </div>
