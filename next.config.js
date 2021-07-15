@@ -1,9 +1,9 @@
-const isProd = process.env.NODE_ENV === 'production';
+const isGithubCI = process.env.NODE_ENV === 'production' && process.env.CI;
 
 module.exports = {
   future: {
     webpack5: true,
   },
-  assetPrefix: isProd ? '/france-chaleur-urbaine/' : '',
-  basePath: isProd ? '/france-chaleur-urbaine' : '',
+  assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : '',
+  basePath: isGithubCI ? '/france-chaleur-urbaine' : '',
 };
