@@ -71,14 +71,14 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
             >
               <ul className="fr-nav__list">
                 <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="ressources" target="_self">
-                    Ressources
-                  </a>
+                  <Link href="/ressources">
+                    <a className="fr-nav__link">Ressources</a>
+                  </Link>
                 </li>
                 <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="partenaires" target="_self">
-                    Partenaires
-                  </a>
+                  <Link href="/partenaires">
+                    <a className="fr-nav__link">Partenaires</a>
+                  </Link>
                 </li>
                 <li className="fr-nav__item">
                   <a
