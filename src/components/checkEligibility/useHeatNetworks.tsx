@@ -7,34 +7,31 @@ export const useHeatNetworks = (
   threshold: number = ELIGIBILITY_DISTANCE_THRESHOLD
 ) => {
   const [status, setStatus] = React.useState('idle');
-  const [nearNetwork, setNearNetwork] =
-    React.useState<HeatNetworksResponse | null>(null);
+  const [isEligible, setIsEligible] = React.useState<boolean>(false);
   const { heatNetworkService } = useServices();
-  const findNearHeatNetwork = React.useCallback(
+  const checkEligibility = React.useCallback(
     async (coords: Coords) => {
-      setStatus('loading');
       try {
+        setStatus('loading');
         const network = await heatNetworkService.findByCoords(coords);
-        setNearNetwork(network);
+        setIsEligible(_IsNetworkOutOfThreshold(network, threshold));
         setStatus('success');
       } catch (e) {
         setStatus('error');
       }
     },
-    [heatNetworkService]
+    [heatNetworkService, threshold]
   );
 
   return {
-    checkEligibility: async (coords: Coords): Promise<void> => {
-      await findNearHeatNetwork(coords);
-    },
-    isEligible: !!nearNetwork && _IsOutOfThreshold(nearNetwork, threshold),
+    checkEligibility,
+    isEligible,
     status,
   };
 };
-function _IsOutOfThreshold(
-  nearNetwork: HeatNetworksResponse,
+function _IsNetworkOutOfThreshold(
+  heatNetwork: HeatNetworksResponse,
   threshold: number
 ) {
-  return nearNetwork.distPointReseau <= threshold;
+  return heatNetwork?.distPointReseau <= threshold;
 }

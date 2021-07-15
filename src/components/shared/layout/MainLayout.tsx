@@ -80,16 +80,6 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                     <a className="fr-nav__link">Partenaires</a>
                   </Link>
                 </li>
-                <li className="fr-nav__item">
-                  <a
-                    className="fr-nav__link"
-                    href="https://carto.viaseva.org/public/viaseva/map/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Cartographie
-                  </a>
-                </li>
               </ul>
             </nav>
           </div>

@@ -40,8 +40,6 @@ export default function DemandeDeContact() {
                 Votre demande de contact est bien prise en compte.
               </CallOutTitle>
               <CallOutBody>
-                Bonjour,
-                <br />
                 L'équipe France Chaleur Urbaine a bien reçu votre demande et
                 reviendra vers vous dans les meilleurs délais afin de vous
                 apporter une réponse. Dans l'attente, n'hésitez pas à consulter
@@ -49,7 +47,6 @@ export default function DemandeDeContact() {
                 <Link href="/ressources">
                   <a>centre de ressources</a>
                 </Link>
-                <br /> Cordialement,
               </CallOutBody>
             </CallOut>
             <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
