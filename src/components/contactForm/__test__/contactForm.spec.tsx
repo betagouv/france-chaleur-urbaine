@@ -28,7 +28,7 @@ test('rendering and submitting contact form', async () => {
     email: filledInData.email,
     modeDeChauffage: filledInData.heatingMethod,
     nom: filledInData.lastName,
-    nombreDeLogement: filledInData.housingNumber,
+    nombreDeLogements: filledInData.housingNumber,
     prenom: filledInData.firstName,
     source: filledInData.contactOrigin,
     status: filledInData.coOwnershipStatus,
@@ -60,7 +60,7 @@ test('rendering and submitting contact form', async () => {
   userFillIn('Nom (*)', filledInData.lastName);
   userFillIn('Email (*)', filledInData.email);
   userFillIn('Téléphone', filledInData.phoneNumber);
-  userFillIn('Nombre de logement', filledInData.housingNumber);
+  userFillIn('Nombre de logements', filledInData.housingNumber);
   userSelectIn('Votre mode de chauffage actuel', filledInData.heatingMethod);
   userSelectIn(
     'Votre statut au sein de la copropriété',

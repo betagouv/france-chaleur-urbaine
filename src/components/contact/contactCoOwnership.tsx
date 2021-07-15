@@ -4,12 +4,15 @@ import { Field } from 'formik';
 import * as Yup from 'yup';
 
 export const defaultValuesContactCoOwnership = {
-  nombreDeLogement: '',
+  nombreDeLogements: '',
   modeDeChauffage: '',
   status: '',
 };
 export const validationSchemasContactCoOwnership = {
-  nombreDeLogement: Yup.number(),
+  nombreDeLogements: Yup.number().min(
+    0,
+    'Le nombre de logements ne peut être inférieur à 0'
+  ),
   modeDeChauffage: Yup.string(),
   status: Yup.string(),
 };
@@ -23,9 +26,8 @@ const ContactCoOwnership = () => {
       <div className="fr-my-3w">
         <Field
           type="number"
-          name="nombreDeLogement"
-          id="nombreDeLogement"
-          label="Nombre de logement"
+          name="nombreDeLogements"
+          label="Nombre de logements"
           component={Input}
         />
       </div>

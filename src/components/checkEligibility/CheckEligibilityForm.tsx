@@ -2,7 +2,7 @@ import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomp
 import { PageTitle } from '@components/checkEligibility/checkElegibility.style';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Coords, Point } from 'src/types';
 import AlertEligibility from './AlertEligibility';
 import { useHeatNetworks } from './useHeatNetworks';
@@ -20,12 +20,16 @@ const CheckEligibilityForm = () => {
     const coords = getCoords(coordinates);
     await checkEligibility(coords);
     saveInStorage({ coords: [coords.lat, coords.lon], label: address });
-
-    await push({
-      pathname: '/demande-de-contact',
-      query: { isEligible },
-    });
   };
+  useEffect(() => {
+    if (isEligible) {
+      push({
+        pathname: '/demande-de-contact',
+        query: { isEligible },
+      });
+    }
+  }, [isEligible, push]);
+
   const getCoords = (point: number[]): Coords => ({
     lon: point[0],
     lat: point[1],
