@@ -9,7 +9,6 @@ function PrivacyPolicy() {
             <h2>
               Politique de confidentialité et de protection des données privées
             </h2>
-            <h3>Vie privée</h3>
             <h3>Données à caractère personnel</h3>
             <p>
               Nous nous engageons à ce que la collecte et le traitement de vos
@@ -28,12 +27,23 @@ function PrivacyPolicy() {
               est : Le Direction des Affaires Juridiques du Ministère de la
               Transition Ecologique 1 place Carpeaux 92800 Puteaux
             </p>
+            <h3>Prestataires d’hébergement</h3>
+            <ul className="fr-mb-4w">
+              <li>
+                Hébergement du site
+                <a href="https://scalingo.com"> https://scalingo.com</a>
+              </li>
+              <li>
+                Hébergement et traitement du formulaire
+                <a href="https://formspark.io/"> https://formspark.io/</a>
+              </li>
+            </ul>
             <h3>Traitement des données et utilisation</h3>
             <p>
               Nous ne pouvons utiliser vos données à caractère personnel qu’à
-              des fins à la fois légitimes et nécessaires. Cela signifie
-              concrètement que nous traitons vos données à caractère personnel
-              pour des finalités de :
+              des fins à la fois légitimes et nécessaires. <br />
+              Cela signifie concrètement que nous traitons vos données à
+              caractère personnel pour des finalités de :
             </p>
             <ul className="fr-mb-4w">
               <li>
@@ -117,14 +127,16 @@ function PrivacyPolicy() {
               de la loi informatique et aux libertés, vous disposez d’un droit
               d’accès, de rectification, de suppression et d’opposition.
             </p>
-            <p>Par courriel : france-chaleur-urbaine@beta.gouv.fr</p>
-            <p>
-              Par voie postale : France Chaleur Urbaine - Fabrique Numérique -
-              Ministère de la Transition écologique et solidaire Direction
-              Générale de l'Aménagement, du Logement et de la Nature, Bureau de
-              la politique des ressources minérales non énergétiques, 1 place
-              Carpeaux, 92800 Puteaux
-            </p>
+            <ul className="fr-mb-4w">
+              <li>Par courriel : france-chaleur-urbaine@beta.gouv.fr</li>
+              <li>
+                Par voie postale : France Chaleur Urbaine - Fabrique Numérique -
+                Ministère de la Transition écologique et solidaire Direction
+                Générale de l'Aménagement, du Logement et de la Nature, Bureau
+                de la politique des ressources minérales non énergétiques, 1
+                place Carpeaux, 92800 Puteaux
+              </li>
+            </ul>
             <p>
               Cette demande écrite est accompagnée d’une copie du titre
               d’identité avec signature du titulaire de la pièce, en précisant

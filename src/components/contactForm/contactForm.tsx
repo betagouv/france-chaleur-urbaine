@@ -58,12 +58,6 @@ export const ContactForm = ({
           </li>
           <li>toute autre information</li>
         </ul>
-        <p>
-          Pour connaître les projets en cours, en savoir plus sur d'autres
-          solutions de chauffage performantes ou toute autre information, merci
-          de compléter le formulaire ci-dessous. Nous reviendrons rapidement
-          vers vous.
-        </p>
         <h2>Demande de contact et d’information</h2>
         <ContactTopic />
         <ContactInformation />
