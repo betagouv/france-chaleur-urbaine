@@ -1,4 +1,5 @@
 import Banner from '@components/banner/banner';
+import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -37,14 +38,13 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                   </div>
                 </div>
                 <div className="fr-header__service">
-                  <a
-                    href="/"
-                    title="Accueil - [À MODIFIER | Nom du site / service]"
-                  >
-                    <p className="fr-header__service-title">
-                      France Chaleur Urbaine
-                    </p>
-                  </a>
+                  <Link href="/">
+                    <a title="Accueil - [À MODIFIER | Nom du site / service]">
+                      <p className="fr-header__service-title">
+                        France Chaleur Urbaine
+                      </p>
+                    </a>
+                  </Link>
                 </div>
               </div>
             </div>
