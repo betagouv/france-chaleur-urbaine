@@ -6,17 +6,17 @@
       "items": [
         {
           "image": {
-            "url": "./defaultPic.jpeg",
+            "url": "./logo-DRIEAT.jpg",
             "title": "DRIEAT"
           },
 
           "title": "DRIEAT",
           "description": "La Direction régionale de l'environnement, de l'aménagement et des transports (DRIEAT) est un service déconcentré du ministère de la transition écologique et du ministère de la cohésion des territoires et des relations avec les collectivités territoriales. Elle met en œuvre les politiques de l’État en matière de transports, de planification et d’aménagement durable, d’environnement, d’énergie, d’urbanisme sous l’autorité du préfet d’Île-de-France, préfet de Paris, du préfet de Police et des préfets de département. Au titre de ses missions, la DRIEAT suit et encourage le développement des réseaux de chaleur franciliens.",
-          "link": ""
+          "link": "http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
         },
         {
           "image": {
-            "url": "./defaultPic.jpeg",
+            "url": "./logo-FNCCR.jpg",
             "title": "Fnccr"
           },
 
@@ -31,32 +31,32 @@
       "items": [
         {
           "image": {
-            "url": "./defaultPic.jpeg",
+            "url": "./logo-DINUM.jpg",
             "title": "DINUM"
           },
 
           "title": "DINUM",
           "description": "La direction interministérielle du numérique (DINUM) est un service du Premier ministre placé sous l’autorité de la ministre de la transformation et de la fonction publiques. Elle est en charge de la transformation numérique de l’État au bénéfice du citoyen comme de l’agent, sous tous ses aspects : modernisation du système d’information de l’État, qualité des services publics numériques, création de services innovants pour les citoyens, outils numériques de travail collaboratif pour les agents… Elle porte le programme beta.gouv.fr qui vise à aider les administrations publiques à axer leurs services sur les besoins des utilisateurs, en constituant des équipes chargées de résoudre des irritants ou des problèmes de politique publique.",
-          "link": ""
+          "link": "https://www.numerique.gouv.fr/dinum/"
         },
         {
           "image": {
-            "url": "./defaultPic.jpeg",
+            "url": "./logo-ADEME.jpg",
             "title": "ADEME"
           },
 
           "title": "ADEME",
           "description": "À l’ADEME - l’Agence de la transition écologique -, nous sommes résolument engagés dans la lutte contre le réchauffement climatique et la dégradation des ressources. Sur tous les fronts, nous mobilisons les citoyens, les acteurs économiques et les territoires, leur donnons les moyens de progresser vers une société économe en ressources, plus sobre en carbone, plus juste et harmonieuse. Dans tous les domaines - énergie, économie circulaire, alimentation, mobilité, qualité de l’air, adaptation au changement climatique, sols… - nous conseillons, facilitons et aidons au financement de nombreux projets, de la recherche jusqu’au partage des solutions. À tous les niveaux, nous mettons nos capacités d’expertise et de prospective au service des politiques publiques.",
-          "link": ""
+          "link": "https://www.ademe.fr/"
         },
         {
           "image": {
-            "url": "./defaultPic.jpeg",
+            "url": "./logo-MINISTERE.jpg",
             "title": "DGEC"
           },
           "title": "DGEC",
           "description": "La Direction générale de l’énergie et du climat du ministère de la transition écologique a pour mission d’élaborer et de mettre en œuvre la politique nationale relative à l’énergie, aux matières premières énergétiques, ainsi qu’à la lutte contre le réchauffement climatique et la pollution atmosphérique.",
-          "link": ""
+          "link": "https://www.ecologie.gouv.fr/direction-generale-lenergie-et-du-climat-dgec"
         }
       ]
     },
@@ -65,39 +65,39 @@
       "items": [
         {
           "image": {
-            "url": "./defaultPic.jpeg",
+            "url": "./logo-SMIREC.jpg",
             "title": "SMIREC"
           },
           "title": "SMIREC",
           "description": "Le Syndicat mixte des réseaux d’énergie calorifique (Smirec) est le deuxième réseau de chaleur d’Île-de-France. Il alimente en chauffage et eau chaude sanitaire 54 000 équivalents logements, grâce à 95 km de réseau sur les territoires de La Courneuve, Saint-Denis, Stains, Pierrefitte, L’Ile-Saint-Denis et Aubervilliers. Le réseau du Smirec est alimenté à plus de 55% en énergies renouvelables et locales, la géothermie et la biomasse. Il connait une dynamique importante grâce aux multiples projets d'aménagement de Plaine Commune, avec des perspectives de développement sur de nouveaux quartiers et de nouvelles villes.",
-          "link": ""
+          "link": "https://www.smirec.fr/"
         },
         {
           "image": {
-            "url": "./defaultPic.jpeg",
+            "url": "./logo-CEREMA.jpg",
             "title": "Cerema"
           },
           "title": "Cerema",
           "description": "Le Centre d’études et d’expertise sur les risques, l’environnement, la mobilité et l’aménagement (CEREMA) est un établissement public du ministère de la transition écologique qui dispose d'expertises transversales pluridisciplinaires pour contribuer à relever le défi du développement durable des territoires. Il peut accompagner les territoires dans la réalisation de leurs projets. Le site Réseaux de Chaleur et Territoires du CEREMA met à disposition ses ressources documentaires et études sur les réseaux de chaleur.",
-          "link": ""
+          "link": "https://www.cerema.fr/fr"
         },
         {
           "image": {
-            "url": "./defaultPic.jpeg",
+            "url": "./logo-CORIANCE.jpg",
             "title": "Coriance"
           },
           "title": "Coriance",
           "description": "Coriance est un opérateur français indépendant au service de la transition énergétique. Fort de ses 20 ans d’expérience, Coriance est devenu un acteur global du secteur énergétique. Ses offres diversifiées et son savoir-faire lui permettent de concevoir, exploiter, optimiser mais aussi de faire progresser des réseaux de chaleur ou de froid, de la production jusqu’à nos clients. Capable d’exploiter toutes les énergies du territoire et présentant le mix énergétique le plus vert de la profession, Coriance accompagne ses clients dans leurs projets. Ses deux métiers sont complémentaires : développer des réseaux de chaleur et de froid urbains et optimiser l’efficacité énergétique des bâtiments publics et privés.",
-          "link": ""
+          "link": "https://www.groupe-coriance.fr/"
         },
         {
           "image": {
-            "url": "./defaultPic.jpeg",
+            "url": "./logo-IDEX.jpg",
             "title": "Idex"
           },
           "title": "Idex",
           "description": "Créée en 1963, Idex est devenu un acteur de l’exploitation des énergies renouvelables. Le groupe a su au fil des années anticiper et s’engager autour des enjeux climatiques. Idex est la première ETI (Entreprise de Taille Intermédiaire) indépendante française de services énergétiques. Idex maîtrise aujourd’hui l’ensemble des solutions énergétiques et incarne une alternative aux opérateurs liés aux grands producteurs d’énergies fossiles (gaz et électricité).",
-          "link": ""
+          "link": "https://www.idex.fr/"
         }
       ]
     }
