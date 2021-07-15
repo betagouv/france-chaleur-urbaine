@@ -22,7 +22,7 @@ const ContactTopic = () => {
       <div className="fr-my-3w">
         <Field
           name="besoin"
-          label="Quel est votre besoin ?"
+          label="Quel est votre besoin ? (*)"
           component={Textarea}
         />
       </div>

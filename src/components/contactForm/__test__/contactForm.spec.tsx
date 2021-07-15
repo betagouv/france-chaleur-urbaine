@@ -51,14 +51,14 @@ test('rendering and submitting contact form', async () => {
       valueToField.toString()
     );
   };
-  userFillIn('Quel est votre besoin ?', filledInData.needTopic);
+  userFillIn('Quel est votre besoin ? (*)', filledInData.needTopic);
   userFillIn(
     'Vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier',
     filledInData.contactOperator
   );
-  userFillIn('Prénom', filledInData.firstName);
-  userFillIn('Nom', filledInData.lastName);
-  userFillIn('Email', filledInData.email);
+  userFillIn('Prénom (*)', filledInData.firstName);
+  userFillIn('Nom (*)', filledInData.lastName);
+  userFillIn('Email (*)', filledInData.email);
   userFillIn('Téléphone', filledInData.phoneNumber);
   userFillIn('Nombre de logement', filledInData.housingNumber);
   userSelectIn('Votre mode de chauffage actuel', filledInData.heatingMethod);
@@ -72,7 +72,7 @@ test('rendering and submitting contact form', async () => {
   );
 
   userFillIn(
-    'Les données collectées sont uniquement utilisées à des fins d’analyse par le ministère de la transition écologique',
+    'Les données collectées sont uniquement utilisées à des fins d’analyse par le ministère de la transition écologique (*)',
     filledInData.collectDataAgreement
   );
 

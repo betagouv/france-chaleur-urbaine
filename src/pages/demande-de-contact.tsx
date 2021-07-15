@@ -91,8 +91,9 @@ function CallOutWithAddress({
   isAddressEligible: boolean;
   address: Record<string, string | number[]>;
 }) {
+  const variant = isAddressEligible ? 'success' : 'error';
   return (
-    <CallOut>
+    <CallOut variant={variant}>
       {isAddressEligible ? (
         <>
           <CallOutTitle>
@@ -115,9 +116,25 @@ function CallOutWithAddress({
           </CallOutBody>
         </>
       ) : (
-        <CallOutTitle>
-          Votre copropriété n'est pas éligible à la chaleur urbaine.
-        </CallOutTitle>
+        <>
+          <CallOutTitle>
+            Votre copropriété n'est pour le moment pas raccordable à un réseau
+            de chaleur.{' '}
+          </CallOutTitle>
+          <CallOutBody>
+            <p>
+              Toutefois, les réseaux se développent et elle pourrait le devenir.
+            </p>
+            <a
+              href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address.coords}&zoom=15`}
+              target="_blank"
+              className="fr-link fr-link--icon-right"
+              rel="noreferrer"
+            >
+              Visualiser les réseaux à proximité
+            </a>
+          </CallOutBody>
+        </>
       )}
     </CallOut>
   );
