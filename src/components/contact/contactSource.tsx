@@ -39,7 +39,7 @@ const ContactSource = () => {
       <div className="fr-my-3w fr-checkbox-group">
         <Field
           name="collecterMesDonnees"
-          label="Les données collectées sont uniquement utilisées à des fins d’analyse par le ministère de la transition écologique"
+          label="Les données collectées sont uniquement utilisées à des fins d’analyse par le ministère de la transition écologique (*)"
           component={Checkbox}
         />
       </div>

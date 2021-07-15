@@ -1,3 +1,4 @@
+import Banner from '@components/banner/banner';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -5,7 +6,13 @@ const Main = styled.section`
   margin: 2em 0;
   min-height: 70vh;
 `;
-const MainLayout: React.FC = ({ children }) => {
+
+type MainLayout = {
+  children: React.ReactNode;
+  banner?: boolean;
+};
+
+const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
   return (
     <>
       <header role="banner" className="fr-header">
@@ -74,7 +81,12 @@ const MainLayout: React.FC = ({ children }) => {
                   </a>
                 </li>
                 <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="#" target="_self">
+                  <a
+                    className="fr-nav__link"
+                    href="https://carto.viaseva.org/public/viaseva/map/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     Cartographie
                   </a>
                 </li>
@@ -83,9 +95,11 @@ const MainLayout: React.FC = ({ children }) => {
           </div>
         </div>
       </header>
+      {banner && <Banner />}
       <div className="fr-container">
         <Main className="fr-grid-row fr-grid-row--center">{children}</Main>
       </div>
+
       <footer className="fr-footer" role="contentinfo" id="footer">
         <div className="fr-container">
           <div className="fr-footer__body fr-footer__body--operator">

@@ -1,69 +1,103 @@
 {
   "title": "Partenaires",
-  "description": "Vous trouverez ci-dessous un ensemble ressoures concernant le chauffage urbain : raccordement, aide public, relation avec les exploitants des réseaux, réglementation.",
   "partners": [
     {
-      "title": "Partenaires principaux",
+      "title": "Ils portent le projet :",
       "items": [
         {
           "image": {
             "url": "./defaultPic.jpeg",
-            "title": ""
+            "title": "DRIEAT"
           },
 
-          "title": "Ademe",
-          "description": "L’Agence de l’Environnement et de la Maîtrise de l’Energie est un établissement public du ministère de la Transition Ecologique qui participe à la mise en œuvre des politiques publiques dans les domaines de l’environnement, de l’énergie et du développement durable. Elle met à disposition des entreprises, des collectivités locales, des pouvoirs publics et du grand public, ses capacités d’expertise, de conseil et aide au financement de projets ainsi qu’à la mobilisation des acteurs, notamment dans le domaine des réseaux de chaleur.",
-          "link": "https://www.ademe.fr/"
+          "title": "DRIEAT",
+          "description": "La Direction régionale de l'environnement, de l'aménagement et des transports (DRIEAT) est un service déconcentré du ministère de la transition écologique et du ministère de la cohésion des territoires et des relations avec les collectivités territoriales. Elle met en œuvre les politiques de l’État en matière de transports, de planification et d’aménagement durable, d’environnement, d’énergie, d’urbanisme sous l’autorité du préfet d’Île-de-France, préfet de Paris, du préfet de Police et des préfets de département. Au titre de ses missions, la DRIEAT suit et encourage le développement des réseaux de chaleur franciliens.",
+          "link": ""
         },
         {
           "image": {
             "url": "./defaultPic.jpeg",
-            "title": ""
-          },
-
-          "title": "Cereme",
-          "description": "Le Centre d’études et d’expertise sur les risques, l’environnement, la mobilité et l’aménagement est un établissement public du Ministère de la Transition Ecologique qui dispose d'expertises transversales pluridisciplinaires pour contribuer à relever le défi du développement durable des territoires. Il peut accompagner les territoires dans la réalisation de leurs projets. Le site Réseaux de Chaleur et Territoires du CEREMA met à disposition ses ressources documentaires et études sur les réseaux de chaleur.",
-          "link": "http://reseaux-chaleur.cerema.fr/"
-        },
-        {
-          "image": {
-            "url": "./defaultPic.jpeg",
-            "title": ""
-          },
-
-          "title": "Métropole du Grand Paris",
-          "description": "La Métropole du Grand Paris a vu le jour le 1er janvier 2016. Elle regroupe 131 communes : Paris, les 123 villes des trois départements des Hauts-de-Seine, de la Seine-Saint-Denis et du Val-de-Marne et 7 communes des départements limitrophes de l’Essonne et du Val d’Oise, soit près de 7,2 millions d’ habitants. Elle agit pour faciliter la mise en œuvre de la transition énergétique sur son territoire (notamment pour les 104 000 copropriétés représentant 2,2 millions de logements) en mobilisant la Fédération Métropolitaine des Agences Locales de l’Energie (ALEC).",
-          "link": "https://metropolegrandparis.fr/fr"
-        },
-        {
-          "image": {
-            "url": "./defaultPic.jpeg",
-            "title": ""
-          },
-
-          "title": "Coriance",
-          "description": "Coriance est un opérateur français indépendant au service de la transition énergétique. Fort de ses 20 ans d’expérience, Coriance est devenu un acteur global du secteur énergétique. Ses offres diversifiées et son savoir-faire lui permettent de concevoir, exploiter, optimiser mais aussi de faire progresser des réseaux de chaleur ou de froid, de la production jusqu’à nos clients. Capable d’exploiter toutes les énergies du territoire et présentant le mix énergétique le plus vert de la profession, Coriance accompagne ses clients dans leurs projets. Ses deux métiers sont complémentaires : développer des réseaux de chaleur et de froid urbains et optimiser l’efficacité énergétique des bâtiments publics et privés.",
-          "link": "https://www.groupe-coriance.fr/"
-        },
-        {
-          "image": {
-            "url": "./defaultPic.jpeg",
-            "title": ""
-          },
-
-          "title": "Idex",
-          "description": "Créée en 1963, Idex est devenu un acteur de l’exploitation des énergies renouvelables. Le groupe a su au fil des années anticiper et s’engager autour des enjeux climatiques. Idex est la première ETI (Entreprise de Taille Intermédiaire) indépendante française de services énergétiques. Idex maîtrise aujourd’hui l’ensemble des solutions énergétiques et incarne une alternative aux opérateurs liés aux grands producteurs d’énergies fossiles (gaz et électricité).",
-          "link": "https://www.idex.fr/"
-        },
-        {
-          "image": {
-            "url": "./defaultPic.jpeg",
-            "title": ""
+            "title": "Fnccr"
           },
 
           "title": "Fnccr",
-          "description": "La Fédération nationale des collectivités concédantes et régies (FNCCR) est une association (de type loi de 1901) créée en 1934, forte de plus de 800 adhérents. Elle regroupe des collectivités territoriales et leurs établissements publics chargés de l’organisation et/ou de l’exploitation de certains services publics, regroupés dans trois secteurs d’activité principaux : énergie, cycle de l’eau, numérique. Le service réseau de chaleur agit pour le respect de grands principes tels que : qualité et efficacité du service rendu, égalité de traitement entre les usagers-consommateurs, organisation et contrôle du service par les autorités locales compétentes",
+          "description": "La Fédération nationale des collectivités concédantes et régies (FNCCR) est une association (de type loi de 1901) créée en 1934, forte de plus de 800 adhérents. Elle regroupe des collectivités territoriales et leurs établissements publics chargés de l’organisation et/ou de l’exploitation de certains services publics, regroupés dans trois secteurs d’activité principaux : énergie, cycle de l’eau, numérique. Le service réseau de chaleur agit pour le respect de grands principes tels que : qualité et efficacité du service rendu, égalité de traitement entre les usagers-consommateurs, organisation et contrôle du service par les autorités locales compétentes ...",
           "link": "https://www.fnccr.asso.fr/"
+        }
+      ]
+    },
+    {
+      "title": "Ils se sont engagés à nos côtés :",
+      "items": [
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": "DINUM"
+          },
+
+          "title": "DINUM",
+          "description": "La direction interministérielle du numérique (DINUM) est un service du Premier ministre placé sous l’autorité de la ministre de la transformation et de la fonction publiques. Elle est en charge de la transformation numérique de l’État au bénéfice du citoyen comme de l’agent, sous tous ses aspects : modernisation du système d’information de l’État, qualité des services publics numériques, création de services innovants pour les citoyens, outils numériques de travail collaboratif pour les agents… Elle porte le programme beta.gouv.fr qui vise à aider les administrations publiques à axer leurs services sur les besoins des utilisateurs, en constituant des équipes chargées de résoudre des irritants ou des problèmes de politique publique.",
+          "link": ""
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": "ADEME"
+          },
+
+          "title": "ADEME",
+          "description": "À l’ADEME - l’Agence de la transition écologique -, nous sommes résolument engagés dans la lutte contre le réchauffement climatique et la dégradation des ressources. Sur tous les fronts, nous mobilisons les citoyens, les acteurs économiques et les territoires, leur donnons les moyens de progresser vers une société économe en ressources, plus sobre en carbone, plus juste et harmonieuse. Dans tous les domaines - énergie, économie circulaire, alimentation, mobilité, qualité de l’air, adaptation au changement climatique, sols… - nous conseillons, facilitons et aidons au financement de nombreux projets, de la recherche jusqu’au partage des solutions. À tous les niveaux, nous mettons nos capacités d’expertise et de prospective au service des politiques publiques.",
+          "link": ""
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": "DGEC"
+          },
+          "title": "DGEC",
+          "description": "La Direction générale de l’énergie et du climat du ministère de la transition écologique a pour mission d’élaborer et de mettre en œuvre la politique nationale relative à l’énergie, aux matières premières énergétiques, ainsi qu’à la lutte contre le réchauffement climatique et la pollution atmosphérique.",
+          "link": ""
+        }
+      ]
+    },
+    {
+      "title": "Ils nous accompagnent :",
+      "items": [
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": "SMIREC"
+          },
+          "title": "SMIREC",
+          "description": "Le Syndicat mixte des réseaux d’énergie calorifique (Smirec) est le deuxième réseau de chaleur d’Île-de-France. Il alimente en chauffage et eau chaude sanitaire 54 000 équivalents logements, grâce à 95 km de réseau sur les territoires de La Courneuve, Saint-Denis, Stains, Pierrefitte, L’Ile-Saint-Denis et Aubervilliers. Le réseau du Smirec est alimenté à plus de 55% en énergies renouvelables et locales, la géothermie et la biomasse. Il connait une dynamique importante grâce aux multiples projets d'aménagement de Plaine Commune, avec des perspectives de développement sur de nouveaux quartiers et de nouvelles villes.",
+          "link": ""
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": "Cerema"
+          },
+          "title": "Cerema",
+          "description": "Le Centre d’études et d’expertise sur les risques, l’environnement, la mobilité et l’aménagement (CEREMA) est un établissement public du ministère de la transition écologique qui dispose d'expertises transversales pluridisciplinaires pour contribuer à relever le défi du développement durable des territoires. Il peut accompagner les territoires dans la réalisation de leurs projets. Le site Réseaux de Chaleur et Territoires du CEREMA met à disposition ses ressources documentaires et études sur les réseaux de chaleur.",
+          "link": ""
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": "Coriance"
+          },
+          "title": "Coriance",
+          "description": "Coriance est un opérateur français indépendant au service de la transition énergétique. Fort de ses 20 ans d’expérience, Coriance est devenu un acteur global du secteur énergétique. Ses offres diversifiées et son savoir-faire lui permettent de concevoir, exploiter, optimiser mais aussi de faire progresser des réseaux de chaleur ou de froid, de la production jusqu’à nos clients. Capable d’exploiter toutes les énergies du territoire et présentant le mix énergétique le plus vert de la profession, Coriance accompagne ses clients dans leurs projets. Ses deux métiers sont complémentaires : développer des réseaux de chaleur et de froid urbains et optimiser l’efficacité énergétique des bâtiments publics et privés.",
+          "link": ""
+        },
+        {
+          "image": {
+            "url": "./defaultPic.jpeg",
+            "title": "Idex"
+          },
+          "title": "Idex",
+          "description": "Créée en 1963, Idex est devenu un acteur de l’exploitation des énergies renouvelables. Le groupe a su au fil des années anticiper et s’engager autour des enjeux climatiques. Idex est la première ETI (Entreprise de Taille Intermédiaire) indépendante française de services énergétiques. Idex maîtrise aujourd’hui l’ensemble des solutions énergétiques et incarne une alternative aux opérateurs liés aux grands producteurs d’énergies fossiles (gaz et électricité).",
+          "link": ""
         }
       ]
     }

@@ -1,4 +1,4 @@
-name: Build, test, and deploy
+name: Build, test, and deploy on DEV
 
 # Controls when the action will run.
 on: [push, pull_request]
@@ -69,13 +69,19 @@ jobs:
     needs: Prepare
     steps:
       - name: Download build artifact
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/dev'
         uses: actions/download-artifact@v2
         with:
           name: next-build-artifact
 
+      - name: Set default Branch 🐛
+        if: github.ref == 'refs/heads/dev'
+        run: git config --global init.defaultBranch dev
+        env:
+          PORT: 3000
+
       - name: deploy 🚀
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/dev'
         uses: JamesIves/github-pages-deploy-action@3.6.2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
