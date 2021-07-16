@@ -26,7 +26,7 @@ const ContactSource = () => {
           component={Select}
         >
           <option defaultValue="" hidden>
-            Sélectionnez une option
+            Selectionnez une option
           </option>
           <option value="mail">Mail</option>
           <option value="bouche à oreille">Bouche à oreille</option>

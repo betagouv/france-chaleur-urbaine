@@ -134,7 +134,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
             <ul className="fr-footer__bottom-list">
               <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href="#">
-                  Accessibilité: partiellement
+                  Accessibilité: non conforme
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
