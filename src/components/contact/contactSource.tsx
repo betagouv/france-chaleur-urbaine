@@ -22,7 +22,7 @@ const ContactSource = () => {
       <div className="fr-my-3w">
         <Field
           name="source"
-          label="Comment avez-vous entendu parlé de France chaleur urbaine"
+          label="Comment avez-vous entendu parlé de France Chaleur Urbaine"
           component={Select}
         >
           <option defaultValue="" hidden>

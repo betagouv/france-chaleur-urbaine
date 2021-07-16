@@ -22,13 +22,13 @@ const CheckEligibilityForm = () => {
     saveInStorage({ coords: [coords.lat, coords.lon], label: address });
   };
   useEffect(() => {
-    if (isEligible) {
+    if (status === 'success') {
       push({
         pathname: '/demande-de-contact',
         query: { isEligible },
       });
     }
-  }, [isEligible, push]);
+  }, [isEligible, push, status]);
 
   const getCoords = (point: number[]): Coords => ({
     lon: point[0],
@@ -37,8 +37,9 @@ const CheckEligibilityForm = () => {
   return (
     <>
       <PageTitle className="fr-mb-4w">
-        Votre copropriété peut-elle être raccordée à un réseau de chaleur ? Un
-        chauffage économique et écologique
+        Votre copropriété peut-elle être raccordée à un réseau de chaleur ?{' '}
+        <br />
+        <span>Un chauffage économique et écologique</span>
       </PageTitle>
       {showAlert && <AlertEligibility isEligible={isEligible} />}
       <AddressAutocomplete onAddressSelected={handleAddressSelected} />

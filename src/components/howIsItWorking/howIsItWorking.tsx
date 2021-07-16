@@ -8,7 +8,7 @@ function HowIsItWorking() {
   return (
     <div className="fr-my-4w">
       <PageTitle>Comment ça marche ?</PageTitle>
-      <div className="fr-col-lg-5 fr-col-sm-10">
+      <div className="fr-col-lg-12 fr-col-sm-10">
         <p>
           France Chaleur Urbaine est une solution numérique qui vise à faciliter
           et accélérer le raccordement des copropriétés aux réseaux de chaleur.{' '}
