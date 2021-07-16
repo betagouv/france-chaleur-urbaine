@@ -37,8 +37,9 @@ const CheckEligibilityForm = () => {
   return (
     <>
       <PageTitle className="fr-mb-4w">
-        Votre copropriété peut-elle être raccordée à un réseau de chaleur ? Un
-        chauffage économique et écologique
+        Votre copropriété peut-elle être raccordée à un réseau de chaleur ?
+        <br />
+        Un chauffage économique et écologique
       </PageTitle>
       {showAlert && <AlertEligibility isEligible={isEligible} />}
       <AddressAutocomplete onAddressSelected={handleAddressSelected} />
