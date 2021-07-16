@@ -71,6 +71,29 @@ export default function DemandeDeContact() {
               isAddressEligible={isAddressEligible}
               address={addressCoords}
             />
+            {isAddressEligible ? (
+              <>
+                <p>Vous pouvez compléter le formulaire ci-dessous pour :</p>
+                <ul className="fr-mb-4w">
+                  <li>obtenir des informations sur les réseaux de chaleur</li>
+                  <li>
+                    pouvoir échanger avec des copropriétés déjà raccordées
+                  </li>
+                  <li>
+                    être mis en relation avec l'exploitant du réseau qui passe
+                    près de chez vous
+                  </li>
+                  <li>toute autre information</li>
+                </ul>
+              </>
+            ) : (
+              <p className="fr-mt-4w">
+                Pour connaître les projets en cours, en savoir plus sur d'autres
+                solutions de chauffage performantes ou toute autre information,
+                merci de compléter le formulaire ci-dessous. Nous reviendrons
+                rapidement vers vous.
+              </p>
+            )}
             <div className="fr-mt-5w">
               <ContactForm
                 onSubmit={handleSubmitForm}
@@ -122,7 +145,7 @@ function CallOutWithAddress({
         <>
           <CallOutTitle>
             Votre copropriété n'est pour le moment pas raccordable à un réseau
-            de chaleur.{' '}
+            de chaleur.
           </CallOutTitle>
           <CallOutBody>
             <p>
