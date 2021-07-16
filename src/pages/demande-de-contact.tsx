@@ -9,7 +9,7 @@ import { useFormspark } from '@formspark/use-formspark';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 const UnderlinedLink = styled.a`
@@ -19,6 +19,7 @@ const UnderlinedLink = styled.a`
 export default function DemandeDeContact() {
   const { query } = useRouter();
   const [messageSent, setMessageSent] = useState(false);
+  const [addressCoords, setAddressCoords] = useState(null);
   const isAddressEligible = query.isEligible === 'true';
   const [storedAddress] = useLocalStorageState('');
   const [submit, submitting] = useFormspark({
@@ -29,7 +30,9 @@ export default function DemandeDeContact() {
       setMessageSent(true)
     );
   };
-
+  useEffect(() => {
+    setAddressCoords(storedAddress);
+  }, [storedAddress]);
   return (
     <MainLayout>
       <div className="fr-col-12">
@@ -66,7 +69,7 @@ export default function DemandeDeContact() {
           <>
             <CallOutWithAddress
               isAddressEligible={isAddressEligible}
-              address={storedAddress}
+              address={addressCoords}
             />
             <div className="fr-mt-5w">
               <ContactForm
@@ -86,7 +89,7 @@ function CallOutWithAddress({
   address,
 }: {
   isAddressEligible: boolean;
-  address: Record<string, string | number[]>;
+  address: Record<string, string | number[]> | null;
 }) {
   const variant = isAddressEligible ? 'success' : 'error';
   return (
@@ -100,16 +103,19 @@ function CallOutWithAddress({
             <p>
               Un réseau de chaleur urbaine passe à moins de 300 métres de votre
               adresse : <br />
-              {address.label}
+              {address?.label}
             </p>
-            <a
-              href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address.coords}&zoom=15`}
-              target="_blank"
-              className="fr-link fr-link--icon-right"
-              rel="noreferrer"
+            <Link
+              href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
             >
-              Voir sur la carte
-            </a>
+              <a
+                target="_blank"
+                className="fr-link fr-link--icon-right"
+                rel="noreferrer"
+              >
+                Voir sur la carte
+              </a>
+            </Link>
           </CallOutBody>
         </>
       ) : (
@@ -123,7 +129,7 @@ function CallOutWithAddress({
               Toutefois, les réseaux se développent et elle pourrait le devenir.
             </p>
             <a
-              href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address.coords}&zoom=15`}
+              href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
               target="_blank"
               className="fr-link fr-link--icon-right"
               rel="noreferrer"
