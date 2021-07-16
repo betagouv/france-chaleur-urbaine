@@ -27,7 +27,7 @@ function LegalMentions() {
               </li>
               <li>
                 Hébergement et traitement du formulaire
-                <a href="https://formspark.io/">https://formspark.io/</a>
+                <a href="https://formspark.io/"> https://formspark.io/</a>
               </li>
             </ul>
             <h2>Conditions générales d’utilisation</h2>
@@ -174,7 +174,7 @@ function LegalMentions() {
             <h3>Crédits photo</h3>
             <p>
               Les incônes sont issues de
-              <a href="https://streamlinehq.com">https://streamlinehq.com</a>
+              <a href="https://streamlinehq.com"> https://streamlinehq.com</a>
               via la licence de Raphaël Yharrassarry, UX designer pour France
               Chaleur Urbaine.
             </p>

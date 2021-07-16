@@ -32,7 +32,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                   <div className="fr-header__operator">
                     <img
                       className="fr-footer__logo"
-                      src="./defaultPic.jpeg"
+                      src="./logo-FCU.png"
                       alt="logo france chaleur urbaine"
                     />
                   </div>
@@ -111,61 +111,27 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
               >
                 <img
                   className="fr-footer__logo"
-                  src="./defaultPic.jpeg"
+                  src="./logo-FCU.png"
                   alt="logo france chaleur urbaine"
                 />
               </a>
             </div>
             <div className="fr-footer__content">
               <p className="fr-footer__content-desc">
-                Texte optionnel 3 lignes maximum.
-                <br /> Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Consectetur et vel quam auctor semper. Cras si amet mollis
-                dolor.
+                France Chaleur Urbaine est un projet d'innovation pour accélérer
+                le raccordement des copropriétés aux réseaux de chaleur en vue
+                de l'atteinte des objectifs de développement de la chaleur
+                d'origine renouvelable.
+                <br />
+                <strong>
+                  Faites nous part de vos propositions pour améliorer ce service
+                  : france-chaleur-urbaine@beta.gouv.fr
+                </strong>
               </p>
-              <ul className="fr-footer__content-list">
-                <li className="fr-footer__content-item">
-                  <a
-                    className="fr-footer__content-link"
-                    href="https://legifrance.gouv.fr"
-                  >
-                    legifrance.gouv.fr
-                  </a>
-                </li>
-                <li className="fr-footer__content-item">
-                  <a
-                    className="fr-footer__content-link"
-                    href="https://gouvernement.fr"
-                  >
-                    gouvernement.fr
-                  </a>
-                </li>
-                <li className="fr-footer__content-item">
-                  <a
-                    className="fr-footer__content-link"
-                    href="https://service-public.fr"
-                  >
-                    service-public.fr
-                  </a>
-                </li>
-                <li className="fr-footer__content-item">
-                  <a
-                    className="fr-footer__content-link"
-                    href="https://data.gouv.fr"
-                  >
-                    data.gouv.fr
-                  </a>
-                </li>
-              </ul>
             </div>
           </div>
           <div className="fr-footer__bottom">
             <ul className="fr-footer__bottom-list">
-              <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="#">
-                  Plan du site
-                </a>
-              </li>
               <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href="#">
                   Accessibilité: partiellement
@@ -179,19 +145,6 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
               <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href="#">
                   Données personnelles
-                </a>
-              </li>
-              <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="#">
-                  Gestion des cookies
-                </a>
-              </li>
-              <li className="fr-footer__bottom-item">
-                <a
-                  className="fr-footer__bottom-link"
-                  href="politique-de-confidentialite"
-                >
-                  Politique de confidentialité
                 </a>
               </li>
             </ul>
