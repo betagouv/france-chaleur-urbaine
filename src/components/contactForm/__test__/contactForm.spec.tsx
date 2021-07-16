@@ -53,7 +53,7 @@ test('rendering and submitting contact form', async () => {
   };
   userFillIn('Quel est votre besoin ? (*)', filledInData.needTopic);
   userFillIn(
-    'Cochez cette case si vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier.Cochez cette case si vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier.',
+    'Cochez cette case si vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier.',
     filledInData.contactOperator
   );
   userFillIn('Prénom (*)', filledInData.firstName);

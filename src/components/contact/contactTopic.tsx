@@ -30,7 +30,7 @@ const ContactTopic = () => {
       <div className="fr-my-3w">
         <Field
           name="contacterUnOperateur"
-          label="Cochez cette case si vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier.Cochez cette case si vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier."
+          label="Cochez cette case si vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier."
           component={Checkbox}
         />
       </div>
