@@ -9,7 +9,7 @@
             "url": "./raccorder-ADEME.png",
             "title": ""
           },
-          "title": "Se racorder à réseau de chaleur",
+          "title": "Se raccorder à réseau de chaleur",
           "description": "Fiche de sensibilisation de l'ADEME sur le raccordement des copropriétés",
           "fileLink": "./se_raccorder_reseau_chaleur.pdf"
         },
@@ -18,7 +18,7 @@
             "url": "./Raccordement-CEREMA.png",
             "title": ""
           },
-          "title": "Raccordement des copropriétés aux réseaux de chaleur Guide méthodologique",
+          "title": "Raccordement des copropriétés aux réseaux de chaleur \n<br/> Guide méthodologique",
           "description": "Guide méthodologique pratique du CEREMA pour étudier très concrètement la faisabilité d'un raccordement d'une copropriété",
           "fileLink": "./guide_raccordement_des_coproprietes.pdf"
         },
@@ -93,7 +93,7 @@
           },
           "title": "Réseaux de chaleur et de froid",
           "description": "Guide de la FNCCR (Fédération nationale des collectivités concédantes et régies) pour prévenir les litiges",
-          "fileLink": "./se_raccorder_reseau_chaleur.pdf"
+          "fileLink": "./FNCCR.pdf"
         }
       ]
     },
@@ -114,7 +114,7 @@
             "url": "./Enquête-classement-reseaux.png",
             "title": ""
           },
-          "title": "Enquête sur le classement des réseaux de chaleur et de froid : …",
+          "title": "Enquête sur le classement des réseaux de chaleur et de froid",
           "description": "Guide CEREMA/AMORCE sur les évolutions en 2021 et 2022 concernant le classement des réseaux de chaleur et l'obligation de raccordement des bâtiments.",
           "fileLink": "./Classement_AMORCE_Cerema _2020.pdf"
         },
@@ -126,20 +126,6 @@
           "title": "Arrété du 24 juillet 2020",
           "description": "Arrêté du 24 juillet 2020 pour l’information du propriétaire ou du syndicat de copropriétaires pour un bâtiment raccordé à un réseau de chaleur ou de froid",
           "fileLink": "./information_copro_et_batiments.pdf"
-        }
-      ]
-    },
-    {
-      "title": "Cartographie et données",
-      "items": [
-        {
-          "image": {
-            "url": "./cart-france.png",
-            "title": ""
-          },
-          "title": "Portail des réseaux de chaleur et de froid",
-          "description": "Site ViaSeva pour visualiser les tracés des réseaux français et leurs caractéristiques principales",
-          "fileLink": "https://carto.viaseva.org/public/viaseva/map/"
         }
       ]
     }
