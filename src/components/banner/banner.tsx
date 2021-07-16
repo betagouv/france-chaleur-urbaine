@@ -15,7 +15,7 @@ function Banner() {
               <ImageContainer className="fr-col-lg-4">
                 <img src="./pictoBuilding.png" alt="" />
               </ImageContainer>
-              <div className="fr-col-lg-6 fr-col-md-12 fr-ml-6w">
+              <div className="fr-col-lg-7 fr-col-md-12 fr-ml-6w fr-mt-2w">
                 <CheckEligibilityForm />
               </div>
             </div>

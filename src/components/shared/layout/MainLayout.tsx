@@ -1,4 +1,5 @@
 import Banner from '@components/banner/banner';
+import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -31,20 +32,19 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                   <div className="fr-header__operator">
                     <img
                       className="fr-footer__logo"
-                      src="./defaultPic.jpeg"
+                      src="./logo-FCU.png"
                       alt="logo france chaleur urbaine"
                     />
                   </div>
                 </div>
                 <div className="fr-header__service">
-                  <a
-                    href="/"
-                    title="Accueil - [À MODIFIER | Nom du site / service]"
-                  >
-                    <p className="fr-header__service-title">
-                      France Chaleur Urbaine
-                    </p>
-                  </a>
+                  <Link href="/">
+                    <a title="Accueil - [À MODIFIER | Nom du site / service]">
+                      <p className="fr-header__service-title">
+                        France Chaleur Urbaine
+                      </p>
+                    </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -71,24 +71,19 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
             >
               <ul className="fr-nav__list">
                 <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="ressources" target="_self">
-                    Ressources
-                  </a>
+                  <Link href="/">
+                    <a className="fr-nav__link">Accueil</a>
+                  </Link>
                 </li>
                 <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="partenaires" target="_self">
-                    Partenaires
-                  </a>
+                  <Link href="/ressources">
+                    <a className="fr-nav__link">Ressources</a>
+                  </Link>
                 </li>
                 <li className="fr-nav__item">
-                  <a
-                    className="fr-nav__link"
-                    href="https://carto.viaseva.org/public/viaseva/map/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Cartographie
-                  </a>
+                  <Link href="/partenaires">
+                    <a className="fr-nav__link">Partenaires</a>
+                  </Link>
                 </li>
               </ul>
             </nav>
@@ -116,64 +111,30 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
               >
                 <img
                   className="fr-footer__logo"
-                  src="./defaultPic.jpeg"
+                  src="./logo-FCU.png"
                   alt="logo france chaleur urbaine"
                 />
               </a>
             </div>
             <div className="fr-footer__content">
               <p className="fr-footer__content-desc">
-                Texte optionnel 3 lignes maximum.
-                <br /> Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Consectetur et vel quam auctor semper. Cras si amet mollis
-                dolor.
+                France Chaleur Urbaine est un projet d'innovation pour accélérer
+                le raccordement des copropriétés aux réseaux de chaleur en vue
+                de l'atteinte des objectifs de développement de la chaleur
+                d'origine renouvelable.
+                <br />
+                <strong>
+                  Faites nous part de vos propositions pour améliorer ce service
+                  : france-chaleur-urbaine@beta.gouv.fr
+                </strong>
               </p>
-              <ul className="fr-footer__content-list">
-                <li className="fr-footer__content-item">
-                  <a
-                    className="fr-footer__content-link"
-                    href="https://legifrance.gouv.fr"
-                  >
-                    legifrance.gouv.fr
-                  </a>
-                </li>
-                <li className="fr-footer__content-item">
-                  <a
-                    className="fr-footer__content-link"
-                    href="https://gouvernement.fr"
-                  >
-                    gouvernement.fr
-                  </a>
-                </li>
-                <li className="fr-footer__content-item">
-                  <a
-                    className="fr-footer__content-link"
-                    href="https://service-public.fr"
-                  >
-                    service-public.fr
-                  </a>
-                </li>
-                <li className="fr-footer__content-item">
-                  <a
-                    className="fr-footer__content-link"
-                    href="https://data.gouv.fr"
-                  >
-                    data.gouv.fr
-                  </a>
-                </li>
-              </ul>
             </div>
           </div>
           <div className="fr-footer__bottom">
             <ul className="fr-footer__bottom-list">
               <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href="#">
-                  Plan du site
-                </a>
-              </li>
-              <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="#">
-                  Accessibilité: partiellement
+                  Accessibilité: non conforme
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
@@ -184,19 +145,6 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
               <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href="#">
                   Données personnelles
-                </a>
-              </li>
-              <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="#">
-                  Gestion des cookies
-                </a>
-              </li>
-              <li className="fr-footer__bottom-item">
-                <a
-                  className="fr-footer__bottom-link"
-                  href="politique-de-confidentialite"
-                >
-                  Politique de confidentialité
                 </a>
               </li>
             </ul>
