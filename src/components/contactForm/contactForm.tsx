@@ -49,16 +49,6 @@ export const ContactForm = ({
     >
       {(formik) => (
         <Form>
-          <p>Vous pouvez compléter le formulaire ci-dessous pour :</p>
-          <ul className="fr-mb-4w">
-            <li>obtenir des informations sur les réseaux de chaleur</li>
-            <li>pouvoir échanger avec des copropriétés déjà raccordées</li>
-            <li>
-              être mis en relation avec l'exploitant du réseau qui passe près de
-              chez vous
-            </li>
-            <li>toute autre information</li>
-          </ul>
           <h2>Demande de contact et d’information</h2>
           <ContactTopic />
           <ContactInformation />

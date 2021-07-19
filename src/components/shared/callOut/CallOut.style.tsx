@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 
-const COLORS_MAP = { success: '#00eb5e', error: '#e10600', default: '#000091' };
+const COLORS_MAP: Record<string, string> = {
+  success: '#00eb5e',
+  error: '#e10600',
+};
 type CallOutContainerProps = {
   variant: 'success' | 'error' | 'default';
 };

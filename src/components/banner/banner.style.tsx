@@ -9,3 +9,8 @@ export const ImageContainer = styled.div`
     width: 100%;
   }
 `;
+export const Container = styled.div`
+  @media (max-width: 576px) {
+    margin: 0;
+  }
+`;

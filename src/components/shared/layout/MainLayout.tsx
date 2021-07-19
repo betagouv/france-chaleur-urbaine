@@ -39,7 +39,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                 </div>
                 <div className="fr-header__service">
                   <Link href="/">
-                    <a title="Accueil - [À MODIFIER | Nom du site / service]">
+                    <a title="france chaleur urbaine">
                       <p className="fr-header__service-title">
                         France Chaleur Urbaine
                       </p>
@@ -125,7 +125,10 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                 <br />
                 <strong>
                   Faites nous part de vos propositions pour améliorer ce service
-                  : france-chaleur-urbaine@beta.gouv.fr
+                  : <br />
+                  <a href="mailto:france-chaleur-urbaine@beta.gouv.fr">
+                    france-chaleur-urbaine@beta.gouv.fr
+                  </a>
                 </strong>
               </p>
             </div>
@@ -133,7 +136,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
           <div className="fr-footer__bottom">
             <ul className="fr-footer__bottom-list">
               <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="#">
+                <a className="fr-footer__bottom-link">
                   Accessibilité: non conforme
                 </a>
               </li>
@@ -143,7 +146,10 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="#">
+                <a
+                  className="fr-footer__bottom-link"
+                  href="politique-de-confidentialite"
+                >
                   Données personnelles
                 </a>
               </li>
