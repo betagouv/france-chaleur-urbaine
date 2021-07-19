@@ -31,15 +31,15 @@ function LegalMentions() {
               </li>
             </ul>
             <h2>Conditions générales d’utilisation</h2>
-            <p>CGU v.1.0, valables à compter du 11 janvier 2021</p>
+            <p>CGU v.1.1, valables à compter du 17 juillet 2021</p>
             <p>
               France Chaleur Urbaine est un service numérique de l’État édité
               par le Ministère de la transition écologique, avec l’appui de la
-              Direction Régionale et Interdépartementale de l'Environnement et
-              de l'Energie de l’Ile-de-France (DRIEE), la Fabrique numérique,
-              l’incubateur ministériel de services numériques innovants, et
-              beta.gouv.fr, l’incubateur de la direction interministérielle du
-              numérique de l’État (DINUM).
+              Direction régionale et interdépartementale de l’Environnement, de
+              l’Aménagement et des Transports d’Île-de-France (DRIEAT), la
+              Fabrique numérique, l’incubateur ministériel de services
+              numériques innovants, et beta.gouv.fr, l’incubateur de la
+              direction interministérielle du numérique de l’État (DINUM).
             </p>
             <h3>Présentation du service</h3>
             <p>
@@ -58,8 +58,7 @@ function LegalMentions() {
               Le présent document a pour objet de régler les relations entre les
               différents intervenants sur le service. Il définit les conditions
               et modalités d’utilisation des services
-              chauffage-urbain.beta.gouv.fr et app.chauffage-urbain.beta.gouv.fr
-              sur Internet.
+              france-chaleur-urbaine.beta.gouv.fr sur Internet.
             </p>
             <ul className="fr-mb-4w">
               <li>
@@ -81,11 +80,16 @@ function LegalMentions() {
             <h3>Objet</h3>
             <p>Le service est une application web qui vous permet de :</p>
             <ul className="fr-mb-4w">
-              <li>Saisir l’adresse d’un logement</li>
               <li>
-                Afficher une carte avec l’emplacement de cette adresse, les
-                réseaux de chaleur à proximité et d’autres copropriétés déjà
-                raccordées à ces réseaux
+                Saisir l’adresse d’un logement et savoir s’il pourrait être
+                raccordé à un réseau de chaleur. Par “pourrait être raccordé”,
+                le service désigne les copropriétés qui sont à moins de 300
+                mètres d’un réseau de chaleur ce qui accroît la probabilité de
+                pouvoir réaliser un raccordement.
+              </li>
+              <li>
+                Afficher une carte centrée sur cette adresse montrant les
+                réseaux de chaleur à proximité (carte ViaSeva)
               </li>
               <li>
                 Saisir des informations concernant votre copropriété en vue
@@ -96,7 +100,7 @@ function LegalMentions() {
             </ul>
             <h3>Qualité des données publiées</h3>
             <p>
-              Nous publions sur France Chaleur Urbaine des données à titre
+              Nous publions sur france-chaleur-urbaine des données à titre
               informatif. Par conséquent, les informations publiées sur
               chauffage-urbain ne sauraient engager la responsabilité de leur
               éditeur ou d’un quelconque service de l’État, l’utilisateur y
@@ -115,7 +119,9 @@ function LegalMentions() {
               pour chacun est expliqué ci-après avec leurs conditions
               particulières.
               <br />
-              <strong>Le site chauffage-urbain.beta.gouv.fr est protégé</strong>
+              <strong>
+                Le site france-chaleur-urbaine.beta.gouv.fr est protégé
+              </strong>
               <br />
               Le site est la propriété exclusive du ministère de la transition
               écologique. Toute reproduction ou représentation totale ou
@@ -173,8 +179,8 @@ function LegalMentions() {
             </p>
             <h3>Crédits photo</h3>
             <p>
-              Les incônes sont issues de
-              <a href="https://streamlinehq.com"> https://streamlinehq.com</a>
+              Les icônes sont issues de
+              <a href="https://streamlinehq.com"> https://streamlinehq.com </a>
               via la licence de Raphaël Yharrassarry, UX designer pour France
               Chaleur Urbaine.
             </p>
