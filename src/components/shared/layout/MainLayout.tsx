@@ -89,7 +89,9 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                 </li>
                 <li className="fr-nav__item">
                   <Link href="/ressources">
-                    <a className="fr-nav__link">Ressources</a>
+                    <a className="fr-nav__link" target="_self">
+                      Ressources
+                    </a>
                   </Link>
                 </li>
                 <li className="fr-nav__item">
@@ -102,6 +104,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
           </div>
         </div>
       </header>
+
       {banner && <Banner />}
       <div className="fr-container">
         <Main className="fr-grid-row fr-grid-row--center">{children}</Main>
