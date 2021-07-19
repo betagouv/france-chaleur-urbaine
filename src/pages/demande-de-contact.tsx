@@ -155,10 +155,6 @@ function CallOutWithAddress({
             <p>
               Toutefois, les réseaux se développent et elle pourrait le devenir.
             </p>
-            <p>
-              Attention, le service ne fonctionne pour le moment que sur
-              l'Ile-de-France
-            </p>
             <a
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
               target="_blank"
