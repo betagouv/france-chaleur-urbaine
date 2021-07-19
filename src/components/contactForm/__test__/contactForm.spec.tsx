@@ -53,7 +53,7 @@ test('rendering and submitting contact form', async () => {
   };
   userFillIn('Quel est votre besoin ? (*)', filledInData.needTopic);
   userFillIn(
-    'Vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier',
+    'Cochez cette case si vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier.',
     filledInData.contactOperator
   );
   userFillIn('Prénom (*)', filledInData.firstName);
@@ -72,7 +72,7 @@ test('rendering and submitting contact form', async () => {
   );
 
   userFillIn(
-    'Les données collectées sont uniquement utilisées à des fins d’analyse par le ministère de la transition écologique (*)',
+    'J’accepte que les données collectées soient uniquement utilisées à des fins d’analyse par le ministère de la transition écologique. (*)',
     filledInData.collectDataAgreement
   );
 
