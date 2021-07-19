@@ -17,7 +17,7 @@ function LegalMentions() {
             </p>
             <p>
               Directrice et directeur de la publication : Jean-Marc Picard
-              (Directeur adjoint de la DRIEE Ile-de-France)
+              (Directeur adjoint de la DRIEAT Ile-de-France)
             </p>
             <h3>Prestataires d’hébergement</h3>
             <ul className="fr-mb-4w">
