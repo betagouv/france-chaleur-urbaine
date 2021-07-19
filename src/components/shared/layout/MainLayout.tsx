@@ -29,6 +29,18 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                       Française
                     </p>
                   </div>
+                  <div className="fr-header__navbar">
+                    <button
+                      className="fr-btn--menu fr-btn"
+                      data-fr-opened="false"
+                      aria-controls="modal-870"
+                      aria-haspopup="menu"
+                      title="Menu"
+                      id="fr-btn-menu-mobile-4"
+                    >
+                      Menu
+                    </button>
+                  </div>
                   <div className="fr-header__operator">
                     <img
                       className="fr-footer__logo"
