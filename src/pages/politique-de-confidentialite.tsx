@@ -6,9 +6,7 @@ function PrivacyPolicy() {
       <div className="fr-container fr-mt-2w">
         <div className="fr-grid-row">
           <div className="fr-col-12">
-            <h2>
-              Politique de confidentialité et de protection des données privées
-            </h2>
+            <h2>Politique des protection des données personnelles</h2>
             <h3>Données à caractère personnel</h3>
             <p>
               Nous nous engageons à ce que la collecte et le traitement de vos
@@ -100,16 +98,17 @@ function PrivacyPolicy() {
             </ul>
             <p>Les données à caractère personnel traitées sont relatives à :</p>
             <ul className="fr-mb-4w">
-              <li>nom, prénom</li>
-              <li>adresse géographie</li>
-              <li>adresse mail</li>
-              <li>rôle dans la copropriété</li>
+              <li>Nom, Prénom</li>
+              <li>Adresse géographie</li>
+              <li>Adresse mail, téléphone</li>
+              <li>Statut dans la copropriété</li>
             </ul>
             <p>
               Note : les autres informations collectées concernent la
               copropriété et ne sont donc pas considérées comme des informations
-              personnelles : type de copropriété, nombre de logement, type de
-              chauffage, âge de la chaudière
+              personnelles : votre besoin, nombre de logements dans votre
+              copropriété, type de chauffage, comment avez-vous entendu parlé de
+              nous.
             </p>
             <p>Les données sont conservées pour une durée de :</p>
             <ul className="fr-mb-4w">
