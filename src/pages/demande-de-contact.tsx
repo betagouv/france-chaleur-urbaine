@@ -80,8 +80,8 @@ export default function DemandeDeContact() {
                     pouvoir échanger avec des copropriétés déjà raccordées
                   </li>
                   <li>
-                    être mis en relation avec l'exploitant du réseau qui passe
-                    près de chez vous
+                    être mis en relation avec la collectivité ou l'exploitant du
+                    réseau qui passe près de chez vous
                   </li>
                   <li>toute autre information</li>
                 </ul>
@@ -128,6 +128,10 @@ function CallOutWithAddress({
               adresse : <br />
               {address?.label}
             </p>
+            <p>
+              être mis en relation avec la collectivité et/ou l'exploitant du
+              réseau qui passe près de chez vous
+            </p>
             <Link
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
             >
@@ -150,6 +154,10 @@ function CallOutWithAddress({
           <CallOutBody>
             <p>
               Toutefois, les réseaux se développent et elle pourrait le devenir.
+            </p>
+            <p>
+              Attention, le service ne fonctionne pour le moment que sur
+              l'Ile-de-France
             </p>
             <a
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
