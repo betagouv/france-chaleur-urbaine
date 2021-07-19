@@ -27,7 +27,9 @@ function HowIsItWorking() {
           <div className="fr-col-lg-3 fr-col-sm-6">
             <ExplainCard>
               <img src="./pictoRelation.png" alt="" />
-              <h4>Soyez mis en relation avec un exploitant </h4>
+              <h4>
+                Soyez mis en relation avec une collectivité et/ou un exploitant
+              </h4>
             </ExplainCard>
           </div>
           <div className="fr-col-lg-3 fr-col-sm-6">
