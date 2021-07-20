@@ -2,11 +2,18 @@ import Adventage from '@components/adventage/adventage';
 import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Testimony from '@components/testimony/testimony';
+import Head from 'next/head';
 import React from 'react';
 
 export default function Home() {
   return (
     <>
+      <Head>
+        <title>
+          France Chaleur Urbaine : Une solution numérique qui facilite le
+          raccordement à un chauffage économique et écologique
+        </title>
+      </Head>
       <MainLayout banner={true}>
         <div className="fr-container fr-mt-2w">
           <div className="fr-grid-row fr-grid-row--center">
