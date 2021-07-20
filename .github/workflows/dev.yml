@@ -56,6 +56,7 @@ jobs:
           touch ./out/.nojekyll
         env:
           CI: true
+          FORMSPARK_ID: ${{ secrets.FORMSPARK_ID }}
 
       - name: Share artifact
         uses: actions/upload-artifact@v2
