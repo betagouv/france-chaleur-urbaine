@@ -20,21 +20,21 @@ function Adventage() {
         title="Économique"
         subTitle="Prix stables, TVA à taux réduit"
         description="Le prix de la chaleur urbaine ne fluctue pas contrairement au fioul et gaz naturel. Tous les réseaux à plus de 50% d’énergies locales bénéficient du taux de TVA réduit pour 100% de la facture."
-        icon="./pictoEconomic.png"
+        icon="/pictograms/pictoEconomic.png"
         altIcon="icon"
       />
       <Highlight
         title="Écologique"
         subTitle="Moins de gaz à effet de serre et meilleure qualité de l’air"
         description="Les réseaux de chaleur sont alimentés majoritairement à plus de 50% par des énergies renouvelables comme la géothermis, le biomasse ou la chaleur produite par l’incinération de nos déchets."
-        icon="./pictoEcology.png"
+        icon="/pictograms/pictoEcology.png"
         altIcon="icon"
       />
       <Highlight
         title="Confort"
         subTitle="Fiabilité et sécurité assurés"
         description="Température constante, pas de rupture de chauffage, eau chaude disponible en permanence, suppression des chaudières et risques associés."
-        icon="./pictoConfort.png"
+        icon="/pictograms/pictoConfort.png"
         altIcon="icon"
       />
     </div>

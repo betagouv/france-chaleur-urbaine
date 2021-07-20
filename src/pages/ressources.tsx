@@ -3,6 +3,7 @@ import ResourceCard from '@components/resources/resourceCard';
 import Data from '@components/resources/resourcesData.json';
 import ResourceSection from '@components/resources/resourceSection';
 import MainLayout from '@components/shared/layout/MainLayout';
+import Image from 'next/image';
 import React from 'react';
 
 function Resources() {
@@ -52,13 +53,13 @@ function Resources() {
                   et leurs caractéristiques principales
                 </p>
               </TextCard>
-              <div className="fr-card__img">
-                <img
-                  src="./cart-france.png"
-                  className="fr-responsive-img"
-                  alt="carte"
-                />
-              </div>
+              <Image
+                src="/imagesRessources/cart-france.png"
+                alt="carte de france"
+                title="carte de france"
+                width="360px"
+                height="200px"
+              />
             </div>
           </div>
         </div>

@@ -6,30 +6,30 @@
       "items": [
         {
           "image": {
-            "url": "./raccorder-ADEME.png",
+            "url": "/imagesRessources/raccorder-ADEME.png",
             "title": ""
           },
           "title": "Se raccorder à réseau de chaleur",
           "description": "Fiche de sensibilisation de l'ADEME sur le raccordement des copropriétés",
-          "fileLink": "./se_raccorder_reseau_chaleur.pdf"
+          "fileLink": "./pdf/se_raccorder_reseau_chaleur.pdf"
         },
         {
           "image": {
-            "url": "./Raccordement-CEREMA.png",
+            "url": "/imagesRessources/Raccordement-CEREMA.png",
             "title": ""
           },
           "title": "Raccordement des copropriétés aux réseaux de chaleur <br/> Guide méthodologique",
           "description": "Guide méthodologique pratique du CEREMA pour étudier très concrètement la faisabilité d'un raccordement d'une copropriété",
-          "fileLink": "./guide_raccordement_des_coproprietes.pdf"
+          "fileLink": "./pdf/guide_raccordement_des_coproprietes.pdf"
         },
         {
           "image": {
-            "url": "./adieu- fioul.png",
+            "url": "/imagesRessources/adieu- fioul.png",
             "title": ""
           },
           "title": "Gagnez en confort et faites des économies <br/>Dites adieu au fioul",
           "description": "Fiche de l'Agence Parisienne du Climat présentant les 8 bonnes raisons de quitter rapidement le fioul",
-          "fileLink": "./APC.pdf"
+          "fileLink": "./pdf/APC.pdf"
         }
       ]
     },
@@ -38,30 +38,30 @@
       "items": [
         {
           "image": {
-            "url": "./Aides-ADEME.png",
+            "url": "/imagesRessources/Aides-ADEME.png",
             "title": ""
           },
           "title": "Aides financières",
           "description": "Guide ADEME de janvier 2021 des aides financières publiques accessibles aux copropriétés et ménages intégrant les dernières évolutions sur MaPrimeRénov' et les Certificats d'économie d'énergie",
-          "fileLink": "./2021_janvier_aides_financières_Vp.pdf"
+          "fileLink": "./pdf/2021_janvier_aides_financières_Vp.pdf"
         },
         {
           "image": {
-            "url": "./Nouveautés-2021-aides-publiques.png",
+            "url": "/imagesRessources/Nouveautés-2021-aides-publiques.png",
             "title": ""
           },
           "title": "Nouveautés 2021 sur les aides publiques",
           "description": "Fiche DRIEAT résumant les nouveautés 2021 sur les aides aux copropriétés pour le raccordement à un réseau de chaleur",
-          "fileLink": "./aides_2021.pdf"
+          "fileLink": "./pdf/aides_2021.pdf"
         },
         {
           "image": {
-            "url": "./Comparaison-AMORCE.png",
+            "url": "/imagesRessources/Comparaison-AMORCE.png",
             "title": ""
           },
           "title": "Comparaison économique des modes de chauffage  en 2017",
           "description": "Rapport AMORCE / ADEME comparant la compétitivité des réseaux de chaleur par rapport aux autres modes de chauffage des logements collectifs",
-          "fileLink": "./AMORCE.pdf"
+          "fileLink": "./pdf/AMORCE.pdf"
         }
       ]
     },
@@ -70,30 +70,30 @@
       "items": [
         {
           "image": {
-            "url": "./Réseaux-chaleur-froid-FNCCR.png",
+            "url": "/imagesRessources/Réseaux-chaleur-froid-FNCCR.png",
             "title": ""
           },
           "title": "Réseaux de chaleur et de froid",
           "description": "Guide de la FNCCR (Fédération nationale des collectivités concédantes et régies) sur les règlements de service et polices d'abonnement",
-          "fileLink": "./FNCCR.pdf"
+          "fileLink": "./pdf/FNCCR.pdf"
         },
         {
           "image": {
-            "url": "./Prix-chaleur-CEREMA.png",
+            "url": "/imagesRessources/Prix-chaleur-CEREMA.png",
             "title": ""
           },
           "title": "Prix de la chaleur et facturation",
           "description": "Fiche du CEREMA pour comprendre sa facture de chauffage urbain",
-          "fileLink": "./guide_raccordement_des_coproprietes.pdf"
+          "fileLink": "./pdf/guide_raccordement_des_coproprietes.pdf"
         },
         {
           "image": {
-            "url": "./Reseaux-chaleur-froid.png",
+            "url": "/imagesRessources/Reseaux-chaleur-froid.png",
             "title": ""
           },
           "title": "Réseaux de chaleur et de froid",
           "description": "Guide de la FNCCR (Fédération nationale des collectivités concédantes et régies) pour prévenir les litiges",
-          "fileLink": "./FNCCR.pdf"
+          "fileLink": "./pdf/FNCCR.pdf"
         }
       ]
     },
@@ -102,30 +102,30 @@
       "items": [
         {
           "image": {
-            "url": "./Code-energie.png",
+            "url": "/imagesRessources/Code-energie.png",
             "title": ""
           },
           "title": "Code de l’energie",
           "description": "Fiche DRIEAT listant les textes législatifs et réglementaires sur les réseaux de chaleur (Extraction du sommaire du code de l'Energie)",
-          "fileLink": "./Fiche_code_de_Energie.pdf"
+          "fileLink": "./pdf/Fiche_code_de_Energie.pdf"
         },
         {
           "image": {
-            "url": "./Enquête-classement-reseaux.png",
+            "url": "/imagesRessources/Enquête-classement-reseaux.png",
             "title": ""
           },
           "title": "Enquête sur le classement des réseaux de chaleur et de froid",
           "description": "Guide CEREMA/AMORCE sur les évolutions en 2021 et 2022 concernant le classement des réseaux de chaleur et l'obligation de raccordement des bâtiments.",
-          "fileLink": "./Classement_AMORCE_Cerema _2020.pdf"
+          "fileLink": "./pdf/Classement_AMORCE_Cerema _2020.pdf"
         },
         {
           "image": {
-            "url": "./Arrete-24-juillet.png",
+            "url": "/imagesRessources/Arrete-24-juillet.png",
             "title": ""
           },
           "title": "Arrété du 24 juillet 2020",
           "description": "Arrêté du 24 juillet 2020 pour l’information du propriétaire ou du syndicat de copropriétaires pour un bâtiment raccordé à un réseau de chaleur ou de froid",
-          "fileLink": "./information_copro_et_batiments.pdf"
+          "fileLink": "./pdf/information_copro_et_batiments.pdf"
         }
       ]
     }

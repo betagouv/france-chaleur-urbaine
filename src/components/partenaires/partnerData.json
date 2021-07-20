@@ -6,7 +6,7 @@
       "items": [
         {
           "image": {
-            "url": "./logo-DRIEAT.jpg",
+            "url": "/logos/logo-DRIEAT.jpg",
             "title": "DRIEAT"
           },
 
@@ -16,7 +16,7 @@
         },
         {
           "image": {
-            "url": "./logo-FNCCR.jpg",
+            "url": "/logos/logo-FNCCR.jpg",
             "title": "Fnccr"
           },
 
@@ -31,7 +31,7 @@
       "items": [
         {
           "image": {
-            "url": "./logo-DINUM.jpg",
+            "url": "/logos/logo-DINUM.jpg",
             "title": "DINUM"
           },
 
@@ -41,7 +41,7 @@
         },
         {
           "image": {
-            "url": "./logo-ADEME.jpg",
+            "url": "/logos/logo-ADEME.jpg",
             "title": "ADEME"
           },
 
@@ -51,7 +51,7 @@
         },
         {
           "image": {
-            "url": "./logo-MINISTERE.jpg",
+            "url": "/logos/logo-MINISTERE.jpg",
             "title": "DGEC"
           },
           "title": "DGEC",
@@ -65,7 +65,7 @@
       "items": [
         {
           "image": {
-            "url": "./logo-SMIREC.jpg",
+            "url": "/logos/logo-SMIREC.jpg",
             "title": "SMIREC"
           },
           "title": "SMIREC",
@@ -74,7 +74,7 @@
         },
         {
           "image": {
-            "url": "./logo-CEREMA.jpg",
+            "url": "/logos/logo-CEREMA.jpg",
             "title": "Cerema"
           },
           "title": "Cerema",
@@ -83,7 +83,7 @@
         },
         {
           "image": {
-            "url": "./logo-CORIANCE.jpg",
+            "url": "/logos/logo-CORIANCE.jpg",
             "title": "Coriance"
           },
           "title": "Coriance",
@@ -92,7 +92,7 @@
         },
         {
           "image": {
-            "url": "./logo-IDEX.jpg",
+            "url": "/logos/logo-IDEX.jpg",
             "title": "Idex"
           },
           "title": "Idex",

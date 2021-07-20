@@ -1,4 +1,5 @@
 import Banner from '@components/banner/banner';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
@@ -30,10 +31,13 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                     </p>
                   </div>
                   <div className="fr-header__operator">
-                    <img
+                    <Image
                       className="fr-footer__logo"
-                      src="./logo-FCU.png"
+                      src="/logos/logo-FCU.jpg"
                       alt="logo france chaleur urbaine"
+                      title="logo france chaleur urbaine"
+                      width="200px"
+                      height="117px"
                     />
                   </div>
                 </div>
@@ -109,10 +113,13 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                 href="/"
                 title="Retour à l’accueil"
               >
-                <img
+                <Image
                   className="fr-footer__logo"
-                  src="./logo-FCU.png"
+                  src="/logos/logo-FCU.jpg"
                   alt="logo france chaleur urbaine"
+                  title="logo france chaleur urbaine"
+                  width="200px"
+                  height="117px"
                 />
               </a>
             </div>

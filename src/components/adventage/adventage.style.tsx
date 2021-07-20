@@ -4,15 +4,15 @@ export const HighlightCard = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-
-  > img {
-    min-width: 75px;
-    margin-right: 32px;
-  }
-  > div {
+  > div:not(:first-child) {
     border-left: 0.25rem solid #00eb5e;
   }
 `;
+
+export const BoxImage = styled.h3`
+  margin-right: 32px;
+`;
+
 export const PageTitle = styled.h3`
   color: #000091;
 `;
