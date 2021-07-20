@@ -8,10 +8,7 @@ export default function Home() {
   return (
     <>
       <MainLayout banner={true}>
-        <div
-          className="fr-container fr-mt-2w"
-          data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}
-        >
+        <div className="fr-container fr-mt-2w">
           <div className="fr-grid-row fr-grid-row--center">
             <div className="fr-col-11">
               <HowIsItWorking />
