@@ -33,7 +33,9 @@ function ResourceCard({ image, title, description, fileLink }: ResourceCard) {
           </div>
         </div>
       </div>
-      <CustomImage src={image.url} alt={image.title} width="" height="" />
+      <div className="fr-card__img">
+        <CustomImage src={image.url} alt={image.title} layout="fill" />
+      </div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ const myLoader = ({ src, width, quality }: any) => {
 };
 
 function CustomImage(
-  props: Record<'src' | 'alt' | 'width' | 'height', any> & {
+  props: Record<'src' | 'alt' | 'width' | 'height' | 'layout', any> & {
     className?: string;
   }
 ) {
