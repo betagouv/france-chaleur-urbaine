@@ -6,4 +6,8 @@ module.exports = {
   },
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : '',
   basePath: isGithubCI ? '/france-chaleur-urbaine' : '',
+  images: {
+    loader: 'imgix',
+    path: '',
+  },
 };
