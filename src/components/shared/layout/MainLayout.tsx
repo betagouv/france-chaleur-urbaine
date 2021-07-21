@@ -32,7 +32,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                   <div className="fr-header__operator">
                     <img
                       className="fr-footer__logo"
-                      src="./logo-FCU.png"
+                      src="./logo-fcu.jpg"
                       alt="logo france chaleur urbaine"
                     />
                   </div>
@@ -111,7 +111,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
               >
                 <img
                   className="fr-footer__logo"
-                  src="./logo-FCU.png"
+                  src="./logo-fcu.jpg"
                   alt="logo france chaleur urbaine"
                 />
               </a>
