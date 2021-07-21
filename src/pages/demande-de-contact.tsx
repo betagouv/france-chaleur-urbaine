@@ -136,6 +136,10 @@ function CallOutWithAddress({
               adresse : <br />
               {address?.label}
             </p>
+            <p>
+              être mis en relation avec la collectivité et/ou l'exploitant du
+              réseau qui passe près de chez vous
+            </p>
             <Link
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
             >
@@ -155,6 +159,10 @@ function CallOutWithAddress({
             <p className={'fr-my-2w'}>
               Toutefois, les réseaux se développent et elle pourrait le devenir.
               <br />
+              Attention, le service ne fonctionne pour le moment que sur
+              l'Ile-de-France
+            </p>
+            <p>
               Attention, le service ne fonctionne pour le moment que sur
               l'Ile-de-France
             </p>
