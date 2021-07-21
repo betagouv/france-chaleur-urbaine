@@ -67,7 +67,7 @@ test('rendering and submitting contact form', async () => {
     filledInData.coOwnershipStatus
   );
   userSelectIn(
-    'Comment avez-vous entendu parlé de France Chaleur Urbaine',
+    'Comment avez-vous entendu parler de France Chaleur Urbaine',
     filledInData.contactOrigin
   );
 

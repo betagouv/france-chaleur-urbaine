@@ -128,27 +128,19 @@ function CallOutWithAddress({
       {isAddressEligible ? (
         <>
           <CallOutTitle>
-            Votre copropriété est éligible à la chaleur urbaine.
+            Votre copropriété pourrait être raccordée à un réseau de chaleur
           </CallOutTitle>
           <CallOutBody>
-            <p>
+            <p className={'fr-mb-2w'}>
               Un réseau de chaleur urbaine passe à moins de 300 métres de votre
               adresse : <br />
               {address?.label}
             </p>
-            <p>
-              être mis en relation avec la collectivité et/ou l'exploitant du
-              réseau qui passe près de chez vous
-            </p>
             <Link
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
             >
-              <a
-                target="_blank"
-                className="fr-link fr-link--icon-right"
-                rel="noreferrer"
-              >
-                Voir sur la carte
+              <a target="_blank" className="fr-text--sm" rel="noreferrer">
+                Visualiser les réseaux à proximité
               </a>
             </Link>
           </CallOutBody>
@@ -160,17 +152,16 @@ function CallOutWithAddress({
             de chaleur.
           </CallOutTitle>
           <CallOutBody>
-            <p>
+            <p className={'fr-my-2w'}>
               Toutefois, les réseaux se développent et elle pourrait le devenir.
-            </p>
-            <p>
+              <br />
               Attention, le service ne fonctionne pour le moment que sur
               l'Ile-de-France
             </p>
             <a
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
               target="_blank"
-              className="fr-link fr-link--icon-right"
+              className="fr-text--sm"
               rel="noreferrer"
             >
               Visualiser les réseaux à proximité
