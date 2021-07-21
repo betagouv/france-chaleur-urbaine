@@ -4,7 +4,7 @@ import {
   ImageContainer,
 } from '@components/banner/banner.style';
 import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
-import Image from 'next/image';
+import CustomImage from '@utils/CustomImage';
 import React from 'react';
 function Banner() {
   return (
@@ -14,10 +14,9 @@ function Banner() {
           <div className="fr-container">
             <div className="fr-grid-row fr-grid-row--center">
               <ImageContainer className="fr-col-lg-4">
-                <Image
+                <CustomImage
                   src="/pictograms/pictoBuilding.png"
                   alt="building illustration"
-                  title="building illustration"
                   width="400px"
                   height="400px"
                 />

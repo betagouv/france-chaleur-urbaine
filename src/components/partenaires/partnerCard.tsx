@@ -1,5 +1,5 @@
 import { TextCard } from '@components/partenaires/partnerCard.style';
-import Image from 'next/image';
+import CustomImage from '@utils/CustomImage';
 import React from 'react';
 
 type PartnerCard = {
@@ -25,10 +25,9 @@ function PartnerCard({ image, title, description, link }: PartnerCard) {
         </h4>
         <p className="fr-card__desc">{description}</p>
       </TextCard>
-      <Image
+      <CustomImage
         src={image.url}
         alt={image.title}
-        title={image.title}
         width="360px"
         height="200px"
       />

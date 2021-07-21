@@ -1,5 +1,5 @@
 import { TextCard } from '@components/resources/resourceCard.style';
-import Image from 'next/image';
+import CustomImage from '@utils/CustomImage';
 import React from 'react';
 
 type ResourceCard = {
@@ -33,13 +33,7 @@ function ResourceCard({ image, title, description, fileLink }: ResourceCard) {
           </div>
         </div>
       </div>
-      <Image
-        src={image.url}
-        alt={image.title}
-        title={image.title}
-        width="360px"
-        height="200px"
-      />
+      <CustomImage src={image.url} alt={image.title} width="" height="" />
     </div>
   );
 }

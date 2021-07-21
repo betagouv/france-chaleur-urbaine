@@ -1,5 +1,5 @@
 import Banner from '@components/banner/banner';
-import Image from 'next/image';
+import CustomImage from '@utils/CustomImage';
 import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
@@ -31,11 +31,10 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                     </p>
                   </div>
                   <div className="fr-header__operator">
-                    <Image
+                    <CustomImage
                       className="fr-footer__logo"
                       src="/logos/logo-FCU.jpg"
                       alt="logo france chaleur urbaine"
-                      title="logo france chaleur urbaine"
                       width="200px"
                       height="117px"
                     />
@@ -113,11 +112,10 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                 href="/"
                 title="Retour à l’accueil"
               >
-                <Image
+                <CustomImage
                   className="fr-footer__logo"
                   src="/logos/logo-FCU.jpg"
                   alt="logo france chaleur urbaine"
-                  title="logo france chaleur urbaine"
                   width="200px"
                   height="117px"
                 />

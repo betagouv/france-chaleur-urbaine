@@ -3,7 +3,7 @@ import ResourceCard from '@components/resources/resourceCard';
 import Data from '@components/resources/resourcesData.json';
 import ResourceSection from '@components/resources/resourceSection';
 import MainLayout from '@components/shared/layout/MainLayout';
-import Image from 'next/image';
+import CustomImage from '@utils/CustomImage';
 import React from 'react';
 
 function Resources() {
@@ -53,10 +53,9 @@ function Resources() {
                   et leurs caractéristiques principales
                 </p>
               </TextCard>
-              <Image
+              <CustomImage
                 src="/imagesRessources/cart-france.png"
                 alt="carte de france"
-                title="carte de france"
                 width="360px"
                 height="200px"
               />

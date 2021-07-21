@@ -2,7 +2,7 @@ import {
   ExplainCard,
   PageTitle,
 } from '@components/howIsItWorking/howIsItworking.style';
-import Image from 'next/image';
+import CustomImage from '@utils/CustomImage';
 import React from 'react';
 
 function HowIsItWorking() {
@@ -19,10 +19,9 @@ function HowIsItWorking() {
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-lg-3 fr-col-sm-6">
             <ExplainCard>
-              <Image
+              <CustomImage
                 src="/pictograms/pictoMap.png"
                 alt="pictogramme carte"
-                title="pictogramme carte"
                 width="85px"
                 height="75px"
               />
@@ -33,10 +32,9 @@ function HowIsItWorking() {
           </div>
           <div className="fr-col-lg-3 fr-col-sm-6">
             <ExplainCard>
-              <Image
+              <CustomImage
                 src="/pictograms/pictoRelation.png"
                 alt="pictogramme relation"
-                title="pictogramme relation"
                 width="85px"
                 height="75px"
               />
@@ -47,10 +45,9 @@ function HowIsItWorking() {
           </div>
           <div className="fr-col-lg-3 fr-col-sm-6">
             <ExplainCard>
-              <Image
+              <CustomImage
                 src="/pictograms/pictoCopro.png"
                 alt="pictogramme copropriete"
-                title="pictogramme copropriete"
                 width="85px"
                 height="75px"
               />
@@ -59,10 +56,9 @@ function HowIsItWorking() {
           </div>
           <div className="fr-col-lg-3 fr-col-sm-6">
             <ExplainCard>
-              <Image
+              <CustomImage
                 src="/pictograms/pictoResource.png"
                 alt="pictogramme ressoources"
-                title="pictogramme ressoources"
                 width="85px"
                 height="75px"
               />
