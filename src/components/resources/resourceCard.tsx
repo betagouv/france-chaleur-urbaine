@@ -22,7 +22,13 @@ function ResourceCard({ image, title, description, fileLink }: ResourceCard) {
         </TextCard>
         <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
           <div className="fr-col-">
-            <a className="fr-btn" href={fileLink} download>
+            <a
+              className="fr-btn"
+              href={fileLink}
+              target="_blank"
+              download
+              rel="noreferrer"
+            >
               Télécharger
               <span
                 className="fr-fi-file-download-line fr-pl-2w"
