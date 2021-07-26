@@ -6,7 +6,7 @@ type AddressInputProps = {
   onChange: (event: React.FormEvent<HTMLInputElement>) => void;
 };
 export const AddressInput: React.FC<AddressInputProps> = ({
-  placeholder = '5 avenue Anatole 75007 Paris',
+  placeholder = 'Exemple: 5 avenue Anatole 75007 Paris',
   onChange,
 }) => (
   <ComboboxInput
