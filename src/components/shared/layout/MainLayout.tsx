@@ -56,10 +56,8 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                 <div className="fr-header__service">
                   <Link href="/">
                     <a title="france chaleur urbaine">
-                      <p className="fr-header__service-title fr-text--md">
-                        France chaleur urbaine : un service mis en place par
-                        l’État pour accélérer le raccordement des copropriétés
-                        aux réseaux de chaleur
+                      <p className="fr-header__service-title">
+                        France Chaleur Urbaine
                       </p>
                     </a>
                   </Link>
