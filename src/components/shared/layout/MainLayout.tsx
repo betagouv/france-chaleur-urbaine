@@ -30,20 +30,22 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                     </p>
                   </div>
                   <div className="fr-header__operator">
-                    <img
-                      className="fr-footer__logo"
-                      src="./logo-fcu.jpg"
-                      alt="logo france chaleur urbaine"
-                    />
+                    <Link href="/">
+                      <a title="france chaleur urbaine">
+                        <img
+                          className="fr-footer__logo"
+                          src="./logo-fcu.jpg"
+                          alt="logo france chaleur urbaine"
+                        />
+                      </a>
+                    </Link>
                   </div>
                 </div>
                 <div className="fr-header__service">
                   <Link href="/">
                     <a title="france chaleur urbaine">
-                      <p className="fr-header__service-title fr-text--md">
-                        France chaleur urbaine : un service mis en place par
-                        l’État pour accélérer le raccordement des copropriétés
-                        aux réseaux de chaleur
+                      <p className="fr-header__service-title">
+                        France Chaleur Urbaine
                       </p>
                     </a>
                   </Link>
