@@ -1,6 +1,7 @@
 import Checkbox from '@components/shared/checkbox';
 import Textarea from '@components/shared/textarea';
 import { Field } from 'formik';
+import { useRouter } from 'next/router';
 import * as Yup from 'yup';
 
 export const defaultValuesContactTopic = {
@@ -13,6 +14,8 @@ export const validationSchemasContactTopic = {
 };
 
 const ContactTopic = () => {
+  const { query } = useRouter();
+  const isAddressEligible = query.isEligible === 'true';
   return (
     <fieldset className="fr-fieldset fr-my-3w">
       <legend className="fr-fieldset__legend fr-text--bold">
@@ -24,6 +27,11 @@ const ContactTopic = () => {
           name="besoin"
           label="Quel est votre besoin ? (*)"
           component={Textarea}
+          placeholder={
+            isAddressEligible
+              ? "Exemple : en savoir plus sur les réseaux de chaleur, en savoir plus sur ce qu'implique un raccordement à un réseau de chaleur (étapes, travaux,...), en savoir plus sur le réseau qui passe près de chez moi, être mis en relation avec la collectivité / l'exploitant de ce réseau, échanger avec des copropriétés déjà raccordées,..."
+              : "Exemple : en savoir plus sur les réseaux de chaleur, connaître les projets en cours dans mon quartier, en savoir plus sur d'autres solutions de chauffage écologiques, en savoir plus sur France chaleur urbaine,..."
+          }
         />
       </div>
 

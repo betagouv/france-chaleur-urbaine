@@ -29,9 +29,9 @@ function ResourceCard({ image, title, description, fileLink }: ResourceCard) {
               download
               rel="noreferrer"
             >
-              Télécharger
+              Consulter
               <span
-                className="fr-fi-file-download-line fr-pl-2w"
+                className="fr-fi-arrow-right-s-line fr-pl-2w"
                 aria-hidden="true"
               />
             </a>

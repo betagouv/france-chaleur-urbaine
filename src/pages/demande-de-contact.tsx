@@ -132,8 +132,7 @@ function CallOutWithAddress({
           </CallOutTitle>
           <CallOutBody>
             <p className={'fr-mb-2w'}>
-              Un réseau de chaleur urbaine passe à moins de 300 métres de votre
-              adresse : <br />
+              Un réseau de chaleur passe à proximité de votre adresse : <br />
               {address?.label}
             </p>
             <Link

@@ -20,7 +20,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
         <div className="fr-header__body">
           <div className="fr-container">
             <div className="fr-header__body-row">
-              <div className="fr-header__brand fr-enlarge-link">
+              <div className="fr-header__brand">
                 <div className="fr-header__brand-top">
                   <div className="fr-header__logo">
                     <p className="fr-logo">
@@ -29,12 +29,28 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                       Française
                     </p>
                   </div>
+                  <div className="fr-header__navbar">
+                    <button
+                      className="fr-btn--menu fr-btn"
+                      data-fr-opened="false"
+                      aria-controls="modal-870"
+                      aria-haspopup="menu"
+                      title="Menu"
+                      id="fr-btn-menu-mobile-4"
+                    >
+                      Menu
+                    </button>
+                  </div>
                   <div className="fr-header__operator">
-                    <img
-                      className="fr-footer__logo"
-                      src="./logo-fcu.jpg"
-                      alt="logo france chaleur urbaine"
-                    />
+                    <Link href="/">
+                      <a title="france chaleur urbaine">
+                        <img
+                          className="fr-footer__logo"
+                          src="./logo-fcu.jpg"
+                          alt="logo france chaleur urbaine"
+                        />
+                      </a>
+                    </Link>
                   </div>
                 </div>
                 <div className="fr-header__service">
@@ -71,19 +87,19 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
             >
               <ul className="fr-nav__list">
                 <li className="fr-nav__item">
-                  <Link href="/">
-                    <a className="fr-nav__link">Accueil</a>
-                  </Link>
+                  <a className="fr-nav__link" href="/">
+                    Accueil
+                  </a>
                 </li>
                 <li className="fr-nav__item">
-                  <Link href="/ressources">
-                    <a className="fr-nav__link">Ressources</a>
-                  </Link>
+                  <a className="fr-nav__link" href="/ressources">
+                    Ressources
+                  </a>
                 </li>
                 <li className="fr-nav__item">
-                  <Link href="/partenaires">
-                    <a className="fr-nav__link">Partenaires</a>
-                  </Link>
+                  <a className="fr-nav__link" href="/partenaires">
+                    Partenaires
+                  </a>
                 </li>
               </ul>
             </nav>

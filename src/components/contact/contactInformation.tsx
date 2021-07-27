@@ -16,9 +16,6 @@ export const validationSchemasContactInformation = {
   email: Yup.string()
     .email('Votre adresse email n‘est pas valide')
     .required('Veuillez renseigner votre adresse email'),
-  telephone: Yup.string()
-    .length(10, 'Le téléphone doit comporter 10 chiffres')
-    .matches(/^[0-9]+$/, 'Le téléphone doit comporter 10 chiffres'),
   _acceptCGV: Yup.boolean(),
 };
 

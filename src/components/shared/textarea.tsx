@@ -2,7 +2,9 @@ import { _hasError } from '@utils/form-utils';
 import { ErrorMessage } from 'formik';
 import React from 'react';
 
-const Textarea = ({ label, field, form }: any) => {
+const Textarea = ({ label, field, form, placeholder }: any) => {
+  // eslint-disable-next-line no-console
+  console.log('field', label);
   const additionalInputClass = _hasError(field.name, form)
     ? 'fr-input--error'
     : '';
@@ -18,6 +20,7 @@ const Textarea = ({ label, field, form }: any) => {
         className={`fr-input ${additionalInputClass}`}
         {...field}
         id={field.name}
+        placeholder={placeholder}
       />
       {_hasError(field.name, form) && (
         <ErrorMessage name="besoin" component={'p'} className="fr-error-text" />
