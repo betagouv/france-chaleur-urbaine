@@ -92,12 +92,12 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                   </a>
                 </li>
                 <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="/ressources">
+                  <a className="fr-nav__link" href="ressources">
                     Ressources
                   </a>
                 </li>
                 <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="/partenaires">
+                  <a className="fr-nav__link" href="partenaires">
                     Partenaires
                   </a>
                 </li>
