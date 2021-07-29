@@ -16,7 +16,7 @@ function Resources() {
         <div className="fr-container fr-mt-2w">
           <div className="fr-grid-row">
             <div className="fr-col-lg-4 fr-col-sm-12">
-              <h2>{Data.title}</h2>
+              <h1>{Data.title}</h1>
             </div>
           </div>
         </div>
