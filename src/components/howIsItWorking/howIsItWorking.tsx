@@ -18,7 +18,10 @@ function HowIsItWorking() {
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-lg-3 fr-col-sm-6">
             <ExplainCard>
-              <img src="./pictoMap.png" alt="" />
+              <img
+                src="./pictoMap.png"
+                alt="pictogram élégibilité à un réseau de chaleur"
+              />
               <h4>
                 Testez votre élégibilité au raccordement à un réseau de chaleur
               </h4>
@@ -26,7 +29,7 @@ function HowIsItWorking() {
           </div>
           <div className="fr-col-lg-3 fr-col-sm-6">
             <ExplainCard>
-              <img src="./pictoRelation.png" alt="" />
+              <img src="./pictoRelation.png" alt="pictogram mis en relation" />
               <h4>
                 Soyez mis en relation avec une collectivité et/ou un exploitant
               </h4>
@@ -34,13 +37,19 @@ function HowIsItWorking() {
           </div>
           <div className="fr-col-lg-3 fr-col-sm-6">
             <ExplainCard>
-              <img src="./pictoCopro.png" alt="" />
+              <img
+                src="./pictoCopro.png"
+                alt="pictogram copropriétés raccordées"
+              />
               <h4>Contactez d’autres copropriétés déjà raccordées </h4>
             </ExplainCard>
           </div>
           <div className="fr-col-lg-3 fr-col-sm-6">
             <ExplainCard>
-              <img src="./pictoResource.png" alt="" />
+              <img
+                src="./pictoResource.png"
+                alt="pictogram ressources sur les réseaux de chaleur"
+              />
               <h4>Accédez à des ressources sur les réseaux de chaleur</h4>
             </ExplainCard>
           </div>

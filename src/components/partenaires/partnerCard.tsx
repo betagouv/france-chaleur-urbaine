@@ -12,16 +12,16 @@ function PartnerCard({ image, title, description, link }: PartnerCard) {
   return (
     <div className="fr-card fr-enlarge-link">
       <TextCard className="fr-card__body">
-        <h4 className="fr-card__title">
+        <h3 className="fr-card__title">
           <a
             href={link}
             target="_blank"
             className="fr-card__link"
-            rel="noreferrer"
+            rel="noreferrer nofollow"
           >
             {title}
           </a>
-        </h4>
+        </h3>
         <p className="fr-card__desc">{description}</p>
       </TextCard>
       <div className="fr-card__img">

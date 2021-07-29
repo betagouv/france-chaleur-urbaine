@@ -14,7 +14,7 @@ function Partner() {
       <MainLayout>
         <div className="fr-container fr-my-2w">
           <div className="fr-grid-row">
-            <h2>{Data.title}</h2>
+            <h1>{Data.title}</h1>
           </div>
         </div>
         {Data.partners.map((partner, index) => (
