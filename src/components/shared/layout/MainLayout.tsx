@@ -16,7 +16,7 @@ type MainLayout = {
 const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
   return (
     <>
-      <header role="banner" className="fr-header">
+      <header className="fr-header">
         <div className="fr-header__body">
           <div className="fr-container">
             <div className="fr-header__body-row">
@@ -66,11 +66,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
             </div>
           </div>
         </div>
-        <div
-          className="fr-header__menu fr-modal"
-          id="modal-870"
-          aria-labelledby="fr-btn-menu-mobile-2"
-        >
+        <div className="fr-header__menu fr-modal" id="modal-870">
           <div className="fr-container">
             <button
               className="fr-link--close fr-link"
@@ -82,7 +78,6 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
             <nav
               className="fr-nav"
               id="header-navigation"
-              role="navigation"
               aria-label="Menu principal"
             >
               <ul className="fr-nav__list">
@@ -111,7 +106,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
         <Main className="fr-grid-row fr-grid-row--center">{children}</Main>
       </div>
 
-      <footer className="fr-footer" role="contentinfo" id="footer">
+      <footer className="fr-footer" id="footer">
         <div className="fr-container">
           <div className="fr-footer__body fr-footer__body--operator">
             <div className="fr-footer__brand fr-enlarge-link">
