@@ -3,8 +3,6 @@ import { ErrorMessage } from 'formik';
 import React from 'react';
 
 const Textarea = ({ label, field, form, placeholder }: any) => {
-  // eslint-disable-next-line no-console
-  console.log('field', label);
   const additionalInputClass = _hasError(field.name, form)
     ? 'fr-input--error'
     : '';

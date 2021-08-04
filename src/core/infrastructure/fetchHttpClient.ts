@@ -1,4 +1,4 @@
-import { HttpClient } from './HttpClient';
+import { HttpClient } from '@core/domain/lib';
 
 class FetchHttpClient implements HttpClient {
   async get<T>(url: string): Promise<T> {
@@ -6,11 +6,11 @@ class FetchHttpClient implements HttpClient {
       method: 'GET',
     };
     return fetch(url, config)
-      .then((responseRaw) => {
+      .then(async (responseRaw) => {
         if (!responseRaw.ok) {
-          throw new Error(responseRaw.statusText);
+          throw new Error(await responseRaw.json());
         }
-        return responseRaw.json() as Promise<T>;
+        return (await responseRaw.json()) as T;
       })
       .catch((err) => {
         throw new Error(err);
