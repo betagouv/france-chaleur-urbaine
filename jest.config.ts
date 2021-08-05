@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://jestjs.io/docs/configuration
@@ -83,6 +84,7 @@ export default {
     '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
     '^@components/(.*)$': '<rootDir>/src/components/$1',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+    '^@core/(.*)$': '<rootDir>/src/core/$1',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -152,9 +154,7 @@ export default {
   // ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
-  // testPathIgnorePatterns: [
-  //   "/node_modules/"
-  // ],
+  testPathIgnorePatterns: ['__tests__/__fixtures__'],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
   // testRegex: [],
