@@ -10,7 +10,7 @@ export class HeatNetworkService {
   async findByCoords({ lon, lat }: Coords): Promise<HeatNetworksResponse> {
     try {
       return await this.httpClient.get<HeatNetworksResponse>(
-        `${process.env.NEXT_PUBLIC_HEAT_NETWORK_API_BASE_URL}?lat=${lat}&lon=${lon}`
+        `/api/eligibility?lat=${lat}&lon=${lon}`
       );
     } catch (e) {
       throw new ServiceError(e);

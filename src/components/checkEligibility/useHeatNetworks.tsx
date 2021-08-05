@@ -1,11 +1,8 @@
 import React from 'react';
 import { useServices } from 'src/services';
-import { Coords, HeatNetworksResponse } from 'src/types';
-const ELIGIBILITY_DISTANCE_THRESHOLD = 300;
+import { Coords } from 'src/types';
 
-export const useHeatNetworks = (
-  threshold: number = ELIGIBILITY_DISTANCE_THRESHOLD
-) => {
+export const useHeatNetworks = () => {
   const [status, setStatus] = React.useState('idle');
   const [isEligible, setIsEligible] = React.useState<boolean>(false);
   const { heatNetworkService } = useServices();
@@ -14,13 +11,13 @@ export const useHeatNetworks = (
       try {
         setStatus('loading');
         const network = await heatNetworkService.findByCoords(coords);
-        setIsEligible(_IsNetworkOutOfThreshold(network, threshold));
+        setIsEligible(network.isEligible);
         setStatus('success');
       } catch (e) {
         setStatus('error');
       }
     },
-    [heatNetworkService, threshold]
+    [heatNetworkService]
   );
 
   return {
@@ -29,9 +26,3 @@ export const useHeatNetworks = (
     status,
   };
 };
-function _IsNetworkOutOfThreshold(
-  heatNetwork: HeatNetworksResponse,
-  threshold: number
-) {
-  return heatNetwork?.distPointReseau <= threshold;
-}

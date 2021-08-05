@@ -5,12 +5,16 @@ class FetchHttpClient implements HttpClient {
     const config = {
       method: 'GET',
     };
-    try {
-      const responseRaw = await fetch(url, config);
-      return (await responseRaw.json()) as T;
-    } catch (error) {
-      return Promise.reject(error);
-    }
+    return fetch(url, config)
+      .then((responseRaw) => {
+        if (!responseRaw.ok) {
+          throw new Error(responseRaw.statusText);
+        }
+        return responseRaw.json() as Promise<T>;
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
   }
 }
 export const fetchHttpClient = new FetchHttpClient();

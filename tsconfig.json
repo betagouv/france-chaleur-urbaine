@@ -20,9 +20,10 @@
       "@constants": ["src/constants"],
       "@pages/*": ["src/pages/*"],
       "@libs/*": ["src/libs/*"],
-      "@styles/*": ["src/styles/*"]
+      "@styles/*": ["src/styles/*"],
+      "@core/*": ["src/core/*"]
     }
   },
   "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.tsx"]
+  "exclude": ["node_modules", "__tests__"]
 }

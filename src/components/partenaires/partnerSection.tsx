@@ -11,7 +11,7 @@ function PartnerSection({ title, children }: ResourceSection) {
     <div className="fr-container fr-my-8w">
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12">
-          <h3>{title}</h3>
+          <h2>{title}</h2>
         </div>
         {children?.map((child: PartnerCard, index: number) => (
           <div key={index} className="fr-col-lg-3 fr-col-sm-6">

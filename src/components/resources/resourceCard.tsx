@@ -14,7 +14,7 @@ function ResourceCard({ image, title, description, fileLink }: ResourceCard) {
       <div className="fr-p-3w">
         <TextCard>
           <p className="fr-card__detail">Brochure PDF</p>
-          <h4
+          <h3
             className="fr-card__title"
             dangerouslySetInnerHTML={{ __html: title }}
           />
@@ -22,10 +22,16 @@ function ResourceCard({ image, title, description, fileLink }: ResourceCard) {
         </TextCard>
         <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--right">
           <div className="fr-col-">
-            <a className="fr-btn" href={fileLink} download>
-              Télécharger
+            <a
+              className="fr-btn"
+              href={fileLink}
+              target="_blank"
+              download
+              rel="noreferrer nofollow"
+            >
+              Consulter
               <span
-                className="fr-fi-file-download-line fr-pl-2w"
+                className="fr-fi-arrow-right-s-line fr-pl-2w"
                 aria-hidden="true"
               />
             </a>
