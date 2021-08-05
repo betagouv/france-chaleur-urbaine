@@ -153,9 +153,6 @@ function CallOutWithAddress({
           <CallOutBody>
             <p className={'fr-my-2w'}>
               Toutefois, les réseaux se développent et elle pourrait le devenir.
-              <br />
-              Attention, le service ne fonctionne pour le moment que sur
-              l'Ile-de-France
             </p>
             <a
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
