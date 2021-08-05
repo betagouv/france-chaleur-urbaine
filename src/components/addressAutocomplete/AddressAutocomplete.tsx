@@ -25,8 +25,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({ onAddressSelected }) => {
     <div className="fr-input-group">
       <label className="fr-label" htmlFor="address">
         <span className="fr-hint-text fr-text--sm">
-          Renseignez ci-dessous l'adresse de votre logement (service disponible
-          uniquement en Ile-de-France)
+          Renseignez ci-dessous l'adresse de votre logement
         </span>
       </label>
       <Combobox
