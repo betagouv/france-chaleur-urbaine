@@ -1,12 +1,12 @@
 import { Address, Coords } from '@core/domain/entity/address';
 import { AddressFactory } from '@core/domain/entity/AddressFactory';
-import { RepositoryError } from '@core/domain/errors';
+import { AddressNotFoundError } from '@core/domain/errors';
 import { AddressRepository } from '@core/domain/repository/addressRepository';
 import { HttpClient } from '../../domain/lib';
 import { AddressPyrisResponse } from '../mapper/address.dto';
 import AddressMapper from '../mapper/addressMapper';
 
-export class HttpAddressRepository implements AddressRepository {
+export class AddressRepositoryImpl implements AddressRepository {
   constructor(private httpClient: HttpClient) {}
 
   async findByCoords(coords: Coords): Promise<Address> {
@@ -23,7 +23,7 @@ export class HttpAddressRepository implements AddressRepository {
         return AddressFactory.create(mappedAddress);
       })
       .catch((e) => {
-        throw new RepositoryError(e);
+        throw new AddressNotFoundError(coords);
       });
   }
 }

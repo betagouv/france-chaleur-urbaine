@@ -8,7 +8,7 @@ export class NetworkMapper {
       lon: networkRaw?.lonPointReseau || null,
       filiere: networkRaw?.filiere || null,
       distance: networkRaw?.distPointReseau || null,
-      irisCode: networkRaw?.code || null,
+      irisCode: networkRaw?.code?.toString() || null,
     };
   }
   static createNullNetwork(): Network {

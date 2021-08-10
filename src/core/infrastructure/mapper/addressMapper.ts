@@ -1,5 +1,6 @@
 import { AddressFields } from '@core/domain/entity/address';
 import { AddressEligibility } from '@core/domain/entity/AddressEligibility';
+import { IsANullNetwork } from '@core/domain/entity/network';
 import { AddressDTO, AddressPyrisResponse } from './address.dto';
 
 export default class AddressMapper {
@@ -20,7 +21,7 @@ export default class AddressMapper {
     return {
       lat: address.lat,
       lon: address.lon,
-      network,
+      network: IsANullNetwork(network) ? null : network,
       isEligible,
     };
   }

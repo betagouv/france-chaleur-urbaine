@@ -7,7 +7,7 @@ export type AddressDTO = {
     irisCode: string | number | null;
     filiere: string | null;
     distance: number | null;
-  };
+  } | null;
   isEligible: boolean;
 };
 

@@ -1,7 +1,7 @@
 export type NetworkDistanceApiResponse = {
   msg: string;
-  latOrigin: number;
-  lonOrigin: number;
+  latOrigin: number | null;
+  lonOrigin: number | null;
   latPointReseau: number;
   lonPointReseau: number;
   distPointReseau: number;

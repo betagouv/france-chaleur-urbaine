@@ -1,6 +1,6 @@
 import {
   anIDFAddress,
-  anIDFNetworkResponse,
+  anIDFNetwork,
   someCoords,
 } from '@core/infrastructure/repository/__tests__/__fixtures__/data';
 import { TestEligibility } from '@core/useCase/testEligibility';
@@ -10,20 +10,21 @@ describe('Test Eligibility useCase', () => {
     it('should return an Address with an eligible to true', async () => {
       // Given
       const coords = someCoords();
-      const httpClient = {
-        get: jest.fn().mockResolvedValue(anIDFNetworkResponse()),
-      };
       const addressRepository = {
         findByCoords: jest.fn().mockResolvedValue(anIDFAddress()),
       };
+      const networkRepository = {
+        findByCoords: jest.fn().mockResolvedValue(anIDFNetwork()),
+        findByIrisCode: jest.fn(),
+      };
       const testEligibility = new TestEligibility(
         addressRepository,
-        httpClient
+        networkRepository
       );
       // When
       const address = await testEligibility.check(coords);
       // Then
-      expect(address.isEligible).toBeTruthy();
+      expect(address.isEligible).toBe(true);
     });
   });
 });
