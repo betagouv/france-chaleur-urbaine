@@ -1,6 +1,6 @@
 import { customRenderHook } from '@utils/contextProvider';
 import { someSuggestions } from '@utils/fixtures/suggestions';
-import useBan from '../useBan';
+import useSuggestions from '../useSuggestions';
 
 describe('useBan Hook', () => {
   afterEach(() => {
@@ -14,7 +14,12 @@ describe('useBan Hook', () => {
       fetchSuggestions: jest.fn().mockResolvedValue(fakeSuggestion),
     };
     const { result, waitForNextUpdate } = customRenderHook(
-      () => useBan(term, { debounceTime: 0, limit: 1, autocomplete: false }),
+      () =>
+        useSuggestions(term, {
+          debounceTime: 0,
+          limit: 1,
+          autocomplete: false,
+        }),
       {
         suggestionService: suggestionServiceMock,
       }
@@ -33,7 +38,12 @@ describe('useBan Hook', () => {
       fetchSuggestions: jest.fn().mockRejectedValue({}),
     };
     const { result, waitForNextUpdate } = customRenderHook(
-      () => useBan(term, { debounceTime: 0, limit: 1, autocomplete: false }),
+      () =>
+        useSuggestions(term, {
+          debounceTime: 0,
+          limit: 1,
+          autocomplete: false,
+        }),
       {
         suggestionService: suggestionServiceMock,
       }
