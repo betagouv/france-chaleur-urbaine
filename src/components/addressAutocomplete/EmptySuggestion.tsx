@@ -1,4 +1,8 @@
-export const EmptySuggestion: React.FC = () => (
+import React from 'react';
+
+export const EmptySuggestion: React.FC<{ text?: string }> = ({
+  text = 'Aucune adresse trouvée :(',
+}) => (
   <p
     style={{
       margin: 0,
@@ -7,6 +11,6 @@ export const EmptySuggestion: React.FC = () => (
       fontStyle: 'italic',
     }}
   >
-    Aucune adresse trouvée :(
+    {text}
   </p>
 );
