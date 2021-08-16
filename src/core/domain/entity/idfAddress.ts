@@ -7,6 +7,8 @@ export class IdfAddress extends Address {
     return true;
   }
   isEligibleWith(network: Network): boolean {
-    return Number(network?.distance) <= this.threshold;
+    return network?.distance
+      ? Number(network.distance) <= this.threshold
+      : false;
   }
 }

@@ -9,7 +9,7 @@ type configProps = {
   debounceTime: number;
 };
 
-const useBan = (
+const useSuggestions = (
   term: string,
   { limit, autocomplete, debounceTime }: configProps = {
     limit: 5,
@@ -52,4 +52,4 @@ const useBan = (
   };
 };
 
-export default useBan;
+export default useSuggestions;
