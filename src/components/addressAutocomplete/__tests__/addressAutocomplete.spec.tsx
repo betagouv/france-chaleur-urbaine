@@ -17,20 +17,153 @@ describe('Address autocomplete', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-  test('should be correctly rendered', () => {
+  test('should display an field to allow the entry of an address', async () => {
+    // Given
+    const addressToEnter = 'some address';
     // When
-    customRender(<AddressAutocomplete onAddressSelected={jest.fn} />, {});
+    RenderAutocompleteWith(suggestionServiceMock);
     // Then
-    expect(
-      screen.getByRole('combobox', { name: /address/i })
-    ).toBeInTheDocument();
+    AssertAddressFieldIsRendered();
+    userEvent.type(getAddressField(), addressToEnter);
+    await waitFor(() => {
+      expect(getAddressField()).toHaveValue(addressToEnter);
+    });
   });
 
-  test('should display suggestions', async () => {
+  describe('errors cases', () => {
+    test('should display empty result when no suggestions found', async () => {
+      // Given
+      const addressToEnter = 'some address';
+      const emptySuggestion = 'aucune adresse';
+      suggestionServiceMock.fetchSuggestions.mockResolvedValue({
+        features: [],
+      });
+      // When
+      RenderAutocompleteWith(suggestionServiceMock);
+      // Then
+      AssertAddressFieldIsRendered();
+      userEvent.type(getAddressField(), addressToEnter);
+      await waitFor(() => {
+        expect(getAddressField()).toHaveValue(addressToEnter);
+        expect(screen.getByText(emptySuggestion)).toBeInTheDocument();
+      });
+    });
+    test('should display empty result when some error occurs', async () => {
+      // Given
+      const addressToEnter = 'some address';
+      const emptySuggestion = 'aucune adresse';
+      suggestionServiceMock.fetchSuggestions.mockRejectedValue(new Error());
+      // When
+      RenderAutocompleteWith(suggestionServiceMock);
+      // Then
+      AssertAddressFieldIsRendered();
+      userEvent.type(getAddressField(), addressToEnter);
+      await waitFor(() => {
+        expect(getAddressField()).toHaveValue(addressToEnter);
+        expect(screen.getByText(emptySuggestion)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('success cases', () => {
+    test('should display a list of suggested addresses based on address user entered', async () => {
+      // Given
+      const addressToEnter = '90 rue ';
+      // When
+      RenderAutocompleteWith(suggestionServiceMock);
+      // Then
+      AssertAddressFieldIsRendered();
+      userEvent.type(getAddressField(), addressToEnter);
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: /90 Rue Lecourbe 75015 Paris/i })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('option', {
+            name: /90 Rue Pelleport 33800 Bordeaux/i,
+          })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('option', { name: /90 Rue Malbec 33800 Bordeaux/i })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('option', { name: /90 Rue Bonnat 31400 Toulouse/i })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('option', { name: /90 Rue Turenne 33000 Bordeaux/i })
+        ).toBeInTheDocument();
+      });
+    });
+    describe('When the user selects an option in the list of suggested addresses', () => {
+      test('should display it in the address field', async () => {
+        // Given
+        const addressToEnter = '90 rue ';
+        const optionText = '90 Rue Lecourbe 75015 Paris';
+        const onSelectedCallback = jest.fn();
+        // When
+        RenderAutocompleteWith(suggestionServiceMock, onSelectedCallback);
+        // Then
+        AssertAddressFieldIsRendered();
+        userEvent.type(getAddressField(), addressToEnter);
+        await waitFor(() => {
+          expect(
+            screen.getByRole('option', { name: new RegExp(optionText, 'i') })
+          ).toBeInTheDocument();
+        });
+        userEvent.click(selectOptionByText(optionText));
+        await waitFor(() => {
+          expect(getAddressField()).toHaveValue(optionText);
+          expect(onSelectedCallback).toHaveBeenCalledWith(
+            optionText,
+            [2.304422, 48.843246]
+          );
+        });
+      });
+    });
+  });
+});
+
+function getAddressField(): HTMLElement {
+  return screen.getByLabelText(
+    "Renseignez ci-dessous l'adresse de votre logement"
+  );
+}
+function AssertAddressFieldIsRendered() {
+  expect(getAddressField()).toBeInTheDocument();
+}
+
+function RenderAutocompleteWith(
+  suggestionServiceMock: any,
+  onSelectedCallback: any = jest.fn
+) {
+  const emptySuggestion = 'aucune adresse';
+  return customRender(
+    <AddressAutocomplete
+      onAddressSelected={onSelectedCallback}
+      placeholder={'Exemple: 5 avenue Anatole 75007 Paris'}
+      label="Renseignez ci-dessous l'adresse de votre logement"
+      emptySuggestionText={emptySuggestion}
+    />,
+    {
+      overrideProps: {
+        suggestionService: suggestionServiceMock,
+      },
+    }
+  );
+}
+function selectOptionByText(text: string): HTMLElement {
+  return screen.getByRole('option', { name: new RegExp(text, 'i') });
+}
+
+/*  test.skip('should display suggestions', async () => {
     // Given
     const handleAddressSelected = jest.fn();
     customRender(
-      <AddressAutocomplete onAddressSelected={handleAddressSelected} />,
+      <AddressAutocomplete
+        onAddressSelected={handleAddressSelected}
+        placeholder={'Exemple: 5 avenue Anatole 75007 Paris'}
+        label="Renseignez ci-dessous l'adresse de votre logement"
+      />,
       {
         overrideProps: {
           suggestionService: suggestionServiceMock,
@@ -56,4 +189,37 @@ describe('Address autocomplete', () => {
       [2.304422, 48.843246]
     );
   });
-});
+  test.skip('should display suggestions', async () => {
+    // Given
+    const handleAddressSelected = jest.fn();
+    customRender(
+      <AddressAutocomplete
+        onAddressSelected={handleAddressSelected}
+        placeholder={'Exemple: 5 avenue Anatole 75007 Paris'}
+        label="Renseignez ci-dessous l'adresse de votre logement"
+      />,
+      {
+        overrideProps: {
+          suggestionService: suggestionServiceMock,
+        },
+      }
+    );
+    // When
+    userEvent.type(
+      screen.getByRole('combobox', { name: /address/i }),
+      'rue de ségur'
+    );
+    // Then
+    await waitFor(() => {
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+
+    userEvent.click(
+      screen.getByRole('option', { name: /90 Rue Lecourbe 75015 Paris/i })
+    );
+
+    expect(handleAddressSelected).toHaveBeenCalledWith(
+      '90 Rue Lecourbe 75015 Paris',
+      [2.304422, 48.843246]
+    );
+  });*/

@@ -1,34 +1,31 @@
-import { useCallback, useState } from 'react';
+import useSuggestions from '@components/addressAutocomplete/useSuggestions';
+import { findPointFromAddressAndSuggestions } from '@components/addressAutocomplete/utils';
+import { useCallback } from 'react';
 import { Point, Suggestions } from '../../types';
 type onAddressSelectedProps = (address: string, coordinates: Point) => void;
 
 export const useFormAutocomplete = (
-  onAddressSelected: onAddressSelectedProps
+  onAddressSelected: onAddressSelectedProps,
+  debounceTime: number
 ) => {
-  const [address, setAddress] = useState('');
-  //const { suggestions, displaySuggestions } = useBan(address);
-
-  const getCoordinates = useCallback(
-    (address: string, suggestions: Suggestions | []): Point => {
-      const suggestion = suggestions.find(
-        (item) => item.properties.label === address
-      );
-      return suggestion?.geometry.coordinates || [0, 0];
-    },
-    []
-  );
-
+  const { suggestions, fetchSuggestions, status } = useSuggestions({
+    debounceTime,
+    limit: 5,
+    autocomplete: false,
+  });
   const handleSelect = useCallback(
     (address: string, suggestions: Suggestions | []) => {
-      const coords = getCoordinates(address, suggestions);
+      const coords = findPointFromAddressAndSuggestions(address, suggestions);
       onAddressSelected(address, coords);
     },
-    [getCoordinates, onAddressSelected]
+    [onAddressSelected]
   );
 
   return {
     handleSelect,
-    address,
-    updateAddress: setAddress,
+    suggestions,
+    fetchSuggestions: (searchTerm: string, minCharactersLength: number) =>
+      searchTerm.length >= minCharactersLength && fetchSuggestions(searchTerm),
+    status,
   };
 };

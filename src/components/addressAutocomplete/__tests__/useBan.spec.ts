@@ -1,3 +1,4 @@
+import { act } from '@testing-library/react-hooks';
 import { customRenderHook } from '@utils/contextProvider';
 import { someSuggestions } from '@utils/fixtures/suggestions';
 import useSuggestions from '../useSuggestions';
@@ -15,7 +16,7 @@ describe('useBan Hook', () => {
     };
     const { result, waitForNextUpdate } = customRenderHook(
       () =>
-        useSuggestions(term, {
+        useSuggestions({
           debounceTime: 0,
           limit: 1,
           autocomplete: false,
@@ -24,7 +25,10 @@ describe('useBan Hook', () => {
         suggestionService: suggestionServiceMock,
       }
     );
-
+    // When
+    act(() => {
+      result.current.fetchSuggestions(term);
+    });
     // Then
     await waitForNextUpdate();
     expect(result.current.suggestions).toEqual(fakeSuggestion.features);
@@ -39,7 +43,7 @@ describe('useBan Hook', () => {
     };
     const { result, waitForNextUpdate } = customRenderHook(
       () =>
-        useSuggestions(term, {
+        useSuggestions({
           debounceTime: 0,
           limit: 1,
           autocomplete: false,
@@ -48,7 +52,10 @@ describe('useBan Hook', () => {
         suggestionService: suggestionServiceMock,
       }
     );
-
+    // When
+    act(() => {
+      result.current.fetchSuggestions(term);
+    });
     // Then
     await waitForNextUpdate();
     expect(result.current.suggestions).toEqual([]);

@@ -14,7 +14,7 @@ jest.mock('next/router', () => ({
   },
 }));
 
-jest.spyOn(console, 'log').getMockImplementation();
+jest.spyOn(global.console, 'log').mockImplementation();
 afterAll(() => {
   jest.resetAllMocks();
 });

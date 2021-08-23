@@ -1,3 +1,4 @@
+import { Status, ValueOf } from '@components/addressAutocomplete/utils';
 import debounce from 'lodash.debounce';
 import React from 'react';
 import { useServices } from 'src/services';
@@ -10,7 +11,6 @@ type configProps = {
 };
 
 const useSuggestions = (
-  term: string,
   { limit, autocomplete, debounceTime }: configProps = {
     limit: 5,
     autocomplete: false,
@@ -18,37 +18,49 @@ const useSuggestions = (
   }
 ) => {
   const [suggestions, setSuggestions] = React.useState<Suggestions | []>([]);
-  const [status, setStatus] = React.useState('idle');
+  const [status, setStatus] = React.useState<ValueOf<Status>>(Status.Idle);
+  const mountedRef = React.useRef(true);
   const DIGITS_THRESHOLD = 3;
   const { suggestionService } = useServices();
-  const searchTerm = term.trim();
-  const debounceFetch = React.useCallback(
-    debounce(async (query: string) => {
-      setStatus('loading');
-      try {
-        const fetchedSuggestions = await suggestionService.fetchSuggestions(
-          query,
-          { limit: limit.toString(), autocomplete: autocomplete.toString() }
-        );
-
-        setSuggestions(fetchedSuggestions.features);
-        setStatus('success');
-      } catch (e) {
-        setStatus('error');
+  const debounceFetch = debounce(async (query: string) => {
+    try {
+      const searchTerm = query.trim();
+      if (
+        !searchTerm ||
+        !mountedRef.current ||
+        searchTerm.length <= DIGITS_THRESHOLD
+      ) {
+        return;
       }
-    }, debounceTime),
+      setStatus(Status.Loading);
+      const fetchedSuggestions = await suggestionService.fetchSuggestions(
+        searchTerm,
+        {
+          limit: limit.toString(),
+          autocomplete: autocomplete.toString(),
+        }
+      );
 
-    []
-  );
+      setSuggestions(fetchedSuggestions.features);
+      setStatus(Status.Success);
+    } catch (e) {
+      setStatus(Status.Error);
+      // eslint-disable-next-line no-console
+      console.log({
+        error: e,
+      });
+    }
+  }, debounceTime);
+
   React.useEffect(() => {
-    if (!searchTerm || searchTerm.length <= DIGITS_THRESHOLD) return;
-
-    debounceFetch(searchTerm);
-  }, [suggestionService, searchTerm, debounceFetch]);
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
   return {
     suggestions,
-    displaySuggestions: status !== 'idle' && !!suggestions,
     status,
+    fetchSuggestions: debounceFetch,
   };
 };
 

@@ -1,23 +1,23 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
+import { convertPointToCoordinates } from '@components/addressAutocomplete/utils';
 import { PageTitle } from '@components/checkEligibility/checkElegibility.style';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
-import { Coords, Point } from 'src/types';
-import AlertEligibility from './AlertEligibility';
+import { Point } from 'src/types';
 import { useHeatNetworks } from './useHeatNetworks';
 
 const CheckEligibilityForm = () => {
   const { status, checkEligibility, isEligible } = useHeatNetworks();
-  const showAlert = status === 'success';
+
   const { push } = useRouter();
   const [, saveInStorage] = useLocalStorageState('');
 
   const handleAddressSelected = async (
     address: string,
-    coordinates: Point
+    point: Point
   ): Promise<void> => {
-    const coords = getCoords(coordinates);
+    const coords = convertPointToCoordinates(point);
     await checkEligibility(coords);
     saveInStorage({ coords: [coords.lat, coords.lon], label: address });
   };
@@ -29,11 +29,6 @@ const CheckEligibilityForm = () => {
       });
     }
   }, [isEligible, push, status]);
-
-  const getCoords = (point: number[]): Coords => ({
-    lon: point[0],
-    lat: point[1],
-  });
   return (
     <>
       <PageTitle className="fr-mb-4w">
@@ -41,8 +36,12 @@ const CheckEligibilityForm = () => {
         <br />
         <span>Un chauffage économique et écologique</span>
       </PageTitle>
-      {showAlert && <AlertEligibility isEligible={isEligible} />}
-      <AddressAutocomplete onAddressSelected={handleAddressSelected} />
+
+      <AddressAutocomplete
+        onAddressSelected={handleAddressSelected}
+        placeholder={'Exemple: 5 avenue Anatole 75007 Paris'}
+        label="Renseignez ci-dessous l'adresse de votre logement"
+      />
     </>
   );
 };

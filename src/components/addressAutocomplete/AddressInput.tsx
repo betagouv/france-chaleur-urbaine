@@ -3,11 +3,11 @@ import React from 'react';
 
 type AddressInputProps = {
   placeholder?: string;
-  onChange: (event: React.FormEvent<HTMLInputElement>) => void;
+  onChangeCallback: (event: React.FormEvent<HTMLInputElement>) => any;
 };
 export const AddressInput: React.FC<AddressInputProps> = ({
   placeholder = 'Exemple: 5 avenue Anatole 75007 Paris',
-  onChange,
+  onChangeCallback,
 }) => (
   <ComboboxInput
     className="fr-input"
@@ -15,6 +15,6 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     id="address"
     name="address"
     placeholder={placeholder}
-    onChange={onChange}
+    onChange={onChangeCallback}
   />
 );

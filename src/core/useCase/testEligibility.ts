@@ -9,8 +9,8 @@ export class TestEligibility {
     public addressRepository: AddressRepository,
     public networkRepository: NetworkRepository
   ) {}
-  async check(coords: Coords): Promise<AddressEligibility> {
-    const address = await this.addressRepository.findByCoords(coords);
+  async check(coordinates: Coords): Promise<AddressEligibility> {
+    const address = await this.addressRepository.findByCoords(coordinates);
     const nearestNetwork = await NetworkService.findNearestOf(
       address,
       this.networkRepository
