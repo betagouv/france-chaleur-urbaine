@@ -5,12 +5,11 @@ import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { Point } from 'src/types';
-import AlertEligibility from './AlertEligibility';
 import { useHeatNetworks } from './useHeatNetworks';
 
 const CheckEligibilityForm = () => {
   const { status, checkEligibility, isEligible } = useHeatNetworks();
-  const showAlert = status === 'success';
+
   const { push } = useRouter();
   const [, saveInStorage] = useLocalStorageState('');
 
@@ -37,7 +36,7 @@ const CheckEligibilityForm = () => {
         <br />
         <span>Un chauffage économique et écologique</span>
       </PageTitle>
-      {showAlert && <AlertEligibility isEligible={isEligible} />}
+
       <AddressAutocomplete
         onAddressSelected={handleAddressSelected}
         placeholder={'Exemple: 5 avenue Anatole 75007 Paris'}

@@ -51,6 +51,7 @@ const useSuggestions = (
       });
     }
   }, debounceTime);
+
   React.useEffect(() => {
     return () => {
       mountedRef.current = false;

@@ -1,13 +1,12 @@
 import { AddressAutocompleteLabel } from '@components/addressAutocomplete/AddressAutocompleteLabel';
+import { Suggestions } from '@components/addressAutocomplete/Suggestions';
 import { useFormAutocomplete } from '@components/addressAutocomplete/useForm';
-import useSuggestions from '@components/addressAutocomplete/useSuggestions';
 import { Status, ValueOf } from '@components/addressAutocomplete/utils';
 import { Combobox, ComboboxPopover } from '@reach/combobox';
 import React from 'react';
-import { Point } from 'src/types';
+import { Point, Suggestions as SuggestionsType } from 'src/types';
 import { AddressInput } from './AddressInput';
 import { EmptySuggestion } from './EmptySuggestion';
-import { Suggestions } from './Suggestions';
 
 type AddressProps = {
   onAddressSelected: (address: string, coordinates: Point) => void;
@@ -15,23 +14,24 @@ type AddressProps = {
   placeholder: string;
   emptySuggestionText?: string;
   debounceTime?: number;
+  minCharactersLength?: number;
 };
 const _suggestionHasBeenAsked = (status: ValueOf<Status>): boolean =>
   status !== 'idle' && status !== 'loading';
+const hasSuggestions = (suggestions: SuggestionsType | []): boolean =>
+  !!suggestions.length;
+
 const AddressAutocomplete: React.FC<AddressProps> = ({
   onAddressSelected,
   label,
   placeholder,
   emptySuggestionText,
   debounceTime = 200,
+  minCharactersLength = 3,
 }) => {
-  const { handleSelect } = useFormAutocomplete(onAddressSelected);
-  const { suggestions, fetchSuggestions, status } = useSuggestions({
-    debounceTime,
-    limit: 5,
-    autocomplete: false,
-  });
-  const displaySuggestions = _suggestionHasBeenAsked(status) && !!suggestions;
+  const { handleSelect, suggestions, fetchSuggestions, status } =
+    useFormAutocomplete(onAddressSelected, debounceTime);
+  const shouldDisplaySuggestions = _suggestionHasBeenAsked(status);
   return (
     <div className="fr-input-group">
       <AddressAutocompleteLabel label={label} />
@@ -45,13 +45,13 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
       >
         <AddressInput
           onChangeCallback={(event) =>
-            fetchSuggestions(event.currentTarget.value)
+            fetchSuggestions(event.currentTarget.value, minCharactersLength)
           }
           placeholder={placeholder}
         />
-        {displaySuggestions && (
+        {shouldDisplaySuggestions && (
           <ComboboxPopover>
-            {suggestions.length ? (
+            {hasSuggestions(suggestions) ? (
               <Suggestions suggestions={suggestions} />
             ) : (
               <EmptySuggestion text={emptySuggestionText} />
