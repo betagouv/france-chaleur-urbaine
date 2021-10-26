@@ -3,7 +3,7 @@ import { convertPointToCoordinates } from '@components/addressAutocomplete/utils
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
-import { Point } from 'src/types';
+import { Coords, Point } from 'src/types';
 import { useHeatNetworks } from './useHeatNetworks';
 
 type CheckEligibilityFormProps = {
@@ -17,7 +17,6 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
   children,
 }) => {
   const { status, checkEligibility, isEligible } = useHeatNetworks();
-
   const { push } = useRouter();
   const [, saveInStorage] = useLocalStorageState('');
 
@@ -25,7 +24,7 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
     address: string,
     point: Point
   ): Promise<void> => {
-    const coords = convertPointToCoordinates(point);
+    const coords: Coords = convertPointToCoordinates(point);
     await checkEligibility(coords);
     saveInStorage({ coords: [coords.lat, coords.lon], label: address });
   };
