@@ -17,7 +17,10 @@ function Banner() {
           <div className="fr-container">
             <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
               <ImageContainer className="fr-col-lg-5">
-                <img src="./pictoBuilding.png" alt="pictogram" />
+                <img
+                  src="./illu-reseau-de-chaleur.png"
+                  alt="Reseau de chaleur urbaine"
+                />
               </ImageContainer>
               <Container className="fr-col-lg-6 fr-col-md-12 fr-ml-1w fr-mt-2w">
                 <CheckEligibilityForm formLabel="Votre copropriété est-elle raccordable&nbsp;?">
