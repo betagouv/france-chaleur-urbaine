@@ -14,3 +14,28 @@ export const Container = styled.div`
     margin: 0;
   }
 `;
+
+export const PageTitle = styled.h1`
+  color: #4550e5;
+  font-size: 2.815rem;
+  line-height: 3rem;
+  letter-spacing: -0.03rem;
+`;
+
+export const PageTitlePreTitle = styled.span`
+  color: #000074;
+  display: block;
+  font-size: 2.06rem;
+`;
+
+export const PageTitleTeaser = styled.p.attrs({
+  className: 'fr-col-lg-11',
+})`
+  font-size: 1.25rem;
+  letter-spacing: -0.03rem;
+
+  strong {
+    color: #4550e5;
+    font-weight: bold;
+  }
+`;
