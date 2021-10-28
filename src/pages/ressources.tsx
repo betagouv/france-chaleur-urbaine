@@ -1,5 +1,5 @@
-import { TextCard } from '@components/partenaires/partnerCard.style';
 import ResourceCard from '@components/resources/resourceCard';
+import { TextCard } from '@components/resources/resourceCard.style';
 import Data from '@components/resources/resourcesData.json';
 import ResourceSection from '@components/resources/resourceSection';
 import MainLayout from '@components/shared/layout/MainLayout';
