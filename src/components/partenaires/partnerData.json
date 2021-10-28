@@ -1,8 +1,10 @@
 {
   "title": "Partenaires",
+  "teaser": "Le cercle des partenaires s’élargit ! Si vous souhaitez être associé à France chaleur urbaine, n’hésitez pas à nous contacter.",
   "partners": [
     {
       "title": "Ils portent le projet :",
+      "teaser": "France chaleur urbaine est un projet initié et piloté par la Direction régionale et interdépartementale de l’environnement, de l’aménagement et des transports d’Ile-de-France (DRIEAT), service déconcentré du ministère de la transition écologique. Le déploiement du service est réalisé en étroit partenariat avec la Fédération nationale des collectivités concédantes et régies (FNCCR).",
       "items": [
         {
           "image": {
@@ -11,7 +13,6 @@
           },
 
           "title": "DRIEAT",
-          "description": "La Direction régionale de l'environnement, de l'aménagement et des transports (DRIEAT) d'Ile-de-France est un service déconcentré du ministère de la transition écologique et du ministère de la cohésion des territoires et des relations avec les collectivités territoriales.",
           "link": "http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
         },
         {
@@ -21,13 +22,13 @@
           },
 
           "title": "Fnccr",
-          "description": "La Fédération nationale des collectivités concédantes et régies (FNCCR) est une association de type loi de 1901 créée en 1934, forte de plus de 800 adhérents. Elle est impliquée dans trois secteurs d’activité principaux : énergie, cycle de l’eau, numérique.",
           "link": "https://www.fnccr.asso.fr/"
         }
       ]
     },
     {
       "title": "Ils se sont engagés à nos côtés :",
+      "teaser": "France chaleur urbaine est un projet financé par l’Agence de la transition écologique (ADEME), la Direction interministérielle du numérique (DINUM) et la Direction générale de l’énergie et du climat du ministère de la transition écologique.",
       "items": [
         {
           "image": {
@@ -36,7 +37,6 @@
           },
 
           "title": "DINUM",
-          "description": "La direction interministérielle du numérique (DINUM) est un service du Premier ministre sous l’autorité de la ministre de la transformation et de la fonction publiques. Elle porte le programme beta.gouv.fr qui vise à aider les administrations publiques à axer leurs services sur les besoins des utilisateurs.",
           "link": "https://www.numerique.gouv.fr/dinum/"
         },
         {
@@ -46,7 +46,6 @@
           },
 
           "title": "ADEME",
-          "description": "L'Agence de la transition écologique (ADEME) est un établissement public du ministère de la transition écologique qui participe à la mise en œuvre des politiques publiques dans les domaines de l’environnement, de l’énergie et du développement durable.",
           "link": "https://www.ademe.fr/"
         },
         {
@@ -55,13 +54,13 @@
             "title": "DGEC"
           },
           "title": "DGEC",
-          "description": "La Direction générale de l’énergie et du climat (DGEC) du ministère de la transition écologique a pour mission d’élaborer et de mettre en œuvre la politique nationale relative à l’énergie, aux matières premières énergétiques, ainsi qu’à la lutte contre le réchauffement climatique et la pollution atmosphérique.",
           "link": "https://www.ecologie.gouv.fr/direction-generale-lenergie-et-du-climat-dgec"
         }
       ]
     },
     {
       "title": "Ils nous accompagnent :",
+      "teaser": "Plusieurs acteurs soutiennent France chaleur urbaine : ils contribuent au développement du service, apportent des données, utilisent le service ou s’en font le relais.",
       "items": [
         {
           "image": {
@@ -69,7 +68,6 @@
             "title": "SMIREC"
           },
           "title": "SMIREC",
-          "description": "Le Syndicat mixte des réseaux d’énergie calorifique (Smirec) est le deuxième réseau de chaleur d’Île-de-France. Il alimente en chauffage et eau chaude sanitaire 54 000 équivalents logements sur les territoires de La Courneuve, Saint-Denis, Stains, Pierrefitte, L’Ile-Saint-Denis et Aubervilliers.",
           "link": "https://www.smirec.fr/"
         },
         {
@@ -78,7 +76,6 @@
             "title": "Cerema"
           },
           "title": "Cerema",
-          "description": "Le Centre d’études et d’expertise sur les risques, l’environnement, la mobilité et l’aménagement (Cerema) est un établissement public du ministère de la transition écologique qui dispose d'expertises transversales pluridisciplinaires pour contribuer à relever le défi du développement durable des territoires.",
           "link": "https://www.cerema.fr/fr"
         },
         {
@@ -87,7 +84,6 @@
             "title": "Coriance"
           },
           "title": "Coriance",
-          "description": "Coriance est un opérateur français indépendant au service de la transition énergétique. Ses offres diversifiées et son savoir-faire lui permettent de concevoir, exploiter, optimiser mais aussi de faire progresser des réseaux de chaleur ou de froid, de la production jusqu’aux clients.",
           "link": "https://www.groupe-coriance.fr/"
         },
         {
@@ -96,7 +92,14 @@
             "title": "Idex"
           },
           "title": "Idex",
-          "description": "Créée en 1963, Idex est devenu un acteur de l’exploitation des énergies renouvelables. Idex est la première ETI (Entreprise de Taille Intermédiaire) indépendante française de services énergétiques et incarne une alternative aux opérateurs liés aux grands producteurs d’énergies fossiles (gaz et électricité).",
+          "link": "https://www.idex.fr/"
+        },
+        {
+          "image": {
+            "url": "./logo-POLD.jpg",
+            "title": "Pold"
+          },
+          "title": "Pold",
           "link": "https://www.idex.fr/"
         }
       ]
