@@ -1,4 +1,5 @@
-import Adventage from '@components/adventage/adventage';
+import HighlightList from '@components/HighlightList';
+import atoutsRcu from '@components/HighlightList/atouts-rcu.json';
 import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Testimony from '@components/testimony/testimony';
@@ -26,7 +27,13 @@ export default function Home() {
           <div className="fr-grid-row fr-grid-row--center">
             <div className="fr-col-11">
               <HowIsItWorking />
-              <Adventage />
+
+              <HighlightList
+                title={`Les nombreux atouts des
+réseaux de chaleur`}
+                data={atoutsRcu}
+              />
+
               <Testimony />
             </div>
           </div>
