@@ -1,4 +1,5 @@
 import Adventage from '@components/adventage/adventage';
+import Banner from '@components/banner/banner';
 import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Slice from '@components/Slice';
@@ -19,8 +20,12 @@ export default function Home() {
           raccordement à un chauffage économique et écologique
         </title>
       </Head>
-      <MainLayout banner={true}>
+      <MainLayout>
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
+          <Slice pattern="grey">
+            <Banner />
+          </Slice>
+
           <Slice>
             <Adventage />
           </Slice>

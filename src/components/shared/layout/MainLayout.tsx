@@ -1,4 +1,3 @@
-import Banner from '@components/banner/banner';
 import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
@@ -9,10 +8,9 @@ const Main = styled.section`
 
 type MainLayout = {
   children: React.ReactNode;
-  banner?: boolean;
 };
 
-const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
+const MainLayout: React.FC<MainLayout> = ({ children }) => {
   return (
     <>
       <header className="fr-header">
@@ -100,7 +98,6 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
           </div>
         </div>
       </header>
-      {banner && <Banner />}
       <Main>{children}</Main>
 
       <footer className="fr-footer" id="footer">
