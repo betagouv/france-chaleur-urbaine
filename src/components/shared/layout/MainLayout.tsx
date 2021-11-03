@@ -4,7 +4,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Main = styled.section`
-  margin: 2em 0;
   min-height: 70vh;
 `;
 const HeaderLogo = styled.img`
@@ -140,9 +139,7 @@ const MainLayout: React.FC<MainLayout> = ({
         </div>
       </header>
       {banner && <Banner />}
-      <div className="fr-container">
-        <Main className="fr-grid-row fr-grid-row--center">{children}</Main>
-      </div>
+      <Main>{children}</Main>
 
       <footer className="fr-footer" id="footer">
         <div className="fr-container">
@@ -209,7 +206,7 @@ const MainLayout: React.FC<MainLayout> = ({
                 <a
                   href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   licence etalab-2.0
                 </a>
