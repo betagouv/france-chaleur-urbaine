@@ -23,10 +23,30 @@ const HeaderSubLabel = styled.p`
 
 type MainLayout = {
   children: React.ReactNode;
+  currentMenu?: string;
   banner?: boolean;
 };
 
-const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
+const menu = [
+  {
+    label: 'Accueil',
+    url: '/',
+  },
+  {
+    label: 'Documentation',
+    url: 'ressources',
+  },
+  {
+    label: 'Partenaires',
+    url: 'partenaires',
+  },
+];
+
+const MainLayout: React.FC<MainLayout> = ({
+  children,
+  currentMenu,
+  banner = false,
+}) => {
   return (
     <>
       <header className="fr-header">
@@ -98,21 +118,22 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
               aria-label="Menu principal"
             >
               <ul className="fr-nav__list">
-                <li className="fr-nav__item fr-nav__item--active">
-                  <a className="fr-nav__link" href="/">
-                    Accueil
-                  </a>
-                </li>
-                <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="ressources">
-                    Documentation
-                  </a>
-                </li>
-                <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="partenaires">
-                    Partenaires
-                  </a>
-                </li>
+                {menu.map(({ label, url }) => (
+                  <li
+                    key={url}
+                    className={`fr-nav__item ${
+                      currentMenu === url ? 'fr-nav__item--active' : ''
+                    }`}
+                  >
+                    <a
+                      className="fr-nav__link"
+                      href={url}
+                      aria-current={currentMenu === url ? 'page' : undefined}
+                    >
+                      {label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </nav>
           </div>
