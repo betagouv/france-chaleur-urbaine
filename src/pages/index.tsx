@@ -1,4 +1,5 @@
 import HighlightList from '@components/HighlightList';
+import accompagnementRcu from '@components/HighlightList/accompagnement-rcu.json';
 import atoutsRcu from '@components/HighlightList/atouts-rcu.json';
 import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
 import MainLayout from '@components/shared/layout/MainLayout';
@@ -32,6 +33,11 @@ export default function Home() {
                 title={`Les nombreux atouts des
 réseaux de chaleur`}
                 data={atoutsRcu}
+              />
+
+              <HighlightList
+                title="France Chaleur Urbaine, vous accompagne gratuitement :"
+                data={accompagnementRcu}
               />
 
               <Testimony />
