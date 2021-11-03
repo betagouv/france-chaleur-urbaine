@@ -7,6 +7,19 @@ const Main = styled.section`
   margin: 2em 0;
   min-height: 70vh;
 `;
+const HeaderLogo = styled.img`
+  width: auto;
+  height: auto;
+  max-height: 110px;
+  max-width: 200px;
+`;
+const HeaderLabel = styled.p`
+  font-size: 1.9rem;
+  color: #069368;
+`;
+const HeaderSubLabel = styled.p`
+  margin: 0;
+`;
 
 type MainLayout = {
   children: React.ReactNode;
@@ -44,9 +57,9 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                   <div className="fr-header__operator">
                     <Link href="/">
                       <a title="france chaleur urbaine">
-                        <img
+                        <HeaderLogo
                           className="fr-footer__logo"
-                          src="./logo-fcu.jpg"
+                          src="./logo-fcu.png"
                           alt="logo france chaleur urbaine"
                         />
                       </a>
@@ -56,9 +69,13 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
                 <div className="fr-header__service">
                   <Link href="/">
                     <a title="france chaleur urbaine">
-                      <p className="fr-header__service-title">
+                      <HeaderLabel className="fr-header__service-title">
                         France Chaleur Urbaine
-                      </p>
+                      </HeaderLabel>
+                      <HeaderSubLabel>
+                        Service public pour le raccordement des copropriétés aux
+                        réseaux de chaleur
+                      </HeaderSubLabel>
                     </a>
                   </Link>
                 </div>
@@ -81,7 +98,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
               aria-label="Menu principal"
             >
               <ul className="fr-nav__list">
-                <li className="fr-nav__item">
+                <li className="fr-nav__item fr-nav__item--active">
                   <a className="fr-nav__link" href="/">
                     Accueil
                   </a>
@@ -122,7 +139,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, banner = false }) => {
               >
                 <img
                   className="fr-footer__logo"
-                  src="./logo-fcu.jpg"
+                  src="./logo-fcu-with-typo.jpg"
                   alt="logo france chaleur urbaine"
                 />
               </a>
