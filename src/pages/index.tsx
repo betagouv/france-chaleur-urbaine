@@ -18,7 +18,7 @@ export default function Home() {
           raccordement à un chauffage économique et écologique
         </title>
       </Head>
-      <MainLayout banner={true}>
+      <MainLayout currentMenu="/" banner={true}>
         <div
           className="fr-container fr-mt-2w"
           data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}
