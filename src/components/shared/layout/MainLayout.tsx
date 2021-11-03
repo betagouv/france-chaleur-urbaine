@@ -1,4 +1,3 @@
-import Banner from '@components/banner/banner';
 import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
@@ -138,7 +137,6 @@ const MainLayout: React.FC<MainLayout> = ({
           </div>
         </div>
       </header>
-      {banner && <Banner />}
       <Main>{children}</Main>
 
       <footer className="fr-footer" id="footer">

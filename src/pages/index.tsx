@@ -1,5 +1,6 @@
 import Accordions from '@components/accordions';
 import faqRcu from '@components/accordions/faq-rcu';
+import Banner from '@components/banner/banner';
 import Carrousel from '@components/Carrousel';
 import testimonies from '@components/Carrousel/testimonies.json';
 import HighlightList from '@components/HighlightList';
@@ -31,8 +32,11 @@ export default function Home() {
           raccordement à un chauffage économique et écologique
         </title>
       </Head>
-      <MainLayout banner={true}>
+      <MainLayout>
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
+          <Slice theme="grey">
+            <Banner />
+          </Slice>
           <Slice>
             <WrappedText />
           </Slice>
