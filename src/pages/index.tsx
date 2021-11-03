@@ -2,8 +2,15 @@ import Adventage from '@components/adventage/adventage';
 import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Testimony from '@components/testimony/testimony';
+import TextList from '@components/TextList';
+import dataNumberRcu from '@components/TextList/data-number-rcu.json';
 import Head from 'next/head';
 import React from 'react';
+
+const textDataKey = dataNumberRcu.map(({ value, description }) => ({
+  title: value,
+  body: description,
+}));
 
 export default function Home() {
   return (
@@ -27,6 +34,7 @@ export default function Home() {
             <div className="fr-col-11">
               <HowIsItWorking />
               <Adventage />
+              <TextList data={textDataKey} />
               <Testimony />
             </div>
           </div>
