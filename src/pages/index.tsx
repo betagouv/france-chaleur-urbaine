@@ -1,7 +1,8 @@
 import Adventage from '@components/adventage/adventage';
+import Carrousel from '@components/Carrousel';
+import testimonies from '@components/Carrousel/testimonies.json';
 import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
 import MainLayout from '@components/shared/layout/MainLayout';
-import Testimony from '@components/testimony/testimony';
 import Head from 'next/head';
 import React from 'react';
 
@@ -27,7 +28,13 @@ export default function Home() {
             <div className="fr-col-11">
               <HowIsItWorking />
               <Adventage />
-              <Testimony />
+
+              <Carrousel
+                title="Leur copropriété est raccordée - ils témoignent :"
+                Testimonies={testimonies}
+                imgSrc="./img-testimony.jpg"
+                imgAlt="Reseau de chaleur urbaine"
+              />
             </div>
           </div>
         </div>
