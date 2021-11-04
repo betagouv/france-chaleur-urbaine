@@ -1,20 +1,20 @@
 import { Coords } from '@core/domain/entity/address';
 import { AddressEligibility } from '@core/domain/entity/AddressEligibility';
-import { HttpClient } from '@core/domain/lib';
 import { AddressRepository } from '@core/domain/repository/addressRepository';
-import { NetworkFactory } from '@core/infrastructure/repository/networkFactory';
+import { NetworkRepository } from '@core/domain/repository/networkRepository';
+import { NetworkService } from '@core/domain/services/networkService';
 
 export class TestEligibility {
   constructor(
     public addressRepository: AddressRepository,
-    public client: HttpClient
+    public networkRepository: NetworkRepository
   ) {}
-  async check(coords: Coords): Promise<AddressEligibility> {
-    const address = await this.addressRepository.findByCoords(coords);
-    const nearestNetwork = await NetworkFactory.create(
-      address.isIDF,
-      this.client
-    ).findNearestOf(address);
+  async check(coordinates: Coords): Promise<AddressEligibility> {
+    const address = await this.addressRepository.findByCoords(coordinates);
+    const nearestNetwork = await NetworkService.findNearestOf(
+      address,
+      this.networkRepository
+    );
     const isEligible = address.isEligibleWith(nearestNetwork);
     return { address, network: nearestNetwork, isEligible };
   }

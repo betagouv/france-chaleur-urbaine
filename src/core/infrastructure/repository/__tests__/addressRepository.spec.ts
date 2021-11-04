@@ -1,7 +1,7 @@
 import { AddressIdfExcluded, IdfAddress } from '@core/domain/entity';
 import { Coords } from '@core/domain/entity/address';
-import { RepositoryError } from '@core/domain/errors';
-import { HttpAddressRepository } from '../httpAddressRepository';
+import { AddressNotFoundError } from '@core/domain/errors';
+import { AddressRepositoryImpl } from '../AddressRepositoryImpl';
 
 describe('Address Repository', () => {
   describe('#findByCoords', () => {
@@ -20,7 +20,7 @@ describe('Address Repository', () => {
           address: '34 Avenue de l’Opéra 75002 Paris',
         }),
       };
-      const addressRepository = new HttpAddressRepository(fakeHttpClient);
+      const addressRepository = new AddressRepositoryImpl(fakeHttpClient);
       const address = await addressRepository.findByCoords(coords);
       expect(address).toBeInstanceOf(IdfAddress);
       expect(address.isIDF).toBeTruthy();
@@ -44,7 +44,7 @@ describe('Address Repository', () => {
           address: '34 Avenue de l’Opéra 17250 Saint-sulpice d‘Arnoult',
         }),
       };
-      const addressRepository = new HttpAddressRepository(fakeHttpClient);
+      const addressRepository = new AddressRepositoryImpl(fakeHttpClient);
       const address = await addressRepository.findByCoords(coords);
       expect(address).toBeInstanceOf(AddressIdfExcluded);
       expect(address.isIDF).toBeFalsy();
@@ -53,15 +53,15 @@ describe('Address Repository', () => {
         `${process.env.NEXT_PUBLIC_PYRIS_BASE_URL}coords?geojson=false&lat=${coords.lat}&lon=${coords.lon}`
       );
     });
-    it('should throw an error when something going wrong', async () => {
+    it('should throw an error when address not found', async () => {
       const coords: Coords = { lat: 48.868662, lon: 2.333382 };
       const fakeHttpClient = {
         get: jest.fn().mockRejectedValue(new Error()),
       };
-      const addressRepository = new HttpAddressRepository(fakeHttpClient);
+      const addressRepository = new AddressRepositoryImpl(fakeHttpClient);
       await addressRepository.findByCoords(coords).catch((result) => {
         expect(result).rejects;
-        expect(result).toBeInstanceOf(RepositoryError);
+        expect(result).toBeInstanceOf(AddressNotFoundError);
       });
       expect(fakeHttpClient.get).toHaveBeenNthCalledWith(
         1,

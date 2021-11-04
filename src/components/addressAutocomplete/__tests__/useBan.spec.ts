@@ -1,6 +1,7 @@
+import { act } from '@testing-library/react-hooks';
 import { customRenderHook } from '@utils/contextProvider';
 import { someSuggestions } from '@utils/fixtures/suggestions';
-import useBan from '../useBan';
+import useSuggestions from '../useSuggestions';
 
 describe('useBan Hook', () => {
   afterEach(() => {
@@ -14,12 +15,20 @@ describe('useBan Hook', () => {
       fetchSuggestions: jest.fn().mockResolvedValue(fakeSuggestion),
     };
     const { result, waitForNextUpdate } = customRenderHook(
-      () => useBan(term, { debounceTime: 0, limit: 1, autocomplete: false }),
+      () =>
+        useSuggestions({
+          debounceTime: 0,
+          limit: 1,
+          autocomplete: false,
+        }),
       {
         suggestionService: suggestionServiceMock,
       }
     );
-
+    // When
+    act(() => {
+      result.current.fetchSuggestions(term);
+    });
     // Then
     await waitForNextUpdate();
     expect(result.current.suggestions).toEqual(fakeSuggestion.features);
@@ -33,12 +42,20 @@ describe('useBan Hook', () => {
       fetchSuggestions: jest.fn().mockRejectedValue({}),
     };
     const { result, waitForNextUpdate } = customRenderHook(
-      () => useBan(term, { debounceTime: 0, limit: 1, autocomplete: false }),
+      () =>
+        useSuggestions({
+          debounceTime: 0,
+          limit: 1,
+          autocomplete: false,
+        }),
       {
         suggestionService: suggestionServiceMock,
       }
     );
-
+    // When
+    act(() => {
+      result.current.fetchSuggestions(term);
+    });
     // Then
     await waitForNextUpdate();
     expect(result.current.suggestions).toEqual([]);

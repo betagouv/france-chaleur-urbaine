@@ -11,3 +11,6 @@ export class Network {
 export const IsNetwork = (network: any): network is Network => {
   return !!network?.irisCode;
 };
+export const IsANullNetwork = (network: any): boolean => {
+  return Object.keys(network).every((key) => network[key] === null);
+};

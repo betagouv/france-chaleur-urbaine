@@ -1,6 +1,7 @@
-import { Address } from '@core/domain/entity';
+import { Coords } from '@core/domain/entity/address';
 import { Network } from '@core/domain/entity/network';
 
 export interface NetworkRepository {
-  findNearestOf(address: Address): Promise<Network>;
+  findByCoords(coords: Coords): Promise<Network>;
+  findByIrisCode(irisCode: string): Promise<Network>;
 }

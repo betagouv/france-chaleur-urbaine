@@ -13,6 +13,8 @@ class FetchHttpClient implements HttpClient {
         return (await responseRaw.json()) as T;
       })
       .catch((err) => {
+        // eslint-disable-next-line no-console
+        console.log(err);
         throw new Error(err);
       });
   }
