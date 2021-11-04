@@ -5,6 +5,7 @@ import {
   CallOutTitle,
 } from '@components/shared/callOut/CallOut';
 import MainLayout from '@components/shared/layout/MainLayout';
+import Slice from '@components/Slice';
 import { useFormspark } from '@formspark/use-formspark';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import Head from 'next/head';
@@ -42,74 +43,78 @@ export default function DemandeDeContact() {
         <title>Demande de contact : France Chaleur Urbaine</title>
       </Head>
       <MainLayout>
-        <div className="fr-col-12">
-          {messageSent ? (
-            <>
-              <CallOut>
-                <CallOutTitle>
-                  Votre demande de contact est bien prise en compte.
-                </CallOutTitle>
-                <CallOutBody>
-                  L'équipe France Chaleur Urbaine a bien reçu votre demande et
-                  reviendra vers vous dans les meilleurs délais afin de vous
-                  apporter une réponse. Dans l'attente, n'hésitez pas à
-                  consulter notre{' '}
-                  <Link href="/ressources">
-                    <a>centre de ressources</a>
-                  </Link>
-                </CallOutBody>
-              </CallOut>
-              <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
-                <UnderlinedLink
-                  className="fr-md-auto"
-                  href={process.env.NEXT_PUBLIC_FEEDBACK_URL}
-                >
-                  <img
-                    src="https://voxusagers.numerique.gouv.fr/static/bouton-bleu.svg"
-                    alt="Je donne mon avis"
-                    title="Je donne mon avis sur cette démarche"
-                  />
-                </UnderlinedLink>
-              </div>
-            </>
-          ) : (
-            <>
-              <CallOutWithAddress
-                isAddressEligible={isAddressEligible}
-                address={addressCoords}
-              />
-              {isAddressEligible ? (
-                <>
-                  <p>Vous pouvez compléter le formulaire ci-dessous pour :</p>
-                  <ul className="fr-mb-4w">
-                    <li>obtenir des informations sur les réseaux de chaleur</li>
-                    <li>
-                      pouvoir échanger avec des copropriétés déjà raccordées
-                    </li>
-                    <li>
-                      être mis en relation avec la collectivité ou l'exploitant
-                      du réseau qui passe près de chez vous
-                    </li>
-                    <li>toute autre information</li>
-                  </ul>
-                </>
-              ) : (
-                <p className="fr-mt-4w">
-                  Pour connaître les projets en cours, en savoir plus sur
-                  d'autres solutions de chauffage performantes ou toute autre
-                  information, merci de compléter le formulaire ci-dessous. Nous
-                  reviendrons rapidement vers vous.
-                </p>
-              )}
-              <div className="fr-mt-5w">
-                <ContactForm
-                  onSubmit={handleSubmitForm}
-                  isSubmitting={submitting}
+        <Slice>
+          <div className="fr-col-12">
+            {messageSent ? (
+              <>
+                <CallOut>
+                  <CallOutTitle>
+                    Votre demande de contact est bien prise en compte.
+                  </CallOutTitle>
+                  <CallOutBody>
+                    L'équipe France Chaleur Urbaine a bien reçu votre demande et
+                    reviendra vers vous dans les meilleurs délais afin de vous
+                    apporter une réponse. Dans l'attente, n'hésitez pas à
+                    consulter notre{' '}
+                    <Link href="/ressources">
+                      <a>centre de ressources</a>
+                    </Link>
+                  </CallOutBody>
+                </CallOut>
+                <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
+                  <UnderlinedLink
+                    className="fr-md-auto"
+                    href={process.env.NEXT_PUBLIC_FEEDBACK_URL}
+                  >
+                    <img
+                      src="https://voxusagers.numerique.gouv.fr/static/bouton-bleu.svg"
+                      alt="Je donne mon avis"
+                      title="Je donne mon avis sur cette démarche"
+                    />
+                  </UnderlinedLink>
+                </div>
+              </>
+            ) : (
+              <>
+                <CallOutWithAddress
+                  isAddressEligible={isAddressEligible}
+                  address={addressCoords}
                 />
-              </div>
-            </>
-          )}
-        </div>
+                {isAddressEligible ? (
+                  <>
+                    <p>Vous pouvez compléter le formulaire ci-dessous pour :</p>
+                    <ul className="fr-mb-4w">
+                      <li>
+                        obtenir des informations sur les réseaux de chaleur
+                      </li>
+                      <li>
+                        pouvoir échanger avec des copropriétés déjà raccordées
+                      </li>
+                      <li>
+                        être mis en relation avec la collectivité ou
+                        l'exploitant du réseau qui passe près de chez vous
+                      </li>
+                      <li>toute autre information</li>
+                    </ul>
+                  </>
+                ) : (
+                  <p className="fr-mt-4w">
+                    Pour connaître les projets en cours, en savoir plus sur
+                    d'autres solutions de chauffage performantes ou toute autre
+                    information, merci de compléter le formulaire ci-dessous.
+                    Nous reviendrons rapidement vers vous.
+                  </p>
+                )}
+                <div className="fr-mt-5w">
+                  <ContactForm
+                    onSubmit={handleSubmitForm}
+                    isSubmitting={submitting}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </Slice>
       </MainLayout>
     </>
   );

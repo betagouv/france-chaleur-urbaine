@@ -1,10 +1,11 @@
+import Banner from '@components/banner/banner';
 import Carrousel from '@components/Carrousel';
 import testimonies from '@components/Carrousel/testimonies.json';
 import HighlightList from '@components/HighlightList';
 import accompagnementRcu from '@components/HighlightList/accompagnement-rcu.json';
 import atoutsRcu from '@components/HighlightList/atouts-rcu.json';
-import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
 import MainLayout from '@components/shared/layout/MainLayout';
+import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import dataNumberRcu from '@components/TextList/data-number-rcu.json';
 import WrappedText from '@components/WrappedText';
@@ -29,38 +30,43 @@ export default function Home() {
           raccordement à un chauffage économique et écologique
         </title>
       </Head>
-      <MainLayout banner={true}>
-        <div
-          className="fr-container fr-mt-2w"
-          data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}
-        >
-          <div className="fr-grid-row fr-grid-row--center">
-            <div className="fr-col-11">
-              <WrappedText />
+      <MainLayout>
+        <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
+          <Slice pattern="grey">
+            <Banner />
+          </Slice>
 
-              <HowIsItWorking />
+          <Slice>
+            <WrappedText />
+          </Slice>
 
-              <HighlightList
-                title={`Les nombreux atouts des
-réseaux de chaleur`}
-                data={atoutsRcu}
-              />
+          <Slice>
+            <HighlightList
+              title={`Les nombreux atouts des
+  réseaux de chaleur`}
+              data={atoutsRcu}
+            />
+          </Slice>
 
-              <TextList data={textDataKey} />
+          <Slice pattern="color">
+            <TextList data={textDataKey} />
+          </Slice>
 
-              <HighlightList
-                title="France Chaleur Urbaine, vous accompagne gratuitement :"
-                data={accompagnementRcu}
-              />
+          <Slice>
+            <HighlightList
+              title="France Chaleur Urbaine, vous accompagne gratuitement :"
+              data={accompagnementRcu}
+            />
+          </Slice>
 
-              <Carrousel
-                title="Leur copropriété est raccordée - ils témoignent :"
-                Testimonies={testimonies}
-                imgSrc="./img-testimony.jpg"
-                imgAlt="Reseau de chaleur urbaine"
-              />
-            </div>
-          </div>
+          <Slice pattern="grey">
+            <Carrousel
+              title="Leur copropriété est raccordée - ils témoignent :"
+              Testimonies={testimonies}
+              imgSrc="./img-testimony.jpg"
+              imgAlt="Reseau de chaleur urbaine"
+            />
+          </Slice>
         </div>
       </MainLayout>
     </>
