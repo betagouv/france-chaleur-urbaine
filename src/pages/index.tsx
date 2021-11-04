@@ -1,3 +1,5 @@
+import Accordions from '@components/accordions';
+import faqRcu from '@components/accordions/faq-rcu';
 import Carrousel from '@components/Carrousel';
 import testimonies from '@components/Carrousel/testimonies.json';
 import HighlightList from '@components/HighlightList';
@@ -49,6 +51,8 @@ réseaux de chaleur`}
                 title="France Chaleur Urbaine, vous accompagne gratuitement :"
                 data={accompagnementRcu}
               />
+
+              <Accordions data={faqRcu} />
 
               <Carrousel
                 title="Leur copropriété est raccordée - ils témoignent :"
