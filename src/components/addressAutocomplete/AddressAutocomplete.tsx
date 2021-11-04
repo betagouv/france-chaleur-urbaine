@@ -8,10 +8,14 @@ import { Point, Suggestions as SuggestionsType } from 'src/types';
 import { AddressInput } from './AddressInput';
 import { EmptySuggestion } from './EmptySuggestion';
 
+const defaultLabel = 'Testez votre éligibilité';
+const defaultPlaceholder = 'Entrez une adresse';
+
 type AddressProps = {
+  centred?: boolean;
   onAddressSelected: (address: string, coordinates: Point) => void;
-  label: string;
-  placeholder: string;
+  label?: string;
+  placeholder?: string;
   emptySuggestionText?: string;
   debounceTime?: number;
   minCharactersLength?: number;
@@ -22,19 +26,20 @@ const hasSuggestions = (suggestions: SuggestionsType | []): boolean =>
   !!suggestions.length;
 
 const AddressAutocomplete: React.FC<AddressProps> = ({
-  onAddressSelected,
-  label,
-  placeholder,
+  label = defaultLabel,
   emptySuggestionText,
   debounceTime = 200,
   minCharactersLength = 3,
+  placeholder = defaultPlaceholder,
+  centred,
+  onAddressSelected,
 }) => {
   const { handleSelect, suggestions, fetchSuggestions, status } =
     useFormAutocomplete(onAddressSelected, debounceTime);
   const shouldDisplaySuggestions = _suggestionHasBeenAsked(status);
   return (
     <div className="fr-input-group">
-      <AddressAutocompleteLabel label={label} />
+      <AddressAutocompleteLabel label={label} centred={centred} />
       <Combobox
         aria-label="address"
         aria-labelledby="address"
@@ -44,7 +49,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
         }
       >
         <AddressInput
-          onChangeCallback={(event) =>
+          onChange={(event) =>
             fetchSuggestions(event.currentTarget.value, minCharactersLength)
           }
           placeholder={placeholder}
