@@ -1,0 +1,17 @@
+[
+  {
+    "description": "Vous accédez à de la documentation détaillée",
+    "icon": "./pictoCopro.png",
+    "altIcon": "Documentation"
+  },
+  {
+    "description": "Vous pouvez être mis en relation avec des copropriétaires déjà raccordés, avec un exploitant ou une collectivité",
+    "icon": "./pictoRelation.png",
+    "altIcon": "Mise en relation"
+  },
+  {
+    "description": "Vous êtes conseillé et accompagné dans vos démarches",
+    "icon": "./pictoResource.png",
+    "altIcon": "Conseille"
+  }
+]

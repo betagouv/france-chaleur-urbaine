@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Energie locale et renouvelable",
+    "description": "Faibles émissions de gaz à effet de serre et de polluants atmosphériques",
+    "icon": "./pictoEcology.png",
+    "altIcon": "Energie locale et renouvelable"
+  },
+  {
+    "title": "Tarif stable et maîtrisé",
+    "description": "Pas de fluctuation du prix et un taux de TVA à 5,5%",
+    "icon": "./pictoEconomic.png",
+    "altIcon": "Tarif stable et maîtrisé"
+  },
+  {
+    "title": "Fiabilité et sécurité",
+    "description": "Suppression des chaudières et risques associés et garantie du service public",
+    "icon": "./pictoConfort.png",
+    "altIcon": "Fiabilité et sécurité"
+  }
+]
