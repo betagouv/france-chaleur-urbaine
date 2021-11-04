@@ -3,6 +3,7 @@ import Carrousel from '@components/Carrousel';
 import testimonies from '@components/Carrousel/testimonies.json';
 import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
 import MainLayout from '@components/shared/layout/MainLayout';
+import WrappedText from '@components/WrappedText';
 import Head from 'next/head';
 import React from 'react';
 
@@ -26,6 +27,8 @@ export default function Home() {
         >
           <div className="fr-grid-row fr-grid-row--center">
             <div className="fr-col-11">
+              <WrappedText />
+
               <HowIsItWorking />
               <Adventage />
 
