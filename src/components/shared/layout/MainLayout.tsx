@@ -5,12 +5,41 @@ import styled from 'styled-components';
 const Main = styled.section`
   min-height: 70vh;
 `;
+const HeaderLogo = styled.img`
+  width: auto;
+  height: auto;
+  max-height: 110px;
+  max-width: 200px;
+`;
+const HeaderLabel = styled.p`
+  font-size: 1.9rem;
+  color: #069368;
+`;
+const HeaderSubLabel = styled.p`
+  margin: 0;
+`;
 
 type MainLayout = {
   children: React.ReactNode;
+  currentMenu?: string;
 };
 
-const MainLayout: React.FC<MainLayout> = ({ children }) => {
+const menu = [
+  {
+    label: 'Accueil',
+    url: '/',
+  },
+  {
+    label: 'Documentation',
+    url: 'ressources',
+  },
+  {
+    label: 'Partenaires',
+    url: 'partenaires',
+  },
+];
+
+const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
   return (
     <>
       <header className="fr-header">
@@ -41,9 +70,9 @@ const MainLayout: React.FC<MainLayout> = ({ children }) => {
                   <div className="fr-header__operator">
                     <Link href="/">
                       <a title="france chaleur urbaine">
-                        <img
+                        <HeaderLogo
                           className="fr-footer__logo"
-                          src="./logo-fcu.jpg"
+                          src="./logo-fcu.png"
                           alt="logo france chaleur urbaine"
                         />
                       </a>
@@ -53,9 +82,13 @@ const MainLayout: React.FC<MainLayout> = ({ children }) => {
                 <div className="fr-header__service">
                   <Link href="/">
                     <a title="france chaleur urbaine">
-                      <p className="fr-header__service-title">
+                      <HeaderLabel className="fr-header__service-title">
                         France Chaleur Urbaine
-                      </p>
+                      </HeaderLabel>
+                      <HeaderSubLabel>
+                        Service public pour le raccordement des copropriétés aux
+                        réseaux de chaleur
+                      </HeaderSubLabel>
                     </a>
                   </Link>
                 </div>
@@ -78,21 +111,22 @@ const MainLayout: React.FC<MainLayout> = ({ children }) => {
               aria-label="Menu principal"
             >
               <ul className="fr-nav__list">
-                <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="/">
-                    Accueil
-                  </a>
-                </li>
-                <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="ressources">
-                    Ressources
-                  </a>
-                </li>
-                <li className="fr-nav__item">
-                  <a className="fr-nav__link" href="partenaires">
-                    Partenaires
-                  </a>
-                </li>
+                {menu.map(({ label, url }) => (
+                  <li
+                    key={url}
+                    className={`fr-nav__item ${
+                      currentMenu === url ? 'fr-nav__item--active' : ''
+                    }`}
+                  >
+                    <a
+                      className="fr-nav__link"
+                      href={url}
+                      aria-current={currentMenu === url ? 'page' : undefined}
+                    >
+                      {label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </nav>
           </div>
@@ -116,7 +150,7 @@ const MainLayout: React.FC<MainLayout> = ({ children }) => {
               >
                 <img
                   className="fr-footer__logo"
-                  src="./logo-fcu.jpg"
+                  src="./logo-fcu-with-typo.jpg"
                   alt="logo france chaleur urbaine"
                 />
               </a>
@@ -165,7 +199,7 @@ const MainLayout: React.FC<MainLayout> = ({ children }) => {
                 <a
                   href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   licence etalab-2.0
                 </a>

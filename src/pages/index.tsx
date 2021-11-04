@@ -30,7 +30,7 @@ export default function Home() {
           raccordement à un chauffage économique et écologique
         </title>
       </Head>
-      <MainLayout>
+      <MainLayout currentMenu="/">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <Slice pattern="grey">
             <Banner />
