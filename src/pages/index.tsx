@@ -1,6 +1,8 @@
-import Adventage from '@components/adventage/adventage';
 import Carrousel from '@components/Carrousel';
 import testimonies from '@components/Carrousel/testimonies.json';
+import HighlightList from '@components/HighlightList';
+import accompagnementRcu from '@components/HighlightList/accompagnement-rcu.json';
+import atoutsRcu from '@components/HighlightList/atouts-rcu.json';
 import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
 import MainLayout from '@components/shared/layout/MainLayout';
 import WrappedText from '@components/WrappedText';
@@ -30,7 +32,17 @@ export default function Home() {
               <WrappedText />
 
               <HowIsItWorking />
-              <Adventage />
+
+              <HighlightList
+                title={`Les nombreux atouts des
+réseaux de chaleur`}
+                data={atoutsRcu}
+              />
+
+              <HighlightList
+                title="France Chaleur Urbaine, vous accompagne gratuitement :"
+                data={accompagnementRcu}
+              />
 
               <Carrousel
                 title="Leur copropriété est raccordée - ils témoignent :"
