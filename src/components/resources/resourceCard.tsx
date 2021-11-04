@@ -12,7 +12,7 @@ function ResourceCard({ image, title, description, fileLink }: ResourceCard) {
   return (
     <div className="fr-card">
       <div className="fr-p-3w">
-        <TextCard>
+        <TextCard height="280px">
           <p className="fr-card__detail">Brochure PDF</p>
           <h3
             className="fr-card__title"
