@@ -1,1 +1,1 @@
-export { default as LinkedInMarkup } from './LinkedInMarkup';
+export { default as LinkedInMarkup, linkedInTrack } from './LinkedInMarkup';

@@ -1,5 +1,11 @@
 import React from 'react';
 
+interface WindowTrackingExtended extends Window {
+  _linkedin_data_partner_ids: string[];
+  lintrk: (action: string, param: any) => void;
+}
+declare let window: WindowTrackingExtended;
+
 const LinkedInMarkup = ({ tagId }: { tagId: string }) => {
   return (
     <>
@@ -42,3 +48,6 @@ const LinkedInMarkup = ({ tagId }: { tagId: string }) => {
 };
 
 export default LinkedInMarkup;
+
+export const linkedInTrack = (...[conversionId]: number[]) =>
+  window?.lintrk('track', { conversion_id: conversionId });
