@@ -4,9 +4,16 @@ import HighlightList from '@components/HighlightList';
 import accompagnementRcu from '@components/HighlightList/accompagnement-rcu.json';
 import atoutsRcu from '@components/HighlightList/atouts-rcu.json';
 import MainLayout from '@components/shared/layout/MainLayout';
+import TextList from '@components/TextList';
+import dataNumberRcu from '@components/TextList/data-number-rcu.json';
 import WrappedText from '@components/WrappedText';
 import Head from 'next/head';
 import React from 'react';
+
+const textDataKey = dataNumberRcu.map(({ value, description }) => ({
+  title: value,
+  body: description,
+}));
 
 export default function Home() {
   return (
@@ -35,6 +42,8 @@ export default function Home() {
 réseaux de chaleur`}
                 data={atoutsRcu}
               />
+
+              <TextList data={textDataKey} />
 
               <HighlightList
                 title="France Chaleur Urbaine, vous accompagne gratuitement :"
