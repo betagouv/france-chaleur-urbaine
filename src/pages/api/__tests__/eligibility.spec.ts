@@ -55,7 +55,9 @@ describe('/api/eligibility', () => {
     expect(res._getStatusCode()).toBe(404);
     expect(JSON.parse(res._getData())).toEqual(
       expect.objectContaining({
-        message: `no address found for theses coords : ${coords}`,
+        message: `no address found for theses coords : ${JSON.stringify(
+          coords
+        )} (Error: Error: Request failed with status code 404)`,
         code: 'Address Not Found',
       })
     );
