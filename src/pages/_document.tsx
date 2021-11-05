@@ -1,3 +1,4 @@
+import { LinkedInMarkup } from '@components/Markup';
 import Document, {
   DocumentContext,
   Head,
@@ -34,6 +35,7 @@ export default class MyDocument extends Document {
       sheet.seal();
     }
   }
+
   render() {
     return (
       <Html lang="fr">
@@ -64,6 +66,7 @@ export default class MyDocument extends Document {
           />
           <Main />
           <NextScript />
+          <LinkedInMarkup tagId="3494650" />
         </body>
       </Html>
     );
