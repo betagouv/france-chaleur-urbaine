@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-export const BannerContainer = styled.section<{ theme?: string }>`
+export const SliceSection = styled.section<{ theme?: string }>`
   ${({ theme }) => {
     switch (theme) {
       case 'color': {
@@ -16,4 +16,8 @@ export const BannerContainer = styled.section<{ theme?: string }>`
       }
     }
   }}
+`;
+
+export const SliceContainer = styled.div`
+  max-width: 100%;
 `;

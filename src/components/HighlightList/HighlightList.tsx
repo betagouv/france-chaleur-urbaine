@@ -9,7 +9,7 @@ type HighlightListProps = {
 
 function HighlightList({ title, data = [] }: HighlightListProps) {
   return (
-    <div className="fr-my-10w">
+    <div className="fr-my-6w">
       <PageTitle>{title}</PageTitle>
       <div className="fr-container--fluid fr-my-6w">
         <div className="fr-grid-row fr-grid-row--gutters">
@@ -21,7 +21,7 @@ function HighlightList({ title, data = [] }: HighlightListProps) {
               icon,
               altIcon,
             }: HighlightType) => (
-              <div key={icon} className="XXX--fr-col-lg-4 fr-col-sm">
+              <div key={icon} className="fr-col-sm">
                 <Highlight
                   title={title}
                   subTitle={subTitle}

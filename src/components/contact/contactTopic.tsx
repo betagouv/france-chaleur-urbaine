@@ -30,7 +30,7 @@ const ContactTopic = () => {
           placeholder={
             isAddressEligible
               ? "Exemple : en savoir plus sur les réseaux de chaleur, en savoir plus sur ce qu'implique un raccordement à un réseau de chaleur (étapes, travaux,...), en savoir plus sur le réseau qui passe près de chez moi, être mis en relation avec la collectivité / l'exploitant de ce réseau, échanger avec des copropriétés déjà raccordées,..."
-              : "Exemple : en savoir plus sur les réseaux de chaleur, connaître les projets en cours dans mon quartier, en savoir plus sur d'autres solutions de chauffage écologiques, en savoir plus sur France chaleur urbaine,..."
+              : "Exemple : en savoir plus sur les réseaux de chaleur, connaître les projets en cours dans mon quartier, en savoir plus sur d'autres solutions de chauffage écologiques, en savoir plus sur France Chaleur Urbaine,..."
           }
         />
       </div>

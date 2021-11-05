@@ -3,7 +3,7 @@ import { Container, ImageContainer } from './WrappedText.style';
 
 function WrappedText() {
   return (
-    <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle fr-my-6w">
+    <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle fr-my-4w">
       <Container className="fr-col-lg-6 fr-col-md-12">
         <h2>Une solution d’avenir gagnante pour votre chauffage.</h2>
         <p className="fr-text--lg">
@@ -11,7 +11,7 @@ function WrappedText() {
           <strong>
             relier les bâtiments d’un quartier par des canalisations qui
             distribuent de la chaleur
-          </strong>
+          </strong>{' '}
           produite avec{' '}
           <strong>
             des sources d’énergies renouvelables, locales et durables
