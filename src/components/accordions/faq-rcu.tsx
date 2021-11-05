@@ -39,7 +39,7 @@ const faqRcu = [
   {
     label:
       'Quelles sont les étapes à suivre pour raccorder ma copropriété à un réseau de chaleur ?',
-    body: `France chaleur urbaine, tiers neutre et indépendant, vous accompagne dans la mise en place de votre projet, dont les grandes étapes seront les suivantes :
+    body: `France Chaleur Urbaine, tiers neutre et indépendant, vous accompagne dans la mise en place de votre projet, dont les grandes étapes seront les suivantes :
     - déterminer la compatibilité du raccordement :
     -- savoir si un réseau de chaleur passe à proximité de ma copropriété ou dans le cas contraire si des travaux d’extension/création sont prévus prochainement ;
     -- connaître les travaux à envisager selon le mode de chauffage initial du bâtiment ;

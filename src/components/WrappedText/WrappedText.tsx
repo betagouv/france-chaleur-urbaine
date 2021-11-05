@@ -11,7 +11,7 @@ function WrappedText() {
           <strong>
             relier les bâtiments d’un quartier par des canalisations qui
             distribuent de la chaleur
-          </strong>
+          </strong>{' '}
           produite avec{' '}
           <strong>
             des sources d’énergies renouvelables, locales et durables
