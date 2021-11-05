@@ -11,6 +11,8 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "importHelpers": true,
+    "removeComments": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "baseUrl": ".",
