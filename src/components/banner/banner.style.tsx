@@ -10,8 +10,8 @@ export const ImageContainer = styled.div`
   }
 `;
 export const Container = styled.div`
-  @media (max-width: 576px) {
-    margin: 0;
+  @media (min-width: 992px) {
+    padding-left: 3rem;
   }
 `;
 
