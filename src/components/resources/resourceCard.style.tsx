@@ -1,5 +1,5 @@
 import styled from 'styled-components';
 
 export const TextCard = styled.div`
-  height: 280px;
+  height: ${({ height }: { height?: string }) => height || 'max-content'};
 `;

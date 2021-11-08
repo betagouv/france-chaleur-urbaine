@@ -1,15 +1,23 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { convertPointToCoordinates } from '@components/addressAutocomplete/utils';
-import { PageTitle } from '@components/checkEligibility/checkElegibility.style';
+import markupData, { linkedInTrack } from '@components/Markup';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
-import { Point } from 'src/types';
+import { Coords, Point } from 'src/types';
 import { useHeatNetworks } from './useHeatNetworks';
 
-const CheckEligibilityForm = () => {
-  const { status, checkEligibility, isEligible } = useHeatNetworks();
+type CheckEligibilityFormProps = {
+  formLabel?: string;
+  centredForm?: boolean;
+};
 
+const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
+  formLabel,
+  centredForm,
+  children,
+}) => {
+  const { status, checkEligibility, isEligible } = useHeatNetworks();
   const { push } = useRouter();
   const [, saveInStorage] = useLocalStorageState('');
 
@@ -17,30 +25,34 @@ const CheckEligibilityForm = () => {
     address: string,
     point: Point
   ): Promise<void> => {
-    const coords = convertPointToCoordinates(point);
+    linkedInTrack(...markupData.eligibilityTest.linkedInTrack);
+    const coords: Coords = convertPointToCoordinates(point);
     await checkEligibility(coords);
     saveInStorage({ coords: [coords.lat, coords.lon], label: address });
   };
+
   useEffect(() => {
     if (status === 'success') {
+      if (isEligible) {
+        linkedInTrack(...markupData.eligibilityTestOK.linkedInTrack);
+      } else {
+        linkedInTrack(...markupData.eligibilityTestKO.linkedInTrack);
+      }
       push({
         pathname: '/demande-de-contact',
         query: { isEligible },
       });
     }
   }, [isEligible, push, status]);
+
   return (
     <>
-      <PageTitle className="fr-mb-4w">
-        Votre copropriété peut-elle être raccordée à un réseau de chaleur ?{' '}
-        <br />
-        <span>Un chauffage économique et écologique</span>
-      </PageTitle>
-
+      {children}
       <AddressAutocomplete
+        label={formLabel}
+        placeholder="Tapez ici votre adresse"
+        centred={centredForm}
         onAddressSelected={handleAddressSelected}
-        placeholder={'Exemple: 5 avenue Anatole 75007 Paris'}
-        label="Renseignez ci-dessous l'adresse de votre logement"
       />
     </>
   );

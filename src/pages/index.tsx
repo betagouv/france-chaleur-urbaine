@@ -1,9 +1,23 @@
-import Adventage from '@components/adventage/adventage';
-import HowIsItWorking from '@components/howIsItWorking/howIsItWorking';
+import Accordions from '@components/accordions';
+import faqRcu from '@components/accordions/faq-rcu';
+import Banner from '@components/banner/banner';
+import Carrousel from '@components/Carrousel';
+import testimonies from '@components/Carrousel/testimonies.json';
+import HighlightList from '@components/HighlightList';
+import accompagnementRcu from '@components/HighlightList/accompagnement-rcu.json';
+import atoutsRcu from '@components/HighlightList/atouts-rcu.json';
 import MainLayout from '@components/shared/layout/MainLayout';
-import Testimony from '@components/testimony/testimony';
+import Slice from '@components/Slice';
+import TextList from '@components/TextList';
+import dataNumberRcu from '@components/TextList/data-number-rcu.json';
+import WrappedText from '@components/WrappedText';
 import Head from 'next/head';
 import React from 'react';
+
+const textDataKey = dataNumberRcu.map(({ value, description }) => ({
+  title: value,
+  body: description,
+}));
 
 export default function Home() {
   return (
@@ -18,18 +32,41 @@ export default function Home() {
           raccordement à un chauffage économique et écologique
         </title>
       </Head>
-      <MainLayout banner={true}>
-        <div
-          className="fr-container fr-mt-2w"
-          data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}
-        >
-          <div className="fr-grid-row fr-grid-row--center">
-            <div className="fr-col-11">
-              <HowIsItWorking />
-              <Adventage />
-              <Testimony />
-            </div>
-          </div>
+      <MainLayout currentMenu="/">
+        <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
+          <Slice theme="grey">
+            <Banner />
+          </Slice>
+          <Slice>
+            <WrappedText />
+          </Slice>
+          <Slice>
+            <HighlightList
+              title={`Les nombreux atouts des
+réseaux de chaleur`}
+              data={atoutsRcu}
+            />
+          </Slice>
+          <Slice theme="color">
+            <TextList data={textDataKey} />
+          </Slice>
+          <Slice>
+            <HighlightList
+              title="France Chaleur Urbaine, vous accompagne gratuitement :"
+              data={accompagnementRcu}
+            />
+          </Slice>
+          <Slice>
+            <Accordions data={faqRcu} />
+          </Slice>
+          <Slice theme="grey">
+            <Carrousel
+              title="Leur copropriété est raccordée - ils témoignent :"
+              Testimonies={testimonies}
+              imgSrc="./img-testimony.jpg"
+              imgAlt="Reseau de chaleur urbaine"
+            />
+          </Slice>
         </div>
       </MainLayout>
     </>
