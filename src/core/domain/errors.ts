@@ -7,8 +7,12 @@ export class RepositoryError extends Error {
 }
 export class AddressNotFoundError extends Error {
   public code: string;
-  constructor(coords: Coords) {
-    super(`no address found for theses coords : ${coords}`);
+  constructor(coords: Coords, err?: string) {
+    super(
+      `no address found for theses coords : ${JSON.stringify(coords)}${
+        err ? ` (${err})` : ''
+      }`
+    );
     this.code = 'Address Not Found';
   }
 }

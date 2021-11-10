@@ -22,8 +22,8 @@ export class AddressRepositoryImpl implements AddressRepository {
         });
         return AddressFactory.create(mappedAddress);
       })
-      .catch((e) => {
-        throw new AddressNotFoundError(coords);
+      .catch((err) => {
+        throw new AddressNotFoundError(coords, err);
       });
   }
 }
