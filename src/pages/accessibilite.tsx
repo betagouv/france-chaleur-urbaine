@@ -71,7 +71,7 @@ function Accessibilite() {
                 <a
                   href="https://formulaire.defenseurdesdroits.fr"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   Défenseur des droits
                 </a>

@@ -27,7 +27,7 @@ function ResourceCard({ image, title, description, fileLink }: ResourceCard) {
               href={fileLink}
               target="_blank"
               download
-              rel="noreferrer nofollow"
+              rel="noopener noreferrer nofollow"
             >
               Consulter
               <span
