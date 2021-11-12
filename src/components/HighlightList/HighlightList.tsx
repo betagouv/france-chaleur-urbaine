@@ -16,6 +16,7 @@ function HighlightList({ title, data = [] }: HighlightListProps) {
           {data?.map(
             ({
               title,
+              body,
               subTitle,
               description,
               icon,
@@ -24,6 +25,7 @@ function HighlightList({ title, data = [] }: HighlightListProps) {
               <div key={icon} className="fr-col-sm">
                 <Highlight
                   title={title}
+                  body={body}
                   subTitle={subTitle}
                   description={description}
                   icon={icon}

@@ -1,16 +1,16 @@
 [
   {
-    "description": "Vous accédez à de la documentation détaillée",
+    "body": "**Vous accédez** à de la documentation détaillée.  \n\n_([Aides disponibles, étapes d’un raccordement,...](/ressources))_",
     "icon": "./pictoCopro.png",
     "altIcon": "Documentation"
   },
   {
-    "description": "Vous pouvez être mis en relation avec des copropriétaires déjà raccordés, avec un exploitant ou une collectivité",
+    "body": "**Vous pouvez être mis en relation** avec des copropriétaires déjà raccordés, avec un exploitant ou une collectivité",
     "icon": "./pictoRelation.png",
     "altIcon": "Mise en relation"
   },
   {
-    "description": "Vous êtes conseillé et accompagné dans vos démarches",
+    "body": "**Vous êtes conseillé** et accompagné dans vos démarches",
     "icon": "./pictoResource.png",
     "altIcon": "Conseille"
   }
