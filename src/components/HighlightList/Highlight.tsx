@@ -1,8 +1,10 @@
+import MarkdownWrapper from '@components/MarkdownWrapper';
 import React from 'react';
 import { HighlightCard } from './HighlightList.style';
 
 export type HighlightType = {
   title?: string;
+  body?: string;
   subTitle?: string;
   description?: string;
   icon: string;
@@ -11,6 +13,7 @@ export type HighlightType = {
 
 const Highlight = ({
   title,
+  body,
   subTitle,
   description,
   icon,
@@ -22,6 +25,7 @@ const Highlight = ({
       {title && <h4>{title}</h4>}
       {subTitle && <strong>{subTitle}</strong>}
       {description && <p className="fr-text--lg">{description}</p>}
+      {body && <MarkdownWrapper value={body} />}
     </div>
   </HighlightCard>
 );

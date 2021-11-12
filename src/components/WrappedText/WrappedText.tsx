@@ -1,31 +1,28 @@
+import MarkdownWrapper from '@components/MarkdownWrapper';
 import React from 'react';
 import { Container, ImageContainer } from './WrappedText.style';
 
-function WrappedText() {
+const WrappedText: React.FC<{
+  title?: string;
+  body?: string;
+  imgSrc?: string;
+  imgAlt?: string;
+}> = ({ title, body, imgSrc, imgAlt = '', children }) => {
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle fr-my-4w">
       <Container className="fr-col-lg-6 fr-col-md-12">
-        <h2>Une solution d’avenir gagnante pour votre chauffage.</h2>
-        <p className="fr-text--lg">
-          Un réseau de chaleur permet de{' '}
-          <strong>
-            relier les bâtiments d’un quartier par des canalisations qui
-            distribuent de la chaleur
-          </strong>{' '}
-          produite avec{' '}
-          <strong>
-            des sources d’énergies renouvelables, locales et durables
-          </strong>
-          . <br />
-          De quoi remplacer vertueusement le fioul et le gaz !
-        </p>
+        <h2>{title}</h2>
+        {<MarkdownWrapper value={body} />}
+        {children}
       </Container>
 
-      <ImageContainer className="fr-col-lg-6 fr-col-md-12">
-        <img src="./img-solution-avenir.jpg" alt="Reseau de chaleur urbaine" />
-      </ImageContainer>
+      {imgSrc && (
+        <ImageContainer className="fr-col-lg-6 fr-col-md-12">
+          <img src={imgSrc} alt={imgAlt} />
+        </ImageContainer>
+      )}
     </div>
   );
-}
+};
 
 export default WrappedText;

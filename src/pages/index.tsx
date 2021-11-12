@@ -11,6 +11,7 @@ import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import dataNumberRcu from '@components/TextList/data-number-rcu.json';
 import WrappedText from '@components/WrappedText';
+import WrappedTextHome from '@components/WrappedText/WrappedText-home-fcu.json';
 import Head from 'next/head';
 import React from 'react';
 
@@ -38,7 +39,7 @@ export default function Home() {
             <Banner />
           </Slice>
           <Slice>
-            <WrappedText />
+            <WrappedText {...WrappedTextHome} />
           </Slice>
           <Slice>
             <HighlightList

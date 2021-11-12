@@ -1,6 +1,6 @@
 {
   "title": "Partenaires",
-  "teaser": "Le cercle des partenaires s’élargit ! Si vous souhaitez être associé à France Chaleur Urbaine, n’hésitez pas à nous contacter.",
+  "teaser": "Le cercle des partenaires s’élargit ! Si vous souhaitez être associé à France Chaleur Urbaine, n’hésitez pas à [nous contacter](mailto:france-chaleur-urbaine@beta.gouv.fr).",
   "partners": [
     {
       "title": "Ils portent le projet :",
@@ -11,7 +11,6 @@
             "url": "./logo-DRIEAT.jpg",
             "title": "DRIEAT"
           },
-
           "title": "DRIEAT",
           "link": "http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
         },
@@ -20,7 +19,6 @@
             "url": "./logo-FNCCR.jpg",
             "title": "Fnccr"
           },
-
           "title": "Fnccr",
           "link": "https://www.fnccr.asso.fr/"
         }
@@ -35,7 +33,6 @@
             "url": "./logo-DINUM.jpg",
             "title": "DINUM"
           },
-
           "title": "DINUM",
           "link": "https://www.numerique.gouv.fr/dinum/"
         },
@@ -44,7 +41,6 @@
             "url": "./logo-ADEME.jpg",
             "title": "ADEME"
           },
-
           "title": "ADEME",
           "link": "https://www.ademe.fr/"
         },

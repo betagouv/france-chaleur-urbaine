@@ -1,9 +1,6 @@
+import MarkdownWrapper from '@components/MarkdownWrapper';
 import React, { useState } from 'react';
-import {
-  BodyAccordion,
-  BodyAccordionWrapper,
-  SectionTitle,
-} from './Accordions.style';
+import { BodyAccordionWrapper, SectionTitle } from './Accordions.style';
 
 type accordionData = {
   label: string;
@@ -38,7 +35,7 @@ function Accordions({ data = [] }: { data: accordionData[] }) {
                 activeMenu={activeMenu === i}
                 id={`accordion-${i}`}
               >
-                <BodyAccordion>{body}</BodyAccordion>
+                <MarkdownWrapper value={body} />
               </BodyAccordionWrapper>
             </section>
           </li>
