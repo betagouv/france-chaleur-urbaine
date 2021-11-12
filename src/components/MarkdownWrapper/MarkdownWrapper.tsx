@@ -4,7 +4,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
-import { MarkdownWrapperStyled } from './MarkdownWrapper.style';
+import { MarkdownWrapperStyled, MyLink } from './MarkdownWrapper.style';
 
 const processor = unified()
   .use(remarkParse)
@@ -13,6 +13,9 @@ const processor = unified()
   .use(rehypeReact, {
     createElement: React.createElement,
     Fragment: React.Fragment,
+    components: {
+      a: MyLink,
+    },
   });
 
 const MarkdownWrapper: React.FC<{
