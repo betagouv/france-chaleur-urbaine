@@ -14,7 +14,7 @@ function PartnerCard({ image, title, link }: PartnerCard) {
           href={link}
           target="_blank"
           className="fr-card__link"
-          rel="noreferrer nofollow"
+          rel="noopener noreferrer nofollow"
           title={title}
         >
           <img
