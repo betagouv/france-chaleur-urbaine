@@ -3,6 +3,7 @@ import faqRcu from '@components/accordions/faq-rcu';
 import Banner from '@components/banner/banner';
 import Carrousel from '@components/Carrousel';
 import testimonies from '@components/Carrousel/testimonies.json';
+import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
 import HighlightList from '@components/HighlightList';
 import accompagnementRcu from '@components/HighlightList/accompagnement-rcu.json';
 import atoutsRcu from '@components/HighlightList/atouts-rcu.json';
@@ -38,9 +39,11 @@ export default function Home() {
           <Slice theme="grey">
             <Banner />
           </Slice>
+
           <Slice>
             <WrappedText {...WrappedTextHome} />
           </Slice>
+
           <Slice>
             <HighlightList
               title={`Les nombreux atouts des
@@ -48,18 +51,33 @@ réseaux de chaleur`}
               data={atoutsRcu}
             />
           </Slice>
+
           <Slice theme="color">
             <TextList data={textDataKey} />
           </Slice>
+
           <Slice>
             <HighlightList
               title="France Chaleur Urbaine, vous accompagne gratuitement :"
               data={accompagnementRcu}
             />
           </Slice>
+
+          <Slice theme="grey">
+            <div className="fr-grid-row fr-grid-row--center fr-py-2w">
+              <div className="fr-col-lg-6">
+                <CheckEligibilityForm
+                  formLabel="Votre logement est-il raccordable ?"
+                  centredForm
+                />
+              </div>
+            </div>
+          </Slice>
+
           <Slice>
             <Accordions data={faqRcu} />
           </Slice>
+
           <Slice theme="grey">
             <Carrousel
               title="Leur copropriété est raccordée - ils témoignent :"
