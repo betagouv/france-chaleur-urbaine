@@ -1,5 +1,11 @@
 import React from 'react';
 
+interface WindowTrackingExtended extends Window {
+  _linkedin_data_partner_ids: string[];
+  _paq: [any];
+}
+declare let window: WindowTrackingExtended;
+
 const MatomoMarkup = ({
   matomoUrl,
   siteId,
@@ -37,3 +43,8 @@ const MatomoMarkup = ({
 };
 
 export default MatomoMarkup;
+
+export const matomoEvent = (
+  matomoEventValues: string[],
+  userEventValues: (string | number)[] = []
+) => window._paq.push(['trackEvent', ...matomoEventValues, ...userEventValues]);

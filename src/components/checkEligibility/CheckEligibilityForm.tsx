@@ -1,6 +1,10 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { convertPointToCoordinates } from '@components/addressAutocomplete/utils';
-import markupData, { googleAdsEvent, linkedInEvent } from '@components/Markup';
+import markupData, {
+  googleAdsEvent,
+  linkedInEvent,
+  matomoEvent,
+} from '@components/Markup';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
@@ -19,12 +23,13 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
 }) => {
   const { status, checkEligibility, isEligible } = useHeatNetworks();
   const { push } = useRouter();
-  const [, saveInStorage] = useLocalStorageState('');
+  const [storage, saveInStorage] = useLocalStorageState('');
 
   const handleAddressSelected = async (
     address: string,
     point: Point
   ): Promise<void> => {
+    matomoEvent(markupData.eligibilityTest.matomoEvent, [address]);
     linkedInEvent(markupData.eligibilityTest.linkedInEvent);
     googleAdsEvent('10794036298', markupData.eligibilityTest.googleAdsEvent);
 
@@ -36,12 +41,20 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
   useEffect(() => {
     if (status === 'success') {
       if (isEligible) {
+        matomoEvent(markupData.eligibilityTestOK.matomoEvent, [
+          storage?.label,
+          true,
+        ]);
         linkedInEvent(markupData.eligibilityTestOK.linkedInEvent);
         googleAdsEvent(
           '10794036298',
           markupData.eligibilityTestOK.googleAdsEvent
         );
       } else {
+        matomoEvent(markupData.eligibilityTestKO.matomoEvent, [
+          storage?.label,
+          true,
+        ]);
         linkedInEvent(markupData.eligibilityTestKO.linkedInEvent);
         googleAdsEvent(
           '10794036298',
@@ -53,7 +66,7 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
         query: { isEligible },
       });
     }
-  }, [isEligible, push, status]);
+  }, [isEligible, push, status, storage?.label]);
 
   return (
     <>
