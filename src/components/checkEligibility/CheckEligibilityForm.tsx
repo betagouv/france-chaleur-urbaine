@@ -1,6 +1,6 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { convertPointToCoordinates } from '@components/addressAutocomplete/utils';
-import markupData, { googleAdsEvent, linkedInTrack } from '@components/Markup';
+import markupData, { googleAdsEvent, linkedInEvent } from '@components/Markup';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
@@ -25,7 +25,7 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
     address: string,
     point: Point
   ): Promise<void> => {
-    linkedInTrack(...markupData.eligibilityTest.linkedInTrack);
+    linkedInEvent(markupData.eligibilityTest.linkedInEvent);
     googleAdsEvent('10794036298', markupData.eligibilityTest.googleAdsEvent);
 
     const coords: Coords = convertPointToCoordinates(point);
@@ -36,13 +36,13 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
   useEffect(() => {
     if (status === 'success') {
       if (isEligible) {
-        linkedInTrack(...markupData.eligibilityTestOK.linkedInTrack);
+        linkedInEvent(markupData.eligibilityTestOK.linkedInEvent);
         googleAdsEvent(
           '10794036298',
           markupData.eligibilityTestOK.googleAdsEvent
         );
       } else {
-        linkedInTrack(...markupData.eligibilityTestKO.linkedInTrack);
+        linkedInEvent(markupData.eligibilityTestKO.linkedInEvent);
         googleAdsEvent(
           '10794036298',
           markupData.eligibilityTestKO.googleAdsEvent
