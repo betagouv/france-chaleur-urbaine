@@ -1,4 +1,4 @@
-import { LinkedInMarkup } from '@components/Markup';
+import { GoogleAdsMarkup, LinkedInMarkup } from '@components/Markup';
 import Document, {
   DocumentContext,
   Head,
@@ -39,24 +39,26 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="fr">
-        <Head />
+        <Head>
+          <GoogleAdsMarkup googleId="10794036298" />
+        </Head>
         <body>
           <script
             dangerouslySetInnerHTML={{
               __html: `
-              /* Matomo */
-               var _paq = window._paq = window._paq || [];
-              _paq.push(['trackPageView']);
-              _paq.push(["disableCookies"]);
-              _paq.push(['enableLinkTracking']);
-              (function() {
-                var u="${process.env.NEXT_PUBLIC_MATOMO_URL}";
-                _paq.push(['setTrackerUrl', u+'matomo.php']);
-                _paq.push(['setSiteId', '${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}']);
-                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-              })();
-            `,
+   /* Matomo */
+    var _paq = window._paq = window._paq || [];
+   _paq.push(['trackPageView']);
+   _paq.push(["disableCookies"]);
+   _paq.push(['enableLinkTracking']);
+   (function() {
+     var u="${process.env.NEXT_PUBLIC_MATOMO_URL}";
+     _paq.push(['setTrackerUrl', u+'matomo.php']);
+     _paq.push(['setSiteId', '${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}']);
+     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+   })();
+ `,
             }}
           />
           <noscript
