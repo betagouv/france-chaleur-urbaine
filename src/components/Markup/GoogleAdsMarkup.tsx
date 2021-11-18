@@ -1,15 +1,14 @@
 import React from 'react';
 
-const googlaAdsIds = [
-  'xmLwCPqp5P0CEMrY_5oo',
-  '4BLdCLqy_oIDEMrY_5oo',
-  '7ZZ6CJL-9YIDEMrY_5oo',
-];
+interface WindowTrackingExtended extends Window {
+  dataLayer: any[];
+  gtag: (...args: any[]) => void;
+}
+declare let window: WindowTrackingExtended;
 
 const GoogleAdsMarkup = ({ googleId }: { googleId: string }) => {
   return (
     <>
-      {/* <!-- Global site tag (gtag.js) - Google Ads --> */}
       <script
         async
         {...{
@@ -24,20 +23,13 @@ const GoogleAdsMarkup = ({ googleId }: { googleId: string }) => {
             gtag('config', 'AW-${googleId}');`,
         }}
       />
-
-      {/* <!-- Event snippet for Formulaire - eligible conversion page --> */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: googlaAdsIds
-            .map(
-              (adsId) =>
-                `gtag('event', 'conversion', {'send_to': 'AW-${googleId}/${adsId}'});`
-            )
-            .join(' '),
-        }}
-      />
     </>
   );
 };
 
 export default GoogleAdsMarkup;
+
+export const googleAdsEvent = (googleId: string, [adsId]: string[]) =>
+  window?.gtag('event', 'conversion', {
+    send_to: `AW-${googleId}/${adsId}`,
+  });
