@@ -1,14 +1,18 @@
 {
   "eligibilityTest": {
-    "linkedInTrack": [5492674]
+    "linkedInTrack": [5492674],
+    "googleAdsEvent": ["7ZZ6CJL-9YIDEMrY_5oo"]
   },
   "eligibilityTestOK": {
-    "linkedInTrack": [5392842]
+    "linkedInTrack": [5392842],
+    "googleAdsEvent": ["xmLwCPqp5P0CEMrY_5oo"]
   },
   "eligibilityTestKO": {
-    "linkedInTrack": [5492666]
+    "linkedInTrack": [5492666],
+    "googleAdsEvent": ["4BLdCLqy_oIDEMrY_5oo"]
   },
   "eligibilityTestUnknow": {
-    "linkedInTrack": [5492682]
+    "linkedInTrack": [5492682],
+    "googleAdsEvent": ["4BLdCLqy_oIDEMrY_5oo"]
   }
 }
