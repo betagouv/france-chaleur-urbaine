@@ -143,7 +143,11 @@ function CallOutWithAddress({
             <Link
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
             >
-              <a target="_blank" className="fr-text--sm" rel="noreferrer">
+              <a
+                target="_blank"
+                className="fr-text--sm"
+                rel="noopener noreferrer"
+              >
                 Visualiser les réseaux à proximité
               </a>
             </Link>
@@ -163,7 +167,7 @@ function CallOutWithAddress({
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
               target="_blank"
               className="fr-text--sm"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               Visualiser les réseaux à proximité
             </a>

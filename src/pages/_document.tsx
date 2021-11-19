@@ -1,4 +1,8 @@
-import { LinkedInMarkup } from '@components/Markup';
+import {
+  GoogleAdsMarkup,
+  LinkedInMarkup,
+  MatomoMarkup,
+} from '@components/Markup';
 import Document, {
   DocumentContext,
   Head,
@@ -8,6 +12,19 @@ import Document, {
 } from 'next/document';
 import React from 'react';
 import { ServerStyleSheet } from 'styled-components';
+
+const favicons = [
+  {
+    rel: 'apple-touch-icon',
+    href: '/favicons/apple-touch-icon.png',
+  },
+  { rel: 'icon', href: '/favicons/favicon.svg', type: 'image/svg+xml' },
+  {
+    rel: 'shortcut icon',
+    href: '/favicons/favicon.ico',
+    type: 'image/x-icon',
+  },
+];
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -39,31 +56,22 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="fr">
-        <Head />
+        <Head>
+          {favicons.map(
+            (
+              faviconProps: { rel: string; href: string; type?: string },
+              i: number
+            ) => (
+              <link key={i} {...faviconProps} />
+            )
+          )}
+          <MatomoMarkup
+            matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
+            siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
+          />
+          <GoogleAdsMarkup googleId="10794036298" />
+        </Head>
         <body>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-              /* Matomo */
-               var _paq = window._paq = window._paq || [];
-              _paq.push(['trackPageView']);
-              _paq.push(["disableCookies"]);
-              _paq.push(['enableLinkTracking']);
-              (function() {
-                var u="${process.env.NEXT_PUBLIC_MATOMO_URL}";
-                _paq.push(['setTrackerUrl', u+'matomo.php']);
-                _paq.push(['setSiteId', '${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}']);
-                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-              })();
-            `,
-            }}
-          />
-          <noscript
-            dangerouslySetInnerHTML={{
-              __html: `<p><img src="${process.env.NEXT_PUBLIC_MATOMO_URL}/matomo.php?idsite='${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}'&amp;rec=1" style="border:0;" alt="" /></p>`,
-            }}
-          />
           <Main />
           <NextScript />
           <LinkedInMarkup tagId="3494650" />

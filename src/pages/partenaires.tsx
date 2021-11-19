@@ -1,9 +1,18 @@
+import MarkdownWrapper from '@components/MarkdownWrapper';
 import PartnerCard from '@components/partenaires/partnerCard';
 import Data from '@components/partenaires/partnerData.json';
 import PartnerSection from '@components/partenaires/partnerSection';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Head from 'next/head';
 import React from 'react';
+import styled from 'styled-components';
+
+const StyledMarkdown = styled(MarkdownWrapper)`
+  p {
+    font-size: 1.25rem;
+    line-height: 2rem;
+  }
+`;
 
 function Partner() {
   return (
@@ -18,7 +27,7 @@ function Partner() {
           </div>
           {Data.teaser && (
             <div className="fr-col-12">
-              <p className="fr-text--lg">{Data.teaser}</p>
+              <StyledMarkdown value={Data.teaser} />
             </div>
           )}
         </div>

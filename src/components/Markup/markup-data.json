@@ -1,14 +1,22 @@
 {
   "eligibilityTest": {
-    "linkedInTrack": [5492674]
+    "linkedInEvent": [5492674],
+    "googleAdsEvent": ["7ZZ6CJL-9YIDEMrY_5oo"],
+    "matomoEvent": ["Eligibilité", "Formulaire de test"]
   },
   "eligibilityTestOK": {
-    "linkedInTrack": [5392842]
+    "linkedInEvent": [5392842],
+    "googleAdsEvent": ["xmLwCPqp5P0CEMrY_5oo"],
+    "matomoEvent": ["Eligibilité", "Formulaire de test"]
   },
   "eligibilityTestKO": {
-    "linkedInTrack": [5492666]
+    "linkedInEvent": [5492666],
+    "googleAdsEvent": ["4BLdCLqy_oIDEMrY_5oo"],
+    "matomoEvent": ["Eligibilité", "Formulaire de test"]
   },
   "eligibilityTestUnknow": {
-    "linkedInTrack": [5492682]
+    "linkedInEvent": [5492682],
+    "googleAdsEvent": ["4BLdCLqy_oIDEMrY_5oo"],
+    "matomoEvent": ["Eligibilité", "Formulaire de test"]
   }
 }

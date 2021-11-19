@@ -24,6 +24,21 @@ export const HighlightCard = styled.div`
     min-width: 64px;
     margin-right: 64px;
   }
+
+  .md-wrapper {
+    p {
+      font-size: 1.25rem;
+      line-height: 2rem;
+      line-height: 1.6em;
+    }
+    strong {
+      color: #4550e5;
+    }
+    em {
+      font-size: 0.8em;
+      line-height: 1em;
+    }
+  }
 `;
 
 export const PageTitle = styled.h2`

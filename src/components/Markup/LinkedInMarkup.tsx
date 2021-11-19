@@ -49,5 +49,5 @@ const LinkedInMarkup = ({ tagId }: { tagId: string }) => {
 
 export default LinkedInMarkup;
 
-export const linkedInTrack = (...[conversionId]: number[]) =>
+export const linkedInEvent = ([conversionId]: number[]) =>
   window?.lintrk('track', { conversion_id: conversionId });

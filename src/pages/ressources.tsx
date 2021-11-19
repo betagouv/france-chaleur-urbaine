@@ -47,7 +47,7 @@ function Resources() {
                       href="https://carto.viaseva.org/public/viaseva/map/"
                       target="_blank"
                       className="fr-card__link"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                     >
                       Portail des réseaux de chaleur et de froid
                     </a>

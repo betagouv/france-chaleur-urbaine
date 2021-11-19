@@ -40,11 +40,7 @@ const menu = [
   },
 ];
 
-const MainLayout: React.FC<MainLayout> = ({
-  children,
-  currentMenu,
-  banner = false,
-}) => {
+const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
   return (
     <>
       <header className="fr-header">
