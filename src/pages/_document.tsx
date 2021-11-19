@@ -13,6 +13,19 @@ import Document, {
 import React from 'react';
 import { ServerStyleSheet } from 'styled-components';
 
+const favicons = [
+  {
+    rel: 'apple-touch-icon',
+    href: '/favicons/apple-touch-icon.png',
+  },
+  { rel: 'icon', href: '/favicons/favicon.svg', type: 'image/svg+xml' },
+  {
+    rel: 'shortcut icon',
+    href: '/favicons/favicon.ico',
+    type: 'image/x-icon',
+  },
+];
+
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const sheet = new ServerStyleSheet();
@@ -44,6 +57,14 @@ export default class MyDocument extends Document {
     return (
       <Html lang="fr">
         <Head>
+          {favicons.map(
+            (
+              faviconProps: { rel: string; href: string; type?: string },
+              i: number
+            ) => (
+              <link key={i} {...faviconProps} />
+            )
+          )}
           <MatomoMarkup
             matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
             siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
