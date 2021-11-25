@@ -1,7 +1,3 @@
-import ContactCoOwnership, {
-  defaultValuesContactCoOwnership,
-  validationSchemasContactCoOwnership,
-} from '@components/contact/contactCoOwnership';
 import ContactInformation, {
   defaultValuesContactInformation,
   validationSchemasContactInformation,
@@ -29,47 +25,45 @@ export const ContactForm = ({
   const initialValues = {
     ...defaultValuesContactTopic,
     ...defaultValuesContactInformation,
-    ...defaultValuesContactCoOwnership,
     ...defaultValuesSourceAndDataSection,
   };
   const validationSchema = Yup.object({
     ...validationSchemasContactTopic,
     ...validationSchemasContactInformation,
-    ...validationSchemasContactCoOwnership,
     ...validationSchemasContactSource,
   });
   const handleSubmit = async (values: FormikValues) => {
     onSubmit({ ...values });
   };
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
-      {(formik) => (
-        <Form>
-          <h2>Demande de contact et d’information</h2>
-          <ContactTopic />
-          <ContactInformation />
-          <ContactCoOwnership />
-          <ContactSource />
-          <button
-            className="fr-btn"
-            type="submit"
-            disabled={!formik.isValid || isSubmitting}
-          >
-            Envoyer ma demande
-          </button>
-          {!formik.isValid && (
-            <p className="fr-error-text">
-              Veuillez remplir les champs obligatoires(*) avant d'envoyer votre
-              demande
-            </p>
-          )}
-        </Form>
-      )}
-    </Formik>
+    <>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {(formik) => (
+          <Form>
+            <ContactInformation />
+            <ContactTopic />
+            <ContactSource />
+            <button
+              className="fr-btn"
+              type="submit"
+              disabled={!formik.isValid || isSubmitting}
+            >
+              Envoyer ma demande
+            </button>
+            {!formik.isValid && (
+              <p className="fr-error-text">
+                Veuillez remplir les champs obligatoires(*) avant d'envoyer
+                votre demande
+              </p>
+            )}
+          </Form>
+        )}
+      </Formik>
+    </>
   );
 };
 

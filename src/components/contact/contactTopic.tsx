@@ -1,4 +1,3 @@
-import Checkbox from '@components/shared/checkbox';
 import Textarea from '@components/shared/textarea';
 import { Field } from 'formik';
 import { useRouter } from 'next/router';
@@ -6,12 +5,26 @@ import * as Yup from 'yup';
 
 export const defaultValuesContactTopic = {
   besoin: '',
-  contacterUnOperateur: false,
 };
 export const validationSchemasContactTopic = {
-  besoin: Yup.string().required('Veuillez indiquer le motif de votre demande'),
-  contacterUnOperateur: Yup.boolean(),
+  besoin: Yup.string(),
 };
+
+const elligiblePlaceholder = `Par exemple : 
+- en savoir plus sur les réseaux de chaleur ou ce qu'implique un raccordement (étapes, travaux,...), 
+- obtenir des information sur le réseau qui passe près de chez moi, 
+- être mis en relation avec la collectivité / l'exploitant de ce réseau, 
+- échanger avec des copropriétés déjà raccordées,
+etc.`;
+
+const unelligiblePlaceholder = `Par exemple : 
+- en apprendre plus sur les réseaux de chaleur, 
+- connaître les projets en cours dans mon quartier, 
+- decouvrir d'autres solutions de chauffage écologiques, 
+- en savoir plus sur France Chaleur Urbaine,
+etc.`;
+
+const getNbLine = (str = '') => (str?.match(/[\r\n]/g)?.length ?? 0) + 1 ?? 0;
 
 const ContactTopic = () => {
   const { query } = useRouter();
@@ -19,27 +32,22 @@ const ContactTopic = () => {
   return (
     <fieldset className="fr-fieldset fr-my-3w">
       <legend className="fr-fieldset__legend fr-text--bold">
-        Votre demande
+        Quelles sont vos attentes ?
       </legend>
 
       <div className="fr-my-3w">
         <Field
           name="besoin"
-          label="Quel est votre besoin ? (*)"
           component={Textarea}
+          field={{
+            rows: Math.max(
+              getNbLine(elligiblePlaceholder),
+              getNbLine(unelligiblePlaceholder)
+            ),
+          }}
           placeholder={
-            isAddressEligible
-              ? "Exemple : en savoir plus sur les réseaux de chaleur, en savoir plus sur ce qu'implique un raccordement à un réseau de chaleur (étapes, travaux,...), en savoir plus sur le réseau qui passe près de chez moi, être mis en relation avec la collectivité / l'exploitant de ce réseau, échanger avec des copropriétés déjà raccordées,..."
-              : "Exemple : en savoir plus sur les réseaux de chaleur, connaître les projets en cours dans mon quartier, en savoir plus sur d'autres solutions de chauffage écologiques, en savoir plus sur France Chaleur Urbaine,..."
+            isAddressEligible ? elligiblePlaceholder : unelligiblePlaceholder
           }
-        />
-      </div>
-
-      <div className="fr-my-3w">
-        <Field
-          name="contacterUnOperateur"
-          label="Cochez cette case si vous souhaitez que nous contactions pour vous l’exploitant de réseau de votre quartier."
-          component={Checkbox}
         />
       </div>
     </fieldset>
