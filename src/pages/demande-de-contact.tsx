@@ -37,6 +37,7 @@ export default function DemandeDeContact() {
   useEffect(() => {
     setAddressCoords(storedAddress);
   }, [storedAddress]);
+
   return (
     <>
       <Head>
@@ -45,6 +46,7 @@ export default function DemandeDeContact() {
       <MainLayout>
         <Slice>
           <div className="fr-col-12">
+            <h2>Demande de contact et d’information</h2>
             {messageSent ? (
               <>
                 <CallOut>
@@ -76,35 +78,63 @@ export default function DemandeDeContact() {
               </>
             ) : (
               <>
-                <CallOutWithAddress
-                  isAddressEligible={isAddressEligible}
-                  address={addressCoords}
-                />
+                <div className="fr-mb-2w">
+                  <CallOutWithAddress
+                    isAddressEligible={isAddressEligible}
+                    address={addressCoords}
+                  />
+                </div>
+
                 {isAddressEligible ? (
                   <>
-                    <p>Vous pouvez compléter le formulaire ci-dessous pour :</p>
+                    <p>
+                      Avec le service public France Chaleur Urbaine, bénéficiez
+                      d’un accompagnement personnalisé, gratuit et sans
+                      engagement. <br />
+                      Nous vous recontactons pour :
+                    </p>
                     <ul className="fr-mb-4w">
                       <li>
-                        obtenir des informations sur les réseaux de chaleur
+                        Vous donnez des informations sur le réseau de chaleur
+                        qui passe près de chez vous
                       </li>
                       <li>
-                        pouvoir échanger avec des copropriétés déjà raccordées
+                        Vous aidez dans les démarches à accomplir pour raccorder
+                        votre copropriété et les étapes d’un raccordement
                       </li>
                       <li>
-                        être mis en relation avec la collectivité ou
-                        l'exploitant du réseau qui passe près de chez vous
+                        Vous faire échanger avec des copropriétés déjà
+                        raccordées
                       </li>
-                      <li>toute autre information</li>
+                      <li>
+                        Vous mettre en relation avec l'exploitant du réseau qui
+                        passe près de chez vous
+                      </li>
                     </ul>
                   </>
                 ) : (
-                  <p className="fr-mt-4w">
-                    Pour connaître les projets en cours, en savoir plus sur
-                    d'autres solutions de chauffage performantes ou toute autre
-                    information, merci de compléter le formulaire ci-dessous.
-                    Nous reviendrons rapidement vers vous.
-                  </p>
+                  <>
+                    <p>
+                      Vous souhaitez en savoir plus sur les projets de réseaux
+                      dans votre quartier ou sur d’autres modes de chauffage
+                      vertueux ? <br />
+                      France Chaleur Urbaine vous recontacte pour :
+                    </p>
+                    <ul className="fr-mb-4w">
+                      <li>
+                        Vous faire découvrir les projets de création ou
+                        extension de réseau dans votre quartier
+                      </li>
+                      <li>
+                        Vous informer sur d’autres solutions de chauffage
+                        performantes et écologiques
+                      </li>
+                    </ul>
+                  </>
                 )}
+
+                <hr />
+
                 <div className="fr-mt-5w">
                   <ContactForm
                     onSubmit={handleSubmitForm}
