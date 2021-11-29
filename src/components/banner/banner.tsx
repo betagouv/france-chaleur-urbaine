@@ -3,7 +3,7 @@ import React from 'react';
 import {
   BannerContainer,
   Container,
-  ImageContainer,
+  // ImageContainer,
   PageTitle,
   PageTitlePreTitle,
   PageTitleTeaser,
@@ -13,13 +13,7 @@ function Banner() {
   return (
     <BannerContainer>
       <div className="fr-grid-row fr-grid-row--center">
-        <ImageContainer className="fr-col-lg-5">
-          <img
-            src="./illu-reseau-de-chaleur.png"
-            alt="Reseau de chaleur urbaine"
-          />
-        </ImageContainer>
-        <Container className="fr-col-lg-7 fr-mt-2w">
+        <Container className="fr-col-lg-7 fr-mb-2w">
           <CheckEligibilityForm formLabel="Votre copropriété est-elle raccordable&nbsp;?">
             <PageTitle className="fr-mb-4w">
               <PageTitlePreTitle>

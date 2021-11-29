@@ -1,7 +1,27 @@
 import styled from 'styled-components';
 
 export const BannerContainer = styled.div`
-  background: #f9f8f6;
+  background: transparent;
+  min-height: 630px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 990px) {
+    margin: 0 -1rem;
+    padding: 0 1rem;
+    background-color: rgba(256, 256, 256, 0.8);
+    background-image: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(79 173 199 / 50%)
+    );
+  }
+
+  @media (max-width: 1440px) {
+    background-size: cover;
+    background-position: left center;
+  }
 `;
 
 export const ImageContainer = styled.div`
@@ -12,6 +32,7 @@ export const ImageContainer = styled.div`
 export const Container = styled.div`
   @media (min-width: 992px) {
     padding-left: 3rem;
+    margin-left: 45%;
   }
 `;
 
