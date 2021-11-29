@@ -2,17 +2,19 @@ import Accordions from '@components/accordions';
 import faqRcu from '@components/accordions/faq-rcu';
 import Banner from '@components/banner/banner';
 import Carrousel from '@components/Carrousel';
-import testimonies from '@components/Carrousel/testimonies.json';
 import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
 import HighlightList from '@components/HighlightList';
-import accompagnementRcu from '@components/HighlightList/accompagnement-rcu.json';
-import atoutsRcu from '@components/HighlightList/atouts-rcu.json';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
-import dataNumberRcu from '@components/TextList/data-number-rcu.json';
 import WrappedText from '@components/WrappedText';
-import WrappedTextHome from '@components/WrappedText/WrappedText-home-fcu.json';
+import {
+  accompagnementRcu,
+  atoutsRcu,
+  dataNumberRcu,
+  fcuSolutionForFutur as WrappedTextHome,
+  testimonies,
+} from '@data';
 import Head from 'next/head';
 import React from 'react';
 
