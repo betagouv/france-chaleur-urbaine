@@ -13,6 +13,7 @@ import {
   dataNumberRcu,
   fcuSolutionForFutur,
   testimonies,
+  userExperience,
 } from '@data';
 import Head from 'next/head';
 import React from 'react';
@@ -85,6 +86,23 @@ export default function Home() {
             />
           </Slice>
 
+          <Slice
+            theme="grey"
+            padding={4}
+            header={`## Découvrez l’exemple de Anne,
+## accompagnée par France Chaleur Urbaine
+
+_Les tarifs sont donnés à titre d’exemple en s’inspirant d’un cas réel_`}
+          >
+            {userExperience.map((props, i) => (
+              <WrappedText
+                key={`user-experience-${i}`}
+                textClassName="user-experience-description"
+                {...props}
+              />
+            ))}
+          </Slice>
+
           <Slice padding={2}>
             <div className="fr-grid-row fr-grid-row--center fr-py-2w">
               <div className="fr-col-lg-6">
@@ -108,17 +126,6 @@ export default function Home() {
 
           <Slice padding={6}>
             <Accordions data={faqRcu} />
-          </Slice>
-
-          <Slice theme="grey" padding={2}>
-            <div className="fr-grid-row fr-grid-row--center fr-py-2w">
-              <div className="fr-col-lg-6">
-                <CheckEligibilityForm
-                  formLabel="Votre logement est-il raccordable ?"
-                  centredForm
-                />
-              </div>
-            </div>
           </Slice>
         </div>
       </MainLayout>
