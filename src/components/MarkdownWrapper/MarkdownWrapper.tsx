@@ -1,22 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import rehypeReact from 'rehype-react';
-import rehypeSanitize from 'rehype-sanitize';
+import remarkDirective from 'remark-directive';
+import remarkDirectiveRehype from 'remark-directive-rehype';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
-import { MarkdownWrapperStyled, MyLink } from './MarkdownWrapper.style';
+import {
+  Cartridge,
+  CounterItem,
+  MarkdownWrapperStyled,
+  MyLink,
+  PuceIcon,
+} from './MarkdownWrapper.style';
 
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkRehype)
-  .use(rehypeSanitize)
-  .use(rehypeReact, {
-    createElement: React.createElement,
-    Fragment: React.Fragment,
-    components: {
-      a: MyLink,
-    },
-  });
+const processor = (extender: Record<string, unknown> = {}) =>
+  unified()
+    .use(remarkParse)
+    .use(remarkDirective)
+    .use(remarkDirectiveRehype)
+    .use(remarkRehype)
+    .use(rehypeReact, {
+      createElement: React.createElement,
+      Fragment: React.Fragment,
+      components: {
+        a: MyLink,
+        ...extender,
+      },
+    });
 
 const MarkdownWrapper: React.FC<{
   value?: string;
@@ -40,7 +50,13 @@ const MarkdownWrapper: React.FC<{
       id={id && String(id)}
       {...props}
     >
-      {processor.processSync(md).result}
+      {
+        processor({
+          'counter-item': CounterItem,
+          cartridge: Cartridge,
+          'puce-icon': PuceIcon,
+        }).processSync(md).result
+      }
     </MarkdownWrapperStyled>
   );
 };

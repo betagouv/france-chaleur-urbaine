@@ -19,6 +19,7 @@ type CarrouselProps = {
   title?: string;
   imgSrc: string;
   imgAlt?: string;
+  imgCaption?: string;
 };
 
 function Carrousel({
@@ -27,6 +28,7 @@ function Carrousel({
   title = '',
   imgSrc,
   imgAlt = '',
+  imgCaption,
 }: CarrouselProps) {
   const [selectedPoint, setSelectedPoint] = useState(0);
 
@@ -57,6 +59,13 @@ function Carrousel({
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-my-6w">
+      <ImageContainer className="fr-col-lg-6 fr-col-md-12">
+        <figure>
+          <img src={imgSrc} alt={imgAlt} />
+          {imgCaption && <figcaption>{imgCaption}</figcaption>}
+        </figure>
+      </ImageContainer>
+
       <Container className="fr-col-lg-6 fr-col-md-12">
         {title && <h2>{title}</h2>}
         <CarrouselBody selected={selectedPoint}>
@@ -78,10 +87,6 @@ function Carrousel({
           onPointSelected={setSelectedPoint}
         />
       </Container>
-
-      <ImageContainer className="fr-col-lg-6 fr-col-md-12">
-        <img src={imgSrc} alt={imgAlt} />
-      </ImageContainer>
     </div>
   );
 }
