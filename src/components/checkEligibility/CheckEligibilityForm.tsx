@@ -43,7 +43,7 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
       if (isEligible) {
         matomoEvent(markupData.eligibilityTestOK.matomoEvent, [
           storage?.label,
-          true,
+          1,
         ]);
         linkedInEvent(markupData.eligibilityTestOK.linkedInEvent);
         googleAdsEvent(
@@ -53,7 +53,7 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
       } else {
         matomoEvent(markupData.eligibilityTestKO.matomoEvent, [
           storage?.label,
-          true,
+          0,
         ]);
         linkedInEvent(markupData.eligibilityTestKO.linkedInEvent);
         googleAdsEvent(
