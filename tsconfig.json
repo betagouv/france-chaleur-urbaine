@@ -19,6 +19,8 @@
     "paths": {
       "@utils/*": ["src/utils/*"],
       "@components/*": ["src/components/*"],
+      "@data": ["src/data"],
+      "@data/*": ["src/data/*"],
       "@constants": ["src/constants"],
       "@pages/*": ["src/pages/*"],
       "@libs/*": ["src/libs/*"],

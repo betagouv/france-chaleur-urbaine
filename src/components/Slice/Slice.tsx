@@ -1,13 +1,58 @@
+import MarkdownWrapper from '@components/MarkdownWrapper';
 import React from 'react';
-import { SliceContainer, SliceSection } from './Slice.style';
+import {
+  SliceContainer,
+  SliceContainerWrapper,
+  SliceContainerWrapperType,
+  SliceSection,
+} from './Slice.style';
 
-const Slice: React.FC<{ theme?: string }> = ({ children, theme }) => {
+const Slice: React.FC<
+  {
+    header?: string;
+    className?: string;
+    theme?: string;
+    padding?: number;
+    bleedColor?: string | [string, string];
+  } & SliceContainerWrapperType
+> = ({
+  className,
+  header,
+  children,
+  theme,
+  padding,
+  bg,
+  bgPos,
+  bgSize,
+  bgWidth,
+  bgColor,
+  bleedColor,
+}) => {
+  const [bleedColorStart = '', bleedColorEnd = ''] = Array.isArray(bleedColor)
+    ? bleedColor
+    : [bleedColor, bleedColor];
+
   return (
-    <SliceSection className="fr-container--fluid fr-py-2w" theme={theme}>
+    <SliceSection className={`fr-container--fluid ${className}`} theme={theme}>
       <div className="fr-grid-row fr-grid-row--center">
-        <SliceContainer className="fr-col-lg-12">
-          <div className="fr-container">{children}</div>
-        </SliceContainer>
+        <SliceContainerWrapper
+          className={`fr-col-lg-12 ${padding ? `fr-py-${padding}w` : ''}`}
+          bg={bg}
+          bgPos={bgPos}
+          bgSize={bgSize}
+          bgWidth={bgWidth}
+          bgColor={bgColor}
+          bleedColors={[bleedColorStart, bleedColorEnd]}
+        >
+          <SliceContainer className="fr-container">
+            {header && (
+              <header>
+                <MarkdownWrapper value={header} className="slice-header" />
+              </header>
+            )}
+            {children}
+          </SliceContainer>
+        </SliceContainerWrapper>
       </div>
     </SliceSection>
   );

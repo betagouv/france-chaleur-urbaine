@@ -20,10 +20,27 @@ export const ImageContainer = styled.div`
   justify-content: center;
   align-items: center;
 
-  > img {
+  > figure {
     width: 100%;
-    max-width: 400px;
-    border-radius: 100%;
+    display: flex;
+    position: relative;
+    margin: 0;
+    img {
+      width: 100%;
+    }
+    figcaption {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      padding: 0.5rem;
+      background-color: white;
+      text-align: right;
+      max-width: 76%;
+      display: inline-flex;
+      color: #4550e5;
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
   }
 `;
 
