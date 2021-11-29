@@ -1,6 +1,10 @@
 import React from 'react';
 import Highlight, { HighlightType } from './Highlight';
-import { PageTitle } from './HighlightList.style';
+import {
+  HighlightListWrapper,
+  HighlightWrapper,
+  PageTitle,
+} from './HighlightList.style';
 
 type HighlightListProps = {
   title: string;
@@ -12,7 +16,7 @@ function HighlightList({ title, data = [] }: HighlightListProps) {
     <div className="fr-my-6w">
       <PageTitle>{title}</PageTitle>
       <div className="fr-container--fluid fr-my-6w">
-        <div className="fr-grid-row fr-grid-row--gutters">
+        <HighlightListWrapper className="fr-grid-row fr-grid-row--gutters">
           {data?.map(
             ({
               title,
@@ -22,7 +26,7 @@ function HighlightList({ title, data = [] }: HighlightListProps) {
               icon,
               altIcon,
             }: HighlightType) => (
-              <div key={icon} className="fr-col-sm">
+              <HighlightWrapper key={icon} className="fr-col-sm">
                 <Highlight
                   title={title}
                   body={body}
@@ -31,10 +35,10 @@ function HighlightList({ title, data = [] }: HighlightListProps) {
                   icon={icon}
                   altIcon={altIcon}
                 />
-              </div>
+              </HighlightWrapper>
             )
           ) || null}
-        </div>
+        </HighlightListWrapper>
       </div>
     </div>
   );
