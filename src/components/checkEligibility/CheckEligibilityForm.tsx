@@ -40,21 +40,16 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
 
   useEffect(() => {
     if (status === 'success') {
+      const address = storage?.label;
       if (isEligible) {
-        matomoEvent(markupData.eligibilityTestOK.matomoEvent, [
-          storage?.label,
-          1,
-        ]);
+        matomoEvent(markupData.eligibilityTestOK.matomoEvent, [address]);
         linkedInEvent(markupData.eligibilityTestOK.linkedInEvent);
         googleAdsEvent(
           '10794036298',
           markupData.eligibilityTestOK.googleAdsEvent
         );
       } else {
-        matomoEvent(markupData.eligibilityTestKO.matomoEvent, [
-          storage?.label,
-          0,
-        ]);
+        matomoEvent(markupData.eligibilityTestKO.matomoEvent, [address]);
         linkedInEvent(markupData.eligibilityTestKO.linkedInEvent);
         googleAdsEvent(
           '10794036298',
