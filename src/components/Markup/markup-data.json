@@ -18,5 +18,11 @@
     "linkedInEvent": [5492682],
     "googleAdsEvent": ["4BLdCLqy_oIDEMrY_5oo"],
     "matomoEvent": ["Eligibilité", "Formulaire de test - Adresse Inconnue"]
+  },
+  "contactFormEligible": {
+    "matomoEvent": ["Eligibilité", "Formulaire de contact éligible - Envoi"]
+  },
+  "contactFormIneligible": {
+    "matomoEvent": ["Eligibilité", "Formulaire de contact inéligible - Envoi"]
   }
 }
