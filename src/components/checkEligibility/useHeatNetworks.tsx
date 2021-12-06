@@ -7,12 +7,18 @@ export const useHeatNetworks = () => {
   const [isEligible, setIsEligible] = React.useState<boolean>(false);
   const { heatNetworkService } = useServices();
   const checkEligibility = React.useCallback(
-    async (coords: Coords) => {
+    async (
+      coords: Coords,
+      callback?: (eligibility: boolean, address?: string) => void,
+      address?: string
+    ) => {
       try {
         setStatus('loading');
         const network = await heatNetworkService.findByCoords(coords);
-        setIsEligible(network.isEligible);
+        const eligibility = network.isEligible;
+        setIsEligible(eligibility);
         setStatus('success');
+        if (callback) callback(eligibility, address);
       } catch (e) {
         setStatus('error');
       }
