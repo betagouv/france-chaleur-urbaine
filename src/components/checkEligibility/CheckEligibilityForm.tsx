@@ -25,6 +25,27 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
   const { push } = useRouter();
   const [storage, saveInStorage] = useLocalStorageState('');
 
+  const callMarkupEvent = (isEligible: boolean, address?: string) => {
+    if (isEligible) {
+      matomoEvent(markupData.eligibilityTestOK.matomoEvent, [
+        address || 'Adresse indefini',
+      ]);
+      linkedInEvent(markupData.eligibilityTestOK.linkedInEvent);
+      googleAdsEvent(
+        '10794036298',
+        markupData.eligibilityTestOK.googleAdsEvent
+      );
+    } else {
+      matomoEvent(markupData.eligibilityTestKO.matomoEvent, [
+        address || 'Adresse indefini',
+      ]);
+      linkedInEvent(markupData.eligibilityTestKO.linkedInEvent);
+      googleAdsEvent(
+        '10794036298',
+        markupData.eligibilityTestKO.googleAdsEvent
+      );
+    }
+  };
   const handleAddressSelected = async (
     address: string,
     point: Point
@@ -34,28 +55,12 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
     googleAdsEvent('10794036298', markupData.eligibilityTest.googleAdsEvent);
 
     const coords: Coords = convertPointToCoordinates(point);
-    await checkEligibility(coords);
+    await checkEligibility(coords, callMarkupEvent, address);
     saveInStorage({ coords: [coords.lat, coords.lon], label: address });
   };
 
   useEffect(() => {
     if (status === 'success') {
-      const address = storage?.label;
-      if (isEligible) {
-        matomoEvent(markupData.eligibilityTestOK.matomoEvent, [address]);
-        linkedInEvent(markupData.eligibilityTestOK.linkedInEvent);
-        googleAdsEvent(
-          '10794036298',
-          markupData.eligibilityTestOK.googleAdsEvent
-        );
-      } else {
-        matomoEvent(markupData.eligibilityTestKO.matomoEvent, [address]);
-        linkedInEvent(markupData.eligibilityTestKO.linkedInEvent);
-        googleAdsEvent(
-          '10794036298',
-          markupData.eligibilityTestKO.googleAdsEvent
-        );
-      }
       push({
         pathname: '/demande-de-contact',
         query: { isEligible },
