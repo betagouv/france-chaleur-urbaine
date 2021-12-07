@@ -1,5 +1,5 @@
 import ContactForm from '@components/contactForm/contactForm';
-import markupData, { matomoEvent } from '@components/Markup';
+import markupData, { facebookEvent, matomoEvent } from '@components/Markup';
 import {
   CallOut,
   CallOutBody,
@@ -29,12 +29,11 @@ export default function DemandeDeContact() {
     formId: process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID || '',
   });
   const handleSubmitForm = async (values: Record<string, string | number>) => {
-    matomoEvent(
-      markupData[
-        isAddressEligible ? 'contactFormEligible' : 'contactFormIneligible'
-      ].matomoEvent,
-      [storedAddress]
-    );
+    const markupEligibilityKey = isAddressEligible
+      ? 'contactFormEligible'
+      : 'contactFormIneligible';
+    matomoEvent(markupData[markupEligibilityKey].matomoEvent, [storedAddress]);
+    facebookEvent(markupData[markupEligibilityKey].facebookEvent);
     await submit({
       ...values,
       address: storedAddress,

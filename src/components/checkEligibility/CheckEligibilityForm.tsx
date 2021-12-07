@@ -1,6 +1,7 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { convertPointToCoordinates } from '@components/addressAutocomplete/utils';
 import markupData, {
+  facebookEvent,
   googleAdsEvent,
   linkedInEvent,
   matomoEvent,
@@ -52,6 +53,7 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
   ): Promise<void> => {
     matomoEvent(markupData.eligibilityTest.matomoEvent, [address]);
     linkedInEvent(markupData.eligibilityTest.linkedInEvent);
+    facebookEvent(markupData.eligibilityTest.facebookEvent);
     googleAdsEvent('10794036298', markupData.eligibilityTest.googleAdsEvent);
 
     const coords: Coords = convertPointToCoordinates(point);
