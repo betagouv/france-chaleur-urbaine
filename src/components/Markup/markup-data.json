@@ -1,6 +1,7 @@
 {
   "eligibilityTest": {
     "linkedInEvent": [5492674],
+    "facebookEvent": ["FindLocation"],
     "googleAdsEvent": ["7ZZ6CJL-9YIDEMrY_5oo"],
     "matomoEvent": ["Eligibilité", "Formulaire de test - Envoi"]
   },
@@ -20,9 +21,11 @@
     "matomoEvent": ["Eligibilité", "Formulaire de test - Adresse Inconnue"]
   },
   "contactFormEligible": {
+    "facebookEvent": ["Contact"],
     "matomoEvent": ["Eligibilité", "Formulaire de contact éligible - Envoi"]
   },
   "contactFormIneligible": {
+    "facebookEvent": ["Contact"],
     "matomoEvent": ["Eligibilité", "Formulaire de contact inéligible - Envoi"]
   }
 }
