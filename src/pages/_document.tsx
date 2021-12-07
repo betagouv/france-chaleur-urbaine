@@ -1,4 +1,5 @@
 import {
+  FacebookMarkup,
   GoogleAdsMarkup,
   LinkedInMarkup,
   MatomoMarkup,
@@ -70,6 +71,7 @@ export default class MyDocument extends Document {
             siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
           />
           <GoogleAdsMarkup googleId="10794036298" />
+          <FacebookMarkup facebookId="3064783047067401" />
         </Head>
         <body>
           <Main />
