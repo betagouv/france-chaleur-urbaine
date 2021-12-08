@@ -9,11 +9,13 @@ declare let window: WindowTrackingExtended;
 const MatomoMarkup = ({
   matomoUrl,
   siteId,
+  noConsentNeeded,
 }: {
   matomoUrl: string;
   siteId: string;
+  noConsentNeeded?: boolean;
 }) => {
-  return (
+  return noConsentNeeded ? (
     <>
       <script
         dangerouslySetInnerHTML={{
@@ -39,6 +41,25 @@ const MatomoMarkup = ({
         }}
       />
     </>
+  ) : (
+    <>
+      <script
+        type="text/javascript"
+        dangerouslySetInnerHTML={{
+          __html: `
+            tarteaucitron.user.matomoId = ${siteId};
+            (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
+          `,
+        }}
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            tarteaucitron.user.matomoHost = '${matomoUrl}';
+          `,
+        }}
+      ></script>
+    </>
   );
 };
 
@@ -47,4 +68,6 @@ export default MatomoMarkup;
 export const matomoEvent = (
   matomoEventValues: string[],
   userEventValues: (string | number)[] = []
-) => window._paq.push(['trackEvent', ...matomoEventValues, ...userEventValues]);
+) =>
+  typeof window?._paq?.push === 'function' &&
+  window._paq.push(['trackEvent', ...matomoEventValues, ...userEventValues]);

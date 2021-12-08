@@ -1,3 +1,4 @@
+import ConsentBanner from '@components/ConsentBanner';
 import {
   FacebookMarkup,
   GoogleAdsMarkup,
@@ -115,17 +116,19 @@ export default class MyDocument extends Document {
 
           {/* <!-- Meta Tags Generated via https://www.opengraph.xyz --> */}
 
-          <MatomoMarkup
-            matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
-            siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
-          />
-          <GoogleAdsMarkup googleId="10794036298" />
-          <FacebookMarkup facebookId="3064783047067401" />
+          <ConsentBanner>
+            <MatomoMarkup
+              matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
+              siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
+            />
+            <GoogleAdsMarkup googleId="10794036298" />
+            <FacebookMarkup facebookId="3064783047067401" />
+            <LinkedInMarkup tagId="3494650" />
+          </ConsentBanner>
         </Head>
         <body>
           <Main />
           <NextScript />
-          <LinkedInMarkup tagId="3494650" />
         </body>
       </Html>
     );
