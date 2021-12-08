@@ -191,6 +191,11 @@ function PrivacyPolicy() {
                 Les adresses IP sont collectées et conservées pour une durée de
                 six (6) mois.
               </p>
+              <p>
+                <a href="#consentement">
+                  Configuration des cookies et consentements
+                </a>
+              </p>
               <h3>Évolution du service</h3>
               <p>
                 Nous pouvons faire évoluer France Chaleur Urbaine sans
