@@ -5322,7 +5322,7 @@ tarteaucitron.services.matomo = {
   type: 'analytic',
   name: 'Matomo (privacy by design)',
   uri: 'https://matomo.org/faq/general/faq_146/',
-  needConsent: false,
+  needConsent: true,
   cookies: [
     '_pk_ref',
     '_pk_cvar',
