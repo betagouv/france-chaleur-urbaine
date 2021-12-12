@@ -12,8 +12,12 @@ tarteaucitron.lang = {
   alertBig:
     "vous acceptez l'utilisation de services tiers pouvant installer des cookies",
 
-  alertBigPrivacy:
-    'Ce site utilise des cookies et vous donne le contrôle sur ceux que vous souhaitez activer',
+  alertBigPrivacy: `
+  <h3>À propos des cookies sur France Chaleur Urbaine</h3>
+  Bienvenue ! Nous utilisons des cookies pour améliorer votre expérience et les services disponibles sur ce site. 
+  Pour en savoir plus, visitez la page <a href="/politique-de-confidentialite" target="_blank">Données personnelles</a>. 
+  Vous pouvez, à tout moment, avoir le contrôle sur les cookies que vous souhaitez activer.
+  `,
   alertSmall: 'Gestion des services',
   acceptAll: 'Tout accepter',
   personalize: 'Personnaliser',
