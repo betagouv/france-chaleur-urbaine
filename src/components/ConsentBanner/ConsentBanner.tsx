@@ -27,7 +27,7 @@ const ConsentBanner: React.FC = ({ children }) => (
                 /* Gestionnaire de cookies (niveau 2) */
                 "removeCredit": true, /* Affiche ou non les credit TAC */
                 "moreInfoLink": true,/*  Affiche ou non le liens vers les infos*/
-                "readmoreLink": true,/* Change the default readmore link pointing to tarteaucitron.io */
+                "readmoreLink": "/politique-de-confidentialite",/* Change the default readmore link pointing to tarteaucitron.io */
                 "mandatory": true,    /* Message à propos des cookies dits fonctionnels  */
 
                 /* Sticky d'ouverture niveau 2 */
