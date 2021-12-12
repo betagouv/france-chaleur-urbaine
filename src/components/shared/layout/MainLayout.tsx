@@ -186,6 +186,11 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
+                <a className="fr-footer__bottom-link" href="#consentement">
+                  Cookies &amp; Consentements
+                </a>
+              </li>
+              <li className="fr-footer__bottom-item">
                 <a
                   className="fr-footer__bottom-link"
                   href="politique-de-confidentialite"

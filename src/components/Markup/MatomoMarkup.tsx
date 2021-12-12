@@ -3,6 +3,7 @@ import React from 'react';
 interface WindowTrackingExtended extends Window {
   _linkedin_data_partner_ids: string[];
   _paq: [any];
+  tarteaucitron: any;
 }
 declare let window: WindowTrackingExtended;
 
@@ -38,13 +39,46 @@ const MatomoMarkup = ({
           __html: `<p><img src="${matomoUrl}/matomo.php?idsite='${siteId}'&amp;rec=1" style="border:0;" alt="" /></p>`,
         }}
       />
+
+      <script
+        type="text/javascript"
+        dangerouslySetInnerHTML={{
+          __html: `
+            tarteaucitron.user.matomoId = ${siteId};
+            (tarteaucitron.job = tarteaucitron.job || []).push('matomo');
+          `,
+        }}
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            tarteaucitron.user.matomoHost = '${matomoUrl}';
+          `,
+        }}
+      ></script>
     </>
   );
 };
 
 export default MatomoMarkup;
 
+const getTarteaucitronjsMatomoConsent = () =>
+  window?.tarteaucitron?.proTemp
+    ?.split('!')
+    ?.reduce((acc: Record<string, unknown>, entry: string) => {
+      const [key, value]: string[] = entry.split('=');
+      return { ...acc, [key]: value !== 'false' };
+    }, {})?.['matomo'];
+
 export const matomoEvent = (
   matomoEventValues: string[],
   userEventValues: (string | number)[] = []
-) => window._paq.push(['trackEvent', ...matomoEventValues, ...userEventValues]);
+) =>
+  typeof window?._paq?.push === 'function' &&
+  window._paq.push([
+    'trackEvent',
+    ...matomoEventValues,
+    ...(getTarteaucitronjsMatomoConsent()
+      ? userEventValues
+      : ['Consentement non accordé']),
+  ]);
