@@ -10,8 +10,38 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
     className: `md-wrapper ${className || ''}`,
   })
 )<MarkdownWrapperStyledProps>`
+  h1,
+  h2 {
+    color: #000074;
+  }
+  h3,
+  h4,
+  h5 {
+    color: #4550e5;
+  }
+  h1 + h1,
+  h2 + h2,
+  h3 + h3,
+  h4 + h4,
+  h5 + h5 {
+    margin-top: calc(-1rem + 0.25rem);
+  }
+
   p {
     margin-bottom: 1em;
+  }
+
+  em {
+    color: #4550e5;
+    font-style: normal;
+  }
+  strong {
+    color: #4550e5;
+
+    em {
+      color: #293173;
+      font-style: normal;
+    }
   }
 `;
 

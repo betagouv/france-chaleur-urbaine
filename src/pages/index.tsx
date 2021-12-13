@@ -6,23 +6,16 @@ import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityF
 import HighlightList from '@components/HighlightList';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Slice from '@components/Slice';
-import TextList from '@components/TextList';
 import WrappedText from '@components/WrappedText';
 import {
   accompagnementRcu,
-  dataNumberRcu,
   fcuSolutionForFutur,
   testimonies,
   userExperience,
 } from '@data';
 import Head from 'next/head';
 import React from 'react';
-import { createGlobalStyle } from 'styled-components';
-
-const textDataKey = dataNumberRcu.map(({ value, description }) => ({
-  title: value,
-  body: description,
-}));
+import styled, { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   .slice-schema-container {
@@ -42,6 +35,17 @@ const GlobalStyle = createGlobalStyle`
     position: relative;
     padding-left: 5.75em;
   }
+
+  preTitle {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 1.25rem;
+  }
+`;
+
+const TitleColorSlice = styled.h3`
+  text-align: center;
+  margin: 0.5em 0;
 `;
 
 export default function Home() {
@@ -71,26 +75,32 @@ export default function Home() {
             <Banner />
           </Slice>
 
+          <Slice
+            padding={4}
+            header={`::preTitle[**_Vous êtes chauffé au fioul ou au gaz ?_**]{className=pre-title}  
+### __France Chaleur Urbaine vous accompagne pour__  
+### changer et vous raccorder à un réseau de chaleur.
+            `}
+          >
+            <HighlightList data={accompagnementRcu} />
+          </Slice>
+
+          <Slice theme="color" padding={5}>
+            <TitleColorSlice>
+              Comme plus de 5 millions de Français, <br />
+              valorisez votre copropriété en optant <br />
+              pour les réseaux de chaleur.
+            </TitleColorSlice>
+          </Slice>
+
           <Slice padding={4} className="slice-schema-container">
             <WrappedText {...fcuSolutionForFutur} />
-          </Slice>
-
-          <Slice theme="color" padding={3}>
-            <TextList data={textDataKey} />
-          </Slice>
-
-          <Slice padding={4}>
-            <HighlightList
-              title="France Chaleur Urbaine, vous accompagne gratuitement :"
-              data={accompagnementRcu}
-            />
           </Slice>
 
           <Slice
             theme="grey"
             padding={4}
-            header={`## Découvrez l’exemple de Anne,
-## accompagnée par France Chaleur Urbaine
+            header={`## Ce que France Chaleur Urbaine peut faire pour vous  
 
 _Les tarifs sont donnés à titre d’exemple en s’inspirant d’un cas réel_`}
           >
