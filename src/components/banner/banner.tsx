@@ -3,10 +3,8 @@ import React from 'react';
 import {
   BannerContainer,
   Container,
-  // ImageContainer,
   PageTitle,
   PageTitlePreTitle,
-  PageTitleTeaser,
 } from './banner.style';
 
 function Banner() {
@@ -17,17 +15,11 @@ function Banner() {
           <CheckEligibilityForm formLabel="Votre copropriété est-elle raccordable&nbsp;?">
             <PageTitle className="fr-mb-4w">
               <PageTitlePreTitle>
-                Vous êtes chauffé au fioul ou au gaz&nbsp;?
+                France Chaleur Urbaine est un service public gratuit.
               </PageTitlePreTitle>
-              Changez pour un chauffage écologique à prix stable&nbsp;!
+              Découvrez les réseaux de chaleur : un chauffage écologique à prix
+              stable&nbsp;!
             </PageTitle>
-            <PageTitleTeaser>
-              France Chaleur Urbaine{' '}
-              <strong>
-                vous accompagne concrètement pour vous raccorder à un réseau de
-                chaleur
-              </strong>
-            </PageTitleTeaser>
           </CheckEligibilityForm>
         </Container>
       </div>
