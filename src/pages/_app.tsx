@@ -10,7 +10,7 @@ import {
   SuggestionService,
 } from 'src/services';
 
-const imagePreview = `./img/preview/fcu-preview-20211213.min.jpg?date=${Date.now()}`;
+const imagePreview = `/img/preview/fcu-preview-20211213.min.jpg?date=${Date.now()}`;
 
 const favicons = [
   {
