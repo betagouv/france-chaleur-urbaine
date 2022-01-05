@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import rehypeReact from 'rehype-react';
 import remarkDirective from 'remark-directive';
@@ -9,9 +10,25 @@ import {
   Cartridge,
   CounterItem,
   MarkdownWrapperStyled,
-  MyLink,
   PuceIcon,
 } from './MarkdownWrapper.style';
+
+const isExternalLink = (href: string) => href?.search(/(^http)|(^mailto)/) >= 0;
+const RoutedLink = (props: any) => {
+  const { href } = props;
+  const extProps = {
+    target: href && isExternalLink(href) ? '_blank' : undefined,
+    rel:
+      href && isExternalLink(href)
+        ? ['nofollow', 'noopener', 'noreferrer'].join(' ')
+        : '',
+  };
+  return (
+    <Link href={href} prefetch={false} passHref>
+      <a {...props} {...extProps} />
+    </Link>
+  );
+};
 
 const processor = (extender: Record<string, unknown> = {}) =>
   unified()
@@ -23,7 +40,7 @@ const processor = (extender: Record<string, unknown> = {}) =>
       createElement: React.createElement,
       Fragment: React.Fragment,
       components: {
-        a: MyLink,
+        a: RoutedLink,
         ...extender,
       },
     });
