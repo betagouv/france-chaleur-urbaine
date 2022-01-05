@@ -41,7 +41,7 @@
     "react/prop-types": 0,
     "no-nested-ternary": 0,
     "react/no-unescaped-entities": 0,
-    "no-console": "error",
+    "no-console": ["error", { "allow": ["warn", "error"] }],
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "no-empty-function": "off",
