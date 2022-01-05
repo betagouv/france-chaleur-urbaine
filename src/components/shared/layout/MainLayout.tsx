@@ -18,6 +18,11 @@ const HeaderLabel = styled.p`
 const HeaderSubLabel = styled.p`
   margin: 0;
 `;
+const GithubLogo = styled.img`
+  shape-rendering: crispEdges;
+  width: 0.7rem;
+  height: 0.7rem;
+`;
 
 type MainLayout = {
   children: React.ReactNode;
@@ -203,6 +208,21 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
               <li className="fr-footer__bottom-item">
                 <Link href="/statistiques" prefetch={false}>
                   <a className="fr-footer__bottom-link">Statistiques</a>
+                </Link>
+              </li>
+              <li className="fr-footer__bottom-item">
+                <Link
+                  href="https://github.com/betagouv/france-chaleur-urbaine"
+                  prefetch={false}
+                >
+                  <a className="fr-footer__bottom-link" target="_blank">
+                    <GithubLogo
+                      src="./icons/github-brands.svg"
+                      alt=""
+                      aria-disabled="true"
+                    />{' '}
+                    Github
+                  </a>
                 </Link>
               </li>
             </ul>
