@@ -90,18 +90,5 @@ export const SliceContainer = styled.div`
   .slice-header {
     text-align: center;
     padding: 1.5rem 0 2rem;
-
-    h2 {
-      color: #000074;
-      margin-bottom: 0;
-
-      + h2 {
-        margin-bottom: 1rem;
-      }
-    }
-    em {
-      font-style: normal;
-      color: #4550e5;
-    }
   }
 `;

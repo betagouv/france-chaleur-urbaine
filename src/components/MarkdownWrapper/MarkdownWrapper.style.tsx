@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 
-const isExternalLink = (href: string) => href?.search(/(^http)|(^mailto)/) >= 0;
-
 type MarkdownWrapperStyledProps = {
   className?: string;
 };
@@ -10,18 +8,40 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
     className: `md-wrapper ${className || ''}`,
   })
 )<MarkdownWrapperStyledProps>`
+  h1,
+  h2 {
+    color: #000074;
+  }
+  h3,
+  h4,
+  h5 {
+    color: #4550e5;
+  }
+  h1 + h1,
+  h2 + h2,
+  h3 + h3,
+  h4 + h4,
+  h5 + h5 {
+    margin-top: calc(-1rem + 0.25rem);
+  }
+
   p {
     margin-bottom: 1em;
   }
-`;
 
-export const MyLink = styled.a.attrs(({ href }) => ({
-  target: href && isExternalLink(href) ? '_blank' : undefined,
-  rel:
-    href && isExternalLink(href)
-      ? ['nofollow', 'noopener', 'noreferrer'].join(' ')
-      : '',
-}))``;
+  em {
+    color: #4550e5;
+    font-style: normal;
+  }
+  strong {
+    color: #4550e5;
+
+    em {
+      color: #293173;
+      font-style: normal;
+    }
+  }
+`;
 
 export const CounterItem = styled.div`
   display: flex;

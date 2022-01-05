@@ -1,17 +1,17 @@
 [
   {
-    "body": "::counter-item[01.]  \n**Anne est copropriétaire d’un immeuble de 126 habitants répartis en 3 bâtiments.**\n\n\nLa chaudière collective au gaz ayant 20 ans elle se demande avec le conseil syndical si un chauffage **plus performant et responsable** serait possible. \n\nElle a entendu parlé des réseaux de chaleur \net contacte **France Chaleur Urbaine**.",
+    "body": "::counter-item[01.]  \n**Anne est copropriétaire d’un immeuble de 126&nbsp;habitants répartis en 3&nbsp;bâtiments.**\n\n\nLa chaudière collective au gaz ayant 20&nbsp;ans elle se demande avec le conseil syndical si un chauffage **plus performant et responsable** serait possible. \n\nElle a entendu parlé des réseaux de chaleur \net contacte **France Chaleur Urbaine**.",
     "imgSrc": "./img/user-experience-1.png",
     "imgAlt": "Portrait d’Anne",
     "reverse": true
   },
   {
-    "body": "::counter-item[02.]  \n**Avec France Chaleur Urbaine, Anne et le conseil syndical découvrent qu’une canalisation de géothermie _passe à 15 mètres_ de la copropriété.**\n\n\nIls décident de contacter le gestionnaire  du réseau pour en **savoir plus sur les conditions de raccordement** et prennent rendez-vous avec le directeur commercial et le chef d’exploitation.",
+    "body": "::counter-item[02.]  \n**Avec France Chaleur Urbaine, Anne et le conseil syndical découvrent qu’une canalisation de géothermie _passe à 15&nbsp;mètres_ de la copropriété.**\n\n\nFrance Chaleur Urbaine contacte le gestionnaire du réseau pour en **savoir plus sur les conditions de raccordement** et prend rendez-vous avec le directeur commercial et le chef d’exploitation.",
     "imgSrc": "./img/user-experience-2.png",
     "imgAlt": "Présentation de France Chaleur Urbaine"
   },
   {
-    "body": "::counter-item[03.]  \n_Les frais de raccordements s’élève à 120 000€._  \n_Sur le conseil de France Chaleur Urbaine, la copropriété d’Anne obtient des aides avec **MaPrimeRénov’ et les certificats d’économies d’énergies**._\n\n**_Ce qui fait baisser le coût du raccordement à 50&nbsp;000€ !_** \n\n::cartridge[**Soit 400€ par lot environ.**]\n\n_Les travaux durent **4 mois** en tout !_",
+    "body": "::counter-item[03.]  \n_Les frais de raccordements s’élève à 120&nbsp;000€._  \n_Sur le conseil de France Chaleur Urbaine, la copropriété d’Anne obtient des aides avec **MaPrimeRénov’ et les certificats d’économies d’énergies**._\n\n**_Ce qui fait baisser le coût du raccordement à 50&nbsp;000€ !_** \n\n::cartridge[**Soit 400€ par lot environ.**]\n\n_Les travaux durent **4&nbsp;mois** en tout !_",
     "imgSrc": "./img/user-experience-3.png",
     "imgAlt": "Charge et travaux pour un raccordement au Reseau de chaleur",
     "reverse": true

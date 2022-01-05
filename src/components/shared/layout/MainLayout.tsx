@@ -32,11 +32,11 @@ const menu = [
   },
   {
     label: 'Documentation',
-    url: 'ressources',
+    url: '/ressources',
   },
   {
     label: 'Partenaires',
-    url: 'partenaires',
+    url: '/partenaires',
   },
 ];
 
@@ -119,13 +119,14 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
                       currentMenu === url ? 'fr-nav__item--active' : ''
                     }`}
                   >
-                    <a
-                      className="fr-nav__link"
-                      href={url}
-                      aria-current={currentMenu === url ? 'page' : undefined}
-                    >
-                      {label}
-                    </a>
+                    <Link href={url} prefetch={false}>
+                      <a
+                        className="fr-nav__link"
+                        aria-current={currentMenu === url ? 'page' : undefined}
+                      >
+                        {label}
+                      </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -144,17 +145,15 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
                 <br />
                 française
               </p>
-              <a
-                className="fr-footer__brand-link"
-                href="/"
-                title="Retour à l’accueil"
-              >
-                <img
-                  className="fr-footer__logo"
-                  src="./logo-fcu-with-typo.jpg"
-                  alt="logo france chaleur urbaine"
-                />
-              </a>
+              <Link href="/">
+                <a className="fr-footer__brand-link" title="Retour à l’accueil">
+                  <img
+                    className="fr-footer__logo"
+                    src="./logo-fcu-with-typo.jpg"
+                    alt="logo france chaleur urbaine"
+                  />
+                </a>
+              </Link>
             </div>
             <div className="fr-footer__content">
               <p className="fr-footer__content-desc">
@@ -166,7 +165,11 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
                 <strong>
                   Faites nous part de vos propositions pour améliorer ce service
                   : <br />
-                  <a href="mailto:france-chaleur-urbaine@beta.gouv.fr">
+                  <a
+                    href="mailto:france-chaleur-urbaine@beta.gouv.fr"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     france-chaleur-urbaine@beta.gouv.fr
                   </a>
                 </strong>
@@ -176,14 +179,16 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
           <div className="fr-footer__bottom">
             <ul className="fr-footer__bottom-list">
               <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="accessibilite">
-                  Accessibilité: non conforme
-                </a>
+                <Link href="/accessibilite" prefetch={false}>
+                  <a className="fr-footer__bottom-link">
+                    Accessibilité: non conforme
+                  </a>
+                </Link>
               </li>
               <li className="fr-footer__bottom-item">
-                <a className="fr-footer__bottom-link" href="mentions-legales">
-                  Mentions légales
-                </a>
+                <Link href="/mentions-legales" prefetch={false}>
+                  <a className="fr-footer__bottom-link">Mentions légales</a>
+                </Link>
               </li>
               <li className="fr-footer__bottom-item">
                 <a className="fr-footer__bottom-link" href="#consentement">
@@ -191,12 +196,9 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
                 </a>
               </li>
               <li className="fr-footer__bottom-item">
-                <a
-                  className="fr-footer__bottom-link"
-                  href="politique-de-confidentialite"
-                >
-                  Données personnelles
-                </a>
+                <Link href="/politique-de-confidentialite" prefetch={false}>
+                  <a className="fr-footer__bottom-link">Données personnelles</a>
+                </Link>
               </li>
             </ul>
             <div className="fr-footer__bottom-copy">

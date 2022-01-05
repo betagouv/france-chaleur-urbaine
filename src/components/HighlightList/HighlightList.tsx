@@ -7,14 +7,14 @@ import {
 } from './HighlightList.style';
 
 type HighlightListProps = {
-  title: string;
+  title?: string;
   data: HighlightType[];
 };
 
 function HighlightList({ title, data = [] }: HighlightListProps) {
   return (
     <div className="fr-my-6w">
-      <PageTitle>{title}</PageTitle>
+      {title && <PageTitle>{title}</PageTitle>}
       <div className="fr-container--fluid fr-my-6w">
         <HighlightListWrapper className="fr-grid-row fr-grid-row--gutters">
           {data?.map(
