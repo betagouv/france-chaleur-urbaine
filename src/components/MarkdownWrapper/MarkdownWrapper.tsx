@@ -30,6 +30,14 @@ const RoutedLink = (props: any) => {
   );
 };
 
+const ConsentLink: React.FC<{
+  ForceBlock: React.ElementType;
+}> = ({ children, ForceBlock = React.Fragment }) => (
+  <ForceBlock>
+    <a href="#consentement">{children}</a>
+  </ForceBlock>
+);
+
 const processor = (extender: Record<string, unknown> = {}) =>
   unified()
     .use(remarkParse)
@@ -70,6 +78,7 @@ const MarkdownWrapper: React.FC<{
       {
         processor({
           'counter-item': CounterItem,
+          'consent-link': ConsentLink,
           cartridge: Cartridge,
           'puce-icon': PuceIcon,
         }).processSync(md).result
