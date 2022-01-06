@@ -192,7 +192,9 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
               </li>
               <li className="fr-footer__bottom-item">
                 <Link href="/mentions-legales" prefetch={false}>
-                  <a className="fr-footer__bottom-link">Mentions légales</a>
+                  <a className="fr-footer__bottom-link">
+                    Mentions légales & CGU
+                  </a>
                 </Link>
               </li>
               <li className="fr-footer__bottom-item">
