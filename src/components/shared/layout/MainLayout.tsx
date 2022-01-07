@@ -208,7 +208,7 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
                 </Link>
               </li>
               <li className="fr-footer__bottom-item">
-                <Link href="/statistiques" prefetch={false}>
+                <Link href="/stats" prefetch={false}>
                   <a className="fr-footer__bottom-link">Statistiques</a>
                 </Link>
               </li>
