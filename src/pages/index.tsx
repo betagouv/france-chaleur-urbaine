@@ -3,9 +3,9 @@ import faqRcu from '@components/accordions/faq-rcu';
 import Banner from '@components/banner/banner';
 import Carrousel from '@components/Carrousel';
 import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
-import HighlightList from '@components/HighlightList';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Slice from '@components/Slice';
+import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import {
   accompagnementRcu,
@@ -27,6 +27,35 @@ const GlobalStyle = createGlobalStyle`
 
       img {
         opacity: 0;
+      }
+    }
+  }
+
+  .slice-migration-solution {
+    background-repeat: no-repeat;
+    @media (min-width: 990px) {
+      background-position: right calc(50% - 28rem) bottom 50%;
+      background-image: radial-gradient(circle, #EEF9FD 0%, #EEF9FD min(280px, 50vw), transparent min(280px, 50vw), transparent 100%);
+    }
+
+    .warning {
+
+      background-repeat: no-repeat;
+      background-position: right calc(50% - 4rem) bottom 50%;
+      background-image: radial-gradient(circle, #EEF9FD 0%, #EEF9FD min(280px, 50vw), transparent min(280px, 50vw), transparent 100%);
+
+      @media (min-width: 420px) {
+        background: none;
+
+      }
+      @media (min-width: 990px) {
+        padding-left: 6rem;
+      }
+
+      p {
+        font-size: 1.1rem;
+        font-size: 0.95rem;
+        line-height: 1.8;
       }
     }
   }
@@ -75,14 +104,8 @@ export default function Home() {
             <Banner />
           </Slice>
 
-          <Slice
-            padding={4}
-            header={`::preTitle[**_Vous êtes chauffé au fioul ou au gaz ?_**]{className=pre-title}  
-### __France Chaleur Urbaine vous accompagne pour__  
-### changer et vous raccorder à un réseau de chaleur.
-            `}
-          >
-            <HighlightList data={accompagnementRcu} />
+          <Slice padding={4} className="slice-migration-solution">
+            <WrappedBlock data={accompagnementRcu} />
           </Slice>
 
           <Slice theme="color" padding={5}>
