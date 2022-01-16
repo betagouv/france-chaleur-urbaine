@@ -20,7 +20,7 @@ function Partner() {
       <Head>
         <title>Partenaires : France Chaleur Urbaine</title>
       </Head>
-      <MainLayout currentMenu="partenaires">
+      <MainLayout currentMenu="/partenaires">
         <div className="fr-container fr-my-2w">
           <div className="fr-grid-row">
             <h1>{Data.title}</h1>
