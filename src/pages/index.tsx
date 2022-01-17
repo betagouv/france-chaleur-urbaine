@@ -1,5 +1,4 @@
 import Accordions from '@components/accordions';
-import faqRcu from '@components/accordions/faq-rcu';
 import Banner from '@components/banner/banner';
 import Carrousel from '@components/Carrousel';
 import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
@@ -9,6 +8,7 @@ import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import {
   accompagnementRcu,
+  faqRcu,
   fcuSolutionForFutur,
   testimonies,
   userExperience,
