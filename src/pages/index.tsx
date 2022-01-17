@@ -18,6 +18,27 @@ import React from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
+  .slice-migration-solution {
+    background-repeat: no-repeat;
+    background-position: right calc(50% - 25rem) bottom 50%;
+
+    @media (min-width: 990px) {
+      background-image: radial-gradient(circle, #EEF9FD 0%, #EEF9FD min(280px, 50vw), transparent min(280px, 50vw), transparent 100%);
+    }
+
+    .warning {
+      @media (min-width: 990px) {
+        padding-left: 13rem;
+      }
+
+      p {
+        font-size: 1.1rem;
+        font-size: 0.95rem;
+        line-height: 1.8;
+      }
+    }
+  }
+
   .slice-schema-container {
     background-repeat: no-repeat;
     background-position: right calc(50% - 28rem) bottom 50%;
@@ -27,35 +48,6 @@ const GlobalStyle = createGlobalStyle`
 
       img {
         opacity: 0;
-      }
-    }
-  }
-
-  .slice-migration-solution {
-    background-repeat: no-repeat;
-    @media (min-width: 990px) {
-      background-position: right calc(50% - 28rem) bottom 50%;
-      background-image: radial-gradient(circle, #EEF9FD 0%, #EEF9FD min(280px, 50vw), transparent min(280px, 50vw), transparent 100%);
-    }
-
-    .warning {
-
-      background-repeat: no-repeat;
-      background-position: right calc(50% - 4rem) bottom 50%;
-      background-image: radial-gradient(circle, #EEF9FD 0%, #EEF9FD min(280px, 50vw), transparent min(280px, 50vw), transparent 100%);
-
-      @media (min-width: 420px) {
-        background: none;
-
-      }
-      @media (min-width: 990px) {
-        padding-left: 6rem;
-      }
-
-      p {
-        font-size: 1.1rem;
-        font-size: 0.95rem;
-        line-height: 1.8;
       }
     }
   }
