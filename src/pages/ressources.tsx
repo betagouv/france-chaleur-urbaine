@@ -12,7 +12,7 @@ function Resources() {
       <Head>
         <title>Ressources : France Chaleur Urbaine</title>
       </Head>
-      <MainLayout currentMenu="ressources">
+      <MainLayout currentMenu="/ressources">
         <div className="fr-container fr-mt-2w">
           <div className="fr-grid-row">
             <div className="fr-col-lg-4 fr-col-sm-12">
