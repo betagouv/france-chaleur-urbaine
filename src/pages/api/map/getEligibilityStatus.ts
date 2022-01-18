@@ -11,7 +11,7 @@ type ErrorResponse = {
   code: string;
   message: string;
 };
-export default async function getEligibility(
+export default async function getEligibilityStatus(
   req: NextApiRequest,
   res: NextApiResponse<AddressDTO | ErrorResponse>
 ) {

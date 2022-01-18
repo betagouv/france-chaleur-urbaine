@@ -4,7 +4,7 @@ import { HeatNetworkService } from '..';
 import { ServiceError } from '../errors';
 
 describe('heatNetwork service', () => {
-  const baseURL = '/api/eligibility';
+  const baseURL = '/api/map/getEligibilityStatus';
   afterEach(() => {
     jest.resetAllMocks();
   });
