@@ -10,7 +10,7 @@ export class HeatNetworkService {
   async findByCoords({ lon, lat }: Coords): Promise<HeatNetworksResponse> {
     try {
       return await this.httpClient.get<HeatNetworksResponse>(
-        `/api/eligibility?lat=${lat}&lon=${lon}`
+        `/api/map/getEligibilityStatus?lat=${lat}&lon=${lon}`
       );
     } catch (e) {
       throw new ServiceError(e);

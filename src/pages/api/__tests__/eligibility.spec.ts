@@ -13,9 +13,9 @@ import {
 } from '@core/infrastructure/repository/__tests__/__fixtures__/data';
 import nock from 'nock';
 import { createMocks } from 'node-mocks-http';
-import getEligibility from '../eligibility';
+import getEligibilityStatus from '../map/getEligibilityStatus';
 
-describe('/api/eligibility', () => {
+describe('/api/map/getEligibilityStatus', () => {
   beforeAll(() => nock.disableNetConnect());
   afterAll(() => nock.enableNetConnect());
 
@@ -26,7 +26,7 @@ describe('/api/eligibility', () => {
       query: givenParams,
     });
 
-    await getEligibility(req, res);
+    await getEligibilityStatus(req, res);
 
     expect(res._getStatusCode()).toBe(400);
     expect(JSON.parse(res._getData())).toEqual(
@@ -50,7 +50,7 @@ describe('/api/eligibility', () => {
       query: coords,
     });
 
-    await getEligibility(req, res);
+    await getEligibilityStatus(req, res);
 
     expect(res._getStatusCode()).toBe(404);
     expect(JSON.parse(res._getData())).toEqual(
@@ -84,7 +84,7 @@ describe('/api/eligibility', () => {
         query: coords,
       });
 
-      await getEligibility(req, res);
+      await getEligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
@@ -110,7 +110,7 @@ describe('/api/eligibility', () => {
         query: coords,
       });
 
-      await getEligibility(req, res);
+      await getEligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
@@ -150,7 +150,7 @@ describe('/api/eligibility', () => {
         query: coords,
       });
 
-      await getEligibility(req, res);
+      await getEligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
@@ -194,7 +194,7 @@ describe('/api/eligibility', () => {
         query: coords,
       });
 
-      await getEligibility(req, res);
+      await getEligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
@@ -226,7 +226,7 @@ describe('/api/eligibility', () => {
         query: coords,
       });
 
-      await getEligibility(req, res);
+      await getEligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual({
