@@ -2,8 +2,8 @@ import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 
-const headerHeight = `214px`;
-const footerHeight = `291px`;
+export const headerHeight = `214px`;
+export const footerHeight = `291px`;
 
 const Main = styled.section`
   min-height: calc(100vh - ${headerHeight} - ${footerHeight});
@@ -45,6 +45,10 @@ const menu = [
   {
     label: 'Partenaires',
     url: '/partenaires',
+  },
+  {
+    label: 'Carte des réseaux',
+    url: '/carte',
   },
 ];
 
