@@ -37,7 +37,6 @@ export const ContactForm = ({
     >
       {(formik) => (
         <Form>
-          <h2>Demande de contact et d’information</h2>
           <ContactInformation />
           <ContactConsent />
           <button
