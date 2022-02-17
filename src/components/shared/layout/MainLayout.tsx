@@ -2,8 +2,11 @@ import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 
+const headerHeight = `214px`;
+const footerHeight = `291px`;
+
 const Main = styled.section`
-  min-height: 70vh;
+  min-height: calc(100vh - ${headerHeight} - ${footerHeight});
 `;
 const HeaderLogo = styled.img`
   width: auto;
