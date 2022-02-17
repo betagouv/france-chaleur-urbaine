@@ -3,7 +3,7 @@ import Select from '@components/shared/select';
 import { Field } from 'formik';
 import * as Yup from 'yup';
 
-export const defaultValuesSourceAndDataSection = {
+export const defaultValuesContactSource = {
   source: '',
   collecterMesDonnees: false,
 };

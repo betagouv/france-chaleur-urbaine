@@ -1,22 +1,22 @@
-import ContactCoOwnership, {
-  defaultValuesContactCoOwnership,
-  validationSchemasContactCoOwnership,
-} from '@components/contact/contactCoOwnership';
-import ContactInformation, {
-  defaultValuesContactInformation,
-  validationSchemasContactInformation,
-} from '@components/contact/contactInformation';
-import ContactSource, {
-  defaultValuesSourceAndDataSection,
-  validationSchemasContactSource,
-} from '@components/contact/contactSource';
-import ContactTopic, {
-  defaultValuesContactTopic,
-  validationSchemasContactTopic,
-} from '@components/contact/contactTopic';
 import { Form, Formik, FormikValues } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
+import ContactCoOwnership, {
+  defaultValuesContactCoOwnership,
+  validationSchemasContactCoOwnership,
+} from './components/contactCoOwnership';
+import ContactInformation, {
+  defaultValuesContactInformation,
+  validationSchemasContactInformation,
+} from './components/contactInformation';
+import ContactSource, {
+  defaultValuesContactSource,
+  validationSchemasContactSource,
+} from './components/contactSource';
+import ContactTopic, {
+  defaultValuesContactTopic,
+  validationSchemasContactTopic,
+} from './components/contactTopic';
 
 type ContactFormProps = {
   onSubmit: (values: FormikValues) => void;
@@ -30,7 +30,7 @@ export const ContactForm = ({
     ...defaultValuesContactTopic,
     ...defaultValuesContactInformation,
     ...defaultValuesContactCoOwnership,
-    ...defaultValuesSourceAndDataSection,
+    ...defaultValuesContactSource,
   };
   const validationSchema = Yup.object({
     ...validationSchemasContactTopic,
