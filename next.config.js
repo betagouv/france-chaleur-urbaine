@@ -4,6 +4,7 @@ module.exports = {
   webpack5: true,
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : '',
   basePath: isGithubCI ? '/france-chaleur-urbaine' : '',
+  swcMinify: true,
   async redirects() {
     return [
       {

@@ -55,6 +55,11 @@ function Carrousel({
     };
 
     setTimer();
+
+    return () => {
+      if (timer.current && typeof timer.current === 'number')
+        clearTimeout(timer.current);
+    };
   }, [Testimonies.length, duration, selectedPoint]);
 
   return (
