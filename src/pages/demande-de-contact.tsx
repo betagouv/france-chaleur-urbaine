@@ -7,6 +7,12 @@ import {
 } from '@components/shared/callOut/CallOut';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Slice from '@components/Slice';
+import {
+  CallOutWithAddress,
+  ContactFormContentWrapper,
+  ContactFormDescription,
+  ContactFormWrapper,
+} from '@components/views/ContactView';
 import { useFormspark } from '@formspark/use-formspark';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import Head from 'next/head';
@@ -34,15 +40,18 @@ export default function DemandeDeContact() {
       : 'contactFormIneligible';
     matomoEvent(markupData[markupEligibilityKey].matomoEvent, [storedAddress]);
     facebookEvent(markupData[markupEligibilityKey].facebookEvent);
+
     await submit({
       ...values,
       address: storedAddress,
       estEligible: isAddressEligible,
     }).then(() => setMessageSent(true));
   };
+
   useEffect(() => {
     setAddressCoords(storedAddress);
   }, [storedAddress]);
+
   return (
     <>
       <Head>
@@ -81,105 +90,29 @@ export default function DemandeDeContact() {
                 </div>
               </>
             ) : (
-              <>
-                <CallOutWithAddress
-                  isAddressEligible={isAddressEligible}
-                  address={addressCoords}
-                />
-                {isAddressEligible ? (
-                  <>
-                    <p>Vous pouvez compléter le formulaire ci-dessous pour :</p>
-                    <ul className="fr-mb-4w">
-                      <li>
-                        obtenir des informations sur les réseaux de chaleur
-                      </li>
-                      <li>
-                        pouvoir échanger avec des copropriétés déjà raccordées
-                      </li>
-                      <li>
-                        être mis en relation avec la collectivité ou
-                        l'exploitant du réseau qui passe près de chez vous
-                      </li>
-                      <li>toute autre information</li>
-                    </ul>
-                  </>
-                ) : (
-                  <p className="fr-mt-4w">
-                    Pour connaître les projets en cours, en savoir plus sur
-                    d'autres solutions de chauffage performantes ou toute autre
-                    information, merci de compléter le formulaire ci-dessous.
-                    Nous reviendrons rapidement vers vous.
-                  </p>
-                )}
-                <div className="fr-mt-5w">
-                  <ContactForm
-                    onSubmit={handleSubmitForm}
-                    isSubmitting={submitting}
+              <ContactFormWrapper>
+                <ContactFormContentWrapper>
+                  <ContactFormDescription
+                    isAddressEligible={isAddressEligible}
                   />
-                </div>
-              </>
+                </ContactFormContentWrapper>
+                <ContactFormContentWrapper>
+                  <CallOutWithAddress
+                    isAddressEligible={isAddressEligible}
+                    address={addressCoords}
+                  />
+                  <div className="fr-mt-5w">
+                    <ContactForm
+                      onSubmit={handleSubmitForm}
+                      isSubmitting={submitting}
+                    />
+                  </div>
+                </ContactFormContentWrapper>
+              </ContactFormWrapper>
             )}
           </div>
         </Slice>
       </MainLayout>
     </>
-  );
-}
-
-function CallOutWithAddress({
-  isAddressEligible,
-  address,
-}: {
-  isAddressEligible: boolean;
-  address: Record<string, string | number[]> | null;
-}) {
-  const variant = isAddressEligible ? 'success' : 'error';
-  return (
-    <CallOut variant={variant}>
-      {isAddressEligible ? (
-        <>
-          <CallOutTitle>
-            Votre copropriété pourrait être raccordée à un réseau de chaleur
-          </CallOutTitle>
-          <CallOutBody>
-            <p className={'fr-mb-2w'}>
-              Un réseau de chaleur passe à proximité de votre adresse : <br />
-              {address?.label}
-            </p>
-            <Link
-              href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
-            >
-              <a
-                target="_blank"
-                className="fr-text--sm"
-                rel="noopener noreferrer"
-              >
-                Visualiser les réseaux à proximité
-              </a>
-            </Link>
-          </CallOutBody>
-        </>
-      ) : (
-        <>
-          <CallOutTitle>
-            Votre copropriété n'est pour le moment pas raccordable à un réseau
-            de chaleur.
-          </CallOutTitle>
-          <CallOutBody>
-            <p className={'fr-my-2w'}>
-              Toutefois, les réseaux se développent et elle pourrait le devenir.
-            </p>
-            <a
-              href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
-              target="_blank"
-              className="fr-text--sm"
-              rel="noopener noreferrer"
-            >
-              Visualiser les réseaux à proximité
-            </a>
-          </CallOutBody>
-        </>
-      )}
-    </CallOut>
   );
 }

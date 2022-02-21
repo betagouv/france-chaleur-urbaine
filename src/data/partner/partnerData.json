@@ -97,6 +97,22 @@
           },
           "title": "Pold",
           "link": "https://www.idex.fr/"
+        },
+        {
+          "image": {
+            "url": "./logo-SIGEIF.jpg",
+            "title": "Sigeif"
+          },
+          "title": "Sigeif",
+          "link": "https://www.sigeif.fr/"
+        },
+        {
+          "image": {
+            "url": "./logo-GRAND-PARIS-SUD.jpg",
+            "title": "Grand Paris Sud"
+          },
+          "title": "Grand Paris Sud",
+          "link": "https://www.grandparissud.fr/"
         }
       ]
     }

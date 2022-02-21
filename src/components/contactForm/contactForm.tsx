@@ -1,22 +1,14 @@
-import ContactCoOwnership, {
-  defaultValuesContactCoOwnership,
-  validationSchemasContactCoOwnership,
-} from '@components/contact/contactCoOwnership';
-import ContactInformation, {
-  defaultValuesContactInformation,
-  validationSchemasContactInformation,
-} from '@components/contact/contactInformation';
-import ContactSource, {
-  defaultValuesSourceAndDataSection,
-  validationSchemasContactSource,
-} from '@components/contact/contactSource';
-import ContactTopic, {
-  defaultValuesContactTopic,
-  validationSchemasContactTopic,
-} from '@components/contact/contactTopic';
 import { Form, Formik, FormikValues } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
+import ContactConsent, {
+  defaultValuesContactConsent,
+  validationSchemasContactConsent,
+} from './components/contactConsent';
+import ContactInformation, {
+  defaultValuesContactInformation,
+  validationSchemasContactInformation,
+} from './components/contactInformation';
 
 type ContactFormProps = {
   onSubmit: (values: FormikValues) => void;
@@ -27,16 +19,12 @@ export const ContactForm = ({
   isSubmitting = false,
 }: ContactFormProps) => {
   const initialValues = {
-    ...defaultValuesContactTopic,
     ...defaultValuesContactInformation,
-    ...defaultValuesContactCoOwnership,
-    ...defaultValuesSourceAndDataSection,
+    ...defaultValuesContactConsent,
   };
   const validationSchema = Yup.object({
-    ...validationSchemasContactTopic,
     ...validationSchemasContactInformation,
-    ...validationSchemasContactCoOwnership,
-    ...validationSchemasContactSource,
+    ...validationSchemasContactConsent,
   });
   const handleSubmit = async (values: FormikValues) => {
     onSubmit({ ...values });
@@ -49,17 +37,14 @@ export const ContactForm = ({
     >
       {(formik) => (
         <Form>
-          <h2>Demande de contact et d’information</h2>
-          <ContactTopic />
           <ContactInformation />
-          <ContactCoOwnership />
-          <ContactSource />
+          <ContactConsent />
           <button
             className="fr-btn"
             type="submit"
             disabled={!formik.isValid || isSubmitting}
           >
-            Envoyer ma demande
+            Envoyer
           </button>
           {!formik.isValid && (
             <p className="fr-error-text">

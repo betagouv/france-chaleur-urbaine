@@ -1,5 +1,5 @@
-import PartnerCard from '@components/partenaires/partnerCard';
 import React from 'react';
+import PartnerCard from './partnerCard';
 
 type ResourceSection = {
   title: string;
