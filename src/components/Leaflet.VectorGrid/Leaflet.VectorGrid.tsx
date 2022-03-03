@@ -29,12 +29,7 @@ export default function VectorGrid({
     };
   }, [attribution, interactive, style]);
 
-  const vectorGrid = url
-    ? L.vectorGrid.protobuf(url, options).on('click', function (e) {
-        console.info(e.layer);
-        L.DomEvent.stop(e);
-      })
-    : null;
+  const vectorGrid = url ? L.vectorGrid.protobuf(url, options) : null;
   const container = layerContainer || map;
 
   useEffect(() => {

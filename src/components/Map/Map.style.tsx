@@ -115,17 +115,34 @@ export const MapGlobalStyle = createGlobalStyle`
 `;
 
 export const LegendGlobalStyle = createGlobalStyle`
-  .legend-heat-network {
-    width: 1.5rem;
+  hr {
+    border: 1px solid #4550e5;
+    border-width: 0 0 1px;
+    margin: .75em 2em;
+    height: 0;
+  }
+
+  .legend {
+    width: 0rem;
     height: 1rem;
     display: inline-flex;
     vertical-align: text-bottom;
     justify-content: center;
     align-items: center;
+    margin-right: 0.2em;
 
-    :before {
+    ::before {
       content: '';
       display: block;
+      height: 1rem;
+    }
+
+  }
+
+  .legend-heat-network {
+    width: 1.5rem;
+
+    :before {
       width: 100%;
       height: 0;
       border: 3px solid #2d9748;
@@ -133,43 +150,87 @@ export const LegendGlobalStyle = createGlobalStyle`
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
-  .legend-substation {
+  .legend-boiler-room {
     width: 1.5rem;
-    height: 1rem;
-    display: inline-flex;
-    vertical-align: text-bottom;
-    justify-content: center;
-    align-items: center;
 
     :before {
-      content: '';
-      display: block;
+      width: 100%;
+      border: 3px solid #ff6600;
+      border-radius: 3px;
+      background-color: #ff660088;
+      margin-bottom: calc(0.25em - 1.5px)
+    }
+  }
+  .legend-substation {
+    width: 1.5rem;
+
+    :before {
       width: 1rem;
-      height: 1rem;
       border: 3px solid #ff00d4;
       border-radius: 50%;
       background-color: #ff00d4;
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
-  .legend-boiler-room {
-    width: 1.5rem;
-    height: 1rem;
-    display: inline-flex;
-    vertical-align: text-bottom;
-    justify-content: center;
-    align-items: center;
+  .legend-energy {
+    width: .6rem;
 
-    :before {
-      content: '';
-      display: block;
-      width: 1.5rem;
-      height: 1rem;
-      border: 3px solid #ff6600;
-      border-radius: 3px;
-      background-color: #ff660088;
+    ::before {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      /* background-color: grey; */
       margin-bottom: calc(0.25em - 1.5px)
     }
+  }
+
+  .legend-heating {
+    width: 0rem;
+  }
+
+`;
+
+export const GroupeLabel = styled.div`
+  padding-bottom: 0.8em;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  header {
+    font-weight: bold;
+    margin-bottom: 0.5em;
+  }
+
+  .groupe-label-body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: stretch;
+    align-items: stretch;
+
+    .label-item {
+      /* border: 1px solid rebeccapurple; */
+      flex: 1;
+      min-width: 30%;
+      max-width: 100%;
+      display: flex;
+      text-align: left;
+      justify-content: flex-start;
+
+      label {
+        display: inline;
+        white-space: nowrap;
+
+        &::before {
+          width: 0.7em;
+        }
+      }
+    }
+  }
+`;
+export const LabelLegend = styled.span<{ bgColor: string }>`
+  ::before {
+    background-color: ${({ bgColor }) => bgColor || 'grey'};
   }
 `;
 
@@ -181,6 +242,10 @@ export const MapWrapper = styled.div`
   overflow: hidden;
 `;
 
+const maskTop = '3.5rem';
+const maskBottom = '5rem';
+const scrollSize = '20px';
+
 export const MapControlWrapper = styled.div`
   position: absolute;
   z-index: 401;
@@ -191,6 +256,8 @@ export const MapControlWrapper = styled.div`
   bottom: 0;
   right: 0;
   width: calc(22.5% + 2em);
+  max-width: 22rem;
+  min-width: 16.5rem;
 
   :before {
     content: '';
@@ -233,6 +300,20 @@ export const MapAsideContainer = styled.div<MapAsideContainerType>`
         `}
 
   overflow-y: overlay;
+
+  /*
+  mask-image: linear-gradient(180deg, transparent 0, black 0%),
+    linear-gradient(
+      180deg,
+      transparent 0,
+      black ${maskTop},
+      black calc(100% - ${maskBottom}),
+      transparent 100%
+    );
+  mask-size: ${scrollSize}, calc(100% - ${scrollSize});
+  mask-repeat: no-repeat, no-repeat;
+  mask-position: right top, left top; 
+  */
 
   &.search-result {
     padding-top: 3.5rem;
