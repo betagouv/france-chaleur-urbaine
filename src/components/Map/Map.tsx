@@ -21,6 +21,7 @@ import {
   MapGlobalStyle,
   MapWrapper,
 } from './Map.style';
+import MapGlobalOptions from './MapGlobalOptions';
 import MapSearchForm, { TypeHandleAddressSelect } from './MapSearchForm';
 
 const MAPBOX_API_TOKEN = `${process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN}`;
@@ -77,9 +78,10 @@ const Map = () => {
         zoom={13}
         style={{ height: '100%', width: '100%' }}
       >
+        <MapGlobalOptions attributionPrefix='<a href="https://beta.gouv.fr/" target="_blank">beta.gouv</a>' />
         <TileLayer
           url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_API_TOKEN}`}
-          attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
+          attribution='Outils cartographique : <a href="https://leafletjs.com/" target="_blank">Leaflet</a> | Données Cartographiques : &copy; <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors (sous license <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>), fond de carte &copy; <a href="https://www.mapbox.com/" target="_blank">Mapbox</a>'
         />
         <VectorGrid
           url="/api/map/network/{z}/{x}/{y}"
@@ -107,7 +109,6 @@ const Map = () => {
               weight: 2,
             }),
           }}
-          attribution="&copy; beta.gouv"
           interactive
         />
 

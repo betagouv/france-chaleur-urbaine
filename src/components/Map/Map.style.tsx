@@ -1,6 +1,75 @@
 import styled, { createGlobalStyle, css } from 'styled-components';
 
 export const MapGlobalStyle = createGlobalStyle`
+.leaflet-container .leaflet-control-attribution {
+  margin: 0.5em 0;
+  padding: 0 0.5em;
+  background: rgba(255, 255, 255, 0.85);
+  font-weight: bold;
+  padding-left: 3rem;
+  position: relative;
+}
+
+.leaflet-control-attribution {
+  position: relative;
+  border-radius: 1em 0 0 1em;
+  overflow: hidden;
+  cursor: default;
+  transform: translateX(calc(100% - 3em));
+
+  transition: transform 0.4s ease;
+
+  &::before {
+    content: '©';
+    position: absolute;
+    left: 0;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    padding-left: 1.25em;
+    padding-right: 0.5em;
+    margin-right: 0.5em;
+    margin-left: -0.5em;
+    border-right: 1px solid #fff;
+    background-color: #4550e5;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0em;
+    height: 0em;
+    border: 0 none transparent;
+    border-left: 0.5em solid transparent;
+    border-right: 0.5em solid transparent;
+    border-bottom: 0.5em solid #fff;
+    transform: translateY(calc(-50% - .05em)) rotate(-90deg) translateY(.45em);
+    transition: transform 0.5s ease;
+  }
+
+  &:hover {
+    transform: translateX(0);
+
+    &::after {
+      transform: translateY(calc(-50% - .05em)) rotate(90deg) translateY(-.45em);
+    }
+  }
+
+  a[target] {
+    color: #4550e5;
+    &::after {
+      content: '';
+    }
+  }
+}
+
   .my-div-icon {
     position: relative;
 

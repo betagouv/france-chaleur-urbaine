@@ -7,7 +7,7 @@ import './Leaflet.VectorGrid.d';
 type VectorGridType = {
   url: string;
   style: any;
-  attribution: string;
+  attribution?: string;
   interactive?: boolean;
 };
 
