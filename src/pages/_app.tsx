@@ -9,6 +9,7 @@ import {
   ServicesContext,
   SuggestionService,
 } from 'src/services';
+import { createGlobalStyle } from 'styled-components';
 
 const imagePreview = `/img/preview/fcu-preview-20211213.min.jpg?date=${Date.now()}`;
 
@@ -25,12 +26,69 @@ const favicons = [
   },
 ];
 
+const DsfrFixUp = createGlobalStyle`
+@media (min-width: 992px) {
+  .fr-header {
+    transition: margin-top .25s ease;
+
+    .fr-nav__Logo-Entry {
+      width: 0;
+    }
+    .fr-nav__logo {
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      opacity: 0;
+      transition: width .25s ease;
+    }
+
+    &.fullscreen {
+      margin-top: -10rem;
+
+      .fr-nav__Logo-Entry {
+        width: 4.4rem;
+      }
+      .fr-nav__logo {
+        opacity: 1;
+      }
+    }
+  }
+
+  .fr-footer {
+    padding-top: 0;
+
+    .fr-container {
+        position: relative;
+    }
+    .fr-footer__body {
+        padding-bottom: 1.5rem;
+        margin-top: 2.5rem;
+        margin-bottom: 0;
+        border-bottom: 1px solid var(--g400);
+    }
+    .fr-footer__bottom {
+        border-top: 0 none;
+        margin-top: 0;
+    }
+
+    &.fullscreen {
+      .fr-footer__body {
+        display: none;
+    }
+
+    }
+  }
+}
+
+`;
+
 function MyApp({ Component, pageProps }: AppProps) {
   React.useEffect(() => {
     import('@gouvfr/dsfr/dist/js/dsfr.module.min.js');
   }, []);
   return (
     <>
+      <DsfrFixUp />
       <ServicesContext.Provider
         value={{
           suggestionService: new SuggestionService(fetchHttpClient),
