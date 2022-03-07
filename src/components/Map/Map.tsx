@@ -3,7 +3,7 @@ import L from 'leaflet';
 import 'leaflet-defaulticon-compatibility';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet/dist/leaflet.css';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   FeatureGroup,
   MapContainer,
@@ -17,6 +17,8 @@ import CardSearchDetails, { AddressDetail } from './CardSearchDetails';
 import { MapCard } from './CardSearchDetails.style';
 import ControlWrapper from './ControlWrapper';
 import {
+  GroupeLabel,
+  LabelLegend,
   LegendGlobalStyle,
   MapAsideContainer,
   MapControlWrapper,
@@ -58,7 +60,22 @@ const Map = () => {
     outline: true,
     substation: true,
     boilerRoom: true,
+    energy: ['fuelOil', 'gas'],
+    heating: ['collective'],
   });
+
+  const maxZoom = 18;
+  const minZoom = 4;
+  const defaultZoom = 13;
+
+  const networkLayerTheme = useMemo(
+    () => vectorGridTheme(layerDisplay, maxZoom),
+    [layerDisplay]
+  );
+  const energyLayerTheme = useMemo(
+    () => vectorGridTheme(layerDisplay, maxZoom),
+    [layerDisplay]
+  );
 
   const onAddressSelectHandle: TypeHandleAddressSelect = (
     address,
@@ -91,9 +108,20 @@ const Map = () => {
     });
   };
 
-  const maxZoom = 18;
-  const minZoom = 4;
-  const defaultZoom = 13;
+  const energyNameOptions = ['fuelOil', 'gas'] as const;
+  type EnergyNameOption = typeof energyNameOptions[number];
+  const toogleEnergyVisibility = (energyName: EnergyNameOption) => () => {
+    const availableEnergy = new Set(layerDisplay.energy);
+    if (availableEnergy.has(energyName)) {
+      availableEnergy.delete(energyName);
+    } else {
+      availableEnergy.add(energyName);
+    }
+    setLayerDisplay({
+      ...layerDisplay,
+      energy: Array.from(availableEnergy),
+    });
+  };
 
   return (
     <MapWrapper>
@@ -112,7 +140,12 @@ const Map = () => {
         />
         <VectorGrid
           url="/api/map/network/{z}/{x}/{y}"
-          style={vectorGridTheme(layerDisplay, maxZoom)}
+          style={networkLayerTheme}
+          interactive
+        />
+        <VectorGrid
+          url="/api/map/energy/{z}/{x}/{y}"
+          style={energyLayerTheme}
           interactive
         />
 
@@ -179,6 +212,34 @@ const Map = () => {
                           Sous station
                         </label>
                       </div>
+
+                      <hr />
+                      <div>
+                        <GroupeLabel>
+                          <header>Type de chauffage</header>
+                          <div className="groupe-label-body">
+                            {energyNameOptions.map((energy) => (
+                              <div className="label-item" key={energy}>
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    checked={
+                                      !!layerDisplay.energy.includes(energy)
+                                    }
+                                    onChange={toogleEnergyVisibility(energy)}
+                                  />
+                                  <LabelLegend
+                                    className="legend legend-energy"
+                                    bgColor={themeDefEnergy[energy].color}
+                                  />
+                                  {localTypeEnergy[energy] ||
+                                    localTypeEnergy.unknow}
+                                </label>
+                              </div>
+                            ))}
+                          </div>{' '}
+                        </GroupeLabel>
+                      </div>
                     </section>
                   </MapCard>
                 </ControlWrapper>
@@ -199,7 +260,9 @@ const Map = () => {
 };
 
 const typeEnergy: any = {
+  fioul: 'fuelOil',
   fioul_domestique: 'fuelOil',
+  gaz: 'gas',
   gaz_naturel: 'gas',
   gaz_propane_butane: 'gas',
   charbon: 'wood',
@@ -208,6 +271,14 @@ const typeEnergy: any = {
   energie_autre: 'unknow',
   'sans objet': 'unknow',
   default: 'unknow',
+};
+
+const localTypeEnergy = {
+  fuelOil: 'Fioul collectif',
+  gas: 'Gaz collectif',
+  wood: 'Bois',
+  electric: 'Electrique',
+  unknow: 'Autre',
 };
 
 const typeHeating: any = {
@@ -233,58 +304,69 @@ const vectorGridTheme = (
   layerDisplay: Record<string, unknown>,
   maxZoom: number
 ) => {
-  const getVisibility = (properties: Record<string, any>, dataDisplay: any) => {
+  const getEnergyVisibility = (
+    properties: Record<string, any>,
+    dataDisplay: any
+  ) => {
     let visibility = true;
 
     // Test Energy:
     const energyGeneric: string = properties?.['energie_utilisee'];
     visibility =
-      visibility && dataDisplay.energy.includes(typeEnergy[energyGeneric]);
+      visibility && dataDisplay?.energy.includes(typeEnergy[energyGeneric]);
 
     // Test Heating:
     const heatingGeneric: string = properties?.['type_chauffage'];
     visibility =
-      visibility && dataDisplay.heating.includes(typeHeating[heatingGeneric]);
+      visibility && dataDisplay?.heating.includes(typeHeating[heatingGeneric]);
 
     return visibility;
   };
+  const getLayerVisibility = (layerName: string, dataDisplay: any) =>
+    !!dataDisplay?.[layerName];
 
   return {
     outline: (properties: any, zoom: number) => ({
       color: '#2d9748',
-      opacity: zoom > 15 ? 1 : 0.75,
+      opacity: !getLayerVisibility('outline', layerDisplay)
+        ? 0
+        : zoom > 15
+        ? 1
+        : 0.75,
       fill: true,
       weight: zoom > 15 ? 5 : 3,
     }),
     substation: {
       color: '#ff00d4',
-      opacity: 1,
+      opacity: !getLayerVisibility('substation', layerDisplay) ? 0 : 1,
       fill: true,
-      fillOpacity: 1,
+      fillOpacity: !getLayerVisibility('substation', layerDisplay) ? 0 : 1,
       weight: 2,
     },
     boilerRoom: (properties: any, zoom: number) => ({
       color: '#ff6600',
-      opacity: 1,
+      opacity: !getLayerVisibility('boilerRoom', layerDisplay) ? 0 : 1,
       lineJoin: 'miter',
       fill: true,
-      fillOpacity: zoom > 15 ? 0.5 : 1,
+      fillOpacity: !getLayerVisibility('boilerRoom', layerDisplay)
+        ? 0
+        : zoom > 15
+        ? 0.5
+        : 1,
       fillRule: 'nonzero',
       weight: 2,
     }),
-    gasUsage: {
-      color: '#6c13e0',
-      opacity: 0,
-      radius: 3,
+    condominiumRegister: (properties: any, zoom: number) => {
+      const { nb_lot_habitation_bureau_commerce: nbLot } = properties;
+      const radius = nbLot <= 100 ? 12 : nbLot <= 1000 ? 24 : 48;
+      return {
+        ...getThemeEnergy(properties.energie_utilisee),
+        opacity: 0,
+        fill: true,
+        fillOpacity: !getEnergyVisibility(properties, layerDisplay) ? 0 : 0.65,
+        radius: Number.parseFloat((radius / (maxZoom - zoom + 1)).toFixed(2)),
+      };
     },
-    condominiumRegister: (properties: any, zoom: number) => ({
-      ...getThemeEnergy(properties.energie_utilisee),
-      opacity: !getVisibility(properties, layerDisplay) ? 0 : 0.3,
-
-      fill: true,
-      fillOpacity: !getVisibility(properties, layerDisplay) ? 0 : 0.8,
-      radius: Number.parseFloat((9 / (maxZoom - zoom + 1)).toFixed(2)),
-    }),
   };
 };
 

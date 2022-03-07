@@ -2,6 +2,8 @@ import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 import { readFileAsync, readSplitFileAsync } from '../helper';
 
+const API_DEBUG_MODE = !!(process.env.API_DEBUG_MODE || null);
+
 const path = './public/geojson/';
 const filepaths = {
   outline: {
@@ -23,28 +25,29 @@ const tileOptions = {
   tolerance: 20,
 };
 
-const getObjectIndex = async () => {
+const getObjectIndex = async (debug) => {
   const tileIndexPromises = Object.entries(filepaths).map(
     ([key, { filename, featuresFilter, multipart }]) => {
       return (
         multipart
-          ? readSplitFileAsync(path, filename, true)
-          : readFileAsync(`${path}${filename}`, true)
+          ? readSplitFileAsync(path, filename, !!API_DEBUG_MODE)
+          : readFileAsync(`${path}${filename}`, !!API_DEBUG_MODE)
       ).then((rawdata) => {
-        console.info(
-          'Convert string to Json ...',
-          typeof rawdata,
-          rawdata.length
-        );
+        debug &&
+          console.info(
+            'Convert string to Json ...',
+            typeof rawdata,
+            rawdata.length
+          );
         const geoJSON = JSON.parse(rawdata);
-        console.info('geoJson-ized', key);
+        debug && console.info('geoJson-ized', key);
 
         if (featuresFilter) {
           geoJSON.features = geoJSON.features.filter(featuresFilter);
         }
 
         const tileIndex = geojsonvt(geoJSON, tileOptions);
-        console.info('tileIndex-ized', typeof tileIndex);
+        debug && console.info('tileIndex-ized', typeof tileIndex);
         return [key, tileIndex];
       });
     }
@@ -61,7 +64,7 @@ const getObjectIndex = async () => {
 };
 
 let objTileIndex = {};
-const objTileIndexPromise = getObjectIndex().then(
+const objTileIndexPromise = getObjectIndex(API_DEBUG_MODE).then(
   (tileIndex) => (objTileIndex = tileIndex)
 );
 
