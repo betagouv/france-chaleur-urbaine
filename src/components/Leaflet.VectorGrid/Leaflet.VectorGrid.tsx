@@ -29,8 +29,11 @@ export default function VectorGrid({
     };
   }, [attribution, interactive, style]);
 
-  const vectorGrid = url ? L.vectorGrid.protobuf(url, options) : null;
-  const container = layerContainer || map;
+  const vectorGrid = useMemo(
+    () => (url ? L.vectorGrid.protobuf(url, options) : null),
+    [options, url]
+  );
+  const container = useMemo(() => layerContainer || map, [layerContainer, map]);
 
   useEffect(() => {
     vectorGrid && container.addLayer(vectorGrid);
