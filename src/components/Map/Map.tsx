@@ -62,7 +62,7 @@ const Map = () => {
     outline: true,
     substation: true,
     boilerRoom: true,
-    gasUsage: true,
+    gasUsage: ['R', 'T'],
     energy: ['fuelOil', 'gas'],
     heating: ['collective'],
   });
@@ -128,6 +128,21 @@ const Map = () => {
     setLayerDisplay({
       ...layerDisplay,
       energy: Array.from(availableEnergy),
+    });
+  };
+
+  const gasUsageNameOptions = ['R', 'T'] as const;
+  type gasUsageNameOption = typeof gasUsageNameOptions[number];
+  const toogleGasUsageVisibility = (gasUsageName: gasUsageNameOption) => () => {
+    const availableGasUsage = new Set(layerDisplay.gasUsage);
+    if (availableGasUsage.has(gasUsageName)) {
+      availableGasUsage.delete(gasUsageName);
+    } else {
+      availableGasUsage.add(gasUsageName);
+    }
+    setLayerDisplay({
+      ...layerDisplay,
+      gasUsage: Array.from(availableGasUsage),
     });
   };
 
@@ -270,10 +285,33 @@ const Map = () => {
                               { label: '+1000', size: 2 },
                             ]}
                           />
+                        </GroupeLabel>
+
+                        <GroupeLabel>
+                          <header>Consommations de gaz</header>
+                          <div className="groupe-label-body">
+                            {gasUsageNameOptions.map((gasType) => (
+                              <div className="label-item" key={gasType}>
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    checked={
+                                      !!layerDisplay.gasUsage.includes(gasType)
+                                    }
+                                    onChange={toogleGasUsageVisibility(gasType)}
+                                  />
+                                  <LabelLegend
+                                    className="legend legend-energy"
+                                    bgColor="#136ce099"
+                                  />
+                                  {localTypeGas[gasType] || localTypeGas.unknow}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+
                           <ScaleLegend
-                            checkbox
-                            checked={!!layerDisplay.gasUsage}
-                            onChange={toggleLayer('gasUsage')}
+                            framed
                             label="Niveau de consomation de gaz (MWh)"
                             color="#136ce040"
                             scaleLabels={[
@@ -324,6 +362,11 @@ const localTypeEnergy = {
   electric: 'Electrique',
   unknow: 'Autre',
 };
+const localTypeGas = {
+  T: 'Tertiaire',
+  R: 'Residentiel',
+  unknow: 'Inconnu',
+};
 
 const typeHeating: any = {
   collectif: 'collective',
@@ -366,6 +409,18 @@ const vectorGridTheme = (
 
     return visibility;
   };
+  const getGasUsageVisibility = (
+    properties: Record<string, any>,
+    dataDisplay: any
+  ) => {
+    let visibility = true;
+
+    // Test Gas Type:
+    const gasType: string = properties?.['code_grand_secteur'];
+    visibility = visibility && dataDisplay?.gasUsage.includes(gasType);
+
+    return visibility;
+  };
   const getLayerVisibility = (layerName: string, dataDisplay: any) =>
     !!dataDisplay?.[layerName];
 
@@ -403,19 +458,13 @@ const vectorGridTheme = (
     gasUsage: (properties: any, zoom: number) => {
       const { conso } = properties;
       const radius = conso < 100 ? 12 : conso < 1000 ? 24 : 48;
-      const defaultLayerProps = {
-        energie_utilisee: 'gaz',
-        type_chauffage: 'collectif',
-      };
       return {
         color: '#136ce0',
         opacity: 0,
         fill: true,
-        fillOpacity:
-          !getLayerVisibility('gasUsage', layerDisplay) ||
-          !getEnergyVisibility(defaultLayerProps, layerDisplay)
-            ? 0
-            : 0.25,
+        fillOpacity: !getGasUsageVisibility(properties, layerDisplay)
+          ? 0
+          : 0.25,
         radius: Number.parseFloat((radius / (maxZoom - zoom + 1)).toFixed(2)),
       };
     },
