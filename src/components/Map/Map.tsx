@@ -24,6 +24,7 @@ import {
   MapControlWrapper,
   MapGlobalStyle,
   MapWrapper,
+  ScaleLegend,
 } from './Map.style';
 import MapGlobalOptions from './MapGlobalOptions';
 import MapSearchForm, { TypeHandleAddressSelect } from './MapSearchForm';
@@ -52,6 +53,7 @@ const Map = () => {
     any | never[],
     React.Dispatch<any | never[]>
   ] = useState([]);
+  const [legendOpened, setLegendOpened] = useState(true);
 
   const [layerDisplay, setLayerDisplay]: [
     Record<string, any>,
@@ -60,6 +62,7 @@ const Map = () => {
     outline: true,
     substation: true,
     boilerRoom: true,
+    gasUsage: true,
     energy: ['fuelOil', 'gas'],
     heating: ['collective'],
   });
@@ -99,7 +102,12 @@ const Map = () => {
     setSearchMarker(true);
   };
 
-  const layerNameOptions = ['outline', 'substation', 'boilerRoom'] as const;
+  const layerNameOptions = [
+    'outline',
+    'substation',
+    'boilerRoom',
+    'gasUsage',
+  ] as const;
   type LayerNameOption = typeof layerNameOptions[number];
   const toggleLayer = (layerName: LayerNameOption) => () => {
     setLayerDisplay({
@@ -146,6 +154,11 @@ const Map = () => {
         <VectorGrid
           url="/api/map/energy/{z}/{x}/{y}"
           style={energyLayerTheme}
+          interactive
+        />
+        <VectorGrid
+          url="/api/map/gas/{z}/{x}/{y}"
+          style={vectorGridTheme(layerDisplay, maxZoom)}
           interactive
         />
 
@@ -237,7 +250,30 @@ const Map = () => {
                                 </label>
                               </div>
                             ))}
-                          </div>{' '}
+                          </div>
+
+                          <ScaleLegend
+                            framed
+                            label="Nombre de lots d'habitation"
+                            color="#afafaf"
+                            scaleLabels={[
+                              { label: '-100', size: 0.5 },
+                              { label: '100 à 1000', size: 1 },
+                              { label: '+1000', size: 2 },
+                            ]}
+                          />
+                          <ScaleLegend
+                            checkbox
+                            checked={!!layerDisplay.gasUsage}
+                            onChange={toggleLayer('gasUsage')}
+                            label="Niveau de consomation de gaz (MWh)"
+                            color="#136ce040"
+                            scaleLabels={[
+                              { label: '-100', size: 0.5 },
+                              { label: '100 à 1000', size: 1 },
+                              { label: '+1000', size: 2 },
+                            ]}
+                          />
                         </GroupeLabel>
                       </div>
                     </section>
@@ -356,9 +392,28 @@ const vectorGridTheme = (
       fillRule: 'nonzero',
       weight: 2,
     }),
+    gasUsage: (properties: any, zoom: number) => {
+      const { conso } = properties;
+      const radius = conso < 100 ? 12 : conso < 1000 ? 24 : 48;
+      const defaultLayerProps = {
+        energie_utilisee: 'gaz',
+        type_chauffage: 'collectif',
+      };
+      return {
+        color: '#136ce0',
+        opacity: 0,
+        fill: true,
+        fillOpacity:
+          !getLayerVisibility('gasUsage', layerDisplay) ||
+          !getEnergyVisibility(defaultLayerProps, layerDisplay)
+            ? 0
+            : 0.25,
+        radius: Number.parseFloat((radius / (maxZoom - zoom + 1)).toFixed(2)),
+      };
+    },
     condominiumRegister: (properties: any, zoom: number) => {
       const { nb_lot_habitation_bureau_commerce: nbLot } = properties;
-      const radius = nbLot <= 100 ? 12 : nbLot <= 1000 ? 24 : 48;
+      const radius = nbLot < 100 ? 12 : nbLot < 1000 ? 24 : 48;
       return {
         ...getThemeEnergy(properties.energie_utilisee),
         opacity: 0,

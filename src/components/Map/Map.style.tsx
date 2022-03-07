@@ -1,3 +1,4 @@
+import React from 'react';
 import styled, { createGlobalStyle, css } from 'styled-components';
 
 export const MapGlobalStyle = createGlobalStyle`
@@ -136,7 +137,6 @@ export const LegendGlobalStyle = createGlobalStyle`
       display: block;
       height: 1rem;
     }
-
   }
 
   .legend-heat-network {
@@ -207,6 +207,7 @@ export const GroupeLabel = styled.div`
     flex-wrap: wrap;
     justify-content: stretch;
     align-items: stretch;
+    padding: 0 0 0.4rem 0;
 
     .label-item {
       /* border: 1px solid rebeccapurple; */
@@ -233,6 +234,119 @@ export const LabelLegend = styled.span<{ bgColor: string }>`
     background-color: ${({ bgColor }) => bgColor || 'grey'};
   }
 `;
+
+// ---------------------------------------
+
+const ScaleLegendWrapper = styled.div<{ framed?: boolean }>`
+  padding: 0 0 0.4rem 0;
+
+  ${({ framed }) =>
+    framed &&
+    css`
+      padding: 0.3em 0.5em 0.55em;
+      margin-bottom: 0.4rem;
+      background-color: #efefef;
+      border-radius: 0.2em;
+    `}
+`;
+const ScaleLegendHeader = styled.div`
+  font-size: 0.8em;
+  margin-bottom: 0.2em;
+`;
+const ScaleLegendLabel = styled.label`
+  display: inline-block;
+  margin-bottom: 0.2em;
+`;
+const Input = styled.input``;
+const ScaleLegendBody = styled.div<{ checkbox?: boolean }>`
+  display: flex;
+  ${({ checkbox }) =>
+    checkbox &&
+    css`
+      padding: 0 0.3em;
+    `}
+`;
+const ScaleLegendLabelWrapper = styled.div`
+  font-size: 0.9em;
+
+  display: inline;
+  position: relative;
+  padding-right: 0.5em;
+  margin-right: 0.5em;
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 2px;
+    height: 70%;
+    background-color: rgb(69 80 229 / 34%);
+    right: 0;
+    top: 15%;
+  }
+
+  &:last-child::after {
+    display: none;
+  }
+`;
+const ScaleLabelLegend = styled.span<{ bgColor?: string; size: number }>`
+  width: ${({ size }) => `${size}rem`};
+  height: 1em;
+  display: inline-flex;
+  vertical-align: text-bottom;
+  justify-content: center;
+  align-items: center;
+  margin-right: 0.2em;
+
+  ::before {
+    content: '';
+    display: block;
+
+    width: ${({ size }) => `${size}em`};
+    height: ${({ size }) => `${size}em`};
+    border-radius: 50%;
+    margin-bottom: calc(0.25em - 1.5px);
+    background-color: ${({ bgColor }) => bgColor || 'grey'};
+  }
+`;
+
+export const ScaleLegend: React.FC<{
+  label: string;
+  color?: string;
+  scaleLabels: { label: string; size: number; bgColor?: string }[];
+  checkbox?: boolean;
+  checked?: boolean;
+  framed?: boolean;
+  onChange?: () => void;
+}> = ({
+  label,
+  checkbox,
+  checked,
+  framed,
+  onChange,
+  color: defaultColor,
+  scaleLabels,
+}) => (
+  <ScaleLegendWrapper framed={framed}>
+    {checkbox ? (
+      <ScaleLegendLabel>
+        <Input type="checkbox" checked={checked} onChange={onChange} />
+        {label}
+      </ScaleLegendLabel>
+    ) : (
+      <ScaleLegendHeader>{label}</ScaleLegendHeader>
+    )}
+
+    <ScaleLegendBody checkbox={checkbox}>
+      {scaleLabels.map(({ bgColor, label, size }) => (
+        <ScaleLegendLabelWrapper key={label}>
+          <ScaleLabelLegend bgColor={bgColor || defaultColor} size={size} />
+          {label}
+        </ScaleLegendLabelWrapper>
+      ))}
+    </ScaleLegendBody>
+  </ScaleLegendWrapper>
+);
 
 export const MapWrapper = styled.div`
   height: 100%;
