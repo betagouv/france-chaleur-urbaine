@@ -13,6 +13,8 @@ const transparency = 'a6'; // Equal to 70%
 type MapCardType = {
   isEligible?: boolean;
   typeCard?: string;
+  isClosable?: boolean;
+  isClickable?: boolean;
 };
 
 export const MapCard = styled.div<MapCardType>`
@@ -48,8 +50,9 @@ export const MapCard = styled.div<MapCardType>`
 
   > header {
     display: block;
-    cursor: pointer;
     padding: 0.5em;
+    cursor: ${({ isClickable, isClosable }) =>
+      isClickable || isClosable ? 'pointer' : 'default'};
 
     font-weight: bold;
 
@@ -77,6 +80,27 @@ export const MapCard = styled.div<MapCardType>`
 
   section {
     padding: 0.5em;
+
+    ${({ isClosable }) =>
+      isClosable &&
+      css`
+        max-height: 1000px;
+        transition: max-height 0.75s ease, padding 0.5s ease 0.25s;
+      `}
+  }
+
+  &.close {
+    section {
+      max-height: 0;
+      padding: 0 0.5em;
+    }
+
+    :hover {
+      section {
+        max-height: 1000px;
+        padding: 0.25em 0.5em;
+      }
+    }
   }
 `;
 

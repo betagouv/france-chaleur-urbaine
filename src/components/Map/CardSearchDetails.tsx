@@ -42,6 +42,7 @@ const CardSearchDetails = ({ result, onClick, flyOnClick }: SearchResult) => {
         isEligible={isEligible}
         typeCard={'search'}
         onClick={onClickHandler}
+        isClickable
       >
         <header>{result.address}</header>
         <section>

@@ -371,7 +371,7 @@ export const MapControlWrapper = styled.div`
   right: 0;
   width: calc(22.5% + 2em);
   max-width: 22rem;
-  min-width: 16.5rem;
+  min-width: 20.5rem;
 
   :before {
     content: '';
@@ -415,22 +415,21 @@ export const MapAsideContainer = styled.div<MapAsideContainerType>`
 
   overflow-y: overlay;
 
-  /*
-  mask-image: linear-gradient(180deg, transparent 0, black 0%),
-    linear-gradient(
-      180deg,
-      transparent 0,
-      black ${maskTop},
-      black calc(100% - ${maskBottom}),
-      transparent 100%
-    );
-  mask-size: ${scrollSize}, calc(100% - ${scrollSize});
-  mask-repeat: no-repeat, no-repeat;
-  mask-position: right top, left top; 
-  */
-
   &.search-result {
-    padding-top: 3.5rem;
+    padding-top: ${maskTop};
+    padding-bottom: ${maskBottom};
+
+    mask-image: linear-gradient(180deg, transparent 0, black 0%),
+      linear-gradient(
+        180deg,
+        transparent 0,
+        black ${maskTop},
+        black calc(100% - ${maskBottom}),
+        transparent 100%
+      );
+    mask-size: ${scrollSize}, calc(100% - ${scrollSize});
+    mask-repeat: no-repeat, no-repeat;
+    mask-position: right top, left top;
   }
 `;
 

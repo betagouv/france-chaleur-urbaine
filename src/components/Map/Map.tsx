@@ -187,9 +187,17 @@ const Map = () => {
 
               <MapAsideContainer bottom>
                 <ControlWrapper event="dblclick mousewheel scroll">
-                  <MapCard typeCard={'legend'}>
+                  <MapCard
+                    typeCard={'legend'}
+                    isClosable
+                    className={
+                      !legendOpened || soughtAddress.length > 0 ? 'close' : ''
+                    }
+                  >
                     <LegendGlobalStyle />
-                    <header>Legende</header>
+                    <header onClick={() => setLegendOpened(!legendOpened)}>
+                      Legende
+                    </header>
 
                     <section>
                       <div>
