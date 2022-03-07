@@ -16,10 +16,16 @@ type Result = {
 type SearchResult = {
   result: Result;
   onClick?: (result: Result) => void;
+  onClickClose?: (result: { coordinates?: L.LatLngExpression }) => void;
   flyOnClick?: boolean | number;
 };
 
-const CardSearchDetails = ({ result, onClick, flyOnClick }: SearchResult) => {
+const CardSearchDetails = ({
+  result,
+  onClick,
+  onClickClose,
+  flyOnClick,
+}: SearchResult) => {
   const map = useMap();
   const { distance } = result.addressDetails?.networkDetails?.network || {};
   const { isEligible } = result.addressDetails?.networkDetails || {};
@@ -36,6 +42,12 @@ const CardSearchDetails = ({ result, onClick, flyOnClick }: SearchResult) => {
     return returnVal;
   };
 
+  const onCloseHandler = () => {
+    if (onClickClose) {
+      onClickClose(result);
+    }
+  };
+
   return (
     <ControlWrapper event="dblclick mousewheel scroll touchstart">
       <MapCard
@@ -44,7 +56,14 @@ const CardSearchDetails = ({ result, onClick, flyOnClick }: SearchResult) => {
         onClick={onClickHandler}
         isClickable
       >
-        <header>{result.address}</header>
+        <header>
+          {result.address}
+          <div className="buttonsWrapper">
+            {onClickClose && (
+              <div className="closeButton" onClick={onCloseHandler} />
+            )}
+          </div>
+        </header>
         <section>
           <EligibilityResult isEligible={isEligible}>
             {isEligible

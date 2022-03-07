@@ -99,7 +99,24 @@ const Map = () => {
       { coordinates, address, addressDetails, search },
     ]);
     setPosition(coordinates);
-    setSearchMarker(true);
+    setSearchMarker(true); // TODO : Fix for multi result
+  };
+
+  const removeSoughtAddress = (result: {
+    coordinates?: L.LatLngExpression;
+  }) => {
+    if (!result.coordinates) return;
+    const getId = (LatLng: L.LatLngExpression) =>
+      Array.isArray(LatLng)
+        ? LatLng.join('--')
+        : `${LatLng.lat}--${LatLng.lng}`;
+    const id = getId(result.coordinates);
+    const newSoughtAddress = soughtAddress.filter(
+      ({ coordinates }: { coordinates: L.LatLngExpression }) =>
+        getId(coordinates) !== id
+    );
+    setSoughtAddress(newSoughtAddress);
+    setSearchMarker(false); // TODO : Fix for multi result
   };
 
   const layerNameOptions = [
@@ -195,6 +212,7 @@ const Map = () => {
                         key={`${adressDetails.address}-${i}`}
                         result={adressDetails}
                         flyOnClick={17}
+                        onClickClose={removeSoughtAddress}
                       />
                     ))
                     .reverse()}
