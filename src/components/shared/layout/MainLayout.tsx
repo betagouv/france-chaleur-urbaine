@@ -2,11 +2,22 @@ import Link from 'next/link';
 import React from 'react';
 import styled from 'styled-components';
 
-const headerHeight = `214px`;
-const footerHeight = `291px`;
+export const headerHeight = `214px`;
+export const tabHeaderHeight = `210px`;
+export const fullscreenHeaderHeight = `calc(214px - 10rem)`;
+export const footerHeight = `291px`;
+export const tabFooterHeight = `409px`;
+export const fullscreenFooterHeight = `98px`;
 
-const Main = styled.section`
-  min-height: calc(100vh - ${headerHeight} - ${footerHeight});
+const Main = styled.section<{ fullscreen?: boolean }>`
+  min-height: calc(100vh - ${tabHeaderHeight});
+
+  @media (min-width: 992px) {
+    min-height: calc(100vh - ${headerHeight} - ${footerHeight});
+    ${({ fullscreen }) =>
+      fullscreen &&
+      `min-height: calc(100vh - ${fullscreenHeaderHeight} - ${fullscreenFooterHeight});`}
+  }
 `;
 const HeaderLogo = styled.img`
   width: auto;
@@ -30,7 +41,7 @@ const GithubLogo = styled.img`
 type MainLayout = {
   children: React.ReactNode;
   currentMenu?: string;
-  banner?: boolean;
+  fullscreen?: boolean;
 };
 
 const menu = [
@@ -46,12 +57,20 @@ const menu = [
     label: 'Partenaires',
     url: '/partenaires',
   },
+  {
+    label: 'Carte des réseaux',
+    url: '/carte',
+  },
 ];
 
-const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
+const MainLayout: React.FC<MainLayout> = ({
+  children,
+  currentMenu,
+  fullscreen,
+}) => {
   return (
     <>
-      <header className="fr-header">
+      <header className={`fr-header ${fullscreen ? 'fullscreen' : ''}`}>
         <div className="fr-header__body">
           <div className="fr-container">
             <div className="fr-header__body-row">
@@ -120,6 +139,14 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
               aria-label="Menu principal"
             >
               <ul className="fr-nav__list">
+                <li className="fr-nav__Logo-Entry">
+                  <img
+                    className="fr-nav__logo"
+                    src="./logo-fcu.png"
+                    alt="logo france chaleur urbaine"
+                  />
+                </li>
+
                 {menu.map(({ label, url }) => (
                   <li
                     key={url}
@@ -142,9 +169,13 @@ const MainLayout: React.FC<MainLayout> = ({ children, currentMenu }) => {
           </div>
         </div>
       </header>
-      <Main>{children}</Main>
 
-      <footer className="fr-footer" id="footer">
+      <Main fullscreen={fullscreen}>{children}</Main>
+
+      <footer
+        className={`fr-footer ${fullscreen ? 'fullscreen' : ''}`}
+        id="footer"
+      >
         <div className="fr-container">
           <div className="fr-footer__body fr-footer__body--operator">
             <div className="fr-footer__brand fr-enlarge-link">
