@@ -186,11 +186,13 @@ const Map = () => {
         <VectorGrid
           url="/api/map/energy/{z}/{x}/{y}"
           style={energyLayerTheme}
+          attribution="Registre des copropriétés"
           interactive
         />
         <VectorGrid
           url="/api/map/gas/{z}/{x}/{y}"
           style={vectorGridTheme(layerDisplay, maxZoom)}
+          attribution="Données locales d'énergie - MTE"
           interactive
         />
 
@@ -229,7 +231,7 @@ const Map = () => {
                   >
                     <LegendGlobalStyle />
                     <header onClick={() => setLegendOpened(!legendOpened)}>
-                      Legende
+                      Légende
                     </header>
 
                     <section>
@@ -241,7 +243,7 @@ const Map = () => {
                             onChange={toggleLayer('outline')}
                           />{' '}
                           <span className="legend legend-heat-network" />
-                          Reseaux de chaleur
+                          Réseaux de chaleur
                         </label>
                       </div>
                       <div>
@@ -270,7 +272,7 @@ const Map = () => {
                       <hr />
                       <div>
                         <GroupeLabel>
-                          <header>Type de chauffage</header>
+                          <header>Copropriétés&nbsp;: type de chauffage</header>
                           <div className="groupe-label-body">
                             {energyNameOptions.map((energy) => (
                               <div className="label-item" key={energy}>
@@ -298,9 +300,9 @@ const Map = () => {
                             label="Nombre de lots d'habitation"
                             color="#afafaf"
                             scaleLabels={[
-                              { label: '-100', size: 0.5 },
+                              { label: '< 100', size: 0.5 },
                               { label: '100 à 1000', size: 1 },
-                              { label: '+1000', size: 2 },
+                              { label: '> 1000', size: 2 },
                             ]}
                           />
                         </GroupeLabel>
@@ -320,7 +322,7 @@ const Map = () => {
                                   />
                                   <LabelLegend
                                     className="legend legend-energy"
-                                    bgColor="#136ce099"
+                                    bgColor={`${themeDefTypeGas[gasType].color}99`}
                                   />
                                   {localTypeGas[gasType] || localTypeGas.unknow}
                                 </label>
@@ -331,11 +333,11 @@ const Map = () => {
                           <ScaleLegend
                             framed
                             label="Niveau de consomation de gaz (MWh)"
-                            color="#136ce040"
+                            color="#afafaf"
                             scaleLabels={[
-                              { label: '-100', size: 0.5 },
+                              { label: '< 100', size: 0.5 },
                               { label: '100 à 1000', size: 1 },
-                              { label: '+1000', size: 2 },
+                              { label: '> 1000', size: 2 },
                             ]}
                           />
                         </GroupeLabel>
@@ -382,7 +384,7 @@ const localTypeEnergy = {
 };
 const localTypeGas = {
   T: 'Tertiaire',
-  R: 'Residentiel',
+  R: 'Résidentiel',
   unknow: 'Inconnu',
 };
 
@@ -401,9 +403,16 @@ const themeDefEnergy: any = {
   electric: { color: '#4cd362' },
   unknow: { color: '#818181' },
 };
+const themeDefTypeGas: any = {
+  T: { color: '#13e0d6' },
+  R: { color: '#136ce0' },
+  unknow: { color: '#818181' },
+};
 
 const getThemeEnergy = (energy: string) =>
   themeDefEnergy[typeEnergy?.[energy] || 'unknow'];
+const getThemeTypeGas = (typeGas: string) =>
+  themeDefTypeGas[typeGas || 'unknow'];
 
 const vectorGridTheme = (
   layerDisplay: Record<string, unknown>,
@@ -477,7 +486,7 @@ const vectorGridTheme = (
       const { conso } = properties;
       const radius = conso < 100 ? 12 : conso < 1000 ? 24 : 48;
       return {
-        color: '#136ce0',
+        ...getThemeTypeGas(properties.code_grand_secteur),
         opacity: 0,
         fill: true,
         fillOpacity: !getGasUsageVisibility(properties, layerDisplay)
