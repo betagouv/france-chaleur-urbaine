@@ -2,7 +2,7 @@ export type SuggestionItem = {
   type: 'Feature';
   geometry: {
     type: 'Point';
-    coordinates: number[];
+    coordinates: Point;
   };
   properties: {
     label: string;
@@ -22,7 +22,7 @@ export type SuggestionItem = {
     street: string;
   };
 };
-export type Point = number[];
+export type Point = [number, number];
 export type SuggestionResponse = {
   type: 'FeatureCollection';
   version: string;

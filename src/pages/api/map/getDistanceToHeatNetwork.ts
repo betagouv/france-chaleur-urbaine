@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import Distance from './helper/distance';
+import { Distance } from './helper';
 
 type DistanceType = {
   msg: string;
