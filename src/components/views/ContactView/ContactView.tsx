@@ -5,6 +5,26 @@ import {
 } from '@components/shared/callOut/CallOut';
 import React from 'react';
 
+const contentDataEligible = {
+  title: `Avec le service public France Chaleur Urbaine, bénéficiez d’un accompagnement gratuit et sans engagement !`,
+  details: [
+    `Nous vous informons sur les démarches à accomplir pour se raccorder à un réseau de chaleur`,
+    `Nous vous mettons en contact avec le gestionnaire du réseau qui passe près de chez vous`,
+  ],
+};
+
+const contentDataIneligible = {
+  title: `Vous souhaiteriez vous raccorder mais il n'existe pas de réseau de
+    chaleur près de chez vous ? Laissez nous vos coordonnées :`,
+  details: [
+    `nous
+      transmettrons votre demande à la mairie de votre commune ou au gestionnaire du réseau le plus proche.`,
+    `Faire connaître son
+      souhait de se raccorder, c'est contribuer à la création de nouveaux
+      réseaux de chaleur ou au développement des réseaux existants`,
+  ],
+};
+
 export function CallOutWithAddress({
   isAddressEligible,
   address,
@@ -52,32 +72,23 @@ export function ContactFormDescription({
 }: {
   isAddressEligible: boolean;
 }) {
-  const contentData = isAddressEligible
-    ? {
-        title: `Avec le service public France Chaleur Urbaine, bénéficiez d’un
-      accompagnement personnalisé, gratuit et sans engagement !`,
-        details: [
-          `Nous vous donnons toutes les informations nécessaires sur le réseau de
-        chaleur qui passe près de chez vous`,
-          `Nous vous accompagnons dans les démarches à accomplir si vous
-        souhaitez y raccorder votre copropriété`,
-        ],
-      }
-    : {
-        title: `Vous souhaitez en savoir plus sur les projets de réseaux dans votre quartier ou sur d’autres modes de chauffage vertueux ?
-      France Chaleur Urbaine vous recontacte pour :`,
-        details: [
-          `Vous faire découvrir les projets de création ou extension de réseau dans votre quartier`,
-          `Vous informer sur d’autres solutions de chauffage performantes et écologiques`,
-        ],
-      };
+  const { title, details } = isAddressEligible
+    ? contentDataEligible
+    : contentDataIneligible;
 
   return (
     <>
-      <h4>{contentData.title}</h4>
+      <h4>{title}</h4>
       <ul>
-        {contentData.details.map((detail, i) => (
-          <li key={i} className="fr-fi-checkbox-circle-fill">
+        {details.map((detail, i) => (
+          <li
+            key={i}
+            className={` ${
+              isAddressEligible
+                ? 'fr-fi-checkbox-circle-fill eligible'
+                : 'fr-fi-arrow-right-s-line ineligible'
+            }`}
+          >
             {detail}
           </li>
         ))}
