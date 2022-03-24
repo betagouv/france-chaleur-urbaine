@@ -1,8 +1,10 @@
 import { Network } from '@core/domain/entity/network';
 import { Address } from './.';
 
+const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
+
 export class IdfAddress extends Address {
-  private threshold = 300;
+  private threshold = THRESHOLD;
   get isIDF(): boolean {
     return true;
   }
