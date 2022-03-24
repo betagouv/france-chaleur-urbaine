@@ -45,5 +45,11 @@ export const ContactFormContentWrapper = styled.div`
       margin-right: 0.5rem;
       color: #2fab73;
     }
+
+    &.ineligible {
+      ::before {
+        color: #4550e5;
+      }
+    }
   }
 `;

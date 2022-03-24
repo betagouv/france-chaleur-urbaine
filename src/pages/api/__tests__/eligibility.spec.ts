@@ -4,7 +4,7 @@
 import {
   someCoords,
   someEligiblePyrisAddressOutOfIDFResponse,
-  someIDFNetworkLessThan300MetersResponse,
+  someIDFNetworkLessThanThresholdDistanceResponse,
   someNetwork,
   someNotFoundNetworkResponse,
   someOutOfIDFCoordsWithNoNetwork,
@@ -14,6 +14,8 @@ import {
 import nock from 'nock';
 import { createMocks } from 'node-mocks-http';
 import getEligibilityStatus from '../map/getEligibilityStatus';
+
+const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
 
 describe('/api/map/getEligibilityStatus', () => {
   beforeAll(() => nock.disableNetConnect());
@@ -123,9 +125,9 @@ describe('/api/map/getEligibilityStatus', () => {
     });
   });
   describe('When address is eligible', () => {
-    test('should return address eligible, when address is in IDF and less then 300m', async () => {
+    test(`should return address eligible, when address is in IDF and less then threshold distance (${THRESHOLD}m)`, async () => {
       const coords = someCoords();
-      const networkResponse = someIDFNetworkLessThan300MetersResponse({
+      const networkResponse = someIDFNetworkLessThanThresholdDistanceResponse({
         latOrigin: coords.lat,
         lonOrigin: coords.lon,
       });
@@ -166,12 +168,12 @@ describe('/api/map/getEligibilityStatus', () => {
         })
       );
     });
-    test('should return address eligible, when address is in IDF and network at 300m', async () => {
+    test(`should return address eligible, when address is in IDF and network at threshold distance (${THRESHOLD}m)`, async () => {
       const coords = someCoords();
-      const networkResponse = someIDFNetworkLessThan300MetersResponse({
+      const networkResponse = someIDFNetworkLessThanThresholdDistanceResponse({
         latOrigin: coords.lat,
         lonOrigin: coords.lon,
-        distPointReseau: 300,
+        distPointReseau: THRESHOLD,
       });
       nock(`${process.env.NEXT_PUBLIC_PYRIS_BASE_URL}`)
         .get('/coords')
