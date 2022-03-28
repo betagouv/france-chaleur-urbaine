@@ -7,16 +7,13 @@ const API_DEBUG_MODE = !!(process.env.API_DEBUG_MODE || null);
 const path = './public/geojson/';
 const filepaths = {
   outline: {
-    filename:
-      'dataset-1641576913364-[Trace-des-reseaux-de-chaleur-en-Ile-de-France].geojson',
+    filename: 'traces_rdch.geojson',
   },
   substation: {
-    filename:
-      'dataset-1642417907427-[Sous-stations-des-reseaux-de-chaleur-Ile-de-France].geojson',
+    filename: 'sous_stations_rdch.geojson',
   },
   boilerRoom: {
-    filename:
-      'dataset-1642417995651-[Chaufferies-des-reseaux-de-chaleur-en-Ile-de-France].geojson',
+    filename: 'chaufferies-rdch.geojson',
   },
 };
 
