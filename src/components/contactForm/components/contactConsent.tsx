@@ -6,7 +6,7 @@ export const fieldLabelConsent = {
   collecterMesDonnees:
     'J’accepte que les données collectées soient utilisées à des fins d’analyse par le ministère de la transition écologique. (*)',
   partageAuGestionnaire:
-    'J’accepte que ma demande soit communiquée à ma commune et au gestionnaire du réseau le plus proche (sans aucun engagement de ma part).',
+    'J’accepte que ma demande soit communiquée à ma commune et au gestionnaire du réseau le plus proche (sans aucun engagement de ma part). (*)',
 };
 
 export const defaultValuesContactConsent = {
@@ -15,6 +15,7 @@ export const defaultValuesContactConsent = {
 };
 export const validationSchemasContactConsent = {
   collecterMesDonnees: Yup.boolean().oneOf([true], 'Ce champ est requis'),
+  partageAuGestionnaire: Yup.boolean().oneOf([true], 'Ce champ est requis'),
 };
 
 const contactConsent = () => {
