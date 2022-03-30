@@ -8,7 +8,7 @@ const FrRadioGroup = styled.span`
   padding-right: 1em;
 `;
 
-const Radio = ({ label, field, form, id, value }: any) => {
+const Radio = ({ label, field, form, id, value, displayError }: any) => {
   const hasError = _hasError(field.name, form);
   const additionalInputGroupClass = hasError ? 'fr-checkbox-group--error' : '';
   return (
@@ -23,7 +23,8 @@ const Radio = ({ label, field, form, id, value }: any) => {
       <label htmlFor={id} className="fr-label">
         {label}
       </label>
-      {hasError && (
+
+      {displayError && hasError && (
         <ErrorMessage
           name={field.name}
           component={'p'}
