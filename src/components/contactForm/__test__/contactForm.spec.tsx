@@ -16,7 +16,7 @@ test('rendering and submitting contact form', async () => {
   const filledInData = {
     email: 'test@test.com',
     nom: 'Dupont Jean',
-    chauffage: filledInLabel.chauffage.input[2].value,
+    chauffage: filledInLabel.chauffage.inputs[2].value,
     collecterMesDonnees: true,
     partageAuGestionnaire: true,
   };
@@ -46,7 +46,7 @@ test('rendering and submitting contact form', async () => {
     filledInLabel.partageAuGestionnaire,
     filledInData.partageAuGestionnaire
   );
-  userFillIn(filledInLabel.chauffage.input[2].label, true);
+  userFillIn(filledInLabel.chauffage.inputs[2].label, true);
 
   userEvent.click(screen.getByRole('button', { name: /Envoyer/i }));
 

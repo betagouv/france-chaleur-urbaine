@@ -1,5 +1,5 @@
 import Input from '@components/shared/input';
-import Radio from '@components/shared/Radio';
+import RadioGroup from '@components/shared/RadioGroup';
 import { Field } from 'formik';
 import * as Yup from 'yup';
 
@@ -7,8 +7,8 @@ export const fieldLabelInformation = {
   email: 'Email (*)',
   nom: 'Nom et Prénom',
   chauffage: {
-    label: 'Mode de chauffage Actuel',
-    input: [
+    label: 'Mode de chauffage Actuel (*)',
+    inputs: [
       { value: 'électricité', label: 'Électricité', id: 'electricite' },
       {
         value: 'gaz individuel',
@@ -29,12 +29,19 @@ export const fieldLabelInformation = {
 export const defaultValuesContactInformation = {
   nom: '',
   email: '',
+  chauffage: '',
 };
 export const validationSchemasContactInformation = {
   nom: Yup.string(),
   email: Yup.string()
     .email('Votre adresse email n‘est pas valide')
     .required('Veuillez renseigner votre adresse email'),
+  chauffage: Yup.string()
+    .required('Veuillez renseigner votre chauffage')
+    .oneOf(
+      fieldLabelInformation.chauffage.inputs.map(({ value }) => value),
+      'Ce champ est requis'
+    ),
 };
 
 const ContactInformation = () => {
@@ -58,18 +65,12 @@ const ContactInformation = () => {
         </div>
       </fieldset>
       <fieldset className="fr-fieldset fr-my-3w">
-        <div className="fr-my-3w">{fieldLabelInformation.chauffage.label}</div>
         <div>
-          {fieldLabelInformation.chauffage.input.map(({ value, label, id }) => (
-            <Field
-              key={id}
-              name="chauffage"
-              id={id}
-              value={value}
-              label={label}
-              component={Radio}
-            />
-          ))}
+          <RadioGroup
+            label={fieldLabelInformation.chauffage.label}
+            name="chauffage"
+            inputs={fieldLabelInformation.chauffage.inputs}
+          />
         </div>
       </fieldset>
     </>
