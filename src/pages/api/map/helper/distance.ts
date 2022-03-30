@@ -13,9 +13,7 @@ class Distance {
   static initReseau() {
     console.info('Lecture du fichier réseau ...');
     const rawdata = fs
-      .readFileSync(
-        './public/geojson/dataset-1641576913364-[Trace-des-reseaux-de-chaleur-en-Ile-de-France].geojson'
-      )
+      .readFileSync('./public/geojson/' + 'traces_rdch.geojson')
       .toString();
     console.info('Parsing le fichier en Json ...');
     const reseau = JSON.parse(rawdata);
