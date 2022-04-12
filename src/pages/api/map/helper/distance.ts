@@ -6,29 +6,32 @@
 
 import fs from 'fs';
 
+const DEBUG = !!(process.env.API_DEBUG_MODE || null);
+
 //Constants are defined at the end of the class, in Comptage object.
 class Distance {
   static reseau = null;
 
   static initReseau() {
-    console.info('Lecture du fichier réseau ...');
+    DEBUG && console.info('Read Network File...');
     const rawdata = fs
       .readFileSync('./public/geojson/' + 'traces_rdch.geojson')
       .toString();
-    console.info('Parsing le fichier en Json ...');
+    DEBUG && console.info('Convert data to Json ...');
     const reseau = JSON.parse(rawdata);
-    console.info('fichier réseau lu');
+    DEBUG && console.info('File read');
     return reseau;
   }
 
   static getDistance(lat: number, lon: number) {
-    console.info(
-      'Computing distance between network and ' +
-        lat +
-        ' lat, ' +
-        lon +
-        ' longitude'
-    );
+    DEBUG &&
+      console.info(
+        'Computing distance between network and ' +
+          lat +
+          ' lat, ' +
+          lon +
+          ' longitude'
+      );
     const resultDistance = Distance.distanceReseau(lat, lon);
     return {
       msg: 'Distance en metres',
@@ -47,7 +50,7 @@ class Distance {
 
     const dataList = Distance.reseau ? [Distance.reseau] : [];
     dataList.forEach(function (data: any, fileIndex) {
-      console.info('processing file ' + fileIndex);
+      DEBUG && console.info('processing file ' + fileIndex);
 
       // Then on features of all files
       let lines;
@@ -58,7 +61,7 @@ class Distance {
           } else if (feature.geometry.type == 'LineString') {
             lines = [feature.geometry.coordinates];
           } else {
-            console.info('Unknown type : ' + feature.geometry.type);
+            DEBUG && console.info('Unknown type : ' + feature.geometry.type);
             lines = [];
           }
 
@@ -100,8 +103,8 @@ class Distance {
       }
     });
 
-    console.info(new Date() + 'Fin de la recherche du point le plus proche ');
-    console.info('La distance minimale est ' + dmin + ' mètres.');
+    DEBUG && console.info(`${new Date()} > End of search for nearest point`);
+    DEBUG && console.info(`Minimum distance is ${dmin} meters.`);
     return { dmin: dmin, latmin: latmin, lonmin: lonmin };
   }
 
