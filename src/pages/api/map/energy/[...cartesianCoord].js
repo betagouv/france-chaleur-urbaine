@@ -8,14 +8,13 @@ const path = './public/geojson/';
 const filepaths = {
   condominiumRegister: {
     filename: 'registre_copro.geojson',
-    minZoom: 15,
+    minZoom: 13.5,
     multipart: true,
   },
 };
 
 const tileOptions = {
-  maxZoom: 18,
-  tolerance: 20,
+  maxZoom: 22,
 };
 
 const getObjectIndex = async (debug) => {
@@ -85,7 +84,7 @@ export default async function handleRequest(req, res) {
     return;
   }
 
-  const buffer = Buffer.from(vtpbf.fromGeojsonVt(tiles));
+  const buffer = Buffer.from(vtpbf.fromGeojsonVt(tiles, { version: 2 }));
   res.setHeader('Content-Type', 'application/protobuf');
   res.status(200).send(buffer);
 }
