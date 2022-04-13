@@ -1,3 +1,4 @@
+import Map from '@components/Map';
 import MainLayout, {
   fullscreenFooterHeight,
   fullscreenHeaderHeight,
@@ -22,7 +23,9 @@ function LegalMentions() {
         <title>Carte des réseaux : France Chaleur Urbaine</title>
       </Head>
       <MainLayout currentMenu="/carte" fullscreen>
-        <MapWrapper />
+        <MapWrapper>
+          <Map />
+        </MapWrapper>
       </MainLayout>
     </>
   );

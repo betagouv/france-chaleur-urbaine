@@ -4,10 +4,16 @@ import {
 } from '@components/shared/layout/MainLayout';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import param from './Map.param';
-const { minZoomData } = param;
+
+const { minZoomData, maxZoom } = param;
 
 const mapOverZindex = 10000;
 const mapControlZindex = 10100;
+
+// Mask Params:
+const maskTop = '3.5rem';
+const maskBottom = '7rem';
+const scrollSize = '15px';
 
 export const MapStyle = createGlobalStyle`
     .map-wrap {
@@ -38,6 +44,28 @@ export const MapStyle = createGlobalStyle`
 
     .popover-map-search-form {
       z-index: ${mapControlZindex + 1} !important;
+    }
+
+    .search-result-box {
+      height: 100%;
+      overflow: auto;
+      overflow-y: auto;
+      overflow-y: overlay;
+      overflow-x: visible;
+      padding-bottom: 6rem;
+
+      mask-image: linear-gradient(180deg, transparent 0, black 0%),
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, .3) 0,
+        black ${maskTop},
+        black calc(100% - ${maskBottom}),
+        transparent 100%
+      );
+    mask-size: ${scrollSize}, calc(100% - ${scrollSize});
+    mask-repeat: no-repeat, no-repeat;
+    mask-position: right top, left top;
+
     }
 `;
 
@@ -180,7 +208,7 @@ export const energyLayerStyle = {
         8,
         15,
       ],
-      22,
+      maxZoom,
       [
         'case',
         ['<', ['get', NB_LOT], 100],
@@ -194,9 +222,9 @@ export const energyLayerStyle = {
       'interpolate',
       ['linear'],
       ['zoom'],
-      minZoomData,
+      minZoomData + 0.2,
       0,
-      14,
+      minZoomData + 0.5 + 1,
       0.65,
     ],
     'circle-stroke-opacity': 0,
@@ -234,7 +262,7 @@ export const gasUsageLayerStyle = {
       'interpolate',
       ['linear'],
       ['zoom'],
-      minZoomData + 0.3,
+      minZoomData + 0.1,
       [
         'case',
         ['<', ['get', CONSO], 100],
@@ -243,7 +271,7 @@ export const gasUsageLayerStyle = {
         8,
         15,
       ],
-      22,
+      maxZoom,
       [
         'case',
         ['<', ['get', CONSO], 100],
@@ -259,7 +287,7 @@ export const gasUsageLayerStyle = {
       ['zoom'],
       minZoomData + 0.2,
       0,
-      14,
+      minZoomData + 0.2 + 1,
       0.25,
     ],
     'circle-stroke-opacity': 0,

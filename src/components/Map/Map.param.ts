@@ -70,7 +70,7 @@ const legendData = [
 ];
 
 const param = {
-  minZoomData: 13.5,
+  minZoomData: 12.75,
   minZoom: 4,
   maxZoom: 22,
   defaultZoom: 12,

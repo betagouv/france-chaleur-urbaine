@@ -229,7 +229,6 @@ export default function Map() {
         type: 'vector',
         tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
         maxzoom: maxZoom,
-        // minzoom: 0,
         minzoom: minZoomData,
       });
 
@@ -247,8 +246,7 @@ export default function Map() {
         type: 'vector',
         tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
         maxzoom: maxZoom,
-        // minzoom: 0,
-        minzoom: minZoomData + 0.1,
+        minzoom: minZoomData,
       });
 
       map.current.addLayer({
@@ -326,6 +324,23 @@ export default function Map() {
     <>
       <MapStyle />
       <div className="map-wrap">
+        {/* Search Result */}
+        <MapControlWrapper className="search-result-box" right top>
+          <MapSearchResult>
+            {soughtAddress.length > 0 &&
+              soughtAddress
+                .map((adressDetails: TypeAddressDetail, i: number) => (
+                  <CardSearchDetails
+                    key={`${adressDetails.address}-${i}`}
+                    result={adressDetails}
+                    onClick={flyTo}
+                    onClickClose={removeSoughtAddress}
+                  />
+                ))
+                .reverse()}
+          </MapSearchResult>
+        </MapControlWrapper>
+
         {/* Legend Box */}
         <MapControlWrapper right bottom>
           <MapLegend
@@ -346,23 +361,6 @@ export default function Map() {
             layerDisplay={layerDisplay}
             forceClosed={soughtAddress.length > 0}
           />
-        </MapControlWrapper>
-
-        {/* Search Result */}
-        <MapControlWrapper right top>
-          <MapSearchResult>
-            {soughtAddress.length > 0 &&
-              soughtAddress
-                .map((adressDetails: TypeAddressDetail, i: number) => (
-                  <CardSearchDetails
-                    key={`${adressDetails.address}-${i}`}
-                    result={adressDetails}
-                    onClick={flyTo}
-                    onClickClose={removeSoughtAddress}
-                  />
-                ))
-                .reverse()}
-          </MapSearchResult>
         </MapControlWrapper>
 
         {/* Search Box */}
