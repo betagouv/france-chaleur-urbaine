@@ -47,7 +47,7 @@ export const MapStyle = createGlobalStyle`
     }
 
     .search-result-box {
-      height: 100%;
+      max-height: 100%;
       overflow: auto;
       overflow-y: auto;
       overflow-y: overlay;
