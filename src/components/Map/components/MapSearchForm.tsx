@@ -1,18 +1,8 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
-import 'leaflet-defaulticon-compatibility';
-import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
-import 'leaflet/dist/leaflet.css';
 import React from 'react';
-import { useMap } from 'react-leaflet';
 import { useServices } from 'src/services';
 import { Point } from 'src/types';
-import { createGlobalStyle } from 'styled-components';
-
-const MapSearchFormGlobalStyle = createGlobalStyle`
-  .popover-class-name {
-    z-index: 1000;
-  }
-`;
+import { MapSearchFormGlobalStyle } from './MapSearchForm.style';
 
 export type TypeHandleAddressSelect = (
   address: string,
@@ -25,8 +15,6 @@ const MapSearchForm = ({
 }: {
   onAddressSelect: TypeHandleAddressSelect;
 }) => {
-  const map = useMap();
-
   const { heatNetworkService } = useServices();
 
   const handleAddressSelected = async (
@@ -34,11 +22,6 @@ const MapSearchForm = ({
     point: Point
   ): Promise<void> => {
     const [lng, lat] = point;
-    const newLatLng = { lat, lng };
-
-    map.setView(newLatLng, map.getMaxZoom() - 1, {
-      animate: true,
-    });
 
     const coords = { lat, lon: lng };
     const network = await heatNetworkService.findByCoords(coords);
@@ -57,7 +40,8 @@ const MapSearchForm = ({
       <AddressAutocomplete
         placeholder="Rechercher une adresse"
         onAddressSelected={handleAddressSelected}
-        popoverClassName={'popover-class-name'}
+        className="map-search-form"
+        popoverClassName={'popover-map-search-form'}
       />
     </>
   );

@@ -1,21 +1,23 @@
+import mapParam from '@components/Map';
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 import { readFileAsync, readSplitFileAsync } from '../helper';
 
 const API_DEBUG_MODE = !!(process.env.API_DEBUG_MODE || null);
 
+const { maxZoom, minZoomData } = mapParam;
+
 const path = './public/geojson/';
 const filepaths = {
   condominiumRegister: {
     filename: 'registre_copro.geojson',
-    minZoom: 15,
+    minZoom: minZoomData,
     multipart: true,
   },
 };
 
 const tileOptions = {
-  maxZoom: 18,
-  tolerance: 20,
+  maxZoom,
 };
 
 const getObjectIndex = async (debug) => {
@@ -85,7 +87,7 @@ export default async function handleRequest(req, res) {
     return;
   }
 
-  const buffer = Buffer.from(vtpbf.fromGeojsonVt(tiles));
+  const buffer = Buffer.from(vtpbf.fromGeojsonVt(tiles, { version: 2 }));
   res.setHeader('Content-Type', 'application/protobuf');
   res.status(200).send(buffer);
 }

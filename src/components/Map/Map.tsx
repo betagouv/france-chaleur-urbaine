@@ -1,90 +1,75 @@
-import VectorGrid from '@components/Leaflet.VectorGrid';
-import L from 'leaflet';
-import 'leaflet-defaulticon-compatibility';
-import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
-import 'leaflet/dist/leaflet.css';
-import React, { useMemo, useState } from 'react';
-import {
-  FeatureGroup,
-  MapContainer,
-  Marker,
-  ScaleControl,
-  TileLayer,
-  useMapEvent,
-} from 'react-leaflet';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import React, { useEffect, useRef, useState } from 'react';
 import { Point } from 'src/types';
-import CardSearchDetails, { AddressDetail } from './CardSearchDetails';
-import { MapCard } from './CardSearchDetails.style';
-import ControlWrapper from './ControlWrapper';
 import {
-  GroupeLabel,
-  LabelLegend,
-  LegendGlobalStyle,
-  MapAsideContainer,
+  CardSearchDetails,
+  MapLegend,
+  MapSearchForm,
+  TypeAddressDetail,
+  TypeHandleAddressSelect,
+} from './components';
+import mapParam, { TypeLayerDisplay } from './Map.param';
+import {
+  boilerRoomLayerStyle,
+  energyLayerStyle,
+  gasUsageLayerStyle,
   MapControlWrapper,
-  MapGlobalStyle,
-  MapWrapper,
-  ScaleLegend,
+  MapSearchResult,
+  MapStyle,
+  objTypeEnergy,
+  outlineLayerStyle,
+  substationLayerStyle,
 } from './Map.style';
-import MapGlobalOptions from './MapGlobalOptions';
-import MapSearchForm, { TypeHandleAddressSelect } from './MapSearchForm';
 
-const MAPBOX_API_TOKEN = `${process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN}`;
-const searchResultIcon = L.divIcon({ className: 'my-div-icon', html: '<i/>' });
+const {
+  defaultZoom,
+  maxZoom,
+  minZoom,
+  minZoomData,
+  lng,
+  lat,
+  defaultLayerDisplay,
+  legendData,
+} = mapParam;
 
-function SetViewOnClick() {
-  const map = useMapEvent('click', (e) => {
-    console.info('e.latlng =>', e.latlng, '/ Current Zoom =>', map.getZoom());
-    // TODO: Set new address point
-    // map.setView(e.latlng, map.getZoom(), {
-    //   animate: true,
-    // });
-  });
+const layerNameOptions = ['outline', 'substation', 'boilerRoom'] as const;
+const energyNameOptions = ['fuelOil', 'gas'] as const;
+const gasUsageNameOptions = ['R', 'T'] as const;
 
-  return null;
-}
+type LayerNameOption = typeof layerNameOptions[number];
+type EnergyNameOption = typeof energyNameOptions[number];
+type gasUsageNameOption = typeof gasUsageNameOptions[number];
 
-const Map = () => {
-  const defaultPosition: L.LatLngExpression = [48.85294, 2.34987];
-  const [position, setPosition]: [L.LatLngExpression, React.Dispatch<Point>] =
-    useState(defaultPosition);
+const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
+
+export default function Map() {
+  const mapContainer: null | { current: any } = useRef(null);
+  const map: null | { current: any } = useRef(null);
+
+  const [mapState, setMapState] = useState('pending');
   const [searchMarker, setSearchMarker] = useState(false);
   const [soughtAddress, setSoughtAddress]: [
     any | never[],
     React.Dispatch<any | never[]>
   ] = useState([]);
-  const [legendOpened, setLegendOpened] = useState(true);
-
   const [layerDisplay, setLayerDisplay]: [
-    Record<string, any>,
+    TypeLayerDisplay,
     React.Dispatch<any | never[]>
-  ] = useState({
-    outline: true,
-    substation: true,
-    boilerRoom: true,
-    gasUsage: ['R', 'T'],
-    energy: ['fuelOil', 'gas'],
-    heating: ['collective'],
-  });
+  ] = useState(defaultLayerDisplay);
 
-  const maxZoom = 18;
-  const minZoom = 4;
-  const defaultZoom = 13;
+  const flyTo = ({ coordinates }: any) => {
+    map.current.flyTo({
+      center: { lon: coordinates[0], lat: coordinates[1] },
+      zoom: 16,
+    });
+  };
 
-  const networkLayerTheme = useMemo(
-    () => vectorGridTheme(layerDisplay, maxZoom),
-    [layerDisplay]
-  );
-  const energyLayerTheme = useMemo(
-    () => vectorGridTheme(layerDisplay, maxZoom),
-    [layerDisplay]
-  );
-
-  const onAddressSelectHandle: TypeHandleAddressSelect = (
-    address,
-    coordinates,
-    addressDetails
-  ) => {
+  const onAddressSelectHandle:
+    | TypeHandleAddressSelect
+    | { _coordinates: Point } = (address, _coordinates, addressDetails) => {
+    // const coordinates: Point = _coordinates.reverse(); // TODO: Fix on source
+    const coordinates: Point = [_coordinates[1], _coordinates[0]]; // TODO: Fix on source
     console.info(
       'onAddressSelectHandle =>',
       address,
@@ -94,48 +79,46 @@ const Map = () => {
     const search = {
       date: Date.now(),
     };
+    const id = getAddressId(coordinates);
+    const newAddress = soughtAddress.find(
+      ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
+    ) || {
+      id,
+      coordinates,
+      address,
+      addressDetails,
+      search,
+    };
     setSoughtAddress([
-      // ...soughtAddress,  //TODO: Enable for support multi address
-      { coordinates, address, addressDetails, search },
+      ...soughtAddress.filter(({ id: _id }: { id: string }) => `${_id}` !== id),
+      newAddress,
     ]);
-    setPosition(coordinates);
+    flyTo({ coordinates });
     setSearchMarker(true); // TODO : Fix for multi result
   };
 
   const removeSoughtAddress = (result: {
-    coordinates?: L.LatLngExpression;
+    marker?: any;
+    coordinates?: Point;
   }) => {
     if (!result.coordinates) return;
-    const getId = (LatLng: L.LatLngExpression) =>
-      Array.isArray(LatLng)
-        ? LatLng.join('--')
-        : `${LatLng.lat}--${LatLng.lng}`;
-    const id = getId(result.coordinates);
-    const newSoughtAddress = soughtAddress.filter(
-      ({ coordinates }: { coordinates: L.LatLngExpression }) =>
-        getId(coordinates) !== id
-    );
+    const id = getAddressId(result.coordinates);
+    const getCurrentSoughtAddress = ({ coordinates }: { coordinates: Point }) =>
+      getAddressId(coordinates) !== id;
+    const newSoughtAddress = soughtAddress.filter(getCurrentSoughtAddress);
+    result?.marker?.remove();
     setSoughtAddress(newSoughtAddress);
     setSearchMarker(false); // TODO : Fix for multi result
   };
 
-  const layerNameOptions = [
-    'outline',
-    'substation',
-    'boilerRoom',
-    'gasUsage',
-  ] as const;
-  type LayerNameOption = typeof layerNameOptions[number];
-  const toggleLayer = (layerName: LayerNameOption) => () => {
+  const toggleLayer = (layerName: LayerNameOption) => {
     setLayerDisplay({
       ...layerDisplay,
       [layerName]: !layerDisplay?.[layerName] ?? false,
     });
   };
 
-  const energyNameOptions = ['fuelOil', 'gas'] as const;
-  type EnergyNameOption = typeof energyNameOptions[number];
-  const toogleEnergyVisibility = (energyName: EnergyNameOption) => () => {
+  const toogleEnergyVisibility = (energyName: EnergyNameOption) => {
     const availableEnergy = new Set(layerDisplay.energy);
     if (availableEnergy.has(energyName)) {
       availableEnergy.delete(energyName);
@@ -148,9 +131,7 @@ const Map = () => {
     });
   };
 
-  const gasUsageNameOptions = ['R', 'T'] as const;
-  type gasUsageNameOption = typeof gasUsageNameOptions[number];
-  const toogleGasUsageVisibility = (gasUsageName: gasUsageNameOption) => () => {
+  const toogleGasUsageVisibility = (gasUsageName: gasUsageNameOption) => {
     const availableGasUsage = new Set(layerDisplay.gasUsage);
     if (availableGasUsage.has(gasUsageName)) {
       availableGasUsage.delete(gasUsageName);
@@ -163,350 +144,232 @@ const Map = () => {
     });
   };
 
+  // ----------------
+  // --- Load Map ---
+  // ----------------
+  useEffect(() => {
+    if (mapState === 'loaded') return;
+
+    map.current = new maplibregl.Map({
+      attributionControl: false,
+      container: mapContainer.current,
+      style: `https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json`,
+      center: [lng, lat],
+      zoom: defaultZoom,
+      maxZoom,
+      minZoom,
+    });
+    map.current.on('click', () => {
+      console.info('zoom =>', map.current.getZoom());
+    });
+
+    map.current.on('load', () => {
+      console.info('useEffect1 mapState =>', mapState);
+      console.info('setMapState =>', 'loaded');
+      setMapState('loaded');
+
+      // ----------------
+      // --- Controls ---
+      // ----------------
+      const navControl = new maplibregl.NavigationControl({
+        showCompass: true,
+        showZoom: true,
+        visualizePitch: true,
+      });
+      map.current.addControl(navControl, 'top-left');
+
+      const attributionControl = new maplibregl.AttributionControl({
+        compact: false,
+      });
+      map.current.addControl(attributionControl, 'bottom-right');
+
+      const scaleControl = new maplibregl.ScaleControl({
+        maxWidth: 100,
+        unit: 'metric',
+      });
+      map.current.addControl(scaleControl, 'bottom-left');
+
+      // -------------------
+      // --- MAP CONTENT ---
+      // -------------------
+
+      const { origin } = document.location;
+
+      // --------------------
+      // --- Heat Network ---
+      // --------------------
+      map.current.addSource('heatNetwork', {
+        type: 'vector',
+        tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
+      });
+
+      map.current.addLayer({
+        id: 'outline',
+        source: 'heatNetwork',
+        'source-layer': 'outline',
+        ...outlineLayerStyle,
+      });
+      map.current.addLayer({
+        id: 'substation',
+        source: 'heatNetwork',
+        'source-layer': 'substation',
+        ...substationLayerStyle,
+      });
+      map.current.addLayer({
+        id: 'boilerRoom',
+        source: 'heatNetwork',
+        'source-layer': 'boilerRoom',
+        ...boilerRoomLayerStyle,
+      });
+
+      // --------------
+      // --- Energy ---
+      // --------------
+      map.current.addSource('energy', {
+        type: 'vector',
+        tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
+        maxzoom: maxZoom,
+        minzoom: minZoomData,
+      });
+
+      map.current.addLayer({
+        id: 'energy',
+        source: 'energy',
+        'source-layer': 'condominiumRegister',
+        ...energyLayerStyle,
+      });
+
+      // -----------------
+      // --- Gas Usage ---
+      // -----------------
+      map.current.addSource('gasUsage', {
+        type: 'vector',
+        tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
+        maxzoom: maxZoom,
+        minzoom: minZoomData,
+      });
+
+      map.current.addLayer({
+        id: 'gasUsage',
+        source: 'gasUsage',
+        'source-layer': 'gasUsage',
+        ...gasUsageLayerStyle,
+      });
+    });
+  });
+  // ------------------
+  // --- Set Marker ---
+  // ------------------
+  useEffect(() => {
+    let shouldUpdate = false;
+    const newSoughtAddress = soughtAddress.map((sAddress: any | never[]) => {
+      if (!sAddress.marker) {
+        const marker = new maplibregl.Marker({
+          color: '#4550e5',
+        })
+          .setLngLat(sAddress.coordinates)
+          .addTo(map.current);
+        shouldUpdate = true;
+        return {
+          marker,
+          ...sAddress,
+        };
+      } else {
+        return sAddress;
+      }
+    });
+    if (shouldUpdate) setSoughtAddress(newSoughtAddress);
+  }, [searchMarker, soughtAddress]);
+  // ---------------------
+  // --- Update Filter ---
+  // ---------------------
+  useEffect(() => {
+    if (mapState === 'pending') return;
+
+    // HeatNetwork
+    layerNameOptions.forEach((layerId) =>
+      map.current.getLayer(layerId)
+        ? map.current.setLayoutProperty(
+            layerId,
+            'visibility',
+            layerDisplay[layerId] ? 'visible' : 'none'
+          )
+        : console.info(`Layer '${layerId}' is not set on map`)
+    );
+
+    // Energy
+    const TYPE_ENERGY = 'energie_utilisee';
+    const energyFilter = layerDisplay.energy.flatMap((energyName) =>
+      objTypeEnergy[energyName].map((energyLabel: string) => [
+        '==',
+        ['get', TYPE_ENERGY],
+        energyLabel,
+      ])
+    );
+    console.info('energyFilter', ['any', ...energyFilter]);
+    map.current.setFilter('energy', ['any', ...energyFilter]);
+
+    // GasUsage
+    const TYPE_GAS = 'code_grand_secteur';
+    const gasUsageFilter = layerDisplay.gasUsage.map((gasUsageName) => [
+      '==',
+      ['get', TYPE_GAS],
+      gasUsageName,
+    ]);
+    console.info('gasUsageFilter', ['any', ...gasUsageFilter]);
+    map.current.setFilter('gasUsage', ['any', ...gasUsageFilter]);
+  }, [layerDisplay, mapState]);
+
   return (
-    <MapWrapper>
-      <MapGlobalStyle />
-      <MapContainer
-        center={defaultPosition}
-        maxZoom={maxZoom}
-        minZoom={minZoom}
-        zoom={defaultZoom}
-        style={{ height: '100%', width: '100%' }}
-      >
-        <MapGlobalOptions attributionPrefix='<a href="https://beta.gouv.fr/" target="_blank">beta.gouv</a>' />
-        <TileLayer
-          url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_API_TOKEN}`}
-          attribution='Outils cartographique : <a href="https://leafletjs.com/" target="_blank">Leaflet</a> | Données Cartographiques : &copy; <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> contributors (sous license <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>), fond de carte &copy; <a href="https://www.mapbox.com/" target="_blank">Mapbox</a>'
-        />
-        <VectorGrid
-          url="/api/map/network/{z}/{x}/{y}"
-          style={networkLayerTheme}
-          interactive
-        />
-        <VectorGrid
-          url="/api/map/energy/{z}/{x}/{y}"
-          style={energyLayerTheme}
-          attribution="Registre des copropriétés"
-          interactive
-        />
-        <VectorGrid
-          url="/api/map/gas/{z}/{x}/{y}"
-          style={vectorGridTheme(layerDisplay, maxZoom)}
-          attribution="Données locales d'énergie - MTE"
-          interactive
-        />
+    <>
+      <MapStyle />
+      <div className="map-wrap">
+        {/* Search Result */}
+        <MapControlWrapper className="search-result-box" right top>
+          <MapSearchResult>
+            {soughtAddress.length > 0 &&
+              soughtAddress
+                .map((adressDetails: TypeAddressDetail, i: number) => (
+                  <CardSearchDetails
+                    key={`${adressDetails.address}-${i}`}
+                    result={adressDetails}
+                    onClick={flyTo}
+                    onClickClose={removeSoughtAddress}
+                  />
+                ))
+                .reverse()}
+          </MapSearchResult>
+        </MapControlWrapper>
 
-        {searchMarker && <Marker position={position} icon={searchResultIcon} />}
+        {/* Legend Box */}
+        <MapControlWrapper right bottom>
+          <MapLegend
+            data={legendData}
+            onToogleFeature={toggleLayer}
+            onToogleInGroup={(groupeName: string, idEntry: any) => {
+              switch (groupeName) {
+                case 'energy': {
+                  toogleEnergyVisibility(idEntry);
+                  break;
+                }
+                case 'gasUsage': {
+                  toogleGasUsageVisibility(idEntry);
+                  break;
+                }
+              }
+            }}
+            layerDisplay={layerDisplay}
+            forceClosed={soughtAddress.length > 0}
+          />
+        </MapControlWrapper>
 
-        <ScaleControl maxWidth={200} imperial={false} metric />
-        <FeatureGroup
-          pane="popupPane"
-          interactive={false}
-          bubblingMouseEvents={true}
-        >
-          <div className="pan-map-aside">
-            <MapControlWrapper>
-              <MapAsideContainer className="search-result">
-                {soughtAddress.length > 0 &&
-                  soughtAddress
-                    .map((adressDetails: AddressDetail, i: number) => (
-                      <CardSearchDetails
-                        key={`${adressDetails.address}-${i}`}
-                        result={adressDetails}
-                        flyOnClick={17}
-                        onClickClose={removeSoughtAddress}
-                      />
-                    ))
-                    .reverse()}
-              </MapAsideContainer>
+        {/* Search Box */}
+        <MapControlWrapper right top>
+          <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+        </MapControlWrapper>
 
-              <MapAsideContainer bottom>
-                <ControlWrapper event="dblclick mousewheel scroll">
-                  <MapCard
-                    typeCard={'legend'}
-                    isClosable
-                    className={
-                      !legendOpened || soughtAddress.length > 0 ? 'close' : ''
-                    }
-                  >
-                    <LegendGlobalStyle />
-                    <header onClick={() => setLegendOpened(!legendOpened)}>
-                      Légende
-                    </header>
-
-                    <section>
-                      <div>
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={!!layerDisplay.outline}
-                            onChange={toggleLayer('outline')}
-                          />{' '}
-                          <span className="legend legend-heat-network" />
-                          Réseaux de chaleur
-                        </label>
-                      </div>
-                      <div>
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={!!layerDisplay.boilerRoom}
-                            onChange={toggleLayer('boilerRoom')}
-                          />{' '}
-                          <span className="legend legend-boiler-room" />
-                          Chaufferie
-                        </label>
-                      </div>
-                      <div>
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={!!layerDisplay.substation}
-                            onChange={toggleLayer('substation')}
-                          />{' '}
-                          <span className="legend legend-substation" />
-                          Sous station
-                        </label>
-                      </div>
-
-                      <hr />
-                      <div>
-                        <GroupeLabel>
-                          <header>Copropriétés&nbsp;: type de chauffage</header>
-                          <div className="groupe-label-body">
-                            {energyNameOptions.map((energy) => (
-                              <div className="label-item" key={energy}>
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    checked={
-                                      !!layerDisplay.energy.includes(energy)
-                                    }
-                                    onChange={toogleEnergyVisibility(energy)}
-                                  />
-                                  <LabelLegend
-                                    className="legend legend-energy"
-                                    bgColor={themeDefEnergy[energy].color}
-                                  />
-                                  {localTypeEnergy[energy] ||
-                                    localTypeEnergy.unknow}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-
-                          <ScaleLegend
-                            framed
-                            label="Nombre de lots d'habitation"
-                            color="#afafaf"
-                            scaleLabels={[
-                              { label: '< 100', size: 0.5 },
-                              { label: '100 à 1000', size: 1 },
-                              { label: '> 1000', size: 2 },
-                            ]}
-                          />
-                        </GroupeLabel>
-
-                        <GroupeLabel>
-                          <header>Consommations de gaz</header>
-                          <div className="groupe-label-body">
-                            {gasUsageNameOptions.map((gasType) => (
-                              <div className="label-item" key={gasType}>
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    checked={
-                                      !!layerDisplay.gasUsage.includes(gasType)
-                                    }
-                                    onChange={toogleGasUsageVisibility(gasType)}
-                                  />
-                                  <LabelLegend
-                                    className="legend legend-energy"
-                                    bgColor={`${themeDefTypeGas[gasType].color}99`}
-                                  />
-                                  {localTypeGas[gasType] || localTypeGas.unknow}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-
-                          <ScaleLegend
-                            framed
-                            label="Niveau de consomation de gaz (MWh)"
-                            color="#afafaf"
-                            scaleLabels={[
-                              { label: '< 100', size: 0.5 },
-                              { label: '100 à 1000', size: 1 },
-                              { label: '> 1000', size: 2 },
-                            ]}
-                          />
-                        </GroupeLabel>
-                      </div>
-                    </section>
-                  </MapCard>
-                </ControlWrapper>
-              </MapAsideContainer>
-
-              <MapAsideContainer>
-                <ControlWrapper>
-                  <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-                </ControlWrapper>
-              </MapAsideContainer>
-            </MapControlWrapper>
-          </div>
-        </FeatureGroup>
-        <SetViewOnClick />
-      </MapContainer>
-    </MapWrapper>
+        <div ref={mapContainer} className="map" />
+      </div>
+    </>
   );
-};
-
-const typeEnergy: any = {
-  fioul: 'fuelOil',
-  fioul_domestique: 'fuelOil',
-  gaz: 'gas',
-  gaz_naturel: 'gas',
-  gaz_propane_butane: 'gas',
-  charbon: 'wood',
-  bois_de_chauffage: 'wood',
-  electricite: 'electric',
-  energie_autre: 'unknow',
-  'sans objet': 'unknow',
-  default: 'unknow',
-};
-
-const localTypeEnergy = {
-  fuelOil: 'Fioul collectif',
-  gas: 'Gaz collectif',
-  wood: 'Bois',
-  electric: 'Electrique',
-  unknow: 'Autre',
-};
-const localTypeGas = {
-  T: 'Tertiaire',
-  R: 'Résidentiel',
-  unknow: 'Inconnu',
-};
-
-const typeHeating: any = {
-  collectif: 'collective',
-  individuel: 'individual',
-  mixte: 'mixed',
-  sans_chauffage: 'unknow',
-  'sans objet': 'unknow',
-};
-
-const themeDefEnergy: any = {
-  fuelOil: { color: '#c72e6e' },
-  gas: { color: '#9c47e2' },
-  wood: { color: '#ce7f17' },
-  electric: { color: '#4cd362' },
-  unknow: { color: '#818181' },
-};
-const themeDefTypeGas: any = {
-  T: { color: '#13e0d6' },
-  R: { color: '#136ce0' },
-  unknow: { color: '#818181' },
-};
-
-const getThemeEnergy = (energy: string) =>
-  themeDefEnergy[typeEnergy?.[energy] || 'unknow'];
-const getThemeTypeGas = (typeGas: string) =>
-  themeDefTypeGas[typeGas || 'unknow'];
-
-const vectorGridTheme = (
-  layerDisplay: Record<string, unknown>,
-  maxZoom: number
-) => {
-  const getEnergyVisibility = (
-    properties: Record<string, any>,
-    dataDisplay: any
-  ) => {
-    let visibility = true;
-
-    // Test Energy:
-    const energyGeneric: string = properties?.['energie_utilisee'];
-    visibility =
-      visibility && dataDisplay?.energy.includes(typeEnergy[energyGeneric]);
-
-    // Test Heating:
-    const heatingGeneric: string = properties?.['type_chauffage'];
-    visibility =
-      visibility && dataDisplay?.heating.includes(typeHeating[heatingGeneric]);
-
-    return visibility;
-  };
-  const getGasUsageVisibility = (
-    properties: Record<string, any>,
-    dataDisplay: any
-  ) => {
-    let visibility = true;
-
-    // Test Gas Type:
-    const gasType: string = properties?.['code_grand_secteur'];
-    visibility = visibility && dataDisplay?.gasUsage.includes(gasType);
-
-    return visibility;
-  };
-  const getLayerVisibility = (layerName: string, dataDisplay: any) =>
-    !!dataDisplay?.[layerName];
-
-  return {
-    outline: (properties: any, zoom: number) => ({
-      color: '#2d9748',
-      opacity: !getLayerVisibility('outline', layerDisplay)
-        ? 0
-        : zoom > 15
-        ? 1
-        : 0.75,
-      fill: true,
-      weight: zoom > 15 ? 5 : 3,
-    }),
-    substation: {
-      color: '#ff00d4',
-      opacity: !getLayerVisibility('substation', layerDisplay) ? 0 : 1,
-      fill: true,
-      fillOpacity: !getLayerVisibility('substation', layerDisplay) ? 0 : 1,
-      weight: 2,
-    },
-    boilerRoom: (properties: any, zoom: number) => ({
-      color: '#ff6600',
-      opacity: !getLayerVisibility('boilerRoom', layerDisplay) ? 0 : 1,
-      lineJoin: 'miter',
-      fill: true,
-      fillOpacity: !getLayerVisibility('boilerRoom', layerDisplay)
-        ? 0
-        : zoom > 15
-        ? 0.5
-        : 1,
-      fillRule: 'nonzero',
-      weight: 2,
-    }),
-    gasUsage: (properties: any, zoom: number) => {
-      const { conso } = properties;
-      const radius = conso < 100 ? 12 : conso < 1000 ? 24 : 48;
-      return {
-        ...getThemeTypeGas(properties.code_grand_secteur),
-        opacity: 0,
-        fill: true,
-        fillOpacity: !getGasUsageVisibility(properties, layerDisplay)
-          ? 0
-          : 0.25,
-        radius: Number.parseFloat((radius / (maxZoom - zoom + 1)).toFixed(2)),
-      };
-    },
-    condominiumRegister: (properties: any, zoom: number) => {
-      const { nb_lot_habitation_bureau_commerce: nbLot } = properties;
-      const radius = nbLot < 100 ? 12 : nbLot < 1000 ? 24 : 48;
-      return {
-        ...getThemeEnergy(properties.energie_utilisee),
-        opacity: 0,
-        fill: true,
-        fillOpacity: !getEnergyVisibility(properties, layerDisplay) ? 0 : 0.65,
-        radius: Number.parseFloat((radius / (maxZoom - zoom + 1)).toFixed(2)),
-      };
-    },
-  };
-};
-
-export default Map;
+}

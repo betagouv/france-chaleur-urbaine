@@ -1,8 +1,11 @@
+import mapParam from '@components/Map';
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 import { readFileAsync, readSplitFileAsync } from '../helper';
 
 const API_DEBUG_MODE = !!(process.env.API_DEBUG_MODE || null);
+
+const { maxZoom } = mapParam;
 
 const path = './public/geojson/';
 const filepaths = {
@@ -18,8 +21,7 @@ const filepaths = {
 };
 
 const tileOptions = {
-  maxZoom: 18,
-  tolerance: 20,
+  maxZoom,
 };
 
 const getObjectIndex = async (debug) => {
@@ -68,6 +70,13 @@ const objTileIndexPromise = getObjectIndex(API_DEBUG_MODE).then(
 export default async function handleRequest(req, res) {
   await objTileIndexPromise;
   const { cartesianCoord } = req.query;
+  // const { cartesianCoord, param } = req.query;
+  // console.log(
+  //   'params ==>',
+  //   req.query,
+  //   Object.keys(req.query),
+  //   Object.keys(req)
+  // );
   const [z, x, y] = cartesianCoord;
   const tiles = Object.entries(objTileIndex).reduce((acc, [key, tileIndex]) => {
     const tile =
@@ -89,7 +98,7 @@ export default async function handleRequest(req, res) {
     return;
   }
 
-  const buffer = Buffer.from(vtpbf.fromGeojsonVt(tiles));
+  const buffer = Buffer.from(vtpbf.fromGeojsonVt(tiles, { version: 2 }));
   res.setHeader('Content-Type', 'application/protobuf');
   res.status(200).send(buffer);
 }
