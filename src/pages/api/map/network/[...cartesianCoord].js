@@ -22,6 +22,7 @@ const filepaths = {
 
 const tileOptions = {
   maxZoom,
+  tolerance: 0,
 };
 
 const getObjectIndex = async (debug) => {
