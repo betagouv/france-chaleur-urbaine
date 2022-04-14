@@ -1,20 +1,23 @@
+import mapParam from '@components/Map';
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 import { readFileAsync, readSplitFileAsync } from '../helper';
 
 const API_DEBUG_MODE = !!(process.env.API_DEBUG_MODE || null);
 
+const { maxZoom, minZoomData } = mapParam;
+
 const path = './public/geojson/';
 const filepaths = {
   gasUsage: {
     filename: 'conso_gaz.geojson',
-    minZoom: 13.5,
+    minZoom: minZoomData,
     multipart: true,
   },
 };
 
 const tileOptions = {
-  maxZoom: 22,
+  maxZoom,
 };
 
 const getObjectIndex = async (debug) => {
