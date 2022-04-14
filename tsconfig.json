@@ -29,5 +29,5 @@
     }
   },
   "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules", "__tests__", "*.backUp"]
+  "exclude": ["node_modules", "__tests__", "*.backUp", "**/*.backUp/*"]
 }

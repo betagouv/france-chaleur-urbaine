@@ -41,6 +41,7 @@ type AddressProps = {
   emptySuggestionText?: string;
   debounceTime?: number;
   minCharactersLength?: number;
+  className?: string;
   popoverClassName?: string;
 };
 
@@ -56,6 +57,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
   debounceTime = 200,
   minCharactersLength = 3,
   placeholder = defaultPlaceholder,
+  className,
   popoverClassName,
   centred,
   onAddressSelected,
@@ -66,7 +68,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
   return (
     <>
       <GlobalStyle />
-      <div className="fr-input-group">
+      <div className={`fr-input-group ${className || ''}`}>
         {label && <AddressAutocompleteLabel label={label} centred={centred} />}
         <Combobox
           aria-label="address"

@@ -1,7 +1,7 @@
-import useSuggestions from '@components/addressAutocomplete/useSuggestions';
-import { findPointFromAddressAndSuggestions } from '@components/addressAutocomplete/utils';
 import { useCallback } from 'react';
 import { Point, Suggestions } from '../../types';
+import useSuggestions from './useSuggestions';
+import { findPointFromAddressAndSuggestions } from './utils';
 type onAddressSelectedProps = (address: string, coordinates: Point) => void;
 
 export const useFormAutocomplete = (

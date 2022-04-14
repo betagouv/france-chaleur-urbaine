@@ -1,9 +1,9 @@
+import Map from '@components/Map';
 import MainLayout, {
   fullscreenFooterHeight,
   fullscreenHeaderHeight,
   tabHeaderHeight,
 } from '@components/shared/layout/MainLayout';
-import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import React from 'react';
 import styled from 'styled-components';
@@ -17,10 +17,6 @@ const MapWrapper = styled.div`
 `;
 
 function LegalMentions() {
-  const MapWithNoSSR = dynamic(() => import('@components/Map'), {
-    ssr: false,
-  });
-
   return (
     <>
       <Head>
@@ -28,7 +24,7 @@ function LegalMentions() {
       </Head>
       <MainLayout currentMenu="/carte" fullscreen>
         <MapWrapper>
-          <MapWithNoSSR />
+          <Map />
         </MapWrapper>
       </MainLayout>
     </>
