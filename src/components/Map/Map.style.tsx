@@ -10,11 +10,6 @@ const { minZoomData, maxZoom } = param;
 const mapOverZindex = 10000;
 const mapControlZindex = 10100;
 
-// Mask Params:
-const maskTop = '3.5rem';
-const maskBottom = '7rem';
-const scrollSize = '15px';
-
 export const MapStyle = createGlobalStyle`
     .map-wrap {
       position: relative;
@@ -45,33 +40,16 @@ export const MapStyle = createGlobalStyle`
     .popover-map-search-form {
       z-index: ${mapControlZindex + 1} !important;
     }
-
-    .search-result-box {
-      max-height: 100%;
-      overflow: auto;
-      overflow-y: auto;
-      overflow-y: overlay;
-      overflow-x: visible;
-      padding-bottom: 6rem;
-
-      mask-image: linear-gradient(180deg, transparent 0, black 0%),
-      linear-gradient(
-        180deg,
-        rgba(0, 0, 0, .3) 0,
-        black ${maskTop},
-        black calc(100% - ${maskBottom}),
-        transparent 100%
-      );
-    mask-size: ${scrollSize}, calc(100% - ${scrollSize});
-    mask-repeat: no-repeat, no-repeat;
-    mask-position: right top, left top;
-
-    }
 `;
 
 // --------------------------
 // --- Tooling components ---
 // --------------------------
+
+// Mask Params:
+const maskTop = '3.5rem';
+const maskBottom = '7rem';
+const scrollSize = '15px';
 
 export const MapControlWrapper = styled.div<{
   top?: boolean;
@@ -103,6 +81,27 @@ export const MapControlWrapper = styled.div<{
       : css`
           left: 0;
         `}
+
+  &.search-result-box {
+    max-height: 100%;
+    overflow: auto;
+    overflow-y: auto;
+    overflow-y: overlay;
+    overflow-x: visible;
+    padding-bottom: 6rem;
+
+    mask-image: linear-gradient(180deg, transparent 0, black 0%),
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.3) 0,
+        black ${maskTop},
+        black calc(100% - ${maskBottom}),
+        transparent 100%
+      );
+    mask-size: ${scrollSize}, calc(100% - ${scrollSize});
+    mask-repeat: no-repeat, no-repeat;
+    mask-position: right top, left top;
+  }
 `;
 
 export const MapSearchResult = styled.div`
