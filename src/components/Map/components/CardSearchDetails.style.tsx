@@ -30,6 +30,11 @@ export const MapCard = styled.div<MapCardType>`
 
   box-shadow: 1px 0 4px 1px rgb(0 0 0 / 20%);
 
+  transition-property: box-shadow, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-in-out;
+  -webkit-font-smoothing: subpixel-antialiased;
+
   ${({ typeCard, isEligible }) => {
     switch (typeCard) {
       case 'search': {
@@ -139,6 +144,11 @@ export const MapCard = styled.div<MapCardType>`
         padding: 0.25em 0.5em;
       }
     }
+  }
+
+  &.selected {
+    box-shadow: 1px 2px 5px 7px rgb(0 0 0 / 20%);
+    transform: translateY(-6px) scale(1.01);
   }
 `;
 

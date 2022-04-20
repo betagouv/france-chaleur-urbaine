@@ -10,6 +10,11 @@ import {
 import { NetworkMapper } from '@core/infrastructure/mapper/network.mapper';
 import networkByIris from '@core/infrastructure/repository/network_by_iris.json';
 
+const IsNetworkIrisResponse = (
+  networkResponse: NetworkIrisResponse | undefined
+): networkResponse is NetworkIrisResponse => {
+  return (networkResponse as NetworkIrisResponse)?.code !== undefined;
+};
 export class NetworkRepositoryImpl implements NetworkRepository {
   constructor(public client: HttpClient) {}
   async findByCoords(coords: Coords): Promise<Network> {
@@ -35,8 +40,3 @@ export class NetworkRepositoryImpl implements NetworkRepository {
     return NetworkMapper.createNullNetwork();
   }
 }
-export const IsNetworkIrisResponse = (
-  networkResponse: NetworkIrisResponse | undefined
-): networkResponse is NetworkIrisResponse => {
-  return (networkResponse as NetworkIrisResponse)?.code !== undefined;
-};

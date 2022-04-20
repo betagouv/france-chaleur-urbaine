@@ -4,6 +4,9 @@ import { EligibilityResult, MapCard } from './CardSearchDetails.style';
 
 export type TypeAddressDetail = any;
 
+const distanceToString = (meterDistance: number) =>
+  meterDistance >= 1000 ? `${meterDistance / 1000}km` : `${meterDistance}m`;
+
 type Result = {
   address: string;
   addressDetails?: TypeAddressDetail;
@@ -54,10 +57,7 @@ const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
             : `Cette adresse n'est pour le moment pas raccordable à un réseau de chaleur.`}
         </EligibilityResult>
         <div>
-          {distance &&
-            `Distance aux reseaux : ${
-              distance >= 1000 ? `${distance / 1000}km` : `${distance}m`
-            }`}
+          {distance && `Distance aux reseaux : ${distanceToString(distance)}`}
         </div>
       </section>
     </MapCard>

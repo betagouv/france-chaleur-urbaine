@@ -16,13 +16,13 @@ export default (req: NextApiRequest, res: NextApiResponse<DistanceType>) => {
   let lat, lon;
 
   if (slat == undefined) {
-    lat = 48.874;
+    lat = 48.874; // TODO : Remove ?
   } else {
     lat = parseFloat(slat);
   }
 
   if (slon == undefined) {
-    lon = 2.584;
+    lon = 2.584; // TODO : Remove ?
   } else {
     lon = parseFloat(slon);
   }

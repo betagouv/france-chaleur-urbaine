@@ -15,7 +15,8 @@ export const useHeatNetworks = () => {
       try {
         setStatus('loading');
         const network = await heatNetworkService.findByCoords(coords);
-        const eligibility = network.isEligible;
+        // console.log('network =>', network);
+        const { isEligible: eligibility } = network;
         setIsEligible(eligibility);
         setStatus('success');
         if (callback) callback(eligibility, address);

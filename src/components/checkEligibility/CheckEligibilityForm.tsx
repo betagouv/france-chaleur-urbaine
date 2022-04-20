@@ -9,6 +9,7 @@ import markupData, {
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
+// import { useServices } from 'src/services';
 import { Coords, Point } from 'src/types';
 import { useHeatNetworks } from './useHeatNetworks';
 
@@ -25,6 +26,7 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
   const { status, checkEligibility, isEligible } = useHeatNetworks();
   const { push } = useRouter();
   const [storage, saveInStorage] = useLocalStorageState('');
+  // const { heatNetworkService } = useServices();
 
   const callMarkupEvent = (isEligible: boolean, address?: string) => {
     if (isEligible) {
@@ -57,6 +59,7 @@ const CheckEligibilityForm: React.FC<CheckEligibilityFormProps> = ({
     googleAdsEvent('10794036298', markupData.eligibilityTest.googleAdsEvent);
 
     const coords: Coords = convertPointToCoordinates(point);
+    // const network = await heatNetworkService.findByCoords(coords);
     await checkEligibility(coords, callMarkupEvent, address);
     saveInStorage({ coords: [coords.lat, coords.lon], label: address });
   };

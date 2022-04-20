@@ -160,7 +160,9 @@ export default function Map() {
       minZoom,
     });
     map.current.on('click', () => {
+      // map.current.on('click', (evt: any) => {
       console.info('zoom =>', map.current.getZoom());
+      // console.log('click', evt);
     });
 
     map.current.on('load', () => {
@@ -194,6 +196,7 @@ export default function Map() {
       // -------------------
 
       const { origin } = document.location;
+      // const origin = 'https://france-chaleur-urbaine.beta.gouv.fr';
 
       // --------------------
       // --- Heat Network ---

@@ -55,6 +55,10 @@ export default class MyDocument extends Document {
             <FacebookMarkup facebookId="3064783047067401" />
             <LinkedInMarkup tagId="3494650" />
           </ConsentBanner>
+          {/* <link
+            href="https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.css"
+            rel="stylesheet"
+          /> */}
         </Head>
         <body>
           <Main />
