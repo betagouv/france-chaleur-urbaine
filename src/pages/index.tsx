@@ -1,7 +1,7 @@
 import Accordions from '@components/accordions';
-import Banner from '@components/banner/banner';
 import Carrousel from '@components/Carrousel';
 import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
+import HeadSlice from '@components/HeadSlice';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Slice from '@components/Slice';
 import WrappedBlock from '@components/WrappedBlock';
@@ -86,15 +86,12 @@ export default function Home() {
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
-          <Slice
-            theme="grey"
-            bg="./img/home-top-search-bg.jpg"
-            bgWidth={1600}
-            bgColor="#88c9df"
-            bleedColor={['#41a4c1', '#88c9df']}
-          >
-            <Banner />
-          </Slice>
+          <HeadSlice
+            bg="./img/head-slice-bg-home.png"
+            formLabel="Votre immeuble pourrait-il être raccordé à un&nbsp;réseau&nbsp;de&nbsp;chaleur&nbsp;?"
+            pageTitle="Les réseaux de chaleur, une énergie d’avenir"
+            pageBody="Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français"
+          />
 
           <Slice padding={4} className="slice-migration-solution">
             <WrappedBlock data={accompagnementRcu} />
