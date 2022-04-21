@@ -36,7 +36,7 @@ export type TypeHandleAddressSelected = (
 type AddressProps = {
   centred?: boolean;
   onAddressSelected: TypeHandleAddressSelected;
-  label?: string;
+  label?: React.ReactNode;
   placeholder?: string;
   emptySuggestionText?: string;
   debounceTime?: number;
@@ -69,7 +69,11 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
     <>
       <GlobalStyle />
       <div className={`fr-input-group ${className || ''}`}>
-        {label && <AddressAutocompleteLabel label={label} centred={centred} />}
+        {label && (
+          <AddressAutocompleteLabel centred={centred}>
+            {label}
+          </AddressAutocompleteLabel>
+        )}
         <Combobox
           aria-label="address"
           aria-labelledby="address"
