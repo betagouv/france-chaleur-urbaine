@@ -10,6 +10,7 @@ import {
   accompagnementRcu,
   faqRcu,
   fcuSolutionForFutur,
+  presentationRcu,
   testimonies,
   userExperience,
 } from '@data';
@@ -44,7 +45,7 @@ const GlobalStyle = createGlobalStyle`
     background-position: right calc(50% - 28rem) bottom 50%;
 
     @media (min-width: 990px) {
-      background-image: url(./img/rcu-illustation.png) ;
+      background-image: url(./img/rcu-illustation.svg) ;
 
       img {
         opacity: 0;
@@ -92,6 +93,12 @@ export default function Home() {
             pageTitle="Les réseaux de chaleur, une énergie d’avenir"
             pageBody="Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français"
           />
+
+          <Slice padding={4} className="slice-schema-container">
+            <WrappedText {...presentationRcu} />
+          </Slice>
+
+          {/* XXX */}
 
           <Slice padding={4} className="slice-migration-solution">
             <WrappedBlock data={accompagnementRcu} />

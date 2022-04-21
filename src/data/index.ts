@@ -5,5 +5,6 @@ export { default as faqRcu } from './home/faq-rcu';
 export { default as privacyPolicy } from './home/fcu-privacy-policy';
 export { default as fcuSolutionForFutur } from './home/fcu-solution-for-futur.json';
 export { default as termOfUse } from './home/fcu-term-of-use';
+export { default as presentationRcu } from './home/presentation-rcu';
 export { default as testimonies } from './home/testimonies.json';
 export { default as userExperience } from './home/user-experience.json';
