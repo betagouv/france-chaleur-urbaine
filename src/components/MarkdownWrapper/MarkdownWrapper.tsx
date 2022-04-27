@@ -7,13 +7,16 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import {
+  ButtonLink,
   Cartridge,
+  CheckItem,
   CounterItem,
+  isExternalLink,
+  KnowMoreLink,
   MarkdownWrapperStyled,
   PuceIcon,
 } from './MarkdownWrapper.style';
 
-const isExternalLink = (href: string) => href?.search(/(^http)|(^mailto)/) >= 0;
 const RoutedLink = (props: any) => {
   const { href } = props;
   const extProps = {
@@ -77,10 +80,13 @@ const MarkdownWrapper: React.FC<{
     >
       {
         processor({
+          'check-item': CheckItem,
           'counter-item': CounterItem,
           'consent-link': ConsentLink,
           cartridge: Cartridge,
           'puce-icon': PuceIcon,
+          'button-link': ButtonLink,
+          'know-more-link': KnowMoreLink,
         }).processSync(md).result
       }
     </MarkdownWrapperStyled>
