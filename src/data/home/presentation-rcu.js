@@ -5,17 +5,17 @@ const presentationRcu = {
   avec **des sources d’énergies renouvelables ou de récupération.**  
   Une alternative écologique au fioul et au gaz !
 
-  :::puce-icon{icon="./icons/picto-ecology.svg"}
+  :::puce-icon{icon="./icons/picto-ecology.svg" className="presentation-rcu-icon"}
   **Energie locale et renouvelable**  
   Faibles émissions de gaz à effet de serre et de polluants atmosphériques
   :::
 
-  :::puce-icon{icon="./icons/picto-economic.svg"}
+  :::puce-icon{icon="./icons/picto-economic.svg" className="presentation-rcu-icon"}
   **Tarif stable et maîtrisé**  
-  Pas de fluctuation du prix et un taux de TVA à 5,5%
+  Peu de fluctuation des prix et un taux de TVA à 5,5%
   :::
 
-  :::puce-icon{icon="./icons/picto-confort.svg"}
+  :::puce-icon{icon="./icons/picto-confort.svg" className="presentation-rcu-icon"}
   **Fiabilité et sécurité**  
   Suppression des chaudières et risques associés et garantie du service public
   :::
