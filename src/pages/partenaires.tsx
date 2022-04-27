@@ -2,7 +2,7 @@ import MarkdownWrapper from '@components/MarkdownWrapper';
 import PartnerCard from '@components/partenaires/partnerCard';
 import PartnerSection from '@components/partenaires/partnerSection';
 import MainLayout from '@components/shared/layout/MainLayout';
-import Data from '@data/partner/partnerData.json';
+import { partnerData } from '@data/partenaires';
 import Head from 'next/head';
 import React from 'react';
 import styled from 'styled-components';
@@ -23,15 +23,15 @@ function Partner() {
       <MainLayout currentMenu="/partenaires">
         <div className="fr-container fr-my-2w">
           <div className="fr-grid-row">
-            <h1>{Data.title}</h1>
+            <h1>{partnerData.title}</h1>
           </div>
-          {Data.teaser && (
+          {partnerData.teaser && (
             <div className="fr-col-12">
-              <StyledMarkdown value={Data.teaser} />
+              <StyledMarkdown value={partnerData.teaser} />
             </div>
           )}
         </div>
-        {Data.partners.map(({ title, teaser, items }, index) => (
+        {partnerData.partners.map(({ title, teaser, items }, index) => (
           <PartnerSection key={index} title={title} teaser={teaser}>
             {items.map((item, index) => (
               <PartnerCard
