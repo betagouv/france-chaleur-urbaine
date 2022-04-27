@@ -1,8 +1,12 @@
 import styled from 'styled-components';
 
-export const Container = styled.div<{ reverse?: boolean }>`
+export const Container = styled.div<{ reverse?: boolean; direction?: string }>`
   display: flex;
-  flex-direction: ${({ reverse }) => (reverse ? ' row-reverse' : 'row')};
+  flex-direction: ${({ reverse, direction }) =>
+    reverse ? ' row-reverse' : direction || 'row'};
+  flex: 1;
+  justify-content: space-around;
+  margin: 2rem 0;
 `;
 export const ImageContainer = styled.div`
   > img {

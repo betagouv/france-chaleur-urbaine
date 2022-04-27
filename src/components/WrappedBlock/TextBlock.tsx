@@ -6,11 +6,13 @@ const TextBlock: React.FC<{
   title?: string;
   body?: string;
   className?: string;
-}> = ({ title, body, children, className }) => {
+  bodyClassName?: string;
+}> = ({ title, body, children, className, bodyClassName }) => {
   return (
-    <TextContainer className="fr-col-lg-6 fr-col-md-12">
+    // TODO: Remove DSFR class system
+    <TextContainer className={`fr-col-lg-6 fr-col-md-12 ${className}`}>
       <h2>{title}</h2>
-      {<MarkdownWrapper value={body} className={className} />}
+      {body && <MarkdownWrapper value={body} className={bodyClassName} />}
       {children}
     </TextContainer>
   );
