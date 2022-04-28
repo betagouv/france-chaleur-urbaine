@@ -178,7 +178,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainLayout currentMenu="/">
+      <MainLayout currentMenu="/tertiaire">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
