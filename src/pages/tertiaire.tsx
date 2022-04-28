@@ -3,6 +3,7 @@ import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityF
 import HeadSlice from '@components/HeadSlice';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainLayout from '@components/shared/layout/MainLayout';
+import SimulateurCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
 import WrappedBlock from '@components/WrappedBlock';
 import {
@@ -12,7 +13,7 @@ import {
 } from '@data/tertiaire';
 import Head from 'next/head';
 import React from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
   .user-experience-description {
@@ -163,11 +164,6 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const TitleColorSlice = styled.h3`
-  text-align: center;
-  margin: 0.5em 0;
-`;
-
 export default function Home() {
   return (
     <>
@@ -276,12 +272,23 @@ Se raccorder à un réseau de chaleur, c’est :
             </div>
           </Slice>
 
-          <Slice theme="color" padding={5}>
-            <TitleColorSlice>
-              Comme plus de 5 millions de Français, <br />
-              valorisez votre copropriété en optant <br />
-              pour les réseaux de chaleur.
-            </TitleColorSlice>
+          <Slice
+            theme="color"
+            padding={8}
+            header={`## Un moyen efficace de lutter contre le changement climatique`}
+          >
+            <SimulateurCO2 typeSurf="tertiaire">
+              <MarkdownWrapper
+                value={`
+:::puce-icon{icon="./icons/picto-warning.svg"}
+**À partir du 1er juillet 2022,** de nouvelles normes environnementales, 
+qui visent à limiter les émissions de gaz à effet de serre, entreront en 
+vigueur et **excluent l'installation de nouvelles chaudières au fioul.**  
+**Des aides accompagnent cette transition.**
+:::
+              `}
+              />
+            </SimulateurCO2>
           </Slice>
 
           <Slice
