@@ -80,7 +80,7 @@ const MainLayout: React.FC<MainLayout> = ({
                         France Chaleur Urbaine
                       </HeaderLabel>
                       <HeaderSubLabel>
-                        Service public pour le raccordement des copropriétés aux
+                        Service public pour le raccordement des bâtiments aux
                         réseaux de chaleur
                       </HeaderSubLabel>
                     </a>
@@ -236,8 +236,8 @@ const MainLayout: React.FC<MainLayout> = ({
             <div className="fr-footer__content">
               <p className="fr-footer__content-desc">
                 France Chaleur Urbaine est un projet d'innovation pour accélérer
-                le raccordement des copropriétés aux réseaux de chaleur en vue
-                de l'atteinte des objectifs de développement de la chaleur
+                le raccordement des bâtiments aux réseaux de chaleur en vue de
+                l'atteinte des objectifs de développement de la chaleur
                 d'origine renouvelable.
                 <br />
                 <strong>
