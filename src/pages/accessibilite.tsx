@@ -76,11 +76,11 @@ function Accessibilite() {
                 <li>
                   Envoyer un message à{' '}
                   <a
-                    href="mailto:france-chaleur-urbaine@beta.gouv.fr"
+                    href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    france-chaleur-urbaine@beta.gouv.fr
+                    france-chaleur-urbaine@developpement-durable.gouv.fr
                   </a>
                 </li>
               </ul>

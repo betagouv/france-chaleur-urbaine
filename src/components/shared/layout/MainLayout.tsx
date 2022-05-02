@@ -20,6 +20,12 @@ export {
   tabHeaderHeight,
 } from './MainLayout.data'; // TODO: remove this and use index.ts
 
+const fcuHeaderDesc = `Un service public pour faciliter et accélérer les raccordements aux réseaux de chaleur`;
+const fcuFooterDesc = `France Chaleur Urbaine est un projet d'innovation pour accélérer
+  le raccordement des bâtiments aux réseaux de chaleur en vue de
+  l'atteinte des objectifs de développement de la chaleur
+  d'origine renouvelable.`;
+
 type MainLayout = {
   children: React.ReactNode;
   currentMenu?: string;
@@ -79,10 +85,7 @@ const MainLayout: React.FC<MainLayout> = ({
                       <HeaderLabel className="fr-header__service-title">
                         France Chaleur Urbaine
                       </HeaderLabel>
-                      <HeaderSubLabel>
-                        Service public pour le raccordement des bâtiments aux
-                        réseaux de chaleur
-                      </HeaderSubLabel>
+                      <HeaderSubLabel>{fcuHeaderDesc}</HeaderSubLabel>
                     </a>
                   </Link>
                 </div>
@@ -235,20 +238,17 @@ const MainLayout: React.FC<MainLayout> = ({
             </div>
             <div className="fr-footer__content">
               <p className="fr-footer__content-desc">
-                France Chaleur Urbaine est un projet d'innovation pour accélérer
-                le raccordement des bâtiments aux réseaux de chaleur en vue de
-                l'atteinte des objectifs de développement de la chaleur
-                d'origine renouvelable.
+                {fcuFooterDesc}
                 <br />
                 <strong>
                   Faites nous part de vos propositions pour améliorer ce service
                   : <br />
                   <a
-                    href="mailto:france-chaleur-urbaine@beta.gouv.fr"
+                    href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    france-chaleur-urbaine@beta.gouv.fr
+                    france-chaleur-urbaine@developpement-durable.gouv.fr
                   </a>
                 </strong>
               </p>

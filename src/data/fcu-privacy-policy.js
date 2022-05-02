@@ -6,7 +6,7 @@ const privacyPolicy = `
 La nature des opérations réalisées sur les données est :
 - Lors de l’utilisation du service, les informations personnelles que vous acceptez de communiquer sont enregistrées dans France Chaleur Urbaine.
 - L’affectation d’un utilisateur à une entité privée de type entreprise est supervisée par un administrateur de la plateforme France Chaleur Urbaine.
-- La mise à jour et l’effacement des données personnelles liées au compte utilisateur France Chaleur Urbaine et possible par mail à l’adresse [france-chaleur-urbaine@beta.gouv.fr](mailto:france-chaleur-urbaine@beta.gouv.fr).
+- La mise à jour et l’effacement des données personnelles liées au compte utilisateur France Chaleur Urbaine et possible par mail à l’adresse [france-chaleur-urbaine@developpement-durable.gouv.fr](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr).
 - Les données de connexion sont utilisées pour établir un journal d’ajout et modification des données de France Chaleur Urbaine et de consultation des données non publiques ou à caractère confidentiel.
 - Les données personnelles contenues dans les dossiers de demandes suivent un cycle de vie contraint par les procédures d’instruction et d’archivage légaux.
 
@@ -59,7 +59,7 @@ En vertu de l’article 13 du règlement (UE) n°2016/679 du Parlement européen
 - Droit au retrait du consentement en matière de cookies.
 
 Vous pouvez exercer ces droits en contactant par :
-- Par courriel : [france-chaleur-urbaine@beta.gouv.fr](mailto:france-chaleur-urbaine@beta.gouv.fr)
+- Par courriel : [france-chaleur-urbaine@developpement-durable.gouv.fr](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr)
 - Par voie postale :  
 _France Chaleur Urbaine - Fabrique Numérique  
 Ministère de la Transition écologique et solidaire Direction Générale de l'Aménagement, du Logement et de la Nature,  
