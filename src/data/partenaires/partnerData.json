@@ -108,6 +108,14 @@
         },
         {
           "image": {
+            "url": "./logo-CPCU.jpg",
+            "title": "CPCU"
+          },
+          "title": "CPCU",
+          "link": "https://www.cpcu.fr/"
+        },
+        {
+          "image": {
             "url": "./logo-FNCCR.jpg",
             "title": "Fnccr"
           },
