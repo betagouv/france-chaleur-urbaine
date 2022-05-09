@@ -63,7 +63,7 @@ Le contenu de l'Utilisateur peut être à tout moment et pour n'importe quelle r
 
 ### Qualité des données publiées
 
-Nous publions sur france-chaleur-urbaine des données à titre informatif. Par conséquent, les informations publiées sur chauffage-urbain ne sauraient engager la responsabilité de leur éditeur ou d’un quelconque service de l’État, l’utilisateur y ayant recours ayant conscience des potentielles erreurs ou omissions qu’elles peuvent comporter. Nous nous efforçons de livrer des données de la meilleure qualité possible. Toutefois, malgré toute notre attention, elles peuvent encore comporter des erreurs ou omissions. Si vous constatez une erreur ou omission parmi ces données, nous vous invitons à nous la signaler par courriel à [france-chaleur-urbaine@beta.gouv.fr](mailto:france-chaleur-urbaine@beta.gouv.fr).
+Nous publions sur france-chaleur-urbaine des données à titre informatif. Par conséquent, les informations publiées sur chauffage-urbain ne sauraient engager la responsabilité de leur éditeur ou d’un quelconque service de l’État, l’utilisateur y ayant recours ayant conscience des potentielles erreurs ou omissions qu’elles peuvent comporter. Nous nous efforçons de livrer des données de la meilleure qualité possible. Toutefois, malgré toute notre attention, elles peuvent encore comporter des erreurs ou omissions. Si vous constatez une erreur ou omission parmi ces données, nous vous invitons à nous la signaler par courriel à [france-chaleur-urbaine@developpement-durable.gouv.fr](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr).
 
 ### Propriété intellectuelle
 

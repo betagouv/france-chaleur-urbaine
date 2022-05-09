@@ -26,6 +26,11 @@ const favicons = [
   },
 ];
 
+const GlobalStyle = createGlobalStyle`
+  html {
+    scroll-behavior: smooth;
+  }
+`;
 const DsfrFixUp = createGlobalStyle`
 @media (min-width: 992px) {
   .fr-header {
@@ -89,6 +94,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <DsfrFixUp />
+      <GlobalStyle />
       <ServicesContext.Provider
         value={{
           suggestionService: new SuggestionService(fetchHttpClient),

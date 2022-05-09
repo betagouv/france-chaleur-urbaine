@@ -1,10 +1,10 @@
 {
   "title": "Partenaires",
-  "teaser": "Le cercle des partenaires s’élargit ! Si vous souhaitez être associé à France Chaleur Urbaine, n’hésitez pas à [nous contacter](mailto:france-chaleur-urbaine@beta.gouv.fr).",
+  "teaser": "Le cercle des partenaires s’élargit ! Si vous souhaitez être associé à France Chaleur Urbaine, n’hésitez pas à [nous contacter](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr).",
   "partners": [
     {
       "title": "Ils portent le projet :",
-      "teaser": "France Chaleur Urbaine est un projet initié et piloté par la Direction régionale et interdépartementale de l’environnement, de l’aménagement et des transports d’Ile-de-France (DRIEAT), service déconcentré du ministère de la transition écologique. Le déploiement du service est réalisé en étroit partenariat avec la Fédération nationale des collectivités concédantes et régies (FNCCR).",
+      "teaser": "France Chaleur Urbaine est un projet initié et piloté par la Direction régionale et interdépartementale de l’environnement, de l’aménagement et des transports d’Ile-de-France (DRIEAT), service déconcentré du ministère de la transition écologique.",
       "items": [
         {
           "image": {
@@ -13,14 +13,6 @@
           },
           "title": "DRIEAT",
           "link": "http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
-        },
-        {
-          "image": {
-            "url": "./logo-FNCCR.jpg",
-            "title": "Fnccr"
-          },
-          "title": "Fnccr",
-          "link": "https://www.fnccr.asso.fr/"
         }
       ]
     },
@@ -113,6 +105,22 @@
           },
           "title": "Grand Paris Sud",
           "link": "https://www.grandparissud.fr/"
+        },
+        {
+          "image": {
+            "url": "./logo-CPCU.jpg",
+            "title": "CPCU"
+          },
+          "title": "CPCU",
+          "link": "https://www.cpcu.fr/"
+        },
+        {
+          "image": {
+            "url": "./logo-FNCCR.jpg",
+            "title": "Fnccr"
+          },
+          "title": "Fnccr",
+          "link": "https://www.fnccr.asso.fr/"
         }
       ]
     }

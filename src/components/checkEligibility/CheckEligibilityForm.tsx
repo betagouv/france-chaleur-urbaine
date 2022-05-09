@@ -13,7 +13,7 @@ import { Coords, Point } from 'src/types';
 import { useHeatNetworks } from './useHeatNetworks';
 
 type CheckEligibilityFormProps = {
-  formLabel?: string;
+  formLabel?: React.ReactNode;
   centredForm?: boolean;
 };
 

@@ -12,6 +12,11 @@ module.exports = {
         destination: '/stats',
         permanent: true,
       },
+      {
+        source: '/guide-france-chaleur-urbaine',
+        destination: '/documentation/guide-france-chaleur-urbaine.pdf',
+        permanent: false,
+      },
     ];
   },
 };

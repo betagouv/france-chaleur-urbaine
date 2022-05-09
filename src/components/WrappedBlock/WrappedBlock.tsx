@@ -4,28 +4,29 @@ import TextBlock from './TextBlock';
 import { Container } from './WrappedBlock.style';
 
 const WrappedText: React.FC<{
-  data: Record<string, unknown>[];
+  data?: Record<string, unknown>[];
   reverse?: boolean;
-}> = ({ data, reverse }) => {
+  direction?: string;
+  className?: string;
+}> = ({ children, data, reverse, direction, className }) => {
   const mapFunc = (
     { type, props }: { type?: string; props?: Record<string, unknown> },
     index: number
   ) => {
     const key = index;
     switch (type) {
-      case 'text-block': {
-        return <TextBlock {...{ key, ...props }} />;
-      }
       case 'image': {
         return <ImgBlock {...{ key, ...props }} />;
+      }
+      case 'text-block':
+      default: {
+        return <TextBlock {...{ key, ...props }} />;
       }
     }
   };
   return (
-    <Container
-      className="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle fr-my-4w"
-      reverse={reverse}
-    >
+    <Container className={className} reverse={reverse} direction={direction}>
+      {children}
       {data && data.map(mapFunc)}
     </Container>
   );

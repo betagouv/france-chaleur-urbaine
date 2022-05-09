@@ -1,21 +1,26 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import React from 'react';
 import {
+  SliceBody,
   SliceContainer,
   SliceContainerWrapper,
   SliceContainerWrapperType,
+  SliceHiddenImg,
   SliceSection,
 } from './Slice.style';
 
 const Slice: React.FC<
   {
+    id?: string;
     header?: string;
     className?: string;
     theme?: string;
     padding?: number;
     bleedColor?: string | [string, string];
+    direction?: string;
   } & SliceContainerWrapperType
 > = ({
+  id,
   className,
   header,
   children,
@@ -27,13 +32,18 @@ const Slice: React.FC<
   bgWidth,
   bgColor,
   bleedColor,
+  direction,
 }) => {
   const [bleedColorStart = '', bleedColorEnd = ''] = Array.isArray(bleedColor)
     ? bleedColor
     : [bleedColor, bleedColor];
 
   return (
-    <SliceSection className={`fr-container--fluid ${className}`} theme={theme}>
+    <SliceSection
+      id={id}
+      className={`fr-container--fluid ${className}`}
+      theme={theme}
+    >
       <div className="fr-grid-row fr-grid-row--center">
         <SliceContainerWrapper
           className={`fr-col-lg-12 ${padding ? `fr-py-${padding}w` : ''}`}
@@ -50,12 +60,23 @@ const Slice: React.FC<
                 <MarkdownWrapper value={header} className="slice-header" />
               </header>
             )}
-            {children}
+            <SliceBody direction={direction}>{children}</SliceBody>
           </SliceContainer>
         </SliceContainerWrapper>
       </div>
     </SliceSection>
   );
 };
+
+export const SliceImg: React.FC<
+  {
+    src: string;
+    padding?: number;
+  } & SliceContainerWrapperType
+> = ({ src, padding, children, ...props }) => (
+  <Slice bg={src} padding={padding || 0} bgPos="top center" {...props}>
+    {children || <SliceHiddenImg src={src} style={{ opacity: 0 }} />}
+  </Slice>
+);
 
 export default Slice;
