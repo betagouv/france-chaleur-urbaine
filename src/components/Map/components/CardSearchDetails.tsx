@@ -55,7 +55,7 @@ const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
         </EligibilityResult>
         <div>
           {distance &&
-            `Distance aux reseaux : ${
+            `Distance au réseau : ${
               distance >= 1000 ? `${distance / 1000}km` : `${distance}m`
             }`}
         </div>
