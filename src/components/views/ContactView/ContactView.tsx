@@ -15,13 +15,10 @@ const contentDataEligible = {
 
 const contentDataIneligible = {
   title: `Vous souhaiteriez vous raccorder mais il n'existe pas de réseau de
-    chaleur près de chez vous ? Laissez nous vos coordonnées :`,
+    chaleur près de chez vous ? Laissez-nous vos coordonnées :`,
   details: [
-    `nous
-      transmettrons votre demande à la mairie de votre commune ou au gestionnaire du réseau le plus proche.`,
-    `Faire connaître son
-      souhait de se raccorder, c'est contribuer à la création de nouveaux
-      réseaux de chaleur ou au développement des réseaux existants`,
+    `Nous transmettrons votre demande à la mairie de votre commune ou au gestionnaire du réseau le plus proche.`,
+    `Faire connaître son souhait de se raccorder, c'est contribuer à la création de nouveaux réseaux de chaleur ou au développement des réseaux existants`,
   ],
 };
 
