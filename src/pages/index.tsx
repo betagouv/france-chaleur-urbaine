@@ -1,18 +1,11 @@
-import Accordions from '@components/accordions';
-import Banner from '@components/banner/banner';
-import Carrousel from '@components/Carrousel';
-import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
+import HeadSlice from '@components/HeadSlice';
+import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainLayout from '@components/shared/layout/MainLayout';
-import Slice from '@components/Slice';
+import Slice, { SliceImg } from '@components/Slice';
+import TextList from '@components/TextList';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
-import {
-  accompagnementRcu,
-  faqRcu,
-  fcuSolutionForFutur,
-  testimonies,
-  userExperience,
-} from '@data';
+import { dataNumberRcu, presentationRcu } from '@data/home';
 import Head from 'next/head';
 import React from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
@@ -44,10 +37,16 @@ const GlobalStyle = createGlobalStyle`
     background-position: right calc(50% - 28rem) bottom 50%;
 
     @media (min-width: 990px) {
-      background-image: url(./img/rcu-illustation.png) ;
+      background-image: url(./img/rcu-illustation.svg) ;
 
       img {
         opacity: 0;
+      }
+    }
+
+    .presentation-rcu-icon {
+      &:first-of-type {
+        margin-top: 3em;
       }
     }
   }
@@ -57,17 +56,36 @@ const GlobalStyle = createGlobalStyle`
     padding-left: 5.75em;
   }
 
-  preTitle {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-size: 1.25rem;
+  .enjeu-societe-description-wrapper {
+    padding: 0 3rem;
+  }
+  .enjeu-societe-description {
+    margin-left: 2em;
+
+    .list-item {
+      max-width: 350px;
+    }
+  }
+  .enjeu-societe-img {
+    max-width: 122px;
   }
 `;
 
-const TitleColorSlice = styled.h3`
+const BlockquoteSlice = styled.div`
   text-align: center;
   margin: 0.5em 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+
+  blockquote {
+    font-weight: normal;
+  }
 `;
+
+const textDataKey = dataNumberRcu.map(({ value, description }) => ({
+  title: value,
+  body: description,
+}));
 
 export default function Home() {
   return (
@@ -82,76 +100,101 @@ export default function Home() {
           raccordement à un chauffage économique et écologique
         </title>
       </Head>
+
       <MainLayout currentMenu="/">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
-          <Slice
-            theme="grey"
-            bg="./img/home-top-search-bg.jpg"
-            bgWidth={1600}
-            bgColor="#88c9df"
-            bleedColor={['#41a4c1', '#88c9df']}
-          >
-            <Banner />
-          </Slice>
+          <HeadSlice
+            bg="./img/head-slice-bg-home.png"
+            pageTitle="Les réseaux de chaleur, une énergie d’avenir"
+            pageBody="Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français"
+            formLabel="Votre immeuble pourrait-il être raccordé à un&nbsp;réseau&nbsp;de&nbsp;chaleur&nbsp;?"
+            CheckEligibility
+          />
 
-          <Slice padding={4} className="slice-migration-solution">
-            <WrappedBlock data={accompagnementRcu} />
+          <Slice padding={10} className="slice-schema-container">
+            <WrappedText {...presentationRcu} />
           </Slice>
 
           <Slice theme="color" padding={5}>
-            <TitleColorSlice>
-              Comme plus de 5 millions de Français, <br />
-              valorisez votre copropriété en optant <br />
-              pour les réseaux de chaleur.
-            </TitleColorSlice>
-          </Slice>
-
-          <Slice padding={4} className="slice-schema-container">
-            <WrappedText {...fcuSolutionForFutur} />
+            <BlockquoteSlice>
+              <blockquote>
+                “Le dérèglement climatique est déjà en cours. Si nous n’agissons
+                pas maintenant <br />
+                pour limiter ses conséquences, nous le subirons de manière
+                brutale.”
+              </blockquote>
+              Rapport du GIEC, février 2022
+            </BlockquoteSlice>
           </Slice>
 
           <Slice
             theme="grey"
-            padding={4}
-            header={`## Ce que France Chaleur Urbaine peut faire pour vous  
+            padding={10}
+            header={`## Le chauffage, un enjeu de société  
 
-_Les tarifs sont donnés à titre d’exemple en s’inspirant d’un cas réel_`}
+_France Chaleur Urbaine est un service public qui promeut les réseaux de chaleur, afin  
+de répondre à deux enjeux majeurs : la lutte contre le changement climatique et la  
+maîtrise du tarif des énergies._`}
+            direction="row"
           >
-            {userExperience.map((props, i) => (
-              <WrappedText
-                key={`user-experience-${i}`}
-                textClassName="user-experience-description"
-                {...props}
+            <WrappedBlock
+              className="enjeu-societe-description-wrapper"
+              direction="column"
+            >
+              <MarkdownWrapper
+                value={`
+##### VOUS ÊTES UN PARTICULIER OU  
+##### PROPRIETAIRE DE BÂTIMENTS TERTIAIRES`}
               />
-            ))}
+              <WrappedText
+                textClassName="enjeu-societe-description"
+                body={`
+::check-item[Découvrez si un réseau de chaleur passe près de votre immeuble]
+::check-item[Trouvez toutes les informations pour faire un raccordement]
+::check-item[Soyez mis en relation avec le gestionnaire du réseau le plus proche]
+
+:button-link[Copropriétaire]{href="./coproprietaire"}
+:button-link[Tertiaire]{href="./tertiaire"}
+`}
+                imgClassName="enjeu-societe-img"
+                imgSrc="./img/enjeu-de-societe-particulier.svg"
+                imgAlt="Portrait d’Anne"
+                reverse={true}
+              />
+            </WrappedBlock>
+            <WrappedBlock
+              className="enjeu-societe-description-wrapper"
+              direction="column"
+            >
+              <MarkdownWrapper
+                value={`
+##### VOUS ÊTES UNE COLLECTIVITÉ OU UN  
+##### EXPLOITANT DE RÉSEAUX DE CHALEUR`}
+              />
+              <WrappedText
+                textClassName="enjeu-societe-description"
+                body={`
+::check-item[Valoriser les informations de votre réseau sur la cartographie France chaleur urbaine]
+::check-item[Découvrez les potentiels de raccordement sur votre territoire]
+::check-item[Soyez mis en contact avec des copropriétaires et propriétaires de bâtiments tertiaires qui souhaitent être raccordés]
+
+:button-link[Collectivités/Exploitants]{href="./collectivites-et-exploitants"}
+`}
+                imgClassName="enjeu-societe-img"
+                imgSrc="./img/enjeu-de-societe-exploitant.svg"
+                imgAlt="Portrait d’Anne"
+                reverse={true}
+              />
+            </WrappedBlock>
           </Slice>
 
-          <Slice padding={2}>
-            <div className="fr-grid-row fr-grid-row--center fr-py-2w">
-              <div className="fr-col-lg-6">
-                <CheckEligibilityForm
-                  formLabel="Votre logement est-il raccordable ?"
-                  centredForm
-                />
-              </div>
-            </div>
+          <Slice theme="color" padding={5}>
+            <TextList data={textDataKey} />
           </Slice>
 
-          <Slice>
-            <Carrousel
-              title="Leur copropriété est raccordée - ils témoignent :"
-              Testimonies={testimonies}
-              imgSrc="./img/home-testimony.jpg"
-              imgAlt="Portrait d’Isham et Sophie."
-              imgCaption="Avec les réseaux de chaleur, Isham et Sophie sont fiers de contribuer à la transition énergétique."
-            />
-          </Slice>
-
-          <Slice padding={6}>
-            <Accordions data={faqRcu} />
-          </Slice>
+          <SliceImg src="./img/home-footer-bg.jpg" />
         </div>
       </MainLayout>
     </>

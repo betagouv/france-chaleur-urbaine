@@ -7,6 +7,18 @@ export const SliceSection = styled.section<{ theme?: string }>`
         return css`
           background-color: #4550e5;
           color: #fff;
+
+          p,
+          strong,
+          em,
+          h1,
+          h2,
+          h3,
+          h4,
+          h5,
+          h6 {
+            color: #fff;
+          }
         `;
       }
       case 'grey': {
@@ -76,7 +88,6 @@ export const SliceContainerWrapper = styled.div<SliceContainerWrapperType>`
     bgWidth &&
     css`
       background-size: ${'cover'};
-      background-position: left center;
       @media (min-width: ${bgWidth}px) {
         background-size: contain;
         background-position: center;
@@ -91,4 +102,13 @@ export const SliceContainer = styled.div`
     text-align: center;
     padding: 1.5rem 0 2rem;
   }
+`;
+
+export const SliceBody = styled.div<{ direction?: string }>`
+  display: flex;
+  flex-direction: ${({ direction }) => direction || 'column'};
+`;
+
+export const SliceHiddenImg = styled.img`
+  opacity: 0;
 `;

@@ -1,42 +1,30 @@
+import BurgerButton from '@components/BurgerButton';
 import Link from 'next/link';
-import React from 'react';
-import styled from 'styled-components';
+import React, { useState } from 'react';
+import { extendMenu, headingMenu, menu } from './MainLayout.data';
+import {
+  GithubLogo,
+  HeaderLabel,
+  HeaderLogo,
+  HeaderSubLabel,
+  Main,
+  MainLayoutStyle,
+} from './MainLayout.style';
 
-export const headerHeight = `214px`;
-export const tabHeaderHeight = `210px`;
-export const fullscreenHeaderHeight = `calc(214px - 10rem)`;
-export const footerHeight = `291px`;
-export const tabFooterHeight = `409px`;
-export const fullscreenFooterHeight = `98px`;
+export {
+  footerHeight,
+  fullscreenFooterHeight,
+  fullscreenHeaderHeight,
+  headerHeight,
+  tabFooterHeight,
+  tabHeaderHeight,
+} from './MainLayout.data'; // TODO: remove this and use index.ts
 
-const Main = styled.section<{ fullscreen?: boolean }>`
-  min-height: calc(100vh - ${tabHeaderHeight});
-
-  @media (min-width: 992px) {
-    min-height: calc(100vh - ${headerHeight} - ${footerHeight});
-    ${({ fullscreen }) =>
-      fullscreen &&
-      `min-height: calc(100vh - ${fullscreenHeaderHeight} - ${fullscreenFooterHeight});`}
-  }
-`;
-const HeaderLogo = styled.img`
-  width: auto;
-  height: auto;
-  max-height: 110px;
-  max-width: 200px;
-`;
-const HeaderLabel = styled.p`
-  font-size: 1.9rem;
-  color: #069368;
-`;
-const HeaderSubLabel = styled.p`
-  margin: 0;
-`;
-const GithubLogo = styled.img`
-  shape-rendering: crispEdges;
-  width: 0.7rem;
-  height: 0.7rem;
-`;
+const fcuHeaderDesc = `Un service public pour faciliter et accélérer les raccordements aux réseaux de chaleur`;
+const fcuFooterDesc = `France Chaleur Urbaine est un projet d'innovation pour accélérer
+  le raccordement des bâtiments aux réseaux de chaleur en vue de
+  l'atteinte des objectifs de développement de la chaleur
+  d'origine renouvelable.`;
 
 type MainLayout = {
   children: React.ReactNode;
@@ -44,32 +32,16 @@ type MainLayout = {
   fullscreen?: boolean;
 };
 
-const menu = [
-  {
-    label: 'Accueil',
-    url: '/',
-  },
-  {
-    label: 'Documentation',
-    url: '/ressources',
-  },
-  {
-    label: 'Partenaires',
-    url: '/partenaires',
-  },
-  {
-    label: 'Carte des réseaux',
-    url: '/carte',
-  },
-];
-
 const MainLayout: React.FC<MainLayout> = ({
   children,
   currentMenu,
   fullscreen,
 }) => {
+  const [menuExtended, setMenuExtended] = useState(false);
+
   return (
     <>
+      <MainLayoutStyle />
       <header className={`fr-header ${fullscreen ? 'fullscreen' : ''}`}>
         <div className="fr-header__body">
           <div className="fr-container">
@@ -113,10 +85,7 @@ const MainLayout: React.FC<MainLayout> = ({
                       <HeaderLabel className="fr-header__service-title">
                         France Chaleur Urbaine
                       </HeaderLabel>
-                      <HeaderSubLabel>
-                        Service public pour le raccordement des copropriétés aux
-                        réseaux de chaleur
-                      </HeaderSubLabel>
+                      <HeaderSubLabel>{fcuHeaderDesc}</HeaderSubLabel>
                     </a>
                   </Link>
                 </div>
@@ -124,6 +93,7 @@ const MainLayout: React.FC<MainLayout> = ({
             </div>
           </div>
         </div>
+
         <div className="fr-header__menu fr-modal" id="modal-870">
           <div className="fr-container">
             <button
@@ -133,8 +103,11 @@ const MainLayout: React.FC<MainLayout> = ({
               Fermer
             </button>
             <div className="fr-header__menu-links"></div>
+
             <nav
-              className="fr-nav"
+              className={`fr-nav main-nav menu-${
+                menuExtended ? 'extended' : 'main'
+              }`}
               id="header-navigation"
               aria-label="Menu principal"
             >
@@ -146,12 +119,11 @@ const MainLayout: React.FC<MainLayout> = ({
                     alt="logo france chaleur urbaine"
                   />
                 </li>
-
                 {menu.map(({ label, url }) => (
                   <li
                     key={url}
                     className={`fr-nav__item ${
-                      currentMenu === url ? 'fr-nav__item--active' : ''
+                      currentMenu === url ? 'fr-nav__item-Active' : ''
                     }`}
                   >
                     <Link href={url} prefetch={false}>
@@ -164,7 +136,77 @@ const MainLayout: React.FC<MainLayout> = ({
                     </Link>
                   </li>
                 ))}
+
+                <li
+                  className={`extend-menu menu-main-nav ${
+                    menuExtended ? 'extend-menu__hidden' : ''
+                  }`}
+                >
+                  <ul className="fr-nav__list">
+                    <li className="fr-nav__item">
+                      <label className="label-menu-item">Vous êtes :</label>
+                    </li>
+                    {headingMenu.map(({ label, url }) => (
+                      <li
+                        key={url}
+                        className={`fr-nav__item ${
+                          currentMenu === url ? 'fr-nav__item-Active' : ''
+                        }`}
+                      >
+                        <Link href={url} prefetch={false}>
+                          <a
+                            className="fr-nav__link"
+                            aria-current={
+                              currentMenu === url ? 'page' : undefined
+                            }
+                          >
+                            {label}
+                          </a>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+
+                <li
+                  className={`extend-menu menu-extended-nav ${
+                    menuExtended ? '' : 'extend-menu__hidden'
+                  }`}
+                >
+                  <ul className="fr-nav__list">
+                    <li className="fr-nav__item">
+                      <label className="label-menu-item">A voir aussi :</label>
+                    </li>
+                    {extendMenu.map(({ label, url }) => (
+                      <li
+                        key={url}
+                        className={`fr-nav__item ${
+                          currentMenu === url ? 'fr-nav__item-Active' : ''
+                        }`}
+                      >
+                        <Link href={url} prefetch={false}>
+                          <a
+                            className="fr-nav__link"
+                            aria-current={
+                              currentMenu === url ? 'page' : undefined
+                            }
+                          >
+                            {label}
+                          </a>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
               </ul>
+              <div className="main-nav-extender-wrapper">
+                <BurgerButton
+                  className={`hamburger hamburger--slider ${
+                    menuExtended ? 'is-active' : ''
+                  }`}
+                  onClick={() => setMenuExtended(!menuExtended)}
+                />
+              </div>
             </nav>
           </div>
         </div>
@@ -196,20 +238,17 @@ const MainLayout: React.FC<MainLayout> = ({
             </div>
             <div className="fr-footer__content">
               <p className="fr-footer__content-desc">
-                France Chaleur Urbaine est un projet d'innovation pour accélérer
-                le raccordement des copropriétés aux réseaux de chaleur en vue
-                de l'atteinte des objectifs de développement de la chaleur
-                d'origine renouvelable.
+                {fcuFooterDesc}
                 <br />
                 <strong>
                   Faites nous part de vos propositions pour améliorer ce service
                   : <br />
                   <a
-                    href="mailto:france-chaleur-urbaine@beta.gouv.fr"
+                    href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    france-chaleur-urbaine@beta.gouv.fr
+                    france-chaleur-urbaine@developpement-durable.gouv.fr
                   </a>
                 </strong>
               </p>

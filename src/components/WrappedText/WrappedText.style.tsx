@@ -1,15 +1,30 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-export const Container = styled.div<{ reverse?: boolean }>`
-  display: flex;
+type ContainerType = {
+  reverse?: boolean;
+  center?: boolean;
+};
+
+export const Container = styled.div<ContainerType>`
+  display: inline-flex;
   flex-direction: ${({ reverse }) => (reverse ? ' row-reverse' : 'row')};
+  ${({ center }) =>
+    center &&
+    css`
+      align-items: center;
+    `}
 `;
 export const ImageContainer = styled.div`
+  flex: 1;
+
   > img {
     width: 100%;
   }
 `;
-export const TextContainer = styled.div`
+export const TextContainer = styled.div<ContainerType>`
+  flex: 1;
+  padding: ${({ reverse }) => (reverse ? '0 0 0 3em' : '0 3em 0 0')};
+
   > h2 {
     color: #000074;
   }

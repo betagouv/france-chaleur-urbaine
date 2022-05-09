@@ -1,4 +1,4 @@
-const faqRcu = [
+const faqRcuCoproprietaire = [
   {
     label: 'Quelles énergies alimentent les réseaux de chaleur ?',
     body: `Les réseaux de chaleur sont alimentés en moyenne à 60 % par des énergies renouvelables et de récupération disponibles localement (ENR&R). Cette chaleur "verte" est principalement issue :
@@ -73,4 +73,4 @@ C’est le gestionnaire du réseau de chaleur auquel la copropriété se raccord
   },
 ];
 
-export default faqRcu;
+export default faqRcuCoproprietaire;
