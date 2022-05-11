@@ -11,7 +11,6 @@ export const MainLayoutStyle = createGlobalStyle`
   .label-menu-item {
     padding: 1.5rem 0 1.25rem 0;
     margin: 0;
-    color: #5662FA;
     font-weight: bold;
   }
   .fr-nav__item  {
@@ -52,12 +51,32 @@ export const MainLayoutStyle = createGlobalStyle`
       & & {
         margin-left: 0;
       }
+
+      .fr-nav__link[aria-current] {
+        color: #5662FA;
+        font-weight: bold;
+
+        &::before {
+          background-color: currentColor;
+          opacity: 0;
+        }
+    }
+
     }
     .extend-menu {
       ul {
         margin: 0;
       }
-      li {}
+      li {
+        .fr-nav__link {
+          text-transform: uppercase;
+          font-size: 1rem;
+        }
+
+      }
+      .label-menu-item.active {
+        color: #5662FA;
+      }
 
       .fr-nav__item:not(.surcharge) {
         margin-left: 0;
