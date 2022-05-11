@@ -1,6 +1,6 @@
 import React from 'react';
 import { Point } from 'src/types';
-import { EligibilityResult, MapCard } from './CardSearchDetails.style';
+import { EligibilityResult, MapCard } from './CardDetails.style';
 
 export type TypeAddressDetail = any;
 
@@ -37,6 +37,7 @@ const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
       isEligible={isEligible}
       typeCard={'search'}
       onClick={onClickHandler}
+      className={isEligible ? 'eligible' : 'ineligible'}
       isClickable
     >
       <header>
