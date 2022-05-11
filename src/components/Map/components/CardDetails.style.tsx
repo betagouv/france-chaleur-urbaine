@@ -8,6 +8,10 @@ const ineligibleStyle = {
   color: '#ce0500',
   bgColor: '#ffe9e9',
 };
+const gasUsageStyle = {
+  color: '#000',
+  bgColor: '#ccc',
+};
 const transparency = 'a6'; // Equal to 70%
 
 type MapCardType = {
@@ -30,24 +34,6 @@ export const MapCard = styled.div<MapCardType>`
 
   box-shadow: 1px 0 4px 1px rgb(0 0 0 / 20%);
 
-  ${({ typeCard, isEligible }) => {
-    switch (typeCard) {
-      case 'search': {
-        return css`
-          border: 2px solid
-            ${isEligible ? eligibleStyle.bgColor : ineligibleStyle.bgColor};
-        `;
-        break;
-      }
-      case 'legend': {
-        return css`
-          border: 2px solid #4550e5;
-        `;
-        break;
-      }
-    }
-  }}
-
   > header {
     display: flex;
     padding: 0.5em;
@@ -55,27 +41,6 @@ export const MapCard = styled.div<MapCardType>`
       isClickable || isClosable ? 'pointer' : 'default'};
 
     font-weight: bold;
-
-    ${({ typeCard, isEligible }) => {
-      switch (typeCard) {
-        case 'search': {
-          return css`
-            background-color: ${isEligible
-              ? eligibleStyle.bgColor
-              : ineligibleStyle.bgColor};
-            color: ${isEligible ? eligibleStyle.color : ineligibleStyle.color};
-          `;
-          break;
-        }
-        case 'legend': {
-          return css`
-            background-color: #4550e5;
-            color: #ffffff;
-          `;
-          break;
-        }
-      }
-    }}
 
     .buttonsWrapper {
       flex: 1;
@@ -116,6 +81,51 @@ export const MapCard = styled.div<MapCardType>`
     }
   }
 
+  &.eligible {
+    border: 2px solid ${eligibleStyle.bgColor};
+
+    > header {
+      background-color: ${eligibleStyle.bgColor};
+      color: ${eligibleStyle.color};
+    }
+  }
+
+  &.ineligible {
+    border: 2px solid ${ineligibleStyle.bgColor};
+
+    > header {
+      background-color: ${ineligibleStyle.bgColor};
+      color: ${ineligibleStyle.color};
+    }
+  }
+
+  &.energyCard {
+    border: 2px solid ${ineligibleStyle.bgColor};
+
+    > header {
+      background-color: ${ineligibleStyle.bgColor};
+      color: ${ineligibleStyle.color};
+    }
+  }
+
+  &.gasUsageCard {
+    border: 2px solid ${gasUsageStyle.bgColor};
+
+    > header {
+      background-color: ${gasUsageStyle.bgColor};
+      color: ${gasUsageStyle.color};
+    }
+  }
+
+  &.legendCard {
+    border: 2px solid #4550e5;
+
+    > header {
+      background-color: #4550e5;
+      color: #ffffff;
+    }
+  }
+
   section {
     padding: 0.5em;
 
@@ -152,4 +162,19 @@ export const EligibilityResult = styled.div<MapCardType>`
     css`
       border-color: ${isEligible ? eligibleStyle.color : ineligibleStyle.color}${transparency};
     `}
+`;
+
+export const EnergyResult = styled.div`
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  border-left: 2px solid;
+
+  border-color: #c72e6e;
+`;
+export const GasUsageResult = styled.div`
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  border-left: 2px solid;
+
+  border-color: #136ce0;
 `;
