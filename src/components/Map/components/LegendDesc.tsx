@@ -9,9 +9,9 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
       label="Nombre de lots d'habitation"
       color="#afafaf"
       scaleLabels={[
-        { label: '< 100', size: 0.5 },
-        { label: '100 à 1000', size: 1 },
-        { label: '> 1000', size: 2 },
+        { label: '<\u00a0100', size: 0.5 },
+        { label: '100\u00a0à\u00a01000', size: 1 },
+        { label: '>\u00a01000', size: 2 },
       ]}
     />
   ),
@@ -21,9 +21,9 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
       label="Niveau de consomation de gaz (MWh)"
       color="#afafaf"
       scaleLabels={[
-        { label: '< 100', size: 0.5 },
-        { label: '100 à 1000', size: 1 },
-        { label: '> 1000', size: 2 },
+        { label: '<\u00a0100', size: 0.5 },
+        { label: '100\u00a0à\u00a01000', size: 1 },
+        { label: '>\u00a01000', size: 2 },
       ]}
     />
   ),
