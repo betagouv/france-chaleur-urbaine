@@ -36,6 +36,7 @@ export const ScaleLegendBody = styled.div<{ checkbox?: boolean }>`
 
 export const ScaleLegendLabelWrapper = styled.div`
   font-size: 0.9em;
+  white-space: nowrap;
 
   display: inline;
   position: relative;

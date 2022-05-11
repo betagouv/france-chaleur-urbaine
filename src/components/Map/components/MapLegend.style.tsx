@@ -276,6 +276,7 @@ const ScaleLegendBody = styled.div<{ checkbox?: boolean }>`
 
 const ScaleLegendLabelWrapper = styled.div`
   font-size: 0.9em;
+  white-space: nowrap;
 
   display: inline;
   position: relative;
