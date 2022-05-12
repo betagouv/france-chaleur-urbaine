@@ -1,6 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Point } from 'src/types';
 import {
   CardSearchDetails,
@@ -9,6 +9,7 @@ import {
   TypeAddressDetail,
   TypeHandleAddressSelect,
 } from './components';
+import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
   boilerRoomLayerStyle,
@@ -41,14 +42,101 @@ type LayerNameOption = typeof layerNameOptions[number];
 type EnergyNameOption = typeof energyNameOptions[number];
 type gasUsageNameOption = typeof gasUsageNameOptions[number];
 
+const DEBUG = true;
+
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
+
+const formatBodyPopup = ({
+  coordinates,
+  consommation,
+  energy,
+}: {
+  coordinates: any;
+  consommation?: Record<string, any>;
+  energy?: Record<string, any>;
+  id: string;
+}) => {
+  const textAddress =
+    consommation?.result_label ?? energy?.adresse_reference ?? null;
+
+  const writeTypeConso = (typeConso: string | unknown) => {
+    switch (typeConso) {
+      case 'R': {
+        return 'Logement residentiel';
+      }
+      case 'T': {
+        return 'Établissement tertiaire';
+      }
+    }
+    return '';
+  };
+
+  const formatBddText = (str?: string) =>
+    str && str.replace(/_/g, ' ').toLowerCase();
+
+  const {
+    nb_lot_habitation_bureau_commerce,
+    energie_utilisee,
+    periode_construction,
+  } = energy || {};
+  const { code_grand_secteur, conso } = consommation || {};
+
+  const bodyPopup = `
+    ${
+      textAddress
+        ? `
+          <header>
+            <h6>${textAddress}</h6>
+            <em class="coord">Lat, Lon : ${[...coordinates]
+              .reverse()
+              .map((point: number) => point.toFixed(5))
+              .join(',')}</em>
+          </header>`
+        : ''
+    }
+    ${`
+        <section>
+          ${
+            code_grand_secteur
+              ? `<strong>${writeTypeConso(code_grand_secteur)}</strong><br />`
+              : energy
+              ? '<strong>Copropriété</strong><br />'
+              : ''
+          }
+          ${
+            nb_lot_habitation_bureau_commerce
+              ? `Nombre de lots : ${nb_lot_habitation_bureau_commerce}<br />`
+              : ''
+          }
+          ${
+            energie_utilisee
+              ? `Chauffage actuel :  ${formatBddText(energie_utilisee)}<br />`
+              : ''
+          }
+          ${
+            conso &&
+            (!energie_utilisee || objTypeEnergy?.gas.includes(energie_utilisee))
+              ? `Consommation de gaz :  ${conso?.toFixed(2)}&nbsp;MWh<br />`
+              : ''
+          }
+          ${
+            periode_construction
+              ? `Période de construction : ${formatBddText(
+                  periode_construction
+                )}<br />`
+              : ''
+          }
+        </section>
+      `}
+  `;
+  return bodyPopup;
+};
 
 export default function Map() {
   const mapContainer: null | { current: any } = useRef(null);
   const map: null | { current: any } = useRef(null);
 
   const [mapState, setMapState] = useState('pending');
-  const [searchMarker, setSearchMarker] = useState(false);
   const [soughtAddress, setSoughtAddress]: [
     any | never[],
     React.Dispatch<any | never[]>
@@ -58,91 +146,108 @@ export default function Map() {
     React.Dispatch<any | never[]>
   ] = useState(defaultLayerDisplay);
 
-  const flyTo = ({ coordinates }: any) => {
+  const [, , updateClickedPoint] = useMapPopup(map.current, {
+    bodyFormater: formatBodyPopup,
+    className: 'popup-map-layer',
+  });
+
+  const flyTo = useCallback(({ coordinates }: any) => {
     map.current.flyTo({
       center: { lon: coordinates[0], lat: coordinates[1] },
       zoom: 16,
     });
-  };
+  }, []);
+
+  const logSoughtAddress = useCallback(() => {
+    console.info('State of: soughtAddress =>', soughtAddress);
+  }, [soughtAddress]);
 
   const onAddressSelectHandle:
     | TypeHandleAddressSelect
-    | { _coordinates: Point } = (address, _coordinates, addressDetails) => {
-    // const coordinates: Point = _coordinates.reverse(); // TODO: Fix on source
-    const coordinates: Point = [_coordinates[1], _coordinates[0]]; // TODO: Fix on source
-    console.info(
-      'onAddressSelectHandle =>',
-      address,
-      coordinates,
-      addressDetails
-    );
-    const search = {
-      date: Date.now(),
-    };
-    const id = getAddressId(coordinates);
-    const newAddress = soughtAddress.find(
-      ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
-    ) || {
-      id,
-      coordinates,
-      address,
-      addressDetails,
-      search,
-    };
-    setSoughtAddress([
-      ...soughtAddress.filter(({ id: _id }: { id: string }) => `${_id}` !== id),
-      newAddress,
-    ]);
-    flyTo({ coordinates });
-    setSearchMarker(true); // TODO : Fix for multi result
-  };
+    | { _coordinates: Point } = useCallback(
+    (address, _coordinates, addressDetails) => {
+      const coordinates: Point = [_coordinates[1], _coordinates[0]]; // TODO: Fix on source
+      const search = {
+        date: Date.now(),
+      };
+      const id = getAddressId(coordinates);
+      const newAddress = soughtAddress.find(
+        ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
+      ) || {
+        id,
+        coordinates,
+        address,
+        addressDetails,
+        search,
+      };
+      setSoughtAddress([
+        ...soughtAddress.filter(
+          ({ id: _id }: { id: string }) => `${_id}` !== id
+        ),
+        newAddress,
+      ]);
+      flyTo({ coordinates });
+    },
+    [flyTo, soughtAddress]
+  );
 
-  const removeSoughtAddress = (result: {
-    marker?: any;
-    coordinates?: Point;
-  }) => {
-    if (!result.coordinates) return;
-    const id = getAddressId(result.coordinates);
-    const getCurrentSoughtAddress = ({ coordinates }: { coordinates: Point }) =>
-      getAddressId(coordinates) !== id;
-    const newSoughtAddress = soughtAddress.filter(getCurrentSoughtAddress);
-    result?.marker?.remove();
-    setSoughtAddress(newSoughtAddress);
-    setSearchMarker(false); // TODO : Fix for multi result
-  };
+  const removeSoughtAddress = useCallback(
+    (result: { marker?: any; coordinates?: Point }) => {
+      if (!result.coordinates) return;
+      const id = getAddressId(result.coordinates);
+      const getCurrentSoughtAddress = ({
+        coordinates,
+      }: {
+        coordinates: Point;
+      }) => getAddressId(coordinates) !== id;
+      const newSoughtAddress = soughtAddress.filter(getCurrentSoughtAddress);
+      result?.marker?.remove();
+      setSoughtAddress(newSoughtAddress);
+    },
+    [soughtAddress]
+  );
 
-  const toggleLayer = (layerName: LayerNameOption) => {
-    setLayerDisplay({
-      ...layerDisplay,
-      [layerName]: !layerDisplay?.[layerName] ?? false,
-    });
-  };
+  const toggleLayer = useCallback(
+    (layerName: LayerNameOption) => {
+      setLayerDisplay({
+        ...layerDisplay,
+        [layerName]: !layerDisplay?.[layerName] ?? false,
+      });
+    },
+    [layerDisplay]
+  );
 
-  const toogleEnergyVisibility = (energyName: EnergyNameOption) => {
-    const availableEnergy = new Set(layerDisplay.energy);
-    if (availableEnergy.has(energyName)) {
-      availableEnergy.delete(energyName);
-    } else {
-      availableEnergy.add(energyName);
-    }
-    setLayerDisplay({
-      ...layerDisplay,
-      energy: Array.from(availableEnergy),
-    });
-  };
+  const toogleEnergyVisibility = useCallback(
+    (energyName: EnergyNameOption) => {
+      const availableEnergy = new Set(layerDisplay.energy);
+      if (availableEnergy.has(energyName)) {
+        availableEnergy.delete(energyName);
+      } else {
+        availableEnergy.add(energyName);
+      }
+      setLayerDisplay({
+        ...layerDisplay,
+        energy: Array.from(availableEnergy),
+      });
+    },
+    [layerDisplay]
+  );
 
-  const toogleGasUsageVisibility = (gasUsageName: gasUsageNameOption) => {
-    const availableGasUsage = new Set(layerDisplay.gasUsage);
-    if (availableGasUsage.has(gasUsageName)) {
-      availableGasUsage.delete(gasUsageName);
-    } else {
-      availableGasUsage.add(gasUsageName);
-    }
-    setLayerDisplay({
-      ...layerDisplay,
-      gasUsage: Array.from(availableGasUsage),
-    });
-  };
+  const toogleGasUsageVisibility = useCallback(
+    (gasUsageName: gasUsageNameOption) => {
+      const availableGasUsage = new Set(layerDisplay.gasUsage);
+      if (availableGasUsage.has(gasUsageName)) {
+        availableGasUsage.delete(gasUsageName);
+      } else {
+        availableGasUsage.add(gasUsageName);
+      }
+      setLayerDisplay({
+        ...layerDisplay,
+        gasUsage: Array.from(availableGasUsage),
+      });
+    },
+    [layerDisplay]
+  );
 
   // ----------------
   // --- Load Map ---
@@ -160,12 +265,13 @@ export default function Map() {
       minZoom,
     });
     map.current.on('click', () => {
-      console.info('zoom =>', map.current.getZoom());
+      if (DEBUG) {
+        console.info('zoom =>', map.current.getZoom());
+        logSoughtAddress();
+      }
     });
 
     map.current.on('load', () => {
-      console.info('useEffect1 mapState =>', mapState);
-      console.info('setMapState =>', 'loaded');
       setMapState('loaded');
 
       // ----------------
@@ -239,6 +345,20 @@ export default function Map() {
         ...energyLayerStyle,
       });
 
+      map.current.on('click', 'energy', (e: any) => {
+        const properties = e.features[0].properties;
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        updateClickedPoint(coordinates, { energy: properties });
+      });
+
+      map.current.on('mouseenter', 'energy', function () {
+        map.current.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.current.on('mouseleave', 'energy', function () {
+        map.current.getCanvas().style.cursor = '';
+      });
+
       // -----------------
       // --- Gas Usage ---
       // -----------------
@@ -255,11 +375,26 @@ export default function Map() {
         'source-layer': 'gasUsage',
         ...gasUsageLayerStyle,
       });
+
+      map.current.on('click', 'gasUsage', (e: any) => {
+        const properties = e.features[0].properties;
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        updateClickedPoint(coordinates, { consommation: properties });
+      });
+
+      map.current.on('mouseenter', 'gasUsage', function () {
+        map.current.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.current.on('mouseleave', 'gasUsage', function () {
+        map.current.getCanvas().style.cursor = '';
+      });
     });
   });
-  // ------------------
-  // --- Set Marker ---
-  // ------------------
+
+  // ---------------------
+  // --- Search result ---
+  // ---------------------
   useEffect(() => {
     let shouldUpdate = false;
     const newSoughtAddress = soughtAddress.map((sAddress: any | never[]) => {
@@ -279,7 +414,8 @@ export default function Map() {
       }
     });
     if (shouldUpdate) setSoughtAddress(newSoughtAddress);
-  }, [searchMarker, soughtAddress]);
+  }, [soughtAddress]);
+
   // ---------------------
   // --- Update Filter ---
   // ---------------------
@@ -294,7 +430,7 @@ export default function Map() {
             'visibility',
             layerDisplay[layerId] ? 'visible' : 'none'
           )
-        : console.info(`Layer '${layerId}' is not set on map`)
+        : console.warn(`Layer '${layerId}' is not set on map`)
     );
 
     // Energy
@@ -306,7 +442,6 @@ export default function Map() {
         energyLabel,
       ])
     );
-    console.info('energyFilter', ['any', ...energyFilter]);
     map.current.setFilter('energy', ['any', ...energyFilter]);
 
     // GasUsage
@@ -316,7 +451,6 @@ export default function Map() {
       ['get', TYPE_GAS],
       gasUsageName,
     ]);
-    console.info('gasUsageFilter', ['any', ...gasUsageFilter]);
     map.current.setFilter('gasUsage', ['any', ...gasUsageFilter]);
   }, [layerDisplay, mapState]);
 
