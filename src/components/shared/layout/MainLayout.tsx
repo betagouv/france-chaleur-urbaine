@@ -1,6 +1,6 @@
 import BurgerButton from '@components/BurgerButton';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { extendMenu, headingMenu, menu } from './MainLayout.data';
 import {
   GithubLogo,
@@ -37,7 +37,17 @@ const MainLayout: React.FC<MainLayout> = ({
   currentMenu,
   fullscreen,
 }) => {
-  const [menuExtended, setMenuExtended] = useState(false);
+  const menuIsExtended = useMemo(
+    () => extendMenu.some(({ url }) => currentMenu === url),
+    [currentMenu]
+  );
+  const [menuExtended, setMenuExtended] = useState(menuIsExtended);
+
+  useEffect(() => {
+    if (menuIsExtended) {
+      setMenuExtended(true);
+    }
+  }, [currentMenu, menuIsExtended]);
 
   return (
     <>
@@ -144,7 +154,15 @@ const MainLayout: React.FC<MainLayout> = ({
                 >
                   <ul className="fr-nav__list">
                     <li className="fr-nav__item">
-                      <label className="label-menu-item">Vous êtes :</label>
+                      <label
+                        className={`label-menu-item ${
+                          headingMenu.some(({ url }) => currentMenu === url)
+                            ? 'active'
+                            : ''
+                        }`}
+                      >
+                        Vous êtes :
+                      </label>
                     </li>
                     {headingMenu.map(({ label, url }) => (
                       <li
@@ -175,7 +193,13 @@ const MainLayout: React.FC<MainLayout> = ({
                 >
                   <ul className="fr-nav__list">
                     <li className="fr-nav__item">
-                      <label className="label-menu-item">A voir aussi :</label>
+                      <label
+                        className={`label-menu-item ${
+                          menuIsExtended ? 'active' : ''
+                        }`}
+                      >
+                        A voir aussi :
+                      </label>
                     </li>
                     {extendMenu.map(({ label, url }) => (
                       <li
