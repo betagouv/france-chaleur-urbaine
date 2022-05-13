@@ -56,56 +56,58 @@ class Distance {
       let lines;
       if (data) {
         data?.features?.forEach(function (feature: any /*, featureIndex*/) {
-          if (feature.geometry.type == 'MultiLineString') {
-            lines = feature.geometry.coordinates;
-          } else if (feature.geometry.type == 'LineString') {
-            lines = [feature.geometry.coordinates];
-          } else {
-            DEBUG && console.info('Unknown type : ' + feature.geometry.type);
-            lines = [];
-          }
+          if (feature?.geometry) {
+            if (feature.geometry.type == 'MultiLineString') {
+              lines = feature.geometry.coordinates;
+            } else if (feature.geometry.type == 'LineString') {
+              lines = [feature.geometry.coordinates];
+            } else {
+              DEBUG && console.info('Unknown type : ' + feature.geometry.type);
+              lines = [];
+            }
 
-          // Then on each list of lines. Note that a "line" contains multiple segments
-          lines.forEach(function (line: any[] /*, linenb*/) {
-            //console.info("feature" + index + "ligne :" + linenb );
+            // Then on each list of lines. Note that a "line" contains multiple segments
+            lines.forEach(function (line: any[] /*, linenb*/) {
+              //console.info("feature" + index + "ligne :" + linenb );
 
-            // Then on the points of the line (that will define the end of the segment)
-            // Le premier point ne constitue pas un segment
-            let isSegment = false;
-            let lat1 = 0;
-            let lon1 = 0;
-            line.forEach(function (point /*, segmentNb*/) {
-              const closestPoint = Distance.distance(
-                lat,
-                lon,
-                point[1],
-                point[0],
-                isSegment,
-                lat1,
-                lon1
-              );
+              // Then on the points of the line (that will define the end of the segment)
+              // Le premier point ne constitue pas un segment
+              let isSegment = false;
+              let lat1 = 0;
+              let lon1 = 0;
+              line.forEach(function (point /*, segmentNb*/) {
+                const closestPoint = Distance.distance(
+                  lat,
+                  lon,
+                  point[1],
+                  point[0],
+                  isSegment,
+                  lat1,
+                  lon1
+                );
 
-              //console.info("feature" + index + "ligne :" + linenb + ", segment : ", segmentNb + "  => d="+d);
-              if (closestPoint.d < dmin) {
-                // console.info("file index : " + fileIndex + " , feature" + featureIndex +"ligne :" + linenb + ", segment : ", segmentNb +
-                //   "  trouvé plus prêt : " + closestPoint.d + " mètres (avant "+dmin + "), long = " + point[0] + " , lat=" + point[1]);
-                dmin = closestPoint.d;
-                latmin = closestPoint.lat;
-                lonmin = closestPoint.lon;
-              }
-              // Pour les suivants on aura un segment en utilisant le point précédent comme second point
-              isSegment = true;
-              lat1 = point[1];
-              lon1 = point[0];
+                //console.info("feature" + index + "ligne :" + linenb + ", segment : ", segmentNb + "  => d="+d);
+                if (closestPoint.d < dmin) {
+                  // console.info("file index : " + fileIndex + " , feature" + featureIndex +"ligne :" + linenb + ", segment : ", segmentNb +
+                  //   "  trouvé plus prêt : " + closestPoint.d + " mètres (avant "+dmin + "), long = " + point[0] + " , lat=" + point[1]);
+                  dmin = closestPoint.d;
+                  latmin = closestPoint.lat;
+                  lonmin = closestPoint.lon;
+                }
+                // Pour les suivants on aura un segment en utilisant le point précédent comme second point
+                isSegment = true;
+                lat1 = point[1];
+                lon1 = point[0];
+              });
             });
-          });
+          }
         });
       }
     });
 
     DEBUG && console.info(`${new Date()} > End of search for nearest point`);
     DEBUG && console.info(`Minimum distance is ${dmin} meters.`);
-    return { dmin: dmin, latmin: latmin, lonmin: lonmin };
+    return { dmin, latmin, lonmin };
   }
 
   //Returns the distance between the  point P0 and the segment P1P2 defined by lat1,lon1 + lat2,lon2
