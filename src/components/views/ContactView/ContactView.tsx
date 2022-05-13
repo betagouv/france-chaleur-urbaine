@@ -42,12 +42,12 @@ export function CallOutWithAddress({
       ) : (
         <>
           <CallOutTitle>
-            Votre copropriété n'est pour le moment pas raccordable à un réseau
-            de chaleur.
+            Votre bâtiment n'est pour le moment pas raccordable à un réseau de
+            chaleur.
           </CallOutTitle>
           <CallOutBody>
             <p className={'fr-my-2w'}>
-              Toutefois, les réseaux se développent et elle pourrait le devenir.
+              Toutefois, les réseaux se développent et il pourrait le devenir.
             </p>
             <a
               href={`https://carto.viaseva.org/public/viaseva/map/?coord=${address?.coords}&zoom=15`}
