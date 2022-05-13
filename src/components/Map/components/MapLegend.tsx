@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapCard } from './CardSearchDetails.style';
+import { MapCard } from './CardDetails.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import LegendGroupLabel, { TypeGroupLegend } from './LegendGroupLabel';
 import { LegendGlobalStyle } from './MapLegend.style';
@@ -23,7 +23,9 @@ function MapLegend({
     <MapCard
       typeCard={'legend'}
       isClosable
-      className={!legendOpened || forceClosed ? 'close' : ''}
+      className={
+        !legendOpened || forceClosed ? 'legendCard close' : 'legendCard'
+      }
     >
       <LegendGlobalStyle />
       <header onClick={() => setLegendOpened(!legendOpened)}>Légende</header>
