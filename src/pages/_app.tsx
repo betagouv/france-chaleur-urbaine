@@ -11,7 +11,7 @@ import {
 } from 'src/services';
 import { createGlobalStyle } from 'styled-components';
 
-const imagePreview = `/img/preview/fcu-preview-20211213.min.jpg?date=${Date.now()}`;
+const imagePreview = `/img/preview/fcu-preview-20220517.min.jpg?date=${Date.now()}`;
 
 const favicons = [
   {
