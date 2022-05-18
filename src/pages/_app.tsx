@@ -11,7 +11,17 @@ import {
 } from 'src/services';
 import { createGlobalStyle } from 'styled-components';
 
-const imagePreview = `/img/preview/fcu-preview-20220517.min.jpg?date=${Date.now()}`;
+const og = {
+  // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
+  imagePreview: `/img/preview/fcu-preview-20220517.min.jpg?date=${Date.now()}`,
+  type: 'website',
+  domaine: 'france-chaleur-urbaine.beta.gouv.fr',
+  url: 'https://france-chaleur-urbaine.beta.gouv.fr/',
+  title: 'Accélérons les raccordements aux réseaux de chaleur.',
+  description:
+    'Une solution de chauffage écologique et économique exploitant des énergies renouvelables et de récupération locales.',
+  twitterCard: 'summary_large_image',
+};
 
 const favicons = [
   {
@@ -114,46 +124,22 @@ function MyApp({ Component, pageProps }: AppProps) {
           <title>
             Facilitez le raccordement à un chauffage économique et écologique
           </title>
-          <meta
-            name="description"
-            content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
-          />
+          <meta name="description" content={og.description} />
 
           {/* <!-- Facebook Meta Tags --> */}
-          <meta
-            property="og:url"
-            content="https://france-chaleur-urbaine.beta.gouv.fr/"
-          />
-          <meta property="og:type" content="website" />
-          <meta
-            property="og:title"
-            content="Facilitez le raccordement à un chauffage économique et écologique"
-          />
-          <meta
-            property="og:description"
-            content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
-          />
-          <meta property="og:image" content={imagePreview} />
+          <meta property="og:url" content={og.url} />
+          <meta property="og:type" content={og.type} />
+          <meta property="og:title" content={og.title} />
+          <meta property="og:description" content={og.description} />
+          <meta property="og:image" content={og.imagePreview} />
 
           {/* <!-- Twitter Meta Tags --> */}
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta
-            property="twitter:domain"
-            content="france-chaleur-urbaine.beta.gouv.fr"
-          />
-          <meta
-            property="twitter:url"
-            content="https://france-chaleur-urbaine.beta.gouv.fr/"
-          />
-          <meta
-            name="twitter:title"
-            content="Facilitez le raccordement à un chauffage économique et écologique"
-          />
-          <meta
-            name="twitter:description"
-            content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
-          />
-          <meta name="twitter:image" content={imagePreview} />
+          <meta name="twitter:card" content={og.twitterCard} />
+          <meta property="twitter:domain" content={og.domaine} />
+          <meta property="twitter:url" content={og.url} />
+          <meta name="twitter:title" content={og.title} />
+          <meta name="twitter:description" content={og.description} />
+          <meta name="twitter:image" content={og.imagePreview} />
 
           {/* <!-- Meta Tags Generated via https://www.opengraph.xyz --> */}
         </Head>
