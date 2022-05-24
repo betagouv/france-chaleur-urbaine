@@ -10,10 +10,12 @@ import markupData, {
   matomoEvent,
 } from '@components/Markup';
 import Slice from '@components/Slice';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   Container,
   FormWarningMessage,
+  Loader,
+  LoaderWrapper,
   SliceContactFormStyle,
 } from './SliceForm.style';
 
@@ -60,15 +62,19 @@ const HeadSlice: React.FC = () => {
   const [contactReady, setContactReady] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('idle');
+
+  const EligibilityFormContactRef = useRef(null);
 
   const handleOnChangeAddress = useCallback((data) => {
     const { address, chauffage } = data;
     setAddressData(data);
     setShowWarning(address && !chauffage);
   }, []);
-  const handleOnFetch = useCallback(
+  const handleOnFetchAddress = useCallback(
     ({ address }) => {
       const { chauffage }: any = addressData;
+      setLoadingStatus('loading');
       callMarkup__handleOnFetchAddress(address);
       setShowWarning(address && !chauffage);
     },
@@ -81,6 +87,15 @@ const HeadSlice: React.FC = () => {
     setAddressData(data);
     if (address && chauffage) {
       setContactReady(true);
+      const scrollTimer = window.setTimeout(() => {
+        const { current }: any = EligibilityFormContactRef;
+        current?.scrollIntoView({
+          behavior: 'smooth',
+        });
+        setLoadingStatus('loaded');
+      }, 500);
+
+      return () => window.clearTimeout(scrollTimer);
     }
   }, []);
 
@@ -98,40 +113,47 @@ const HeadSlice: React.FC = () => {
           <>
             <EligibilityFormAddress
               onChange={handleOnChangeAddress}
-              onFetch={handleOnFetch}
+              onFetch={handleOnFetchAddress}
               onSuccess={handleOnSuccessAddress}
             />
 
             <FormWarningMessage show={showWarning}>
               {warningMessage}
             </FormWarningMessage>
+
+            <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
+              <Loader />
+            </LoaderWrapper>
           </>
         </Container>
       </Slice>
 
       <SliceContactFormStyle />
+      <div ref={EligibilityFormContactRef}>
+        <Slice
+          padding={5}
+          theme="grey"
+          className={`slice-contact-form-wrapper ${
+            contactReady && !messageSent ? 'active' : ''
+          }`}
+        >
+          <EligibilityFormContact
+            addressData={addressData}
+            onSubmit={handleOnSubmitContact}
+            afterSubmit={handleAfterSubmitContact}
+          />
+        </Slice>
 
-      <Slice
-        padding={5}
-        theme="grey"
-        className={`slice-contact-form-wrapper ${
-          contactReady && !messageSent ? 'active' : ''
-        }`}
-      >
-        <EligibilityFormContact
-          addressData={addressData}
-          onSubmit={handleOnSubmitContact}
-          afterSubmit={handleAfterSubmitContact}
-        />
-      </Slice>
-
-      <Slice
-        padding={5}
-        theme="grey"
-        className={`slice-contact-form-wrapper ${messageSent ? 'active' : ''}`}
-      >
-        <EligibilityFormMessageConfirmation />
-      </Slice>
+        <Slice
+          padding={5}
+          theme="grey"
+          className={`slice-contact-form-wrapper ${
+            messageSent ? 'active' : ''
+          }`}
+        >
+          <EligibilityFormMessageConfirmation />
+        </Slice>
+      </div>
     </>
   );
 };

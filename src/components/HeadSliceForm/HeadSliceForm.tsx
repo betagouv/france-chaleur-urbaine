@@ -12,12 +12,14 @@ import markupData, {
   matomoEvent,
 } from '@components/Markup';
 import Slice from '@components/Slice';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Container,
   FormLabel,
   FormWarningMessage,
   HeadSliceContainer,
+  Loader,
+  LoaderWrapper,
   PageBody,
   PageTitle,
   PageTitlePreTitle,
@@ -88,15 +90,19 @@ const HeadSlice = ({
   const [contactReady, setContactReady] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('idle');
+
+  const EligibilityFormContactRef = useRef(null);
 
   const handleOnChangeAddress = useCallback((data) => {
     const { address, chauffage } = data;
     setAddressData(data);
     setShowWarning(address && !chauffage);
   }, []);
-  const handleOnFetch = useCallback(
+  const handleOnFetchAddress = useCallback(
     ({ address }) => {
       const { chauffage }: any = addressData;
+      setLoadingStatus('loading');
       callMarkup__handleOnFetchAddress(address);
       setShowWarning(address && !chauffage);
     },
@@ -109,6 +115,15 @@ const HeadSlice = ({
     setAddressData(data);
     if (address && chauffage) {
       setContactReady(true);
+      const scrollTimer = window.setTimeout(() => {
+        const { current }: any = EligibilityFormContactRef;
+        current?.scrollIntoView({
+          behavior: 'smooth',
+        });
+        setLoadingStatus('loaded');
+      }, 500);
+
+      return () => window.clearTimeout(scrollTimer);
     }
   }, []);
 
@@ -149,7 +164,7 @@ const HeadSlice = ({
           <EligibilityFormAddress
             formLabel={formLabel && <FormLabel>{formLabel}</FormLabel>}
             onChange={handleOnChangeAddress}
-            onFetch={handleOnFetch}
+            onFetch={handleOnFetchAddress}
             onSuccess={handleOnSuccessAddress}
           >
             {Child}
@@ -158,6 +173,10 @@ const HeadSlice = ({
           <FormWarningMessage show={showWarning}>
             {warningMessage}
           </FormWarningMessage>
+
+          <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
+            <Loader color="#fff" />
+          </LoaderWrapper>
         </>
       ) : (
         <>{Child}</>
@@ -167,9 +186,10 @@ const HeadSlice = ({
       Child,
       formLabel,
       handleOnChangeAddress,
-      handleOnFetch,
-      showWarning,
+      handleOnFetchAddress,
       handleOnSuccessAddress,
+      loadingStatus,
+      showWarning,
     ]
   );
 
@@ -189,27 +209,31 @@ const HeadSlice = ({
 
       <SliceContactFormStyle />
 
-      <Slice
-        padding={5}
-        theme="grey"
-        className={`slice-contact-form-wrapper ${
-          contactReady && !messageSent ? 'active' : ''
-        }`}
-      >
-        <EligibilityFormContact
-          addressData={addressData}
-          onSubmit={handleOnSubmitContact}
-          afterSubmit={handleAfterSubmitContact}
-        />
-      </Slice>
+      <div ref={EligibilityFormContactRef}>
+        <Slice
+          padding={5}
+          theme="grey"
+          className={`slice-contact-form-wrapper ${
+            contactReady && !messageSent ? 'active' : ''
+          }`}
+        >
+          <EligibilityFormContact
+            addressData={addressData}
+            onSubmit={handleOnSubmitContact}
+            afterSubmit={handleAfterSubmitContact}
+          />
+        </Slice>
 
-      <Slice
-        padding={5}
-        theme="grey"
-        className={`slice-contact-form-wrapper ${messageSent ? 'active' : ''}`}
-      >
-        <EligibilityFormMessageConfirmation />
-      </Slice>
+        <Slice
+          padding={5}
+          theme="grey"
+          className={`slice-contact-form-wrapper ${
+            messageSent ? 'active' : ''
+          }`}
+        >
+          <EligibilityFormMessageConfirmation />
+        </Slice>
+      </div>
     </>
   );
 };

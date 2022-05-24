@@ -60,13 +60,19 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
 
   useEffect(() => {
     if (status === 'success' && onSuccess) {
-      onSuccess(data);
+      const cleaningFunction = onSuccess(data);
+      if (typeof cleaningFunction === 'function') {
+        return cleaningFunction;
+      }
     }
   }, [data, onSuccess, status]);
 
   useEffect(() => {
     if (prevData !== data && onChange) {
-      onChange(data);
+      const cleaningFunction = onChange(data);
+      if (typeof cleaningFunction === 'function') {
+        return cleaningFunction;
+      }
     }
   }, [data, onChange, prevData]);
 
