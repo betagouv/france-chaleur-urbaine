@@ -5,9 +5,14 @@ import {
 } from '@components/EligibilityForm';
 import { SliceContactFormStyle } from '@components/EligibilityForm/components/EligibilityForm.styled';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import markupData, { facebookEvent, matomoEvent } from '@components/Markup';
+import markupData, {
+  facebookEvent,
+  googleAdsEvent,
+  linkedInEvent,
+  matomoEvent,
+} from '@components/Markup';
 import Slice from '@components/Slice';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   Container,
   FormLabel,
@@ -30,7 +35,45 @@ type HeadBannerType = {
   needGradient?: boolean;
 };
 
-function HeadSlice({
+const callMarkup__handleOnFetchAddress = (address: string) => {
+  matomoEvent(markupData.eligibilityTest.matomoEvent, [address]);
+  linkedInEvent(markupData.eligibilityTest.linkedInEvent);
+  facebookEvent(markupData.eligibilityTest.facebookEvent);
+  googleAdsEvent('10794036298', markupData.eligibilityTest.googleAdsEvent);
+};
+const callMarkup__handleOnSuccessAddress = ({
+  eligibility,
+  address,
+}: {
+  eligibility: boolean;
+  address?: string;
+}) => {
+  if (eligibility) {
+    matomoEvent(markupData.eligibilityTestOK.matomoEvent, [
+      address || 'Adresse indefini',
+    ]);
+    linkedInEvent(markupData.eligibilityTestOK.linkedInEvent);
+    googleAdsEvent('10794036298', markupData.eligibilityTestOK.googleAdsEvent);
+  } else {
+    matomoEvent(markupData.eligibilityTestKO.matomoEvent, [
+      address || 'Adresse indefini',
+    ]);
+    linkedInEvent(markupData.eligibilityTestKO.linkedInEvent);
+    googleAdsEvent('10794036298', markupData.eligibilityTestKO.googleAdsEvent);
+  }
+};
+const callMarkup__handleOnSubmitContact = (data: Record<string, any>) => {
+  const { estEligible: eligibility, address } = data;
+  const markupEligibilityKey = eligibility
+    ? 'contactFormEligible'
+    : 'contactFormIneligible';
+  matomoEvent(markupData[markupEligibilityKey].matomoEvent, [address]);
+  facebookEvent(markupData[markupEligibilityKey].facebookEvent);
+};
+
+const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
+
+const HeadSlice = ({
   bg,
   bgPos,
   CheckEligibility,
@@ -40,7 +83,42 @@ function HeadSlice({
   pageBody,
   children,
   needGradient,
-}: HeadBannerType) {
+}: HeadBannerType) => {
+  const [addressData, setAddressData] = useState({});
+  const [contactReady, setContactReady] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
+
+  const handleOnChangeAddress = useCallback((data) => {
+    const { address, chauffage } = data;
+    setAddressData(data);
+    setShowWarning(address && !chauffage);
+  }, []);
+  const handleOnFetch = useCallback(
+    ({ address }) => {
+      const { chauffage }: any = addressData;
+      callMarkup__handleOnFetchAddress(address);
+      setShowWarning(address && !chauffage);
+    },
+    [addressData]
+  );
+  const handleOnSuccessAddress = useCallback((data: any) => {
+    const { address, chauffage, eligibility } = data;
+    callMarkup__handleOnSuccessAddress({ eligibility, address });
+    // TODO: Prefer context ?
+    setAddressData(data);
+    if (address && chauffage) {
+      setContactReady(true);
+    }
+  }, []);
+
+  const handleOnSubmitContact = useCallback((data: Record<string, any>) => {
+    callMarkup__handleOnSubmitContact(data);
+  }, []);
+  const handleAfterSubmitContact = useCallback(() => {
+    setMessageSent(true);
+  }, []);
+
   const Child = useMemo(
     () =>
       (pageTitle || pagePreTitle || pageBody) && (
@@ -64,55 +142,19 @@ function HeadSlice({
     [children, pageBody, pagePreTitle, pageTitle]
   );
 
-  const [contactReady, setContactReady] = useState(false);
-  const [addressData, setAddressData] = useState({});
-
-  const updateContactData = (data: any) => {
-    setAddressData(data);
-    const { address, chauffage } = data;
-    if (address && chauffage) {
-      setContactReady(true);
-    }
-  };
-  const [messageSent, setMessageSent] = useState(false);
-
-  const handleOnSubmit = (data: Record<string, any>) => {
-    const { estEligible: eligibility, address } = data;
-    const markupEligibilityKey = eligibility
-      ? 'contactFormEligible'
-      : 'contactFormIneligible';
-    matomoEvent(markupData[markupEligibilityKey].matomoEvent, [address]);
-    facebookEvent(markupData[markupEligibilityKey].facebookEvent);
-  };
-
-  const handleAfterSubmit = () => {
-    setMessageSent(true);
-  };
-
-  const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
-  const [showWarning, setShowWarning] = useState(false);
   const WrappedChild = useMemo(
     () =>
       CheckEligibility ? (
         <>
           <EligibilityFormAddress
             formLabel={formLabel && <FormLabel>{formLabel}</FormLabel>}
-            onChange={(data) => {
-              const { address, chauffage } = data;
-              setAddressData(data);
-              setShowWarning(address && !chauffage);
-            }}
-            onFetch={(address) => {
-              const { chauffage }: any = addressData;
-              setShowWarning(address && !chauffage);
-            }}
-            onSuccess={(data) => {
-              // TODO: Prefer context ?
-              updateContactData(data);
-            }}
+            onChange={handleOnChangeAddress}
+            onFetch={handleOnFetch}
+            onSuccess={handleOnSuccessAddress}
           >
             {Child}
           </EligibilityFormAddress>
+
           <FormWarningMessage show={showWarning}>
             {warningMessage}
           </FormWarningMessage>
@@ -120,7 +162,15 @@ function HeadSlice({
       ) : (
         <>{Child}</>
       ),
-    [CheckEligibility, Child, addressData, formLabel, showWarning]
+    [
+      CheckEligibility,
+      Child,
+      formLabel,
+      handleOnChangeAddress,
+      handleOnFetch,
+      showWarning,
+      handleOnSuccessAddress,
+    ]
   );
 
   return (
@@ -148,8 +198,8 @@ function HeadSlice({
       >
         <EligibilityFormContact
           addressData={addressData}
-          onSubmit={handleOnSubmit}
-          afterSubmit={handleAfterSubmit}
+          onSubmit={handleOnSubmitContact}
+          afterSubmit={handleAfterSubmitContact}
         />
       </Slice>
 
@@ -162,6 +212,6 @@ function HeadSlice({
       </Slice>
     </>
   );
-}
+};
 
 export default HeadSlice;

@@ -32,6 +32,7 @@ function EligibilityFormContact({
       address,
       coords,
       chauffage: chauffageType,
+      network,
     }: Record<string, any> = addressData;
     const storedAddress = JSON.stringify({
       coords: [coords.lat, coords.lon],
@@ -43,6 +44,7 @@ function EligibilityFormContact({
       ...values,
       chauffage: `${chauffage} - ${chauffageType}`,
       address: storedAddress,
+      distanceAuReseau: network.distance ? `${network.distance}m` : 'inconnue',
       estEligible: isAddressEligible,
     };
 
