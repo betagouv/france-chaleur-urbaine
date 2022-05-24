@@ -1,6 +1,6 @@
 import Accordions from '@components/accordions';
 import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
-import HeadSlice from '@components/HeadSlice';
+import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainLayout from '@components/shared/layout/MainLayout';
 import SimulateurCO2 from '@components/SimulatorCO2';
@@ -182,12 +182,16 @@ export default function Home() {
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
-          <HeadSlice
+          <HeadSliceForm
             bg="./img/head-slice-bg-tertiaire.png"
             pageBody={`
 ## Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
 # Optez pour un chauffage écologique et économique`}
             formLabel="Votre bâtiment peut-il être raccordé&nbsp;?"
+            energyInputsLabels={{
+              collectif: 'Chauffage central',
+              individuel: 'Chauffage individuel',
+            }}
             CheckEligibility
             needGradient
           />
