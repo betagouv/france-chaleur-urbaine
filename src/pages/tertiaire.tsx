@@ -1,10 +1,10 @@
 import Accordions from '@components/accordions';
-import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainLayout from '@components/shared/layout/MainLayout';
 import SimulateurCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
+import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
 import {
   comparatifRcu,
@@ -266,14 +266,7 @@ Se raccorder à un réseau de chaleur, c’est :
           </Slice>
 
           <Slice theme="grey" padding={2}>
-            <div className="fr-grid-row fr-grid-row--center fr-py-2w">
-              <div className="fr-col-lg-6">
-                <CheckEligibilityForm
-                  formLabel="Votre immeuble est-il raccordable ?"
-                  centredForm
-                />
-              </div>
-            </div>
+            <SliceForm />
           </Slice>
 
           <Slice

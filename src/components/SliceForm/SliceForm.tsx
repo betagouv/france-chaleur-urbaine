@@ -3,11 +3,14 @@ import {
   EligibilityFormContact,
   EligibilityFormMessageConfirmation,
 } from '@components/EligibilityForm';
-import { SliceContactFormStyle } from '@components/EligibilityForm/components/EligibilityForm.styled';
 import markupData, { facebookEvent, matomoEvent } from '@components/Markup';
 import Slice from '@components/Slice';
 import React, { useState } from 'react';
-import { Container, FormWarningMessage } from './SliceForm.style';
+import {
+  Container,
+  FormWarningMessage,
+  SliceContactFormStyle,
+} from './SliceForm.style';
 
 const HeadSlice: React.FC = () => {
   const [contactReady, setContactReady] = useState(false);
