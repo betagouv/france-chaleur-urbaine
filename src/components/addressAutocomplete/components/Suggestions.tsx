@@ -5,7 +5,8 @@ import { SuggestionItem } from 'src/types';
 type SuggestionListProps = {
   suggestions: SuggestionItem[];
 };
-export const Suggestions: React.FC<SuggestionListProps> = ({ suggestions }) => (
+
+const Suggestions: React.FC<SuggestionListProps> = ({ suggestions }) => (
   <ComboboxList>
     {suggestions.map(({ properties }: SuggestionItem, index) => {
       return (
@@ -14,3 +15,5 @@ export const Suggestions: React.FC<SuggestionListProps> = ({ suggestions }) => (
     })}
   </ComboboxList>
 );
+
+export default Suggestions;

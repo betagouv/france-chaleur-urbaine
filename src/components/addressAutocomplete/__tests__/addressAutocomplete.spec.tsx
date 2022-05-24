@@ -115,7 +115,29 @@ describe('Address autocomplete', () => {
           expect(getAddressField()).toHaveValue(optionText);
           expect(onSelectedCallback).toHaveBeenCalledWith(
             optionText,
-            [2.304422, 48.843246]
+            [2.304422, 48.843246],
+            fakeSuggestion.features[0]
+            // {
+            //   geometry: { coordinates: [2.304422, 48.843246], type: 'Point' },
+            //   properties: {
+            //     city: 'Paris',
+            //     citycode: '75115',
+            //     context: '75, Paris, Île-de-France',
+            //     district: 'Paris 15e Arrondissement',
+            //     housenumber: '90',
+            //     id: '75115_5456_00090',
+            //     importance: 0.852,
+            //     label: '90 Rue Lecourbe 75015 Paris',
+            //     name: '90 Rue Lecourbe',
+            //     postcode: '75015',
+            //     score: 0.8956363636363637,
+            //     street: 'Rue Lecourbe',
+            //     type: 'housenumber',
+            //     x: 648950.42,
+            //     y: 6860580.25,
+            //   },
+            //   type: 'Feature',
+            // }
           );
         });
       });

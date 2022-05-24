@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const EmptySuggestion: React.FC<{ text?: string }> = ({
+const EmptySuggestion: React.FC<{ text?: string }> = ({
   text = 'Aucune adresse trouvée :(',
 }) => (
   <p
@@ -14,3 +14,5 @@ export const EmptySuggestion: React.FC<{ text?: string }> = ({
     {text}
   </p>
 );
+
+export default EmptySuggestion;

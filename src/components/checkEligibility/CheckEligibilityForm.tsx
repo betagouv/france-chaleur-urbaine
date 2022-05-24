@@ -1,11 +1,11 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
-import { convertPointToCoordinates } from '@components/addressAutocomplete/utils';
 import markupData, {
   facebookEvent,
   googleAdsEvent,
   linkedInEvent,
   matomoEvent,
 } from '@components/Markup';
+import convertPointToCoordinates from '@utils/convertPointToCoordinates';
 import { useLocalStorageState } from '@utils/useLocalStorage';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';

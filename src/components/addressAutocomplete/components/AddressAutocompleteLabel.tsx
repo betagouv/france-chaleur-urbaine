@@ -5,9 +5,11 @@ type AddressAutocompleteLabelProps = {
   centred?: boolean;
 };
 
-export const AddressAutocompleteLabel: React.FC<
-  AddressAutocompleteLabelProps
-> = ({ children, name = 'address', centred }) => {
+const AddressAutocompleteLabel: React.FC<AddressAutocompleteLabelProps> = ({
+  children,
+  name = 'address',
+  centred,
+}) => {
   const className = `fr-text--lg fr-my-2w fr-grid-row ${
     centred ? 'fr-grid-row--center' : 'fr-grid-row--left'
   }`;
@@ -17,3 +19,5 @@ export const AddressAutocompleteLabel: React.FC<
     </label>
   );
 };
+
+export default AddressAutocompleteLabel;

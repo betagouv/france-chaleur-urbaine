@@ -5,16 +5,12 @@ import markupData, {
   linkedInEvent,
   matomoEvent,
 } from '@components/Markup';
+import convertPointToCoordinates from '@utils/convertPointToCoordinates';
 import React, { useEffect } from 'react';
 import { usePreviousState } from 'src/hooks';
 import { useServices } from 'src/services';
 import { Coords, Point } from 'src/types';
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
-
-const convertPointToCoordinates = (point: Point): Coords => ({
-  lon: point[0],
-  lat: point[1],
-});
 
 // TODO: Ue generic function ?
 const callMarkupEvent = ({

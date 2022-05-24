@@ -1,22 +1,28 @@
-import { Status, ValueOf } from '@components/addressAutocomplete/utils';
 import debounce from 'lodash.debounce';
 import React from 'react';
 import { useServices } from 'src/services';
 import { Suggestions } from 'src/types';
 
+enum Status {
+  Idle = 'idle',
+  Loading = 'loading',
+  Success = 'success',
+  Error = 'error',
+}
+type ValueOf<Obj> = Obj[keyof Obj];
 type configProps = {
-  limit: number;
-  autocomplete: boolean;
-  debounceTime: number;
+  limit?: number;
+  autocomplete?: boolean;
+  debounceTime?: number;
+  minCharactersLength?: number;
 };
 
-const useSuggestions = (
-  { limit, autocomplete, debounceTime }: configProps = {
-    limit: 5,
-    autocomplete: false,
-    debounceTime: 300,
-  }
-) => {
+const useSuggestions = ({
+  limit = 5,
+  autocomplete = false,
+  debounceTime = 300,
+  minCharactersLength = 3,
+}: configProps) => {
   const [suggestions, setSuggestions] = React.useState<Suggestions | []>([]);
   const [status, setStatus] = React.useState<ValueOf<Status>>(Status.Idle);
   const mountedRef = React.useRef(true);
@@ -45,12 +51,13 @@ const useSuggestions = (
       setStatus(Status.Success);
     } catch (e) {
       setStatus(Status.Error);
-      // eslint-disable-next-line no-console
-      console.log({
+      console.error({
         error: e,
       });
     }
   }, debounceTime);
+  const fetchSuggestions = (queryString: string) =>
+    queryString.length >= minCharactersLength && debounceFetch(queryString);
 
   React.useEffect(() => {
     return () => {
@@ -60,7 +67,7 @@ const useSuggestions = (
   return {
     suggestions,
     status,
-    fetchSuggestions: debounceFetch,
+    fetchSuggestions,
   };
 };
 

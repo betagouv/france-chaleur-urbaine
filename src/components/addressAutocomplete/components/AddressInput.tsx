@@ -5,7 +5,8 @@ type AddressInputProps = {
   placeholder?: string;
   onChange: (event: React.FormEvent<HTMLInputElement>) => any;
 };
-export const AddressInput: React.FC<AddressInputProps> = ({
+
+const AddressInput: React.FC<AddressInputProps> = ({
   placeholder = '',
   onChange,
 }) => (
@@ -18,3 +19,5 @@ export const AddressInput: React.FC<AddressInputProps> = ({
     onChange={onChange}
   />
 );
+
+export default AddressInput;
