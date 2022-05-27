@@ -18,6 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@utils/*": ["src/utils/*"],
+      "@helpers": ["src/helpers"],
+      "@helpers/*": ["src/helpers/*"],
       "@components/*": ["src/components/*"],
       "@data": ["src/data"],
       "@data/*": ["src/data/*"],
