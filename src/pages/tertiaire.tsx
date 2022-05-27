@@ -189,8 +189,8 @@ export default function Home() {
 # Optez pour un chauffage écologique et économique`}
             formLabel="Votre bâtiment peut-il être raccordé&nbsp;?"
             energyInputsLabels={{
-              collectif: 'Chauffage central',
-              individuel: 'Chauffage individuel',
+              collectif: 'Central',
+              individuel: 'Individuel',
             }}
             CheckEligibility
             needGradient

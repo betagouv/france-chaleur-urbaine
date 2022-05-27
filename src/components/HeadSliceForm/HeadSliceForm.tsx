@@ -106,6 +106,7 @@ const HeadSlice = ({
     ({ address }) => {
       const { chauffage }: any = addressData;
       setLoadingStatus('loading');
+      setMessageSent(false);
       callMarkup__handleOnFetchAddress(address);
       setShowWarning(address && !chauffage);
     },
@@ -133,9 +134,13 @@ const HeadSlice = ({
   const handleOnSubmitContact = useCallback((data: Record<string, any>) => {
     callMarkup__handleOnSubmitContact(data);
   }, []);
-  const handleAfterSubmitContact = useCallback(() => {
-    setMessageSent(true);
-  }, []);
+  const handleAfterSubmitContact = useCallback(
+    (submitedAddressData) => {
+      setAddressData({ ...addressData, ...submitedAddressData });
+      setMessageSent(true);
+    },
+    [addressData]
+  );
 
   const Child = useMemo(
     () =>
@@ -236,7 +241,7 @@ const HeadSlice = ({
             messageSent ? 'active' : ''
           }`}
         >
-          <EligibilityFormMessageConfirmation />
+          <EligibilityFormMessageConfirmation addressData={addressData} />
         </Slice>
       </div>
     </>

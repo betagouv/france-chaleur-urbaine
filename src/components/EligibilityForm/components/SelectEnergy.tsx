@@ -43,7 +43,7 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
   return (
     <>
       {children}
-      <HeadFormWrapper>{options}</HeadFormWrapper>
+      <HeadFormWrapper>Chauffage actuel : {options}</HeadFormWrapper>
     </>
   );
 };

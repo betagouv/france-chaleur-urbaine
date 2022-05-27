@@ -18,8 +18,8 @@ type CheckEligibilityFormProps = {
 };
 
 const energyInputsDefaultLabels = {
-  collectif: 'Chauffage collectif',
-  individuel: 'Chauffage individuel',
+  collectif: 'Collectif',
+  individuel: 'Individuel',
 };
 
 const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({

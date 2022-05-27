@@ -1,30 +1,75 @@
+import MarkdownWrapper from '@components/MarkdownWrapper';
 import {
   CallOut,
   CallOutBody,
   CallOutTitle,
 } from '@components/shared/callOut/CallOut';
-import Link from 'next/link';
-import React from 'react';
+import { isIDF } from '@helpers';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
+
+// TODO: Extract and import
+type AvailableHeating = 'collectif' | 'individuel' | undefined;
+type AvailableStructure = 'Tertiaire' | 'Copropriété' | undefined;
+type AddressDataType = {
+  geoAddress?: Record<string, any>;
+  eligibility?: boolean;
+  chauffage?: AvailableHeating;
+  network?: Record<string, any>;
+  structure?: AvailableStructure;
+};
 
 const UnderlinedLink = styled.a`
   text-decoration: none;
   color: white;
 `;
-const EligibilityFormMessageConfirmation = () => {
+const EligibilityFormMessageConfirmation = ({
+  addressData = {},
+}: {
+  addressData: AddressDataType;
+}) => {
+  const addressCoords: [number, number] = useMemo(() => {
+    const coords = addressData?.geoAddress?.geometry?.coordinates;
+    return coords && [coords].reverse();
+  }, [addressData]);
+
+  const isIDFAddress = useMemo(() => {
+    const { postcode: postCode } = addressData?.geoAddress?.properties || {};
+    return postCode && isIDF(postCode);
+  }, [addressData]);
+
+  const linkToMap =
+    addressCoords &&
+    (isIDFAddress
+      ? `./carte/?coord=${addressCoords}&zoom=15`
+      : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
+
+  const { structure } = addressData;
+
+  const message = {
+    Tertiaire: {
+      title: 'Votre demande de contact est bien prise en compte.',
+      body: `Visualisez notre carte des réseaux de chaleur [ici](${linkToMap}).`,
+    },
+    Copropriété: {
+      title: 'Votre demande de contact est bien prise en compte.',
+      body: `
+Sans attendre, téléchargez notre guide pratique afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.  
+Visualisez également notre carte des réseaux de chaleur [ici](${linkToMap}).`,
+    },
+  };
   return (
     <>
       <CallOut>
         <CallOutTitle>
-          Votre demande de contact est bien prise en compte.
+          <MarkdownWrapper
+            value={structure ? message?.[structure]?.title : ''}
+          />
         </CallOutTitle>
         <CallOutBody>
-          L'équipe France Chaleur Urbaine a bien reçu votre demande et reviendra
-          vers vous dans les meilleurs délais afin de vous apporter une réponse.
-          Dans l'attente, n'hésitez pas à consulter notre{' '}
-          <Link href="/ressources">
-            <a>centre de ressources</a>
-          </Link>
+          <MarkdownWrapper
+            value={structure ? message?.[structure]?.body : ''}
+          />
         </CallOutBody>
       </CallOut>
       <div className="fr-grid-row fr-grid-row--center fr-mt-5w">

@@ -1,17 +1,14 @@
-import styled, { createGlobalStyle, css } from 'styled-components';
+import styled, { css } from 'styled-components';
 
-export const SliceContactFormStyle = createGlobalStyle`
-.slice-contact-form-wrapper {
-  max-height: 0px;
-  overflow: hidden;
-  transition: max-height 1s ease;
-
-  &.active {
-    max-height: 1000px;
-  }
-}
-
+export const CheckEligibilityFormLabel = styled.div<{ centred?: boolean }>`
+  padding: 1em 0;
+  ${({ centred }) =>
+    centred &&
+    css`
+      text-align: center;
+    `}
 `;
+
 export const ContactFormWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -66,11 +63,43 @@ export const ContactFormContentWrapper = styled.div`
   }
 `;
 
-export const CheckEligibilityFormLabel = styled.div<{ centred?: boolean }>`
-  padding: 1em 0;
-  ${({ centred }) =>
-    centred &&
-    css`
-      text-align: center;
-    `}
+export const ContactFormFooter = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+`;
+
+export const ContactFormResultMessage = styled.div<{
+  eligible?: boolean;
+  headerTypo?: string;
+}>`
+  box-shadow: inset 0.5rem 0 0 0
+    ${({ eligible }) => (eligible ? '#00eb5e' : '#ea7c3f')};
+  padding: 2rem 3rem;
+  background-color: var(--g200);
+  margin: 0.5rem 0;
+
+  font-size: ${({ headerTypo }) => (headerTypo === 'small' ? '18px' : '25px')};
+
+  p {
+    font-size: 1em;
+    line-height: 1.35;
+    margin-bottom: 0.5em;
+  }
+
+  em.distance {
+    display: block;
+    margin: 0.5em 0 0;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+  }
+`;
+
+export const ContactFormEligibilityMessage = styled.div`
+  font-size: 20px;
+  line-height: 1.5;
+  margin-top: 2em;
+  color: #000074;
 `;

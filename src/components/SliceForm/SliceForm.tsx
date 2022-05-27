@@ -75,6 +75,7 @@ const HeadSlice: React.FC = () => {
     ({ address }) => {
       const { chauffage }: any = addressData;
       setLoadingStatus('loading');
+      setMessageSent(false);
       callMarkup__handleOnFetchAddress(address);
       setShowWarning(address && !chauffage);
     },
@@ -102,9 +103,13 @@ const HeadSlice: React.FC = () => {
   const handleOnSubmitContact = useCallback((data: Record<string, any>) => {
     callMarkup__handleOnSubmitContact(data);
   }, []);
-  const handleAfterSubmitContact = useCallback(() => {
-    setMessageSent(true);
-  }, []);
+  const handleAfterSubmitContact = useCallback(
+    (submitedAddressData) => {
+      setAddressData({ ...addressData, ...submitedAddressData });
+      setMessageSent(true);
+    },
+    [addressData]
+  );
 
   return (
     <>
@@ -151,7 +156,7 @@ const HeadSlice: React.FC = () => {
             messageSent ? 'active' : ''
           }`}
         >
-          <EligibilityFormMessageConfirmation />
+          <EligibilityFormMessageConfirmation addressData={addressData} />
         </Slice>
       </div>
     </>

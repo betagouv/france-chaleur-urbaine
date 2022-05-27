@@ -9,6 +9,7 @@ import ContactInformation, {
   defaultValuesContactInformation,
   validationSchemasContactInformation,
 } from './ContactInformation';
+import { ContactFormFooter } from './EligibilityForm.styled';
 
 type ContactFormProps = {
   onSubmit: (values: FormikValues) => void;
@@ -39,19 +40,21 @@ export const ContactForm = ({
         <Form>
           <ContactInformation />
           <ContactConsent />
-          <button
-            className="fr-btn"
-            type="submit"
-            disabled={!formik.isValid || isSubmitting}
-          >
-            Envoyer
-          </button>
-          {!formik.isValid && (
-            <p className="fr-error-text">
-              Veuillez remplir les champs obligatoires(*) avant d'envoyer votre
-              demande
-            </p>
-          )}
+          <ContactFormFooter>
+            <button
+              className="fr-btn"
+              type="submit"
+              disabled={!formik.isValid || isSubmitting}
+            >
+              Envoyer
+            </button>
+            {!formik.isValid && (
+              <p className="fr-error-text">
+                Veuillez remplir les champs obligatoires(*) avant d'envoyer
+                votre demande
+              </p>
+            )}
+          </ContactFormFooter>
         </Form>
       )}
     </Formik>
