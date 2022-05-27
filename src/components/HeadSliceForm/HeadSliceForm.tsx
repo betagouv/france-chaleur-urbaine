@@ -2,8 +2,8 @@ import {
   EligibilityFormAddress,
   EligibilityFormContact,
   EligibilityFormMessageConfirmation,
+  EnergyInputsLabelsType,
 } from '@components/EligibilityForm';
-import { SliceContactFormStyle } from '@components/EligibilityForm/components/EligibilityForm.styled';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import markupData, {
   facebookEvent,
@@ -23,6 +23,7 @@ import {
   PageBody,
   PageTitle,
   PageTitlePreTitle,
+  SliceContactFormStyle,
 } from './HeadSliceForm.style';
 
 type HeadBannerType = {
@@ -30,6 +31,7 @@ type HeadBannerType = {
   bgPos?: string;
   CheckEligibility?: boolean;
   formLabel?: string;
+  energyInputsLabels?: EnergyInputsLabelsType;
   pagePreTitle?: string;
   pageTitle?: string;
   pageBody?: string;
@@ -80,6 +82,7 @@ const HeadSlice = ({
   bgPos,
   CheckEligibility,
   formLabel,
+  energyInputsLabels,
   pagePreTitle,
   pageTitle,
   pageBody,
@@ -163,6 +166,7 @@ const HeadSlice = ({
         <>
           <EligibilityFormAddress
             formLabel={formLabel && <FormLabel>{formLabel}</FormLabel>}
+            energyInputsLabels={energyInputsLabels}
             onChange={handleOnChangeAddress}
             onFetch={handleOnFetchAddress}
             onSuccess={handleOnSuccessAddress}
@@ -184,6 +188,7 @@ const HeadSlice = ({
     [
       CheckEligibility,
       Child,
+      energyInputsLabels,
       formLabel,
       handleOnChangeAddress,
       handleOnFetchAddress,

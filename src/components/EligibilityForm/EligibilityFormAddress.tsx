@@ -1,4 +1,4 @@
-import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
+import AddressAutocomplete from '@components/addressAutocomplete';
 import convertPointToCoordinates from '@utils/convertPointToCoordinates';
 import React, { useCallback, useEffect, useState } from 'react';
 import { usePreviousState } from 'src/hooks';
@@ -6,16 +6,25 @@ import { useServices } from 'src/services';
 import { Coords, Point } from 'src/types';
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 
+export type EnergyInputsLabelsType = { collectif: string; individuel: string };
+
 type CheckEligibilityFormProps = {
   formLabel?: React.ReactNode;
+  energyInputsLabels?: EnergyInputsLabelsType;
   centredForm?: boolean;
   onChange?: (...arg: any) => void;
   onFetch?: (...arg: any) => void;
   onSuccess?: (...arg: any) => void;
 };
 
+const energyInputsDefaultLabels = {
+  collectif: 'Chauffage collectif',
+  individuel: 'Chauffage individuel',
+};
+
 const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   formLabel,
+  energyInputsLabels = energyInputsDefaultLabels,
   centredForm,
   children,
   onChange,
@@ -82,10 +91,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       <CheckEligibilityFormLabel centred={centredForm}>
         <SelectEnergy
           name="chauffage"
-          selectOptions={{
-            collectif: 'Chauffage collectif',
-            individuel: 'Chauffage individuel',
-          }}
+          selectOptions={energyInputsLabels}
           onChange={(e) => {
             setData({
               ...data,

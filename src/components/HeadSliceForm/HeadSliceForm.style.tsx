@@ -1,4 +1,16 @@
-import styled, { css, keyframes } from 'styled-components';
+import styled, { createGlobalStyle, css, keyframes } from 'styled-components';
+
+export const SliceContactFormStyle = createGlobalStyle`
+.slice-contact-form-wrapper {
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height 1s ease;
+
+  &.active {
+    max-height: 1000px;
+  }
+}
+`;
 
 export const HeadSliceContainer = styled.div<{ needGradient?: boolean }>`
   background: transparent;
