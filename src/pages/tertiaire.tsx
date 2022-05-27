@@ -256,9 +256,12 @@ consommations d’énergie des bâtiments raccordés aux
 réseaux de chaleur.** 
 
 :::cartridge{theme="color" className="presentation-rcu-tertiaire-cartridge-conso"}
-Se raccorder à un réseau de chaleur, c’est :  
+Se raccorder à un réseau de chaleur,  
+c’est jusqu'à :  
 
 **23%** de réduction de consommations d’énergie comptabilisée !  
+
+(en fonction du mode de chauffage initial)
 :::
 `}
               className="presentation-rcu-tertiaire-body"
