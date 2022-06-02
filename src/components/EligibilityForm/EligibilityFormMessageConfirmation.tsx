@@ -44,17 +44,17 @@ const EligibilityFormMessageConfirmation = ({
       ? `./carte/?coord=${addressCoords}&zoom=15`
       : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
 
-  const { structure } = addressData;
+  const { structure, eligibility } = addressData;
 
   const message = {
-    Tertiaire: {
+    ineligible: {
       title: 'Votre demande de contact est bien prise en compte.',
       body: `Visualisez notre carte des réseaux de chaleur [ici](${linkToMap}).`,
     },
-    Copropriété: {
+    eligible: {
       title: 'Votre demande de contact est bien prise en compte.',
       body: `
-Sans attendre, téléchargez notre guide pratique afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.  
+Sans attendre, [téléchargez notre guide pratique](https://france-chaleur-urbaine.beta.gouv.fr/documentation/guide-france-chaleur-urbaine.pdf) afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.  
 Visualisez également notre carte des réseaux de chaleur [ici](${linkToMap}).`,
     },
   };
@@ -63,12 +63,20 @@ Visualisez également notre carte des réseaux de chaleur [ici](${linkToMap}).`,
       <CallOut>
         <CallOutTitle>
           <MarkdownWrapper
-            value={structure ? message?.[structure]?.title : ''}
+            value={
+              structure
+                ? message?.[eligibility ? 'eligible' : 'ineligible']?.title
+                : ''
+            }
           />
         </CallOutTitle>
         <CallOutBody>
           <MarkdownWrapper
-            value={structure ? message?.[structure]?.body : ''}
+            value={
+              structure
+                ? message?.[eligibility ? 'eligible' : 'ineligible']?.body
+                : ''
+            }
           />
         </CallOutBody>
       </CallOut>
