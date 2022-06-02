@@ -55,6 +55,18 @@ const useContactFormFCU = () => {
   const [loadingStatus, setLoadingStatus] = useState('idle');
   const [submitToFCU] = useBackEndFCU();
 
+  const timeoutScroller = useCallback(
+    (delai: number, callback?: () => void) =>
+      window.setTimeout(() => {
+        const { current }: any = EligibilityFormContactRef;
+        current?.scrollIntoView({
+          behavior: 'smooth',
+        });
+        if (callback) callback();
+      }, delai),
+    []
+  );
+
   const handleOnChangeAddress = useCallback((data) => {
     const { address, heatingType } = data;
     setAddressData(data);
@@ -79,28 +91,25 @@ const useContactFormFCU = () => {
       setAddressData(data);
       if (address && heatingType) {
         setContactReady(true);
-        const scrollTimer = window.setTimeout(() => {
-          const { current }: any = EligibilityFormContactRef;
-          current?.scrollIntoView({
-            behavior: 'smooth',
-          });
-          setLoadingStatus('loaded');
-        }, 500);
-
+        const scrollTimer = timeoutScroller(500, () =>
+          setLoadingStatus('loaded')
+        );
         return () => window.clearTimeout(scrollTimer);
       }
     },
-    [EligibilityFormContactRef]
+    [timeoutScroller]
   );
 
   const handleOnSubmitContact = useCallback(
     async (data: Record<string, any>) => {
       callMarkup__handleOnSubmitContact(data);
       await submitToFCU(data);
+      const scrollTimer = timeoutScroller(500);
       setAddressData({ ...addressData, ...data });
       setMessageSent(true);
+      return () => window.clearTimeout(scrollTimer);
     },
-    [addressData, submitToFCU]
+    [addressData, submitToFCU, timeoutScroller]
   );
 
   return {
