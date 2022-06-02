@@ -4,8 +4,8 @@ import {
   EligibilityFormMessageConfirmation,
 } from '@components/EligibilityForm';
 import Slice from '@components/Slice';
+import { useContactFormFCU } from '@hooks';
 import React from 'react';
-import { useContactFormFCU } from 'src/hooks';
 import {
   Container,
   FormWarningMessage,

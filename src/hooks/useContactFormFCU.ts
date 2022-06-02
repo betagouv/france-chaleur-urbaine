@@ -5,7 +5,7 @@ import markupData, {
   matomoEvent,
 } from '@components/Markup';
 import { useCallback, useRef, useState } from 'react';
-import { useBackEndFCU } from 'src/hooks';
+import useBackEndFCU from './useBackEndFCU';
 
 const callMarkup__handleOnFetchAddress = (address: string) => {
   matomoEvent(markupData.eligibilityTest.matomoEvent, [address]);

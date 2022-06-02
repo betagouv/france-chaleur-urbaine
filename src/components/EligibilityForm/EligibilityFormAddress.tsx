@@ -1,7 +1,7 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
+import { usePreviousState } from '@hooks';
 import convertPointToCoordinates from '@utils/convertPointToCoordinates';
 import React, { useCallback, useEffect, useState } from 'react';
-import { usePreviousState } from 'src/hooks';
 import { useServices } from 'src/services';
 import { Coords, Point } from 'src/types';
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
