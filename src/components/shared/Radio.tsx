@@ -1,6 +1,7 @@
 import { _hasError } from '@utils/form-utils';
 import { ErrorMessage } from 'formik';
 import React from 'react';
+import { useFormInputAutoId } from 'src/hooks';
 import styled from 'styled-components';
 
 const FrRadioGroup = styled.span`
@@ -8,19 +9,30 @@ const FrRadioGroup = styled.span`
   padding-right: 1em;
 `;
 
-const Radio = ({ label, field, form, id, value, displayError }: any) => {
+const Radio = ({
+  label,
+  field,
+  form,
+  id,
+  value,
+  displayError,
+  ...otherProps
+}: any) => {
   const hasError = _hasError(field.name, form);
   const additionalInputGroupClass = hasError ? 'fr-checkbox-group--error' : '';
+  const inputId = useFormInputAutoId({ id, name: field.name });
+
   return (
     <FrRadioGroup className={`fr-radio-group ${additionalInputGroupClass}`}>
       <input
         type={'radio'}
-        id={id}
+        id={inputId}
+        {...otherProps}
         {...field}
         value={value}
         checked={field.value === value}
       />
-      <label htmlFor={id} className="fr-label">
+      <label htmlFor={inputId} className="fr-label">
         {label}
       </label>
 
