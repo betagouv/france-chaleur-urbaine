@@ -13,6 +13,7 @@ import markupData, {
 } from '@components/Markup';
 import Slice from '@components/Slice';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useBackEndFCU } from 'src/hooks';
 import {
   Container,
   FormLabel,
@@ -94,6 +95,7 @@ const HeadSlice = ({
   const [showWarning, setShowWarning] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('idle');
+  const [submitToFCU] = useBackEndFCU();
 
   const EligibilityFormContactRef = useRef(null);
 
@@ -131,15 +133,14 @@ const HeadSlice = ({
     }
   }, []);
 
-  const handleOnSubmitContact = useCallback((data: Record<string, any>) => {
-    callMarkup__handleOnSubmitContact(data);
-  }, []);
-  const handleAfterSubmitContact = useCallback(
-    (submitedAddressData) => {
-      setAddressData({ ...addressData, ...submitedAddressData });
+  const handleOnSubmitContact = useCallback(
+    async (data: Record<string, any>) => {
+      callMarkup__handleOnSubmitContact(data);
+      await submitToFCU(data);
+      setAddressData({ ...addressData, ...data });
       setMessageSent(true);
     },
-    [addressData]
+    [addressData, submitToFCU]
   );
 
   const Child = useMemo(
@@ -230,7 +231,6 @@ const HeadSlice = ({
           <EligibilityFormContact
             addressData={addressData}
             onSubmit={handleOnSubmitContact}
-            afterSubmit={handleAfterSubmitContact}
           />
         </Slice>
 

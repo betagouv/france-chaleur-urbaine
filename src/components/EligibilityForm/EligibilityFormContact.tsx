@@ -6,7 +6,6 @@ import {
   ContactFormWrapper,
 } from '@components/EligibilityForm/components/EligibilityForm.styled';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import { useFormspark } from '@formspark/use-formspark';
 import { isIDF } from '@helpers';
 import React, { useCallback, useMemo } from 'react';
 
@@ -23,7 +22,6 @@ type AddressDataType = {
 type EligibilityFormContactType = {
   addressData: AddressDataType;
   onSubmit?: (...arg: any) => void;
-  afterSubmit?: (...arg: any) => void;
 };
 
 type KeyPrimaryType =
@@ -167,12 +165,7 @@ Découvrez également d’autres solutions de chauffage [ici](https://france-ren
 const EligibilityFormContact = ({
   addressData,
   onSubmit,
-  afterSubmit,
 }: EligibilityFormContactType) => {
-  const [submit, submitting] = useFormspark({
-    formId: process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID || '',
-  });
-
   const isIDFAddress = useMemo(() => {
     const { postcode: postCode } = addressData?.geoAddress?.properties || {};
     return postCode && isIDF(postCode);
@@ -184,36 +177,14 @@ const EligibilityFormContact = ({
   );
   const handleSubmitForm = useCallback(
     async (values: Record<string, string | number>) => {
-      const { heatingEnergy } = values;
-      const {
-        address,
-        coords,
-        heatingType,
-        eligibility,
-        network,
-      }: Record<string, any> = addressData;
-      const storedAddress = JSON.stringify({
-        coords: [coords.lat, coords.lon],
-        label: address,
-      });
-
       const sendedValues = {
+        ...addressData,
         ...values,
-        chauffage: `${heatingEnergy} - ${heatingType}`,
-        address: storedAddress,
-        distanceAuReseau: network.distance
-          ? `${network.distance}m`
-          : 'inconnue',
-        estEligible: eligibility,
       };
 
       if (onSubmit) onSubmit(sendedValues);
-
-      await submit(sendedValues).then(
-        () => afterSubmit && afterSubmit(sendedValues)
-      );
     },
-    [addressData, afterSubmit, onSubmit, submit]
+    [addressData, onSubmit]
   );
 
   const {
@@ -273,7 +244,7 @@ const EligibilityFormContact = ({
 
       <ContactFormContentWrapper>
         <div>
-          <ContactForm onSubmit={handleSubmitForm} isSubmitting={submitting} />
+          <ContactForm onSubmit={handleSubmitForm} />
         </div>
       </ContactFormContentWrapper>
     </ContactFormWrapper>
