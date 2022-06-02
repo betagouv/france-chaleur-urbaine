@@ -90,12 +90,12 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       {children}
       <CheckEligibilityFormLabel centred={centredForm}>
         <SelectEnergy
-          name="chauffage"
+          name="heatingType"
           selectOptions={energyInputsLabels}
           onChange={(e) => {
             setData({
               ...data,
-              chauffage: e.target.value,
+              heatingType: e.target.value,
             });
           }}
         >

@@ -1,5 +1,5 @@
 import { Form, Formik, FormikValues } from 'formik';
-import React from 'react';
+import React, { useRef } from 'react';
 import * as Yup from 'yup';
 import ContactConsent, {
   defaultValuesContactConsent,
@@ -13,12 +13,13 @@ import { ContactFormFooter } from './EligibilityForm.styled';
 
 type ContactFormProps = {
   onSubmit: (values: FormikValues) => void;
-  isSubmitting: boolean;
+  isSubmitting?: boolean; // TODO: remove and replace by 'disable'
 };
 export const ContactForm = ({
   onSubmit,
   isSubmitting = false,
 }: ContactFormProps) => {
+  const formRef = useRef(null);
   const initialValues = {
     ...defaultValuesContactInformation,
     ...defaultValuesContactConsent,
@@ -29,6 +30,9 @@ export const ContactForm = ({
   });
   const handleSubmit = async (values: FormikValues) => {
     onSubmit({ ...values });
+    // const form: any = formRef?.current;
+    // console.log(form);
+    // if (form) form?.reset();
   };
   return (
     <Formik
@@ -37,7 +41,7 @@ export const ContactForm = ({
       onSubmit={handleSubmit}
     >
       {(formik) => (
-        <Form>
+        <Form ref={formRef}>
           <ContactInformation />
           <ContactConsent />
           <ContactFormFooter>

@@ -3,20 +3,20 @@ import { Field } from 'formik';
 import * as Yup from 'yup';
 
 export const fieldLabelConsent = {
-  collecterMesDonnees:
+  dataRetention:
     'J’accepte que les données collectées soient utilisées à des fins d’analyse par le ministère de la transition écologique. (*)',
-  partageAuGestionnaire:
+  dataSharing:
     'J’accepte que ma demande soit communiquée à ma commune et au gestionnaire du réseau le plus proche (sans aucun engagement de ma part). (*)',
 };
 
 export const defaultValuesContactConsent = {
-  collecterMesDonnees: false,
-  partageAuGestionnaire: false,
+  dataRetention: false,
+  dataSharing: false,
 };
 
 export const validationSchemasContactConsent = {
-  collecterMesDonnees: Yup.boolean().oneOf([true], 'Ce champ est requis'),
-  partageAuGestionnaire: Yup.boolean().oneOf([true], 'Ce champ est requis'),
+  dataRetention: Yup.boolean().oneOf([true], 'Ce champ est requis'),
+  dataSharing: Yup.boolean().oneOf([true], 'Ce champ est requis'),
 };
 
 const ContactConsent = () => {
@@ -24,15 +24,15 @@ const ContactConsent = () => {
     <fieldset className="fr-fieldset fr-my-3w">
       <div className="fr-my-3w fr-checkbox-group">
         <Field
-          name="collecterMesDonnees"
-          label={fieldLabelConsent.collecterMesDonnees}
+          name="dataRetention"
+          label={fieldLabelConsent.dataRetention}
           component={Checkbox}
         />
       </div>
       <div className="fr-my-3w fr-checkbox-group">
         <Field
-          name="partageAuGestionnaire"
-          label={fieldLabelConsent.partageAuGestionnaire}
+          name="dataSharing"
+          label={fieldLabelConsent.dataSharing}
           component={Checkbox}
         />
       </div>

@@ -67,26 +67,26 @@ const HeadSlice: React.FC = () => {
   const EligibilityFormContactRef = useRef(null);
 
   const handleOnChangeAddress = useCallback((data) => {
-    const { address, chauffage } = data;
+    const { address, heatingType } = data;
     setAddressData(data);
-    setShowWarning(address && !chauffage);
+    setShowWarning(address && !heatingType);
   }, []);
   const handleOnFetchAddress = useCallback(
     ({ address }) => {
-      const { chauffage }: any = addressData;
+      const { heatingType }: any = addressData;
       setLoadingStatus('loading');
       setMessageSent(false);
       callMarkup__handleOnFetchAddress(address);
-      setShowWarning(address && !chauffage);
+      setShowWarning(address && !heatingType);
     },
     [addressData]
   );
   const handleOnSuccessAddress = useCallback((data: any) => {
-    const { address, chauffage, eligibility } = data;
+    const { address, heatingType, eligibility } = data;
     callMarkup__handleOnSuccessAddress({ eligibility, address });
     // TODO: Prefer context ?
     setAddressData(data);
-    if (address && chauffage) {
+    if (address && heatingType) {
       setContactReady(true);
       const scrollTimer = window.setTimeout(() => {
         const { current }: any = EligibilityFormContactRef;

@@ -24,11 +24,11 @@ export const fieldLabelInformation = {
       { value: 'Tertiaire', label: 'Tertiaire', id: 'tertiaire' },
     ],
   },
-  nom: 'Nom',
-  prenom: 'Prénom',
-  etablissement: 'Établissement',
+  lastName: 'Nom',
+  firstName: 'Prénom',
+  company: 'Établissement',
   email: 'Email (*)',
-  chauffage: {
+  heatingEnergy: {
     label: 'Mode de chauffage actuel (*)',
     inputs: [
       { value: 'électricité', label: 'Électricité', id: 'electricite' },
@@ -40,24 +40,24 @@ export const fieldLabelInformation = {
 };
 export const defaultValuesContactInformation = {
   structure: '',
-  nom: '',
-  prenom: '',
-  etablissement: '',
+  lastName: '',
+  firstName: '',
+  company: '',
   email: '',
-  chauffage: '',
+  heatingEnergy: '',
 };
 export const validationSchemasContactInformation = {
   structure: Yup.string(),
-  nom: Yup.string(),
-  prenom: Yup.string(),
-  etablissement: Yup.string(),
+  lastName: Yup.string(),
+  firstName: Yup.string(),
+  company: Yup.string(),
   email: Yup.string()
     .email('Votre adresse email n‘est pas valide')
     .required('Veuillez renseigner votre adresse email'),
-  chauffage: Yup.string()
+  heatingEnergy: Yup.string()
     .required('Veuillez renseigner votre chauffage')
     .oneOf(
-      fieldLabelInformation.chauffage.inputs.map(({ value }) => value),
+      fieldLabelInformation.heatingEnergy.inputs.map(({ value }) => value),
       'Ce champ est requis'
     ),
 };
@@ -79,15 +79,15 @@ const ContactInformation = () => {
       <fieldset className="fr-fieldset fr-my-3w">
         <InputWraper className="fr-my-3w">
           <Field
-            name="nom"
-            label={fieldLabelInformation.nom}
+            name="lastName"
+            label={fieldLabelInformation.lastName}
             component={Input}
           />
         </InputWraper>
         <InputWraper className="fr-my-3w">
           <Field
-            name="prenom"
-            label={fieldLabelInformation.prenom}
+            name="firstName"
+            label={fieldLabelInformation.firstName}
             component={Input}
           />
         </InputWraper>
@@ -99,9 +99,12 @@ const ContactInformation = () => {
           }`}
         >
           <Field
-            name="etablissement"
-            label={fieldLabelInformation.etablissement}
+            name="company"
+            label={fieldLabelInformation.company}
             component={Input}
+            disabled
+            readOnly
+            // value=""
           />
         </InputWraper>
         <InputWraper className="fr-my-3w">
@@ -116,9 +119,9 @@ const ContactInformation = () => {
       <fieldset className="fr-fieldset fr-my-3w">
         <InputWraper>
           <RadioGroup
-            label={fieldLabelInformation.chauffage.label}
-            name="chauffage"
-            inputs={fieldLabelInformation.chauffage.inputs}
+            label={fieldLabelInformation.heatingEnergy.label}
+            name="heatingEnergy"
+            inputs={fieldLabelInformation.heatingEnergy.inputs}
           />
         </InputWraper>
       </fieldset>

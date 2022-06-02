@@ -15,7 +15,7 @@ type AvailableHeating = 'collectif' | 'individuel' | undefined;
 type AddressDataType = {
   geoAddress?: Record<string, any>;
   eligibility?: boolean;
-  chauffage?: AvailableHeating;
+  heatingType?: AvailableHeating;
   network?: Record<string, any>;
   distance?: number;
 };
@@ -36,13 +36,13 @@ type KeyPrimaryType =
 
 const getContactResult = (
   formContactResult: Record<string, Record<string, string>>,
-  { distance, eligibility, chauffage }: AddressDataType
+  { distance, eligibility, heatingType }: AddressDataType
 ) => {
   const keyPrimary: KeyPrimaryType =
     (distance &&
       (distance <= 100 ? 'lt100' : distance <= 200 ? 'lt200' : 'gt200')) ||
     (eligibility ? 'provinceElligible' : 'provinceIneligible');
-  const keySecondary: AvailableHeating = chauffage;
+  const keySecondary: AvailableHeating = heatingType;
   return (
     (keyPrimary &&
       keySecondary &&
@@ -184,11 +184,11 @@ const EligibilityFormContact = ({
   );
   const handleSubmitForm = useCallback(
     async (values: Record<string, string | number>) => {
-      const { chauffage } = values;
+      const { heatingEnergy } = values;
       const {
         address,
         coords,
-        chauffage: chauffageType,
+        heatingType,
         eligibility,
         network,
       }: Record<string, any> = addressData;
@@ -199,7 +199,7 @@ const EligibilityFormContact = ({
 
       const sendedValues = {
         ...values,
-        chauffage: `${chauffage} - ${chauffageType}`,
+        chauffage: `${heatingEnergy} - ${heatingType}`,
         address: storedAddress,
         distanceAuReseau: network.distance
           ? `${network.distance}m`
@@ -216,7 +216,11 @@ const EligibilityFormContact = ({
     [addressData, afterSubmit, onSubmit, submit]
   );
 
-  const { chauffage, eligibility, network = {} }: AddressDataType = addressData;
+  const {
+    heatingType,
+    eligibility,
+    network = {},
+  }: AddressDataType = addressData;
   const { distance } = network || {};
 
   const {
@@ -227,7 +231,7 @@ const EligibilityFormContact = ({
   }: any = getContactResult(formContactResult, {
     distance,
     eligibility,
-    chauffage,
+    heatingType,
   });
 
   const distStep =
