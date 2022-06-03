@@ -66,6 +66,7 @@ export const MainLayoutStyle = createGlobalStyle`
     .extend-menu {
       ul {
         margin: 0;
+        padding-left: 1.5rem;
       }
       li {
         .fr-nav__link {
