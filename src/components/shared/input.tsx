@@ -26,8 +26,8 @@ const Input = ({
         type={type}
         className={`fr-input ${additionalInputClass}`}
         id={inputId}
-        {...otherProps}
         {...field}
+        {...otherProps}
       />
       {hasError && (
         <ErrorMessage

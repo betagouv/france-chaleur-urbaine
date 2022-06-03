@@ -101,7 +101,8 @@ const useContactFormFCU = () => {
   );
 
   const handleOnSubmitContact = useCallback(
-    async (data: Record<string, any>) => {
+    async (data: Record<string, any> = {}) => {
+      if (data.structure !== 'Tertiaire') data.company = '';
       callMarkup__handleOnSubmitContact(data);
       await submitToFCU(data);
       const scrollTimer = timeoutScroller(500);

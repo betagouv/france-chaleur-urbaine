@@ -4,7 +4,7 @@ import { Field, useFormikContext } from 'formik';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 
-const InputWraper = styled.div<{ hidden?: boolean }>`
+const InputWraper = styled.div`
   opacity: 1;
   max-height: 8em;
   overflow: hidden;
@@ -102,9 +102,9 @@ const ContactInformation = () => {
             name="company"
             label={fieldLabelInformation.company}
             component={Input}
-            disabled
-            readOnly
-            // value=""
+            {...(!values.structure || values.structure !== 'Tertiaire'
+              ? { value: '' }
+              : {})}
           />
         </InputWraper>
         <InputWraper className="fr-my-3w">
