@@ -14,6 +14,7 @@ type AvailableStructure = 'Tertiaire' | 'Copropriété' | undefined;
 type AddressDataType = {
   geoAddress?: Record<string, any>;
   eligibility?: boolean;
+  computEligibility?: boolean;
   chauffage?: AvailableHeating;
   network?: Record<string, any>;
   structure?: AvailableStructure;
@@ -30,7 +31,7 @@ const EligibilityFormMessageConfirmation = ({
 }) => {
   const addressCoords: [number, number] = useMemo(() => {
     const coords = addressData?.geoAddress?.geometry?.coordinates;
-    return coords && [coords].reverse();
+    return coords && [...coords].reverse();
   }, [addressData]);
 
   const isIDFAddress = useMemo(() => {
@@ -44,7 +45,7 @@ const EligibilityFormMessageConfirmation = ({
       ? `./carte/?coord=${addressCoords}&zoom=15`
       : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
 
-  const { structure, eligibility } = addressData;
+  const { structure, computEligibility } = addressData;
 
   const message = {
     ineligible: {
@@ -65,7 +66,8 @@ Visualisez également notre carte des réseaux de chaleur [ici](${linkToMap}).`,
           <MarkdownWrapper
             value={
               structure
-                ? message?.[eligibility ? 'eligible' : 'ineligible']?.title
+                ? message?.[computEligibility ? 'eligible' : 'ineligible']
+                    ?.title
                 : ''
             }
           />
@@ -74,7 +76,7 @@ Visualisez également notre carte des réseaux de chaleur [ici](${linkToMap}).`,
           <MarkdownWrapper
             value={
               structure
-                ? message?.[eligibility ? 'eligible' : 'ineligible']?.body
+                ? message?.[computEligibility ? 'eligible' : 'ineligible']?.body
                 : ''
             }
           />

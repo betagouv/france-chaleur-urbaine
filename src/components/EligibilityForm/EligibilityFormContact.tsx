@@ -171,39 +171,50 @@ const EligibilityFormContact = ({
     return postCode && isIDF(postCode);
   }, [addressData]);
 
-  const addressCoords: [number, number] = useMemo(
-    () => addressData?.geoAddress?.geometry?.coordinates?.reverse(),
-    [addressData]
-  );
+  const addressCoords: [number, number] | undefined = useMemo(() => {
+    const [lon, lat] = addressData?.geoAddress?.geometry?.coordinates || [];
+    return lat && lon ? [lat, lon] : undefined; // TODO: Fix on source
+  }, [addressData]);
+
+  const { distance, header, body, computEligibility, headerTypo } =
+    useMemo(() => {
+      const {
+        heatingType,
+        eligibility,
+        network = {},
+      }: AddressDataType = addressData;
+      const { distance } = network || {};
+      const {
+        header,
+        body,
+        eligibility: computEligibility,
+        headerTypo,
+      }: any = getContactResult(formContactResult, {
+        distance,
+        eligibility,
+        heatingType,
+      });
+      return {
+        distance,
+        header,
+        body,
+        computEligibility,
+        headerTypo,
+      };
+    }, [addressData]);
+
   const handleSubmitForm = useCallback(
     async (values: Record<string, string | number>) => {
       const sendedValues = {
         ...addressData,
         ...values,
+        computEligibility,
       };
 
       if (onSubmit) onSubmit(sendedValues);
     },
-    [addressData, onSubmit]
+    [addressData, computEligibility, onSubmit]
   );
-
-  const {
-    heatingType,
-    eligibility,
-    network = {},
-  }: AddressDataType = addressData;
-  const { distance } = network || {};
-
-  const {
-    header,
-    body,
-    eligibility: computEligibility,
-    headerTypo,
-  }: any = getContactResult(formContactResult, {
-    distance,
-    eligibility,
-    heatingType,
-  });
 
   const distStep =
     isIDFAddress &&
