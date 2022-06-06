@@ -1,4 +1,4 @@
-import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
+import AddressAutocomplete from '@components/addressAutocomplete';
 import React from 'react';
 import { useServices } from 'src/services';
 import { Point } from 'src/types';

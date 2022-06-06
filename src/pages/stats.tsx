@@ -137,10 +137,10 @@ function Statistiques() {
       } ${year}`;
       const eligible =
         entry?.['Formulaire de contact éligible - Envoi']?.nb_visits || 0;
-      const uneligible =
+      const ineligible =
         entry?.['Formulaire de contact inéligible - Envoi']?.nb_visits || 0;
-      const total = Number(eligible) + Number(uneligible);
-      return [label, total, uneligible, eligible];
+      const total = Number(eligible) + Number(ineligible);
+      return [label, total, ineligible, eligible];
     }),
   ];
 

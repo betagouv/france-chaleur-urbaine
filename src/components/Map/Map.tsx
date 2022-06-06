@@ -1,5 +1,6 @@
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Point } from 'src/types';
 import {
@@ -116,7 +117,7 @@ const formatBodyPopup = ({
           ${
             conso &&
             (!energie_utilisee || objTypeEnergy?.gas.includes(energie_utilisee))
-              ? `Consommation de gaz :  ${conso?.toFixed(2)}&nbsp;MWh<br />`
+              ? `Consommations de gaz :  ${conso?.toFixed(2)}&nbsp;MWh<br />`
               : ''
           }
           ${
@@ -146,6 +147,7 @@ export default function Map() {
     React.Dispatch<any | never[]>
   ] = useState(defaultLayerDisplay);
 
+  const { query } = useRouter();
   const [, , updateClickedPoint] = useMapPopup(map.current, {
     bodyFormater: formatBodyPopup,
     className: 'popup-map-layer',
@@ -253,7 +255,7 @@ export default function Map() {
   // --- Load Map ---
   // ----------------
   useEffect(() => {
-    if (mapState === 'loaded') return;
+    if (mapState === 'loaded' || map.current) return;
 
     map.current = new maplibregl.Map({
       attributionControl: false,
@@ -391,6 +393,31 @@ export default function Map() {
       });
     });
   });
+
+  // -------------------------
+  // --- Load Query Params ---
+  // -------------------------
+  const [queryState, setQueryState] = useState({});
+  useEffect(() => {
+    const { coord: coordState }: any = queryState;
+    const { coord } = query;
+    if (coord && coord !== coordState) {
+      const coordinates: any =
+        typeof coord === 'string'
+          ? coord
+              .split(',')
+              .map((point: string) => parseFloat(point))
+              .reverse()
+          : coord; // TODO: Fix on source
+      flyTo({ coordinates });
+      setQueryState(query);
+      new maplibregl.Marker({
+        color: '#ea7c3f', // TODO: Change color if address is eligible and use #00eb5e or #4550e5
+      })
+        .setLngLat(coordinates)
+        .addTo(map.current);
+    }
+  }, [flyTo, query, queryState]);
 
   // ---------------------
   // --- Search result ---
