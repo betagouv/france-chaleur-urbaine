@@ -1,16 +1,50 @@
-import { AddressAutocompleteLabel } from '@components/addressAutocomplete/AddressAutocompleteLabel';
-import { Suggestions } from '@components/addressAutocomplete/Suggestions';
-import { useFormAutocomplete } from '@components/addressAutocomplete/useForm';
-import { Status, ValueOf } from '@components/addressAutocomplete/utils';
 import { Combobox, ComboboxPopover } from '@reach/combobox';
-import React from 'react';
-import { Point, Suggestions as SuggestionsType } from 'src/types';
+import React, { useCallback, useMemo } from 'react';
+import {
+  Point,
+  SuggestionItem,
+  Suggestions as SuggestionsType,
+} from 'src/types';
 import { createGlobalStyle } from 'styled-components';
-import { AddressInput } from './AddressInput';
-import { EmptySuggestion } from './EmptySuggestion';
+import {
+  AddressAutocompleteLabel,
+  AddressInput,
+  EmptySuggestion,
+  Suggestions,
+} from './components';
+import useSuggestions from './useSuggestions';
 
 const defaultLabel = '';
 const defaultPlaceholder = 'Recherchez une adresse';
+
+type TypeHandleAddressSelected = (
+  address: string,
+  coordinates: Point,
+  geoAddress?: SuggestionItem
+) => void;
+
+type AddressProps = {
+  centred?: boolean;
+  label?: React.ReactNode;
+  placeholder?: string;
+  emptySuggestionText?: string;
+  debounceTime?: number;
+  minCharactersLength?: number;
+  className?: string;
+  popoverClassName?: string;
+  onAddressSelected: TypeHandleAddressSelected;
+  onChange?: (e: string) => void;
+};
+
+const findAddressInSuggestions = (
+  address: string,
+  suggestions: SuggestionsType | []
+): SuggestionItem | undefined => {
+  const suggestion = suggestions.find(
+    (item) => item.properties.label === address
+  );
+  return suggestion;
+};
 
 const GlobalStyle = createGlobalStyle`
   .fr-input {
@@ -28,29 +62,6 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-export type TypeHandleAddressSelected = (
-  address: string,
-  coordinates: Point
-) => void;
-
-type AddressProps = {
-  centred?: boolean;
-  onAddressSelected: TypeHandleAddressSelected;
-  label?: React.ReactNode;
-  placeholder?: string;
-  emptySuggestionText?: string;
-  debounceTime?: number;
-  minCharactersLength?: number;
-  className?: string;
-  popoverClassName?: string;
-};
-
-const _suggestionHasBeenAsked = (status: ValueOf<Status>): boolean =>
-  status !== 'idle' && status !== 'loading';
-
-const hasSuggestions = (suggestions: SuggestionsType | []): boolean =>
-  !!suggestions.length;
-
 const AddressAutocomplete: React.FC<AddressProps> = ({
   label = defaultLabel,
   emptySuggestionText,
@@ -61,10 +72,34 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
   popoverClassName,
   centred,
   onAddressSelected,
+  onChange,
 }) => {
-  const { handleSelect, suggestions, fetchSuggestions, status } =
-    useFormAutocomplete(onAddressSelected, debounceTime);
-  const shouldDisplaySuggestions = _suggestionHasBeenAsked(status);
+  const { suggestions, fetchSuggestions, status } = useSuggestions({
+    debounceTime,
+    limit: 5,
+    autocomplete: false,
+    minCharactersLength,
+  });
+  const handleSelect = useCallback(
+    (address: string, suggestions: SuggestionsType | []) => {
+      const geoAddress = findAddressInSuggestions(address, suggestions);
+      const coords = geoAddress?.geometry.coordinates || [0, 0];
+      onAddressSelected(address, coords, geoAddress);
+    },
+    [onAddressSelected]
+  );
+  const shouldDisplaySuggestions = useMemo(
+    () => status !== 'idle' && status !== 'loading',
+    [status]
+  );
+  const hasSuggestions = useMemo(() => !!suggestions.length, [suggestions]);
+
+  const onChangeHandler = (event: React.FormEvent<HTMLInputElement>) => {
+    const value = event.currentTarget.value;
+    if (onChange) onChange(value);
+    fetchSuggestions(value);
+  };
+
   return (
     <>
       <GlobalStyle />
@@ -82,15 +117,10 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
             handleSelect(selectedAddress, suggestions)
           }
         >
-          <AddressInput
-            onChange={(event) =>
-              fetchSuggestions(event.currentTarget.value, minCharactersLength)
-            }
-            placeholder={placeholder}
-          />
+          <AddressInput onChange={onChangeHandler} placeholder={placeholder} />
           {shouldDisplaySuggestions && (
             <ComboboxPopover className={popoverClassName}>
-              {hasSuggestions(suggestions) ? (
+              {hasSuggestions ? (
                 <Suggestions suggestions={suggestions} />
               ) : (
                 <EmptySuggestion text={emptySuggestionText} />

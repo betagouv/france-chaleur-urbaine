@@ -1,11 +1,11 @@
 import Accordions from '@components/accordions';
 import Carrousel from '@components/Carrousel';
-import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
-import HeadSlice from '@components/HeadSlice';
+import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainLayout from '@components/shared/layout/MainLayout';
 import SimulateurCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
+import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import {
@@ -115,7 +115,7 @@ export default function Home() {
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
-          <HeadSlice
+          <HeadSliceForm
             bg="./img/head-slice-bg-coproprietaire.png"
             pagePreTitle="Vous êtes chauffé au fioul ou au gaz&nbsp;?"
             pageTitle="Changez pour un chauffage écologique à prix compétitif&nbsp;!"
@@ -167,14 +167,7 @@ vigueur et **excluent l'installation de nouvelles chaudières au fioul.**
           </Slice>
 
           <Slice theme="grey" padding={5}>
-            <div className="fr-grid-row fr-grid-row--center fr-py-2w">
-              <div className="fr-col-lg-6">
-                <CheckEligibilityForm
-                  formLabel="Votre immeuble est-il raccordable ?"
-                  centredForm
-                />
-              </div>
-            </div>
+            <SliceForm />
           </Slice>
 
           <Slice padding={5}>

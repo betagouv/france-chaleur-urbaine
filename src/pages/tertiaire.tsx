@@ -1,10 +1,10 @@
 import Accordions from '@components/accordions';
-import CheckEligibilityForm from '@components/checkEligibility/CheckEligibilityForm';
-import HeadSlice from '@components/HeadSlice';
+import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainLayout from '@components/shared/layout/MainLayout';
 import SimulateurCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
+import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
 import {
   comparatifRcu,
@@ -182,12 +182,16 @@ export default function Home() {
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
-          <HeadSlice
+          <HeadSliceForm
             bg="./img/head-slice-bg-tertiaire.png"
             pageBody={`
 ## Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
 # Optez pour un chauffage écologique et économique`}
             formLabel="Votre bâtiment peut-il être raccordé&nbsp;?"
+            energyInputsLabels={{
+              collectif: 'Central',
+              individuel: 'Individuel',
+            }}
             CheckEligibility
             needGradient
           />
@@ -252,9 +256,12 @@ consommations d’énergie des bâtiments raccordés aux
 réseaux de chaleur.** 
 
 :::cartridge{theme="color" className="presentation-rcu-tertiaire-cartridge-conso"}
-Se raccorder à un réseau de chaleur, c’est :  
+Se raccorder à un réseau de chaleur,  
+c’est jusqu'à :  
 
 **23%** de réduction de consommations d’énergie comptabilisée !  
+
+(en fonction du mode de chauffage initial)
 :::
 `}
               className="presentation-rcu-tertiaire-body"
@@ -262,14 +269,7 @@ Se raccorder à un réseau de chaleur, c’est :
           </Slice>
 
           <Slice theme="grey" padding={2}>
-            <div className="fr-grid-row fr-grid-row--center fr-py-2w">
-              <div className="fr-col-lg-6">
-                <CheckEligibilityForm
-                  formLabel="Votre immeuble est-il raccordable ?"
-                  centredForm
-                />
-              </div>
-            </div>
+            <SliceForm />
           </Slice>
 
           <Slice

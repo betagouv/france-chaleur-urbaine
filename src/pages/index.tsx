@@ -1,4 +1,4 @@
-import HeadSlice from '@components/HeadSlice';
+import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Slice, { SliceImg } from '@components/Slice';
@@ -105,7 +105,7 @@ export default function Home() {
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
-          <HeadSlice
+          <HeadSliceForm
             bg="./img/head-slice-bg-home.png"
             pageTitle="Les réseaux de chaleur, une énergie d’avenir"
             pageBody="Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français"

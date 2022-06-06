@@ -85,6 +85,8 @@ export default {
     '^@components(/.*)$': '<rootDir>/src/components$1',
     '^@data(/.*)$': '<rootDir>/src/data$1',
     '^@utils(/.*)$': '<rootDir>/src/utils$1',
+    '^@hooks(/.*)$': '<rootDir>/src/hooks$1',
+    '^@helpers(/.*)$': '<rootDir>/src/helpers$1',
     '^@core(/.*)$': '<rootDir>/src/core$1',
   },
 
