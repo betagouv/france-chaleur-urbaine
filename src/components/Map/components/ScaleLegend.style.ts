@@ -59,7 +59,11 @@ export const ScaleLegendLabelWrapper = styled.div`
   }
 `;
 
-export const ScaleLabelLegend = styled.span<{ bgColor?: string; size: number }>`
+export const ScaleLabelLegend = styled.span<{
+  bgColor?: string;
+  size: number;
+  circle?: boolean;
+}>`
   width: ${({ size }) => `${size}rem`};
   height: 1em;
   display: inline-flex;
@@ -74,8 +78,12 @@ export const ScaleLabelLegend = styled.span<{ bgColor?: string; size: number }>`
 
     width: ${({ size }) => `${size}em`};
     height: ${({ size }) => `${size}em`};
-    border-radius: 50%;
     margin-bottom: calc(0.25em - 1.5px);
     background-color: ${({ bgColor }) => bgColor || 'grey'};
+    ${({ circle }) =>
+      circle &&
+      css`
+        border-radius: 50%;
+      `}
   }
 `;

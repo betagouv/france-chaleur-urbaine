@@ -247,15 +247,12 @@ const arrColorFromDefEnergy = [
   ),
   themeDefEnergy.unknow.color,
 ];
-
 export const energyLayerStyle = {
-  type: 'circle',
+  type: 'symbol',
   layout: {
-    'circle-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
-  },
-  paint: {
-    'circle-color': ['match', ['get', TYPE_ENERGY], ...arrColorFromDefEnergy],
-    'circle-radius': [
+    'icon-image': 'energy-picto',
+    'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
+    'icon-size': [
       'interpolate',
       ['linear'],
       ['zoom'],
@@ -263,22 +260,25 @@ export const energyLayerStyle = {
       [
         'case',
         ['<', ['get', NB_LOT], 100],
-        4,
+        0.25,
         ['<', ['get', NB_LOT], 1000],
-        8,
-        15,
+        0.6,
+        1,
       ],
       maxZoom,
       [
         'case',
         ['<', ['get', NB_LOT], 100],
-        8,
+        0.25 * 2,
         ['<', ['get', NB_LOT], 1000],
-        16,
-        30,
+        0.6 * 2,
+        1 * 2,
       ],
     ],
-    'circle-opacity': [
+  },
+  paint: {
+    'icon-color': ['match', ['get', TYPE_ENERGY], ...arrColorFromDefEnergy],
+    'icon-opacity': [
       'interpolate',
       ['linear'],
       ['zoom'],
@@ -287,7 +287,6 @@ export const energyLayerStyle = {
       minZoomData + 0.5 + 1,
       0.65,
     ],
-    'circle-stroke-opacity': 0,
   },
 };
 
