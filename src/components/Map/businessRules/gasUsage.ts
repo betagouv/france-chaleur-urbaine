@@ -5,7 +5,7 @@ export const localTypeGas: Record<string, string> = {
 };
 
 export const themeDefTypeGas: any = {
-  T: { color: '#13e0d6' },
-  R: { color: '#136ce0' },
+  T: { color: '#2200F0' },
+  R: { color: '#00B8F0' },
   unknow: { color: '#818181' },
 };

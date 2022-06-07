@@ -7,9 +7,9 @@ export const localTypeEnergy: Record<string, string> = {
 };
 
 export const themeDefEnergy: any = {
-  fuelOil: { color: '#c72e6e' },
-  gas: { color: '#9c47e2' },
-  wood: { color: '#ce7f17' },
+  fuelOil: { color: '#F07300' },
+  gas: { color: '#B414FF' },
+  wood: { color: '#955e15' },
   electric: { color: '#4cd362' },
   unknow: { color: '#818181' },
 };

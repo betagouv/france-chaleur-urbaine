@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { createGlobalStyle, css } from 'styled-components';
+import { themeDefHeatNetwork } from '../businessRules';
 
 export const MapGlobalStyle = createGlobalStyle`
   .leaflet-container .leaflet-control-attribution {
@@ -145,7 +146,7 @@ export const LegendGlobalStyle = createGlobalStyle`
     :before {
       width: 100%;
       height: 0;
-      border: 3px solid #2d9748;
+      border: 3px solid ${themeDefHeatNetwork.outline.color};
       border-radius: 3px;
       margin-bottom: calc(0.25em - 1.5px)
     }
@@ -155,9 +156,9 @@ export const LegendGlobalStyle = createGlobalStyle`
 
     :before {
       width: 100%;
-      border: 3px solid #ff6600;
+      border: 3px solid ${themeDefHeatNetwork.boilerRoom.color};
       border-radius: 3px;
-      background-color: #ff660088;
+      background-color: ${themeDefHeatNetwork.boilerRoom.color}88;
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
@@ -166,9 +167,9 @@ export const LegendGlobalStyle = createGlobalStyle`
 
     :before {
       width: 1rem;
-      border: 3px solid #ff00d4;
+      border: 3px solid ${themeDefHeatNetwork.substation.color};
       border-radius: 50%;
-      background-color: #ff00d4;
+      background-color: ${themeDefHeatNetwork.substation.color};
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
@@ -179,7 +180,6 @@ export const LegendGlobalStyle = createGlobalStyle`
       width: 0.5rem;
       height: 0.5rem;
       border-radius: 50%;
-      /* background-color: grey; */
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
@@ -210,7 +210,6 @@ export const GroupeLabel = styled.div`
     padding: 0 0 0.4rem 0;
 
     .label-item {
-      /* border: 1px solid rebeccapurple; */
       flex: 1;
       min-width: 30%;
       max-width: 100%;

@@ -3,6 +3,11 @@ import {
   fullscreenHeaderHeight,
 } from '@components/shared/layout/MainLayout';
 import styled, { createGlobalStyle, css } from 'styled-components';
+import {
+  themeDefEnergy,
+  themeDefHeatNetwork,
+  themeDefTypeGas,
+} from './businessRules';
 import param from './Map.param';
 
 const { minZoomData, maxZoom } = param;
@@ -182,7 +187,7 @@ export const outlineLayerStyle = {
     'line-cap': 'round',
   },
   paint: {
-    'line-color': '#2d9748',
+    'line-color': themeDefHeatNetwork.outline.color,
     'line-width': 3,
     'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
   },
@@ -191,7 +196,7 @@ export const substationLayerStyle = {
   type: 'fill',
   layout: {},
   paint: {
-    'fill-color': '#ff00d4',
+    'fill-color': themeDefHeatNetwork.substation.color,
     'fill-opacity': 1,
   },
 };
@@ -199,8 +204,8 @@ export const boilerRoomLayerStyle = {
   type: 'fill',
   layout: {},
   paint: {
-    'fill-color': '#ff6600',
-    'fill-outline-color': '#ff6600',
+    'fill-color': themeDefHeatNetwork.boilerRoom.color,
+    'fill-outline-color': themeDefHeatNetwork.boilerRoom.color,
     'fill-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 0.95],
   },
 };
@@ -233,13 +238,6 @@ export const objTypeEnergy = Object.entries(typeEnergy).reduce(
   },
   {}
 );
-const themeDefEnergy: any = {
-  fuelOil: { color: '#c72e6e' },
-  gas: { color: '#9c47e2' },
-  wood: { color: '#ce7f17' },
-  electric: { color: '#4cd362' },
-  unknow: { color: '#818181' },
-};
 const arrColorFromDefEnergy = [
   ...Object.entries(themeDefEnergy).flatMap(
     ([energyName, styleObject]: [string, any]) => [
@@ -298,11 +296,6 @@ export const energyLayerStyle = {
 // -----------------
 const CONSO = 'conso';
 const TYPE_GAS = 'code_grand_secteur';
-const themeDefTypeGas: any = {
-  T: { color: '#13e0d6' },
-  R: { color: '#136ce0' },
-  unknow: { color: '#818181' },
-};
 const arrColorFromDefTypeGas = [
   ...Object.entries(themeDefTypeGas).flatMap(
     ([TypeGasName, styleObject]: [string, any]) => [
