@@ -128,7 +128,7 @@ export const MapControlWrapper = styled.div<{
   position: absolute;
   z-index: ${mapControlZindex};
 
-  max-width: 28%;
+  max-width: 430px;
   width: 100%;
   min-width: 330px;
   padding: 1rem;
@@ -323,7 +323,7 @@ export const gasUsageLayerStyle = {
         4,
         ['<', ['get', CONSO], 1000],
         8,
-        15,
+        14,
       ],
       maxZoom,
       [
@@ -332,7 +332,7 @@ export const gasUsageLayerStyle = {
         8,
         ['<', ['get', CONSO], 1000],
         16,
-        30,
+        28,
       ],
     ],
     'circle-opacity': [
@@ -342,7 +342,7 @@ export const gasUsageLayerStyle = {
       minZoomData + 0.2,
       0,
       minZoomData + 0.2 + 1,
-      0.25,
+      0.35,
     ],
     'circle-stroke-opacity': 0,
   },

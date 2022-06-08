@@ -262,6 +262,12 @@ export default function Map() {
     },
     [layerDisplay]
   );
+  const toogleGasUsageGroupeVisibility = useCallback(() => {
+    setLayerDisplay({
+      ...layerDisplay,
+      gasUsageGroup: !layerDisplay.gasUsageGroup,
+    });
+  }, [layerDisplay]);
 
   // ----------------
   // --- Load Map ---
@@ -498,7 +504,10 @@ export default function Map() {
       ['get', TYPE_GAS],
       gasUsageName,
     ]);
-    map.current.setFilter('gasUsage', ['any', ...gasUsageFilter]);
+    map.current.setFilter(
+      'gasUsage',
+      layerDisplay.gasUsageGroup && ['any', ...gasUsageFilter]
+    );
   }, [layerDisplay, mapState]);
 
   return (
@@ -527,14 +536,18 @@ export default function Map() {
           <MapLegend
             data={legendData}
             onToogleFeature={toggleLayer}
-            onToogleInGroup={(groupeName: string, idEntry: any) => {
+            onToogleInGroup={(groupeName: string, idEntry?: any) => {
               switch (groupeName) {
                 case 'energy': {
-                  toogleEnergyVisibility(idEntry);
+                  toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
                   break;
                 }
                 case 'gasUsage': {
-                  toogleGasUsageVisibility(idEntry);
+                  toogleGasUsageVisibility(idEntry as 'R' | 'T');
+                  break;
+                }
+                case 'gasUsageGroup': {
+                  toogleGasUsageGroupeVisibility();
                   break;
                 }
               }

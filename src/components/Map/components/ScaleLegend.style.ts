@@ -7,9 +7,9 @@ export const ScaleLegendWrapper = styled.div<{ framed?: boolean }>`
     framed &&
     css`
       padding: 0.3em 0.5em 0.55em;
-      margin-bottom: 0.4rem;
-      background-color: #efefef;
-      border-radius: 0.2em;
+      margin: 0.2em 0.5em 0.4em 1.5em;
+      border: 1px solid #d2d6df;
+      border-radius: 0.5em;
     `}
 `;
 
@@ -27,6 +27,8 @@ export const Input = styled.input``;
 
 export const ScaleLegendBody = styled.div<{ checkbox?: boolean }>`
   display: flex;
+  justify-content: space-between;
+
   ${({ checkbox }) =>
     checkbox &&
     css`
@@ -35,27 +37,15 @@ export const ScaleLegendBody = styled.div<{ checkbox?: boolean }>`
 `;
 
 export const ScaleLegendLabelWrapper = styled.div`
-  font-size: 0.9em;
+  font-size: 0.75em;
   white-space: nowrap;
 
   display: inline;
   position: relative;
   padding-right: 0.5em;
-  margin-right: 0.5em;
 
-  &::after {
-    content: '';
-    display: block;
-    position: absolute;
-    width: 2px;
-    height: 70%;
-    background-color: rgb(69 80 229 / 34%);
-    right: 0;
-    top: 15%;
-  }
-
-  &:last-child::after {
-    display: none;
+  &:not(:last-child) {
+    margin-right: 0.5em;
   }
 `;
 
@@ -75,10 +65,10 @@ export const ScaleLabelLegend = styled.span<{
   ::before {
     content: '';
     display: block;
+    position: relative;
 
     width: ${({ size }) => `${size}em`};
     height: ${({ size }) => `${size}em`};
-    margin-bottom: calc(0.25em - 1.5px);
     background-color: ${({ bgColor }) => bgColor || 'grey'};
     ${({ circle }) =>
       circle &&
