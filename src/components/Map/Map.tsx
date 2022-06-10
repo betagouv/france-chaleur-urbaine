@@ -1,3 +1,4 @@
+import { usePersistedState } from '@hooks';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
@@ -138,14 +139,24 @@ export default function Map() {
   const map: null | { current: any } = useRef(null);
 
   const [mapState, setMapState] = useState('pending');
-  const [soughtAddress, setSoughtAddress]: [
-    any | never[],
-    React.Dispatch<any | never[]>
-  ] = useState([]);
   const [layerDisplay, setLayerDisplay]: [
     TypeLayerDisplay,
     React.Dispatch<any | never[]>
   ] = useState(defaultLayerDisplay);
+
+  const [soughtAddress, setSoughtAddress] = usePersistedState(
+    'mapSoughtAddress',
+    [],
+    {
+      beforeStorage: (value: any) => {
+        const newValue = value.map((address: any) => {
+          const { marker, ...parsableAddress } = address;
+          return parsableAddress;
+        });
+        return newValue;
+      },
+    }
+  );
 
   const { query } = useRouter();
   const [, , updateClickedPoint] = useMapPopup(map.current, {
@@ -173,6 +184,7 @@ export default function Map() {
         date: Date.now(),
       };
       const id = getAddressId(coordinates);
+      if (!Array.isArray(soughtAddress)) return;
       const newAddress = soughtAddress.find(
         ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
       ) || {
@@ -190,7 +202,7 @@ export default function Map() {
       ]);
       flyTo({ coordinates });
     },
-    [flyTo, soughtAddress]
+    [flyTo, setSoughtAddress, soughtAddress]
   );
 
   const removeSoughtAddress = useCallback(
@@ -206,7 +218,7 @@ export default function Map() {
       result?.marker?.remove();
       setSoughtAddress(newSoughtAddress);
     },
-    [soughtAddress]
+    [setSoughtAddress, soughtAddress]
   );
 
   const toggleLayer = useCallback(
@@ -441,7 +453,7 @@ export default function Map() {
       }
     });
     if (shouldUpdate) setSoughtAddress(newSoughtAddress);
-  }, [soughtAddress]);
+  }, [setSoughtAddress, soughtAddress]);
 
   // ---------------------
   // --- Update Filter ---
