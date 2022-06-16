@@ -1,4 +1,4 @@
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, css } from 'styled-components';
 
 export const LegendGroupLabelStyle = createGlobalStyle`
 .legend-label-description {
@@ -15,8 +15,17 @@ export const LegendGroupLabelStyle = createGlobalStyle`
 }
 `;
 
-export const GroupeLabelWrapper = styled.div`
+export const GroupeLabelWrapper = styled.div<{
+  disable?: boolean;
+}>`
   padding-bottom: 0.15em;
+  transition: opacity 0.25s ease-in-out;
+
+  ${({ disable }) =>
+    disable &&
+    css`
+      opacity: 0.3;
+    `}
 
   &:last-child {
     padding-bottom: 0;

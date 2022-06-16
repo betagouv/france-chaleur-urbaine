@@ -1,5 +1,5 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import React from 'react';
+import React, { useMemo } from 'react';
 import LegendDesc from './LegendDesc';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import {
@@ -15,6 +15,7 @@ export type TypeGroupLegend = {
   entries: TypeLegendEntry[];
   type?: string;
   subGroup?: boolean;
+  linkto?: string[];
 };
 
 function LegendGroupLabel({
@@ -25,15 +26,23 @@ function LegendGroupLabel({
   entries,
   subGroup,
   layerDisplay,
+  linkto,
   onChangeEntry,
 }: TypeGroupLegend & {
   layerDisplay: Record<string, string[] | boolean>;
   onChangeEntry: (groupName: string, idEntry: string) => void;
 }) {
+  const disable = useMemo(
+    () =>
+      linkto
+        ?.map((layerName) => layerDisplay?.[layerName])
+        .some((display) => display === false),
+    [layerDisplay, linkto]
+  );
   return (
     <>
       <LegendGroupLabelStyle />
-      <GroupeLabelWrapper>
+      <GroupeLabelWrapper disable={disable}>
         {title && <header>{title}</header>}
         {description && (
           <MarkdownWrapper
@@ -52,6 +61,7 @@ function LegendGroupLabel({
               type={subGroup ? 'subGroup' : 'group'}
               key={entry.id}
               onChange={() => onChangeEntry(id, entry?.id)}
+              readOnly={disable}
               {...entry}
             />
           ))}

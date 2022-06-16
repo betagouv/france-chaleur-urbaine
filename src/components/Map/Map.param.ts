@@ -59,6 +59,7 @@ const legendData = [
     subLegend: 'GasUsage',
     type: 'group',
     subGroup: true,
+    linkto: ['gasUsageGroup'],
   },
   {
     id: 'energy',

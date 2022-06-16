@@ -23,9 +23,11 @@ function LegendEntry({
   label,
   description,
   checked,
+  readOnly,
   onChange,
 }: TypeLegendEntry & {
   checked: boolean;
+  readOnly?: boolean;
   onChange: (idEntry: any) => void;
 }) {
   return (
@@ -36,7 +38,7 @@ function LegendEntry({
             type="checkbox"
             checked={checked}
             onChange={() => {
-              onChange(id);
+              !readOnly && onChange(id);
             }}
           />
           <LabelLegendMarker

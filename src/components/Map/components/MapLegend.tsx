@@ -39,6 +39,7 @@ function MapLegend({
               subGroup,
               entries,
               subLegend,
+              linkto,
               type = 'list',
             } = group;
             if (type === 'group') {
@@ -52,6 +53,7 @@ function MapLegend({
                   description={description}
                   subGroup={subGroup}
                   entries={entries}
+                  linkto={linkto}
                   onChangeEntry={onToogleInGroup}
                 />
               );
