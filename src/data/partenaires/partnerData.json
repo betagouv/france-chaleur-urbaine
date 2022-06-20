@@ -121,6 +121,14 @@
           },
           "title": "Fnccr",
           "link": "https://www.fnccr.asso.fr/"
+        },
+        {
+          "image": {
+            "url": "./logo-SIPPEREC.jpg",
+            "title": "SIPPEREC"
+          },
+          "title": "SIPPEREC",
+          "link": "http://www.sipperec.com/"
         }
       ]
     }
