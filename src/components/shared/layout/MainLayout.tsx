@@ -153,17 +153,6 @@ const MainLayout: React.FC<MainLayout> = ({
                   }`}
                 >
                   <ul className="fr-nav__list">
-                    <li className="fr-nav__item">
-                      <label
-                        className={`label-menu-item ${
-                          headingMenu.some(({ url }) => currentMenu === url)
-                            ? 'active'
-                            : ''
-                        }`}
-                      >
-                        Vous êtes :
-                      </label>
-                    </li>
                     {headingMenu.map(({ label, url }) => (
                       <li
                         key={url}
