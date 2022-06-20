@@ -2,7 +2,7 @@ import Accordions from '@components/accordions';
 import Carrousel from '@components/Carrousel';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import SimulateurCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
@@ -134,7 +134,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainLayout currentMenu="/coproprietaire">
+      <MainContainer currentMenu="/coproprietaire">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
@@ -229,7 +229,7 @@ _Les tarifs sont donnés à titre d’exemple en s’inspirant d’un cas réel 
             <Accordions data={faqRcuCoproprietaire} />
           </Slice>
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

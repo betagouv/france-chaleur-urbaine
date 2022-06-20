@@ -1,6 +1,6 @@
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import Slice, { SliceImg } from '@components/Slice';
 import TextList from '@components/TextList';
 import WrappedBlock from '@components/WrappedBlock';
@@ -110,7 +110,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainLayout currentMenu="/">
+      <MainContainer currentMenu="/">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
@@ -205,7 +205,7 @@ maîtrise du tarif des énergies._`}
 
           <SliceImg src="./img/home-footer-bg.jpg" />
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

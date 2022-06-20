@@ -1,4 +1,5 @@
 import { fetchHttpClient } from '@components/lib';
+import { LayoutProvider, MainLayout } from '@components/shared/layout';
 import '@gouvfr/dsfr/dist/css/dsfr.min.css';
 import '@reach/combobox/styles.css';
 import type { AppProps } from 'next/app';
@@ -143,7 +144,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 
           {/* <!-- Meta Tags Generated via https://www.opengraph.xyz --> */}
         </Head>
-        <Component {...pageProps} />
+
+        <LayoutProvider>
+          <MainLayout>
+            <Component {...pageProps} />
+          </MainLayout>
+        </LayoutProvider>
       </ServicesContext.Provider>
     </>
   );

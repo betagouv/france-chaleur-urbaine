@@ -1,5 +1,6 @@
 import Map from '@components/Map';
-import MainLayout, {
+import MainContainer from '@components/shared/layout';
+import {
   fullscreenFooterHeight,
   fullscreenHeaderHeight,
   tabHeaderHeight,
@@ -22,11 +23,11 @@ function LegalMentions() {
       <Head>
         <title>Carte des réseaux : France Chaleur Urbaine</title>
       </Head>
-      <MainLayout currentMenu="/carte" fullscreen>
+      <MainContainer currentMenu="/carte" fullscreen>
         <MapWrapper>
           <Map />
         </MapWrapper>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

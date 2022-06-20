@@ -1,7 +1,7 @@
 import Accordions from '@components/accordions';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import SimulateurCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
@@ -215,7 +215,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainLayout currentMenu="/tertiaire">
+      <MainContainer currentMenu="/tertiaire">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
@@ -373,7 +373,7 @@ pour les bâtiments publics des collectivités
             <Accordions data={faqRcuTertiaire} />
           </Slice>
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }
