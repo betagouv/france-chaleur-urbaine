@@ -59,8 +59,12 @@ const GlobalStyle = createGlobalStyle`
   .enjeu-societe-description-wrapper {
     padding: 0 3rem;
   }
+  .enjeu-societe-description--container {
+    z-index: 1;
+  }
   .enjeu-societe-description {
     margin-left: 2em;
+    
 
     .list-item {
       max-width: 350px;
@@ -68,6 +72,11 @@ const GlobalStyle = createGlobalStyle`
   }
   .enjeu-societe-img {
     max-width: 122px;
+
+    @media (max-width: 991px) {
+      position: absolute;
+      opacity: 0.25;
+    }
   }
 `;
 
