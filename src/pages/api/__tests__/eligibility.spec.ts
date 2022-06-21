@@ -212,6 +212,50 @@ describe('/api/map/getEligibilityStatus', () => {
         })
       );
     });
+    test(`should return address eligible, when address is in IDF and on network`, async () => {
+      const coords = someCoords();
+      const networkResponse = someIDFNetworkLessThanThresholdDistanceResponse({
+        latOrigin: coords.lat,
+        lonOrigin: coords.lon,
+        distPointReseau: 0,
+      });
+      nock(`${process.env.NEXT_PUBLIC_PYRIS_BASE_URL}`)
+        .get('/coords')
+        .query({
+          geojson: false,
+          ...coords,
+        })
+        .reply(200, { ...somePyrisAddressResponse() });
+
+      nock(`${process.env.NEXT_PUBLIC_HEAT_NETWORK_API_BASE_URL}`)
+        .get('')
+        .query({
+          ...coords,
+        })
+        .reply(200, {
+          ...networkResponse,
+        });
+      const { req, res } = createMocks({
+        method: 'GET',
+        query: coords,
+      });
+
+      await getEligibilityStatus(req, res);
+
+      expect(res._getStatusCode()).toBe(200);
+      expect(JSON.parse(res._getData())).toEqual(
+        expect.objectContaining({
+          ...someCoords(),
+          network: someNetwork({
+            lat: networkResponse.latPointReseau,
+            lon: networkResponse.lonPointReseau,
+            distance: networkResponse.distPointReseau,
+            filiere: null,
+          }),
+          isEligible: true,
+        })
+      );
+    });
     test('should return address eligible, when address is out of IDF and network exist', async () => {
       const coords = someCoords({ lat: 43.50142, lon: -1.45507 });
       const pyrisResponse = someEligiblePyrisAddressOutOfIDFResponse();
