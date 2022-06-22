@@ -6,7 +6,6 @@ import {
   tabHeaderHeight,
 } from '@components/shared/layout/MainLayout';
 import Head from 'next/head';
-import React from 'react';
 import styled from 'styled-components';
 
 const MapWrapper = styled.div`

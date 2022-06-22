@@ -1,4 +1,3 @@
-import React from 'react';
 import Highlight, { HighlightType } from './Highlight';
 import {
   HighlightListWrapper,

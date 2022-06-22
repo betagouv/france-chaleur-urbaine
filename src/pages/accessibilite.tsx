@@ -1,6 +1,5 @@
 import MainContainer from '@components/shared/layout';
 import Head from 'next/head';
-import React from 'react';
 
 function Accessibilite() {
   return (

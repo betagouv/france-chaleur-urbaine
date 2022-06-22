@@ -1,5 +1,4 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import React from 'react';
 import { HighlightCard } from './HighlightList.style';
 
 export type HighlightType = {

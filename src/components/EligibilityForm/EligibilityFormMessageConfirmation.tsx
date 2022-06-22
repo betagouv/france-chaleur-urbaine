@@ -5,7 +5,7 @@ import {
   CallOutTitle,
 } from '@components/shared/callOut/CallOut';
 import { isIDF } from '@helpers';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 
 // TODO: Extract and import

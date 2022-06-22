@@ -1,5 +1,4 @@
 import ResourceCard from '@components/resources/resourceCard';
-import React from 'react';
 
 type ResourceSection = {
   title: string;

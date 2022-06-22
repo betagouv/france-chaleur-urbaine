@@ -1,7 +1,6 @@
 import { useFormInputAutoId } from '@hooks';
 import { _hasError } from '@utils/form-utils';
 import { ErrorMessage } from 'formik';
-import React from 'react';
 
 const Textarea = ({ label, field, form, placeholder, id }: any) => {
   const additionalInputClass = _hasError(field.name, form)
