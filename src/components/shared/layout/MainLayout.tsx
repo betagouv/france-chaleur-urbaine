@@ -1,7 +1,6 @@
-import BurgerButton from '@components/BurgerButton';
 import Link from 'next/link';
-import React, { useEffect, useMemo, useState } from 'react';
-import { extendMenu, headingMenu, menu } from './MainLayout.data';
+import React from 'react';
+import { menu } from './MainLayout.data';
 import {
   GithubLogo,
   HeaderLabel,
@@ -37,18 +36,6 @@ const MainLayout: React.FC<MainLayout> = ({
   currentMenu,
   fullscreen,
 }) => {
-  const menuIsExtended = useMemo(
-    () => extendMenu.some(({ url }) => currentMenu === url),
-    [currentMenu]
-  );
-  const [menuExtended, setMenuExtended] = useState(menuIsExtended);
-
-  useEffect(() => {
-    if (menuIsExtended) {
-      setMenuExtended(true);
-    }
-  }, [currentMenu, menuIsExtended]);
-
   return (
     <>
       <MainLayoutStyle />
@@ -115,9 +102,7 @@ const MainLayout: React.FC<MainLayout> = ({
             <div className="fr-header__menu-links"></div>
 
             <nav
-              className={`fr-nav main-nav menu-${
-                menuExtended ? 'extended' : 'main'
-              }`}
+              className="fr-nav main-nav menu-main"
               id="header-navigation"
               aria-label="Menu principal"
             >
@@ -146,80 +131,7 @@ const MainLayout: React.FC<MainLayout> = ({
                     </Link>
                   </li>
                 ))}
-
-                <li
-                  className={`extend-menu menu-main-nav ${
-                    menuExtended ? 'extend-menu__hidden' : ''
-                  }`}
-                >
-                  <ul className="fr-nav__list">
-                    {headingMenu.map(({ label, url }) => (
-                      <li
-                        key={url}
-                        className={`fr-nav__item ${
-                          currentMenu === url ? 'fr-nav__item-Active' : ''
-                        }`}
-                      >
-                        <Link href={url} prefetch={false}>
-                          <a
-                            className="fr-nav__link"
-                            aria-current={
-                              currentMenu === url ? 'page' : undefined
-                            }
-                          >
-                            {label}
-                          </a>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-
-                <li
-                  className={`extend-menu menu-extended-nav ${
-                    menuExtended ? '' : 'extend-menu__hidden'
-                  }`}
-                >
-                  <ul className="fr-nav__list">
-                    <li className="fr-nav__item">
-                      <label
-                        className={`label-menu-item ${
-                          menuIsExtended ? 'active' : ''
-                        }`}
-                      >
-                        A voir aussi :
-                      </label>
-                    </li>
-                    {extendMenu.map(({ label, url }) => (
-                      <li
-                        key={url}
-                        className={`fr-nav__item ${
-                          currentMenu === url ? 'fr-nav__item-Active' : ''
-                        }`}
-                      >
-                        <Link href={url} prefetch={false}>
-                          <a
-                            className="fr-nav__link"
-                            aria-current={
-                              currentMenu === url ? 'page' : undefined
-                            }
-                          >
-                            {label}
-                          </a>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
               </ul>
-              <div className="main-nav-extender-wrapper">
-                <BurgerButton
-                  className={`hamburger hamburger--slider ${
-                    menuExtended ? 'is-active' : ''
-                  }`}
-                  onClick={() => setMenuExtended(!menuExtended)}
-                />
-              </div>
             </nav>
           </div>
         </div>

@@ -11,24 +11,6 @@ export const menu = [
     url: '/',
   },
   {
-    label: 'Cartographie',
-    url: '/carte',
-  },
-];
-
-export const extendMenu = [
-  {
-    label: 'Documentation',
-    url: '/ressources',
-  },
-  {
-    label: 'Partenaires',
-    url: '/partenaires',
-  },
-];
-
-export const headingMenu = [
-  {
     label: 'Copropriété',
     url: '/coproprietaire',
   },
@@ -39,5 +21,17 @@ export const headingMenu = [
   {
     label: 'Collectivité/Exploitant',
     url: '/collectivites-et-exploitants',
+  },
+  {
+    label: 'Partenaires',
+    url: '/partenaires',
+  },
+  {
+    label: 'Cartographie',
+    url: '/carte',
+  },
+  {
+    label: 'Documentation',
+    url: '/ressources',
   },
 ];
