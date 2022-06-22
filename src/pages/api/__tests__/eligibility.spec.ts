@@ -61,7 +61,7 @@ describe('/api/map/getEligibilityStatus', () => {
       expect.objectContaining({
         message: `no address found for theses coords : ${JSON.stringify(
           coords
-        )} (Error: Error: Request failed with status code 404)`,
+        )} (Error: AxiosError: Request failed with status code 404)`,
         code: 'Address Not Found',
       })
     );
