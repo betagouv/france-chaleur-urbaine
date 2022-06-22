@@ -14,8 +14,9 @@ export type TypeLayerDisplay = Record<string, any> & {
 
 const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
-  substation: true,
-  boilerRoom: true,
+  substation: false,
+  boilerRoom: false,
+  gasUsageGroup: true,
   gasUsage: ['R', 'T'],
   energy: ['fuelOil', 'gas'],
 };
@@ -29,42 +30,63 @@ const legendData = [
         label: 'Réseaux de chaleur',
         className: 'legend-heat-network',
       },
-      {
-        id: 'boilerRoom',
-        label: 'Chaufferie',
-        className: 'legend-boiler-room',
-      },
-      {
-        id: 'substation',
-        label: 'Sous station',
-        className: 'legend-substation',
-      },
     ],
     type: 'list',
   },
   'separator',
   {
-    id: 'energy',
-    title: 'Copropriétés\u00a0: type de chauffage',
-    entries: defaultLayerDisplay.energy.map((id: string) => ({
-      id,
-      label: localTypeEnergy?.[id] || localTypeEnergy.unknow,
-      bgColor: themeDefEnergy[id].color,
-      className: 'legend-energy',
-    })),
-    description: 'Energy',
+    id: 'gasUsageGroup',
+    title: 'Gaz :',
+    entries: [
+      {
+        id: 'gasUsageGroup',
+        label: 'Consommations de gaz',
+        description: 'Source : Données locales de l’énergie, MTE',
+        bgColor: 'red',
+      },
+    ],
     type: 'group',
   },
+
   {
     id: 'gasUsage',
-    title: 'Consommations de gaz',
     entries: defaultLayerDisplay.gasUsage.map((id: string) => ({
       id,
       label: localTypeGas?.[id] || localTypeGas.unknow,
       bgColor: themeDefTypeGas[id].color,
       className: 'legend-energy',
     })),
-    description: 'GasUsage',
+    subLegend: 'GasUsage',
+    type: 'group',
+    subGroup: true,
+    linkto: ['gasUsageGroup'],
+  },
+  {
+    id: 'energy',
+    entries: [
+      {
+        id: 'gas',
+        label: localTypeEnergy?.gas || localTypeEnergy.unknow,
+        description: 'Source : Registre national des copropriétés',
+        bgColor: themeDefEnergy.gas.color,
+      },
+    ],
+    subLegend: 'EnergyGas',
+    type: 'group',
+  },
+  'separator',
+  {
+    id: 'energy',
+    title: 'Fioul :',
+    entries: [
+      {
+        id: 'fuelOil',
+        label: localTypeEnergy?.fuelOil || localTypeEnergy.unknow,
+        description: 'Source : Registre national des copropriétés',
+        bgColor: themeDefEnergy.fuelOil.color,
+      },
+    ],
+    subLegend: 'EnergyFuel',
     type: 'group',
   },
 ];
