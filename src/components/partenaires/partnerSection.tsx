@@ -10,7 +10,7 @@ type ResourceSection = {
 function PartnerSection({ title, teaser, children }: ResourceSection) {
   return (
     <div className="fr-container fr-my-8w">
-      <div className="fr-grid-row fr-grid-row--gutters">
+      <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-grid-row--middle">
         <div className="fr-col-12">
           <h2>{title}</h2>
         </div>
