@@ -9,7 +9,7 @@ export class IdfAddress extends Address {
     return true;
   }
   isEligibleWith(network: Network): boolean {
-    return network?.distance
+    return network?.distance !== null
       ? Number(network.distance) <= this.threshold
       : false;
   }

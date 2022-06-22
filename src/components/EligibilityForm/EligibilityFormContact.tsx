@@ -7,7 +7,7 @@ import {
 } from '@components/EligibilityForm/components/EligibilityForm.styled';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { isIDF } from '@helpers';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 // TODO: Extract and import
 type AvailableHeating = 'collectif' | 'individuel' | undefined;
@@ -37,7 +37,8 @@ const getContactResult = (
   { distance, eligibility, heatingType }: AddressDataType
 ) => {
   const keyPrimary: KeyPrimaryType =
-    (distance &&
+    (distance !== null &&
+      distance !== undefined &&
       (distance <= 100 ? 'lt100' : distance <= 200 ? 'lt200' : 'gt200')) ||
     (eligibility ? 'provinceElligible' : 'provinceIneligible');
   const keySecondary: AvailableHeating = heatingType;
@@ -218,7 +219,8 @@ const EligibilityFormContact = ({
 
   const distStep =
     isIDFAddress &&
-    distance &&
+    distance !== null &&
+    distance !== undefined &&
     (distance <= 200
       ? `Un reseau de chaleur se trouve à ${distance}m de ce batiment`
       : '');
@@ -236,7 +238,9 @@ const EligibilityFormContact = ({
           headerTypo={headerTypo}
         >
           <MarkdownWrapper value={header} />
-          {distance && distStep && <em className="distance">{distStep}</em>}
+          {distance !== null && distance !== undefined && distStep && (
+            <em className="distance">{distStep}</em>
+          )}
           {!computEligibility && linkToMap && (
             <a
               href={linkToMap}
