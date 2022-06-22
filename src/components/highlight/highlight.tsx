@@ -1,5 +1,4 @@
 import { HighlightCard } from '@components/adventage/adventage.style';
-import React from 'react';
 type highlight = {
   title: string;
   subTitle: string;

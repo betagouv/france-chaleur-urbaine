@@ -1,4 +1,3 @@
-import React from 'react';
 import { LabelLegend } from './MapLegend.style';
 
 export type TypeLegendEntry = {

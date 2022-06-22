@@ -2,7 +2,6 @@ import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainLayout from '@components/shared/layout/MainLayout';
 import { termOfUse } from '@data';
 import Head from 'next/head';
-import React from 'react';
 import styled from 'styled-components';
 
 const StyledMarkdown = styled(MarkdownWrapper)`

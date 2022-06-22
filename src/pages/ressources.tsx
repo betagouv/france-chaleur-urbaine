@@ -4,7 +4,6 @@ import Data from '@components/resources/resourcesData.json';
 import ResourceSection from '@components/resources/resourceSection';
 import MainLayout from '@components/shared/layout/MainLayout';
 import Head from 'next/head';
-import React from 'react';
 
 function Resources() {
   return (

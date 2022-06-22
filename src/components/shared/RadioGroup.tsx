@@ -1,6 +1,5 @@
 import { _hasError } from '@utils/form-utils';
 import { ErrorMessage, Field, useFormikContext } from 'formik';
-import React from 'react';
 import styled from 'styled-components';
 import Radio from './Radio';
 

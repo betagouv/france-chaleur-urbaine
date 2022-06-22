@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Container, ImageContainer } from './Carrousel.style';
 import CarrouselBody from './CarrouselBody';
 import CarrouselNav from './CarrouselNav';

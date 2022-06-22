@@ -1,7 +1,6 @@
 import { useFormInputAutoId } from '@hooks';
 import { _hasError } from '@utils/form-utils';
 import { ErrorMessage } from 'formik';
-import React from 'react';
 import styled from 'styled-components';
 
 const FrRadioGroup = styled.span`

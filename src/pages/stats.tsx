@@ -3,7 +3,7 @@ import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import { dataNumberFcu, dataNumberRcu } from '@data';
 import Head from 'next/head';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import Chart from 'react-google-charts';
 import styled from 'styled-components';
 import useSWR from 'swr';

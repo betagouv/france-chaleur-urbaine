@@ -1,4 +1,3 @@
-import React from 'react';
 import { BurgerStyle } from './BurgerButton.style';
 
 const BurgerButton = ({

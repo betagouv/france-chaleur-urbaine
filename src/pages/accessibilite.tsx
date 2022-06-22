@@ -1,6 +1,5 @@
 import MainLayout from '@components/shared/layout/MainLayout';
 import Head from 'next/head';
-import React from 'react';
 
 function Accessibilite() {
   return (

@@ -1,4 +1,3 @@
-import React from 'react';
 import { DataCard } from './TextList.style';
 
 type DataTextProps = {

@@ -1,4 +1,3 @@
-import React from 'react';
 import LegendDesc from './LegendDesc';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import { GroupeLabel as GroupeLabelWrapper } from './MapLegend.style';

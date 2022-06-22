@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MapCard } from './CardDetails.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import LegendGroupLabel, { TypeGroupLegend } from './LegendGroupLabel';

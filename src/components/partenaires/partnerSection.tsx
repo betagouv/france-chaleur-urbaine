@@ -1,4 +1,3 @@
-import React from 'react';
 import PartnerCard from './partnerCard';
 
 type ResourceSection = {

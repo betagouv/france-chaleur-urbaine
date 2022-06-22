@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface WindowTrackingExtended extends Window {
   dataLayer: any[];
   gtag: (...args: any[]) => void;
