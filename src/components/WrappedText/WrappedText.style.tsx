@@ -7,12 +7,18 @@ type ContainerType = {
 
 export const Container = styled.div<ContainerType>`
   display: inline-flex;
-  flex-direction: ${({ reverse }) => (reverse ? ' row-reverse' : 'row')};
-  ${({ center }) =>
-    center &&
-    css`
-      align-items: center;
-    `}
+  flex-direction: column;
+  justify-content: space-around;
+  margin: 2rem 0;
+
+  @media (min-width: 992px) {
+    flex-direction: ${({ reverse }) => (reverse ? ' row-reverse' : 'row')};
+    ${({ center }) =>
+      center &&
+      css`
+        align-items: center;
+      `}
+  }
 `;
 export const ImageContainer = styled.div`
   flex: 1;
@@ -23,7 +29,10 @@ export const ImageContainer = styled.div`
 `;
 export const TextContainer = styled.div<ContainerType>`
   flex: 1;
-  padding: ${({ reverse }) => (reverse ? '0 0 0 3em' : '0 3em 0 0')};
+
+  @media (min-width: 992px) {
+    padding: ${({ reverse }) => (reverse ? '0 0 0 3em' : '0 3em 0 0')};
+  }
 
   > h2 {
     color: #000074;

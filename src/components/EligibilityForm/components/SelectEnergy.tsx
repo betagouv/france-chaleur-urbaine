@@ -10,6 +10,14 @@ const HeadFormWrapper = styled.div`
   }
 `;
 
+const OptionWrapper = styled.span`
+  display: block;
+
+  @media (min-width: 992px) {
+    display: inline;
+  }
+`;
+
 type CheckEligibilityFormProps = {
   name: string;
   selectOptions?: Record<string, string>;
@@ -25,7 +33,6 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
 }) => {
   const changeHandle = useCallback(
     (e: any) => {
-      // console.log('change --', e.target?.value, e);
       if (onChange) onChange(e);
     },
     [onChange]
@@ -43,7 +50,9 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
   return (
     <>
       {children}
-      <HeadFormWrapper>Chauffage actuel : {options}</HeadFormWrapper>
+      <HeadFormWrapper>
+        Chauffage actuel : <OptionWrapper>{options}</OptionWrapper>
+      </HeadFormWrapper>
     </>
   );
 };

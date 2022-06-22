@@ -1,7 +1,7 @@
 import Accordions from '@components/accordions';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import SimulateurCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
@@ -35,8 +35,12 @@ const GlobalStyle = createGlobalStyle`
   .fcuSolutionForFuturBody,
   .fcuSolutionForFuturFooter {
     text-align: center;
-    padding: 0 7rem;
-    margin: 3rem 0;
+    margin: 1rem 0;
+    
+    @media (min-width: 992px) {
+      padding: 0 7rem;
+      margin: 3rem 0;
+    }
 
     p {
       font-size: 1.5rem;
@@ -45,7 +49,12 @@ const GlobalStyle = createGlobalStyle`
   }
   .fcuSolutionForFuturListing {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    
+    @media (min-width: 992px) {
+      justify-content: space-between;
+      flex-direction: row;
+    }
 
     p {
       font-size: 1.05rem;
@@ -54,8 +63,10 @@ const GlobalStyle = createGlobalStyle`
     }
 
     & > div {
-      flex: 1;
-      max-width: 29%;
+      @media (min-width: 992px) {
+        flex: 1;
+        max-width: 29%;
+      }
     }
   }
 
@@ -67,7 +78,7 @@ const GlobalStyle = createGlobalStyle`
     }
 
     .rcu-comparatif-image {
-      position: relative ;
+      position: relative;
       border-radius: 2.5rem;
       background-color: #F9F8F6;
       padding: 2rem 0 1rem !important;
@@ -93,8 +104,11 @@ const GlobalStyle = createGlobalStyle`
   .presentation-rcu-tertiaire {
     .presentation-rcu-tertiaire-body {
       flex: 1;
-      padding: 3rem;
       color: var(--bf500);
+      
+      @media (min-width: 992px) {
+        padding: 3rem;
+      }
 
       p {
         font-size: 1.12rem;
@@ -108,16 +122,32 @@ const GlobalStyle = createGlobalStyle`
 
     .presentation-rcu-tertiaire-cartridge {
       position: relative;
-      padding-right: 17.5rem;
+
+      @media (max-width: 991px) {
+        padding: 1em 1.5em;
+      }
+
+      @media (min-width: 992px) {
+        padding-right: 17.5rem;
+      }
 
       .presentation-rcu-tertiaire-percent {
-        display: inline-block;
+        display: block;
         text-align: center;
 
-        position: absolute;
         top: 3rem;
         right: 1em;
         font-size: 0.85em !important;
+
+        margin: 0.1em;
+
+        @media (min-width: 440px) {
+          display: inline-block;
+        }
+
+        @media (min-width: 992px) {
+          position: absolute;
+        }
 
         strong {
           display: block;
@@ -125,18 +155,22 @@ const GlobalStyle = createGlobalStyle`
           margin-bottom: -0.2em;
         }
 
-        &:nth-child(2n) {
-          margin-right: 5.5em;
-        }
+        @media (min-width: 992px) {
+          &:nth-child(2n) {
+            margin-right: 5.5em;
+          }
 
-        &:nth-child(3n) {
-          margin-right: 11em;
+          &:nth-child(3n) {
+            margin-right: 11em;
+          }
         }
       }
     }
 
     .presentation-rcu-tertiaire-cartridge-conso {
-      margin-right: 4.5em;
+      @media (min-width: 992px) {
+        margin-right: 4.5em;
+      }
 
       strong {
         display: block;
@@ -153,8 +187,11 @@ const GlobalStyle = createGlobalStyle`
       display: flex;
       flex-wrap: wrap;
       flex: 1;
-      padding: 3rem;
       color: var(--bf500);
+      
+      @media (min-width: 992px) {
+        padding: 3rem;
+      }
 
       p {
         font-size: 1.15rem;
@@ -178,7 +215,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainLayout currentMenu="/tertiaire">
+      <MainContainer currentMenu="/tertiaire">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
@@ -259,7 +296,7 @@ réseaux de chaleur.**
 Se raccorder à un réseau de chaleur,  
 c’est jusqu'à :  
 
-**23%** de réduction de consommations d’énergie comptabilisée !  
+**23%** de réduction de consommations d’énergie comptabilisée&nbsp;!  
 
 (en fonction du mode de chauffage initial)
 :::
@@ -294,7 +331,7 @@ vigueur et **excluent l'installation de nouvelles chaudières au fioul.**
           <Slice
             padding={4}
             className="slice-comparatif-rcu"
-            header={`## Les réseaux de chaleur constituent en moyenne la solution de chauffage la plus compétitive pour les bâtiments tertiaires !`}
+            header={`## Les réseaux de chaleur constituent en moyenne la solution de chauffage la plus compétitive pour les bâtiments tertiaires&nbsp;!`}
           >
             <WrappedBlock data={comparatifRcu} />
           </Slice>
@@ -307,7 +344,7 @@ vigueur et **excluent l'installation de nouvelles chaudières au fioul.**
             className="aides-rcu"
           >
             <MarkdownWrapper
-              value={`##### Vous souhaitez raccorder vos locaux à un réseau de chaleur ?  
+              value={`##### Vous souhaitez raccorder vos locaux à un réseau de chaleur&nbsp;?  
 
 Le dispositif **[«&nbsp;Coup de pouce Chauffage des bâtiments 
 tertiaires&nbsp;»](https://www.ecologie.gouv.fr/coup-pouce-chauffage-des-batiments-tertiaires)** 
@@ -320,7 +357,7 @@ réseau de chaleur.
               className="aides-rcu-body"
             />
             <MarkdownWrapper
-              value={`##### Un accompagnement technique et financier peut aussi être sollicité :  
+              value={`##### Un accompagnement technique et financier peut aussi être sollicité&nbsp;:  
 
 - Auprès de **[France Renov](https://france-renov.gouv.fr/fr/pro/quel-accompagnement-pour-mes-travaux)** 
 pour le petit tertiaire privé (<1000 m²)  
@@ -336,7 +373,7 @@ pour les bâtiments publics des collectivités
             <Accordions data={faqRcuTertiaire} />
           </Slice>
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

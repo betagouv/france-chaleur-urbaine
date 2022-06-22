@@ -1,4 +1,3 @@
-import ContactForm from '@components/EligibilityForm/components/ContactForm';
 import {
   ContactFormContentWrapper,
   ContactFormEligibilityMessage,
@@ -7,7 +6,8 @@ import {
 } from '@components/EligibilityForm/components/EligibilityForm.styled';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { isIDF } from '@helpers';
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import ContactForm from './components/ContactForm';
 
 // TODO: Extract and import
 type AvailableHeating = 'collectif' | 'individuel' | undefined;

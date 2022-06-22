@@ -8,6 +8,9 @@ import {
 } from './MainLayout.data';
 
 export const MainLayoutStyle = createGlobalStyle`
+  .fr-header {
+    z-index: 20000;
+  }
   .label-menu-item {
     padding: 1.5rem 0 1.25rem 0;
     margin: 0;

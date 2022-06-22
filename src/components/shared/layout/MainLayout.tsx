@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import React from 'react';
+import React, { useContext } from 'react';
+import LayoutContext from './LayoutContext';
 import { menu } from './MainLayout.data';
 import {
   GithubLogo,
@@ -27,15 +28,12 @@ const fcuFooterDesc = `France Chaleur Urbaine est un projet d'innovation pour ac
 
 type MainLayout = {
   children: React.ReactNode;
-  currentMenu?: string;
   fullscreen?: boolean;
 };
 
-const MainLayout: React.FC<MainLayout> = ({
-  children,
-  currentMenu,
-  fullscreen,
-}) => {
+const MainLayout: React.FC<MainLayout> = ({ children }) => {
+  const { currentMenu, fullscreen } = useContext(LayoutContext);
+
   return (
     <>
       <MainLayoutStyle />

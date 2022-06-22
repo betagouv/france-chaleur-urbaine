@@ -2,11 +2,15 @@ import styled from 'styled-components';
 
 export const Container = styled.div<{ reverse?: boolean; direction?: string }>`
   display: flex;
-  flex-direction: ${({ reverse, direction }) =>
-    reverse ? ' row-reverse' : direction || 'row'};
-  flex: 1;
+  flex-direction: column;
   justify-content: space-around;
   margin: 2rem 0;
+
+  @media (min-width: 992px) {
+    flex-direction: ${({ reverse, direction }) =>
+      reverse ? ' row-reverse' : direction || 'row'};
+    flex: 1;
+  }
 `;
 export const ImageContainer = styled.div`
   > img {
