@@ -1,4 +1,4 @@
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import Head from 'next/head';
 import React from 'react';
 
@@ -8,7 +8,7 @@ function Accessibilite() {
       <Head>
         <title>Déclaration d’accessibilité France Chaleur Urbaine</title>
       </Head>
-      <MainLayout>
+      <MainContainer>
         <div className="fr-container fr-mt-2w">
           <div className="fr-grid-row">
             <div className="fr-col-12">
@@ -103,7 +103,7 @@ function Accessibilite() {
             </div>
           </div>
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import { dataNumberFcu, dataNumberRcu } from '@data';
@@ -149,7 +149,7 @@ function Statistiques() {
       <Head>
         <title>Statistiques - France Chaleur Urbaine</title>
       </Head>
-      <MainLayout>
+      <MainContainer>
         <div className="fr-container fr-mt-2w">
           <div className="fr-grid-row">
             <div className="fr-col-12">
@@ -342,7 +342,7 @@ function Statistiques() {
             </div>
           </div>
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

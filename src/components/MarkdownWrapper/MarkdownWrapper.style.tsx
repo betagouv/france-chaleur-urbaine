@@ -67,8 +67,15 @@ export const CounterItem = styled.div`
   border-radius: 100%;
   background-color: #4550e5;
 
-  position: absolute;
-  left: 0;
+  float: left;
+  margin: -0.4em 0.6em -0.2em 0em;
+
+  @media (min-width: 992px) {
+    position: absolute;
+    left: 0;
+    margin: 0;
+    float: none;
+  }
 `;
 
 export const Cartridge = styled.p<{ theme: string }>`

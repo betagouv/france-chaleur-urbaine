@@ -1,5 +1,5 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import { privacyPolicy } from '@data';
 import Head from 'next/head';
 import React from 'react';
@@ -47,7 +47,7 @@ function PrivacyPolicy() {
       <Head>
         <title>Politique de confidentialité : France Chaleur Urbaine</title>
       </Head>
-      <MainLayout>
+      <MainContainer>
         <div className="fr-container fr-mt-2w">
           <div className="fr-grid-row">
             <div className="fr-col-12">
@@ -57,7 +57,7 @@ function PrivacyPolicy() {
             </div>
           </div>
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

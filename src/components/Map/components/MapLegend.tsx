@@ -23,9 +23,7 @@ function MapLegend({
     <MapCard
       typeCard={'legend'}
       isClosable
-      className={
-        !legendOpened || forceClosed ? 'legendCard close' : 'legendCard'
-      }
+      className={`legendCard ${!legendOpened || forceClosed ? 'close' : ''}`}
     >
       <LegendGlobalStyle />
       <header onClick={() => setLegendOpened(!legendOpened)}>Légende</header>
@@ -34,16 +32,28 @@ function MapLegend({
         {data.map((group, i) => {
           if (group === 'separator') return <hr key={`separator-${i}`} />;
           else if (typeof group === 'object') {
-            const { id, title, entries, description, type = 'list' } = group;
+            const {
+              id,
+              title,
+              description,
+              subGroup,
+              entries,
+              subLegend,
+              linkto,
+              type = 'list',
+            } = group;
             if (type === 'group') {
               return (
                 <LegendGroupLabel
                   layerDisplay={layerDisplay}
-                  key={`group-${id}`}
+                  key={`group-${id}-${i}`}
                   id={id}
                   title={title}
+                  subLegend={subLegend}
                   description={description}
+                  subGroup={subGroup}
                   entries={entries}
+                  linkto={linkto}
                   onChangeEntry={onToogleInGroup}
                 />
               );

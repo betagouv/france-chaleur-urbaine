@@ -1,7 +1,7 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import PartnerCard from '@components/partenaires/partnerCard';
 import PartnerSection from '@components/partenaires/partnerSection';
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import { partnerData } from '@data/partenaires';
 import Head from 'next/head';
 import React from 'react';
@@ -20,7 +20,7 @@ function Partner() {
       <Head>
         <title>Partenaires : France Chaleur Urbaine</title>
       </Head>
-      <MainLayout currentMenu="/partenaires">
+      <MainContainer currentMenu="/partenaires">
         <div className="fr-container fr-my-2w">
           <div className="fr-grid-row">
             <h1>{partnerData.title}</h1>
@@ -43,7 +43,7 @@ function Partner() {
             ))}
           </PartnerSection>
         ))}
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

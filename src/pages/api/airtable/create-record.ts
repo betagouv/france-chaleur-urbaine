@@ -14,7 +14,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   }
 
   if (req?.body) {
-    base('FCU - Contacts Utilisateurs').create(
+    base('FCU - Utilisateurs').create(
       [{ fields: req?.body }],
       function (err: any, records: any) {
         if (err) {

@@ -1,4 +1,6 @@
-export { default } from './MainLayout';
+export { default as LayoutContext, LayoutProvider } from './LayoutContext';
+export { default } from './MainContainer';
+export { default as MainLayout } from './MainLayout';
 export {
   footerHeight,
   fullscreenFooterHeight,

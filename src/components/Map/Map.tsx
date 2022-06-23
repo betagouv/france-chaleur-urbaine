@@ -1,3 +1,4 @@
+import { usePersistedState } from '@hooks';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
@@ -138,14 +139,24 @@ export default function Map() {
   const map: null | { current: any } = useRef(null);
 
   const [mapState, setMapState] = useState('pending');
-  const [soughtAddress, setSoughtAddress]: [
-    any | never[],
-    React.Dispatch<any | never[]>
-  ] = useState([]);
   const [layerDisplay, setLayerDisplay]: [
     TypeLayerDisplay,
     React.Dispatch<any | never[]>
   ] = useState(defaultLayerDisplay);
+
+  const [soughtAddress, setSoughtAddress] = usePersistedState(
+    'mapSoughtAddress',
+    [],
+    {
+      beforeStorage: (value: any) => {
+        const newValue = value.map((address: any) => {
+          const { marker, ...parsableAddress } = address;
+          return parsableAddress;
+        });
+        return newValue;
+      },
+    }
+  );
 
   const { query } = useRouter();
   const [, , updateClickedPoint] = useMapPopup(map.current, {
@@ -173,6 +184,7 @@ export default function Map() {
         date: Date.now(),
       };
       const id = getAddressId(coordinates);
+      if (!Array.isArray(soughtAddress)) return;
       const newAddress = soughtAddress.find(
         ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
       ) || {
@@ -190,7 +202,7 @@ export default function Map() {
       ]);
       flyTo({ coordinates });
     },
-    [flyTo, soughtAddress]
+    [flyTo, setSoughtAddress, soughtAddress]
   );
 
   const removeSoughtAddress = useCallback(
@@ -206,7 +218,7 @@ export default function Map() {
       result?.marker?.remove();
       setSoughtAddress(newSoughtAddress);
     },
-    [soughtAddress]
+    [setSoughtAddress, soughtAddress]
   );
 
   const toggleLayer = useCallback(
@@ -250,6 +262,12 @@ export default function Map() {
     },
     [layerDisplay]
   );
+  const toogleGasUsageGroupeVisibility = useCallback(() => {
+    setLayerDisplay({
+      ...layerDisplay,
+      gasUsageGroup: !layerDisplay.gasUsageGroup,
+    });
+  }, [layerDisplay]);
 
   // ----------------
   // --- Load Map ---
@@ -274,123 +292,131 @@ export default function Map() {
     });
 
     map.current.on('load', () => {
-      setMapState('loaded');
+      map.current.loadImage(
+        './icons/rect.png',
+        (error: any, image: Record<string, unknown>) => {
+          if (error) throw error;
 
-      // ----------------
-      // --- Controls ---
-      // ----------------
-      const navControl = new maplibregl.NavigationControl({
-        showCompass: true,
-        showZoom: true,
-        visualizePitch: true,
-      });
-      map.current.addControl(navControl, 'top-left');
+          setMapState('loaded');
+          map.current.addImage('energy-picto', image, { sdf: true });
 
-      const attributionControl = new maplibregl.AttributionControl({
-        compact: false,
-      });
-      map.current.addControl(attributionControl, 'bottom-right');
+          // ----------------
+          // --- Controls ---
+          // ----------------
+          const navControl = new maplibregl.NavigationControl({
+            showCompass: true,
+            showZoom: true,
+            visualizePitch: true,
+          });
+          map.current.addControl(navControl, 'top-left');
 
-      const scaleControl = new maplibregl.ScaleControl({
-        maxWidth: 100,
-        unit: 'metric',
-      });
-      map.current.addControl(scaleControl, 'bottom-left');
+          const attributionControl = new maplibregl.AttributionControl({
+            compact: false,
+          });
+          map.current.addControl(attributionControl, 'bottom-right');
 
-      // -------------------
-      // --- MAP CONTENT ---
-      // -------------------
+          const scaleControl = new maplibregl.ScaleControl({
+            maxWidth: 100,
+            unit: 'metric',
+          });
+          map.current.addControl(scaleControl, 'bottom-left');
 
-      const { origin } = document.location;
+          // -------------------
+          // --- MAP CONTENT ---
+          // -------------------
 
-      // --------------------
-      // --- Heat Network ---
-      // --------------------
-      map.current.addSource('heatNetwork', {
-        type: 'vector',
-        tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
-      });
+          const { origin } = document.location;
 
-      map.current.addLayer({
-        id: 'outline',
-        source: 'heatNetwork',
-        'source-layer': 'outline',
-        ...outlineLayerStyle,
-      });
-      map.current.addLayer({
-        id: 'substation',
-        source: 'heatNetwork',
-        'source-layer': 'substation',
-        ...substationLayerStyle,
-      });
-      map.current.addLayer({
-        id: 'boilerRoom',
-        source: 'heatNetwork',
-        'source-layer': 'boilerRoom',
-        ...boilerRoomLayerStyle,
-      });
+          // --------------------
+          // --- Heat Network ---
+          // --------------------
+          map.current.addSource('heatNetwork', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
+          });
 
-      // --------------
-      // --- Energy ---
-      // --------------
-      map.current.addSource('energy', {
-        type: 'vector',
-        tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
-        maxzoom: maxZoom,
-        minzoom: minZoomData,
-      });
+          map.current.addLayer({
+            id: 'outline',
+            source: 'heatNetwork',
+            'source-layer': 'outline',
+            ...outlineLayerStyle,
+          });
+          map.current.addLayer({
+            id: 'substation',
+            source: 'heatNetwork',
+            'source-layer': 'substation',
+            ...substationLayerStyle,
+          });
+          map.current.addLayer({
+            id: 'boilerRoom',
+            source: 'heatNetwork',
+            'source-layer': 'boilerRoom',
+            ...boilerRoomLayerStyle,
+          });
 
-      map.current.addLayer({
-        id: 'energy',
-        source: 'energy',
-        'source-layer': 'condominiumRegister',
-        ...energyLayerStyle,
-      });
+          // --------------
+          // --- Energy ---
+          // --------------
+          map.current.addSource('energy', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          });
 
-      map.current.on('click', 'energy', (e: any) => {
-        const properties = e.features[0].properties;
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        updateClickedPoint(coordinates, { energy: properties });
-      });
+          map.current.addLayer({
+            id: 'energy',
+            source: 'energy',
+            'source-layer': 'condominiumRegister',
+            ...energyLayerStyle,
+          });
 
-      map.current.on('mouseenter', 'energy', function () {
-        map.current.getCanvas().style.cursor = 'pointer';
-      });
+          map.current.on('click', 'energy', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { energy: properties });
+          });
 
-      map.current.on('mouseleave', 'energy', function () {
-        map.current.getCanvas().style.cursor = '';
-      });
+          map.current.on('mouseenter', 'energy', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
 
-      // -----------------
-      // --- Gas Usage ---
-      // -----------------
-      map.current.addSource('gasUsage', {
-        type: 'vector',
-        tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
-        maxzoom: maxZoom,
-        minzoom: minZoomData,
-      });
+          map.current.on('mouseleave', 'energy', function () {
+            map.current.getCanvas().style.cursor = '';
+          });
 
-      map.current.addLayer({
-        id: 'gasUsage',
-        source: 'gasUsage',
-        'source-layer': 'gasUsage',
-        ...gasUsageLayerStyle,
-      });
+          // -----------------
+          // --- Gas Usage ---
+          // -----------------
+          map.current.addSource('gasUsage', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          });
 
-      map.current.on('click', 'gasUsage', (e: any) => {
-        const properties = e.features[0].properties;
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        updateClickedPoint(coordinates, { consommation: properties });
-      });
+          map.current.addLayer({
+            id: 'gasUsage',
+            source: 'gasUsage',
+            'source-layer': 'gasUsage',
+            ...gasUsageLayerStyle,
+          });
 
-      map.current.on('mouseenter', 'gasUsage', function () {
-        map.current.getCanvas().style.cursor = 'pointer';
-      });
+          map.current.on('click', 'gasUsage', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { consommation: properties });
+          });
 
-      map.current.on('mouseleave', 'gasUsage', function () {
-        map.current.getCanvas().style.cursor = '';
-      });
+          map.current.on('mouseenter', 'gasUsage', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'gasUsage', function () {
+            map.current.getCanvas().style.cursor = '';
+          });
+        }
+      );
     });
   });
 
@@ -441,7 +467,7 @@ export default function Map() {
       }
     });
     if (shouldUpdate) setSoughtAddress(newSoughtAddress);
-  }, [soughtAddress]);
+  }, [setSoughtAddress, soughtAddress]);
 
   // ---------------------
   // --- Update Filter ---
@@ -478,7 +504,10 @@ export default function Map() {
       ['get', TYPE_GAS],
       gasUsageName,
     ]);
-    map.current.setFilter('gasUsage', ['any', ...gasUsageFilter]);
+    map.current.setFilter(
+      'gasUsage',
+      layerDisplay.gasUsageGroup && ['any', ...gasUsageFilter]
+    );
   }, [layerDisplay, mapState]);
 
   return (
@@ -507,14 +536,18 @@ export default function Map() {
           <MapLegend
             data={legendData}
             onToogleFeature={toggleLayer}
-            onToogleInGroup={(groupeName: string, idEntry: any) => {
+            onToogleInGroup={(groupeName: string, idEntry?: any) => {
               switch (groupeName) {
                 case 'energy': {
-                  toogleEnergyVisibility(idEntry);
+                  toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
                   break;
                 }
                 case 'gasUsage': {
-                  toogleGasUsageVisibility(idEntry);
+                  toogleGasUsageVisibility(idEntry as 'R' | 'T');
+                  break;
+                }
+                case 'gasUsageGroup': {
+                  toogleGasUsageGroupeVisibility();
                   break;
                 }
               }

@@ -106,7 +106,11 @@ export const SliceContainer = styled.div`
 
 export const SliceBody = styled.div<{ direction?: string }>`
   display: flex;
-  flex-direction: ${({ direction }) => direction || 'column'};
+  flex-direction: column;
+
+  @media (min-width: 992px) {
+    flex-direction: ${({ direction }) => direction || 'column'};
+  }
 `;
 
 export const SliceHiddenImg = styled.img`

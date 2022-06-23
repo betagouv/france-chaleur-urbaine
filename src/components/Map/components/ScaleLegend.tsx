@@ -13,6 +13,7 @@ const ScaleLegend: React.FC<{
   label: string;
   color?: string;
   scaleLabels: { label: string; size: number; bgColor?: string }[];
+  circle?: boolean;
   checkbox?: boolean;
   checked?: boolean;
   framed?: boolean;
@@ -25,6 +26,7 @@ const ScaleLegend: React.FC<{
   onChange,
   color: defaultColor,
   scaleLabels,
+  circle,
 }) => (
   <ScaleLegendWrapper framed={framed}>
     {checkbox ? (
@@ -39,7 +41,11 @@ const ScaleLegend: React.FC<{
     <ScaleLegendBody checkbox={checkbox}>
       {scaleLabels.map(({ bgColor, label, size }) => (
         <ScaleLegendLabelWrapper key={label}>
-          <ScaleLabelLegend bgColor={bgColor || defaultColor} size={size} />
+          <ScaleLabelLegend
+            bgColor={bgColor || defaultColor}
+            size={size}
+            circle={circle}
+          />
           {label}
         </ScaleLegendLabelWrapper>
       ))}

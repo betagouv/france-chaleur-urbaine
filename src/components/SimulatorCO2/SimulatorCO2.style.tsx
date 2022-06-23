@@ -106,9 +106,16 @@ export const SimulatorHeader = styled.p`
   font-size: 1.25em;
 `;
 export const SimulatorFormWrapper = styled.div`
-  display: flex;
+  width: 100%;
+  align-items: center;
   max-width: 700px;
   align-self: center;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 992px) {
+    flex-direction: row;
+  }
 
   @media (min-width: ${breakPoint}) {
     max-width: none;
@@ -116,10 +123,13 @@ export const SimulatorFormWrapper = styled.div`
   }
 `;
 export const SimulatorForm = styled.form`
-  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
+  @media (min-width: 992px) {
+    flex: 1;
+  }
 
   fieldset {
     padding: 0;
@@ -133,23 +143,31 @@ export const SimulatorForm = styled.form`
   }
 `;
 export const SimulatorFormResult = styled.div<{ inline?: boolean }>`
+  margin: 1em 0;
+
   flex: 1;
   display: flex;
   flex-direction: column;
   padding: 0 0.55em;
   max-width: calc(230px + 0.55em);
-  margin-left: 3em;
+
+  @media (min-width: 992px) {
+    margin-left: 3em;
+  }
 
   ${({ inline }) =>
     inline &&
     css`
-      flex-direction: row;
       width: auto;
       margin-left: 0em;
       flex-wrap: nowrap;
       max-width: none;
       justify-content: stretch;
       align-items: stretch;
+
+      @media (min-width: 992px) {
+        flex-direction: row;
+      }
     `}
 
   & > .cartridge {
@@ -222,11 +240,19 @@ export const SimulatorFormResult = styled.div<{ inline?: boolean }>`
   }
 
   .simulator-result-reduction {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
     font-size: 0.75rem;
+
+    @media (max-width: 991px) {
+      margin-top: 1em;
+    }
+
+    @media (min-width: 992px) {
+      display: flex;
+      flex-direction: column;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
 
     ${({ inline }) =>
       inline &&
@@ -236,12 +262,19 @@ export const SimulatorFormResult = styled.div<{ inline?: boolean }>`
       `}
 
     strong {
-      width: 4em;
       font-weight: normal;
       font-size: 1.5rem;
       padding: 0 0.2em 0 0;
       line-height: 1;
       text-align: right;
+
+      @media (max-width: 991px) {
+        float: left;
+      }
+
+      @media (min-width: 992px) {
+        width: 4em;
+      }
     }
   }
 `;

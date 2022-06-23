@@ -1,11 +1,11 @@
 export const localTypeGas: Record<string, string> = {
   T: 'Tertiaire',
-  R: 'Résidentiel',
+  R: 'Logements (tous types)',
   unknow: 'Inconnu',
 };
 
 export const themeDefTypeGas: any = {
-  T: { color: '#13e0d6' },
-  R: { color: '#136ce0' },
+  T: { color: '#0032E5' },
+  R: { color: '#00B8F0' },
   unknow: { color: '#818181' },
 };

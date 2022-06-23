@@ -2,7 +2,7 @@ import ResourceCard from '@components/resources/resourceCard';
 import { TextCard } from '@components/resources/resourceCard.style';
 import Data from '@components/resources/resourcesData.json';
 import ResourceSection from '@components/resources/resourceSection';
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import Head from 'next/head';
 import React from 'react';
 
@@ -12,7 +12,7 @@ function Resources() {
       <Head>
         <title>Ressources : France Chaleur Urbaine</title>
       </Head>
-      <MainLayout currentMenu="/ressources">
+      <MainContainer currentMenu="/ressources">
         <div className="fr-container fr-mt-2w">
           <div className="fr-grid-row">
             <div className="fr-col-lg-4 fr-col-sm-12">
@@ -68,7 +68,7 @@ function Resources() {
             </div>
           </div>
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

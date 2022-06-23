@@ -26,18 +26,18 @@ contact avec Anne pour l’informer **sur les conditions de raccordement.**`,
 _Les frais de raccordements s’élève à 120&nbsp;000€._  
 _Sur le conseil de France Chaleur Urbaine, la copropriété d’Anne obtient des aides avec **MaPrimeRénov’ et les certificats d’économies d’énergies**._
 
-**_Ce qui fait baisser le coût du raccordement à 50&nbsp;000€ !_** 
+**_Ce qui fait baisser le coût du raccordement à 50&nbsp;000€&nbsp;!_** 
 
 ::cartridge[**Soit 400€ par lot environ.**]
 
-_Les travaux durent **4&nbsp;mois** en tout !_`,
+_Les travaux durent **4&nbsp;mois** en tout&nbsp;!_`,
     imgSrc: `./img/user-experience-3.png`,
     imgAlt: `Charge et travaux pour un raccordement au Reseau de chaleur`,
     reverse: true,
   },
   {
     body: `::counter-item[04.]  
-::cartridge[_Depuis Anne profite d’une chaleur **fiable et garantie, pour 108€/mois pour son T4**._]
+::cartridge[_Depuis Anne profite d’une chaleur **fiable et garantie, pour 108€/mois pour son T4**._]{className=cartridge-4}
 
 Grâce au réseau de chaleur, la copropriété bénéficie d’une **bonne température de chauffe** et d’une distribution de l'eau chaude **sans aucune panne** et avec **un budget maîtrisé**.
 

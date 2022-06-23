@@ -1,6 +1,6 @@
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import Slice, { SliceImg } from '@components/Slice';
 import TextList from '@components/TextList';
 import WrappedBlock from '@components/WrappedBlock';
@@ -59,8 +59,12 @@ const GlobalStyle = createGlobalStyle`
   .enjeu-societe-description-wrapper {
     padding: 0 3rem;
   }
+  .enjeu-societe-description--container {
+    z-index: 1;
+  }
   .enjeu-societe-description {
     margin-left: 2em;
+    
 
     .list-item {
       max-width: 350px;
@@ -68,6 +72,11 @@ const GlobalStyle = createGlobalStyle`
   }
   .enjeu-societe-img {
     max-width: 122px;
+
+    @media (max-width: 991px) {
+      position: absolute;
+      opacity: 0.25;
+    }
   }
 `;
 
@@ -101,7 +110,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainLayout currentMenu="/">
+      <MainContainer currentMenu="/">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
@@ -196,7 +205,7 @@ maîtrise du tarif des énergies._`}
 
           <SliceImg src="./img/home-footer-bg.jpg" />
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

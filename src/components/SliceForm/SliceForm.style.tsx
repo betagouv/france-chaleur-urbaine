@@ -7,7 +7,7 @@ export const SliceContactFormStyle = createGlobalStyle`
   transition: max-height 1s ease;
 
   &.active {
-    max-height: 1000px;
+    max-height: 500vh;
   }
 }
 `;

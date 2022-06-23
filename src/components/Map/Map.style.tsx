@@ -3,6 +3,11 @@ import {
   fullscreenHeaderHeight,
 } from '@components/shared/layout/MainLayout';
 import styled, { createGlobalStyle, css } from 'styled-components';
+import {
+  themeDefEnergy,
+  themeDefHeatNetwork,
+  themeDefTypeGas,
+} from './businessRules';
 import param from './Map.param';
 
 const { minZoomData, maxZoom } = param;
@@ -123,7 +128,7 @@ export const MapControlWrapper = styled.div<{
   position: absolute;
   z-index: ${mapControlZindex};
 
-  max-width: 28%;
+  max-width: 430px;
   width: 100%;
   min-width: 330px;
   padding: 1rem;
@@ -182,7 +187,7 @@ export const outlineLayerStyle = {
     'line-cap': 'round',
   },
   paint: {
-    'line-color': '#2d9748',
+    'line-color': themeDefHeatNetwork.outline.color,
     'line-width': 3,
     'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
   },
@@ -191,7 +196,7 @@ export const substationLayerStyle = {
   type: 'fill',
   layout: {},
   paint: {
-    'fill-color': '#ff00d4',
+    'fill-color': themeDefHeatNetwork.substation.color,
     'fill-opacity': 1,
   },
 };
@@ -199,8 +204,8 @@ export const boilerRoomLayerStyle = {
   type: 'fill',
   layout: {},
   paint: {
-    'fill-color': '#ff6600',
-    'fill-outline-color': '#ff6600',
+    'fill-color': themeDefHeatNetwork.boilerRoom.color,
+    'fill-outline-color': themeDefHeatNetwork.boilerRoom.color,
     'fill-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 0.95],
   },
 };
@@ -233,13 +238,6 @@ export const objTypeEnergy = Object.entries(typeEnergy).reduce(
   },
   {}
 );
-const themeDefEnergy: any = {
-  fuelOil: { color: '#c72e6e' },
-  gas: { color: '#9c47e2' },
-  wood: { color: '#ce7f17' },
-  electric: { color: '#4cd362' },
-  unknow: { color: '#818181' },
-};
 const arrColorFromDefEnergy = [
   ...Object.entries(themeDefEnergy).flatMap(
     ([energyName, styleObject]: [string, any]) => [
@@ -249,15 +247,12 @@ const arrColorFromDefEnergy = [
   ),
   themeDefEnergy.unknow.color,
 ];
-
 export const energyLayerStyle = {
-  type: 'circle',
+  type: 'symbol',
   layout: {
-    'circle-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
-  },
-  paint: {
-    'circle-color': ['match', ['get', TYPE_ENERGY], ...arrColorFromDefEnergy],
-    'circle-radius': [
+    'icon-image': 'energy-picto',
+    'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
+    'icon-size': [
       'interpolate',
       ['linear'],
       ['zoom'],
@@ -265,22 +260,25 @@ export const energyLayerStyle = {
       [
         'case',
         ['<', ['get', NB_LOT], 100],
-        4,
+        0.25,
         ['<', ['get', NB_LOT], 1000],
-        8,
-        15,
+        0.6,
+        1,
       ],
       maxZoom,
       [
         'case',
         ['<', ['get', NB_LOT], 100],
-        8,
+        0.25 * 2,
         ['<', ['get', NB_LOT], 1000],
-        16,
-        30,
+        0.6 * 2,
+        1 * 2,
       ],
     ],
-    'circle-opacity': [
+  },
+  paint: {
+    'icon-color': ['match', ['get', TYPE_ENERGY], ...arrColorFromDefEnergy],
+    'icon-opacity': [
       'interpolate',
       ['linear'],
       ['zoom'],
@@ -289,7 +287,6 @@ export const energyLayerStyle = {
       minZoomData + 0.5 + 1,
       0.65,
     ],
-    'circle-stroke-opacity': 0,
   },
 };
 
@@ -298,11 +295,6 @@ export const energyLayerStyle = {
 // -----------------
 const CONSO = 'conso';
 const TYPE_GAS = 'code_grand_secteur';
-const themeDefTypeGas: any = {
-  T: { color: '#13e0d6' },
-  R: { color: '#136ce0' },
-  unknow: { color: '#818181' },
-};
 const arrColorFromDefTypeGas = [
   ...Object.entries(themeDefTypeGas).flatMap(
     ([TypeGasName, styleObject]: [string, any]) => [
@@ -331,7 +323,7 @@ export const gasUsageLayerStyle = {
         4,
         ['<', ['get', CONSO], 1000],
         8,
-        15,
+        14,
       ],
       maxZoom,
       [
@@ -340,7 +332,7 @@ export const gasUsageLayerStyle = {
         8,
         ['<', ['get', CONSO], 1000],
         16,
-        30,
+        28,
       ],
     ],
     'circle-opacity': [
@@ -350,7 +342,7 @@ export const gasUsageLayerStyle = {
       minZoomData + 0.2,
       0,
       minZoomData + 0.2 + 1,
-      0.25,
+      0.35,
     ],
     'circle-stroke-opacity': 0,
   },

@@ -2,7 +2,7 @@ import Accordions from '@components/accordions';
 import Carrousel from '@components/Carrousel';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import MainLayout from '@components/shared/layout/MainLayout';
+import MainContainer from '@components/shared/layout';
 import SimulateurCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
@@ -22,7 +22,16 @@ import { createGlobalStyle } from 'styled-components';
 const GlobalStyle = createGlobalStyle`
   .user-experience-description {
     position: relative;
-    padding-left: 5.75em;
+
+    @media (min-width: 992px) {
+      padding-left: 5.75em;
+    }
+
+    .cartridge-4 {
+      @media (max-width: 991px) {
+        margin: -0.7em 0 0.5em 1.6em;
+      }
+    }
   }
 
   .enjeu-societe-description {
@@ -39,8 +48,12 @@ const GlobalStyle = createGlobalStyle`
   .fcuSolutionForFuturBody,
   .fcuSolutionForFuturFooter {
     text-align: center;
-    padding: 0 7rem;
-    margin: 3rem 0;
+    margin: 1rem 0;
+    
+    @media (min-width: 992px) {
+      padding: 0 7rem;
+      margin: 3rem 0;
+    }
 
     p {
       font-size: 1.5rem;
@@ -49,7 +62,12 @@ const GlobalStyle = createGlobalStyle`
   }
   .fcuSolutionForFuturListing {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    
+    @media (min-width: 992px) {
+      justify-content: space-between;
+      flex-direction: row;
+    }
 
     p {
       font-size: 1.05rem;
@@ -58,8 +76,10 @@ const GlobalStyle = createGlobalStyle`
     }
 
     & > div {
-      flex: 1;
-      max-width: 29%;
+      @media (min-width: 992px) {
+        flex: 1;
+        max-width: 29%;
+      }
     }
   }
 
@@ -71,7 +91,7 @@ const GlobalStyle = createGlobalStyle`
     }
 
     .rcu-comparatif-image {
-      position: relative ;
+      position: relative;
       border-radius: 2.5rem;
       background-color: #F9F8F6;
       padding: 2rem 0 1rem !important;
@@ -91,8 +111,11 @@ const GlobalStyle = createGlobalStyle`
       flex: 1;
       width: auto;
       max-width: none;
-      padding-left: 4rem;
       color: var(--bf500);
+
+      @media (min-width: 992px) {
+        padding-left: 4rem;
+      }
     }
   }
 `;
@@ -111,7 +134,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainLayout currentMenu="/coproprietaire">
+      <MainContainer currentMenu="/coproprietaire">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
 
@@ -206,7 +229,7 @@ _Les tarifs sont donnés à titre d’exemple en s’inspirant d’un cas réel 
             <Accordions data={faqRcuCoproprietaire} />
           </Slice>
         </div>
-      </MainLayout>
+      </MainContainer>
     </>
   );
 }

@@ -1,13 +1,13 @@
 import React from 'react';
+import { themeDefEnergy } from '../businessRules';
 import ScaleLegend from './ScaleLegend';
 
-// TODO: Move to MapData.ts ?
 const LegendDesc: Record<string, () => React.ReactElement> = {
   Energy: () => (
     <ScaleLegend
       framed
       label="Nombre de lots d'habitation"
-      color="#afafaf"
+      color={themeDefEnergy.gas.color}
       scaleLabels={[
         { label: '<\u00a0100', size: 0.5 },
         { label: '100\u00a0à\u00a01000', size: 1 },
@@ -15,14 +15,39 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
       ]}
     />
   ),
+  EnergyGas: () => (
+    <ScaleLegend
+      framed
+      label="Nombre de lots d'habitation"
+      color={`${themeDefEnergy.gas.color}88`}
+      scaleLabels={[
+        { label: '<\u00a0100', size: 0.8 },
+        { label: '100\u00a0à\u00a01000', size: 1.3 },
+        { label: '>\u00a01000', size: 2 },
+      ]}
+    />
+  ),
+  EnergyFuel: () => (
+    <ScaleLegend
+      framed
+      label="Nombre de lots d'habitation"
+      color={`${themeDefEnergy.fuelOil.color}88`}
+      scaleLabels={[
+        { label: '<\u00a0100', size: 0.8 },
+        { label: '100\u00a0à\u00a01000', size: 1.3 },
+        { label: '>\u00a01000', size: 2 },
+      ]}
+    />
+  ),
   GasUsage: () => (
     <ScaleLegend
       framed
+      circle
       label="Niveau de consomation de gaz (MWh)"
-      color="#afafaf"
+      color="#D9D9D9"
       scaleLabels={[
-        { label: '<\u00a0100', size: 0.5 },
-        { label: '100\u00a0à\u00a01000', size: 1 },
+        { label: '<\u00a0100', size: 0.8 },
+        { label: '100\u00a0à\u00a01000', size: 1.3 },
         { label: '>\u00a01000', size: 2 },
       ]}
     />

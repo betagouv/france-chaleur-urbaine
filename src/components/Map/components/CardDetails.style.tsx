@@ -1,3 +1,7 @@
+import {
+  fullscreenFooterHeight,
+  fullscreenHeaderHeight,
+} from '@components/shared/layout/MainLayout';
 import styled, { css } from 'styled-components';
 
 const eligibleStyle = {
@@ -20,6 +24,12 @@ type MapCardType = {
   isClosable?: boolean;
   isClickable?: boolean;
 };
+
+const legendMaxHeight = css`
+  max-height: calc(
+    100vh - ${fullscreenHeaderHeight} - ${fullscreenFooterHeight} - 5rem - 4rem
+  );
+`;
 
 export const MapCard = styled.div<MapCardType>`
   width: 100%;
@@ -128,11 +138,14 @@ export const MapCard = styled.div<MapCardType>`
 
   section {
     padding: 0.5em;
+    overflow: auto;
+    scrollbar-gutter: stable both-edges;
+
+    ${legendMaxHeight}
 
     ${({ isClosable }) =>
       isClosable &&
       css`
-        max-height: 1000px;
         transition: max-height 0.75s ease, padding 0.5s ease 0.25s;
       `}
   }
@@ -145,8 +158,8 @@ export const MapCard = styled.div<MapCardType>`
 
     :hover {
       section {
-        max-height: 1000px;
         padding: 0.25em 0.5em;
+        ${legendMaxHeight}
       }
     }
   }
