@@ -43,6 +43,10 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 const DsfrFixUp = createGlobalStyle`
+.fr-btn--secondary {
+  background-color: white;
+}
+
 @media (min-width: 992px) {
   .fr-header {
     transition: margin-top .25s ease;
