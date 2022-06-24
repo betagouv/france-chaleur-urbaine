@@ -5,6 +5,7 @@ import markupData, {
   matomoEvent,
 } from '@components/Markup';
 import { useCallback, useRef, useState } from 'react';
+import { useServices } from 'src/services';
 import useBackEndFCU from './useBackEndFCU';
 
 const callMarkup__handleOnFetchAddress = (address: string) => {
@@ -54,6 +55,18 @@ const useContactFormFCU = () => {
   const [messageSent, setMessageSent] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('idle');
   const [submitToFCU] = useBackEndFCU();
+  const { heatNetworkService } = useServices();
+
+  const initAddressData = useCallback((addressDataArg) => {
+    setAddressData(addressDataArg);
+  }, []);
+  const resetContactFormFCU = useCallback((addressDataArg) => {
+    setAddressData(addressDataArg || {});
+    setContactReady(false);
+    setShowWarning(false);
+    setMessageSent(false);
+    setLoadingStatus('idle');
+  }, []);
 
   const timeoutScroller = useCallback(
     (delai: number, callback?: () => void) =>
@@ -113,6 +126,80 @@ const useContactFormFCU = () => {
     [addressData, submitToFCU, timeoutScroller]
   );
 
+  // TODO: Need move ? :
+  const convertAddressBanToFcu = useCallback(
+    async ({
+      address,
+      points,
+      geoAddress,
+    }): Promise<Record<string, unknown>> => {
+      const [lon, lat] = points; // TODO: Fix on source ?
+
+      const coords = { lat, lon };
+      const networkData = await heatNetworkService.findByCoords(coords);
+      const { isEligible: eligibility, network } = networkData;
+
+      // ------------------------------
+      // { ...data, eligibility, address, coords, geoAddress, network }
+      // ------------------------------
+      //   {
+      //     "heatingType": "collectif",
+      //     "eligibility": true,
+      //     "address": "85 Avenue Foch 75016 Paris",
+      //     "coords": {
+      //         "lon": 2.275627,
+      //         "lat": 48.87095
+      //     },
+      //     "geoAddress": {
+      //         "type": "Feature",
+      //         "geometry": {
+      //             "type": "Point",
+      //             "coordinates": [
+      //                 2.275627,
+      //                 48.87095
+      //             ]
+      //         },
+      //         "properties": {
+      //             "label": "85 Avenue Foch 75016 Paris",
+      //             "score": 0.6297687412587413,
+      //             "housenumber": "85",
+      //             "id": "75116_3696_00085",
+      //             "name": "85 Avenue Foch",
+      //             "postcode": "75016",
+      //             "citycode": "75116",
+      //             "x": 646865.43,
+      //             "y": 6863679.67,
+      //             "city": "Paris",
+      //             "district": "Paris 16e Arrondissement",
+      //             "context": "75, Paris, Île-de-France",
+      //             "type": "housenumber",
+      //             "importance": 0.77361,
+      //             "street": "Avenue Foch"
+      //         }
+      //     },
+      //     "network": {
+      //         "lat": 48.87095573763034,
+      //         "lon": 2.275962634547043,
+      //         "filiere": null,
+      //         "distance": 24,
+      //         "irisCode": null
+      //     }
+      // }
+      // ------------------------------
+
+      return {
+        // id:
+        eligibility,
+        address,
+        coords,
+        points: [coords.lon, coords.lat],
+        geoAddress,
+        network,
+      };
+    },
+    [heatNetworkService]
+  );
+
   return {
     EligibilityFormContactRef,
     addressData,
@@ -121,6 +208,9 @@ const useContactFormFCU = () => {
     messageSent,
     loadingStatus,
     warningMessage,
+    convertAddressBanToFcu,
+    initAddressData,
+    resetContactFormFCU,
     handleOnChangeAddress,
     handleOnFetchAddress,
     handleOnSuccessAddress,
