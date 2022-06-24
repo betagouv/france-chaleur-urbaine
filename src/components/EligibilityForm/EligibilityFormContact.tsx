@@ -21,6 +21,7 @@ type AddressDataType = {
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
+  forceMobile?: boolean;
   onSubmit?: (...arg: any) => void;
 };
 
@@ -165,6 +166,7 @@ Découvrez également d’autres solutions de chauffage [ici](https://france-ren
 
 const EligibilityFormContact = ({
   addressData,
+  forceMobile,
   onSubmit,
 }: EligibilityFormContactType) => {
   const isIDFAddress = useMemo(() => {
@@ -231,7 +233,7 @@ const EligibilityFormContact = ({
       : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
 
   return (
-    <ContactFormWrapper>
+    <ContactFormWrapper forceMobile={forceMobile}>
       <ContactFormContentWrapper>
         <ContactFormResultMessage
           eligible={computEligibility}

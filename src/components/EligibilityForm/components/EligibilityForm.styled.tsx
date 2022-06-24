@@ -9,16 +9,20 @@ export const CheckEligibilityFormLabel = styled.div<{ centred?: boolean }>`
     `}
 `;
 
-export const ContactFormWrapper = styled.div`
+export const ContactFormWrapper = styled.div<{ forceMobile?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: stretch;
   padding: 1.5rem 0;
 
-  @media (min-width: 992px) {
-    flex-direction: row;
-  }
+  ${({ forceMobile }) =>
+    !forceMobile &&
+    css`
+      @media (min-width: 992px) {
+        flex-direction: row;
+      }
+    `}
 `;
 
 export const ContactFormContentWrapper = styled.div`

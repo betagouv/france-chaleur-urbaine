@@ -1,12 +1,40 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-const HeadFormWrapper = styled.div`
+type Align = 'left' | 'right';
+
+type CheckEligibilityFormProps = {
+  name: string;
+  forceMobile?: boolean;
+  align?: Align;
+  selectOptions?: Record<string, string>;
+  centredForm?: boolean;
+  onChange?: (e: any) => void;
+};
+
+const HeadFormWrapper = styled.div<{ forceMobile?: boolean; align?: Align }>`
   font-size: 1rem;
   padding: 0.5rem 0 0;
 
-  label:not(:last-child) {
-    margin-right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: ${({ align }) =>
+    align === 'right' ? 'flex-end' : 'flex-start'};
+
+  ${({ forceMobile }) =>
+    !forceMobile &&
+    css`
+      @media (min-width: 480px) {
+        flex-direction: row;
+      }
+    `}
+
+  label {
+    white-space: nowrap;
+
+    &:not(:last-child) {
+      margin-right: 1.5rem;
+    }
   }
 `;
 
@@ -18,16 +46,11 @@ const OptionWrapper = styled.span`
   }
 `;
 
-type CheckEligibilityFormProps = {
-  name: string;
-  selectOptions?: Record<string, string>;
-  centredForm?: boolean;
-  onChange?: (e: any) => void;
-};
-
 const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
   children,
   name,
+  forceMobile,
+  align,
   selectOptions = {},
   onChange,
 }) => {
@@ -50,7 +73,7 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
   return (
     <>
       {children}
-      <HeadFormWrapper>
+      <HeadFormWrapper forceMobile={forceMobile} align={align}>
         Chauffage actuel : <OptionWrapper>{options}</OptionWrapper>
       </HeadFormWrapper>
     </>

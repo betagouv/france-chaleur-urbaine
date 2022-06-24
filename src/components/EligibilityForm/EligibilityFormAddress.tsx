@@ -1,9 +1,7 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
-import { usePreviousState } from '@hooks';
-import convertPointToCoordinates from '@utils/convertPointToCoordinates';
+import { useContactFormFCU, usePreviousState } from '@hooks';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useServices } from 'src/services';
-import { Coords, Point } from 'src/types';
+import { Point } from 'src/types';
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 
 export type EnergyInputsLabelsType = { collectif: string; individuel: string };
@@ -12,6 +10,8 @@ type CheckEligibilityFormProps = {
   formLabel?: React.ReactNode;
   energyInputsLabels?: EnergyInputsLabelsType;
   centredForm?: boolean;
+  forceMobile?: boolean;
+  popoverClassName?: string;
   onChange?: (...arg: any) => void;
   onFetch?: (...arg: any) => void;
   onSuccess?: (...arg: any) => void;
@@ -26,6 +26,8 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   formLabel,
   energyInputsLabels = energyInputsDefaultLabels,
   centredForm,
+  forceMobile,
+  popoverClassName,
   children,
   onChange,
   onFetch,
@@ -34,35 +36,39 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   const [status, setStatus] = useState('idle');
   const [data, setData] = useState({});
   const prevData = usePreviousState(data);
-  const { heatNetworkService } = useServices();
+  const { convertAddressBanToFcu } = useContactFormFCU();
+
   const checkEligibility = useCallback(
     async ({
       address,
-      coords,
+      points,
       geoAddress,
     }: {
       address?: string;
-      coords: Coords;
+      points: Point;
       geoAddress?: any;
     }) => {
       try {
         setStatus('loading');
-        const networkData = await heatNetworkService.findByCoords(coords);
-        const { isEligible: eligibility, network } = networkData;
-        setData({ ...data, eligibility, address, coords, geoAddress, network });
+        const fcuAddress = await convertAddressBanToFcu({
+          address,
+          points,
+          geoAddress,
+        });
+
+        setData({ ...data, ...fcuAddress });
         setStatus('success');
       } catch (e) {
         setStatus('error');
       }
     },
-    [data, heatNetworkService]
+    [convertAddressBanToFcu, data]
   );
 
   const handleAddressSelected = useCallback(
     async (address: string, point: Point, geoAddress: any): Promise<void> => {
       if (onFetch) onFetch({ address, point, geoAddress });
-      const coords: Coords = convertPointToCoordinates(point);
-      await checkEligibility({ address, coords, geoAddress });
+      await checkEligibility({ address, points: point, geoAddress });
     },
     [checkEligibility, onFetch]
   );
@@ -92,6 +98,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
         <SelectEnergy
           name="heatingType"
           selectOptions={energyInputsLabels}
+          forceMobile={forceMobile}
           onChange={(e) => {
             setData({
               ...data,
@@ -105,6 +112,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       <AddressAutocomplete
         placeholder="Tapez ici votre adresse"
         onAddressSelected={handleAddressSelected}
+        popoverClassName={popoverClassName}
       />
     </>
   );

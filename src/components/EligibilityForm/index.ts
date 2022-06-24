@@ -1,3 +1,4 @@
+export { SelectEnergy as EligibilitySelectEnergy } from './components';
 export {
   default,
   default as EligibilityFormAddress,
