@@ -53,6 +53,13 @@ export const MapCard = styled.div<MapCardType>`
     font-weight: bold;
   }
 
+  .map-card-footer {
+    padding: 0.5em;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
   &.eligible {
     border: 2px solid ${eligibleStyle.bgColor};
 
@@ -160,4 +167,16 @@ export const GasUsageResult = styled.div`
   border-left: 2px solid;
 
   border-color: #136ce0;
+`;
+
+export const EligibilityHeatingForm = styled.div`
+  padding: 0.5em;
+  max-height: 0;
+  overflow: hidden;
+  text-align: right;
+  transition: max-height 0.5s ease-in-out;
+
+  &.active {
+    max-height: 100vh;
+  }
 `;
