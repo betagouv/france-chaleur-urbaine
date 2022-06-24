@@ -12,11 +12,27 @@ const useBackEndFCU = (): [(arg: any) => void, boolean] => {
     formId: FORMSPARK_FORM_ID,
   });
   const submit = (values: any) => {
-    const response = Promise.all([
-      submitToFormspark(formatDataToFormspark(values)),
-      submitToAirtable(formatDataToAirtable(values)),
-    ]);
-    return response;
+    if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
+      console.info(
+        'Send following data to Formspark',
+        formatDataToFormspark(values)
+      );
+      console.info(
+        'Send following data to Airtabe',
+        formatDataToAirtable(values)
+      );
+      return Promise.resolve([
+        () => {
+          //do nothing
+        },
+        true,
+      ]);
+    } else {
+      return Promise.all([
+        submitToFormspark(formatDataToFormspark(values)),
+        submitToAirtable(formatDataToAirtable(values)),
+      ]);
+    }
   };
 
   return [submit, submittingToFormspark];
