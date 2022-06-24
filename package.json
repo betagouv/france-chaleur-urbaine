@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start -p $PORT",
     "test": "jest",
+    "test:coverage": "jest --collectCoverage",
     "export": "next export",
     "prepare": "husky install",
     "prettier-check": "prettier --check src",
