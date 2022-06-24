@@ -31,7 +31,7 @@ export default async function getEligibilityStatus(
     const coords = { lat: Number(lat), lon: Number(lon) };
 
     const addressRepository = new AddressRepositoryImpl(axiosHttpClient);
-    const networkRepository = new NetworkRepositoryImpl(axiosHttpClient);
+    const networkRepository = new NetworkRepositoryImpl();
     const testEligibilityUseCase = new TestEligibility(
       addressRepository,
       networkRepository
