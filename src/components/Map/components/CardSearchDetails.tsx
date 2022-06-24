@@ -1,39 +1,48 @@
 import CloseButton from '@components/CloseButton';
-import React from 'react';
-import { Point } from 'src/types';
+import { EligibilitySelectEnergy } from '@components/EligibilityForm';
+import React, { useState } from 'react';
+import { AddressFcu, Point } from 'src/types';
 import {
+  EligibilityHeatingForm,
   EligibilityResult,
   MapCard,
   MapCardHeaderButtonZone,
 } from './CardDetails.style';
 
-export type TypeAddressDetail = any;
-
-type Result = {
-  address: string;
-  addressDetails?: TypeAddressDetail;
-  coordinates?: Point;
-};
 type SearchResult = {
-  result: Result;
-  onClick?: (result: Result) => void;
-  onClickClose?: (result: { coordinates?: Point }) => void;
+  addressData: AddressFcu;
+  onClick?: (addressData: AddressFcu) => void;
+  onClickClose?: (addressData: { points?: Point }) => void;
+  onClickContact?: (addressData: AddressFcu) => void;
+  onSubmitAddressForm?: (addressData: AddressFcu) => void;
 };
 
-const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
-  const { distance } = result.addressDetails?.networkDetails?.network || {};
-  const { isEligible } = result.addressDetails?.networkDetails || {};
+const energyInputsDefaultLabels = {
+  collectif: 'Collectif',
+  individuel: 'Individuel',
+};
+
+const CardSearchDetails = ({
+  addressData,
+  onClick,
+  onClickClose,
+  onClickContact,
+  onSubmitAddressForm,
+}: SearchResult) => {
+  const [showEligibilityForm, setShowEligibilityForm] = useState(false);
+  const { distance } = addressData?.network || {};
+  const { eligibility: isEligible } = addressData || {};
 
   const onClickHandler = (ev: React.MouseEvent<HTMLElement>) => {
     const returnVal =
-      (typeof onClick === 'function' && onClick(result)) || undefined;
+      (typeof onClick === 'function' && onClick(addressData)) || undefined;
     ev.stopPropagation();
     return returnVal;
   };
 
   const onCloseHandler = () => {
     if (onClickClose) {
-      onClickClose(result);
+      onClickClose(addressData);
     }
   };
 
@@ -46,7 +55,7 @@ const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
       isClickable
     >
       <header>
-        {result.address}
+        {addressData.address}
         <MapCardHeaderButtonZone>
           {onClickClose && <CloseButton onClick={onCloseHandler} />}
         </MapCardHeaderButtonZone>
@@ -67,6 +76,34 @@ const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
                 : `: ${distance}m`
             }`}
         </div>
+
+        <footer className="map-card-footer">
+          <button
+            className="fr-btn"
+            onClick={() => {
+              if (onClickContact) onClickContact({ ...addressData });
+              setShowEligibilityForm(!showEligibilityForm);
+            }}
+          >
+            Tester l'elligibilité
+          </button>
+        </footer>
+        <EligibilityHeatingForm className={showEligibilityForm ? 'active' : ''}>
+          <EligibilitySelectEnergy
+            name="heatingType"
+            selectOptions={energyInputsDefaultLabels}
+            align="right"
+            forceMobile
+            onChange={(e) => {
+              const newAddressData = {
+                ...addressData,
+                heatingType: e.target.value,
+              };
+              if (onSubmitAddressForm) onSubmitAddressForm(newAddressData);
+              setShowEligibilityForm(false);
+            }}
+          />
+        </EligibilityHeatingForm>
       </section>
     </MapCard>
   );

@@ -22,12 +22,14 @@ export const MapStyle = createGlobalStyle`
       height: calc(
         100vh - ${fullscreenHeaderHeight} - ${fullscreenFooterHeight}
       );
+      overflow: hidden;
     }
 
     .map {
       position: absolute;
       width: 100%;
       height: 100%;
+      overflow: hidden;
     }
 
     .maplibregl-control-container,
@@ -133,6 +135,9 @@ export const MapControlWrapper = styled.div<{
   min-width: 330px;
   padding: 1rem;
 
+  transform: translateX(0);
+  transition: transform 0.25s ease-in-out;
+
   ${({ bottom }) =>
     bottom
       ? css`
@@ -150,6 +155,19 @@ export const MapControlWrapper = styled.div<{
           left: 0;
         `}
 
+  &.hidden-left {
+    transform: translateX(-100%);
+  }
+  &.hidden-right {
+    transform: translateX(100%);
+  }
+
+  &.map-contact-form {
+    background-color: #fff;
+    height: 100%;
+    overflow: auto;
+    box-shadow: -5px 0px 5px -3px rgb(0 0 0 / 35%);
+  }
   &.search-result-box {
     max-height: 100%;
     overflow: auto;

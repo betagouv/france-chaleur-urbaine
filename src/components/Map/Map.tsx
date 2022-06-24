@@ -1,14 +1,15 @@
+import CloseButton from '@components/CloseButton';
 import { usePersistedState } from '@hooks';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Point } from 'src/types';
+import { AddressFcu, Point } from 'src/types';
 import {
   CardSearchDetails,
+  MapContactForm,
   MapLegend,
   MapSearchForm,
-  TypeAddressDetail,
   TypeHandleAddressSelect,
 } from './components';
 import { useMapPopup } from './hooks';
@@ -139,6 +140,10 @@ export default function Map() {
   const map: null | { current: any } = useRef(null);
 
   const [mapState, setMapState] = useState('pending');
+  const [showContactForm, setShowContactForm] = useState<Record<
+    string,
+    any
+  > | null>(null);
   const [layerDisplay, setLayerDisplay]: [
     TypeLayerDisplay,
     React.Dispatch<any | never[]>
@@ -164,9 +169,9 @@ export default function Map() {
     className: 'popup-map-layer',
   });
 
-  const flyTo = useCallback(({ coordinates }: any) => {
+  const flyTo = useCallback(({ points }: any) => {
     map.current.flyTo({
-      center: { lon: coordinates[0], lat: coordinates[1] },
+      center: points,
       zoom: 16,
     });
   }, []);
@@ -178,20 +183,18 @@ export default function Map() {
   const onAddressSelectHandle:
     | TypeHandleAddressSelect
     | { _coordinates: Point } = useCallback(
-    (address, _coordinates, addressDetails) => {
-      const coordinates: Point = [_coordinates[1], _coordinates[0]]; // TODO: Fix on source
+    (fcuAddress) => {
+      const { points } = fcuAddress;
       const search = {
         date: Date.now(),
       };
-      const id = getAddressId(coordinates);
+      const id = getAddressId(points);
       if (!Array.isArray(soughtAddress)) return;
       const newAddress = soughtAddress.find(
         ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
       ) || {
         id,
-        coordinates,
-        address,
-        addressDetails,
+        ...fcuAddress,
         search,
       };
       setSoughtAddress([
@@ -200,20 +203,29 @@ export default function Map() {
         ),
         newAddress,
       ]);
-      flyTo({ coordinates });
+      flyTo({ points });
     },
     [flyTo, setSoughtAddress, soughtAddress]
   );
 
+  const updateSoughtAddress = useCallback(
+    (newAddress) =>
+      setSoughtAddress(
+        soughtAddress.map((sAddress: AddressFcu) =>
+          sAddress.id === newAddress.id
+            ? { ...sAddress, ...newAddress }
+            : sAddress
+        )
+      ),
+    [setSoughtAddress, soughtAddress]
+  );
+
   const removeSoughtAddress = useCallback(
-    (result: { marker?: any; coordinates?: Point }) => {
-      if (!result.coordinates) return;
-      const id = getAddressId(result.coordinates);
-      const getCurrentSoughtAddress = ({
-        coordinates,
-      }: {
-        coordinates: Point;
-      }) => getAddressId(coordinates) !== id;
+    (result: { marker?: any; points?: Point }) => {
+      if (!result.points) return;
+      const id = getAddressId(result.points);
+      const getCurrentSoughtAddress = ({ points }: { points: Point }) =>
+        getAddressId(points) !== id;
       const newSoughtAddress = soughtAddress.filter(getCurrentSoughtAddress);
       result?.marker?.remove();
       setSoughtAddress(newSoughtAddress);
@@ -262,6 +274,7 @@ export default function Map() {
     },
     [layerDisplay]
   );
+
   const toogleGasUsageGroupeVisibility = useCallback(() => {
     setLayerDisplay({
       ...layerDisplay,
@@ -424,23 +437,24 @@ export default function Map() {
   // --- Load Query Params ---
   // -------------------------
   const [queryState, setQueryState] = useState({});
+
   useEffect(() => {
     const { coord: coordState }: any = queryState;
     const { coord } = query;
     if (coord && coord !== coordState) {
-      const coordinates: any =
+      const points: any =
         typeof coord === 'string'
           ? coord
               .split(',')
               .map((point: string) => parseFloat(point))
               .reverse()
           : coord; // TODO: Fix on source
-      flyTo({ coordinates });
+      flyTo({ points });
       setQueryState(query);
       new maplibregl.Marker({
         color: '#ea7c3f', // TODO: Change color if address is eligible and use #00eb5e or #4550e5
       })
-        .setLngLat(coordinates)
+        .setLngLat(points)
         .addTo(map.current);
     }
   }, [flyTo, query, queryState]);
@@ -451,11 +465,11 @@ export default function Map() {
   useEffect(() => {
     let shouldUpdate = false;
     const newSoughtAddress = soughtAddress.map((sAddress: any | never[]) => {
-      if (!sAddress.marker) {
+      if (!sAddress.marker && sAddress.points) {
         const marker = new maplibregl.Marker({
           color: '#4550e5',
         })
-          .setLngLat(sAddress.coordinates)
+          .setLngLat(sAddress.points)
           .addTo(map.current);
         shouldUpdate = true;
         return {
@@ -519,12 +533,16 @@ export default function Map() {
           <MapSearchResult>
             {soughtAddress.length > 0 &&
               soughtAddress
-                .map((adressDetails: TypeAddressDetail, i: number) => (
+                .map((sAddress: AddressFcu, i: number) => (
                   <CardSearchDetails
-                    key={`${adressDetails.address}-${i}`}
-                    result={adressDetails}
+                    key={`${sAddress.address}-${i}`}
+                    addressData={sAddress}
                     onClick={flyTo}
-                    onClickClose={removeSoughtAddress}
+                    onClickClose={() => removeSoughtAddress(sAddress)}
+                    onSubmitAddressForm={(result) => {
+                      updateSoughtAddress(result);
+                      setShowContactForm(result);
+                    }}
                   />
                 ))
                 .reverse()}
@@ -561,6 +579,25 @@ export default function Map() {
         <MapControlWrapper right top>
           <MapSearchForm onAddressSelect={onAddressSelectHandle} />
         </MapControlWrapper>
+
+        {mapState === 'loaded' && (
+          <>
+            {/* Contact Form */}
+            <MapControlWrapper
+              className={`map-contact-form ${
+                showContactForm ? '' : 'hidden-right'
+              }`}
+              right
+              top
+            >
+              <CloseButton onClick={() => setShowContactForm(null)} />
+              <div>
+                <h2>Nous contacter</h2>
+              </div>
+              <MapContactForm addressData={showContactForm} />
+            </MapControlWrapper>
+          </>
+        )}
 
         <div ref={mapContainer} className="map" />
       </div>
