@@ -1,6 +1,11 @@
+import CloseButton from '@components/CloseButton';
 import React from 'react';
 import { Point } from 'src/types';
-import { EligibilityResult, MapCard } from './CardDetails.style';
+import {
+  EligibilityResult,
+  MapCard,
+  MapCardHeaderButtonZone,
+} from './CardDetails.style';
 
 export type TypeAddressDetail = any;
 
@@ -42,11 +47,9 @@ const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
     >
       <header>
         {result.address}
-        <div className="buttonsWrapper">
-          {onClickClose && (
-            <div className="closeButton" onClick={onCloseHandler} />
-          )}
-        </div>
+        <MapCardHeaderButtonZone>
+          {onClickClose && <CloseButton onClick={onCloseHandler} />}
+        </MapCardHeaderButtonZone>
       </header>
       <section>
         <EligibilityResult isEligible={isEligible}>

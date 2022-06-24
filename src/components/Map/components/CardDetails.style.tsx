@@ -51,44 +51,6 @@ export const MapCard = styled.div<MapCardType>`
       isClickable || isClosable ? 'pointer' : 'default'};
 
     font-weight: bold;
-
-    .buttonsWrapper {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-      align-items: flex-start;
-      padding-left: 0.5rem;
-
-      .closeButton {
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #ffffff;
-        box-shadow: 0 1px 2px 1px #33333333;
-        width: 1.25rem;
-        height: 1.25rem;
-        border-radius: 50%;
-        cursor: pointer;
-
-        ::before,
-        ::after {
-          content: '';
-          position: absolute;
-          width: 2px;
-          height: 80%;
-          background-color: #333;
-        }
-        ::before {
-          content: '';
-          transform: rotate(-45deg);
-        }
-        ::after {
-          content: '';
-          transform: rotate(45deg);
-        }
-      }
-    }
   }
 
   &.eligible {
@@ -163,6 +125,14 @@ export const MapCard = styled.div<MapCardType>`
       }
     }
   }
+`;
+
+export const MapCardHeaderButtonZone = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-left: 0.5rem;
 `;
 
 export const EligibilityResult = styled.div<MapCardType>`
