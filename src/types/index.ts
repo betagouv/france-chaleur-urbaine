@@ -1,3 +1,22 @@
+type Lat = number;
+type Lon = number;
+export type Point = [Lat, Lon];
+export type Coords = {
+  lat: Lat;
+  lon: Lon;
+};
+
+type networkType = any;
+export type AddressFcu = {
+  id?: string;
+  address: string;
+  points?: Point;
+  eligibility?: boolean;
+  network?: networkType;
+  geoAddress?: any; // TODO: Use type geoJSON
+  heatingType?: string;
+};
+
 export type SuggestionItem = {
   type: 'Feature';
   geometry: {
@@ -22,7 +41,6 @@ export type SuggestionItem = {
     street: string;
   };
 };
-export type Point = [number, number];
 export type SuggestionResponse = {
   type: 'FeatureCollection';
   version: string;
@@ -37,11 +55,6 @@ export type SuggestionResponse = {
 };
 
 export type Suggestions = SuggestionResponse['features'];
-
-export type Coords = {
-  lon: number;
-  lat: number;
-};
 
 export type HeatNetworksResponse = {
   lat: number;
