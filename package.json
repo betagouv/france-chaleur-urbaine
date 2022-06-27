@@ -15,7 +15,7 @@
     "lint": "eslint src/ -c .eslintrc.json --ext js,jsx,ts,tsx,json"
   },
   "dependencies": {
-    "@dataesr/react-dsfr": "^2.3.1",
+    "@dataesr/react-dsfr": "^2.6.3",
     "@formspark/use-formspark": "^0.1.39",
     "@reach/combobox": "^0.17.0",
     "airtable": "^0.11.4",

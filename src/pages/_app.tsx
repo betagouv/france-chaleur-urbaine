@@ -1,5 +1,5 @@
 import { fetchHttpClient } from '@components/lib';
-import '@gouvfr/dsfr/dist/utility/icons/icons.css';
+import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 import '@reach/combobox/styles.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';

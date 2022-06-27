@@ -127,10 +127,9 @@ export const LegendGlobalStyle = createGlobalStyle`
     width: 0rem;
     height: 1rem;
     display: inline-flex;
-    vertical-align: text-bottom;
     justify-content: center;
     align-items: center;
-    margin-right: 0.2em;
+    margin: 0 0.2em;
 
     ::before {
       content: '';
@@ -207,6 +206,7 @@ export const GroupeLabel = styled.div`
     flex-wrap: wrap;
     justify-content: stretch;
     align-items: stretch;
+    gap: 8px;
     padding: 0 0 0.4rem 0;
 
     .label-item {
