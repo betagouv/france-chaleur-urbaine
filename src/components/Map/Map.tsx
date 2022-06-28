@@ -325,7 +325,8 @@ export default function Map() {
           // --- MAP CONTENT ---
           // -------------------
 
-          const { origin } = document.location;
+          const origin =
+            process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
 
           // --------------------
           // --- Heat Network ---
