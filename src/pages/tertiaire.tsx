@@ -2,6 +2,7 @@ import Accordions from '@components/accordions';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainContainer from '@components/shared/layout';
+import { GlobalStyle } from '@components/shared/layout/Global.style';
 import SimulateurCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
@@ -14,108 +15,19 @@ import {
 import Head from 'next/head';
 import { createGlobalStyle } from 'styled-components';
 
-const GlobalStyle = createGlobalStyle`
-  .user-experience-description {
-    position: relative;
-    padding-left: 5.75em;
-  }
-
-  .enjeu-societe-description {
-    .list-item {
-      max-width: 350px;
-    }
-  }
-  .enjeu-societe-img {
-    max-width: 122px;
-  }
-
-  /* ---  */
-
-  .fcuSolutionForFuturBody,
-  .fcuSolutionForFuturFooter {
-    text-align: center;
-    margin: 1rem 0;
-    
-    @media (min-width: 992px) {
-      padding: 0 7rem;
-      margin: 3rem 0;
-    }
-
-    p {
-      font-size: 1.5rem;
-      line-height: 1.5;
-    }
-  }
-  .fcuSolutionForFuturListing {
-    display: flex;
-    flex-direction: column;
-    
-    @media (min-width: 992px) {
-      justify-content: space-between;
-      flex-direction: row;
-    }
-
-    p {
-      font-size: 1.05rem;
-      line-height: 1.35;
-      padding-top: 0.5em;
-    }
-
-    & > div {
-      @media (min-width: 992px) {
-        flex: 1;
-        max-width: 29%;
-      }
-    }
-  }
-
-  .slice-comparatif-rcu {
-    > div {
-      flex: 3;
-    width: auto;
-    max-width: none;
-    }
-
-    .rcu-comparatif-image {
-      position: relative;
-      border-radius: 2.5rem;
-      background-color: #F9F8F6;
-      padding: 2rem 0 1rem !important;
-
-      flex: 3;
-      justify-content: space-between;
-      width: auto;
-      max-width: none;
-
-      .rcu-comparatif-image-legend {
-        margin: 1rem;
-        text-align: center;
-        color: #4550E5;
-
-        p {
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-      }
-    }
-  }
-
+const TertiaireStyle = createGlobalStyle`
   .presentation-rcu-tertiaire {
     .presentation-rcu-tertiaire-body {
       flex: 1;
       color: var(--bf500);
       
       @media (min-width: 992px) {
-        padding: 3rem;
+        padding: 0 3rem;
       }
 
       p {
         font-size: 1.12rem;
         line-height: 1.5;
-      }
-
-      h4 {
-        margin-bottom: 0.25rem;
       }
     }
 
@@ -189,7 +101,7 @@ const GlobalStyle = createGlobalStyle`
       color: var(--bf500);
       
       @media (min-width: 992px) {
-        padding: 3rem;
+        padding: 0 3rem;
       }
 
       p {
@@ -217,11 +129,12 @@ export default function Home() {
       <MainContainer currentMenu="/tertiaire">
         <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
           <GlobalStyle />
+          <TertiaireStyle />
 
           <HeadSliceForm
             bg="./img/head-slice-bg-tertiaire.png"
             pageBody={`
-## Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
+Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
 # Optez pour un chauffage écologique et économique`}
             formLabel="Votre bâtiment peut-il être raccordé&nbsp;?"
             energyInputsLabels={{

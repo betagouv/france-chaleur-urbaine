@@ -9,7 +9,6 @@ export const Container = styled.div<ContainerType>`
   display: inline-flex;
   flex-direction: column;
   justify-content: space-around;
-  margin: 2rem 0;
 
   @media (min-width: 992px) {
     flex-direction: ${({ reverse }) => (reverse ? ' row-reverse' : 'row')};

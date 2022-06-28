@@ -45,6 +45,10 @@ const DsfrFixUp = createGlobalStyle`
   .fr-footer {
     margin-top: 2px;
   }
+
+  .fr-btn--secondary {
+    background-color: white !important;
+  }
 `;
 
 function MyApp({ Component, pageProps }: AppProps) {

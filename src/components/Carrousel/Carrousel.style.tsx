@@ -73,6 +73,7 @@ export const NavContainer = styled.div`
   display: flex;
 `;
 export const NavPoint = styled.div`
+  cursor: pointer;
   position: relative;
   overflow: hidden;
   font-size: 0.9rem;
