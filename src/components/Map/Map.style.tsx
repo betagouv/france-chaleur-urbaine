@@ -221,6 +221,7 @@ const typeEnergy: Record<string, string> = {
   fioul_domestique: 'fuelOil',
   gaz: 'gas',
   gaz_naturel: 'gas',
+  gaz_collectif: 'gas',
   gaz_propane_butane: 'gas',
   charbon: 'wood',
   bois_de_chauffage: 'wood',
