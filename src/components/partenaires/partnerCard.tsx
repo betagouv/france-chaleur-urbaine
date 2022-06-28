@@ -1,5 +1,3 @@
-import React from 'react';
-
 type PartnerCard = {
   image: { url: string; title: string };
   title: string;

@@ -2,7 +2,6 @@ import {
   ExplainCard,
   PageTitle,
 } from '@components/howIsItWorking/howIsItworking.style';
-import React from 'react';
 
 function HowIsItWorking() {
   return (

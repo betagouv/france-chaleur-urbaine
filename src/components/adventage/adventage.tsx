@@ -1,5 +1,4 @@
 import { PageTitle } from '@components/adventage/adventage.style';
-import React from 'react';
 import Highlight from '../highlight/highlight';
 
 function Adventage() {

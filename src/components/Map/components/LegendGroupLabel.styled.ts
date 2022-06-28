@@ -40,8 +40,7 @@ export const GroupeLabelWrapper = styled.div<{
   .groupe-label-body {
     display: flex;
     flex-wrap: wrap;
-    justify-content: stretch;
-    align-items: stretch;
+    gap: 8px;
     padding: 0 0 0.4rem 0;
 
     &.subGroup {

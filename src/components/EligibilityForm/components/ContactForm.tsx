@@ -1,5 +1,5 @@
 import { Form, Formik, FormikValues } from 'formik';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import * as Yup from 'yup';
 import ContactConsent, {
   defaultValuesContactConsent,

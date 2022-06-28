@@ -24,7 +24,7 @@ export const LabelLegendMarker = styled.div<{ bgColor?: string }>`
   vertical-align: text-bottom;
   justify-content: center;
   align-items: center;
-  margin-right: 0.2em;
+  margin: 0 0.2em;
   top: -0.15em;
   position: relative;
 

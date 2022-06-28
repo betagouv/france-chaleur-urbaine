@@ -4,7 +4,6 @@ import PartnerSection from '@components/partenaires/partnerSection';
 import MainContainer from '@components/shared/layout';
 import { partnerData } from '@data/partenaires';
 import Head from 'next/head';
-import React from 'react';
 import styled from 'styled-components';
 
 const StyledMarkdown = styled(MarkdownWrapper)`

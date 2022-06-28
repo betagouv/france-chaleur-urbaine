@@ -1,5 +1,4 @@
 import { PageTitle } from '@components/testimony/testimony.style';
-import React from 'react';
 
 function Testimony() {
   return (
