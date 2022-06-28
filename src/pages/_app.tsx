@@ -40,11 +40,17 @@ const GlobalStyle = createGlobalStyle`
     scroll-behavior: smooth;
   }
 `;
+const DsfrFixUp = createGlobalStyle`
+  .fr-footer {
+    margin-top: 2px;
+  }
+`;
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <GlobalStyle />
+      <DsfrFixUp />
       <ServicesContext.Provider
         value={{
           suggestionService: new SuggestionService(fetchHttpClient),
