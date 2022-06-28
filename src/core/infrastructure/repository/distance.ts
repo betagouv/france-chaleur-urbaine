@@ -5,6 +5,7 @@
  */
 
 import fs from 'fs';
+import { NetworkDistance } from '../mapper/network.dto';
 
 const DEBUG = !!(process.env.API_DEBUG_MODE || null);
 
@@ -23,7 +24,7 @@ class Distance {
     return reseau;
   }
 
-  static getDistance(lat: number, lon: number) {
+  static getDistance(lat: number, lon: number): NetworkDistance {
     DEBUG &&
       console.info(
         'Computing distance between network and ' +

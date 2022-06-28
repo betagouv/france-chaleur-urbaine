@@ -2,7 +2,7 @@ import { Address, Coords } from '@core/domain/entity/address';
 import { AddressFactory } from '@core/domain/entity/AddressFactory';
 import { Network } from '@core/domain/entity/network';
 import { AddressPyrisResponse } from '@core/infrastructure/mapper/address.dto';
-import { NetworkDistanceApiResponse } from '@core/infrastructure/mapper/network.dto';
+import { NetworkDistance } from '@core/infrastructure/mapper/network.dto';
 
 const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
 
@@ -16,8 +16,8 @@ export const someNetwork = (args?: Partial<Network>): Network => ({
 });
 
 export const anIDFNetworkResponse = (
-  args?: Partial<NetworkDistanceApiResponse>
-): NetworkDistanceApiResponse => ({
+  args?: Partial<NetworkDistance>
+): NetworkDistance => ({
   msg: 'Distance en metres',
   latOrigin: 48.868662,
   lonOrigin: 2.333382,
@@ -121,8 +121,8 @@ export const someEligiblePyrisAddressOutOfIDFResponse = (
 });
 
 export const someNotFoundNetworkResponse = (
-  args?: Partial<NetworkDistanceApiResponse>
-): NetworkDistanceApiResponse => ({
+  args?: Partial<NetworkDistance>
+): NetworkDistance => ({
   msg: 'Distance en metres',
   latOrigin: null,
   lonOrigin: 0,
@@ -134,8 +134,8 @@ export const someNotFoundNetworkResponse = (
 
 THRESHOLD;
 export const someIDFNetworkLessThanThresholdDistanceResponse = (
-  args?: Partial<NetworkDistanceApiResponse>
-): NetworkDistanceApiResponse => ({
+  args?: Partial<NetworkDistance>
+): NetworkDistance => ({
   msg: 'Distance en metres',
   latOrigin: 48.868662,
   lonOrigin: 2.333382,
