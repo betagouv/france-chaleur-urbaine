@@ -1,8 +1,20 @@
 {
-  "name": "front-app",
-  "version": "0.1.0",
-  "private": true,
-  "proxy": "https://chauffurbain.herokuapp.com",
+  "name": "france-chaleur-urbaine",
+  "version": "1.0.0",
+  "private": false,
+  "engines": {
+    "node": "16"
+  },
+  "description": "Un service public pour faciliter et accélérer les raccordements aux réseaux de chaleur.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betagouv/france-chaleur-urbaine.git"
+  },
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/betagouv/france-chaleur-urbaine/issues"
+  },
+  "homepage": "https://github.com/betagouv/france-chaleur-urbaine#readme",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
