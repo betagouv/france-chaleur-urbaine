@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from 'react';
 import LayoutContext from './LayoutContext';
-import { MainLayoutStyle } from './MainLayout.style';
 
 const MainContainer: React.FC<{
   currentMenu?: string;
@@ -17,12 +16,7 @@ const MainContainer: React.FC<{
     if (domBurgerBtn?.dataset?.frOpened === 'true') domBurgerBtn.click();
   }, [currentMenu, fullscreen, setCurrentMenu, setFullscreen]);
 
-  return (
-    <>
-      <MainLayoutStyle />
-      <div>{children}</div>{' '}
-    </>
-  );
+  return <>{children}</>;
 };
 
 export default MainContainer;

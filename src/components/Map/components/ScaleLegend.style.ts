@@ -57,7 +57,7 @@ export const ScaleLabelLegend = styled.span<{
   width: ${({ size }) => `${size}rem`};
   height: 1em;
   display: inline-flex;
-  vertical-align: text-bottom;
+  vertical-align: middle;
   justify-content: center;
   align-items: center;
   margin-right: 0.2em;
