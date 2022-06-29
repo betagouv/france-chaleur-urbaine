@@ -46,6 +46,8 @@ export const MapCard = styled.div<MapCardType>`
 
   > header {
     display: flex;
+    justify-content: space-between;
+
     padding: 0.5em;
     cursor: ${({ isClickable, isClosable }) =>
       isClickable || isClosable ? 'pointer' : 'default'};
