@@ -1,5 +1,6 @@
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import Partners from '@components/Partners/Partners';
 import MainContainer from '@components/shared/layout';
 import Slice, { SliceImg } from '@components/Slice';
 import TextList from '@components/TextList';
@@ -202,6 +203,7 @@ maîtrise du tarif des énergies._`}
             <TextList data={textDataKey} />
           </Slice>
 
+          <Partners />
           <SliceImg src="./img/home-footer-bg.jpg" />
         </div>
       </MainContainer>

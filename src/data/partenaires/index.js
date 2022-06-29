@@ -1,1 +1,1 @@
-export { default as partnerData } from './partnerData.json';
+export { default as partnerData } from './partnerData.js';

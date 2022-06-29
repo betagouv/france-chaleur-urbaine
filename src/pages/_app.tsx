@@ -45,6 +45,9 @@ const DsfrFixUp = createGlobalStyle`
   .fr-footer {
     margin-top: 2px;
   }
+  .fr-footer__logo {
+    height: 80px !important;
+  }
 `;
 
 function MyApp({ Component, pageProps }: AppProps) {
