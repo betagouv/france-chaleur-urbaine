@@ -8,6 +8,7 @@ import {
   FooterOperator,
   FooterPartners,
   FooterPartnersLogo,
+  FooterPartnersSecondaryTitle,
   FooterPartnersTitle,
   Logo,
 } from '@dataesr/react-dsfr';
@@ -50,6 +51,9 @@ const Footer = () => {
       </FooterBody>
       <FooterPartners>
         <FooterPartnersTitle>A l'origine du projet</FooterPartnersTitle>
+        <FooterPartnersSecondaryTitle>
+          Nos financeurs
+        </FooterPartnersSecondaryTitle>
         <FooterPartnersLogo
           isMain
           href="http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
