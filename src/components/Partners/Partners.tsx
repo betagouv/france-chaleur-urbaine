@@ -1,8 +1,35 @@
 import Slice from '@components/Slice';
 import { partnerData } from '@data/partenaires';
-import { PartnerImage, PartnerImages } from './Partners.style';
+import { Icon } from '@dataesr/react-dsfr';
+import { useEffect, useMemo, useState } from 'react';
+import { Arrow, PartnerImage, PartnerImages, Wrapper } from './Partners.style';
 
 const Partners = () => {
+  const [firstLogo, setFirstLogo] = useState(0);
+  const logos = useMemo(() => {
+    const shuffledLogos = partnerData
+      .map(({ image, title, link }) => ({
+        key: title,
+        image,
+        title,
+        link,
+        sort: Math.random(),
+      }))
+      .sort((a, b) => a.sort - b.sort);
+    return shuffledLogos.concat(
+      shuffledLogos.map((logo) => ({ ...logo, key: `${logo.title}-2` }))
+    );
+  }, []);
+
+  const setNextLogo = (value: number) => {
+    setFirstLogo((firstLogo + value) % partnerData.length);
+  };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setNextLogo(1), 5000);
+    return () => clearTimeout(timeout);
+  }, [setNextLogo]);
+
   return (
     <Slice
       padding={10}
@@ -13,24 +40,24 @@ const Partners = () => {
 Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au développement du service, apportent des données, utilisent le service ou s’en font le relais.
 `}
     >
-      <PartnerImages>
-        {partnerData
-          .map(({ image, title, link }) => ({
-            image,
-            title,
-            link,
-            sort: Math.random(),
-          }))
-          .sort((a, b) => a.sort - b.sort)
-          .map(({ image, title, link }) => (
+      <Wrapper>
+        <Arrow onClick={() => setNextLogo(-1)}>
+          <Icon name="ri-arrow-left-circle-line" size="xl" />
+        </Arrow>
+        <PartnerImages>
+          {logos.slice(firstLogo).map(({ key, image, title, link }) => (
             <PartnerImage
-              key={title}
+              key={key}
               src={image}
               alt={title}
               onClick={() => window.open(link)}
             />
           ))}
-      </PartnerImages>
+        </PartnerImages>
+        <Arrow onClick={() => setNextLogo(1)}>
+          <Icon name="ri-arrow-right-circle-line" size="xl" />
+        </Arrow>
+      </Wrapper>
     </Slice>
   );
 };
