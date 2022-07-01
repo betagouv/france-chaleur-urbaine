@@ -14,10 +14,10 @@ import {
   Service,
 } from '@dataesr/react-dsfr';
 import Link from 'next/link';
-import { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import LayoutContext from './LayoutContext';
 import { menu } from './MainLayout.data';
-import { GithubLogo, Main } from './MainLayout.style';
+import { FullScreenHeader, GithubLogo, Main } from './MainLayout.style';
 export {
   footerHeight,
   fullscreenFooterHeight,
@@ -40,30 +40,41 @@ type MainLayout = {
 
 const MainLayout: React.FC<MainLayout> = ({ children }) => {
   const { currentMenu, fullscreen } = useContext(LayoutContext);
-
+  const Container = fullscreen ? FullScreenHeader : Fragment;
   return (
     <>
       <Header>
-        <HeaderBody>
-          <Logo splitCharacter={10}>République Française</Logo>
-          <HeaderOperator>
-            <img
-              height={81}
-              src="./logo-fcu.png"
-              alt="logo france chaleur urbaine"
+        <Container>
+          <HeaderBody>
+            <Logo splitCharacter={10}>République Française</Logo>
+            <HeaderOperator>
+              <img
+                height={81}
+                src="./logo-fcu.png"
+                alt="logo france chaleur urbaine"
+              />
+            </HeaderOperator>
+            <Service
+              title={
+                <a className="fr-header__service-title fr-link--md">
+                  France Chaleur Urbaine
+                </a>
+              }
+              description={fcuHeaderDesc}
+              asLink={<Link href={'/'} title="Revenir à l'accueil" />}
             />
-          </HeaderOperator>
-          <Service
-            title={
-              <a className="fr-header__service-title fr-link--md">
-                France Chaleur Urbaine
-              </a>
-            }
-            description={fcuHeaderDesc}
-            asLink={<Link href={'/'} title="Revenir à l'accueil" />}
-          />
-        </HeaderBody>
+          </HeaderBody>
+        </Container>
         <HeaderNav>
+          {fullscreen && (
+            <li>
+              <img
+                height={56}
+                src="./logo-fcu.png"
+                alt="logo france chaleur urbaine"
+              />
+            </li>
+          )}
           {menu.map(({ label, url }) => (
             <li
               key={url}

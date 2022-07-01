@@ -1,9 +1,9 @@
-export const headerHeight = `214px`;
-export const tabHeaderHeight = `210px`;
-export const fullscreenHeaderHeight = `calc(214px - 10rem)`;
+export const headerHeight = `185px`;
+export const tabHeaderHeight = `178px`;
+export const fullscreenHeaderHeight = `63px`;
 export const footerHeight = `291px`;
-export const tabFooterHeight = `409px`;
-export const fullscreenFooterHeight = `98px`;
+export const tabFooterHeight = `534px`;
+export const fullscreenFooterHeight = `301px`;
 
 export const menu = [
   {
