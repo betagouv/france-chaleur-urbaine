@@ -23,13 +23,25 @@ function MapLegend({
   return (
     <MapCard
       typeCard={'legend'}
-      isClosable
+      isClickable={hasResults}
       className={`legendCard ${!legendPined && hasResults ? 'close' : ''}`}
     >
       <LegendGlobalStyle />
-      <header onClick={() => setLegendPined(!legendPined)}>
+      <header
+        onClick={() => {
+          if (hasResults) {
+            setLegendPined(!legendPined);
+          }
+        }}
+      >
         Légende
-        <Icon name={legendPined ? 'ri-pushpin-2-fill' : 'ri-pushpin-line'} />
+        <Icon
+          name={
+            !legendPined && hasResults
+              ? 'ri-arrow-up-s-line'
+              : 'ri-arrow-down-s-line'
+          }
+        />
       </header>
 
       <section>
