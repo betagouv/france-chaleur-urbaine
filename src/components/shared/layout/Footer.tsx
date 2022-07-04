@@ -57,7 +57,7 @@ const Footer = () => {
         <FooterPartnersLogo
           isMain
           href="http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
-          imageSrc="./logo-DRIEAT.svg"
+          imageSrc="./logo-DRIEAT.png"
           target="_blank"
           imageAlt="DRIEAT"
         />
@@ -78,12 +78,6 @@ const Footer = () => {
           imageSrc="./logo-relance.png"
           target="_blank"
           imageAlt="France relance"
-        />
-        <FooterPartnersLogo
-          href="https://europa.eu/next-generation-eu/index_fr"
-          imageSrc="./logo-UE.png"
-          target="_blank"
-          imageAlt="Union européenne"
         />
       </FooterPartners>
       <FooterBottom>

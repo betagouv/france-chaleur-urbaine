@@ -16,13 +16,14 @@ const Partners = () => {
         sort: Math.random(),
       }))
       .sort((a, b) => a.sort - b.sort);
+
     return shuffledLogos.concat(
       shuffledLogos.map((logo) => ({ ...logo, key: `${logo.title}-2` }))
     );
   }, []);
 
   const setNextLogo = (value: number) => {
-    setFirstLogo((firstLogo + value) % partnerData.length);
+    setFirstLogo((firstLogo + value + partnerData.length) % partnerData.length);
   };
 
   useEffect(() => {
@@ -45,12 +46,13 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
           <Icon name="ri-arrow-left-circle-line" size="xl" />
         </Arrow>
         <PartnerImages>
-          {logos.slice(firstLogo).map(({ key, image, title, link }) => (
+          {logos.map(({ key, image, title, link }, index) => (
             <PartnerImage
               key={key}
               src={image}
               alt={title}
               onClick={() => window.open(link)}
+              display={index >= firstLogo}
             />
           ))}
         </PartnerImages>

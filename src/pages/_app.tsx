@@ -44,7 +44,14 @@ const GlobalStyle = createGlobalStyle`
 const DsfrFixUp = createGlobalStyle`
   .fr-footer {
     margin-top: 2px;
+
+    a[target=_blank] {
+      &::after {
+        display: none;
+      }
+    }
   }
+
   .fr-footer__logo {
     height: 80px !important;
   }

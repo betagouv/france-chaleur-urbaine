@@ -22,7 +22,7 @@ export default [
   {
     image: './logo-POLD.jpg',
     title: 'Pold',
-    link: 'https://www.idex.fr/',
+    link: 'https://www.alec-pold.org/',
   },
   {
     image: './logo-SIGEIF.jpg',
@@ -50,7 +50,7 @@ export default [
     link: 'http://www.sipperec.com/',
   },
   {
-    image: './logo-SGRM.jpeg',
+    image: './logo-SGRM.jpg',
     title: 'SGRM',
     link: 'https://reseau-sgrm.idex.fr/web/p/sgrm/',
   },

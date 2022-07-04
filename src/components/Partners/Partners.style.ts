@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Wrapper = styled.div`
   display: flex;
@@ -17,7 +17,12 @@ export const PartnerImages = styled.div`
   flex-shrink: 1;
 `;
 
-export const PartnerImage = styled.img`
+export const PartnerImage = styled.img<{ display?: boolean }>`
   cursor: pointer;
   height: 100px;
+  ${({ display }) =>
+    !display &&
+    css`
+      display: none;
+    `}
 `;
