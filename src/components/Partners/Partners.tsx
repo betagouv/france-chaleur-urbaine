@@ -33,7 +33,7 @@ const Partners = () => {
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => setNextLogo(1), 5000);
+    const timeout = setTimeout(() => setNextLogo(1), 3000);
     return () => clearTimeout(timeout);
   }, [setNextLogo]);
 
