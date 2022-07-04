@@ -62,7 +62,7 @@ const Footer = () => {
           imageAlt="DRIEAT"
         />
         <FooterPartnersLogo
-          href="https://www.numerique.gouv.fr/dinum"
+          href="https://www.gouvernement.fr/"
           imageSrc="./logo-government.svg"
           target="_blank"
           imageAlt="Gouvernement"

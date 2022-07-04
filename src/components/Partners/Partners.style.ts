@@ -15,14 +15,23 @@ export const PartnerImages = styled.div`
   gap: 48px;
   overflow: hidden;
   flex-shrink: 1;
+  a[target='_blank'] {
+    &::after {
+      display: none;
+    }
+  }
 `;
 
-export const PartnerImage = styled.img<{ display?: boolean }>`
-  cursor: pointer;
-  height: 100px;
+export const PartnerLink = styled.a<{ display?: boolean }>`
+  background-image: unset !important;
   ${({ display }) =>
     !display &&
     css`
       display: none;
     `}
+`;
+
+export const PartnerImage = styled.img`
+  cursor: pointer;
+  height: 100px;
 `;

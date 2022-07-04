@@ -2,7 +2,13 @@ import Slice from '@components/Slice';
 import { partnerData } from '@data/partenaires';
 import { Icon } from '@dataesr/react-dsfr';
 import { useEffect, useMemo, useState } from 'react';
-import { Arrow, PartnerImage, PartnerImages, Wrapper } from './Partners.style';
+import {
+  Arrow,
+  PartnerImage,
+  PartnerImages,
+  PartnerLink,
+  Wrapper,
+} from './Partners.style';
 
 const Partners = () => {
   const [firstLogo, setFirstLogo] = useState(0);
@@ -47,13 +53,15 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
         </Arrow>
         <PartnerImages>
           {logos.map(({ key, image, title, link }, index) => (
-            <PartnerImage
-              key={key}
-              src={image}
-              alt={title}
-              onClick={() => window.open(link)}
+            <PartnerLink
               display={index >= firstLogo}
-            />
+              href={link}
+              target="_blank"
+              rel="noreferrer noopener"
+              key={key}
+            >
+              <PartnerImage src={image} alt={title} />
+            </PartnerLink>
           ))}
         </PartnerImages>
         <Arrow onClick={() => setNextLogo(1)}>
