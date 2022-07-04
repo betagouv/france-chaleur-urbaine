@@ -35,13 +35,11 @@ function MapLegend({
         }}
       >
         Légende
-        <Icon
-          name={
-            !legendPined && hasResults
-              ? 'ri-arrow-up-s-line'
-              : 'ri-arrow-down-s-line'
-          }
-        />
+        {hasResults && (
+          <Icon
+            name={!legendPined ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'}
+          />
+        )}
       </header>
 
       <section>
