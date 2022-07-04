@@ -33,14 +33,14 @@ class Distance {
           lon +
           ' longitude'
       );
-    const resultDistance = Distance.distanceReseau(lat, lon);
+    const { dmin, latmin, lonmin } = Distance.distanceReseau(lat, lon);
     return {
       msg: 'Distance en metres',
       latOrigin: lat,
       lonOrigin: lon,
-      latPointReseau: resultDistance.latmin,
-      lonPointReseau: resultDistance.lonmin,
-      distPointReseau: Math.floor(resultDistance.dmin),
+      latPointReseau: latmin,
+      lonPointReseau: lonmin,
+      distPointReseau: Math.floor(dmin),
     };
   }
 
