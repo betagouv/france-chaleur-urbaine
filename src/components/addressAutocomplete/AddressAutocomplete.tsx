@@ -1,21 +1,23 @@
 import { Combobox, ComboboxPopover } from '@reach/combobox';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   Point,
   SuggestionItem,
   Suggestions as SuggestionsType,
 } from 'src/types';
-import { createGlobalStyle } from 'styled-components';
+import AddressAutocompleteGlobalStyle, {
+  EmptySuggestion,
+} from './AddressAutocomplete.style';
 import {
   AddressAutocompleteLabel,
   AddressInput,
-  EmptySuggestion,
   Suggestions,
 } from './components';
 import useSuggestions from './useSuggestions';
 
 const defaultLabel = '';
 const defaultPlaceholder = 'Recherchez une adresse';
+const defaultEmptySuggestionText = 'Aucune adresse trouvée :(';
 
 type TypeHandleAddressSelected = (
   address: string,
@@ -46,25 +48,9 @@ const findAddressInSuggestions = (
   return suggestion;
 };
 
-const GlobalStyle = createGlobalStyle`
-  .fr-input {
-    transition: box-shadow .5s ease;
-    color: #000074;
-
-    :focus {
-      box-shadow: inset 0 -2px 0 0 #000074;
-    }
-  }
-
-  .fr-input-wrap {
-    box-shadow: 0 0 5px rgb(0 0 0 / 74%);
-    border-radius: .25rem .25rem 0 0;
-  }
-`;
-
 const AddressAutocomplete: React.FC<AddressProps> = ({
   label = defaultLabel,
-  emptySuggestionText,
+  emptySuggestionText = defaultEmptySuggestionText,
   debounceTime = 200,
   minCharactersLength = 3,
   placeholder = defaultPlaceholder,
@@ -102,7 +88,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
 
   return (
     <>
-      <GlobalStyle />
+      <AddressAutocompleteGlobalStyle />
       <div className={`fr-input-group ${className || ''}`}>
         {label && (
           <AddressAutocompleteLabel centred={centred}>
@@ -123,7 +109,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
               {hasSuggestions ? (
                 <Suggestions suggestions={suggestions} />
               ) : (
-                <EmptySuggestion text={emptySuggestionText} />
+                <EmptySuggestion>{emptySuggestionText}</EmptySuggestion>
               )}
             </ComboboxPopover>
           )}

@@ -1,5 +1,4 @@
 import { ComboboxList, ComboboxOption } from '@reach/combobox';
-import React from 'react';
 import { SuggestionItem } from 'src/types';
 
 type SuggestionListProps = {
