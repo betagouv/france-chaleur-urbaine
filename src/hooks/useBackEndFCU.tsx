@@ -30,7 +30,7 @@ const useBackEndFCU = (): [(arg: any) => void, boolean] => {
     } else {
       return Promise.all([
         submitToFormspark(formatDataToFormspark(values)),
-        submitToAirtable(formatDataToAirtable(values)),
+        submitToAirtable(formatDataToAirtable(values), 'FCU - Utilisateurs'),
       ]);
     }
   };

@@ -1,3 +1,4 @@
+import { Button } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -158,7 +159,7 @@ export default function Map() {
     }
   );
 
-  const { query } = useRouter();
+  const router = useRouter();
   const [, , updateClickedPoint] = useMapPopup(map.current, {
     bodyFormater: formatBodyPopup,
     className: 'popup-map-layer',
@@ -427,7 +428,7 @@ export default function Map() {
   const [queryState, setQueryState] = useState({});
   useEffect(() => {
     const { coord: coordState }: any = queryState;
-    const { coord } = query;
+    const { coord } = router.query;
     if (coord && coord !== coordState) {
       const coordinates: any =
         typeof coord === 'string'
@@ -437,14 +438,14 @@ export default function Map() {
               .reverse()
           : coord; // TODO: Fix on source
       flyTo({ coordinates });
-      setQueryState(query);
+      setQueryState(router.query);
       new maplibregl.Marker({
         color: '#ea7c3f', // TODO: Change color if address is eligible and use #00eb5e or #4550e5
       })
         .setLngLat(coordinates)
         .addTo(map.current);
     }
-  }, [flyTo, query, queryState]);
+  }, [flyTo, router.query, queryState]);
 
   // ---------------------
   // --- Search result ---
@@ -561,6 +562,15 @@ export default function Map() {
         {/* Search Box */}
         <MapControlWrapper right top>
           <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+        </MapControlWrapper>
+
+        <MapControlWrapper left bottom>
+          <Button
+            icon="ri-add-line"
+            onClick={() => router.push('/contribution')}
+          >
+            Contribuer
+          </Button>
         </MapControlWrapper>
 
         <div ref={mapContainer} className="map" />
