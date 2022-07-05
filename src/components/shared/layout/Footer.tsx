@@ -38,13 +38,9 @@ const Footer = () => {
           />
         </FooterOperator>
         <FooterBodyItem>
-          Faites nous part de vos propositions pour améliorer ce service :{' '}
+          Faites nous part de vos propositions pour améliorer ce service :
           <br />
-          <a
-            href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">
             france-chaleur-urbaine@developpement-durable.gouv.fr
           </a>
         </FooterBodyItem>
