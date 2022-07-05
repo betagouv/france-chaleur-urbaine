@@ -24,8 +24,6 @@ export const GlobalStyle = createGlobalStyle`
     max-width: 122px;
   }
 
-  /* ---  */
-
   .fcuSolutionForFuturBody,
   .fcuSolutionForFuturFooter {
     text-align: center;
