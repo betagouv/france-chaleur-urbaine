@@ -42,6 +42,10 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 const DsfrFixUp = createGlobalStyle`
+  .fr-header__service-title{
+    color: #069368;
+  }
+
   .fr-footer {
     margin-top: 2px;
 
@@ -54,6 +58,10 @@ const DsfrFixUp = createGlobalStyle`
 
   .fr-footer__logo {
     height: 80px !important;
+  }
+
+  .fr-btn--secondary {
+    background-color: white !important;
   }
 `;
 

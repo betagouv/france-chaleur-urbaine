@@ -82,11 +82,11 @@ const GlobalStyle = createGlobalStyle`
 
 const BlockquoteSlice = styled.div`
   text-align: center;
-  margin: 0.5em 0;
   font-size: 1.25rem;
   font-weight: bold;
 
   blockquote {
+    margin: 0;
     font-weight: normal;
   }
 `;

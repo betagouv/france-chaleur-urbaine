@@ -63,7 +63,7 @@ function Carrousel({
   }, [Testimonies.length, duration, selectedPoint]);
 
   return (
-    <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-my-6w">
+    <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
       <ImageContainer className="fr-col-lg-6 fr-col-md-12">
         <figure>
           <img src={imgSrc} alt={imgAlt} />

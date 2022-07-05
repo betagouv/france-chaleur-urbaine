@@ -18,7 +18,7 @@ const InputWraper = styled.div`
 
 export const fieldLabelInformation = {
   structure: {
-    label: '',
+    label: 'Type de bâtiment (*)',
     inputs: [
       { value: 'Copropriété', label: 'Copropriété', id: 'copropriete' },
       { value: 'Tertiaire', label: 'Tertiaire', id: 'tertiaire' },
@@ -47,7 +47,9 @@ export const defaultValuesContactInformation = {
   heatingEnergy: '',
 };
 export const validationSchemasContactInformation = {
-  structure: Yup.string(),
+  structure: Yup.string().required(
+    'Veuillez renseigner votre type de bâtiment'
+  ),
   lastName: Yup.string(),
   firstName: Yup.string(),
   company: Yup.string(),
@@ -64,7 +66,6 @@ export const validationSchemasContactInformation = {
 
 const ContactInformation = () => {
   const { values }: any = useFormikContext();
-
   return (
     <>
       <fieldset className="fr-fieldset fr-my-3w">

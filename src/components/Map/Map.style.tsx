@@ -1,7 +1,3 @@
-import {
-  fullscreenFooterHeight,
-  fullscreenHeaderHeight,
-} from '@components/shared/layout/MainLayout';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import {
   themeDefEnergy,
@@ -19,9 +15,7 @@ export const MapStyle = createGlobalStyle`
     .map-wrap {
       position: relative;
       width: 100%;
-      height: calc(
-        100vh - ${fullscreenHeaderHeight} - ${fullscreenFooterHeight}
-      );
+      height: 100%;
     }
 
     .map {
@@ -221,6 +215,7 @@ const typeEnergy: Record<string, string> = {
   fioul_domestique: 'fuelOil',
   gaz: 'gas',
   gaz_naturel: 'gas',
+  gaz_collectif: 'gas',
   gaz_propane_butane: 'gas',
   charbon: 'wood',
   bois_de_chauffage: 'wood',

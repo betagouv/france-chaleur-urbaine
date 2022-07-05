@@ -19,10 +19,9 @@ type MainLayout = {
 
 const MainLayout: React.FC<MainLayout> = ({ children }) => {
   const { currentMenu, fullscreen } = useContext(LayoutContext);
-
   return (
     <>
-      <Header currentMenu={currentMenu} />
+      <Header fullscreen={fullscreen} currentMenu={currentMenu} />
       <Main fullscreen={fullscreen}>{children}</Main>
       <Footer />
     </>
