@@ -42,8 +42,16 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 const DsfrFixUp = createGlobalStyle`
+  .fr-header__service-title{
+    color: #069368;
+  }
+
   .fr-footer {
     margin-top: 2px;
+  }
+
+  .fr-btn--secondary {
+    background-color: white !important;
   }
 `;
 

@@ -100,7 +100,6 @@ export const SliceContainer = styled.div`
 
   .slice-header {
     text-align: center;
-    padding: 1.5rem 0 2rem;
   }
 `;
 

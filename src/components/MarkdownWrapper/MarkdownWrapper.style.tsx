@@ -35,7 +35,6 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
   p {
     font-size: inherit;
     line-height: inherit;
-    margin-bottom: 1em;
   }
 
   em {

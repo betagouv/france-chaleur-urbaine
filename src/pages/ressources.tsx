@@ -12,7 +12,7 @@ function Resources() {
         <title>Ressources : France Chaleur Urbaine</title>
       </Head>
       <MainContainer currentMenu="/ressources">
-        <div className="fr-container fr-mt-2w">
+        <div className="fr-container fr-mt-6w">
           <div className="fr-grid-row">
             <div className="fr-col-lg-4 fr-col-sm-12">
               <h1>{Data.title}</h1>
