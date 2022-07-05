@@ -1,7 +1,7 @@
 import Slice from '@components/Slice';
 import { partnerData } from '@data/partenaires';
 import { Icon } from '@dataesr/react-dsfr';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Arrow,
   PartnerImage,
@@ -28,9 +28,14 @@ const Partners = () => {
     );
   }, []);
 
-  const setNextLogo = (value: number) => {
-    setFirstLogo((firstLogo + value + partnerData.length) % partnerData.length);
-  };
+  const setNextLogo = useCallback(
+    (value: number) => {
+      setFirstLogo(
+        (firstLogo + value + partnerData.length) % partnerData.length
+      );
+    },
+    [firstLogo]
+  );
 
   useEffect(() => {
     const timeout = setTimeout(() => setNextLogo(1), 3000);
