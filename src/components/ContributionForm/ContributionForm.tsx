@@ -116,7 +116,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
           )}
         </>
       )}
-      {wish && wish !== 'ajouter' && (
+      {wish && wish !== 'Ajout de données' && (
         <TextInput
           label="Precisez"
           required
