@@ -1,3 +1,4 @@
+import { Icon } from '@dataesr/react-dsfr';
 import { useState } from 'react';
 import { MapCard } from './CardDetails.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
@@ -6,27 +7,40 @@ import { LegendGlobalStyle } from './MapLegend.style';
 
 function MapLegend({
   data,
-  forceClosed,
+  hasResults,
   layerDisplay,
   onToogleFeature,
   onToogleInGroup,
 }: {
   data: (string | TypeGroupLegend)[];
-  forceClosed?: boolean;
+  hasResults?: boolean;
   layerDisplay: Record<string, string[]>;
   onToogleFeature: (idEntry: any) => void;
   onToogleInGroup: (groupeName: string, idEntry: any) => void;
 }) {
-  const [legendOpened, setLegendOpened] = useState(true);
+  const [legendPined, setLegendPined] = useState(false);
 
   return (
     <MapCard
       typeCard={'legend'}
-      isClosable
-      className={`legendCard ${!legendOpened || forceClosed ? 'close' : ''}`}
+      isClickable={hasResults}
+      className={`legendCard ${!legendPined && hasResults ? 'close' : ''}`}
     >
       <LegendGlobalStyle />
-      <header onClick={() => setLegendOpened(!legendOpened)}>Légende</header>
+      <header
+        onClick={() => {
+          if (hasResults) {
+            setLegendPined(!legendPined);
+          }
+        }}
+      >
+        Légende
+        {hasResults && (
+          <Icon
+            name={!legendPined ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'}
+          />
+        )}
+      </header>
 
       <section>
         {data.map((group, i) => {

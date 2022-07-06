@@ -554,7 +554,7 @@ export default function Map() {
               }
             }}
             layerDisplay={layerDisplay}
-            forceClosed={soughtAddress.length > 0}
+            hasResults={soughtAddress.length > 0}
           />
         </MapControlWrapper>
 
