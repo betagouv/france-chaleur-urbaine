@@ -1,7 +1,4 @@
-import {
-  fullscreenFooterHeight,
-  fullscreenHeaderHeight,
-} from '@components/shared/layout/MainLayout';
+import { fullscreenHeaderHeight } from '@components/shared/layout/MainLayout';
 import styled, { css } from 'styled-components';
 
 const eligibleStyle = {
@@ -24,17 +21,11 @@ type MapCardType = {
   isClickable?: boolean;
 };
 
-const legendMaxHeight = css`
-  max-height: calc(
-    100vh - ${fullscreenHeaderHeight} - ${fullscreenFooterHeight} - 5rem - 4rem
-  );
-`;
-
 export const MapCard = styled.div<MapCardType>`
   width: 100%;
   display: block;
   background-color: white;
-  margin: 1em 0;
+  margin-bottom: 48px;
   border: 2px solid var(--bf500);
   border: 1px solid rgb(0 0 0 / 20%);
 
@@ -141,8 +132,7 @@ export const MapCard = styled.div<MapCardType>`
     overflow: auto;
     scrollbar-gutter: stable both-edges;
 
-    ${legendMaxHeight}
-
+    max-height: calc(100vh - ${fullscreenHeaderHeight} - 180px);
     transition: max-height 0.75s ease, padding 0.5s ease 0.25s;
   }
 

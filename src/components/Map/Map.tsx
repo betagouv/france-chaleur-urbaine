@@ -1,4 +1,3 @@
-import { Button } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -15,6 +14,7 @@ import {
 import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
+  AddButton,
   boilerRoomLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
@@ -559,18 +559,17 @@ export default function Map() {
           />
         </MapControlWrapper>
 
-        {/* Search Box */}
         <MapControlWrapper right top>
           <MapSearchForm onAddressSelect={onAddressSelectHandle} />
         </MapControlWrapper>
 
-        <MapControlWrapper left bottom>
-          <Button
+        <MapControlWrapper bottom right>
+          <AddButton
             icon="ri-add-line"
             onClick={() => router.push('/contribution')}
           >
             Contribuer
-          </Button>
+          </AddButton>
         </MapControlWrapper>
 
         <div ref={mapContainer} className="map" />
