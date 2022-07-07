@@ -1,7 +1,6 @@
 import { useFormInputAutoId } from '@hooks';
 import { _hasError } from '@utils/form-utils';
 import { ErrorMessage } from 'formik';
-import React from 'react';
 
 function Select({ label, field, form, id, children }: any) {
   const hasError = _hasError(field.name, form);

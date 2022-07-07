@@ -1,5 +1,5 @@
 import debounce from 'lodash.debounce';
-import React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { Suggestions } from 'src/types';
 
@@ -23,9 +23,9 @@ const useSuggestions = ({
   debounceTime = 300,
   minCharactersLength = 3,
 }: configProps) => {
-  const [suggestions, setSuggestions] = React.useState<Suggestions | []>([]);
-  const [status, setStatus] = React.useState<ValueOf<Status>>(Status.Idle);
-  const mountedRef = React.useRef(true);
+  const [suggestions, setSuggestions] = useState<Suggestions | []>([]);
+  const [status, setStatus] = useState<ValueOf<Status>>(Status.Idle);
+  const mountedRef = useRef(true);
   const DIGITS_THRESHOLD = 3;
   const { suggestionService } = useServices();
   const debounceFetch = debounce(async (query: string) => {
@@ -59,7 +59,7 @@ const useSuggestions = ({
   const fetchSuggestions = (queryString: string) =>
     queryString.length >= minCharactersLength && debounceFetch(queryString);
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       mountedRef.current = false;
     };

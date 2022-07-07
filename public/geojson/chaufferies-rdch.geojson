@@ -282,7 +282,7 @@
       },
       "properties": {
         "id_chauff": 37,
-        "combustib": "Gaz_naturel",
+        "combustib": "Gaz_collectif",
         "gestionnai": "COFELY",
         "id_reseau": 19,
         "code_insee": "78640",
@@ -556,7 +556,7 @@
       },
       "properties": {
         "id_chauff": 77,
-        "combustib": "Gaz_naturel",
+        "combustib": "Gaz_collectif",
         "gestionnai": "CICEO",
         "id_reseau": 33,
         "code_insee": "92062",
@@ -588,7 +588,7 @@
       },
       "properties": {
         "id_chauff": 66,
-        "combustib": "Gaz_naturel/Fuel",
+        "combustib": "Gaz_collectif/Fuel",
         "gestionnai": "SOCLIS",
         "id_reseau": 9,
         "code_insee": "92 026",
@@ -613,7 +613,7 @@
       },
       "properties": {
         "id_chauff": 29,
-        "combustib": "Gaz_naturel",
+        "combustib": "Gaz_collectif",
         "gestionnai": "CURMA",
         "id_reseau": 52,
         "code_insee": "91377",
@@ -769,7 +769,7 @@
       },
       "properties": {
         "id_chauff": 39,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SDCC",
         "id_reseau": 15,
         "code_insee": "92024",
@@ -848,7 +848,7 @@
       },
       "properties": {
         "id_chauff": 21,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SOCACHAL",
         "id_reseau": 92,
         "code_insee": "94016",
@@ -1014,7 +1014,7 @@
       },
       "properties": {
         "id_chauff": 16,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SOCACHAL",
         "id_reseau": 92,
         "code_insee": "94016",
@@ -1039,7 +1039,7 @@
       },
       "properties": {
         "id_chauff": 14,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SOCACHAL",
         "id_reseau": 92,
         "code_insee": "94016",
@@ -1064,7 +1064,7 @@
       },
       "properties": {
         "id_chauff": 12,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SOCACHAL",
         "id_reseau": 92,
         "code_insee": "94016",
@@ -1089,7 +1089,7 @@
       },
       "properties": {
         "id_chauff": 13,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SOCACHAL",
         "id_reseau": 92,
         "code_insee": "94016",
@@ -1115,7 +1115,7 @@
       },
       "properties": {
         "id_chauff": 20,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SOCACHAL",
         "id_reseau": 92,
         "code_insee": "94016",
@@ -1140,7 +1140,7 @@
       },
       "properties": {
         "id_chauff": 15,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SOCACHAL",
         "id_reseau": 92,
         "code_insee": "94016",
@@ -1260,7 +1260,7 @@
       },
       "properties": {
         "id_chauff": 18,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SOCACHAL",
         "id_reseau": 92,
         "code_insee": "94016",
@@ -1285,7 +1285,7 @@
       },
       "properties": {
         "id_chauff": 17,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "SOCACHAL",
         "id_reseau": 92,
         "code_insee": "94016",
@@ -1428,7 +1428,7 @@
       },
       "properties": {
         "id_chauff": 34,
-        "combustib": "Gaz_naturel",
+        "combustib": "Gaz_collectif",
         "gestionnai": "SDCSD",
         "id_reseau": 42,
         "code_insee": "93066",
@@ -1486,7 +1486,7 @@
       },
       "properties": {
         "id_chauff": 32,
-        "combustib": "Gaz_naturel",
+        "combustib": "Gaz_collectif",
         "gestionnai": "SDCSD",
         "id_reseau": 42,
         "code_insee": "93066",
@@ -1511,7 +1511,7 @@
       },
       "properties": {
         "id_chauff": 35,
-        "combustib": "Gaz_naturel",
+        "combustib": "Gaz_collectif",
         "gestionnai": "SDCSD",
         "id_reseau": 42,
         "code_insee": "93066",
@@ -1936,7 +1936,7 @@
       },
       "properties": {
         "id_chauff": 47,
-        "combustib": "Fioul/Gaz_naturel/Cogeneration",
+        "combustib": "Fioul/Gaz_collectif/Cogeneration",
         "gestionnai": "COFELY IDF",
         "id_reseau": 29,
         "code_insee": "91286",
@@ -2199,7 +2199,7 @@
       },
       "properties": {
         "id_chauff": 41,
-        "combustib": "Gaz_naturel",
+        "combustib": "Gaz_collectif",
         "gestionnai": "SDCB (Sré de distribution de chleur",
         "id_reseau": 49,
         "code_insee": "93006",
@@ -2231,7 +2231,7 @@
       },
       "properties": {
         "id_chauff": 55,
-        "combustib": "Gaz_naturel",
+        "combustib": "Gaz_collectif",
         "gestionnai": "GIE EVRY",
         "id_reseau": 5,
         "code_insee": "91228",
@@ -3030,7 +3030,7 @@
       },
       "properties": {
         "id_chauff": 43,
-        "combustib": "Fioul/Gaz_naturel",
+        "combustib": "Fioul/Gaz_collectif",
         "gestionnai": "ERIVA",
         "id_reseau": 11,
         "code_insee": "77305",

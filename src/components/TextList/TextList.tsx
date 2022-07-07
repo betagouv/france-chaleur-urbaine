@@ -1,4 +1,3 @@
-import React from 'react';
 import { DataCard } from './TextList.style';
 
 type DataTextProps = {
@@ -7,7 +6,7 @@ type DataTextProps = {
 };
 function TextList({ data = [] }: { data: DataTextProps[] }) {
   return (
-    <div className="fr-grid-row fr-grid-row--gutters">
+    <div className="fr-grid-row">
       {data?.map((d, key) => (
         <div className="fr-col-lg-3 fr-col-sm-6" key={`${key}-${d.title}`}>
           <DataCard>

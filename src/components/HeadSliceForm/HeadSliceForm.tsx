@@ -17,7 +17,6 @@ import {
   LoaderWrapper,
   PageBody,
   PageTitle,
-  PageTitlePreTitle,
   SliceContactFormStyle,
 } from './HeadSliceForm.style';
 
@@ -27,7 +26,6 @@ type HeadBannerType = {
   CheckEligibility?: boolean;
   formLabel?: string;
   energyInputsLabels?: EnergyInputsLabelsType;
-  pagePreTitle?: string;
   pageTitle?: string;
   pageBody?: string;
   children?: React.ReactNode;
@@ -40,7 +38,6 @@ const HeadSlice = ({
   CheckEligibility,
   formLabel,
   energyInputsLabels,
-  pagePreTitle,
   pageTitle,
   pageBody,
   children,
@@ -62,16 +59,9 @@ const HeadSlice = ({
 
   const Child = useMemo(
     () =>
-      (pageTitle || pagePreTitle || pageBody) && (
+      (pageTitle || pageBody) && (
         <>
-          {(pageTitle || pagePreTitle) && (
-            <PageTitle className="fr-mb-4w">
-              {pagePreTitle && (
-                <PageTitlePreTitle>{pagePreTitle}</PageTitlePreTitle>
-              )}
-              {pageTitle}
-            </PageTitle>
-          )}
+          {pageTitle && <PageTitle className="fr-mb-4w">{pageTitle}</PageTitle>}
           {pageBody && (
             <PageBody>
               <MarkdownWrapper value={pageBody} />
@@ -80,7 +70,7 @@ const HeadSlice = ({
           )}
         </>
       ),
-    [children, pageBody, pagePreTitle, pageTitle]
+    [children, pageBody, pageTitle]
   );
 
   const WrappedChild = useMemo(

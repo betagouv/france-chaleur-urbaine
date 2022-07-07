@@ -1,4 +1,4 @@
-export type NetworkDistanceApiResponse = {
+export type NetworkDistance = {
   msg: string;
   latOrigin: number | null;
   lonOrigin: number | null;
@@ -18,5 +18,5 @@ export type NetworkIrisResponse = {
   code__1: any;
   operateur__1: string;
 };
-export type NetworkResponse = Partial<NetworkDistanceApiResponse> &
+export type NetworkResponse = Partial<NetworkDistance> &
   Partial<NetworkIrisResponse>;

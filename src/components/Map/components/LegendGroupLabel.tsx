@@ -1,5 +1,5 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import LegendDesc from './LegendDesc';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import {

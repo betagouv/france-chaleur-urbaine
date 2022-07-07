@@ -14,6 +14,7 @@ import {
 import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
+  AddButton,
   boilerRoomLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
@@ -158,7 +159,7 @@ export default function Map() {
     }
   );
 
-  const { query } = useRouter();
+  const router = useRouter();
   const [, , updateClickedPoint] = useMapPopup(map.current, {
     bodyFormater: formatBodyPopup,
     className: 'popup-map-layer',
@@ -325,7 +326,8 @@ export default function Map() {
           // --- MAP CONTENT ---
           // -------------------
 
-          const { origin } = document.location;
+          const origin =
+            process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
 
           // --------------------
           // --- Heat Network ---
@@ -426,7 +428,7 @@ export default function Map() {
   const [queryState, setQueryState] = useState({});
   useEffect(() => {
     const { coord: coordState }: any = queryState;
-    const { coord } = query;
+    const { coord } = router.query;
     if (coord && coord !== coordState) {
       const coordinates: any =
         typeof coord === 'string'
@@ -436,14 +438,14 @@ export default function Map() {
               .reverse()
           : coord; // TODO: Fix on source
       flyTo({ coordinates });
-      setQueryState(query);
+      setQueryState(router.query);
       new maplibregl.Marker({
         color: '#ea7c3f', // TODO: Change color if address is eligible and use #00eb5e or #4550e5
       })
         .setLngLat(coordinates)
         .addTo(map.current);
     }
-  }, [flyTo, query, queryState]);
+  }, [flyTo, router.query, queryState]);
 
   // ---------------------
   // --- Search result ---
@@ -514,7 +516,6 @@ export default function Map() {
     <>
       <MapStyle />
       <div className="map-wrap">
-        {/* Search Result */}
         <MapControlWrapper className="search-result-box" right top>
           <MapSearchResult>
             {soughtAddress.length > 0 &&
@@ -531,7 +532,6 @@ export default function Map() {
           </MapSearchResult>
         </MapControlWrapper>
 
-        {/* Legend Box */}
         <MapControlWrapper right bottom>
           <MapLegend
             data={legendData}
@@ -553,13 +553,21 @@ export default function Map() {
               }
             }}
             layerDisplay={layerDisplay}
-            forceClosed={soughtAddress.length > 0}
+            hasResults={soughtAddress.length > 0}
           />
         </MapControlWrapper>
 
-        {/* Search Box */}
         <MapControlWrapper right top>
           <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+        </MapControlWrapper>
+
+        <MapControlWrapper bottom right>
+          <AddButton
+            icon="ri-add-line"
+            onClick={() => router.push('/contribution')}
+          >
+            Contribuer
+          </AddButton>
         </MapControlWrapper>
 
         <div ref={mapContainer} className="map" />

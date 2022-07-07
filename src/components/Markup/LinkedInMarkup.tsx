@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface WindowTrackingExtended extends Window {
   _linkedin_data_partner_ids: string[];
   lintrk: (action: string, param: any) => void;

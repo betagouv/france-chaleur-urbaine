@@ -1,5 +1,3 @@
-import React from 'react';
-
 type AddressAutocompleteLabelProps = {
   name?: string;
   centred?: boolean;

@@ -1,5 +1,6 @@
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import Partners from '@components/Partners/Partners';
 import MainContainer from '@components/shared/layout';
 import Slice, { SliceImg } from '@components/Slice';
 import TextList from '@components/TextList';
@@ -7,7 +8,6 @@ import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import { dataNumberRcu, presentationRcu } from '@data/home';
 import Head from 'next/head';
-import React from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
@@ -82,11 +82,11 @@ const GlobalStyle = createGlobalStyle`
 
 const BlockquoteSlice = styled.div`
   text-align: center;
-  margin: 0.5em 0;
   font-size: 1.25rem;
   font-weight: bold;
 
   blockquote {
+    margin: 0;
     font-weight: normal;
   }
 `;
@@ -203,6 +203,7 @@ maîtrise du tarif des énergies._`}
             <TextList data={textDataKey} />
           </Slice>
 
+          <Partners />
           <SliceImg src="./img/home-footer-bg.jpg" />
         </div>
       </MainContainer>

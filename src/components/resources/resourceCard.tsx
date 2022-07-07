@@ -1,5 +1,4 @@
 import { TextCard } from '@components/resources/resourceCard.style';
-import React from 'react';
 
 type ResourceCard = {
   image: { url: string; title: string };

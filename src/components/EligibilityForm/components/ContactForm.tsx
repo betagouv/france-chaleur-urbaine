@@ -1,5 +1,6 @@
 import { Form, Formik, FormikValues } from 'formik';
-import React, { useRef } from 'react';
+import { useRouter } from 'next/router';
+import { useRef } from 'react';
 import * as Yup from 'yup';
 import ContactConsent, {
   defaultValuesContactConsent,
@@ -20,9 +21,23 @@ export const ContactForm = ({
   isSubmitting = false,
 }: ContactFormProps) => {
   const formRef = useRef(null);
+  const router = useRouter();
+
+  const getDefaultStructure = () => {
+    switch (router.pathname) {
+      case '/coproprietaire':
+        return 'Copropriété';
+      case '/tertiaire':
+        return 'Tertiaire';
+      default:
+        return '';
+    }
+  };
+
   const initialValues = {
     ...defaultValuesContactInformation,
     ...defaultValuesContactConsent,
+    structure: getDefaultStructure(),
   };
   const validationSchema = Yup.object({
     ...validationSchemasContactInformation,

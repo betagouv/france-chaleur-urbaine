@@ -1,7 +1,4 @@
-import {
-  fullscreenFooterHeight,
-  fullscreenHeaderHeight,
-} from '@components/shared/layout/MainLayout';
+import { fullscreenHeaderHeight } from '@components/shared/layout/MainLayout';
 import styled, { css } from 'styled-components';
 
 const eligibleStyle = {
@@ -21,21 +18,14 @@ const transparency = 'a6'; // Equal to 70%
 type MapCardType = {
   isEligible?: boolean;
   typeCard?: string;
-  isClosable?: boolean;
   isClickable?: boolean;
 };
-
-const legendMaxHeight = css`
-  max-height: calc(
-    100vh - ${fullscreenHeaderHeight} - ${fullscreenFooterHeight} - 5rem - 4rem
-  );
-`;
 
 export const MapCard = styled.div<MapCardType>`
   width: 100%;
   display: block;
   background-color: white;
-  margin: 1em 0;
+  margin-bottom: 48px;
   border: 2px solid var(--bf500);
   border: 1px solid rgb(0 0 0 / 20%);
 
@@ -46,9 +36,10 @@ export const MapCard = styled.div<MapCardType>`
 
   > header {
     display: flex;
+    justify-content: space-between;
+
     padding: 0.5em;
-    cursor: ${({ isClickable, isClosable }) =>
-      isClickable || isClosable ? 'pointer' : 'default'};
+    cursor: ${({ isClickable }) => (isClickable ? 'pointer' : 'default')};
 
     font-weight: bold;
 
@@ -141,26 +132,14 @@ export const MapCard = styled.div<MapCardType>`
     overflow: auto;
     scrollbar-gutter: stable both-edges;
 
-    ${legendMaxHeight}
-
-    ${({ isClosable }) =>
-      isClosable &&
-      css`
-        transition: max-height 0.75s ease, padding 0.5s ease 0.25s;
-      `}
+    max-height: calc(100vh - ${fullscreenHeaderHeight} - 180px);
+    transition: max-height 0.75s ease, padding 0.5s ease 0.25s;
   }
 
   &.close {
     section {
       max-height: 0;
       padding: 0 0.5em;
-    }
-
-    :hover {
-      section {
-        padding: 0.25em 0.5em;
-        ${legendMaxHeight}
-      }
     }
   }
 `;

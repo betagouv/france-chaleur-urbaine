@@ -1,5 +1,5 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BodyAccordionWrapper, SectionTitle } from './Accordions.style';
 
 type accordionData = {
