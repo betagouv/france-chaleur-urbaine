@@ -1,9 +1,17 @@
 import Chart from 'react-google-charts';
 import { Container, GraphTitle, GraphWrapper } from './Graph.style';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const Graph = ({ title, errors, data, formatedData }) => {
+const Graph = ({
+  title,
+  errors,
+  data,
+  formatedData,
+}: {
+  title: string;
+  errors: any;
+  data: any;
+  formatedData: any[];
+}) => {
   return (
     <Container>
       <GraphTitle>{title}</GraphTitle>
