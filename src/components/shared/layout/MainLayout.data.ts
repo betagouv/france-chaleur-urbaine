@@ -23,10 +23,6 @@ export const menu = [
     url: '/collectivites-et-exploitants',
   },
   {
-    label: 'Partenaires',
-    url: '/partenaires',
-  },
-  {
     label: 'Cartographie',
     url: '/carte',
   },
