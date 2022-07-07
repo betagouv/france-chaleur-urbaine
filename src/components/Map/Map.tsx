@@ -516,7 +516,6 @@ export default function Map() {
     <>
       <MapStyle />
       <div className="map-wrap">
-        {/* Search Result */}
         <MapControlWrapper className="search-result-box" right top>
           <MapSearchResult>
             {soughtAddress.length > 0 &&
@@ -533,7 +532,6 @@ export default function Map() {
           </MapSearchResult>
         </MapControlWrapper>
 
-        {/* Legend Box */}
         <MapControlWrapper right bottom>
           <MapLegend
             data={legendData}
