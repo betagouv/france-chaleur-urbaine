@@ -1,5 +1,14 @@
 import styled, { css } from 'styled-components';
 
+export const FormWrapper = styled.div`
+  position: relative;
+`;
+export const FormFreezer = styled.div<{ enabled?: boolean }>`
+  position: absolute;
+  inset: 0;
+  display: ${({ enabled }) => (enabled ? 'block' : 'none')};
+`;
+
 export const CheckEligibilityFormLabel = styled.div<{ centred?: boolean }>`
   padding: 1em 0;
   ${({ centred }) =>

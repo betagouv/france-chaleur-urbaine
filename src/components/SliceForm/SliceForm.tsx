@@ -20,6 +20,7 @@ const HeadSlice: React.FC = () => {
     addressData,
     contactReady,
     showWarning,
+    messageSent,
     messageReceived,
     loadingStatus,
     warningMessage,
@@ -62,6 +63,7 @@ const HeadSlice: React.FC = () => {
         >
           <EligibilityFormContact
             addressData={addressData}
+            isSent={messageSent}
             onSubmit={handleOnSubmitContact}
           />
         </Slice>

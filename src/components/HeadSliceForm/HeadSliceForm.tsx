@@ -48,6 +48,7 @@ const HeadSlice = ({
     addressData,
     contactReady,
     showWarning,
+    messageSent,
     messageReceived,
     loadingStatus,
     warningMessage,
@@ -138,6 +139,7 @@ const HeadSlice = ({
         >
           <EligibilityFormContact
             addressData={addressData}
+            isSent={messageSent}
             onSubmit={handleOnSubmitContact}
           />
         </Slice>

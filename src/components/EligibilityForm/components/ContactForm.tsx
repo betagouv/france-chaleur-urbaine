@@ -1,3 +1,4 @@
+import Loader from '@components/Loader';
 import { Button } from '@dataesr/react-dsfr';
 import { Form, Formik, FormikValues } from 'formik';
 import { useRouter } from 'next/router';
@@ -11,16 +12,17 @@ import ContactInformation, {
   defaultValuesContactInformation,
   validationSchemasContactInformation,
 } from './ContactInformation';
-import { ContactFormFooter } from './EligibilityForm.styled';
+import {
+  ContactFormFooter,
+  FormFreezer,
+  FormWrapper,
+} from './EligibilityForm.styled';
 
 type ContactFormProps = {
   onSubmit: (values: FormikValues) => void;
-  isSubmitting?: boolean; // TODO: remove and replace by 'disable'
+  isLoading?: boolean;
 };
-export const ContactForm = ({
-  onSubmit,
-  isSubmitting = false,
-}: ContactFormProps) => {
+export const ContactForm = ({ onSubmit, isLoading }: ContactFormProps) => {
   const formRef = useRef(null);
   const router = useRouter();
 
@@ -46,9 +48,6 @@ export const ContactForm = ({
   });
   const handleSubmit = async (values: FormikValues) => {
     onSubmit({ ...values });
-    // const form: any = formRef?.current;
-    // console.log(form);
-    // if (form) form?.reset();
   };
   return (
     <Formik
@@ -57,21 +56,28 @@ export const ContactForm = ({
       onSubmit={handleSubmit}
     >
       {(formik) => (
-        <Form ref={formRef}>
-          <ContactInformation />
-          <ContactConsent />
-          <ContactFormFooter>
-            <Button submit disabled={!formik.isValid || isSubmitting}>
-              Envoyer
-            </Button>
-            {!formik.isValid && (
-              <p className="fr-error-text">
-                Veuillez remplir les champs obligatoires(*) avant d'envoyer
-                votre demande
-              </p>
-            )}
-          </ContactFormFooter>
-        </Form>
+        <FormWrapper>
+          <Form ref={formRef}>
+            <ContactInformation />
+            <ContactConsent />
+            <ContactFormFooter>
+              {isLoading ? (
+                <Loader color="#4550e5" show />
+              ) : (
+                <Button submit disabled={!formik.isValid || isLoading}>
+                  Envoyer
+                </Button>
+              )}
+              {!formik.isValid && (
+                <p className="fr-error-text">
+                  Veuillez remplir les champs obligatoires(*) avant d'envoyer
+                  votre demande
+                </p>
+              )}
+            </ContactFormFooter>
+            <FormFreezer enabled={isLoading} />
+          </Form>
+        </FormWrapper>
       )}
     </Formik>
   );
