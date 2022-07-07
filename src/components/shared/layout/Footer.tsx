@@ -32,8 +32,8 @@ const Footer = () => {
         </Logo>
         <FooterOperator>
           <img
-            height={81}
-            src="./logo-fcu.png"
+            height={136}
+            src="./logo-fcu-with-typo.jpg"
             alt="logo france chaleur urbaine"
           />
         </FooterOperator>
