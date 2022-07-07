@@ -105,6 +105,7 @@ function SimulatorCO2({
                   title="energy"
                   name="energy"
                   onChange={selectHandleChange}
+                  defaultValue={energy}
                 >
                   <option value="">
                     {dataSimulator?.[typeSurf]?.label?.chauffage}
@@ -112,7 +113,7 @@ function SimulatorCO2({
                   {Object.entries(dataEnergy)
                     .filter(([key]) => key !== 'rdc')
                     .map(([key, { label }]) => (
-                      <option key={key} value={key} selected={energy === key}>
+                      <option key={key} value={key}>
                         {label}
                       </option>
                     ))}

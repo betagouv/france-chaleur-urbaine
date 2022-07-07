@@ -1,5 +1,4 @@
 import { ComboboxInput } from '@reach/combobox';
-import React from 'react';
 
 type AddressInputProps = {
   placeholder?: string;
