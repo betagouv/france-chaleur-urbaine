@@ -68,7 +68,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     dataSharing,
   } = values;
 
-  const field = {
+  return {
     Nom: lastName,
     Prénom: firstName,
     Structure: structure,
@@ -86,24 +86,20 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     'J’accepte que ma demande soit communiquée à ma commune et au gestionnaire du réseau le plus proche (sans aucun engagement de ma part)':
       dataSharing,
   };
-
-  return field;
 };
 
-const submitToAirtable: (
-  values: any,
-  callback?: (response: Response, values?: any) => void
-) => void = async (values, callback): Promise<Response | void> => {
+const submitToAirtable: (values: any, type: string) => void = async (
+  values,
+  type
+): Promise<Response | void> => {
   const airTableUrl = './api/airtable/create-record';
-  const response: Response = await fetch(airTableUrl, {
+  return fetch(airTableUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(values),
+    body: JSON.stringify({ ...values, type }),
   });
-  if (callback) return callback(response, values);
-  else return response;
 };
 
 export default submitToAirtable;

@@ -1,3 +1,4 @@
+import { Button } from '@dataesr/react-dsfr';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import {
   themeDefEnergy,
@@ -342,3 +343,7 @@ export const gasUsageLayerStyle = {
     'circle-stroke-opacity': 0,
   },
 };
+
+export const AddButton = styled(Button)`
+  float: right;
+`;
