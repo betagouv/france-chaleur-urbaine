@@ -5,6 +5,7 @@ import TextList from '@components/TextList';
 import { dataNumberFcu, dataNumberRcu } from '@data';
 import { useMemo } from 'react';
 import useSWR from 'swr';
+import Band from './Band';
 import { Container, Subtitle } from './Statistics.style';
 
 const monthToString = [
@@ -141,6 +142,9 @@ const Statistics = () => {
               effet de serre que le fioul ou le gaz (source : SNCU).
             </b>
           </span>
+        </Slice>
+        <Slice padding={4}>
+          <Band />
         </Slice>
         <Slice padding={4}>
           <span>

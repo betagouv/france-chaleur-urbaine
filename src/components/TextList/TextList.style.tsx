@@ -20,7 +20,7 @@ export const Card = styled.div<{ type?: string }>`
     type === 'orange-circle' &&
     css`
       top: -50px;
-      padding-left: 16px;
+      padding: 16px;
       position: relative;
       justify-content: center;
       color: white;

@@ -12,3 +12,9 @@ export const Container = styled.div`
 export const Subtitle = styled.span`
   margin-bottom: 16px;
 `;
+
+export const Value = styled.span`
+  font-size: 40px;
+  font-weight: 700;
+  margin-right: 4px;
+`;
