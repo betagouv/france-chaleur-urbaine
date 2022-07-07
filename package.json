@@ -27,7 +27,10 @@
     "prelint": "yarn prettier-check",
     "lint": "eslint src/ -c .eslintrc.json --ext js,jsx,ts,tsx,json",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "dev-storybook": "yarn storybook",
+    "build-storybook": "build-storybook",
+    "start-storybook": "npx http-server storybook-static -p $PORT",
+    "scalingo-postbuild": "bash bin/build.sh"
   },
   "dependencies": {
     "@dataesr/react-dsfr": "^2.8.4",

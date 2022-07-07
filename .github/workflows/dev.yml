@@ -41,7 +41,7 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
 
       - name: Audit 🛡️
-        run: yarn audit
+        run: yarn audit --groups dependencies
 
       - name: Lint 🧹
         run: yarn lint
