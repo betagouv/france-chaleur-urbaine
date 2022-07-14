@@ -2,11 +2,11 @@ import Graph from '@components/Graph/Graph';
 import { Graphs } from '@components/Graph/Graph.style';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
-import { dataNumberFcu, dataNumberRcu } from '@data';
+import { dataNumberFcu } from '@data';
 import { useMemo } from 'react';
 import useSWR from 'swr';
 import Band from './Band';
-import { Container, Subtitle } from './Statistics.style';
+import { Container } from './Statistics.style';
 
 const monthToString = [
   'Jan',
@@ -136,11 +136,22 @@ const Statistics = () => {
           <span>
             En France, les besoins en chauffage ne sont couverts qu’à hauteur de
             5% par des réseaux de chaleur.
-            <br />
-            <b>
-              Pourtant, ce mode de chauffage émet minimun 2 fois moins de gaz à
-              effet de serre que le fioul ou le gaz (source : SNCU).
-            </b>
+            <div>
+              <b>
+                Pourtant, ce mode de chauffage émet minimun 2 fois moins de gaz
+                à effet de serre que le fioul ou le gaz
+              </b>{' '}
+              (source : SNCU).
+            </div>
+            <div>
+              <b>
+                La loi de transition énergétique pour la croissance verte fixe
+                un objectif de multiplication par 5 de la quantité de chaud et
+                de froid livrés par les réseaux en 2030, par rapport à 2012 :
+                cela revient à 4 à 5 millions d’équivalents logements
+                supplémentaires à raccorder (estimation Amorce) !
+              </b>
+            </div>
           </span>
         </Slice>
         <Slice padding={4}>
@@ -148,33 +159,24 @@ const Statistics = () => {
         </Slice>
         <Slice padding={4}>
           <span>
-            <b>
-              Le potentiel de logements raccordables est estimé à 4 à 5 millions
-              !
-            </b>
-            <br />
-            Cependant les copropriétaires n’ont actuellement pas un accès facile
-            aux informations dont ils ont besoin pour étudier l’opportunité d’un
-            raccordement et ce malgré l’interdition du renouvellement des
-            chaudières au fioul.
+            <i>
+              Pour une consommation moyenne de 10 MWh/an, avec un réseau de
+              chaleur alimenté à 60% par des énergies renouvelables (= taux
+              moyen pour les réseaux de chaleur français)
+            </i>
           </span>
         </Slice>
       </Slice>
       <Slice padding={8} theme="color">
-        <h3>Les réseaux de chaleurs</h3>
-        <TextList data={dataNumberRcu} />
-      </Slice>
-      <Slice padding={8}>
-        <h3>France Chaleur Urbaine c’est :</h3>
-        <Subtitle>Au 1er février 2022 :</Subtitle>
-        <TextList data={dataNumberFcu} />
-        <span>
+        <h3>Au {dataNumberFcu.date}, France Chaleur Urbaine c’est :</h3>
+        <TextList data={dataNumberFcu.data} />
+        <i>
           Par raccordements à l’étude, on désigne ceux pour lesquels une étude
           de faisabilité technico-économique est en cours au niveau du
           gestionnaire du réseau. La proposition du gestionnaire devra ensuite
           être votée en AG de la copropriété avant que les travaux ne puissent
           démarrer.
-        </span>
+        </i>
       </Slice>
       <Slice padding={8}>
         <Graphs>

@@ -1,29 +1,30 @@
 import {
-  BlueCircle,
+  Circle,
   Container,
   Equal,
-  OrangeCircle,
+  Label,
   Separator,
-  Stat,
+  Value,
 } from './Band.style';
-import { Value } from './Statistics.style';
 
 const Band = () => {
   return (
     <Container>
-      <BlueCircle>1 logement de 70m2</BlueCircle>
+      <Circle color="#fff" bgColor="#4550e5">
+        <Label>1 logement de 70m2</Label>
+      </Circle>
       <Equal>=</Equal>
-      <Stat>
+      <Circle>
         <Value>2</Value>tonnes co2 si chauffé au gaz
-      </Stat>
+      </Circle>
       <Separator>ou</Separator>
-      <Stat>
+      <Circle>
         <Value>2,8</Value>tonnes co2 si chauffé au fioul
-      </Stat>
+      </Circle>
       <Separator>ou</Separator>
-      <OrangeCircle>
-        <p>1</p>tonne co2 si raccordé aux réseaux de chaleur
-      </OrangeCircle>
+      <Circle color="#fff" bgColor="#069368">
+        <Value>1</Value>tonne co2 si raccordé aux réseaux de chaleur
+      </Circle>
     </Container>
   );
 };

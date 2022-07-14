@@ -1,19 +1,22 @@
-[
-  {
-    "value": "5",
-    "description": "Raccordements à l’étude, initiés par France Chaleur Urbaine"
-  },
-  {
-    "value": "360",
-    "description": "Nombre de logements concernés"
-  },
-  {
-    "value": "24%",
-    "description": "Taux de conversion sur la base du nombre de logements éligibles"
-  },
-  {
-    "value": "740",
-    "description": "Tonnes de co2 potentiellement économisées par an",
-    "type": "orange-circle"
-  }
-]
+{
+  "date": "1er juiller 2022",
+  "data": [
+    {
+      "value": ">20",
+      "description": "Partenariats effectifs ou en cours de montage avec des collectivités et exploitants"
+    },
+    {
+      "value": ">30",
+      "description": "Raccordements à l’étude"
+    },
+    {
+      "value": ">2000",
+      "description": "Nombre de logements concernés"
+    },
+    {
+      "value": "~ 2000",
+      "description": "Tonnes de CO2 potentiellement économisées par an",
+      "type": "orange-circle"
+    }
+  ]
+}
