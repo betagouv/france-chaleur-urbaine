@@ -45,7 +45,7 @@ export const CircleContent = styled.div<CirclePropsType>`
   text-align: center;
   border-radius: 50%;
   display: flex;
-  gap: 16px;
+  gap: 24px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -60,9 +60,9 @@ export const Value = styled.p`
   margin-bottom: 0;
 `;
 export const Label = styled.p`
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 700;
-  line-height: 30px;
+  line-height: 1.25;
   margin-bottom: 0;
 `;
 

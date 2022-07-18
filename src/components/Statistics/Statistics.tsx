@@ -93,7 +93,7 @@ const Statistics = () => {
   ];
 
   const formatedDataEligibilityTest = [
-    ['x', 'Total des tests', 'Adresse non éligibles', 'Adresse éligibles'],
+    ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
     ...dataEligibilityTest.map((entry: returnApi = {}) => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
       const label = `${
@@ -112,8 +112,8 @@ const Statistics = () => {
     [
       'x',
       'Total des prises de contact',
-      'Contact pour adresse non éligibles',
-      'Contact pour adresse éligibles',
+      'Contact pour adresses non éligibles',
+      'Contact pour adresses éligibles',
     ],
     ...dataContact.map((entry: returnApi = {}) => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
@@ -147,8 +147,8 @@ const Statistics = () => {
               <b>
                 La loi de transition énergétique pour la croissance verte fixe
                 un objectif de multiplication par 5 de la quantité de chaud et
-                de froid livrés par les réseaux en 2030, par rapport à 2012 :
-                cela revient à 4 à 5 millions d’équivalents logements
+                de froid livrée par les réseaux en 2030, par rapport à 2012 :
+                cela revient à 4 à 5 millions d’équivalent-logements
                 supplémentaires à raccorder (estimation Amorce) !
               </b>
             </div>
@@ -170,13 +170,7 @@ const Statistics = () => {
       <Slice padding={8} theme="color">
         <h3>Au {dataNumberFcu.date}, France Chaleur Urbaine c’est :</h3>
         <TextList data={dataNumberFcu.data} />
-        <i>
-          Par raccordements à l’étude, on désigne ceux pour lesquels une étude
-          de faisabilité technico-économique est en cours au niveau du
-          gestionnaire du réseau. La proposition du gestionnaire devra ensuite
-          être votée en AG de la copropriété avant que les travaux ne puissent
-          démarrer.
-        </i>
+        <i>{dataNumberFcu.note}</i>
       </Slice>
       <Slice padding={8}>
         <Graphs>
