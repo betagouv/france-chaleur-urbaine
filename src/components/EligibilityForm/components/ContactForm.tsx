@@ -1,3 +1,4 @@
+import { Button } from '@dataesr/react-dsfr';
 import { Form, Formik, FormikValues } from 'formik';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
@@ -60,13 +61,9 @@ export const ContactForm = ({
           <ContactInformation />
           <ContactConsent />
           <ContactFormFooter>
-            <button
-              className="fr-btn"
-              type="submit"
-              disabled={!formik.isValid || isSubmitting}
-            >
+            <Button submit disabled={!formik.isValid || isSubmitting}>
               Envoyer
-            </button>
+            </Button>
             {!formik.isValid && (
               <p className="fr-error-text">
                 Veuillez remplir les champs obligatoires(*) avant d'envoyer
