@@ -1,6 +1,6 @@
 import Slice from '@components/Slice';
 import { partnerData } from '@data/partenaires';
-import { Icon } from '@dataesr/react-dsfr';
+import { Button, ButtonGroup, Icon } from '@dataesr/react-dsfr';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Arrow,
@@ -73,6 +73,25 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
           <Icon name="ri-arrow-right-circle-line" size="xl" />
         </Arrow>
       </Wrapper>
+      <ButtonGroup isInlineFrom="xs" align="center">
+        <Button
+          onClick={() =>
+            window.open(
+              'mailto:france-chaleur-urbaine@developpement-durable.gouv.fr'
+            )
+          }
+        >
+          Rejoindre notre réseau
+        </Button>
+        <Button
+          secondary
+          onClick={() =>
+            window.open('/documentation/FCU_dossier_presentation.pdf')
+          }
+        >
+          Notre dossier de présentation
+        </Button>
+      </ButtonGroup>
     </Slice>
   );
 };

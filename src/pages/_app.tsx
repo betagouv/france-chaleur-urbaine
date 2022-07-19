@@ -62,6 +62,9 @@ const DsfrFixUp = createGlobalStyle`
 
   .fr-btn--secondary {
     background-color: white !important;
+    :hover {
+      background-color: var(--hover-tint) !important;
+    }
   }
 `;
 
