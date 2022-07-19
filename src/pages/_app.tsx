@@ -40,6 +40,10 @@ const GlobalStyle = createGlobalStyle`
   html {
     scroll-behavior: smooth;
   }
+
+  .hide-link-icon:after {
+    display:none !important;
+  }
 `;
 const DsfrFixUp = createGlobalStyle`
   .fr-header__service-title{
@@ -62,6 +66,9 @@ const DsfrFixUp = createGlobalStyle`
 
   .fr-btn--secondary {
     background-color: white !important;
+    :hover {
+      background-color: var(--hover-tint) !important;
+    }
   }
 `;
 

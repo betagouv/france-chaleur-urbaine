@@ -1,18 +1,23 @@
-[
-  {
-    "value": "3",
-    "description": "Raccordements à l’étude (au 5 janvier 2022), initiés par France Chaleur Urbaine"
-  },
-  {
-    "value": "282",
-    "description": "Nombre de logements concernés (au 5 janvier 2022)"
-  },
-  {
-    "value": "27%",
-    "description": "Taux de conversion sur la base du nombre de logements (toutes adresses confondues)"
-  },
-  {
-    "value": "34%",
-    "description": "Taux de conversion sur la base du nombre de logements  (adresses éligibles)"
-  }
-]
+{
+  "date": "1er juillet 2022",
+  "data": [
+    {
+      "value": ">20",
+      "description": "Partenariats effectifs ou en cours de montage avec des collectivités et exploitants"
+    },
+    {
+      "value": ">30",
+      "description": "Raccordements à l’étude"
+    },
+    {
+      "value": ">2000",
+      "description": "Nombre de logements concernés"
+    },
+    {
+      "value": "~ 2000",
+      "description": "Tonnes de CO2 potentiellement économisées par an",
+      "type": "orange-circle"
+    }
+  ],
+  "note": "Par raccordements à l’étude, on désigne ceux pour lesquels une étude de faisabilité technico-économique est en cours au niveau du gestionnaire du réseau, ou a été transmise à la copropriété ou au bâtiment tertiaire. En copropriété, la proposition du gestionnaire de réseau devra ensuite être votée en AG avant que les travaux ne puissent démarrer."
+}

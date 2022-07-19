@@ -1,13 +1,13 @@
+import MarkdownWrapper from '@components/MarkdownWrapper';
+import { isIDF } from '@helpers';
+import { useCallback, useMemo } from 'react';
 import {
+  ContactForm,
   ContactFormContentWrapper,
   ContactFormEligibilityMessage,
   ContactFormResultMessage,
   ContactFormWrapper,
-} from '@components/EligibilityForm/components/EligibilityForm.styled';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import { isIDF } from '@helpers';
-import { useCallback, useMemo } from 'react';
-import ContactForm from './components/ContactForm';
+} from './components';
 
 // TODO: Extract and import
 type AvailableHeating = 'collectif' | 'individuel' | undefined;
@@ -21,6 +21,7 @@ type AddressDataType = {
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
+  isSent?: boolean;
   onSubmit?: (...arg: any) => void;
 };
 
@@ -165,6 +166,7 @@ Découvrez également d’autres solutions de chauffage [ici](https://france-ren
 
 const EligibilityFormContact = ({
   addressData,
+  isSent,
   onSubmit,
 }: EligibilityFormContactType) => {
   const isIDFAddress = useMemo(() => {
@@ -259,7 +261,7 @@ const EligibilityFormContact = ({
 
       <ContactFormContentWrapper>
         <div>
-          <ContactForm onSubmit={handleSubmitForm} />
+          <ContactForm onSubmit={handleSubmitForm} isLoading={isSent} />
         </div>
       </ContactFormContentWrapper>
     </ContactFormWrapper>

@@ -91,11 +91,6 @@ const BlockquoteSlice = styled.div`
   }
 `;
 
-const textDataKey = dataNumberRcu.map(({ value, description }) => ({
-  title: value,
-  body: description,
-}));
-
 export default function Home() {
   return (
     <>
@@ -200,7 +195,7 @@ maîtrise du tarif des énergies._`}
           </Slice>
 
           <Slice theme="color" padding={5}>
-            <TextList data={textDataKey} />
+            <TextList data={dataNumberRcu} />
           </Slice>
 
           <Partners />

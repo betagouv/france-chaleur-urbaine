@@ -63,7 +63,7 @@ function Contribution() {
       <MainContainer currentMenu="/contribution">
         <Slice
           padding={4}
-          header={`## Vous souhaitez contribuer à cette carte en ajoutant des données ou en nous signalant une erreur ? C'est possible ! Complétez le formulaire ci-dessous :`}
+          header={`## Vous souhaitez contribuer à notre carte en ajoutant des données ou en nous signalant une erreur ? C'est possible ! Complétez le formulaire ci-dessous :`}
         >
           {result ? (
             <Alert
