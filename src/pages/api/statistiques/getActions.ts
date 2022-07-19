@@ -33,6 +33,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         }),
       true
     );
+
     res.status(200).json({ result });
   } catch (err) {
     res.status(500).json({

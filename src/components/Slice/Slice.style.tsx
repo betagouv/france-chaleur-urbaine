@@ -17,7 +17,7 @@ export const SliceSection = styled.section<{ theme?: string }>`
           h4,
           h5,
           h6 {
-            color: #fff;
+            color: #fff !important;
           }
         `;
       }
