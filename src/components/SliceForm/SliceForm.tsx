@@ -21,6 +21,7 @@ const HeadSlice: React.FC = () => {
     contactReady,
     showWarning,
     messageSent,
+    messageReceived,
     loadingStatus,
     warningMessage,
     handleOnChangeAddress,
@@ -57,11 +58,12 @@ const HeadSlice: React.FC = () => {
           padding={5}
           theme="grey"
           className={`slice-contact-form-wrapper ${
-            contactReady && !messageSent ? 'active' : ''
+            contactReady && !messageReceived ? 'active' : ''
           }`}
         >
           <EligibilityFormContact
             addressData={addressData}
+            isSent={messageSent}
             onSubmit={handleOnSubmitContact}
           />
         </Slice>
@@ -70,7 +72,7 @@ const HeadSlice: React.FC = () => {
           padding={5}
           theme="grey"
           className={`slice-contact-form-wrapper ${
-            messageSent ? 'active' : ''
+            messageReceived ? 'active' : ''
           }`}
         >
           <EligibilityFormMessageConfirmation addressData={addressData} />

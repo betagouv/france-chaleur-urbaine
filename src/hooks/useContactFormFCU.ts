@@ -52,6 +52,7 @@ const useContactFormFCU = () => {
   const [contactReady, setContactReady] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
+  const [messageReceived, setMessageReceived] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('idle');
   const [submitToFCU] = useBackEndFCU();
 
@@ -78,6 +79,7 @@ const useContactFormFCU = () => {
       const { heatingType }: any = addressData;
       setLoadingStatus('loading');
       setMessageSent(false);
+      setMessageReceived(false);
       callMarkup__handleOnFetchAddress(address);
       setShowWarning(address && !heatingType);
     },
@@ -103,11 +105,12 @@ const useContactFormFCU = () => {
   const handleOnSubmitContact = useCallback(
     async (data: Record<string, any> = {}) => {
       if (data.structure !== 'Tertiaire') data.company = '';
+      setMessageSent(true);
       callMarkup__handleOnSubmitContact(data);
       await submitToFCU(data);
       const scrollTimer = timeoutScroller(500);
       setAddressData({ ...addressData, ...data });
-      setMessageSent(true);
+      setMessageReceived(true);
       return () => window.clearTimeout(scrollTimer);
     },
     [addressData, submitToFCU, timeoutScroller]
@@ -119,6 +122,7 @@ const useContactFormFCU = () => {
     contactReady,
     showWarning,
     messageSent,
+    messageReceived,
     loadingStatus,
     warningMessage,
     handleOnChangeAddress,
