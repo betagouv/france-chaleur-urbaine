@@ -70,15 +70,10 @@ const objTileIndexPromise = getObjectIndex(API_DEBUG_MODE).then(
 
 export default async function handleRequest(req, res) {
   await objTileIndexPromise;
-  const { cartesianCoord } = req.query;
-  // const { cartesianCoord, param } = req.query;
-  // console.log(
-  //   'params ==>',
-  //   req.query,
-  //   Object.keys(req.query),
-  //   Object.keys(req)
-  // );
-  const [z, x, y] = cartesianCoord;
+  const {
+    cartesianCoord: [z, x, y],
+  } = req.query;
+
   const tiles = Object.entries(objTileIndex).reduce((acc, [key, tileIndex]) => {
     const tile =
       filepaths[key]?.minZoom && filepaths[key]?.minZoom > +z

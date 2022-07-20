@@ -47,3 +47,5 @@ yarn-error.log*
 # Working tools
 *.backUp
 *.old
+
+/docker/db/dump.sql
