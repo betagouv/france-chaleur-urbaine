@@ -1,6 +1,7 @@
 import mapParam from '@components/Map';
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
+import db from '../../../../db';
 import { readFileAsync, readSplitFileAsync } from '../helper';
 
 const API_DEBUG_MODE = !!(process.env.API_DEBUG_MODE || null);
@@ -11,6 +12,7 @@ const path = './public/geojson/';
 const filepaths = {
   outline: {
     filename: 'traces_rdch.geojson',
+    table: 'potentiel_rcu — conso_potent_rcu_iris_2018',
   },
   substation: {
     filename: 'sous_stations_rdch.geojson',
@@ -27,7 +29,24 @@ const tileOptions = {
 
 const getObjectIndex = async (debug) => {
   const tileIndexPromises = Object.entries(filepaths).map(
-    ([key, { filename, featuresFilter, multipart }]) => {
+    async ([key, { filename, table, featuresFilter, multipart }]) => {
+      if (table) {
+        const geoJSON = await db(
+          'potentiel_rcu — l_traces_rdch_l_r11_2022_05_new'
+        ).first(
+          db.raw(`
+            json_build_object(
+              'type', 'FeatureCollection',
+              'features', json_agg(json_build_object(
+                'type', 'Feature',
+                'geometry', ST_AsGeoJSON(ST_Transform(geom,4326))::json)
+            ))
+          `)
+        );
+
+        const tileIndex = geojsonvt(geoJSON.json_build_object, tileOptions);
+        return [key, tileIndex];
+      }
       return (
         multipart
           ? readSplitFileAsync(path, filename, !!API_DEBUG_MODE)
