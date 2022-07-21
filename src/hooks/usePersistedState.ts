@@ -7,14 +7,14 @@ type PersistedStateOption = {
   keyPrefix?: string;
 };
 
-function usePersistedState(
+function usePersistedState<T>(
   name: string,
-  defaultValue: any,
+  defaultValue: T,
   {
     beforeStorage = () => undefined,
     keyPrefix = STORED_KEY,
   }: PersistedStateOption = {}
-): [any, React.Dispatch<React.SetStateAction<any>>] {
+): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [value, setValue] = useState(defaultValue);
   const key = useMemo(() => `${keyPrefix}-${name}`, [keyPrefix, name]);
   const nameRef = useRef(key);

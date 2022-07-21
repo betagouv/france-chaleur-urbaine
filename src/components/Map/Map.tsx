@@ -54,9 +54,9 @@ const formatBodyPopup = ({
   consommation,
   energy,
 }: {
-  coordinates: any;
-  consommation?: Record<string, any>;
-  energy?: Record<string, any>;
+  coordinates: Point;
+  consommation?: Record<string, unknown>;
+  energy?: Record<string, unknown>;
   id: string;
 }) => {
   const textAddress =
@@ -113,19 +113,23 @@ const formatBodyPopup = ({
           }
           ${
             energie_utilisee
-              ? `Chauffage actuel :  ${formatBddText(energie_utilisee)}<br />`
+              ? `Chauffage actuel :  ${formatBddText(
+                  energie_utilisee as string
+                )}<br />`
               : ''
           }
           ${
             conso &&
             (!energie_utilisee || objTypeEnergy?.gas.includes(energie_utilisee))
-              ? `Consommations de gaz :  ${conso?.toFixed(2)}&nbsp;MWh<br />`
+              ? `Consommations de gaz :  ${(conso as number)?.toFixed(
+                  2
+                )}&nbsp;MWh<br />`
               : ''
           }
           ${
             periode_construction
               ? `Période de construction : ${formatBddText(
-                  periode_construction
+                  periode_construction as string
                 )}<br />`
               : ''
           }
@@ -147,7 +151,13 @@ export default function Map() {
 
   const [soughtAddress, setSoughtAddress] = usePersistedState(
     'mapSoughtAddress',
-    [],
+    [] as {
+      id: string;
+      coordinates: Point;
+      address: Record<string, any>;
+      addressDetails: Record<string, any>;
+      search: { date: number };
+    }[],
     {
       beforeStorage: (value: any) => {
         const newValue = value.map((address: any) => {
@@ -196,9 +206,7 @@ export default function Map() {
         search,
       };
       setSoughtAddress([
-        ...soughtAddress.filter(
-          ({ id: _id }: { id: string }) => `${_id}` !== id
-        ),
+        ...soughtAddress.filter(({ id: _id }) => `${_id}` !== id),
         newAddress,
       ]);
       flyTo({ coordinates });
