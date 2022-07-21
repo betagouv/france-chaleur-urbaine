@@ -14,8 +14,6 @@ export type TypeLayerDisplay = Record<string, any> & {
 
 const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
-  substation: false,
-  boilerRoom: false,
   gasUsageGroup: true,
   gasUsage: ['R', 'T'],
   energy: ['fuelOil', 'gas'],

@@ -187,23 +187,6 @@ export const outlineLayerStyle = {
     'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
   },
 };
-export const substationLayerStyle = {
-  type: 'fill',
-  layout: {},
-  paint: {
-    'fill-color': themeDefHeatNetwork.substation.color,
-    'fill-opacity': 1,
-  },
-};
-export const boilerRoomLayerStyle = {
-  type: 'fill',
-  layout: {},
-  paint: {
-    'fill-color': themeDefHeatNetwork.boilerRoom.color,
-    'fill-outline-color': themeDefHeatNetwork.boilerRoom.color,
-    'fill-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 0.95],
-  },
-};
 
 // --------------
 // --- Energy ---
@@ -341,6 +324,19 @@ export const gasUsageLayerStyle = {
       0.35,
     ],
     'circle-stroke-opacity': 0,
+  },
+};
+
+export const zoneDPLayerStyle = {
+  type: 'line',
+  layout: {
+    'line-join': 'round',
+    'line-cap': 'round',
+  },
+  paint: {
+    'line-color': '#FF0000',
+    'line-width': 3,
+    'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
   },
 };
 

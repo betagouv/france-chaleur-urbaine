@@ -1422,6 +1422,13 @@
   dependencies:
     "@types/ms" "*"
 
+"@types/geojson-vt@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@types/geojson-vt/-/geojson-vt-3.2.0.tgz#3e757793ebc406262277c411025e9dcceb6ab87f"
+  integrity sha512-w3Suw6tXNOPZZROz7+cEkYF+ufVZKKfhKByxRFQwwm5BMyC1pflI9nEsiFQ1eQ27IiO1TEkxjvvcbyKW5YJJKA==
+  dependencies:
+    "@types/geojson" "*"
+
 "@types/geojson@*", "@types/geojson@^7946.0.8":
   version "7946.0.8"
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.8.tgz#30744afdb385e2945e22f3b033f897f76b1f12ca"

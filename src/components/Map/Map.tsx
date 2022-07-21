@@ -15,7 +15,6 @@ import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
   AddButton,
-  boilerRoomLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
   MapControlWrapper,
@@ -23,7 +22,7 @@ import {
   MapStyle,
   objTypeEnergy,
   outlineLayerStyle,
-  substationLayerStyle,
+  zoneDPLayerStyle,
 } from './Map.style';
 
 const {
@@ -37,7 +36,7 @@ const {
   legendData,
 } = mapParam;
 
-const layerNameOptions = ['outline', 'substation', 'boilerRoom'] as const;
+const layerNameOptions = ['outline'] as const;
 const energyNameOptions = ['fuelOil', 'gas'] as const;
 const gasUsageNameOptions = ['R', 'T'] as const;
 
@@ -355,18 +354,6 @@ export default function Map() {
             'source-layer': 'outline',
             ...outlineLayerStyle,
           });
-          map.current.addLayer({
-            id: 'substation',
-            source: 'heatNetwork',
-            'source-layer': 'substation',
-            ...substationLayerStyle,
-          });
-          map.current.addLayer({
-            id: 'boilerRoom',
-            source: 'heatNetwork',
-            'source-layer': 'boilerRoom',
-            ...boilerRoomLayerStyle,
-          });
 
           // --------------
           // --- Energy ---
@@ -397,6 +384,23 @@ export default function Map() {
 
           map.current.on('mouseleave', 'energy', function () {
             map.current.getCanvas().style.cursor = '';
+          });
+
+          // -----------------
+          // --- Zone DP ---
+          // -----------------
+          map.current.addSource('zoneDP', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          });
+
+          map.current.addLayer({
+            id: 'zoneDP',
+            source: 'zoneDP',
+            'source-layer': 'zoneDP',
+            ...zoneDPLayerStyle,
           });
 
           // -----------------

@@ -134,28 +134,6 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
-  .legend-boiler-room-marker {
-    width: 1.5rem;
-
-    :before {
-      width: 100%;
-      border: 3px solid ${themeDefHeatNetwork.boilerRoom.color};
-      border-radius: 3px;
-      background-color: ${themeDefHeatNetwork.boilerRoom.color};
-      margin-bottom: calc(0.25em - 1.5px)
-    }
-  }
-  .legend-substation-marker {
-    width: 1.5rem;
-
-    :before {
-      width: 1rem;
-      border: 3px solid ${themeDefHeatNetwork.substation.color};
-      border-radius: 50%;
-      background-color: ${themeDefHeatNetwork.substation.color};
-      margin-bottom: calc(0.25em - 1.5px)
-    }
-  }
   .legend-energy-marker {
     width: .6rem;
 
