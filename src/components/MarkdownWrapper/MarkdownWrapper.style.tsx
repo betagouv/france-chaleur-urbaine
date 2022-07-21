@@ -52,7 +52,7 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
 `;
 
 export const ButtonLink = styled.a.attrs({
-  className: 'fr-btn  hide-link-icon',
+  className: 'fr-btn',
 })``;
 
 export const CounterItem = styled.div`

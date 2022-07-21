@@ -75,7 +75,7 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
       </Wrapper>
       <ButtonGroup isInlineFrom="xs" align="center">
         <a
-          className="fr-btn hide-link-icon"
+          className="fr-btn"
           href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
           target="_blank"
           rel="noopener noreferrer"
@@ -83,7 +83,7 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
           Rejoindre notre réseau
         </a>
         <a
-          className="fr-btn fr-btn--secondary hide-link-icon"
+          className="fr-btn fr-btn--secondary"
           href="/documentation/FCU_dossier_presentation.pdf"
           target="_blank"
           rel="noopener noreferrer"

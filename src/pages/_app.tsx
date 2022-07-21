@@ -40,10 +40,6 @@ const GlobalStyle = createGlobalStyle`
   html {
     scroll-behavior: smooth;
   }
-
-  .hide-link-icon:after {
-    display:none !important;
-  }
 `;
 const DsfrFixUp = createGlobalStyle`
   .fr-header__service-title{
@@ -69,6 +65,10 @@ const DsfrFixUp = createGlobalStyle`
     :hover {
       background-color: var(--hover-tint) !important;
     }
+  }
+
+  .fr-btn[target=_blank]:after {
+    content: "\\ecaf" !important;
   }
 `;
 
