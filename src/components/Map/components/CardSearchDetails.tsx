@@ -55,7 +55,7 @@ const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
             : `Cette adresse n'est pour le moment pas raccordable à un réseau de chaleur.`}
         </EligibilityResult>
         <div>
-          {!isNaN(distance) &&
+          {!isNaN(parseFloat(distance)) &&
             `Distance au réseau ${
               distance < 1
                 ? '< 1m'
