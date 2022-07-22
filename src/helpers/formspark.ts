@@ -13,6 +13,7 @@ export const formatDataToFormspark: (
     lastName,
     company,
     email,
+    termOfUse,
   } = values;
 
   const formatedData = {
@@ -30,8 +31,7 @@ export const formatDataToFormspark: (
       ? `${network.distance}m`
       : 'inconnue',
     Éligiblité: eligibility,
-    'Accord pour la collecte des données': true,
-    'Accord pour partage au gestionnaire': true,
+    'Accord des CGU': termOfUse,
   };
 
   return formatedData;

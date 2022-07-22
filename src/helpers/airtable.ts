@@ -64,8 +64,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     lastName,
     company,
     email,
-    dataRetention,
-    dataSharing,
+    termOfUse,
   } = values;
 
   return {
@@ -81,10 +80,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     'Distance au réseau': network?.distance,
     'Choix en fonction de la distance au réseau':
       formatDistanceToAirtable(network?.distance, heatingType) || 'inconnue',
-    'J’accepte que les données collectées soient utilisées à des fins d’analyse par le ministère de la transition écologique.':
-      dataRetention,
-    'J’accepte que ma demande soit communiquée à ma commune et au gestionnaire du réseau le plus proche (sans aucun engagement de ma part)':
-      dataSharing,
+    'J’accepte les CGU': termOfUse,
   };
 };
 
