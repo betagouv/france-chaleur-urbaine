@@ -34,7 +34,7 @@ const RoutedLink = (props: any) => {
 };
 
 const ConsentLink: React.FC<{
-  ForceBlock: React.ElementType;
+  ForceBlock: React.FC;
 }> = ({ children, ForceBlock = React.Fragment }) => (
   <ForceBlock>
     <a href="#consentement">{children}</a>
