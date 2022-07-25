@@ -1,15 +1,15 @@
 const termOfUse = `
 ## Conditions générales d’utilisation
 
-_CGU v.1.2, valables à compter du 15 décembre 2021_
+_CGU v.1.3, valables à compter du 22 juillet 2022_
 
 France Chaleur Urbaine est un service numérique de l’État édité par le Ministère de la transition écologique, avec l’appui de la Direction régionale et interdépartementale de l’Environnement, de l’Aménagement et des Transports d’Île-de-France (DRIEAT), la Fabrique numérique, l’incubateur ministériel de services numériques innovants, et beta.gouv.fr, l’incubateur de la direction interministérielle du numérique de l’État (DINUM).
 
 ### Présentation du service
 
-France Chaleur Urbaine est un service numérique de l’administration qui permet de localiser les réseaux de chaleur de chauffage urbain à proximité d’une copropriété.
+France Chaleur Urbaine est un service numérique de l’administration qui vise à faciliter et multiplier les raccordements aux réseaux de chaleur. France Chaleur Urbaine permet de savoir si un  réseau de chaleur passe à proximité d’un  bâtiment, et d’être mis en relation avec le gestionnaire du réseau.
 
-Ce service a pour objectif d’inciter les copropriétés encore chauffées au fioul ou au gaz à étudier l’opportunité d’un raccordement à un chauffage urbain à proximité, en particulier lorsque leurs chaudières existantes arrivent en fin de vie ou lorsque des travaux de rénovation sont prévus
+Ce service a pour objectif d’inciter les propriétaires des bâtiments encore chauffés au fioul ou au gaz à étudier l’opportunité d’un raccordement à un chauffage urbain à proximité, en particulier lorsque leurs chaudières existantes arrivent en fin de vie ou lorsque des travaux de rénovation sont prévus.
 
 Le présent document a pour objet de régler les relations entre les différents intervenants sur le service. Il définit les conditions et modalités d’utilisation des services france-chaleur-urbaine.beta.gouv.fr sur Internet.
 
@@ -24,17 +24,20 @@ Le présent document a pour objet de régler les relations entre les différents
 ### Objet
 
 Le service est une application web qui vous permet de :
-- Saisir l’adresse d’un logement et savoir s’il pourrait être raccordé à un réseau de chaleur. Par “pourrait être raccordé”, le service désigne les copropriétés qui sont à moins de 300 mètres d’un réseau de chaleur ce qui accroît la probabilité de pouvoir réaliser un raccordement.
-- Afficher une carte centrée sur cette adresse montrant les réseaux de chaleur à proximité (carte ViaSeva)
-- Saisir des informations concernant votre copropriété en vue d’obtenir des informations de services publics d’accompagnement ou d’informations techniques et commerciales de la part de l’opérateur du réseau de chaleur à proximité
+- Saisir l’adresse d’un bâtiment et savoir s’il est situé à proximité d’un réseau de chaleur. Par “à proximité”, le service désigne les bâtiments qui sont à moins de 100 mètres d’un réseau de chaleur ce qui accroît la probabilité de pouvoir réaliser un raccordement.
+- Saisir vos coordonnées en vue d’obtenir des informations  techniques et commerciales de la part de l’opérateur du réseau de chaleur à proximité
+- Consulter une carte montrant les tracés des réseaux de chaleur, les potentiels de raccordement à l’adresse, et la localisation des demandes reçues sur France Chaleur Urbaine. Cette dernière information a pour objectif de susciter des projets de création d’extensions ou de nouveaux réseaux là où de fortes attentes sont identifiées.
 
 ### Fonctionnalités
 
-- __*Formulaire pour savoir si la copropriété est raccordable*__  
-L’Utilisateur peut renseigner l’adresse d’une copropriété pour savoir si elle est raccordable à un réseau de chaleur.
+- __*Formulaire pour savoir si le bâtiment est situé à proximité d’un réseau de chaleur*__  
+L’Utilisateur peut renseigner l’adresse d’un bâtiment pour savoir s’il est situé à proximité d’un réseau de chaleur.
 
 - __*Formulaire de contact et d’information*__  
-L’Utilisateur peut contacter l’équipe de France Chaleur Urbaine pour toute demande d’information.
+L’Utilisateur peut demander à être mis en relation avec le gestionnaire du réseau de chaleur, ou à ce que sa demande soit portée à la connaissance de la collectivité (en l’absence de réseau de chaleur notamment). La localisation de l’ensemble des demandes de contact reçues sur le site a vocation à être affichée sur la cartographie, sans divulguer l’identité ni les coordonnées du demandeur. L’utilisateur accepte que ses données soient collectées et utilisées à des fin d’analyse par le ministère de la transition écologique. Il accepte que sa demande soit communiquée au gestionnaire du réseau le plus proche, à la collectivité territoriale sur laquelle est située son adresse, ainsi qu’à l’espace France Rénov local.
+
+- __*Formulaire de contribution à la cartographie*__
+L’utilisateur peut transmettre des informations et données/tracés à afficher sur la cartographie, ou signaler une erreur.
 
 ### Responsabilités
 
@@ -48,8 +51,7 @@ L’éditeur s’engage à mettre en œuvre toutes mesures appropriées, afin de
 
 L’éditeur s’engage à la sécurisation de la Plateforme, notamment en prenant toutes les mesures nécessaires permettant de garantir la sécurité et la confidentialité des informations fournies.
 
-L’éditeur fournit les moyens nécessaires et raisonnables pour assurer un accès continu, sans contrepartie financière, à la Plateforme. Il se réserve la liberté de faire évoluer, de modifier ou de suspendre, sans préavis, la plateforme pour des raisons de maintenance ou pour tout autre motif jugé nécessaire.
-Ce site peut mettre à disposition des liens pouvant orienter l’utilisateur vers des sites réalisés par des tiers extérieurs. Ces tiers sont les seuls responsables du contenu publié par leur soin.
+L’éditeur fournit les moyens nécessaires et raisonnables pour assurer un accès continu, sans contrepartie financière, à la Plateforme. Il se réserve la liberté de faire évoluer, de modifier ou de suspendre, sans préavis, la plateforme pour des raisons de maintenance ou pour tout autre motif jugé nécessaire. Ce site peut mettre à disposition des liens pouvant orienter l’utilisateur vers des sites réalisés par des tiers extérieurs. Ces tiers sont les seuls responsables du contenu publié par leur soin.
 
 L’équipe n’a aucun contrôle sur le contenu de ces sites, ces contenus ne sauraient engager la responsabilité de l’administration.
 
@@ -63,11 +65,11 @@ Le contenu de l'Utilisateur peut être à tout moment et pour n'importe quelle r
 
 ### Qualité des données publiées
 
-Nous publions sur france-chaleur-urbaine des données à titre informatif. Par conséquent, les informations publiées sur chauffage-urbain ne sauraient engager la responsabilité de leur éditeur ou d’un quelconque service de l’État, l’utilisateur y ayant recours ayant conscience des potentielles erreurs ou omissions qu’elles peuvent comporter. Nous nous efforçons de livrer des données de la meilleure qualité possible. Toutefois, malgré toute notre attention, elles peuvent encore comporter des erreurs ou omissions. Si vous constatez une erreur ou omission parmi ces données, nous vous invitons à nous la signaler par courriel à [france-chaleur-urbaine@developpement-durable.gouv.fr](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr).
+Nous publions sur France Chaleur Urbaine des données à titre informatif. Par conséquent, les informations publiées sur France Chaleur Urbaine  ne sauraient engager la responsabilité de leur éditeur ou d’un quelconque service de l’État, l’utilisateur y ayant recours ayant conscience des potentielles erreurs ou omissions qu’elles peuvent comporter. Nous nous efforçons de livrer des données de la meilleure qualité possible. Toutefois, malgré toute notre attention, elles peuvent encore comporter des erreurs ou omissions. Si vous constatez une erreur ou omission parmi ces données, nous vous invitons à nous la signaler par courriel à [france-chaleur-urbaine@developpement-durable.gouv.fr](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr).
 
 ### Propriété intellectuelle
 
-Les marques dont est titulaire l’Etat, le ministère de la transition écologique, la Direction régionale et interdépartementale de l’Environnement, de l’Aménagement et des Transports d’Île-de-France de l’Ile-de-France, ainsi que les logos figurant sur le site sont des marques régulièrement déposées auprès de l’Institut national de la propriété industrielle (INPI). Toute reproduction totale ou partielle de ces marques ou de ces logos effectués à partir des éléments du site sans l’autorisation expresse du propriétaire de ce site est prohibée au sens des articles L. 713-2 et suivants du Code de la propriété intellectuelle. Tout contrefacteur s’expose aux sanctions prévues aux articles L. 716-1 et suivants du code de la propriété intellectuelle.
+Les marques dont est titulaire l’État, le ministère de la transition écologique, la Direction régionale et interdépartementale de l’Environnement, de l’Aménagement et des Transports d’Île-de-France de l’Ile-de-France, ainsi que les logos figurant sur le site sont des marques régulièrement déposées auprès de l’Institut national de la propriété industrielle (INPI). Toute reproduction totale ou partielle de ces marques ou de ces logos effectués à partir des éléments du site sans l’autorisation expresse du propriétaire de ce site est prohibée au sens des articles L. 713-2 et suivants du Code de la propriété intellectuelle. Tout contrefacteur s’expose aux sanctions prévues aux articles L. 716-1 et suivants du code de la propriété intellectuelle.
 
 ### Les données personnelles et les données relevant du secret des affaires sont protégées
 
