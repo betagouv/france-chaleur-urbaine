@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import LayoutContext from './LayoutContext';
 
 const MainContainer: React.FC<{
+  children?: React.ReactNode;
   currentMenu?: string;
   fullscreen?: boolean;
 }> = ({ children, currentMenu, fullscreen }) => {

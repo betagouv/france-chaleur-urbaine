@@ -3,11 +3,12 @@ import React from 'react';
 import { TextContainer } from './WrappedBlock.style';
 
 const TextBlock: React.FC<{
+  children?: React.ReactNode;
   title?: string;
   body?: string;
   className?: string;
   bodyClassName?: string;
-}> = ({ title, body, children, className, bodyClassName }) => {
+}> = ({ children, title, body, className, bodyClassName }) => {
   return (
     // TODO: Remove DSFR class system
     <TextContainer className={`fr-col-lg-6 fr-col-md-12 ${className}`}>

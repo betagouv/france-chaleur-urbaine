@@ -6,11 +6,11 @@ type CallOutProps = {
   variant?: 'default' | 'success' | 'error';
 };
 
-export const CallOutTitle: React.FC = (props) => (
+export const CallOutTitle: React.FC<any> = (props) => (
   <header className="fr-callout__title" {...props} />
 );
 
-export const CallOutBody: React.FC = (props) => (
+export const CallOutBody: React.FC<any> = (props) => (
   <div className="fr-callout__text" {...props} />
 );
 

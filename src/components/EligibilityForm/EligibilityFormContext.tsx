@@ -27,7 +27,9 @@ function reducer(
 
 export const Context = React.createContext(initialState);
 
-const EligibilityFormProvider: React.FC = ({ children }) => {
+const EligibilityFormProvider: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const contextValue = useMemo(() => ({ ...state, dispatch }), [state]);
 

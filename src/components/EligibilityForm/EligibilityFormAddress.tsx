@@ -9,6 +9,7 @@ import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 export type EnergyInputsLabelsType = { collectif: string; individuel: string };
 
 type CheckEligibilityFormProps = {
+  children?: React.ReactNode;
   formLabel?: React.ReactNode;
   energyInputsLabels?: EnergyInputsLabelsType;
   centredForm?: boolean;

@@ -11,6 +11,7 @@ import {
 
 const Slice: React.FC<
   {
+    children?: React.ReactNode;
     id?: string;
     header?: string;
     className?: string;
@@ -20,10 +21,10 @@ const Slice: React.FC<
     direction?: string;
   } & SliceContainerWrapperType
 > = ({
+  children,
   id,
   className,
   header,
-  children,
   theme,
   padding,
   bg,
@@ -70,10 +71,11 @@ const Slice: React.FC<
 
 export const SliceImg: React.FC<
   {
+    children?: React.ReactNode;
     src: string;
     padding?: number;
   } & SliceContainerWrapperType
-> = ({ src, padding, children, ...props }) => (
+> = ({ children, src, padding, ...props }) => (
   <Slice bg={src} padding={padding || 0} bgPos="top center" {...props}>
     {children || <SliceHiddenImg src={src} style={{ opacity: 0 }} />}
   </Slice>

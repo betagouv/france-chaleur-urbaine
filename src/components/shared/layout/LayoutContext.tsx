@@ -10,7 +10,9 @@ const context = {
 export const LayoutContext = React.createContext(context);
 export default LayoutContext;
 
-export const LayoutProvider: React.FC = ({ children }) => {
+export const LayoutProvider: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => {
   const [currentMenu, setCurrentMenu] = useState('/');
   const [fullscreen, setFullscreen] = useState(false);
   return (
