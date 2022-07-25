@@ -176,21 +176,23 @@ export default function Map() {
     console.info('State of: soughtAddress =>', soughtAddress);
   }, [soughtAddress]);
 
-  const onAddressSelectHandle:
-    | TypeHandleAddressSelect
-    | { _coordinates: Point } = useCallback(
-    (address, _coordinates, addressDetails) => {
-      const coordinates: Point = [_coordinates[1], _coordinates[0]]; // TODO: Fix on source
+  const onAddressSelectHandle: TypeHandleAddressSelect = useCallback(
+    (
+      address: string,
+      coordinates: Point,
+      addressDetails: TypeAddressDetail
+    ) => {
+      const computedCoordinates: Point = [coordinates[1], coordinates[0]]; // TODO: Fix on source
       const search = {
         date: Date.now(),
       };
-      const id = getAddressId(coordinates);
+      const id = getAddressId(computedCoordinates);
       if (!Array.isArray(soughtAddress)) return;
       const newAddress = soughtAddress.find(
         ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
       ) || {
         id,
-        coordinates,
+        coordinates: computedCoordinates,
         address,
         addressDetails,
         search,
@@ -201,7 +203,7 @@ export default function Map() {
         ),
         newAddress,
       ]);
-      flyTo({ coordinates });
+      flyTo({ coordinates: computedCoordinates });
     },
     [flyTo, setSoughtAddress, soughtAddress]
   );

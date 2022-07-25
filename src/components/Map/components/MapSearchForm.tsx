@@ -1,12 +1,13 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
 import { useServices } from 'src/services';
 import { Point } from 'src/types';
+import type { TypeAddressDetail } from './CardSearchDetails';
 import { MapSearchFormGlobalStyle } from './MapSearchForm.style';
 
 export type TypeHandleAddressSelect = (
   address: string,
   coordinates: Point,
-  addressDetails: any
+  addressDetails: TypeAddressDetail
 ) => void;
 
 const MapSearchForm = ({
