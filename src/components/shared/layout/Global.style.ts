@@ -103,4 +103,5 @@ export const GlobalStyle = createGlobalStyle`
         padding-left: 4rem;
       }
     }
+  }
 `;
