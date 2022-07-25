@@ -2,7 +2,7 @@ import db from 'src/db';
 
 const DEBUG = !!(process.env.API_DEBUG_MODE || null);
 
-const distanceReseau = async (lat: number, lon: number): Promise<number> => {
+const calculateDistance = async (lat: number, lon: number): Promise<number> => {
   const { distance } = await db('reseaux_de_chaleur_new')
     .select(
       db.raw(`ST_Distance(
@@ -17,4 +17,4 @@ const distanceReseau = async (lat: number, lon: number): Promise<number> => {
   return distance;
 };
 
-export default distanceReseau;
+export default calculateDistance;
