@@ -1,8 +1,6 @@
-import ResourceCard from '@components/resources/resourceCard';
-
 type ResourceSection = {
+  children?: React.ReactNode[];
   title: string;
-  children: JSX.Element | JSX.Element[] | any;
 };
 
 function ResourceSection({ title, children }: ResourceSection) {
@@ -12,7 +10,7 @@ function ResourceSection({ title, children }: ResourceSection) {
         <div className="fr-col-12">
           <h2>{title}</h2>
         </div>
-        {children?.map((child: ResourceCard, index: number) => (
+        {children?.map((child: React.ReactNode, index: number) => (
           <div key={index} className="fr-col-lg-4 fr-col-sm-6">
             {child}
           </div>
