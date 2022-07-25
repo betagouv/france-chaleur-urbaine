@@ -15,12 +15,12 @@ import {
 import Head from 'next/head';
 import { createGlobalStyle } from 'styled-components';
 
-const TertiaireStyle = createGlobalStyle`
+const TertiaireStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .presentation-rcu-tertiaire {
     .presentation-rcu-tertiaire-body {
       flex: 1;
       color: var(--bf500);
-      
+
       @media (min-width: 992px) {
         padding: 0 3rem;
       }
@@ -99,7 +99,7 @@ const TertiaireStyle = createGlobalStyle`
       flex-wrap: wrap;
       flex: 1;
       color: var(--bf500);
-      
+
       @media (min-width: 992px) {
         padding: 0 3rem;
       }

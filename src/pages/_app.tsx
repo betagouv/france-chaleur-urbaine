@@ -36,12 +36,12 @@ const favicons = [
   },
 ];
 
-const GlobalStyle = createGlobalStyle`
+const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   html {
     scroll-behavior: smooth;
   }
 `;
-const DsfrFixUp = createGlobalStyle`
+const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .fr-header__service-title{
     color: #069368;
   }

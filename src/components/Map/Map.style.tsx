@@ -12,7 +12,7 @@ const { minZoomData, maxZoom } = param;
 const mapOverZindex = 10000;
 const mapControlZindex = 10100;
 
-export const MapStyle = createGlobalStyle`
+export const MapStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
       position: relative;
       width: 100%;
