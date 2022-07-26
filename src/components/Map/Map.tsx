@@ -240,8 +240,9 @@ export default function Map() {
       if (!Array.isArray(soughtAddress)) {
         return;
       }
+
       const newAddress = soughtAddress.find(
-        ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
+        ({ id: soughtAddressId }) => soughtAddressId === id
       ) || {
         id,
         coordinates: computedCoordinates,
