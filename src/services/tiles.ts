@@ -1,4 +1,5 @@
 import { mapParam } from '@components/Map';
+import { meaningFullEnergies } from '@core/infrastructure/repository/dataSummary';
 import geojsonvt from 'geojson-vt';
 import db from 'src/db';
 
@@ -27,13 +28,23 @@ const getObjectIndex = async (
   tileOptions: geojsonvt.Options,
   properties: string[]
 ) => {
-  const geoJSON = process.env.LIMIT_NETWORK_RESULTS
-    ? await db(table)
-        .first(geoJSONQuery(properties))
-        .whereNotNull('geom')
-        .andWhere(db.raw(`id < ${process.env.LIMIT_NETWORK_RESULTS}`))
-    : await db(table).first(geoJSONQuery(properties)).whereNotNull('geom');
-
+  let geoJSON;
+  if (table === 'registre_copro_r11_220125') {
+    geoJSON = process.env.LIMIT_NETWORK_RESULTS
+      ? await db(table)
+          .first(geoJSONQuery(properties))
+          .whereIn('energie_utilisee', meaningFullEnergies)
+          .whereNotNull('geom')
+          .andWhere(db.raw(`id < ${process.env.LIMIT_NETWORK_RESULTS}`))
+      : await db(table).first(geoJSONQuery(properties)).whereNotNull('geom');
+  } else {
+    geoJSON = process.env.LIMIT_NETWORK_RESULTS
+      ? await db(table)
+          .first(geoJSONQuery(properties))
+          .whereNotNull('geom')
+          .andWhere(db.raw(`id < ${process.env.LIMIT_NETWORK_RESULTS}`))
+      : await db(table).first(geoJSONQuery(properties)).whereNotNull('geom');
+  }
   return geojsonvt(geoJSON.json_build_object, tileOptions);
 };
 

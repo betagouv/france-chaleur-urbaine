@@ -193,7 +193,7 @@ export const outlineLayerStyle = {
 
 const NB_LOT = 'nb_lot_habitation_bureau_commerce';
 const TYPE_ENERGY = 'energie_utilisee';
-const typeEnergy: Record<string, string> = {
+export const typeEnergy: Record<string, string> = {
   fioul: 'fuelOil',
   fioul_domestique: 'fuelOil',
   gaz: 'gas',

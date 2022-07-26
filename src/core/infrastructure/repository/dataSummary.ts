@@ -1,5 +1,14 @@
 import db from 'src/db';
 
+export const meaningFullEnergies = [
+  'fioul',
+  'fioul_domestique',
+  'gaz',
+  'gaz_naturel',
+  'gaz_collectif',
+  'gaz_propane_butane',
+];
+
 const getWithinQuery = (
   swLng: number,
   swLat: number,
@@ -73,8 +82,9 @@ const getEnergySummary = async (
   neLat: number
 ) =>
   db('registre_copro_r11_220125')
-    .select('id')
-    .where(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)));
+    .select('id', 'energie_utilisee')
+    .whereIn('energie_utilisee', meaningFullEnergies)
+    .andWhere(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)));
 
 const getCloseGasSummary = async (
   swLng: number,
@@ -106,8 +116,9 @@ const getCloseEnergySummary = async (
   neLat: number
 ) =>
   db('registre_copro_r11_220125 as energy')
-    .select('id')
-    .where(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)))
+    .select('id', 'energie_utilisee')
+    .whereIn('energie_utilisee', meaningFullEnergies)
+    .andWhere(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)))
     .andWhere(
       db.raw(`
         EXISTS (

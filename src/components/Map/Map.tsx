@@ -24,6 +24,7 @@ import {
   MapStyle,
   objTypeEnergy,
   outlineLayerStyle,
+  typeEnergy,
   zoneDPLayerStyle,
 } from './Map.style';
 
@@ -194,8 +195,14 @@ export default function Map() {
     const { gas, energy, network, closeGas, closeEnergy } =
       await heatNetworkService.getData(bounds);
     window.alert(`
-      fioul proche reseau: ${closeEnergy.length}
-      gas proche reseau: ${closeGas.length}
+      fioul proche reseau: ${
+        closeEnergy.filter((x) => typeEnergy[x.energie_utilisee] === 'fuelOil')
+          .length
+      }
+      gas proche reseau: ${
+        closeEnergy.filter((x) => typeEnergy[x.energie_utilisee] === 'gas')
+          .length
+      }
       gas proche reseau conso (Gwh): ${
         closeGas.reduce(
           (acc: number, current: any): number => acc + current.conso,
@@ -211,8 +218,13 @@ export default function Map() {
           0
         ) / 1000
       }
-      Batiment au fioul: ${energy.length}
-      Batiment au gas: ${gas.length}
+      Batiment au fioul: ${
+        energy.filter((x) => typeEnergy[x.energie_utilisee] === 'fuelOil')
+          .length
+      }
+      Batiment au gas: ${
+        energy.filter((x) => typeEnergy[x.energie_utilisee] === 'gas').length
+      }
       gas conso (Gwh): ${
         gas.reduce(
           (acc: number, current: any): number => acc + current.conso,
