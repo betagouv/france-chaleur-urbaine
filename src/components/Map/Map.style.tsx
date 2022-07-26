@@ -1,4 +1,3 @@
-import { Button } from '@dataesr/react-dsfr';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import {
   themeDefEnergy,
@@ -340,6 +339,7 @@ export const zoneDPLayerStyle = {
   },
 };
 
-export const AddButton = styled(Button)`
-  float: right;
+export const Buttons = styled.div`
+  display: flex;
+  justify-content: space-evenly;
 `;

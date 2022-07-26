@@ -16,4 +16,14 @@ export class HeatNetworkService {
       throw new ServiceError(e);
     }
   }
+
+  async getData(bounds: any): Promise<any> {
+    try {
+      return await this.httpClient.get<any>(
+        `/api/map/getData?swLng=${bounds._sw.lng}&swLat=${bounds._sw.lat}&neLng=${bounds._ne.lng}&neLat=${bounds._ne.lat}&`
+      );
+    } catch (e) {
+      throw new ServiceError(e);
+    }
+  }
 }

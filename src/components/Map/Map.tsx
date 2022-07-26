@@ -1,8 +1,10 @@
+import { Button } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useServices } from 'src/services';
 import { Point } from 'src/types';
 import {
   CardSearchDetails,
@@ -14,7 +16,7 @@ import {
 import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
-  AddButton,
+  Buttons,
   energyLayerStyle,
   gasUsageLayerStyle,
   MapControlWrapper,
@@ -139,6 +141,8 @@ const formatBodyPopup = ({
 };
 
 export default function Map() {
+  const { heatNetworkService } = useServices();
+
   const mapContainer: null | { current: any } = useRef(null);
   const map: null | { current: any } = useRef(null);
 
@@ -184,6 +188,43 @@ export default function Map() {
   const logSoughtAddress = useCallback(() => {
     console.info('State of: soughtAddress =>', soughtAddress);
   }, [soughtAddress]);
+
+  const computeData = useCallback(async () => {
+    const bounds = map.current.getBounds();
+    const { gas, energy, network, closeGas, closeEnergy } =
+      await heatNetworkService.getData(bounds);
+    window.alert(`
+      fioul proche reseau: ${closeEnergy.length}
+      gas proche reseau: ${closeGas.length}
+      gas proche reseau conso (Gwh): ${
+        closeGas.reduce(
+          (acc: number, current: any): number => acc + current.conso,
+          0
+        ) / 1000
+      }
+
+      ----------
+      
+      longueur reseau (km): ${
+        network.reduce(
+          (acc: number, current: number[]): number => acc + current.length,
+          0
+        ) / 1000
+      }
+      Batiment au fioul: ${energy.length}
+      Batiment au gas: ${gas.length}
+      gas conso (Gwh): ${
+        gas.reduce(
+          (acc: number, current: any): number => acc + current.conso,
+          0
+        ) / 1000
+      }
+      gas pdl: ${gas.reduce(
+        (acc: number, current: any): number => acc + current.pdl,
+        0
+      )}
+    `);
+  }, [map]);
 
   const onAddressSelectHandle: TypeHandleAddressSelect = useCallback(
     (
@@ -296,6 +337,7 @@ export default function Map() {
       maxZoom,
       minZoom,
     });
+
     map.current.on('click', () => {
       if (DEBUG) {
         console.info('zoom =>', map.current.getZoom());
@@ -578,12 +620,17 @@ export default function Map() {
         </MapControlWrapper>
 
         <MapControlWrapper bottom right>
-          <AddButton
-            icon="ri-add-line"
-            onClick={() => router.push('/contribution')}
-          >
-            Contribuer
-          </AddButton>
+          <Buttons>
+            <Button
+              icon="ri-add-line"
+              onClick={() => router.push('/contribution')}
+            >
+              Contribuer
+            </Button>
+            <Button icon="ri-file-list-line" onClick={computeData}>
+              Compute
+            </Button>
+          </Buttons>
         </MapControlWrapper>
 
         <div ref={mapContainer} className="map" />
