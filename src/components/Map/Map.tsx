@@ -154,8 +154,8 @@ export default function Map() {
     [] as {
       id: string;
       coordinates: Point;
-      address: Record<string, any>;
-      addressDetails: Record<string, any>;
+      address: string;
+      addressDetails: TypeAddressDetail;
       search: { date: number };
     }[],
     {
@@ -197,7 +197,9 @@ export default function Map() {
         date: Date.now(),
       };
       const id = getAddressId(computedCoordinates);
-      if (!Array.isArray(soughtAddress)) return;
+      if (!Array.isArray(soughtAddress)) {
+        return;
+      }
       const newAddress = soughtAddress.find(
         ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
       ) || {
