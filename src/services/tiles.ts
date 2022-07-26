@@ -45,6 +45,7 @@ const getObjectIndex = async (
           .andWhere(db.raw(`id < ${process.env.LIMIT_NETWORK_RESULTS}`))
       : await db(table).first(geoJSONQuery(properties)).whereNotNull('geom');
   }
+
   return geojsonvt(geoJSON.json_build_object, tileOptions);
 };
 
@@ -117,9 +118,12 @@ const getTiles = (type: DataType, x: number, y: number, z: number) => {
   }
 
   const tileInfo = tilesInfo[type];
-  return tileInfo.minZoom && tileInfo.minZoom > z
-    ? null
-    : { [tileInfo.sourceLayer]: tiles.getTile(z, x, y) };
+  if (tileInfo.minZoom && tileInfo.minZoom > z) {
+    return null;
+  }
+
+  const tile = tiles.getTile(z, x, y);
+  return tile ? { [tileInfo.sourceLayer]: tile } : null;
 };
 
 export default getTiles;
