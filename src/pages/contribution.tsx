@@ -6,14 +6,13 @@ import { submitToAirtable } from '@helpers';
 import Head from 'next/head';
 import { useState } from 'react';
 
-const results: Record<
-  string,
-  {
-    type: 'success' | 'error';
-    title: string;
-    description: string | Object | any[];
-  }
-> = {
+type ResultType = {
+  type: 'success' | 'error';
+  title: string;
+  description: string | unknown | any[];
+};
+
+const results: Record<string, ResultType> = {
   success: {
     type: 'success',
     title: 'Nous vous remercions pour votre contribution.',
@@ -36,11 +35,7 @@ const results: Record<
 };
 
 function Contribution() {
-  const [result, setResult] = useState<{
-    type: 'success' | 'error';
-    title: string;
-    description: string | Object | any[];
-  }>();
+  const [result, setResult] = useState<ResultType>();
 
   const submit = async (data: any) => {
     try {
@@ -69,7 +64,7 @@ function Contribution() {
             <Alert
               type={result.type}
               title={result.title}
-              description={result.description}
+              description={result.description as string}
             />
           ) : (
             <ContributionForm submit={submit} />
