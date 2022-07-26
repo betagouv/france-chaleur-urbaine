@@ -196,11 +196,12 @@ export default function Map() {
       await heatNetworkService.getData(bounds);
     window.alert(`
       fioul proche reseau: ${
-        closeEnergy.filter((x) => typeEnergy[x.energie_utilisee] === 'fuelOil')
-          .length
+        closeEnergy.filter(
+          (x: any) => typeEnergy[x.energie_utilisee] === 'fuelOil'
+        ).length
       }
       gas proche reseau: ${
-        closeEnergy.filter((x) => typeEnergy[x.energie_utilisee] === 'gas')
+        closeEnergy.filter((x: any) => typeEnergy[x.energie_utilisee] === 'gas')
           .length
       }
       gas proche reseau conso (Gwh): ${
@@ -219,11 +220,12 @@ export default function Map() {
         ) / 1000
       }
       Batiment au fioul: ${
-        energy.filter((x) => typeEnergy[x.energie_utilisee] === 'fuelOil')
+        energy.filter((x: any) => typeEnergy[x.energie_utilisee] === 'fuelOil')
           .length
       }
       Batiment au gas: ${
-        energy.filter((x) => typeEnergy[x.energie_utilisee] === 'gas').length
+        energy.filter((x: any) => typeEnergy[x.energie_utilisee] === 'gas')
+          .length
       }
       gas conso (Gwh): ${
         gas.reduce(
