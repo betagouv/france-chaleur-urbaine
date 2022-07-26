@@ -1,7 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
 import { themeDefHeatNetwork } from '../businessRules';
 
-export const MapGlobalStyle = createGlobalStyle`
+export const MapGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .leaflet-container .leaflet-control-attribution {
     margin: 0.5em 0;
     padding: 0 0.5em;
@@ -115,7 +115,7 @@ export const MapGlobalStyle = createGlobalStyle`
   }
 `;
 
-export const LegendGlobalStyle = createGlobalStyle`
+export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   hr {
     border: 1px solid #4550e5;
     border-width: 0 0 1px;

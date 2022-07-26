@@ -1,4 +1,5 @@
 type AddressAutocompleteLabelProps = {
+  children?: React.ReactNode;
   name?: string;
   centred?: boolean;
 };

@@ -3,6 +3,7 @@ import React from 'react';
 import { Container, ImageContainer, TextContainer } from './WrappedText.style';
 
 const WrappedText: React.FC<{
+  children?: React.ReactNode;
   title?: string;
   body?: string;
   imgSrc?: string;
@@ -12,11 +13,11 @@ const WrappedText: React.FC<{
   reverse?: boolean;
   center?: boolean;
 }> = ({
+  children,
   title,
   body,
   imgSrc,
   imgAlt = '',
-  children,
   textClassName,
   imgClassName,
   reverse,

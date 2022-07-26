@@ -19,6 +19,7 @@ const OptionWrapper = styled.span`
 `;
 
 type CheckEligibilityFormProps = {
+  children?: React.ReactNode;
   name: string;
   selectOptions?: Record<string, string>;
   centredForm?: boolean;

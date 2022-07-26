@@ -13,7 +13,7 @@ export {
 } from './MainLayout.data'; // TODO: remove this and use index.ts
 
 type MainLayout = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   fullscreen?: boolean;
 };
 

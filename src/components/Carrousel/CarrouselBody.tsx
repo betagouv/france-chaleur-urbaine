@@ -2,13 +2,13 @@ import React from 'react';
 import { CarrouselBodyChild, CarrouselBodyWrapper } from './Carrousel.style';
 
 type CarrouselBodyProps = {
-  selected?: number;
   children?: React.ReactNode;
+  selected?: number;
 };
 
 const CarrouselBody: React.FC<CarrouselBodyProps> = ({
-  selected = 0,
   children,
+  selected = 0,
 }) => {
   return (
     <CarrouselBodyWrapper>

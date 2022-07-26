@@ -34,6 +34,7 @@ const RoutedLink = (props: any) => {
 };
 
 const ConsentLink: React.FC<{
+  children?: React.ReactNode;
   ForceBlock: React.ElementType;
 }> = ({ children, ForceBlock = React.Fragment }) => (
   <ForceBlock>
@@ -57,6 +58,7 @@ const processor = (extender: Record<string, unknown> = {}) =>
     });
 
 const MarkdownWrapper: React.FC<{
+  children?: React.ReactNode;
   value?: string;
   id?: JSX.IntrinsicAttributes;
   className?: string;

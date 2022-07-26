@@ -25,7 +25,10 @@ export const customRender = (
   );
 };
 export const customRenderHook = (hook: any, overrideProps?: any) => {
-  const Wrapper: React.FC = ({ children, ...overrideProps }) => {
+  const Wrapper: React.FC<{
+    children: React.ReactNode;
+    overrideProps: any;
+  }> = ({ children, ...overrideProps }) => {
     return (
       <ServicesContext.Provider
         value={{

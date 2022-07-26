@@ -4,6 +4,7 @@ import TextBlock from './TextBlock';
 import { Container } from './WrappedBlock.style';
 
 const WrappedText: React.FC<{
+  children?: React.ReactNode;
   data?: Record<string, unknown>[];
   reverse?: boolean;
   direction?: string;
