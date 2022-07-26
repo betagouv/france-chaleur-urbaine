@@ -1,9 +1,11 @@
 import getDataSummary from '@core/infrastructure/repository/dataSummary';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { ErrorResponse } from 'src/types/ErrorResponse';
+import { Summary } from 'src/types/Summary';
 
 export default async function getEligibilityStatusgibilityStatus(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<Summary | ErrorResponse>
 ) {
   if (req.method !== 'GET') {
     return res.status(501);

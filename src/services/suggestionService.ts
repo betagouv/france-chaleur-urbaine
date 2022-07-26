@@ -1,5 +1,5 @@
 import { HttpClient } from '@components/lib';
-import { SuggestionResponse } from 'src/types';
+import { SuggestionResponse } from 'src/types/Suggestions';
 import { ServiceError } from './errors';
 
 export class SuggestionService {

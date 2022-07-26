@@ -6,11 +6,8 @@ import { axiosHttpClient } from '@core/infrastructure/repository/AxiosHttpClient
 import { NetworkRepositoryImpl } from '@core/infrastructure/repository/networkRepositoryImpl';
 import { TestEligibility } from '@core/useCase/testEligibility';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { ErrorResponse } from 'src/types/ErrorResponse';
 
-type ErrorResponse = {
-  code: string;
-  message: string;
-};
 export default async function getEligibilityStatusgibilityStatus(
   req: NextApiRequest,
   res: NextApiResponse<AddressDTO | ErrorResponse>

@@ -5,7 +5,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
-import { Point } from 'src/types';
+import { Point } from 'src/types/Point';
 import {
   CardSearchDetails,
   MapLegend,
@@ -196,49 +196,35 @@ export default function Map() {
       await heatNetworkService.getData(bounds);
     window.alert(`
       fioul proche reseau: ${
-        closeEnergy.filter(
-          (x: any) => typeEnergy[x.energie_utilisee] === 'fuelOil'
-        ).length
+        closeEnergy.filter((x) => typeEnergy[x.energie_utilisee] === 'fuelOil')
+          .length
       }
       gas proche reseau: ${
-        closeEnergy.filter((x: any) => typeEnergy[x.energie_utilisee] === 'gas')
+        closeEnergy.filter((x) => typeEnergy[x.energie_utilisee] === 'gas')
           .length
       }
       gas proche reseau conso (Gwh): ${
-        closeGas.reduce(
-          (acc: number, current: any): number => acc + current.conso,
-          0
-        ) / 1000
+        closeGas.reduce((acc, current) => acc + current.conso, 0) / 1000
       }
 
       ----------
       
       longueur reseau (km): ${
-        network.reduce(
-          (acc: number, current: number[]): number => acc + current.length,
-          0
-        ) / 1000
+        network.reduce((acc, current) => acc + current.length, 0) / 1000
       }
       Batiment au fioul: ${
-        energy.filter((x: any) => typeEnergy[x.energie_utilisee] === 'fuelOil')
+        energy.filter((x) => typeEnergy[x.energie_utilisee] === 'fuelOil')
           .length
       }
       Batiment au gas: ${
-        energy.filter((x: any) => typeEnergy[x.energie_utilisee] === 'gas')
-          .length
+        energy.filter((x) => typeEnergy[x.energie_utilisee] === 'gas').length
       }
       gas conso (Gwh): ${
-        gas.reduce(
-          (acc: number, current: any): number => acc + current.conso,
-          0
-        ) / 1000
+        gas.reduce((acc, current) => acc + current.conso, 0) / 1000
       }
-      gas pdl: ${gas.reduce(
-        (acc: number, current: any): number => acc + current.pdl,
-        0
-      )}
+      gas pdl: ${gas.reduce((acc, current) => acc + current.pdl, 0)}
     `);
-  }, [map]);
+  }, [heatNetworkService, map]);
 
   const onAddressSelectHandle: TypeHandleAddressSelect = useCallback(
     (

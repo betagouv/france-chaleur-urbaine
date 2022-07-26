@@ -1,7 +1,7 @@
 import { mapParam } from '@components/Map';
-import { meaningFullEnergies } from '@core/infrastructure/repository/dataSummary';
 import geojsonvt from 'geojson-vt';
 import db from 'src/db';
+import { meaningFullEnergies } from 'src/types/enum/EnergyType';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 

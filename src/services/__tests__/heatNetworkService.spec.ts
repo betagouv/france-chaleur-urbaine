@@ -1,5 +1,5 @@
 import { FakeHttpClient } from '@utils/fakeHttpClient';
-import { Coords } from 'src/types';
+import { Coords } from 'src/types/Coords';
 import { HeatNetworkService } from '..';
 import { ServiceError } from '../errors';
 

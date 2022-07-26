@@ -1,13 +1,9 @@
 import db from 'src/db';
-
-export const meaningFullEnergies = [
-  'fioul',
-  'fioul_domestique',
-  'gaz',
-  'gaz_naturel',
-  'gaz_collectif',
-  'gaz_propane_butane',
-];
+import { meaningFullEnergies } from 'src/types/enum/EnergyType';
+import { Summary } from 'src/types/Summary';
+import { EnergySummary } from 'src/types/Summary/Energy';
+import { GasSummary } from 'src/types/Summary/Gas';
+import { NetworkSummary } from 'src/types/Summary/Network';
 
 const getWithinQuery = (
   swLng: number,
@@ -31,7 +27,7 @@ const getNetworkSummary = async (
   swLat: number,
   neLng: number,
   neLat: number
-) =>
+): Promise<NetworkSummary[]> =>
   db('reseaux_de_chaleur_new')
     .select(
       db.raw(`
@@ -70,7 +66,7 @@ const getGasSummary = async (
   swLat: number,
   neLng: number,
   neLat: number
-) =>
+): Promise<GasSummary[]> =>
   db('conso_gaz_2020_r11_geocoded')
     .select('conso', 'pdl')
     .where(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)));
@@ -80,7 +76,7 @@ const getEnergySummary = async (
   swLat: number,
   neLng: number,
   neLat: number
-) =>
+): Promise<EnergySummary[]> =>
   db('registre_copro_r11_220125')
     .select('id', 'energie_utilisee')
     .whereIn('energie_utilisee', meaningFullEnergies)
@@ -91,7 +87,7 @@ const getCloseGasSummary = async (
   swLat: number,
   neLng: number,
   neLat: number
-) =>
+): Promise<GasSummary[]> =>
   db('conso_gaz_2020_r11_geocoded as gas')
     .select('conso', 'pdl')
     .where(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)))
@@ -114,7 +110,7 @@ const getCloseEnergySummary = async (
   swLat: number,
   neLng: number,
   neLat: number
-) =>
+): Promise<EnergySummary[]> =>
   db('registre_copro_r11_220125 as energy')
     .select('id', 'energie_utilisee')
     .whereIn('energie_utilisee', meaningFullEnergies)
@@ -138,7 +134,7 @@ const getDataSummary = async (
   swLat: number,
   neLng: number,
   neLat: number
-): Promise<any> => {
+): Promise<Summary> => {
   const [gas, energy, network, closeGas, closeEnergy] = await Promise.all([
     getGasSummary(swLng, swLat, neLng, neLat),
     getEnergySummary(swLng, swLat, neLng, neLat),

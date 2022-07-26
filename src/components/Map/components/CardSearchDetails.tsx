@@ -1,5 +1,5 @@
 import React from 'react';
-import { Point } from 'src/types';
+import { Point } from 'src/types/Point';
 import { EligibilityResult, MapCard } from './CardDetails.style';
 
 export type TypeAddressDetail = any;

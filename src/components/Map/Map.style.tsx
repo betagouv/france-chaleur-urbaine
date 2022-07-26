@@ -1,3 +1,4 @@
+import { EnergyType, EnergyUsed } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import {
   themeDefEnergy,
@@ -193,19 +194,19 @@ export const outlineLayerStyle = {
 
 const NB_LOT = 'nb_lot_habitation_bureau_commerce';
 const TYPE_ENERGY = 'energie_utilisee';
-export const typeEnergy: Record<string, string> = {
-  fioul: 'fuelOil',
-  fioul_domestique: 'fuelOil',
-  gaz: 'gas',
-  gaz_naturel: 'gas',
-  gaz_collectif: 'gas',
-  gaz_propane_butane: 'gas',
-  charbon: 'wood',
-  bois_de_chauffage: 'wood',
-  electricite: 'electric',
-  energie_autre: 'unknow',
-  'sans objet': 'unknow',
-  default: 'unknow',
+export const typeEnergy: Record<EnergyUsed, EnergyType> = {
+  [EnergyUsed.Fioul]: EnergyType.Fuel,
+  [EnergyUsed.FioulDomestique]: EnergyType.Fuel,
+  [EnergyUsed.Gaz]: EnergyType.Gas,
+  [EnergyUsed.GazNaturel]: EnergyType.Gas,
+  [EnergyUsed.GazCollectif]: EnergyType.Gas,
+  [EnergyUsed.GazPropaneButane]: EnergyType.Gas,
+  [EnergyUsed.Charbon]: EnergyType.Wood,
+  [EnergyUsed.BoisDeChauffage]: EnergyType.Wood,
+  [EnergyUsed.Electricite]: EnergyType.Electric,
+  [EnergyUsed.EnergieAutre]: EnergyType.Unknown,
+  [EnergyUsed.SansObjet]: EnergyType.Unknown,
+  [EnergyUsed.Default]: EnergyType.Unknown,
 };
 export const objTypeEnergy = Object.entries(typeEnergy).reduce(
   (acc: any, [key, value]: [string, string]) => {

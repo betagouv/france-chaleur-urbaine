@@ -1,4 +1,4 @@
-import { SuggestionResponse } from 'src/types';
+import { SuggestionResponse } from 'src/types/Suggestions';
 
 export const someSuggestions = (): SuggestionResponse => ({
   type: 'FeatureCollection',

@@ -1,5 +1,7 @@
 import { HttpClient } from '@components/lib';
-import { Coords, HeatNetworksResponse } from 'src/types';
+import { Coords } from 'src/types/Coords';
+import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
+import { Summary } from 'src/types/Summary';
 import { ServiceError } from './errors';
 
 export class HeatNetworkService {
@@ -17,9 +19,9 @@ export class HeatNetworkService {
     }
   }
 
-  async getData(bounds: any): Promise<any> {
+  async getData(bounds: any): Promise<Summary> {
     try {
-      return await this.httpClient.get<any>(
+      return await this.httpClient.get<Summary>(
         `/api/map/getData?swLng=${bounds._sw.lng}&swLat=${bounds._sw.lat}&neLng=${bounds._ne.lng}&neLat=${bounds._ne.lat}&`
       );
     } catch (e) {

@@ -1,7 +1,7 @@
 import debounce from 'lodash.debounce';
 import { useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
-import { Suggestions } from 'src/types';
+import { SuggestionItem } from 'src/types/Suggestions';
 
 enum Status {
   Idle = 'idle',
@@ -23,7 +23,7 @@ const useSuggestions = ({
   debounceTime = 300,
   minCharactersLength = 3,
 }: configProps) => {
-  const [suggestions, setSuggestions] = useState<Suggestions | []>([]);
+  const [suggestions, setSuggestions] = useState<SuggestionItem[]>([]);
   const [status, setStatus] = useState<ValueOf<Status>>(Status.Idle);
   const mountedRef = useRef(true);
   const DIGITS_THRESHOLD = 3;
