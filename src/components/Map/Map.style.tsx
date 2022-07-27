@@ -1,4 +1,4 @@
-import { EnergyType, EnergyUsed } from 'src/types/enum/EnergyType';
+import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import {
   themeDefEnergy,
@@ -194,19 +194,19 @@ export const outlineLayerStyle = {
 
 const NB_LOT = 'nb_lot_habitation_bureau_commerce';
 const TYPE_ENERGY = 'energie_utilisee';
-export const typeEnergy: Record<EnergyUsed, EnergyType> = {
-  [EnergyUsed.Fioul]: EnergyType.Fuel,
-  [EnergyUsed.FioulDomestique]: EnergyType.Fuel,
-  [EnergyUsed.Gaz]: EnergyType.Gas,
-  [EnergyUsed.GazNaturel]: EnergyType.Gas,
-  [EnergyUsed.GazCollectif]: EnergyType.Gas,
-  [EnergyUsed.GazPropaneButane]: EnergyType.Gas,
-  [EnergyUsed.Charbon]: EnergyType.Wood,
-  [EnergyUsed.BoisDeChauffage]: EnergyType.Wood,
-  [EnergyUsed.Electricite]: EnergyType.Electric,
-  [EnergyUsed.EnergieAutre]: EnergyType.Unknown,
-  [EnergyUsed.SansObjet]: EnergyType.Unknown,
-  [EnergyUsed.Default]: EnergyType.Unknown,
+export const typeEnergy: Record<ENERGY_USED, ENERGY_TYPE> = {
+  [ENERGY_USED.Fioul]: ENERGY_TYPE.Fuel,
+  [ENERGY_USED.FioulDomestique]: ENERGY_TYPE.Fuel,
+  [ENERGY_USED.Gaz]: ENERGY_TYPE.Gas,
+  [ENERGY_USED.GazNaturel]: ENERGY_TYPE.Gas,
+  [ENERGY_USED.GazCollectif]: ENERGY_TYPE.Gas,
+  [ENERGY_USED.GazPropaneButane]: ENERGY_TYPE.Gas,
+  [ENERGY_USED.Charbon]: ENERGY_TYPE.Wood,
+  [ENERGY_USED.BoisDeChauffage]: ENERGY_TYPE.Wood,
+  [ENERGY_USED.Electricite]: ENERGY_TYPE.Electric,
+  [ENERGY_USED.EnergieAutre]: ENERGY_TYPE.Unknown,
+  [ENERGY_USED.SansObjet]: ENERGY_TYPE.Unknown,
+  [ENERGY_USED.Default]: ENERGY_TYPE.Unknown,
 };
 export const objTypeEnergy = Object.entries(typeEnergy).reduce(
   (acc: any, [key, value]: [string, string]) => {

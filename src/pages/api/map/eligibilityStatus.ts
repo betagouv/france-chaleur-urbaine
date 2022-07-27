@@ -2,13 +2,13 @@ import { AddressNotFoundError } from '@core/domain/errors';
 import { AddressDTO } from '@core/infrastructure/mapper/address.dto';
 import AddressMapper from '@core/infrastructure/mapper/addressMapper';
 import { AddressRepositoryImpl } from '@core/infrastructure/repository/AddressRepositoryImpl';
-import { axiosHttpClient } from '@core/infrastructure/repository/AxiosHttpClient';
 import { NetworkRepositoryImpl } from '@core/infrastructure/repository/networkRepositoryImpl';
 import { TestEligibility } from '@core/useCase/testEligibility';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { axiosHttpClient } from 'src/services/http';
 import { ErrorResponse } from 'src/types/ErrorResponse';
 
-export default async function getEligibilityStatusgibilityStatus(
+export default async function eligibilityStatusgibilityStatus(
   req: NextApiRequest,
   res: NextApiResponse<AddressDTO | ErrorResponse>
 ) {

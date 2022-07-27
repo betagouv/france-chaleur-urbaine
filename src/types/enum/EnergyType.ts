@@ -1,4 +1,4 @@
-export enum EnergyType {
+export enum ENERGY_TYPE {
   Fuel = 'fuelOil',
   Gas = 'gas',
   Wood = 'wood',
@@ -6,7 +6,7 @@ export enum EnergyType {
   Unknown = 'unknow',
 }
 
-export enum EnergyUsed {
+export enum ENERGY_USED {
   Fioul = 'fioul',
   FioulDomestique = 'fioul_domestique',
   Gaz = 'gaz',
@@ -22,10 +22,10 @@ export enum EnergyUsed {
 }
 
 export const meaningFullEnergies = [
-  EnergyUsed.Fioul,
-  EnergyUsed.FioulDomestique,
-  EnergyUsed.Gaz,
-  EnergyUsed.GazNaturel,
-  EnergyUsed.GazCollectif,
-  EnergyUsed.GazPropaneButane,
+  ENERGY_USED.Fioul,
+  ENERGY_USED.FioulDomestique,
+  ENERGY_USED.Gaz,
+  ENERGY_USED.GazNaturel,
+  ENERGY_USED.GazCollectif,
+  ENERGY_USED.GazPropaneButane,
 ];

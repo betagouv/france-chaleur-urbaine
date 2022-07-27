@@ -5,6 +5,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
+import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Point } from 'src/types/Point';
 import {
   CardSearchDetails,
@@ -190,10 +191,15 @@ export default function Map() {
     console.info('State of: soughtAddress =>', soughtAddress);
   }, [soughtAddress]);
 
+  const exportData = useCallback(async () => {
+    const bounds = map.current.getBounds();
+    await heatNetworkService.downloadSummary(bounds, EXPORT_FORMAT.CSV);
+  }, [map, heatNetworkService]);
+
   const computeData = useCallback(async () => {
     const bounds = map.current.getBounds();
     const { gas, energy, network, closeGas, closeEnergy } =
-      await heatNetworkService.getData(bounds);
+      await heatNetworkService.summary(bounds);
     window.alert(`
       fioul proche reseau: ${
         closeEnergy.filter((x) => typeEnergy[x.energie_utilisee] === 'fuelOil')
@@ -630,6 +636,9 @@ export default function Map() {
             </Button>
             <Button icon="ri-file-list-line" onClick={computeData}>
               Compute
+            </Button>
+            <Button icon="ri-file-download-line" onClick={exportData}>
+              Export
             </Button>
           </Buttons>
         </MapControlWrapper>

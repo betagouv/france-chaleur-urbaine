@@ -1,4 +1,3 @@
-import { fetchHttpClient } from '@components/lib';
 import { LayoutProvider, MainLayout } from '@components/shared/layout';
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 import '@reach/combobox/styles.css';
@@ -9,6 +8,7 @@ import {
   ServicesContext,
   SuggestionService,
 } from 'src/services';
+import { axiosHttpClient } from 'src/services/http';
 import { createGlobalStyle } from 'styled-components';
 
 const og = {
@@ -79,8 +79,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       <DsfrFixUp />
       <ServicesContext.Provider
         value={{
-          suggestionService: new SuggestionService(fetchHttpClient),
-          heatNetworkService: new HeatNetworkService(fetchHttpClient),
+          suggestionService: new SuggestionService(axiosHttpClient),
+          heatNetworkService: new HeatNetworkService(axiosHttpClient),
         }}
       >
         <Head>

@@ -1,9 +1,11 @@
 import db from 'src/db';
-import { meaningFullEnergies } from 'src/types/enum/EnergyType';
+import { ENERGY_USED, meaningFullEnergies } from 'src/types/enum/EnergyType';
+import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Summary } from 'src/types/Summary';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
+import { getSpreadSheet, zip } from './export';
 
 const getWithinQuery = (
   swLng: number,
@@ -61,6 +63,16 @@ const getNetworkSummary = async (
       `)
     );
 
+const exportGasSummary = async (
+  swLng: number,
+  swLat: number,
+  neLng: number,
+  neLat: number
+): Promise<GasSummary[]> =>
+  db('conso_gaz_2020_r11_geocoded')
+    .select('result_label', 'code_grand_secteur', 'conso', 'pdl')
+    .where(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)));
+
 const getGasSummary = async (
   swLng: number,
   swLat: number,
@@ -69,6 +81,36 @@ const getGasSummary = async (
 ): Promise<GasSummary[]> =>
   db('conso_gaz_2020_r11_geocoded')
     .select('conso', 'pdl')
+    .where(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)));
+
+const exportEnergyGasSummary = async (
+  swLng: number,
+  swLat: number,
+  neLng: number,
+  neLat: number
+): Promise<GasSummary[]> =>
+  db('registre_copro_r11_220125')
+    .select('adresse_reference')
+    .whereIn('energie_utilisee', [
+      ENERGY_USED.Gaz,
+      ENERGY_USED.GazNaturel,
+      ENERGY_USED.GazCollectif,
+      ENERGY_USED.GazPropaneButane,
+    ])
+    .where(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)));
+
+const exportEnergyFioulSummary = async (
+  swLng: number,
+  swLat: number,
+  neLng: number,
+  neLat: number
+): Promise<GasSummary[]> =>
+  db('registre_copro_r11_220125')
+    .select('adresse_reference')
+    .whereIn('energie_utilisee', [
+      ENERGY_USED.Fioul,
+      ENERGY_USED.FioulDomestique,
+    ])
     .where(db.raw(getWithinQuery(swLng, swLat, neLng, neLat)));
 
 const getEnergySummary = async (
@@ -129,7 +171,7 @@ const getCloseEnergySummary = async (
       `)
     );
 
-const getDataSummary = async (
+export const getDataSummary = async (
   swLng: number,
   swLat: number,
   neLng: number,
@@ -152,4 +194,38 @@ const getDataSummary = async (
   };
 };
 
-export default getDataSummary;
+export const exportDataSummary = async (
+  swLng: number,
+  swLat: number,
+  neLng: number,
+  neLat: number,
+  exportType: EXPORT_FORMAT
+): Promise<{ content: any; name: string }> => {
+  const [gas, energyGas, energyFioul] = await Promise.all([
+    exportGasSummary(swLng, swLat, neLng, neLat),
+    exportEnergyGasSummary(swLng, swLat, neLng, neLat),
+    exportEnergyFioulSummary(swLng, swLat, neLng, neLat),
+  ]);
+
+  return zip(
+    [
+      {
+        sheet: getSpreadSheet(
+          ['result_label', 'code_grand_secteur', 'conso', 'pdl'],
+          gas,
+          exportType
+        ),
+        name: `conso.${exportType}`,
+      },
+      {
+        sheet: getSpreadSheet(['adresse_reference'], energyFioul, exportType),
+        name: `fioul.${exportType}`,
+      },
+      {
+        sheet: getSpreadSheet(['adresse_reference'], energyGas, exportType),
+        name: `gas.${exportType}`,
+      },
+    ],
+    'export'
+  );
+};

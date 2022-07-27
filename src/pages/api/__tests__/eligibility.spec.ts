@@ -15,11 +15,11 @@ import {
 import nock from 'nock';
 import { createMocks } from 'node-mocks-http';
 import sinon from 'sinon';
-import getEligibilityStatus from '../map/getEligibilityStatus';
+import eligibilityStatus from '../map/eligibilityStatus';
 
 const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
 
-describe('/api/map/getEligibilityStatus', () => {
+describe('/api/map/eligibilityStatus', () => {
   let calculateDistanceStub: sinon.SinonStub;
   beforeEach(() => {
     calculateDistanceStub = sinon.stub(distance, 'default');
@@ -38,7 +38,7 @@ describe('/api/map/getEligibilityStatus', () => {
       query: givenParams,
     });
 
-    await getEligibilityStatus(req, res);
+    await eligibilityStatus(req, res);
 
     expect(res._getStatusCode()).toBe(400);
     expect(JSON.parse(res._getData())).toEqual(
@@ -62,14 +62,14 @@ describe('/api/map/getEligibilityStatus', () => {
       query: coords,
     });
 
-    await getEligibilityStatus(req, res);
+    await eligibilityStatus(req, res);
 
     expect(res._getStatusCode()).toBe(404);
     expect(JSON.parse(res._getData())).toEqual(
       expect.objectContaining({
         message: `no address found for theses coords : ${JSON.stringify(
           coords
-        )} (Error: AxiosError: Request failed with status code 404)`,
+        )} (AxiosError: Request failed with status code 404)`,
         code: 'Address Not Found',
       })
     );
@@ -96,7 +96,7 @@ describe('/api/map/getEligibilityStatus', () => {
         query: coords,
       });
 
-      await getEligibilityStatus(req, res);
+      await eligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
@@ -124,7 +124,7 @@ describe('/api/map/getEligibilityStatus', () => {
         query: coords,
       });
 
-      await getEligibilityStatus(req, res);
+      await eligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
@@ -161,7 +161,7 @@ describe('/api/map/getEligibilityStatus', () => {
         query: coords,
       });
 
-      await getEligibilityStatus(req, res);
+      await eligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
@@ -209,7 +209,7 @@ describe('/api/map/getEligibilityStatus', () => {
         query: coords,
       });
 
-      await getEligibilityStatus(req, res);
+      await eligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual({
