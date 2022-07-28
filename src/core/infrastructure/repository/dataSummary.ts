@@ -6,6 +6,7 @@ import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
 import { getSpreadSheet, zip } from './export';
+import { consoColumns, fioulColumns, gasColumns } from './export.config';
 
 const getWithinQuery = (
   swLng: number,
@@ -88,7 +89,7 @@ const exportEnergyGasSummary = async (
   swLat: number,
   neLng: number,
   neLat: number
-): Promise<GasSummary[]> =>
+): Promise<EnergySummary[]> =>
   db('registre_copro_r11_220125')
     .select('adresse_reference')
     .whereIn('energie_utilisee', [
@@ -104,7 +105,7 @@ const exportEnergyFioulSummary = async (
   swLat: number,
   neLng: number,
   neLat: number
-): Promise<GasSummary[]> =>
+): Promise<EnergySummary[]> =>
   db('registre_copro_r11_220125')
     .select('adresse_reference')
     .whereIn('energie_utilisee', [
@@ -210,19 +211,15 @@ export const exportDataSummary = async (
   return zip(
     [
       {
-        sheet: getSpreadSheet(
-          ['result_label', 'code_grand_secteur', 'conso', 'pdl'],
-          gas,
-          exportType
-        ),
+        sheet: getSpreadSheet(consoColumns, gas, exportType),
         name: `conso.${exportType}`,
       },
       {
-        sheet: getSpreadSheet(['adresse_reference'], energyFioul, exportType),
+        sheet: getSpreadSheet(fioulColumns, energyFioul, exportType),
         name: `fioul.${exportType}`,
       },
       {
-        sheet: getSpreadSheet(['adresse_reference'], energyGas, exportType),
+        sheet: getSpreadSheet(gasColumns, energyGas, exportType),
         name: `gas.${exportType}`,
       },
     ],
