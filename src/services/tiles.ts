@@ -1,11 +1,12 @@
 import { mapParam } from '@components/Map';
 import geojsonvt from 'geojson-vt';
 import db from 'src/db';
+import base from 'src/db/airtable';
 import { meaningFullEnergies } from 'src/types/enum/EnergyType';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
-type DataType = 'network' | 'gas' | 'energy' | 'zoneDP';
+type DataType = 'network' | 'gas' | 'energy' | 'zoneDP' | 'demands';
 
 const geoJSONQuery = (properties: string[]) =>
   db.raw(
@@ -23,7 +24,51 @@ const geoJSONQuery = (properties: string[]) =>
   )`
   );
 
-const getObjectIndex = async (
+const getObjectIndexFromAirtable = async (
+  table: string,
+  tileOptions: geojsonvt.Options,
+  properties: string[]
+) => {
+  return base(table)
+    .select()
+    .all()
+    .then((records) => {
+      const features = records
+        .filter((record) => {
+          const addresse = record.get('Adresse') as string;
+          return addresse.includes('coords');
+        })
+        .map((record) => {
+          const addresse = record.get('Adresse') as string;
+          return {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: JSON.parse(addresse).coords.reverse(),
+            },
+            properties: properties.reduce(function (acc: any, key: string) {
+              const value = record.get(key);
+              if (value) {
+                acc[key] = record.get(key);
+              }
+              return acc;
+            }, {}),
+          };
+        });
+
+      return geojsonvt(
+        {
+          type: 'FeatureCollection',
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore: Create proper type
+          features: features,
+        },
+        tileOptions
+      );
+    });
+};
+
+const getObjectIndexFromDatabase = async (
   table: string,
   tileOptions: geojsonvt.Options,
   properties: string[]
@@ -51,6 +96,7 @@ const getObjectIndex = async (
 
 const { maxZoom, minZoomData } = mapParam;
 const allTiles: Record<DataType, any> = {
+  demands: null,
   network: null,
   gas: null,
   energy: null,
@@ -60,6 +106,7 @@ const allTiles: Record<DataType, any> = {
 const tilesInfo: Record<
   DataType,
   {
+    source: 'database' | 'airtable';
     table: string;
     minZoom?: number;
     options: geojsonvt.Options;
@@ -67,7 +114,17 @@ const tilesInfo: Record<
     sourceLayer: string;
   }
 > = {
+  demands: {
+    source: 'airtable',
+    table: 'FCU - Utilisateurs',
+    options: {
+      maxZoom,
+    },
+    properties: ['Nom', 'Prénom', 'Adresse'],
+    sourceLayer: 'demands',
+  },
   network: {
+    source: 'database',
     table: 'reseaux_de_chaleur_new',
     options: {
       maxZoom,
@@ -77,7 +134,9 @@ const tilesInfo: Record<
     sourceLayer: 'outline',
   },
   energy: {
+    source: 'database',
     table: 'registre_copro_r11_220125',
+    minZoom: minZoomData,
     options: {
       maxZoom,
     },
@@ -85,6 +144,7 @@ const tilesInfo: Record<
     sourceLayer: 'condominiumRegister',
   },
   gas: {
+    source: 'database',
     table: 'conso_gaz_2020_r11_geocoded',
     minZoom: minZoomData,
     options: {
@@ -94,6 +154,7 @@ const tilesInfo: Record<
     sourceLayer: 'gasUsage',
   },
   zoneDP: {
+    source: 'database',
     table: 'zone_de_developpement_prioritaire',
     options: {
       maxZoom,
@@ -103,13 +164,19 @@ const tilesInfo: Record<
   },
 };
 
-Object.entries(tilesInfo).forEach(([type, { table, options, properties }]) => {
-  debug && console.info(`Indexing tiles for ${type} with ${table}...`);
-  getObjectIndex(table, options, properties).then((result) => {
-    allTiles[type as DataType] = result;
-    debug && console.info(`Indexing tiles for ${type} with ${table} done`);
-  });
-});
+Object.entries(tilesInfo).forEach(
+  ([type, { source, table, options, properties }]) => {
+    debug && console.info(`Indexing tiles for ${type} with ${table}...`);
+    const getter =
+      source === 'airtable'
+        ? getObjectIndexFromAirtable
+        : getObjectIndexFromDatabase;
+    getter(table, options, properties).then((result) => {
+      allTiles[type as DataType] = result;
+      debug && console.info(`Indexing tiles for ${type} with ${table} done`);
+    });
+  }
+);
 
 const getTiles = (type: DataType, x: number, y: number, z: number) => {
   const tiles = allTiles[type];

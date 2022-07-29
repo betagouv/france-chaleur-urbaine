@@ -7,6 +7,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Point } from 'src/types/Point';
+import { EnergySummary } from 'src/types/Summary/Energy';
+import { GasSummary } from 'src/types/Summary/Gas';
 import {
   CardSearchDetails,
   MapLegend,
@@ -18,6 +20,7 @@ import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
   Buttons,
+  demandsLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
   MapControlWrapper,
@@ -56,14 +59,22 @@ const formatBodyPopup = ({
   coordinates,
   consommation,
   energy,
+  demands,
 }: {
   coordinates: Point;
-  consommation?: Record<string, unknown>;
-  energy?: Record<string, unknown>;
+  consommation?: GasSummary;
+  energy?: EnergySummary;
+  demands?: any;
   id: string;
 }) => {
-  const textAddress =
-    consommation?.result_label ?? energy?.adresse_reference ?? null;
+  let textAddress;
+  if (consommation) {
+    textAddress = consommation.result_label;
+  } else if (energy) {
+    textAddress = energy.adresse_reference;
+  } else if (demands) {
+    textAddress = JSON.parse(demands.Adresse).label;
+  }
 
   const writeTypeConso = (typeConso: string | unknown) => {
     switch (typeConso) {
@@ -136,6 +147,7 @@ const formatBodyPopup = ({
                 )}<br />`
               : ''
           }
+          ${demands && `${demands.Nom} ${demands.Prénom || ''}`}
         </section>
       `}
   `;
@@ -402,6 +414,35 @@ export default function Map() {
             source: 'heatNetwork',
             'source-layer': 'outline',
             ...outlineLayerStyle,
+          });
+
+          // -----------------
+          // --- Demands ---
+          // -----------------
+          map.current.addSource('demands', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+          });
+
+          map.current.addLayer({
+            id: 'demands',
+            source: 'demands',
+            'source-layer': 'demands',
+            ...demandsLayerStyle,
+          });
+
+          map.current.on('click', 'demands', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { demands: properties });
+          });
+
+          map.current.on('mouseenter', 'demands', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'demands', function () {
+            map.current.getCanvas().style.cursor = '';
           });
 
           // --------------

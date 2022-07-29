@@ -327,6 +327,16 @@ export const gasUsageLayerStyle = {
   },
 };
 
+export const demandsLayerStyle = {
+  type: 'circle',
+  paint: {
+    'circle-color': '#FF0000',
+    'circle-radius': 4,
+    'circle-opacity': 1,
+    'circle-stroke-opacity': 0,
+  },
+};
+
 export const zoneDPLayerStyle = {
   type: 'line',
   layout: {
