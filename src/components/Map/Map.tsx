@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Point } from 'src/types/Point';
+import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
 import {
@@ -64,7 +65,7 @@ const formatBodyPopup = ({
   coordinates: Point;
   consommation?: GasSummary;
   energy?: EnergySummary;
-  demands?: any;
+  demands?: DemandSummary;
   id: string;
 }) => {
   let textAddress;
@@ -147,7 +148,11 @@ const formatBodyPopup = ({
                 )}<br />`
               : ''
           }
-          ${demands && `${demands.Nom} ${demands.Prénom || ''}`}
+          ${
+            demands && demands['Mode de chauffage']
+              ? `Mode de chauffage: ${demands['Mode de chauffage']}`
+              : 'Mode de chauffage: inconnu'
+          }
         </section>
       `}
   `;

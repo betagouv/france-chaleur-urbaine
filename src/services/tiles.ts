@@ -120,7 +120,7 @@ const tilesInfo: Record<
     options: {
       maxZoom,
     },
-    properties: ['Nom', 'Prénom', 'Adresse'],
+    properties: ['Mode de chauffage', 'Adresse'],
     sourceLayer: 'demands',
   },
   network: {
