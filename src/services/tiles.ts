@@ -14,7 +14,7 @@ const geoJSONQuery = (properties: string[]) =>
     'type', 'FeatureCollection',
     'features', json_agg(json_build_object(
       'type', 'Feature',
-      'geometry', ST_AsGeoJSON(ST_Transform(geom,4326))::json,
+      'geometry', ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom,4326)))::json,
       'properties', json_build_object(
         ${properties
           .flatMap((property) => [`'${property}'`, property])

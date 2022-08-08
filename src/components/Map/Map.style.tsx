@@ -123,8 +123,8 @@ export const MapControlWrapper = styled.div<{
   position: absolute;
   z-index: ${mapControlZindex};
 
-  max-width: 430px;
   width: 100%;
+  max-width: 430px;
   min-width: 330px;
   padding: 1rem;
 
@@ -330,23 +330,19 @@ export const gasUsageLayerStyle = {
 export const demandsLayerStyle = {
   type: 'circle',
   paint: {
-    'circle-color': '#FF0000',
+    'circle-color': '#FFFFFF',
+    'circle-stroke-color': '#FF7576',
     'circle-radius': 4,
+    'circle-stroke-width': 2,
     'circle-opacity': 1,
-    'circle-stroke-opacity': 0,
   },
 };
 
 export const zoneDPLayerStyle = {
-  type: 'line',
-  layout: {
-    'line-join': 'round',
-    'line-cap': 'round',
-  },
+  type: 'fill',
   paint: {
-    'line-color': '#FF0000',
-    'line-width': 3,
-    'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
+    'fill-color': '#f0bb00',
+    'fill-opacity': 0.46,
   },
 };
 

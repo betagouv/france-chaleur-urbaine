@@ -427,6 +427,8 @@ export default function Map() {
           map.current.addSource('demands', {
             type: 'vector',
             tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
           });
 
           map.current.addLayer({
@@ -487,8 +489,6 @@ export default function Map() {
           map.current.addSource('zoneDP', {
             type: 'vector',
             tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
           });
 
           map.current.addLayer({
