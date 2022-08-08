@@ -11,9 +11,6 @@ services:
   web:
     build: ./docker/web
     command: sh -c "yarn dev"
-    env_file:
-      - .env
-      - .env.local
     environment:
       DATABASE_URL: postgres://postgres:postgres_fcu@db:5432/postgres
     ports:
