@@ -1,5 +1,5 @@
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
-import styled, { createGlobalStyle, css } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import {
   themeDefEnergy,
   themeDefHeatNetwork,
@@ -109,68 +109,14 @@ export const MapStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/st
 // --- Tooling components ---
 // --------------------------
 
-// Mask Params:
-const maskTop = '3.5rem';
-const maskBottom = '7rem';
-const scrollSize = '15px';
-
-export const MapControlWrapper = styled.div<{
-  top?: boolean;
-  bottom?: boolean;
-  left?: boolean;
-  right?: boolean;
-  maxWidth?: string;
-}>`
+export const MapControlWrapper = styled.div<{}>`
   position: absolute;
   z-index: ${mapControlZindex};
 
-  ${({ maxWidth }) =>
-    maxWidth &&
-    css`
-      max-width: ${maxWidth};
-    `}
-
-  width: 100%;
-  min-width: 330px;
+  width: 1000px;
   padding: 1rem;
-
-  ${({ bottom }) =>
-    bottom
-      ? css`
-          bottom: 0;
-        `
-      : css`
-          top: 0;
-        `}
-  ${({ right }) =>
-    right
-      ? css`
-          right: 0;
-        `
-      : css`
-          left: 0;
-        `}
-
-  &.search-result-box {
-    max-height: 100%;
-    overflow: auto;
-    overflow-y: auto;
-    overflow-y: overlay;
-    overflow-x: visible;
-    padding-bottom: 6rem;
-
-    mask-image: linear-gradient(180deg, transparent 0, black 0%),
-      linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0.3) 0,
-        black ${maskTop},
-        black calc(100% - ${maskBottom}),
-        transparent 100%
-      );
-    mask-size: ${scrollSize}, calc(100% - ${scrollSize});
-    mask-repeat: no-repeat, no-repeat;
-    mask-position: right top, left top;
-  }
+  bottom: 0;
+  left: calc(50% - 500px);
 `;
 
 export const MapSearchResult = styled.div`

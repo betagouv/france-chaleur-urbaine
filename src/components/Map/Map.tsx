@@ -474,7 +474,7 @@ export default function Map() {
     <>
       <MapStyle />
       <div className="map-wrap">
-        <MapControlWrapper bottom maxWidth="100%">
+        <MapControlWrapper>
           <ZoneInfos map={map.current} draw={draw.current} />
         </MapControlWrapper>
 

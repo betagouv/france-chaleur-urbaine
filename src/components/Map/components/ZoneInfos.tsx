@@ -48,9 +48,11 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   }, [heatNetworkService, bounds]);
 
   const exportData = useCallback(async () => {
-    setExporting(true);
-    await heatNetworkService.downloadSummary(bounds, EXPORT_FORMAT.CSV);
-    setExporting(false);
+    if (bounds) {
+      setExporting(true);
+      await heatNetworkService.downloadSummary(bounds, EXPORT_FORMAT.CSV);
+      setExporting(false);
+    }
   }, [heatNetworkService, bounds]);
 
   return (
@@ -179,8 +181,8 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
           </>
         ) : (
           <span>
-            Calcul des statistiques en cours (peut être long si la zone définie
-            est trop grande)
+            Calcul des statistiques en cours... (peut être long si la zone
+            définie est trop grande)
           </span>
         )}
       </ZoneInfosWrapper>

@@ -61,11 +61,16 @@ export class HeatNetworkService {
     return { fileName, blob };
   };
 
-  async downloadSummary(bounds: any, format: EXPORT_FORMAT): Promise<any> {
+  async downloadSummary(
+    bounds: number[][],
+    format: EXPORT_FORMAT
+  ): Promise<any> {
     try {
       return await this.httpClient
         .post(
-          `/api/map/summary?format=${format}&swLng=${bounds._sw.lng}&swLat=${bounds._sw.lat}&neLng=${bounds._ne.lng}&neLat=${bounds._ne.lat}&`
+          `/api/map/summary?format=${format}&coordinates=${encodeURIComponent(
+            JSON.stringify(bounds)
+          )}`
         )
         .then(async (response) => {
           const { fileName, blob } = await this.getFileToDownload(response);
