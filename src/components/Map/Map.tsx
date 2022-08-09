@@ -36,8 +36,6 @@ const {
 
 const layerNameOptions = ['outline'] as const;
 
-const DEBUG = true;
-
 const formatBodyPopup = ({
   coordinates,
   consommation,
@@ -183,10 +181,6 @@ export default function Map() {
     });
   }, []);
 
-  const logSoughtAddress = useCallback(() => {
-    console.info('State of: soughtAddress =>', soughtAddress);
-  }, [soughtAddress]);
-
   // ----------------
   // --- Load Map ---
   // ----------------
@@ -208,13 +202,6 @@ export default function Map() {
     });
 
     map.current.addControl(draw.current);
-
-    map.current.on('click', () => {
-      if (DEBUG) {
-        console.info('zoom =>', map.current.getZoom());
-        logSoughtAddress();
-      }
-    });
 
     map.current.on('load', () => {
       map.current.loadImage(

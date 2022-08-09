@@ -1,10 +1,15 @@
 import { Button } from '@dataesr/react-dsfr';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-export const Container = styled.div`
+export const Container = styled.div<{ customCursor?: boolean }>`
   display: flex;
   align-items: center;
   flex-direction: column;
+  ${({ customCursor }) =>
+    customCursor &&
+    css`
+      cursor: crosshair !important;
+    `}
 `;
 
 export const ZoneInfosWrapper = styled.div`

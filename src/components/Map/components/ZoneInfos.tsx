@@ -13,6 +13,7 @@ import { Container, ExportButton, ZoneInfosWrapper } from './ZoneInfos.style';
 const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   const { heatNetworkService } = useServices();
 
+  const [customCursor, setCustomCursor] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [bounds, setBounds] = useState<number[][]>();
   const [summary, setSummary] = useState<Summary>();
@@ -37,6 +38,12 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
         const geometry = draw.getAll().features[0].geometry as Polygon;
         setBounds(geometry.coordinates[0]);
       });
+
+      map.on('draw.modechange', ({ mode }) => {
+        if (mode === 'simple_select') {
+          setCustomCursor(false);
+        }
+      });
     }
   }, [map, draw]);
 
@@ -56,7 +63,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   }, [heatNetworkService, bounds]);
 
   return (
-    <Container>
+    <Container customCursor={customCursor}>
       <ButtonGroup isInlineFrom="xs" size="sm" align="center">
         <Button
           icon="ri-search-line"
@@ -76,9 +83,10 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
           Actualiser dans cette zone
         </Button>
         <Button
-          icon="ri-shape-line"
+          icon="ri-edit-2-line"
           secondary
           onClick={() => {
+            setCustomCursor(true);
             draw.deleteAll();
             draw.changeMode('draw_polygon');
           }}
