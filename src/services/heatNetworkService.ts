@@ -21,10 +21,12 @@ export class HeatNetworkService {
     }
   }
 
-  async summary(bounds: any): Promise<Summary> {
+  async summary(bounds: number[][]): Promise<Summary> {
     try {
       return await this.httpClient.get<Summary>(
-        `/api/map/summary?swLng=${bounds._sw.lng}&swLat=${bounds._sw.lat}&neLng=${bounds._ne.lng}&neLat=${bounds._ne.lat}&`
+        `/api/map/summary?coordinates=${encodeURIComponent(
+          JSON.stringify(bounds)
+        )}`
       );
     } catch (e) {
       throw new ServiceError(e);

@@ -119,12 +119,18 @@ export const MapControlWrapper = styled.div<{
   bottom?: boolean;
   left?: boolean;
   right?: boolean;
+  maxWidth?: string;
 }>`
   position: absolute;
   z-index: ${mapControlZindex};
 
+  ${({ maxWidth }) =>
+    maxWidth &&
+    css`
+      max-width: ${maxWidth};
+    `}
+
   width: 100%;
-  max-width: 430px;
   min-width: 330px;
   padding: 1rem;
 

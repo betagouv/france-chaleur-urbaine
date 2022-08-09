@@ -1,35 +1,26 @@
-import { Button } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useServices } from 'src/services';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Point } from 'src/types/Point';
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
-import {
-  CardSearchDetails,
-  MapLegend,
-  MapSearchForm,
-  TypeAddressDetail,
-  TypeHandleAddressSelect,
-} from './components';
+import { TypeAddressDetail } from './components';
+import ZoneInfos from './components/ZoneInfos';
 import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
-  Buttons,
   demandsLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
   MapControlWrapper,
-  MapSearchResult,
   MapStyle,
   objTypeEnergy,
   outlineLayerStyle,
-  typeEnergy,
   zoneDPLayerStyle,
 } from './Map.style';
 
@@ -41,20 +32,11 @@ const {
   lng,
   lat,
   defaultLayerDisplay,
-  legendData,
 } = mapParam;
 
 const layerNameOptions = ['outline'] as const;
-const energyNameOptions = ['fuelOil', 'gas'] as const;
-const gasUsageNameOptions = ['R', 'T'] as const;
-
-type LayerNameOption = typeof layerNameOptions[number];
-type EnergyNameOption = typeof energyNameOptions[number];
-type gasUsageNameOption = typeof gasUsageNameOptions[number];
 
 const DEBUG = true;
-
-const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
 const formatBodyPopup = ({
   coordinates,
@@ -160,16 +142,13 @@ const formatBodyPopup = ({
 };
 
 export default function Map() {
-  const { heatNetworkService } = useServices();
-
   const mapContainer: null | { current: any } = useRef(null);
   const map: null | { current: any } = useRef(null);
+  const draw: null | { current: any } = useRef(null);
 
   const [mapState, setMapState] = useState('pending');
-  const [layerDisplay, setLayerDisplay]: [
-    TypeLayerDisplay,
-    React.Dispatch<any | never[]>
-  ] = useState(defaultLayerDisplay);
+  const [layerDisplay]: [TypeLayerDisplay, React.Dispatch<any | never[]>] =
+    useState(defaultLayerDisplay);
 
   const [soughtAddress, setSoughtAddress] = usePersistedState(
     'mapSoughtAddress',
@@ -208,149 +187,15 @@ export default function Map() {
     console.info('State of: soughtAddress =>', soughtAddress);
   }, [soughtAddress]);
 
-  const exportData = useCallback(async () => {
-    const bounds = map.current.getBounds();
-    await heatNetworkService.downloadSummary(bounds, EXPORT_FORMAT.CSV);
-  }, [map, heatNetworkService]);
-
-  const computeData = useCallback(async () => {
-    const bounds = map.current.getBounds();
-    const { gas, energy, network, closeGas, closeEnergy } =
-      await heatNetworkService.summary(bounds);
-    window.alert(`
-      fioul proche reseau: ${
-        closeEnergy.filter((x) => typeEnergy[x.energie_utilisee] === 'fuelOil')
-          .length
-      }
-      gas proche reseau: ${
-        closeEnergy.filter((x) => typeEnergy[x.energie_utilisee] === 'gas')
-          .length
-      }
-      gas proche reseau conso (Gwh): ${
-        closeGas.reduce((acc, current) => acc + current.conso, 0) / 1000
-      }
-
-      ----------
-      
-      longueur reseau (km): ${
-        network.reduce((acc, current) => acc + current.length, 0) / 1000
-      }
-      Batiment au fioul: ${
-        energy.filter((x) => typeEnergy[x.energie_utilisee] === 'fuelOil')
-          .length
-      }
-      Batiment au gas: ${
-        energy.filter((x) => typeEnergy[x.energie_utilisee] === 'gas').length
-      }
-      gas conso (Gwh): ${
-        gas.reduce((acc, current) => acc + current.conso, 0) / 1000
-      }
-      gas pdl: ${gas.reduce((acc, current) => acc + current.pdl, 0)}
-    `);
-  }, [heatNetworkService, map]);
-
-  const onAddressSelectHandle: TypeHandleAddressSelect = useCallback(
-    (
-      address: string,
-      coordinates: Point,
-      addressDetails: TypeAddressDetail
-    ) => {
-      const computedCoordinates: Point = [coordinates[1], coordinates[0]]; // TODO: Fix on source
-      const search = {
-        date: Date.now(),
-      };
-      const id = getAddressId(computedCoordinates);
-      if (!Array.isArray(soughtAddress)) {
-        return;
-      }
-
-      const newAddress = soughtAddress.find(
-        ({ id: soughtAddressId }) => soughtAddressId === id
-      ) || {
-        id,
-        coordinates: computedCoordinates,
-        address,
-        addressDetails,
-        search,
-      };
-      setSoughtAddress([
-        ...soughtAddress.filter(({ id: _id }) => `${_id}` !== id),
-        newAddress,
-      ]);
-      flyTo({ coordinates: computedCoordinates });
-    },
-    [flyTo, setSoughtAddress, soughtAddress]
-  );
-
-  const removeSoughtAddress = useCallback(
-    (result: { marker?: any; coordinates?: Point }) => {
-      if (!result.coordinates) return;
-      const id = getAddressId(result.coordinates);
-      const getCurrentSoughtAddress = ({
-        coordinates,
-      }: {
-        coordinates: Point;
-      }) => getAddressId(coordinates) !== id;
-      const newSoughtAddress = soughtAddress.filter(getCurrentSoughtAddress);
-      result?.marker?.remove();
-      setSoughtAddress(newSoughtAddress);
-    },
-    [setSoughtAddress, soughtAddress]
-  );
-
-  const toggleLayer = useCallback(
-    (layerName: LayerNameOption) => {
-      setLayerDisplay({
-        ...layerDisplay,
-        [layerName]: !layerDisplay?.[layerName] ?? false,
-      });
-    },
-    [layerDisplay]
-  );
-
-  const toogleEnergyVisibility = useCallback(
-    (energyName: EnergyNameOption) => {
-      const availableEnergy = new Set(layerDisplay.energy);
-      if (availableEnergy.has(energyName)) {
-        availableEnergy.delete(energyName);
-      } else {
-        availableEnergy.add(energyName);
-      }
-      setLayerDisplay({
-        ...layerDisplay,
-        energy: Array.from(availableEnergy),
-      });
-    },
-    [layerDisplay]
-  );
-
-  const toogleGasUsageVisibility = useCallback(
-    (gasUsageName: gasUsageNameOption) => {
-      const availableGasUsage = new Set(layerDisplay.gasUsage);
-      if (availableGasUsage.has(gasUsageName)) {
-        availableGasUsage.delete(gasUsageName);
-      } else {
-        availableGasUsage.add(gasUsageName);
-      }
-      setLayerDisplay({
-        ...layerDisplay,
-        gasUsage: Array.from(availableGasUsage),
-      });
-    },
-    [layerDisplay]
-  );
-  const toogleGasUsageGroupeVisibility = useCallback(() => {
-    setLayerDisplay({
-      ...layerDisplay,
-      gasUsageGroup: !layerDisplay.gasUsageGroup,
-    });
-  }, [layerDisplay]);
-
   // ----------------
   // --- Load Map ---
   // ----------------
   useEffect(() => {
     if (mapState === 'loaded' || map.current) return;
+
+    draw.current = new MapboxDraw({
+      displayControlsDefault: false,
+    });
 
     map.current = new maplibregl.Map({
       attributionControl: false,
@@ -361,6 +206,8 @@ export default function Map() {
       maxZoom,
       minZoom,
     });
+
+    map.current.addControl(draw.current);
 
     map.current.on('click', () => {
       if (DEBUG) {
@@ -627,66 +474,8 @@ export default function Map() {
     <>
       <MapStyle />
       <div className="map-wrap">
-        <MapControlWrapper className="search-result-box" right top>
-          <MapSearchResult>
-            {soughtAddress.length > 0 &&
-              soughtAddress
-                .map((adressDetails: TypeAddressDetail, i: number) => (
-                  <CardSearchDetails
-                    key={`${adressDetails.address}-${i}`}
-                    result={adressDetails}
-                    onClick={flyTo}
-                    onClickClose={removeSoughtAddress}
-                  />
-                ))
-                .reverse()}
-          </MapSearchResult>
-        </MapControlWrapper>
-
-        <MapControlWrapper right bottom>
-          <MapLegend
-            data={legendData}
-            onToogleFeature={toggleLayer}
-            onToogleInGroup={(groupeName: string, idEntry?: any) => {
-              switch (groupeName) {
-                case 'energy': {
-                  toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
-                  break;
-                }
-                case 'gasUsage': {
-                  toogleGasUsageVisibility(idEntry as 'R' | 'T');
-                  break;
-                }
-                case 'gasUsageGroup': {
-                  toogleGasUsageGroupeVisibility();
-                  break;
-                }
-              }
-            }}
-            layerDisplay={layerDisplay}
-            hasResults={soughtAddress.length > 0}
-          />
-        </MapControlWrapper>
-
-        <MapControlWrapper right top>
-          <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-        </MapControlWrapper>
-
-        <MapControlWrapper bottom right>
-          <Buttons>
-            <Button
-              icon="ri-add-line"
-              onClick={() => router.push('/contribution')}
-            >
-              Contribuer
-            </Button>
-            <Button icon="ri-file-list-line" onClick={computeData}>
-              Compute
-            </Button>
-            <Button icon="ri-file-download-line" onClick={exportData}>
-              Export
-            </Button>
-          </Buttons>
+        <MapControlWrapper bottom maxWidth="100%">
+          <ZoneInfos map={map.current} draw={draw.current} />
         </MapControlWrapper>
 
         <div ref={mapContainer} className="map" />

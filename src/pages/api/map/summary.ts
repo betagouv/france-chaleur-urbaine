@@ -12,17 +12,19 @@ export default async function eligibilityStatusgibilityStatus(
   res: NextApiResponse<Summary | ErrorResponse>
 ) {
   try {
-    const { swLng, swLat, neLng, neLat } = req.query as Record<string, string>;
+    const coordinates = JSON.parse(
+      decodeURIComponent((req.query as Record<string, string>).coordinates)
+    ) as number[][];
 
-    if (!swLng || !swLat || !neLng || !neLat) {
+    if (!coordinates) {
       return res.status(400).json({
-        message: 'Parameters swLng, swLat, neLng and neLat are required',
+        message: 'Parameters coordinates is required',
         code: 'Bad Arguments',
       });
     }
 
     if (req.method === 'GET') {
-      const data = await getDataSummary(+swLng, +swLat, +neLng, +neLat);
+      const data = await getDataSummary(coordinates);
       return res.json(data);
     } else if (req.method === 'POST') {
       const format = req.query.format as EXPORT_FORMAT;
@@ -35,13 +37,7 @@ export default async function eligibilityStatusgibilityStatus(
         });
       }
 
-      const data = await exportDataSummary(
-        +swLng,
-        +swLat,
-        +neLng,
-        +neLat,
-        format
-      );
+      const data = await exportDataSummary(coordinates, format);
 
       res.setHeader('Content-Type', 'application/zip');
       res.setHeader('Content-Disposition', `attachment; filename=${data.name}`);
