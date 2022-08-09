@@ -55,6 +55,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
 ) => {
   const {
     address,
+    coords,
     eligibility,
     heatingEnergy,
     heatingType,
@@ -74,6 +75,8 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     Établissement: company,
     Éligibilité: eligibility,
     Adresse: address,
+    Latitude: parseFloat(coords.lat),
+    Longitude: parseFloat(coords.lon),
     Mail: email,
     'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
     'Type de chauffage': formatHeatingTypeToAirtable(heatingType),
