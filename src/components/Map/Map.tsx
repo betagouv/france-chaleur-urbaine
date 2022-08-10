@@ -54,7 +54,7 @@ const formatBodyPopup = ({
   } else if (energy) {
     textAddress = energy.adresse_reference;
   } else if (demands) {
-    textAddress = JSON.parse(demands.Adresse).label;
+    textAddress = demands.Adresse;
   }
 
   const writeTypeConso = (typeConso: string | unknown) => {

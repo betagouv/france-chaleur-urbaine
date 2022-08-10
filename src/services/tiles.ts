@@ -33,28 +33,24 @@ const getObjectIndexFromAirtable = async (
     .select()
     .all()
     .then((records) => {
-      const features = records
-        .filter((record) => {
-          const addresse = record.get('Adresse') as string;
-          return addresse.includes('coords');
-        })
-        .map((record) => {
-          const addresse = record.get('Adresse') as string;
-          return {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: JSON.parse(addresse).coords.reverse(),
-            },
-            properties: properties.reduce(function (acc: any, key: string) {
-              const value = record.get(key);
-              if (value) {
-                acc[key] = record.get(key);
-              }
-              return acc;
-            }, {}),
-          };
-        });
+      const features = records.map((record) => {
+        const longitude = record.get('Longitude') as string;
+        const latitude = record.get('Latitude') as string;
+        return {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [longitude, latitude],
+          },
+          properties: properties.reduce(function (acc: any, key: string) {
+            const value = record.get(key);
+            if (value) {
+              acc[key] = record.get(key);
+            }
+            return acc;
+          }, {}),
+        };
+      });
 
       return geojsonvt(
         {
