@@ -18,14 +18,13 @@ export const LabelLegend = styled.div`
   justify-content: flex-start;
 `;
 export const LabelLegendMarker = styled.div<{ bgColor?: string }>`
-  width: 0rem;
+  width: 32px;
   height: 1rem;
   display: inline-flex;
   vertical-align: text-bottom;
   justify-content: center;
   align-items: center;
-  margin: 0 0.2em;
-  top: -0.15em;
+  margin: 4px;
   position: relative;
 
   ::before {
@@ -44,17 +43,15 @@ export const LabelLegendMarker = styled.div<{ bgColor?: string }>`
 `;
 
 export const LabelLegendHead = styled.div<{ type?: string }>`
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+
   ${({ type }) =>
     type === 'group' &&
     css`
-      font-weight: bold;
+      margin-left: 8px;
       border-bottom: 1px solid;
-      margin-bottom: 0.2em;
       line-height: 1.45;
     `}
-`;
-export const LabelLegendDescription = styled.div`
-  font-size: 0.73em;
-  line-height: 1.2;
-  color: #8d93a1;
 `;

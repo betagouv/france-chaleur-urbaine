@@ -1,4 +1,3 @@
-import MarkdownWrapper from '@components/MarkdownWrapper';
 import { useMemo } from 'react';
 import LegendDesc from './LegendDesc';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
@@ -20,8 +19,6 @@ export type TypeGroupLegend = {
 
 function LegendGroupLabel({
   id,
-  title,
-  description,
   subLegend,
   entries,
   subGroup,
@@ -43,13 +40,6 @@ function LegendGroupLabel({
     <>
       <LegendGroupLabelStyle />
       <GroupeLabelWrapper disable={disable}>
-        {title && <header>{title}</header>}
-        {description && (
-          <MarkdownWrapper
-            className="legend-label-description"
-            value={description}
-          />
-        )}
         <div className={`groupe-label-body ${subGroup ? 'subGroup' : ''}`}>
           {entries.map((entry: TypeLegendEntry) => (
             <LegendEntry

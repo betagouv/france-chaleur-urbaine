@@ -1,6 +1,6 @@
 export const localTypeEnergy: Record<string, string> = {
-  fuelOil: 'Copropriétés chauffées au fioul collectif',
-  gas: 'Copropriétés chauffées au gaz collectif',
+  fuelOil: 'Bâtiments chauffées au fioul collectif',
+  gas: 'Bâtiments chauffés au gaz collectif',
   wood: 'Bois',
   electric: 'Electrique',
   unknow: 'Autre',

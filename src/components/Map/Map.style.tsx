@@ -1,9 +1,11 @@
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, css } from 'styled-components';
 import {
+  themeDefDemands,
   themeDefEnergy,
   themeDefHeatNetwork,
   themeDefTypeGas,
+  themeDefZoneDP,
 } from './businessRules';
 import param from './Map.param';
 
@@ -12,16 +14,21 @@ const { minZoomData, maxZoom } = param;
 const mapOverZindex = 10000;
 const mapControlZindex = 10100;
 
-export const MapStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+export const MapStyle: any = createGlobalStyle<{
+  legendCollapsed: boolean;
+}>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
       position: relative;
+      display: flex;
       width: 100%;
       height: 100%;
     }
 
     .map {
       position: absolute;
-      width: 100%;
+      left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : '333px')};
+      width: ${({ legendCollapsed }) =>
+        legendCollapsed ? '100%' : 'calc(100% - 333px)'};
       height: 100%;
     }
 
@@ -109,18 +116,49 @@ export const MapStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/st
 // --- Tooling components ---
 // --------------------------
 
-export const MapControlWrapper = styled.div`
+export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
 
   width: 1000px;
   padding: 1rem;
   bottom: 0;
-  left: calc(50% - 500px);
+  left: ${({ legendCollapsed }) =>
+    legendCollapsed ? 'calc(50% - 500px)' : 'calc((50% + 166px) - 500px)'};
 `;
 
-export const MapSearchResult = styled.div`
-  padding-top: 3rem;
+export const Legend = styled.div<{ legendCollapsed: boolean }>`
+  z-index: ${mapControlZindex};
+  overflow: scroll;
+  ${({ legendCollapsed }) =>
+    legendCollapsed &&
+    css`
+      display: none;
+    `}
+  width: 333px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  box-shadow: 0px 16px 16px -16px rgba(0, 0, 0, 0.32),
+    0px 8px 16px rgba(0, 0, 0, 0.1);
+`;
+
+export const LegendSeparator = styled.div`
+  width: 100%;
+  border: 1px solid #e1e1e1;
+  margin: 16px 0;
+`;
+
+export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
+  position: absolute;
+  padding: 0 0 0 9px;
+  z-index: ${mapControlZindex};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '-11px' : '322px')};
+  top: 50%;
+  border-radius: 10px;
+  background-color: white;
+  height: 42px;
+  width: 22px;
 `;
 
 // --------------------
@@ -282,19 +320,18 @@ export const gasUsageLayerStyle = {
 export const demandsLayerStyle = {
   type: 'circle',
   paint: {
-    'circle-color': '#FFFFFF',
-    'circle-stroke-color': '#FF7576',
-    'circle-radius': 4,
-    'circle-stroke-width': 2,
-    'circle-opacity': 1,
+    'circle-color': themeDefDemands.fill.color,
+    'circle-stroke-color': themeDefDemands.stroke.color,
+    'circle-radius': themeDefDemands.fill.size,
+    'circle-stroke-width': themeDefDemands.stroke.size,
   },
 };
 
 export const zoneDPLayerStyle = {
   type: 'fill',
   paint: {
-    'fill-color': '#f0bb00',
-    'fill-opacity': 0.46,
+    'fill-color': themeDefZoneDP.fill.color,
+    'fill-opacity': themeDefZoneDP.fill.opacity,
   },
 };
 

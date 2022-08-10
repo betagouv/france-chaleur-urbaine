@@ -1,6 +1,5 @@
 import {
   LabelLegend,
-  LabelLegendDescription,
   LabelLegendHead,
   LabelLegendMarker,
   LabelLegendWrapper,
@@ -20,7 +19,6 @@ function LegendEntry({
   className,
   type,
   label,
-  description,
   checked,
   readOnly,
   onChange,
@@ -30,31 +28,24 @@ function LegendEntry({
   onChange: (idEntry: any) => void;
 }) {
   return (
-    <div>
-      <LabelLegendWrapper>
-        <label>
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={() => {
-              !readOnly && onChange(id);
-            }}
-          />
-          <LabelLegendMarker
-            className={`legend-marker ${
-              className ? `${className}-marker` : ''
-            }`}
-            bgColor={bgColor && `${bgColor}`}
-          />
-          <LabelLegend>
-            <LabelLegendHead type={type}>{label}</LabelLegendHead>
-            {description && (
-              <LabelLegendDescription>{description}</LabelLegendDescription>
-            )}
-          </LabelLegend>
-        </label>
-      </LabelLegendWrapper>
-    </div>
+    <LabelLegendWrapper>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={() => {
+          !readOnly && onChange(id);
+        }}
+      />
+      {className && (
+        <LabelLegendMarker
+          className={`legend-marker ${className}-marker`}
+          bgColor={bgColor && `${bgColor}`}
+        />
+      )}
+      <LabelLegend>
+        <LabelLegendHead type={type}>{label}</LabelLegendHead>
+      </LabelLegend>
+    </LabelLegendWrapper>
   );
 }
 
