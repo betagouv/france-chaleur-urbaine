@@ -5,12 +5,12 @@ import { NetworkRepository } from '@core/domain/repository/networkRepository';
 import { NetworkIrisResponse } from '@core/infrastructure/mapper/network.dto';
 import { NetworkMapper } from '@core/infrastructure/mapper/network.mapper';
 import networkByIris from '@core/infrastructure/repository/network_by_iris.json';
-import calculateDistance from './distance';
+import computeDistance from './distance';
 
 export class NetworkRepositoryImpl implements NetworkRepository {
   async findByCoords(coords: Coords): Promise<Network> {
     try {
-      const networkDistance = await calculateDistance(coords.lat, coords.lon);
+      const networkDistance = await computeDistance(coords.lat, coords.lon);
       return {
         lat: null,
         lon: null,

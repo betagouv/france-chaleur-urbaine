@@ -20,12 +20,12 @@ import eligibilityStatus from '../map/eligibilityStatus';
 const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
 
 describe('/api/map/eligibilityStatus', () => {
-  let calculateDistanceStub: sinon.SinonStub;
+  let computeDistanceStub: sinon.SinonStub;
   beforeEach(() => {
-    calculateDistanceStub = sinon.stub(distance, 'default');
+    computeDistanceStub = sinon.stub(distance, 'default');
   });
   afterEach(() => {
-    calculateDistanceStub.restore();
+    computeDistanceStub.restore();
   });
 
   beforeAll(() => nock.disableNetConnect());
@@ -89,7 +89,7 @@ describe('/api/map/eligibilityStatus', () => {
         })
         .reply(200, { ...somePyrisAddressResponse() });
 
-      calculateDistanceStub.returns(null);
+      computeDistanceStub.returns(null);
 
       const { req, res } = createMocks({
         method: 'GET',
@@ -106,8 +106,8 @@ describe('/api/map/eligibilityStatus', () => {
           isEligible: false,
         })
       );
-      sinon.assert.calledOnce(calculateDistanceStub);
-      sinon.assert.calledWith(calculateDistanceStub, coords.lat, coords.lon);
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, coords.lat, coords.lon);
     });
     test('should a successful response but with a null network (address out of IDF)', async () => {
       const coords = someOutOfIDFCoordsWithNoNetwork();
@@ -154,7 +154,7 @@ describe('/api/map/eligibilityStatus', () => {
         })
         .reply(200, { ...somePyrisAddressResponse() });
 
-      calculateDistanceStub.returns(networkResponse.distPointReseau);
+      computeDistanceStub.returns(networkResponse.distPointReseau);
 
       const { req, res } = createMocks({
         method: 'GET',
@@ -177,8 +177,8 @@ describe('/api/map/eligibilityStatus', () => {
         })
       );
 
-      sinon.assert.calledOnce(calculateDistanceStub);
-      sinon.assert.calledWith(calculateDistanceStub, coords.lat, coords.lon);
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, coords.lat, coords.lon);
     };
 
     test(`should return address eligible, when address is in IDF and less then threshold distance (${THRESHOLD}m)`, async () => {

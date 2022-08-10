@@ -109,7 +109,7 @@ export const MapStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/st
 // --- Tooling components ---
 // --------------------------
 
-export const MapControlWrapper = styled.div<{}>`
+export const MapControlWrapper = styled.div`
   position: absolute;
   z-index: ${mapControlZindex};
 

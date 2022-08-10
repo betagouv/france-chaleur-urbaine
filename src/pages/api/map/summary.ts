@@ -47,8 +47,7 @@ export default async function eligibilityStatusgibilityStatus(
 
     return res.status(501);
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log(error);
+    console.error(error);
     res.statusCode = 500;
     return res.json({
       message: 'internal server error',

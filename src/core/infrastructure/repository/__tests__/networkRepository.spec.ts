@@ -7,25 +7,25 @@ import { anIDFAddress, someNetwork, THRESHOLD } from './__fixtures__/data';
 
 describe('Network Repository', () => {
   describe('#findByCoords', () => {
-    let calculateDistanceStub: sinon.SinonStub;
+    let computeDistanceStub: sinon.SinonStub;
     beforeEach(() => {
-      calculateDistanceStub = sinon.stub(distance, 'default');
+      computeDistanceStub = sinon.stub(distance, 'default');
     });
     afterEach(() => {
       jest.resetAllMocks();
-      calculateDistanceStub.restore();
+      computeDistanceStub.restore();
     });
 
     it('should correctly use distance helper', async () => {
-      calculateDistanceStub.returns(THRESHOLD);
+      computeDistanceStub.returns(THRESHOLD);
 
       const address = AddressFactory.create(anIDFAddress());
       const networkRepository = new NetworkRepositoryImpl();
 
       const network = await networkRepository.findByCoords(address);
 
-      sinon.assert.calledOnce(calculateDistanceStub);
-      sinon.assert.calledWith(calculateDistanceStub, address.lat, address.lon);
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, address.lat, address.lon);
       expect(network).toEqual({
         distance: THRESHOLD,
         filiere: null,
@@ -36,7 +36,7 @@ describe('Network Repository', () => {
     });
 
     it('should a null network when nothing found', async () => {
-      calculateDistanceStub.returns(null);
+      computeDistanceStub.returns(null);
 
       const address = AddressFactory.create(anIDFAddress());
       const expectedNetwork = NetworkMapper.createNullNetwork();
@@ -44,21 +44,21 @@ describe('Network Repository', () => {
 
       const network = await networkRepository.findByCoords(address);
 
-      sinon.assert.calledOnce(calculateDistanceStub);
-      sinon.assert.calledWith(calculateDistanceStub, address.lat, address.lon);
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, address.lat, address.lon);
       expect(network).toEqual(expectedNetwork);
     });
 
     it('should return 0 when distance is 0', async () => {
-      calculateDistanceStub.returns(0);
+      computeDistanceStub.returns(0);
 
       const address = AddressFactory.create(anIDFAddress());
       const networkRepository = new NetworkRepositoryImpl();
 
       const network = await networkRepository.findByCoords(address);
 
-      sinon.assert.calledOnce(calculateDistanceStub);
-      sinon.assert.calledWith(calculateDistanceStub, address.lat, address.lon);
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, address.lat, address.lon);
       expect(network).toEqual({
         distance: 0,
         filiere: null,
@@ -69,18 +69,14 @@ describe('Network Repository', () => {
     });
 
     it('should throw an error when call to distance Api fails', async () => {
-      calculateDistanceStub.throws(new Error());
+      computeDistanceStub.throws(new Error());
 
       const address = AddressFactory.create(anIDFAddress());
       const networkRepository = new NetworkRepositoryImpl();
 
       await networkRepository.findByCoords(address).catch((result) => {
-        sinon.assert.calledOnce(calculateDistanceStub);
-        sinon.assert.calledWith(
-          calculateDistanceStub,
-          address.lat,
-          address.lon
-        );
+        sinon.assert.calledOnce(computeDistanceStub);
+        sinon.assert.calledWith(computeDistanceStub, address.lat, address.lon);
         expect(result).rejects;
       });
     });
