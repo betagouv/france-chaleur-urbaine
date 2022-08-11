@@ -48,7 +48,6 @@ export const LabelLegendHead = styled.div<{ type?: string }>`
     type === 'group' &&
     css`
       margin-left: 8px;
-      border-bottom: 1px solid;
       line-height: 1.45;
     `}
 `;

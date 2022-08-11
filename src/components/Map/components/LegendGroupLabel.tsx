@@ -54,7 +54,6 @@ function LegendGroupLabel({
             />
           ))}
         </div>
-
         {subLegend && LegendDesc?.[subLegend]?.()}
       </GroupeLabelWrapper>
     </>
