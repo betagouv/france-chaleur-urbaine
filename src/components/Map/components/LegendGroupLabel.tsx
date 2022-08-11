@@ -8,8 +8,6 @@ import {
 
 export type TypeGroupLegend = {
   id: string;
-  title?: string;
-  description?: string;
   subLegend?: string;
   entries: TypeLegendEntry[];
   type?: string;

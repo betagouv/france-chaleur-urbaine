@@ -12,10 +12,7 @@ export const LabelLegendWrapper = styled.div`
   }
 `;
 export const LabelLegend = styled.div`
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
+  display: flex;
 `;
 export const LabelLegendMarker = styled.div<{ bgColor?: string }>`
   width: 32px;

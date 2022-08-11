@@ -176,3 +176,13 @@ export const LegendButton = styled.div`
   justify-content: center;
   margin-top: 8px;
 `;
+
+export const Sources = styled.div`
+  color: #8d93a1;
+  font-size: 10px;
+  position: relative;
+  a {
+    position: absolute;
+    top: -16px;
+  }
+`;

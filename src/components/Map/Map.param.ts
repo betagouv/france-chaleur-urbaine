@@ -39,6 +39,7 @@ const legendData = [
       {
         id: 'zoneDP',
         label: 'Zones de développement prioritaires',
+        info: "Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage au dessus d'une puissance de 30 kW est obligatoire",
         className: 'legend-zoneDP',
       },
     ],
@@ -108,6 +109,7 @@ const legendData = [
     type: 'group',
   },
   'separator',
+  'sources',
 ];
 
 const param = {

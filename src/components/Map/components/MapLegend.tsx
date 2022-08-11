@@ -1,9 +1,9 @@
-import { Button } from '@dataesr/react-dsfr';
+import { Button, Link } from '@dataesr/react-dsfr';
 import { useRouter } from 'next/router';
 import { LegendSeparator } from '../Map.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import LegendGroupLabel, { TypeGroupLegend } from './LegendGroupLabel';
-import { LegendButton, LegendGlobalStyle } from './MapLegend.style';
+import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
 
 function MapLegend({
   data,
@@ -37,6 +37,16 @@ function MapLegend({
                 Contribuer
               </Button>
             </LegendButton>
+          );
+        }
+
+        if (group === 'sources') {
+          return (
+            <Sources>
+              <Link key={'sources'} href="/carto_sources.pdf" target="_blank">
+                Sources
+              </Link>
+            </Sources>
           );
         }
 

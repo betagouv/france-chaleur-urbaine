@@ -1,3 +1,4 @@
+import { Icon } from '@dataesr/react-dsfr';
 import {
   LabelLegend,
   LabelLegendHead,
@@ -8,7 +9,7 @@ import {
 export type TypeLegendEntry = {
   id: string;
   label: string;
-  description?: string;
+  info?: string;
   className?: string;
   type?: string;
   bgColor?: string;
@@ -19,6 +20,7 @@ function LegendEntry({
   className,
   type,
   label,
+  info,
   checked,
   readOnly,
   onChange,
@@ -44,6 +46,7 @@ function LegendEntry({
       )}
       <LabelLegend>
         <LabelLegendHead type={type}>{label}</LabelLegendHead>
+        {info && <Icon size="lg" name="ri-information-fill" title={info} />}
       </LabelLegend>
     </LabelLegendWrapper>
   );
