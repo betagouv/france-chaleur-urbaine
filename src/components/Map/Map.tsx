@@ -95,7 +95,6 @@ const formatBodyPopup = ({
     periode_construction,
   } = energy || {};
   const { code_grand_secteur, conso } = consommation || {};
-
   const bodyPopup = `
     ${
       textAddress
@@ -146,9 +145,11 @@ const formatBodyPopup = ({
               : ''
           }
           ${
-            demands && demands['Mode de chauffage']
-              ? `Mode de chauffage: ${demands['Mode de chauffage']}`
-              : 'Mode de chauffage: inconnu'
+            demands
+              ? `Mode de chauffage: ${
+                  demands['Mode de chauffage'] || 'inconnu'
+                }`
+              : ''
           }
         </section>
       `}
