@@ -13,7 +13,7 @@ export const consoColumns: ExportColumn<GasSummary>[] = [
       conso.code_grand_secteur === 'R' ? 'Résidentiel' : 'Tertiaire',
   },
   {
-    header: 'Consommation',
+    header: 'Consommation (MWh)',
     value: 'conso',
   },
   {
