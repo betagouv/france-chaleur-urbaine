@@ -71,18 +71,15 @@ export const MapStyle: any = createGlobalStyle<{
         overflow: hidden;
 
         header {
-          padding: 7px 25px 7px 10px;
+          padding: 8px;
           margin: -15px -10px 10px;
           background-color: #4550e5;
-          color: #fff;
-
+          
           h6 {
+            color: #fff;
             font-size: 1.45em;
             font-weight: bold;
             margin: 0;
-          }
-          em.coord {
-            font-size: 0.85em;
           }
         }
 

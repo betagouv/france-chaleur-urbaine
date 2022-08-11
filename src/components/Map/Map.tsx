@@ -54,12 +54,10 @@ type EnergyNameOption = typeof energyNameOptions[number];
 type gasUsageNameOption = typeof gasUsageNameOptions[number];
 
 const formatBodyPopup = ({
-  coordinates,
   consommation,
   energy,
   demands,
 }: {
-  coordinates: Point;
   consommation?: GasSummary;
   energy?: EnergySummary;
   demands?: DemandSummary;
@@ -101,10 +99,6 @@ const formatBodyPopup = ({
         ? `
           <header>
             <h6>${textAddress}</h6>
-            <em class="coord">Lat, Lon : ${[...coordinates]
-              .reverse()
-              .map((point: number) => point.toFixed(5))
-              .join(',')}</em>
           </header>`
         : ''
     }
