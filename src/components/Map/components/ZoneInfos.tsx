@@ -20,15 +20,6 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
 
   useEffect(() => {
     if (map && draw) {
-      const bounds = map.getBounds();
-      setBounds([
-        bounds.getNorthEast().toArray(),
-        bounds.getNorthWest().toArray(),
-        bounds.getSouthWest().toArray(),
-        bounds.getSouthEast().toArray(),
-        bounds.getNorthEast().toArray(),
-      ]);
-
       map.on('draw.create', () => {
         const geometry = draw.getAll().features[0].geometry as Polygon;
         setBounds(geometry.coordinates[0]);
@@ -48,8 +39,8 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   }, [map, draw]);
 
   useEffect(() => {
+    setSummary(undefined);
     if (bounds) {
-      setSummary(undefined);
       heatNetworkService.summary(bounds).then(setSummary);
     }
   }, [heatNetworkService, bounds]);
@@ -86,6 +77,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
           icon="ri-edit-2-line"
           secondary
           onClick={() => {
+            setBounds(undefined);
             setCustomCursor(true);
             draw.deleteAll();
             draw.changeMode('draw_polygon');
@@ -189,8 +181,9 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
           </>
         ) : (
           <span>
-            Calcul des statistiques en cours... (peut être long si la zone
-            définie est trop grande)
+            {bounds
+              ? 'Calcul des statistiques en cours (peut être long si la zone définie est trop grande)...'
+              : 'Pour afficher et exporter des données sur les modes de chauffage, consommations de gaz et réseaux de chaleur, zoomez sur une zone ou tracez une zone sur la carte.'}
           </span>
         )}
       </ZoneInfosWrapper>
