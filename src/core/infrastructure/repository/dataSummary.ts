@@ -175,15 +175,15 @@ export const exportDataSummary = async (
     [
       {
         sheet: getSpreadSheet(consoColumns, gas, exportType),
-        name: `conso.${exportType}`,
+        name: `consos_gaz.${exportType}`,
       },
       {
         sheet: getSpreadSheet(fioulColumns, energyFioul, exportType),
-        name: `fioul.${exportType}`,
+        name: `chauffage_collectif_fioul.${exportType}`,
       },
       {
         sheet: getSpreadSheet(gasColumns, energyGas, exportType),
-        name: `gas.${exportType}`,
+        name: `chauffage_collectif_gaz.${exportType}`,
       },
     ],
     'export'
