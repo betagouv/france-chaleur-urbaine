@@ -1,3 +1,4 @@
+import { Icon } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -9,14 +10,23 @@ import { Point } from 'src/types/Point';
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
-import { TypeAddressDetail } from './components';
+import {
+  CardSearchDetails,
+  MapLegend,
+  MapSearchForm,
+  TypeAddressDetail,
+  TypeHandleAddressSelect,
+} from './components';
 import ZoneInfos from './components/ZoneInfos';
 import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
+  CollapseLegend,
   demandsLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
+  Legend,
+  LegendSeparator,
   MapControlWrapper,
   MapStyle,
   objTypeEnergy,
@@ -32,17 +42,22 @@ const {
   lng,
   lat,
   defaultLayerDisplay,
+  legendData,
 } = mapParam;
 
-const layerNameOptions = ['outline'] as const;
+const layerNameOptions = ['outline', 'demands', 'zoneDP'] as const;
+const energyNameOptions = ['fuelOil', 'gas'] as const;
+const gasUsageNameOptions = ['R', 'T'] as const;
+
+type LayerNameOption = typeof layerNameOptions[number];
+type EnergyNameOption = typeof energyNameOptions[number];
+type gasUsageNameOption = typeof gasUsageNameOptions[number];
 
 const formatBodyPopup = ({
-  coordinates,
   consommation,
   energy,
   demands,
 }: {
-  coordinates: Point;
   consommation?: GasSummary;
   energy?: EnergySummary;
   demands?: DemandSummary;
@@ -78,17 +93,12 @@ const formatBodyPopup = ({
     periode_construction,
   } = energy || {};
   const { code_grand_secteur, conso } = consommation || {};
-
   const bodyPopup = `
     ${
       textAddress
         ? `
           <header>
             <h6>${textAddress}</h6>
-            <em class="coord">Lat, Lon : ${[...coordinates]
-              .reverse()
-              .map((point: number) => point.toFixed(5))
-              .join(',')}</em>
           </header>`
         : ''
     }
@@ -129,9 +139,11 @@ const formatBodyPopup = ({
               : ''
           }
           ${
-            demands && demands['Mode de chauffage']
-              ? `Mode de chauffage: ${demands['Mode de chauffage']}`
-              : 'Mode de chauffage: inconnu'
+            demands
+              ? `Mode de chauffage: ${
+                  demands['Mode de chauffage'] || 'inconnu'
+                }`
+              : ''
           }
         </section>
       `}
@@ -139,14 +151,25 @@ const formatBodyPopup = ({
   return bodyPopup;
 };
 
+const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
+
 export default function Map() {
   const mapContainer: null | { current: any } = useRef(null);
   const map: null | { current: any } = useRef(null);
   const draw: null | { current: any } = useRef(null);
 
+  const [legendCollapsed, setLegendCollapsed] = useState(false);
+  useEffect(() => {
+    if (map && map.current) {
+      map.current.resize();
+    }
+  }, [map, legendCollapsed]);
+
   const [mapState, setMapState] = useState('pending');
-  const [layerDisplay]: [TypeLayerDisplay, React.Dispatch<any | never[]>] =
-    useState(defaultLayerDisplay);
+  const [layerDisplay, setLayerDisplay]: [
+    TypeLayerDisplay,
+    React.Dispatch<any | never[]>
+  ] = useState(defaultLayerDisplay);
 
   const [soughtAddress, setSoughtAddress] = usePersistedState(
     'mapSoughtAddress',
@@ -180,6 +203,103 @@ export default function Map() {
       zoom: 16,
     });
   }, []);
+
+  const onAddressSelectHandle: TypeHandleAddressSelect = useCallback(
+    (
+      address: string,
+      coordinates: Point,
+      addressDetails: TypeAddressDetail
+    ) => {
+      const computedCoordinates: Point = [coordinates[1], coordinates[0]]; // TODO: Fix on source
+      const search = {
+        date: Date.now(),
+      };
+      const id = getAddressId(computedCoordinates);
+      if (!Array.isArray(soughtAddress)) {
+        return;
+      }
+
+      const newAddress = soughtAddress.find(
+        ({ id: soughtAddressId }) => soughtAddressId === id
+      ) || {
+        id,
+        coordinates: computedCoordinates,
+        address,
+        addressDetails,
+        search,
+      };
+      setSoughtAddress([
+        ...soughtAddress.filter(({ id: _id }) => `${_id}` !== id),
+        newAddress,
+      ]);
+      flyTo({ coordinates: computedCoordinates });
+    },
+    [flyTo, setSoughtAddress, soughtAddress]
+  );
+
+  const removeSoughtAddress = useCallback(
+    (result: { marker?: any; coordinates?: Point }) => {
+      if (!result.coordinates) return;
+      const id = getAddressId(result.coordinates);
+      const getCurrentSoughtAddress = ({
+        coordinates,
+      }: {
+        coordinates: Point;
+      }) => getAddressId(coordinates) !== id;
+      const newSoughtAddress = soughtAddress.filter(getCurrentSoughtAddress);
+      result?.marker?.remove();
+      setSoughtAddress(newSoughtAddress);
+    },
+    [setSoughtAddress, soughtAddress]
+  );
+
+  const toggleLayer = useCallback(
+    (layerName: LayerNameOption) => {
+      setLayerDisplay({
+        ...layerDisplay,
+        [layerName]: !layerDisplay?.[layerName] ?? false,
+      });
+    },
+    [layerDisplay]
+  );
+
+  const toogleEnergyVisibility = useCallback(
+    (energyName: EnergyNameOption) => {
+      const availableEnergy = new Set(layerDisplay.energy);
+      if (availableEnergy.has(energyName)) {
+        availableEnergy.delete(energyName);
+      } else {
+        availableEnergy.add(energyName);
+      }
+      setLayerDisplay({
+        ...layerDisplay,
+        energy: Array.from(availableEnergy),
+      });
+    },
+    [layerDisplay]
+  );
+
+  const toogleGasUsageVisibility = useCallback(
+    (gasUsageName: gasUsageNameOption) => {
+      const availableGasUsage = new Set(layerDisplay.gasUsage);
+      if (availableGasUsage.has(gasUsageName)) {
+        availableGasUsage.delete(gasUsageName);
+      } else {
+        availableGasUsage.add(gasUsageName);
+      }
+      setLayerDisplay({
+        ...layerDisplay,
+        gasUsage: Array.from(availableGasUsage),
+      });
+    },
+    [layerDisplay]
+  );
+  const toogleGasUsageGroupeVisibility = useCallback(() => {
+    setLayerDisplay({
+      ...layerDisplay,
+      gasUsageGroup: !layerDisplay.gasUsageGroup,
+    });
+  }, [layerDisplay]);
 
   // ----------------
   // --- Load Map ---
@@ -459,12 +579,61 @@ export default function Map() {
 
   return (
     <>
-      <MapStyle />
+      <MapStyle legendCollapsed={legendCollapsed} />
       <div className="map-wrap">
-        <MapControlWrapper>
+        <CollapseLegend
+          legendCollapsed={legendCollapsed}
+          onClick={() => setLegendCollapsed(!legendCollapsed)}
+        >
+          <Icon
+            name={
+              legendCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line'
+            }
+          />
+        </CollapseLegend>
+        <Legend legendCollapsed={legendCollapsed}>
+          <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+          <LegendSeparator />
+          {soughtAddress.length > 0 && (
+            <>
+              {soughtAddress
+                .map((adressDetails: TypeAddressDetail, i: number) => (
+                  <CardSearchDetails
+                    key={`${adressDetails.address}-${i}`}
+                    result={adressDetails}
+                    onClick={flyTo}
+                    onClickClose={removeSoughtAddress}
+                  />
+                ))
+                .reverse()}
+              <LegendSeparator />
+            </>
+          )}
+          <MapLegend
+            data={legendData}
+            onToogleFeature={toggleLayer}
+            onToogleInGroup={(groupeName: string, idEntry?: any) => {
+              switch (groupeName) {
+                case 'energy': {
+                  toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
+                  break;
+                }
+                case 'gasUsage': {
+                  toogleGasUsageVisibility(idEntry as 'R' | 'T');
+                  break;
+                }
+                case 'gasUsageGroup': {
+                  toogleGasUsageGroupeVisibility();
+                  break;
+                }
+              }
+            }}
+            layerDisplay={layerDisplay}
+          />
+        </Legend>
+        <MapControlWrapper legendCollapsed={legendCollapsed}>
           <ZoneInfos map={map.current} draw={draw.current} />
         </MapControlWrapper>
-
         <div ref={mapContainer} className="map" />
       </div>
     </>

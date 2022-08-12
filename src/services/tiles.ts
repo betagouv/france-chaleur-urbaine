@@ -146,7 +146,7 @@ const tilesInfo: Record<
     options: {
       maxZoom,
     },
-    properties: ['id', 'code_grand_secteur', 'conso'],
+    properties: ['id', 'code_grand_secteur', 'conso', 'result_label'],
     sourceLayer: 'gasUsage',
   },
   zoneDP: {

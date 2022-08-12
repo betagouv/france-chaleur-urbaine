@@ -5,7 +5,6 @@ import ScaleLegend from './ScaleLegend';
 const LegendDesc: Record<string, () => React.ReactElement> = {
   Energy: () => (
     <ScaleLegend
-      framed
       label="Nombre de lots d'habitation"
       color={themeDefEnergy.gas.color}
       scaleLabels={[
@@ -17,7 +16,6 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
   ),
   EnergyGas: () => (
     <ScaleLegend
-      framed
       label="Nombre de lots d'habitation"
       color={`${themeDefEnergy.gas.color}88`}
       scaleLabels={[
@@ -29,7 +27,6 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
   ),
   EnergyFuel: () => (
     <ScaleLegend
-      framed
       label="Nombre de lots d'habitation"
       color={`${themeDefEnergy.fuelOil.color}88`}
       scaleLabels={[
@@ -41,7 +38,6 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
   ),
   GasUsage: () => (
     <ScaleLegend
-      framed
       circle
       label="Niveau de consomation de gaz (MWh)"
       color="#D9D9D9"
