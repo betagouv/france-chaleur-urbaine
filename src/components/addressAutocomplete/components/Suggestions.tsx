@@ -1,5 +1,5 @@
 import { ComboboxList, ComboboxOption } from '@reach/combobox';
-import { SuggestionItem } from 'src/types';
+import { SuggestionItem } from 'src/types/Suggestions';
 
 type SuggestionListProps = {
   suggestions: SuggestionItem[];

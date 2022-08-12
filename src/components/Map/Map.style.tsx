@@ -1,9 +1,11 @@
-import { Button } from '@dataesr/react-dsfr';
+import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import {
+  themeDefDemands,
   themeDefEnergy,
   themeDefHeatNetwork,
   themeDefTypeGas,
+  themeDefZoneDP,
 } from './businessRules';
 import param from './Map.param';
 
@@ -12,16 +14,21 @@ const { minZoomData, maxZoom } = param;
 const mapOverZindex = 10000;
 const mapControlZindex = 10100;
 
-export const MapStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+export const MapStyle: any = createGlobalStyle<{
+  legendCollapsed: boolean;
+}>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
       position: relative;
+      display: flex;
       width: 100%;
       height: 100%;
     }
 
     .map {
       position: absolute;
-      width: 100%;
+      left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : '333px')};
+      width: ${({ legendCollapsed }) =>
+        legendCollapsed ? '100%' : 'calc(100% - 333px)'};
       height: 100%;
     }
 
@@ -64,18 +71,15 @@ export const MapStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/st
         overflow: hidden;
 
         header {
-          padding: 7px 25px 7px 10px;
+          padding: 8px;
           margin: -15px -10px 10px;
           background-color: #4550e5;
-          color: #fff;
-
+          
           h6 {
+            color: #fff;
             font-size: 1.45em;
             font-weight: bold;
             margin: 0;
-          }
-          em.coord {
-            font-size: 0.85em;
           }
         }
 
@@ -109,66 +113,49 @@ export const MapStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/st
 // --- Tooling components ---
 // --------------------------
 
-// Mask Params:
-const maskTop = '3.5rem';
-const maskBottom = '7rem';
-const scrollSize = '15px';
-
-export const MapControlWrapper = styled.div<{
-  top?: boolean;
-  bottom?: boolean;
-  left?: boolean;
-  right?: boolean;
-}>`
+export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
 
-  max-width: 430px;
-  width: 100%;
-  min-width: 330px;
+  width: 1000px;
   padding: 1rem;
-
-  ${({ bottom }) =>
-    bottom
-      ? css`
-          bottom: 0;
-        `
-      : css`
-          top: 0;
-        `}
-  ${({ right }) =>
-    right
-      ? css`
-          right: 0;
-        `
-      : css`
-          left: 0;
-        `}
-
-  &.search-result-box {
-    max-height: 100%;
-    overflow: auto;
-    overflow-y: auto;
-    overflow-y: overlay;
-    overflow-x: visible;
-    padding-bottom: 6rem;
-
-    mask-image: linear-gradient(180deg, transparent 0, black 0%),
-      linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0.3) 0,
-        black ${maskTop},
-        black calc(100% - ${maskBottom}),
-        transparent 100%
-      );
-    mask-size: ${scrollSize}, calc(100% - ${scrollSize});
-    mask-repeat: no-repeat, no-repeat;
-    mask-position: right top, left top;
-  }
+  bottom: 0;
+  left: ${({ legendCollapsed }) =>
+    legendCollapsed ? 'calc(50% - 500px)' : 'calc((50% + 166px) - 500px)'};
 `;
 
-export const MapSearchResult = styled.div`
-  padding-top: 3rem;
+export const Legend = styled.div<{ legendCollapsed: boolean }>`
+  z-index: ${mapControlZindex};
+  overflow: scroll;
+  ${({ legendCollapsed }) =>
+    legendCollapsed &&
+    css`
+      display: none;
+    `}
+  width: 333px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  box-shadow: 0px 16px 16px -16px rgba(0, 0, 0, 0.32),
+    0px 8px 16px rgba(0, 0, 0, 0.1);
+`;
+
+export const LegendSeparator = styled.div`
+  width: 100%;
+  border: 1px solid #e1e1e1;
+  margin: 16px 0;
+`;
+
+export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
+  position: absolute;
+  padding: 0 0 0 9px;
+  z-index: ${mapControlZindex};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '-11px' : '322px')};
+  top: 50%;
+  border-radius: 10px;
+  background-color: white;
+  height: 42px;
+  width: 22px;
 `;
 
 // --------------------
@@ -187,23 +174,6 @@ export const outlineLayerStyle = {
     'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
   },
 };
-export const substationLayerStyle = {
-  type: 'fill',
-  layout: {},
-  paint: {
-    'fill-color': themeDefHeatNetwork.substation.color,
-    'fill-opacity': 1,
-  },
-};
-export const boilerRoomLayerStyle = {
-  type: 'fill',
-  layout: {},
-  paint: {
-    'fill-color': themeDefHeatNetwork.boilerRoom.color,
-    'fill-outline-color': themeDefHeatNetwork.boilerRoom.color,
-    'fill-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 0.95],
-  },
-};
 
 // --------------
 // --- Energy ---
@@ -211,19 +181,19 @@ export const boilerRoomLayerStyle = {
 
 const NB_LOT = 'nb_lot_habitation_bureau_commerce';
 const TYPE_ENERGY = 'energie_utilisee';
-const typeEnergy: Record<string, string> = {
-  fioul: 'fuelOil',
-  fioul_domestique: 'fuelOil',
-  gaz: 'gas',
-  gaz_naturel: 'gas',
-  gaz_collectif: 'gas',
-  gaz_propane_butane: 'gas',
-  charbon: 'wood',
-  bois_de_chauffage: 'wood',
-  electricite: 'electric',
-  energie_autre: 'unknow',
-  'sans objet': 'unknow',
-  default: 'unknow',
+export const typeEnergy: Record<ENERGY_USED, ENERGY_TYPE> = {
+  [ENERGY_USED.Fioul]: ENERGY_TYPE.Fuel,
+  [ENERGY_USED.FioulDomestique]: ENERGY_TYPE.Fuel,
+  [ENERGY_USED.Gaz]: ENERGY_TYPE.Gas,
+  [ENERGY_USED.GazNaturel]: ENERGY_TYPE.Gas,
+  [ENERGY_USED.GazCollectif]: ENERGY_TYPE.Gas,
+  [ENERGY_USED.GazPropaneButane]: ENERGY_TYPE.Gas,
+  [ENERGY_USED.Charbon]: ENERGY_TYPE.Wood,
+  [ENERGY_USED.BoisDeChauffage]: ENERGY_TYPE.Wood,
+  [ENERGY_USED.Electricite]: ENERGY_TYPE.Electric,
+  [ENERGY_USED.EnergieAutre]: ENERGY_TYPE.Unknown,
+  [ENERGY_USED.SansObjet]: ENERGY_TYPE.Unknown,
+  [ENERGY_USED.Default]: ENERGY_TYPE.Unknown,
 };
 export const objTypeEnergy = Object.entries(typeEnergy).reduce(
   (acc: any, [key, value]: [string, string]) => {
@@ -344,6 +314,25 @@ export const gasUsageLayerStyle = {
   },
 };
 
-export const AddButton = styled(Button)`
-  float: right;
+export const demandsLayerStyle = {
+  type: 'circle',
+  paint: {
+    'circle-color': themeDefDemands.fill.color,
+    'circle-stroke-color': themeDefDemands.stroke.color,
+    'circle-radius': themeDefDemands.fill.size,
+    'circle-stroke-width': themeDefDemands.stroke.size,
+  },
+};
+
+export const zoneDPLayerStyle = {
+  type: 'fill',
+  paint: {
+    'fill-color': themeDefZoneDP.fill.color,
+    'fill-opacity': themeDefZoneDP.fill.opacity,
+  },
+};
+
+export const Buttons = styled.div`
+  display: flex;
+  justify-content: space-evenly;
 `;

@@ -1,11 +1,5 @@
-import Airtable from 'airtable';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
-const AIRTABLE_KEY_API = process.env.AIRTABLE_KEY_API;
-const AIRTABLE_BASE = process.env.AIRTABLE_BASE;
-const base = new Airtable({ apiKey: AIRTABLE_KEY_API }).base(
-  AIRTABLE_BASE || ''
-);
+import base from 'src/db/airtable';
 
 const creationCallBack =
   (res: NextApiResponse<any>) => (err: any, records: any) => {

@@ -1,41 +1,42 @@
 import { AddressFactory } from '@core/domain/entity/AddressFactory';
 import { NetworkMapper } from '@core/infrastructure/mapper/network.mapper';
 import { NetworkRepositoryImpl } from '@core/infrastructure/repository/networkRepositoryImpl';
-import Distance from '../distance';
-import {
-  anIDFAddress,
-  anIDFNetwork,
-  anIDFNetworkResponse,
-  someNetwork,
-} from './__fixtures__/data';
+import sinon from 'sinon';
+import * as distance from '../distance';
+import { anIDFAddress, someNetwork, THRESHOLD } from './__fixtures__/data';
 
 describe('Network Repository', () => {
   describe('#findByCoords', () => {
+    let computeDistanceStub: sinon.SinonStub;
+    beforeEach(() => {
+      computeDistanceStub = sinon.stub(distance, 'default');
+    });
     afterEach(() => {
       jest.resetAllMocks();
+      computeDistanceStub.restore();
     });
 
     it('should correctly use distance helper', async () => {
-      const spy = jest
-        .spyOn(Distance, 'getDistance')
-        .mockImplementation(() => anIDFNetworkResponse());
+      computeDistanceStub.returns(THRESHOLD);
 
       const address = AddressFactory.create(anIDFAddress());
-      const expectedNetwork = anIDFNetwork();
       const networkRepository = new NetworkRepositoryImpl();
 
       const network = await networkRepository.findByCoords(address);
 
-      expect(spy).toHaveBeenNthCalledWith(1, address.lat, address.lon);
-      expect(network).toEqual(expectedNetwork);
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, address.lat, address.lon);
+      expect(network).toEqual({
+        distance: THRESHOLD,
+        filiere: null,
+        lat: null,
+        lon: null,
+        irisCode: null,
+      });
     });
 
     it('should a null network when nothing found', async () => {
-      const spy = jest
-        .spyOn(Distance, 'getDistance')
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore: Partial object
-        .mockImplementation(() => ({}));
+      computeDistanceStub.returns(null);
 
       const address = AddressFactory.create(anIDFAddress());
       const expectedNetwork = NetworkMapper.createNullNetwork();
@@ -43,19 +44,39 @@ describe('Network Repository', () => {
 
       const network = await networkRepository.findByCoords(address);
 
-      expect(spy).toHaveBeenNthCalledWith(1, address.lat, address.lon);
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, address.lat, address.lon);
       expect(network).toEqual(expectedNetwork);
     });
 
-    it('should throw an error when call to distance Api fails', async () => {
-      const spy = jest.spyOn(Distance, 'getDistance').mockImplementation(() => {
-        throw new Error();
+    it('should return 0 when distance is 0', async () => {
+      computeDistanceStub.returns(0);
+
+      const address = AddressFactory.create(anIDFAddress());
+      const networkRepository = new NetworkRepositoryImpl();
+
+      const network = await networkRepository.findByCoords(address);
+
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, address.lat, address.lon);
+      expect(network).toEqual({
+        distance: 0,
+        filiere: null,
+        lat: null,
+        lon: null,
+        irisCode: null,
       });
+    });
+
+    it('should throw an error when call to distance Api fails', async () => {
+      computeDistanceStub.throws(new Error());
+
       const address = AddressFactory.create(anIDFAddress());
       const networkRepository = new NetworkRepositoryImpl();
 
       await networkRepository.findByCoords(address).catch((result) => {
-        expect(spy).toHaveBeenNthCalledWith(1, address.lat, address.lon);
+        sinon.assert.calledOnce(computeDistanceStub);
+        sinon.assert.calledWith(computeDistanceStub, address.lat, address.lon);
         expect(result).rejects;
       });
     });

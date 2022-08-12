@@ -1,6 +1,6 @@
+import { Icon } from '@dataesr/react-dsfr';
 import {
   LabelLegend,
-  LabelLegendDescription,
   LabelLegendHead,
   LabelLegendMarker,
   LabelLegendWrapper,
@@ -9,7 +9,7 @@ import {
 export type TypeLegendEntry = {
   id: string;
   label: string;
-  description?: string;
+  info?: string;
   className?: string;
   type?: string;
   bgColor?: string;
@@ -20,7 +20,7 @@ function LegendEntry({
   className,
   type,
   label,
-  description,
+  info,
   checked,
   readOnly,
   onChange,
@@ -30,31 +30,25 @@ function LegendEntry({
   onChange: (idEntry: any) => void;
 }) {
   return (
-    <div>
-      <LabelLegendWrapper>
-        <label>
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={() => {
-              !readOnly && onChange(id);
-            }}
-          />
-          <LabelLegendMarker
-            className={`legend-marker ${
-              className ? `${className}-marker` : ''
-            }`}
-            bgColor={bgColor && `${bgColor}`}
-          />
-          <LabelLegend>
-            <LabelLegendHead type={type}>{label}</LabelLegendHead>
-            {description && (
-              <LabelLegendDescription>{description}</LabelLegendDescription>
-            )}
-          </LabelLegend>
-        </label>
-      </LabelLegendWrapper>
-    </div>
+    <LabelLegendWrapper>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={() => {
+          !readOnly && onChange(id);
+        }}
+      />
+      {className && (
+        <LabelLegendMarker
+          className={`legend-marker ${className}-marker`}
+          bgColor={bgColor && `${bgColor}`}
+        />
+      )}
+      <LabelLegend>
+        <LabelLegendHead type={type}>{label}</LabelLegendHead>
+        {info && <Icon size="lg" name="ri-information-fill" title={info} />}
+      </LabelLegend>
+    </LabelLegendWrapper>
   );
 }
 

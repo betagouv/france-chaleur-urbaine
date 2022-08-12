@@ -1,9 +1,15 @@
+import { Icon } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Point } from 'src/types';
+import { Point } from 'src/types/Point';
+import { DemandSummary } from 'src/types/Summary/Demand';
+import { EnergySummary } from 'src/types/Summary/Energy';
+import { GasSummary } from 'src/types/Summary/Gas';
 import {
   CardSearchDetails,
   MapLegend,
@@ -11,19 +17,21 @@ import {
   TypeAddressDetail,
   TypeHandleAddressSelect,
 } from './components';
+import ZoneInfos from './components/ZoneInfos';
 import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
-  AddButton,
-  boilerRoomLayerStyle,
+  CollapseLegend,
+  demandsLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
+  Legend,
+  LegendSeparator,
   MapControlWrapper,
-  MapSearchResult,
   MapStyle,
   objTypeEnergy,
   outlineLayerStyle,
-  substationLayerStyle,
+  zoneDPLayerStyle,
 } from './Map.style';
 
 const {
@@ -37,7 +45,7 @@ const {
   legendData,
 } = mapParam;
 
-const layerNameOptions = ['outline', 'substation', 'boilerRoom'] as const;
+const layerNameOptions = ['outline', 'demands', 'zoneDP'] as const;
 const energyNameOptions = ['fuelOil', 'gas'] as const;
 const gasUsageNameOptions = ['R', 'T'] as const;
 
@@ -45,22 +53,24 @@ type LayerNameOption = typeof layerNameOptions[number];
 type EnergyNameOption = typeof energyNameOptions[number];
 type gasUsageNameOption = typeof gasUsageNameOptions[number];
 
-const DEBUG = true;
-
-const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
-
 const formatBodyPopup = ({
-  coordinates,
   consommation,
   energy,
+  demands,
 }: {
-  coordinates: Point;
-  consommation?: Record<string, unknown>;
-  energy?: Record<string, unknown>;
+  consommation?: GasSummary;
+  energy?: EnergySummary;
+  demands?: DemandSummary;
   id: string;
 }) => {
-  const textAddress =
-    consommation?.result_label ?? energy?.adresse_reference ?? null;
+  let textAddress;
+  if (consommation) {
+    textAddress = consommation.result_label;
+  } else if (energy) {
+    textAddress = energy.adresse_reference;
+  } else if (demands) {
+    textAddress = demands.Adresse;
+  }
 
   const writeTypeConso = (typeConso: string | unknown) => {
     switch (typeConso) {
@@ -83,17 +93,12 @@ const formatBodyPopup = ({
     periode_construction,
   } = energy || {};
   const { code_grand_secteur, conso } = consommation || {};
-
   const bodyPopup = `
     ${
       textAddress
         ? `
           <header>
             <h6>${textAddress}</h6>
-            <em class="coord">Lat, Lon : ${[...coordinates]
-              .reverse()
-              .map((point: number) => point.toFixed(5))
-              .join(',')}</em>
           </header>`
         : ''
     }
@@ -133,15 +138,32 @@ const formatBodyPopup = ({
                 )}<br />`
               : ''
           }
+          ${
+            demands
+              ? `Mode de chauffage: ${
+                  demands['Mode de chauffage'] || 'inconnu'
+                }`
+              : ''
+          }
         </section>
       `}
   `;
   return bodyPopup;
 };
 
+const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
+
 export default function Map() {
   const mapContainer: null | { current: any } = useRef(null);
   const map: null | { current: any } = useRef(null);
+  const draw: null | { current: any } = useRef(null);
+
+  const [legendCollapsed, setLegendCollapsed] = useState(false);
+  useEffect(() => {
+    if (map && map.current) {
+      map.current.resize();
+    }
+  }, [map, legendCollapsed]);
 
   const [mapState, setMapState] = useState('pending');
   const [layerDisplay, setLayerDisplay]: [
@@ -182,10 +204,6 @@ export default function Map() {
     });
   }, []);
 
-  const logSoughtAddress = useCallback(() => {
-    console.info('State of: soughtAddress =>', soughtAddress);
-  }, [soughtAddress]);
-
   const onAddressSelectHandle: TypeHandleAddressSelect = useCallback(
     (
       address: string,
@@ -200,8 +218,9 @@ export default function Map() {
       if (!Array.isArray(soughtAddress)) {
         return;
       }
+
       const newAddress = soughtAddress.find(
-        ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
+        ({ id: soughtAddressId }) => soughtAddressId === id
       ) || {
         id,
         coordinates: computedCoordinates,
@@ -288,6 +307,10 @@ export default function Map() {
   useEffect(() => {
     if (mapState === 'loaded' || map.current) return;
 
+    draw.current = new MapboxDraw({
+      displayControlsDefault: false,
+    });
+
     map.current = new maplibregl.Map({
       attributionControl: false,
       container: mapContainer.current,
@@ -297,12 +320,8 @@ export default function Map() {
       maxZoom,
       minZoom,
     });
-    map.current.on('click', () => {
-      if (DEBUG) {
-        console.info('zoom =>', map.current.getZoom());
-        logSoughtAddress();
-      }
-    });
+
+    map.current.addControl(draw.current);
 
     map.current.on('load', () => {
       map.current.loadImage(
@@ -355,17 +374,36 @@ export default function Map() {
             'source-layer': 'outline',
             ...outlineLayerStyle,
           });
-          map.current.addLayer({
-            id: 'substation',
-            source: 'heatNetwork',
-            'source-layer': 'substation',
-            ...substationLayerStyle,
+
+          // -----------------
+          // --- Demands ---
+          // -----------------
+          map.current.addSource('demands', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
           });
+
           map.current.addLayer({
-            id: 'boilerRoom',
-            source: 'heatNetwork',
-            'source-layer': 'boilerRoom',
-            ...boilerRoomLayerStyle,
+            id: 'demands',
+            source: 'demands',
+            'source-layer': 'demands',
+            ...demandsLayerStyle,
+          });
+
+          map.current.on('click', 'demands', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { demands: properties });
+          });
+
+          map.current.on('mouseenter', 'demands', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'demands', function () {
+            map.current.getCanvas().style.cursor = '';
           });
 
           // --------------
@@ -397,6 +435,21 @@ export default function Map() {
 
           map.current.on('mouseleave', 'energy', function () {
             map.current.getCanvas().style.cursor = '';
+          });
+
+          // -----------------
+          // --- Zone DP ---
+          // -----------------
+          map.current.addSource('zoneDP', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
+          });
+
+          map.current.addLayer({
+            id: 'zoneDP',
+            source: 'zoneDP',
+            'source-layer': 'zoneDP',
+            ...zoneDPLayerStyle,
           });
 
           // -----------------
@@ -526,12 +579,24 @@ export default function Map() {
 
   return (
     <>
-      <MapStyle />
+      <MapStyle legendCollapsed={legendCollapsed} />
       <div className="map-wrap">
-        <MapControlWrapper className="search-result-box" right top>
-          <MapSearchResult>
-            {soughtAddress.length > 0 &&
-              soughtAddress
+        <CollapseLegend
+          legendCollapsed={legendCollapsed}
+          onClick={() => setLegendCollapsed(!legendCollapsed)}
+        >
+          <Icon
+            name={
+              legendCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line'
+            }
+          />
+        </CollapseLegend>
+        <Legend legendCollapsed={legendCollapsed}>
+          <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+          <LegendSeparator />
+          {soughtAddress.length > 0 && (
+            <>
+              {soughtAddress
                 .map((adressDetails: TypeAddressDetail, i: number) => (
                   <CardSearchDetails
                     key={`${adressDetails.address}-${i}`}
@@ -541,10 +606,9 @@ export default function Map() {
                   />
                 ))
                 .reverse()}
-          </MapSearchResult>
-        </MapControlWrapper>
-
-        <MapControlWrapper right bottom>
+              <LegendSeparator />
+            </>
+          )}
           <MapLegend
             data={legendData}
             onToogleFeature={toggleLayer}
@@ -565,23 +629,11 @@ export default function Map() {
               }
             }}
             layerDisplay={layerDisplay}
-            hasResults={soughtAddress.length > 0}
           />
+        </Legend>
+        <MapControlWrapper legendCollapsed={legendCollapsed}>
+          <ZoneInfos map={map.current} draw={draw.current} />
         </MapControlWrapper>
-
-        <MapControlWrapper right top>
-          <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-        </MapControlWrapper>
-
-        <MapControlWrapper bottom right>
-          <AddButton
-            icon="ri-add-line"
-            onClick={() => router.push('/contribution')}
-          >
-            Contribuer
-          </AddButton>
-        </MapControlWrapper>
-
         <div ref={mapContainer} className="map" />
       </div>
     </>

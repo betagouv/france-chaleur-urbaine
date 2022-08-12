@@ -4,7 +4,7 @@ import { Network } from '@core/domain/entity/network';
 import { AddressPyrisResponse } from '@core/infrastructure/mapper/address.dto';
 import { NetworkDistance } from '@core/infrastructure/mapper/network.dto';
 
-const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
+export const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
 
 export const someNetwork = (args?: Partial<Network>): Network => ({
   lat: 48,

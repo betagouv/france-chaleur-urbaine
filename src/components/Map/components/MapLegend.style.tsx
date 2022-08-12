@@ -1,5 +1,9 @@
-import { createGlobalStyle } from 'styled-components';
-import { themeDefHeatNetwork } from '../businessRules';
+import styled, { createGlobalStyle } from 'styled-components';
+import {
+  themeDefDemands,
+  themeDefHeatNetwork,
+  themeDefZoneDP,
+} from '../businessRules';
 
 export const MapGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .leaflet-container .leaflet-control-attribution {
@@ -124,38 +128,37 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
   }
 
   .legend-heat-network-marker {
-    width: 1.5rem;
-
+    top: -2px;
     :before {
-      width: 100%;
+      margin: 0 4px;
+      width: 24px;
       height: 0;
       border: 3px solid ${themeDefHeatNetwork.outline.color};
       border-radius: 3px;
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
-  .legend-boiler-room-marker {
-    width: 1.5rem;
 
+  .legend-zoneDP-marker {
     :before {
-      width: 100%;
-      border: 3px solid ${themeDefHeatNetwork.boilerRoom.color};
-      border-radius: 3px;
-      background-color: ${themeDefHeatNetwork.boilerRoom.color};
+      margin: 0 4px;
+      width: 32px;
+      background-color ${themeDefZoneDP.fill.color};
+      opacity: ${themeDefZoneDP.fill.opacity};
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
-  .legend-substation-marker {
-    width: 1.5rem;
 
+  .legend-demands-marker {
     :before {
-      width: 1rem;
-      border: 3px solid ${themeDefHeatNetwork.substation.color};
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      background-color: ${themeDefHeatNetwork.substation.color};
-      margin-bottom: calc(0.25em - 1.5px)
+      background-color ${themeDefDemands.fill.color};
+      border: 2px solid ${themeDefDemands.stroke.color};
     }
   }
+
   .legend-energy-marker {
     width: .6rem;
 
@@ -165,5 +168,21 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       border-radius: 50%;
       margin-bottom: calc(0.25em - 1.5px)
     }
+  }
+`;
+
+export const LegendButton = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+`;
+
+export const Sources = styled.div`
+  color: #8d93a1;
+  font-size: 10px;
+  position: relative;
+  a {
+    position: absolute;
+    top: -16px;
   }
 `;

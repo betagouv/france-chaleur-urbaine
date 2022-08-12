@@ -1,6 +1,6 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
 import { useServices } from 'src/services';
-import { Point } from 'src/types';
+import { Point } from 'src/types/Point';
 import type { TypeAddressDetail } from './CardSearchDetails';
 import { MapSearchFormGlobalStyle } from './MapSearchForm.style';
 

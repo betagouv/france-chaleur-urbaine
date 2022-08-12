@@ -1,16 +1,8 @@
 import styled, { css } from 'styled-components';
 
 export const ScaleLegendWrapper = styled.div<{ framed?: boolean }>`
-  padding: 0 0 0.4rem 0;
-
-  ${({ framed }) =>
-    framed &&
-    css`
-      padding: 0.3em 0.5em 0.55em;
-      margin: 0.2em 0.5em 0.4em 1.5em;
-      border: 1px solid #d2d6df;
-      border-radius: 0.5em;
-    `}
+  margin-left: 1.5rem;
+  margin-bottom: 4px;
 `;
 
 export const ScaleLegendHeader = styled.div`

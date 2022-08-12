@@ -2,7 +2,7 @@ import { Address, Coords } from '@core/domain/entity/address';
 import { AddressFactory } from '@core/domain/entity/AddressFactory';
 import { AddressNotFoundError } from '@core/domain/errors';
 import { AddressRepository } from '@core/domain/repository/addressRepository';
-import { HttpClient } from '../../domain/lib';
+import { HttpClient } from 'src/services/http';
 import { AddressPyrisResponse } from '../mapper/address.dto';
 import AddressMapper from '../mapper/addressMapper';
 

@@ -1,13 +1,12 @@
-import { Icon } from '@dataesr/react-dsfr';
-import { useState } from 'react';
-import { MapCard } from './CardDetails.style';
+import { Button, Link } from '@dataesr/react-dsfr';
+import { useRouter } from 'next/router';
+import { LegendSeparator } from '../Map.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import LegendGroupLabel, { TypeGroupLegend } from './LegendGroupLabel';
-import { LegendGlobalStyle } from './MapLegend.style';
+import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
 
 function MapLegend({
   data,
-  hasResults,
   layerDisplay,
   onToogleFeature,
   onToogleInGroup,
@@ -18,73 +17,77 @@ function MapLegend({
   onToogleFeature: (idEntry: any) => void;
   onToogleInGroup: (groupeName: string, idEntry: any) => void;
 }) {
-  const [legendPined, setLegendPined] = useState(false);
-
+  const router = useRouter();
   return (
-    <MapCard
-      typeCard={'legend'}
-      isClickable={hasResults}
-      className={`legendCard ${!legendPined && hasResults ? 'close' : ''}`}
-    >
+    <>
       <LegendGlobalStyle />
-      <header
-        onClick={() => {
-          if (hasResults) {
-            setLegendPined(!legendPined);
-          }
-        }}
-      >
-        Légende
-        {hasResults && (
-          <Icon
-            name={!legendPined ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'}
-          />
-        )}
-      </header>
+      {data.map((group, i) => {
+        if (group === 'separator') {
+          return <LegendSeparator key={`separator-${i}`} />;
+        }
 
-      <section>
-        {data.map((group, i) => {
-          if (group === 'separator') return <hr key={`separator-${i}`} />;
-          else if (typeof group === 'object') {
-            const {
-              id,
-              title,
-              description,
-              subGroup,
-              entries,
-              subLegend,
-              linkto,
-              type = 'list',
-            } = group;
-            if (type === 'group') {
-              return (
-                <LegendGroupLabel
-                  layerDisplay={layerDisplay}
-                  key={`group-${id}-${i}`}
-                  id={id}
-                  title={title}
-                  subLegend={subLegend}
-                  description={description}
-                  subGroup={subGroup}
-                  entries={entries}
-                  linkto={linkto}
-                  onChangeEntry={onToogleInGroup}
-                />
-              );
-            } else if (type === 'list') {
-              return entries.map((entry: TypeLegendEntry) => (
-                <LegendEntry
-                  checked={!!layerDisplay?.[entry.id]}
-                  key={entry.id}
-                  onChange={onToogleFeature}
-                  {...entry}
-                />
-              ));
-            }
-          } else return null;
-        })}
-      </section>
-    </MapCard>
+        if (group === 'contributeButton') {
+          return (
+            <LegendButton key="contribute-button">
+              <Button
+                icon="ri-upload-2-line"
+                onClick={() => router.push('/contribution')}
+                size="sm"
+              >
+                Contribuer
+              </Button>
+            </LegendButton>
+          );
+        }
+
+        if (group === 'sources') {
+          return (
+            <Sources>
+              <Link key={'sources'} href="/carto_sources.pdf" target="_blank">
+                Sources
+              </Link>
+            </Sources>
+          );
+        }
+
+        if (typeof group === 'object') {
+          const {
+            id,
+            subGroup,
+            entries,
+            subLegend,
+            linkto,
+            type = 'list',
+          } = group;
+          if (type === 'group') {
+            return (
+              <LegendGroupLabel
+                layerDisplay={layerDisplay}
+                key={`group-${id}-${subLegend}`}
+                id={id}
+                subLegend={subLegend}
+                subGroup={subGroup}
+                entries={entries}
+                linkto={linkto}
+                onChangeEntry={onToogleInGroup}
+              />
+            );
+          }
+
+          if (type === 'list') {
+            return entries.map((entry: TypeLegendEntry) => (
+              <LegendEntry
+                checked={!!layerDisplay?.[entry.id]}
+                key={entry.id}
+                onChange={onToogleFeature}
+                {...entry}
+              />
+            ));
+          }
+        }
+        return null;
+      })}
+    </>
   );
 }
 

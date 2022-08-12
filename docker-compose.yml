@@ -1,0 +1,23 @@
+version: '3'
+services:
+  db:
+    build: ./docker/db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_fcu
+    ports:
+      - "5432:5432"
+
+  web:
+    build: ./docker/web
+    command: sh -c "yarn dev"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres_fcu@db:5432/postgres
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    depends_on: # https://docs.docker.com/compose/startup-order/
+      - db
+    restart: # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart
+      always # trick to be sure our app is always up, even when it has started before PG 

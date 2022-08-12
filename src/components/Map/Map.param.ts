@@ -14,8 +14,8 @@ export type TypeLayerDisplay = Record<string, any> & {
 
 const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
-  substation: false,
-  boilerRoom: false,
+  zoneDP: true,
+  demands: true,
   gasUsageGroup: true,
   gasUsage: ['R', 'T'],
   energy: ['fuelOil', 'gas'],
@@ -33,21 +33,43 @@ const legendData = [
     ],
     type: 'list',
   },
+  {
+    id: 'zoneDP',
+    entries: [
+      {
+        id: 'zoneDP',
+        label: 'Zones de développement prioritaires',
+        info: "Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage au dessus d'une puissance de 30 kW est obligatoire",
+        className: 'legend-zoneDP',
+      },
+    ],
+    type: 'list',
+  },
+  'contributeButton',
+  'separator',
+  {
+    id: 'demands',
+    entries: [
+      {
+        id: 'demands',
+        label: 'Demandes de raccordement sur France Chaleur Urbaine',
+        className: 'legend-demands',
+      },
+    ],
+    type: 'list',
+  },
   'separator',
   {
     id: 'gasUsageGroup',
-    title: 'Gaz :',
     entries: [
       {
         id: 'gasUsageGroup',
-        label: 'Consommations de gaz',
-        description: 'Source : Données locales de l’énergie, MTE',
+        label: 'Consommations globale de gaz',
         bgColor: 'red',
       },
     ],
     type: 'group',
   },
-
   {
     id: 'gasUsage',
     entries: defaultLayerDisplay.gasUsage.map((id: string) => ({
@@ -66,8 +88,7 @@ const legendData = [
     entries: [
       {
         id: 'gas',
-        label: localTypeEnergy?.gas || localTypeEnergy.unknow,
-        description: 'Source : Registre national des copropriétés',
+        label: localTypeEnergy.gas,
         bgColor: themeDefEnergy.gas.color,
       },
     ],
@@ -77,18 +98,18 @@ const legendData = [
   'separator',
   {
     id: 'energy',
-    title: 'Fioul :',
     entries: [
       {
         id: 'fuelOil',
-        label: localTypeEnergy?.fuelOil || localTypeEnergy.unknow,
-        description: 'Source : Registre national des copropriétés',
+        label: localTypeEnergy.fuelOil,
         bgColor: themeDefEnergy.fuelOil.color,
       },
     ],
     subLegend: 'EnergyFuel',
     type: 'group',
   },
+  'separator',
+  'sources',
 ];
 
 const param = {

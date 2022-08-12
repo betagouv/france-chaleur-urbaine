@@ -24,8 +24,8 @@ type MapCardType = {
 export const MapCard = styled.div<MapCardType>`
   width: 100%;
   display: block;
+  margin-bottom: 8px;
   background-color: white;
-  margin-bottom: 48px;
   border: 2px solid var(--bf500);
   border: 1px solid rgb(0 0 0 / 20%);
 

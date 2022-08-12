@@ -1,10 +1,10 @@
 import { FakeHttpClient } from '@utils/fakeHttpClient';
-import { Coords } from 'src/types';
+import { Coords } from 'src/types/Coords';
 import { HeatNetworkService } from '..';
 import { ServiceError } from '../errors';
 
 describe('heatNetwork service', () => {
-  const baseURL = '/api/map/getEligibilityStatus';
+  const baseURL = '/api/map/eligibilityStatus';
   afterEach(() => {
     jest.resetAllMocks();
   });
