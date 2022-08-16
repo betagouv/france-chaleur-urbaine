@@ -136,7 +136,12 @@ const tilesInfo: Record<
     options: {
       maxZoom,
     },
-    properties: ['id', 'nb_lot_habitation_bureau_commerce', 'energie_utilisee'],
+    properties: [
+      'id',
+      'nb_lot_habitation_bureau_commerce',
+      'energie_utilisee',
+      'adresse_reference',
+    ],
     sourceLayer: 'condominiumRegister',
   },
   gas: {
