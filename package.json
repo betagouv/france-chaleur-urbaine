@@ -36,6 +36,7 @@
     "archiver": "^5.3.1",
     "axios": "^0.27.2",
     "base64-stream": "^1.0.0",
+    "dotenv": "^16.0.1",
     "formik": "^2.2.9",
     "geojson-vt": "^3.2.1",
     "knex": "^2.2.0",

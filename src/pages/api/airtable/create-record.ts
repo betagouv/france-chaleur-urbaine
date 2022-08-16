@@ -1,3 +1,4 @@
+import { getGestionnaire } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
 
@@ -22,6 +23,11 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
   if (req?.body) {
     const { type, ...values } = req.body;
+    const gestionnaire = getGestionnaire(values.Adresse);
+    if (gestionnaire) {
+      values.Gestionnaire = gestionnaire;
+    }
+
     switch (type) {
       case 'FCU - Utilisateurs':
         base('FCU - Utilisateurs').create(
