@@ -49,8 +49,8 @@ export const MapStyle: any = createGlobalStyle<{
     }
 
     .popup-map-layer {
-      z-index: 10000;
-      font-size: .8rem;
+      z-index: 10101;
+      font-size: 14px;
 
       &.maplibregl-popup-anchor-left  .maplibregl-popup-tip {
         border-right-color: #4550e5;
@@ -77,7 +77,7 @@ export const MapStyle: any = createGlobalStyle<{
           
           h6 {
             color: #fff;
-            font-size: 1.45em;
+            font-size: 15px;
             font-weight: bold;
             margin: 0;
           }
