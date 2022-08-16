@@ -36,18 +36,13 @@ const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
     <MapCard
       isEligible={isEligible}
       typeCard={'search'}
-      onClick={onClickHandler}
       className={isEligible ? 'eligible' : 'ineligible'}
       isClickable
     >
-      <header>
-        {result.address}
-        <div className="buttonsWrapper">
-          {onClickClose && (
-            <div className="closeButton" onClick={onCloseHandler} />
-          )}
-        </div>
-      </header>
+      <header onClick={onClickHandler}>{result.address}</header>
+      {onClickClose && (
+        <button className="closeButton" onClick={onCloseHandler} />
+      )}
       <section>
         <EligibilityResult isEligible={isEligible}>
           {isEligible

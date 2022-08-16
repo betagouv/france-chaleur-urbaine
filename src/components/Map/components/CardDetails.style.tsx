@@ -24,6 +24,7 @@ type MapCardType = {
 export const MapCard = styled.div<MapCardType>`
   width: 100%;
   display: block;
+  position: relative;
   margin-bottom: 8px;
   background-color: white;
   border: 2px solid var(--bf500);
@@ -35,50 +36,41 @@ export const MapCard = styled.div<MapCardType>`
   box-shadow: 1px 0 4px 1px rgb(0 0 0 / 20%);
 
   > header {
-    display: flex;
-    justify-content: space-between;
-
-    padding: 0.5em;
+    padding: 8px 24px 8px 8px;
     cursor: ${({ isClickable }) => (isClickable ? 'pointer' : 'default')};
 
     font-weight: bold;
+  }
 
-    .buttonsWrapper {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-      align-items: flex-start;
-      padding-left: 0.5rem;
+  .closeButton {
+    position: absolute;
+    top: 2px;
+    right: 2px;
 
-      .closeButton {
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #ffffff;
-        box-shadow: 0 1px 2px 1px #33333333;
-        width: 1.25rem;
-        height: 1.25rem;
-        border-radius: 50%;
-        cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px 1px #33333333;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
 
-        ::before,
-        ::after {
-          content: '';
-          position: absolute;
-          width: 2px;
-          height: 80%;
-          background-color: #333;
-        }
-        ::before {
-          content: '';
-          transform: rotate(-45deg);
-        }
-        ::after {
-          content: '';
-          transform: rotate(45deg);
-        }
-      }
+    ::before,
+    ::after {
+      content: '';
+      position: absolute;
+      width: 2px;
+      height: 80%;
+      background-color: #333;
+    }
+    ::before {
+      content: '';
+      transform: rotate(-45deg);
+    }
+    ::after {
+      content: '';
+      transform: rotate(45deg);
     }
   }
 

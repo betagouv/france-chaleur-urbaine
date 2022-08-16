@@ -239,7 +239,10 @@ export default function Map() {
 
   const removeSoughtAddress = useCallback(
     (result: { marker?: any; coordinates?: Point }) => {
-      if (!result.coordinates) return;
+      if (!result.coordinates) {
+        return;
+      }
+
       const id = getAddressId(result.coordinates);
       const getCurrentSoughtAddress = ({
         coordinates,
@@ -502,6 +505,7 @@ export default function Map() {
               .map((point: string) => parseFloat(point))
               .reverse()
           : coord; // TODO: Fix on source
+
       flyTo({ coordinates });
       setQueryState(router.query);
       new maplibregl.Marker({
