@@ -39,7 +39,7 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
   GasUsage: () => (
     <ScaleLegend
       circle
-      label="Niveau de consomation de gaz (MWh)"
+      label="Niveau de consommation de gaz (MWh)"
       color="#D9D9D9"
       scaleLabels={[
         { label: '<\u00a0100', size: 0.8 },
