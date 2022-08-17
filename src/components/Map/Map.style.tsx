@@ -74,7 +74,7 @@ export const MapStyle: any = createGlobalStyle<{
           padding: 8px;
           margin: -15px -10px 10px;
           background-color: #4550e5;
-          
+
           h6 {
             color: #fff;
             font-size: 15px;
@@ -179,7 +179,7 @@ export const outlineLayerStyle = {
 // --- Energy ---
 // --------------
 
-const NB_LOT = 'nb_lot_habitation_bureau_commerce';
+const NB_LOT = 'nb_logements';
 const TYPE_ENERGY = 'energie_utilisee';
 export const typeEnergy: Record<ENERGY_USED, ENERGY_TYPE> = {
   [ENERGY_USED.Fioul]: ENERGY_TYPE.Fuel,

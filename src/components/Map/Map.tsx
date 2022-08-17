@@ -87,11 +87,7 @@ const formatBodyPopup = ({
   const formatBddText = (str?: string) =>
     str && str.replace(/_/g, ' ').toLowerCase();
 
-  const {
-    nb_lot_habitation_bureau_commerce,
-    energie_utilisee,
-    periode_construction,
-  } = energy || {};
+  const { nb_logements, energie_utilisee, periode_construction } = energy || {};
   const { code_grand_secteur, conso } = consommation || {};
   const bodyPopup = `
     ${
@@ -111,11 +107,7 @@ const formatBodyPopup = ({
               ? '<strong>Copropriété</strong><br />'
               : ''
           }
-          ${
-            nb_lot_habitation_bureau_commerce
-              ? `Nombre de lots : ${nb_lot_habitation_bureau_commerce}<br />`
-              : ''
-          }
+          ${nb_logements ? `Nombre de lots : ${nb_logements}<br />` : ''}
           ${
             energie_utilisee
               ? `Chauffage actuel :  ${formatBddText(
