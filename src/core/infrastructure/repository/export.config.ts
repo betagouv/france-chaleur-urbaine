@@ -25,13 +25,13 @@ export const consoColumns: ExportColumn<GasSummary>[] = [
 export const gasColumns: ExportColumn<EnergySummary>[] = [
   {
     header: 'Adresse',
-    value: 'adresse_reference',
+    value: 'addr_label',
   },
 ];
 
 export const fioulColumns: ExportColumn<EnergySummary>[] = [
   {
     header: 'Adresse',
-    value: 'adresse_reference',
+    value: 'addr_label',
   },
 ];

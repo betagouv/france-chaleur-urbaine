@@ -67,7 +67,7 @@ const formatBodyPopup = ({
   if (consommation) {
     textAddress = consommation.result_label;
   } else if (energy) {
-    textAddress = energy.adresse_reference;
+    textAddress = energy.addr_label;
   } else if (demands) {
     textAddress = demands.Adresse;
   }

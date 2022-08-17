@@ -2,12 +2,51 @@ import { mapParam } from '@components/Map';
 import geojsonvt from 'geojson-vt';
 import db from 'src/db';
 import base from 'src/db/airtable';
-import { meaningFullEnergies } from 'src/types/enum/EnergyType';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
 type PropertyType = string | [string, string];
 type DataType = 'network' | 'gas' | 'energy' | 'zoneDP' | 'demands';
+
+const preTable: Record<string, string> = {
+  'pre-table-energy': `
+    SELECT addr.rownum as "id", addr.fid, addr.geom AS geom,
+      addr.etaban202111_id,
+      TRIM(CONCAT(
+        addr.etaban202111_numero,
+        ' ', addr.etaban202111_voie,
+        ' ', addr.etaban202111_code_postal,
+        ' ', addr.etaban202111_ville
+      )) AS addr_label,
+      addr.etaban202111_numero AS addr_numero,
+      addr.etaban202111_voie AS addr_voie,
+      addr.etaban202111_code_postal AS addr_cp,
+      addr.etaban202111_code_insee AS addr_insee,
+      addr.etaban202111_ville AS addr_ville,
+      bati.cerffo2020_nb_log AS nb_logements,
+      bati.adedpe202006_logtype_ch_type_ener_corr AS energie_utilisee,
+      bati.adedpe202006_logtype_ch_type_inst AS type_chauffage,
+      bati.adedpe202006_mean_class_conso_ener AS dpe_energie,
+      bati.adedpe202006_mean_class_estim_ges AS dpe_ges
+      FROM "bnb_idf - adresse" AS "addr"
+    INNER JOIN "bnb_idf - batiment" AS "bati"
+    ON addr.etaban202111_id = bati.etaban202111_id
+    WHERE addr.fiabilite_niv_1 <> 'problème de géocodage'
+    AND bati.bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
+    AND bati.cerffo2020_nb_log > 0
+    AND bati.adedpe202006_logtype_ch_type_ener_corr <> ''
+    AND bati.adedpe202006_logtype_ch_type_inst IS NOT NULL
+    AND bati.adedpe202006_mean_class_conso_ener IS NOT NULL
+    AND bati.adedpe202006_mean_class_estim_ges IS NOT NULL
+      ORDER BY addr.rownum`,
+};
+
+const dbTable = (table: string) => {
+  if (preTable[table]) {
+    return db(table).with(table, db.raw(preTable[table]));
+  }
+  return db(table);
+};
 
 const geoJSONQuery = (properties: PropertyType[]) =>
   db.raw(
@@ -79,24 +118,12 @@ const getObjectIndexFromDatabase = async (
   tileOptions: geojsonvt.Options,
   properties: PropertyType[]
 ) => {
-  let geoJSON;
-  if (table === 'registre_copro_r11_220125') {
-    geoJSON = process.env.LIMIT_NETWORK_RESULTS
-      ? await db(table)
-          .first(geoJSONQuery(properties))
-          .whereIn('energie_utilisee', meaningFullEnergies)
-          .whereNotNull('geom')
-          .andWhere(db.raw(`id < ${process.env.LIMIT_NETWORK_RESULTS}`))
-      : await db(table).first(geoJSONQuery(properties)).whereNotNull('geom');
-  } else {
-    geoJSON = process.env.LIMIT_NETWORK_RESULTS
-      ? await db(table)
-          .first(geoJSONQuery(properties))
-          .whereNotNull('geom')
-          .andWhere(db.raw(`id < ${process.env.LIMIT_NETWORK_RESULTS}`))
-      : await db(table).first(geoJSONQuery(properties)).whereNotNull('geom');
-  }
-
+  const geoJSON = process.env.LIMIT_NETWORK_RESULTS
+    ? await dbTable(table)
+        .first(geoJSONQuery(properties))
+        .whereNotNull('geom')
+        .andWhere(db.raw(`id < ${process.env.LIMIT_NETWORK_RESULTS}`))
+    : await dbTable(table).first(geoJSONQuery(properties)).whereNotNull('geom');
   return geojsonvt(geoJSON.json_build_object, tileOptions);
 };
 
@@ -141,16 +168,21 @@ const tilesInfo: Record<
   },
   energy: {
     source: 'database',
-    table: 'registre_copro_r11_220125',
+    table: 'pre-table-energy',
     minZoom: minZoomData,
     options: {
       maxZoom,
     },
     properties: [
       'id',
-      ['nb_logements', 'ALIAS OF nb_lot_habitation_bureau_commerce'],
+      'nb_logements',
       'energie_utilisee',
-      'adresse_reference',
+      'addr_label',
+      'addr_numero',
+      'addr_voie',
+      'addr_cp',
+      'addr_insee',
+      'addr_ville',
     ],
     sourceLayer: 'condominiumRegister',
   },
