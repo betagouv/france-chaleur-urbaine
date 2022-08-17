@@ -130,7 +130,7 @@ const fillTiles = async (table: DataType, zoomMin: number, zoomMax: number) => {
 
 if (process.argv.length !== 5) {
   console.info(
-    'Usage: export NODE_PATH=./ && ts-node scripts/fillTiles.ts table zoomMin zoomMax'
+    'Usage: export NODE_PATH=./ && npx ts-node scripts/fillTiles.ts table zoomMin zoomMax'
   );
   process.exit(1);
 }

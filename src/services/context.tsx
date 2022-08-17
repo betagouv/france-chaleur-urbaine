@@ -1,10 +1,12 @@
 import React from 'react';
+import { DemandsService } from './demandsService';
 import { HeatNetworkService } from './heatNetworkService';
 import { SuggestionService } from './suggestionService';
 
 type ServiceContextProps = {
   suggestionService: SuggestionService;
   heatNetworkService: HeatNetworkService;
+  demandsService: DemandsService;
 };
 export const ServicesContext = React.createContext<
   ServiceContextProps | undefined
