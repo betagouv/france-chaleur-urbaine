@@ -1,6 +1,6 @@
 export interface GasSummary {
-  result_label?: string;
-  code_grand_secteur?: 'R' | 'T';
-  conso: number;
-  pdl: number;
+  adresse?: string;
+  code_grand?: 'R' | 'T' | 'I';
+  conso_nb: number;
+  pdl_nb: number;
 }

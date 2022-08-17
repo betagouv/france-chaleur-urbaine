@@ -260,8 +260,8 @@ export const energyLayerStyle = {
 // -----------------
 // --- Gas Usage ---
 // -----------------
-const CONSO = 'conso';
-const TYPE_GAS = 'code_grand_secteur';
+const CONSO = 'conso_nb';
+const TYPE_GAS = 'code_grand';
 const arrColorFromDefTypeGas = [
   ...Object.entries(themeDefTypeGas).flatMap(
     ([TypeGasName, styleObject]: [string, any]) => [

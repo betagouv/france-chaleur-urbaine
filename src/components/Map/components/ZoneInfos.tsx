@@ -119,7 +119,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                   label: 'Total',
                   value: `${(
                     summary.gas.reduce(
-                      (acc, current) => acc + current.conso,
+                      (acc, current) => acc + +current.conso_nb,
                       0
                     ) / 1000
                   ).toFixed(2)} GWh`,
@@ -128,7 +128,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                   label: 'Proche réseau (<50 m)',
                   value: `${(
                     summary.closeGas.reduce(
-                      (acc, current) => acc + current.conso,
+                      (acc, current) => acc + +current.conso_nb,
                       0
                     ) / 1000
                   ).toFixed(2)} GWh`,

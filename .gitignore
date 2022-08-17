@@ -48,4 +48,5 @@ yarn-error.log*
 *.backUp
 *.old
 
-/docker/db/dump.sql
+/docker/db/*.sql
+/docker/db/*.dat

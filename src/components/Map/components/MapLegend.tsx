@@ -1,5 +1,6 @@
 import { Button, Link } from '@dataesr/react-dsfr';
 import { useRouter } from 'next/router';
+import { TypeLayerDisplay } from '../Map.param';
 import { LegendSeparator } from '../Map.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import LegendGroupLabel, { TypeGroupLegend } from './LegendGroupLabel';
@@ -13,7 +14,7 @@ function MapLegend({
 }: {
   data: (string | TypeGroupLegend)[];
   hasResults?: boolean;
-  layerDisplay: Record<string, string[]>;
+  layerDisplay: TypeLayerDisplay;
   onToogleFeature: (idEntry: any) => void;
   onToogleInGroup: (groupeName: string, idEntry: any) => void;
 }) {
@@ -77,7 +78,7 @@ function MapLegend({
           if (type === 'list') {
             return entries.map((entry: TypeLegendEntry) => (
               <LegendEntry
-                checked={!!layerDisplay?.[entry.id]}
+                checked={!!layerDisplay[entry.id]}
                 key={entry.id}
                 onChange={onToogleFeature}
                 {...entry}

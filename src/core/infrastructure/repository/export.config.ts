@@ -5,20 +5,32 @@ import { GasSummary } from 'src/types/Summary/Gas';
 export const consoColumns: ExportColumn<GasSummary>[] = [
   {
     header: 'Adresse',
-    value: 'result_label',
+    value: 'adresse',
   },
   {
     header: 'Type',
-    value: (conso: any) =>
-      conso.code_grand_secteur === 'R' ? 'Résidentiel' : 'Tertiaire',
+    value: (conso: any) => {
+      switch (conso.code_grand) {
+        case 'R': {
+          return 'Résidentiel';
+        }
+        case 'T': {
+          return 'Tertiaire';
+        }
+        case 'I': {
+          return 'Industrie';
+        }
+      }
+      return '';
+    },
   },
   {
     header: 'Consommation (MWh)',
-    value: 'conso',
+    value: 'conso_nb',
   },
   {
     header: 'Points de livraison',
-    value: 'pdl',
+    value: 'pdl_nb',
   },
 ];
 
