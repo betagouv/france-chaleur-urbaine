@@ -64,7 +64,7 @@ const legendData = [
     entries: [
       {
         id: 'gasUsageGroup',
-        label: 'Consommations globale de gaz',
+        label: 'Consommations globales de gaz',
         bgColor: 'red',
       },
     ],

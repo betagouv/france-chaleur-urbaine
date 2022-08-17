@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from '@dataesr/react-dsfr';
+import { Button } from '@dataesr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { Polygon } from 'geojson';
 import { Map } from 'maplibre-gl';
@@ -55,37 +55,19 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
 
   return (
     <Container customCursor={customCursor}>
-      <ButtonGroup isInlineFrom="xs" size="sm" align="center">
-        <Button
-          icon="ri-search-line"
-          secondary
-          onClick={() => {
-            draw.deleteAll();
-            const bounds = map.getBounds();
-            setBounds([
-              bounds.getNorthEast().toArray(),
-              bounds.getNorthWest().toArray(),
-              bounds.getSouthWest().toArray(),
-              bounds.getSouthEast().toArray(),
-              bounds.getNorthEast().toArray(),
-            ]);
-          }}
-        >
-          Actualiser dans cette zone
-        </Button>
-        <Button
-          icon="ri-edit-2-line"
-          secondary
-          onClick={() => {
-            setBounds(undefined);
-            setCustomCursor(true);
-            draw.deleteAll();
-            draw.changeMode('draw_polygon');
-          }}
-        >
-          Définir une zone
-        </Button>
-      </ButtonGroup>
+      <Button
+        icon="ri-edit-2-line"
+        size="sm"
+        secondary
+        onClick={() => {
+          setBounds(undefined);
+          setCustomCursor(true);
+          draw.deleteAll();
+          draw.changeMode('draw_polygon');
+        }}
+      >
+        Définir une zone
+      </Button>
       <ZoneInfosWrapper>
         {summary ? (
           <>
@@ -183,7 +165,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
           <span>
             {bounds
               ? 'Calcul des statistiques en cours (peut être long si la zone définie est trop grande)...'
-              : 'Pour afficher et exporter des données sur les modes de chauffage, consommations de gaz et réseaux de chaleur, zoomez sur une zone ou tracez une zone sur la carte.'}
+              : 'Pour afficher et exporter des données sur les modes de chauffage, consommations de gaz et réseaux de chaleur, définissez une zone en cliquant sur au moins trois points puis en appuyant sur "Entrée".'}
           </span>
         )}
       </ZoneInfosWrapper>
