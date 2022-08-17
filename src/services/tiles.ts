@@ -6,9 +6,10 @@ import { meaningFullEnergies } from 'src/types/enum/EnergyType';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
+type PropertyType = string | [string, string];
 type DataType = 'network' | 'gas' | 'energy' | 'zoneDP' | 'demands';
 
-const geoJSONQuery = (properties: string[]) =>
+const geoJSONQuery = (properties: PropertyType[]) =>
   db.raw(
     `json_build_object(
     'type', 'FeatureCollection',
@@ -17,7 +18,16 @@ const geoJSONQuery = (properties: string[]) =>
       'geometry', ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom,4326)))::json,
       'properties', json_build_object(
         ${properties
-          .flatMap((property) => [`'${property}'`, property])
+          .flatMap((property) =>
+            Array.isArray(property)
+              ? [
+                  `'${property[0]}'`,
+                  !/^ALIAS OF /.test(property[1].trim())
+                    ? `'${property[1]}'`
+                    : property[1].replace('ALIAS OF ', '').trim(),
+                ]
+              : [`'${property}'`, property]
+          )
           .join(',')}
       )
     ))
@@ -27,7 +37,7 @@ const geoJSONQuery = (properties: string[]) =>
 const getObjectIndexFromAirtable = async (
   table: string,
   tileOptions: geojsonvt.Options,
-  properties: string[]
+  properties: PropertyType[]
 ) => {
   return base(table)
     .select()
@@ -42,7 +52,7 @@ const getObjectIndexFromAirtable = async (
             type: 'Point',
             coordinates: [longitude, latitude],
           },
-          properties: properties.reduce(function (acc: any, key: string) {
+          properties: (properties as string[]).reduce((acc: any, key) => {
             const value = record.get(key);
             if (value) {
               acc[key] = record.get(key);
@@ -67,7 +77,7 @@ const getObjectIndexFromAirtable = async (
 const getObjectIndexFromDatabase = async (
   table: string,
   tileOptions: geojsonvt.Options,
-  properties: string[]
+  properties: PropertyType[]
 ) => {
   let geoJSON;
   if (table === 'registre_copro_r11_220125') {
@@ -106,7 +116,7 @@ const tilesInfo: Record<
     table: string;
     minZoom?: number;
     options: geojsonvt.Options;
-    properties: string[];
+    properties: PropertyType[];
     sourceLayer: string;
   }
 > = {
