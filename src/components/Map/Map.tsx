@@ -423,68 +423,6 @@ export default function Map() {
             ...outlineLayerStyle,
           });
 
-          // -----------------
-          // --- Demands ---
-          // -----------------
-          map.current.addSource('demands', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          });
-
-          map.current.addLayer({
-            id: 'demands',
-            source: 'demands',
-            'source-layer': 'demands',
-            ...demandsLayerStyle,
-          });
-
-          map.current.on('click', 'demands', (e: any) => {
-            const properties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            updateClickedPoint(coordinates, { demands: properties });
-          });
-
-          map.current.on('mouseenter', 'demands', function () {
-            map.current.getCanvas().style.cursor = 'pointer';
-          });
-
-          map.current.on('mouseleave', 'demands', function () {
-            map.current.getCanvas().style.cursor = '';
-          });
-
-          // --------------
-          // --- Energy ---
-          // --------------
-          map.current.addSource('energy', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          });
-
-          map.current.addLayer({
-            id: 'energy',
-            source: 'energy',
-            'source-layer': 'energy',
-            ...energyLayerStyle,
-          });
-
-          map.current.on('click', 'energy', (e: any) => {
-            const properties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            updateClickedPoint(coordinates, { energy: properties });
-          });
-
-          map.current.on('mouseenter', 'energy', function () {
-            map.current.getCanvas().style.cursor = 'pointer';
-          });
-
-          map.current.on('mouseleave', 'energy', function () {
-            map.current.getCanvas().style.cursor = '';
-          });
-
           // ---------------
           // --- Zone DP ---
           // ---------------
@@ -560,6 +498,68 @@ export default function Map() {
           });
 
           map.current.on('mouseleave', 'gasUsage', function () {
+            map.current.getCanvas().style.cursor = '';
+          });
+
+          // --------------
+          // --- Energy ---
+          // --------------
+          map.current.addSource('energy', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          });
+
+          map.current.addLayer({
+            id: 'energy',
+            source: 'energy',
+            'source-layer': 'energy',
+            ...energyLayerStyle,
+          });
+
+          map.current.on('click', 'energy', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { energy: properties });
+          });
+
+          map.current.on('mouseenter', 'energy', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'energy', function () {
+            map.current.getCanvas().style.cursor = '';
+          });
+
+          // -----------------
+          // --- Demands ---
+          // -----------------
+          map.current.addSource('demands', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          });
+
+          map.current.addLayer({
+            id: 'demands',
+            source: 'demands',
+            'source-layer': 'demands',
+            ...demandsLayerStyle,
+          });
+
+          map.current.on('click', 'demands', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { demands: properties });
+          });
+
+          map.current.on('mouseenter', 'demands', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'demands', function () {
             map.current.getCanvas().style.cursor = '';
           });
         }
