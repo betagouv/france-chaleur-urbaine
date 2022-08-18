@@ -1,3 +1,4 @@
+export { themeDefBuildings } from './buildings';
 export { themeDefDemands } from './demands';
 export { localTypeEnergy, themeDefEnergy } from './energy';
 export { localTypeGas, themeDefTypeGas } from './gasUsage';

@@ -18,7 +18,7 @@ const useMapPopup = (
   ] = useState([]);
 
   const updateClickedPoint = useCallback(
-    (coordinates: any, { energy, consommation, demands }: any) => {
+    (coordinates: any, { buildings, consommation, demands, energy }: any) => {
       const [lon, lat] = coordinates;
       const idCoords = `${lon.toFixed(4)}--${lat.toFixed(4)}`;
 
@@ -34,9 +34,10 @@ const useMapPopup = (
           ...(clickedPointCtx.current.find(isCurrentPoint) || {}),
           id: idCoords,
           coordinates,
-          ...(energy ? { energy } : {}),
+          ...(buildings ? { buildings } : {}),
           ...(consommation ? { consommation } : {}),
           ...(demands ? { demands } : {}),
+          ...(energy ? { energy } : {}),
         },
       ];
       setClickedPoint(clickedPointCtx.current);

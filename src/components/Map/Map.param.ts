@@ -17,6 +17,7 @@ const defaultLayerDisplay: TypeLayerDisplay = {
   zoneDP: false,
   demands: true,
   gasUsageGroup: true,
+  buildings: false,
   gasUsage: ['R', 'T'],
   energy: ['fuelOil', 'gas'],
 };
@@ -107,6 +108,19 @@ const legendData = [
     ],
     subLegend: 'EnergyFuel',
     type: 'group',
+  },
+  'separator',
+  {
+    id: 'buildings',
+    entries: [
+      {
+        id: 'buildings',
+        label: 'Autres données sur les bâtiments',
+        subLegendTxt:
+          'Cliquer sur le bâtiment souhaité pour obtenir plus d’informations',
+      },
+    ],
+    type: 'list',
   },
   'separator',
   'sources',

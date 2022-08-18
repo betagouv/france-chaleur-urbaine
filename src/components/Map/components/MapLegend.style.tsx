@@ -143,7 +143,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
     :before {
       margin: 0 4px;
       width: 32px;
-      background-color ${themeDefZoneDP.fill.color};
+      background-color: ${themeDefZoneDP.fill.color};
       opacity: ${themeDefZoneDP.fill.opacity};
       margin-bottom: calc(0.25em - 1.5px)
     }
@@ -154,7 +154,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      background-color ${themeDefDemands.fill.color};
+      background-color: ${themeDefDemands.fill.color};
       border: 2px solid ${themeDefDemands.stroke.color};
     }
   }
@@ -166,7 +166,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       width: 0.5rem;
       height: 0.5rem;
       border-radius: 50%;
-      margin-bottom: calc(0.25em - 1.5px)
+      margin-bottom: calc(0.25em - 1.5px);
     }
   }
 `;

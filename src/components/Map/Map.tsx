@@ -7,6 +7,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Point } from 'src/types/Point';
+import { BuildingSummary } from 'src/types/Summary/Building';
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
@@ -21,6 +22,7 @@ import ZoneInfos from './components/ZoneInfos';
 import { useMapPopup } from './hooks';
 import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
+  buildingsLayerStyle,
   CollapseLegend,
   demandsLayerStyle,
   energyLayerStyle,
@@ -45,7 +47,7 @@ const {
   legendData,
 } = mapParam;
 
-const layerNameOptions = ['outline', 'demands', 'zoneDP'] as const;
+const layerNameOptions = ['outline', 'demands', 'zoneDP', 'buildings'] as const;
 const energyNameOptions = ['fuelOil', 'gas'] as const;
 const gasUsageNameOptions = ['R', 'T'] as const;
 
@@ -54,24 +56,16 @@ type EnergyNameOption = typeof energyNameOptions[number];
 type gasUsageNameOption = typeof gasUsageNameOptions[number];
 
 const formatBodyPopup = ({
+  buildings,
   consommation,
-  energy,
   demands,
+  energy,
 }: {
+  buildings?: BuildingSummary;
   consommation?: GasSummary;
   energy?: EnergySummary;
   demands?: DemandSummary;
-  id: string;
 }) => {
-  let textAddress;
-  if (consommation) {
-    textAddress = consommation.result_label;
-  } else if (energy) {
-    textAddress = energy.adresse_reference;
-  } else if (demands) {
-    textAddress = demands.Adresse;
-  }
-
   const writeTypeConso = (typeConso: string | unknown) => {
     switch (typeConso) {
       case 'R': {
@@ -88,11 +82,43 @@ const formatBodyPopup = ({
     str && str.replace(/_/g, ' ').toLowerCase();
 
   const {
-    nb_lot_habitation_bureau_commerce,
-    energie_utilisee,
-    periode_construction,
+    nb_logements: nb_logements_buildings,
+    annee_construction: annee_construction_buildings,
+    type_usage,
+    energie_utilisee: energie_utilisee_buildings,
+    type_chauffage: type_chauffage_buildings,
+    addr_label: addr_label_buildings,
+    dpe_energie,
+    dpe_ges,
+  } = buildings || {};
+  const {
+    addr_label: addr_label_energy,
+    nb_logements: nb_logements_energy,
+    annee_construction: annee_construction_energy,
+    energie_utilisee: energie_utilisee_energy,
   } = energy || {};
-  const { code_grand_secteur, conso } = consommation || {};
+  const {
+    result_label: addr_label_consommation,
+    code_grand_secteur,
+    conso,
+  } = consommation || {};
+  const {
+    Adresse: addr_label_demands,
+    'Mode de chauffage': type_chauffage_demands,
+  } = demands || {};
+
+  const textAddress =
+    addr_label_buildings ||
+    addr_label_consommation ||
+    addr_label_energy ||
+    addr_label_demands;
+  const nb_logements = nb_logements_buildings || nb_logements_energy;
+  const annee_construction =
+    annee_construction_buildings || annee_construction_energy;
+  const energie_utilisee =
+    energie_utilisee_buildings || energie_utilisee_energy;
+  const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
+
   const bodyPopup = `
     ${
       textAddress
@@ -106,43 +132,62 @@ const formatBodyPopup = ({
         <section>
           ${
             code_grand_secteur
-              ? `<strong>${writeTypeConso(code_grand_secteur)}</strong><br />`
+              ? `<strong><u></u>${writeTypeConso(
+                  code_grand_secteur
+                )}</u></strong><br />`
               : energy
-              ? '<strong>Copropriété</strong><br />'
+              ? '<strong><u>Copropriété</u></strong><br />'
               : ''
           }
           ${
-            nb_lot_habitation_bureau_commerce
-              ? `Nombre de lots : ${nb_lot_habitation_bureau_commerce}<br />`
+            annee_construction
+              ? `<strong>Année de construction&nbsp;:</strong> ${annee_construction}<br />`
+              : ''
+          }
+          ${
+            type_usage
+              ? `<strong>usage&nbsp;:</strong> ${type_usage}<br />`
+              : ''
+          }
+          ${
+            nb_logements
+              ? `<strong>Nombre de logements&nbsp;:</strong> ${nb_logements}<br />`
               : ''
           }
           ${
             energie_utilisee
-              ? `Chauffage actuel :  ${formatBddText(
-                  energie_utilisee as string
+              ? `<strong>Chauffage actuel&nbsp;:</strong> ${formatBddText(
+                  energie_utilisee
                 )}<br />`
               : ''
           }
           ${
             conso &&
             (!energie_utilisee || objTypeEnergy?.gas.includes(energie_utilisee))
-              ? `Consommations de gaz :  ${(conso as number)?.toFixed(
-                  2
-                )}&nbsp;MWh<br />`
+              ? `<strong>Consommations de gaz&nbsp;:</strong> ${(
+                  conso as number
+                )?.toFixed(2)}&nbsp;MWh<br />`
               : ''
           }
           ${
-            periode_construction
-              ? `Période de construction : ${formatBddText(
-                  periode_construction as string
-                )}<br />`
+            type_chauffage
+              ? `<strong>Mode de chauffage&nbsp;:</strong> ${
+                  type_chauffage || 'inconnu'
+                }<br />`
               : ''
           }
           ${
-            demands
-              ? `Mode de chauffage: ${
-                  demands['Mode de chauffage'] || 'inconnu'
-                }`
+            dpe_energie
+              ? `<strong>DPE consommations énergétiques&nbsp;:</strong> ${
+                  dpe_energie || 'inconnu'
+                }<br />`
+              : ''
+          }
+          ${
+            dpe_ges
+              ? `<strong>DPE émissions de gaz à effet de serre&nbsp;:</strong> ${
+                  dpe_ges || 'inconnu'
+                }<br />`
               : ''
           }
         </section>
@@ -378,71 +423,9 @@ export default function Map() {
             ...outlineLayerStyle,
           });
 
-          // -----------------
-          // --- Demands ---
-          // -----------------
-          map.current.addSource('demands', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          });
-
-          map.current.addLayer({
-            id: 'demands',
-            source: 'demands',
-            'source-layer': 'demands',
-            ...demandsLayerStyle,
-          });
-
-          map.current.on('click', 'demands', (e: any) => {
-            const properties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            updateClickedPoint(coordinates, { demands: properties });
-          });
-
-          map.current.on('mouseenter', 'demands', function () {
-            map.current.getCanvas().style.cursor = 'pointer';
-          });
-
-          map.current.on('mouseleave', 'demands', function () {
-            map.current.getCanvas().style.cursor = '';
-          });
-
-          // --------------
-          // --- Energy ---
-          // --------------
-          map.current.addSource('energy', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          });
-
-          map.current.addLayer({
-            id: 'energy',
-            source: 'energy',
-            'source-layer': 'condominiumRegister',
-            ...energyLayerStyle,
-          });
-
-          map.current.on('click', 'energy', (e: any) => {
-            const properties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            updateClickedPoint(coordinates, { energy: properties });
-          });
-
-          map.current.on('mouseenter', 'energy', function () {
-            map.current.getCanvas().style.cursor = 'pointer';
-          });
-
-          map.current.on('mouseleave', 'energy', function () {
-            map.current.getCanvas().style.cursor = '';
-          });
-
-          // -----------------
+          // ---------------
           // --- Zone DP ---
-          // -----------------
+          // ---------------
           map.current.addSource('zoneDP', {
             type: 'vector',
             tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
@@ -453,6 +436,38 @@ export default function Map() {
             source: 'zoneDP',
             'source-layer': 'zoneDP',
             ...zoneDPLayerStyle,
+          });
+
+          // -----------------
+          // --- Buildings ---
+          // -----------------
+          map.current.addSource('buildings', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/buildings/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          });
+
+          map.current.addLayer({
+            id: 'buildings',
+            source: 'buildings',
+            'source-layer': 'buildings',
+            ...buildingsLayerStyle,
+          });
+
+          map.current.on('click', 'buildings', (e: any) => {
+            const properties = e.features[0].properties;
+            const { lat, lng } = e.lngLat;
+            const coordinates = [lng, lat];
+            updateClickedPoint(coordinates, { buildings: properties });
+          });
+
+          map.current.on('mouseenter', 'buildings', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'buildings', function () {
+            map.current.getCanvas().style.cursor = '';
           });
 
           // -----------------
@@ -483,6 +498,68 @@ export default function Map() {
           });
 
           map.current.on('mouseleave', 'gasUsage', function () {
+            map.current.getCanvas().style.cursor = '';
+          });
+
+          // --------------
+          // --- Energy ---
+          // --------------
+          map.current.addSource('energy', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          });
+
+          map.current.addLayer({
+            id: 'energy',
+            source: 'energy',
+            'source-layer': 'energy',
+            ...energyLayerStyle,
+          });
+
+          map.current.on('click', 'energy', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { energy: properties });
+          });
+
+          map.current.on('mouseenter', 'energy', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'energy', function () {
+            map.current.getCanvas().style.cursor = '';
+          });
+
+          // -----------------
+          // --- Demands ---
+          // -----------------
+          map.current.addSource('demands', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          });
+
+          map.current.addLayer({
+            id: 'demands',
+            source: 'demands',
+            'source-layer': 'demands',
+            ...demandsLayerStyle,
+          });
+
+          map.current.on('click', 'demands', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { demands: properties });
+          });
+
+          map.current.on('mouseenter', 'demands', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'demands', function () {
             map.current.getCanvas().style.cursor = '';
           });
         }

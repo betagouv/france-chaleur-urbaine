@@ -1,6 +1,7 @@
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import {
+  themeDefBuildings,
   themeDefDemands,
   themeDefEnergy,
   themeDefHeatNetwork,
@@ -74,7 +75,7 @@ export const MapStyle: any = createGlobalStyle<{
           padding: 8px;
           margin: -15px -10px 10px;
           background-color: #4550e5;
-          
+
           h6 {
             color: #fff;
             font-size: 15px;
@@ -179,7 +180,7 @@ export const outlineLayerStyle = {
 // --- Energy ---
 // --------------
 
-const NB_LOT = 'nb_lot_habitation_bureau_commerce';
+const NB_LOT = 'nb_logements';
 const TYPE_ENERGY = 'energie_utilisee';
 export const typeEnergy: Record<ENERGY_USED, ENERGY_TYPE> = {
   [ENERGY_USED.Fioul]: ENERGY_TYPE.Fuel,
@@ -329,6 +330,35 @@ export const zoneDPLayerStyle = {
   paint: {
     'fill-color': themeDefZoneDP.fill.color,
     'fill-opacity': themeDefZoneDP.fill.opacity,
+  },
+};
+
+const DPE_ENERGY = 'dpe_energie';
+const arrColorFromDefBuildingsDpeEnergy = [
+  ...Object.entries(themeDefBuildings.colors).flatMap(
+    ([dpeCode, dpeStyleDef]: [string, any]) => [dpeCode, dpeStyleDef.color]
+  ),
+  themeDefBuildings.colors.unknow.color,
+];
+
+export const buildingsLayerStyle = {
+  type: 'fill',
+  paint: {
+    'fill-color': [
+      'match',
+      ['downcase', ['get', DPE_ENERGY]],
+      ...arrColorFromDefBuildingsDpeEnergy,
+    ],
+    'fill-outline-color': '#555555',
+    'fill-opacity': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      minZoomData + 0.2,
+      0,
+      minZoomData + 0.2 + 1,
+      themeDefBuildings.opacity,
+    ],
   },
 };
 

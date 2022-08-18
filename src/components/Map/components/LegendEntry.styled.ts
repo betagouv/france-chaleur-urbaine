@@ -1,5 +1,17 @@
 import styled, { css } from 'styled-components';
 
+export const LabelLegendInputLabelWrapper = styled.div`
+  margin-left: 4px;
+`;
+export const LabelLegendInputLabel = styled.div`
+  display: flex;
+`;
+export const LabelLegendDescription = styled.div`
+  margin-left: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+`;
+
 export const LabelLegendWrapper = styled.div`
   font-size: 0.95em;
   display: flex;
@@ -47,7 +59,6 @@ export const LabelLegendHead = styled.div<{ type?: string }>`
   ${({ type }) =>
     type === 'group' &&
     css`
-      margin-left: 8px;
       line-height: 1.45;
     `}
 `;
