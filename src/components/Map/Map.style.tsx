@@ -1,6 +1,7 @@
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import {
+  themeDefBuildings,
   themeDefDemands,
   themeDefEnergy,
   themeDefHeatNetwork,
@@ -329,6 +330,35 @@ export const zoneDPLayerStyle = {
   paint: {
     'fill-color': themeDefZoneDP.fill.color,
     'fill-opacity': themeDefZoneDP.fill.opacity,
+  },
+};
+
+const DPE_ENERGY = 'dpe_energie';
+const arrColorFromDefBuildingsDpeEnergy = [
+  ...Object.entries(themeDefBuildings.colors).flatMap(
+    ([dpeCode, dpeStyleDef]: [string, any]) => [dpeCode, dpeStyleDef.color]
+  ),
+  themeDefBuildings.colors.unknow.color,
+];
+
+export const buildingsLayerStyle = {
+  type: 'fill',
+  paint: {
+    'fill-color': [
+      'match',
+      ['downcase', ['get', DPE_ENERGY]],
+      ...arrColorFromDefBuildingsDpeEnergy,
+    ],
+    'fill-outline-color': '#555555',
+    'fill-opacity': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      minZoomData + 0.2,
+      0,
+      minZoomData + 0.2 + 1,
+      themeDefBuildings.opacity,
+    ],
   },
 };
 

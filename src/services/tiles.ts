@@ -6,39 +6,67 @@ import base from 'src/db/airtable';
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
 type PropertyType = string | [string, string];
-type DataType = 'network' | 'gas' | 'energy' | 'zoneDP' | 'demands';
+type DataType =
+  | 'network'
+  | 'gas'
+  | 'energy'
+  | 'zoneDP'
+  | 'demands'
+  | 'buildings';
 
 const preTable: Record<string, string> = {
   'pre-table-energy': `
-    SELECT addr.rownum as "id", addr.fid, addr.geom AS geom,
-      addr.etaban202111_id,
-      TRIM(CONCAT(
-        addr.etaban202111_numero,
-        ' ', addr.etaban202111_voie,
-        ' ', addr.etaban202111_code_postal,
-        ' ', addr.etaban202111_ville
-      )) AS addr_label,
-      addr.etaban202111_numero AS addr_numero,
-      addr.etaban202111_voie AS addr_voie,
-      addr.etaban202111_code_postal AS addr_cp,
-      addr.etaban202111_code_insee AS addr_insee,
-      addr.etaban202111_ville AS addr_ville,
-      bati.cerffo2020_nb_log AS nb_logements,
-      bati.adedpe202006_logtype_ch_type_ener_corr AS energie_utilisee,
+    SELECT addr.rownum as id, addr.geom AS geom, addr.etaban202111_id,
+      bati.etaban202111_label AS addr_label,
+      bati.cerffo2020_annee_construction AS annee_construction,
+      CASE
+        WHEN bati.cerffo2020_nb_log ISNULL 
+          THEN bati.anarnc202012_nb_log
+        WHEN bati.cerffo2020_nb_log < 1 
+          THEN bati.anarnc202012_nb_log
+        ELSE bati.cerffo2020_nb_log
+      END nb_logements,
+      bati.adedpe202006_logtype_ch_type_ener_corr AS energie_utilisee
+    FROM "bnb_idf - adresse" AS "addr"
+      INNER JOIN "bnb_idf - batiment" AS "bati"
+      ON addr.etaban202111_id = bati.etaban202111_id
+    WHERE addr.geom IS NOT NULL
+      AND addr.fiabilite_niv_1 <> 'problème de géocodage'
+      AND bati.bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
+      AND bati.adedpe202006_logtype_ch_type_inst = 'collectif'
+      AND (
+        bati.adedpe202006_logtype_ch_type_ener_corr = 'gaz'
+        OR bati.adedpe202006_logtype_ch_type_ener_corr = 'fioul'
+      )`,
+  'pre-table-buildings': `
+    SELECT bati.rownum as id, bati.geom AS geom, bati.etaban202111_id,
+      bati.etaban202111_label AS addr_label,
+      bati.cerffo2020_annee_construction AS annee_construction,
+      bati.cerffo2020_usage_niveau_1_txt AS type_usage,
+      CASE
+        WHEN bati.cerffo2020_nb_log ISNULL 
+          THEN bati.anarnc202012_nb_log
+        WHEN bati.cerffo2020_nb_log < 1 
+          THEN bati.anarnc202012_nb_log
+        ELSE bati.cerffo2020_nb_log
+      END nb_logements,
       bati.adedpe202006_logtype_ch_type_inst AS type_chauffage,
+      CASE
+        WHEN bati.adedpe202006_logtype_ch_type_ener_corr <> '' 
+          THEN bati.adedpe202006_logtype_ch_type_ener_corr
+        ELSE bati.adedpe202006_logtype_ch_gen_lib_princ
+      END energie_utilisee,
       bati.adedpe202006_mean_class_conso_ener AS dpe_energie,
       bati.adedpe202006_mean_class_estim_ges AS dpe_ges
-      FROM "bnb_idf - adresse" AS "addr"
-    INNER JOIN "bnb_idf - batiment" AS "bati"
-    ON addr.etaban202111_id = bati.etaban202111_id
-    WHERE addr.fiabilite_niv_1 <> 'problème de géocodage'
-    AND bati.bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
-    AND bati.cerffo2020_nb_log > 0
-    AND bati.adedpe202006_logtype_ch_type_ener_corr <> ''
-    AND bati.adedpe202006_logtype_ch_type_inst IS NOT NULL
-    AND bati.adedpe202006_mean_class_conso_ener IS NOT NULL
-    AND bati.adedpe202006_mean_class_estim_ges IS NOT NULL
-      ORDER BY addr.rownum`,
+    FROM "bnb_idf - adresse" AS "addr"
+      INNER JOIN "bnb_idf - batiment" AS "bati"
+      ON addr.etaban202111_id = bati.etaban202111_id
+    WHERE bati.geom IS NOT NULL
+      AND addr.fiabilite_niv_1 <> 'problème de géocodage'
+      AND bati.bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
+      AND bati.adedpe202006_logtype_ch_type_inst IS NOT NULL
+      AND bati.adedpe202006_mean_class_conso_ener IS NOT NULL
+      AND bati.adedpe202006_mean_class_estim_ges IS NOT NULL`,
 };
 
 const dbTable = (table: string) => {
@@ -134,6 +162,7 @@ const allTiles: Record<DataType, any> = {
   gas: null,
   energy: null,
   zoneDP: null,
+  buildings: null,
 };
 
 const tilesInfo: Record<
@@ -176,15 +205,11 @@ const tilesInfo: Record<
     properties: [
       'id',
       'nb_logements',
+      'annee_construction',
       'energie_utilisee',
       'addr_label',
-      'addr_numero',
-      'addr_voie',
-      'addr_cp',
-      'addr_insee',
-      'addr_ville',
     ],
-    sourceLayer: 'condominiumRegister',
+    sourceLayer: 'energy',
   },
   gas: {
     source: 'database',
@@ -205,8 +230,29 @@ const tilesInfo: Record<
     properties: ['id'],
     sourceLayer: 'zoneDP',
   },
+  buildings: {
+    source: 'database',
+    table: 'pre-table-buildings',
+    minZoom: minZoomData,
+    options: {
+      maxZoom,
+    },
+    properties: [
+      'id',
+      'nb_logements',
+      'annee_construction',
+      'type_usage',
+      'energie_utilisee',
+      'type_chauffage',
+      'addr_label',
+      'dpe_energie',
+      'dpe_ges',
+    ],
+    sourceLayer: 'buildings',
+  },
 };
 
+const promiseGetters: Promise<unknown>[] = [];
 Object.entries(tilesInfo).forEach(
   ([type, { source, table, options, properties }]) => {
     debug && console.info(`Indexing tiles for ${type} with ${table}...`);
@@ -214,11 +260,16 @@ Object.entries(tilesInfo).forEach(
       source === 'airtable'
         ? getObjectIndexFromAirtable
         : getObjectIndexFromDatabase;
-    getter(table, options, properties).then((result) => {
-      allTiles[type as DataType] = result;
-      debug && console.info(`Indexing tiles for ${type} with ${table} done`);
-    });
+    promiseGetters.push(
+      getter(table, options, properties).then((result) => {
+        allTiles[type as DataType] = result;
+        debug && console.info(`Indexing tiles for ${type} with ${table} done`);
+      })
+    );
   }
+);
+Promise.all(promiseGetters).then(
+  () => debug && console.info(`Indexing tiles finished`)
 );
 
 const getTiles = (type: DataType, x: number, y: number, z: number) => {
