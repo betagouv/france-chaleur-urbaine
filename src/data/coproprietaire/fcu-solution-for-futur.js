@@ -35,6 +35,6 @@ const presentationRcu = {
   **Choisissez la sérénité** avec des énergies locales et bénéficiez de la garantie d’un service public. 
   :::
   `,
-  imgAlt: 'Reseau de chaleur urbaine',
+  imgAlt: 'Réseau de chaleur urbaine',
 };
 export default presentationRcu;

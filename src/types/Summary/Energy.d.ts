@@ -4,6 +4,8 @@ export interface EnergySummary {
   id: number;
   addr_label: string;
   energie_utilisee: ENERGY_USED;
+  dpe_energie: string;
+  dpe_ges: string;
   nb_logements: number;
   annee_construction?: string;
 }
