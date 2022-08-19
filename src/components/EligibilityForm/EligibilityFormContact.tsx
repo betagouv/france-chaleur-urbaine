@@ -1,5 +1,5 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import { isIDF } from '@helpers';
+import { isBasedOnIRIS } from '@helpers/address';
 import { useCallback, useMemo } from 'react';
 import {
   ContactForm,
@@ -169,9 +169,9 @@ const EligibilityFormContact = ({
   isSent,
   onSubmit,
 }: EligibilityFormContactType) => {
-  const isIDFAddress = useMemo(() => {
-    const { postcode: postCode } = addressData?.geoAddress?.properties || {};
-    return postCode && isIDF(postCode);
+  const isIRISAddress = useMemo(() => {
+    const { postcode, city } = addressData?.geoAddress?.properties || {};
+    return isBasedOnIRIS(postcode, city);
   }, [addressData]);
 
   const addressCoords: [number, number] | undefined = useMemo(() => {
@@ -220,7 +220,7 @@ const EligibilityFormContact = ({
   );
 
   const distStep =
-    isIDFAddress &&
+    !isIRISAddress &&
     distance !== null &&
     distance !== undefined &&
     (distance <= 200
@@ -228,7 +228,7 @@ const EligibilityFormContact = ({
       : '');
   const linkToMap =
     addressCoords &&
-    (isIDFAddress
+    (!isIRISAddress
       ? `./carte/?coord=${addressCoords}&zoom=15`
       : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
 

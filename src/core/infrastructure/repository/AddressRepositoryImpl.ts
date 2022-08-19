@@ -1,5 +1,5 @@
 import { Address, Coords } from '@core/domain/entity/address';
-import { AddressFactory } from '@core/domain/entity/AddressFactory';
+import { createAddress } from '@core/domain/entity/AddressFactory';
 import { AddressNotFoundError } from '@core/domain/errors';
 import { AddressRepository } from '@core/domain/repository/addressRepository';
 import { HttpClient } from 'src/services/http';
@@ -20,7 +20,7 @@ export class AddressRepositoryImpl implements AddressRepository {
           lat: coords.lat,
           lon: coords.lon,
         });
-        return AddressFactory.create(mappedAddress);
+        return createAddress(mappedAddress);
       })
       .catch((err) => {
         throw new AddressNotFoundError(coords, err);

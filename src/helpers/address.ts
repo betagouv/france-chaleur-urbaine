@@ -1,13 +1,6 @@
-const idfPostCodePrefix: string[] = [
-  '75',
-  '77',
-  '78',
-  '91',
-  '92',
-  '93',
-  '94',
-  '95',
-];
+const idfPrefixes = ['75', '77', '78', '91', '92', '93', '94', '95'];
+const cityManaged = ['Rennes', 'Bordeaux'];
 
-export const isIDF = (postCode: string): boolean =>
-  idfPostCodePrefix.includes(postCode.slice(0, 2));
+export const isBasedOnIRIS = (postCode: string, city: string): boolean =>
+  !cityManaged.includes(city) &&
+  (!postCode || !idfPrefixes.includes(postCode.slice(0, 2)));

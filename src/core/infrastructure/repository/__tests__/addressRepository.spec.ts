@@ -1,5 +1,6 @@
-import { AddressIdfExcluded, IdfAddress } from '@core/domain/entity';
 import { Coords } from '@core/domain/entity/address';
+import { IRISAdress } from '@core/domain/entity/irisAddress';
+import { RegularAddress } from '@core/domain/entity/regularAddress';
 import { AddressNotFoundError } from '@core/domain/errors';
 import { AddressRepositoryImpl } from '../AddressRepositoryImpl';
 
@@ -19,11 +20,12 @@ describe('Address Repository', () => {
           type: 'A',
           address: '34 Avenue de l’Opéra 75002 Paris',
         }),
+        post: jest.fn(),
       };
       const addressRepository = new AddressRepositoryImpl(fakeHttpClient);
       const address = await addressRepository.findByCoords(coords);
-      expect(address).toBeInstanceOf(IdfAddress);
-      expect(address.isIDF).toBeTruthy();
+      expect(address).toBeInstanceOf(RegularAddress);
+      expect(address.isBasedOnIRIS).toBeFalsy();
       expect(fakeHttpClient.get).toHaveBeenNthCalledWith(
         1,
         `${process.env.NEXT_PUBLIC_PYRIS_BASE_URL}coords?geojson=false&lat=${coords.lat}&lon=${coords.lon}`
@@ -43,11 +45,12 @@ describe('Address Repository', () => {
           type: 'A',
           address: '34 Avenue de l’Opéra 17250 Saint-sulpice d‘Arnoult',
         }),
+        post: jest.fn(),
       };
       const addressRepository = new AddressRepositoryImpl(fakeHttpClient);
       const address = await addressRepository.findByCoords(coords);
-      expect(address).toBeInstanceOf(AddressIdfExcluded);
-      expect(address.isIDF).toBeFalsy();
+      expect(address).toBeInstanceOf(IRISAdress);
+      expect(address.isBasedOnIRIS).toBeTruthy();
       expect(fakeHttpClient.get).toHaveBeenNthCalledWith(
         1,
         `${process.env.NEXT_PUBLIC_PYRIS_BASE_URL}coords?geojson=false&lat=${coords.lat}&lon=${coords.lon}`
@@ -57,6 +60,7 @@ describe('Address Repository', () => {
       const coords: Coords = { lat: 48.868662, lon: 2.333382 };
       const fakeHttpClient = {
         get: jest.fn().mockRejectedValue(new Error()),
+        post: jest.fn(),
       };
       const addressRepository = new AddressRepositoryImpl(fakeHttpClient);
       await addressRepository.findByCoords(coords).catch((result) => {
