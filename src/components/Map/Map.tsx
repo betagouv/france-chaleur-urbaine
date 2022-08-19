@@ -5,7 +5,7 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Point } from 'src/types/Point';
 import { BuildingSummary } from 'src/types/Summary/Building';
 import { DemandSummary } from 'src/types/Summary/Demand';
@@ -20,7 +20,13 @@ import {
 } from './components';
 import ZoneInfos from './components/ZoneInfos';
 import { useMapPopup } from './hooks';
-import mapParam, { TypeLayerDisplay } from './Map.param';
+import mapParam, {
+  EnergyNameOption,
+  gasUsageNameOption,
+  LayerNameOption,
+  layerNameOptions,
+  TypeLayerDisplay,
+} from './Map.param';
 import {
   buildingsLayerStyle,
   CollapseLegend,
@@ -47,14 +53,6 @@ const {
   legendData,
 } = mapParam;
 
-const layerNameOptions = ['outline', 'demands', 'zoneDP', 'buildings'] as const;
-const energyNameOptions = ['fuelOil', 'gas'] as const;
-const gasUsageNameOptions = ['R', 'T'] as const;
-
-type LayerNameOption = typeof layerNameOptions[number];
-type EnergyNameOption = typeof energyNameOptions[number];
-type gasUsageNameOption = typeof gasUsageNameOptions[number];
-
 const formatBodyPopup = ({
   buildings,
   consommation,
@@ -73,6 +71,9 @@ const formatBodyPopup = ({
       }
       case 'T': {
         return 'Établissement tertiaire';
+      }
+      case 'I': {
+        return 'Industrie';
       }
     }
     return '';
@@ -98,9 +99,9 @@ const formatBodyPopup = ({
     energie_utilisee: energie_utilisee_energy,
   } = energy || {};
   const {
-    result_label: addr_label_consommation,
-    code_grand_secteur,
-    conso,
+    adresse: addr_label_consommation,
+    code_grand,
+    conso_nb,
   } = consommation || {};
   const {
     Adresse: addr_label_demands,
@@ -131,9 +132,9 @@ const formatBodyPopup = ({
     ${`
         <section>
           ${
-            code_grand_secteur
+            code_grand
               ? `<strong><u></u>${writeTypeConso(
-                  code_grand_secteur
+                  code_grand
                 )}</u></strong><br />`
               : energy
               ? '<strong><u>Copropriété</u></strong><br />'
@@ -162,11 +163,11 @@ const formatBodyPopup = ({
               : ''
           }
           ${
-            conso &&
+            conso_nb &&
             (!energie_utilisee || objTypeEnergy?.gas.includes(energie_utilisee))
-              ? `<strong>Consommations de gaz&nbsp;:</strong> ${(
-                  conso as number
-                )?.toFixed(2)}&nbsp;MWh<br />`
+              ? `<strong>Consommations de gaz&nbsp;:</strong> ${conso_nb.toFixed(
+                  2
+                )}&nbsp;MWh<br />`
               : ''
           }
           ${
@@ -211,10 +212,8 @@ export default function Map() {
   }, [map, legendCollapsed]);
 
   const [mapState, setMapState] = useState('pending');
-  const [layerDisplay, setLayerDisplay]: [
-    TypeLayerDisplay,
-    React.Dispatch<any | never[]>
-  ] = useState(defaultLayerDisplay);
+  const [layerDisplay, setLayerDisplay] =
+    useState<TypeLayerDisplay>(defaultLayerDisplay);
 
   const [soughtAddress, setSoughtAddress] = usePersistedState(
     'mapSoughtAddress',
@@ -621,9 +620,10 @@ export default function Map() {
   // --- Update Filter ---
   // ---------------------
   useEffect(() => {
-    if (mapState === 'pending') return;
+    if (mapState === 'pending') {
+      return;
+    }
 
-    // HeatNetwork
     layerNameOptions.forEach((layerId) =>
       map.current.getLayer(layerId)
         ? map.current.setLayoutProperty(
@@ -646,7 +646,7 @@ export default function Map() {
     map.current.setFilter('energy', ['any', ...energyFilter]);
 
     // GasUsage
-    const TYPE_GAS = 'code_grand_secteur';
+    const TYPE_GAS = 'code_grand';
     const gasUsageFilter = layerDisplay.gasUsage.map((gasUsageName) => [
       '==',
       ['get', TYPE_GAS],
@@ -700,7 +700,7 @@ export default function Map() {
                   break;
                 }
                 case 'gasUsage': {
-                  toogleGasUsageVisibility(idEntry as 'R' | 'T');
+                  toogleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
                   break;
                 }
                 case 'gasUsageGroup': {

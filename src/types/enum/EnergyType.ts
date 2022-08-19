@@ -20,12 +20,3 @@ export enum ENERGY_USED {
   SansObjet = 'sans objet',
   Default = 'default',
 }
-
-export const meaningFullEnergies = [
-  ENERGY_USED.Fioul,
-  ENERGY_USED.FioulDomestique,
-  ENERGY_USED.Gaz,
-  ENERGY_USED.GazNaturel,
-  ENERGY_USED.GazCollectif,
-  ENERGY_USED.GazPropaneButane,
-];

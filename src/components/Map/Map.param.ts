@@ -4,10 +4,26 @@ import {
   themeDefEnergy,
   themeDefTypeGas,
 } from './businessRules';
+import { TypeGroupLegend } from './components/LegendGroupLabel';
 
 const defaultPos = [48.85294, 2.34987]; // Default to Paris IDF
 
-export type TypeLayerDisplay = Record<string, any> & {
+enum Layer {
+  outline = 'outline',
+  demands = 'demands',
+  zoneDP = 'zoneDP',
+  buildings = 'buildings',
+}
+
+export const layerNameOptions = Object.values(Layer);
+const energyNameOptions = ['fuelOil', 'gas'];
+const gasUsageNameOptions = ['R', 'T', 'I'];
+
+export type LayerNameOption = typeof layerNameOptions[number];
+export type EnergyNameOption = typeof energyNameOptions[number];
+export type gasUsageNameOption = typeof gasUsageNameOptions[number];
+
+export type TypeLayerDisplay = Record<string, boolean | string[]> & {
   gasUsage: string[];
   energy: string[];
 };
@@ -18,11 +34,11 @@ const defaultLayerDisplay: TypeLayerDisplay = {
   demands: true,
   gasUsageGroup: true,
   buildings: false,
-  gasUsage: ['R', 'T'],
-  energy: ['fuelOil', 'gas'],
+  gasUsage: gasUsageNameOptions,
+  energy: energyNameOptions,
 };
 
-const legendData = [
+const legendData: (string | TypeGroupLegend)[] = [
   {
     id: 'heat-network',
     entries: [
@@ -75,7 +91,7 @@ const legendData = [
     id: 'gasUsage',
     entries: defaultLayerDisplay.gasUsage.map((id: string) => ({
       id,
-      label: localTypeGas?.[id] || localTypeGas.unknow,
+      label: localTypeGas[id] || localTypeGas.unknow,
       bgColor: themeDefTypeGas[id].color,
       className: 'legend-energy',
     })),
