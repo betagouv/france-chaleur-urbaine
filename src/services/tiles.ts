@@ -1,8 +1,10 @@
 import { mapParam } from '@components/Map';
 import geojsonvt from 'geojson-vt';
-import { Knex } from 'knex';
 import db from 'src/db';
 import base from 'src/db/airtable';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore: no types
+import vtpbf from 'vt-pbf';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
@@ -18,18 +20,19 @@ const allTiles: Record<DataType, any> = {
 type BasicTileInfo = {
   table: string;
   minZoom?: boolean;
-  properties: string[];
   sourceLayer: string;
 };
 
 type AirtableTileInfo = BasicTileInfo & {
   source: 'airtable';
+  properties: string[];
 };
 
 type DatabaseTileInfo = BasicTileInfo & {
   source: 'database';
-  extraWhere: (query: Knex.QueryBuilder) => Knex.QueryBuilder;
-  id: string;
+  properties: string[] | [string, string][];
+  where?: string;
+  geom?: string;
 };
 
 type TileInfo = AirtableTileInfo | DatabaseTileInfo;
@@ -41,77 +44,6 @@ type DataType =
   | 'zoneDP'
   | 'demands'
   | 'buildings';
-
-const preTable: Record<string, string> = {
-  'pre-table-energy': `
-    SELECT rownum as id, geom_adresse AS geom, etaban202111_id,
-      etaban202111_label AS addr_label,
-      cerffo2020_annee_construction AS annee_construction,
-      CASE
-        WHEN cerffo2020_nb_log ISNULL 
-          THEN anarnc202012_nb_log
-        WHEN cerffo2020_nb_log < 1 
-          THEN anarnc202012_nb_log
-        ELSE cerffo2020_nb_log
-      END nb_logements,
-      adedpe202006_logtype_ch_type_ener_corr AS energie_utilisee,
-      adedpe202006_mean_class_conso_ener AS dpe_energie,
-      adedpe202006_mean_class_estim_ges AS dpe_ges
-    FROM "bnb_idf - batiment_adresse"
-    WHERE geom IS NOT NULL
-      AND bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
-      AND adedpe202006_logtype_ch_type_inst = 'collectif'
-      AND (
-        adedpe202006_logtype_ch_type_ener_corr = 'gaz'
-        OR adedpe202006_logtype_ch_type_ener_corr = 'fioul'
-      )`,
-  'pre-table-buildings': `
-    SELECT rownum as id, geom AS geom, etaban202111_id,
-      etaban202111_label AS addr_label,
-      cerffo2020_annee_construction AS annee_construction,
-      cerffo2020_usage_niveau_1_txt AS type_usage,
-      CASE
-        WHEN cerffo2020_nb_log ISNULL 
-          THEN anarnc202012_nb_log
-        WHEN cerffo2020_nb_log < 1 
-          THEN anarnc202012_nb_log
-        ELSE cerffo2020_nb_log
-      END nb_logements,
-      adedpe202006_logtype_ch_type_inst AS type_chauffage,
-      CASE
-        WHEN adedpe202006_logtype_ch_type_ener_corr <> '' 
-          THEN adedpe202006_logtype_ch_type_ener_corr
-        ELSE adedpe202006_logtype_ch_gen_lib_princ
-      END energie_utilisee,
-      adedpe202006_mean_class_conso_ener AS dpe_energie,
-      adedpe202006_mean_class_estim_ges AS dpe_ges
-    FROM "bnb_idf - batiment_adresse"
-    WHERE geom IS NOT NULL
-      AND bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'`,
-};
-
-const dbTable = (table: string) => {
-  if (preTable[table]) {
-    return db(table).with(table, db.raw(preTable[table]));
-  }
-  return db(table);
-};
-
-const geoJSONQuery = (properties: string[]) =>
-  db.raw(
-    `json_build_object(
-    'type', 'FeatureCollection',
-    'features', json_agg(json_build_object(
-      'type', 'Feature',
-      'geometry', ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom,4326)))::json,
-      'properties', json_build_object(
-        ${properties
-          .flatMap((property) => [`'${property}'`, property])
-          .join(',')}
-      )
-    ))
-  )`
-  );
 
 const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
   return base(tileInfo.table)
@@ -155,27 +87,6 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
     });
 };
 
-const getObjectIndexFromDatabase = async (tileInfo: DatabaseTileInfo) => {
-  const geoJSON = process.env.LIMIT_NETWORK_RESULTS
-    ? await tileInfo
-        .extraWhere(
-          dbTable(tileInfo.table).first(geoJSONQuery(tileInfo.properties))
-        )
-        .whereNotNull('geom')
-        .andWhere(
-          db.raw(`${tileInfo.id} < ${process.env.LIMIT_NETWORK_RESULTS}`)
-        )
-    : await tileInfo
-        .extraWhere(
-          dbTable(tileInfo.table).first(geoJSONQuery(tileInfo.properties))
-        )
-        .whereNotNull('geom');
-
-  return geojsonvt(geoJSON.json_build_object, {
-    maxZoom: mapParam.maxZoom,
-  });
-};
-
 const tilesInfo: Record<DataType, TileInfo> = {
   demands: {
     source: 'airtable',
@@ -186,23 +97,28 @@ const tilesInfo: Record<DataType, TileInfo> = {
   network: {
     source: 'database',
     table: 'reseaux_de_chaleur',
-    id: 'id',
-    extraWhere: (query) => query,
     properties: ['id'],
     sourceLayer: 'outline',
   },
   energy: {
     source: 'database',
-    table: 'pre-table-energy',
+    table: 'bnb_idf - batiment_adresse',
+    geom: 'geom_adresse',
     minZoom: true,
-    id: 'id',
-    extraWhere: (query) => query,
+    where: `
+      bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
+      AND adedpe202006_logtype_ch_type_inst = 'collectif'
+      AND adedpe202006_logtype_ch_type_ener_corr in ('gaz', 'fioul')
+    `,
     properties: [
-      'id',
-      'nb_logements',
-      'annee_construction',
-      'energie_utilisee',
-      'addr_label',
+      ['cerffo2020_nb_log', 'nb_logements'],
+      ['cerffo2020_annee_construction', 'annee_construction'],
+      ['cerffo2020_usage_niveau_1_txt', 'type_usage'],
+      ['adedpe202006_logtype_ch_type_inst', 'type_chauffage'],
+      ['adedpe202006_logtype_ch_type_ener_corr', 'energie_utilisee'],
+      ['etaban202111_label', 'addr_label'],
+      ['adedpe202006_mean_class_conso_ener', 'dpe_energie'],
+      ['adedpe202006_mean_class_estim_ges', 'dpe_ges'],
     ],
     sourceLayer: 'energy',
   },
@@ -210,49 +126,42 @@ const tilesInfo: Record<DataType, TileInfo> = {
     source: 'database',
     table: 'Donnees_de_conso_et_pdl_gaz_nat_2020',
     minZoom: true,
-    id: 'rownum',
-    extraWhere: (query) => query.whereIn('code_grand', ['R', 'T', 'I']),
+    where: "code_grand in ('R', 'T', 'I')",
     properties: ['rownum', 'code_grand', 'conso_nb', 'adresse', 'pdl_nb'],
     sourceLayer: 'gasUsage',
   },
   zoneDP: {
     source: 'database',
     table: 'zone_de_developpement_prioritaire',
-    id: 'id',
-    extraWhere: (query) => query,
     properties: ['id'],
     sourceLayer: 'zoneDP',
   },
   buildings: {
     source: 'database',
-    table: 'pre-table-buildings',
+    table: 'bnb_idf - batiment_adresse',
     minZoom: true,
-    id: 'id',
-    extraWhere: (query) => query,
+    where: `
+    bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
+`,
     properties: [
-      'id',
-      'nb_logements',
-      'annee_construction',
-      'type_usage',
-      'energie_utilisee',
-      'type_chauffage',
-      'addr_label',
-      'dpe_energie',
-      'dpe_ges',
+      ['cerffo2020_nb_log', 'nb_logements'],
+      ['cerffo2020_annee_construction', 'annee_construction'],
+      ['cerffo2020_usage_niveau_1_txt', 'type_usage'],
+      ['adedpe202006_logtype_ch_type_inst', 'type_chauffage'],
+      ['adedpe202006_logtype_ch_type_ener_corr', 'energie_utilisee'],
+      ['etaban202111_label', 'addr_label'],
+      ['adedpe202006_mean_class_conso_ener', 'dpe_energie'],
+      ['adedpe202006_mean_class_estim_ges', 'dpe_ges'],
     ],
     sourceLayer: 'buildings',
   },
 };
 
-const promiseGetters: Promise<unknown>[] = [];
 Object.entries(tilesInfo).forEach(([type, tileInfo]) => {
-  debug && console.info(`Indexing tiles for ${type} with ${tileInfo.table}...`);
-  const getter = (tileInfo: TileInfo) =>
-    tileInfo.source === 'airtable'
-      ? getObjectIndexFromAirtable(tileInfo)
-      : getObjectIndexFromDatabase(tileInfo);
-  promiseGetters.push(
-    getter(tileInfo)
+  if (tileInfo.source === 'airtable') {
+    debug &&
+      console.info(`Indexing tiles for ${type} with ${tileInfo.table}...`);
+    getObjectIndexFromAirtable(tileInfo)
       .then((result) => {
         allTiles[type as DataType] = result;
         debug &&
@@ -267,27 +176,77 @@ Object.entries(tilesInfo).forEach(([type, tileInfo]) => {
             `Indexing tiles for ${type} with ${tileInfo.table} failed`,
             e
           )
-      )
-  );
+      );
+  }
 });
 
-Promise.all(promiseGetters).then(
-  () => debug && console.info(`Indexing tiles finished`)
-);
+const tileToEnvelope = (
+  x: number,
+  y: number,
+  z: number
+): { bounds: string; where: string } => {
+  const worldMercMax = 20037508.3427892;
+  const worldMercMin = -1 * worldMercMax;
+  const worldMercSize = worldMercMax - worldMercMin;
 
-const getTiles = (type: DataType, x: number, y: number, z: number) => {
+  const worldTileSize = 2 ** z;
+  const tileMercSize = worldMercSize / worldTileSize;
+
+  const xmin = worldMercMin + tileMercSize * x;
+  const xmax = worldMercMin + tileMercSize * (x + 1);
+  const ymin = worldMercMax - tileMercSize * (y + 1);
+  const ymax = worldMercMax - tileMercSize * y;
+
+  return {
+    bounds: `ST_MakeBox2D(ST_Point(${xmin}, ${ymin}), ST_Point(${xmax}, ${ymax}))`,
+    where: `ST_Segmentize(ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857),${
+      (xmax - xmin) / 4
+    })`,
+  };
+};
+
+const getTiles = async (type: DataType, x: number, y: number, z: number) => {
+  const tileInfo = tilesInfo[type];
+  if (tileInfo.source === 'database') {
+    const envelope = tileToEnvelope(x, y, z);
+    const tile = await db.raw(
+      `
+      WITH 
+      mvtgeom AS (
+        SELECT ST_AsMVTGeom(ST_Transform(${tileInfo.geom || 'geom'}, 3857), ${
+        envelope.bounds
+      }) AS geom, ${tileInfo.properties.map((property) =>
+        Array.isArray(property)
+          ? `${property[0]} as ${property[1]}`
+          : `${property} as ${property}`
+      )}
+        FROM "${tileInfo.table}"
+        WHERE ST_Intersects(
+          ST_Transform(${tileInfo.geom || 'geom'}, 3857),
+          ${envelope.where}
+        )
+        ${tileInfo.where ? `AND ${tileInfo.where}` : ''}
+      ) 
+      SELECT ST_AsMVT(mvtgeom.*, '${
+        tileInfo.sourceLayer
+      }') FROM mvtgeom where mvtgeom.geom is not null
+    `
+    );
+    return tile.rows[0].st_asmvt;
+  }
   const tiles = allTiles[type];
   if (!tiles) {
     return null;
   }
 
-  const tileInfo = tilesInfo[type];
   if (tileInfo.minZoom && mapParam.minZoom > z) {
     return null;
   }
 
   const tile = tiles.getTile(z, x, y);
-  return tile ? { [tileInfo.sourceLayer]: tile } : null;
+  return Buffer.from(
+    vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })
+  );
 };
 
 export default getTiles;
