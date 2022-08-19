@@ -1,4 +1,4 @@
-import { AddressFactory } from '@core/domain/entity/AddressFactory';
+import { createAddress } from '@core/domain/entity/AddressFactory';
 import { NetworkMapper } from '@core/infrastructure/mapper/network.mapper';
 import { NetworkRepositoryImpl } from '@core/infrastructure/repository/networkRepositoryImpl';
 import sinon from 'sinon';
@@ -19,7 +19,7 @@ describe('Network Repository', () => {
     it('should correctly use distance helper', async () => {
       computeDistanceStub.returns(THRESHOLD);
 
-      const address = AddressFactory.create(anIDFAddress());
+      const address = createAddress(anIDFAddress());
       const networkRepository = new NetworkRepositoryImpl();
 
       const network = await networkRepository.findByCoords(address);
@@ -38,7 +38,7 @@ describe('Network Repository', () => {
     it('should a null network when nothing found', async () => {
       computeDistanceStub.returns(null);
 
-      const address = AddressFactory.create(anIDFAddress());
+      const address = createAddress(anIDFAddress());
       const expectedNetwork = NetworkMapper.createNullNetwork();
       const networkRepository = new NetworkRepositoryImpl();
 
@@ -52,7 +52,7 @@ describe('Network Repository', () => {
     it('should return 0 when distance is 0', async () => {
       computeDistanceStub.returns(0);
 
-      const address = AddressFactory.create(anIDFAddress());
+      const address = createAddress(anIDFAddress());
       const networkRepository = new NetworkRepositoryImpl();
 
       const network = await networkRepository.findByCoords(address);
@@ -71,7 +71,7 @@ describe('Network Repository', () => {
     it('should throw an error when call to distance Api fails', async () => {
       computeDistanceStub.throws(new Error());
 
-      const address = AddressFactory.create(anIDFAddress());
+      const address = createAddress(anIDFAddress());
       const networkRepository = new NetworkRepositoryImpl();
 
       await networkRepository.findByCoords(address).catch((result) => {
@@ -84,11 +84,12 @@ describe('Network Repository', () => {
 
   describe('#findByIrisCode', () => {
     it('should correctly retrieve an Network by iris code', async () => {
-      const address = AddressFactory.create({
+      const address = createAddress({
         lat: 43.50142,
         lon: -1.45507,
         irisCode: '641021001',
         cityCode: '64102',
+        city: 'Bayonne',
         label: '2 Esplanade Jouandin 64100 Bayonne',
       });
       const expectedNetwork = someNetwork({
@@ -105,11 +106,12 @@ describe('Network Repository', () => {
       expect(network).toEqual(expectedNetwork);
     });
     it('should return a null network when nothing no irisCode matches', async () => {
-      const address = AddressFactory.create({
+      const address = createAddress({
         lat: 43.50142,
         lon: -1.45507,
         irisCode: 'some-not-existing-iris-code',
         cityCode: '64102',
+        city: 'Bayonne',
         label: '2 Esplanade Jouandin 64100 Bayonne',
       });
       const expectedNetwork = NetworkMapper.createNullNetwork();

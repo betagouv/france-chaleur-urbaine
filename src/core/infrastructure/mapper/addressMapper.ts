@@ -9,6 +9,7 @@ export default class AddressMapper {
       lat: address.lat,
       lon: address.lon,
       label: address.address,
+      city: address.city,
       cityCode: address.citycode,
       irisCode: address.complete_code,
     };

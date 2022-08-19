@@ -1,24 +1,25 @@
 import { Address } from '@core/domain/entity/address';
-import { AddressIdfExcluded } from '@core/domain/entity/addressIdfExcluded';
-import { IdfAddress } from '@core/domain/entity/idfAddress';
+import { isBasedOnIRIS } from '@helpers/address';
+import { IRISAdress } from './irisAddress';
+import { RegularAddress } from './regularAddress';
 
-export class AddressFactory {
-  static create({
-    lat,
-    lon,
-    label,
-    cityCode,
-    irisCode,
-  }: {
-    lat: number;
-    lon: number;
-    label: string;
-    cityCode: string;
-    irisCode: string;
-  }) {
-    if (Address.isInIDF(cityCode)) {
-      return new IdfAddress(lat, lon, label, cityCode, irisCode);
-    }
-    return new AddressIdfExcluded(lat, lon, label, cityCode, irisCode);
+export const createAddress = ({
+  lat,
+  lon,
+  label,
+  city,
+  cityCode,
+  irisCode,
+}: {
+  lat: number;
+  lon: number;
+  label: string;
+  city: string;
+  cityCode: string;
+  irisCode: string;
+}): Address => {
+  if (isBasedOnIRIS(cityCode, city)) {
+    return new IRISAdress(lat, lon, label, city, cityCode, irisCode);
   }
-}
+  return new RegularAddress(lat, lon, label, city, cityCode, irisCode);
+};

@@ -1,5 +1,5 @@
 import { Address, Coords } from '@core/domain/entity/address';
-import { AddressFactory } from '@core/domain/entity/AddressFactory';
+import { createAddress } from '@core/domain/entity/AddressFactory';
 import { Network } from '@core/domain/entity/network';
 import { AddressPyrisResponse } from '@core/infrastructure/mapper/address.dto';
 import { NetworkDistance } from '@core/infrastructure/mapper/network.dto';
@@ -37,27 +37,29 @@ export const anIDFNetwork = (args?: Partial<Network>): Network => ({
 });
 
 export const anOutOfIDFAddress = (args?: Partial<Address>): Address =>
-  AddressFactory.create({
+  createAddress({
     lat: 48.868662,
     lon: 2.333382,
     irisCode: '172500501',
     cityCode: '17250',
+    city: 'Saint-sulpice d‘Arnoult',
     label: '34 Avenue de l’Opéra 17250 Saint-sulpice d‘Arnoult',
     ...args,
   });
 
 export const anIDFAddress = (args?: any): Address =>
-  AddressFactory.create({
+  createAddress({
     lat: 48.868662,
     lon: 2.333382,
     irisCode: '7525000501',
     cityCode: '75250',
+    city: 'Paris',
     label: '34 Avenue de l’Opéra 75002 Paris',
     ...args,
   });
 
 export const anAddressNotFound = (args?: any): Address =>
-  AddressFactory.create({
+  createAddress({
     lat: 48.868662,
     lon: 2.333382,
     irisCode: '7525000501',
