@@ -54,7 +54,9 @@ const preTable: Record<string, string> = {
           THEN anarnc202012_nb_log
         ELSE cerffo2020_nb_log
       END nb_logements,
-      adedpe202006_logtype_ch_type_ener_corr AS energie_utilisee
+      adedpe202006_logtype_ch_type_ener_corr AS energie_utilisee,
+      adedpe202006_mean_class_conso_ener AS dpe_energie,
+      adedpe202006_mean_class_estim_ges AS dpe_ges
     FROM "bnb_idf - batiment_adresse"
     WHERE geom IS NOT NULL
       AND bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
@@ -85,10 +87,7 @@ const preTable: Record<string, string> = {
       adedpe202006_mean_class_estim_ges AS dpe_ges
     FROM "bnb_idf - batiment_adresse"
     WHERE geom IS NOT NULL
-      AND bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
-      AND adedpe202006_logtype_ch_type_inst IS NOT NULL
-      AND adedpe202006_mean_class_conso_ener IS NOT NULL
-      AND adedpe202006_mean_class_estim_ges IS NOT NULL`,
+      AND bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'`,
 };
 
 const dbTable = (table: string) => {

@@ -224,7 +224,7 @@ const EligibilityFormContact = ({
     distance !== null &&
     distance !== undefined &&
     (distance <= 200
-      ? `Un reseau de chaleur se trouve à ${distance}m de ce bâtiment`
+      ? `Un réseau de chaleur se trouve à ${distance}m de ce bâtiment`
       : '');
   const linkToMap =
     addressCoords &&

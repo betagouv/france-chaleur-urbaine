@@ -20,6 +20,6 @@ const presentationRcu = {
   Suppression des chaudières et risques associés et garantie du service public
   :::
   `,
-  imgAlt: 'Reseau de chaleur urbaine',
+  imgAlt: 'Réseau de chaleur urbaine',
 };
 export default presentationRcu;

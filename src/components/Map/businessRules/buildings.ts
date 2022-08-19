@@ -7,6 +7,7 @@ export const themeDefBuildings: any = {
     e: { color: '#FFCC01' },
     f: { color: '#FF9A32' },
     g: { color: '#FF0000' },
+    n: { color: '#999999' },
     unknow: { color: '#999999' },
   },
   opacity: 0.65,

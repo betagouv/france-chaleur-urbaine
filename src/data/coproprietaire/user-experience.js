@@ -32,7 +32,7 @@ _Sur le conseil de France Chaleur Urbaine, la copropriété d’Anne obtient des
 
 _Les travaux durent **4&nbsp;mois** en tout&nbsp;!_`,
     imgSrc: `./img/user-experience-3.png`,
-    imgAlt: `Charge et travaux pour un raccordement au Reseau de chaleur`,
+    imgAlt: `Charge et travaux pour un raccordement au Réseau de chaleur`,
     reverse: true,
   },
   {
@@ -43,7 +43,7 @@ Grâce au réseau de chaleur, la copropriété bénéficie d’une **bonne temp�
 
 Toute la copropriété est heureuse d’avoir eu une **démarche écologique et économique** qui a été simplifiée par l’accompagnement de **France Chaleur Urbaine**.`,
     imgSrc: `./img/user-experience-4.png`,
-    imgAlt: `Le confort d’un Reseau de chaleur Urbaine`,
+    imgAlt: `Le confort d’un éeseau de chaleur Urbaine`,
   },
 ];
 

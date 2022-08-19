@@ -346,10 +346,9 @@ export const buildingsLayerStyle = {
   paint: {
     'fill-color': [
       'match',
-      ['downcase', ['get', DPE_ENERGY]],
+      ['downcase', ['coalesce', ['get', DPE_ENERGY], 'N']],
       ...arrColorFromDefBuildingsDpeEnergy,
     ],
-    'fill-outline-color': '#555555',
     'fill-opacity': [
       'interpolate',
       ['linear'],

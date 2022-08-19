@@ -79,8 +79,16 @@ const formatBodyPopup = ({
     return '';
   };
 
-  const formatBddText = (str?: string) =>
-    str && str.replace(/_/g, ' ').toLowerCase();
+  const formatBddText = (str?: string) => {
+    return (
+      str &&
+      str
+        .replace(/_/g, ' ')
+        .toLowerCase()
+        .replace(/electricite/g, 'électricité')
+        .replace(/reseau/g, 'réseau')
+    );
+  };
 
   const {
     nb_logements: nb_logements_buildings,
@@ -89,14 +97,16 @@ const formatBodyPopup = ({
     energie_utilisee: energie_utilisee_buildings,
     type_chauffage: type_chauffage_buildings,
     addr_label: addr_label_buildings,
-    dpe_energie,
-    dpe_ges,
+    dpe_energie: dpe_energie_buildings,
+    dpe_ges: dpe_ges_buildings,
   } = buildings || {};
   const {
     addr_label: addr_label_energy,
     nb_logements: nb_logements_energy,
     annee_construction: annee_construction_energy,
     energie_utilisee: energie_utilisee_energy,
+    dpe_energie: dpe_energie_energy,
+    dpe_ges: dpe_ges_energy,
   } = energy || {};
   const {
     adresse: addr_label_consommation,
@@ -118,8 +128,9 @@ const formatBodyPopup = ({
     annee_construction_buildings || annee_construction_energy;
   const energie_utilisee =
     energie_utilisee_buildings || energie_utilisee_energy;
+  const dpe_energie = dpe_energie_buildings || dpe_energie_energy;
+  const dpe_ges = dpe_ges_buildings || dpe_ges_energy;
   const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
-
   const bodyPopup = `
     ${
       textAddress
@@ -147,7 +158,7 @@ const formatBodyPopup = ({
           }
           ${
             type_usage
-              ? `<strong>usage&nbsp;:</strong> ${type_usage}<br />`
+              ? `<strong>Usage&nbsp;:</strong> ${type_usage}<br />`
               : ''
           }
           ${
@@ -172,23 +183,17 @@ const formatBodyPopup = ({
           }
           ${
             type_chauffage
-              ? `<strong>Mode de chauffage&nbsp;:</strong> ${
-                  type_chauffage || 'inconnu'
-                }<br />`
+              ? `<strong>Mode de chauffage&nbsp;:</strong> ${type_chauffage}<br />`
               : ''
           }
           ${
             dpe_energie
-              ? `<strong>DPE consommations énergétiques&nbsp;:</strong> ${
-                  dpe_energie || 'inconnu'
-                }<br />`
+              ? `<strong>DPE consommations énergétiques&nbsp;:</strong> ${dpe_energie}<br />`
               : ''
           }
           ${
             dpe_ges
-              ? `<strong>DPE émissions de gaz à effet de serre&nbsp;:</strong> ${
-                  dpe_ges || 'inconnu'
-                }<br />`
+              ? `<strong>DPE émissions de gaz à effet de serre&nbsp;:</strong> ${dpe_ges}<br />`
               : ''
           }
         </section>
@@ -407,6 +412,35 @@ export default function Map() {
           const origin =
             process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
 
+          // -----------------
+          // --- Demands ---
+          // -----------------
+          map.current.addSource('demands', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+          });
+
+          map.current.addLayer({
+            id: 'demands',
+            source: 'demands',
+            'source-layer': 'demands',
+            ...demandsLayerStyle,
+          });
+
+          map.current.on('click', 'demands', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { demands: properties });
+          });
+
+          map.current.on('mouseenter', 'demands', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'demands', function () {
+            map.current.getCanvas().style.cursor = '';
+          });
+
           // --------------------
           // --- Heat Network ---
           // --------------------
@@ -528,37 +562,6 @@ export default function Map() {
           });
 
           map.current.on('mouseleave', 'energy', function () {
-            map.current.getCanvas().style.cursor = '';
-          });
-
-          // -----------------
-          // --- Demands ---
-          // -----------------
-          map.current.addSource('demands', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          });
-
-          map.current.addLayer({
-            id: 'demands',
-            source: 'demands',
-            'source-layer': 'demands',
-            ...demandsLayerStyle,
-          });
-
-          map.current.on('click', 'demands', (e: any) => {
-            const properties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            updateClickedPoint(coordinates, { demands: properties });
-          });
-
-          map.current.on('mouseenter', 'demands', function () {
-            map.current.getCanvas().style.cursor = 'pointer';
-          });
-
-          map.current.on('mouseleave', 'demands', function () {
             map.current.getCanvas().style.cursor = '';
           });
         }
