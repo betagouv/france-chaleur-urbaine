@@ -11,6 +11,13 @@ import { BuildingSummary } from 'src/types/Summary/Building';
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
+import mapParam, {
+  EnergyNameOption,
+  gasUsageNameOption,
+  LayerNameOption,
+  layerNameOptions,
+  TypeLayerDisplay,
+} from '../../services/Map/param';
 import {
   CardSearchDetails,
   MapLegend,
@@ -20,13 +27,6 @@ import {
 } from './components';
 import ZoneInfos from './components/ZoneInfos';
 import { useMapPopup } from './hooks';
-import mapParam, {
-  EnergyNameOption,
-  gasUsageNameOption,
-  LayerNameOption,
-  layerNameOptions,
-  TypeLayerDisplay,
-} from './Map.param';
 import {
   buildingsLayerStyle,
   CollapseLegend,

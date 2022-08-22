@@ -1,5 +1,5 @@
 import React from 'react';
-import { themeDefEnergy } from '../businessRules';
+import { themeDefEnergy } from '../../../services/Map/businessRules';
 import ScaleLegend from './ScaleLegend';
 
 const LegendDesc: Record<string, () => React.ReactElement> = {

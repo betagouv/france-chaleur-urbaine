@@ -50,3 +50,5 @@ yarn-error.log*
 
 /docker/db/*.sql
 /docker/db/*.dat
+
+dump.pgsql

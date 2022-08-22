@@ -1,20 +1,11 @@
 import { useMemo } from 'react';
+import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import LegendDesc from './LegendDesc';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import {
   GroupeLabelWrapper,
   LegendGroupLabelStyle,
 } from './LegendGroupLabel.styled';
-
-export type TypeGroupLegend = {
-  id: string;
-  subLegend?: string;
-  subLegendTxt?: string;
-  entries: TypeLegendEntry[];
-  type?: string;
-  subGroup?: boolean;
-  linkto?: string[];
-};
 
 function LegendGroupLabel({
   id,

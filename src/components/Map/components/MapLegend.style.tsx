@@ -3,7 +3,7 @@ import {
   themeDefDemands,
   themeDefHeatNetwork,
   themeDefZoneDP,
-} from '../businessRules';
+} from '../../../services/Map/businessRules';
 
 export const MapGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .leaflet-container .leaflet-control-attribution {
