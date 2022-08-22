@@ -1,9 +1,10 @@
 import { Button, Link } from '@dataesr/react-dsfr';
 import { useRouter } from 'next/router';
-import { TypeLayerDisplay } from '../Map.param';
+import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
+import { TypeLayerDisplay } from '../../../services/Map/param';
 import { LegendSeparator } from '../Map.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
-import LegendGroupLabel, { TypeGroupLegend } from './LegendGroupLabel';
+import LegendGroupLabel from './LegendGroupLabel';
 import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
 
 function MapLegend({

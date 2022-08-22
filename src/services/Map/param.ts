@@ -1,10 +1,10 @@
+import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import {
   localTypeEnergy,
   localTypeGas,
   themeDefEnergy,
   themeDefTypeGas,
 } from './businessRules';
-import { TypeGroupLegend } from './components/LegendGroupLabel';
 
 const defaultPos = [48.85294, 2.34987]; // Default to Paris IDF
 
@@ -143,9 +143,9 @@ const legendData: (string | TypeGroupLegend)[] = [
 ];
 
 const param = {
-  minZoomData: 12.75,
+  minZoomData: 13,
   minZoom: 4,
-  maxZoom: 22,
+  maxZoom: 17,
   defaultZoom: 12,
   lng: defaultPos[1],
   lat: defaultPos[0],

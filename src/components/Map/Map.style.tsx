@@ -1,5 +1,3 @@
-import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
-import styled, { createGlobalStyle, css } from 'styled-components';
 import {
   themeDefBuildings,
   themeDefDemands,
@@ -7,8 +5,10 @@ import {
   themeDefHeatNetwork,
   themeDefTypeGas,
   themeDefZoneDP,
-} from './businessRules';
-import param from './Map.param';
+} from 'src/services/Map/businessRules';
+import param from 'src/services/Map/param';
+import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
+import styled, { createGlobalStyle, css } from 'styled-components';
 
 const { minZoomData, maxZoom } = param;
 
