@@ -120,8 +120,8 @@ const formatBodyPopup = ({
 
   const textAddress =
     addr_label_buildings ||
-    addr_label_consommation ||
     addr_label_energy ||
+    addr_label_consommation ||
     addr_label_demands;
   const nb_logements = nb_logements_buildings || nb_logements_energy;
   const annee_construction =

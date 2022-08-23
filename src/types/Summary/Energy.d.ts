@@ -8,4 +8,5 @@ export interface EnergySummary {
   dpe_ges: string;
   nb_logements: number;
   annee_construction?: string;
+  is_close: boolean;
 }

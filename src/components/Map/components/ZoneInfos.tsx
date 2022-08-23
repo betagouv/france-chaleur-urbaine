@@ -6,7 +6,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Summary } from 'src/types/Summary';
-import { typeEnergy } from '../Map.style';
 import ZoneInfo from './ZoneInfo';
 import { Container, ExportButton, ZoneInfosWrapper } from './ZoneInfos.style';
 
@@ -80,14 +79,16 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                 {
                   label: 'Total',
                   value: summary.energy.filter(
-                    (x) => typeEnergy[x.energie_utilisee] === 'fuelOil'
+                    ({ energie_utilisee }) => energie_utilisee === 'fioul'
                   ).length,
                 },
                 {
                   label: 'Proche réseau (<50 m)',
-                  value: summary.closeEnergy.filter(
-                    (x) => typeEnergy[x.energie_utilisee] === 'fuelOil'
-                  ).length,
+                  value: summary.energy
+                    .filter((energy) => energy.is_close)
+                    .filter(
+                      ({ energie_utilisee }) => energie_utilisee === 'fioul'
+                    ).length,
                 },
               ]}
             />
@@ -100,14 +101,16 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                 {
                   label: 'Total',
                   value: summary.energy.filter(
-                    (x) => typeEnergy[x.energie_utilisee] === 'gas'
+                    ({ energie_utilisee }) => energie_utilisee === 'gaz'
                   ).length,
                 },
                 {
                   label: 'Proche réseau (<50 m)',
-                  value: summary.closeEnergy.filter(
-                    (x) => typeEnergy[x.energie_utilisee] === 'gas'
-                  ).length,
+                  value: summary.energy
+                    .filter((energy) => energy.is_close)
+                    .filter(
+                      ({ energie_utilisee }) => energie_utilisee === 'gaz'
+                    ).length,
                 },
               ]}
             />
@@ -127,10 +130,10 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                 {
                   label: 'Proche réseau (<50 m)',
                   value: `${(
-                    summary.closeGas.reduce(
-                      (acc, current) => acc + +current.conso_nb,
-                      0
-                    ) / 1000
+                    summary.gas
+                      .filter((gas) => gas.is_close)
+                      .reduce((acc, current) => acc + +current.conso_nb, 0) /
+                    1000
                   ).toFixed(2)} GWh`,
                 },
               ]}
