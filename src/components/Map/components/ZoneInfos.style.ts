@@ -1,4 +1,3 @@
-import { Button } from '@dataesr/react-dsfr';
 import styled, { css } from 'styled-components';
 
 export const Container = styled.div<{ customCursor?: boolean }>`
@@ -25,7 +24,7 @@ export const ZoneInfosWrapper = styled.div`
     0px 8px 16px rgba(0, 0, 0, 0.1);
 `;
 
-export const ExportButton = styled(Button)`
+export const Export = styled.div`
   position: absolute;
   right: 16px;
   bottom: 16px;

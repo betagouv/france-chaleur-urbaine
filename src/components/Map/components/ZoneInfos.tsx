@@ -2,16 +2,18 @@ import { Button } from '@dataesr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { Polygon } from 'geojson';
 import { Map } from 'maplibre-gl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Summary } from 'src/types/Summary';
 import ZoneInfo from './ZoneInfo';
-import { Container, ExportButton, ZoneInfosWrapper } from './ZoneInfos.style';
+import { Container, Export, ZoneInfosWrapper } from './ZoneInfos.style';
 
 const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   const { heatNetworkService } = useServices();
 
+  const zoneIndex = useRef(0);
   const [customCursor, setCustomCursor] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [bounds, setBounds] = useState<number[][]>();
@@ -40,7 +42,13 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   useEffect(() => {
     setSummary(undefined);
     if (bounds) {
-      heatNetworkService.summary(bounds).then(setSummary);
+      zoneIndex.current += 1;
+      const currentZoneIndex = zoneIndex.current;
+      heatNetworkService.summary(bounds).then((result) => {
+        if (currentZoneIndex === zoneIndex.current) {
+          setSummary(result);
+        }
+      });
     }
   }, [heatNetworkService, bounds]);
 
@@ -155,14 +163,19 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                 },
               ]}
             />
-            <ExportButton
-              size="sm"
-              icon="ri-download-2-line"
-              onClick={exportData}
-              disabled={exporting}
-            >
-              Exporter
-            </ExportButton>
+            <Export>
+              {exporting ? (
+                <Oval height={40} width={40} />
+              ) : (
+                <Button
+                  size="sm"
+                  icon={'ri-download-2-line'}
+                  onClick={exportData}
+                >
+                  Exporter
+                </Button>
+              )}
+            </Export>
           </>
         ) : (
           <span>
