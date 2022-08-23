@@ -6,6 +6,4 @@ export interface Summary {
   gas: GasSummary[];
   energy: EnergySummary[];
   network: NetworkSummary[];
-  closeGas: GasSummary[];
-  closeEnergy: EnergySummary[];
 }
