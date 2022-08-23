@@ -1,7 +1,7 @@
 import { Icon } from '@dataesr/react-dsfr';
+import LegendDesc from './LegendDesc';
 import {
   LabelLegend,
-  LabelLegendDescription,
   LabelLegendHead,
   LabelLegendInputLabel,
   LabelLegendInputLabelWrapper,
@@ -13,10 +13,10 @@ export type TypeLegendEntry = {
   id: string;
   label: string;
   info?: string;
-  subLegendTxt?: string;
   className?: string;
   type?: string;
   bgColor?: string;
+  subLegend?: string;
 };
 function LegendEntry({
   id,
@@ -25,10 +25,10 @@ function LegendEntry({
   type,
   label,
   info,
-  subLegendTxt,
   checked,
   readOnly,
   onChange,
+  subLegend,
 }: TypeLegendEntry & {
   checked: boolean;
   readOnly?: boolean;
@@ -57,9 +57,7 @@ function LegendEntry({
             {info && <Icon size="lg" name="ri-information-fill" title={info} />}
           </LabelLegend>
         </LabelLegendInputLabel>
-        {subLegendTxt && (
-          <LabelLegendDescription>{subLegendTxt}</LabelLegendDescription>
-        )}
+        {subLegend && LegendDesc[subLegend]?.()}
       </LabelLegendInputLabelWrapper>
     </LabelLegendWrapper>
   );

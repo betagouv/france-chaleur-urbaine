@@ -131,9 +131,8 @@ const legendData: (string | TypeGroupLegend)[] = [
     entries: [
       {
         id: 'buildings',
-        label: 'Autres données sur les bâtiments',
-        subLegendTxt:
-          'Cliquer sur le bâtiment souhaité pour obtenir plus d’informations',
+        label: 'Diagnostic de performance énergétique',
+        subLegend: 'DPE',
       },
     ],
     type: 'list',
