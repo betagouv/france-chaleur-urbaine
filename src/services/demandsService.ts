@@ -14,11 +14,9 @@ export class DemandsService {
       throw new ServiceError(e);
     }
   }
-  async fetchDemand(demandId: string): Promise<DemandSummary> {
+  async fetchDemand(demandId: string): Promise<Demand> {
     try {
-      return await this.httpClient.get<DemandSummary>(
-        `/api/demands/${demandId}`
-      );
+      return await this.httpClient.get<Demand>(`/api/demands/${demandId}`);
     } catch (e) {
       throw new ServiceError(e);
     }

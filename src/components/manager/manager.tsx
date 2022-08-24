@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Select, Table, TextInput } from '@dataesr/react-dsfr';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import { Demand } from 'src/types/Summary/Demand';
@@ -14,11 +15,18 @@ const columns = [
   },
   { name: 'Structure', label: 'Structure' },
   { name: 'Établissement', label: 'Établissement' },
-  { name: 'Mail', label: 'Mail' },
+  { name: 'Mail', label: 'Email' },
   { name: 'Adresse', label: 'Adresse' },
   { name: 'Distance au réseau', label: 'Distance au réseau' },
   { name: 'Type de chauffage', label: 'Type de chauffage' },
   { name: 'Mode de chauffage', label: 'Mode de chauffage' },
+  {
+    name: 'view-more',
+    label: 'Voir plus',
+    render: (demand: Demand) => (
+      <Link href={`/demandes/${demand.id}`}>Voir les details</Link>
+    ),
+  },
 ];
 
 const searchKeys: (keyof Demand)[] = ['Nom', 'Prénom', 'Mail'];
