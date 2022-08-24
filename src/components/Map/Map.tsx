@@ -67,7 +67,7 @@ const formatBodyPopup = ({
   const writeTypeConso = (typeConso: string | unknown) => {
     switch (typeConso) {
       case 'R': {
-        return 'Logement residentiel';
+        return 'Logement';
       }
       case 'T': {
         return 'Établissement tertiaire';
