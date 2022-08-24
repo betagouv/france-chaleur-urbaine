@@ -14,4 +14,13 @@ export class DemandsService {
       throw new ServiceError(e);
     }
   }
+  async fetchDemand(demandId: string): Promise<DemandSummary> {
+    try {
+      return await this.httpClient.get<DemandSummary>(
+        `/api/demands/${demandId}`
+      );
+    } catch (e) {
+      throw new ServiceError(e);
+    }
+  }
 }

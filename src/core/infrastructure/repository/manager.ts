@@ -2,6 +2,11 @@ import db from 'src/db';
 import base from 'src/db/airtable';
 import { Demand } from 'src/types/Summary/Demand';
 
+const getUser = (email: string) =>
+  db('users').select(['gestionnaire']).where({ email }).first();
+
+const tableNameFcuDemands = 'FCU - Utilisateurs';
+
 export const getGestionnaire = (addresse: string): string | null => {
   if (addresse && addresse.includes('Paris')) {
     return 'Paris';
@@ -11,21 +16,39 @@ export const getGestionnaire = (addresse: string): string | null => {
 };
 
 export const getDemands = async (email: string): Promise<Demand[]> => {
-  const user = await db('users')
-    .select(['gestionnaire'])
-    .where({ email })
-    .first();
+  const user = await getUser(email);
 
   if (!user) {
     return [];
   }
 
-  const results = await base('FCU - Utilisateurs')
+  const records = await base(tableNameFcuDemands)
     .select({
       filterByFormula: `Gestionnaire="${user.gestionnaire}"`,
       sort: [{ field: 'Date demandes', direction: 'desc' }],
     })
     .all();
 
-  return results.map((result) => result.fields as Demand);
+  return records.map(
+    (record) => ({ id: record.id, ...record.fields } as Demand)
+  );
+};
+
+export const getDemand = async (
+  email: string,
+  demandId: string
+): Promise<Demand | Record<string, never> | undefined> => {
+  const user = await getUser(email);
+
+  if (!user) {
+    return {};
+  }
+
+  try {
+    const record = await base(tableNameFcuDemands).find(demandId);
+    return { id: record.id, ...record.fields } as Demand;
+  } catch (err) {
+    console.error(err);
+    return;
+  }
 };

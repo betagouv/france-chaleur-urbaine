@@ -1,4 +1,5 @@
 export type DemandSummary = {
+  id: string;
   Nom: string;
   Prénom?: string;
   Adresse: string;
