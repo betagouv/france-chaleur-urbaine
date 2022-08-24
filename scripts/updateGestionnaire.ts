@@ -1,5 +1,5 @@
-import { getGestionnaire } from '@core/infrastructure/repository/manager';
-import base from 'src/db/airtable';
+import { getGestionnaire } from '../src/core/infrastructure/repository/manager';
+import base from '../src/db/airtable';
 
 const updateGestionnaire = async () => {
   try {

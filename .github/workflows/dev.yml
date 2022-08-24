@@ -50,10 +50,7 @@ jobs:
         run: yarn test:coverage
 
       - name: Build 📦
-        run: |
-          yarn build
-          yarn export
-          touch ./out/.nojekyll
+        run: yarn build
         env:
           CI: true
           FORMSPARK_ID: ${{ secrets.FORMSPARK_ID }}

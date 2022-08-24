@@ -1,5 +1,8 @@
 {
   "name": "fcu",
+  "scripts": {
+    "postdeploy": "yarn db:migrate"
+  },
   "formation": {
     "web": {
       "amount": 1,

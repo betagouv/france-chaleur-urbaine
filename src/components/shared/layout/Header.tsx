@@ -6,6 +6,7 @@ import {
   Logo,
   Service,
 } from '@dataesr/react-dsfr';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Fragment } from 'react';
 import { menu } from './MainLayout.data';
@@ -20,6 +21,7 @@ const Header = ({
   currentMenu: string;
   fullscreen: boolean;
 }) => {
+  const { data: session } = useSession();
   const Container = fullscreen ? FullScreenHeader : Fragment;
 
   return (
@@ -72,6 +74,24 @@ const Header = ({
             </Link>
           </li>
         ))}
+        {session && (
+          <li
+            className={`fr-nav__item ${
+              currentMenu === '/gestionnaire' ? 'fr-nav__item-Active' : ''
+            }`}
+          >
+            <Link href={'/gestionnaire'} prefetch={false}>
+              <a
+                className="fr-nav__link"
+                aria-current={
+                  currentMenu === '/gestionnaire' ? 'page' : undefined
+                }
+              >
+                Gestionnaire
+              </a>
+            </Link>
+          </li>
+        )}
       </HeaderNav>
     </HeaderDS>
   );

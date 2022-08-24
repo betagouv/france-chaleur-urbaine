@@ -1,6 +1,7 @@
 import { LayoutProvider, MainLayout } from '@components/shared/layout';
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 import '@reach/combobox/styles.css';
+import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import {
@@ -8,6 +9,7 @@ import {
   ServicesContext,
   SuggestionService,
 } from 'src/services';
+import { DemandsService } from 'src/services/demandsService';
 import { axiosHttpClient } from 'src/services/http';
 import { createGlobalStyle } from 'styled-components';
 
@@ -81,6 +83,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         value={{
           suggestionService: new SuggestionService(axiosHttpClient),
           heatNetworkService: new HeatNetworkService(axiosHttpClient),
+          demandsService: new DemandsService(axiosHttpClient),
         }}
       >
         <Head>
@@ -120,11 +123,13 @@ function MyApp({ Component, pageProps }: AppProps) {
           />
         </Head>
 
-        <LayoutProvider>
-          <MainLayout>
-            <Component {...pageProps} />
-          </MainLayout>
-        </LayoutProvider>
+        <SessionProvider session={pageProps.session}>
+          <LayoutProvider>
+            <MainLayout>
+              <Component {...pageProps} />
+            </MainLayout>
+          </LayoutProvider>
+        </SessionProvider>
       </ServicesContext.Provider>
     </>
   );
