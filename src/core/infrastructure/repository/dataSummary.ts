@@ -7,9 +7,9 @@ import { NetworkSummary } from 'src/types/Summary/Network';
 import { getSpreadSheet, zip } from './export';
 import { consoColumns, fioulColumns, gasColumns } from './export.config';
 
-const getWithinQuery = (coordinates: number[][]) => `
-ST_INTERSECTS(
-  ST_Transform(geom, 4326),
+const getWithinQuery = (coordinates: number[][], geom: string) => `
+ST_WITHIN(
+  ST_Transform(${geom}, 4326),
   ST_MakePolygon(
     ST_MakeLine(
       Array[${coordinates.map(
@@ -72,7 +72,7 @@ const getGasSummary = async (coordinates: number[][]): Promise<GasSummary[]> =>
       ) as is_close
       `)
     )
-    .where(db.raw(getWithinQuery(coordinates)));
+    .where(db.raw(getWithinQuery(coordinates, 'geom')));
 
 const getEnergySummary = async (
   coordinates: number[][]
@@ -95,14 +95,14 @@ const getEnergySummary = async (
     .whereIn('adedpe202006_logtype_ch_type_ener_corr', ['gaz', 'fioul'])
     .andWhereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
     .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
-    .andWhere(db.raw(getWithinQuery(coordinates)));
+    .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 const exportGasSummary = async (
   coordinates: number[][]
 ): Promise<GasSummary[]> =>
   db('Donnees_de_conso_et_pdl_gaz_nat_2020')
     .select('adresse', 'code_grand', 'conso_nb', 'pdl_nb')
-    .where(db.raw(getWithinQuery(coordinates)));
+    .where(db.raw(getWithinQuery(coordinates, 'geom')));
 
 const exportEnergyGasSummary = async (
   coordinates: number[][]
@@ -112,7 +112,7 @@ const exportEnergyGasSummary = async (
     .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
     .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
     .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'gaz')
-    .andWhere(db.raw(getWithinQuery(coordinates)));
+    .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 const exportEnergyFioulSummary = async (
   coordinates: number[][]
@@ -122,7 +122,7 @@ const exportEnergyFioulSummary = async (
     .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
     .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
     .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'fioul')
-    .andWhere(db.raw(getWithinQuery(coordinates)));
+    .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 export const getDataSummary = async (
   coordinates: number[][]
