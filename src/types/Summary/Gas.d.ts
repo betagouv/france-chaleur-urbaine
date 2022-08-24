@@ -1,5 +1,5 @@
 export interface GasSummary {
-  adresse?: string;
+  result_lab?: string;
   code_grand?: 'R' | 'T' | 'I';
   conso_nb: number;
   pdl_nb: number;

@@ -144,7 +144,7 @@ export const tilesInfo: Record<string, TileInfo> = {
     minZoom: true,
     id: 'rownum',
     extraWhere: (query) => query.whereIn('code_grand', ['R', 'T', 'I']),
-    properties: ['rownum', 'code_grand', 'conso_nb', 'adresse', 'pdl_nb'],
+    properties: ['rownum', 'code_grand', 'conso_nb', 'result_lab', 'pdl_nb'],
     sourceLayer: 'gasUsage',
   },
 };
