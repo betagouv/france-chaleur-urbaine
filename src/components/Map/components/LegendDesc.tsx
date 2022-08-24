@@ -1,5 +1,6 @@
 import React from 'react';
-import { themeDefEnergy } from '../../../services/Map/businessRules';
+import { themeDefEnergy } from 'src/services/Map/businessRules';
+import DPELegend from './DPELegend';
 import ScaleLegend from './ScaleLegend';
 
 const LegendDesc: Record<string, () => React.ReactElement> = {
@@ -48,6 +49,7 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
       ]}
     />
   ),
+  DPE: () => <DPELegend />,
 };
 
 export default LegendDesc;

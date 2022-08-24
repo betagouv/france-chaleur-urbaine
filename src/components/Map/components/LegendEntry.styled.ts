@@ -6,11 +6,6 @@ export const LabelLegendInputLabelWrapper = styled.div`
 export const LabelLegendInputLabel = styled.div`
   display: flex;
 `;
-export const LabelLegendDescription = styled.div`
-  margin-left: 8px;
-  font-size: 13px;
-  line-height: 1.5;
-`;
 
 export const LabelLegendWrapper = styled.div`
   font-size: 0.95em;

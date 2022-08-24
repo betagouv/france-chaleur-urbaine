@@ -44,8 +44,8 @@ function MapLegend({
 
         if (group === 'sources') {
           return (
-            <Sources>
-              <Link key={'sources'} href="/carto_sources.pdf" target="_blank">
+            <Sources key={'sources'}>
+              <Link href="/carto_sources.pdf" target="_blank">
                 Sources
               </Link>
             </Sources>
@@ -82,6 +82,7 @@ function MapLegend({
                 checked={!!layerDisplay[entry.id]}
                 key={entry.id}
                 onChange={onToogleFeature}
+                subLegend={subLegend}
                 {...entry}
               />
             ));

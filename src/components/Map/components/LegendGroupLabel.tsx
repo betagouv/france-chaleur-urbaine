@@ -26,6 +26,7 @@ function LegendGroupLabel({
         .some((display) => display === false),
     [layerDisplay, linkto]
   );
+
   return (
     <>
       <LegendGroupLabelStyle />
@@ -46,7 +47,7 @@ function LegendGroupLabel({
             />
           ))}
         </div>
-        {subLegend && LegendDesc?.[subLegend]?.()}
+        {subLegend && LegendDesc[subLegend]?.()}
       </GroupeLabelWrapper>
     </>
   );

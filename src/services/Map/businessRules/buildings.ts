@@ -1,4 +1,4 @@
-export const themeDefBuildings: any = {
+export const themeDefBuildings = {
   colors: {
     a: { color: '#329A33' },
     b: { color: '#34CC33' },
