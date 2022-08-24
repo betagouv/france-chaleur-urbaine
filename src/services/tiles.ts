@@ -8,13 +8,10 @@ import mapParam from './Map/param';
 import { AirtableTileInfo, DataType, tilesInfo } from './tiles.config';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
-const allTiles: Record<DataType, any> = {
+
+let airtableDayCached = 0;
+const airtableTiles: Partial<Record<DataType, any>> = {
   demands: null,
-  network: null,
-  gas: null,
-  energy: null,
-  zoneDP: null,
-  buildings: null,
 };
 
 const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
@@ -59,29 +56,35 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
     });
 };
 
-Object.entries(tilesInfo).forEach(([type, tileInfo]) => {
-  if (tileInfo.source === 'airtable') {
-    debug &&
-      console.info(`Indexing tiles for ${type} with ${tileInfo.table}...`);
-    getObjectIndexFromAirtable(tileInfo)
-      .then((result) => {
-        allTiles[type as DataType] = result;
-        debug &&
-          console.info(
-            `Indexing tiles for ${type} with ${tileInfo.table} done`
-          );
-      })
-      .catch(
-        (e) =>
+const cacheAirtableTiles = () => {
+  airtableDayCached = new Date().getDate();
+  Object.entries(tilesInfo).forEach(([type, tileInfo]) => {
+    if (tileInfo.source === 'airtable') {
+      debug &&
+        console.info(
+          `Indexing tiles for ${type} from airtable ${tileInfo.table}...`
+        );
+      getObjectIndexFromAirtable(tileInfo)
+        .then((result) => {
+          airtableTiles[type as DataType] = result;
           debug &&
-          console.error(
-            `Indexing tiles for ${type} with ${tileInfo.table} failed`,
-            e
-          )
-      );
-  }
-});
+            console.info(
+              `Indexing tiles for ${type} from airtable ${tileInfo.table} done`
+            );
+        })
+        .catch(
+          (e) =>
+            debug &&
+            console.error(
+              `Indexing tiles for ${type} from airtable ${tileInfo.table} failed`,
+              e
+            )
+        );
+    }
+  });
+};
 
+cacheAirtableTiles();
 const getTiles = async (type: DataType, x: number, y: number, z: number) => {
   const tileInfo = tilesInfo[type];
   if (tileInfo.source === 'database') {
@@ -93,15 +96,23 @@ const getTiles = async (type: DataType, x: number, y: number, z: number) => {
 
     return result?.tile;
   }
-  const tiles = allTiles[type];
+
+  if (airtableDayCached !== new Date().getDate()) {
+    cacheAirtableTiles();
+  }
+
+  const tiles = airtableTiles[type];
   if (!tiles) {
     return null;
   }
 
   const tile = tiles.getTile(z, x, y);
-  return Buffer.from(
-    vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })
-  );
+
+  return tile
+    ? Buffer.from(
+        vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })
+      )
+    : null;
 };
 
 export default getTiles;
