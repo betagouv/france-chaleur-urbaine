@@ -3,23 +3,12 @@ import { Select, Table, TextInput } from '@dataesr/react-dsfr';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useServices } from 'src/services';
+import { demandRowsParams } from 'src/services/demandsService';
 import { Demand } from 'src/types/Summary/Demand';
 import { Filters, NoResult } from './manager.style';
 
 const columns = [
-  {
-    name: 'Nom',
-    label: 'Nom',
-    render: (demands: Demand) =>
-      `${demands.Nom}${demands.Prénom ? ` ${demands.Prénom}` : ''}`,
-  },
-  { name: 'Structure', label: 'Structure' },
-  { name: 'Établissement', label: 'Établissement' },
-  { name: 'Mail', label: 'Email' },
-  { name: 'Adresse', label: 'Adresse' },
-  { name: 'Distance au réseau', label: 'Distance au réseau' },
-  { name: 'Type de chauffage', label: 'Type de chauffage' },
-  { name: 'Mode de chauffage', label: 'Mode de chauffage' },
+  ...demandRowsParams,
   {
     name: 'view-more',
     label: 'Voir plus',
