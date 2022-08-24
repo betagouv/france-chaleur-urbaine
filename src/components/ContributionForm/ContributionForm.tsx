@@ -1,5 +1,21 @@
-import { Button, Radio, RadioGroup, TextInput } from '@dataesr/react-dsfr';
-import { FormEvent, useState } from 'react';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  Radio,
+  RadioGroup,
+  TextInput,
+} from '@dataesr/react-dsfr';
+import { ChangeEvent, FormEvent, useState } from 'react';
+
+const additionWishValues = [
+  'Tracé du réseau',
+  'Périmètre de la zone de développement prioritaire',
+  "Tracé d'une extension prévue du réseau",
+  'Informations tarifaires',
+  'autre',
+];
 
 const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
   const [email, setEmail] = useState('');
@@ -7,20 +23,38 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
   const [otherUser, setOtherUser] = useState('');
   const [network, setNetwork] = useState('');
   const [wish, setWish] = useState('');
-  const [additionWish, setAdditionWish] = useState('');
+  const [additionWish, setAdditionWish] = useState<string[]>([]);
   const [otherAdditionWish, setOtherAdditionWish] = useState('');
+  const [additionWishEmpty, setAdditionWishEmpty] = useState(false);
   const [otherWish, setOtherWish] = useState('');
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (additionWish.length === 0) {
+      setAdditionWishEmpty(true);
+      return;
+    }
+    setAdditionWishEmpty(false);
     submit({
       Email: email,
       Utilisateur: user === 'autre' ? otherUser : user,
       'Réseau(x)': network,
       Souhait: wish,
-      'Ajout de': additionWish === 'autre' ? otherAdditionWish : additionWish,
+      'Ajout de': additionWish
+        .map((value) =>
+          value === 'autre' ? `Autre : ${otherAdditionWish}` : value
+        )
+        .join(', '),
       Précisions: otherWish,
     });
+  };
+
+  const handleClickAdditionWish = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.checked) {
+      setAdditionWish(additionWish.filter((value) => value !== e.target.name));
+    } else {
+      setAdditionWish(Array.from(new Set([...additionWish, e.target.name])));
+    }
   };
 
   return (
@@ -83,30 +117,19 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
       </RadioGroup>
       {wish === 'Ajout de données' && (
         <>
-          <RadioGroup
-            legend="Vous voulez ajouter"
-            name="additionWish"
-            isInline
-            required
-            value={additionWish}
-            onChange={setAdditionWish}
-          >
-            <Radio label="tracé du réseau" value="Tracé du réseau" />
-            <Radio
-              label="périmètre de la zone de développement prioritaire"
-              value="Périmètre de la zone de développement prioritaire"
-            />
-            <Radio
-              label="tracé d'une extension prévue du réseau"
-              value="Tracé d'une extension prévue du réseau"
-            />
-            <Radio
-              label="informations tarifaires"
-              value="Informations tarifaires"
-            />
-            <Radio label="autre" value="autre" />
-          </RadioGroup>
-          {additionWish === 'autre' && (
+          <CheckboxGroup legend="Vous voulez ajouter" isInline required>
+            {additionWishValues.map((value) => (
+              <Checkbox
+                key={value}
+                label={value}
+                id={value}
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore: Create proper type
+                onClick={handleClickAdditionWish}
+              />
+            ))}
+          </CheckboxGroup>
+          {additionWish.includes('autre') && (
             <TextInput
               label="Precisez"
               required
@@ -123,6 +146,14 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
           value={otherWish}
           onChange={(e) => setOtherWish(e.target.value)}
         />
+      )}
+      {additionWishEmpty && (
+        <p>
+          <Alert
+            type="error"
+            title={'Merci de selectionner le type d’ajout.'}
+          />
+        </p>
       )}
       <Button submit>Suivant</Button>
     </form>

@@ -17,7 +17,7 @@ const results: Record<string, ResultType> = {
     type: 'success',
     title: 'Nous vous remercions pour votre contribution.',
     description:
-      'Si vous avez indiqué souhaiter ajouter des données, vous recevrez très prochainement un lien par mail pour les télécharger.',
+      'Si vous avez indiqué souhaiter ajouter des données, nous vous avons envoyé un lien par mail pour les télécharger.',
   },
   error: {
     type: 'error',
