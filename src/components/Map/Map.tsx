@@ -109,7 +109,7 @@ const formatBodyPopup = ({
     dpe_ges: dpe_ges_energy,
   } = energy || {};
   const {
-    adresse: addr_label_consommation,
+    result_lab: addr_label_consommation,
     code_grand,
     conso_nb,
   } = consommation || {};

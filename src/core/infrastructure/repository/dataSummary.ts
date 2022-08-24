@@ -101,7 +101,7 @@ const exportGasSummary = async (
   coordinates: number[][]
 ): Promise<GasSummary[]> =>
   db('Donnees_de_conso_et_pdl_gaz_nat_2020')
-    .select('adresse', 'code_grand', 'conso_nb', 'pdl_nb')
+    .select('result_lab', 'code_grand', 'conso_nb', 'pdl_nb')
     .where(db.raw(getWithinQuery(coordinates, 'geom')));
 
 const exportEnergyGasSummary = async (
