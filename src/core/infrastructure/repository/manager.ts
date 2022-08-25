@@ -1,5 +1,6 @@
 import db from 'src/db';
 import base from 'src/db/airtable';
+import { Demand } from 'src/types/Summary/Demand';
 
 export const getGestionnaire = (addresse: string): string | null => {
   if (addresse && addresse.includes('Paris')) {
@@ -9,7 +10,7 @@ export const getGestionnaire = (addresse: string): string | null => {
   return null;
 };
 
-export const getDemands = async (email: string) => {
+export const getDemands = async (email: string): Promise<Demand[]> => {
   const user = await db('users')
     .select(['gestionnaire'])
     .where({ email })
@@ -26,5 +27,5 @@ export const getDemands = async (email: string) => {
     })
     .all();
 
-  return results.map((result) => result.fields);
+  return results.map((result) => result.fields as Demand);
 };
