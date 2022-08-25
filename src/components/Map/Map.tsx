@@ -7,7 +7,6 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Point } from 'src/types/Point';
-import { BuildingSummary } from 'src/types/Summary/Building';
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
@@ -59,7 +58,7 @@ const formatBodyPopup = ({
   demands,
   energy,
 }: {
-  buildings?: BuildingSummary;
+  buildings?: EnergySummary;
   consommation?: GasSummary;
   energy?: EnergySummary;
   demands?: DemandSummary;
@@ -91,45 +90,24 @@ const formatBodyPopup = ({
   };
 
   const {
-    nb_logements: nb_logements_buildings,
-    annee_construction: annee_construction_buildings,
+    nb_logements,
+    annee_construction,
     type_usage,
-    energie_utilisee: energie_utilisee_buildings,
+    energie_utilisee,
     type_chauffage: type_chauffage_buildings,
     addr_label: addr_label_buildings,
-    dpe_energie: dpe_energie_buildings,
-    dpe_ges: dpe_ges_buildings,
-  } = buildings || {};
-  const {
-    addr_label: addr_label_energy,
-    nb_logements: nb_logements_energy,
-    annee_construction: annee_construction_energy,
-    energie_utilisee: energie_utilisee_energy,
-    dpe_energie: dpe_energie_energy,
-    dpe_ges: dpe_ges_energy,
-  } = energy || {};
-  const {
-    result_lab: addr_label_consommation,
-    code_grand,
-    conso_nb,
-  } = consommation || {};
+    dpe_energie,
+    dpe_ges,
+  } = buildings || energy || {};
+  const { adresse, nom_commun, code_grand, conso_nb } = consommation || {};
+  const addr_label_consommation = `${adresse} ${nom_commun}`;
   const {
     Adresse: addr_label_demands,
     'Mode de chauffage': type_chauffage_demands,
   } = demands || {};
 
   const textAddress =
-    addr_label_buildings ||
-    addr_label_energy ||
-    addr_label_consommation ||
-    addr_label_demands;
-  const nb_logements = nb_logements_buildings || nb_logements_energy;
-  const annee_construction =
-    annee_construction_buildings || annee_construction_energy;
-  const energie_utilisee =
-    energie_utilisee_buildings || energie_utilisee_energy;
-  const dpe_energie = dpe_energie_buildings || dpe_energie_energy;
-  const dpe_ges = dpe_ges_buildings || dpe_ges_energy;
+    addr_label_buildings || addr_label_consommation || addr_label_demands;
   const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
   const bodyPopup = `
     ${
@@ -147,8 +125,6 @@ const formatBodyPopup = ({
               ? `<strong><u></u>${writeTypeConso(
                   code_grand
                 )}</u></strong><br />`
-              : energy
-              ? '<strong><u>Copropriété</u></strong><br />'
               : ''
           }
           ${
@@ -174,16 +150,16 @@ const formatBodyPopup = ({
               : ''
           }
           ${
+            type_chauffage
+              ? `<strong>Mode de chauffage&nbsp;:</strong> ${type_chauffage}<br />`
+              : ''
+          }
+          ${
             conso_nb &&
             (!energie_utilisee || objTypeEnergy?.gas.includes(energie_utilisee))
               ? `<strong>Consommations de gaz&nbsp;:</strong> ${conso_nb.toFixed(
                   2
                 )}&nbsp;MWh<br />`
-              : ''
-          }
-          ${
-            type_chauffage
-              ? `<strong>Mode de chauffage&nbsp;:</strong> ${type_chauffage}<br />`
               : ''
           }
           ${
