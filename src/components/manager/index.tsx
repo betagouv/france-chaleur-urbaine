@@ -91,16 +91,14 @@ const Manager = () => {
     if (filterModeChauffage) {
       tempDemands = tempDemands.filter(
         (demand) =>
-          demand['Mode de chauffage'] &&
-          demand['Mode de chauffage'].toLowerCase() === filterModeChauffage
+          demand['Mode de chauffage']?.toLowerCase() === filterModeChauffage
       );
     }
 
     if (filterTypeChauffage) {
       tempDemands = tempDemands.filter(
         (demand) =>
-          demand['Type de chauffage'] &&
-          demand['Type de chauffage'].toLowerCase() === filterTypeChauffage
+          demand['Type de chauffage']?.toLowerCase() === filterTypeChauffage
       );
     }
 
