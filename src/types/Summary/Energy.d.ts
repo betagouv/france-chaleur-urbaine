@@ -9,4 +9,6 @@ export interface EnergySummary {
   nb_logements: number;
   annee_construction?: string;
   is_close: boolean;
+  type_usage: string;
+  type_chauffage: string;
 }

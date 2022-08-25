@@ -36,8 +36,9 @@ const dbTable = (
       table,
       db.raw(
         `${preTable[table]}${
-          limitRowIDMin &&
-          `AND rowid BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}`
+          limitRowIDMin
+            ? `AND rowid BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}`
+            : ''
         }`
       )
     );

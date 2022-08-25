@@ -7,8 +7,18 @@ import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Summary } from 'src/types/Summary';
+import { GasSummary } from 'src/types/Summary/Gas';
 import ZoneInfo from './ZoneInfo';
 import { Container, Export, ZoneInfosWrapper } from './ZoneInfos.style';
+
+const getConso = (consos: GasSummary[]) => {
+  const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
+  if (sum > 1000) {
+    return `${(sum / 1000).toFixed(2)} GWh`;
+  }
+
+  return `${sum.toFixed(2)} MWh`;
+};
 
 const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   const { heatNetworkService } = useServices();
@@ -128,21 +138,11 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
               values={[
                 {
                   label: 'Total',
-                  value: `${(
-                    summary.gas.reduce(
-                      (acc, current) => acc + +current.conso_nb,
-                      0
-                    ) / 1000
-                  ).toFixed(2)} GWh`,
+                  value: getConso(summary.gas),
                 },
                 {
                   label: 'Proche réseau (<50 m)',
-                  value: `${(
-                    summary.gas
-                      .filter((gas) => gas.is_close)
-                      .reduce((acc, current) => acc + +current.conso_nb, 0) /
-                    1000
-                  ).toFixed(2)} GWh`,
+                  value: getConso(summary.gas.filter((gas) => gas.is_close)),
                 },
               ]}
             />
