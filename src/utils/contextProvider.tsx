@@ -5,6 +5,7 @@ import {
   ServicesContext,
   SuggestionService,
 } from 'src/services';
+import { DemandsService } from 'src/services/demandsService';
 import { FakeHttpClient } from './fakeHttpClient';
 
 export const customRender = (
@@ -16,6 +17,7 @@ export const customRender = (
       value={{
         suggestionService: new SuggestionService(FakeHttpClient),
         heatNetworkService: new HeatNetworkService(FakeHttpClient),
+        demandsService: new DemandsService(FakeHttpClient),
         ...overrideProps,
       }}
     >
@@ -25,12 +27,16 @@ export const customRender = (
   );
 };
 export const customRenderHook = (hook: any, overrideProps?: any) => {
-  const Wrapper: React.FC = ({ children, ...overrideProps }) => {
+  const Wrapper: React.FC<{
+    children: React.ReactNode;
+    overrideProps: any;
+  }> = ({ children, ...overrideProps }) => {
     return (
       <ServicesContext.Provider
         value={{
           suggestionService: new SuggestionService(FakeHttpClient),
           heatNetworkService: new HeatNetworkService(FakeHttpClient),
+          demandsService: new DemandsService(FakeHttpClient),
           ...overrideProps,
         }}
       >

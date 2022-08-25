@@ -1,11 +1,11 @@
 import React from 'react';
-import { themeDefEnergy } from '../businessRules';
+import { themeDefEnergy } from 'src/services/Map/businessRules';
+import DPELegend from './DPELegend';
 import ScaleLegend from './ScaleLegend';
 
 const LegendDesc: Record<string, () => React.ReactElement> = {
   Energy: () => (
     <ScaleLegend
-      framed
       label="Nombre de lots d'habitation"
       color={themeDefEnergy.gas.color}
       scaleLabels={[
@@ -17,7 +17,6 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
   ),
   EnergyGas: () => (
     <ScaleLegend
-      framed
       label="Nombre de lots d'habitation"
       color={`${themeDefEnergy.gas.color}88`}
       scaleLabels={[
@@ -29,7 +28,6 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
   ),
   EnergyFuel: () => (
     <ScaleLegend
-      framed
       label="Nombre de lots d'habitation"
       color={`${themeDefEnergy.fuelOil.color}88`}
       scaleLabels={[
@@ -41,9 +39,8 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
   ),
   GasUsage: () => (
     <ScaleLegend
-      framed
       circle
-      label="Niveau de consomation de gaz (MWh)"
+      label="Niveau de consommation de gaz (MWh)"
       color="#D9D9D9"
       scaleLabels={[
         { label: '<\u00a0100', size: 0.8 },
@@ -52,6 +49,7 @@ const LegendDesc: Record<string, () => React.ReactElement> = {
       ]}
     />
   ),
+  DPE: () => <DPELegend />,
 };
 
 export default LegendDesc;

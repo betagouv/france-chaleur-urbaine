@@ -4,7 +4,7 @@ import {
   CallOutBody,
   CallOutTitle,
 } from '@components/shared/callOut/CallOut';
-import { isIDF } from '@helpers';
+import { isBasedOnIRIS } from '@helpers/address';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -34,14 +34,14 @@ const EligibilityFormMessageConfirmation = ({
     return coords && [...coords].reverse();
   }, [addressData]);
 
-  const isIDFAddress = useMemo(() => {
-    const { postcode: postCode } = addressData?.geoAddress?.properties || {};
-    return postCode && isIDF(postCode);
+  const isIRISAddress = useMemo(() => {
+    const { postcode, city } = addressData?.geoAddress?.properties || {};
+    return isBasedOnIRIS(postcode, city);
   }, [addressData]);
 
   const linkToMap =
     addressCoords &&
-    (isIDFAddress
+    (!isIRISAddress
       ? `./carte/?coord=${addressCoords}&zoom=15`
       : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
 

@@ -6,21 +6,21 @@ export interface Coords {
 }
 export interface AddressFields extends Coords {
   cityCode: string;
+  city: string;
   label: string;
   irisCode: string;
 }
+
 export abstract class Address {
   constructor(
     public lat: number,
     public lon: number,
     public label: string,
+    public city: string,
     public cityCode: string,
     public irisCode: string
   ) {}
+
   abstract isEligibleWith(network: Network): boolean;
-  abstract get isIDF(): boolean;
-  static isInIDF(cityCode: string) {
-    const idfCityCodePrefix: number[] = [75, 77, 78, 91, 92, 93, 94, 95];
-    return idfCityCodePrefix.includes(Number(cityCode.slice(0, 2)));
-  }
+  abstract get isBasedOnIRIS(): boolean;
 }

@@ -1,4 +1,4 @@
-import { HeatNetworksResponse } from 'src/types';
+import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 
 export const someNearHeatNetwork = (): HeatNetworksResponse => ({
   lat: 48.867762,

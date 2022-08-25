@@ -1,9 +1,22 @@
+import { Icon } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Point } from 'src/types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Point } from 'src/types/Point';
+import { DemandSummary } from 'src/types/Summary/Demand';
+import { EnergySummary } from 'src/types/Summary/Energy';
+import { GasSummary } from 'src/types/Summary/Gas';
+import mapParam, {
+  EnergyNameOption,
+  gasUsageNameOption,
+  LayerNameOption,
+  layerNameOptions,
+  TypeLayerDisplay,
+} from '../../services/Map/param';
 import {
   CardSearchDetails,
   MapLegend,
@@ -11,19 +24,21 @@ import {
   TypeAddressDetail,
   TypeHandleAddressSelect,
 } from './components';
+import ZoneInfos from './components/ZoneInfos';
 import { useMapPopup } from './hooks';
-import mapParam, { TypeLayerDisplay } from './Map.param';
 import {
-  AddButton,
-  boilerRoomLayerStyle,
+  buildingsLayerStyle,
+  CollapseLegend,
+  demandsLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
+  Legend,
+  LegendSeparator,
   MapControlWrapper,
-  MapSearchResult,
   MapStyle,
   objTypeEnergy,
   outlineLayerStyle,
-  substationLayerStyle,
+  zoneDPLayerStyle,
 } from './Map.style';
 
 const {
@@ -37,96 +52,124 @@ const {
   legendData,
 } = mapParam;
 
-const layerNameOptions = ['outline', 'substation', 'boilerRoom'] as const;
-const energyNameOptions = ['fuelOil', 'gas'] as const;
-const gasUsageNameOptions = ['R', 'T'] as const;
-
-type LayerNameOption = typeof layerNameOptions[number];
-type EnergyNameOption = typeof energyNameOptions[number];
-type gasUsageNameOption = typeof gasUsageNameOptions[number];
-
-const DEBUG = true;
-
-const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
-
 const formatBodyPopup = ({
-  coordinates,
+  buildings,
   consommation,
+  demands,
   energy,
 }: {
-  coordinates: any;
-  consommation?: Record<string, any>;
-  energy?: Record<string, any>;
-  id: string;
+  buildings?: EnergySummary;
+  consommation?: GasSummary;
+  energy?: EnergySummary;
+  demands?: DemandSummary;
 }) => {
-  const textAddress =
-    consommation?.result_label ?? energy?.adresse_reference ?? null;
-
   const writeTypeConso = (typeConso: string | unknown) => {
     switch (typeConso) {
       case 'R': {
-        return 'Logement residentiel';
+        return 'Logement';
       }
       case 'T': {
         return 'Établissement tertiaire';
+      }
+      case 'I': {
+        return 'Industrie';
       }
     }
     return '';
   };
 
-  const formatBddText = (str?: string) =>
-    str && str.replace(/_/g, ' ').toLowerCase();
+  const formatBddText = (str?: string) => {
+    return (
+      str &&
+      str
+        .replace(/_/g, ' ')
+        .toLowerCase()
+        .replace(/electricite/g, 'électricité')
+        .replace(/reseau/g, 'réseau')
+    );
+  };
 
   const {
-    nb_lot_habitation_bureau_commerce,
+    nb_logements,
+    annee_construction,
+    type_usage,
     energie_utilisee,
-    periode_construction,
-  } = energy || {};
-  const { code_grand_secteur, conso } = consommation || {};
+    type_chauffage: type_chauffage_buildings,
+    addr_label: addr_label_buildings,
+    dpe_energie,
+    dpe_ges,
+  } = buildings || energy || {};
+  const { adresse, nom_commun, code_grand, conso_nb } = consommation || {};
+  const addr_label_consommation = `${adresse} ${nom_commun}`;
+  const {
+    Adresse: addr_label_demands,
+    'Mode de chauffage': type_chauffage_demands,
+  } = demands || {};
 
+  const textAddress =
+    addr_label_buildings || addr_label_consommation || addr_label_demands;
+  const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
   const bodyPopup = `
     ${
       textAddress
         ? `
           <header>
             <h6>${textAddress}</h6>
-            <em class="coord">Lat, Lon : ${[...coordinates]
-              .reverse()
-              .map((point: number) => point.toFixed(5))
-              .join(',')}</em>
           </header>`
         : ''
     }
     ${`
         <section>
           ${
-            code_grand_secteur
-              ? `<strong>${writeTypeConso(code_grand_secteur)}</strong><br />`
-              : energy
-              ? '<strong>Copropriété</strong><br />'
+            code_grand
+              ? `<strong><u></u>${writeTypeConso(
+                  code_grand
+                )}</u></strong><br />`
               : ''
           }
           ${
-            nb_lot_habitation_bureau_commerce
-              ? `Nombre de lots : ${nb_lot_habitation_bureau_commerce}<br />`
+            annee_construction
+              ? `<strong>Année de construction&nbsp;:</strong> ${annee_construction}<br />`
+              : ''
+          }
+          ${
+            type_usage
+              ? `<strong>Usage&nbsp;:</strong> ${type_usage}<br />`
+              : ''
+          }
+          ${
+            nb_logements
+              ? `<strong>Nombre de logements&nbsp;:</strong> ${nb_logements}<br />`
               : ''
           }
           ${
             energie_utilisee
-              ? `Chauffage actuel :  ${formatBddText(energie_utilisee)}<br />`
-              : ''
-          }
-          ${
-            conso &&
-            (!energie_utilisee || objTypeEnergy?.gas.includes(energie_utilisee))
-              ? `Consommations de gaz :  ${conso?.toFixed(2)}&nbsp;MWh<br />`
-              : ''
-          }
-          ${
-            periode_construction
-              ? `Période de construction : ${formatBddText(
-                  periode_construction
+              ? `<strong>Chauffage actuel&nbsp;:</strong> ${formatBddText(
+                  energie_utilisee
                 )}<br />`
+              : ''
+          }
+          ${
+            type_chauffage
+              ? `<strong>Mode de chauffage&nbsp;:</strong> ${type_chauffage}<br />`
+              : ''
+          }
+          ${
+            conso_nb &&
+            (!energie_utilisee || objTypeEnergy?.gas.includes(energie_utilisee))
+              ? `<strong>Consommations de gaz&nbsp;:</strong> ${conso_nb.toFixed(
+                  2
+                )}&nbsp;MWh<br />`
+              : ''
+          }
+          ${
+            dpe_energie
+              ? `<strong>DPE consommations énergétiques&nbsp;:</strong> ${dpe_energie}<br />`
+              : ''
+          }
+          ${
+            dpe_ges
+              ? `<strong>DPE émissions de gaz à effet de serre&nbsp;:</strong> ${dpe_ges}<br />`
               : ''
           }
         </section>
@@ -135,19 +178,33 @@ const formatBodyPopup = ({
   return bodyPopup;
 };
 
+const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
+
 export default function Map() {
   const mapContainer: null | { current: any } = useRef(null);
   const map: null | { current: any } = useRef(null);
+  const draw: null | { current: any } = useRef(null);
+
+  const [legendCollapsed, setLegendCollapsed] = useState(false);
+  useEffect(() => {
+    if (map && map.current) {
+      map.current.resize();
+    }
+  }, [map, legendCollapsed]);
 
   const [mapState, setMapState] = useState('pending');
-  const [layerDisplay, setLayerDisplay]: [
-    TypeLayerDisplay,
-    React.Dispatch<any | never[]>
-  ] = useState(defaultLayerDisplay);
+  const [layerDisplay, setLayerDisplay] =
+    useState<TypeLayerDisplay>(defaultLayerDisplay);
 
   const [soughtAddress, setSoughtAddress] = usePersistedState(
     'mapSoughtAddress',
-    [],
+    [] as {
+      id: string;
+      coordinates: Point;
+      address: string;
+      addressDetails: TypeAddressDetail;
+      search: { date: number };
+    }[],
     {
       beforeStorage: (value: any) => {
         const newValue = value.map((address: any) => {
@@ -172,43 +229,45 @@ export default function Map() {
     });
   }, []);
 
-  const logSoughtAddress = useCallback(() => {
-    console.info('State of: soughtAddress =>', soughtAddress);
-  }, [soughtAddress]);
-
-  const onAddressSelectHandle:
-    | TypeHandleAddressSelect
-    | { _coordinates: Point } = useCallback(
-    (address, _coordinates, addressDetails) => {
-      const coordinates: Point = [_coordinates[1], _coordinates[0]]; // TODO: Fix on source
+  const onAddressSelectHandle: TypeHandleAddressSelect = useCallback(
+    (
+      address: string,
+      coordinates: Point,
+      addressDetails: TypeAddressDetail
+    ) => {
+      const computedCoordinates: Point = [coordinates[1], coordinates[0]]; // TODO: Fix on source
       const search = {
         date: Date.now(),
       };
-      const id = getAddressId(coordinates);
-      if (!Array.isArray(soughtAddress)) return;
+      const id = getAddressId(computedCoordinates);
+      if (!Array.isArray(soughtAddress)) {
+        return;
+      }
+
       const newAddress = soughtAddress.find(
-        ({ id: soughtAddressId }: { id: string }) => soughtAddressId === id
+        ({ id: soughtAddressId }) => soughtAddressId === id
       ) || {
         id,
-        coordinates,
+        coordinates: computedCoordinates,
         address,
         addressDetails,
         search,
       };
       setSoughtAddress([
-        ...soughtAddress.filter(
-          ({ id: _id }: { id: string }) => `${_id}` !== id
-        ),
+        ...soughtAddress.filter(({ id: _id }) => `${_id}` !== id),
         newAddress,
       ]);
-      flyTo({ coordinates });
+      flyTo({ coordinates: computedCoordinates });
     },
     [flyTo, setSoughtAddress, soughtAddress]
   );
 
   const removeSoughtAddress = useCallback(
     (result: { marker?: any; coordinates?: Point }) => {
-      if (!result.coordinates) return;
+      if (!result.coordinates) {
+        return;
+      }
+
       const id = getAddressId(result.coordinates);
       const getCurrentSoughtAddress = ({
         coordinates,
@@ -276,6 +335,10 @@ export default function Map() {
   useEffect(() => {
     if (mapState === 'loaded' || map.current) return;
 
+    draw.current = new MapboxDraw({
+      displayControlsDefault: false,
+    });
+
     map.current = new maplibregl.Map({
       attributionControl: false,
       container: mapContainer.current,
@@ -285,12 +348,8 @@ export default function Map() {
       maxZoom,
       minZoom,
     });
-    map.current.on('click', () => {
-      if (DEBUG) {
-        console.info('zoom =>', map.current.getZoom());
-        logSoughtAddress();
-      }
-    });
+
+    map.current.addControl(draw.current);
 
     map.current.on('load', () => {
       map.current.loadImage(
@@ -329,6 +388,35 @@ export default function Map() {
           const origin =
             process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
 
+          // -----------------
+          // --- Demands ---
+          // -----------------
+          map.current.addSource('demands', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+          });
+
+          map.current.addLayer({
+            id: 'demands',
+            source: 'demands',
+            'source-layer': 'demands',
+            ...demandsLayerStyle,
+          });
+
+          map.current.on('click', 'demands', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { demands: properties });
+          });
+
+          map.current.on('mouseenter', 'demands', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'demands', function () {
+            map.current.getCanvas().style.cursor = '';
+          });
+
           // --------------------
           // --- Heat Network ---
           // --------------------
@@ -343,47 +431,51 @@ export default function Map() {
             'source-layer': 'outline',
             ...outlineLayerStyle,
           });
-          map.current.addLayer({
-            id: 'substation',
-            source: 'heatNetwork',
-            'source-layer': 'substation',
-            ...substationLayerStyle,
-          });
-          map.current.addLayer({
-            id: 'boilerRoom',
-            source: 'heatNetwork',
-            'source-layer': 'boilerRoom',
-            ...boilerRoomLayerStyle,
+
+          // ---------------
+          // --- Zone DP ---
+          // ---------------
+          map.current.addSource('zoneDP', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
           });
 
-          // --------------
-          // --- Energy ---
-          // --------------
-          map.current.addSource('energy', {
+          map.current.addLayer({
+            id: 'zoneDP',
+            source: 'zoneDP',
+            'source-layer': 'zoneDP',
+            ...zoneDPLayerStyle,
+          });
+
+          // -----------------
+          // --- Buildings ---
+          // -----------------
+          map.current.addSource('buildings', {
             type: 'vector',
-            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
+            tiles: [`${origin}/api/map/buildings/{z}/{x}/{y}`],
             maxzoom: maxZoom,
             minzoom: minZoomData,
           });
 
           map.current.addLayer({
-            id: 'energy',
-            source: 'energy',
-            'source-layer': 'condominiumRegister',
-            ...energyLayerStyle,
+            id: 'buildings',
+            source: 'buildings',
+            'source-layer': 'buildings',
+            ...buildingsLayerStyle,
           });
 
-          map.current.on('click', 'energy', (e: any) => {
+          map.current.on('click', 'buildings', (e: any) => {
             const properties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            updateClickedPoint(coordinates, { energy: properties });
+            const { lat, lng } = e.lngLat;
+            const coordinates = [lng, lat];
+            updateClickedPoint(coordinates, { buildings: properties });
           });
 
-          map.current.on('mouseenter', 'energy', function () {
+          map.current.on('mouseenter', 'buildings', function () {
             map.current.getCanvas().style.cursor = 'pointer';
           });
 
-          map.current.on('mouseleave', 'energy', function () {
+          map.current.on('mouseleave', 'buildings', function () {
             map.current.getCanvas().style.cursor = '';
           });
 
@@ -417,6 +509,37 @@ export default function Map() {
           map.current.on('mouseleave', 'gasUsage', function () {
             map.current.getCanvas().style.cursor = '';
           });
+
+          // --------------
+          // --- Energy ---
+          // --------------
+          map.current.addSource('energy', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          });
+
+          map.current.addLayer({
+            id: 'energy',
+            source: 'energy',
+            'source-layer': 'energy',
+            ...energyLayerStyle,
+          });
+
+          map.current.on('click', 'energy', (e: any) => {
+            const properties = e.features[0].properties;
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            updateClickedPoint(coordinates, { energy: properties });
+          });
+
+          map.current.on('mouseenter', 'energy', function () {
+            map.current.getCanvas().style.cursor = 'pointer';
+          });
+
+          map.current.on('mouseleave', 'energy', function () {
+            map.current.getCanvas().style.cursor = '';
+          });
         }
       );
     });
@@ -437,6 +560,7 @@ export default function Map() {
               .map((point: string) => parseFloat(point))
               .reverse()
           : coord; // TODO: Fix on source
+
       flyTo({ coordinates });
       setQueryState(router.query);
       new maplibregl.Marker({
@@ -475,9 +599,10 @@ export default function Map() {
   // --- Update Filter ---
   // ---------------------
   useEffect(() => {
-    if (mapState === 'pending') return;
+    if (mapState === 'pending') {
+      return;
+    }
 
-    // HeatNetwork
     layerNameOptions.forEach((layerId) =>
       map.current.getLayer(layerId)
         ? map.current.setLayoutProperty(
@@ -500,7 +625,7 @@ export default function Map() {
     map.current.setFilter('energy', ['any', ...energyFilter]);
 
     // GasUsage
-    const TYPE_GAS = 'code_grand_secteur';
+    const TYPE_GAS = 'code_grand';
     const gasUsageFilter = layerDisplay.gasUsage.map((gasUsageName) => [
       '==',
       ['get', TYPE_GAS],
@@ -514,12 +639,24 @@ export default function Map() {
 
   return (
     <>
-      <MapStyle />
+      <MapStyle legendCollapsed={legendCollapsed} />
       <div className="map-wrap">
-        <MapControlWrapper className="search-result-box" right top>
-          <MapSearchResult>
-            {soughtAddress.length > 0 &&
-              soughtAddress
+        <CollapseLegend
+          legendCollapsed={legendCollapsed}
+          onClick={() => setLegendCollapsed(!legendCollapsed)}
+        >
+          <Icon
+            name={
+              legendCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line'
+            }
+          />
+        </CollapseLegend>
+        <Legend legendCollapsed={legendCollapsed}>
+          <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+          <LegendSeparator />
+          {soughtAddress.length > 0 && (
+            <>
+              {soughtAddress
                 .map((adressDetails: TypeAddressDetail, i: number) => (
                   <CardSearchDetails
                     key={`${adressDetails.address}-${i}`}
@@ -529,10 +666,9 @@ export default function Map() {
                   />
                 ))
                 .reverse()}
-          </MapSearchResult>
-        </MapControlWrapper>
-
-        <MapControlWrapper right bottom>
+              <LegendSeparator />
+            </>
+          )}
           <MapLegend
             data={legendData}
             onToogleFeature={toggleLayer}
@@ -543,7 +679,7 @@ export default function Map() {
                   break;
                 }
                 case 'gasUsage': {
-                  toogleGasUsageVisibility(idEntry as 'R' | 'T');
+                  toogleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
                   break;
                 }
                 case 'gasUsageGroup': {
@@ -553,23 +689,11 @@ export default function Map() {
               }
             }}
             layerDisplay={layerDisplay}
-            hasResults={soughtAddress.length > 0}
           />
+        </Legend>
+        <MapControlWrapper legendCollapsed={legendCollapsed}>
+          <ZoneInfos map={map.current} draw={draw.current} />
         </MapControlWrapper>
-
-        <MapControlWrapper right top>
-          <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-        </MapControlWrapper>
-
-        <MapControlWrapper bottom right>
-          <AddButton
-            icon="ri-add-line"
-            onClick={() => router.push('/contribution')}
-          >
-            Contribuer
-          </AddButton>
-        </MapControlWrapper>
-
         <div ref={mapContainer} className="map" />
       </div>
     </>

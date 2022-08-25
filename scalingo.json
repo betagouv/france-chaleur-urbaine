@@ -1,9 +1,17 @@
 {
   "name": "fcu",
+  "scripts": {
+    "postdeploy": "yarn db:migrate"
+  },
   "formation": {
     "web": {
       "amount": 1,
-      "size": "2XL"
+      "size": "S"
     }
-  }
+  },
+  "addons": [
+    {
+      "plan": "postgresql:postgresql-sandbox"
+    }
+  ]
 }

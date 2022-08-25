@@ -1,6 +1,8 @@
 import React from 'react';
 
-const ConsentBanner: React.FC = ({ children }) => (
+const ConsentBanner: React.FC<{
+  children?: React.ReactNode;
+}> = ({ children }) => (
   <>
     <link rel="stylesheet" href="./css/dsfr-theme-tac.min.css" />
     <script src="./js/tarteaucitron.js-1.9.5/tarteaucitron.js"></script>

@@ -25,13 +25,10 @@ import {
 const numberToString = (num: number, precision = 0) =>
   `${parseFloat(num.toFixed(precision))}`.replace('.', ',');
 
-function SimulatorCO2({
-  children,
-  typeSurf,
-}: {
+const SimulatorCO2: React.FC<{
   children?: React.ReactNode;
   typeSurf: any;
-}) {
+}> = ({ children, typeSurf }) => {
   const [conso, setConso] = useState(0);
   const [surf, setSurf] = useState(0);
   const [log, setLog] = useState(0);
@@ -160,6 +157,6 @@ function SimulatorCO2({
       {children && <ContainerBody>{children}</ContainerBody>}
     </Container>
   );
-}
+};
 
 export default SimulatorCO2;

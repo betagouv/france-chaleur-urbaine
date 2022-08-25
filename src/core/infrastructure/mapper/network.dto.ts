@@ -12,7 +12,7 @@ export type NetworkIrisResponse = {
   annee: number;
   code: any;
   filiere: string;
-  code_grand_secteur: string;
+  code_grand: string;
   conso: string | number;
   pdl: any;
   code__1: any;

@@ -1,10 +1,7 @@
 import { Combobox, ComboboxPopover } from '@reach/combobox';
 import { useCallback, useMemo } from 'react';
-import {
-  Point,
-  SuggestionItem,
-  Suggestions as SuggestionsType,
-} from 'src/types';
+import { Point } from 'src/types/Point';
+import { SuggestionItem } from 'src/types/Suggestions';
 import AddressAutocompleteGlobalStyle, {
   EmptySuggestion,
 } from './AddressAutocomplete.style';
@@ -40,7 +37,7 @@ type AddressProps = {
 
 const findAddressInSuggestions = (
   address: string,
-  suggestions: SuggestionsType | []
+  suggestions: SuggestionItem[]
 ): SuggestionItem | undefined => {
   const suggestion = suggestions.find(
     (item) => item.properties.label === address
@@ -67,7 +64,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
     minCharactersLength,
   });
   const handleSelect = useCallback(
-    (address: string, suggestions: SuggestionsType | []) => {
+    (address: string, suggestions: SuggestionItem[]) => {
       const geoAddress = findAddressInSuggestions(address, suggestions);
       const coords = geoAddress?.geometry.coordinates || [0, 0];
       onAddressSelected(address, coords, geoAddress);

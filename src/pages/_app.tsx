@@ -1,7 +1,7 @@
-import { fetchHttpClient } from '@components/lib';
 import { LayoutProvider, MainLayout } from '@components/shared/layout';
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 import '@reach/combobox/styles.css';
+import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import {
@@ -9,6 +9,8 @@ import {
   ServicesContext,
   SuggestionService,
 } from 'src/services';
+import { DemandsService } from 'src/services/demandsService';
+import { axiosHttpClient } from 'src/services/http';
 import { createGlobalStyle } from 'styled-components';
 
 const og = {
@@ -36,16 +38,12 @@ const favicons = [
   },
 ];
 
-const GlobalStyle = createGlobalStyle`
+const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   html {
     scroll-behavior: smooth;
   }
-
-  .hide-link-icon:after {
-    display:none !important;
-  }
 `;
-const DsfrFixUp = createGlobalStyle`
+const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .fr-header__service-title{
     color: #069368;
   }
@@ -70,6 +68,10 @@ const DsfrFixUp = createGlobalStyle`
       background-color: var(--hover-tint) !important;
     }
   }
+
+  .fr-btn[target=_blank]:after {
+    content: "\\ecaf" !important;
+  }
 `;
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -79,8 +81,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       <DsfrFixUp />
       <ServicesContext.Provider
         value={{
-          suggestionService: new SuggestionService(fetchHttpClient),
-          heatNetworkService: new HeatNetworkService(fetchHttpClient),
+          suggestionService: new SuggestionService(axiosHttpClient),
+          heatNetworkService: new HeatNetworkService(axiosHttpClient),
+          demandsService: new DemandsService(axiosHttpClient),
         }}
       >
         <Head>
@@ -120,11 +123,13 @@ function MyApp({ Component, pageProps }: AppProps) {
           />
         </Head>
 
-        <LayoutProvider>
-          <MainLayout>
-            <Component {...pageProps} />
-          </MainLayout>
-        </LayoutProvider>
+        <SessionProvider session={pageProps.session}>
+          <LayoutProvider>
+            <MainLayout>
+              <Component {...pageProps} />
+            </MainLayout>
+          </LayoutProvider>
+        </SessionProvider>
       </ServicesContext.Provider>
     </>
   );

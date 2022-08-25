@@ -3,12 +3,14 @@ import { usePreviousState } from '@hooks';
 import convertPointToCoordinates from '@utils/convertPointToCoordinates';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
-import { Coords, Point } from 'src/types';
+import { Coords } from 'src/types/Coords';
+import { Point } from 'src/types/Point';
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 
 export type EnergyInputsLabelsType = { collectif: string; individuel: string };
 
 type CheckEligibilityFormProps = {
+  children?: React.ReactNode;
   formLabel?: React.ReactNode;
   energyInputsLabels?: EnergyInputsLabelsType;
   centredForm?: boolean;

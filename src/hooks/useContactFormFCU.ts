@@ -68,14 +68,17 @@ const useContactFormFCU = () => {
     []
   );
 
-  const handleOnChangeAddress = useCallback((data) => {
-    const { address, heatingType } = data;
-    setAddressData(data);
-    setShowWarning(address && !heatingType);
-  }, []);
+  const handleOnChangeAddress = useCallback(
+    (data: { address: any; heatingType: string }) => {
+      const { address, heatingType } = data;
+      setAddressData(data);
+      setShowWarning(address && !heatingType);
+    },
+    []
+  );
 
   const handleOnFetchAddress = useCallback(
-    ({ address }) => {
+    ({ address }: { address: any }) => {
       const { heatingType }: any = addressData;
       setLoadingStatus('loading');
       setMessageSent(false);

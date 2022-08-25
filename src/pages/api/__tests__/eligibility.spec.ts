@@ -2,24 +2,32 @@
  * @jest-environment node
  */
 import { NetworkDistance } from '@core/infrastructure/mapper/network.dto';
-import Distance from '@core/infrastructure/repository/distance';
+import * as distance from '@core/infrastructure/repository/distance';
 import {
   someCoords,
   someEligiblePyrisAddressOutOfIDFResponse,
   someIDFNetworkLessThanThresholdDistanceResponse,
   someNetwork,
-  someNotFoundNetworkResponse,
   someOutOfIDFCoordsWithNoNetwork,
   somePyrisAddressOutOfIDFResponse,
   somePyrisAddressResponse,
 } from '@core/infrastructure/repository/__tests__/__fixtures__/data';
 import nock from 'nock';
 import { createMocks } from 'node-mocks-http';
-import getEligibilityStatus from '../map/getEligibilityStatus';
+import sinon from 'sinon';
+import eligibilityStatus from '../map/eligibilityStatus';
 
 const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
 
-describe('/api/map/getEligibilityStatus', () => {
+describe('/api/map/eligibilityStatus', () => {
+  let computeDistanceStub: sinon.SinonStub;
+  beforeEach(() => {
+    computeDistanceStub = sinon.stub(distance, 'default');
+  });
+  afterEach(() => {
+    computeDistanceStub.restore();
+  });
+
   beforeAll(() => nock.disableNetConnect());
   afterAll(() => nock.enableNetConnect());
 
@@ -30,7 +38,7 @@ describe('/api/map/getEligibilityStatus', () => {
       query: givenParams,
     });
 
-    await getEligibilityStatus(req, res);
+    await eligibilityStatus(req, res);
 
     expect(res._getStatusCode()).toBe(400);
     expect(JSON.parse(res._getData())).toEqual(
@@ -54,14 +62,14 @@ describe('/api/map/getEligibilityStatus', () => {
       query: coords,
     });
 
-    await getEligibilityStatus(req, res);
+    await eligibilityStatus(req, res);
 
     expect(res._getStatusCode()).toBe(404);
     expect(JSON.parse(res._getData())).toEqual(
       expect.objectContaining({
         message: `no address found for theses coords : ${JSON.stringify(
           coords
-        )} (Error: AxiosError: Request failed with status code 404)`,
+        )} (AxiosError: Request failed with status code 404)`,
         code: 'Address Not Found',
       })
     );
@@ -81,16 +89,14 @@ describe('/api/map/getEligibilityStatus', () => {
         })
         .reply(200, { ...somePyrisAddressResponse() });
 
-      const spy = jest
-        .spyOn(Distance, 'getDistance')
-        .mockImplementation(() => someNotFoundNetworkResponse());
+      computeDistanceStub.returns(null);
 
       const { req, res } = createMocks({
         method: 'GET',
         query: coords,
       });
 
-      await getEligibilityStatus(req, res);
+      await eligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
@@ -100,7 +106,8 @@ describe('/api/map/getEligibilityStatus', () => {
           isEligible: false,
         })
       );
-      expect(spy).toHaveBeenNthCalledWith(1, coords.lat, coords.lon);
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, coords.lat, coords.lon);
     });
     test('should a successful response but with a null network (address out of IDF)', async () => {
       const coords = someOutOfIDFCoordsWithNoNetwork();
@@ -117,7 +124,7 @@ describe('/api/map/getEligibilityStatus', () => {
         query: coords,
       });
 
-      await getEligibilityStatus(req, res);
+      await eligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
@@ -147,31 +154,31 @@ describe('/api/map/getEligibilityStatus', () => {
         })
         .reply(200, { ...somePyrisAddressResponse() });
 
-      const spy = jest
-        .spyOn(Distance, 'getDistance')
-        .mockImplementation(() => networkResponse);
+      computeDistanceStub.returns(networkResponse.distPointReseau);
 
       const { req, res } = createMocks({
         method: 'GET',
         query: coords,
       });
 
-      await getEligibilityStatus(req, res);
+      await eligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual(
         expect.objectContaining({
           ...someCoords(),
           network: someNetwork({
-            lat: networkResponse.latPointReseau,
-            lon: networkResponse.lonPointReseau,
+            lat: null,
+            lon: null,
             distance: networkResponse.distPointReseau,
             filiere: null,
           }),
           isEligible: true,
         })
       );
-      expect(spy).toHaveBeenNthCalledWith(1, coords.lat, coords.lon);
+
+      sinon.assert.calledOnce(computeDistanceStub);
+      sinon.assert.calledWith(computeDistanceStub, coords.lat, coords.lon);
     };
 
     test(`should return address eligible, when address is in IDF and less then threshold distance (${THRESHOLD}m)`, async () => {
@@ -202,7 +209,7 @@ describe('/api/map/getEligibilityStatus', () => {
         query: coords,
       });
 
-      await getEligibilityStatus(req, res);
+      await eligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
       expect(JSON.parse(res._getData())).toEqual({

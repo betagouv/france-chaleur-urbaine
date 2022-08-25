@@ -10,7 +10,7 @@ import { dataNumberRcu, presentationRcu } from '@data/home';
 import Head from 'next/head';
 import styled, { createGlobalStyle } from 'styled-components';
 
-const GlobalStyle = createGlobalStyle`
+const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .slice-migration-solution {
     background-repeat: no-repeat;
     background-position: right calc(50% - 25rem) bottom 50%;

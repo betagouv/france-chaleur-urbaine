@@ -1,11 +1,6 @@
-import Airtable from 'airtable';
+import { getGestionnaire } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
-const AIRTABLE_KEY_API = process.env.AIRTABLE_KEY_API;
-const AIRTABLE_BASE = process.env.AIRTABLE_BASE;
-const base = new Airtable({ apiKey: AIRTABLE_KEY_API }).base(
-  AIRTABLE_BASE || ''
-);
+import base from 'src/db/airtable';
 
 const creationCallBack =
   (res: NextApiResponse<any>) => (err: any, records: any) => {
@@ -28,6 +23,11 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
   if (req?.body) {
     const { type, ...values } = req.body;
+    const gestionnaire = getGestionnaire(values.Adresse);
+    if (gestionnaire) {
+      values.Gestionnaire = gestionnaire;
+    }
+
     switch (type) {
       case 'FCU - Utilisateurs':
         base('FCU - Utilisateurs').create(

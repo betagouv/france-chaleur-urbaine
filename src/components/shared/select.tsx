@@ -1,8 +1,15 @@
 import { useFormInputAutoId } from '@hooks';
-import { _hasError } from '@utils/form-utils';
+import { TypeFormObject, _hasError } from '@utils/form-utils';
 import { ErrorMessage } from 'formik';
+import React from 'react';
 
-function Select({ label, field, form, id, children }: any) {
+const Select: React.FC<{
+  children: React.ReactNode;
+  label: React.ReactNode;
+  field: { name: string };
+  form: TypeFormObject;
+  id: string;
+}> = ({ children, label, field, form, id }) => {
   const hasError = _hasError(field.name, form);
   const additionalInputClass = hasError ? 'fr-select--error' : '';
   const additionalInputGroupClass = hasError ? 'fr-select-group--error' : '';
@@ -29,6 +36,6 @@ function Select({ label, field, form, id, children }: any) {
       )}
     </div>
   );
-}
+};
 
 export default Select;

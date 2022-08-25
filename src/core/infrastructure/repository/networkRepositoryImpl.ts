@@ -5,20 +5,22 @@ import { NetworkRepository } from '@core/domain/repository/networkRepository';
 import { NetworkIrisResponse } from '@core/infrastructure/mapper/network.dto';
 import { NetworkMapper } from '@core/infrastructure/mapper/network.mapper';
 import networkByIris from '@core/infrastructure/repository/network_by_iris.json';
-import Distance from './distance';
+import computeDistance from './distance';
 
 export class NetworkRepositoryImpl implements NetworkRepository {
   async findByCoords(coords: Coords): Promise<Network> {
     try {
-      const networkDistance = Distance.getDistance(coords.lat, coords.lon);
-      if (
-        !networkDistance ||
-        !networkDistance.latPointReseau ||
-        !networkDistance.lonPointReseau
-      ) {
-        return NetworkMapper.createNullNetwork();
-      }
-      return NetworkMapper.toDomain(networkDistance);
+      const networkDistance = await computeDistance(coords.lat, coords.lon);
+      return {
+        lat: null,
+        lon: null,
+        filiere: null,
+        distance:
+          networkDistance === null || networkDistance === undefined
+            ? null
+            : Math.floor(networkDistance),
+        irisCode: null,
+      };
     } catch (e) {
       throw new RepositoryError(e);
     }

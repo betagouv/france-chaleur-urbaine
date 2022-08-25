@@ -6,19 +6,18 @@ import { submitToAirtable } from '@helpers';
 import Head from 'next/head';
 import { useState } from 'react';
 
-const results: Record<
-  string,
-  {
-    type: 'success' | 'error';
-    title: string;
-    description: string | Object | any[];
-  }
-> = {
+type ResultType = {
+  type: 'success' | 'error';
+  title: string;
+  description: string | unknown | any[];
+};
+
+const results: Record<string, ResultType> = {
   success: {
     type: 'success',
     title: 'Nous vous remercions pour votre contribution.',
     description:
-      'Si vous avez indiqué souhaiter ajouter des données, vous recevrez très prochainement un lien par mail pour les télécharger.',
+      'Si vous avez indiqué souhaiter ajouter des données, nous vous avons envoyé un lien par mail pour les télécharger.',
   },
   error: {
     type: 'error',
@@ -36,11 +35,7 @@ const results: Record<
 };
 
 function Contribution() {
-  const [result, setResult] = useState<{
-    type: 'success' | 'error';
-    title: string;
-    description: string | Object | any[];
-  }>();
+  const [result, setResult] = useState<ResultType>();
 
   const submit = async (data: any) => {
     try {
@@ -69,7 +64,7 @@ function Contribution() {
             <Alert
               type={result.type}
               title={result.title}
-              description={result.description}
+              description={result.description as string}
             />
           ) : (
             <ContributionForm submit={submit} />

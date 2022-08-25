@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle, css } from 'styled-components';
 
-export const LegendGroupLabelStyle = createGlobalStyle`
+export const LegendGroupLabelStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
 .legend-label-description {
   font-size: 15px;
   font-size: 0.95em;
