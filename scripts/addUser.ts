@@ -34,4 +34,4 @@ const email = process.argv[2];
 const password = process.argv[3];
 const gestionnaire = process.argv[4];
 
-addUser(email, password, gestionnaire);
+addUser(email.toLowerCase(), password, gestionnaire);

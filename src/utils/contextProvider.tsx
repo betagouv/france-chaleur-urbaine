@@ -6,6 +6,7 @@ import {
   SuggestionService,
 } from 'src/services';
 import { DemandsService } from 'src/services/demandsService';
+import { PasswordService } from 'src/services/passwordService';
 import { FakeHttpClient } from './fakeHttpClient';
 
 export const customRender = (
@@ -18,6 +19,7 @@ export const customRender = (
         suggestionService: new SuggestionService(FakeHttpClient),
         heatNetworkService: new HeatNetworkService(FakeHttpClient),
         demandsService: new DemandsService(FakeHttpClient),
+        passwordService: new PasswordService(FakeHttpClient),
         ...overrideProps,
       }}
     >
@@ -37,6 +39,7 @@ export const customRenderHook = (hook: any, overrideProps?: any) => {
           suggestionService: new SuggestionService(FakeHttpClient),
           heatNetworkService: new HeatNetworkService(FakeHttpClient),
           demandsService: new DemandsService(FakeHttpClient),
+          passwordService: new PasswordService(FakeHttpClient),
           ...overrideProps,
         }}
       >
