@@ -1,7 +1,18 @@
 import styled from 'styled-components';
 
+export const Title = styled.p`
+  font-size: 13px;
+  font-weight: 500;
+  font-style: italic;
+  margin-bottom: 0;
+`;
+
+export const SubTitle = styled.p`
+  margin-bottom: 0;
+  font-size: 13px;
+`;
+
 export const Boxes = styled.div`
-  margin-top: 8px;
   display: flex;
   gap: 4px;
 `;
