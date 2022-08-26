@@ -100,7 +100,7 @@ const formatBodyPopup = ({
     dpe_ges,
   } = buildings || energy || {};
   const { adresse, nom_commun, code_grand, conso_nb } = consommation || {};
-  const addr_label_consommation = `${adresse} ${nom_commun}`;
+  const addr_label_consommation = adresse ? `${adresse} ${nom_commun}` : '';
   const {
     Adresse: addr_label_demands,
     'Mode de chauffage': type_chauffage_demands,
