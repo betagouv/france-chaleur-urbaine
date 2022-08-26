@@ -7,8 +7,8 @@ class AxiosHttpClient implements HttpClient {
       return responseRaw.data as T;
     });
   }
-  async post(url: string): Promise<AxiosResponse> {
-    return axios.post(url).then((responseRaw) => {
+  async post(url: string, body: any): Promise<AxiosResponse> {
+    return axios.post(url, body).then((responseRaw) => {
       return responseRaw;
     });
   }

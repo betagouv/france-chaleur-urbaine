@@ -1,4 +1,4 @@
-import { LoginForm, LoginFormProps } from '@components/login/LoginForm';
+import { LoginForm, LoginFormProps } from '@components/connexion/LoginForm';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 

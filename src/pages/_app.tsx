@@ -11,6 +11,7 @@ import {
 } from 'src/services';
 import { DemandsService } from 'src/services/demandsService';
 import { axiosHttpClient } from 'src/services/http';
+import { PasswordService } from 'src/services/passwordService';
 import { createGlobalStyle } from 'styled-components';
 
 const og = {
@@ -84,6 +85,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           suggestionService: new SuggestionService(axiosHttpClient),
           heatNetworkService: new HeatNetworkService(axiosHttpClient),
           demandsService: new DemandsService(axiosHttpClient),
+          passwordService: new PasswordService(axiosHttpClient),
         }}
       >
         <Head>

@@ -4,7 +4,10 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import db from 'src/db';
 
 const login = async (email: string, password: string) => {
-  const user = await db('users').select().where({ email }).first();
+  const user = await db('users')
+    .select()
+    .where({ email: email.toLowerCase() })
+    .first();
 
   if (!user) {
     return null;
