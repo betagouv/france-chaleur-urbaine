@@ -118,11 +118,10 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
 
-  width: 1000px;
+  max-width: calc(100vw - 400px);
   padding: 1rem;
   bottom: 0;
-  left: ${({ legendCollapsed }) =>
-    legendCollapsed ? 'calc(50% - 500px)' : 'calc((50% + 166px) - 500px)'};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '200px' : '366px  ')};
 `;
 
 export const Legend = styled.div<{ legendCollapsed: boolean }>`

@@ -14,7 +14,7 @@ export const Container = styled.div<{ customCursor?: boolean }>`
 
 export const ZoneInfosWrapper = styled.div`
   position: relative;
-  max-width: 1000px;
+  max-width: calc(100vw - 400px);
   display: flex;
   gap: 16px;
   background-color: white;
