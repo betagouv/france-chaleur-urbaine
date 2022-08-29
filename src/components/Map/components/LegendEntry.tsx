@@ -1,6 +1,7 @@
 import { Icon } from '@dataesr/react-dsfr';
 import LegendDesc from './LegendDesc';
 import {
+  InfoIcon,
   LabelLegend,
   LabelLegendHead,
   LabelLegendInputLabel,
@@ -54,7 +55,12 @@ function LegendEntry({
           )}
           <LabelLegend>
             <LabelLegendHead type={type}>{label}</LabelLegendHead>
-            {info && <Icon size="lg" name="ri-information-fill" title={info} />}
+            {info && (
+              <InfoIcon>
+                <Icon size="lg" name="ri-information-fill" />
+                <div>{info}</div>
+              </InfoIcon>
+            )}
           </LabelLegend>
         </LabelLegendInputLabel>
         {subLegend && LegendDesc[subLegend]?.()}
