@@ -93,7 +93,7 @@ const formatBodyPopup = ({
     nb_logements,
     annee_construction,
     type_usage,
-    energie_utilisee,
+    energie_utilisee: energie_utilisee_buildings,
     type_chauffage: type_chauffage_buildings,
     addr_label: addr_label_buildings,
     dpe_energie,
@@ -103,9 +103,11 @@ const formatBodyPopup = ({
   const addr_label_consommation = adresse ? `${adresse} ${nom_commun}` : '';
   const {
     Adresse: addr_label_demands,
-    'Mode de chauffage': type_chauffage_demands,
+    'Mode de chauffage': mode_chauffage_demands,
+    'Type de chauffage': type_chauffage_demands,
   } = demands || {};
 
+  const energie_utilisee = energie_utilisee_buildings || mode_chauffage_demands;
   const textAddress =
     addr_label_buildings || addr_label_consommation || addr_label_demands;
   const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
