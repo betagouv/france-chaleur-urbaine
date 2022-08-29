@@ -32,6 +32,10 @@ export const consoColumns: ExportColumn<GasSummary>[] = [
     header: 'Points de livraison',
     value: 'pdl_nb',
   },
+  {
+    header: '<50m du réseau',
+    value: (values) => (values.is_close ? 'Oui' : 'Non'),
+  },
 ];
 
 export const gasColumns: ExportColumn<EnergySummary>[] = [
@@ -39,11 +43,19 @@ export const gasColumns: ExportColumn<EnergySummary>[] = [
     header: 'Adresse',
     value: 'addr_label',
   },
+  {
+    header: '<50m du réseau',
+    value: (values) => (values.is_close ? 'Oui' : 'Non'),
+  },
 ];
 
 export const fioulColumns: ExportColumn<EnergySummary>[] = [
   {
     header: 'Adresse',
     value: 'addr_label',
+  },
+  {
+    header: '<50m du réseau',
+    value: (values) => (values.is_close ? 'Oui' : 'Non'),
   },
 ];
