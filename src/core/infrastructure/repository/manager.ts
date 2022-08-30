@@ -15,11 +15,11 @@ export const getGestionnaire = (addresse: string): string | null => {
   return null;
 };
 
-export const getDemands = async (email: string): Promise<Demand[]> => {
+export const getDemands = async (email: string): Promise<Demand[] | null> => {
   const user = await getUser(email);
 
   if (!user) {
-    return [];
+    return null;
   }
 
   const records = await base(tableNameFcuDemands)
@@ -47,8 +47,28 @@ export const getDemand = async (
   try {
     const record = await base(tableNameFcuDemands).find(demandId);
     return { id: record.id, ...record.fields } as Demand;
-  } catch (err) {
-    console.error(err);
-    return;
+  } catch (err: any) {
+    throw Error(err);
+  }
+};
+
+export const updateDemand = async (
+  email: string,
+  demandId: string,
+  update: Record<string, any>
+): Promise<Demand | Record<string, never> | undefined> => {
+  const user = await getUser(email);
+
+  if (!user) {
+    return {};
+  }
+
+  try {
+    const record = await base(tableNameFcuDemands)
+      .update([{ id: demandId, fields: update }])
+      .then((records) => records[0]);
+    return { id: record.id, ...record.fields } as Demand;
+  } catch (err: any) {
+    throw Error(err);
   }
 };
