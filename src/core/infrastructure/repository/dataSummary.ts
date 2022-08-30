@@ -7,6 +7,25 @@ import { NetworkSummary } from 'src/types/Summary/Network';
 import { getSpreadSheet, zip } from './export';
 import { consoColumns, fioulColumns, gasColumns } from './export.config';
 
+const getRegions = async (coordinates: number[][]): Promise<string[]> => {
+  const results = await db('regions')
+    .select('bnb_nom')
+    .where(
+      db.raw(`
+        ST_Intersects(
+          ST_Transform(geom, 4326),
+          ST_MakePolygon(
+            ST_MakeLine(
+              Array[${coordinates.map(
+                (coords) => `ST_SetSRID(ST_MakePoint(${coords}), 4326)`
+              )}]
+            ))
+        )
+      `)
+    );
+  return results.map((result) => result.bnb_nom);
+};
+
 const getWithinQuery = (coordinates: number[][], geom: string) => `
 ST_WITHIN(
   ST_Transform(${geom}, 4326),
@@ -16,7 +35,7 @@ ST_WITHIN(
         (coords) => `ST_SetSRID(ST_MakePoint(${coords}), 4326)`
       )}]
     ))
-) is true
+)
 `;
 
 const getNetworkSummary = async (
@@ -51,7 +70,7 @@ const getNetworkSummary = async (
                 (coords) => `ST_SetSRID(ST_MakePoint(${coords}), 4326)`
               )}]
             ))
-    ) is true
+    )
       `)
     );
 
@@ -75,9 +94,10 @@ const getGasSummary = async (coordinates: number[][]): Promise<GasSummary[]> =>
     .where(db.raw(getWithinQuery(coordinates, 'geom')));
 
 const getEnergySummary = async (
-  coordinates: number[][]
+  coordinates: number[][],
+  region: string
 ): Promise<EnergySummary[]> =>
-  db('bnb_idf - batiment_adresse as energy')
+  db(`${region} as energy`)
     .select(
       'adedpe202006_logtype_ch_type_ener_corr as energie_utilisee',
       db.raw(`
@@ -122,9 +142,10 @@ const exportGasSummary = async (
     .where(db.raw(getWithinQuery(coordinates, 'geom')));
 
 const exportEnergyGasSummary = async (
-  coordinates: number[][]
+  coordinates: number[][],
+  region: string
 ): Promise<EnergySummary[]> =>
-  db('bnb_idf - batiment_adresse as energy')
+  db(`${region} as energy`)
     .select(
       'etaban202111_label as addr_label',
       db.raw(`
@@ -145,9 +166,10 @@ const exportEnergyGasSummary = async (
     .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 const exportEnergyFioulSummary = async (
-  coordinates: number[][]
+  coordinates: number[][],
+  region: string
 ): Promise<EnergySummary[]> =>
-  db('bnb_idf - batiment_adresse as energy')
+  db(`${region} as energy`)
     .select(
       'etaban202111_label as addr_label',
       db.raw(`
@@ -170,9 +192,12 @@ const exportEnergyFioulSummary = async (
 export const getDataSummary = async (
   coordinates: number[][]
 ): Promise<Summary> => {
+  const regions = await getRegions(coordinates);
   const [gas, energy, network] = await Promise.all([
     getGasSummary(coordinates),
-    getEnergySummary(coordinates),
+    Promise.all(
+      regions.map((region) => getEnergySummary(coordinates, region))
+    ).then((results) => results.flatMap((x) => x)),
     getNetworkSummary(coordinates),
   ]);
 
@@ -187,10 +212,15 @@ export const exportDataSummary = async (
   coordinates: number[][],
   exportType: EXPORT_FORMAT
 ): Promise<{ content: any; name: string }> => {
+  const regions = await getRegions(coordinates);
   const [gas, energyGas, energyFioul] = await Promise.all([
     exportGasSummary(coordinates),
-    exportEnergyGasSummary(coordinates),
-    exportEnergyFioulSummary(coordinates),
+    Promise.all(
+      regions.map((region) => exportEnergyGasSummary(coordinates, region))
+    ).then((results) => results.flatMap((x) => x)),
+    Promise.all(
+      regions.map((region) => exportEnergyFioulSummary(coordinates, region))
+    ).then((results) => results.flatMap((x) => x)),
   ]);
 
   return zip(
