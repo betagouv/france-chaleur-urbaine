@@ -91,7 +91,8 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
         onClick={() => setZoneCollapsed(!zoneCollapsed)}
       >
         <Icon
-          name={zoneCollapsed ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'}
+          size="xl"
+          name={zoneCollapsed ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'}
         />
       </CollapseZone>
       {!zoneCollapsed && (

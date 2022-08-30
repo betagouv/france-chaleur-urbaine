@@ -653,8 +653,9 @@ export default function Map() {
           onClick={() => setLegendCollapsed(!legendCollapsed)}
         >
           <Icon
+            size="xl"
             name={
-              legendCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line'
+              legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'
             }
           />
         </CollapseLegend>

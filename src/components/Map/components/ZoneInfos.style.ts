@@ -38,19 +38,19 @@ export const CollapseZone = styled.button<{ zoneCollapsed: boolean }>`
   position: absolute;
   display: flex;
   justify-content: center;
+  left: 50%;
+  top: -6px;
   ${({ zoneCollapsed }) =>
     zoneCollapsed &&
     css`
-      align-items: center;
+      top: 10px;
     `}
-  left: 50%;
-  top: 5px;
   border-radius: 10px;
   background-color: white;
-  height: 22px;
-  width: 42px;
+  height: 46px;
+  width: 48px;
   & > span {
-    margin: 0 !important;
+    margin: 4px 0 0 0 !important;
   }
 `;
 

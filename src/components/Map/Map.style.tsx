@@ -149,14 +149,14 @@ export const LegendSeparator = styled.div`
 
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
-  padding: 0 0 0 9px;
+  padding: 0 0 0 24px;
   z-index: ${mapControlZindex};
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '-11px' : '322px')};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '-23px' : '310px')};
   top: 50%;
   border-radius: 10px;
   background-color: white;
-  height: 42px;
-  width: 22px;
+  height: 48px;
+  width: 46px;
 `;
 
 // --------------------
