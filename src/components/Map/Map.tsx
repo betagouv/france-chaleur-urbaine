@@ -644,6 +644,11 @@ export default function Map() {
       <MapStyle legendCollapsed={legendCollapsed} />
       <div className="map-wrap">
         <CollapseLegend
+          title={
+            legendCollapsed
+              ? 'Développer le panneau de la légende'
+              : 'Cacher le panneau de la légende'
+          }
           legendCollapsed={legendCollapsed}
           onClick={() => setLegendCollapsed(!legendCollapsed)}
         >

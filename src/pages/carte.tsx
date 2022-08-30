@@ -13,7 +13,7 @@ const MapWrapper = styled.div`
     height: calc(100vh - ${fullscreenHeaderHeight});
   }
 
-  @media (max-width: 800px) {
+  @media (max-width: 1225px) {
     display: none;
   }
 `;
@@ -22,7 +22,7 @@ const NotAvailable = styled.h2`
   display: none;
   margin: auto;
   padding: 32px;
-  @media (max-width: 800px) {
+  @media (max-width: 1225px) {
     display: block;
   }
 `;
