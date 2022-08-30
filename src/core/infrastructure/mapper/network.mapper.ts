@@ -1,5 +1,5 @@
-import { Network } from '@core/domain/entity/network';
 import { NetworkResponse } from '@core/infrastructure/mapper/network.dto';
+import { Network } from 'src/types/HeatNetworksResponse';
 
 export class NetworkMapper {
   static transform(value: number | undefined): number | null {

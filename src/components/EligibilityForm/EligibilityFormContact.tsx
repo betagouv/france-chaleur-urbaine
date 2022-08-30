@@ -214,7 +214,9 @@ const EligibilityFormContact = ({
         computEligibility,
       };
 
-      if (onSubmit) onSubmit(sendedValues);
+      if (onSubmit) {
+        onSubmit(sendedValues);
+      }
     },
     [addressData, computEligibility, onSubmit]
   );

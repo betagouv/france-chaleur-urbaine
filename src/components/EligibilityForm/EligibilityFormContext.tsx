@@ -1,8 +1,9 @@
 import React, { useMemo, useReducer } from 'react';
+import { Point } from 'src/types/Point';
 
 const initialState = {
   address: {},
-  coords: [],
+  coords: [] as Point[],
   dataForm: {},
   status: '',
 };

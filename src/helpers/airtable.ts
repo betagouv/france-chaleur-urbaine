@@ -66,6 +66,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     company,
     email,
     termOfUse,
+    inZDP,
   } = values;
 
   return {
@@ -81,6 +82,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
     'Type de chauffage': formatHeatingTypeToAirtable(heatingType),
     'Distance au réseau': network?.distance,
+    'en ZDP': inZDP ? 'Oui' : 'Non',
     'Choix en fonction de la distance au réseau':
       formatDistanceToAirtable(network?.distance, heatingType) || 'inconnue',
     'J’accepte les CGU': termOfUse,

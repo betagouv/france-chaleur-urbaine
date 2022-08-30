@@ -6,11 +6,12 @@ export const someNearHeatNetwork = (): HeatNetworksResponse => ({
   network: {
     lat: 48.79819023,
     lon: 21.330067158,
+    distance: 12,
     irisCode: null,
     filiere: null,
-    distance: 12,
   },
   isEligible: true,
+  inZDP: false,
 });
 
 export const someRemoteHeatNetwork = (): HeatNetworksResponse => ({
@@ -24,4 +25,5 @@ export const someRemoteHeatNetwork = (): HeatNetworksResponse => ({
     distance: null,
   },
   isEligible: false,
+  inZDP: false,
 });
