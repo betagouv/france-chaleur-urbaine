@@ -81,7 +81,7 @@ const Manager = () => {
     let tempDemands = demands;
     if (filter) {
       tempDemands = tempDemands.filter((demand) =>
-        searchKeys.some((key) => matchFilter(filter, demand[key]))
+        searchKeys.some((key) => matchFilter(filter, demand[key] as string))
       );
     }
 
