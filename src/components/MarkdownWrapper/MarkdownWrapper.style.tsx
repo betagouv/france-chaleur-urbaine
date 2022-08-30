@@ -79,7 +79,7 @@ export const CounterItem = styled.div`
   }
 `;
 
-export const Cartridge = styled.p<{ theme: string }>`
+export const Cartridge = styled.div<{ theme: string }>`
   display: inline-block;
   background-color: #ffdecf;
   margin: 0 -0.55em;
@@ -99,7 +99,7 @@ export const Cartridge = styled.p<{ theme: string }>`
     h4,
     h5,
     h6 {
-      color: currentColor;
+      color: currentColor !important;
     }
 
     ${({ theme }) => {

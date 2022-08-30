@@ -4,6 +4,7 @@ import {
   HeaderNav,
   HeaderOperator,
   Logo,
+  NavItem,
   Service,
 } from '@dataesr/react-dsfr';
 import { useSession } from 'next-auth/react';
@@ -36,15 +37,17 @@ const Header = ({
               alt="logo france chaleur urbaine"
             />
           </HeaderOperator>
-          <Service
-            title={
-              <a className="fr-header__service-title fr-link--md">
-                France Chaleur Urbaine
-              </a>
-            }
-            description={fcuHeaderDesc}
-            asLink={<Link href={'/'} title="Revenir à l'accueil" />}
-          />
+          {!fullscreen && (
+            <Service
+              title={
+                <a className="fr-header__service-title fr-link--md">
+                  France Chaleur Urbaine
+                </a>
+              }
+              description={fcuHeaderDesc}
+              asLink={<Link href={'/'} title="Revenir à l'accueil" />}
+            />
+          )}
         </HeaderBody>
       </Container>
       <HeaderNav>
@@ -58,39 +61,19 @@ const Header = ({
           </li>
         )}
         {menu.map(({ label, url }) => (
-          <li
+          <NavItem
             key={url}
-            className={`fr-nav__item ${
-              currentMenu === url ? 'fr-nav__item-Active' : ''
-            }`}
-          >
-            <Link href={url} prefetch={false}>
-              <a
-                className="fr-nav__link"
-                aria-current={currentMenu === url ? 'page' : undefined}
-              >
-                {label}
-              </a>
-            </Link>
-          </li>
+            title={label}
+            current={currentMenu === url}
+            asLink={<a href={url}></a>}
+          />
         ))}
         {session && (
-          <li
-            className={`fr-nav__item ${
-              currentMenu === '/gestionnaire' ? 'fr-nav__item-Active' : ''
-            }`}
-          >
-            <Link href={'/gestionnaire'} prefetch={false}>
-              <a
-                className="fr-nav__link"
-                aria-current={
-                  currentMenu === '/gestionnaire' ? 'page' : undefined
-                }
-              >
-                Gestionnaire
-              </a>
-            </Link>
-          </li>
+          <NavItem
+            title="Gestionnaire"
+            current={currentMenu === '/gestionnaire'}
+            asLink={<a href="/gestionnaire"></a>}
+          />
         )}
       </HeaderNav>
     </HeaderDS>
