@@ -10,7 +10,7 @@ import param from 'src/services/Map/param';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
 
-const { minZoomData, maxZoom } = param;
+const { minZoomData } = param;
 
 const mapOverZindex = 100;
 const mapControlZindex = 110;
@@ -247,27 +247,12 @@ export const energyLayerStyle = {
     'icon-image': 'energy-picto',
     'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
     'icon-size': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.1,
-      [
-        'case',
-        ['<', ['get', NB_LOT], 30],
-        0.25,
-        ['<', ['get', NB_LOT], 100],
-        0.6,
-        1,
-      ],
-      maxZoom,
-      [
-        'case',
-        ['<', ['get', NB_LOT], 30],
-        0.25 * 2,
-        ['<', ['get', NB_LOT], 100],
-        0.6 * 2,
-        1 * 2,
-      ],
+      'case',
+      ['<', ['get', NB_LOT], 30],
+      0.3,
+      ['<', ['get', NB_LOT], 100],
+      0.5,
+      0.85,
     ],
   },
   paint: {
@@ -307,27 +292,12 @@ export const gasUsageLayerStyle = {
   paint: {
     'circle-color': ['match', ['get', TYPE_GAS], ...arrColorFromDefTypeGas],
     'circle-radius': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.1,
-      [
-        'case',
-        ['<', ['get', CONSO], 100],
-        4,
-        ['<', ['get', CONSO], 1000],
-        8,
-        14,
-      ],
-      maxZoom,
-      [
-        'case',
-        ['<', ['get', CONSO], 100],
-        8,
-        ['<', ['get', CONSO], 1000],
-        16,
-        28,
-      ],
+      'case',
+      ['<', ['get', CONSO], 100],
+      4,
+      ['<', ['get', CONSO], 1000],
+      8,
+      14,
     ],
     'circle-opacity': [
       'interpolate',
