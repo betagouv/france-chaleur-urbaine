@@ -100,15 +100,45 @@ const getEnergySummary = async (
 const exportGasSummary = async (
   coordinates: number[][]
 ): Promise<GasSummary[]> =>
-  db('Donnees_de_conso_et_pdl_gaz_nat_2020')
-    .select('adresse', 'nom_commun', 'code_grand', 'conso_nb', 'pdl_nb')
+  db('Donnees_de_conso_et_pdl_gaz_nat_2020 as gas')
+    .select(
+      'adresse',
+      'nom_commun',
+      'code_grand',
+      'conso_nb',
+      'pdl_nb',
+      db.raw(`
+        EXISTS (
+          SELECT *
+          FROM reseaux_de_chaleur rdc
+          WHERE ST_Distance(
+            ST_Transform(rdc.geom, 2154),
+            ST_Transform(gas.geom, 2154)
+            ) < 50
+          LIMIT 1
+        ) as is_close
+      `)
+    )
     .where(db.raw(getWithinQuery(coordinates, 'geom')));
 
 const exportEnergyGasSummary = async (
   coordinates: number[][]
 ): Promise<EnergySummary[]> =>
-  db('bnb_idf - batiment_adresse')
-    .select('etaban202111_label as addr_label')
+  db('bnb_idf - batiment_adresse as energy')
+    .select(
+      'etaban202111_label as addr_label',
+      db.raw(`
+        EXISTS (
+          SELECT *
+          FROM reseaux_de_chaleur rdc
+          WHERE ST_Distance(
+            ST_Transform(rdc.geom, 2154),
+            ST_Transform(energy.geom_adresse, 2154)
+            ) < 50
+          LIMIT 1
+        ) as is_close
+      `)
+    )
     .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
     .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
     .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'gaz')
@@ -117,8 +147,21 @@ const exportEnergyGasSummary = async (
 const exportEnergyFioulSummary = async (
   coordinates: number[][]
 ): Promise<EnergySummary[]> =>
-  db('bnb_idf - batiment_adresse')
-    .select('etaban202111_label as addr_label')
+  db('bnb_idf - batiment_adresse as energy')
+    .select(
+      'etaban202111_label as addr_label',
+      db.raw(`
+      EXISTS (
+        SELECT *
+        FROM reseaux_de_chaleur rdc
+        WHERE ST_Distance(
+          ST_Transform(rdc.geom, 2154),
+          ST_Transform(energy.geom_adresse, 2154)
+          ) < 50
+        LIMIT 1
+      ) as is_close
+    `)
+    )
     .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
     .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
     .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'fioul')

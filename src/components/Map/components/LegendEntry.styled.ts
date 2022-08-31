@@ -57,3 +57,15 @@ export const LabelLegendHead = styled.div<{ type?: string }>`
       line-height: 1.45;
     `}
 `;
+
+export const InfoIcon = styled.div`
+  position: relative;
+  & > .hover-info {
+    width: 300px;
+  }
+  &:hover {
+    & > .hover-info {
+      display: block;
+    }
+  }
+`;

@@ -1,4 +1,4 @@
-import { Network } from '@core/domain/entity/network';
+import { Network } from 'src/types/HeatNetworksResponse';
 
 export interface Coords {
   lat: number;

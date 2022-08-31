@@ -1,7 +1,8 @@
 import { Button, TextInput } from '@dataesr/react-dsfr';
 import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { FormEvent, useState } from 'react';
-import { Container } from './LoginForm.styles';
+import { Container, Password } from './Form.styles';
 
 export interface LoginFormProps {
   callbackUrl: string;
@@ -34,7 +35,9 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-
+      <Password>
+        <Link href="/reset-password">Mot de passe oublié ?</Link>
+      </Password>
       <Button submit>Me connecter</Button>
     </Container>
   );

@@ -1,3 +1,4 @@
+import Hoverable from '@components/Hoverable';
 import { Icon } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -93,7 +94,7 @@ const formatBodyPopup = ({
     nb_logements,
     annee_construction,
     type_usage,
-    energie_utilisee,
+    energie_utilisee: energie_utilisee_buildings,
     type_chauffage: type_chauffage_buildings,
     addr_label: addr_label_buildings,
     dpe_energie,
@@ -103,9 +104,11 @@ const formatBodyPopup = ({
   const addr_label_consommation = adresse ? `${adresse} ${nom_commun}` : '';
   const {
     Adresse: addr_label_demands,
-    'Mode de chauffage': type_chauffage_demands,
+    'Mode de chauffage': mode_chauffage_demands,
+    'Type de chauffage': type_chauffage_demands,
   } = demands || {};
 
+  const energie_utilisee = energie_utilisee_buildings || mode_chauffage_demands;
   const textAddress =
     addr_label_buildings || addr_label_consommation || addr_label_demands;
   const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
@@ -645,9 +648,13 @@ export default function Map() {
           legendCollapsed={legendCollapsed}
           onClick={() => setLegendCollapsed(!legendCollapsed)}
         >
+          <Hoverable position="right">
+            {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
+          </Hoverable>
           <Icon
+            size="xl"
             name={
-              legendCollapsed ? 'ri-arrow-right-s-line' : 'ri-arrow-left-s-line'
+              legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'
             }
           />
         </CollapseLegend>

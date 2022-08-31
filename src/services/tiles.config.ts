@@ -72,7 +72,7 @@ export const tilesInfo: Record<string, TileInfo> = {
   demands: {
     source: 'airtable',
     table: 'FCU - Utilisateurs',
-    properties: ['Mode de chauffage', 'Adresse'],
+    properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage'],
     sourceLayer: 'demands',
   },
   network: {

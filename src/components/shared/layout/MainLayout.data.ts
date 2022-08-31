@@ -1,5 +1,5 @@
 export const headerHeight = `185px`;
-export const tabHeaderHeight = `178px`;
+export const tabHeaderHeight = `105px`;
 export const fullscreenHeaderHeight = `63px`;
 export const footerHeight = `291px`;
 export const tabFooterHeight = `534px`;

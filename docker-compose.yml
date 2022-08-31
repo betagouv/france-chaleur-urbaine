@@ -8,11 +8,26 @@ services:
     ports:
       - "5432:5432"
 
+  maildev:
+    image: maildev/maildev
+    environment:
+      MAILDEV_INCOMING_USER: mailuser
+      MAILDEV_INCOMING_PASS: mailpassword
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
   web:
     build: ./docker/web
     command: sh -c "yarn dev"
     environment:
       DATABASE_URL: postgres://postgres:postgres_fcu@db:5432/postgres
+      MAIL_PASS: mailpassword
+      MAIL_USER: mailuser
+      MAIL_HOST: maildev
+      MAIL_PORT: 1025
+      MAIL_SECURE: "false"
+      MAIL_REQUIRE_TLS: "false"
     ports:
       - "3000:3000"
     volumes:

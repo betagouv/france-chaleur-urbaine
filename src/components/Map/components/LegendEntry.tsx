@@ -1,6 +1,8 @@
+import Hoverable from '@components/Hoverable';
 import { Icon } from '@dataesr/react-dsfr';
 import LegendDesc from './LegendDesc';
 import {
+  InfoIcon,
   LabelLegend,
   LabelLegendHead,
   LabelLegendInputLabel,
@@ -54,7 +56,12 @@ function LegendEntry({
           )}
           <LabelLegend>
             <LabelLegendHead type={type}>{label}</LabelLegendHead>
-            {info && <Icon size="lg" name="ri-information-fill" title={info} />}
+            {info && (
+              <InfoIcon>
+                <Icon size="lg" name="ri-information-fill" />
+                <Hoverable>{info}</Hoverable>
+              </InfoIcon>
+            )}
           </LabelLegend>
         </LabelLegendInputLabel>
         {subLegend && LegendDesc[subLegend]?.()}

@@ -1,4 +1,4 @@
-import { IsNetwork, Network } from '@core/domain/entity/network';
+import { Network } from 'src/types/HeatNetworksResponse';
 import { Address } from './address';
 
 export class IRISAdress extends Address {
@@ -7,6 +7,6 @@ export class IRISAdress extends Address {
   }
 
   isEligibleWith(network: Network): boolean {
-    return IsNetwork(network);
+    return !!network?.irisCode;
   }
 }
