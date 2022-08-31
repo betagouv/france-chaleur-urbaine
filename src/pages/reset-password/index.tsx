@@ -6,7 +6,7 @@ export default function ResetPasswordPage(): JSX.Element {
   return <ResetPasswordForm />;
 }
 
-export const getServerSideProps: GetServerSideProps<{}> = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const userSession = await getSession(context);
 
   if (userSession) {

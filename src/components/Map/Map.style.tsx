@@ -118,11 +118,11 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
 
-  width: 1000px;
+  width: 925px;
   padding: 1rem;
   bottom: 0;
   left: ${({ legendCollapsed }) =>
-    legendCollapsed ? 'calc(50% - 500px)' : 'calc((50% + 166px) - 500px)'};
+    legendCollapsed ? '250px' : 'calc((100vw - 925px - 333px)/2 + 333px)'};
 `;
 
 export const Legend = styled.div<{ legendCollapsed: boolean }>`
@@ -149,14 +149,19 @@ export const LegendSeparator = styled.div`
 
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
-  padding: 0 0 0 9px;
+  padding: 0 0 0 24px;
   z-index: ${mapControlZindex};
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '-11px' : '322px')};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '-23px' : '310px')};
   top: 50%;
   border-radius: 10px;
   background-color: white;
-  height: 42px;
-  width: 22px;
+  height: 48px;
+  width: 46px;
+  &:hover {
+    & > .hover-info {
+      display: block;
+    }
+  }
 `;
 
 // --------------------
