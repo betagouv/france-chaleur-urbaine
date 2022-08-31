@@ -1,5 +1,5 @@
-import { Network } from '@core/domain/entity/network';
 import { NetworkRepository } from '@core/domain/repository/networkRepository';
+import { Network } from 'src/types/HeatNetworksResponse';
 import { Address } from '../entity/address';
 
 export class NetworkService {

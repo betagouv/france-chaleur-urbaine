@@ -1,16 +1,15 @@
 import { AddressNotFoundError } from '@core/domain/errors';
-import { AddressDTO } from '@core/infrastructure/mapper/address.dto';
-import AddressMapper from '@core/infrastructure/mapper/addressMapper';
 import { AddressRepositoryImpl } from '@core/infrastructure/repository/AddressRepositoryImpl';
 import { NetworkRepositoryImpl } from '@core/infrastructure/repository/networkRepositoryImpl';
 import { TestEligibility } from '@core/useCase/testEligibility';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { axiosHttpClient } from 'src/services/http';
 import { ErrorResponse } from 'src/types/ErrorResponse';
+import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 
 export default async function eligibilityStatusgibilityStatus(
   req: NextApiRequest,
-  res: NextApiResponse<AddressDTO | ErrorResponse>
+  res: NextApiResponse<HeatNetworksResponse | ErrorResponse>
 ) {
   if (req.method !== 'GET') {
     return res.status(501);
@@ -34,9 +33,14 @@ export default async function eligibilityStatusgibilityStatus(
       networkRepository
     );
     const addressEligibility = await testEligibilityUseCase.check(coords);
-    const response = AddressMapper.toDTO(addressEligibility);
 
-    return res.status(200).json({ ...response });
+    return res.status(200).json({
+      lat: addressEligibility.address.lat,
+      lon: addressEligibility.address.lon,
+      isEligible: addressEligibility.isEligible,
+      network: addressEligibility.network,
+      inZDP: addressEligibility.inZDP,
+    });
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log(error);

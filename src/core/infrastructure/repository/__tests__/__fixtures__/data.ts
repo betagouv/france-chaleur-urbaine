@@ -1,8 +1,8 @@
 import { Address, Coords } from '@core/domain/entity/address';
 import { createAddress } from '@core/domain/entity/AddressFactory';
-import { Network } from '@core/domain/entity/network';
 import { AddressPyrisResponse } from '@core/infrastructure/mapper/address.dto';
 import { NetworkDistance } from '@core/infrastructure/mapper/network.dto';
+import { Network } from 'src/types/HeatNetworksResponse';
 
 export const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
 

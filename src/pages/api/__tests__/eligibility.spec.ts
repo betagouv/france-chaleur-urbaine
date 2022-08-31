@@ -3,6 +3,7 @@
  */
 import { NetworkDistance } from '@core/infrastructure/mapper/network.dto';
 import * as distance from '@core/infrastructure/repository/distance';
+import * as inZDP from '@core/infrastructure/repository/zdp';
 import {
   someCoords,
   someEligiblePyrisAddressOutOfIDFResponse,
@@ -21,11 +22,14 @@ const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
 
 describe('/api/map/eligibilityStatus', () => {
   let computeDistanceStub: sinon.SinonStub;
+  let zdpStub: sinon.SinonStub;
   beforeEach(() => {
     computeDistanceStub = sinon.stub(distance, 'default');
+    zdpStub = sinon.stub(inZDP, 'default');
   });
   afterEach(() => {
     computeDistanceStub.restore();
+    zdpStub.restore();
   });
 
   beforeAll(() => nock.disableNetConnect());
@@ -90,6 +94,7 @@ describe('/api/map/eligibilityStatus', () => {
         .reply(200, { ...somePyrisAddressResponse() });
 
       computeDistanceStub.returns(null);
+      zdpStub.returns(false);
 
       const { req, res } = createMocks({
         method: 'GET',
@@ -102,12 +107,21 @@ describe('/api/map/eligibilityStatus', () => {
       expect(JSON.parse(res._getData())).toEqual(
         expect.objectContaining({
           ...someCoords(),
-          network: null,
+          network: {
+            distance: null,
+            filiere: null,
+            irisCode: null,
+            lat: null,
+            lon: null,
+          },
           isEligible: false,
+          inZDP: false,
         })
       );
       sinon.assert.calledOnce(computeDistanceStub);
       sinon.assert.calledWith(computeDistanceStub, coords.lat, coords.lon);
+      sinon.assert.calledOnce(zdpStub);
+      sinon.assert.calledWith(zdpStub, coords.lat, coords.lon);
     });
     test('should a successful response but with a null network (address out of IDF)', async () => {
       const coords = someOutOfIDFCoordsWithNoNetwork();
@@ -118,6 +132,7 @@ describe('/api/map/eligibilityStatus', () => {
           ...coords,
         })
         .reply(200, { ...somePyrisAddressOutOfIDFResponse() });
+      zdpStub.returns(false);
 
       const { req, res } = createMocks({
         method: 'GET',
@@ -130,8 +145,15 @@ describe('/api/map/eligibilityStatus', () => {
       expect(JSON.parse(res._getData())).toEqual(
         expect.objectContaining({
           ...coords,
-          network: null,
+          network: {
+            distance: null,
+            filiere: null,
+            irisCode: null,
+            lat: null,
+            lon: null,
+          },
           isEligible: false,
+          inZDP: false,
         })
       );
     });
@@ -155,6 +177,7 @@ describe('/api/map/eligibilityStatus', () => {
         .reply(200, { ...somePyrisAddressResponse() });
 
       computeDistanceStub.returns(networkResponse.distPointReseau);
+      zdpStub.returns(true);
 
       const { req, res } = createMocks({
         method: 'GET',
@@ -174,11 +197,14 @@ describe('/api/map/eligibilityStatus', () => {
             filiere: null,
           }),
           isEligible: true,
+          inZDP: true,
         })
       );
 
       sinon.assert.calledOnce(computeDistanceStub);
       sinon.assert.calledWith(computeDistanceStub, coords.lat, coords.lon);
+      sinon.assert.calledOnce(zdpStub);
+      sinon.assert.calledWith(zdpStub, coords.lat, coords.lon);
     };
 
     test(`should return address eligible, when address is in IDF and less then threshold distance (${THRESHOLD}m)`, async () => {
@@ -209,6 +235,7 @@ describe('/api/map/eligibilityStatus', () => {
         query: coords,
       });
 
+      zdpStub.returns(false);
       await eligibilityStatus(req, res);
 
       expect(res._getStatusCode()).toBe(200);
@@ -222,6 +249,7 @@ describe('/api/map/eligibilityStatus', () => {
           filiere: 'c',
         }),
         isEligible: true,
+        inZDP: false,
       });
     });
   });

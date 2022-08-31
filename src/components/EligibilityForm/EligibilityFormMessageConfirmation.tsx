@@ -30,8 +30,8 @@ const EligibilityFormMessageConfirmation = ({
   addressData: AddressDataType;
 }) => {
   const addressCoords: [number, number] = useMemo(() => {
-    const coords = addressData?.geoAddress?.geometry?.coordinates;
-    return coords && [...coords].reverse();
+    const coords = addressData?.geoAddress?.geometry?.coordinates as number[];
+    return coords && [coords[1], coords[0]];
   }, [addressData]);
 
   const isIRISAddress = useMemo(() => {

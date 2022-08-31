@@ -1,4 +1,4 @@
-import { Network } from '@core/domain/entity/network';
+import { Network } from 'src/types/HeatNetworksResponse';
 import { Address } from './address';
 
 const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);

@@ -23,18 +23,18 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
   if (req?.body) {
     const { type, ...values } = req.body;
-    const gestionnaire = getGestionnaire(values.Adresse);
-    if (gestionnaire) {
-      values.Gestionnaire = gestionnaire;
-    }
-
     switch (type) {
-      case 'FCU - Utilisateurs':
+      case 'FCU - Utilisateurs': {
+        const gestionnaire = getGestionnaire(values.Adresse);
+        if (gestionnaire) {
+          values.Gestionnaire = gestionnaire;
+        }
         base('FCU - Utilisateurs').create(
           [{ fields: values }],
           creationCallBack(res)
         );
         break;
+      }
       case 'FCU - Contribution':
         base('FCU - Contribution').create(
           [{ fields: values }],

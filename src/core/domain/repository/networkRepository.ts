@@ -1,5 +1,5 @@
 import { Coords } from '@core/domain/entity/address';
-import { Network } from '@core/domain/entity/network';
+import { Network } from 'src/types/HeatNetworksResponse';
 
 export interface NetworkRepository {
   findByCoords(coords: Coords): Promise<Network>;
