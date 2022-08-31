@@ -12,8 +12,8 @@ import styled, { createGlobalStyle, css } from 'styled-components';
 
 const { minZoomData, maxZoom } = param;
 
-const mapOverZindex = 10000;
-const mapControlZindex = 10100;
+const mapOverZindex = 100;
+const mapControlZindex = 110;
 
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
@@ -50,7 +50,7 @@ export const MapStyle: any = createGlobalStyle<{
     }
 
     .popup-map-layer {
-      z-index: 10101;
+      z-index: 111;
       font-size: 14px;
 
       &.maplibregl-popup-anchor-left  .maplibregl-popup-tip {
