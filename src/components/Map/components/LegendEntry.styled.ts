@@ -60,21 +60,11 @@ export const LabelLegendHead = styled.div<{ type?: string }>`
 
 export const InfoIcon = styled.div`
   position: relative;
-  & > div {
-    display: none;
-    position: absolute;
-    bottom: 38px;
-    right: 0;
-    background-color: white;
-    border: 1px solid black;
+  & > .hover-info {
     width: 300px;
-    font-size: 12px;
-    line-height: 14px;
-    border-radius: 4px;
-    padding: 8px;
   }
   &:hover {
-    & > div {
+    & > .hover-info {
       display: block;
     }
   }

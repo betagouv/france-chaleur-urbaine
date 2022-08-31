@@ -1,3 +1,4 @@
+import Hoverable from '@components/Hoverable';
 import { Icon } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -644,14 +645,12 @@ export default function Map() {
       <MapStyle legendCollapsed={legendCollapsed} />
       <div className="map-wrap">
         <CollapseLegend
-          title={
-            legendCollapsed
-              ? 'Développer le panneau de la légende'
-              : 'Cacher le panneau de la légende'
-          }
           legendCollapsed={legendCollapsed}
           onClick={() => setLegendCollapsed(!legendCollapsed)}
         >
+          <Hoverable position="right">
+            {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
+          </Hoverable>
           <Icon
             size="xl"
             name={

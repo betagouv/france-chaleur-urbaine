@@ -157,6 +157,11 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   background-color: white;
   height: 48px;
   width: 46px;
+  &:hover {
+    & > .hover-info {
+      display: block;
+    }
+  }
 `;
 
 // --------------------

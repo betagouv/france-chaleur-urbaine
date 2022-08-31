@@ -52,6 +52,11 @@ export const CollapseZone = styled.button<{ zoneCollapsed: boolean }>`
   & > span {
     margin: 4px 0 0 0 !important;
   }
+  &:hover {
+    & > .hover-info {
+      display: block;
+    }
+  }
 `;
 
 export const Explanation = styled.div`

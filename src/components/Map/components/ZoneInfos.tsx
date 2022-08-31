@@ -1,3 +1,4 @@
+import Hoverable from '@components/Hoverable';
 import { Button, Icon } from '@dataesr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { Polygon } from 'geojson';
@@ -82,14 +83,12 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   return (
     <>
       <CollapseZone
-        title={
-          zoneCollapsed
-            ? 'Développer le panneau de de recherche de données'
-            : 'Cacher le panneau de de recherche de données'
-        }
         zoneCollapsed={zoneCollapsed}
         onClick={() => setZoneCollapsed(!zoneCollapsed)}
       >
+        <Hoverable position="top-centered">
+          {zoneCollapsed ? 'Afficher le panneau' : 'Masquer le panneau'}
+        </Hoverable>
         <Icon
           size="xl"
           name={zoneCollapsed ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'}

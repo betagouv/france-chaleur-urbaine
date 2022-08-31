@@ -1,3 +1,4 @@
+import Hoverable from '@components/Hoverable';
 import { Icon } from '@dataesr/react-dsfr';
 import LegendDesc from './LegendDesc';
 import {
@@ -58,7 +59,7 @@ function LegendEntry({
             {info && (
               <InfoIcon>
                 <Icon size="lg" name="ri-information-fill" />
-                <div>{info}</div>
+                <Hoverable>{info}</Hoverable>
               </InfoIcon>
             )}
           </LabelLegend>
