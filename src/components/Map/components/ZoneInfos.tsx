@@ -33,11 +33,15 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   const { heatNetworkService } = useServices();
 
   const zoneIndex = useRef(0);
-  const [zoneCollapsed, setZoneCollapsed] = useState(false);
+  const [zoneCollapsed, setZoneCollapsed] = useState(true);
   const [exporting, setExporting] = useState(false);
   const [drawing, setDrawing] = useState(false);
   const [bounds, setBounds] = useState<number[][]>();
   const [summary, setSummary] = useState<Summary>();
+
+  useEffect(() => {
+    setZoneCollapsed(window.innerWidth < 1251);
+  }, []);
 
   useEffect(() => {
     if (map && draw) {

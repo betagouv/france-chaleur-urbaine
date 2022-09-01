@@ -1,12 +1,14 @@
 import styled, { css } from 'styled-components';
 
 export const ZoneInfoWrapper = styled.div`
+  min-width: 200px;
   display: flex;
   flex: 1;
   gap: 4px;
 `;
 
 export const IconWrapper = styled.div<{ withBackground?: boolean }>`
+  width: 25px;
   display: inline;
   position: relative;
   ${({ withBackground }) =>
