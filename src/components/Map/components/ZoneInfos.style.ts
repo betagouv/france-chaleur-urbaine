@@ -1,5 +1,6 @@
 import { Button } from '@dataesr/react-dsfr';
 import styled, { css } from 'styled-components';
+import { mapMinMedia } from '../Map.style';
 
 export const Container = styled.div<{ customCursor?: boolean }>`
   ${({ customCursor }) =>
@@ -13,13 +14,12 @@ export const ZoneInfosWrapper = styled.div`
   position: relative;
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   background-color: white;
   padding: 16px;
   border-radius: 8px;
   border: 1px solid #dddddd;
-  box-shadow: 0px 16px 16px -16px rgba(0, 0, 0, 0.32),
-    0px 8px 16px rgba(0, 0, 0, 0.1);
 `;
 
 export const Export = styled.div`
@@ -39,14 +39,23 @@ export const CollapseZone = styled.button<{ zoneCollapsed: boolean }>`
   display: flex;
   justify-content: center;
   left: 50%;
-  top: -6px;
+  top: 32px;
+  ${mapMinMedia} {
+    left: 64px;
+    top: 16px;
+  }
   ${({ zoneCollapsed }) =>
     zoneCollapsed &&
     css`
-      top: 10px;
+      top: 64px;
+      ${mapMinMedia} {
+        top: 32px;
+      }
     `}
+  transform: translateY(-50%);
   border-radius: 10px;
   background-color: white;
+  border: solid 1px #dddddd;
   height: 46px;
   width: 48px;
   & > span {
@@ -55,6 +64,9 @@ export const CollapseZone = styled.button<{ zoneCollapsed: boolean }>`
   &:hover {
     & > .hover-info {
       display: block;
+      ${mapMinMedia} {
+        display: none;
+      }
     }
   }
 `;

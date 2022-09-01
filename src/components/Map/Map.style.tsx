@@ -15,6 +15,9 @@ const { minZoomData, maxZoom } = param;
 const mapOverZindex = 100;
 const mapControlZindex = 110;
 
+export const mapMediumMedia = '@media (max-width: 1250px) ';
+export const mapMinMedia = '@media (max-width: 750px) ';
+
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
@@ -31,6 +34,10 @@ export const MapStyle: any = createGlobalStyle<{
       width: ${({ legendCollapsed }) =>
         legendCollapsed ? '100%' : 'calc(100% - 333px)'};
       height: 100%;
+      ${mapMediumMedia} {
+        left: 0;
+        width: 100%;
+      }
     }
 
     .maplibregl-control-container,
@@ -118,15 +125,25 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
 
-  width: 925px;
-  padding: 1rem;
+  max-width: calc(100vw - 333px);
+  width: 1100px;
+  padding: 32px;
+  ${mapMinMedia} {
+    padding: 16px 32px;
+  }
   bottom: 0;
   left: ${({ legendCollapsed }) =>
-    legendCollapsed ? '250px' : 'calc((100vw - 925px - 333px)/2 + 333px)'};
+    legendCollapsed ? '50vw' : 'calc((100vw - 333px)/2 + 333px)'};
+  transform: translateX(-50%);
+
+  ${mapMediumMedia} {
+    left: 50vw;
+    max-width: 100%;
+  }
 `;
 
 export const Legend = styled.div<{ legendCollapsed: boolean }>`
-  z-index: ${mapControlZindex};
+  z-index: ${mapControlZindex + 1};
   overflow: scroll;
   ${({ legendCollapsed }) =>
     legendCollapsed &&
@@ -149,17 +166,22 @@ export const LegendSeparator = styled.div`
 
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
-  padding: 0 0 0 24px;
-  z-index: ${mapControlZindex};
+  padding: 0 0 0 22px;
+  z-index: ${mapControlZindex + 1};
   left: ${({ legendCollapsed }) => (legendCollapsed ? '-23px' : '310px')};
   top: 50%;
   border-radius: 10px;
   background-color: white;
+  border: solid 1px #dddddd;
   height: 48px;
   width: 46px;
+  overflow: hidden;
   &:hover {
     & > .hover-info {
       display: block;
+      ${mapMinMedia} {
+        display: none;
+      }
     }
   }
 `;
