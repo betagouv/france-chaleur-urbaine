@@ -7,6 +7,21 @@ import { NetworkSummary } from 'src/types/Summary/Network';
 import { getSpreadSheet, zip } from './export';
 import { consoColumns, fioulColumns, gasColumns } from './export.config';
 
+export const availableRegions = [
+  'bnb_auvergne-rhone-alpes-batiment_adresse',
+  'bnb_idf - batiment_adresse',
+  'bnb_nouvelle-aquitaine-batiment_adresse',
+  'bnb_bretagne-batiment_adresse',
+  'bnb_occitanie-batiment_adresse',
+  'bnb_grand-est-batiment_adresse',
+  'bnb_centre-val-de-loire-batiment_adresse',
+  'bnb_bourgogne-franche-comte-batiment_adresse',
+  'bnb_hauts-de-france-batiment_adresse',
+  'bnb_normandie-batiment_adresse',
+  'bnb_pays-de-la-loire-batiment_adresse',
+  'bnb_provence-alpes-cote-d_azur-batiment_adresse',
+];
+
 const getRegions = async (coordinates: number[][]): Promise<string[]> => {
   const results = await db('regions')
     .select('bnb_nom')
@@ -23,7 +38,9 @@ const getRegions = async (coordinates: number[][]): Promise<string[]> => {
         )
       `)
     );
-  return results.map((result) => result.bnb_nom);
+  return results
+    .map((result) => result.bnb_nom)
+    .filter((region) => availableRegions.includes(region));
 };
 
 const getWithinQuery = (coordinates: number[][], geom: string) => `
