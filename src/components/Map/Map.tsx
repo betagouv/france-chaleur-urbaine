@@ -369,7 +369,11 @@ export default function Map() {
     ];
     const onMapClick = (e: any, key: string) => {
       const properties = e.features[0].properties;
-      const coordinates = e.features[0].geometry.coordinates.slice();
+      let coordinates = e.features[0].geometry.coordinates.slice();
+      if (key === 'buildings') {
+        const { lat, lng } = e.lngLat;
+        coordinates = [lng, lat];
+      }
       updateClickedPoint(coordinates, { [key]: properties });
     };
 
