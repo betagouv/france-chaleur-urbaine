@@ -50,8 +50,16 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       try {
         setStatus('loading');
         const networkData = await heatNetworkService.findByCoords(coords);
-        const { isEligible: eligibility, network } = networkData;
-        setData({ ...data, eligibility, address, coords, geoAddress, network });
+        const { isEligible: eligibility, network, inZDP } = networkData;
+        setData({
+          ...data,
+          eligibility,
+          address,
+          coords,
+          geoAddress,
+          network,
+          inZDP,
+        });
         setStatus('success');
       } catch (e) {
         setStatus('error');

@@ -107,7 +107,9 @@ const useContactFormFCU = () => {
 
   const handleOnSubmitContact = useCallback(
     async (data: Record<string, any> = {}) => {
-      if (data.structure !== 'Tertiaire') data.company = '';
+      if (data.structure !== 'Tertiaire') {
+        data.company = '';
+      }
       setMessageSent(true);
       callMarkup__handleOnSubmitContact(data);
       await submitToFCU(data);

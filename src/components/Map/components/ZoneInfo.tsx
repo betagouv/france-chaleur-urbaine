@@ -24,11 +24,9 @@ const ZoneInfo = ({
 }) => {
   return (
     <ZoneInfoWrapper>
-      {icon && (
-        <IconWrapper withBackground={withBackground}>
-          <img src={`/icons/picto-${icon}.svg`} alt="" />
-        </IconWrapper>
-      )}
+      <IconWrapper withBackground={withBackground}>
+        {icon && <img src={`/icons/picto-${icon}.svg`} alt="" />}
+      </IconWrapper>
       <Info alignTop={alignTop}>
         <Title>{title}</Title>
         <div>

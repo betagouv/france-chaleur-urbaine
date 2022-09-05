@@ -9,11 +9,15 @@ import {
 import param from 'src/services/Map/param';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
+import { LegendDeskData } from './components/LegendDesc';
 
-const { minZoomData, maxZoom } = param;
+const { minZoomData } = param;
 
-const mapOverZindex = 10000;
-const mapControlZindex = 10100;
+const mapOverZindex = 100;
+const mapControlZindex = 110;
+
+export const mapMediumMedia = '@media (max-width: 1250px) ';
+export const mapMinMedia = '@media (max-width: 750px) ';
 
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
@@ -31,6 +35,10 @@ export const MapStyle: any = createGlobalStyle<{
       width: ${({ legendCollapsed }) =>
         legendCollapsed ? '100%' : 'calc(100% - 333px)'};
       height: 100%;
+      ${mapMediumMedia} {
+        left: 0;
+        width: 100%;
+      }
     }
 
     .maplibregl-control-container,
@@ -50,7 +58,7 @@ export const MapStyle: any = createGlobalStyle<{
     }
 
     .popup-map-layer {
-      z-index: 10101;
+      z-index: 111;
       font-size: 14px;
 
       &.maplibregl-popup-anchor-left  .maplibregl-popup-tip {
@@ -118,15 +126,25 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
 
-  width: 1000px;
-  padding: 1rem;
+  max-width: calc(100vw - 333px);
+  width: 1100px;
+  padding: 32px;
+  ${mapMinMedia} {
+    padding: 16px 32px;
+  }
   bottom: 0;
   left: ${({ legendCollapsed }) =>
-    legendCollapsed ? 'calc(50% - 500px)' : 'calc((50% + 166px) - 500px)'};
+    legendCollapsed ? '50vw' : 'calc((100vw - 333px)/2 + 333px)'};
+  transform: translateX(-50%);
+
+  ${mapMediumMedia} {
+    left: 50vw;
+    max-width: 100%;
+  }
 `;
 
 export const Legend = styled.div<{ legendCollapsed: boolean }>`
-  z-index: ${mapControlZindex};
+  z-index: ${mapControlZindex + 1};
   overflow: scroll;
   ${({ legendCollapsed }) =>
     legendCollapsed &&
@@ -149,14 +167,24 @@ export const LegendSeparator = styled.div`
 
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
-  padding: 0 0 0 9px;
-  z-index: ${mapControlZindex};
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '-11px' : '322px')};
+  padding: 0 0 0 22px;
+  z-index: ${mapControlZindex + 1};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '-23px' : '310px')};
   top: 50%;
   border-radius: 10px;
   background-color: white;
-  height: 42px;
-  width: 22px;
+  border: solid 1px #dddddd;
+  height: 48px;
+  width: 46px;
+  overflow: hidden;
+  &:hover {
+    & > .hover-info {
+      display: block;
+      ${mapMinMedia} {
+        display: none;
+      }
+    }
+  }
 `;
 
 // --------------------
@@ -214,33 +242,27 @@ const arrColorFromDefEnergy = [
   ),
   themeDefEnergy.unknow.color,
 ];
+
+const iconSize = 31;
+const maxDisplaySize = 29;
+const iconRatio = 1 / (iconSize / maxDisplaySize);
+const getSymbolRatio: (size: number) => number = (size) =>
+  iconRatio * (size / maxDisplaySize);
 export const energyLayerStyle = {
   type: 'symbol',
   layout: {
     'icon-image': 'energy-picto',
     'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
     'icon-size': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.1,
-      [
-        'case',
-        ['<', ['get', NB_LOT], 100],
-        0.25,
-        ['<', ['get', NB_LOT], 1000],
-        0.6,
-        1,
-      ],
-      maxZoom,
-      [
-        'case',
-        ['<', ['get', NB_LOT], 100],
-        0.25 * 2,
-        ['<', ['get', NB_LOT], 1000],
-        0.6 * 2,
-        1 * 2,
-      ],
+      'case',
+      ...LegendDeskData.energy.flatMap(({ mapCase, size }, i, arr) => {
+        const { ope, value } = mapCase;
+        const isLastEntry = i === arr.length - 1;
+        const symbolRatio = getSymbolRatio(size);
+        return !isLastEntry
+          ? [[ope, ['get', NB_LOT], value], symbolRatio]
+          : [symbolRatio];
+      }),
     ],
   },
   paint: {
@@ -280,27 +302,15 @@ export const gasUsageLayerStyle = {
   paint: {
     'circle-color': ['match', ['get', TYPE_GAS], ...arrColorFromDefTypeGas],
     'circle-radius': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.1,
-      [
-        'case',
-        ['<', ['get', CONSO], 100],
-        4,
-        ['<', ['get', CONSO], 1000],
-        8,
-        14,
-      ],
-      maxZoom,
-      [
-        'case',
-        ['<', ['get', CONSO], 100],
-        8,
-        ['<', ['get', CONSO], 1000],
-        16,
-        28,
-      ],
+      'case',
+      ...LegendDeskData.gasUsage.flatMap(({ mapCase, size }, i, arr) => {
+        const { ope, value } = mapCase;
+        const isLastEntry = i === arr.length - 1;
+        const radiusValue = size / 2;
+        return !isLastEntry
+          ? [[ope, ['get', CONSO], value], radiusValue]
+          : [radiusValue];
+      }),
     ],
     'circle-opacity': [
       'interpolate',
@@ -309,7 +319,7 @@ export const gasUsageLayerStyle = {
       minZoomData + 0.2,
       0,
       minZoomData + 0.2 + 1,
-      0.35,
+      0.55,
     ],
     'circle-stroke-opacity': 0,
   },

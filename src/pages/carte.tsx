@@ -1,9 +1,8 @@
 import Map from '@components/Map';
-import MainContainer from '@components/shared/layout';
-import {
+import MainContainer, {
   fullscreenHeaderHeight,
   tabHeaderHeight,
-} from '@components/shared/layout/MainLayout';
+} from '@components/shared/layout';
 import Head from 'next/head';
 import styled from 'styled-components';
 
