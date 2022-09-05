@@ -3,7 +3,6 @@ import { Icon } from '@dataesr/react-dsfr';
 import LegendDesc from './LegendDesc';
 import {
   InfoIcon,
-  LabelLegend,
   LabelLegendHead,
   LabelLegendInputLabel,
   LabelLegendInputLabelWrapper,
@@ -54,17 +53,15 @@ function LegendEntry({
               bgColor={bgColor && `${bgColor}`}
             />
           )}
-          <LabelLegend>
-            <LabelLegendHead type={type}>{label}</LabelLegendHead>
-            {info && (
-              <InfoIcon>
-                <Icon size="lg" name="ri-information-fill" />
-                <Hoverable>{info}</Hoverable>
-              </InfoIcon>
-            )}
-          </LabelLegend>
+          <LabelLegendHead type={type}>{label}</LabelLegendHead>
         </LabelLegendInputLabel>
         {subLegend && LegendDesc[subLegend]?.()}
+        {info && (
+          <InfoIcon>
+            <Icon size="lg" name="ri-information-fill" />
+            <Hoverable>{info}</Hoverable>
+          </InfoIcon>
+        )}
       </LabelLegendInputLabelWrapper>
     </LabelLegendWrapper>
   );
