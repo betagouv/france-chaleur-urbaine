@@ -133,6 +133,7 @@ const legendData: (string | TypeGroupLegend)[] = [
         id: 'buildings',
         label: 'Caractéristiques des bâtiments',
         subLegend: 'DPE',
+        info: "Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont donnés à titre informatif et non-officiel, sans aucune valeur légale.",
       },
     ],
     type: 'list',

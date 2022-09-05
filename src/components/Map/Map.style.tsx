@@ -9,8 +9,9 @@ import {
 import param from 'src/services/Map/param';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
+import { LegendDeskData } from './components/LegendDesc';
 
-const { minZoomData, maxZoom } = param;
+const { minZoomData } = param;
 
 const mapOverZindex = 100;
 const mapControlZindex = 110;
@@ -241,33 +242,27 @@ const arrColorFromDefEnergy = [
   ),
   themeDefEnergy.unknow.color,
 ];
+
+const iconSize = 31;
+const maxDisplaySize = 29;
+const iconRatio = 1 / (iconSize / maxDisplaySize);
+const getSymbolRatio: (size: number) => number = (size) =>
+  iconRatio * (size / maxDisplaySize);
 export const energyLayerStyle = {
   type: 'symbol',
   layout: {
     'icon-image': 'energy-picto',
     'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
     'icon-size': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.1,
-      [
-        'case',
-        ['<', ['get', NB_LOT], 100],
-        0.25,
-        ['<', ['get', NB_LOT], 1000],
-        0.6,
-        1,
-      ],
-      maxZoom,
-      [
-        'case',
-        ['<', ['get', NB_LOT], 100],
-        0.25 * 2,
-        ['<', ['get', NB_LOT], 1000],
-        0.6 * 2,
-        1 * 2,
-      ],
+      'case',
+      ...LegendDeskData.energy.flatMap(({ mapCase, size }, i, arr) => {
+        const { ope, value } = mapCase;
+        const isLastEntry = i === arr.length - 1;
+        const symbolRatio = getSymbolRatio(size);
+        return !isLastEntry
+          ? [[ope, ['get', NB_LOT], value], symbolRatio]
+          : [symbolRatio];
+      }),
     ],
   },
   paint: {
@@ -307,27 +302,15 @@ export const gasUsageLayerStyle = {
   paint: {
     'circle-color': ['match', ['get', TYPE_GAS], ...arrColorFromDefTypeGas],
     'circle-radius': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.1,
-      [
-        'case',
-        ['<', ['get', CONSO], 100],
-        4,
-        ['<', ['get', CONSO], 1000],
-        8,
-        14,
-      ],
-      maxZoom,
-      [
-        'case',
-        ['<', ['get', CONSO], 100],
-        8,
-        ['<', ['get', CONSO], 1000],
-        16,
-        28,
-      ],
+      'case',
+      ...LegendDeskData.gasUsage.flatMap(({ mapCase, size }, i, arr) => {
+        const { ope, value } = mapCase;
+        const isLastEntry = i === arr.length - 1;
+        const radiusValue = size / 2;
+        return !isLastEntry
+          ? [[ope, ['get', CONSO], value], radiusValue]
+          : [radiusValue];
+      }),
     ],
     'circle-opacity': [
       'interpolate',
@@ -336,7 +319,7 @@ export const gasUsageLayerStyle = {
       minZoomData + 0.2,
       0,
       minZoomData + 0.2 + 1,
-      0.35,
+      0.55,
     ],
     'circle-stroke-opacity': 0,
   },
