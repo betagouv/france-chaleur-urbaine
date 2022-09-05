@@ -46,8 +46,10 @@ export const ScaleLabelLegend = styled.span<{
   size: number;
   circle?: boolean;
 }>`
-  width: ${({ size }) => `${size}rem`};
-  height: 1em;
+  ${({ size }) => css`
+    width: ${size}px;
+    height: ${size}px;
+  `};
   display: inline-flex;
   vertical-align: middle;
   justify-content: center;
@@ -59,8 +61,8 @@ export const ScaleLabelLegend = styled.span<{
     display: block;
     position: relative;
 
-    width: ${({ size }) => `${size}em`};
-    height: ${({ size }) => `${size}em`};
+    width: 100%;
+    height: 100%;
     background-color: ${({ bgColor }) => bgColor || 'grey'};
     ${({ circle }) =>
       circle &&

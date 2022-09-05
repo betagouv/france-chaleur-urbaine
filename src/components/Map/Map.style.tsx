@@ -9,6 +9,7 @@ import {
 import param from 'src/services/Map/param';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
+import { LegendDeskData } from './components/LegendDesc';
 
 const { minZoomData } = param;
 
@@ -241,6 +242,12 @@ const arrColorFromDefEnergy = [
   ),
   themeDefEnergy.unknow.color,
 ];
+
+const iconSize = 31;
+const maxDisplaySize = 29;
+const iconRatio = 1 / (iconSize / maxDisplaySize);
+const getSymbolRatio: (size: number) => number = (size) =>
+  iconRatio * (size / maxDisplaySize);
 export const energyLayerStyle = {
   type: 'symbol',
   layout: {
@@ -248,11 +255,14 @@ export const energyLayerStyle = {
     'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
     'icon-size': [
       'case',
-      ['<', ['get', NB_LOT], 30],
-      0.3,
-      ['<', ['get', NB_LOT], 100],
-      0.5,
-      0.85,
+      ...LegendDeskData.energy.flatMap(({ mapCase, size }, i, arr) => {
+        const { ope, value } = mapCase;
+        const isLastEntry = i === arr.length - 1;
+        const symbolRatio = getSymbolRatio(size);
+        return !isLastEntry
+          ? [[ope, ['get', NB_LOT], value], symbolRatio]
+          : [symbolRatio];
+      }),
     ],
   },
   paint: {
@@ -293,11 +303,14 @@ export const gasUsageLayerStyle = {
     'circle-color': ['match', ['get', TYPE_GAS], ...arrColorFromDefTypeGas],
     'circle-radius': [
       'case',
-      ['<', ['get', CONSO], 100],
-      4,
-      ['<', ['get', CONSO], 1000],
-      8,
-      14,
+      ...LegendDeskData.gasUsage.flatMap(({ mapCase, size }, i, arr) => {
+        const { ope, value } = mapCase;
+        const isLastEntry = i === arr.length - 1;
+        const radiusValue = size / 2;
+        return !isLastEntry
+          ? [[ope, ['get', CONSO], value], radiusValue]
+          : [radiusValue];
+      }),
     ],
     'circle-opacity': [
       'interpolate',
@@ -306,7 +319,7 @@ export const gasUsageLayerStyle = {
       minZoomData + 0.2,
       0,
       minZoomData + 0.2 + 1,
-      0.35,
+      0.55,
     ],
     'circle-stroke-opacity': 0,
   },
