@@ -51,9 +51,10 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
   }
 `;
 
-export const ButtonLink = styled.a.attrs({
-  className: 'fr-btn',
-})``;
+export const ButtonLink = styled.a.attrs((props) => ({
+  ...props,
+  className: `fr-btn ${props.className || ''}`,
+}))``;
 
 export const CounterItem = styled.div`
   display: flex;
