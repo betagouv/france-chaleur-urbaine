@@ -67,6 +67,8 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     email,
     termOfUse,
     inZDP,
+    city,
+    postcode,
   } = values;
 
   return {
@@ -86,6 +88,8 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     'Choix en fonction de la distance au réseau':
       formatDistanceToAirtable(network?.distance, heatingType) || 'inconnue',
     'J’accepte les CGU': termOfUse,
+    Ville: city,
+    'Code Postal': postcode,
   };
 };
 

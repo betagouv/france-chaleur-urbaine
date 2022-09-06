@@ -212,6 +212,8 @@ const EligibilityFormContact = ({
         ...addressData,
         ...values,
         computEligibility,
+        city: addressData?.geoAddress?.properties?.city,
+        postcode: addressData?.geoAddress?.properties?.postcode,
       };
 
       if (onSubmit) {

@@ -59,4 +59,9 @@ export default [
     title: 'ADEME',
     link: 'https://www.ademe.fr',
   },
+  {
+    image: './logo-CSTB.jpg',
+    title: 'CSTB',
+    link: 'http://www.cstb.fr/fr/',
+  },
 ];
