@@ -1,23 +1,76 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Select, Table, TextInput } from '@dataesr/react-dsfr';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useServices } from 'src/services';
-import { demandRowsParams } from 'src/services/demandsService';
+import { RowsParams } from 'src/services/demandsService';
 import { Demand } from 'src/types/Summary/Demand';
-import { Filters, NoResult } from './manager.style';
+import Addresse from './Addresse';
+import Comment from './Comment';
+import Contact from './Contact';
+import Contacted from './Contacted';
+import { Container, Filters, NoResult } from './manager.style';
+import Status from './Status';
+import Tag from './Tag';
 
-const columns = [
-  ...demandRowsParams,
+export const demandRowsParams: RowsParams[] = [
   {
-    name: 'view-more',
-    label: 'Voir plus',
-    render: (demand: Demand) => (
-      <Link href={`/demandes/${demand.id}`}>Voir les details</Link>
+    name: 'Status',
+    label: 'Status',
+    render: (demand) => <Status demand={demand} />,
+  },
+  {
+    name: 'Prospect recontacté',
+    label: 'Prospect recontacté',
+    render: (demand) => <Contacted demand={demand} />,
+  },
+  {
+    name: 'Contact',
+    label: 'Contact',
+    render: (demand) => <Contact demand={demand} />,
+  },
+  {
+    name: 'Adresse',
+    label: 'Adresse',
+    render: (demand) => <Addresse demand={demand} />,
+  },
+  {
+    name: 'Date de la demande',
+    label: 'Date de demande',
+    render: (demand) =>
+      new Date(demand['Date de la demande']).toLocaleDateString(),
+  },
+  {
+    name: 'Type de chauffage',
+    label: 'Type',
+    render: (demand) => <Tag text={demand.Structure} />,
+  },
+  {
+    name: 'Mode de chauffage',
+    label: 'Mode de chauffage',
+    render: (demand) => (
+      <Tag
+        text={
+          demand['Mode de chauffage'] === 'Électricité' ||
+          demand['Mode de chauffage'] === 'électricité'
+            ? 'Électricité'
+            : `${demand['Mode de chauffage']} ${demand[
+                'Type de chauffage'
+              ].toLowerCase()}`
+        }
+      />
     ),
   },
+  {
+    name: 'Distance au réseau',
+    label: 'Distance au réseau',
+    render: (demand) => `${demand['Distance au réseau']} m`,
+  },
+  {
+    name: 'Commentaires',
+    label: 'Commentaires',
+    render: (demand) => <Comment demand={demand} />,
+  },
 ];
-
 const searchKeys: (keyof Demand)[] = ['Nom', 'Prénom', 'Mail'];
 const matchFilter = (filter: string, value: string | undefined) => {
   return (
@@ -104,7 +157,7 @@ const Manager = () => {
   }, [filter, filterModeChauffage, filterTypeChauffage, demands]);
 
   return (
-    <>
+    <Container>
       <h2>Mes demandes - {demands.length || 'Chargement...'}</h2>
       {demands.length > 0 && (
         <>
@@ -133,8 +186,7 @@ const Manager = () => {
           </Filters>
           {filteredDemands.length > 0 ? (
             <Table
-              fixedHeader
-              columns={columns}
+              columns={demandRowsParams}
               data={filteredDemands}
               rowKey="N° de dossier"
               pagination
@@ -147,7 +199,7 @@ const Manager = () => {
           )}
         </>
       )}
-    </>
+    </Container>
   );
 };
 

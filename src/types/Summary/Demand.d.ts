@@ -8,16 +8,9 @@ export type DemandSummary = {
 };
 
 export type EditableDemandSummary = {
-  'Date de mise à jour': string;
-  Raccordable: boolean;
-  'Prise de contact avec le demandeur réalisée par l’exploitant': boolean;
-  'En attente d’éléments complémentaires de la part du demandeur': boolean;
-  'Etude en cours': boolean;
-  'Raccordement abandonné par la copropriété ou l’établissement tertiaire': boolean;
-  'Raccordement voté en AG de copropriété': boolean;
-  'Travaux en cours': boolean;
-  'Raccordement effectué': boolean;
+  'Prise de contact': boolean;
   Commentaire: string;
+  Status: string;
 };
 
 export type Demand = DemandSummary &
@@ -25,4 +18,8 @@ export type Demand = DemandSummary &
     Mail: string;
     'Distance au réseau': string;
     'N° de dossier': string;
+    'en ZDP': boolean;
+    'Date de la demande': string;
+    Structure: string;
+    Ville: string;
   };

@@ -7,8 +7,8 @@ const getUser = (email: string) =>
 
 const tableNameFcuDemands = 'FCU - Utilisateurs';
 
-export const getGestionnaire = (addresse: string): string | null => {
-  if (addresse && addresse.includes('Paris')) {
+export const getGestionnaire = (demand: Demand): string | null => {
+  if (demand.Ville === 'Paris') {
     return 'Paris';
   }
 
@@ -37,38 +37,28 @@ export const getDemands = async (email: string): Promise<Demand[] | null> => {
 export const getDemand = async (
   email: string,
   demandId: string
-): Promise<Demand | Record<string, never> | undefined> => {
+): Promise<Demand | null> => {
   const user = await getUser(email);
 
-  if (!user) {
-    return {};
+  const record = await base(tableNameFcuDemands).find(demandId);
+  if (!user || record.get('Gestionnaire') !== user.gestionnaire) {
+    return null;
   }
-
-  try {
-    const record = await base(tableNameFcuDemands).find(demandId);
-    return { id: record.id, ...record.fields } as Demand;
-  } catch (err: any) {
-    throw Error(err);
-  }
+  return { id: record.id, ...record.fields } as Demand;
 };
 
 export const updateDemand = async (
   email: string,
   demandId: string,
-  update: Record<string, any>
-): Promise<Demand | Record<string, never> | undefined> => {
-  const user = await getUser(email);
-
-  if (!user) {
-    return {};
+  update: Partial<Demand>
+): Promise<Demand | null> => {
+  const demand = await getDemand(email, demandId);
+  if (!demand) {
+    return null;
   }
 
-  try {
-    const record = await base(tableNameFcuDemands)
-      .update([{ id: demandId, fields: update }])
-      .then((records) => records[0]);
-    return { id: record.id, ...record.fields } as Demand;
-  } catch (err: any) {
-    throw Error(err);
-  }
+  const record = await base(tableNameFcuDemands)
+    .update([{ id: demandId, fields: update }])
+    .then((records) => records[0]);
+  return { id: record.id, ...record.fields } as Demand;
 };

@@ -1,6 +1,5 @@
-import Manager from '@components/manager';
+import Manager from '@components/manager/Manager';
 import MainContainer from '@components/shared/layout';
-import Slice from '@components/Slice';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import Head from 'next/head';
@@ -12,9 +11,7 @@ export default function Gestionnaire(): JSX.Element {
         <title>France Chaleur Urbaine - Espace gestionnaire</title>
       </Head>
       <MainContainer currentMenu="/gestionnaire">
-        <Slice padding={8}>
-          <Manager />
-        </Slice>
+        <Manager />
       </MainContainer>
     </>
   );
