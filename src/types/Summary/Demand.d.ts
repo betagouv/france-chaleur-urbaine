@@ -18,7 +18,7 @@ export type Demand = DemandSummary &
     Mail: string;
     'Distance au réseau': string;
     'N° de dossier': string;
-    'en ZDP': boolean;
+    'en ZDP': string;
     'Date de la demande': string;
     Structure: string;
     Ville: string;

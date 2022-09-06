@@ -1,0 +1,206 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { Select, Table, TextInput } from '@dataesr/react-dsfr';
+import { useEffect, useState } from 'react';
+import { useServices } from 'src/services';
+import { RowsParams } from 'src/services/demandsService';
+import { Demand } from 'src/types/Summary/Demand';
+import Addresse from './Addresse';
+import Comment from './Comment';
+import Contact from './Contact';
+import Contacted from './Contacted';
+import { Container, Filters, NoResult } from './manager.style';
+import Status from './Status';
+import Tag from './Tag';
+
+export const demandRowsParams: RowsParams[] = [
+  {
+    name: 'Status',
+    label: 'Status',
+    render: (demand) => <Status demand={demand} />,
+  },
+  {
+    name: 'Prospect recontacté',
+    label: 'Prospect recontacté',
+    render: (demand) => <Contacted demand={demand} />,
+  },
+  {
+    name: 'Contact',
+    label: 'Contact',
+    render: (demand) => <Contact demand={demand} />,
+  },
+  {
+    name: 'Adresse',
+    label: 'Adresse',
+    render: (demand) => <Addresse demand={demand} />,
+  },
+  {
+    name: 'Date de la demande',
+    label: 'Date de demande',
+    render: (demand) =>
+      new Date(demand['Date de la demande']).toLocaleDateString(),
+  },
+  {
+    name: 'Type de chauffage',
+    label: 'Type',
+    render: (demand) => <Tag text={demand.Structure} />,
+  },
+  {
+    name: 'Mode de chauffage',
+    label: 'Mode de chauffage',
+    render: (demand) => (
+      <Tag
+        text={
+          demand['Mode de chauffage'] === 'Électricité' ||
+          demand['Mode de chauffage'] === 'électricité'
+            ? 'Électricité'
+            : `${demand['Mode de chauffage']} ${demand[
+                'Type de chauffage'
+              ].toLowerCase()}`
+        }
+      />
+    ),
+  },
+  {
+    name: 'Distance au réseau',
+    label: 'Distance au réseau',
+    render: (demand) => `${demand['Distance au réseau']} m`,
+  },
+  {
+    name: 'Commentaires',
+    label: 'Commentaires',
+    render: (demand) => <Comment demand={demand} />,
+  },
+];
+const searchKeys: (keyof Demand)[] = ['Nom', 'Prénom', 'Mail'];
+const matchFilter = (filter: string, value: string | undefined) => {
+  return (
+    value &&
+    value
+      .toString()
+      .toLowerCase()
+      .replace(/é/g, 'e')
+      .includes(filter.toLowerCase())
+  );
+};
+
+const typeDeChauffageOptions = [
+  {
+    label: 'Tous',
+    value: '',
+  },
+  {
+    label: 'Collectif',
+    value: 'collectif',
+  },
+  {
+    label: 'Individuel',
+    value: 'individuel',
+  },
+];
+
+const modeDeChauffageOptions = [
+  {
+    label: 'Tous',
+    value: '',
+  },
+  {
+    label: 'Gaz',
+    value: 'gaz',
+  },
+  {
+    label: 'Fioul',
+    value: 'fioul',
+  },
+  {
+    label: 'Électricité',
+    value: 'électricité',
+  },
+];
+
+const Manager = () => {
+  const { demandsService } = useServices();
+  const [page, setPage] = useState(1);
+  const [demands, setDemands] = useState<Demand[]>([]);
+  const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
+  const [filter, setFilter] = useState('');
+  const [filterModeChauffage, setFilterModeChauffage] = useState('');
+  const [filterTypeChauffage, setFilterTypeChauffage] = useState('');
+
+  useEffect(() => {
+    demandsService.fetchDemands().then(setDemands);
+  }, [demandsService]);
+
+  useEffect(() => {
+    let tempDemands = demands;
+    if (filter) {
+      tempDemands = tempDemands.filter((demand) =>
+        searchKeys.some((key) => matchFilter(filter, demand[key] as string))
+      );
+    }
+
+    if (filterModeChauffage) {
+      tempDemands = tempDemands.filter(
+        (demand) =>
+          demand['Mode de chauffage']?.toLowerCase() === filterModeChauffage
+      );
+    }
+
+    if (filterTypeChauffage) {
+      tempDemands = tempDemands.filter(
+        (demand) =>
+          demand['Type de chauffage']?.toLowerCase() === filterTypeChauffage
+      );
+    }
+
+    setFilteredDemands(tempDemands);
+    setPage(1);
+  }, [filter, filterModeChauffage, filterTypeChauffage, demands]);
+
+  return (
+    <Container>
+      <h2>Mes demandes - {demands.length || 'Chargement...'}</h2>
+      {demands.length > 0 && (
+        <>
+          <Filters>
+            <TextInput
+              label="Rechercher par nom ou par mail:"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            />
+            <Select
+              // @ts-ignore: to fix in react-dsfr
+              label="Mode de chauffage:"
+              selected={filterModeChauffage}
+              // @ts-ignore: to fix in react-dsfr
+              onChange={(e) => setFilterModeChauffage(e.target.value)}
+              options={modeDeChauffageOptions}
+            />
+            <Select
+              // @ts-ignore: to fix in react-dsfr
+              label="Type de chauffage:"
+              selected={filterTypeChauffage}
+              // @ts-ignore: to fix in react-dsfr
+              onChange={(e) => setFilterTypeChauffage(e.target.value)}
+              options={typeDeChauffageOptions}
+            />
+          </Filters>
+          {filteredDemands.length > 0 ? (
+            <Table
+              columns={demandRowsParams}
+              data={filteredDemands}
+              rowKey="N° de dossier"
+              pagination
+              paginationPosition="center"
+              page={page}
+              setPage={setPage}
+            />
+          ) : (
+            <NoResult>Aucun résultats</NoResult>
+          )}
+        </>
+      )}
+    </Container>
+  );
+};
+
+export default Manager;

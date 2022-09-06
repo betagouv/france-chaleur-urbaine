@@ -1,4 +1,4 @@
-import Manager from '@components/manager/Manager';
+import Manager from '@components/Manager/Manager';
 import MainContainer from '@components/shared/layout';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
