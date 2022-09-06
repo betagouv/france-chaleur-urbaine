@@ -434,21 +434,6 @@ export default function Map() {
           const origin =
             process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
 
-          // -----------------
-          // --- Demands ---
-          // -----------------
-          map.current.addSource('demands', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
-          });
-
-          map.current.addLayer({
-            id: 'demands',
-            source: 'demands',
-            'source-layer': 'demands',
-            ...demandsLayerStyle,
-          });
-
           // --------------------
           // --- Heat Network ---
           // --------------------
@@ -528,6 +513,21 @@ export default function Map() {
             source: 'energy',
             'source-layer': 'energy',
             ...energyLayerStyle,
+          });
+
+          // -----------------
+          // --- Demands ---
+          // -----------------
+          map.current.addSource('demands', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+          });
+
+          map.current.addLayer({
+            id: 'demands',
+            source: 'demands',
+            'source-layer': 'demands',
+            ...demandsLayerStyle,
           });
         }
       );
