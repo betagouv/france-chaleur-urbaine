@@ -1,5 +1,5 @@
 const idfPrefixes = ['75', '77', '78', '91', '92', '93', '94', '95'];
-const cityManaged = ['Rennes', 'Bordeaux'];
+const cityManaged = ['Rennes', 'Bordeaux', 'Reims'];
 
 export const isBasedOnIRIS = (postCode: string, city: string): boolean =>
   !cityManaged.includes(city) &&
