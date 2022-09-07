@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Demand } from 'src/types/Summary/Demand';
 import { TextAreaInput } from './Comment.styles';
 
@@ -10,6 +10,10 @@ const Comment = ({
   updateDemand: (demandId: string, demand: Partial<Demand>) => void;
 }) => {
   const timeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    return () => clearTimeout(timeoutRef.current);
+  }, []);
 
   return (
     <TextAreaInput
