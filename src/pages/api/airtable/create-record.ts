@@ -25,7 +25,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
     const { type, ...values } = req.body;
     switch (type) {
       case 'FCU - Utilisateurs': {
-        const gestionnaire = getGestionnaire(values.Adresse);
+        const gestionnaire = getGestionnaire(values);
         if (gestionnaire) {
           values.Gestionnaire = gestionnaire;
         }
