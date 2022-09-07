@@ -8,7 +8,13 @@ import Addresse from './Addresse';
 import Comment from './Comment';
 import Contact from './Contact';
 import Contacted from './Contacted';
-import { Container, Distance, Filters, NoResult } from './manager.style';
+import {
+  Container,
+  Distance,
+  Filters,
+  NoResult,
+  TableContainer,
+} from './manager.style';
 import Status from './Status';
 import Tag from './Tag';
 
@@ -201,19 +207,21 @@ const Manager = () => {
               options={typeDeChauffageOptions}
             />
           </Filters>
-          {filteredDemands.length > 0 ? (
-            <Table
-              columns={demandRowsParams}
-              data={filteredDemands}
-              rowKey="N° de dossier"
-              pagination
-              paginationPosition="center"
-              page={page}
-              setPage={setPage}
-            />
-          ) : (
-            <NoResult>Aucun résultats</NoResult>
-          )}
+          <TableContainer>
+            {filteredDemands.length > 0 ? (
+              <Table
+                columns={demandRowsParams}
+                data={filteredDemands}
+                rowKey="N° de dossier"
+                pagination
+                paginationPosition="center"
+                page={page}
+                setPage={setPage}
+              />
+            ) : (
+              <NoResult>Aucun résultats</NoResult>
+            )}
+          </TableContainer>
         </>
       )}
     </Container>

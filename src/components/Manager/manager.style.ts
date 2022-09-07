@@ -25,3 +25,10 @@ export const NoResult = styled.div`
 export const Distance = styled.div`
   width: 70px;
 `;
+
+export const TableContainer = styled.div`
+  overflow: scroll;
+  & table {
+    max-height: calc(100vh - 64px) !important;
+  }
+`;
