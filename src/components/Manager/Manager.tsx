@@ -8,14 +8,14 @@ import Addresse from './Addresse';
 import Comment from './Comment';
 import Contact from './Contact';
 import Contacted from './Contacted';
-import { Container, Filters, NoResult } from './manager.style';
+import { Container, Distance, Filters, NoResult } from './manager.style';
 import Status from './Status';
 import Tag from './Tag';
 
 export const demandRowsParams: RowsParams[] = [
   {
-    name: 'Status',
-    label: 'Status',
+    name: 'Statut',
+    label: 'Statut',
     render: (demand) => <Status demand={demand} />,
   },
   {
@@ -36,8 +36,7 @@ export const demandRowsParams: RowsParams[] = [
   {
     name: 'Date de la demande',
     label: 'Date de demande',
-    render: (demand) =>
-      new Date(demand['Date de la demande']).toLocaleDateString(),
+    render: (demand) => new Date(demand['Date demandes']).toLocaleDateString(),
   },
   {
     name: 'Type de chauffage',
@@ -53,9 +52,11 @@ export const demandRowsParams: RowsParams[] = [
           demand['Mode de chauffage'] === 'Électricité' ||
           demand['Mode de chauffage'] === 'électricité'
             ? 'Électricité'
-            : `${demand['Mode de chauffage']} ${demand[
-                'Type de chauffage'
-              ].toLowerCase()}`
+            : `${demand['Mode de chauffage']} ${
+                demand['Type de chauffage']
+                  ? demand['Type de chauffage'].toLowerCase()
+                  : ''
+              }`
         }
       />
     ),
@@ -63,7 +64,7 @@ export const demandRowsParams: RowsParams[] = [
   {
     name: 'Distance au réseau',
     label: 'Distance au réseau',
-    render: (demand) => `${demand['Distance au réseau']} m`,
+    render: (demand) => <Distance>{demand['Distance au réseau']} m</Distance>,
   },
   {
     name: 'Commentaires',

@@ -19,7 +19,7 @@ export type Demand = DemandSummary &
     'Distance au réseau': string;
     'N° de dossier': string;
     'en ZDP': string;
-    'Date de la demande': string;
+    'Date demandes': string;
     Structure: string;
     Ville: string;
   };

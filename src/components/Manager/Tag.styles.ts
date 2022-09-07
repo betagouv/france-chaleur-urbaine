@@ -12,5 +12,5 @@ export const Container = styled.div<{
    color: ${colors.color};
   `};
   font-weight: bold;
-  width: fit-content;
+  width: max-content;
 `;
