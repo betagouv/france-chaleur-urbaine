@@ -6,7 +6,6 @@ export type RowsParams = {
   name: string;
   label: string;
   render?: (d: Demand) => any;
-  editable?: 'checkbox' | 'radio' | 'textarea' | 'text';
 };
 
 export class DemandsService {

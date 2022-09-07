@@ -22,4 +22,6 @@ export type Demand = DemandSummary &
     'Date demandes': string;
     Structure: string;
     Ville: string;
+    Conso: number;
+    Logement: number;
   };

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import { RowsParams } from 'src/services/demandsService';
 import { Demand } from 'src/types/Summary/Demand';
+import AdditionalInformation from './AdditionalInformation';
 import Addresse from './Addresse';
 import Comment from './Comment';
 import Contact from './Contact';
@@ -168,7 +169,15 @@ const Manager = () => {
     {
       name: 'Distance au réseau',
       label: 'Distance au réseau',
-      render: (demand) => <Distance>{demand['Distance au réseau']} m</Distance>,
+      render: (demand) =>
+        demand['Distance au réseau'] && (
+          <Distance>{demand['Distance au réseau']} m</Distance>
+        ),
+    },
+    {
+      name: 'Nb logements Conso gaz',
+      label: 'Nb logements Conso gaz',
+      render: (demand) => <AdditionalInformation demand={demand} />,
     },
     {
       name: 'Commentaires',
