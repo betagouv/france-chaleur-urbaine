@@ -20,6 +20,7 @@ export type Demand = DemandSummary &
     'N° de dossier': string;
     'en ZDP': string;
     'Date demandes': string;
+    Établissement: string;
     Structure: string;
     Ville: string;
     Conso: number;

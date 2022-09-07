@@ -65,6 +65,30 @@ const modeDeChauffageOptions = [
   },
 ];
 
+const displyModeDeChauffage = (demand: Demand) => {
+  if (
+    demand['Mode de chauffage'] &&
+    demand['Mode de chauffage'].toLowerCase() === 'électricité'
+  ) {
+    return 'Électricité';
+  } else if (
+    demand['Mode de chauffage'] &&
+    (demand['Mode de chauffage'].toLowerCase().trim() === 'gaz' ||
+      demand['Mode de chauffage'].toLowerCase().trim() === 'fioul')
+  ) {
+    return `${demand['Mode de chauffage'][0].toUpperCase()}${demand[
+      'Mode de chauffage'
+    ]
+      .slice(1)
+      .trim()} ${
+      demand['Type de chauffage']
+        ? demand['Type de chauffage'].toLowerCase()
+        : ''
+    }`;
+  }
+  return demand['Type de chauffage'];
+};
+
 const Manager = () => {
   const { demandsService } = useServices();
   const [page, setPage] = useState(1);
@@ -151,20 +175,7 @@ const Manager = () => {
     {
       name: 'Mode de chauffage',
       label: 'Mode de chauffage',
-      render: (demand) => (
-        <Tag
-          text={
-            demand['Mode de chauffage'] === 'Électricité' ||
-            demand['Mode de chauffage'] === 'électricité'
-              ? 'Électricité'
-              : `${demand['Mode de chauffage']} ${
-                  demand['Type de chauffage']
-                    ? demand['Type de chauffage'].toLowerCase()
-                    : ''
-                }`
-          }
-        />
-      ),
+      render: (demand) => <Tag text={displyModeDeChauffage(demand)} />,
     },
     {
       name: 'Distance au réseau',

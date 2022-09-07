@@ -6,7 +6,7 @@ import { StatusSelect } from './Status.styles';
 const statusOptions = [
   {
     value: '',
-    label: '- Status de la demande -',
+    label: '- Statut de la demande -',
     disabled: true,
   },
 ].concat(

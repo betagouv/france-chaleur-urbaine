@@ -15,6 +15,7 @@ const Tag = ({ text }: { text: string }) => {
   if (!text) {
     return null;
   }
+
   return <Container colors={colors[text] || colors.default}>{text}</Container>;
 };
 
