@@ -1,20 +1,31 @@
-import { useServices } from 'src/services';
+import { useRef } from 'react';
 import { Demand } from 'src/types/Summary/Demand';
 import { TextAreaInput } from './Comment.styles';
 
-const Comment = ({ demand }: { demand: Demand }) => {
-  const { demandsService } = useServices();
+const Comment = ({
+  demand,
+  updateDemand,
+}: {
+  demand: Demand;
+  updateDemand: (demandId: string, demand: Partial<Demand>) => void;
+}) => {
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   return (
     <TextAreaInput
       type="text"
       textarea
       defaultValue={demand.Commentaire}
-      onChange={(e) =>
-        demandsService.updateDemand(demand.id, {
-          Commentaire: e.target.value,
-        })
-      }
+      onChange={(e) => {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(
+          () =>
+            updateDemand(demand.id, {
+              Commentaire: e.target.value,
+            }),
+          500
+        );
+      }}
     />
   );
 };

@@ -25,12 +25,11 @@ export class DemandsService {
   async updateDemand(
     demandId: string,
     demandUpdate: Record<string, any>
-  ): Promise<Record<string, any> & { data: Demand }> {
+  ): Promise<Demand> {
     try {
-      return await this.httpClient.put(
-        `/api/demands/${demandId}`,
-        demandUpdate
-      );
+      return await this.httpClient
+        .put(`/api/demands/${demandId}`, demandUpdate)
+        .then((response) => response.data);
     } catch (e) {
       throw new ServiceError(e);
     }

@@ -12,66 +12,6 @@ import { Container, Distance, Filters, NoResult } from './manager.style';
 import Status from './Status';
 import Tag from './Tag';
 
-export const demandRowsParams: RowsParams[] = [
-  {
-    name: 'Statut',
-    label: 'Statut',
-    render: (demand) => <Status demand={demand} />,
-  },
-  {
-    name: 'Prospect recontacté',
-    label: 'Prospect recontacté',
-    render: (demand) => <Contacted demand={demand} />,
-  },
-  {
-    name: 'Contact',
-    label: 'Contact',
-    render: (demand) => <Contact demand={demand} />,
-  },
-  {
-    name: 'Adresse',
-    label: 'Adresse',
-    render: (demand) => <Addresse demand={demand} />,
-  },
-  {
-    name: 'Date de la demande',
-    label: 'Date de demande',
-    render: (demand) => new Date(demand['Date demandes']).toLocaleDateString(),
-  },
-  {
-    name: 'Type de chauffage',
-    label: 'Type',
-    render: (demand) => <Tag text={demand.Structure} />,
-  },
-  {
-    name: 'Mode de chauffage',
-    label: 'Mode de chauffage',
-    render: (demand) => (
-      <Tag
-        text={
-          demand['Mode de chauffage'] === 'Électricité' ||
-          demand['Mode de chauffage'] === 'électricité'
-            ? 'Électricité'
-            : `${demand['Mode de chauffage']} ${
-                demand['Type de chauffage']
-                  ? demand['Type de chauffage'].toLowerCase()
-                  : ''
-              }`
-        }
-      />
-    ),
-  },
-  {
-    name: 'Distance au réseau',
-    label: 'Distance au réseau',
-    render: (demand) => <Distance>{demand['Distance au réseau']} m</Distance>,
-  },
-  {
-    name: 'Commentaires',
-    label: 'Commentaires',
-    render: (demand) => <Comment demand={demand} />,
-  },
-];
 const searchKeys: (keyof Demand)[] = ['Nom', 'Prénom', 'Mail'];
 const matchFilter = (filter: string, value: string | undefined) => {
   return (
@@ -156,6 +96,82 @@ const Manager = () => {
     setFilteredDemands(tempDemands);
     setPage(1);
   }, [filter, filterModeChauffage, filterTypeChauffage, demands]);
+
+  const updateDemand = (demandId: string, demand: Partial<Demand>) => {
+    demandsService.updateDemand(demandId, demand).then((response) => {
+      const index = demands.findIndex((d) => d.id === demandId);
+      demands.splice(index, 1, response);
+      setDemands([...demands]);
+    });
+  };
+
+  const demandRowsParams: RowsParams[] = [
+    {
+      name: 'Statut',
+      label: 'Statut',
+      render: (demand) => (
+        <Status demand={demand} updateDemand={updateDemand} />
+      ),
+    },
+    {
+      name: 'Prospect recontacté',
+      label: 'Prospect recontacté',
+      render: (demand) => (
+        <Contacted demand={demand} updateDemand={updateDemand} />
+      ),
+    },
+    {
+      name: 'Contact',
+      label: 'Contact',
+      render: (demand) => <Contact demand={demand} />,
+    },
+    {
+      name: 'Adresse',
+      label: 'Adresse',
+      render: (demand) => <Addresse demand={demand} />,
+    },
+    {
+      name: 'Date de la demande',
+      label: 'Date de demande',
+      render: (demand) =>
+        new Date(demand['Date demandes']).toLocaleDateString(),
+    },
+    {
+      name: 'Type de chauffage',
+      label: 'Type',
+      render: (demand) => <Tag text={demand.Structure} />,
+    },
+    {
+      name: 'Mode de chauffage',
+      label: 'Mode de chauffage',
+      render: (demand) => (
+        <Tag
+          text={
+            demand['Mode de chauffage'] === 'Électricité' ||
+            demand['Mode de chauffage'] === 'électricité'
+              ? 'Électricité'
+              : `${demand['Mode de chauffage']} ${
+                  demand['Type de chauffage']
+                    ? demand['Type de chauffage'].toLowerCase()
+                    : ''
+                }`
+          }
+        />
+      ),
+    },
+    {
+      name: 'Distance au réseau',
+      label: 'Distance au réseau',
+      render: (demand) => <Distance>{demand['Distance au réseau']} m</Distance>,
+    },
+    {
+      name: 'Commentaires',
+      label: 'Commentaires',
+      render: (demand) => (
+        <Comment demand={demand} updateDemand={updateDemand} />
+      ),
+    },
+  ];
 
   return (
     <Container>
