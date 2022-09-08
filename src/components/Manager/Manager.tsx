@@ -201,7 +201,6 @@ const Manager = () => {
 
   return (
     <Container>
-      <h2>Mes demandes - {demands.length || 'Chargement...'}</h2>
       {demands.length > 0 && (
         <>
           <Filters>
@@ -228,19 +227,21 @@ const Manager = () => {
             />
           </Filters>
           <TableContainer>
-            {filteredDemands.length > 0 ? (
-              <Table
-                columns={demandRowsParams}
-                data={filteredDemands}
-                rowKey="N° de dossier"
-                pagination
-                paginationPosition="center"
-                page={page}
-                setPage={setPage}
-              />
-            ) : (
-              <NoResult>Aucun résultats</NoResult>
-            )}
+            <div>
+              {filteredDemands.length > 0 ? (
+                <Table
+                  columns={demandRowsParams}
+                  data={filteredDemands}
+                  rowKey="N° de dossier"
+                  pagination
+                  paginationPosition="center"
+                  page={page}
+                  setPage={setPage}
+                />
+              ) : (
+                <NoResult>Aucun résultats</NoResult>
+              )}
+            </div>
           </TableContainer>
         </>
       )}

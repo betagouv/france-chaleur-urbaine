@@ -10,7 +10,7 @@ export default function Gestionnaire(): JSX.Element {
       <Head>
         <title>France Chaleur Urbaine - Espace gestionnaire</title>
       </Head>
-      <MainContainer currentMenu="/gestionnaire">
+      <MainContainer currentMenu="/gestionnaire" fullscreen>
         <Manager />
       </MainContainer>
     </>

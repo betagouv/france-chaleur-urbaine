@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const Container = styled.div`
   max-width: 1700px;
   margin: auto;
-  padding: 32px;
+  padding: 16px;
 `;
 
 export const Filters = styled.div`
@@ -28,7 +28,15 @@ export const Distance = styled.div`
 
 export const TableContainer = styled.div`
   overflow: scroll;
+  height: calc(100vh - 166px);
   & table {
-    max-height: calc(100vh - 64px) !important;
+    max-height: 100% !important;
+    & th,
+    & td {
+      padding: 0.5rem !important;
+    }
+  }
+  & > div {
+    width: fit-content;
   }
 `;
