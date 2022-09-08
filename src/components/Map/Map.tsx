@@ -8,6 +8,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Point } from 'src/types/Point';
+import { StoredAddress } from 'src/types/StoredAddress';
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
@@ -216,13 +217,7 @@ export default function Map() {
 
   const [soughtAddress, setSoughtAddress] = usePersistedState(
     'mapSoughtAddress',
-    [] as {
-      id: string;
-      coordinates: Point;
-      address: string;
-      addressDetails: TypeAddressDetail;
-      search: { date: number };
-    }[],
+    [] as StoredAddress[],
     {
       beforeStorage: (value: any) => {
         const newValue = value.map((address: any) => {
@@ -246,6 +241,14 @@ export default function Map() {
       zoom: 16,
     });
   }, []);
+
+  const markAddressAsContacted = (address: Partial<StoredAddress>) => {
+    setSoughtAddress(
+      soughtAddress.map((addr) =>
+        addr.id === address.id ? { ...addr, contacted: true } : addr
+      )
+    );
+  };
 
   const onAddressSelectHandle: TypeHandleAddressSelect = useCallback(
     (
@@ -667,9 +670,10 @@ export default function Map() {
                 .map((adressDetails: TypeAddressDetail, i: number) => (
                   <CardSearchDetails
                     key={`${adressDetails.address}-${i}`}
-                    result={adressDetails}
+                    address={adressDetails}
                     onClick={flyTo}
                     onClickClose={removeSoughtAddress}
+                    onContacted={markAddressAsContacted}
                   />
                 ))
                 .reverse()}
