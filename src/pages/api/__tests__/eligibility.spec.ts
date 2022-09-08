@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { NetworkDistance } from '@core/infrastructure/mapper/network.dto';
-import * as distance from '@core/infrastructure/repository/distance';
+import * as distance from '@core/infrastructure/repository/addresseInformation';
 import * as inZDP from '@core/infrastructure/repository/zdp';
 import {
   someCoords,
@@ -24,7 +24,7 @@ describe('/api/map/eligibilityStatus', () => {
   let computeDistanceStub: sinon.SinonStub;
   let zdpStub: sinon.SinonStub;
   beforeEach(() => {
-    computeDistanceStub = sinon.stub(distance, 'default');
+    computeDistanceStub = sinon.stub(distance, 'computeDistance');
     zdpStub = sinon.stub(inZDP, 'default');
   });
   afterEach(() => {

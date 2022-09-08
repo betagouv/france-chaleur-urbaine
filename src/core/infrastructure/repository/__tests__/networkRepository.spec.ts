@@ -2,14 +2,14 @@ import { createAddress } from '@core/domain/entity/AddressFactory';
 import { NetworkMapper } from '@core/infrastructure/mapper/network.mapper';
 import { NetworkRepositoryImpl } from '@core/infrastructure/repository/networkRepositoryImpl';
 import sinon from 'sinon';
-import * as distance from '../distance';
+import * as distance from '../addresseInformation';
 import { anIDFAddress, someNetwork, THRESHOLD } from './__fixtures__/data';
 
 describe('Network Repository', () => {
   describe('#findByCoords', () => {
     let computeDistanceStub: sinon.SinonStub;
     beforeEach(() => {
-      computeDistanceStub = sinon.stub(distance, 'default');
+      computeDistanceStub = sinon.stub(distance, 'computeDistance');
     });
     afterEach(() => {
       jest.resetAllMocks();

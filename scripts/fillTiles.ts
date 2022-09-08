@@ -2,7 +2,6 @@
 //@ts-ignore: no types
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
-import { availableRegions } from '../src/core/infrastructure/repository/dataSummary';
 import db from '../src/db';
 import {
   DatabaseTileInfo,
@@ -139,9 +138,6 @@ const fillTiles = async (
       console.info(regions.length, 'region(s) to search');
       for (let r = 0; r < regions.length; r++) {
         const region = regions[r].bnb_nom;
-        if (!availableRegions.includes(region)) {
-          continue;
-        }
         console.log('Region', region);
         console.time(region);
         for (let i = 1; i <= 2692791; i += 100000) {

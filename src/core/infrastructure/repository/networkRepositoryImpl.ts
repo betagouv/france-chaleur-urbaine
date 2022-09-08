@@ -5,7 +5,7 @@ import { NetworkIrisResponse } from '@core/infrastructure/mapper/network.dto';
 import { NetworkMapper } from '@core/infrastructure/mapper/network.mapper';
 import networkByIris from '@core/infrastructure/repository/network_by_iris.json';
 import { Network } from 'src/types/HeatNetworksResponse';
-import computeDistance from './distance';
+import { computeDistance } from './addresseInformation';
 
 export class NetworkRepositoryImpl implements NetworkRepository {
   async findByCoords(coords: Coords): Promise<Network> {
