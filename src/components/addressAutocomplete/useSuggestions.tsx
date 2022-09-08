@@ -1,4 +1,4 @@
-import debounce from 'lodash.debounce';
+import debounce from '@utils/debounce';
 import { useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { SuggestionItem } from 'src/types/Suggestions';
