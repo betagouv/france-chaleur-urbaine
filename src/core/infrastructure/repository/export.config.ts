@@ -47,6 +47,10 @@ export const gasColumns: ExportColumn<EnergySummary>[] = [
     header: '<50m du réseau',
     value: (values) => (values.is_close ? 'Oui' : 'Non'),
   },
+  {
+    header: 'Nombre de logements',
+    value: 'nb_logements',
+  },
 ];
 
 export const fioulColumns: ExportColumn<EnergySummary>[] = [
@@ -57,5 +61,9 @@ export const fioulColumns: ExportColumn<EnergySummary>[] = [
   {
     header: '<50m du réseau',
     value: (values) => (values.is_close ? 'Oui' : 'Non'),
+  },
+  {
+    header: 'Nombre de logements',
+    value: 'nb_logements',
   },
 ];

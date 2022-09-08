@@ -56,7 +56,7 @@ const legendData: (string | TypeGroupLegend)[] = [
       {
         id: 'zoneDP',
         label: 'Zones de développement prioritaire',
-        info: "Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage au-dessus d'une puissance de 30 kW est obligatoire",
+        info: "Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage au-dessus d'une certaine puissance est obligatoire",
         className: 'legend-zoneDP',
       },
     ],
@@ -133,6 +133,7 @@ const legendData: (string | TypeGroupLegend)[] = [
         id: 'buildings',
         label: 'Caractéristiques des bâtiments',
         subLegend: 'DPE',
+        info: "Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont donnés à titre informatif et non-officiel, sans aucune valeur légale.",
       },
     ],
     type: 'list',

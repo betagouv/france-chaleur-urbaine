@@ -158,6 +158,15 @@ const exportEnergyGasSummary = async (
             ) < 50
           LIMIT 1
         ) as is_close
+      `),
+      db.raw(`
+        CASE
+          WHEN cerffo2020_nb_log ISNULL 
+            THEN anarnc202012_nb_log
+          WHEN cerffo2020_nb_log < 1 
+            THEN anarnc202012_nb_log
+          ELSE cerffo2020_nb_log
+        END as nb_logements
       `)
     )
     .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
@@ -173,16 +182,25 @@ const exportEnergyFioulSummary = async (
     .select(
       'etaban202111_label as addr_label',
       db.raw(`
-      EXISTS (
-        SELECT *
-        FROM reseaux_de_chaleur rdc
-        WHERE ST_Distance(
-          ST_Transform(rdc.geom, 2154),
-          ST_Transform(energy.geom_adresse, 2154)
-          ) < 50
-        LIMIT 1
-      ) as is_close
-    `)
+        EXISTS (
+          SELECT *
+          FROM reseaux_de_chaleur rdc
+          WHERE ST_Distance(
+            ST_Transform(rdc.geom, 2154),
+            ST_Transform(energy.geom_adresse, 2154)
+            ) < 50
+          LIMIT 1
+        ) as is_close
+      `),
+      db.raw(`
+        CASE
+          WHEN cerffo2020_nb_log ISNULL 
+            THEN anarnc202012_nb_log
+          WHEN cerffo2020_nb_log < 1 
+            THEN anarnc202012_nb_log
+          ELSE cerffo2020_nb_log
+        END as nb_logements
+      `)
     )
     .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
     .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')

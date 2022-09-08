@@ -188,7 +188,11 @@ export default function Map() {
   const map: null | { current: any } = useRef(null);
   const draw: null | { current: any } = useRef(null);
 
-  const [legendCollapsed, setLegendCollapsed] = useState(false);
+  const [legendCollapsed, setLegendCollapsed] = useState(true);
+  useEffect(() => {
+    setLegendCollapsed(window.innerWidth < 1251);
+  }, []);
+
   useEffect(() => {
     if (map && map.current) {
       map.current.resize();
@@ -354,14 +358,53 @@ export default function Map() {
 
     map.current.addControl(draw.current);
 
+    const clickEvents = [
+      {
+        name: 'demands',
+        key: 'demands',
+      },
+      { name: 'buildings', key: 'buildings' },
+      { name: 'gasUsage', key: 'consommation' },
+      { name: 'energy', key: 'energy' },
+    ];
+    const onMapClick = (e: any, key: string) => {
+      const properties = e.features[0].properties;
+      let coordinates = e.features[0].geometry.coordinates.slice();
+      if (key === 'buildings') {
+        const { lat, lng } = e.lngLat;
+        coordinates = [lng, lat];
+      }
+      updateClickedPoint(coordinates, { [key]: properties });
+    };
+
     map.current.on('load', () => {
       map.current.loadImage(
         './icons/rect.png',
         (error: any, image: Record<string, unknown>) => {
-          if (error) throw error;
+          if (error) {
+            throw error;
+          }
 
           setMapState('loaded');
           map.current.addImage('energy-picto', image, { sdf: true });
+
+          clickEvents.map(({ name, key }) => {
+            map.current.on('click', name, (e: any) => {
+              onMapClick(e, key);
+            });
+
+            map.current.on('touchend', name, (e: any) => {
+              onMapClick(e, key);
+            });
+
+            map.current.on('mouseenter', name, function () {
+              map.current.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.current.on('mouseleave', name, function () {
+              map.current.getCanvas().style.cursor = '';
+            });
+          });
 
           // ----------------
           // --- Controls ---
@@ -390,35 +433,6 @@ export default function Map() {
 
           const origin =
             process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
-
-          // -----------------
-          // --- Demands ---
-          // -----------------
-          map.current.addSource('demands', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
-          });
-
-          map.current.addLayer({
-            id: 'demands',
-            source: 'demands',
-            'source-layer': 'demands',
-            ...demandsLayerStyle,
-          });
-
-          map.current.on('click', 'demands', (e: any) => {
-            const properties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            updateClickedPoint(coordinates, { demands: properties });
-          });
-
-          map.current.on('mouseenter', 'demands', function () {
-            map.current.getCanvas().style.cursor = 'pointer';
-          });
-
-          map.current.on('mouseleave', 'demands', function () {
-            map.current.getCanvas().style.cursor = '';
-          });
 
           // --------------------
           // --- Heat Network ---
@@ -467,21 +481,6 @@ export default function Map() {
             ...buildingsLayerStyle,
           });
 
-          map.current.on('click', 'buildings', (e: any) => {
-            const properties = e.features[0].properties;
-            const { lat, lng } = e.lngLat;
-            const coordinates = [lng, lat];
-            updateClickedPoint(coordinates, { buildings: properties });
-          });
-
-          map.current.on('mouseenter', 'buildings', function () {
-            map.current.getCanvas().style.cursor = 'pointer';
-          });
-
-          map.current.on('mouseleave', 'buildings', function () {
-            map.current.getCanvas().style.cursor = '';
-          });
-
           // -----------------
           // --- Gas Usage ---
           // -----------------
@@ -497,20 +496,6 @@ export default function Map() {
             source: 'gasUsage',
             'source-layer': 'gasUsage',
             ...gasUsageLayerStyle,
-          });
-
-          map.current.on('click', 'gasUsage', (e: any) => {
-            const properties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            updateClickedPoint(coordinates, { consommation: properties });
-          });
-
-          map.current.on('mouseenter', 'gasUsage', function () {
-            map.current.getCanvas().style.cursor = 'pointer';
-          });
-
-          map.current.on('mouseleave', 'gasUsage', function () {
-            map.current.getCanvas().style.cursor = '';
           });
 
           // --------------
@@ -530,18 +515,19 @@ export default function Map() {
             ...energyLayerStyle,
           });
 
-          map.current.on('click', 'energy', (e: any) => {
-            const properties = e.features[0].properties;
-            const coordinates = e.features[0].geometry.coordinates.slice();
-            updateClickedPoint(coordinates, { energy: properties });
+          // -----------------
+          // --- Demands ---
+          // -----------------
+          map.current.addSource('demands', {
+            type: 'vector',
+            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
           });
 
-          map.current.on('mouseenter', 'energy', function () {
-            map.current.getCanvas().style.cursor = 'pointer';
-          });
-
-          map.current.on('mouseleave', 'energy', function () {
-            map.current.getCanvas().style.cursor = '';
+          map.current.addLayer({
+            id: 'demands',
+            source: 'demands',
+            'source-layer': 'demands',
+            ...demandsLayerStyle,
           });
         }
       );
