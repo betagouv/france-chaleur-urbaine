@@ -136,6 +136,9 @@ const fillTiles = async (
         );
 
       console.info(regions.length, 'region(s) to search');
+      if (regions.length === 0) {
+        continue;
+      }
       for (let r = 0; r < regions.length; r++) {
         const region = regions[r].bnb_nom;
         console.log('Region', region);
