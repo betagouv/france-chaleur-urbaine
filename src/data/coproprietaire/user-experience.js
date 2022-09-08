@@ -24,7 +24,7 @@ contact avec Anne pour l’informer **sur les conditions de raccordement.**`,
   {
     body: `::counter-item[03.]  
 _Les frais de raccordements s’élève à 120&nbsp;000€._  
-_Sur le conseil de France Chaleur Urbaine, la copropriété d’Anne obtient des aides avec **MaPrimeRénov’ et les certificats d’économies d’énergies**._
+_Sur le conseil de France Chaleur Urbaine, la copropriété d’Anne obtient des aides au titre du **Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires**._
 
 **_Ce qui fait baisser le coût du raccordement à 50&nbsp;000€&nbsp;!_** 
 
