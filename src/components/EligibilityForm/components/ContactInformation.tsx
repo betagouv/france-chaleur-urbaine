@@ -6,9 +6,9 @@ import * as Yup from 'yup';
 
 const InputWraper = styled.div`
   opacity: 1;
-  max-height: 8em;
   overflow: hidden;
-  transition: opacity 0.25s ease, max-height 0.75s ease;
+  max-height: 200px;
+  transition: opacity 0.25s ease, max-height 0.5s ease;
 
   &.hidden {
     opacity: 0;
@@ -78,14 +78,14 @@ const ContactInformation = () => {
         </InputWraper>
       </fieldset>
       <fieldset className="fr-fieldset fr-my-3w">
-        <InputWraper className="fr-my-3w">
+        <InputWraper className="fr-my-1w">
           <Field
             name="lastName"
             label={fieldLabelInformation.lastName}
             component={Input}
           />
         </InputWraper>
-        <InputWraper className="fr-my-3w">
+        <InputWraper className="fr-my-1w">
           <Field
             name="firstName"
             label={fieldLabelInformation.firstName}
@@ -93,10 +93,10 @@ const ContactInformation = () => {
           />
         </InputWraper>
         <InputWraper
-          className={`fr-my-3w ${
+          className={`${
             !values.structure || values.structure !== 'Tertiaire'
               ? 'hidden'
-              : ''
+              : 'fr-my-1w'
           }`}
         >
           <Field
@@ -108,7 +108,7 @@ const ContactInformation = () => {
               : {})}
           />
         </InputWraper>
-        <InputWraper className="fr-my-3w">
+        <InputWraper className="fr-my-1w">
           <Field
             name="email"
             label={fieldLabelInformation.email}

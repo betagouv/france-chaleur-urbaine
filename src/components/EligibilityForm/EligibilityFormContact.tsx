@@ -1,5 +1,6 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { isBasedOnIRIS } from '@helpers/address';
+import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
 import {
   ContactForm,
@@ -22,6 +23,7 @@ type AddressDataType = {
 type EligibilityFormContactType = {
   addressData: AddressDataType;
   isSent?: boolean;
+  cardMode?: boolean;
   onSubmit?: (...arg: any) => void;
 };
 
@@ -71,6 +73,8 @@ Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées*
 L’amélioration de l’isolation thermique de votre immeuble constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [France Rénov’](https://france-renov.gouv.fr/)  
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
+      bodyLight: `
+Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
       headerTypo: 'small',
     },
   },
@@ -93,6 +97,8 @@ Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées*
 L’amélioration de l’isolation thermique de votre immeuble constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [France Rénov’](https://france-renov.gouv.fr/)  
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
+      bodyLight: `
+Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
       headerTypo: 'small',
     },
   },
@@ -115,6 +121,8 @@ Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées*
 L’amélioration de l’isolation thermique de votre immeuble constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [France Rénov’](https://france-renov.gouv.fr/)  
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
+      bodyLight: `
+Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
       headerTypo: 'small',
     },
   },
@@ -137,6 +145,8 @@ Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées*
 L’amélioration de l’isolation thermique de votre immeuble constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [France Rénov’](https://france-renov.gouv.fr/)  
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
+      bodyLight: `
+Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
       headerTypo: 'small',
     },
   },
@@ -148,6 +158,8 @@ Découvrez également d’autres solutions de chauffage [ici](https://france-ren
 **Contribuez au développement des réseaux de chaleur** en faisant connaître votre souhait de vous raccorder ! **Laissez-nous vos coordonnées pour être tenu informé** par le gestionnaire du réseau le plus proche ou par votre collectivité des projets d’extension de réseau ou de création de réseau dans votre quartier.  
 
 Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, pensez à améliorer l’isolation thermique de votre immeuble. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [France Rénov’](https://france-renov.gouv.fr/)`,
+      bodyLight: `
+**Contribuez au développement des réseaux de chaleur** en faisant connaître votre souhait de vous raccorder ! **Laissez-nous vos coordonnées pour être tenu informé** par le gestionnaire du réseau le plus proche ou par votre collectivité des projets d’extension de réseau ou de création de réseau dans votre quartier.`,
       headerTypo: 'large',
     },
     individuel: {
@@ -159,6 +171,8 @@ Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées*
 L’amélioration de l’isolation thermique de votre immeuble constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [France Rénov’](https://france-renov.gouv.fr/)  
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
+      bodyLight: `
+Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
       headerTypo: 'small',
     },
   },
@@ -167,6 +181,7 @@ Découvrez également d’autres solutions de chauffage [ici](https://france-ren
 const EligibilityFormContact = ({
   addressData,
   isSent,
+  cardMode,
   onSubmit,
 }: EligibilityFormContactType) => {
   const isIRISAddress = useMemo(() => {
@@ -179,7 +194,7 @@ const EligibilityFormContact = ({
     return lat && lon ? [lat, lon] : undefined; // TODO: Fix on source
   }, [addressData]);
 
-  const { distance, header, body, computEligibility, headerTypo } =
+  const { distance, header, body, bodyLight, computEligibility, headerTypo } =
     useMemo(() => {
       const {
         heatingType,
@@ -190,6 +205,7 @@ const EligibilityFormContact = ({
       const {
         header,
         body,
+        bodyLight,
         eligibility: computEligibility,
         headerTypo,
       }: any = getContactResult(formContactResult, {
@@ -201,6 +217,7 @@ const EligibilityFormContact = ({
         distance,
         header,
         body,
+        bodyLight,
         computEligibility,
         headerTypo,
       };
@@ -237,33 +254,46 @@ const EligibilityFormContact = ({
       : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
 
   return (
-    <ContactFormWrapper>
-      <ContactFormContentWrapper>
-        <ContactFormResultMessage
-          eligible={computEligibility}
-          headerTypo={headerTypo}
-        >
-          <MarkdownWrapper value={header} />
-          {distance !== null && distance !== undefined && distStep && (
-            <em className="distance">{distStep}</em>
-          )}
-          {!computEligibility && linkToMap && (
-            <a
-              href={linkToMap}
-              target="_blank"
-              className="fr-text--sm"
-              rel="noopener noreferrer"
+    <ContactFormWrapper cardMode={cardMode}>
+      <ContactFormContentWrapper cardMode={cardMode}>
+        {!cardMode ? (
+          <>
+            <ContactFormResultMessage
+              eligible={computEligibility}
+              headerTypo={headerTypo}
             >
-              Visualiser les réseaux à proximité de cette adresse
-            </a>
-          )}
-        </ContactFormResultMessage>
-        <ContactFormEligibilityMessage>
-          <MarkdownWrapper value={body} />
-        </ContactFormEligibilityMessage>
+              <MarkdownWrapper value={header} />
+              {distance !== null && distance !== undefined && distStep && (
+                <em className="distance">{distStep}</em>
+              )}
+              {!computEligibility && linkToMap && (
+                <Link href={linkToMap}>
+                  <a
+                    target="_blank"
+                    className="fr-text--sm"
+                    rel="noopener noreferrer"
+                  >
+                    Visualiser les réseaux à proximité de cette adresse
+                  </a>
+                </Link>
+              )}
+            </ContactFormResultMessage>
+            <ContactFormEligibilityMessage cardMode>
+              <MarkdownWrapper value={body} />
+            </ContactFormEligibilityMessage>
+          </>
+        ) : (
+          <ContactFormResultMessage
+            eligible={computEligibility}
+            headerTypo={headerTypo}
+            cardMode
+          >
+            <MarkdownWrapper value={bodyLight || body} />
+          </ContactFormResultMessage>
+        )}
       </ContactFormContentWrapper>
 
-      <ContactFormContentWrapper>
+      <ContactFormContentWrapper cardMode>
         <div>
           <ContactForm onSubmit={handleSubmitForm} isLoading={isSent} />
         </div>
