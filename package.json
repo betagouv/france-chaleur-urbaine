@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "@dataesr/react-dsfr": "^2.9.2",
-    "@formspark/use-formspark": "^0.1.39",
     "@mapbox/mapbox-gl-draw": "^1.3.0",
     "@reach/combobox": "^0.17.0",
     "airtable": "^0.11.4",
