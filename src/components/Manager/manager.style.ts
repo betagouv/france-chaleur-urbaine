@@ -1,17 +1,30 @@
+import {
+  fullscreenHeaderHeight,
+  tabHeaderHeight,
+} from '@components/shared/layout';
 import styled from 'styled-components';
 
 export const Container = styled.div`
   max-width: 1700px;
   margin: auto;
   padding: 16px;
+  height: calc(100vh - ${tabHeaderHeight});
+
+  @media (min-width: 992px) {
+    height: calc(100vh - ${fullscreenHeaderHeight});
+  }
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const Filters = styled.div`
   display: flex;
   gap: 16px 32px;
   flex-wrap: wrap;
+  margin-bottom: 16px;
   & > div {
-    width: 350px;
+    width: 300px;
     margin-bottom: 0 !important;
   }
 `;
@@ -28,7 +41,11 @@ export const Distance = styled.div`
 
 export const TableContainer = styled.div`
   overflow: scroll;
-  height: calc(100vh - 166px);
+
+  & .fr-table {
+    padding-top: 0 !important;
+  }
+
   & table {
     max-height: 100% !important;
     & th,
@@ -36,6 +53,7 @@ export const TableContainer = styled.div`
       padding: 0.5rem !important;
     }
   }
+
   & > div {
     width: fit-content;
   }
