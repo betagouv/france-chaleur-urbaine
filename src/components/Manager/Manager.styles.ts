@@ -18,17 +18,6 @@ export const Container = styled.div`
   flex-direction: column;
 `;
 
-export const Filters = styled.div`
-  display: flex;
-  gap: 16px 32px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-  & > div {
-    width: 300px;
-    margin-bottom: 0 !important;
-  }
-`;
-
 export const NoResult = styled.div`
   margin-top: 16px;
   font-size: 18px;
