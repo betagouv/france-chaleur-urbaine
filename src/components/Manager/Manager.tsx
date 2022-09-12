@@ -20,15 +20,22 @@ import Status from './Status';
 import Tag from './Tag';
 
 const searchKeys: (keyof Demand)[] = ['Nom', 'Prénom', 'Mail'];
+
+const cleanValue = (value: string | undefined): string => {
+  return value
+    ? value
+        .toString()
+        .toLowerCase()
+        .replace(/é/g, 'e')
+        .replace(/è/g, 'e')
+        .replace(/à/g, 'a')
+        .replace(/ô/g, 'o')
+        .toLowerCase()
+    : '';
+};
+
 const matchFilter = (filter: string, value: string | undefined) => {
-  return (
-    value &&
-    value
-      .toString()
-      .toLowerCase()
-      .replace(/é/g, 'e')
-      .includes(filter.toLowerCase())
-  );
+  return cleanValue(value).includes(cleanValue(filter));
 };
 
 const typeDeChauffageOptions = [
@@ -94,7 +101,8 @@ const Manager = () => {
   const [page, setPage] = useState(1);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
-  const [filter, setFilter] = useState('');
+  const [nameFilter, setNameFilter] = useState('');
+  const [addressFilter, setAddressFilter] = useState('');
   const [filterModeChauffage, setFilterModeChauffage] = useState('');
   const [filterTypeChauffage, setFilterTypeChauffage] = useState('');
 
@@ -104,9 +112,15 @@ const Manager = () => {
 
   useEffect(() => {
     let tempDemands = demands;
-    if (filter) {
+    if (nameFilter) {
       tempDemands = tempDemands.filter((demand) =>
-        searchKeys.some((key) => matchFilter(filter, demand[key] as string))
+        searchKeys.some((key) => matchFilter(nameFilter, demand[key] as string))
+      );
+    }
+
+    if (addressFilter) {
+      tempDemands = tempDemands.filter((demand) =>
+        matchFilter(addressFilter, demand.Adresse)
       );
     }
 
@@ -126,7 +140,13 @@ const Manager = () => {
 
     setFilteredDemands(tempDemands);
     setPage(1);
-  }, [filter, filterModeChauffage, filterTypeChauffage, demands]);
+  }, [
+    addressFilter,
+    nameFilter,
+    filterModeChauffage,
+    filterTypeChauffage,
+    demands,
+  ]);
 
   const updateDemand = (demandId: string, demand: Partial<Demand>) => {
     demandsService.updateDemand(demandId, demand).then((response) => {
@@ -201,14 +221,18 @@ const Manager = () => {
 
   return (
     <Container>
-      <h2>Mes demandes - {demands.length || 'Chargement...'}</h2>
       {demands.length > 0 && (
         <>
           <Filters>
             <TextInput
               label="Rechercher par nom ou par mail:"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+            />
+            <TextInput
+              label="Rechercher par adresse:"
+              value={addressFilter}
+              onChange={(e) => setAddressFilter(e.target.value)}
             />
             <Select
               // @ts-ignore: to fix in react-dsfr
@@ -228,19 +252,21 @@ const Manager = () => {
             />
           </Filters>
           <TableContainer>
-            {filteredDemands.length > 0 ? (
-              <Table
-                columns={demandRowsParams}
-                data={filteredDemands}
-                rowKey="N° de dossier"
-                pagination
-                paginationPosition="center"
-                page={page}
-                setPage={setPage}
-              />
-            ) : (
-              <NoResult>Aucun résultats</NoResult>
-            )}
+            <div>
+              {filteredDemands.length > 0 ? (
+                <Table
+                  columns={demandRowsParams}
+                  data={filteredDemands}
+                  rowKey="N° de dossier"
+                  pagination
+                  paginationPosition="center"
+                  page={page}
+                  setPage={setPage}
+                />
+              ) : (
+                <NoResult>Aucun résultats</NoResult>
+              )}
+            </div>
           </TableContainer>
         </>
       )}
