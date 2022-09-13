@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Button, Select, TextInput } from '@dataesr/react-dsfr';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { Demand } from 'src/types/Summary/Demand';
@@ -64,7 +64,7 @@ const ManagerHeader = ({
   setFilteredDemands,
 }: {
   demands: Demand[];
-  setFilteredDemands: Dispatch<SetStateAction<Demand[]>>;
+  setFilteredDemands: (demands: Demand[]) => void;
 }) => {
   const { demandsService } = useServices();
 
