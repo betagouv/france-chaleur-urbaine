@@ -64,4 +64,14 @@ export default [
     title: 'CSTB',
     link: 'http://www.cstb.fr/fr/',
   },
+  {
+    image: './logo-IVRY.png',
+    title: 'Ivry sur seine',
+    link: 'https://www.ivry94.fr/2/accueil.htm',
+  },
+  {
+    image: './logo-BDX.png',
+    title: 'Bordeaux Métropole',
+    link: 'https://www.bordeaux-metropole.fr/',
+  },
 ];

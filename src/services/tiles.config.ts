@@ -28,7 +28,7 @@ export type DataType =
   | 'buildings';
 
 const bnbFields = `
-  rowid as id,
+  fid as id,
   etaban202111_label AS addr_label,
   cerffo2020_annee_construction AS annee_construction,
   cerffo2020_usage_niveau_1_txt AS type_usage,
@@ -49,12 +49,13 @@ const bnbFields = `
   adedpe202006_mean_class_estim_ges AS dpe_ges
 `;
 
-export const preTable: Record<string, string> = {
+export const preTable: (region: string) => Record<string, string> = (
+  region
+) => ({
   'pre-table-energy': `
     SELECT ${bnbFields}, geom_adresse as geom
-    FROM "bnb_idf - batiment_adresse"
-    WHERE geom IS NOT NULL
-      AND bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
+    FROM "${region}"
+    WHERE bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
       AND adedpe202006_logtype_ch_type_inst = 'collectif'
       AND (
         adedpe202006_logtype_ch_type_ener_corr = 'gaz'
@@ -62,11 +63,10 @@ export const preTable: Record<string, string> = {
       )`,
   'pre-table-buildings': `
     SELECT ${bnbFields}, geom
-    FROM "bnb_idf - batiment_adresse"
-    WHERE geom IS NOT NULL
-    AND bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
+    FROM "${region}"
+    WHERE bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
     `,
-};
+});
 
 export const tilesInfo: Record<string, TileInfo> = {
   demands: {
@@ -96,7 +96,7 @@ export const tilesInfo: Record<string, TileInfo> = {
   buildings: {
     source: 'database',
     table: 'pre-table-buildings',
-    tiles: 'bnb_idf - batiment_tiles',
+    tiles: 'bnb - batiment_tiles',
     id: 'id',
     extraWhere: (query) => query,
     properties: [
@@ -115,7 +115,7 @@ export const tilesInfo: Record<string, TileInfo> = {
   energy: {
     source: 'database',
     table: 'pre-table-energy',
-    tiles: 'bnb_idf - adresse_tiles',
+    tiles: 'bnb - adresse_tiles',
     id: 'id',
     extraWhere: (query) => query,
     properties: [

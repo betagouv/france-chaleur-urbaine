@@ -1,3 +1,7 @@
+import {
+  getConso,
+  getNbLogement,
+} from '@core/infrastructure/repository/addresseInformation';
 import { getGestionnaire } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
@@ -26,11 +30,24 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
     switch (type) {
       case 'FCU - Utilisateurs': {
         const gestionnaire = getGestionnaire(values);
-        if (gestionnaire) {
-          values.Gestionnaire = gestionnaire;
-        }
+        const conso = await getConso(values.Latitude, values.Longitude);
+        const nbLogement = await getNbLogement(
+          values.Latitude,
+          values.Longitude
+        );
         base('FCU - Utilisateurs').create(
-          [{ fields: values }],
+          [
+            {
+              fields: {
+                ...values,
+                Gestionnaire: gestionnaire,
+                Conso: conso ? conso.conso_nb : undefined,
+                'ID Conso': conso ? conso.rownum : undefined,
+                Logement: nbLogement ? nbLogement.nb_logements : undefined,
+                'ID BNB': nbLogement ? nbLogement.fid : undefined,
+              },
+            },
+          ],
           creationCallBack(res)
         );
         break;
