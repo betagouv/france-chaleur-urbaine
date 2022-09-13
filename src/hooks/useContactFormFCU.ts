@@ -4,8 +4,8 @@ import markupData, {
   linkedInEvent,
   matomoEvent,
 } from '@components/Markup';
+import { formatDataToAirtable, submitToAirtable } from '@helpers';
 import { useCallback, useRef, useState } from 'react';
-import useBackEndFCU from './useBackEndFCU';
 
 const callMarkup__handleOnFetchAddress = (address: string) => {
   matomoEvent(markupData.eligibilityTest.matomoEvent, [address]);
@@ -45,6 +45,20 @@ const callMarkup__handleOnSubmitContact = (data: Record<string, any>) => {
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
+const submitToFCU = (values: Record<string, any>) => {
+  if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
+    console.info(
+      'Send following data to Airtabe',
+      formatDataToAirtable(values)
+    );
+    return Promise.resolve(() => {
+      //do nothing
+    });
+  } else {
+    return submitToAirtable(formatDataToAirtable(values), 'FCU - Utilisateurs');
+  }
+};
+
 const useContactFormFCU = () => {
   const EligibilityFormContactRef = useRef(null);
 
@@ -54,7 +68,6 @@ const useContactFormFCU = () => {
   const [messageSent, setMessageSent] = useState(false);
   const [messageReceived, setMessageReceived] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('idle');
-  const [submitToFCU] = useBackEndFCU();
 
   const timeoutScroller = useCallback(
     (delai: number, callback?: () => void) =>
@@ -118,7 +131,7 @@ const useContactFormFCU = () => {
       setMessageReceived(true);
       return () => window.clearTimeout(scrollTimer);
     },
-    [addressData, submitToFCU, timeoutScroller]
+    [addressData, timeoutScroller]
   );
 
   return {

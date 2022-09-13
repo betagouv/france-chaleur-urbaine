@@ -73,7 +73,7 @@ En raison de l’obligation de sécurité et de confidentialité dans le traitem
 
 Certaines des données sont envoyées à des sous-traitants pour réaliser certaines missions. Le responsable de traitement s’est assuré de la mise en œuvre par ses sous-traitants de garanties adéquates et du respect de conditions strictes de confidentialité, d’usage et de protection des données.
 - Hébergement du site : [scalingo.com](https://scalingo.com/)
-- Hébergement et traitement du formulaire : [formspark.io](https://formspark.io/)
+- Hébergement et traitement du formulaire : [airtable.com](https://airtable.com/)
 
 ### Cookies
 

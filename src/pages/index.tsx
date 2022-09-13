@@ -106,7 +106,7 @@ export default function Home() {
       </Head>
 
       <MainContainer currentMenu="/">
-        <div data-hidden={process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID}>
+        <div>
           <GlobalStyle />
 
           <HeadSliceForm
