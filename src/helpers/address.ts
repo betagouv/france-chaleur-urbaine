@@ -1,6 +1,41 @@
 const idfPrefixes = ['75', '77', '78', '91', '92', '93', '94', '95'];
-const cityManaged = ['Rennes', 'Bordeaux', 'Reims'];
+const cityManaged = [
+  'rennes',
+  'bordeaux',
+  'reims',
+  'brest',
+  'martigues',
+  'marseille',
+  'aix-en-provence',
+  'istres',
+  'salon-de-provence',
+  'vitrolles',
+  'montceau-les-mines',
+  'chalon-sur-saône',
+  'lons-le-saunier',
+  'dole',
+  'besançon',
+  'compiègne',
+  'givors',
+  'grenoble',
+  'échirolles',
+  'le pont-de-claix',
+  'eybens',
+  "saint-martin-d'hères",
+  'la tronche',
+  'mérignac',
+  'pessac',
+  'le haillan',
+  'saint-médard-en-jalles',
+  'bègles',
+  'florac',
+  'cenon',
+  'lormont',
+  'vezin-le-coquet',
+  'barcelonnette',
+  'nice',
+];
 
 export const isBasedOnIRIS = (postCode: string, city: string): boolean =>
-  !cityManaged.includes(city) &&
+  (!city || !cityManaged.includes(city.toLowerCase())) &&
   (!postCode || !idfPrefixes.includes(postCode.slice(0, 2)));

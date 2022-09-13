@@ -31,28 +31,24 @@ const dbTable = (
   region?: string,
   limitRowIDMin?: number,
   limitRowIDMax?: number,
-  x13Min?: number,
-  x13Max?: number,
-  y13Min?: number,
-  y13Max?: number
+  xmin?: number,
+  xmax?: number,
+  ymin?: number,
+  ymax?: number
 ) => {
   if (region && preTable(region)[table]) {
-    const { xmin, ymin } = tileToEnvelope(x13Min, y13Min, 13);
-    const { xmin: xmax, ymin: ymax } = tileToEnvelope(x13Max, y13Max, 13);
-
     return db(table).with(
       table,
       db.raw(
         `${preTable(region)[table]}${
           limitRowIDMin
-            ? `AND fid BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}
-               AND ST_WITHIN(
-                ST_Transform(geom, 3857),
-                ST_Segmentize(ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857),${
+            ? `AND fid BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}AND ST_WITHIN(
+              ST_Transform(geom, 3857),
+              ST_Segmentize(ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857),${
                 (xmax - xmin) / 4
               })
-              )
-              `
+            )
+            `
             : ''
         }`
       )
@@ -93,31 +89,26 @@ const fillTiles = async (
   zoomMax: number,
   withIndex: boolean
 ) => {
-  for (let index = 0; index < (withIndex ? 20 : 1); index++) {
+  for (let index = 0; index < (withIndex ? 320 : 1); index++) {
     let x13Min = globalX13Min;
     let x13Max = globalX13Max;
     let y13Min = globalY13Min;
     let y13Max = globalY13Max;
     if (withIndex) {
-      console.log('Part', index + 1, '/', withIndex ? 20 : 1);
-      const j = index % 4;
-      const i = (index - j) / 4;
-      x13Min = globalX13Min + i * 100;
-      x13Max = x13Min + 100;
-      y13Min = globalY13Min + j * 100;
-      y13Max = y13Min + 100;
+      console.log('Part', index + 1, '/', withIndex ? 320 : 1);
+      const j = index % 16;
+      const i = (index - j) / 16;
+      x13Min = globalX13Min + i * 25;
+      x13Max = x13Min + 25;
+      y13Min = globalY13Min + j * 25;
+      y13Max = y13Min + 25;
     }
     const tileInfo = tilesInfo[table] as DatabaseTileInfo;
     console.info('Load geojson from', tileInfo.table);
     console.time('geojson');
     let geoJSON;
     if (table === 'buildings' || table === 'energy') {
-      geoJSON = {
-        json_build_object: {
-          type: 'FeatureCollection',
-          features: [],
-        },
-      };
+      const list: any[] = [];
       const { xmin, ymin } = tileToEnvelope(x13Min, y13Min, 13);
       const { xmin: xmax, ymin: ymax } = tileToEnvelope(x13Max, y13Max, 13);
 
@@ -152,22 +143,28 @@ const fillTiles = async (
                 region,
                 i,
                 i + 100000 - 1,
-                x13Min,
-                x13Max,
-                y13Min,
-                y13Max
+                xmin,
+                xmax,
+                ymin,
+                ymax
               ).first(geoJSONQuery(tileInfo.properties))
             )
             .whereNotNull('geom');
-          if (tempGeoJSON.json_build_object.features) {
-            geoJSON.json_build_object.features =
-              geoJSON.json_build_object.features.concat(
-                tempGeoJSON.json_build_object.features
-              );
+          const newList = tempGeoJSON.json_build_object.features;
+          if (newList) {
+            for (let i = 0, len = newList.length; i < len; i++) {
+              list.push(newList[i]);
+            }
           }
         }
         console.timeEnd(region);
       }
+      geoJSON = {
+        json_build_object: {
+          type: 'FeatureCollection',
+          features: list,
+        },
+      };
     } else {
       geoJSON = await tileInfo
         .extraWhere(
