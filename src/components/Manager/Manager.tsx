@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Select, Table, TextInput } from '@dataesr/react-dsfr';
+import { Table } from '@dataesr/react-dsfr';
 import { useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import { RowsParams } from 'src/services/demandsService';
+import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
 import { Demand } from 'src/types/Summary/Demand';
 import AdditionalInformation from './AdditionalInformation';
 import Addresse from './Addresse';
@@ -12,144 +12,29 @@ import Contacted from './Contacted';
 import {
   Container,
   Distance,
-  Filters,
   NoResult,
   TableContainer,
-} from './manager.style';
+} from './Manager.styles';
+import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
-
-const searchKeys: (keyof Demand)[] = ['Nom', 'Prénom', 'Mail'];
-
-const cleanValue = (value: string | undefined): string => {
-  return value
-    ? value
-        .toString()
-        .toLowerCase()
-        .replace(/é/g, 'e')
-        .replace(/è/g, 'e')
-        .replace(/à/g, 'a')
-        .replace(/ô/g, 'o')
-        .toLowerCase()
-    : '';
-};
-
-const matchFilter = (filter: string, value: string | undefined) => {
-  return cleanValue(value).includes(cleanValue(filter));
-};
-
-const typeDeChauffageOptions = [
-  {
-    label: 'Tous',
-    value: '',
-  },
-  {
-    label: 'Collectif',
-    value: 'collectif',
-  },
-  {
-    label: 'Individuel',
-    value: 'individuel',
-  },
-];
-
-const modeDeChauffageOptions = [
-  {
-    label: 'Tous',
-    value: '',
-  },
-  {
-    label: 'Gaz',
-    value: 'gaz',
-  },
-  {
-    label: 'Fioul',
-    value: 'fioul',
-  },
-  {
-    label: 'Électricité',
-    value: 'électricité',
-  },
-];
-
-const displyModeDeChauffage = (demand: Demand) => {
-  if (
-    demand['Mode de chauffage'] &&
-    demand['Mode de chauffage'].toLowerCase() === 'électricité'
-  ) {
-    return 'Électricité';
-  } else if (
-    demand['Mode de chauffage'] &&
-    (demand['Mode de chauffage'].toLowerCase().trim() === 'gaz' ||
-      demand['Mode de chauffage'].toLowerCase().trim() === 'fioul')
-  ) {
-    return `${demand['Mode de chauffage'][0].toUpperCase()}${demand[
-      'Mode de chauffage'
-    ]
-      .slice(1)
-      .trim()} ${
-      demand['Type de chauffage']
-        ? demand['Type de chauffage'].toLowerCase()
-        : ''
-    }`;
-  }
-  return demand['Type de chauffage'];
-};
 
 const Manager = () => {
   const { demandsService } = useServices();
   const [page, setPage] = useState(1);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
-  const [nameFilter, setNameFilter] = useState('');
-  const [addressFilter, setAddressFilter] = useState('');
-  const [filterModeChauffage, setFilterModeChauffage] = useState('');
-  const [filterTypeChauffage, setFilterTypeChauffage] = useState('');
 
   useEffect(() => {
-    demandsService.fetchDemands().then(setDemands);
+    demandsService.fetch().then(setDemands);
   }, [demandsService]);
 
   useEffect(() => {
-    let tempDemands = demands;
-    if (nameFilter) {
-      tempDemands = tempDemands.filter((demand) =>
-        searchKeys.some((key) => matchFilter(nameFilter, demand[key] as string))
-      );
-    }
-
-    if (addressFilter) {
-      tempDemands = tempDemands.filter((demand) =>
-        matchFilter(addressFilter, demand.Adresse)
-      );
-    }
-
-    if (filterModeChauffage) {
-      tempDemands = tempDemands.filter(
-        (demand) =>
-          demand['Mode de chauffage']?.toLowerCase() === filterModeChauffage
-      );
-    }
-
-    if (filterTypeChauffage) {
-      tempDemands = tempDemands.filter(
-        (demand) =>
-          demand['Type de chauffage']?.toLowerCase() === filterTypeChauffage
-      );
-    }
-
-    setFilteredDemands(tempDemands);
     setPage(1);
-  }, [
-    addressFilter,
-    nameFilter,
-    filterModeChauffage,
-    filterTypeChauffage,
-    demands,
-  ]);
+  }, [filteredDemands]);
 
   const updateDemand = (demandId: string, demand: Partial<Demand>) => {
-    demandsService.updateDemand(demandId, demand).then((response) => {
+    demandsService.update(demandId, demand).then((response) => {
       const index = demands.findIndex((d) => d.id === demandId);
       demands.splice(index, 1, response);
       setDemands([...demands]);
@@ -195,7 +80,7 @@ const Manager = () => {
     {
       name: 'Mode de chauffage',
       label: 'Mode de chauffage',
-      render: (demand) => <Tag text={displyModeDeChauffage(demand)} />,
+      render: (demand) => <Tag text={displayModeDeChauffage(demand)} />,
     },
     {
       name: 'Distance au réseau',
@@ -223,34 +108,10 @@ const Manager = () => {
     <Container>
       {demands.length > 0 && (
         <>
-          <Filters>
-            <TextInput
-              label="Rechercher par nom ou par mail:"
-              value={nameFilter}
-              onChange={(e) => setNameFilter(e.target.value)}
-            />
-            <TextInput
-              label="Rechercher par adresse:"
-              value={addressFilter}
-              onChange={(e) => setAddressFilter(e.target.value)}
-            />
-            <Select
-              // @ts-ignore: to fix in react-dsfr
-              label="Mode de chauffage:"
-              selected={filterModeChauffage}
-              // @ts-ignore: to fix in react-dsfr
-              onChange={(e) => setFilterModeChauffage(e.target.value)}
-              options={modeDeChauffageOptions}
-            />
-            <Select
-              // @ts-ignore: to fix in react-dsfr
-              label="Type de chauffage:"
-              selected={filterTypeChauffage}
-              // @ts-ignore: to fix in react-dsfr
-              onChange={(e) => setFilterTypeChauffage(e.target.value)}
-              options={typeDeChauffageOptions}
-            />
-          </Filters>
+          <ManagerHeader
+            demands={demands}
+            setFilteredDemands={setFilteredDemands}
+          />
           <TableContainer>
             <div>
               {filteredDemands.length > 0 ? (
