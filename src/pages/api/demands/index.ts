@@ -2,7 +2,6 @@ import { getSpreadSheet } from '@core/infrastructure/repository/export';
 import { getDemands } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
-import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ExportColumn } from 'src/types/ExportColumn';
 import { Demand } from 'src/types/Summary/Demand';
@@ -24,17 +23,22 @@ const exportColumn: ExportColumn<Demand>[] = [
   { header: 'Adresse', value: 'Adresse' },
   {
     header: 'En ZDP',
-    value: (demand) => (demand['Prise de contact'] ? 'Oui' : 'Non'),
+    value: 'en ZDP',
   },
   { header: 'Date de demande', value: 'Date demandes' },
-  { header: 'Type de chauffage', value: 'Structure' },
+  { header: 'Type', value: 'Structure' },
+  { header: 'Structure', value: 'Établissement' },
   {
     header: 'Mode de chauffage',
-    value: (demand) => displayModeDeChauffage(demand),
+    value: 'Mode de chauffage',
   },
-  { header: 'Distance au réseau', value: 'Distance au réseau' },
+  {
+    header: 'Type de chauffage',
+    value: 'Type de chauffage',
+  },
+  { header: 'Distance au réseau (m)', value: 'Distance au réseau' },
   { header: 'Nb logements', value: 'Logement' },
-  { header: 'Conso gaz', value: 'Conso' },
+  { header: 'Conso gaz (MWh)', value: 'Conso' },
   { header: 'Commentaires', value: 'Commentaire' },
 ];
 
