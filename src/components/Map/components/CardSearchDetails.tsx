@@ -47,7 +47,7 @@ const CardSearchDetails = ({ result, onClick, onClickClose }: SearchResult) => {
         <EligibilityResult isEligible={isEligible}>
           {isEligible
             ? `Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.`
-            : `Cette adresse n'est pour le moment pas raccordable à un réseau de chaleur.`}
+            : `D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.`}
         </EligibilityResult>
         <div>
           {!isNaN(parseFloat(distance)) &&
