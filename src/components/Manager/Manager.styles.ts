@@ -2,7 +2,7 @@ import {
   fullscreenHeaderHeight,
   tabHeaderHeight,
 } from '@components/shared/layout';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
   max-width: 1700px;
@@ -16,6 +16,35 @@ export const Container = styled.div`
   overflow: scroll;
   display: flex;
   flex-direction: column;
+`;
+
+const iconSize = '6px';
+export const ColHeader = styled.div<{ sort?: 'asc' | 'desc' }>`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  &:before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    opacity: 0.1;
+    margin: 0 ${iconSize} 0 0;
+    background-color: transparent;
+    border-width: ${iconSize} ${iconSize} 0 ${iconSize};
+    border-style: solid;
+    border-color: #000 transparent transparent;
+    ${({ sort }) =>
+      sort &&
+      css`
+        opacity: 1;
+        ${sort !== 'desc' &&
+        css`
+          transform: rotate(180deg);
+        `};
+      `}
+  }
 `;
 
 export const NoResult = styled.div`

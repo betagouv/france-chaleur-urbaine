@@ -16,7 +16,7 @@ export type EditableDemandSummary = {
 export type Demand = DemandSummary &
   EditableDemandSummary & {
     Mail: string;
-    'Distance au réseau': string;
+    'Distance au réseau': number;
     'N° de dossier': string;
     'en ZDP': string;
     'Date demandes': string;
