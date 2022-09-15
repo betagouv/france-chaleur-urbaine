@@ -34,9 +34,11 @@ const WrappedText: React.FC<{
         {children}
       </TextContainer>
 
-      <ImageContainer className={imgClassName}>
-        {imgSrc && <img src={imgSrc} alt={imgAlt} />}
-      </ImageContainer>
+      {imgSrc && (
+        <ImageContainer className={imgClassName}>
+          <img src={imgSrc} alt={imgAlt} />
+        </ImageContainer>
+      )}
     </Container>
   );
 };
