@@ -8,7 +8,7 @@ import Band from './Band';
 import { Container, GraphsWrapper } from './Statistics.style';
 
 type NbVisitType = { nb_visits?: number | string };
-type returnApi = {
+type ReturnApiMatomo = {
   filters?: { date?: string };
   nb_uniq_visitors?: string;
   'Formulaire de test - Envoi'?: NbVisitType;
@@ -16,6 +16,12 @@ type returnApi = {
   'Formulaire de test - Adresse Éligible'?: NbVisitType;
   'Formulaire de contact éligible - Envoi'?: NbVisitType;
   'Formulaire de contact inéligible - Envoi'?: NbVisitType;
+};
+type ReturnApiStatAirtable = {
+  date: string;
+  nbTotal: number;
+  nbEligible: number;
+  nbUneligible: number;
 };
 
 const monthToString = [
@@ -44,6 +50,10 @@ const Statistics = () => {
     '/api/statistiques/getVisitsSummary',
     fetcher
   );
+  const { data: rawDataCountContact, error: errorCountContact } = useSWR(
+    '/api/statistiques/getCountContact',
+    fetcher
+  );
 
   if (errorActions) console.warn('errorActions >>', errorActions);
   const dataActions = useMemo(
@@ -63,9 +73,7 @@ const Statistics = () => {
         .reverse() ?? [],
     [rawDataActions?.result]
   );
-
   const dataEligibilityTest = dataActions;
-  const dataContact = dataActions;
 
   if (errorVisits) console.warn('errorVisits >>', errorVisits);
   const dataVisits = useMemo(
@@ -79,9 +87,19 @@ const Statistics = () => {
     [rawDataVisits?.result]
   );
 
+  if (errorCountContact)
+    console.warn('errorCountContact >>', errorCountContact);
+  const dataCountContact = useMemo(
+    () =>
+      Object.entries(
+        (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
+      ).map(([, value]) => value),
+    [rawDataCountContact]
+  );
+
   const formatedDataVisits = [
     ['x', 'Visiteurs'],
-    ...dataVisits.map((entry: returnApi = {}) => {
+    ...dataVisits.map((entry: ReturnApiMatomo = {}) => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
       const label = `${
         !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
@@ -92,7 +110,7 @@ const Statistics = () => {
 
   const formatedDataEligibilityTest = [
     ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
-    ...dataEligibilityTest.map((entry: returnApi = {}) => {
+    ...dataEligibilityTest.map((entry: ReturnApiMatomo = {}) => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
       const label = `${
         !isNaN(Number(month)) ? monthToString[Number(month) - 1] : month
@@ -113,7 +131,7 @@ const Statistics = () => {
       'Contact pour adresses non éligibles',
       'Contact pour adresses éligibles',
     ],
-    ...dataContact.map((entry: returnApi = {}) => {
+    ...dataEligibilityTest.map((entry: ReturnApiMatomo = {}) => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
       const label = `${
         !isNaN(Number(month)) ? monthToString[Number(month) - 1] : month
@@ -126,6 +144,26 @@ const Statistics = () => {
       return [label, total, ineligible, eligible];
     }),
   ];
+
+  const formatedDataSumContact = [
+    [
+      { type: 'date', label: 'Date' },
+      'Total des prises de contact',
+      'Contact pour adresses non éligibles',
+      'Contact pour adresses éligibles',
+    ],
+    ...dataCountContact.map((val) => {
+      const { date, nbTotal, nbEligible, nbUneligible } = val;
+      const [year, month, day] = date.split('-');
+      return [
+        new Date(Date.UTC(+year, +month - 1, +day)),
+        nbTotal || 0,
+        nbUneligible || 0,
+        nbEligible || 0,
+      ];
+    }),
+  ];
+
   return (
     <Container>
       <Slice padding={8}>
@@ -185,10 +223,16 @@ const Statistics = () => {
             formatedData={formatedDataEligibilityTest}
           />
           <Graph
-            title="Demandes de contacts"
+            title="Demandes de contacts mensuelles"
             errors={errorActions}
-            data={dataContact}
+            data={dataEligibilityTest}
             formatedData={formatedDataContact}
+          />
+          <Graph
+            title="Demandes de contacts cumulées"
+            errors={errorCountContact}
+            data={dataCountContact}
+            formatedData={formatedDataSumContact}
           />
         </GraphsWrapper>
       </Slice>
