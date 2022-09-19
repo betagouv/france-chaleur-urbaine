@@ -1,10 +1,5 @@
 import styled from 'styled-components';
 
-export const Graphs = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-`;
-
 export const GraphTitle = styled.h3`
   text-align: center;
 `;

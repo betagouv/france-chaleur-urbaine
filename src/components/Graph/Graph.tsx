@@ -27,6 +27,7 @@ const Graph = ({
           <Chart
             height={'400px'}
             chartType="LineChart"
+            chartLanguage="FR-fr"
             loader={<div>Loading Chart</div>}
             data={formatedData}
             options={{
@@ -34,6 +35,7 @@ const Graph = ({
               hAxis: {
                 slantedText: true,
                 slantedTextAngle: 30,
+                format: 'MMM yyyy',
               },
               vAxis: {
                 viewWindow: {

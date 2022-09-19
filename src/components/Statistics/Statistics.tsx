@@ -1,12 +1,22 @@
-import Graph from '@components/Graph/Graph';
-import { Graphs } from '@components/Graph/Graph.style';
+import Graph from '@components/Graph';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import { dataNumberFcu } from '@data';
 import { useMemo } from 'react';
 import useSWR from 'swr';
 import Band from './Band';
-import { Container } from './Statistics.style';
+import { Container, GraphsWrapper } from './Statistics.style';
+
+type NbVisitType = { nb_visits?: number | string };
+type returnApi = {
+  filters?: { date?: string };
+  nb_uniq_visitors?: string;
+  'Formulaire de test - Envoi'?: NbVisitType;
+  'Formulaire de test - Adresse Inéligible'?: NbVisitType;
+  'Formulaire de test - Adresse Éligible'?: NbVisitType;
+  'Formulaire de contact éligible - Envoi'?: NbVisitType;
+  'Formulaire de contact inéligible - Envoi'?: NbVisitType;
+};
 
 const monthToString = [
   'Jan',
@@ -68,18 +78,6 @@ const Statistics = () => {
         .reverse() ?? [],
     [rawDataVisits?.result]
   );
-
-  type returnApi = {
-    filters?: { date?: string };
-    nb_uniq_visitors?: string;
-    'Formulaire de test - Envoi'?: { nb_visits?: number | string };
-    'Formulaire de test - Adresse Inéligible'?: { nb_visits?: number | string };
-    'Formulaire de test - Adresse Éligible'?: { nb_visits?: number | string };
-    'Formulaire de contact éligible - Envoi'?: { nb_visits?: number | string };
-    'Formulaire de contact inéligible - Envoi'?: {
-      nb_visits?: number | string;
-    };
-  };
 
   const formatedDataVisits = [
     ['x', 'Visiteurs'],
@@ -173,7 +171,7 @@ const Statistics = () => {
         <i>{dataNumberFcu.note}</i>
       </Slice>
       <Slice padding={8}>
-        <Graphs>
+        <GraphsWrapper>
           <Graph
             title="Nombre de visiteurs/mois"
             errors={errorVisits}
@@ -192,7 +190,7 @@ const Statistics = () => {
             data={dataContact}
             formatedData={formatedDataContact}
           />
-        </Graphs>
+        </GraphsWrapper>
       </Slice>
     </Container>
   );
