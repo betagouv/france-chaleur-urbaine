@@ -81,7 +81,7 @@ export const tilesInfo: Record<string, TileInfo> = {
     tiles: 'reseaux_de_chaleur_tiles',
     id: 'id',
     extraWhere: (query) => query,
-    properties: ['id'],
+    properties: ['id', 'Taux EnR&R', 'Gestionnaire'],
     sourceLayer: 'outline',
   },
   zoneDP: {
