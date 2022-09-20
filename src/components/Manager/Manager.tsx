@@ -12,7 +12,6 @@ import Contacted from './Contacted';
 import {
   ColHeader,
   Container,
-  Distance,
   NoResult,
   TableContainer,
 } from './Manager.styles';
@@ -21,33 +20,45 @@ import Status from './Status';
 import Tag from './Tag';
 
 type SortParamType = {
-  key?: keyof Demand;
-  order?: 'asc' | 'desc';
+  key: keyof Demand;
+  backupKey?: keyof Demand;
+  order: 'asc' | 'desc';
 };
 
-const getSortBy =
-  (arr: Demand[]) => (key?: keyof Demand, order?: 'asc' | 'desc') => {
-    if (!arr.length) return [];
-    if (!key || !order) {
-      return [...arr];
-    }
-    return [...arr].sort((_a, _b) => {
-      const a = _a?.[key] as number;
-      const b = _b?.[key] as number;
-      return order === 'desc'
-        ? typeof a === 'undefined' || a < b
-          ? 1
-          : -1
-        : typeof a === 'undefined' || a > b
-        ? 1
-        : -1;
-    });
-  };
+const getValueToSort = (
+  demand: Demand,
+  key: keyof Demand,
+  backupKey?: keyof Demand
+) =>
+  !backupKey || demand[key] !== undefined ? demand[key] : demand[backupKey];
 
-const defaultSort: {
-  key?: keyof Demand;
-  order?: 'asc' | 'desc';
-} = { key: 'Date demandes', order: 'desc' };
+const getSortBy = (arr: Demand[]) => (sort: SortParamType) => {
+  if (!arr.length) return [];
+  if (!sort.key || !sort.order) {
+    return [...arr];
+  }
+  return [...arr].sort((_a, _b) => {
+    const a = getValueToSort(_a, sort.key, sort.backupKey);
+    const b = getValueToSort(_b, sort.key, sort.backupKey);
+    let sortResult = 0;
+    if (typeof a === 'undefined') {
+      if (typeof b === 'undefined') {
+        sortResult = 0;
+      } else {
+        sortResult = 1;
+      }
+    } else {
+      if (typeof b === 'undefined') {
+        sortResult = -1;
+      } else {
+        sortResult = a < b ? 1 : -1;
+      }
+    }
+    return sort.order === 'desc' ? sortResult : -1 * sortResult;
+  });
+};
+
+const defaultSort: SortParamType = { key: 'Date demandes', order: 'desc' };
 
 const Manager = () => {
   const { demandsService } = useServices();
@@ -57,21 +68,21 @@ const Manager = () => {
   const [sort, setSort] = useState<SortParamType>(defaultSort);
 
   const handleSort = useCallback(
-    (key: keyof Demand) => () => {
+    (key: keyof Demand, backupKey?: keyof Demand) => () => {
       const order =
         sort.key !== key || !sort.order
           ? 'desc'
           : sort.order === 'desc'
           ? 'asc'
           : undefined;
-      setSort(order ? { key, order } : defaultSort);
+      setSort(order ? { key, backupKey, order } : defaultSort);
     },
     [sort]
   );
 
   const onFilterUpdate = useCallback(
     (demands: Demand[]) => {
-      const sortedDemands = getSortBy(demands)(sort.key, sort.order);
+      const sortedDemands = getSortBy(demands)(sort);
       setFilteredDemands(sortedDemands);
       setPage(1);
     },
@@ -124,6 +135,7 @@ const Manager = () => {
         <ColHeader
           sort={sort.key === 'Date demandes' ? sort.order : undefined}
           onClick={handleSort('Date demandes')}
+          width="100px"
         >
           Date de la demande
         </ColHeader>
@@ -146,21 +158,48 @@ const Manager = () => {
       name: 'Distance au réseau',
       label: (
         <ColHeader
-          sort={sort.key === 'Distance au réseau' ? sort.order : undefined}
-          onClick={handleSort('Distance au réseau')}
+          sort={
+            sort.key === 'Gestionnaire Distance au réseau'
+              ? sort.order
+              : undefined
+          }
+          onClick={handleSort(
+            'Gestionnaire Distance au réseau',
+            'Distance au réseau'
+          )}
         >
-          Distance au réseau
+          Distance au réseau (m)
         </ColHeader>
       ),
-      render: (demand) =>
-        demand['Distance au réseau'] && (
-          <Distance>{demand['Distance au réseau']} m</Distance>
-        ),
+      render: (demand) => (
+        <AdditionalInformation
+          demand={demand}
+          field="Distance au réseau"
+          updateDemand={updateDemand}
+        />
+      ),
     },
     {
-      name: 'Nb logements Conso gaz',
-      label: 'Nb logements Conso gaz',
-      render: (demand) => <AdditionalInformation demand={demand} />,
+      name: 'Nb logements',
+      label: 'Nb logements (lots)',
+      render: (demand) => (
+        <AdditionalInformation
+          demand={demand}
+          field="Logement"
+          updateDemand={updateDemand}
+        />
+      ),
+    },
+    {
+      name: 'Conso gaz',
+      label: 'Conso gaz (MWh)',
+      render: (demand) => (
+        <AdditionalInformation
+          demand={demand}
+          field="Conso"
+          updateDemand={updateDemand}
+        />
+      ),
     },
     {
       name: 'Commentaires',
