@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import db from 'src/db';
 import base from 'src/db/airtable';
 import { Demand } from 'src/types/Summary/Demand';
@@ -22,16 +23,28 @@ export const getDemands = async (email: string): Promise<Demand[] | null> => {
     return null;
   }
 
+  const isDemoUser = user.gestionnaire === 'DEMO';
   const records = await base(tableNameFcuDemands)
     .select({
-      filterByFormula: `Gestionnaire="${user.gestionnaire}"`,
+      filterByFormula: `Gestionnaire="${
+        isDemoUser ? 'Paris' : user.gestionnaire
+      }"`,
       sort: [{ field: 'Date demandes', direction: 'desc' }],
     })
     .all();
 
-  return records.map(
-    (record) => ({ id: record.id, ...record.fields } as Demand)
-  );
+  return isDemoUser
+    ? records.map(
+        (record) =>
+          ({
+            id: record.id,
+            ...record.fields,
+            Nom: faker.name.lastName(),
+            Prénom: faker.name.firstName(),
+            Mail: faker.internet.email(),
+          } as Demand)
+      )
+    : records.map((record) => ({ id: record.id, ...record.fields } as Demand));
 };
 
 export const getDemand = async (
@@ -39,7 +52,6 @@ export const getDemand = async (
   demandId: string
 ): Promise<Demand | null> => {
   const user = await getUser(email);
-
   const record = await base(tableNameFcuDemands).find(demandId);
   if (!user || record.get('Gestionnaire') !== user.gestionnaire) {
     return null;

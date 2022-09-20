@@ -96,9 +96,11 @@ const Manager = () => {
   const updateDemand = useCallback(
     (demandId: string, demand: Partial<Demand>) => {
       demandsService.update(demandId, demand).then((response) => {
-        const index = demands.findIndex((d) => d.id === demandId);
-        demands.splice(index, 1, response);
-        setDemands([...demands]);
+        if (response) {
+          const index = demands.findIndex((d) => d.id === demandId);
+          demands.splice(index, 1, response);
+          setDemands([...demands]);
+        }
       });
     },
     [demands, demandsService]
