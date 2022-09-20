@@ -1,5 +1,5 @@
 import { Table } from '@dataesr/react-dsfr';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import { RowsParams } from 'src/services/demandsService';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
@@ -10,6 +10,7 @@ import Comment from './Comment';
 import Contact from './Contact';
 import Contacted from './Contacted';
 import {
+  ColHeader,
   Container,
   Distance,
   NoResult,
@@ -19,27 +20,78 @@ import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
 
+type SortParamType = {
+  key?: keyof Demand;
+  order?: 'asc' | 'desc';
+};
+
+const getSortBy =
+  (arr: Demand[]) => (key?: keyof Demand, order?: 'asc' | 'desc') => {
+    if (!arr.length) return [];
+    if (!key || !order) {
+      return [...arr];
+    }
+    return [...arr].sort((_a, _b) => {
+      const a = _a?.[key] as number;
+      const b = _b?.[key] as number;
+      return order === 'desc'
+        ? typeof a === 'undefined' || a < b
+          ? 1
+          : -1
+        : typeof a === 'undefined' || a > b
+        ? 1
+        : -1;
+    });
+  };
+
+const defaultSort: {
+  key?: keyof Demand;
+  order?: 'asc' | 'desc';
+} = { key: 'Date demandes', order: 'desc' };
+
 const Manager = () => {
   const { demandsService } = useServices();
   const [page, setPage] = useState(1);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
+  const [sort, setSort] = useState<SortParamType>(defaultSort);
+
+  const handleSort = useCallback(
+    (key: keyof Demand) => () => {
+      const order =
+        sort.key !== key || !sort.order
+          ? 'desc'
+          : sort.order === 'desc'
+          ? 'asc'
+          : undefined;
+      setSort(order ? { key, order } : defaultSort);
+    },
+    [sort]
+  );
+
+  const onFilterUpdate = useCallback(
+    (demands: Demand[]) => {
+      const sortedDemands = getSortBy(demands)(sort.key, sort.order);
+      setFilteredDemands(sortedDemands);
+      setPage(1);
+    },
+    [sort]
+  );
 
   useEffect(() => {
     demandsService.fetch().then(setDemands);
   }, [demandsService]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [filteredDemands]);
-
-  const updateDemand = (demandId: string, demand: Partial<Demand>) => {
-    demandsService.update(demandId, demand).then((response) => {
-      const index = demands.findIndex((d) => d.id === demandId);
-      demands.splice(index, 1, response);
-      setDemands([...demands]);
-    });
-  };
+  const updateDemand = useCallback(
+    (demandId: string, demand: Partial<Demand>) => {
+      demandsService.update(demandId, demand).then((response) => {
+        const index = demands.findIndex((d) => d.id === demandId);
+        demands.splice(index, 1, response);
+        setDemands([...demands]);
+      });
+    },
+    [demands, demandsService]
+  );
 
   const demandRowsParams: RowsParams[] = [
     {
@@ -67,8 +119,16 @@ const Manager = () => {
       render: (demand) => <Addresse demand={demand} />,
     },
     {
-      name: 'Date de la demande',
-      label: 'Date de demande',
+      name: 'Date demandes',
+      label: (
+        <ColHeader
+          sort={sort.key === 'Date demandes' ? sort.order : undefined}
+          onClick={handleSort('Date demandes')}
+        >
+          Date de la demande
+        </ColHeader>
+      ),
+
       render: (demand) =>
         new Date(demand['Date demandes']).toLocaleDateString(),
     },
@@ -84,7 +144,14 @@ const Manager = () => {
     },
     {
       name: 'Distance au réseau',
-      label: 'Distance au réseau',
+      label: (
+        <ColHeader
+          sort={sort.key === 'Distance au réseau' ? sort.order : undefined}
+          onClick={handleSort('Distance au réseau')}
+        >
+          Distance au réseau
+        </ColHeader>
+      ),
       render: (demand) =>
         demand['Distance au réseau'] && (
           <Distance>{demand['Distance au réseau']} m</Distance>
@@ -110,7 +177,7 @@ const Manager = () => {
         <>
           <ManagerHeader
             demands={demands}
-            setFilteredDemands={setFilteredDemands}
+            setFilteredDemands={onFilterUpdate}
           />
           <TableContainer>
             <div>

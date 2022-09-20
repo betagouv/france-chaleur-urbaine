@@ -1,10 +1,11 @@
+import React from 'react';
 import { HttpClient } from 'src/services/http';
 import { Demand } from 'src/types/Summary/Demand';
 import { ServiceError } from './errors';
 
 export type RowsParams = {
   name: string;
-  label: string;
+  label: React.ReactNode;
   render?: (d: Demand) => any;
 };
 

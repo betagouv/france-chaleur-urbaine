@@ -93,10 +93,10 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
   };
 };
 
-const submitToAirtable: (values: any, type: string) => void = async (
-  values,
-  type
-): Promise<Response | void> => {
+const submitToAirtable = async (
+  values: any,
+  type: string
+): Promise<Response> => {
   const airTableUrl = './api/airtable/create-record';
   return fetch(airTableUrl, {
     method: 'POST',

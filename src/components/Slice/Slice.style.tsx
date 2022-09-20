@@ -21,6 +21,25 @@ export const SliceSection = styled.section<{ theme?: string }>`
           }
         `;
       }
+
+      case 'color-light': {
+        return css`
+          background-color: #666dff;
+          color: #fff;
+
+          p,
+          strong,
+          em,
+          h1,
+          h2,
+          h3,
+          h4,
+          h5,
+          h6 {
+            color: #fff !important;
+          }
+        `;
+      }
       case 'grey': {
         return css`
           background-color: #f9f8f6;

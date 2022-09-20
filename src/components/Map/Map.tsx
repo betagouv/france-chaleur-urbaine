@@ -357,6 +357,12 @@ export default function Map() {
     });
 
     map.current.addControl(draw.current);
+    map.current.addControl(
+      new maplibregl.GeolocateControl({
+        fitBoundsOptions: { maxZoom: 13 },
+        showUserLocation: false,
+      })
+    );
 
     const clickEvents = [
       {

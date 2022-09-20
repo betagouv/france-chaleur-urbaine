@@ -58,6 +58,12 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
           creationCallBack(res)
         );
         break;
+      case 'FCU - Newsletter':
+        base('FCU - Newsletter').create(
+          [{ fields: values }],
+          creationCallBack(res)
+        );
+        break;
       default:
         res.status(400).send({ message: 'Type not recognized' });
         break;
