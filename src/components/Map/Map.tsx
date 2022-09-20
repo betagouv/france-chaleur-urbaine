@@ -181,8 +181,13 @@ const formatBodyPopup = ({
           ${
             network
               ? `
-            <strong>Gestionnaire&nbsp;:</strong> ${network.Gestionnaire}<br />
-            <strong>Taux EnR&R&nbsp;:</strong> ${network['Taux EnR&R']}<br />
+            <strong>Gestionnaire&nbsp;:</strong> ${
+              network.Gestionnaire ? `${network.Gestionnaire}` : 'Non connu'
+            }<br />
+            <strong>Taux EnR&R&nbsp;:</strong> ${
+              network['Taux EnR&R'] ? `${network['Taux EnR&R']}%` : 'Non connu'
+            }
+            <br />
           `
               : ''
           }
