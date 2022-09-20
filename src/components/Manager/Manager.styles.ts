@@ -19,10 +19,15 @@ export const Container = styled.div`
 `;
 
 const iconSize = '6px';
-export const ColHeader = styled.div<{ sort?: 'asc' | 'desc' }>`
+export const ColHeader = styled.div<{
+  sort?: 'asc' | 'desc';
+  width?: string;
+}>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  cursor: pointer;
+  ${({ width }) => width && `width: ${width};`}
 
   &:before {
     content: '';
@@ -51,10 +56,6 @@ export const NoResult = styled.div`
   margin-top: 16px;
   font-size: 18px;
   font-weight: bold;
-`;
-
-export const Distance = styled.div`
-  width: 70px;
 `;
 
 export const TableContainer = styled.div`

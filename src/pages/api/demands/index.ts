@@ -36,9 +36,27 @@ const exportColumn: ExportColumn<Demand>[] = [
     header: 'Type de chauffage',
     value: 'Type de chauffage',
   },
-  { header: 'Distance au réseau (m)', value: 'Distance au réseau' },
-  { header: 'Nb logements', value: 'Logement' },
-  { header: 'Conso gaz (MWh)', value: 'Conso' },
+  {
+    header: 'Distance au réseau (m)',
+    value: (demand) =>
+      demand['Gestionnaire Distance au réseau'] === undefined
+        ? demand['Distance au réseau']
+        : demand['Gestionnaire Distance au réseau'],
+  },
+  {
+    header: 'Nb logements',
+    value: (demand) =>
+      demand['Gestionnaire Logement'] === undefined
+        ? demand['Logement']
+        : demand['Gestionnaire Logement'],
+  },
+  {
+    header: 'Conso gaz (MWh)',
+    value: (demand) =>
+      demand['Gestionnaire Conso'] === undefined
+        ? demand['Conso']
+        : demand['Gestionnaire Conso'],
+  },
   { header: 'Commentaires', value: 'Commentaire' },
 ];
 

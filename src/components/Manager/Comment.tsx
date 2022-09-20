@@ -20,7 +20,7 @@ const Comment = ({
           }),
         500
       ),
-    [demand, updateDemand]
+    [demand.id, updateDemand]
   );
 
   useEffect(() => () => onChangeHandler.cancel(), [onChangeHandler]);
