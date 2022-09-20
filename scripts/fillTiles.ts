@@ -19,7 +19,7 @@ const geoJSONQuery = (properties: string[]) =>
       'geometry', ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom,4326)))::json,
       'properties', json_build_object(
         ${properties
-          .flatMap((property) => [`'${property}'`, property])
+          .flatMap((property) => [`'${property}'`, `"${property}"`])
           .join(',')}
       )
     ))
@@ -42,12 +42,13 @@ const dbTable = (
       db.raw(
         `${preTable(region)[table]}${
           limitRowIDMin
-            ? `AND fid BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}AND ST_WITHIN(
-              ST_Transform(geom, 3857),
-              ST_Segmentize(ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857),${
+            ? `AND fid BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}
+               AND ST_INTERSECTS(
+                ST_Transform(geom, 3857),
+                ST_Segmentize(ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857),${
                 (xmax - xmin) / 4
               })
-            )
+              )
             `
             : ''
         }`
@@ -76,10 +77,10 @@ const tileToEnvelope = (x: number, y: number, z: number) => {
   const ymax = worldMercMax - tileMercSize * y;
 
   return {
-    xmin,
-    xmax,
-    ymin,
-    ymax,
+    xmin: xmin - 1,
+    xmax: xmax + 1,
+    ymin: ymin - 1,
+    ymax: ymax + 1,
   };
 };
 
@@ -117,15 +118,14 @@ const fillTiles = async (
         .select('bnb_nom')
         .where(
           db.raw(`
-          ST_Intersects(
-            ST_Transform(geom, 3857),
-            ST_Segmentize(ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857),${
+        ST_Intersects(
+          ST_Transform(geom, 3857),
+          ST_Segmentize(ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857),${
             (xmax - xmin) / 4
           })
-        )
-        `)
+      )
+      `)
         );
-
       console.info(regions.length, 'region(s) to search');
       if (regions.length === 0) {
         continue;
@@ -134,7 +134,7 @@ const fillTiles = async (
         const region = regions[r].bnb_nom;
         console.log('Region', region);
         console.time(region);
-        for (let i = 1; i <= 2692791; i += 100000) {
+        for (let i = 1; i <= 2692791; i += 500000) {
           console.info('Part', i);
           const tempGeoJSON = await tileInfo
             .extraWhere(
@@ -142,7 +142,7 @@ const fillTiles = async (
                 tileInfo.table,
                 region,
                 i,
-                i + 100000 - 1,
+                i + 500000 - 1,
                 xmin,
                 xmax,
                 ymin,
@@ -192,7 +192,6 @@ const fillTiles = async (
         for (let y = yMin; y < yMax; y++) {
           const tile = tiles.getTile(z, x, y);
           if (tile) {
-            // const tile = await getTile(tileInfo, x, y, z);
             await db(tileInfo.tiles)
               .insert({
                 x,
