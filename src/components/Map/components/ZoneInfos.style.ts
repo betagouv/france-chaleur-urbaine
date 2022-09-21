@@ -30,34 +30,33 @@ export const Export = styled.div`
 
 export const ZoneButton = styled(Button)`
   position: absolute;
-  top: -4px;
-  right: 32px;
+  top: 8px;
+  right: 40px;
 `;
 
 export const CollapseZone = styled.button<{ zoneCollapsed: boolean }>`
   position: absolute;
-  display: flex;
-  justify-content: center;
+  padding-bottom: 24px;
   left: 50%;
   top: 32px;
   ${mapMinMedia} {
     left: 64px;
-    top: 16px;
+    top: 29px;
   }
   ${({ zoneCollapsed }) =>
     zoneCollapsed &&
     css`
       top: 64px;
       ${mapMinMedia} {
-        top: 32px;
+        top: 45px;
       }
     `}
   transform: translateY(-50%);
   border-radius: 10px;
   background-color: white;
   border: solid 1px #dddddd;
-  height: 46px;
-  width: 48px;
+  height: 51px;
+  width: 60px;
   & > span {
     margin: 4px 0 0 0 !important;
   }

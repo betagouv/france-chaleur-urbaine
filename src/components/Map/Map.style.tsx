@@ -125,12 +125,13 @@ export const MapStyle: any = createGlobalStyle<{
 export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
+  overflow: hidden;
 
   max-width: calc(100vw - 333px);
   width: 1100px;
   padding: 32px;
   ${mapMinMedia} {
-    padding: 16px 32px;
+    padding: 32px 32px 16px 32px;
   }
   bottom: 0;
   left: ${({ legendCollapsed }) =>
@@ -174,8 +175,8 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   border-radius: 10px;
   background-color: white;
   border: solid 1px #dddddd;
-  height: 48px;
-  width: 46px;
+  height: 60px;
+  width: 51px;
   overflow: hidden;
   &:hover {
     & > .hover-info {

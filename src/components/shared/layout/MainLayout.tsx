@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import Footer from './Footer';
 import Header from './Header';
 import LayoutContext from './LayoutContext';
-import { Main } from './MainLayout.style';
 export {
   footerHeight,
   fullscreenFooterHeight,
@@ -22,7 +21,7 @@ const MainLayout: React.FC<MainLayout> = ({ children }) => {
   return (
     <>
       <Header fullscreen={fullscreen} currentMenu={currentMenu} />
-      <Main fullscreen={fullscreen}>{children}</Main>
+      <div>{children}</div>
       <Footer />
     </>
   );
