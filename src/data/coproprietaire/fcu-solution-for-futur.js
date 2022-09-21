@@ -2,7 +2,7 @@ const presentationRcu = {
   title: 'Remplaçons vertueusement le fioul et le gaz',
   body: `## Une énergie d’avenir, propre et économique
 
-  Un réseau de chaleur permet de **relier les bâtiments d’un quartier par des canalisations qui distribuent de la chaleur** produite avec **des sources d’énergies renouvelables, locales et durables** (géothermie, biomasse, chaleur issue de l'incinération des déchets).  
+  Un réseau de chaleur permet de **relier les bâtiments d’un quartier par des canalisations qui distribuent de la chaleur** produite avec **des sources d’énergies renouvelables, locales et durables** (géothermie, biomasse, chaleur issue de l'incinération des déchets...).  
   `,
   footer: `:button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" target="_blank"}`,
   listing: `
