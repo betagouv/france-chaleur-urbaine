@@ -18,7 +18,10 @@ const useMapPopup = (
   ] = useState([]);
 
   const updateClickedPoint = useCallback(
-    (coordinates: any, { buildings, consommation, demands, energy }: any) => {
+    (
+      coordinates: any,
+      { buildings, consommation, demands, energy, network }: any
+    ) => {
       const [lon, lat] = coordinates;
       const idCoords = `${lon.toFixed(4)}--${lat.toFixed(4)}`;
 
@@ -38,6 +41,7 @@ const useMapPopup = (
           ...(consommation ? { consommation } : {}),
           ...(demands ? { demands } : {}),
           ...(energy ? { energy } : {}),
+          ...(network ? { network } : {}),
         },
       ];
       setClickedPoint(clickedPointCtx.current);
@@ -51,7 +55,10 @@ const useMapPopup = (
       const bodyPopup = bodyFormater
         ? bodyFormater(data)
         : JSON.stringify(data);
-      userPopUp.current.setLngLat(coordinates).setHTML(bodyPopup).addTo(map);
+      userPopUp.current
+        .setLngLat({ lon: coordinates[0], lat: coordinates[1] })
+        .setHTML(bodyPopup)
+        .addTo(map);
     },
     [bodyFormater, map]
   );

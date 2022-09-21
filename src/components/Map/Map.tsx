@@ -11,6 +11,7 @@ import { Point } from 'src/types/Point';
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
+import { NetworkSummary } from 'src/types/Summary/Network';
 import mapParam, {
   EnergyNameOption,
   gasUsageNameOption,
@@ -58,11 +59,13 @@ const formatBodyPopup = ({
   consommation,
   demands,
   energy,
+  network,
 }: {
   buildings?: EnergySummary;
   consommation?: GasSummary;
   energy?: EnergySummary;
   demands?: DemandSummary;
+  network?: NetworkSummary;
 }) => {
   const writeTypeConso = (typeConso: string | unknown) => {
     switch (typeConso) {
@@ -173,6 +176,19 @@ const formatBodyPopup = ({
           ${
             dpe_ges
               ? `<strong>DPE émissions de gaz à effet de serre&nbsp;:</strong> ${dpe_ges}<br />`
+              : ''
+          }
+          ${
+            network
+              ? `
+            <strong>Gestionnaire&nbsp;:</strong> ${
+              network.Gestionnaire ? `${network.Gestionnaire}` : 'Non connu'
+            }<br />
+            <strong>Taux EnR&R&nbsp;:</strong> ${
+              network['Taux EnR&R'] ? `${network['Taux EnR&R']}%` : 'Non connu'
+            }
+            <br />
+          `
               : ''
           }
         </section>
@@ -365,6 +381,7 @@ export default function Map() {
     );
 
     const clickEvents = [
+      { name: 'outline', key: 'network' },
       {
         name: 'demands',
         key: 'demands',
@@ -375,12 +392,8 @@ export default function Map() {
     ];
     const onMapClick = (e: any, key: string) => {
       const properties = e.features[0].properties;
-      let coordinates = e.features[0].geometry.coordinates.slice();
-      if (key === 'buildings') {
-        const { lat, lng } = e.lngLat;
-        coordinates = [lng, lat];
-      }
-      updateClickedPoint(coordinates, { [key]: properties });
+      const { lat, lng } = e.lngLat;
+      updateClickedPoint([lng, lat], { [key]: properties });
     };
 
     map.current.on('load', () => {

@@ -70,7 +70,7 @@ const Header = ({
         ))}
         {session && (
           <NavItem
-            title="Gestionnaire"
+            title="Espace gestionnaire"
             current={currentMenu === '/gestionnaire'}
             asLink={<a href="/gestionnaire"></a>}
           />

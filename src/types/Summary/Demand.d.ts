@@ -17,6 +17,7 @@ export type Demand = DemandSummary &
   EditableDemandSummary & {
     Mail: string;
     'Distance au réseau': number;
+    'Gestionnaire Distance au réseau': number;
     'N° de dossier': string;
     'en ZDP': string;
     'Date demandes': string;
@@ -24,5 +25,7 @@ export type Demand = DemandSummary &
     Structure: string;
     Ville: string;
     Conso: number;
+    'Gestionnaire Conso': number;
     Logement: number;
+    'Gestionnaire Logement': number;
   };
