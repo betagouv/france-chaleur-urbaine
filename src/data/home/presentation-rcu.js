@@ -2,7 +2,7 @@ const presentationRcu = {
   title: 'Remplaçons vertueusement le fioul et le gaz',
   body: `Un réseau de chaleur est constitué d’un système de **canalisations** qui permettent
   d’acheminer vers un ensemble de **bâtiments** de la **chaleur** produite **localement**,
-  avec **des sources d’énergies renouvelables ou de récupération.**  (géothermie, biomasse, chaleur issue de l'incinération des déchets...).
+  avec **des sources d’énergies renouvelables ou de récupération** (géothermie, biomasse, chaleur issue de l'incinération des déchets...).
   Une alternative écologique au fioul et au gaz !
 
   :::puce-icon{icon="./icons/picto-ecology.svg" className="presentation-rcu-icon"}
