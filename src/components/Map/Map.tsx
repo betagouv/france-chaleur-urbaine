@@ -657,7 +657,7 @@ export default function Map() {
             {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
           </Hoverable>
           <Icon
-            size="xl"
+            size="2x"
             name={
               legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'
             }

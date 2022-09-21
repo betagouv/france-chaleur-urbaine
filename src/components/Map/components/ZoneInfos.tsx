@@ -94,7 +94,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
           {zoneCollapsed ? 'Afficher le panneau' : 'Masquer le panneau'}
         </Hoverable>
         <Icon
-          size="xl"
+          size="2x"
           name={zoneCollapsed ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'}
         />
       </CollapseZone>
