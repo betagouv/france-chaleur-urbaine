@@ -1,20 +1,4 @@
 import styled from 'styled-components';
-import {
-  footerHeight,
-  fullscreenHeaderHeight,
-  headerHeight,
-  tabHeaderHeight,
-} from './MainLayout.data';
-
-export const Main = styled.section<{ fullscreen?: boolean }>`
-  min-height: calc(100vh - ${tabHeaderHeight});
-
-  @media (min-width: 992px) {
-    min-height: calc(100vh - ${headerHeight} - ${footerHeight});
-    ${({ fullscreen }) =>
-      fullscreen && `min-height: calc(100vh - ${fullscreenHeaderHeight});`}
-  }
-`;
 
 export const FullScreenHeader = styled.div`
   @media (min-width: 992px) {

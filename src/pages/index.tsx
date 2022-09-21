@@ -56,6 +56,10 @@ const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled
     padding-left: 5.75em;
   }
 
+  .presentation-rcu {
+    max-width: 650px;
+  }
+
   .enjeu-societe-description-wrapper {
     padding: 0 3rem;
   }

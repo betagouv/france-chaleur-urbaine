@@ -34,6 +34,7 @@ const cityManaged = [
   'vezin-le-coquet',
   'barcelonnette',
   'nice',
+  'vaux-en-velin',
 ];
 
 export const isBasedOnIRIS = (postCode: string, city: string): boolean =>
