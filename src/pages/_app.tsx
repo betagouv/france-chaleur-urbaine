@@ -46,6 +46,19 @@ const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled
   }
 `;
 const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+  input[type="checkbox"], input[type="radio"] {
+    width: 13px;
+    height: 13px;
+  }
+  
+  input[type="checkbox"] {
+    appearance: checkbox;
+  }
+  
+  input[type="radio"] {
+    appearance: radio;
+  }
+
   .fr-header__service-title{
     color: #069368;
   }
