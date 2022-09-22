@@ -134,6 +134,15 @@ const useContactFormFCU = () => {
     [addressData, timeoutScroller]
   );
 
+  const handleResetFormContact = useCallback(() => {
+    setAddressData({});
+    setContactReady(false);
+    setShowWarning(false);
+    setMessageSent(false);
+    setMessageReceived(false);
+    setLoadingStatus('idle');
+  }, []);
+
   return {
     EligibilityFormContactRef,
     addressData,
@@ -147,6 +156,7 @@ const useContactFormFCU = () => {
     handleOnFetchAddress,
     handleOnSuccessAddress,
     handleOnSubmitContact,
+    handleResetFormContact,
   };
 };
 
