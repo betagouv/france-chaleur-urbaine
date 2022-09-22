@@ -6,19 +6,8 @@ import {
 } from '@components/shared/callOut/CallOut';
 import { isBasedOnIRIS } from '@helpers/address';
 import { useMemo } from 'react';
+import { AddressDataType } from 'src/types/AddressData';
 import styled from 'styled-components';
-
-// TODO: Extract and import
-type AvailableHeating = 'collectif' | 'individuel' | undefined;
-type AvailableStructure = 'Tertiaire' | 'Copropriété' | undefined;
-type AddressDataType = {
-  geoAddress?: Record<string, any>;
-  eligibility?: boolean;
-  computEligibility?: boolean;
-  chauffage?: AvailableHeating;
-  network?: Record<string, any>;
-  structure?: AvailableStructure;
-};
 
 const UnderlinedLink = styled.a`
   text-decoration: none;
