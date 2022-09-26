@@ -253,6 +253,7 @@ export const energyLayerStyle = {
   type: 'symbol',
   layout: {
     'icon-image': 'energy-picto',
+    'icon-overlap': 'always',
     'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
     'icon-size': [
       'case',
