@@ -65,14 +65,22 @@ const Header = ({
             key={url}
             title={label}
             current={currentMenu === url}
-            asLink={<a href={url}></a>}
+            asLink={
+              <div>
+                <Link href={url}>{label}</Link>
+              </div>
+            }
           />
         ))}
         {session && (
           <NavItem
             title="Espace gestionnaire"
             current={currentMenu === '/gestionnaire'}
-            asLink={<a href="/gestionnaire"></a>}
+            asLink={
+              <div>
+                <Link href="/gestionnaire">Espace gestionnaire</Link>
+              </div>
+            }
           />
         )}
       </HeaderNav>
