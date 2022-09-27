@@ -5,6 +5,7 @@ export type DemandSummary = {
   Adresse: string;
   'Mode de chauffage': string;
   'Type de chauffage': string;
+  Structure: string;
 };
 
 export type EditableDemandSummary = {
@@ -22,7 +23,6 @@ export type Demand = DemandSummary &
     'en ZDP': string;
     'Date demandes': string;
     Établissement: string;
-    Structure: string;
     Ville: string;
     Conso: number;
     'Gestionnaire Conso': number;
