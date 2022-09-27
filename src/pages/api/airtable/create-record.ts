@@ -2,7 +2,7 @@ import {
   getConso,
   getNbLogement,
 } from '@core/infrastructure/repository/addresseInformation';
-import { getGestionnaire } from '@core/infrastructure/repository/manager';
+import { getGestionnaires } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
 
@@ -29,7 +29,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
     const { type, ...values } = req.body;
     switch (type) {
       case 'FCU - Utilisateurs': {
-        const gestionnaire = getGestionnaire(values);
+        const gestionnaires = getGestionnaires(values);
         const conso = await getConso(values.Latitude, values.Longitude);
         const nbLogement = await getNbLogement(
           values.Latitude,
@@ -40,7 +40,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
             {
               fields: {
                 ...values,
-                Gestionnaire: gestionnaire,
+                Gestionnaires: gestionnaires,
                 Conso: conso ? conso.conso_nb : undefined,
                 'ID Conso': conso ? conso.rownum : undefined,
                 Logement: nbLogement ? nbLogement.nb_logements : undefined,
