@@ -42,6 +42,16 @@ const CardSearchDetails = ({
     return `${distance}m`;
   }, [distance]);
 
+  const eligibilityWording = useMemo(() => {
+    if (isEligible && distance < 100) {
+      return `Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.`;
+    }
+    if (isEligible && distance < 200) {
+      return `Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois le réseau n’est pas très loin.`;
+    }
+    return `D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.`;
+  }, [distance, isEligible]);
+
   const onClickHandler = useCallback(
     (evt: React.MouseEvent<HTMLElement>) => {
       evt.stopPropagation();
@@ -87,9 +97,7 @@ const CardSearchDetails = ({
       )}
       <section>
         <EligibilityResult isEligible={isEligible}>
-          {isEligible
-            ? `Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.`
-            : `D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.`}
+          {eligibilityWording}
           <div>
             <strong>
               {isEligible &&

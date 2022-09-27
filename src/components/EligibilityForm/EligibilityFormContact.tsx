@@ -65,7 +65,7 @@ L’amélioration de l’isolation thermique de votre immeuble constitue un autr
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
       bodyLight: `
-Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
+Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble`,
       headerTypo: 'small',
     },
   },
@@ -89,7 +89,7 @@ L’amélioration de l’isolation thermique de votre immeuble constitue un autr
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
       bodyLight: `
-Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
+Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble`,
       headerTypo: 'small',
     },
   },
@@ -113,7 +113,7 @@ L’amélioration de l’isolation thermique de votre immeuble constitue un autr
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
       bodyLight: `
-Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
+Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble`,
       headerTypo: 'small',
     },
   },
@@ -137,7 +137,7 @@ L’amélioration de l’isolation thermique de votre immeuble constitue un autr
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
       bodyLight: `
-Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
+Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble`,
       headerTypo: 'small',
     },
   },
@@ -150,7 +150,7 @@ Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées*
 
 Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, pensez à améliorer l’isolation thermique de votre immeuble. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [France Rénov’](https://france-renov.gouv.fr/)`,
       bodyLight: `
-**Contribuez au développement des réseaux de chaleur** en faisant connaître votre souhait de vous raccorder ! **Laissez-nous vos coordonnées pour être tenu informé** par le gestionnaire du réseau le plus proche ou par votre collectivité des projets d’extension de réseau ou de création de réseau dans votre quartier.`,
+Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble`,
       headerTypo: 'large',
     },
     individuel: {
@@ -163,7 +163,7 @@ L’amélioration de l’isolation thermique de votre immeuble constitue un autr
 
 Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage) `,
       bodyLight: `
-Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.`,
+Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble`,
       headerTypo: 'small',
     },
   },
@@ -274,13 +274,15 @@ const EligibilityFormContact = ({
             </ContactFormEligibilityMessage>
           </>
         ) : (
-          <ContactFormResultMessage
-            eligible={computEligibility}
-            headerTypo={headerTypo}
-            cardMode
-          >
-            <MarkdownWrapper value={bodyLight || body} />
-          </ContactFormResultMessage>
+          bodyLight && (
+            <ContactFormResultMessage
+              eligible={computEligibility}
+              headerTypo={headerTypo}
+              cardMode
+            >
+              <MarkdownWrapper value={bodyLight} />
+            </ContactFormResultMessage>
+          )
         )}
       </ContactFormContentWrapper>
 
