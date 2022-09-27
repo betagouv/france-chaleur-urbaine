@@ -2,6 +2,7 @@ import MarkdownWrapper from '@components/MarkdownWrapper';
 import { isBasedOnIRIS } from '@helpers/address';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
+import { AddressDataType, AvailableHeating } from 'src/types/AddressData';
 import {
   ContactForm,
   ContactFormContentWrapper,
@@ -9,16 +10,6 @@ import {
   ContactFormResultMessage,
   ContactFormWrapper,
 } from './components';
-
-// TODO: Extract and import
-type AvailableHeating = 'collectif' | 'individuel' | undefined;
-type AddressDataType = {
-  geoAddress?: Record<string, any>;
-  eligibility?: boolean;
-  heatingType?: AvailableHeating;
-  network?: Record<string, any>;
-  distance?: number;
-};
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
