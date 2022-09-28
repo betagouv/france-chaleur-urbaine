@@ -6,14 +6,40 @@ import {
   Logo,
   NavItem,
   Service,
+  Tool,
+  ToolItem,
+  ToolItemGroup,
 } from '@dataesr/react-dsfr';
-import { useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Fragment } from 'react';
 import { menu } from './MainLayout.data';
-import { FullScreenHeader } from './MainLayout.style';
+import { FullScreenHeader, FullScreenItems } from './MainLayout.style';
 
 const fcuHeaderDesc = `Un service public pour faciliter et accélérer les raccordements aux réseaux de chaleur`;
+
+const ToolItems = ({ session }: { session: Session | null }) => (
+  <Tool>
+    <ToolItemGroup>
+      {session ? (
+        <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
+          Se deconnecter
+        </ToolItem>
+      ) : (
+        <ToolItem
+          asLink={
+            <Link href="/connexion">
+              <a className="fr-link">Espace gestionnaire</a>
+            </Link>
+          }
+        >
+          Espace gestionnaire
+        </ToolItem>
+      )}
+    </ToolItemGroup>
+  </Tool>
+);
 
 const Header = ({
   currentMenu,
@@ -48,6 +74,7 @@ const Header = ({
               asLink={<Link href={'/'} title="Revenir à l'accueil" />}
             />
           )}
+          {!fullscreen && <ToolItems session={session} />}
         </HeaderBody>
       </Container>
       <HeaderNav>
@@ -82,6 +109,11 @@ const Header = ({
               </div>
             }
           />
+        )}
+        {fullscreen && (
+          <FullScreenItems>
+            <ToolItems session={session} />
+          </FullScreenItems>
         )}
       </HeaderNav>
     </HeaderDS>
