@@ -42,6 +42,7 @@ export const getDemands = async (email: string): Promise<Demand[] | null> => {
             Nom: faker.name.lastName(),
             Prénom: faker.name.firstName(),
             Mail: faker.internet.email(),
+            Téléphone: faker.phone.number('0#########'),
           } as Demand)
       )
     : records.map((record) => ({ id: record.id, ...record.fields } as Demand));
