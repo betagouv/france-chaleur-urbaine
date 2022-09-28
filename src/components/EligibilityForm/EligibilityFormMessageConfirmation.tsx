@@ -22,8 +22,8 @@ const EligibilityFormMessageConfirmation = ({
   }, [addressData]);
 
   const isIRISAddress = useMemo(() => {
-    const { postcode, city } = addressData?.geoAddress?.properties || {};
-    return isBasedOnIRIS(postcode, city);
+    const { city } = addressData?.geoAddress?.properties || {};
+    return isBasedOnIRIS(city);
   }, [addressData]);
 
   const linkToMap =

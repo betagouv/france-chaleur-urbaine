@@ -6,11 +6,11 @@ import { AddressRepositoryImpl } from '../AddressRepositoryImpl';
 
 describe('Address Repository', () => {
   describe('#findByCoords', () => {
-    it('should return an IDF Address, when postal code starts with [75,...,78]', async () => {
+    it('should return an IDF Address, when city is managed', async () => {
       const coords: Coords = { lat: 48.868662, lon: 2.333382 };
       const fakeHttpClient = {
         get: jest.fn().mockResolvedValue({
-          city: 'Paris 2e Arrondissement',
+          city: 'Paris',
           lat: 48.868662,
           lon: 2.333382,
           name: 'Gaillon 1',
@@ -31,7 +31,8 @@ describe('Address Repository', () => {
         `${process.env.NEXT_PUBLIC_PYRIS_BASE_URL}coords?geojson=false&lat=${coords.lat}&lon=${coords.lon}`
       );
     });
-    it('should return an Address IDF excluded according to postal code', async () => {
+
+    it('should return an Address IDF excluded according city', async () => {
       const coords: Coords = { lat: 48.868662, lon: 2.333382 };
       const fakeHttpClient = {
         get: jest.fn().mockResolvedValue({
