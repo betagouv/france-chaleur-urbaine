@@ -65,6 +65,7 @@ export const anAddressNotFound = (args?: any): Address =>
     irisCode: '7525000501',
     cityCode: '75250',
     label: '34 Avenue de l’Opéra 75002 Paris',
+    city: 'Paris',
     ...args,
   });
 
@@ -83,7 +84,7 @@ export const someOutOfIDFCoordsWithNoNetwork = (args?: any): Coords => ({
 export const someAddress = (): string => '5 avenue ségur, 75017 Paris';
 
 export const somePyrisAddressResponse = (args?: any): AddressPyrisResponse => ({
-  city: 'Paris 2e Arrondissement',
+  city: 'Paris',
   name: 'Gaillon 1',
   complete_code: '751020501',
   iris: '0501',

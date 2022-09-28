@@ -8,9 +8,9 @@ const getUser = (email: string) =>
 
 const tableNameFcuDemands = 'FCU - Utilisateurs';
 
-export const getGestionnaires = (demand: Demand): string[] | null => {
+export const getGestionnaire = (demand: Demand): string | null => {
   if (demand.Ville === 'Paris') {
-    return ['VDP'];
+    return 'Paris';
   }
 
   return null;
@@ -26,19 +26,15 @@ export const getDemands = async (email: string): Promise<Demand[] | null> => {
   const isDemoUser = user.gestionnaire === 'DEMO';
   const records = await base(tableNameFcuDemands)
     .select({
+      filterByFormula: `Gestionnaire="${
+        isDemoUser ? 'Paris' : user.gestionnaire
+      }"`,
       sort: [{ field: 'Date demandes', direction: 'desc' }],
     })
     .all();
 
-  const filteredRecords = records.filter((record) => {
-    const gestionnaires = record.get('Gestionnaires') as string[];
-    return (
-      gestionnaires &&
-      gestionnaires.includes(isDemoUser ? 'VDP' : user.gestionnaire)
-    );
-  });
   return isDemoUser
-    ? filteredRecords.map(
+    ? records.map(
         (record) =>
           ({
             id: record.id,
@@ -48,9 +44,7 @@ export const getDemands = async (email: string): Promise<Demand[] | null> => {
             Mail: faker.internet.email(),
           } as Demand)
       )
-    : filteredRecords.map(
-        (record) => ({ id: record.id, ...record.fields } as Demand)
-      );
+    : records.map((record) => ({ id: record.id, ...record.fields } as Demand));
 };
 
 export const getDemand = async (

@@ -18,7 +18,7 @@ export const createAddress = ({
   cityCode: string;
   irisCode: string;
 }): Address => {
-  if (isBasedOnIRIS(cityCode, city)) {
+  if (isBasedOnIRIS(city)) {
     return new IRISAdress(lat, lon, label, city, cityCode, irisCode);
   }
   return new RegularAddress(lat, lon, label, city, cityCode, irisCode);

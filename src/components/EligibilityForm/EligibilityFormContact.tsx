@@ -176,8 +176,8 @@ const EligibilityFormContact = ({
   onSubmit,
 }: EligibilityFormContactType) => {
   const isIRISAddress = useMemo(() => {
-    const { postcode, city } = addressData?.geoAddress?.properties || {};
-    return isBasedOnIRIS(postcode, city);
+    const { city } = addressData?.geoAddress?.properties || {};
+    return isBasedOnIRIS(city);
   }, [addressData]);
 
   const addressCoords: [number, number] | undefined = useMemo(() => {
