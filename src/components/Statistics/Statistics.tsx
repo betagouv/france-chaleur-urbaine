@@ -7,15 +7,15 @@ import useSWR from 'swr';
 import Band from './Band';
 import { Container, GraphsWrapper } from './Statistics.style';
 
-type NbVisitType = { nb_visits?: number | string };
+type NbVisit = { nb_visits?: number | string };
 type ReturnApiMatomo = {
   filters?: { date?: string };
   nb_uniq_visitors?: string;
-  'Formulaire de test - Envoi'?: NbVisitType;
-  'Formulaire de test - Adresse Inéligible'?: NbVisitType;
-  'Formulaire de test - Adresse Éligible'?: NbVisitType;
-  'Formulaire de contact éligible - Envoi'?: NbVisitType;
-  'Formulaire de contact inéligible - Envoi'?: NbVisitType;
+  'Formulaire de test - Envoi'?: NbVisit;
+  'Formulaire de test - Adresse Inéligible'?: NbVisit;
+  'Formulaire de test - Adresse Éligible'?: NbVisit;
+  'Formulaire de contact éligible - Envoi'?: NbVisit;
+  'Formulaire de contact inéligible - Envoi'?: NbVisit;
 };
 type ReturnApiStatAirtable = {
   date: string;
@@ -27,27 +27,14 @@ type ReturnApiStatAirtable = {
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Statistics = () => {
-  const { data: rawDataActions, error: errorActions } = useSWR(
-    '/api/statistiques/getActions',
-    fetcher
-  );
-  const { data: rawDataVisits, error: errorVisits } = useSWR(
-    '/api/statistiques/getVisitsSummary',
-    fetcher
-  );
-  const { data: rawDataMonthContact, error: errorMonthContact } = useSWR(
-    '/api/statistiques/getMonthContact',
-    fetcher
-  );
-  const { data: rawDataCountContact, error: errorCountContact } = useSWR(
-    '/api/statistiques/getCountContact',
-    fetcher
-  );
+  const { data: rawDataEligibilityTest, error: errorDataEligibilityTest } =
+    useSWR('/api/statistiques/getActions', fetcher, {
+      onError: (err) => console.warn('errorDataEligibilityTest >>', err),
+    });
 
-  if (errorActions) console.warn('errorActions >>', errorActions);
-  const dataActions = useMemo(
+  const dataEligibilityTest = useMemo(
     () =>
-      rawDataActions?.result.values
+      rawDataEligibilityTest?.result.values
         .map((arr: any[], i: number) =>
           arr.reduce(
             (acc, entry) => {
@@ -56,63 +43,12 @@ const Statistics = () => {
                 [entry.label]: entry,
               };
             },
-            { filters: rawDataActions?.result.filters[i] }
+            { filters: rawDataEligibilityTest?.result.filters[i] }
           )
         )
         .reverse() ?? [],
-    [rawDataActions?.result]
+    [rawDataEligibilityTest?.result]
   );
-  const dataEligibilityTest = dataActions;
-
-  if (errorVisits) console.warn('errorVisits >>', errorVisits);
-  const dataVisits = useMemo(
-    () =>
-      rawDataVisits?.result.values
-        .map((data: any, i: number) => ({
-          filters: rawDataVisits.result.filters[i],
-          ...data,
-        }))
-        .reverse() ?? [],
-    [rawDataVisits?.result]
-  );
-
-  if (errorMonthContact)
-    console.warn('errorMonthContact >>', errorMonthContact);
-  const dataMonthContact = useMemo(
-    () =>
-      Object.entries(
-        (rawDataMonthContact as Record<string, ReturnApiStatAirtable>) || {}
-      ).map(([key, value]) => {
-        const [year, month] = key.split('-');
-        return {
-          period: new Date(new Date(+year, +month).setDate(-1)),
-          ...value,
-        };
-      }),
-    [rawDataMonthContact]
-  );
-
-  if (errorCountContact)
-    console.warn('errorCountContact >>', errorCountContact);
-  const dataCountContact = useMemo(
-    () =>
-      Object.entries(
-        (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
-      ).map(([, { date, ...value }]) => {
-        const [year, month, day] = date.split('-');
-        return { date: new Date(Date.UTC(+year, +month - 1, +day)), ...value };
-      }),
-    [rawDataCountContact]
-  );
-
-  const formatedDataVisits = [
-    [{ type: 'date', label: 'period' }, 'Visiteurs'],
-    ...dataVisits.map((entry: ReturnApiMatomo = {}) => {
-      const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
-      const label = new Date(new Date(+year, +month).setDate(-1));
-      return [label, entry?.nb_uniq_visitors || 0];
-    }),
-  ];
 
   const formatedDataEligibilityTest = [
     [
@@ -133,6 +69,56 @@ const Statistics = () => {
     }),
   ];
 
+  const { data: rawDataVisits, error: errorVisits } = useSWR(
+    '/api/statistiques/getVisitsSummary',
+    fetcher,
+    {
+      onError: (err) => console.warn('errorVisits >>', err),
+    }
+  );
+
+  const dataVisits = useMemo(
+    () =>
+      rawDataVisits?.result.values
+        .map((data: any, i: number) => ({
+          filters: rawDataVisits.result.filters[i],
+          ...data,
+        }))
+        .reverse() ?? [],
+    [rawDataVisits?.result]
+  );
+
+  const formatedDataVisits = [
+    [{ type: 'date', label: 'period' }, 'Visiteurs'],
+    ...dataVisits.map((entry: ReturnApiMatomo = {}) => {
+      const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
+      const label = new Date(new Date(+year, +month).setDate(-1));
+      return [label, entry?.nb_uniq_visitors || 0];
+    }),
+  ];
+
+  const { data: rawDataMonthContact, error: errorMonthContact } = useSWR(
+    '/api/statistiques/getCountContact?group=monthly',
+    fetcher,
+    {
+      onError: (err) => console.warn('errorMonthContact >>', err),
+    }
+  );
+
+  const dataMonthContact = useMemo(
+    () =>
+      Object.entries(
+        (rawDataMonthContact as Record<string, ReturnApiStatAirtable>) || {}
+      ).map(([key, value]) => {
+        const [year, month] = key.split('-');
+        return {
+          period: new Date(new Date(+year, +month).setDate(-1)),
+          ...value,
+        };
+      }),
+    [rawDataMonthContact]
+  );
+
   const formatedDataMonthContact = [
     [
       { type: 'date', label: 'period' },
@@ -146,7 +132,26 @@ const Statistics = () => {
     }),
   ];
 
-  const formatedDataSumContact = [
+  const { data: rawDataCountContact, error: errorCountContact } = useSWR(
+    '/api/statistiques/getCountContact?group=all',
+    fetcher,
+    {
+      onError: (err) => console.warn('errorCountContact >>', err),
+    }
+  );
+
+  const dataCountContact = useMemo(
+    () =>
+      Object.entries(
+        (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
+      ).map(([, { date, ...value }]) => {
+        const [year, month, day] = date.split('-');
+        return { date: new Date(Date.UTC(+year, +month - 1, +day)), ...value };
+      }),
+    [rawDataCountContact]
+  );
+
+  const formatedDataCountContact = [
     [
       { type: 'date', label: 'Date' },
       'Total des prises de contact',
@@ -213,7 +218,7 @@ const Statistics = () => {
           />
           <Graph
             title="Nombre d'adresses testées / mois"
-            errors={errorActions}
+            errors={errorDataEligibilityTest}
             data={dataEligibilityTest}
             formatedData={formatedDataEligibilityTest}
           />
@@ -227,7 +232,7 @@ const Statistics = () => {
             title="Demandes de contacts cumulées"
             errors={errorCountContact}
             data={dataCountContact}
-            formatedData={formatedDataSumContact}
+            formatedData={formatedDataCountContact}
           />
         </GraphsWrapper>
       </Slice>
