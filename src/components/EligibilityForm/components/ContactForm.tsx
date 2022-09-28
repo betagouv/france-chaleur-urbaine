@@ -64,11 +64,11 @@ export const ContactForm = ({ onSubmit, isLoading }: ContactFormProps) => {
               {isLoading ? (
                 <Loader color="#4550e5" show />
               ) : (
-                <Button submit disabled={!formik.isValid || isLoading}>
+                <Button submit disabled={isLoading}>
                   Envoyer
                 </Button>
               )}
-              {!formik.isValid && (
+              {formik.isSubmitting && !formik.isValid && (
                 <p className="fr-error-text">
                   Veuillez remplir les champs obligatoires(*) avant d'envoyer
                   votre demande

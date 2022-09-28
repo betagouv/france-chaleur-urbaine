@@ -1,6 +1,11 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const isGithubCI = process.env.NODE_ENV === 'production' && process.env.CI;
 
-module.exports = {
+module.exports = withBundleAnalyzer({
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,
   basePath: isGithubCI ? '/france-chaleur-urbaine' : undefined,
   // swcMinify: true, // Need Fix on the Rust Compiler SWC: Incompatibility with MapLibre
@@ -18,4 +23,4 @@ module.exports = {
       },
     ];
   },
-};
+});

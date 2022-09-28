@@ -39,6 +39,7 @@ jobs:
 
       - name: Audit 🛡️
         run: yarn audit
+        continue-on-error: true
 
       - name: Lint 🧹
         run: yarn lint

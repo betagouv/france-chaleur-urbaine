@@ -1,24 +1,9 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import {
-  CallOut,
-  CallOutBody,
-  CallOutTitle,
-} from '@components/shared/callOut/CallOut';
 import { isBasedOnIRIS } from '@helpers/address';
 import { useMemo } from 'react';
+import { AddressDataType } from 'src/types/AddressData';
 import styled from 'styled-components';
-
-// TODO: Extract and import
-type AvailableHeating = 'collectif' | 'individuel' | undefined;
-type AvailableStructure = 'Tertiaire' | 'Copropriété' | undefined;
-type AddressDataType = {
-  geoAddress?: Record<string, any>;
-  eligibility?: boolean;
-  computEligibility?: boolean;
-  chauffage?: AvailableHeating;
-  network?: Record<string, any>;
-  structure?: AvailableStructure;
-};
+import { ContactFormEligibilityResult } from './components';
 
 const UnderlinedLink = styled.a`
   text-decoration: none;
@@ -26,8 +11,10 @@ const UnderlinedLink = styled.a`
 `;
 const EligibilityFormMessageConfirmation = ({
   addressData = {},
+  cardMode,
 }: {
   addressData: AddressDataType;
+  cardMode?: boolean;
 }) => {
   const addressCoords: [number, number] = useMemo(() => {
     const coords = addressData?.geoAddress?.geometry?.coordinates as number[];
@@ -51,18 +38,21 @@ const EligibilityFormMessageConfirmation = ({
     ineligible: {
       title: 'Votre demande de contact est bien prise en compte.',
       body: `Visualisez notre carte des réseaux de chaleur [ici](${linkToMap}).`,
+      bodyCardMode: '',
     },
     eligible: {
       title: 'Votre demande de contact est bien prise en compte.',
       body: `
 Sans attendre, [téléchargez notre guide pratique](/documentation/guide-france-chaleur-urbaine.pdf) afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.  
 Visualisez également notre carte des réseaux de chaleur [ici](${linkToMap}).`,
+      bodyCardMode: `
+Sans attendre, [téléchargez notre guide pratique](/documentation/guide-france-chaleur-urbaine.pdf) afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.`,
     },
   };
   return (
     <>
-      <CallOut>
-        <CallOutTitle>
+      <ContactFormEligibilityResult cardMode={cardMode}>
+        <header>
           <MarkdownWrapper
             value={
               structure
@@ -71,17 +61,17 @@ Visualisez également notre carte des réseaux de chaleur [ici](${linkToMap}).`,
                 : ''
             }
           />
-        </CallOutTitle>
-        <CallOutBody>
-          <MarkdownWrapper
-            value={
-              structure
-                ? message?.[computEligibility ? 'eligible' : 'ineligible']?.body
-                : ''
-            }
-          />
-        </CallOutBody>
-      </CallOut>
+        </header>
+        <MarkdownWrapper
+          value={
+            structure
+              ? message?.[computEligibility ? 'eligible' : 'ineligible']?.[
+                  cardMode ? 'bodyCardMode' : 'body'
+                ]
+              : ''
+          }
+        />
+      </ContactFormEligibilityResult>
       <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
         <UnderlinedLink
           className="fr-md-auto"

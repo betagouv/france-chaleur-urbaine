@@ -11,7 +11,9 @@ export type EnergyInputsLabelsType = { collectif: string; individuel: string };
 
 type CheckEligibilityFormProps = {
   children?: React.ReactNode;
+  fullAddress?: any;
   formLabel?: React.ReactNode;
+  heatingLabel?: React.ReactNode;
   energyInputsLabels?: EnergyInputsLabelsType;
   centredForm?: boolean;
   onChange?: (...arg: any) => void;
@@ -25,56 +27,78 @@ const energyInputsDefaultLabels = {
 };
 
 const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
+  children,
+  fullAddress,
   formLabel,
+  heatingLabel,
   energyInputsLabels = energyInputsDefaultLabels,
   centredForm,
-  children,
   onChange,
   onFetch,
   onSuccess,
 }) => {
-  const [status, setStatus] = useState('idle');
-  const [data, setData] = useState({});
+  const address = fullAddress?.address;
+  const {
+    lon,
+    lat,
+    isEligible: eligibility,
+    network,
+    inZDP,
+  } = fullAddress?.addressDetails?.networkDetails || {};
+  const coords = (lon ?? lat) && { lon, lat };
+  const defaultData = {
+    address,
+    eligibility,
+    coords,
+    network,
+    inZDP,
+  };
+
+  const [status, setStatus] = useState(!coords ? 'idle' : 'success');
+  const [data, setData] = useState<Record<string, any>>(defaultData);
   const prevData = usePreviousState(data);
   const { heatNetworkService } = useServices();
+
+  type CallbackParams = {
+    eligibility: boolean;
+    network: Record<string, any>;
+    inZDP: boolean;
+  };
   const checkEligibility = useCallback(
-    async ({
-      address,
-      coords,
-      geoAddress,
-    }: {
-      address?: string;
-      coords: Coords;
-      geoAddress?: any;
-    }) => {
+    async (
+      coords: Coords,
+      callBack: ({ eligibility, network, inZDP }: CallbackParams) => void
+    ) => {
       try {
         setStatus('loading');
         const networkData = await heatNetworkService.findByCoords(coords);
         const { isEligible: eligibility, network, inZDP } = networkData;
-        setData({
-          ...data,
-          eligibility,
-          address,
-          coords,
-          geoAddress,
-          network,
-          inZDP,
-        });
+        callBack({ eligibility, network, inZDP });
         setStatus('success');
       } catch (e) {
         setStatus('error');
       }
     },
-    [data, heatNetworkService]
+    [heatNetworkService]
   );
 
   const handleAddressSelected = useCallback(
     async (address: string, point: Point, geoAddress: any): Promise<void> => {
       if (onFetch) onFetch({ address, point, geoAddress });
       const coords: Coords = convertPointToCoordinates(point);
-      await checkEligibility({ address, coords, geoAddress });
+      await checkEligibility(coords, ({ eligibility, network, inZDP }) =>
+        setData({
+          ...data,
+          address,
+          eligibility,
+          coords,
+          geoAddress,
+          network,
+          inZDP,
+        })
+      );
     },
-    [checkEligibility, onFetch]
+    [checkEligibility, data, onFetch]
   );
 
   useEffect(() => {
@@ -100,6 +124,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       {children}
       <CheckEligibilityFormLabel centred={centredForm}>
         <SelectEnergy
+          label={heatingLabel}
           name="heatingType"
           selectOptions={energyInputsLabels}
           onChange={(e) => {
@@ -112,10 +137,12 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           {formLabel}
         </SelectEnergy>
       </CheckEligibilityFormLabel>
-      <AddressAutocomplete
-        placeholder="Tapez ici votre adresse"
-        onAddressSelected={handleAddressSelected}
-      />
+      {!coords && (
+        <AddressAutocomplete
+          placeholder="Tapez ici votre adresse"
+          onAddressSelected={handleAddressSelected}
+        />
+      )}
     </>
   );
 };

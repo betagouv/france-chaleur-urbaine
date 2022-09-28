@@ -9,8 +9,15 @@ export const FormFreezer = styled.div<{ enabled?: boolean }>`
   display: ${({ enabled }) => (enabled ? 'block' : 'none')};
 `;
 
-export const CheckEligibilityFormLabel = styled.div<{ centred?: boolean }>`
-  padding: 1em 0;
+export const CheckEligibilityFormLabel = styled.div<{
+  centred?: boolean;
+}>`
+  display: block;
+  overflow: hidden;
+  max-height: 500px;
+  padding: 16px 0 0;
+  transition: all 0.3s ease;
+
   ${({ centred }) =>
     centred &&
     css`
@@ -18,53 +25,59 @@ export const CheckEligibilityFormLabel = styled.div<{ centred?: boolean }>`
     `}
 `;
 
-export const ContactFormWrapper = styled.div`
+export const ContactFormWrapper = styled.div<{ cardMode?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: stretch;
-  padding: 1.5rem 0;
 
-  @media (min-width: 992px) {
-    flex-direction: row;
-  }
+  ${({ cardMode }) => css`
+    ${!cardMode ? 'padding: 24px 0' : ''};
+
+    @media (min-width: 992px) {
+      flex-direction: ${cardMode ? 'column' : 'row'};
+      gap: ${cardMode ? '0' : '32px'};
+    }
+  `}
 `;
 
-export const ContactFormContentWrapper = styled.div`
+export const ContactFormContentWrapper = styled.div<{
+  cardMode?: boolean;
+}>`
   flex: 1;
 
-  &:first-child {
-    padding-right: 1rem;
-    flex: 0.8;
-  }
-  &:last-child {
-    padding-left: 1rem;
-  }
+  ${({ cardMode }) =>
+    !cardMode &&
+    css`
+      &:first-child {
+        flex: 0.8;
+      }
+    `}
 
   h4 {
     color: #4550e5;
-    font-size: 1.5rem;
-    line-height: 2rem;
-    margin-bottom: 3rem;
+    font-size: 24px;
+    line-height: 32px;
+    margin-bottom: 48px;
   }
 
   ul {
-    font-size: 1.2rem;
+    font-size: 18px;
     line-height: 1.5;
     padding: 0;
   }
 
   li {
     font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 24px;
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
 
     ::before {
       display: block;
-      padding-top: 0.15rem;
-      margin-right: 0.5rem;
+      padding-top: 2px;
+      margin-right: 8px;
       color: #2fab73;
     }
 
@@ -86,33 +99,65 @@ export const ContactFormFooter = styled.div`
 export const ContactFormResultMessage = styled.div<{
   eligible?: boolean;
   headerTypo?: string;
+  cardMode?: boolean;
 }>`
-  box-shadow: inset 0.5rem 0 0 0
+  box-shadow: inset 8px 0 0 0
     ${({ eligible }) => (eligible ? '#00eb5e' : '#ea7c3f')};
-  padding: 2rem 3rem;
   background-color: var(--g200);
-  margin: 0.5rem 0;
+  margin: 8px 0;
 
-  font-size: ${({ headerTypo }) => (headerTypo === 'small' ? '18px' : '25px')};
+  ${({ cardMode, headerTypo }) => css`
+    padding: ${cardMode ? '8px 16px' : '32px 48px'};
+    font-size: ${(cardMode && '14px') ||
+    (headerTypo === 'small' && '18px') ||
+    '25px'};
+  `}
 
   p {
-    font-size: 1em;
+    font-size: ${({ cardMode, headerTypo }) =>
+      (cardMode && '14px') || (headerTypo === 'small' && '18px') || '25px'};
     line-height: 1.35;
-    margin-bottom: 0.5em;
+    margin-bottom: ${({ cardMode, headerTypo }) =>
+      (cardMode && '7px') || (headerTypo === 'small' && '9px') || '12.5px'};
   }
 
   em.distance {
     display: block;
-    margin: 0.5em 0 0;
+    margin: 8px 0 0 0;
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
   }
 `;
 
-export const ContactFormEligibilityMessage = styled.div`
+export const ContactFormEligibilityMessage = styled.div<{
+  cardMode?: boolean;
+}>`
   font-size: 20px;
   line-height: 1.5;
-  margin-top: 2em;
   color: #000074;
+  ${({ cardMode }) =>
+    !cardMode &&
+    css`
+      margin-top: 40px;
+    `};
+`;
+
+export const ContactFormEligibilityResult = styled.div<{
+  cardMode?: boolean;
+}>`
+  background-color: #eeeeee;
+  padding: 8px 8px 8px 16px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  box-shadow: inset 8px 0 0 0 var(--border-default-blue-france);
+
+  font-size: ${({ cardMode }) => (cardMode ? '14px' : '18px')};
+  line-height: ${({ cardMode }) => (cardMode ? 'inherit' : '1.5')};
+
+  header {
+    font-size: ${({ cardMode }) => (cardMode ? '14px' : '23.5px')};
+    line-height: ${({ cardMode }) => (cardMode ? 'inherit' : '1.5')};
+    font-weight: bold;
+  }
 `;

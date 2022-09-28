@@ -6,6 +6,7 @@ import markupData, {
 } from '@components/Markup';
 import { formatDataToAirtable, submitToAirtable } from '@helpers';
 import { useCallback, useRef, useState } from 'react';
+import { AddressDataType } from 'src/types/AddressData';
 
 const callMarkup__handleOnFetchAddress = (address: string) => {
   matomoEvent(markupData.eligibilityTest.matomoEvent, [address]);
@@ -34,8 +35,8 @@ const callMarkup__handleOnSuccessAddress = ({
     googleAdsEvent('10986886666', markupData.eligibilityTestKO.googleAdsEvent);
   }
 };
-const callMarkup__handleOnSubmitContact = (data: Record<string, any>) => {
-  const { estEligible: eligibility, address } = data;
+const callMarkup__handleOnSubmitContact = (data: AddressDataType) => {
+  const { eligibility, address = '' } = data;
   const markupEligibilityKey = eligibility
     ? 'contactFormEligible'
     : 'contactFormIneligible';
@@ -45,7 +46,7 @@ const callMarkup__handleOnSubmitContact = (data: Record<string, any>) => {
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
-const submitToFCU = (values: Record<string, any>) => {
+const submitToFCU = (values: AddressDataType) => {
   if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
     console.info(
       'Send following data to Airtabe',
@@ -119,13 +120,13 @@ const useContactFormFCU = () => {
   );
 
   const handleOnSubmitContact = useCallback(
-    async (data: Record<string, any> = {}) => {
-      if (data.structure !== 'Tertiaire') {
+    async (data?: AddressDataType) => {
+      if (data && data.structure !== 'Tertiaire') {
         data.company = '';
       }
       setMessageSent(true);
-      callMarkup__handleOnSubmitContact(data);
-      await submitToFCU(data);
+      callMarkup__handleOnSubmitContact((data as AddressDataType) || {});
+      await submitToFCU((data as AddressDataType) || {});
       const scrollTimer = timeoutScroller(500);
       setAddressData({ ...addressData, ...data });
       setMessageReceived(true);
@@ -133,6 +134,15 @@ const useContactFormFCU = () => {
     },
     [addressData, timeoutScroller]
   );
+
+  const handleResetFormContact = useCallback(() => {
+    setAddressData({});
+    setContactReady(false);
+    setShowWarning(false);
+    setMessageSent(false);
+    setMessageReceived(false);
+    setLoadingStatus('idle');
+  }, []);
 
   return {
     EligibilityFormContactRef,
@@ -147,6 +157,7 @@ const useContactFormFCU = () => {
     handleOnFetchAddress,
     handleOnSuccessAddress,
     handleOnSubmitContact,
+    handleResetFormContact,
   };
 };
 

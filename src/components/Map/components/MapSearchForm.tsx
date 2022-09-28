@@ -19,7 +19,8 @@ const MapSearchForm = ({
 
   const handleAddressSelected = async (
     address: string,
-    point: Point
+    point: Point,
+    geoAddress: TypeAddressDetail
   ): Promise<void> => {
     const [lng, lat] = point;
 
@@ -27,6 +28,7 @@ const MapSearchForm = ({
     const network = await heatNetworkService.findByCoords(coords);
     const addressDetail = {
       networkDetails: network,
+      geoAddress,
     };
 
     if (onAddressSelect) {
