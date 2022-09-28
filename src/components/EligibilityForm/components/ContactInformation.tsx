@@ -28,6 +28,7 @@ export const fieldLabelInformation = {
   firstName: 'Prénom',
   company: 'Établissement',
   email: 'Email (*)',
+  phone: 'Téléphone',
   heatingEnergy: {
     label: 'Mode de chauffage actuel (*)',
     inputs: [
@@ -45,6 +46,7 @@ export const defaultValuesContactInformation = {
   company: '',
   email: '',
   heatingEnergy: '',
+  phone: '',
 };
 export const validationSchemasContactInformation = {
   structure: Yup.string().required(
@@ -53,6 +55,10 @@ export const validationSchemasContactInformation = {
   lastName: Yup.string(),
   firstName: Yup.string(),
   company: Yup.string(),
+  phone: Yup.string().matches(
+    /^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$/,
+    'Veuillez renseigner votre numéro de téléphone sous le format 0605040302'
+  ),
   email: Yup.string()
     .email('Votre adresse email n‘est pas valide')
     .required('Veuillez renseigner votre adresse email'),
@@ -111,9 +117,18 @@ const ContactInformation = () => {
         <InputWraper className="fr-my-1w">
           <Field
             name="email"
+            type="email"
             label={fieldLabelInformation.email}
             component={Input}
             required
+          />
+        </InputWraper>
+        <InputWraper className="fr-my-1w without-arrows">
+          <Field
+            name="phone"
+            placeholder="0605040302"
+            label={fieldLabelInformation.phone}
+            component={Input}
           />
         </InputWraper>
       </fieldset>
