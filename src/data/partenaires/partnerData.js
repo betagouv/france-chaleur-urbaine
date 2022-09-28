@@ -74,4 +74,9 @@ export default [
     title: 'Bordeaux Métropole',
     link: 'https://www.bordeaux-metropole.fr/',
   },
+  {
+    image: './logo-lyon.jpeg',
+    title: 'Lyon Métropole',
+    link: 'https://www.grandlyon.com/',
+  },
 ];
