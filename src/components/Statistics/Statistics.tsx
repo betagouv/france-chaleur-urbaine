@@ -50,6 +50,10 @@ const Statistics = () => {
     '/api/statistiques/getVisitsSummary',
     fetcher
   );
+  const { data: rawDataMonthContact, error: errorMonthContact } = useSWR(
+    '/api/statistiques/getMonthContact',
+    fetcher
+  );
   const { data: rawDataCountContact, error: errorCountContact } = useSWR(
     '/api/statistiques/getCountContact',
     fetcher
@@ -87,13 +91,32 @@ const Statistics = () => {
     [rawDataVisits?.result]
   );
 
+  if (errorMonthContact)
+    console.warn('errorMonthContact >>', errorMonthContact);
+  const dataMonthContact = useMemo(
+    () =>
+      Object.entries(
+        (rawDataMonthContact as Record<string, ReturnApiStatAirtable>) || {}
+      ).map(([key, value]) => {
+        const [year, month] = key.split('-');
+        return {
+          period: new Date(new Date(+year, +month).setDate(-1)),
+          ...value,
+        };
+      }),
+    [rawDataMonthContact]
+  );
+
   if (errorCountContact)
     console.warn('errorCountContact >>', errorCountContact);
   const dataCountContact = useMemo(
     () =>
       Object.entries(
         (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
-      ).map(([, value]) => value),
+      ).map(([, { date, ...value }]) => {
+        const [year, month, day] = date.split('-');
+        return { date: new Date(Date.UTC(+year, +month - 1, +day)), ...value };
+      }),
     [rawDataCountContact]
   );
 
@@ -103,7 +126,7 @@ const Statistics = () => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
       const label = `${
         !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
-      } ${year}`;
+      }. ${year}`;
       return [label, entry?.nb_uniq_visitors || 0];
     }),
   ];
@@ -114,7 +137,7 @@ const Statistics = () => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
       const label = `${
         !isNaN(Number(month)) ? monthToString[Number(month) - 1] : month
-      } ${year}`;
+      }. ${year}`;
       return [
         label,
         entry?.['Formulaire de test - Envoi']?.nb_visits || 0,
@@ -124,24 +147,16 @@ const Statistics = () => {
     }),
   ];
 
-  const formatedDataContact = [
+  const formatedDataMonthContact = [
     [
-      'x',
-      'Total des prises de contact',
-      'Contact pour adresses non éligibles',
-      'Contact pour adresses éligibles',
+      { type: 'date', label: 'period' },
+      'Total mensuel des prises de contact',
+      'Contact mensuel pour adresses non éligibles',
+      'Contact mensuel pour adresses éligibles',
     ],
-    ...dataEligibilityTest.map((entry: ReturnApiMatomo = {}) => {
-      const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
-      const label = `${
-        !isNaN(Number(month)) ? monthToString[Number(month) - 1] : month
-      } ${year}`;
-      const eligible =
-        entry?.['Formulaire de contact éligible - Envoi']?.nb_visits || 0;
-      const ineligible =
-        entry?.['Formulaire de contact inéligible - Envoi']?.nb_visits || 0;
-      const total = Number(eligible) + Number(ineligible);
-      return [label, total, ineligible, eligible];
+    ...dataMonthContact.map((val) => {
+      const { period, nbTotal, nbEligible, nbUneligible } = val;
+      return [period, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
     }),
   ];
 
@@ -154,13 +169,7 @@ const Statistics = () => {
     ],
     ...dataCountContact.map((val) => {
       const { date, nbTotal, nbEligible, nbUneligible } = val;
-      const [year, month, day] = date.split('-');
-      return [
-        new Date(Date.UTC(+year, +month - 1, +day)),
-        nbTotal || 0,
-        nbUneligible || 0,
-        nbEligible || 0,
-      ];
+      return [date, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
     }),
   ];
 
@@ -224,9 +233,9 @@ const Statistics = () => {
           />
           <Graph
             title="Demandes de contacts mensuelles"
-            errors={errorActions}
-            data={dataEligibilityTest}
-            formatedData={formatedDataContact}
+            errors={errorMonthContact}
+            data={dataMonthContact}
+            formatedData={formatedDataMonthContact}
           />
           <Graph
             title="Demandes de contacts cumulées"
