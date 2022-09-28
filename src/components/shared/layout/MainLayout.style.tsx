@@ -6,6 +6,12 @@ export const FullScreenHeader = styled.div`
   }
 `;
 
+export const FullScreenItems = styled.div`
+  flex-grow: 1;
+  display: flex;
+  align-items: flex-end;
+`;
+
 export const GithubLogo = styled.img`
   shape-rendering: crispEdges;
   width: 0.7rem;
