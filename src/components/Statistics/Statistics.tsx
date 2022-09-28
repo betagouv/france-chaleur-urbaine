@@ -24,21 +24,6 @@ type ReturnApiStatAirtable = {
   nbUneligible: number;
 };
 
-const monthToString = [
-  'Jan',
-  'Fev',
-  'Mar',
-  'Avr',
-  'Mai',
-  'Juin',
-  'Juil',
-  'Aout',
-  'Sept',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Statistics = () => {
@@ -121,23 +106,24 @@ const Statistics = () => {
   );
 
   const formatedDataVisits = [
-    ['x', 'Visiteurs'],
+    [{ type: 'date', label: 'period' }, 'Visiteurs'],
     ...dataVisits.map((entry: ReturnApiMatomo = {}) => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
-      const label = `${
-        !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
-      }. ${year}`;
+      const label = new Date(new Date(+year, +month).setDate(-1));
       return [label, entry?.nb_uniq_visitors || 0];
     }),
   ];
 
   const formatedDataEligibilityTest = [
-    ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
+    [
+      { type: 'date', label: 'period' },
+      'Total des tests',
+      'Adresses non éligibles',
+      'Adresses éligibles',
+    ],
     ...dataEligibilityTest.map((entry: ReturnApiMatomo = {}) => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
-      const label = `${
-        !isNaN(Number(month)) ? monthToString[Number(month) - 1] : month
-      }. ${year}`;
+      const label = new Date(new Date(+year, +month).setDate(-1));
       return [
         label,
         entry?.['Formulaire de test - Envoi']?.nb_visits || 0,
@@ -220,19 +206,19 @@ const Statistics = () => {
       <Slice padding={8}>
         <GraphsWrapper>
           <Graph
-            title="Nombre de visiteurs/mois"
+            title="Nombre de visiteurs / mois"
             errors={errorVisits}
             data={dataVisits}
             formatedData={formatedDataVisits}
           />
           <Graph
-            title="Adresses testées"
+            title="Nombre d'adresses testées / mois"
             errors={errorActions}
             data={dataEligibilityTest}
             formatedData={formatedDataEligibilityTest}
           />
           <Graph
-            title="Demandes de contacts mensuelles"
+            title="Demandes de contacts / mois"
             errors={errorMonthContact}
             data={dataMonthContact}
             formatedData={formatedDataMonthContact}
