@@ -55,6 +55,32 @@ const {
   legendData,
 } = mapParam;
 
+const writeTypeConso = (typeConso: string | unknown) => {
+  switch (typeConso) {
+    case 'R': {
+      return 'Logement';
+    }
+    case 'T': {
+      return 'Établissement tertiaire';
+    }
+    case 'I': {
+      return 'Industrie';
+    }
+  }
+  return '';
+};
+
+const formatBddText = (str?: string) => {
+  return (
+    str &&
+    str
+      .replace(/_/g, ' ')
+      .toLowerCase()
+      .replace(/electricite/g, 'électricité')
+      .replace(/reseau/g, 'réseau')
+  );
+};
+
 const formatBodyPopup = ({
   buildings,
   consommation,
@@ -68,32 +94,6 @@ const formatBodyPopup = ({
   demands?: DemandSummary;
   network?: NetworkSummary;
 }) => {
-  const writeTypeConso = (typeConso: string | unknown) => {
-    switch (typeConso) {
-      case 'R': {
-        return 'Logement';
-      }
-      case 'T': {
-        return 'Établissement tertiaire';
-      }
-      case 'I': {
-        return 'Industrie';
-      }
-    }
-    return '';
-  };
-
-  const formatBddText = (str?: string) => {
-    return (
-      str &&
-      str
-        .replace(/_/g, ' ')
-        .toLowerCase()
-        .replace(/electricite/g, 'électricité')
-        .replace(/reseau/g, 'réseau')
-    );
-  };
-
   const {
     nb_logements,
     annee_construction,
@@ -110,12 +110,16 @@ const formatBodyPopup = ({
     Adresse: addr_label_demands,
     'Mode de chauffage': mode_chauffage_demands,
     'Type de chauffage': type_chauffage_demands,
+    Structure: structure,
   } = demands || {};
 
   const energie_utilisee = energie_utilisee_buildings || mode_chauffage_demands;
   const textAddress =
     addr_label_buildings || addr_label_consommation || addr_label_demands;
   const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
+
+  const displayNetwork =
+    network && !(buildings || consommation || demands || energy);
   const bodyPopup = `
     ${
       textAddress
@@ -180,7 +184,12 @@ const formatBodyPopup = ({
               : ''
           }
           ${
-            network
+            structure
+              ? `<strong>Structure&nbsp;:</strong> ${structure}<br />`
+              : ''
+          }
+          ${
+            displayNetwork
               ? `
             <strong>Gestionnaire&nbsp;:</strong> ${
               network.Gestionnaire ? `${network.Gestionnaire}` : 'Non connu'
