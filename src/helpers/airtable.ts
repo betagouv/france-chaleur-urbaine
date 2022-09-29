@@ -69,6 +69,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     inZDP,
     city,
     postcode,
+    phone,
   } = values;
 
   return {
@@ -81,6 +82,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     Latitude: parseFloat(coords.lat),
     Longitude: parseFloat(coords.lon),
     Mail: email,
+    Téléphone: phone,
     'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
     'Type de chauffage': formatHeatingTypeToAirtable(heatingType),
     'Distance au réseau': network?.distance,

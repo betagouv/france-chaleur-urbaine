@@ -84,7 +84,7 @@ export const someOutOfIDFCoordsWithNoNetwork = (args?: any): Coords => ({
 export const someAddress = (): string => '5 avenue ségur, 75017 Paris';
 
 export const somePyrisAddressResponse = (args?: any): AddressPyrisResponse => ({
-  city: 'Paris',
+  city: 'Paris 2e Arrondissement',
   name: 'Gaillon 1',
   complete_code: '751020501',
   iris: '0501',

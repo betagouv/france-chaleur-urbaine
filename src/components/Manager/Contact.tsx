@@ -1,5 +1,5 @@
 import { Demand } from 'src/types/Summary/Demand';
-import { Email, Name } from './Contact.styles';
+import { Name, OtherInfo } from './Contact.styles';
 
 const Contact = ({ demand }: { demand: Demand }) => {
   return (
@@ -9,10 +9,11 @@ const Contact = ({ demand }: { demand: Demand }) => {
       </Name>
       {demand.Établissement && <div>{demand.Établissement}</div>}
       {demand.Mail && (
-        <Email>
+        <OtherInfo>
           <a href={`mailto:${demand.Mail}`}>{demand.Mail}</a>
-        </Email>
+        </OtherInfo>
       )}
+      {demand.Téléphone && <OtherInfo>{demand.Téléphone}</OtherInfo>}
     </>
   );
 };
