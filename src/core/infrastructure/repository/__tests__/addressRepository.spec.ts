@@ -10,7 +10,7 @@ describe('Address Repository', () => {
       const coords: Coords = { lat: 48.868662, lon: 2.333382 };
       const fakeHttpClient = {
         get: jest.fn().mockResolvedValue({
-          city: 'Paris',
+          city: 'Paris 2e Arrondissement',
           lat: 48.868662,
           lon: 2.333382,
           name: 'Gaillon 1',

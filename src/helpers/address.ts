@@ -237,5 +237,10 @@ const citiesManaged = [
 ];
 
 export const isBasedOnIRIS = (city: string): boolean => {
-  return !city || !citiesManaged.includes(city.toLowerCase());
+  return (
+    !city ||
+    !citiesManaged.includes(
+      city.replace(/ \d{1,2}e Arrondissement$/, '').toLowerCase()
+    )
+  );
 };
