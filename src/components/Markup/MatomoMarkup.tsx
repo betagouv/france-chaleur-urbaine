@@ -69,14 +69,23 @@ const getTarteaucitronjsMatomoConsent = () =>
     }, {})?.['matomo'];
 
 export const matomoEvent = (
-  matomoEventValues: string[],
+  matomoEventValues: string[] = [],
   userEventValues: (string | number)[] = []
-) =>
-  typeof window?._paq?.push === 'function' &&
-  window._paq.push([
-    'trackEvent',
+) => {
+  const eventParam = [
     ...matomoEventValues,
-    ...(getTarteaucitronjsMatomoConsent()
+    ...(userEventValues.length === 0 || getTarteaucitronjsMatomoConsent()
       ? userEventValues
       : ['Consentement non accordé']),
-  ]);
+  ];
+  if (eventParam.length === 0) {
+    console.warn(
+      'matomoEvent > Event Params is required - Event is not send to Matomo'
+    );
+    return;
+  }
+  return (
+    typeof window?._paq?.push === 'function' &&
+    window._paq.push(['trackEvent', ...eventParam])
+  );
+};
