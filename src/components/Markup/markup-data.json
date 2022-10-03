@@ -27,5 +27,8 @@
   "contactFormIneligible": {
     "facebookEvent": ["Contact"],
     "matomoEvent": ["Eligibilité", "Formulaire de contact inéligible - Envoi"]
+  },
+  "downloadLink": {
+    "matomoEvent": ["Téléchargement"]
   }
 }

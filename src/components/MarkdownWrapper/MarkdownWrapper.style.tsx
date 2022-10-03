@@ -1,7 +1,8 @@
+import markupData, { matomoEvent } from '@components/Markup';
 import styled, { css } from 'styled-components';
 
 export const isExternalLink = (href: string) =>
-  href?.search(/(^http)|(^mailto)/) >= 0;
+  href && href.search(/(^http)|(^mailto)/) >= 0;
 
 type MarkdownWrapperStyledProps = {
   className?: string;
@@ -51,10 +52,36 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
   }
 `;
 
-export const ButtonLink = styled.a.attrs((props) => ({
-  ...props,
-  className: `fr-btn ${props.className || ''}`,
-}))``;
+type TagName = keyof typeof markupData;
+type ExtraEventType = {
+  children: React.ReactNode;
+  className?: string;
+  tagName?: TagName;
+  trackEvent?: string;
+};
+
+export const ButtonLink = styled.a.attrs(
+  (props: React.HTMLProps<HTMLLinkElement> & ExtraEventType) => {
+    const { className, tagName, trackEvent } = props;
+    const getMatomoEventKey = (tagName?: TagName) =>
+      (tagName && markupData?.[tagName]?.matomoEvent) || [];
+    const trackEventProps = trackEvent
+      ? {
+          onClick: () => {
+            matomoEvent(
+              getMatomoEventKey(tagName),
+              trackEvent.split(',').map((v) => v.trim())
+            );
+          },
+        }
+      : {};
+    return {
+      ...props,
+      ...trackEventProps,
+      className: `fr-btn ${className || ''}`,
+    };
+  }
+)``;
 
 export const CounterItem = styled.div`
   display: flex;
