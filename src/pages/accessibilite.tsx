@@ -56,10 +56,12 @@ function Accessibilite() {
                 <li>CSS</li>
                 <li>JavaScript</li>
                 <li>Node.js</li>
+                <li>PostgreSQL</li>
                 <li>NEXT.js</li>
                 <li>REACT</li>
                 <li>Styled Component</li>
                 <li>Markdown</li>
+                <li>Maplibre</li>
                 <li>Tarteaucitron</li>
               </ul>
               <p>
