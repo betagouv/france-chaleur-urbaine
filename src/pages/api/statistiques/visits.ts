@@ -1,8 +1,7 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { fetchFromMatomo } from './matomoHelper';
+import { fetchFromMatomo } from '../../../services/matomo';
 
-const API_DEBUG_MODE = false;
+const API_DEBUG_MODE = process.env.API_DEBUG_MODE;
 
 type Data = Record<string, unknown>;
 
@@ -13,7 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   try {
     const result = await fetchFromMatomo(
       {
-        method: 'Events.getAction',
+        method: 'VisitsSummary.get',
         period: 'month',
       },
       Array(12)
@@ -33,7 +32,6 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         }),
       true
     );
-
     res.status(200).json({ result });
   } catch (err) {
     res.status(500).json({

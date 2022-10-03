@@ -7,16 +7,6 @@ import useSWR from 'swr';
 import Band from './Band';
 import { Container, GraphsWrapper } from './Statistics.style';
 
-type NbVisit = { nb_visits?: number | string };
-type ReturnApiMatomo = {
-  filters?: { date?: string };
-  nb_uniq_visitors?: string;
-  'Formulaire de test - Envoi'?: NbVisit;
-  'Formulaire de test - Adresse Inéligible'?: NbVisit;
-  'Formulaire de test - Adresse Éligible'?: NbVisit;
-  'Formulaire de contact éligible - Envoi'?: NbVisit;
-  'Formulaire de contact inéligible - Envoi'?: NbVisit;
-};
 type ReturnApiStatAirtable = {
   date: string;
   nbTotal: number;
@@ -28,7 +18,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Statistics = () => {
   const { data: rawDataEligibilityTest, error: errorDataEligibilityTest } =
-    useSWR('/api/statistiques/getActions', fetcher, {
+    useSWR('/api/statistiques/actions', fetcher, {
       onError: (err) => console.warn('errorDataEligibilityTest >>', err),
     });
 
@@ -57,11 +47,9 @@ const Statistics = () => {
       'Adresses non éligibles',
       'Adresses éligibles',
     ],
-    ...dataEligibilityTest.map((entry: ReturnApiMatomo = {}) => {
-      const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
-      const label = new Date(new Date(+year, +month).setDate(-1));
+    ...dataEligibilityTest.map((entry: any) => {
       return [
-        label,
+        new Date(entry.filters.date),
         entry?.['Formulaire de test - Envoi']?.nb_visits || 0,
         entry?.['Formulaire de test - Adresse Inéligible']?.nb_visits || 0,
         entry?.['Formulaire de test - Adresse Éligible']?.nb_visits || 0,
@@ -70,7 +58,7 @@ const Statistics = () => {
   ];
 
   const { data: rawDataVisits, error: errorVisits } = useSWR(
-    '/api/statistiques/getVisitsSummary',
+    '/api/statistiques/visits',
     fetcher,
     {
       onError: (err) => console.warn('errorVisits >>', err),
@@ -90,15 +78,13 @@ const Statistics = () => {
 
   const formatedDataVisits = [
     [{ type: 'date', label: 'period' }, 'Visiteurs'],
-    ...dataVisits.map((entry: ReturnApiMatomo = {}) => {
-      const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
-      const label = new Date(new Date(+year, +month).setDate(-1));
-      return [label, entry?.nb_uniq_visitors || 0];
+    ...dataVisits.map((entry: any) => {
+      return [new Date(entry.filters.date), entry.nb_uniq_visitors || 0];
     }),
   ];
 
   const { data: rawDataMonthContact, error: errorMonthContact } = useSWR(
-    '/api/statistiques/getCountContact?group=monthly',
+    '/api/statistiques/contacts?group=monthly',
     fetcher,
     {
       onError: (err) => console.warn('errorMonthContact >>', err),
@@ -107,15 +93,16 @@ const Statistics = () => {
 
   const dataMonthContact = useMemo(
     () =>
-      Object.entries(
-        (rawDataMonthContact as Record<string, ReturnApiStatAirtable>) || {}
-      ).map(([key, value]) => {
-        const [year, month] = key.split('-');
-        return {
-          period: new Date(new Date(+year, +month).setDate(-1)),
-          ...value,
-        };
-      }),
+      rawDataMonthContact
+        ? Object.entries(
+            (rawDataMonthContact as Record<string, ReturnApiStatAirtable>) || {}
+          ).map(([key, value]) => {
+            return {
+              period: new Date(key),
+              ...value,
+            };
+          })
+        : undefined,
     [rawDataMonthContact]
   );
 
@@ -126,14 +113,16 @@ const Statistics = () => {
       'Contact mensuel pour adresses non éligibles',
       'Contact mensuel pour adresses éligibles',
     ],
-    ...dataMonthContact.map((val) => {
-      const { period, nbTotal, nbEligible, nbUneligible } = val;
-      return [period, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
-    }),
+    ...(dataMonthContact
+      ? dataMonthContact.map((val) => {
+          const { period, nbTotal, nbEligible, nbUneligible } = val;
+          return [period, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
+        })
+      : []),
   ];
 
   const { data: rawDataCountContact, error: errorCountContact } = useSWR(
-    '/api/statistiques/getCountContact?group=all',
+    '/api/statistiques/contacts?group=all',
     fetcher,
     {
       onError: (err) => console.warn('errorCountContact >>', err),
@@ -142,12 +131,16 @@ const Statistics = () => {
 
   const dataCountContact = useMemo(
     () =>
-      Object.entries(
-        (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
-      ).map(([, { date, ...value }]) => {
-        const [year, month, day] = date.split('-');
-        return { date: new Date(Date.UTC(+year, +month - 1, +day)), ...value };
-      }),
+      rawDataCountContact
+        ? Object.entries(
+            (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
+          ).map(([, { date, ...value }]) => {
+            return {
+              date: new Date(date),
+              ...value,
+            };
+          })
+        : undefined,
     [rawDataCountContact]
   );
 
@@ -158,10 +151,12 @@ const Statistics = () => {
       'Contact pour adresses non éligibles',
       'Contact pour adresses éligibles',
     ],
-    ...dataCountContact.map((val) => {
-      const { date, nbTotal, nbEligible, nbUneligible } = val;
-      return [date, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
-    }),
+    ...(dataCountContact
+      ? dataCountContact.map((val) => {
+          const { date, nbTotal, nbEligible, nbUneligible } = val;
+          return [date, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
+        })
+      : []),
   ];
 
   return (

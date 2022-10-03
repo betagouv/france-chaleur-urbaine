@@ -1,4 +1,4 @@
-import { getDemands } from '@core/infrastructure/repository/manager';
+import { getAllDemands } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Demand } from 'src/types/Summary/Demand';
 
@@ -14,7 +14,6 @@ const reducer = {
     let nbTotal = 0;
     let nbEligible = 0;
     let nbUneligible = 0;
-
     return (acc: Record<string, CalcResult>, fields: Demand) => {
       const key = fields['Date demandes'];
 
@@ -44,7 +43,6 @@ const reducer = {
       nbEligible: 0,
       nbUneligible: 0,
     };
-
     return (acc: Record<string, CalcResult>, fields: Demand) => {
       const date = fields['Date demandes'];
       const [year, month] = date.split('-');
@@ -73,14 +71,10 @@ const reducer = {
   },
 };
 
-const get = async (
-  res: NextApiResponse,
-  group: keyof typeof reducer = 'monthly'
-) => {
-  const defaultReducer = reducer.monthly;
-  const demands = ((await getDemands()) as Demand[])
+const get = async (res: NextApiResponse, group: keyof typeof reducer) => {
+  const demands = (await getAllDemands())
     .reverse()
-    .reduce((reducer[group] || defaultReducer)(), {});
+    .reduce(reducer[group](), {});
   return res.status(200).json(demands);
 };
 
@@ -92,7 +86,7 @@ export default async function demands(
 
   try {
     if (req.method === 'GET') {
-      return get(res, group as keyof typeof reducer | undefined);
+      return get(res, group as keyof typeof reducer);
     }
     return res.status(501);
   } catch (error) {
