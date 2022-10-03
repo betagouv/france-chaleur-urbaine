@@ -146,7 +146,7 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
 
 export const Legend = styled.div<{ legendCollapsed: boolean }>`
   z-index: ${mapControlZindex + 1};
-  overflow: scroll;
+  overflow: auto;
   ${({ legendCollapsed }) =>
     legendCollapsed &&
     css`
