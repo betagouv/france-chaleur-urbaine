@@ -65,6 +65,13 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
           creationCallBack(res)
         );
         break;
+      case 'FCU - Indicateurs':
+        base('FCU - Indicateurs').create(
+          [{ fields: { ...values, Date: new Date() } }],
+          creationCallBack(res)
+        );
+        break;
+
       default:
         res.status(400).send({ message: 'Type not recognized' });
         break;
