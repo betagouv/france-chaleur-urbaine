@@ -18,6 +18,8 @@ import {
 } from '@data/coproprietaire';
 import Head from 'next/head';
 
+const currentPage = 'coproprietaire';
+
 export default function Home() {
   return (
     <>
@@ -32,7 +34,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainContainer currentMenu="/coproprietaire">
+      <MainContainer currentMenu={`/${currentPage}`}>
         <div>
           <GlobalStyle />
 
@@ -117,7 +119,7 @@ _Les tarifs sont donnés à titre d’exemple en s’inspirant d’un cas réel 
             ))}
             <Slice>
               <MarkdownWrapper
-                value={`:button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" target="_blank"}`}
+                value={`:button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" tagName="downloadLink" trackEvent="Guide FCU, ${currentPage}" target="_blank"}`}
                 className="fcuSolutionForFuturFooter"
               />
             </Slice>

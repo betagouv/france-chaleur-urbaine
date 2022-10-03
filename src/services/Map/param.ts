@@ -55,7 +55,7 @@ const legendData: (string | TypeGroupLegend)[] = [
     entries: [
       {
         id: 'zoneDP',
-        label: 'Zones de développement prioritaire',
+        label: 'Périmètres de développement prioritaire',
         info: "Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage au-dessus d'une certaine puissance est obligatoire",
         className: 'legend-zoneDP',
       },
