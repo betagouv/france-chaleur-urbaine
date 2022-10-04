@@ -99,8 +99,7 @@ const submitToAirtable = async (
   values: any,
   type: string
 ): Promise<Response> => {
-  const airTableUrl = './api/airtable/create-record';
-  return fetch(airTableUrl, {
+  return fetch('./api/airtable/create-record', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
