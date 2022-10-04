@@ -18,3 +18,8 @@ export const Value = styled.span`
   font-weight: 700;
   margin-right: 4px;
 `;
+
+export const GraphsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;

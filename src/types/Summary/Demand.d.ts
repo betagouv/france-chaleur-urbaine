@@ -18,6 +18,7 @@ export type Demand = DemandSummary &
   EditableDemandSummary & {
     Mail: string;
     Téléphone: string;
+    Éligibilité: boolean;
     'Distance au réseau': number;
     'Gestionnaire Distance au réseau': number;
     'N° de dossier': string;

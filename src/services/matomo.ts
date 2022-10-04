@@ -43,16 +43,16 @@ const getMatomoRequest = (
   return `${MATOMO_URL}${strConfig}`;
 };
 
+const requestOptions: RequestInit = {
+  method: 'GET',
+  redirect: 'follow',
+};
+
 export const fetchFromMatomo = async (
   config: ConfigType = {},
   bulkConfig: ConfigType[] = [],
   sendFilter?: boolean
 ) => {
-  const requestOptions: RequestInit = {
-    method: 'GET',
-    redirect: 'follow',
-  };
-
   try {
     const response = await fetch(
       getMatomoRequest(config, bulkConfig),
