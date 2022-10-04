@@ -1,41 +1,26 @@
-import { useFormInputAutoId } from '@hooks';
+import { TextInput } from '@dataesr/react-dsfr';
 import { _hasError } from '@utils/form-utils';
-import { ErrorMessage } from 'formik';
 
 const Input = ({
   label,
-  type = 'text',
   field,
   form,
   required,
+  type,
   id,
   ...otherProps
 }: any) => {
   const hasError = _hasError(field.name, form);
-  const additionalInputClass = hasError ? 'fr-input--error' : '';
-  const additionalInputGroupClass = hasError ? 'fr-input-group--error' : '';
-  const inputId = useFormInputAutoId({ id, name: field.name });
-
   return (
-    <div className={`fr-input-group ${additionalInputGroupClass}`}>
-      <label htmlFor={inputId} className="fr-label" data-required={required}>
-        {label}
-      </label>
-      <input
-        type={type}
-        className={`fr-input ${additionalInputClass}`}
-        id={inputId}
-        {...field}
-        {...otherProps}
-      />
-      {hasError && (
-        <ErrorMessage
-          name={field.name}
-          component={'p'}
-          className="fr-error-text"
-        />
-      )}
-    </div>
+    <TextInput
+      label={label}
+      required={required}
+      type={type}
+      {...field}
+      {...otherProps}
+      message={form.errors[field.name]}
+      messageType={hasError ? 'error' : null}
+    />
   );
 };
 

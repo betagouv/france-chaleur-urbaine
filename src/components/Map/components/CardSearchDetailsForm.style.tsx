@@ -3,7 +3,6 @@ import styled, { createGlobalStyle } from 'styled-components';
 export const CardSearchDetailsFormStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .slice-contact-form-wrapper {
     max-height: 0px;
-    overflow: hidden;
     transition: max-height 1s ease;
 
     &.active {
@@ -20,9 +19,13 @@ export const Container = styled.div`
 `;
 
 export const ContactFormWrapper = styled.div<{ active: boolean }>`
-  overflow: hidden;
+  ${({ active }) => !active && 'overflow: hidden;'}
   max-height: ${({ active }) => (active ? '500vh' : '0px')};
   transition: max-height 1s ease;
+
+  .fr-form-group {
+    margin-bottom: 8px;
+  }
 `;
 
 export const CloseButtonWrapper = styled.div<{ active: boolean }>`

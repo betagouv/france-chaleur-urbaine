@@ -83,11 +83,11 @@ export const PageBody = styled.div`
 `;
 
 export const FormLabel = styled.div`
-  /* color: #4550e5; TODO: Limit colors in style ? */
   color: #2731b1;
   font-weight: 500;
   letter-spacing: -0.05rem;
   font-size: 1.25rem;
+  margin-bottom: 32px;
 `;
 
 export const FormWarningMessage = styled.div<{ show?: boolean }>`

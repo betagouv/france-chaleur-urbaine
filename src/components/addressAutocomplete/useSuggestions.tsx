@@ -19,7 +19,6 @@ type configProps = {
 
 const useSuggestions = ({
   limit = 5,
-  autocomplete = false,
   debounceTime = 300,
   minCharactersLength = 3,
 }: configProps) => {
@@ -43,7 +42,6 @@ const useSuggestions = ({
         searchTerm,
         {
           limit: limit.toString(),
-          autocomplete: autocomplete.toString(),
         }
       );
 

@@ -30,7 +30,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (additionWish.length === 0) {
+    if (wish === 'Ajout de données' && additionWish.length === 0) {
       setAdditionWishEmpty(true);
       return;
     }
@@ -155,7 +155,11 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
           />
         </p>
       )}
-      <Button submit>Suivant</Button>
+      <Button submit>
+        {wish && wish === 'Ajout de données'
+          ? 'Télécharger mes données'
+          : 'Envoyer'}
+      </Button>
     </form>
   );
 };

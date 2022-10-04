@@ -286,10 +286,12 @@ const EligibilityFormContact = ({
         )}
       </ContactFormContentWrapper>
 
-      <ContactFormContentWrapper cardMode>
-        <div>
-          <ContactForm onSubmit={handleSubmitForm} isLoading={isSent} />
-        </div>
+      <ContactFormContentWrapper cardMode={cardMode}>
+        <ContactForm
+          onSubmit={handleSubmitForm}
+          isLoading={isSent}
+          cardMode={cardMode}
+        />
       </ContactFormContentWrapper>
     </ContactFormWrapper>
   );

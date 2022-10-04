@@ -2,7 +2,7 @@ import {
   getConso,
   getNbLogement,
 } from '@core/infrastructure/repository/addresseInformation';
-import { getGestionnaire } from '@core/infrastructure/repository/manager';
+import { getGestionnaires } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
 
@@ -21,52 +21,59 @@ const creationCallBack =
 
 export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   if (req.method !== 'POST') {
-    res.status(405).send({ message: 'Only POST requests allowed' });
-    return;
+    return res.status(405).send({ message: 'Only POST requests allowed' });
   }
 
-  if (req?.body) {
-    const { type, ...values } = req.body;
-    switch (type) {
-      case 'FCU - Utilisateurs': {
-        const gestionnaire = getGestionnaire(values);
-        const conso = await getConso(values.Latitude, values.Longitude);
-        const nbLogement = await getNbLogement(
-          values.Latitude,
-          values.Longitude
-        );
-        base('FCU - Utilisateurs').create(
-          [
-            {
-              fields: {
-                ...values,
-                Gestionnaire: gestionnaire,
-                Conso: conso ? conso.conso_nb : undefined,
-                'ID Conso': conso ? conso.rownum : undefined,
-                Logement: nbLogement ? nbLogement.nb_logements : undefined,
-                'ID BNB': nbLogement ? nbLogement.fid : undefined,
-              },
+  const { type, ...values } = req.body;
+  if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
+    console.log('Sending to', type, values);
+    return res.status(200).send(`Sending to ${type} ${JSON.stringify(values)}`);
+  }
+
+  switch (type) {
+    case 'FCU - Utilisateurs': {
+      const gestionnaires = getGestionnaires(values);
+      const conso = await getConso(values.Latitude, values.Longitude);
+      const nbLogement = await getNbLogement(values.Latitude, values.Longitude);
+      base('FCU - Utilisateurs').create(
+        [
+          {
+            fields: {
+              ...values,
+              Gestionnaires: gestionnaires,
+              Conso: conso ? conso.conso_nb : undefined,
+              'ID Conso': conso ? conso.rownum : undefined,
+              Logement: nbLogement ? nbLogement.nb_logements : undefined,
+              'ID BNB': nbLogement ? nbLogement.fid : undefined,
             },
-          ],
-          creationCallBack(res)
-        );
-        break;
-      }
-      case 'FCU - Contribution':
-        base('FCU - Contribution').create(
-          [{ fields: values }],
-          creationCallBack(res)
-        );
-        break;
-      case 'FCU - Newsletter':
-        base('FCU - Newsletter').create(
-          [{ fields: values }],
-          creationCallBack(res)
-        );
-        break;
-      default:
-        res.status(400).send({ message: 'Type not recognized' });
-        break;
+          },
+        ],
+        { typecast: true },
+        creationCallBack(res)
+      );
+      break;
     }
+    case 'FCU - Contribution':
+      base('FCU - Contribution').create(
+        [{ fields: values }],
+        creationCallBack(res)
+      );
+      break;
+    case 'FCU - Newsletter':
+      base('FCU - Newsletter').create(
+        [{ fields: values }],
+        creationCallBack(res)
+      );
+      break;
+    case 'FCU - Indicateurs':
+      base('FCU - Indicateurs').create(
+        [{ fields: { ...values, Date: new Date() } }],
+        creationCallBack(res)
+      );
+      break;
+
+    default:
+      res.status(400).send({ message: 'Type not recognized' });
+      break;
   }
 };

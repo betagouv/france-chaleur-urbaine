@@ -23,7 +23,7 @@ import {
 type HeadBannerType = {
   bg?: string;
   bgPos?: string;
-  CheckEligibility?: boolean;
+  checkEligibility?: boolean;
   formLabel?: string;
   energyInputsLabels?: EnergyInputsLabelsType;
   pageTitle?: string;
@@ -35,7 +35,7 @@ type HeadBannerType = {
 const HeadSlice = ({
   bg,
   bgPos,
-  CheckEligibility,
+  checkEligibility,
   formLabel,
   energyInputsLabels,
   pageTitle,
@@ -58,7 +58,7 @@ const HeadSlice = ({
     handleOnSubmitContact,
   } = useContactFormFCU();
 
-  const Child = useMemo(
+  const child = useMemo(
     () =>
       (pageTitle || pageBody) && (
         <>
@@ -76,7 +76,7 @@ const HeadSlice = ({
 
   const WrappedChild = useMemo(
     () =>
-      CheckEligibility ? (
+      checkEligibility ? (
         <>
           <EligibilityFormAddress
             formLabel={formLabel && <FormLabel>{formLabel}</FormLabel>}
@@ -85,7 +85,7 @@ const HeadSlice = ({
             onFetch={handleOnFetchAddress}
             onSuccess={handleOnSuccessAddress}
           >
-            {Child}
+            {child}
           </EligibilityFormAddress>
 
           <FormWarningMessage show={showWarning}>
@@ -97,11 +97,11 @@ const HeadSlice = ({
           </LoaderWrapper>
         </>
       ) : (
-        <>{Child}</>
+        <>{child}</>
       ),
     [
-      CheckEligibility,
-      Child,
+      checkEligibility,
+      child,
       energyInputsLabels,
       formLabel,
       handleOnChangeAddress,

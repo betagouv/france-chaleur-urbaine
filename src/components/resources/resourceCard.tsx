@@ -29,10 +29,6 @@ function ResourceCard({ image, title, description, fileLink }: ResourceCard) {
               rel="noopener noreferrer nofollow"
             >
               Consulter
-              <span
-                className="fr-fi-arrow-right-s-line fr-pl-2w"
-                aria-hidden="true"
-              />
             </a>
           </div>
         </div>

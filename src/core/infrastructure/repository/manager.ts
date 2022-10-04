@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import db from 'src/db';
 import base from 'src/db/airtable';
 import { Demand } from 'src/types/Summary/Demand';
+import { gestionnaires } from './gestionnaires.config';
 
 const getUser = (email: string) =>
   db('users').select(['gestionnaire']).where({ email }).first();
@@ -17,11 +18,13 @@ export const getAllDemands = async (): Promise<Demand[]> => {
   );
 };
 
-export const getGestionnaire = (demand: Demand): string | null => {
-  if (demand.Ville === 'Paris') {
-    return 'Paris';
+export const getGestionnaires = (demand: Demand): string[] => {
+  let city = demand.Ville;
+  if (!city) {
+    const address = demand.Adresse.split(' ');
+    city = address[address.length - 1];
   }
-  return null;
+  return [city].concat(gestionnaires[city] || []);
 };
 
 export const getDemands = async (email: string): Promise<Demand[] | null> => {
@@ -34,15 +37,19 @@ export const getDemands = async (email: string): Promise<Demand[] | null> => {
   const isDemoUser = user.gestionnaire === 'DEMO';
   const records = await base(tableNameFcuDemands)
     .select({
-      filterByFormula: `Gestionnaire="${
-        isDemoUser ? 'Paris' : user.gestionnaire
-      }"`,
       sort: [{ field: 'Date demandes', direction: 'desc' }],
     })
     .all();
 
+  const filteredRecords = records.filter((record) => {
+    const gestionnaires = record.get('Gestionnaires') as string[];
+    return (
+      gestionnaires &&
+      gestionnaires.includes(isDemoUser ? 'Paris' : user.gestionnaire)
+    );
+  });
   return isDemoUser
-    ? records.map(
+    ? filteredRecords.map(
         (record) =>
           ({
             id: record.id,
@@ -53,7 +60,9 @@ export const getDemands = async (email: string): Promise<Demand[] | null> => {
             Téléphone: faker.phone.number('0#########'),
           } as Demand)
       )
-    : records.map((record) => ({ id: record.id, ...record.fields } as Demand));
+    : filteredRecords.map(
+        (record) => ({ id: record.id, ...record.fields } as Demand)
+      );
 };
 
 export const getDemand = async (

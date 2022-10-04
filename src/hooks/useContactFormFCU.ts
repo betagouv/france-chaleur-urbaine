@@ -46,20 +46,6 @@ const callMarkup__handleOnSubmitContact = (data: AddressDataType) => {
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
-const submitToFCU = (values: AddressDataType) => {
-  if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
-    console.info(
-      'Send following data to Airtabe',
-      formatDataToAirtable(values)
-    );
-    return Promise.resolve(() => {
-      //do nothing
-    });
-  } else {
-    return submitToAirtable(formatDataToAirtable(values), 'FCU - Utilisateurs');
-  }
-};
-
 const useContactFormFCU = () => {
   const EligibilityFormContactRef = useRef(null);
 
@@ -126,7 +112,7 @@ const useContactFormFCU = () => {
       }
       setMessageSent(true);
       callMarkup__handleOnSubmitContact((data as AddressDataType) || {});
-      await submitToFCU((data as AddressDataType) || {});
+      await submitToAirtable(formatDataToAirtable(data), 'FCU - Utilisateurs');
       const scrollTimer = timeoutScroller(500);
       setAddressData({ ...addressData, ...data });
       setMessageReceived(true);
