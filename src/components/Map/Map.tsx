@@ -249,12 +249,37 @@ export default function Map() {
     className: 'popup-map-layer',
   });
 
-  const flyTo = useCallback(({ coordinates }: any) => {
-    map.current.flyTo({
-      center: { lon: coordinates[0], lat: coordinates[1] },
-      zoom: 16,
-    });
-  }, []);
+  const flyTo = useCallback(
+    ({
+      coordinates,
+      zoom,
+    }: {
+      coordinates: [number, number];
+      zoom?: number;
+    }) => {
+      map.current.flyTo({
+        center: { lon: coordinates[0], lat: coordinates[1] },
+        zoom: zoom || 16,
+      });
+    },
+    []
+  );
+
+  const jumpTo = useCallback(
+    ({
+      coordinates,
+      zoom,
+    }: {
+      coordinates: [number, number];
+      zoom?: number;
+    }) => {
+      map.current.jumpTo({
+        center: { lon: coordinates[0], lat: coordinates[1] },
+        zoom: zoom || 16,
+      });
+    },
+    []
+  );
 
   const markAddressAsContacted = (address: Partial<StoredAddress>) => {
     setSoughtAddress(
@@ -368,7 +393,9 @@ export default function Map() {
   // --- Load Map ---
   // ----------------
   useEffect(() => {
-    if (mapState === 'loaded' || map.current) return;
+    if (mapState === 'loaded' || map.current) {
+      return;
+    }
 
     draw.current = new MapboxDraw({
       displayControlsDefault: false,
@@ -564,31 +591,19 @@ export default function Map() {
     });
   });
 
-  // -------------------------
-  // --- Load Query Params ---
-  // -------------------------
-  const [queryState, setQueryState] = useState({});
   useEffect(() => {
-    const { coord: coordState }: any = queryState;
-    const { coord } = router.query;
-    if (coord && coord !== coordState) {
-      const coordinates: any =
-        typeof coord === 'string'
-          ? coord
-              .split(',')
-              .map((point: string) => parseFloat(point))
-              .reverse()
-          : coord; // TODO: Fix on source
+    const { coord, zoom } = router.query;
+    if (coord) {
+      const coordinates = (coord as string)
+        .split(',')
+        .map((point: string) => parseFloat(point)) as [number, number];
 
-      flyTo({ coordinates });
-      setQueryState(router.query);
-      new maplibregl.Marker({
-        color: '#ea7c3f', // TODO: Change color if address is eligible and use #00eb5e or #4550e5
-      })
-        .setLngLat(coordinates)
-        .addTo(map.current);
+      jumpTo({
+        coordinates,
+        zoom: zoom ? parseInt(zoom as string, 10) : defaultZoom,
+      });
     }
-  }, [flyTo, router.query, queryState]);
+  }, [jumpTo, router.query]);
 
   // ---------------------
   // --- Search result ---
