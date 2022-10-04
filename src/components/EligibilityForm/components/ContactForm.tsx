@@ -12,17 +12,18 @@ import ContactInformation, {
   defaultValuesContactInformation,
   validationSchemasContactInformation,
 } from './ContactInformation';
-import {
-  ContactFormFooter,
-  FormFreezer,
-  FormWrapper,
-} from './EligibilityForm.styled';
+import { ContactFormFooter } from './EligibilityForm.styled';
 
 type ContactFormProps = {
   onSubmit: (values: FormikValues) => void;
   isLoading?: boolean;
+  cardMode?: boolean;
 };
-export const ContactForm = ({ onSubmit, isLoading }: ContactFormProps) => {
+export const ContactForm = ({
+  onSubmit,
+  isLoading,
+  cardMode,
+}: ContactFormProps) => {
   const formRef = useRef(null);
   const router = useRouter();
 
@@ -56,28 +57,25 @@ export const ContactForm = ({ onSubmit, isLoading }: ContactFormProps) => {
       onSubmit={handleSubmit}
     >
       {(formik) => (
-        <FormWrapper>
-          <Form ref={formRef}>
-            <ContactInformation />
-            <ContactConsent />
-            <ContactFormFooter>
-              {isLoading ? (
-                <Loader color="#4550e5" show />
-              ) : (
-                <Button submit disabled={isLoading}>
-                  Envoyer
-                </Button>
-              )}
-              {formik.isSubmitting && !formik.isValid && (
-                <p className="fr-error-text">
-                  Veuillez remplir les champs obligatoires(*) avant d'envoyer
-                  votre demande
-                </p>
-              )}
-            </ContactFormFooter>
-            <FormFreezer enabled={isLoading} />
-          </Form>
-        </FormWrapper>
+        <Form ref={formRef}>
+          <ContactInformation cardMode={cardMode} />
+          <ContactConsent />
+          <ContactFormFooter>
+            {isLoading ? (
+              <Loader color="#4550e5" show />
+            ) : (
+              <Button submit disabled={isLoading}>
+                Envoyer
+              </Button>
+            )}
+            {formik.isSubmitting && !formik.isValid && (
+              <p className="fr-error-text">
+                Veuillez remplir les champs obligatoires(*) avant d'envoyer
+                votre demande
+              </p>
+            )}
+          </ContactFormFooter>
+        </Form>
       )}
     </Formik>
   );

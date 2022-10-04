@@ -36,17 +36,16 @@ const CardSearchDetailsForm: React.FC<{
 
   return (
     <>
-      <div>
-        <ContactFormWrapper active={!formIsSend}>
-          <EligibilityFormAddress
-            heatingLabel="Mode de chauffage actuel"
-            fullAddress={fullAddress}
-            onChange={handleOnChangeAddress}
-            onFetch={handleOnFetchAddress}
-            onSuccess={handleOnSuccessAddress}
-          />
-        </ContactFormWrapper>
-      </div>
+      <ContactFormWrapper active={!formIsSend}>
+        <EligibilityFormAddress
+          heatingLabel="Mode de chauffage actuel :"
+          fullAddress={fullAddress}
+          onChange={handleOnChangeAddress}
+          onFetch={handleOnFetchAddress}
+          onSuccess={handleOnSuccessAddress}
+          cardMode
+        />
+      </ContactFormWrapper>
 
       <CardSearchDetailsFormStyle />
       <div ref={EligibilityFormContactRef}>

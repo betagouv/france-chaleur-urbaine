@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Button, Select, TextInput } from '@dataesr/react-dsfr';
 import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
@@ -131,20 +130,16 @@ const ManagerHeader = ({
       </Filter>
       <Filter>
         <Select
-          // @ts-ignore: to fix in react-dsfr
           label="Mode de chauffage:"
           selected={filterModeChauffage}
-          // @ts-ignore: to fix in react-dsfr
-          onChange={(e) => setFilterModeChauffage(e.target.value)}
+          onChange={(e: any) => setFilterModeChauffage(e.target.value)}
           options={modeDeChauffageOptions}
         />
       </Filter>
       <Filter>
         <Select
-          // @ts-ignore: to fix in react-dsfr
           label="Type de chauffage:"
           selected={filterTypeChauffage}
-          // @ts-ignore: to fix in react-dsfr
           onChange={(e) => setFilterTypeChauffage(e.target.value)}
           options={typeDeChauffageOptions}
         />

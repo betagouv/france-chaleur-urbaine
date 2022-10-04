@@ -1,28 +1,10 @@
 import styled, { css } from 'styled-components';
 
-export const FormWrapper = styled.div`
-  position: relative;
-`;
-export const FormFreezer = styled.div<{ enabled?: boolean }>`
-  position: absolute;
-  inset: 0;
-  display: ${({ enabled }) => (enabled ? 'block' : 'none')};
-`;
-
-export const CheckEligibilityFormLabel = styled.div<{
-  centred?: boolean;
-}>`
+export const CheckEligibilityFormLabel = styled.div`
   display: block;
   overflow: hidden;
   max-height: 500px;
-  padding: 16px 0 0;
   transition: all 0.3s ease;
-
-  ${({ centred }) =>
-    centred &&
-    css`
-      text-align: center;
-    `}
 `;
 
 export const ContactFormWrapper = styled.div<{ cardMode?: boolean }>`
@@ -92,8 +74,7 @@ export const ContactFormContentWrapper = styled.div<{
 export const ContactFormFooter = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
+  margin-top: 16px;
 `;
 
 export const ContactFormResultMessage = styled.div<{

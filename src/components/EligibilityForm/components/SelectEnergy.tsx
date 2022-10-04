@@ -6,7 +6,7 @@ type CheckEligibilityFormProps = {
   label?: React.ReactNode;
   name: string;
   selectOptions?: Record<string, string>;
-  centredForm?: boolean;
+  cardMode?: boolean;
   onChange?: (e: any) => void;
 };
 
@@ -14,6 +14,7 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
   children,
   label,
   name,
+  cardMode,
   selectOptions = {},
   onChange,
 }) => {
@@ -42,9 +43,9 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
     <>
       {children}
       <RadioGroup
-        legend={(label as string) || 'Chauffage actuel'}
+        legend={(label as string) || 'Chauffage actuel :'}
         name={name}
-        isInline
+        isInline={!cardMode}
         required
       >
         {options}
