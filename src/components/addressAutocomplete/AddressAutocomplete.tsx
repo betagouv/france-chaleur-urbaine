@@ -60,7 +60,6 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
   const { suggestions, fetchSuggestions, status } = useSuggestions({
     debounceTime,
     limit: 5,
-    autocomplete: false,
     minCharactersLength,
   });
   const handleSelect = useCallback(
