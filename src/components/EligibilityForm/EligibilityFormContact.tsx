@@ -241,7 +241,7 @@ const EligibilityFormContact = ({
   const linkToMap =
     addressCoords &&
     (!isIRISAddress
-      ? `./carte/?coord=${addressCoords}&zoom=15`
+      ? `./carte/?coord=${addressCoords.reverse()}&zoom=15`
       : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
 
   return (
