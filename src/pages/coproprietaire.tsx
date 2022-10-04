@@ -44,7 +44,7 @@ export default function Home() {
 Vous êtes chauffé au fioul ou au gaz&nbsp;?
 # Changez pour un chauffage écologique à prix compétitif&nbsp;!`}
             formLabel="Votre immeuble peut-il être raccordé&nbsp;?"
-            CheckEligibility
+            checkEligibility
             needGradient
           />
 

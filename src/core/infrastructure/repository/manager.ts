@@ -9,6 +9,15 @@ const getUser = (email: string) =>
 
 const tableNameFcuDemands = 'FCU - Utilisateurs';
 
+export const getAllDemands = async (): Promise<Demand[]> => {
+  const records = await base(tableNameFcuDemands)
+    .select({ sort: [{ field: 'Date demandes', direction: 'desc' }] })
+    .all();
+  return records.map(
+    (record) => ({ id: record.id, ...record.fields } as Demand)
+  );
+};
+
 export const getGestionnaires = (demand: Demand): string[] => {
   let city = demand.Ville;
   if (!city) {

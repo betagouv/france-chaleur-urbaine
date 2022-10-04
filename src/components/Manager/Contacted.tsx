@@ -10,9 +10,9 @@ const Contacted = ({
 }) => {
   return (
     <Checkbox
+      defaultChecked={demand['Prise de contact']}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore: to fix in react-dsfr
-      defaultChecked={demand['Prise de contact']}
       onChange={(e: any) =>
         updateDemand(demand.id, {
           'Prise de contact': e.target.checked,

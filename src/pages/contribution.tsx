@@ -4,20 +4,19 @@ import Slice from '@components/Slice';
 import { Alert } from '@dataesr/react-dsfr';
 import { submitToAirtable } from '@helpers';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { ReactNode, useState } from 'react';
 
 type ResultType = {
   type: 'success' | 'error';
   title: string;
-  description: string | unknown | any[];
+  description?: ReactNode;
 };
 
 const results: Record<string, ResultType> = {
   success: {
     type: 'success',
     title: 'Nous vous remercions pour votre contribution.',
-    description:
-      'Si vous avez indiqué souhaiter ajouter des données, nous vous avons envoyé un lien par mail pour les télécharger.',
   },
   error: {
     type: 'error',
@@ -35,16 +34,19 @@ const results: Record<string, ResultType> = {
 };
 
 function Contribution() {
+  const router = useRouter();
   const [result, setResult] = useState<ResultType>();
 
   const submit = async (data: any) => {
     try {
-      if (process.env.NEXT_PUBLIC_MOCK_CONTRIBUTION_CREATION === 'true') {
-        console.info('Send following data to Airtabe', data);
+      await submitToAirtable(data, 'FCU - Contribution');
+      if (data.Souhait === 'Ajout de données') {
+        router.push(
+          'https://e.pcloud.com/#page=puplink&code=XjWZ2YJ44fMhie47yc9zWyMA35OElcQ7'
+        );
       } else {
-        await submitToAirtable(data, 'FCU - Contribution');
+        setResult(results.success);
       }
-      setResult(results.success);
     } catch (e) {
       setResult(results.error);
     }

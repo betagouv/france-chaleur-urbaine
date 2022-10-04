@@ -86,7 +86,6 @@ export const MapCard = styled.div<MapCardType>`
 
   section {
     padding: 8px;
-    overflow: auto;
     scrollbar-gutter: stable both-edges;
     transition: max-height 0.75s ease, padding 0.5s ease 0.25s;
   }
@@ -120,7 +119,7 @@ export const ContactFormWrapper = styled.div`
   margin-bottom: 8px;
 
   header {
-    margin-bottom: 8px;
+    margin-bottom: 32px;
   }
 `;
 

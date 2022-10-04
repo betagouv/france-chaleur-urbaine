@@ -3,7 +3,7 @@ import { Field } from 'formik';
 import * as Yup from 'yup';
 
 export const fieldLabelConsent = {
-  termOfUse: 'J’accepte les conditions générales d’utilisation du service. (*)',
+  termOfUse: 'J’accepte les conditions générales d’utilisation du service.',
 };
 
 export const defaultValuesContactConsent = {
@@ -16,14 +16,12 @@ export const validationSchemasContactConsent = {
 
 const ContactConsent = () => {
   return (
-    <fieldset className="fr-fieldset fr-my-3w">
-      <div className="fr-my-3w fr-checkbox-group">
-        <Field
-          name="termOfUse"
-          label={fieldLabelConsent.termOfUse}
-          component={Checkbox}
-        />
-      </div>
+    <fieldset className="fr-fieldset fr-mt-3w fr-checkbox-group">
+      <Field
+        name="termOfUse"
+        label={fieldLabelConsent.termOfUse}
+        component={Checkbox}
+      />
     </fieldset>
   );
 };

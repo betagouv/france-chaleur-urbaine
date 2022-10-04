@@ -141,7 +141,7 @@ Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
               collectif: 'Central',
               individuel: 'Individuel',
             }}
-            CheckEligibility
+            checkEligibility
             needGradient
           />
 

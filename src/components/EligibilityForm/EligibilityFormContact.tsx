@@ -241,7 +241,7 @@ const EligibilityFormContact = ({
   const linkToMap =
     addressCoords &&
     (!isIRISAddress
-      ? `./carte/?coord=${addressCoords}&zoom=15`
+      ? `./carte/?coord=${addressCoords.reverse()}&zoom=15`
       : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
 
   return (
@@ -286,10 +286,12 @@ const EligibilityFormContact = ({
         )}
       </ContactFormContentWrapper>
 
-      <ContactFormContentWrapper cardMode>
-        <div>
-          <ContactForm onSubmit={handleSubmitForm} isLoading={isSent} />
-        </div>
+      <ContactFormContentWrapper cardMode={cardMode}>
+        <ContactForm
+          onSubmit={handleSubmitForm}
+          isLoading={isSent}
+          cardMode={cardMode}
+        />
       </ContactFormContentWrapper>
     </ContactFormWrapper>
   );

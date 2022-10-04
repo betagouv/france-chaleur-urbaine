@@ -2,7 +2,6 @@ import { Radio, RadioGroup } from '@dataesr/react-dsfr';
 import { _hasError } from '@utils/form-utils';
 import { ErrorMessage, Field, useFormikContext } from 'formik';
 import { useMemo } from 'react';
-import styled from 'styled-components';
 
 type InputObjType = {
   value: string;
@@ -10,21 +9,18 @@ type InputObjType = {
   id: string;
 };
 
-const GroupWrapper = styled.div`
-  padding-top: 0.75em;
-  position: relative;
-`;
-
 function FCURadioGroup({
   label,
   name,
   inputs,
   required,
+  isInline,
 }: {
   label: string;
   name: string;
   inputs: InputObjType[];
   required?: boolean;
+  isInline?: boolean;
 }) {
   const form = useFormikContext();
   const hasError = _hasError(name, form);
@@ -47,14 +43,17 @@ function FCURadioGroup({
   );
 
   return (
-    <GroupWrapper>
-      <RadioGroup legend={label} name={name} required={required} isInline>
-        {options}
-        {hasError && (
-          <ErrorMessage name={name} component={'p'} className="fr-error-text" />
-        )}
-      </RadioGroup>
-    </GroupWrapper>
+    <RadioGroup
+      legend={label}
+      name={name}
+      required={required}
+      isInline={isInline}
+    >
+      {options}
+      {hasError && (
+        <ErrorMessage name={name} component={'p'} className="fr-error-text" />
+      )}
+    </RadioGroup>
   );
 }
 
