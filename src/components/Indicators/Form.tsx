@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Checkbox, SearchableSelect, TextInput } from '@dataesr/react-dsfr';
 import { submitToAirtable } from '@helpers';
 import { useState } from 'react';
@@ -105,7 +104,6 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
         </Hint>
         <SearchableSelect
           required
-          // @ts-ignore: to fix in react-dsfr
           placeholder="Ville concernée - Identifiant - Nom du réseau"
           selected={network}
           onChange={setNetwork}
@@ -160,14 +158,12 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
           }
         />
         <Checkbox
-          // @ts-ignore: to fix in react-dsfr
           onClick={(e) =>
             setCoordinates({ ...coordinates, information: e.target.checked })
           }
           label="Je souhaite être informé de la mise en ligne des indicateurs sur France Chaleur Urbaine."
         />
         <Checkbox
-          // @ts-ignore: to fix in react-dsfr
           onClick={(e) =>
             setCoordinates({ ...coordinates, information: e.target.checked })
           }

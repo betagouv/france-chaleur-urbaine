@@ -3,7 +3,6 @@ import styled, { createGlobalStyle, css, keyframes } from 'styled-components';
 export const SliceContactFormStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
 .slice-contact-form-wrapper {
   max-height: 0px;
-  overflow: hidden;
   transition: max-height 1s ease;
 
   &.active {

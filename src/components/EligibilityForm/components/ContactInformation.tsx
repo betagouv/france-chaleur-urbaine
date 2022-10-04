@@ -6,8 +6,6 @@ import * as Yup from 'yup';
 
 const InputWraper = styled.div`
   opacity: 1;
-  overflow: hidden;
-  max-height: 200px;
   transition: opacity 0.25s ease, max-height 0.5s ease;
 
   &.hidden {
@@ -18,19 +16,19 @@ const InputWraper = styled.div`
 
 export const fieldLabelInformation = {
   structure: {
-    label: 'Type de bâtiment (*)',
+    label: 'Type de bâtiment :',
     inputs: [
       { value: 'Copropriété', label: 'Copropriété', id: 'copropriete' },
       { value: 'Tertiaire', label: 'Tertiaire', id: 'tertiaire' },
     ],
   },
-  lastName: 'Nom',
-  firstName: 'Prénom',
+  lastName: 'Nom :',
+  firstName: 'Prénom :',
   company: 'Établissement',
-  email: 'Email (*)',
-  phone: 'Téléphone',
+  email: 'Email :',
+  phone: 'Téléphone :',
   heatingEnergy: {
-    label: 'Mode de chauffage actuel (*)',
+    label: 'Mode de chauffage actuel :',
     inputs: [
       { value: 'électricité', label: 'Électricité', id: 'electricite' },
       { value: 'gaz', label: 'Gaz', id: 'gaz' },
@@ -52,8 +50,8 @@ export const validationSchemasContactInformation = {
   structure: Yup.string().required(
     'Veuillez renseigner votre type de bâtiment'
   ),
-  lastName: Yup.string(),
-  firstName: Yup.string(),
+  lastName: Yup.string().required('Veuillez renseigner votre nom'),
+  firstName: Yup.string().required('Veuillez renseigner votre prénom'),
   company: Yup.string(),
   phone: Yup.string().matches(
     /^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$/,
@@ -70,23 +68,26 @@ export const validationSchemasContactInformation = {
     ),
 };
 
-const ContactInformation = () => {
+const ContactInformation = ({ cardMode }: { cardMode?: boolean }) => {
   const { values }: any = useFormikContext();
   return (
     <>
-      <fieldset className="fr-fieldset fr-my-3w">
+      <fieldset className={`fr-fieldset fr-mt-${cardMode ? '1' : '3'}w`}>
         <InputWraper>
           <RadioGroup
+            required
+            isInline={!cardMode}
             label={fieldLabelInformation.structure.label}
             name="structure"
             inputs={fieldLabelInformation.structure.inputs}
           />
         </InputWraper>
       </fieldset>
-      <fieldset className="fr-fieldset fr-my-3w">
+      <fieldset className="fr-fieldset">
         <InputWraper className="fr-my-1w">
           <Field
             name="lastName"
+            required
             label={fieldLabelInformation.lastName}
             component={Input}
           />
@@ -94,26 +95,21 @@ const ContactInformation = () => {
         <InputWraper className="fr-my-1w">
           <Field
             name="firstName"
+            required
             label={fieldLabelInformation.firstName}
             component={Input}
           />
         </InputWraper>
-        <InputWraper
-          className={`${
-            !values.structure || values.structure !== 'Tertiaire'
-              ? 'hidden'
-              : 'fr-my-1w'
-          }`}
-        >
-          <Field
-            name="company"
-            label={fieldLabelInformation.company}
-            component={Input}
-            {...(!values.structure || values.structure !== 'Tertiaire'
-              ? { value: '' }
-              : {})}
-          />
-        </InputWraper>
+        {values.structure === 'Tertiaire' && (
+          <InputWraper className="fr-my-1w">
+            <Field
+              name="company"
+              label={fieldLabelInformation.company}
+              component={Input}
+              required
+            />
+          </InputWraper>
+        )}
         <InputWraper className="fr-my-1w">
           <Field
             name="email"
@@ -132,12 +128,14 @@ const ContactInformation = () => {
           />
         </InputWraper>
       </fieldset>
-      <fieldset className="fr-fieldset fr-my-3w">
+      <fieldset className="fr-fieldset fr-my-1w">
         <InputWraper>
           <RadioGroup
             label={fieldLabelInformation.heatingEnergy.label}
             name="heatingEnergy"
             inputs={fieldLabelInformation.heatingEnergy.inputs}
+            required
+            isInline={!cardMode}
           />
         </InputWraper>
       </fieldset>

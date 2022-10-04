@@ -118,7 +118,7 @@ export default function Home() {
             pageTitle="Les réseaux de chaleur, une énergie d’avenir"
             pageBody="Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français"
             formLabel="Votre immeuble pourrait-il être raccordé à un&nbsp;réseau&nbsp;de&nbsp;chaleur&nbsp;?"
-            CheckEligibility
+            checkEligibility
           />
 
           <Slice padding={10} className="slice-schema-container">
