@@ -7,6 +7,9 @@ type Data = Record<string, unknown>;
 
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const currentDate = new Date();
+  const month = currentDate.getMonth();
+  const year = currentDate.getFullYear();
+  const display = 12 * (year - 2021) + (month - 6);
   currentDate.setMonth(currentDate.getMonth() - 1);
   currentDate.setDate(1);
   try {
@@ -15,7 +18,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
         method: 'VisitsSummary.get',
         period: 'month',
       },
-      Array(12)
+      Array(display)
         .fill(null)
         .map((v, i) => {
           const baseDate = new Date(currentDate.toDateString());

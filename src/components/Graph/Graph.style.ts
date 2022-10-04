@@ -1,12 +1,8 @@
 import styled from 'styled-components';
 
-export const GraphTitle = styled.h3`
-  text-align: center;
-`;
-
 export const Container = styled.div`
   width: 100%;
-  @media (min-width: 992px) {
+  @media (min-width: 1150px) {
     width: 50%;
   }
 `;

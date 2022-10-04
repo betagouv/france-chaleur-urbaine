@@ -14,6 +14,21 @@ type ReturnApiStatAirtable = {
   nbUneligible: number;
 };
 
+const monthToString = [
+  'janvier',
+  'fevrier',
+  'mars',
+  'avril',
+  'mai',
+  'juin',
+  'juillet',
+  'aout',
+  'septembre',
+  'octobre',
+  'novembre',
+  'decembre',
+];
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Statistics = () => {
@@ -41,15 +56,14 @@ const Statistics = () => {
   );
 
   const formatedDataEligibilityTest = [
-    [
-      { type: 'date', label: 'period' },
-      'Total des tests',
-      'Adresses non éligibles',
-      'Adresses éligibles',
-    ],
+    ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
     ...dataEligibilityTest.map((entry: any) => {
+      const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
+      const label = `${
+        !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
+      } ${year}`;
       return [
-        new Date(entry.filters.date),
+        label,
         entry?.['Formulaire de test - Envoi']?.nb_visits || 0,
         entry?.['Formulaire de test - Adresse Inéligible']?.nb_visits || 0,
         entry?.['Formulaire de test - Adresse Éligible']?.nb_visits || 0,
@@ -77,9 +91,13 @@ const Statistics = () => {
   );
 
   const formatedDataVisits = [
-    [{ type: 'date', label: 'period' }, 'Visiteurs'],
+    ['x', 'Visiteurs'],
     ...dataVisits.map((entry: any) => {
-      return [new Date(entry.filters.date), entry.nb_uniq_visitors || 0];
+      const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
+      const label = `${
+        !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
+      } ${year}`;
+      return [label, entry.nb_uniq_visitors || 0];
     }),
   ];
 
@@ -108,15 +126,19 @@ const Statistics = () => {
 
   const formatedDataMonthContact = [
     [
-      { type: 'date', label: 'period' },
-      'Total mensuel des prises de contact',
-      'Contact mensuel pour adresses non éligibles',
-      'Contact mensuel pour adresses éligibles',
+      'x',
+      'Total des prises de contact',
+      'Contact pour adresses non éligibles',
+      'Contact pour adresses éligibles',
     ],
     ...(dataMonthContact
       ? dataMonthContact.map((val) => {
           const { period, nbTotal, nbEligible, nbUneligible } = val;
-          return [period, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
+          const label = `${
+            monthToString[period.getMonth()]
+          } ${period.getFullYear()}`;
+
+          return [label, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
         })
       : []),
   ];

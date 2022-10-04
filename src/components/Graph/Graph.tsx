@@ -1,5 +1,5 @@
 import Chart from 'react-google-charts';
-import { Container, GraphTitle, GraphWrapper } from './Graph.style';
+import { Container, GraphWrapper } from './Graph.style';
 
 const Graph = ({
   title,
@@ -11,10 +11,10 @@ const Graph = ({
   errors: any;
   data: any;
   formatedData: any[];
+  date?: boolean;
 }) => {
   return (
     <Container>
-      <GraphTitle>{title}</GraphTitle>
       <GraphWrapper>
         {errors ? (
           <div>
@@ -28,24 +28,14 @@ const Graph = ({
             height={'400px'}
             chartType="LineChart"
             chartLanguage="FR-fr"
-            loader={<div>Loading Chart</div>}
+            loader={<div>Chargement du graph...</div>}
             data={formatedData}
             options={{
+              title,
               colors: ['#0078f3', '#f60700', '#1f8d49', '#009099'],
               hAxis: {
                 slantedText: true,
                 slantedTextAngle: 30,
-                format: 'MMM yyyy',
-              },
-              vAxis: {
-                viewWindow: {
-                  min: -8,
-                },
-              },
-              animation: {
-                startup: true,
-                easing: 'out',
-                duration: 500,
               },
             }}
           />
