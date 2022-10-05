@@ -1,4 +1,4 @@
-import { Alert } from '@dataesr/react-dsfr';
+import { Alert, Callout, CalloutTitle } from '@dataesr/react-dsfr';
 import { useState } from 'react';
 import Form from './Form';
 import { Container } from './Indicators.styles';
@@ -63,6 +63,12 @@ const Indicators = () => {
             Seuls les indicateurs relatifs aux conditions tarifaires sont à
             renseigner ici.
           </p>
+          <Callout hasInfoIcon={false}>
+            <CalloutTitle size="sm">
+              Page temporaire, en attente de la validation et de la publication
+              de l'arrêté
+            </CalloutTitle>
+          </Callout>
           <Form afterSubmit={() => setSubmitted(true)} />
         </>
       )}

@@ -3,14 +3,15 @@ import { AddressRepositoryImpl } from '@core/infrastructure/repository/AddressRe
 import { NetworkRepositoryImpl } from '@core/infrastructure/repository/networkRepositoryImpl';
 import { TestEligibility } from '@core/useCase/testEligibility';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { withCors } from 'src/services/api/cors';
 import { axiosHttpClient } from 'src/services/http';
 import { ErrorResponse } from 'src/types/ErrorResponse';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 
-export default async function eligibilityStatusgibilityStatus(
+const eligibilityStatusgibilityStatus = async (
   req: NextApiRequest,
   res: NextApiResponse<HeatNetworksResponse | ErrorResponse>
-) {
+) => {
   if (req.method !== 'GET') {
     return res.status(501);
   }
@@ -54,4 +55,6 @@ export default async function eligibilityStatusgibilityStatus(
       code: 'Internal Server Error',
     });
   }
-}
+};
+
+export default withCors(eligibilityStatusgibilityStatus);
