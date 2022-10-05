@@ -84,4 +84,9 @@ export default [
     title: 'Mixéner',
     link: 'https://www.mixener.fr/',
   },
+  {
+    image: './logo-DALKIA.jpeg',
+    title: 'Dalkia',
+    link: 'https://www.dalkia.fr/',
+  },
 ];
