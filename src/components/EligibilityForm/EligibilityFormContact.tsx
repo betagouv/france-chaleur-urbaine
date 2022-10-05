@@ -1,8 +1,8 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import { isBasedOnIRIS } from '@helpers/address';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
 import { AddressDataType, AvailableHeating } from 'src/types/AddressData';
+import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import {
   ContactForm,
   ContactFormContentWrapper,
@@ -28,18 +28,28 @@ type KeyPrimaryType =
 
 const getContactResult = (
   formContactResult: Record<string, Record<string, string>>,
-  { distance, eligibility, heatingType }: AddressDataType
+  heatingType: AvailableHeating,
+  eligibility?: HeatNetworksResponse
 ) => {
-  const keyPrimary: KeyPrimaryType =
-    (distance !== null &&
-      distance !== undefined &&
-      (distance <= 100 ? 'lt100' : distance <= 200 ? 'lt200' : 'gt200')) ||
-    (eligibility ? 'provinceElligible' : 'provinceIneligible');
-  const keySecondary: AvailableHeating = heatingType;
+  let keyPrimary: KeyPrimaryType = 'gt200';
+  if (eligibility) {
+    if (eligibility.isBasedOnIris) {
+      keyPrimary = eligibility.isEligible
+        ? 'provinceElligible'
+        : 'provinceIneligible';
+    } else if (eligibility.distance !== null) {
+      if (eligibility.distance <= 100) {
+        keyPrimary = 'lt100';
+      } else if (eligibility.distance <= 200) {
+        keyPrimary = 'lt200';
+      }
+    }
+  }
+
   return (
     (keyPrimary &&
-      keySecondary &&
-      formContactResult?.[keyPrimary]?.[keySecondary]) ||
+      heatingType &&
+      formContactResult?.[keyPrimary]?.[heatingType]) ||
     {}
   );
 };
@@ -175,41 +185,25 @@ const EligibilityFormContact = ({
   cardMode,
   onSubmit,
 }: EligibilityFormContactType) => {
-  const isIRISAddress = useMemo(() => {
-    const { city } = addressData?.geoAddress?.properties || {};
-    return isBasedOnIRIS(city);
-  }, [addressData]);
-
-  const addressCoords: [number, number] | undefined = useMemo(() => {
-    const [lon, lat] = addressData?.geoAddress?.geometry?.coordinates || [];
-    return lat && lon ? [lat, lon] : undefined; // TODO: Fix on source
-  }, [addressData]);
-
-  const { distance, header, body, bodyLight, computEligibility, headerTypo } =
+  const { distance, header, body, bodyLight, computedEligibility, headerTypo } =
     useMemo(() => {
       const {
-        heatingType,
-        eligibility,
-        network = {},
-      }: AddressDataType = addressData;
-      const { distance } = network || {};
-      const {
         header,
         body,
         bodyLight,
-        eligibility: computEligibility,
+        eligibility: computedEligibility,
         headerTypo,
-      }: any = getContactResult(formContactResult, {
-        distance,
-        eligibility,
-        heatingType,
-      });
+      }: any = getContactResult(
+        formContactResult,
+        addressData.heatingType,
+        addressData.eligibility
+      );
       return {
-        distance,
+        distance: addressData.eligibility?.distance,
         header,
         body,
         bodyLight,
-        computEligibility,
+        computedEligibility,
         headerTypo,
       };
     }, [addressData]);
@@ -219,7 +213,7 @@ const EligibilityFormContact = ({
       const sendedValues = {
         ...addressData,
         ...values,
-        computEligibility,
+        computedEligibility,
         city: addressData?.geoAddress?.properties?.city,
         postcode: addressData?.geoAddress?.properties?.postcode,
       };
@@ -228,21 +222,21 @@ const EligibilityFormContact = ({
         onSubmit(sendedValues);
       }
     },
-    [addressData, computEligibility, onSubmit]
+    [addressData, computedEligibility, onSubmit]
   );
 
   const distStep =
-    !isIRISAddress &&
+    !addressData.eligibility?.isBasedOnIris &&
     distance !== null &&
     distance !== undefined &&
     (distance <= 200
       ? `Un réseau de chaleur se trouve à ${distance}m de ce bâtiment`
       : '');
   const linkToMap =
-    addressCoords &&
-    (!isIRISAddress
-      ? `./carte/?coord=${addressCoords.reverse()}&zoom=15`
-      : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
+    addressData?.geoAddress?.geometry?.coordinates &&
+    (!addressData.eligibility?.isBasedOnIris
+      ? `./carte/?coord=${addressData.geoAddress.geometry.coordinates.reverse()}&zoom=15`
+      : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`);
 
   return (
     <ContactFormWrapper cardMode={cardMode}>
@@ -250,14 +244,14 @@ const EligibilityFormContact = ({
         {!cardMode ? (
           <>
             <ContactFormResultMessage
-              eligible={computEligibility}
+              eligible={computedEligibility}
               headerTypo={headerTypo}
             >
               <MarkdownWrapper value={header} />
               {distance !== null && distance !== undefined && distStep && (
                 <em className="distance">{distStep}</em>
               )}
-              {!computEligibility && linkToMap && (
+              {!computedEligibility && linkToMap && (
                 <Link href={linkToMap}>
                   <a
                     target="_blank"
@@ -276,7 +270,7 @@ const EligibilityFormContact = ({
         ) : (
           bodyLight && (
             <ContactFormResultMessage
-              eligible={computEligibility}
+              eligible={computedEligibility}
               headerTypo={headerTypo}
               cardMode
             >

@@ -7,6 +7,10 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  AddressDetail,
+  HandleAddressSelect,
+} from 'src/types/HeatNetworksResponse';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 import { DemandSummary } from 'src/types/Summary/Demand';
@@ -20,13 +24,7 @@ import mapParam, {
   layerNameOptions,
   TypeLayerDisplay,
 } from '../../services/Map/param';
-import {
-  CardSearchDetails,
-  MapLegend,
-  MapSearchForm,
-  TypeAddressDetail,
-  TypeHandleAddressSelect,
-} from './components';
+import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
 import ZoneInfos from './components/ZoneInfos';
 import { useMapPopup } from './hooks';
 import {
@@ -229,8 +227,8 @@ export default function Map() {
   const [layerDisplay, setLayerDisplay] =
     useState<TypeLayerDisplay>(defaultLayerDisplay);
 
-  const [soughtAddress, setSoughtAddress] = usePersistedState(
-    'mapSoughtAddress',
+  const [soughtAddresses, setSoughtAddresses] = usePersistedState(
+    'mapSoughtAddresses',
     [] as StoredAddress[],
     {
       beforeStorage: (value: any) => {
@@ -282,63 +280,56 @@ export default function Map() {
   );
 
   const markAddressAsContacted = (address: Partial<StoredAddress>) => {
-    setSoughtAddress(
-      soughtAddress.map((addr) =>
+    setSoughtAddresses(
+      soughtAddresses.map((addr) =>
         addr.id === address.id ? { ...addr, contacted: true } : addr
       )
     );
   };
 
-  const onAddressSelectHandle: TypeHandleAddressSelect = useCallback(
-    (
-      address: string,
-      coordinates: Point,
-      addressDetails: TypeAddressDetail
-    ) => {
-      const computedCoordinates: Point = [coordinates[1], coordinates[0]]; // TODO: Fix on source
+  const onAddressSelectHandle: HandleAddressSelect = useCallback(
+    (address: string, coordinates: Point, addressDetails: AddressDetail) => {
       const search = {
         date: Date.now(),
       };
-      const id = getAddressId(computedCoordinates);
-      if (!Array.isArray(soughtAddress)) {
-        return;
+      const id = getAddressId(coordinates);
+      const existingAddress = soughtAddresses.find(
+        ({ id: soughtAddressesId }) => soughtAddressesId === id
+      );
+      if (!existingAddress) {
+        const newAddress = {
+          id,
+          coordinates,
+          address,
+          addressDetails,
+          search,
+        };
+        setSoughtAddresses([...soughtAddresses, newAddress]);
       }
-
-      const newAddress = soughtAddress.find(
-        ({ id: soughtAddressId }) => soughtAddressId === id
-      ) || {
-        id,
-        coordinates: computedCoordinates,
-        address,
-        addressDetails,
-        search,
-      };
-      setSoughtAddress([
-        ...soughtAddress.filter(({ id: _id }) => `${_id}` !== id),
-        newAddress,
-      ]);
-      flyTo({ coordinates: computedCoordinates });
+      flyTo({ coordinates });
     },
-    [flyTo, setSoughtAddress, soughtAddress]
+    [flyTo, setSoughtAddresses, soughtAddresses]
   );
 
-  const removeSoughtAddress = useCallback(
+  const removeSoughtAddresses = useCallback(
     (result: { marker?: any; coordinates?: Point }) => {
       if (!result.coordinates) {
         return;
       }
 
       const id = getAddressId(result.coordinates);
-      const getCurrentSoughtAddress = ({
+      const getCurrentSoughtAddresses = ({
         coordinates,
       }: {
         coordinates: Point;
       }) => getAddressId(coordinates) !== id;
-      const newSoughtAddress = soughtAddress.filter(getCurrentSoughtAddress);
+      const newSoughtAddresses = soughtAddresses.filter(
+        getCurrentSoughtAddresses
+      );
       result?.marker?.remove();
-      setSoughtAddress(newSoughtAddress);
+      setSoughtAddresses(newSoughtAddresses);
     },
-    [setSoughtAddress, soughtAddress]
+    [setSoughtAddresses, soughtAddresses]
   );
 
   const toggleLayer = useCallback(
@@ -610,24 +601,26 @@ export default function Map() {
   // ---------------------
   useEffect(() => {
     let shouldUpdate = false;
-    const newSoughtAddress = soughtAddress.map((sAddress: any | never[]) => {
-      if (!sAddress.marker) {
-        const marker = new maplibregl.Marker({
-          color: '#4550e5',
-        })
-          .setLngLat(sAddress.coordinates)
-          .addTo(map.current);
-        shouldUpdate = true;
-        return {
-          marker,
-          ...sAddress,
-        };
-      } else {
-        return sAddress;
+    const newSoughtAddresses = soughtAddresses.map(
+      (sAddress: any | never[]) => {
+        if (!sAddress.marker) {
+          const marker = new maplibregl.Marker({
+            color: '#4550e5',
+          })
+            .setLngLat(sAddress.coordinates)
+            .addTo(map.current);
+          shouldUpdate = true;
+          return {
+            marker,
+            ...sAddress,
+          };
+        } else {
+          return sAddress;
+        }
       }
-    });
-    if (shouldUpdate) setSoughtAddress(newSoughtAddress);
-  }, [setSoughtAddress, soughtAddress]);
+    );
+    if (shouldUpdate) setSoughtAddresses(newSoughtAddresses);
+  }, [setSoughtAddresses, soughtAddresses]);
 
   // ---------------------
   // --- Update Filter ---
@@ -692,15 +685,15 @@ export default function Map() {
         <Legend legendCollapsed={legendCollapsed}>
           <MapSearchForm onAddressSelect={onAddressSelectHandle} />
           <LegendSeparator />
-          {soughtAddress.length > 0 && (
+          {soughtAddresses.length > 0 && (
             <>
-              {soughtAddress
-                .map((adressDetails: TypeAddressDetail, i: number) => (
+              {soughtAddresses
+                .map((soughtAddress) => (
                   <CardSearchDetails
-                    key={`${adressDetails.address}-${i}`}
-                    address={adressDetails}
+                    key={soughtAddress.id}
+                    address={soughtAddress}
                     onClick={flyTo}
-                    onClickClose={removeSoughtAddress}
+                    onClickClose={removeSoughtAddresses}
                     onContacted={markAddressAsContacted}
                   />
                 ))
