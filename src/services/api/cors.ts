@@ -4,7 +4,7 @@ import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 const cors = Cors({
   methods: ['GET', 'HEAD'],
   origin: [
-    'https://france-chaleur-urbaine*.osc-fr1.scalingo.io/',
+    /^https:\/\/france-chaleur-urbaine-(.)+\.osc-fr1.scalingo.io\/$/,
     'https://france-chaleur-urbaine.beta.gouv.fr/',
   ],
 });
