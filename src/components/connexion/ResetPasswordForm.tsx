@@ -20,7 +20,7 @@ const ResetPasswordForm = () => {
       {success ? (
         <Alert
           type="success"
-          title="Un email pour renvoyer votre mot de passe vous a été envoyer, pensez à regarder vos spams."
+          title="Un email pour réinitialiser votre mot de passe vous a été envoyé, pensez à vérifier vos spams."
         />
       ) : (
         <>
