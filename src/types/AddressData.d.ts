@@ -1,13 +1,16 @@
+import { HeatNetworksResponse } from './HeatNetworksResponse';
+import { Point } from './Point';
+import { SuggestionItem } from './Suggestions';
+
 export type AvailableHeating = 'collectif' | 'individuel' | undefined;
 export type AvailableStructure = 'Tertiaire' | 'Copropriété' | undefined;
 export type AddressDataType = {
   address?: string;
+  coords?: Point;
   company?: string;
-  geoAddress?: Record<string, any>;
-  eligibility?: boolean;
-  computEligibility?: boolean;
+  geoAddress?: SuggestionItem;
+  computedEligibility?: boolean;
   heatingType?: AvailableHeating;
-  network?: Record<string, any>;
   structure?: AvailableStructure;
-  distance?: number;
+  eligibility?: HeatNetworksResponse;
 };

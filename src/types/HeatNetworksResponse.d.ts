@@ -1,24 +1,19 @@
-import { Address } from '@core/domain/entity/address';
+import { SuggestionItem } from './Suggestions';
 
 export interface HeatNetworksResponse {
-  lat: number;
-  lon: number;
-  network: Network;
-  inZDP: boolean;
   isEligible: boolean;
-}
-
-export interface Network {
-  lat: number | null;
-  lon: number | null;
-  irisCode: string | number | null;
-  filiere: string | null;
   distance: number | null;
+  inZDP: boolean;
+  isBasedOnIris: boolean;
 }
 
-export interface AddressEligibility {
-  address: Address;
-  network: Network;
-  isEligible: boolean;
-  inZDP: boolean;
+export interface AddressDetail {
+  geoAddress?: SuggestionItem;
+  network: HeatNetworksResponse;
 }
+
+export type HandleAddressSelect = (
+  address: string,
+  coordinates: Point,
+  geoAddress: AddressDetail
+) => void;

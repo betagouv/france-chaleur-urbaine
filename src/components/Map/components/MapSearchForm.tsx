@@ -1,38 +1,33 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
 import { useServices } from 'src/services';
-import { Point } from 'src/types/Point';
-import type { TypeAddressDetail } from './CardSearchDetails';
+import { HandleAddressSelect } from 'src/types/HeatNetworksResponse';
+import { SuggestionItem } from 'src/types/Suggestions';
 import { MapSearchFormGlobalStyle } from './MapSearchForm.style';
-
-export type TypeHandleAddressSelect = (
-  address: string,
-  coordinates: Point,
-  addressDetails: TypeAddressDetail
-) => void;
 
 const MapSearchForm = ({
   onAddressSelect,
 }: {
-  onAddressSelect: TypeHandleAddressSelect;
+  onAddressSelect: HandleAddressSelect;
 }) => {
   const { heatNetworkService } = useServices();
 
   const handleAddressSelected = async (
     address: string,
-    point: Point,
-    geoAddress: TypeAddressDetail
+    geoAddress: SuggestionItem
   ): Promise<void> => {
-    const [lng, lat] = point;
+    const [lon, lat] = geoAddress.geometry.coordinates;
 
-    const coords = { lat, lon: lng };
-    const network = await heatNetworkService.findByCoords(coords);
+    const network = await heatNetworkService.findByCoords(
+      { lat, lon },
+      geoAddress.properties.city
+    );
     const addressDetail = {
-      networkDetails: network,
+      network,
       geoAddress,
     };
 
     if (onAddressSelect) {
-      onAddressSelect(address, [lat, lng], addressDetail);
+      onAddressSelect(address, geoAddress.geometry.coordinates, addressDetail);
     }
   };
 

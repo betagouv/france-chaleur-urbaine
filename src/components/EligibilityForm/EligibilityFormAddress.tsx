@@ -1,10 +1,10 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
 import { usePreviousState } from '@hooks';
-import convertPointToCoordinates from '@utils/convertPointToCoordinates';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import { Coords } from 'src/types/Coords';
-import { Point } from 'src/types/Point';
+import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
+import { SuggestionItem } from 'src/types/Suggestions';
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 
 export type EnergyInputsLabelsType = { collectif: string; individuel: string };
@@ -56,24 +56,20 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
 
   const [status, setStatus] = useState(!coords ? 'idle' : 'success');
   const [data, setData] = useState<Record<string, any>>(defaultData);
+  const [heatingType, setHeatingType] = useState('');
   const prevData = usePreviousState(data);
   const { heatNetworkService } = useServices();
 
-  type CallbackParams = {
-    eligibility: boolean;
-    network: Record<string, any>;
-    inZDP: boolean;
-  };
   const checkEligibility = useCallback(
     async (
       coords: Coords,
-      callBack: ({ eligibility, network, inZDP }: CallbackParams) => void
+      city: string,
+      callBack: (response: HeatNetworksResponse) => void
     ) => {
       try {
         setStatus('loading');
-        const networkData = await heatNetworkService.findByCoords(coords);
-        const { isEligible: eligibility, network, inZDP } = networkData;
-        callBack({ eligibility, network, inZDP });
+        const networkData = await heatNetworkService.findByCoords(coords, city);
+        callBack(networkData);
         setStatus('success');
       } catch (e) {
         setStatus('error');
@@ -83,19 +79,23 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   );
 
   const handleAddressSelected = useCallback(
-    async (address: string, point: Point, geoAddress: any): Promise<void> => {
-      if (onFetch) onFetch({ address, point, geoAddress });
-      const coords: Coords = convertPointToCoordinates(point);
-      await checkEligibility(coords, ({ eligibility, network, inZDP }) =>
-        setData({
-          ...data,
-          address,
-          eligibility,
-          coords,
-          geoAddress,
-          network,
-          inZDP,
-        })
+    async (address: string, geoAddress: SuggestionItem): Promise<void> => {
+      if (onFetch) {
+        onFetch({ address, geoAddress });
+      }
+      const [lon, lat] = geoAddress.geometry.coordinates;
+      const coords = { lon, lat };
+      await checkEligibility(
+        coords,
+        geoAddress.properties.city,
+        (response: HeatNetworksResponse) =>
+          setData({
+            ...data,
+            address,
+            coords,
+            geoAddress,
+            eligibility: response,
+          })
       );
     },
     [checkEligibility, data, onFetch]
@@ -103,21 +103,21 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
 
   useEffect(() => {
     if (status === 'success' && onSuccess) {
-      const cleaningFunction = onSuccess(data);
+      const cleaningFunction = onSuccess({ ...data, heatingType });
       if (typeof cleaningFunction === 'function') {
         return cleaningFunction;
       }
     }
-  }, [data, onSuccess, status]);
+  }, [data, heatingType, onSuccess, status]);
 
   useEffect(() => {
-    if (prevData !== data && onChange) {
-      const cleaningFunction = onChange(data);
+    if (onChange) {
+      const cleaningFunction = onChange({ ...data, heatingType });
       if (typeof cleaningFunction === 'function') {
         return cleaningFunction;
       }
     }
-  }, [data, onChange, prevData]);
+  }, [data, heatingType, onChange, prevData]);
 
   return (
     <>
@@ -127,12 +127,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           label={heatingLabel}
           name="heatingType"
           selectOptions={energyInputsLabels}
-          onChange={(e) => {
-            setData({
-              ...data,
-              heatingType: e.target.value,
-            });
-          }}
+          onChange={(e) => setHeatingType(e.target.value)}
           cardMode={cardMode}
         >
           {formLabel}

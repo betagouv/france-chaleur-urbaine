@@ -1,6 +1,5 @@
 import { Combobox, ComboboxPopover } from '@reach/combobox';
 import { useCallback, useMemo } from 'react';
-import { Point } from 'src/types/Point';
 import { SuggestionItem } from 'src/types/Suggestions';
 import AddressAutocompleteGlobalStyle, {
   EmptySuggestion,
@@ -16,12 +15,6 @@ const defaultLabel = '';
 const defaultPlaceholder = 'Recherchez une adresse';
 const defaultEmptySuggestionText = 'Aucune adresse trouvée :(';
 
-type TypeHandleAddressSelected = (
-  address: string,
-  coordinates: Point,
-  geoAddress?: SuggestionItem
-) => void;
-
 type AddressProps = {
   centred?: boolean;
   label?: React.ReactNode;
@@ -31,7 +24,10 @@ type AddressProps = {
   minCharactersLength?: number;
   className?: string;
   popoverClassName?: string;
-  onAddressSelected: TypeHandleAddressSelected;
+  onAddressSelected: (
+    address: string,
+    geoAddress: SuggestionItem
+  ) => Promise<void>;
   onChange?: (e: string) => void;
 };
 
@@ -39,10 +35,7 @@ const findAddressInSuggestions = (
   address: string,
   suggestions: SuggestionItem[]
 ): SuggestionItem | undefined => {
-  const suggestion = suggestions.find(
-    (item) => item.properties.label === address
-  );
-  return suggestion;
+  return suggestions.find((item) => item.properties.label === address);
 };
 
 const AddressAutocomplete: React.FC<AddressProps> = ({
@@ -65,8 +58,9 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
   const handleSelect = useCallback(
     (address: string, suggestions: SuggestionItem[]) => {
       const geoAddress = findAddressInSuggestions(address, suggestions);
-      const coords = geoAddress?.geometry.coordinates || [0, 0];
-      onAddressSelected(address, coords, geoAddress);
+      if (geoAddress) {
+        onAddressSelected(address, geoAddress);
+      }
     },
     [onAddressSelected]
   );
