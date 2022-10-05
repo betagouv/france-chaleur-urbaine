@@ -79,4 +79,9 @@ export default [
     title: 'Lyon Métropole',
     link: 'https://www.grandlyon.com/',
   },
+  {
+    image: './logo-MIXENER.png',
+    title: 'Mixéner',
+    link: 'https://www.mixener.fr/',
+  },
 ];
