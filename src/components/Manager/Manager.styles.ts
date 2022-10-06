@@ -59,7 +59,7 @@ export const NoResult = styled.div`
 `;
 
 export const TableContainer = styled.div`
-  overflow: scroll;
+  overflow: auto;
 
   & .fr-table {
     padding-top: 0 !important;
