@@ -103,9 +103,7 @@ const CardSearchDetails = ({
           {eligibilityWording}
           <div>
             <strong>
-              {isEligible &&
-                readableDistance &&
-                `Le réseau passe à ${readableDistance}`}
+              {readableDistance && `Le réseau passe à ${readableDistance}`}
             </strong>
           </div>
         </EligibilityResult>
