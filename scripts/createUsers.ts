@@ -13,9 +13,7 @@ const createUsers = async () => {
       const gestionnaire = gestionnaires[i];
       const tag = gestionnaire.get('Nom tag');
       if (!existingEmails.has(`${tag} - FCU`)) {
-        console.log(
-          `Create account for ${tag} - FCU on ${tag}. ${tag} ${process.env.ACCES_PASSWORD}`
-        );
+        console.log(`Create account for ${tag} - FCU on ${tag}.`);
         await db('users').insert({
           email: `${tag} - FCU`.toLowerCase(),
           password: bcrypt.hashSync(
