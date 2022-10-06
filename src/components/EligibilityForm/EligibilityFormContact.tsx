@@ -225,18 +225,25 @@ const EligibilityFormContact = ({
     [addressData, computedEligibility, onSubmit]
   );
 
-  const distStep =
-    !addressData.eligibility?.isBasedOnIris &&
-    distance !== null &&
-    distance !== undefined &&
-    (distance <= 200
-      ? `Un réseau de chaleur se trouve à ${distance}m de ce bâtiment`
-      : '');
+  const readableDistance = useMemo(() => {
+    if (distance === null || distance === undefined) {
+      return '';
+    }
+
+    if (distance < 1) {
+      return '< 1m';
+    }
+    if (distance >= 1000) {
+      return `${distance / 1000}km`;
+    }
+    return `${distance}m`;
+  }, [distance]);
+
   const linkToMap =
     addressData?.geoAddress?.geometry?.coordinates &&
     (!addressData.eligibility?.isBasedOnIris
-      ? `./carte/?coord=${addressData.geoAddress.geometry.coordinates.reverse()}&zoom=15`
-      : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`);
+      ? `./carte/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`
+      : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressData.geoAddress.geometry.coordinates.reverse()}&zoom=15`);
 
   return (
     <ContactFormWrapper cardMode={cardMode}>
@@ -248,8 +255,11 @@ const EligibilityFormContact = ({
               headerTypo={headerTypo}
             >
               <MarkdownWrapper value={header} />
-              {distance !== null && distance !== undefined && distStep && (
-                <em className="distance">{distStep}</em>
+              {readableDistance && (
+                <em className="distance">
+                  Un réseau de chaleur se trouve à {readableDistance} de ce
+                  bâtiment
+                </em>
               )}
               {!computedEligibility && linkToMap && (
                 <Link href={linkToMap}>
