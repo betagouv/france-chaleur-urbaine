@@ -12,9 +12,25 @@ const createUsers = async () => {
     for (let i = 0; i < gestionnaires.length; i++) {
       const gestionnaire = gestionnaires[i];
       const tag = gestionnaire.get('Nom tag');
+      if (!existingEmails.has(`${tag} - FCU`)) {
+        console.log(
+          `Create account for ${tag} - FCU on ${tag}. ${tag} ${process.env.ACCES_PASSWORD}`
+        );
+        await db('users').insert({
+          email: `${tag} - FCU`.toLowerCase(),
+          password: bcrypt.hashSync(
+            `${tag} ${process.env.ACCES_PASSWORD}`,
+            salt
+          ),
+          gestionnaire: tag,
+        });
+      } else {
+        console.log(`Email ${gestionnaire} - FCU already exists.`);
+      }
       for (let j = 1; j < 10; j++) {
-        const email = gestionnaire.get(`Email ${j}`);
+        let email = gestionnaire.get(`Email ${j}`) as string;
         if (email) {
+          email = email.toLowerCase();
           if (!existingEmails.has(email)) {
             console.log(`Create account for ${email} on ${tag}.`);
             await db('users').insert({
