@@ -5,7 +5,6 @@ import {
 import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
-  max-width: 1700px;
   margin: auto;
   padding: 16px;
   height: calc(100vh - ${tabHeaderHeight});

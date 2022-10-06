@@ -2,6 +2,7 @@ import { Button, Select, TextInput } from '@dataesr/react-dsfr';
 import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
+import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import { Demand } from 'src/types/Summary/Demand';
 import { ExportButton, Filter, Filters } from './ManagerHeader.styles';
 
@@ -39,6 +40,13 @@ const modeDeChauffageOptions = [
   },
 ];
 
+const statusOptions = [{ label: 'Tous', value: '' }].concat(
+  Object.values(DEMANDE_STATUS).map((status: string) => ({
+    label: status,
+    value: status,
+  }))
+);
+
 const searchKeys: (keyof Demand)[] = ['Nom', 'Prénom', 'Mail'];
 
 const cleanValue = (value: string | undefined): string => {
@@ -73,6 +81,7 @@ const ManagerHeader = ({
   const [addressFilter, setAddressFilter] = useState('');
   const [filterModeChauffage, setFilterModeChauffage] = useState('');
   const [filterTypeChauffage, setFilterTypeChauffage] = useState('');
+  const [statusFilter, setStatusFiler] = useState('');
 
   useEffect(() => {
     let filteredDemands = demands;
@@ -85,6 +94,12 @@ const ManagerHeader = ({
     if (addressFilter) {
       filteredDemands = filteredDemands.filter((demand) =>
         matchFilter(addressFilter, demand.Adresse)
+      );
+    }
+
+    if (statusFilter) {
+      filteredDemands = filteredDemands.filter(
+        (demand) => demand.Status === statusFilter
       );
     }
 
@@ -106,6 +121,7 @@ const ManagerHeader = ({
   }, [
     addressFilter,
     nameFilter,
+    statusFilter,
     filterModeChauffage,
     filterTypeChauffage,
     demands,
@@ -126,6 +142,14 @@ const ManagerHeader = ({
           label="Rechercher par adresse:"
           value={addressFilter}
           onChange={(e) => setAddressFilter(e.target.value)}
+        />
+      </Filter>
+      <Filter>
+        <Select
+          label="Statut:"
+          selected={statusFilter}
+          onChange={(e: any) => setStatusFiler(e.target.value)}
+          options={statusOptions}
         />
       </Filter>
       <Filter>

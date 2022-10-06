@@ -71,7 +71,8 @@ export const getDemand = async (
 ): Promise<Demand | null> => {
   const user = await getUser(email);
   const record = await base(tableNameFcuDemands).find(demandId);
-  if (!user || record.get('Gestionnaire') !== user.gestionnaire) {
+  const gestionnaires = record.get('Gestionnaires') as string[];
+  if (!user || !gestionnaires.includes(user.gestionnaire)) {
     return null;
   }
   return { id: record.id, ...record.fields } as Demand;
