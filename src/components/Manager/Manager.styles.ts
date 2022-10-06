@@ -13,7 +13,7 @@ export const Container = styled.div`
   @media (min-width: 992px) {
     height: calc(100vh - ${fullscreenHeaderHeight});
   }
-  overflow: scroll;
+  overflow: auto;
   display: flex;
   flex-direction: column;
 `;
