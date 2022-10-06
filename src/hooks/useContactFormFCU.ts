@@ -14,6 +14,7 @@ const callMarkup__handleOnFetchAddress = (address: string) => {
   facebookEvent(markupData.eligibilityTest.facebookEvent);
   googleAdsEvent('10986886666', markupData.eligibilityTest.googleAdsEvent);
 };
+
 const callMarkup__handleOnSuccessAddress = ({
   eligibility,
   address,
@@ -90,9 +91,12 @@ const useContactFormFCU = () => {
   );
 
   const handleOnSuccessAddress = useCallback(
-    (data: any) => {
+    (data: AddressDataType) => {
       const { address, heatingType, eligibility } = data;
-      callMarkup__handleOnSuccessAddress({ eligibility, address });
+      callMarkup__handleOnSuccessAddress({
+        eligibility: eligibility ? eligibility.isEligible : false,
+        address,
+      });
       setAddressData(data);
       if (address && heatingType) {
         setContactReady(true);

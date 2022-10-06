@@ -11,8 +11,6 @@ import {
 } from './CardSearchDetails.style';
 import CardSearchDetailsForm from './CardSearchDetailsForm';
 
-export type TypeAddressDetail = any;
-
 type CardSearchDetailsProps = {
   address: StoredAddress;
   onClick?: (result: StoredAddress) => void;
@@ -26,13 +24,15 @@ const CardSearchDetails = ({
   onClickClose,
   onContacted,
 }: CardSearchDetailsProps) => {
-  const { distance } =
-    storedAddress.addressDetails?.networkDetails?.network || {};
-  const { isEligible } = storedAddress.addressDetails?.networkDetails || {};
+  const { distance, isEligible } = storedAddress.addressDetails?.network || {};
 
   const [contactFormVisible, setContactFormVisible] = useState(false);
 
   const readableDistance = useMemo(() => {
+    if (distance === null) {
+      return '';
+    }
+
     if (distance < 1) {
       return '< 1m';
     }
@@ -43,10 +43,13 @@ const CardSearchDetails = ({
   }, [distance]);
 
   const eligibilityWording = useMemo(() => {
-    if (isEligible && distance < 100) {
+    if (
+      (isEligible && distance === null) ||
+      (distance !== null && distance < 100)
+    ) {
       return `Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.`;
     }
-    if (isEligible && distance < 200) {
+    if (distance !== null && distance < 200) {
       return `Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois le réseau n’est pas très loin.`;
     }
     return `D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.`;
@@ -101,7 +104,7 @@ const CardSearchDetails = ({
           <div>
             <strong>
               {isEligible &&
-                !isNaN(parseFloat(distance)) &&
+                readableDistance &&
                 `Le réseau passe à ${readableDistance}`}
             </strong>
           </div>
