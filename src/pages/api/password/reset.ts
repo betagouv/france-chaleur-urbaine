@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
 import db from 'src/db';
+import base from 'src/db/airtable';
 import { sendResetPasswordEmail } from 'src/services/email';
 import * as yup from 'yup';
 
@@ -21,6 +22,14 @@ const reset = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const user = await db('users').where('email', email).first();
   if (!user) {
+    await base('FCU - Connexion espace gestionnaire').create([
+      {
+        fields: {
+          Email: email,
+          Date: new Date().toISOString(),
+        },
+      },
+    ]);
     return res.status(200).send('Success');
   }
 
