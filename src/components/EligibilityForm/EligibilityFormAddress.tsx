@@ -39,12 +39,12 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
 }) => {
   const address = fullAddress?.address;
   const {
-    lon,
-    lat,
     isEligible: eligibility,
     network,
     inZDP,
-  } = fullAddress?.addressDetails?.networkDetails || {};
+  } = fullAddress?.addressDetails?.network || {};
+  const [lon, lat] = fullAddress?.addressDetails?.geoAddress?.geometry
+    ?.coordinates || [null, null];
   const coords = (lon ?? lat) && { lon, lat };
   const defaultData = {
     address,
