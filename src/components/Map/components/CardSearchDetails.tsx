@@ -121,8 +121,9 @@ const CardSearchDetails = ({
           <ContactFormWrapper>
             {!storedAddress.contacted && (
               <header>
-                Vous souhaitez en savoir plus et être recontacté par le
-                gestionnaire du réseau ?
+                {isEligible
+                  ? 'Vous souhaitez en savoir plus et être recontacté par le gestionnaire du réseau ?'
+                  : 'Vous souhaitez tout de même faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
               </header>
             )}
             {!contactFormVisible && !storedAddress.contacted && (
