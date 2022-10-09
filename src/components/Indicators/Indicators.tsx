@@ -40,28 +40,24 @@ const Indicators = () => {
             </b>
           </p>
           <p>
-            À l’issue de la période de dépôt qui s’étend du ... au ..., les
-            indicateurs relatifs aux performances économiques recueillis dans le
-            cadre de ce service public de collecte de données réglementaires
-            seront téléchargeables en ligne sur le site de France Chaleur
-            Urbaine et librement réutilisables. Un rapport de synthèse sera
-            également diffusé sur le site de France Chaleur Urbaine.
+            Conformément à{' '}
+            <a
+              href="https://www.legifrance.gouv.fr"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              l'arrêté [...] en date du [...]
+            </a>
+            , les indicateurs relatifs au prix moyen, au prix moyen par
+            catégorie d’abonné, au poids de la part proportionnelle aux
+            consommations et au poids de la part forfaitaire de l’abonnement
+            dans la facturation sont à renseigner sur cette plateforme dans le
+            mois suivant la publication du rapport annuel.
           </p>
           <p>
-            <b>
-              <a
-                href="https://www.legifrance.gouv.fr"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                L’arrêté [...] en date du [...]
-              </a>{' '}
-              précise la liste des indicateurs et leurs modalités de calcul.
-            </b>
-          </p>
-          <p>
-            Seuls les indicateurs relatifs aux conditions tarifaires sont à
-            renseigner ici.
+            Les indicateurs recueillis dans le cadre de ce service public de
+            collecte de données réglementaires seront téléchargeables en ligne
+            sur le site de France Chaleur Urbaine et librement réutilisables.{' '}
           </p>
           <Callout hasInfoIcon={false}>
             <CalloutTitle size="sm">
