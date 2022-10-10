@@ -24,7 +24,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
     <ToolItemGroup>
       {session ? (
         <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
-          Se deconnecter
+          Se déconnecter
         </ToolItem>
       ) : (
         <ToolItem
