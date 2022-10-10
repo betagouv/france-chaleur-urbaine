@@ -26,7 +26,7 @@ const NewPasswordForm = ({ token }: { token: string }) => {
         !/[0-9]/.test(password))
     ) {
       setError(
-        'Votre mot de passe doit avoir au moins 8 charactères dont 1 majuscule, 1 minuscule et 1 chiffre.'
+        'Votre mot de passe doit avoir au moins 8 caractères dont 1 majuscule, 1 minuscule et 1 chiffre.'
       );
     }
   }, [password, confirmation]);
