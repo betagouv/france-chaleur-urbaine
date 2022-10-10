@@ -1,7 +1,7 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
-import { usePreviousState } from '@hooks';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
+import { AddressDataType } from 'src/types/AddressData';
 import { Coords } from 'src/types/Coords';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { SuggestionItem } from 'src/types/Suggestions';
@@ -37,27 +37,19 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   onFetch,
   onSuccess,
 }) => {
-  const address = fullAddress?.address;
-  const {
-    isEligible: eligibility,
-    network,
-    inZDP,
-  } = fullAddress?.addressDetails?.network || {};
   const [lon, lat] = fullAddress?.addressDetails?.geoAddress?.geometry
     ?.coordinates || [null, null];
   const coords = (lon ?? lat) && { lon, lat };
-  const defaultData = {
-    address,
-    eligibility,
+  const defaultData: AddressDataType = {
+    address: fullAddress?.address,
+    eligibility: fullAddress?.addressDetails?.network,
+    geoAddress: fullAddress?.addressDetails?.geoAddress,
     coords,
-    network,
-    inZDP,
   };
 
   const [status, setStatus] = useState(!coords ? 'idle' : 'success');
-  const [data, setData] = useState<Record<string, any>>(defaultData);
+  const [data, setData] = useState<AddressDataType>(defaultData);
   const [heatingType, setHeatingType] = useState('');
-  const prevData = usePreviousState(data);
   const { heatNetworkService } = useServices();
 
   const checkEligibility = useCallback(
@@ -92,7 +84,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           setData({
             ...data,
             address,
-            coords,
+            coords: geoAddress.geometry.coordinates,
             geoAddress,
             eligibility: response,
           })
@@ -117,7 +109,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
         return cleaningFunction;
       }
     }
-  }, [data, heatingType, onChange, prevData]);
+  }, [data, heatingType, onChange]);
 
   return (
     <>
