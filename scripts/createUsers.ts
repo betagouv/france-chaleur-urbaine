@@ -6,7 +6,9 @@ const createUsers = async () => {
   try {
     const gestionnaires = await base('FCU - Tags gestionnaires').select().all();
     const users = await db('users').select('email');
-    const existingEmails = new Set(users.map((user) => user.email));
+    const existingEmails = new Set(
+      users.map((user) => user.email.toLowerCase())
+    );
     const salt = await bcrypt.genSalt(10);
 
     for (let i = 0; i < gestionnaires.length; i++) {
