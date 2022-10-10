@@ -49,5 +49,5 @@ export const sendResetPasswordEmail = async (
     link: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
   });
 
-  return send([email], 'Reinitialisation de votre mot de passe FCU.', html);
+  return send([email], 'Réinitialisation de votre mot de passe FCU.', html);
 };
