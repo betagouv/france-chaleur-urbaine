@@ -20,6 +20,7 @@ const exportColumn: ExportColumn<Demand>[] = [
     value: (demand) => `${demand.Prénom ? demand.Prénom : ''} ${demand.Nom}`,
   },
   { header: 'Mail', value: 'Mail' },
+  { header: 'Téléphone', value: 'Téléphone' },
   { header: 'Adresse', value: 'Adresse' },
   {
     header: 'En ZDP',

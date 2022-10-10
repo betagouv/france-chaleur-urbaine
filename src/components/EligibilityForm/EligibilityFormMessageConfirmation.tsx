@@ -1,6 +1,4 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import { isBasedOnIRIS } from '@helpers/address';
-import { useMemo } from 'react';
 import { AddressDataType } from 'src/types/AddressData';
 import styled from 'styled-components';
 import { ContactFormEligibilityResult } from './components';
@@ -16,24 +14,11 @@ const EligibilityFormMessageConfirmation = ({
   addressData: AddressDataType;
   cardMode?: boolean;
 }) => {
-  const addressCoords: [number, number] = useMemo(() => {
-    const coords = addressData?.geoAddress?.geometry?.coordinates as number[];
-    return coords && [coords[1], coords[0]];
-  }, [addressData]);
-
-  const isIRISAddress = useMemo(() => {
-    return (
-      addressData &&
-      addressData.geoAddress &&
-      isBasedOnIRIS(addressData.geoAddress.properties.city)
-    );
-  }, [addressData]);
-
   const linkToMap =
-    addressCoords &&
-    (!isIRISAddress
-      ? `./carte/?coord=${addressCoords}&zoom=15`
-      : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressCoords}&zoom=15`);
+    addressData?.geoAddress?.geometry?.coordinates &&
+    (!addressData.eligibility?.isBasedOnIris
+      ? `./carte/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`
+      : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressData.geoAddress.geometry.coordinates.reverse()}&zoom=15`);
 
   const { structure, computedEligibility } = addressData;
 

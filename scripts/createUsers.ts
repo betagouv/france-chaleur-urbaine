@@ -6,15 +6,13 @@ const createUsers = async () => {
   try {
     const gestionnaires = await base('FCU - Tags gestionnaires').select().all();
     const users = await db('users').select('email');
-    const existingEmails = new Set(
-      users.map((user) => user.email.toLowerCase())
-    );
+    const existingEmails = new Set(users.map((user) => user.email));
     const salt = await bcrypt.genSalt(10);
 
     for (let i = 0; i < gestionnaires.length; i++) {
       const gestionnaire = gestionnaires[i];
       const tag = gestionnaire.get('Nom tag');
-      if (!existingEmails.has(`${tag} - FCU`)) {
+      if (!existingEmails.has(`${tag} - FCU`.toLowerCase())) {
         console.log(`Create account for ${tag} - FCU on ${tag}.`);
         await db('users').insert({
           email: `${tag} - FCU`.toLowerCase(),
