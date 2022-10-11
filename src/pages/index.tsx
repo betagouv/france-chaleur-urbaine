@@ -74,6 +74,7 @@ const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled
       max-width: 350px;
     }
   }
+
   .enjeu-societe-img {
     max-width: 122px;
 
