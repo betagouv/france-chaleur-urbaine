@@ -84,7 +84,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           setData({
             ...data,
             address,
-            coords: geoAddress.geometry.coordinates,
+            coords,
             geoAddress,
             eligibility: response,
           })
