@@ -21,11 +21,11 @@ const Documents = () => {
         <Icon name="ri-arrow-left-line" size="2x" />
       </Arrow>
       <DocumentsCard>
-        {documentsData.map((document, index) => (
+        {documentsData.map(([key, document], index) => (
           <Document
-            key={document.title}
+            key={key}
             hide={index < firstCard}
-            asLink={<Link href={document.link} />}
+            asLink={<Link href={`/ressources/${key}`} />}
           >
             <CardTitle>{document.title}</CardTitle>
             <CardDescription>{document.description}</CardDescription>

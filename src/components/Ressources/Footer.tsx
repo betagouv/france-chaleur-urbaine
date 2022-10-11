@@ -32,7 +32,7 @@ const Footer = () => {
           Ils bénéficient d’une chaleur produite à plus de <b>60%</b> par des
           énergies renouvelables et de récupération locales.
         </BannerDescription>
-        <BannerImage alt="" src="./img/ressources-end.png" />
+        <BannerImage alt="" src="/img/ressources-end.png" />
       </Banner>
     </WrappedText>
   );

@@ -6,7 +6,7 @@ const Understanding = () => {
   return (
     <WrappedText
       title="Les réseaux de chaleur en pratique : tout comprendre pour se raccorder"
-      imgSrc="./img/ressources-middle.png"
+      imgSrc="/img/ressources-middle.png"
       imgAlt=""
       imgClassName="understanding-img"
     >

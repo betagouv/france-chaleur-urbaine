@@ -132,7 +132,7 @@ export default function Home() {
           <TertiaireStyle />
 
           <HeadSliceForm
-            bg="./img/head-slice-bg-tertiaire.png"
+            bg="/img/head-slice-bg-tertiaire.png"
             pageBody={`
 Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
 # Optez pour un chauffage écologique et économique`}
