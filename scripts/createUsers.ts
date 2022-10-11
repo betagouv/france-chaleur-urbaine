@@ -23,7 +23,7 @@ const createUsers = async () => {
           gestionnaire: tag,
         });
       } else {
-        console.log(`Email ${gestionnaire} - FCU already exists.`);
+        console.log(`Email ${tag} - FCU already exists.`);
       }
       for (let j = 1; j < 10; j++) {
         let email = gestionnaire.get(`Email ${j}`) as string;
