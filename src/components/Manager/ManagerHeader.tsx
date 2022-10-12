@@ -1,5 +1,5 @@
 import { Button, Select, TextInput } from '@dataesr/react-dsfr';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
@@ -69,9 +69,11 @@ const matchFilter = (filter: string, value: string | undefined) => {
 const ManagerHeader = ({
   demands,
   setFilteredDemands,
+  setPage,
 }: {
   demands: Demand[];
   setFilteredDemands: (demands: Demand[]) => void;
+  setPage: Dispatch<SetStateAction<number>>;
 }) => {
   const { demandsService } = useServices();
 
@@ -126,6 +128,17 @@ const ManagerHeader = ({
     filterTypeChauffage,
     demands,
     setFilteredDemands,
+  ]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [
+    addressFilter,
+    nameFilter,
+    statusFilter,
+    filterModeChauffage,
+    filterTypeChauffage,
+    setPage,
   ]);
 
   return (
