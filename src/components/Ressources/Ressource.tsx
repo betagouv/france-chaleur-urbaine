@@ -35,8 +35,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
           <Row>
             <Col n="md-4 12">
               <SideMenu
-                title="Aller plus loin :"
-                buttonLabel="Aller plus loin :"
+                title="Aller plus loin :"
+                buttonLabel="Aller plus loin :"
               >
                 <SideMenuItem
                   title="Les enjeux de la transition énergétique avec les réseaux de chaleur"

@@ -120,7 +120,7 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
         </div>
         <TextInput
           required
-          label="Nom :"
+          label="Nom :"
           value={coordinates.name}
           onChange={(e) =>
             setCoordinates({ ...coordinates, name: e.target.value })
@@ -128,7 +128,7 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
         />
         <TextInput
           required
-          label="Prénom :"
+          label="Prénom :"
           value={coordinates.firstName}
           onChange={(e) =>
             setCoordinates({ ...coordinates, firstName: e.target.value })
@@ -137,21 +137,21 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
         <TextInput
           required
           type="email"
-          label="Email :"
+          label="Email :"
           value={coordinates.email}
           onChange={(e) =>
             setCoordinates({ ...coordinates, email: e.target.value })
           }
         />
         <TextInput
-          label="Structure :"
+          label="Structure :"
           value={coordinates.structure}
           onChange={(e) =>
             setCoordinates({ ...coordinates, structure: e.target.value })
           }
         />
         <TextInput
-          label="Fonction :"
+          label="Fonction :"
           value={coordinates.function}
           onChange={(e) =>
             setCoordinates({ ...coordinates, function: e.target.value })
@@ -179,7 +179,7 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
           type="number"
           step="any"
           min={0}
-          label="Prix moyen du MWh (€ TTC / MWh) :"
+          label="Prix moyen du MWh (€ TTC / MWh) :"
           hint={
             <>
               Recettes d'énergie thermique totales (€TTC) / Quantité d'énergie
@@ -206,7 +206,7 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
           type="number"
           step="any"
           min={0}
-          label="Ménage en maison individuelle ayant une consommation annuelle de 20 MWh/an (€ TTC / MWh) :"
+          label="Ménage en maison individuelle ayant une consommation annuelle de 20 MWh/an (€ TTC / MWh) :"
           value={indicators.individualHome}
           onChange={(e) =>
             setIndicators({ ...indicators, individualHome: e.target.value })
@@ -217,7 +217,7 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
           type="number"
           step="any"
           min={0}
-          label="Copropriété de 30 lots, ayant une consommation annuelle de 300 MWh/an (€ TTC / MWh) :"
+          label="Copropriété de 30 lots, ayant une consommation annuelle de 300 MWh/an (€ TTC / MWh) :"
           value={indicators.coprop30}
           onChange={(e) =>
             setIndicators({ ...indicators, coprop30: e.target.value })
@@ -228,7 +228,7 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
           type="number"
           step="any"
           min={0}
-          label="Copropriété de 100 lots, ayant une consommation annuelle de 1000 MWh/an (€ TTC / MWh) :"
+          label="Copropriété de 100 lots, ayant une consommation annuelle de 1000 MWh/an (€ TTC / MWh) :"
           value={indicators.coprop100}
           onChange={(e) =>
             setIndicators({ ...indicators, coprop100: e.target.value })
@@ -239,7 +239,7 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
           type="number"
           step="any"
           min={0}
-          label="Surface tertiaire de 1000 m2 ayant une consommation annuelle de 1500 MWh/an (€ TTC / MWh) :"
+          label="Surface tertiaire de 1000 m2 ayant une consommation annuelle de 1500 MWh/an (€ TTC / MWh) :"
           value={indicators.tertiaire}
           onChange={(e) =>
             setIndicators({ ...indicators, tertiaire: e.target.value })
@@ -253,7 +253,7 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
           required
           type="number"
           step="any"
-          label="Part proportionnelle à la consommation (%) :"
+          label="Part proportionnelle à la consommation (%) :"
           hint={
             <>
               Recettes totales R1 (€ TTC) / Recettes d'énergie thermique totales
@@ -277,7 +277,7 @@ const Form = ({ afterSubmit }: { afterSubmit: () => void }) => {
           required
           type="number"
           step="any"
-          label="Part forfaitaire de l'abonnement (%) :"
+          label="Part forfaitaire de l'abonnement (%) :"
           hint={
             <>
               Recettes totales R2 (€ TTC)/Recettes d'énergie thermique totales

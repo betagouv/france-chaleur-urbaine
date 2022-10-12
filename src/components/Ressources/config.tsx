@@ -1,6 +1,9 @@
 import { ReactNode } from 'react';
 import GreenEnergies from './Contents/GreenEnergies';
+import Livraisons from './Contents/Livraisons';
 import Network from './Contents/Network';
+import Role from './Contents/Role';
+import Strengths from './Contents/Strengths';
 
 export type Document = {
   title: string;
@@ -10,7 +13,7 @@ export type Document = {
 
 export const issues: Record<string, Document> = {
   reseau: {
-    title: 'Qu’est-ce qu’un réseau de chaleur ?',
+    title: 'Qu’est-ce qu’un réseau de chaleur ?',
     description: (
       <>
         Un réseau de chaleur est un{' '}
@@ -33,29 +36,66 @@ export const issues: Record<string, Document> = {
     ),
     content: <GreenEnergies />,
   },
+  atouts: {
+    title: 'Un mode de chauffage aux multiples atouts',
+    description: (
+      <>
+        Se chauffer par un réseau de chaleur, c’est adopter un{' '}
+        <b>mode de chauffage fiable</b> qui présente des bénéfices à la fois
+        environnementaux, sanitaires, économiques et sociaux...
+      </>
+    ),
+    content: <Strengths />,
+  },
+  livraisons: {
+    title:
+      'Que représentent les livraisons de chaleur par les réseaux en France ?',
+    description: (
+      <>
+        Au niveau européen, la France ne se place qu’en 20ème position en termes
+        de recours aux réseaux de chaleur,{' '}
+        <b>avec environ 5 % des besoins en chaleur du pays couverts</b> par les
+        réseaux.
+      </>
+    ),
+    content: <Livraisons />,
+  },
+  role: {
+    title: 'Un rôle clé dans la transition énergétique',
+    description: (
+      <>
+        Les bâtiments (résidentiels et tertiaires) sont responsables de près de
+        la moitié des consommations d’énergie en France, et{' '}
+        <b>de 15 % des émissions de gaz à effet de serre</b>, principalement
+        dues au chauffage des bâtiments. Les réseaux de chaleur constituent un
+        levier efficace pour réduire ces émissions.
+      </>
+    ),
+    content: <Role />,
+  },
 };
 
 export const understandings: Record<string, Document> = {
   faisabilite: {
-    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
+    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
     description:
       'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
     content: <Network />,
   },
   faisabilite1: {
-    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
+    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
     description:
       'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
     content: <Network />,
   },
   faisabilite2: {
-    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
+    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
     description:
       'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
     content: <Network />,
   },
   faisabilite3: {
-    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
+    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
     description:
       'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
     content: <Network />,
@@ -64,7 +104,7 @@ export const understandings: Record<string, Document> = {
 
 export const growths: Record<string, Document> = {
   acteurs: {
-    title: 'Quels sont les principaux acteurs de la filière ?',
+    title: 'Quels sont les principaux acteurs de la filière ?',
     description:
       'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
     content: <Network />,

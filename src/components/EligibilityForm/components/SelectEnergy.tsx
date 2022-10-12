@@ -43,7 +43,7 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
     <>
       {children}
       <RadioGroup
-        legend={(label as string) || 'Chauffage actuel :'}
+        legend={(label as string) || 'Chauffage actuel :'}
         name={name}
         isInline={!cardMode}
         required

@@ -16,19 +16,19 @@ const InputWraper = styled.div`
 
 export const fieldLabelInformation = {
   structure: {
-    label: 'Type de bâtiment :',
+    label: 'Type de bâtiment :',
     inputs: [
       { value: 'Copropriété', label: 'Copropriété', id: 'copropriete' },
       { value: 'Tertiaire', label: 'Tertiaire', id: 'tertiaire' },
     ],
   },
-  lastName: 'Nom :',
-  firstName: 'Prénom :',
+  lastName: 'Nom :',
+  firstName: 'Prénom :',
   company: 'Établissement',
-  email: 'Email :',
-  phone: 'Téléphone :',
+  email: 'Email :',
+  phone: 'Téléphone :',
   heatingEnergy: {
-    label: 'Mode de chauffage actuel :',
+    label: 'Mode de chauffage actuel :',
     inputs: [
       { value: 'électricité', label: 'Électricité', id: 'electricite' },
       { value: 'gaz', label: 'Gaz', id: 'gaz' },

@@ -96,7 +96,7 @@ vigueur et **excluent l'installation de nouvelles chaudières au fioul.**
 
           <Slice padding={5}>
             <Carrousel
-              title="Leur copropriété est raccordée - ils témoignent :"
+              title="Leur copropriété est raccordée - ils témoignent :"
               Testimonies={testimonies}
               imgSrc="/img/home-testimony.jpg"
               imgAlt="Portrait d’Isham et Sophie."

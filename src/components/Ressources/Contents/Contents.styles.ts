@@ -25,3 +25,28 @@ export const List = styled.ul<{ withoutMargin?: boolean }>`
     background-size: 20px;
   }
 `;
+
+export const Statistics = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  color: #4550e5;
+  > div {
+    width: 175px;
+    text-align: center;
+    > span {
+      font-size: 12px;
+      line-height: 12px;
+    }
+  }
+`;
+
+export const Statistic = styled.div`
+  height: 175px;
+  background-image: url('/img/ressources-livraisons.svg');
+  background-size: contain;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+`;
