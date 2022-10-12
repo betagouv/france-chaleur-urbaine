@@ -24,16 +24,18 @@ export const Arrow = styled.div`
   }
 `;
 
-export const DocumentsCard = styled.div`
+export const IssuesCard = styled.div`
   flex: auto;
   display: flex;
   overflow: hidden;
+  margin: 64px 0;
   padding: 8px;
   gap: 32px;
 `;
 
-export const Document = styled(Card)<{ hide: boolean }>`
+export const Issue = styled(Card)<{ hide: boolean }>`
   flex: 0 0 auto;
   width: 300px;
-  ${({ hide }) => hide && 'display: none !important;'}
+  height: initial !important;
+  ${({ hide }) => hide && 'display: none !important;'};
 `;

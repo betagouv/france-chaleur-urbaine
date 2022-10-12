@@ -1,5 +1,6 @@
 import WrappedText from '@components/WrappedText';
-import { understandings } from './Understanding.config';
+import Link from 'next/link';
+import { understandings } from './config';
 import { Block, Blocks, BlockTitle } from './Understanding.styles';
 
 const Understanding = () => {
@@ -11,10 +12,12 @@ const Understanding = () => {
       imgClassName="understanding-img"
     >
       <Blocks>
-        {understandings.map((understanding) => (
-          <Block key={understanding.title}>
+        {Object.entries(understandings).map(([key, understanding]) => (
+          <Block key={key}>
             <BlockTitle>{understanding.title}</BlockTitle>
             {understanding.description}
+            <br />
+            <Link href={`/ressources/${key}`}>Lire l'article</Link>
           </Block>
         ))}
       </Blocks>

@@ -1,7 +1,14 @@
 import Slice from '@components/Slice';
-import Documents from './Documents';
-import Footer from './Footer';
+import Growth from './Growth';
 import Header from './Header';
+import Issues from './Issues';
+import {
+  Banner,
+  BannerDescription,
+  BannerImage,
+  BannerTitle,
+} from './Ressources.styles';
+import StickyForm from './StickyForm';
 import Understanding from './Understanding';
 
 const Ressources = () => {
@@ -11,18 +18,35 @@ const Ressources = () => {
         title="Pour aller plus loin..."
         description="Retrouvez toute notre documentation pour approfondir votre connaissance des réseaux de chaleur."
       />
+      <StickyForm />
       <Slice
-        padding={8}
+        padding={12}
         theme="grey"
-        header="## Les enjeux de la transition énergétique avec les réseaux de chaleur"
+        header={`
+## Les enjeux de la transition énergétique avec 
+## les réseaux de chaleur
+        `}
       >
-        <Documents />
+        <Issues />
       </Slice>
       <Slice padding={8} theme="color">
         <Understanding />
       </Slice>
       <Slice padding={8}>
-        <Footer />
+        <Growth />
+      </Slice>
+      <Slice padding={8}>
+        <Banner>
+          <BannerTitle>
+            <b>43 945 bâtiments</b> sont déjà raccordés à l’un des{' '}
+            <b>833 réseaux de chaleur français !</b>
+          </BannerTitle>
+          <BannerDescription>
+            Ils bénéficient d’une chaleur produite à plus de <b>60%</b> par des
+            énergies renouvelables et de récupération locales.
+          </BannerDescription>
+          <BannerImage alt="" src="/img/ressources-end.png" />
+        </Banner>
       </Slice>
     </>
   );

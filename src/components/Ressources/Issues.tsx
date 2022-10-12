@@ -1,17 +1,19 @@
 import { CardDescription, CardTitle, Icon } from '@dataesr/react-dsfr';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
-import { documentsData } from './Documents.config';
-import { Arrow, Container, Document, DocumentsCard } from './Documents.styles';
+import { issues } from './config';
+import { Arrow, Container, Issue, IssuesCard } from './Issues.styles';
 
-const Documents = () => {
+const issuesData = Object.entries(issues).concat(
+  Object.entries(issues).map(([key, document]) => [`${key}-2`, document])
+);
+
+const Issues = () => {
   const [firstCard, setFirstCard] = useState(0);
 
   const setNextCard = useCallback(
     (value: number) => {
-      setFirstCard(
-        (firstCard + value + documentsData.length) % documentsData.length
-      );
+      setFirstCard((firstCard + value + issuesData.length) % issuesData.length);
     },
     [firstCard]
   );
@@ -20,18 +22,18 @@ const Documents = () => {
       <Arrow onClick={() => setNextCard(-1)}>
         <Icon name="ri-arrow-left-line" size="2x" />
       </Arrow>
-      <DocumentsCard>
-        {documentsData.map(([key, document], index) => (
-          <Document
+      <IssuesCard>
+        {issuesData.map(([key, issue], index) => (
+          <Issue
             key={key}
             hide={index < firstCard}
             asLink={<Link href={`/ressources/${key}`} />}
           >
-            <CardTitle>{document.title}</CardTitle>
-            <CardDescription>{document.description}</CardDescription>
-          </Document>
+            <CardTitle>{issue.title}</CardTitle>
+            <CardDescription>{issue.description}</CardDescription>
+          </Issue>
         ))}
-      </DocumentsCard>
+      </IssuesCard>
       <Arrow onClick={() => setNextCard(1)}>
         <Icon name="ri-arrow-right-line" size="2x" />
       </Arrow>
@@ -39,4 +41,4 @@ const Documents = () => {
   );
 };
 
-export default Documents;
+export default Issues;

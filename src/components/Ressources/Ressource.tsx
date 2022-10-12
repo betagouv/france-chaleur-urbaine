@@ -6,7 +6,8 @@ import {
   SideMenuItem,
   SideMenuLink,
 } from '@dataesr/react-dsfr';
-import { enjeux } from './Documents.config';
+import Link from 'next/link';
+import { growths, issues, understandings } from './config';
 import Guide from './Guide';
 import Header from './Header';
 import { StickyWrapper } from './Ressource.styles';
@@ -14,7 +15,11 @@ import RessourceContent from './RessourceContent';
 import StickyForm from './StickyForm';
 
 const getContent = (ressourceKey: string) => {
-  return enjeux[ressourceKey];
+  return (
+    issues[ressourceKey] ||
+    understandings[ressourceKey] ||
+    growths[ressourceKey]
+  );
 };
 
 const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
@@ -36,15 +41,80 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                 <SideMenuItem
                   title="Les enjeux de la transition énergétique avec les réseaux de chaleur"
                   expandedDefault
-                  current={Object.keys(enjeux).includes(ressourceKey)}
+                  current={Object.keys(issues).includes(ressourceKey)}
                 >
-                  {Object.entries(enjeux).map(([key, document]) => (
+                  {Object.entries(issues).map(([key, issue]) => (
                     <SideMenuLink
                       key={key}
-                      href={`/ressources/${key}`}
+                      asLink={
+                        <Link href={`/ressources/${key}`}>
+                          <a
+                            className="fr-sidemenu__link fr-link--md"
+                            aria-current={
+                              ressourceKey === key ? 'page' : undefined
+                            }
+                          >
+                            {issue.title}
+                          </a>
+                        </Link>
+                      }
                       current={ressourceKey === key}
                     >
-                      {document.title}
+                      {issue.title}
+                    </SideMenuLink>
+                  ))}
+                </SideMenuItem>
+                <SideMenuItem
+                  title="Les réseaux de chaleur en pratique : tout comprendre pour se raccorder"
+                  expandedDefault
+                  current={Object.keys(understandings).includes(ressourceKey)}
+                >
+                  {Object.entries(understandings).map(
+                    ([key, understanding]) => (
+                      <SideMenuLink
+                        key={key}
+                        asLink={
+                          <Link href={`/ressources/${key}`}>
+                            <a
+                              className="fr-sidemenu__link fr-link--md"
+                              aria-current={
+                                ressourceKey === key ? 'page' : undefined
+                              }
+                            >
+                              {understanding.title}
+                            </a>
+                          </Link>
+                        }
+                        current={ressourceKey === key}
+                      >
+                        {understanding.title}
+                      </SideMenuLink>
+                    )
+                  )}
+                </SideMenuItem>
+                <SideMenuItem
+                  title="Une filière en pleine croissance"
+                  expandedDefault
+                  current={Object.keys(growths).includes(ressourceKey)}
+                >
+                  {Object.entries(growths).map(([key, growth]) => (
+                    <SideMenuLink
+                      key={key}
+                      asLink={
+                        <Link href={`/ressources/${key}`}>
+                          <a
+                            className="fr-sidemenu__link fr-link--md"
+                            aria-current={
+                              ressourceKey === key ? 'page' : undefined
+                            }
+                          >
+                            {growth.title}
+                          </a>
+                        </Link>
+                      }
+                      current={ressourceKey === key}
+                    >
+                      {growth.title}
                     </SideMenuLink>
                   ))}
                 </SideMenuItem>

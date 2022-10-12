@@ -5,9 +5,10 @@ export const Title = styled.h1`
   font-size: 43px;
   line-height: 44px;
   font-weight: 400;
+  margin: 64px 0;
 `;
 
 export const Description = styled.div`
   color: #000074;
-  margin-bottom: 32px;
+  margin: 32px 0;
 `;
