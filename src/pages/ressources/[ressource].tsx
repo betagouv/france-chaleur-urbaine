@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 const RessourcePage = () => {
   const router = useRouter();
   return (
-    <MainContainer currentMenu={'/ressources'}>
+    <MainContainer>
       <Ressource ressourceKey={router.query.ressource as string} />
     </MainContainer>
   );

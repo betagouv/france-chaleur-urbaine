@@ -10,27 +10,27 @@ export const Banner = styled.div`
   font-weight: 400;
   @media (min-width: 992px) {
     div {
-      width: calc(70% - 32px);
+      width: calc(80% - 32px);
     }
   }
 `;
 
 export const BannerTitle = styled.div`
-  font-size: 38px;
-  line-height: 42px;
+  font-size: 30px;
+  line-height: 35px;
   margin-bottom: 32px;
 `;
 
 export const BannerDescription = styled.div`
-  font-size: 28px;
-  line-height: 30px;
+  font-size: 20px;
+  line-height: 24px;
 `;
 
 export const BannerImage = styled.img`
-  width: 30%;
+  height: 250px;
   margin-top: 16px;
   position: absolute;
-  bottom: -64px;
+  bottom: -32px;
   right: 32px;
   display: none;
   @media (min-width: 992px) {

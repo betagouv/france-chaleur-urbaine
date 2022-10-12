@@ -2,7 +2,6 @@ import {
   Col,
   Container,
   Row,
-  SideMenu,
   SideMenuItem,
   SideMenuLink,
 } from '@dataesr/react-dsfr';
@@ -10,7 +9,7 @@ import Link from 'next/link';
 import { growths, issues, understandings } from './config';
 import Guide from './Guide';
 import Header from './Header';
-import { StickyWrapper } from './Ressource.styles';
+import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
 import StickyForm from './StickyForm';
 
@@ -33,11 +32,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
       <StickyWrapper>
         <Container className="fr-my-4w">
           <Row>
-            <Col n="md-4 12">
-              <SideMenu
-                title="Aller plus loin :"
-                buttonLabel="Aller plus loin :"
-              >
+            <Col n="md-3 12">
+              <SideMenu title="Aller plus loin :" buttonLabel="Sommaire">
                 <SideMenuItem
                   title="Les enjeux de la transition énergétique avec les réseaux de chaleur"
                   expandedDefault
@@ -120,7 +116,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                 </SideMenuItem>
               </SideMenu>
             </Col>
-            <Col n="8">
+            <Col n="md-9 12">
               <RessourceContent content={getContent(ressourceKey)} />
               <Guide />
             </Col>
