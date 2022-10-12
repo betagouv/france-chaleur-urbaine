@@ -1,8 +1,10 @@
 import { ReactNode } from 'react';
+import Actors from './Contents/Actors';
 import GreenEnergies from './Contents/GreenEnergies';
 import Livraisons from './Contents/Livraisons';
 import Network from './Contents/Network';
 import Role from './Contents/Role';
+import State from './Contents/State';
 import Strengths from './Contents/Strengths';
 
 export type Document = {
@@ -105,8 +107,13 @@ export const understandings: Record<string, Document> = {
 export const growths: Record<string, Document> = {
   acteurs: {
     title: 'Quels sont les principaux acteurs de la filière ?',
+    description: '',
+    content: <Actors />,
+  },
+  etat: {
+    title: 'L’État investit dans les réseaux de chaleur',
     description:
-      'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
-    content: <Network />,
+      'Plusieurs dispositifs financiers sont mis en place par État pour accompagner le développement des réseaux de chaleur.',
+    content: <State />,
   },
 };

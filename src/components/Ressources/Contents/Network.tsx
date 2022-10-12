@@ -5,7 +5,7 @@ const Network = () => {
   return (
     <>
       <Subtitle>
-        Tout réseau de chaleur comporte les principaux éléments suivants :
+        Tout réseau de chaleur comporte les principaux éléments suivants :
       </Subtitle>
       <Row>
         <Col n="md-12 lg-6" className="fr-pr-1w">
