@@ -31,9 +31,11 @@ const EligibilityFormMessageConfirmation = ({
     eligible: {
       title: 'Votre demande de contact est bien prise en compte.',
       body: `
-Sans attendre, [téléchargez notre guide pratique](/documentation/guide-france-chaleur-urbaine.pdf) afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.  
+Seul le gestionnaire du réseau pourra vous confirmer la faisabilité technique et les délais du raccordement.<br />
+Sans attendre, [téléchargez notre guide pratique](/documentation/guide-france-chaleur-urbaine.pdf) afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.<br />
 Visualisez également notre carte des réseaux de chaleur [ici](${linkToMap}).`,
       bodyCardMode: `
+Seul le gestionnaire du réseau pourra vous confirmer la faisabilité technique et les délais du raccordement.<br/ >
 Sans attendre, [téléchargez notre guide pratique](/documentation/guide-france-chaleur-urbaine.pdf) afin d'en savoir plus sur les étapes d'un raccordement et les aides financières mobilisables.`,
     },
   };

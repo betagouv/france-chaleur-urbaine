@@ -86,7 +86,7 @@ Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble néce
       body: `
 Au vu de votre chauffage actuel, votre immeuble dispose déjà des équipements nécessaires : **il s’agit du cas le plus favorable pour un raccordement !**  
 
-**Laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche afin de bénéficier d’une **première estimation tarifaire gratuite et sans engagement.**`,
+**Laissez-nous vos coordonnées pour être recontacté par le gestionnaire du réseau le plus proche afin de vérifier la faisabilité technique et économique d’un raccordement (gratuit et sans engagement).**`,
       headerTypo: 'large',
     },
     individuel: {

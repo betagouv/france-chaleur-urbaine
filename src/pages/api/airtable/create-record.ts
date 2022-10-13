@@ -32,24 +32,29 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
   switch (type) {
     case 'FCU - Utilisateurs': {
-      const gestionnaires = getGestionnaires(values);
-      const conso = await getConso(values.Latitude, values.Longitude);
-      const nbLogement = await getNbLogement(values.Latitude, values.Longitude);
       base('FCU - Utilisateurs').create(
-        [
-          {
-            fields: {
-              ...values,
+        [{ fields: values }],
+        { typecast: true },
+        async (error, records) => {
+          creationCallBack(res)(error, records);
+
+          if (!error && records && records[0]) {
+            const gestionnaires = getGestionnaires(values);
+            const conso = await getConso(values.Latitude, values.Longitude);
+            const nbLogement = await getNbLogement(
+              values.Latitude,
+              values.Longitude
+            );
+
+            await base('FCU - Utilisateurs').update(records[0].getId(), {
               Gestionnaires: gestionnaires,
               Conso: conso ? conso.conso_nb : undefined,
               'ID Conso': conso ? conso.rownum : undefined,
               Logement: nbLogement ? nbLogement.nb_logements : undefined,
               'ID BNB': nbLogement ? nbLogement.fid : undefined,
-            },
-          },
-        ],
-        { typecast: true },
-        creationCallBack(res)
+            });
+          }
+        }
       );
       break;
     }
