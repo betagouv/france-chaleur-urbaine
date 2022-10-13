@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import rehypeReact from 'rehype-react';
+import remarkBreaks from 'remark-breaks';
 import remarkDirective from 'remark-directive';
 import remarkDirectiveRehype from 'remark-directive-rehype';
 import remarkParse from 'remark-parse';
@@ -44,6 +45,7 @@ const ConsentLink: React.FC<{
 
 const processor = (extender: Record<string, unknown> = {}) =>
   unified()
+    .use(remarkBreaks)
     .use(remarkParse)
     .use(remarkDirective)
     .use(remarkDirectiveRehype)
