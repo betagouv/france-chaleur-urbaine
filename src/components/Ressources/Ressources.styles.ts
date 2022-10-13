@@ -10,7 +10,7 @@ export const Banner = styled.div`
   font-weight: 400;
   @media (min-width: 992px) {
     div {
-      width: calc(80% - 32px);
+      width: calc(60% - 32px);
     }
   }
 `;
@@ -27,10 +27,9 @@ export const BannerDescription = styled.div`
 `;
 
 export const BannerImage = styled.img`
-  height: 250px;
-  margin-top: 16px;
+  height: 350px;
   position: absolute;
-  bottom: -32px;
+  top: 32px;
   right: 32px;
   display: none;
   @media (min-width: 992px) {

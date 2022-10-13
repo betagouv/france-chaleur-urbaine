@@ -1,10 +1,10 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Container, ImageContainer, TextContainer } from './WrappedText.style';
 
 const WrappedText: React.FC<{
-  children?: React.ReactNode;
-  title?: string;
+  children?: ReactNode;
+  title?: ReactNode;
   body?: string;
   imgSrc?: string;
   imgAlt?: string;

@@ -6,6 +6,7 @@ const Style = createGlobalStyle`
   display: none;
   @media (min-width: 992px) {
     display: block;
+    max-width: 500px;
   }
 }`;
 

@@ -1,3 +1,4 @@
+import { Card } from '@dataesr/react-dsfr';
 import styled from 'styled-components';
 
 export const IssuesCard = styled.div`
@@ -8,13 +9,13 @@ export const IssuesCard = styled.div`
   gap: 32px;
 `;
 
-export const Issue = styled.div`
+export const Issue = styled(Card)`
   width: 300px;
+  height: initial !important;
 `;
 
-export const IssueTitle = styled.h2`
-  line-height: 28px;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 16px;
+export const BottomLink = styled.div`
+  position: absolute;
+  bottom: 12px;
+  right: 55px;
 `;
