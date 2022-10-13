@@ -6,6 +6,8 @@ import {
   SideMenuLink,
 } from '@dataesr/react-dsfr';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { growths, issues, understandings } from './config';
 import Guide from './Guide';
 import Header from './Header';
@@ -22,6 +24,13 @@ const getContent = (ressourceKey: string) => {
 };
 
 const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
+  const router = useRouter();
+  useEffect(() => {
+    if (ressourceKey && !getContent(ressourceKey)) {
+      router.push('/ressources');
+    }
+  }, [router, ressourceKey]);
+
   return (
     <>
       <Header

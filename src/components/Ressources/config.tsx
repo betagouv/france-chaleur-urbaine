@@ -1,8 +1,13 @@
 import { ReactNode } from 'react';
 import Actors from './Contents/Actors';
+import Advantages from './Contents/Advantages';
+import Bill from './Contents/Bill';
+import Feasability from './Contents/Feasability';
 import GreenEnergies from './Contents/GreenEnergies';
+import Helps from './Contents/Helps';
 import Livraisons from './Contents/Livraisons';
 import Network from './Contents/Network';
+import Priority from './Contents/Priority';
 import Role from './Contents/Role';
 import State from './Contents/State';
 import Strengths from './Contents/Strengths';
@@ -82,25 +87,49 @@ export const understandings: Record<string, Document> = {
     title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
     description:
       'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
-    content: <Network />,
+    content: <Feasability />,
   },
-  faisabilite1: {
-    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
-    description:
-      'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
-    content: <Network />,
+  avantages: {
+    title:
+      'Quels avantages par rapport à un chauffage collectif au gaz ou fioul ?',
+    description: (
+      <>
+        Votre bâtiment est équipé d’un <b>chauffage collectif</b> que vous
+        souhaitez renouveler ? Quelles solutions adopter ?
+      </>
+    ),
+    content: <Advantages />,
   },
-  faisabilite2: {
-    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
-    description:
-      'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
-    content: <Network />,
+  prioritaire: {
+    title:
+      'Mon bâtiment est situé dans le périmètre de développement prioritaire',
+    description: (
+      <>
+        Quels bâtiments sont concernés par <b>l’obligation de raccordement ?</b>
+      </>
+    ),
+    content: <Priority />,
   },
-  faisabilite3: {
-    title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
-    description:
-      'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
-    content: <Network />,
+  aides: {
+    title: 'Des aides financières conséquentes pour se raccorder',
+    description: (
+      <>
+        Depuis le 1er septembre 2022, le coup de pouce{' '}
+        <b>"Chauffage des bâtiments résidentiels collectifs et tertiaires ”</b>{' '}
+        permet d’obtenir des aides financières conséquentes pour se raccorder.
+      </>
+    ),
+    content: <Helps />,
+  },
+  facture: {
+    title: 'Comprendre la facture de chauffage de ma copropriété',
+    description: (
+      <>
+        En raccordant mon immeuble à un réseau de chaleur, je bénéficie d’une{' '}
+        <b>facture plus stable qu’avec un autre mode de chauffage.</b>
+      </>
+    ),
+    content: <Bill />,
   },
 };
 

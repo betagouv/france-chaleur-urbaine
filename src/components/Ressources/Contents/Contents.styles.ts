@@ -50,3 +50,9 @@ export const Statistic = styled.div`
   align-items: center;
   font-size: 28px;
 `;
+
+export const LeftImage = styled.img`
+  width: 100%;
+  height: fit-content;
+  margin-bottom: 32px;
+`;
