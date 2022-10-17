@@ -1,4 +1,4 @@
-import { Col, Row } from '@dataesr/react-dsfr';
+import { Col, MediaVideo, Row } from '@dataesr/react-dsfr';
 import { List, Source, Subtitle } from './Contents.styles';
 
 const Network = () => {
@@ -61,7 +61,13 @@ const Network = () => {
           https://reseaux-chaleur.cerema.fr/espace-documentaire/constitution-reseau-chaleur
         </a>
       </Source>
-      <img src="/img/ressources-network.png" alt="" className="fr-mt-4w" />
+      <br />
+      <MediaVideo>
+        <video width="100%" height="100%" controls>
+          <source src="/videos/FCU-RC.mp4" type="video/mp4" />
+          Votre browser ne supporte pas les vidéos.
+        </video>
+      </MediaVideo>
     </>
   );
 };

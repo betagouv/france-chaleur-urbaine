@@ -78,17 +78,12 @@ const useContactFormFCU = () => {
     []
   );
 
-  const handleOnFetchAddress = useCallback(
-    ({ address }: { address: any }) => {
-      const { heatingType }: any = addressData;
-      setLoadingStatus('loading');
-      setMessageSent(false);
-      setMessageReceived(false);
-      callMarkup__handleOnFetchAddress(address);
-      setShowWarning(address && !heatingType);
-    },
-    [addressData]
-  );
+  const handleOnFetchAddress = ({ address }: { address: any }) => {
+    setLoadingStatus('loading');
+    setMessageSent(false);
+    setMessageReceived(false);
+    callMarkup__handleOnFetchAddress(address);
+  };
 
   const handleOnSuccessAddress = useCallback(
     (data: AddressDataType) => {
