@@ -1,3 +1,4 @@
+import { Highlight } from '@dataesr/react-dsfr';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import rehypeReact from 'rehype-react';
@@ -89,6 +90,7 @@ const MarkdownWrapper: React.FC<{
           'consent-link': ConsentLink,
           cartridge: Cartridge,
           'puce-icon': PuceIcon,
+          highlight: Highlight,
           'button-link': ButtonLink,
           'know-more-link': KnowMoreLink,
         }).processSync(md).result

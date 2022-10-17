@@ -48,6 +48,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     display: flex;
     flex-direction: column;
     margin-top: 1rem;
+    gap: 32px;
     
     @media (min-width: 992px) {
       margin-top: 3rem;

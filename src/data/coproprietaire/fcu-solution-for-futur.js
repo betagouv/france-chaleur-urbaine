@@ -4,7 +4,6 @@ const presentationRcu = {
 
   Un réseau de chaleur permet de **relier les bâtiments d’un quartier par des canalisations qui distribuent de la chaleur** produite avec **des sources d’énergies renouvelables, locales et durables** (géothermie, biomasse, chaleur issue de l'incinération des déchets...).  
   `,
-  footer: `:button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" tagName="downloadLink" trackEvent="Guide FCU, coproprietaire" target="_blank"}`,
   listing: `
   :::puce-icon{icon="./icons/picto-planet.svg"}
   **Agissez pour la planète**, en réduisant vos émissions de gaz à effet de serre.
