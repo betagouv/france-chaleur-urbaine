@@ -74,7 +74,7 @@ const Simulator = () => {
                   style: 'currency',
                   currency: 'EUR',
                 })}
-                /m²
+                /logement
               </span>
             )}
           </Result>

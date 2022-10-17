@@ -100,16 +100,6 @@ export const understandings: Record<string, Document> = {
     ),
     content: <Advantages />,
   },
-  prioritaire: {
-    title:
-      'Mon bâtiment est situé dans le périmètre de développement prioritaire',
-    description: (
-      <>
-        Quels bâtiments sont concernés par <b>l’obligation de raccordement ?</b>
-      </>
-    ),
-    content: <Priority />,
-  },
   aides: {
     title: 'Des aides financières conséquentes pour se raccorder',
     description: (
@@ -131,12 +121,29 @@ export const understandings: Record<string, Document> = {
     ),
     content: <Bill />,
   },
+  prioritaire: {
+    title:
+      'Mon bâtiment est situé dans le périmètre de développement prioritaire',
+    description: (
+      <>
+        Quels bâtiments sont concernés par <b>l’obligation de raccordement ?</b>
+      </>
+    ),
+    content: <Priority />,
+  },
 };
 
 export const growths: Record<string, Document> = {
   acteurs: {
     title: 'Quels sont les principaux acteurs de la filière ?',
-    description: '',
+    description: (
+      <>
+        Les réseaux de chaleur sont majoritairement établis à l’initiative de
+        <b>collectivités territoriales</b>, mais leur gestion est le plus
+        souvent concédée à des <b>opérateurs</b>, via des délégations de service
+        public.
+      </>
+    ),
     content: <Actors />,
   },
   etat: {

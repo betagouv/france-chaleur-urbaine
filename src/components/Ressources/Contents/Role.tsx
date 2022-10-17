@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { List, Subtitle } from './Contents.styles';
 
 const contents = [
@@ -82,8 +83,10 @@ const contents = [
       <>
         Mise en place du{' '}
         <b>
-          coup de pouce chauffage des bâtiments résidentiels collectifs et
-          tertiaires
+          <Link href="/ressources/aides">
+            coup de pouce chauffage des bâtiments résidentiels collectifs et
+            tertiaires
+          </Link>
         </b>{' '}
         (aides financières conséquentes pour le raccordement de ces bâtiments
         aux réseaux de chaleur, attribuées dans le cadre du dispositif des
