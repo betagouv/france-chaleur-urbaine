@@ -10,9 +10,9 @@ import {
   SliceContactFormStyle,
 } from '@components/HeadSliceForm/HeadSliceForm.style';
 import Slice from '@components/Slice';
-import { Col } from '@dataesr/react-dsfr';
+import { Col, Icon } from '@dataesr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
-import { Container, Title } from './StickyForm.styles';
+import { Close, Container, Form, Title } from './StickyForm.styles';
 
 const StickyForm = () => {
   const {
@@ -28,6 +28,7 @@ const StickyForm = () => {
     handleOnFetchAddress,
     handleOnSuccessAddress,
     handleOnSubmitContact,
+    handleResetFormContact,
   } = useContactFormFCU();
 
   return (
@@ -51,9 +52,13 @@ const StickyForm = () => {
       )}
 
       <SliceContactFormStyle />
-      <div ref={EligibilityFormContactRef}>
+      <Form ref={EligibilityFormContactRef}>
+        {(contactReady || messageReceived) && (
+          <Close onClick={handleResetFormContact}>
+            <Icon name="ri-close-line" size="lg" />
+          </Close>
+        )}
         <Slice
-          padding={5}
           theme="grey"
           className={`slice-contact-form-wrapper ${
             contactReady && !messageReceived ? 'active' : ''
@@ -75,7 +80,7 @@ const StickyForm = () => {
         >
           <EligibilityFormMessageConfirmation addressData={addressData} />
         </Slice>
-      </div>
+      </Form>
     </Container>
   );
 };

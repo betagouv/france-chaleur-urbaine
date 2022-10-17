@@ -8,7 +8,11 @@ const Feasability = () => {
         La faisabilité d’un raccordement au réseau de chaleur dépend :
       </Subtitle>
       <List>
-        <li>De la distance au réseau</li>
+        <li>
+          De la distance au réseau
+          <br />
+          <br />
+        </li>
         <li>Du mode de chauffage actuel :</li>
         <Row className="fr-my-4w">
           <Col n="sm-0 md-2" className="fr-hidden fr-unhidden-md">

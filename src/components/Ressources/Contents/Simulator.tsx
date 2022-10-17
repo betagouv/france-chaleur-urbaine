@@ -67,12 +67,16 @@ const Simulator = () => {
               })}
               *
             </ResultValue>
-            Soit{' '}
-            {(help / intValue).toLocaleString('fr-FR', {
-              style: 'currency',
-              currency: 'EUR',
-            })}
-            /{structure === 'Résidentiel' ? 'logement' : 'm²'}
+            {structure === 'Résidentiel' && (
+              <span>
+                Soit{' '}
+                {(help / intValue).toLocaleString('fr-FR', {
+                  style: 'currency',
+                  currency: 'EUR',
+                })}
+                /m²
+              </span>
+            )}
           </Result>
         )}
       </Form>

@@ -17,7 +17,7 @@ const Livraisons = () => {
           </Statistic>
           Bâtiments raccordés
           <br />
-          <span>(soit 2,46 M équivalents logements)</span>
+          <span>2,46 millions d'équivalent-logements</span>
         </div>
         <div>
           <Statistic>
@@ -48,7 +48,7 @@ const Livraisons = () => {
         l’objectif de multiplier par 5 la quantité de chaud et de froid
         renouvelables livrés par les réseaux en 2030, par rapport à 2012.
       </b>
-      <Source>Source: SNCU</Source>
+      <Source>Source : SNCU</Source>
     </>
   );
 };

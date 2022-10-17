@@ -9,7 +9,7 @@ const Helps = () => {
       Ce « coup de pouce » est une{' '}
       <b>
         prime mise en place par l’État dans le cadre du dispositif des
-        Certificats d’Economies d’Energie (CEE)*
+        Certificats d’économies d’énergie (CEE)*
       </b>
       . Elle est versée par des entreprises signataires de la charte coup de
       pouce "Chauffage des bâtiments résidentiels collectifs et tertiaires ».
@@ -24,12 +24,12 @@ const Helps = () => {
           chauffage performants.
         </b>
       </Highlight>
-      *Le dispositif des Certificats d’économies d’énergies (CEE) repose sur une
+      *Le dispositif des Certificats d’économies d’énergie repose sur une
       obligation de réalisation d’économies d’énergie imposée par les pouvoirs
       publics aux fournisseurs d’énergie (les "obligés"). Pour obtenir des CEE,
       les obligés peuvent notamment financer un certain nombre d’opérations
       menées par les ménages, les collectivités territoriales ou les
-      professionnels (tels que le raccordement aux réseaux de chaleur).
+      professionnels (telles que le raccordement aux réseaux de chaleur).
       <br />
       <br />
       <Subtitle>Qui peut en bénéficier ?</Subtitle>
@@ -54,14 +54,14 @@ const Helps = () => {
       <br />
       Les montants exacts dépendent cependant des offres commerciales de chaque
       signataire de la charte.
-      <List>
-        <li>
-          <b>
-            Le bénéficiaire doit donc se rapprocher de chaque signataire de la
-            charte proposant l’offre pour connaître le montant des primes.
-          </b>
-        </li>
-      </List>
+      <br />
+      <br />
+      <Highlight>
+        <b>
+          Le bénéficiaire doit donc se rapprocher de chaque signataire de la
+          charte proposant l’offre pour connaître le montant des primes.
+        </b>
+      </Highlight>
       <Source>
         <a
           href="https://www.ecologie.gouv.fr/sites/default/files/CdP%20Chauffage%20B%C3%A2timents%20r%C3%A9sidentiels%20collectifs%20et%20tertiaires%20-%20Les%20offres%20Coup%20de%20pouce.pdf"
@@ -112,7 +112,7 @@ const Helps = () => {
       <br />
       <br />
       <Subtitle>Comment bénéficier de la prime ?</Subtitle>
-      1. Vérifier que je remplis les conditions d’attributions
+      1. Vérifier que je remplis les conditions d’attribution
       <br />
       2. Comparer les offres proposées par les signataires et choisir un
       signataire

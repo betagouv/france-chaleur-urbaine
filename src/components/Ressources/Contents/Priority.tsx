@@ -1,4 +1,3 @@
-import { Highlight } from '@dataesr/react-dsfr';
 import { List, Source, Subtitle } from './Contents.styles';
 
 const Priority = () => {
@@ -12,19 +11,18 @@ const Priority = () => {
       <br />
       <br />
       <Subtitle> Est considéré comme bâtiment neuf :</Subtitle>
-      <Highlight>
-        Un bâtiment nouvellement construit dont{' '}
-        <b>
-          la demande de permis de construire a été déposée postérieurement à la
-          décision de classement
-        </b>
-        , ou une partie nouvelle de bâtiment, ou surélévation (excédant 150 m ²
-        ou 30 % de la surface des locaux existants) et dont les besoins{' '}
-        <b>
-          de chauffage de locaux, de climatisation ou de production d’eau chaude
-          excèdent un niveau de puissance de 30 kilowatts.
-        </b>
-      </Highlight>
+      Un bâtiment nouvellement construit dont{' '}
+      <b>
+        la demande de permis de construire a été déposée postérieurement à la
+        décision de classement
+      </b>
+      , ou une partie nouvelle de bâtiment, ou surélévation (excédant 150 m ² ou
+      30 % de la surface des locaux existants) et dont les besoins{' '}
+      <b>
+        de chauffage de locaux, de climatisation ou de production d’eau chaude
+        excèdent un niveau de puissance de 30 kilowatts.
+      </b>
+      <br />
       <br />
       <Subtitle>
         Est considéré comme bâtiment faisant l’objet de travaux de rénovation
@@ -44,8 +42,8 @@ const Priority = () => {
       </b>
       <br />
       <br />
-      A noter : certaines collectivités choisissent de relever le seuil de
-      puissance au-dessus duquel le raccordement est obligatiore.
+      À noter : certaines collectivités choisissent de relever le seuil de
+      puissance au-dessus duquel le raccordement est obligatoire.
       <br />
       <br />
       Des dérogations au raccordement obligatoire sont possibles, qui doivent

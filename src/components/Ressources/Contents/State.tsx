@@ -20,7 +20,7 @@ const State = () => {
       près de 6200 km.
       <br />
       <br />
-      <Subtitle>En quelques chiffres :</Subtitle>
+      <b>En quelques chiffres :</b>
       <List>
         <li>
           2,9 milliards d’euros attribués sur 10,6 milliards d’euros investis
@@ -34,9 +34,9 @@ const State = () => {
         </li>
         <li>
           un budget croissant : 250 M€ en 2018, 307 M€ en 2019, 350 M€ en 2020
+          et 2021
         </li>
       </List>
-      <br />
       <br />
       <b>Le Fonds Chaleur comprend :</b>
       <List>
@@ -49,7 +49,6 @@ const State = () => {
         </li>
       </List>
       <br />
-      <br />
       Pour en savoir plus :{' '}
       <a
         href="https://fondschaleur.ademe.fr/le-fonds-chaleur/"
@@ -57,19 +56,6 @@ const State = () => {
         rel="noreferrer"
       >
         https://fondschaleur.ademe.fr/le-fonds-chaleur/
-      </a>
-      <br />
-      <br />
-      ACTU : En mai 2022, l’ADEME a lancé un appel à projets « Une Ville un
-      Réseau » financé par le Fonds Chaleur et qui vise à accélérer la création
-      de réseaux de chaleur et de froid renouvelable dans les villes de moins de
-      50 000 habitants. En savoir plus :{' '}
-      <a
-        href="https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20220427/reseaux-chaleur-renouvelables-jusqua-90-etudes-financees-candidatez?cible=79"
-        target="_blank"
-        rel="noreferrer"
-      >
-        https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20220427/reseaux-chaleur-renouvelables-jusqua-90-etudes-financees-candidatez?cible=79
       </a>
       <br />
       <br />

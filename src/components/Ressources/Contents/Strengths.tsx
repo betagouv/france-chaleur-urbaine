@@ -28,7 +28,7 @@ const contents = [
   {
     title: 'Emploi :',
     list: [
-      'Une source d’emploi non délocalisable (construction, fonctionnement, maintenance.',
+      'Une source d’emploi non délocalisable (construction, fonctionnement, maintenance).',
     ],
   },
 ];
@@ -38,14 +38,14 @@ const Strengths = () => {
     <>
       {contents.map((content, index) => (
         <Row key={content.title} className="fr-my-4w">
-          <Col n="sm-0 md-2" className="fr-hidden fr-unhidden-md">
+          <Col n="sm-0 md-1" className="fr-hidden fr-unhidden-md">
             <img
               width="100%"
               src={`/img/ressources-strenghts-${index + 1}.svg`}
               alt=""
             />
           </Col>
-          <Col n="sm-12 md-10">
+          <Col n="sm-12 md-11">
             <Subtitle>{content.title}</Subtitle>
             <List>
               {content.list.map((item, index) => (

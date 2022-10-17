@@ -9,11 +9,11 @@ const GreenEnergies = () => {
           La <b>chaleur issue de l’incinération de nos ordures ménagères</b>,
           qui peut être récupérée et transférée au réseau. On appelle unités de
           valorisation énergétique les installations qui captent l’énergie issue
-          de la combustion des ordures ménagères ;
+          de la combustion des ordures ménagères ;
         </li>
         <li>
           La <b>combustion de la biomasse (bois, biomasse agricole,…)</b>, dans
-          une chaufferie alimentant le réseau de chaleur ;
+          une chaufferie alimentant le réseau de chaleur ;
         </li>
         <li>
           La <b>géothermie</b>, c’est-à-dire l’exploitation de la chaleur

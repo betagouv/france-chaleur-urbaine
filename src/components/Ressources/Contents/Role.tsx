@@ -10,11 +10,11 @@ const contents = [
       <>
         La <b>sobriété énergétique</b>, qui passe par des changements de
         comportement (par exemple, réduire la température de chauffe de son
-        logement).
+        logement) ;
       </>,
       <>
         L’<b>efficacité énergétique</b>, qui vise à aboutir au même résultat en
-        consommant moins d’énergie (par exemple, en isolant les bâtiments)
+        consommant moins d’énergie (par exemple, en isolant les bâtiments) ;
       </>,
       <>
         La <b>décarbonation</b>, c’est-à-dire le recours à des énergies
@@ -49,12 +49,12 @@ const contents = [
     ),
     list: [
       <>
-        <b>“Verdir” les réseaux de chaleur existants</b>, c’est-à-dire augmenter
-        encore la part d’énergies renouvelables et de récupération.
+        <b>Verdir les réseaux de chaleur existants</b>, c’est-à-dire augmenter
+        encore la part d’énergies renouvelables et de récupération ;
       </>,
       <>
-        <b>“Densifier” les réseaux de chaleur existants</b>, c’est-à-dire y
-        raccorder davantage de bâtiments.
+        <b>Densifier les réseaux de chaleur existants</b>, c’est-à-dire y
+        raccorder davantage de bâtiments ;
       </>,
       <>
         <b>Créer de nouveaux réseaux</b> ou des extensions de réseaux.
