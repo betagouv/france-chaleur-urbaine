@@ -6,8 +6,6 @@ import {
   themeDefTypeGas,
 } from './businessRules';
 
-const defaultPos = [48.85294, 2.34987]; // Default to Paris IDF
-
 enum Layer {
   outline = 'outline',
   demands = 'demands',
@@ -146,9 +144,9 @@ const param = {
   minZoomData: 13,
   minZoom: 4,
   maxZoom: 17,
-  defaultZoom: 12,
-  lng: defaultPos[1],
-  lat: defaultPos[0],
+  defaultZoom: 4,
+  lng: 2.3,
+  lat: 45,
   defaultLayerDisplay,
   legendData,
 };

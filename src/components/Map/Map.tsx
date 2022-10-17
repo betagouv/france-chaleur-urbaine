@@ -591,7 +591,19 @@ export default function Map() {
 
       jumpTo({
         coordinates,
-        zoom: zoom ? parseInt(zoom as string, 10) : defaultZoom,
+        zoom: zoom ? parseInt(zoom as string, 10) : 12,
+      });
+    } else if (navigator.geolocation) {
+      navigator.permissions.query({ name: 'geolocation' }).then(({ state }) => {
+        console.log(state);
+        if (state === 'granted' || state === 'prompt') {
+          console.log(state);
+          navigator.geolocation.getCurrentPosition((pos) => {
+            console.log(pos);
+            const { longitude, latitude } = pos.coords;
+            jumpTo({ coordinates: [longitude, latitude], zoom: 12 });
+          });
+        }
       });
     }
   }, [jumpTo, router.query]);
