@@ -50,16 +50,35 @@ Vous êtes chauffé au fioul ou au gaz&nbsp;?
 
           <Slice padding={10}>
             <MarkdownWrapper
+              className="fcuSolutionForFuturBody"
+              value="## France Chaleur Urbaine est **un service public gratuit** qui agit comme tiers de confiance en **facilitant la mise en contact entre gestionnaires des réseaux de chaleur et copropriétés :**"
+            />
+            <MarkdownWrapper
+              className="fcuSolutionForFuturListing"
+              value={`:::highlight
+**>Découvrez si votre batiment est potentiellement raccordable**
+:::
+:::highlight
+**>Soyez mis en contact avec le gestionnaire du réseau le plus proche.**
+:::
+:::highlight
+**>Téléchargez notre guide et accédez à notre espace documentation**
+:::`}
+            />
+            <MarkdownWrapper
+              value=':button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" tagName="downloadLink" trackEvent="Guide FCU, coproprietaire" target="_blank"}'
+              className="fcuSolutionForFuturFooter"
+            />
+          </Slice>
+
+          <Slice padding={10} theme="grey">
+            <MarkdownWrapper
               value={fcuSolutionForFutur.body}
               className="fcuSolutionForFuturBody"
             />
             <MarkdownWrapper
               value={fcuSolutionForFutur.listing}
               className="fcuSolutionForFuturListing"
-            />
-            <MarkdownWrapper
-              value={fcuSolutionForFutur.footer}
-              className="fcuSolutionForFuturFooter"
             />
           </Slice>
 
