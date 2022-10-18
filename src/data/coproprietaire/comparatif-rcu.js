@@ -17,11 +17,8 @@ const comparatifRcu = [
       body: `
 ![Attention](./icons/picto-warning.svg)  
 **Votre copropriété est mal isolée ?**
-Pour réduire votre facture et votre impact écologique, 
-pensez avant tout à améliorer l’isolation thermique 
-de votre copropriété !
-Rendez-vous sur [France Rénov](https://france-renov.gouv.fr/) pour être accompagné dans 
-vos projets de rénovation énergétique.
+Pour réduire votre facture et votre impact écologique, pensez avant tout à améliorer l’isolation thermique de votre copropriété !
+Rendez-vous sur [France Rénov](https://france-renov.gouv.fr/) pour être accompagné dans vos projets de rénovation énergétique.
         `,
     },
   },

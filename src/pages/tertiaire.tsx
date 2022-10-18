@@ -165,23 +165,18 @@ Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
           >
             <MarkdownWrapper
               value={`
-Vos bâtiments présentent une surface d’activités tertiaires (ou un 
-cumul de surfaces) égale ou supérieure à 1 000 m²&nbsp;?  
+Vos bâtiments présentent une surface d’activités tertiaires (ou un cumul de surfaces) égale ou supérieure à 1 000 m²&nbsp;?  
 
 **-> vous êtes assujettis au dispositif éco-énergie tertiaire&nbsp;!**  
 
-Pour atteindre les objectifs du dispositif, vous pouvez optimiser 
-l'exploitation de vos bâtiments, moderniser vos équipements, ou 
-encore engager des travaux de rénovation énergétique.  
+Pour atteindre les objectifs du dispositif, vous pouvez optimiser l'exploitation de vos bâtiments, moderniser vos équipements, ou encore engager des travaux de rénovation énergétique.  
 
-**C’est aussi le moment de changer votre mode de chauffage pour 
-une solution moins émettrice de gaz à effet de serre&nbsp;!**
+**C’est aussi le moment de changer votre mode de chauffage pour une solution moins émettrice de gaz à effet de serre&nbsp;!**
 
 :::cartridge{theme="grey" className="presentation-rcu-tertiaire-cartridge"}
 #### Obligation  
 
-**de réduction des consommations d’énergie finale de l’ensemble 
-du parc tertaire d’au moins :**  
+**de réduction des consommations d’énergie finale de l’ensemble du parc tertaire d’au moins :**  
 :know-more-link{href="https://www.ecologie.gouv.fr/sites/default/files/20064_EcoEnergieTertiaire-4pages-2-1.pdf"}
 
 ::cartridge[**-40%** en 2030]{theme="yellow" className="presentation-rcu-tertiaire-percent"}  
@@ -195,17 +190,12 @@ du parc tertaire d’au moins :**
             <MarkdownWrapper
               value={`
 ![Attention](./icons/picto-warning.svg)  
-Le 13 avril 2022, un arrêté modifiant celui du 10 avril 2020 
-relatif aux obligations d’actions de réduction des 
-consommations d’énergie finale dans des bâtiments à 
-usage tertiaire a été publié.  
+Le 13 avril 2022, un arrêté modifiant celui du 10 avril 2020 relatif aux obligations d’actions de réduction des consommations d’énergie finale dans des bâtiments à usage tertiaire a été publié.  
 
-Il spécifie qu’**un coefficient de 0,77 sera appliqué aux 
-consommations d’énergie des bâtiments raccordés aux 
-réseaux de chaleur.** 
+Il spécifie qu’**un coefficient de 0,77 sera appliqué aux consommations d’énergie des bâtiments raccordés aux réseaux de chaleur.** 
 
 :::cartridge{theme="color" className="presentation-rcu-tertiaire-cartridge-conso"}
-Se raccorder à un réseau de chaleur,  
+Se raccorder à un réseau de chaleur, 
 c’est jusqu'à :  
 
 **23%** de réduction de consommations d’énergie comptabilisée&nbsp;!  
@@ -230,9 +220,7 @@ c’est jusqu'à :
               <MarkdownWrapper
                 value={`
 :::puce-icon{icon="./icons/picto-warning.svg"}
-**À partir du 1er juillet 2022,** de nouvelles normes environnementales, 
-qui visent à limiter les émissions de gaz à effet de serre, entreront en 
-vigueur et **excluent l'installation de nouvelles chaudières au fioul.**  
+**À partir du 1er juillet 2022,** de nouvelles normes environnementales, qui visent à limiter les émissions de gaz à effet de serre, entreront en vigueur et **excluent l'installation de nouvelles chaudières au fioul.**  
 **Des aides accompagnent cette transition.**
 :::
               `}
@@ -258,23 +246,16 @@ vigueur et **excluent l'installation de nouvelles chaudières au fioul.**
             <MarkdownWrapper
               value={`##### Vous souhaitez raccorder vos locaux à un réseau de chaleur&nbsp;?  
 
-Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires&nbsp;»](https://www.ecologie.gouv.fr/coup-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires)** 
-a pour objectif d’inciter financièrement les 
-propriétaires ou gestionnaires de bâtiments tertiaires à 
-remplacer leurs équipements de chauffage au charbon, 
-au fioul ou au gaz au profit d’un raccordement à un 
-réseau de chaleur.  
+Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires&nbsp;»](https://www.ecologie.gouv.fr/coup-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires)** a pour objectif d’inciter financièrement les propriétaires ou gestionnaires de bâtiments tertiaires à remplacer leurs équipements de chauffage au charbon, au fioul ou au gaz au profit d’un raccordement à un réseau de chaleur.  
               `}
               className="aides-rcu-body"
             />
             <MarkdownWrapper
               value={`##### Un accompagnement technique et financier peut aussi être sollicité&nbsp;:  
 
-- Auprès de **[France Renov](https://france-renov.gouv.fr/fr/pro/quel-accompagnement-pour-mes-travaux)** 
-pour le petit tertiaire privé (<1000 m²)  
+- Auprès de **[France Renov](https://france-renov.gouv.fr/fr/pro/quel-accompagnement-pour-mes-travaux)** pour le petit tertiaire privé (<1000 m²)  
 
-- Dans le cadre du **[programme ACTEE](https://www.programme-cee-actee.fr/)** 
-pour les bâtiments publics des collectivités  
+- Dans le cadre du **[programme ACTEE](https://www.programme-cee-actee.fr/)** pour les bâtiments publics des collectivités  
               `}
               className="aides-rcu-body"
             />
