@@ -74,7 +74,10 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   }
 
   .fr-footer__logo {
-    height: 80px !important;
+    max-height: 60px !important;
+    @media (min-width: 400px) {
+      max-height: 80px !important;
+    }
   }
 
   .fr-btn--secondary {

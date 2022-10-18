@@ -81,7 +81,9 @@ export const ButtonLink = styled.a.attrs(
       className: `fr-btn ${className || ''}`,
     };
   }
-)``;
+)`
+  margin-bottom: 16px;
+`;
 
 export const CounterItem = styled.div`
   display: flex;

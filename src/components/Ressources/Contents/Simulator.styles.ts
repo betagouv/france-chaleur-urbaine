@@ -4,7 +4,10 @@ export const Container = styled.div`
   background-color: #4550e5;
   color: white;
   padding: 32px;
-  margin: 32px 0 32px 64px;
+  margin: 32px 0;
+  @media (min-width: 576px) {
+    margin: 32px 0 32px 64px;
+  }
 `;
 
 export const Title = styled.div`
@@ -16,6 +19,7 @@ export const Title = styled.div`
 export const Form = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 32px;
   margin: 32px;
