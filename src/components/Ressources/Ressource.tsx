@@ -29,6 +29,20 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
     if (ressourceKey && !getContent(ressourceKey)) {
       router.push('/ressources');
     }
+
+    const handleRouteChange = (url: string) => {
+      if (url.includes('#contenu')) {
+        const element = document.getElementById('contenu');
+        if (element) {
+          element.scrollIntoView();
+        }
+      }
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
   }, [router, ressourceKey]);
 
   return (
@@ -40,7 +54,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
       <div id="contenu" />
       <StickyForm />
       <StickyWrapper>
-        <Container className="fr-my-4w">
+        <Container className="fr-my-4w" as="main">
           <Row>
             <Col n="md-3 12">
               <SideMenu title="Aller plus loin :" buttonLabel="Sommaire">
@@ -53,7 +67,10 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                     <SideMenuLink
                       key={key}
                       asLink={
-                        <Link href={`/ressources/${key}#contenu`}>
+                        <Link
+                          href={`/ressources/${key}#contenu`}
+                          scroll={false}
+                        >
                           <a
                             className="fr-sidemenu__link fr-link--md"
                             aria-current={
@@ -80,7 +97,10 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                       <SideMenuLink
                         key={key}
                         asLink={
-                          <Link href={`/ressources/${key}#contenu`}>
+                          <Link
+                            href={`/ressources/${key}#contenu`}
+                            scroll={false}
+                          >
                             <a
                               className="fr-sidemenu__link fr-link--md"
                               aria-current={
@@ -107,7 +127,10 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                     <SideMenuLink
                       key={key}
                       asLink={
-                        <Link href={`/ressources/${key}#contenu`}>
+                        <Link
+                          href={`/ressources/${key}#contenu`}
+                          scroll={false}
+                        >
                           <a
                             className="fr-sidemenu__link fr-link--md"
                             aria-current={

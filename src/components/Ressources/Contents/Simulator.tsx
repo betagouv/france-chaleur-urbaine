@@ -32,7 +32,7 @@ const Simulator = () => {
   return (
     <Container>
       <Title>
-        Estimer le montant du Coup de pouce "Chauffage des bâtiments
+        Estimer le montant du Coup de pouce « Chauffage des bâtiments
         résidentiels collectifs et tertiaires » pour le raccordement de mon
         bâtiment
       </Title>

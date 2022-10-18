@@ -38,7 +38,7 @@ export const issues: Record<string, Document> = {
     description: (
       <>
         Les réseaux de chaleur français sont alimentés en moyenne à{' '}
-        <b>60 % par des énergies renouvelables et de récupération locales.</b>
+        <b>60 % par des énergies renouvelables et de récupération locales.</b>
       </>
     ),
     content: <GreenEnergies />,

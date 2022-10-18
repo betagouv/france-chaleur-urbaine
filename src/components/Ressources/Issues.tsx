@@ -11,7 +11,7 @@ const Issues = () => {
       }
       imgSrc="/img/ressources-middle.png"
       imgAlt=""
-      imgClassName="understanding-img"
+      imgClassName="issues-img"
     >
       <Blocks>
         {Object.entries(issues).map(([key, issue]) => (
