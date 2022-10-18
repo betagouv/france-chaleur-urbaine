@@ -2,7 +2,7 @@ import ContributionForm from '@components/ContributionForm/ContributionForm';
 import MainContainer from '@components/shared/layout';
 import Slice from '@components/Slice';
 import { Alert } from '@dataesr/react-dsfr';
-import { submitToAirtable } from '@helpers';
+import { submitToAirtable } from '@helpers/airtable';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ReactNode, useState } from 'react';

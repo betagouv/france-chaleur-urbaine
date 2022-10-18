@@ -4,7 +4,7 @@ import markupData, {
   linkedInEvent,
   matomoEvent,
 } from '@components/Markup';
-import { formatDataToAirtable, submitToAirtable } from '@helpers';
+import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
 import { useCallback, useRef, useState } from 'react';
 import { AddressDataType } from 'src/types/AddressData';
 
