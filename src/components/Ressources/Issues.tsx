@@ -1,23 +1,29 @@
-import { CardDescription, CardTitle } from '@dataesr/react-dsfr';
+import WrappedText from '@components/WrappedText';
 import Link from 'next/link';
 import { issues } from './config';
-import { BottomLink, Issue, IssuesCard } from './Issues.styles';
+import { Block, Blocks, BlockTitle } from './Issues.styles';
 
 const Issues = () => {
   return (
-    <IssuesCard>
-      {Object.entries(issues).map(([key, issue]) => (
-        <Issue key={key} asLink={<Link href={`/ressources/${key}`} />}>
-          <CardTitle>{issue.title}</CardTitle>
-          <CardDescription>
+    <WrappedText
+      title={
+        <>Les enjeux de la transition énergétique avec les réseaux de chaleur</>
+      }
+      imgSrc="/img/ressources-middle.png"
+      imgAlt=""
+      imgClassName="understanding-img"
+    >
+      <Blocks>
+        {Object.entries(issues).map(([key, issue]) => (
+          <Block key={key}>
+            <BlockTitle>{issue.title}</BlockTitle>
             {issue.description}
             <br />
-            <br />
-            <BottomLink>Lire l'article</BottomLink>
-          </CardDescription>
-        </Issue>
-      ))}
-    </IssuesCard>
+            <Link href={`/ressources/${key}`}>Lire l'article</Link>
+          </Block>
+        ))}
+      </Blocks>
+    </WrappedText>
   );
 };
 

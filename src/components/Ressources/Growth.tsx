@@ -2,7 +2,7 @@ import WrappedText from '@components/WrappedText';
 import Link from 'next/link';
 import { growths } from './config';
 import { Questions } from './Growth.styles';
-import { Block, BlockTitle } from './Understanding.styles';
+import { Block, BlockTitle } from './Issues.styles';
 
 const Growth = () => {
   return (

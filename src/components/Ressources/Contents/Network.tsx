@@ -63,7 +63,7 @@ const Network = () => {
       </Source>
       <br />
       <MediaVideo>
-        <video width="100%" height="100%" controls>
+        <video height="100%" controls poster="/img/ressources-network.png">
           <source src="/videos/FCU-RC.mp4" type="video/mp4" />
           Votre browser ne supporte pas les vidéos.
         </video>

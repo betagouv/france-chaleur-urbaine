@@ -1,5 +1,5 @@
 import { Highlight } from '@dataesr/react-dsfr';
-import { List, Source, Subtitle } from './Contents.styles';
+import { BlueText, List, Source, Subtitle } from './Contents.styles';
 import Simulator from './Simulator';
 
 const Helps = () => {
@@ -112,22 +112,30 @@ const Helps = () => {
       <br />
       <br />
       <Subtitle>Comment bénéficier de la prime ?</Subtitle>
-      1. Vérifier que je remplis les conditions d’attribution
+      <BlueText>1.</BlueText> Vérifier que je remplis les conditions
+      d’attribution
       <br />
-      2. Comparer les offres proposées par les signataires et choisir un
-      signataire
       <br />
-      3. Accepter l'offre du signataire de la charte (ou un de ses partenaires)
-      avant de signer le devis des travaux. Cette offre devra obligatoirement
-      comporter un document décrivant la proposition
+      <BlueText>2.</BlueText> Comparer les offres proposées par les signataires
+      et choisir un signataire
       <br />
-      4. Signer le devis proposé par un professionnel pour la réalisation des
-      travaux
       <br />
-      5. Faire réaliser les travaux par le professionnel
+      <BlueText>3.</BlueText> Accepter l'offre du signataire de la charte (ou un
+      de ses partenaires) avant de signer le devis des travaux. Cette offre
+      devra obligatoirement comporter un document décrivant la proposition
       <br />
-      6. Retourner les documents (factures, attestations sur l’honneur, etc.) au
-      signataire de la charte ou à son partenaire dans les délais prévus
+      <br />
+      <BlueText>4.</BlueText> Signer le devis proposé par un professionnel pour
+      la réalisation des travaux
+      <br />
+      <br />
+      <BlueText>5.</BlueText> Faire réaliser les travaux par le professionnel
+      <br />
+      <br />
+      <BlueText>6.</BlueText> Retourner les documents (factures, attestations
+      sur l’honneur, etc.) au signataire de la charte ou à son partenaire dans
+      les délais prévus
+      <br />
       <br />
       <br />
       <Subtitle>Sous quelle forme vais-je recevoir la prime ?</Subtitle>

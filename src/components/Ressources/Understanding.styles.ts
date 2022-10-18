@@ -1,30 +1,21 @@
-import WrappedText from '@components/WrappedText';
+import { Card } from '@dataesr/react-dsfr';
 import styled from 'styled-components';
 
-export const Wrapper = styled(WrappedText)`
-  .understanding-image {
-    max-height: 500px;
-  }
-`;
-
-export const Blocks = styled.div`
+export const UnderstandingCards = styled.div`
   display: flex;
   flex-wrap: wrap;
+  margin: 64px 0;
+  padding: 8px;
   gap: 32px;
-  margin: 32px 0;
-  justify-content: space-between;
 `;
 
-export const Block = styled.div`
-  width: calc(50% - 32px);
-  @media (max-width: 576px) {
-    width: 100%;
-  }
+export const UnderstandingCard = styled(Card)`
+  width: 300px;
+  height: initial !important;
 `;
 
-export const BlockTitle = styled.h2`
-  line-height: 28px;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 16px;
+export const BottomLink = styled.div`
+  position: absolute;
+  bottom: 12px;
+  right: 55px;
 `;

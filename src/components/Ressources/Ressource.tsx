@@ -37,6 +37,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
         title="Découvrez les réseaux de chaleur"
         description="Changez pour un chauffage écologique à prix compétitif  déjà adopté par 6 millions de Français !"
       />
+      <div id="contenu" />
       <StickyForm />
       <StickyWrapper>
         <Container className="fr-my-4w">
@@ -52,7 +53,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                     <SideMenuLink
                       key={key}
                       asLink={
-                        <Link href={`/ressources/${key}`}>
+                        <Link href={`/ressources/${key}#contenu`}>
                           <a
                             className="fr-sidemenu__link fr-link--md"
                             aria-current={
@@ -79,7 +80,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                       <SideMenuLink
                         key={key}
                         asLink={
-                          <Link href={`/ressources/${key}`}>
+                          <Link href={`/ressources/${key}#contenu`}>
                             <a
                               className="fr-sidemenu__link fr-link--md"
                               aria-current={
@@ -106,7 +107,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                     <SideMenuLink
                       key={key}
                       asLink={
-                        <Link href={`/ressources/${key}`}>
+                        <Link href={`/ressources/${key}#contenu`}>
                           <a
                             className="fr-sidemenu__link fr-link--md"
                             aria-current={

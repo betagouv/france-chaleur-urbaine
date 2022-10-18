@@ -1,33 +1,30 @@
-import WrappedText from '@components/WrappedText';
+import { CardDescription, CardTitle } from '@dataesr/react-dsfr';
 import Link from 'next/link';
 import { understandings } from './config';
-import { Block, Blocks, BlockTitle } from './Understanding.styles';
+import {
+  BottomLink,
+  UnderstandingCard,
+  UnderstandingCards,
+} from './Understanding.styles';
 
 const Understanding = () => {
   return (
-    <WrappedText
-      title={
-        <>
-          Les réseaux de chaleur en pratique :
-          <br />
-          tout comprendre pour se raccorder
-        </>
-      }
-      imgSrc="/img/ressources-middle.png"
-      imgAlt=""
-      imgClassName="understanding-img"
-    >
-      <Blocks>
-        {Object.entries(understandings).map(([key, understanding]) => (
-          <Block key={key}>
-            <BlockTitle>{understanding.title}</BlockTitle>
+    <UnderstandingCards>
+      {Object.entries(understandings).map(([key, understanding]) => (
+        <UnderstandingCard
+          key={key}
+          asLink={<Link href={`/ressources/${key}`} />}
+        >
+          <CardTitle>{understanding.title}</CardTitle>
+          <CardDescription>
             {understanding.description}
             <br />
-            <Link href={`/ressources/${key}`}>Lire l'article</Link>
-          </Block>
-        ))}
-      </Blocks>
-    </WrappedText>
+            <br />
+            <BottomLink>Lire l'article</BottomLink>
+          </CardDescription>
+        </UnderstandingCard>
+      ))}
+    </UnderstandingCards>
   );
 };
 

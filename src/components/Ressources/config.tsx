@@ -138,7 +138,7 @@ export const growths: Record<string, Document> = {
     title: 'Quels sont les principaux acteurs de la filière ?',
     description: (
       <>
-        Les réseaux de chaleur sont majoritairement établis à l’initiative de
+        Les réseaux de chaleur sont majoritairement établis à l’initiative de{' '}
         <b>collectivités territoriales</b>, mais leur gestion est le plus
         souvent concédée à des <b>opérateurs</b>, via des délégations de service
         public.

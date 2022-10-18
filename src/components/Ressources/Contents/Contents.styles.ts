@@ -16,7 +16,7 @@ export const Source = styled.div`
 export const List = styled.ul<{ withoutMargin?: boolean }>`
   ${({ withoutMargin }) => withoutMargin && 'margin: 0;'}
   li {
-    margin: 0;
+    margin: 0 0 8px 0;
     padding-left: 24px;
     list-style: none;
     background-image: url('/img/ressources-list.svg');
@@ -51,8 +51,17 @@ export const Statistic = styled.div`
   font-size: 28px;
 `;
 
+export const CenteredImage = styled.div`
+  text-align: center;
+`;
+
 export const LeftImage = styled.img`
   width: 100%;
   height: fit-content;
   margin-bottom: 32px;
+`;
+
+export const BlueText = styled.span`
+  color: #4550e5;
+  font-weight: bold;
 `;
