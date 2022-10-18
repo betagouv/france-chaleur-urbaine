@@ -38,7 +38,7 @@ const CardSearchDetailsForm: React.FC<{
     <>
       <ContactFormWrapper active={!formIsSend}>
         <EligibilityFormAddress
-          heatingLabel="Mode de chauffage actuel :"
+          heatingLabel="Mode de chauffage actuel :"
           fullAddress={fullAddress}
           onChange={handleOnChangeAddress}
           onFetch={handleOnFetchAddress}

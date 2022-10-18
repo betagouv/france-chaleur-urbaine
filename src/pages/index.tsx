@@ -37,7 +37,7 @@ const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled
     background-position: right calc(50% - 28rem) bottom 50%;
 
     @media (min-width: 990px) {
-      background-image: url(./img/rcu-illustation.svg) ;
+      background-image: url(/img/rcu-illustation.svg) ;
 
       img {
         opacity: 0;
@@ -74,6 +74,7 @@ const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled
       max-width: 350px;
     }
   }
+
   .enjeu-societe-img {
     max-width: 122px;
 
@@ -114,7 +115,7 @@ export default function Home() {
           <GlobalStyle />
 
           <HeadSliceForm
-            bg="./img/head-slice-bg-home.png"
+            bg="/img/head-slice-bg-home.png"
             pageTitle="Les réseaux de chaleur, une énergie d’avenir"
             pageBody="Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français"
             formLabel="Votre immeuble pourrait-il être raccordé à un&nbsp;réseau&nbsp;de&nbsp;chaleur&nbsp;?"
@@ -167,7 +168,7 @@ maîtrise du tarif des énergies._`}
 :button-link[Tertiaire]{href="./tertiaire"}
 `}
                 imgClassName="enjeu-societe-img"
-                imgSrc="./img/enjeu-de-societe-particulier.svg"
+                imgSrc="/img/enjeu-de-societe-particulier.svg"
                 imgAlt="Portrait d’Anne"
                 reverse={true}
               />
@@ -191,7 +192,7 @@ maîtrise du tarif des énergies._`}
 :button-link[Collectivités/Exploitants]{href="./collectivites-et-exploitants"}
 `}
                 imgClassName="enjeu-societe-img"
-                imgSrc="./img/enjeu-de-societe-exploitant.svg"
+                imgSrc="/img/enjeu-de-societe-exploitant.svg"
                 imgAlt="Portrait d’Anne"
                 reverse={true}
               />
@@ -203,7 +204,7 @@ maîtrise du tarif des énergies._`}
           </Slice>
 
           <Partners />
-          <SliceImg src="./img/home-footer-bg.jpg" />
+          <SliceImg src="/img/home-footer-bg.jpg" />
         </div>
       </MainContainer>
     </>

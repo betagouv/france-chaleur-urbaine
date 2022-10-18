@@ -33,7 +33,7 @@ const Footer = () => {
         <FooterOperator>
           <img
             height={136}
-            src="./logo-fcu-with-typo.jpg"
+            src="/logo-fcu-with-typo.jpg"
             alt="logo france chaleur urbaine"
           />
         </FooterOperator>
@@ -53,25 +53,25 @@ const Footer = () => {
         <FooterPartnersLogo
           isMain
           href="http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
-          imageSrc="./logo-DRIEAT.png"
+          imageSrc="/logo-DRIEAT.png"
           target="_blank"
           imageAlt="DRIEAT"
         />
         <FooterPartnersLogo
           href="https://www.gouvernement.fr/"
-          imageSrc="./logo-government.svg"
+          imageSrc="/logo-government.svg"
           target="_blank"
           imageAlt="Gouvernement"
         />
         <FooterPartnersLogo
           href="https://www.ademe.fr"
-          imageSrc="./logo-ADEME.svg"
+          imageSrc="/logo-ADEME.svg"
           target="_blank"
           imageAlt="Gouvernement"
         />
         <FooterPartnersLogo
           href="https://www.economie.gouv.fr/plan-de-relance"
-          imageSrc="./logo-relance.png"
+          imageSrc="/logo-relance.png"
           target="_blank"
           imageAlt="France relance"
         />

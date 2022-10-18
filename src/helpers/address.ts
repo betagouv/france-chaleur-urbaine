@@ -237,6 +237,10 @@ const citiesManaged = [
 ];
 
 export const isBasedOnIRIS = (city: string): boolean => {
+  if (city === 'clichy') {
+    return isBasedOnIRIS('clichy-la-garenne');
+  }
+
   return (
     !city ||
     !citiesManaged.includes(

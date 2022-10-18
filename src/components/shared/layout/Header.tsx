@@ -59,7 +59,7 @@ const Header = ({
           <HeaderOperator>
             <img
               height={81}
-              src="./logo-fcu.png"
+              src="/logo-fcu.png"
               alt="logo france chaleur urbaine"
             />
           </HeaderOperator>
@@ -82,7 +82,7 @@ const Header = ({
           <li>
             <img
               height={56}
-              src="./logo-fcu.png"
+              src="/logo-fcu.png"
               alt="logo france chaleur urbaine"
             />
           </li>

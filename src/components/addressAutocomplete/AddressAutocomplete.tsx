@@ -72,7 +72,9 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
 
   const onChangeHandler = (event: React.FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
-    if (onChange) onChange(value);
+    if (onChange) {
+      onChange(value);
+    }
     fetchSuggestions(value);
   };
 
