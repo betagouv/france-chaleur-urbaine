@@ -1,5 +1,5 @@
 import { Radio, RadioGroup } from '@dataesr/react-dsfr';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 type CheckEligibilityFormProps = {
   children?: React.ReactNode;
@@ -18,13 +18,6 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
   selectOptions = {},
   onChange,
 }) => {
-  const changeHandle = useCallback(
-    (e: any) => {
-      if (onChange) onChange(e);
-    },
-    [onChange]
-  );
-
   const options = useMemo(() => {
     return Object.entries(selectOptions).map(([value, label]) => (
       <Radio
@@ -34,16 +27,16 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
         key={value}
         label={label}
         value={value}
-        onChange={changeHandle}
+        onChange={onChange}
       />
     ));
-  }, [changeHandle, name, selectOptions]);
+  }, [onChange, name, selectOptions]);
 
   return (
     <>
       {children}
       <RadioGroup
-        legend={(label as string) || 'Chauffage actuel :'}
+        legend={(label as string) || 'Chauffage actuel :'}
         name={name}
         isInline={!cardMode}
         required

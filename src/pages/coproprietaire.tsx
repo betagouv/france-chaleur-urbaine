@@ -39,7 +39,7 @@ export default function Home() {
           <GlobalStyle />
 
           <HeadSliceForm
-            bg="./img/head-slice-bg-coproprietaire.png"
+            bg="/img/head-slice-bg-coproprietaire.png"
             pageBody={`
 Vous êtes chauffé au fioul ou au gaz&nbsp;?
 # Changez pour un chauffage écologique à prix compétitif&nbsp;!`}
@@ -96,9 +96,9 @@ vigueur et **excluent l'installation de nouvelles chaudières au fioul.**
 
           <Slice padding={5}>
             <Carrousel
-              title="Leur copropriété est raccordée - ils témoignent :"
+              title="Leur copropriété est raccordée - ils témoignent :"
               Testimonies={testimonies}
-              imgSrc="./img/home-testimony.jpg"
+              imgSrc="/img/home-testimony.jpg"
               imgAlt="Portrait d’Isham et Sophie."
             />
           </Slice>
