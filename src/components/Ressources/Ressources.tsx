@@ -19,12 +19,12 @@ const Ressources = () => {
         description="Retrouvez toute notre documentation pour approfondir votre connaissance des réseaux de chaleur."
       />
       <StickyForm />
-      <Slice padding={8} theme="color">
+      <Slice padding={8} theme="grey">
         <Issues />
       </Slice>
       <Slice
         padding={8}
-        theme="grey"
+        theme="color"
         header={`
 ## Les réseaux de chaleur en pratique :
 ## tout comprendre pour se raccorder
