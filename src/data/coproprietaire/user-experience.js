@@ -3,8 +3,7 @@ const userExperience = [
     body: `::counter-item[01.]  
 **Anne est copropriétaire d’un immeuble de 126&nbsp;habitants répartis en 3&nbsp;bâtiments.**  
 
-La chaudière collective au gaz ayant 20&nbsp;ans elle se demande avec le conseil syndical 
-si un chauffage **plus performant et responsable** serait possible. 
+La chaudière collective au gaz ayant 20&nbsp;ans elle se demande avec le conseil syndical si un chauffage **plus performant et responsable** serait possible. 
 
 Elle vérifie sur **France Chaleur Urbaine** si la copropriété est raccordable.`,
     imgSrc: `/img/user-experience-1.png`,
@@ -16,8 +15,7 @@ Elle vérifie sur **France Chaleur Urbaine** si la copropriété est raccordable
 **La copropriété est bien raccordable : 
 un réseau de chaleur alimenté par la géothermie** passe à 15 mètres.
 
-Par l’entremise de France Chaleur Urbaine, le gestionnaire du réseau prend 
-contact avec Anne pour l’informer **sur les conditions de raccordement.**`,
+Par l’entremise de France Chaleur Urbaine, le gestionnaire du réseau prend contact avec Anne pour l’informer **sur les conditions de raccordement.**`,
     imgSrc: `/img/user-experience-2.png`,
     imgAlt: `Présentation de France Chaleur Urbaine`,
   },
