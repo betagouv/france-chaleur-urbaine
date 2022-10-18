@@ -1,6 +1,6 @@
 import { FakeHttpClient } from '@utils/fakeHttpClient';
 import { ServiceError } from '../errors';
-import { SuggestionService } from '../suggestionService';
+import { SuggestionService } from '../suggestion';
 
 describe('Suggestion service', () => {
   const baseURL = process.env.NEXT_PUBLIC_BAN_API_BASE_URL;
