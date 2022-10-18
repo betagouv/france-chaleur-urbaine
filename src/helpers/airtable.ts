@@ -94,7 +94,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
   };
 };
 
-const submitToAirtable = async (
+export const submitToAirtable = async (
   values: any,
   type: string
 ): Promise<Response> => {
@@ -106,5 +106,3 @@ const submitToAirtable = async (
     body: JSON.stringify({ ...values, type }),
   });
 };
-
-export default submitToAirtable;

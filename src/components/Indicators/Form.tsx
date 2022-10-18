@@ -1,5 +1,5 @@
 import { Checkbox, SearchableSelect, TextInput } from '@dataesr/react-dsfr';
-import { submitToAirtable } from '@helpers';
+import { submitToAirtable } from '@helpers/airtable';
 import { useState } from 'react';
 import {
   Hint,
