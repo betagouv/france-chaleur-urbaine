@@ -1,5 +1,5 @@
 import { Alert, Button } from '@dataesr/react-dsfr';
-import { submitToAirtable } from '@helpers';
+import { submitToAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { Container, Email } from './Newsletter.styles';
