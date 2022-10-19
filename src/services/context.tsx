@@ -1,8 +1,8 @@
 import React from 'react';
-import { DemandsService } from './demandsService';
-import { HeatNetworkService } from './heatNetworkService';
-import { PasswordService } from './passwordService';
-import { SuggestionService } from './suggestionService';
+import { DemandsService } from './demands';
+import { HeatNetworkService } from './heatNetwork';
+import { PasswordService } from './password';
+import { SuggestionService } from './suggestion';
 
 type ServiceContextProps = {
   suggestionService: SuggestionService;

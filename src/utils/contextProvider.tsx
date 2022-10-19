@@ -5,8 +5,8 @@ import {
   ServicesContext,
   SuggestionService,
 } from 'src/services';
-import { DemandsService } from 'src/services/demandsService';
-import { PasswordService } from 'src/services/passwordService';
+import { DemandsService } from 'src/services/demands';
+import { PasswordService } from 'src/services/password';
 import { FakeHttpClient } from './fakeHttpClient';
 
 export const customRender = (

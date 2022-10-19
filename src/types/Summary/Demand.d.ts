@@ -6,6 +6,7 @@ export type DemandSummary = {
   'Mode de chauffage': string;
   'Type de chauffage': string;
   Structure: string;
+  Gestionnaires: string[];
 };
 
 export type EditableDemandSummary = {

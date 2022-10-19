@@ -7,6 +7,10 @@
     "web": {
       "amount": 1,
       "size": "S"
+    },
+    "cron": {
+      "amount": 0,
+      "size": "S"
     }
   },
   "addons": [

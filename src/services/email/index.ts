@@ -1,7 +1,11 @@
+import dotenv from 'dotenv';
 import ejs from 'ejs';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore: type not official
 import nodemailer from 'nodemailer';
+
+dotenv.config({ path: '.env.local' });
+dotenv.config();
 
 const mailTransport = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
@@ -39,6 +43,23 @@ const send = (
       error ? reject(error) : resolve(info)
     );
   });
+};
+
+export const sendNewDemands = async (
+  email: string,
+  demands: number
+): Promise<void> => {
+  const html = await ejs.renderFile('./src/services/email/views/demands.ejs', {
+    demands,
+    link: `${process.env.NEXTAUTH_URL}/connexion`,
+    email,
+  });
+
+  return send(
+    ['floclemy@gmail.com'],
+    '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire',
+    html
+  );
 };
 
 export const sendResetPasswordEmail = async (
