@@ -10,6 +10,17 @@ export const Container = styled.form`
   }
 `;
 
+export const PasswordInput = styled.div`
+  position: relative;
+`;
+
+export const PasswordIcon = styled.div`
+  cursor: pointer;
+  bottom: 9px;
+  position: absolute;
+  right: 9px;
+`;
+
 export const Password = styled.div`
   margin-top: -16px;
   margin-bottom: 16px;
