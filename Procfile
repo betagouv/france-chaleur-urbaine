@@ -1,1 +1,1 @@
-clock: export NODE_PATH=./ && ts-node cron_jobs/cron.ts
+clock: export NODE_PATH=./ && ts-node src/cron_jobs/cron.ts
