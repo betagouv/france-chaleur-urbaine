@@ -594,17 +594,23 @@ export default function Map() {
         zoom: zoom ? parseInt(zoom as string, 10) : 12,
       });
     } else if (navigator.geolocation) {
-      navigator.permissions.query({ name: 'geolocation' }).then(({ state }) => {
-        console.log(state);
-        if (state === 'granted' || state === 'prompt') {
-          console.log(state);
-          navigator.geolocation.getCurrentPosition((pos) => {
-            console.log(pos);
-            const { longitude, latitude } = pos.coords;
-            jumpTo({ coordinates: [longitude, latitude], zoom: 12 });
+      if (navigator.permissions) {
+        navigator.permissions
+          .query({ name: 'geolocation' })
+          .then(({ state }) => {
+            if (state === 'granted' || state === 'prompt') {
+              navigator.geolocation.getCurrentPosition((pos) => {
+                const { longitude, latitude } = pos.coords;
+                jumpTo({ coordinates: [longitude, latitude], zoom: 12 });
+              });
+            }
           });
-        }
-      });
+      } else {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const { longitude, latitude } = pos.coords;
+          jumpTo({ coordinates: [longitude, latitude], zoom: 12 });
+        });
+      }
     }
   }, [jumpTo, router.query]);
 
