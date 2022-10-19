@@ -18,6 +18,18 @@ export const getAllDemands = async (): Promise<Demand[]> => {
   );
 };
 
+export const getAllDemandsFrom = async (
+  dateDiff: number
+): Promise<Demand[]> => {
+  const records = await base(tableNameFcuDemands)
+    .select({
+      sort: [{ field: 'Date demandes', direction: 'desc' }],
+      filterByFormula: `IS_AFTER({Date demandes}, DATEADD(TODAY(), ${dateDiff}, "days"))`,
+    })
+    .all();
+  return records.map((record) => record.fields as Demand);
+};
+
 export const getGestionnaires = (demand: Demand): string[] => {
   let city = demand.Ville;
   if (!city) {

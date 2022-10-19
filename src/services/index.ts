@@ -1,3 +1,3 @@
 export * from './context';
-export * from './heatNetworkService';
-export * from './suggestionService';
+export * from './heatNetwork';
+export * from './suggestion';

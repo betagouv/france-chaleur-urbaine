@@ -10,9 +10,9 @@ import {
   ServicesContext,
   SuggestionService,
 } from 'src/services';
-import { DemandsService } from 'src/services/demandsService';
+import { DemandsService } from 'src/services/demands';
 import { axiosHttpClient } from 'src/services/http';
-import { PasswordService } from 'src/services/passwordService';
+import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
 
 const og = {
