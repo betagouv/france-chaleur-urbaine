@@ -46,13 +46,17 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
               values.Longitude
             );
 
-            await base('FCU - Utilisateurs').update(records[0].getId(), {
-              Gestionnaires: gestionnaires,
-              Conso: conso ? conso.conso_nb : undefined,
-              'ID Conso': conso ? conso.rownum : undefined,
-              Logement: nbLogement ? nbLogement.nb_logements : undefined,
-              'ID BNB': nbLogement ? nbLogement.fid : undefined,
-            });
+            await base('FCU - Utilisateurs').update(
+              records[0].getId(),
+              {
+                Gestionnaires: gestionnaires,
+                Conso: conso ? conso.conso_nb : undefined,
+                'ID Conso': conso ? conso.rownum : undefined,
+                Logement: nbLogement ? nbLogement.nb_logements : undefined,
+                'ID BNB': nbLogement ? nbLogement.fid : undefined,
+              },
+              { typecast: true }
+            );
           }
         }
       );
