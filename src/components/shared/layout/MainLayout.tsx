@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import Footer from './Footer';
 import Header from './Header';
@@ -9,7 +10,7 @@ export {
   headerHeight,
   tabFooterHeight,
   tabHeaderHeight,
-} from './MainLayout.data'; // TODO: remove this and use index.ts
+} from './MainLayout.data';
 
 type MainLayout = {
   children?: React.ReactNode;
@@ -18,6 +19,12 @@ type MainLayout = {
 
 const MainLayout: React.FC<MainLayout> = ({ children }) => {
   const { currentMenu, fullscreen } = useContext(LayoutContext);
+  const router = useRouter();
+
+  if (router.pathname === '/form') {
+    return <div>{children}</div>;
+  }
+
   return (
     <>
       <Header fullscreen={fullscreen} currentMenu={currentMenu} />

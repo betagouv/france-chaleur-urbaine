@@ -50,7 +50,7 @@ const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 const useContactFormFCU = () => {
   const EligibilityFormContactRef = useRef(null);
 
-  const [addressData, setAddressData] = useState({});
+  const [addressData, setAddressData] = useState<AddressDataType>({});
   const [contactReady, setContactReady] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
@@ -69,14 +69,11 @@ const useContactFormFCU = () => {
     []
   );
 
-  const handleOnChangeAddress = useCallback(
-    (data: { address: any; heatingType: string }) => {
-      const { address, heatingType } = data;
-      setAddressData(data);
-      setShowWarning(address && !heatingType);
-    },
-    []
-  );
+  const handleOnChangeAddress = useCallback((data: AddressDataType) => {
+    const { address, heatingType } = data;
+    setAddressData(data as AddressDataType);
+    setShowWarning(!!(address && !heatingType));
+  }, []);
 
   const handleOnFetchAddress = ({ address }: { address: any }) => {
     setLoadingStatus('loading');
