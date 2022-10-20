@@ -36,10 +36,6 @@ export const dailyManagerMail = async () => {
 
   let count = 0;
   for (const gestionnaire in groupedDemands) {
-    if (gestionnaire !== 'Paris') {
-      continue;
-    }
-
     const gestionnaireUsers = groupedUsers[gestionnaire] || [];
     for (let i = 0; i < gestionnaireUsers.length; i++) {
       count++;
