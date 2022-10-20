@@ -1,94 +1,47 @@
-import { EligibilityFormAddress } from '@components/EligibilityForm';
+import AddressAutocomplete from '@components/addressAutocomplete';
 import {
-  Loader,
-  LoaderWrapper,
-} from '@components/HeadSliceForm/HeadSliceForm.style';
-import { EligibilityResult } from '@components/Map/components/CardSearchDetails.style';
-import { Button, Col } from '@dataesr/react-dsfr';
-import { useContactFormFCU } from '@hooks';
-import { useMemo } from 'react';
-import { Container, Result } from './Eligibility.styles';
+  CheckEligibilityFormLabel,
+  SelectEnergy,
+} from '@components/EligibilityForm/components';
+import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
+import { Button } from '@dataesr/react-dsfr';
+import { useState } from 'react';
+import { SuggestionItem } from 'src/types/Suggestions';
+import { Container } from './Eligibility.styles';
 
 const Eligibility = () => {
-  const {
-    showWarning,
-    loadingStatus,
-    warningMessage,
-    EligibilityFormContactRef,
-    addressData,
-    contactReady,
-    handleOnChangeAddress,
-    handleOnFetchAddress,
-    handleOnSuccessAddress,
-  } = useContactFormFCU();
-
-  const readableDistance = useMemo(() => {
-    const { distance } = addressData.eligibility || { distance: null };
-
-    if (distance === null) {
-      return '';
-    }
-
-    if (distance < 1) {
-      return '< 1m';
-    }
-    if (distance >= 1000) {
-      return `${distance / 1000}km`;
-    }
-    return `${distance}m`;
-  }, [addressData]);
-
-  const eligibilityWording = useMemo(() => {
-    const { distance, isEligible } = addressData.eligibility || {
-      distance: null,
-    };
-
-    if (
-      (isEligible && distance === null) ||
-      (distance !== null && distance < 100)
-    ) {
-      return `Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.`;
-    }
-    if (distance !== null && distance < 200) {
-      return `Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois le réseau n’est pas très loin.`;
-    }
-    return `D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.`;
-  }, [addressData]);
-
+  const [heatingType, setHeatingType] = useState('');
+  const [address, setAddress] = useState<SuggestionItem>();
   return (
     <Container>
-      <EligibilityFormAddress
-        onChange={handleOnChangeAddress}
-        onFetch={handleOnFetchAddress}
-        onSuccess={handleOnSuccessAddress}
-      ></EligibilityFormAddress>
-      {showWarning && (
-        <Col n="12">
-          <b>{warningMessage}</b>
-        </Col>
-      )}
-      {!contactReady && !showWarning && loadingStatus === 'loading' && (
-        <Col n="12">
-          <LoaderWrapper show>
-            <Loader color="balck" />
-          </LoaderWrapper>
-        </Col>
-      )}
-      {contactReady && (
-        <Col n="12">
-          <Result ref={EligibilityFormContactRef}>
-            <EligibilityResult isEligible={addressData.eligibility?.isEligible}>
-              {eligibilityWording}
-              <div>
-                <strong>
-                  {readableDistance && `Le réseau passe à ${readableDistance}`}
-                </strong>
-              </div>
-              <Button className="fr-mt-1w">Laisser mes coordonnées</Button>
-            </EligibilityResult>
-          </Result>
-        </Col>
-      )}
+      <CheckEligibilityFormLabel>
+        <SelectEnergy
+          name="heatingType"
+          selectOptions={energyInputsDefaultLabels}
+          onChange={(e) => setHeatingType(e.target.value)}
+          value={heatingType}
+        />
+      </CheckEligibilityFormLabel>
+      <AddressAutocomplete
+        placeholder="Tapez ici votre adresse"
+        onAddressSelected={(address, suggestionItem) => {
+          setAddress(suggestionItem);
+          return Promise.resolve();
+        }}
+        popoverClassName={'popover-search-form'}
+      />
+      <Button
+        disabled={!heatingType || !address}
+        onClick={() =>
+          window.open(
+            //`https://france-chaleur-urbaine.beta.gouv.fr?heating=${heatingType}&address=${address?.properties.id}`
+            //`http://localhost:3000?heating=${heatingType}&address=${address?.properties.label}`
+            `https://france-chaleur-urbaine-pr361.osc-fr1.scalingo.io?heating=${heatingType}&address=${address?.properties.label}`
+          )
+        }
+      >
+        Tester mon adresse
+      </Button>
     </Container>
   );
 };

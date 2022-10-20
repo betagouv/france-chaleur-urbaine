@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  max-width: 650px;
+  background-color: white;
   display: flex;
   flex-wrap: wrap;
   gap: 32px;
+  padding: 32px;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
 
   .fr-form-group,
   .fr-input-group {
