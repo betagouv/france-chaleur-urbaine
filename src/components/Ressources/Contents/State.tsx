@@ -91,11 +91,11 @@ const State = () => {
       <br />
       Pour en savoir plus :{' '}
       <a
-        href="https://www.ecologie.gouv.fr/operations-standardisees-deconomies-denergie#scroll-nav__1"
+        href="https://www.ecologie.gouv.fr/operations-standardisees-deconomies-denergie"
         target="_blank"
         rel="noreferrer"
       >
-        https://www.ecologie.gouv.fr/operations-standardisees-deconomies-denergie#scroll-nav__1
+        https://www.ecologie.gouv.fr/operations-standardisees-deconomies-denergie
       </a>
     </>
   );
