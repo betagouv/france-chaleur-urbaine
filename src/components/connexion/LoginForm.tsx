@@ -1,8 +1,13 @@
-import { Button, TextInput } from '@dataesr/react-dsfr';
+import { Button, Icon, TextInput } from '@dataesr/react-dsfr';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
-import { Container, Password } from './Form.styles';
+import {
+  Container,
+  Password,
+  PasswordIcon,
+  PasswordInput,
+} from './Form.styles';
 
 export interface LoginFormProps {
   callbackUrl: string;
@@ -10,6 +15,7 @@ export interface LoginFormProps {
 export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [seePassword, setSeePassword] = useState(false);
 
   const connect = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,13 +34,21 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <TextInput
-        type="password"
-        label="Mot de passe"
-        placeholder="Saisir votre mot de passe"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+      <PasswordInput>
+        <TextInput
+          type={seePassword ? 'text' : 'password'}
+          label="Mot de passe"
+          placeholder="Saisir votre mot de passe"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <PasswordIcon onClick={() => setSeePassword(!seePassword)}>
+          <Icon
+            name={seePassword ? 'ri-eye-line' : 'ri-eye-off-line'}
+            size="lg"
+          />
+        </PasswordIcon>
+      </PasswordInput>
       <Password>
         <Link href="/reset-password">Mot de passe oublié ?</Link>
       </Password>
