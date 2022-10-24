@@ -31,6 +31,7 @@ import {
   buildingsLayerStyle,
   CollapseLegend,
   demandsLayerStyle,
+  dottedOutlineLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
   Legend,
@@ -189,6 +190,15 @@ const formatBodyPopup = ({
           ${
             displayNetwork
               ? `
+            ${
+              network.commentaires
+                ? `<strong>
+                  ${network.commentaires}
+                  </strong>
+                <br />
+                `
+                : ''
+            }
             <strong>Gestionnaire&nbsp;:</strong> ${
               network.Gestionnaire ? `${network.Gestionnaire}` : 'Non connu'
             }<br />
@@ -495,6 +505,13 @@ export default function Map() {
             source: 'heatNetwork',
             'source-layer': 'outline',
             ...outlineLayerStyle,
+          });
+
+          map.current.addLayer({
+            id: 'dottedOutline',
+            source: 'heatNetwork',
+            'source-layer': 'outline',
+            ...dottedOutlineLayerStyle,
           });
 
           // ---------------

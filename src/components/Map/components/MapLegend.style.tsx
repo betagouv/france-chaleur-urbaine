@@ -127,15 +127,27 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
     height: 0;
   }
 
+  .legend-futur-heat-network-marker,
   .legend-heat-network-marker {
-    top: -2px;
+    top: -3px;
     :before {
       margin: 0 4px;
+      border-radius: 4px;
       width: 24px;
       height: 0;
-      border: 3px solid ${themeDefHeatNetwork.outline.color};
-      border-radius: 3px;
       margin-bottom: calc(0.25em - 1.5px)
+    }
+  }
+
+  .legend-heat-network-marker {
+    :before {
+      border: 2px solid ${themeDefHeatNetwork.outline.color};
+    }
+  }
+
+  .legend-futur-heat-network-marker {
+    :before {
+      border: 2px dashed ${themeDefHeatNetwork.outline.color};
     }
   }
 
