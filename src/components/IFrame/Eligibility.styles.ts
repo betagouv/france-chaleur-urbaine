@@ -2,12 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   background-color: white;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 32px;
-  padding: 32px;
-  align-items: center;
-  justify-content: center;
+  padding: 0 32px 32px 32px;
 
   .fr-form-group,
   .fr-input-group {
@@ -19,6 +14,21 @@ export const Container = styled.div`
   }
 `;
 
-export const Result = styled.div`
-  margin: auto;
+export const Header = styled.div`
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  @media (max-width: 873px) {
+    margin-bottom: 16px;
+  }
+`;
+
+export const Form = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px 32px;
 `;
