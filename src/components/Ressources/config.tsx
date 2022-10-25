@@ -94,8 +94,10 @@ export const understandings: Record<string, Document> = {
       'Quels avantages par rapport à un chauffage collectif au gaz ou fioul ?',
     description: (
       <>
-        Votre bâtiment est équipé d’un <b>chauffage collectif</b> que vous
-        souhaitez renouveler ? Quelles solutions adopter ?
+        Se raccorder à un réseau de chaleur, c’est <b>64 %</b> de réduction des
+        émissions de gaz à effet de serre par rapport à un chauffage au fioul et{' '}
+        <b>51 %</b> par rapport à un chauffage au gaz. Et ce n'est pas le seul
+        avantage !
       </>
     ),
     content: <Advantages />,

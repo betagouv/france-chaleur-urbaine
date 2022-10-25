@@ -7,6 +7,7 @@ import TextList from '@components/TextList';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import { dataNumberRcu, presentationRcu } from '@data/home';
+import { MediaVideo } from '@dataesr/react-dsfr';
 import Head from 'next/head';
 import styled, { createGlobalStyle } from 'styled-components';
 
@@ -33,17 +34,6 @@ const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled
   }
 
   .slice-schema-container {
-    background-repeat: no-repeat;
-    background-position: right calc(50% - 28rem) bottom 50%;
-
-    @media (min-width: 990px) {
-      background-image: url(/img/rcu-illustation.svg) ;
-
-      img {
-        opacity: 0;
-      }
-    }
-
     .presentation-rcu-icon {
       &:first-of-type {
         margin-top: 3em;
@@ -120,8 +110,23 @@ export default function Home() {
             formLabel="Votre immeuble pourrait-il être raccordé à un&nbsp;réseau&nbsp;de&nbsp;chaleur&nbsp;?"
             checkEligibility
           />
-          <Slice padding={10} className="slice-schema-container">
+          <Slice
+            padding={10}
+            className="slice-schema-container"
+            direction="row"
+          >
             <WrappedText {...presentationRcu} />
+            <MediaVideo>
+              <video
+                width="100%"
+                controls
+                poster="/img/rcu-illustation.svg"
+                src="/videos/FCU-RC.mp4"
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore: needed by DSFR
+                href="/videos/FCU-RC.mp4"
+              />
+            </MediaVideo>
           </Slice>
           <Slice theme="color" padding={5}>
             <BlockquoteSlice>
