@@ -43,9 +43,7 @@ const Eligibility = () => {
           disabled={!heatingType || !address}
           onClick={() =>
             window.open(
-              //`https://france-chaleur-urbaine.beta.gouv.fr?heating=${heatingType}&address=${address?.properties.id}`
-              //`http://localhost:3000?heating=${heatingType}&address=${address?.properties.label}`
-              `https://france-chaleur-urbaine-pr361.osc-fr1.scalingo.io?heating=${heatingType}&address=${address?.properties.label}`
+              `https://france-chaleur-urbaine.beta.gouv.fr?heating=${heatingType}&address=${address?.properties.label}`
             )
           }
         >
