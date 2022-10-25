@@ -113,7 +113,6 @@ export default function Home() {
       <MainContainer currentMenu="/">
         <div>
           <GlobalStyle />
-
           <HeadSliceForm
             bg="/img/head-slice-bg-home.png"
             pageTitle="Les réseaux de chaleur, une énergie d’avenir"
@@ -121,11 +120,9 @@ export default function Home() {
             formLabel="Votre immeuble pourrait-il être raccordé à un&nbsp;réseau&nbsp;de&nbsp;chaleur&nbsp;?"
             checkEligibility
           />
-
           <Slice padding={10} className="slice-schema-container">
             <WrappedText {...presentationRcu} />
           </Slice>
-
           <Slice theme="color" padding={5}>
             <BlockquoteSlice>
               <blockquote>
@@ -137,7 +134,6 @@ export default function Home() {
               Rapport du GIEC, février 2022
             </BlockquoteSlice>
           </Slice>
-
           <Slice
             theme="grey"
             padding={10}
@@ -198,11 +194,9 @@ maîtrise du tarif des énergies._`}
               />
             </WrappedBlock>
           </Slice>
-
           <Slice theme="color" padding={5}>
             <TextList data={dataNumberRcu} />
           </Slice>
-
           <Partners />
           <SliceImg src="/img/home-footer-bg.jpg" />
         </div>

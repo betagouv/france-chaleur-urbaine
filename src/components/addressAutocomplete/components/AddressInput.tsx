@@ -3,11 +3,13 @@ import { ComboboxInput } from '@reach/combobox';
 type AddressInputProps = {
   placeholder?: string;
   onChange: (event: React.FormEvent<HTMLInputElement>) => any;
+  value: string;
 };
 
 const AddressInput: React.FC<AddressInputProps> = ({
   placeholder = '',
   onChange,
+  value,
 }) => (
   <ComboboxInput
     className="fr-input"
@@ -16,6 +18,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
     name="address"
     placeholder={placeholder}
     onChange={onChange}
+    value={value}
   />
 );
 

@@ -1,4 +1,5 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
+import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import { AddressDataType } from 'src/types/AddressData';
@@ -21,7 +22,7 @@ type CheckEligibilityFormProps = {
   onSuccess?: (...arg: any) => void;
 };
 
-const energyInputsDefaultLabels = {
+export const energyInputsDefaultLabels = {
   collectif: 'Collectif',
   individuel: 'Individuel',
 };
@@ -37,6 +38,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   onFetch,
   onSuccess,
 }) => {
+  const router = useRouter();
   const [lon, lat] = fullAddress?.addressDetails?.geoAddress?.geometry
     ?.coordinates || [null, null];
   const coords = (lon ?? lat) && { lon, lat };
@@ -51,6 +53,13 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   const [data, setData] = useState<AddressDataType>(defaultData);
   const [heatingType, setHeatingType] = useState('');
   const { heatNetworkService } = useServices();
+
+  useEffect(() => {
+    const { heating } = router.query;
+    if (heating) {
+      setHeatingType(heating as string);
+    }
+  }, [router.query]);
 
   const checkEligibility = useCallback(
     async (
@@ -120,6 +129,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           name="heatingType"
           selectOptions={energyInputsLabels}
           onChange={(e) => setHeatingType(e.target.value)}
+          value={heatingType}
           cardMode={cardMode}
         >
           {formLabel}

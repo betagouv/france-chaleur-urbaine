@@ -26,8 +26,7 @@ type KeyPrimaryType =
   | 'provinceIneligible'
   | undefined;
 
-const getContactResult = (
-  formContactResult: Record<string, Record<string, string>>,
+export const getContactResult = (
   heatingType: AvailableHeating,
   eligibility?: HeatNetworksResponse
 ) => {
@@ -47,9 +46,7 @@ const getContactResult = (
   }
 
   return (
-    (keyPrimary &&
-      heatingType &&
-      formContactResult?.[keyPrimary]?.[heatingType]) ||
+    (keyPrimary && heatingType && formContactResult[keyPrimary][heatingType]) ||
     {}
   );
 };
@@ -194,7 +191,6 @@ const EligibilityFormContact = ({
         eligibility: computedEligibility,
         headerTypo,
       }: any = getContactResult(
-        formContactResult,
         addressData.heatingType,
         addressData.eligibility
       );

@@ -1,5 +1,6 @@
 import { Combobox, ComboboxPopover } from '@reach/combobox';
-import { useCallback, useMemo } from 'react';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
 import AddressAutocompleteGlobalStyle, {
   EmptySuggestion,
@@ -50,28 +51,58 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
   onAddressSelected,
   onChange,
 }) => {
+  const router = useRouter();
+  const [address, setAddress] = useState('');
+  const [seeSuggestions, setSeeSuggestions] = useState(true);
+
   const { suggestions, fetchSuggestions, status } = useSuggestions({
     debounceTime,
     limit: 5,
     minCharactersLength,
   });
+
   const handleSelect = useCallback(
     (address: string, suggestions: SuggestionItem[]) => {
       const geoAddress = findAddressInSuggestions(address, suggestions);
+      setAddress(address);
+      setSeeSuggestions(false);
       if (geoAddress) {
         onAddressSelected(address, geoAddress);
       }
     },
     [onAddressSelected]
   );
+
+  useEffect(() => {
+    const { address } = router.query;
+    console.log(router.query);
+
+    if (address) {
+      setAddress(address as string);
+      setSeeSuggestions(false);
+      fetchSuggestions(address as string);
+    }
+  }, [router.query]);
+
+  useEffect(() => {
+    console.log(router.query);
+    const { address } = router.query;
+    if (address && suggestions.length > 0) {
+      handleSelect(address as string, suggestions);
+      router.replace(router.pathname);
+    }
+  }, [router.query, suggestions, handleSelect]);
+
   const shouldDisplaySuggestions = useMemo(
-    () => status !== 'idle' && status !== 'loading',
-    [status]
+    () => seeSuggestions && status !== 'idle' && status !== 'loading',
+    [status, seeSuggestions]
   );
   const hasSuggestions = useMemo(() => !!suggestions.length, [suggestions]);
 
   const onChangeHandler = (event: React.FormEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
+    setAddress(value);
+    setSeeSuggestions(true);
     if (onChange) {
       onChange(value);
     }
@@ -95,7 +126,11 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
             handleSelect(selectedAddress, suggestions)
           }
         >
-          <AddressInput onChange={onChangeHandler} placeholder={placeholder} />
+          <AddressInput
+            onChange={onChangeHandler}
+            placeholder={placeholder}
+            value={address}
+          />
           {shouldDisplaySuggestions && (
             <ComboboxPopover className={popoverClassName}>
               {hasSuggestions ? (
