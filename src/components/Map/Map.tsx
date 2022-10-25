@@ -208,6 +208,7 @@ const formatBodyPopup = ({
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
 export default function Map() {
+  const [collapsedCardIndex, setCollapsedCardIndex] = useState(0);
   const mapContainer: null | { current: any } = useRef(null);
   const map: null | { current: any } = useRef(null);
   const draw: null | { current: any } = useRef(null);
@@ -293,10 +294,11 @@ export default function Map() {
         date: Date.now(),
       };
       const id = getAddressId(coordinates);
-      const existingAddress = soughtAddresses.find(
+      const existingAddress = soughtAddresses.findIndex(
         ({ id: soughtAddressesId }) => soughtAddressesId === id
       );
-      if (!existingAddress) {
+
+      if (existingAddress === -1) {
         const newAddress = {
           id,
           coordinates,
@@ -305,7 +307,11 @@ export default function Map() {
           search,
         };
         setSoughtAddresses([...soughtAddresses, newAddress]);
+        setCollapsedCardIndex(0);
+      } else {
+        setCollapsedCardIndex(soughtAddresses.length - 1 - existingAddress);
       }
+
       flyTo({ coordinates });
     },
     [flyTo, setSoughtAddresses, soughtAddresses]
@@ -318,18 +324,19 @@ export default function Map() {
       }
 
       const id = getAddressId(result.coordinates);
-      const getCurrentSoughtAddresses = ({
-        coordinates,
-      }: {
-        coordinates: Point;
-      }) => getAddressId(coordinates) !== id;
-      const newSoughtAddresses = soughtAddresses.filter(
-        getCurrentSoughtAddresses
+      const addressIndex = soughtAddresses.findIndex(
+        ({ coordinates }) => getAddressId(coordinates) === id
       );
-      result?.marker?.remove();
-      setSoughtAddresses(newSoughtAddresses);
+
+      if (collapsedCardIndex === soughtAddresses.length - 1 - addressIndex) {
+        setCollapsedCardIndex(-1);
+      }
+
+      soughtAddresses.splice(addressIndex, 1);
+      setSoughtAddresses([...soughtAddresses]);
+      result.marker?.remove();
     },
-    [setSoughtAddresses, soughtAddresses]
+    [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
   );
 
   const toggleLayer = useCallback(
@@ -706,13 +713,25 @@ export default function Map() {
           {soughtAddresses.length > 0 && (
             <>
               {soughtAddresses
-                .map((soughtAddress) => (
+                .map((soughtAddress, index) => (
                   <CardSearchDetails
                     key={soughtAddress.id}
                     address={soughtAddress}
                     onClick={flyTo}
                     onClickClose={removeSoughtAddresses}
                     onContacted={markAddressAsContacted}
+                    collapsed={
+                      collapsedCardIndex !== soughtAddresses.length - 1 - index
+                    }
+                    setCollapsed={(collapsed) => {
+                      if (collapsed) {
+                        setCollapsedCardIndex(-1);
+                      } else {
+                        setCollapsedCardIndex(
+                          soughtAddresses.length - 1 - index
+                        );
+                      }
+                    }}
                   />
                 ))
                 .reverse()}
