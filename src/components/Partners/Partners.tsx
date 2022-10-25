@@ -45,7 +45,6 @@ const Partners = () => {
   return (
     <Slice
       padding={10}
-      className="--slice-schema-container"
       header={`
 ## Notre réseau de partenaires
 
