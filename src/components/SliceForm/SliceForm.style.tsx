@@ -14,7 +14,6 @@ export const SliceContactFormStyle: any = createGlobalStyle` // TODO: Wait Fix f
 export const Container = styled.div`
   width: 100%;
   max-width: 550px;
-  text-align: center;
   margin: auto;
 `;
 

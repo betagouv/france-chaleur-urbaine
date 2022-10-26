@@ -3,7 +3,8 @@ import { createGlobalStyle } from 'styled-components';
 export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .user-experience-description {
     position: relative;
-
+    margin-top: 32px;
+    
     @media (min-width: 992px) {
       padding-left: 5.75em;
     }
