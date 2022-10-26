@@ -20,4 +20,3 @@ afterAll(() => {
 });
 // Env Variables
 process.env.NEXT_PUBLIC_BAN_API_BASE_URL = 'http://suggestions-service/search/';
-process.env.NEXT_PUBLIC_PYRIS_BASE_URL = 'https://pyris-api/api/';

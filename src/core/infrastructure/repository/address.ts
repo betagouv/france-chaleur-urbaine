@@ -2,6 +2,23 @@ import db from 'src/db';
 
 const DEBUG = !!(process.env.API_DEBUG_MODE || null);
 
+export const isOnAnIRISNetwork = async (
+  lat: number,
+  lon: number
+): Promise<boolean> => {
+  const result = await db('network_iris')
+    .where(
+      db.raw(`ST_INTERSECTS(
+      ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
+      ST_Transform(geom, 2154)
+    )
+  `)
+    )
+    .first();
+
+  return !!result;
+};
+
 export const computeDistance = async (
   lat: number,
   lon: number
