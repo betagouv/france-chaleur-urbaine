@@ -8,6 +8,7 @@ import {
 
 enum Layer {
   outline = 'outline',
+  dottedOutline = 'dottedOutline',
   demands = 'demands',
   zoneDP = 'zoneDP',
   buildings = 'buildings',
@@ -28,6 +29,7 @@ export type TypeLayerDisplay = Record<string, boolean | string[]> & {
 
 const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
+  dottedOutline: true,
   zoneDP: false,
   demands: true,
   gasUsageGroup: true,
@@ -44,6 +46,17 @@ const legendData: (string | TypeGroupLegend)[] = [
         id: 'outline',
         label: 'Réseaux de chaleur',
         className: 'legend-heat-network',
+      },
+    ],
+    type: 'list',
+  },
+  {
+    id: 'futur-heat-network',
+    entries: [
+      {
+        id: 'dottedOutline',
+        label: 'Réseaux de chaleur en construction',
+        className: 'legend-futur-heat-network',
       },
     ],
     type: 'list',

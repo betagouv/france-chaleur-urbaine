@@ -23,8 +23,6 @@ export const updateUsers = async () => {
         password: bcrypt.hashSync(`${tag} ${process.env.ACCES_PASSWORD}`, salt),
         gestionnaire: tag,
       });
-    } else {
-      console.log(`Email ${tag} - FCU already exists.`);
     }
     for (let j = 1; j < 10; j++) {
       let email = gestionnaire.get(`Email ${j}`) as string;
@@ -41,8 +39,6 @@ export const updateUsers = async () => {
             ),
             gestionnaire: tag,
           });
-        } else {
-          console.log(`Email ${email} already exists.`);
         }
       }
     }
