@@ -10,9 +10,8 @@ const ineligibleStyle = {
 };
 
 type MapCardType = {
-  isEligible?: boolean;
-  typeCard?: string;
-  isClickable?: boolean;
+  isEligible: boolean;
+  collapsed?: boolean;
 };
 
 export const MapCard = styled.div<MapCardType>`
@@ -22,7 +21,7 @@ export const MapCard = styled.div<MapCardType>`
   margin-bottom: 8px;
   background-color: white;
   border-style: solid;
-  border-width: 0 0 10px;
+  border-width: 0 0 ${({ collapsed }) => (collapsed ? '0' : '10px')} 0;
 
   border-radius: 4px;
   overflow: hidden;
@@ -30,70 +29,58 @@ export const MapCard = styled.div<MapCardType>`
   box-shadow: 1px 0 4px 1px rgb(0 0 0 / 20%);
 
   > header {
-    padding: 8px 32px 8px 8px;
-    cursor: ${({ isClickable }) => (isClickable ? 'pointer' : 'default')};
-  }
-
-  .closeButton {
-    position: absolute;
-    top: 10px;
-    right: 8px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #ffffff;
-    box-shadow: 0 1px 2px 1px #33333333;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-
-    ::before,
-    ::after {
-      content: '';
-      position: absolute;
-      width: 2px;
-      height: 80%;
-      background-color: #333;
-    }
-    ::before {
-      content: '';
-      transform: rotate(-45deg);
-    }
-    ::after {
-      content: '';
-      transform: rotate(45deg);
+    padding: 8px 62px 8px 8px;
+    cursor: pointer;
+    > .icon-left {
+      margin-right: 0;
     }
   }
 
-  &.eligible {
-    border-color: ${eligibleStyle.bgColor};
-
-    > header {
-      background-color: ${eligibleStyle.bgColor};
-      color: ${eligibleStyle.color};
-    }
-  }
-
-  &.ineligible {
-    border-color: ${ineligibleStyle.bgColor};
-
-    > header {
-      background-color: ${ineligibleStyle.bgColor};
-      color: ${ineligibleStyle.color};
-    }
-  }
+  ${({ isEligible }) =>
+    isEligible
+      ? css`
+          border-color: ${eligibleStyle.bgColor};
+          > header {
+            background-color: ${eligibleStyle.bgColor};
+            color: ${eligibleStyle.color};
+          }
+        `
+      : css`
+          border-color: ${ineligibleStyle.bgColor};
+          > header {
+            background-color: ${ineligibleStyle.bgColor};
+            color: ${ineligibleStyle.color};
+          }
+        `}
 
   section {
     padding: 8px;
     scrollbar-gutter: stable both-edges;
     transition: max-height 0.75s ease, padding 0.5s ease 0.25s;
   }
+`;
 
-  &.close {
-    section {
-      max-height: 0;
-      padding: 0 8px;
+export const HeaderButtons = styled.div`
+  position: absolute;
+  top: 8px;
+  right: 0;
+
+  > button {
+    padding: 0;
+    margin-right: 8px;
+    cursor: pointer;
+    background-color: white;
+    box-shadow: 0 1px 2px 1px #33333333;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+
+    > .icon-left {
+      margin-right: 0;
+    }
+
+    &:hover {
+      background-color: #eeeeee;
     }
   }
 `;
