@@ -20,7 +20,9 @@ export const TextContainer = styled.div`
   > h2 {
     color: #000074;
   }
-  p {
+  p,
+  em,
+  strong {
     font-size: 1.25rem;
     line-height: 2rem;
   }

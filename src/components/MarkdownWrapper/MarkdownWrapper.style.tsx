@@ -112,8 +112,7 @@ export const CounterItem = styled.div`
 export const Cartridge = styled.div<{ theme: string }>`
   display: inline-block;
   background-color: #ffdecf;
-  margin: 0 -0.55em;
-  padding: 0.35em 0.55em;
+  padding: 8px 16px;
   border-radius: 0.7em;
 
   & > & {

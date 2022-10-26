@@ -63,10 +63,15 @@ const Network = () => {
       </Source>
       <br />
       <MediaVideo>
-        <video height="100%" controls poster="/img/ressources-network.png">
-          <source src="/videos/FCU-RC.mp4" type="video/mp4" />
-          Votre browser ne supporte pas les vidéos.
-        </video>
+        <video
+          height="100%"
+          controls
+          poster="/img/ressources-network.png"
+          src="/videos/FCU-RC.mp4"
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore: needed by DSFR
+          href="/videos/FCU-RC.mp4"
+        />
       </MediaVideo>
     </>
   );

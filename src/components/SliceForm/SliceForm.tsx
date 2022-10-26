@@ -34,21 +34,19 @@ const HeadSlice: React.FC = () => {
     <>
       <Slice>
         <Container>
-          <>
-            <EligibilityFormAddress
-              onChange={handleOnChangeAddress}
-              onFetch={handleOnFetchAddress}
-              onSuccess={handleOnSuccessAddress}
-            />
+          <EligibilityFormAddress
+            onChange={handleOnChangeAddress}
+            onFetch={handleOnFetchAddress}
+            onSuccess={handleOnSuccessAddress}
+          />
 
-            <FormWarningMessage show={showWarning}>
-              {warningMessage}
-            </FormWarningMessage>
+          <FormWarningMessage show={showWarning}>
+            {warningMessage}
+          </FormWarningMessage>
 
-            <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
-              <Loader />
-            </LoaderWrapper>
-          </>
+          <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
+            <Loader />
+          </LoaderWrapper>
         </Container>
       </Slice>
 
