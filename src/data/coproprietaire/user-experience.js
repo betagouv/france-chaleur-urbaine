@@ -21,7 +21,7 @@ Par l’entremise de France Chaleur Urbaine, le gestionnaire du réseau prend co
   },
   {
     body: `::counter-item[03.]
-_Les frais de raccordement s’élève à 105&nbsp;000€._  
+_Les frais de raccordement s’élèvent à 105&nbsp;000€._  
 _Sur le conseil de France Chaleur Urbaine, la copropriété d’Anne obtient des aides au titre du **Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires**._
 
 **_Ce qui fait baisser le coût du raccordement à 50&nbsp;000€&nbsp;!_** 
