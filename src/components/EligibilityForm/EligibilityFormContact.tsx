@@ -56,6 +56,7 @@ const formContactResult: Record<string, Record<string, any>> = {
     collectif: {
       eligibility: true,
       header: `**Bonne nouvelle ! Un réseau de chaleur passe à proximité de votre adresse.**`,
+      futurHeader: `**Bonne nouvelle ! Un réseau de chaleur passera bientôt à proximité de cette adresse (prévu ou en construction).**`,
       body: `
 Au vu de votre chauffage actuel, votre immeuble dispose déjà des équipements nécessaires : **il s’agit du cas le plus favorable pour un raccordement !**  
 
@@ -64,7 +65,8 @@ Au vu de votre chauffage actuel, votre immeuble dispose déjà des équipements 
     },
     individuel: {
       eligibility: false,
-      header: `Votre immeuble est situé à proximité immédiate d’un réseau de chaleur, toutefois **au vu de votre chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux**, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble`,
+      header: `Votre immeuble est situé à proximité immédiate d’un réseau de chaleur, toutefois **au vu de votre chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux**, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.`,
+      futurHeader: `Un réseau de chaleur passera bientôt à proximité de votre adresse (prévu ou en construction), toutefois au vu de votre chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.`,
       body: `
 Si vous souhaitez tout de même en savoir plus, **laissez-nous vos coordonnées** pour être recontacté par le gestionnaire du réseau le plus proche.  
 
@@ -80,6 +82,7 @@ Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble néce
     collectif: {
       eligibility: true,
       header: `**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois le réseau n’est pas très loin.**`,
+      futurHeader: `**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs (prévu ou en construction).**`,
       body: `
 Au vu de votre chauffage actuel, votre immeuble dispose déjà des équipements nécessaires : **il s’agit du cas le plus favorable pour un raccordement !**  
 
@@ -182,27 +185,35 @@ const EligibilityFormContact = ({
   cardMode,
   onSubmit,
 }: EligibilityFormContactType) => {
-  const { distance, header, body, bodyLight, computedEligibility, headerTypo } =
-    useMemo(() => {
-      const {
-        header,
-        body,
-        bodyLight,
-        eligibility: computedEligibility,
-        headerTypo,
-      }: any = getContactResult(
-        addressData.heatingType,
-        addressData.eligibility
-      );
-      return {
-        distance: addressData.eligibility?.distance,
-        header,
-        body,
-        bodyLight,
-        computedEligibility,
-        headerTypo,
-      };
-    }, [addressData]);
+  const {
+    distance,
+    futurNetwork,
+    header,
+    futurHeader,
+    body,
+    bodyLight,
+    computedEligibility,
+    headerTypo,
+  } = useMemo(() => {
+    const {
+      header,
+      futurHeader,
+      body,
+      bodyLight,
+      eligibility: computedEligibility,
+      headerTypo,
+    }: any = getContactResult(addressData.heatingType, addressData.eligibility);
+    return {
+      distance: addressData.eligibility?.distance,
+      futurNetwork: addressData.eligibility?.futurNetwork,
+      header,
+      futurHeader,
+      body,
+      bodyLight,
+      computedEligibility,
+      headerTypo,
+    };
+  }, [addressData]);
 
   const handleSubmitForm = useCallback(
     async (values: Record<string, string | number>) => {
@@ -250,7 +261,9 @@ const EligibilityFormContact = ({
               eligible={computedEligibility}
               headerTypo={headerTypo}
             >
-              <MarkdownWrapper value={header} />
+              <MarkdownWrapper
+                value={futurNetwork && futurHeader ? futurHeader : header}
+              />
               {readableDistance && (
                 <em className="distance">
                   Un réseau de chaleur se trouve à {readableDistance} de ce
