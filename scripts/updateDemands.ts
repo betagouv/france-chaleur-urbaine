@@ -1,5 +1,5 @@
 import {
-  computeDistance,
+  closestNetwork,
   getConso,
   getConsoById,
   getNbLogement,
@@ -30,8 +30,8 @@ const updateDemands = async () => {
       const newValue: any = {};
       let shouldUpdate = false;
       if (!demand.get('Distance au réseau')) {
-        const distance = Math.round(await computeDistance(latitude, longitude));
-        newValue['Distance au réseau'] = distance;
+        const { distance } = await closestNetwork(latitude, longitude);
+        newValue['Distance au réseau'] = Math.round(distance);
         shouldUpdate = true;
       }
       if (!demand.get('Conso')) {

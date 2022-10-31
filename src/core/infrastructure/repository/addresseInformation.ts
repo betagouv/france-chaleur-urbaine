@@ -2,22 +2,27 @@ import db from 'src/db';
 
 const DEBUG = !!(process.env.API_DEBUG_MODE || null);
 
-export const computeDistance = async (
+export const closestNetwork = async (
   lat: number,
   lon: number
-): Promise<number> => {
-  const { distance } = await db('reseaux_de_chaleur')
+): Promise<{
+  distance: number;
+  date?: Date;
+}> => {
+  const network = await db('reseaux_de_chaleur')
     .select(
-      db.raw(`ST_Distance(
+      db.raw(
+        `ST_Distance(
     ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
     ST_Transform(geom, 2154)
-  ) as distance`)
+  ) as distance, date`
+      )
     )
     .orderBy('distance')
     .first();
 
-  DEBUG && console.info(`Minimum distance is ${distance} meters.`);
-  return distance;
+  DEBUG && console.info(`Minimum distance is ${network.distance} meters.`);
+  return network;
 };
 
 export const getConso = async (

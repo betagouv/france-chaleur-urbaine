@@ -5,6 +5,7 @@ export interface HeatNetworksResponse {
   distance: number | null;
   inZDP: boolean;
   isBasedOnIris: boolean;
+  futurNetwork: boolean;
 }
 
 export interface AddressDetail {

@@ -1,4 +1,4 @@
-import { computeDistance } from '@core/infrastructure/repository/addresseInformation';
+import { closestNetwork } from '@core/infrastructure/repository/addresseInformation';
 import networkByIris from '@core/infrastructure/repository/network_by_iris.json';
 import inZDP from '@core/infrastructure/repository/zdp';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -32,13 +32,14 @@ const eligibilityStatusgibilityStatus = async (
       `${process.env.NEXT_PUBLIC_PYRIS_BASE_URL}coords?geojson=false&lat=${lat}&lon=${lon}`
     );
 
-    const distance = Math.round(await computeDistance(coords.lat, coords.lon));
-    if (distance !== null && Number(distance) < 1000) {
+    const network = await closestNetwork(coords.lat, coords.lon);
+    if (network.distance !== null && Number(network.distance) < 1000) {
       return res.status(200).json({
-        isEligible: Number(distance) <= THRESHOLD,
-        distance,
+        isEligible: Number(network.distance) <= THRESHOLD,
+        distance: Math.round(network.distance),
         inZDP: await zdpPromise,
         isBasedOnIris: false,
+        futurNetwork: network.date !== null,
       });
     }
 
@@ -52,6 +53,7 @@ const eligibilityStatusgibilityStatus = async (
       distance: null,
       inZDP: await zdpPromise,
       isBasedOnIris: true,
+      futurNetwork: false,
     });
   } catch (error) {
     // eslint-disable-next-line no-console
