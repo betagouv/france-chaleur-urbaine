@@ -55,7 +55,7 @@ const legendData: (string | TypeGroupLegend)[] = [
     entries: [
       {
         id: 'dottedOutline',
-        label: 'Réseaux de chaleur en construction',
+        label: 'Futurs réseaux de chaleur',
         className: 'legend-futur-heat-network',
       },
     ],
