@@ -1,5 +1,6 @@
 import Hoverable from '@components/Hoverable';
 import { Icon } from '@dataesr/react-dsfr';
+import { LayerNameOption } from 'src/services/Map/param';
 import LegendDesc from './LegendDesc';
 import {
   InfoIcon,
@@ -11,7 +12,7 @@ import {
 } from './LegendEntry.styled';
 
 export type TypeLegendEntry = {
-  id: string;
+  id: LayerNameOption;
   label: string;
   info?: string;
   className?: string;

@@ -12,12 +12,18 @@ function MapLegend({
   layerDisplay,
   onToogleFeature,
   onToogleInGroup,
+  onValuesChange,
 }: {
   data: (string | TypeGroupLegend)[];
   hasResults?: boolean;
   layerDisplay: TypeLayerDisplay;
   onToogleFeature: (idEntry: any) => void;
-  onToogleInGroup: (groupeName: string, idEntry: any) => void;
+  onToogleInGroup: (groupeName: string, idEntry: string) => void;
+  onValuesChange?: (
+    groupeName: string,
+    idEntry: string,
+    values: [number, number]
+  ) => void;
 }) {
   const router = useRouter();
   return (
@@ -72,6 +78,7 @@ function MapLegend({
                 entries={entries}
                 linkto={linkto}
                 onChangeEntry={onToogleInGroup}
+                onValuesChange={onValuesChange}
               />
             );
           }
