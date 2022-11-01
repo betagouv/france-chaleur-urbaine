@@ -266,8 +266,8 @@ const EligibilityFormContact = ({
               />
               {readableDistance && (
                 <em className="distance">
-                  Un réseau de chaleur se trouve à {readableDistance} de ce
-                  bâtiment
+                  Un réseau de chaleur se {futurNetwork ? 'trouvera' : 'trouve'}{' '}
+                  à {readableDistance} de ce bâtiment
                 </em>
               )}
               {!computedEligibility && linkToMap && (
