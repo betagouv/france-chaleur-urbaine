@@ -5,6 +5,7 @@ import {
   ServicesContext,
   SuggestionService,
 } from 'src/services';
+import { AdminService } from 'src/services/admin';
 import { DemandsService } from 'src/services/demands';
 import { PasswordService } from 'src/services/password';
 import { FakeHttpClient } from './fakeHttpClient';
@@ -20,6 +21,7 @@ export const customRender = (
         heatNetworkService: new HeatNetworkService(FakeHttpClient),
         demandsService: new DemandsService(FakeHttpClient),
         passwordService: new PasswordService(FakeHttpClient),
+        adminService: new AdminService(FakeHttpClient),
         ...overrideProps,
       }}
     >
@@ -40,6 +42,7 @@ export const customRenderHook = (hook: any, overrideProps?: any) => {
           heatNetworkService: new HeatNetworkService(FakeHttpClient),
           demandsService: new DemandsService(FakeHttpClient),
           passwordService: new PasswordService(FakeHttpClient),
+          adminService: new AdminService(FakeHttpClient),
           ...overrideProps,
         }}
       >

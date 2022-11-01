@@ -1,6 +1,7 @@
 import { getSpreadSheet } from '@core/infrastructure/repository/export';
 import { getDemands } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { User } from 'next-auth';
 import { getSession } from 'next-auth/react';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ExportColumn } from 'src/types/ExportColumn';
@@ -61,13 +62,13 @@ const exportColumn: ExportColumn<Demand>[] = [
   { header: 'Commentaires', value: 'Commentaire' },
 ];
 
-const get = async (res: NextApiResponse, email: string) => {
-  const demands = await getDemands(email);
+const get = async (res: NextApiResponse, user: User) => {
+  const demands = await getDemands(user);
   return res.status(200).json(demands);
 };
 
-const post = async (res: NextApiResponse, email: string) => {
-  const demands = await getDemands(email);
+const post = async (res: NextApiResponse, user: User) => {
+  const demands = await getDemands(user);
   if (!demands) {
     return res.status(204).send(null);
   }
@@ -86,17 +87,17 @@ export default async function demands(
 ) {
   try {
     const session = await getSession({ req });
-    const email = session?.user?.email;
-    if (!email) {
+    const user = session?.user;
+    if (!user) {
       return res.status(204).json([]);
     }
 
     if (req.method === 'GET') {
-      return get(res, email);
+      return get(res, user);
     }
 
     if (req.method === 'POST') {
-      return post(res, email);
+      return post(res, user);
     }
     return res.status(501);
   } catch (error) {
