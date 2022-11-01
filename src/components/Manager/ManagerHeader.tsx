@@ -98,8 +98,11 @@ const ManagerHeader = ({
         matchFilter(addressFilter, demand.Adresse)
       );
     }
-
-    if (statusFilter) {
+    if (statusFilter === 'En attente de prise en charge') {
+      filteredDemands = filteredDemands.filter(
+        (demand) => !demand.Status || demand.Status === statusFilter
+      );
+    } else if (statusFilter) {
       filteredDemands = filteredDemands.filter(
         (demand) => demand.Status === statusFilter
       );

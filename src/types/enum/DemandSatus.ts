@@ -1,4 +1,5 @@
 export enum DEMANDE_STATUS {
+  EMPTY = 'En attente de prise en charge',
   UNREALISABLE = 'Non réalisable',
   WAITING = 'En attente d’éléments du prospect',
   IN_PROGRESS = 'Étude en cours',
