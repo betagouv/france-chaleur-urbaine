@@ -27,7 +27,7 @@ export default async function demand(
 ) {
   const { demandId } = req.query;
   const session = await getSession({ req });
-  if (!session?.user?.email) {
+  if (!session?.user) {
     return res.status(204).json({});
   }
 
@@ -41,11 +41,7 @@ export default async function demand(
       return res.status(400).send('Error');
     }
 
-    const demand = await updateDemand(
-      session.user.email,
-      demandId as string,
-      body
-    );
+    const demand = await updateDemand(session.user, demandId as string, body);
 
     const error = (demand as any)?.error;
     if (error) {

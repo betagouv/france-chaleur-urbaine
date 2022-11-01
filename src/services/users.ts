@@ -1,10 +1,13 @@
 import bcrypt from 'bcryptjs';
+import { USER_ROLE } from 'src/types/enum/UserRole';
 import db from '../db';
 import base from '../db/airtable';
 
 export const updateUsers = async () => {
   const gestionnaires = await base('FCU - Tags gestionnaires').select().all();
-  const users = await db('users').select('email');
+  const users = await db('users')
+    .select('email')
+    .where('role', USER_ROLE.GESTIONNAIRE);
   const existingEmails = new Set(users.map((user) => user.email));
   const salt = await bcrypt.genSalt(10);
 

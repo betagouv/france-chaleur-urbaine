@@ -1,11 +1,9 @@
 import { faker } from '@faker-js/faker';
-import db from 'src/db';
+import { User } from 'next-auth';
 import base from 'src/db/airtable';
+import { USER_ROLE } from 'src/types/enum/UserRole';
 import { Demand } from 'src/types/Summary/Demand';
 import { gestionnaires } from './gestionnaires.config';
-
-const getUser = (email: string) =>
-  db('users').select(['gestionnaire']).where({ email }).first();
 
 const tableNameFcuDemands = 'FCU - Utilisateurs';
 
@@ -39,9 +37,7 @@ export const getGestionnaires = (demand: Demand): string[] => {
   return [city].concat(gestionnaires[city] || []);
 };
 
-export const getDemands = async (email: string): Promise<Demand[] | null> => {
-  const user = await getUser(email);
-
+export const getDemands = async (user: User): Promise<Demand[] | null> => {
   if (!user) {
     return null;
   }
@@ -53,13 +49,16 @@ export const getDemands = async (email: string): Promise<Demand[] | null> => {
     })
     .all();
 
-  const filteredRecords = records.filter((record) => {
-    const gestionnaires = record.get('Gestionnaires') as string[];
-    return (
-      gestionnaires &&
-      gestionnaires.includes(isDemoUser ? 'Paris' : user.gestionnaire)
-    );
-  });
+  const filteredRecords =
+    user.role === USER_ROLE.ADMIN
+      ? records
+      : records.filter((record) => {
+          const gestionnaires = record.get('Gestionnaires') as string[];
+          return (
+            gestionnaires &&
+            gestionnaires.includes(isDemoUser ? 'Paris' : user.gestionnaire)
+          );
+        });
   return isDemoUser
     ? filteredRecords.map(
         (record) =>
@@ -78,24 +77,26 @@ export const getDemands = async (email: string): Promise<Demand[] | null> => {
 };
 
 export const getDemand = async (
-  email: string,
+  user: User,
   demandId: string
 ): Promise<Demand | null> => {
-  const user = await getUser(email);
   const record = await base(tableNameFcuDemands).find(demandId);
   const gestionnaires = record.get('Gestionnaires') as string[];
-  if (!user || !gestionnaires.includes(user.gestionnaire)) {
-    return null;
+  if (
+    user &&
+    (user.role === USER_ROLE.ADMIN || gestionnaires.includes(user.gestionnaire))
+  ) {
+    return { id: record.id, ...record.fields } as Demand;
   }
-  return { id: record.id, ...record.fields } as Demand;
+  return null;
 };
 
 export const updateDemand = async (
-  email: string,
+  user: User,
   demandId: string,
   update: Partial<Demand>
 ): Promise<Demand | null> => {
-  const demand = await getDemand(email, demandId);
+  const demand = await getDemand(user, demandId);
   if (!demand) {
     return null;
   }
