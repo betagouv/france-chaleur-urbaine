@@ -132,8 +132,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
     top: -3px;
     :before {
       margin: 0 4px;
-      border-radius: 4px;
-      width: 24px;
+      width: 100%;
       height: 0;
       margin-bottom: calc(0.25em - 1.5px)
     }
@@ -141,13 +140,14 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
 
   .legend-heat-network-marker {
     :before {
-      border: 2px solid ${themeDefHeatNetwork.outline.color};
+      border-radius: 4px;
+      border-top: 3px solid ${themeDefHeatNetwork.outline.color};
     }
   }
 
   .legend-futur-heat-network-marker {
     :before {
-      border: 2px dashed ${themeDefHeatNetwork.outline.color};
+      border-top: 3px dashed ${themeDefHeatNetwork.outline.color};
     }
   }
 
