@@ -29,7 +29,8 @@ const CardSearchDetails = ({
   collapsed,
   setCollapsed,
 }: CardSearchDetailsProps) => {
-  const { distance, isEligible } = storedAddress.addressDetails?.network || {};
+  const { distance, isEligible, futurNetwork } =
+    storedAddress.addressDetails?.network || {};
 
   const [contactFormVisible, setContactFormVisible] = useState(false);
 
@@ -52,13 +53,17 @@ const CardSearchDetails = ({
       (isEligible && distance === null) ||
       (distance !== null && distance < 100)
     ) {
-      return `Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.`;
+      return futurNetwork
+        ? 'Bonne nouvelle ! Un réseau de chaleur passera bientôt à proximité de cette adresse (prévu ou en construction).'
+        : 'Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.';
     }
     if (distance !== null && distance < 200) {
-      return `Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois le réseau n’est pas très loin.`;
+      return futurNetwork
+        ? 'Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs (prévu ou en construction).'
+        : 'Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois le réseau n’est pas très loin.';
     }
-    return `D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.`;
-  }, [distance, isEligible]);
+    return "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";
+  }, [distance, isEligible, futurNetwork]);
 
   const onClickHandler = useCallback(
     (evt: React.MouseEvent<HTMLElement>) => {
@@ -109,7 +114,10 @@ const CardSearchDetails = ({
             {eligibilityWording}
             <div>
               <strong>
-                {readableDistance && `Le réseau passe à ${readableDistance}`}
+                {readableDistance &&
+                  `Le réseau ${
+                    futurNetwork ? 'passera' : 'passe'
+                  } à ${readableDistance}`}
               </strong>
             </div>
           </EligibilityResult>

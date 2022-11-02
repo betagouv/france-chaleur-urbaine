@@ -14,6 +14,7 @@ import { Session } from 'next-auth';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Fragment } from 'react';
+import { USER_ROLE } from 'src/types/enum/UserRole';
 import { menu } from './MainLayout.data';
 import { FullScreenHeader, FullScreenItems } from './MainLayout.style';
 
@@ -100,15 +101,28 @@ const Header = ({
           />
         ))}
         {session && (
-          <NavItem
-            title="Espace gestionnaire"
-            current={currentMenu === '/gestionnaire'}
-            asLink={
-              <div>
-                <Link href="/gestionnaire">Espace gestionnaire</Link>
-              </div>
-            }
-          />
+          <>
+            <NavItem
+              title="Espace gestionnaire"
+              current={currentMenu === '/gestionnaire'}
+              asLink={
+                <div>
+                  <Link href="/gestionnaire">Espace gestionnaire</Link>
+                </div>
+              }
+            />
+            {session.user.role === USER_ROLE.ADMIN && (
+              <NavItem
+                title="Admin"
+                current={currentMenu === '/admin'}
+                asLink={
+                  <div>
+                    <Link href="/admin">Admin</Link>
+                  </div>
+                }
+              />
+            )}
+          </>
         )}
         {fullscreen && (
           <FullScreenItems>

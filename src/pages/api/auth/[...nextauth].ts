@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import nextAuth from 'next-auth';
+import nextAuth, { Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import db from 'src/db';
 
@@ -25,6 +25,7 @@ const login = async (email: string, password: string) => {
   return {
     id: user.id,
     gestionnaire: user.gestionnaire,
+    role: user.role,
     email: user.email,
   };
 };
@@ -37,6 +38,30 @@ export default nextAuth({
   },
   callbacks: {
     redirect: ({ url, baseUrl }) => url || baseUrl,
+    async jwt({ token, user }) {
+      if (user) {
+        return {
+          ...token,
+          role: user.role,
+          email: user.email,
+          gestionnaire: user.gestionnaire,
+        };
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        return {
+          ...session,
+          user: {
+            role: token.role,
+            email: token.email,
+            gestionnaire: token.gestionnaire,
+          },
+        } as Session;
+      }
+      return session;
+    },
   },
   providers: [
     CredentialsProvider({

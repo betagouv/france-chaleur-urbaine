@@ -10,6 +10,7 @@ import {
   ServicesContext,
   SuggestionService,
 } from 'src/services';
+import { AdminService } from 'src/services/admin';
 import { DemandsService } from 'src/services/demands';
 import { axiosHttpClient } from 'src/services/http';
 import { PasswordService } from 'src/services/password';
@@ -112,6 +113,7 @@ function MyApp({
           heatNetworkService: new HeatNetworkService(axiosHttpClient),
           demandsService: new DemandsService(axiosHttpClient),
           passwordService: new PasswordService(axiosHttpClient),
+          adminService: new AdminService(axiosHttpClient),
         }}
       >
         <Head>

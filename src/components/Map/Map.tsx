@@ -258,22 +258,6 @@ export default function Map() {
     className: 'popup-map-layer',
   });
 
-  const flyTo = useCallback(
-    ({
-      coordinates,
-      zoom,
-    }: {
-      coordinates: [number, number];
-      zoom?: number;
-    }) => {
-      map.current.flyTo({
-        center: { lon: coordinates[0], lat: coordinates[1] },
-        zoom: zoom || 16,
-      });
-    },
-    []
-  );
-
   const jumpTo = useCallback(
     ({
       coordinates,
@@ -322,9 +306,9 @@ export default function Map() {
         setCollapsedCardIndex(soughtAddresses.length - 1 - existingAddress);
       }
 
-      flyTo({ coordinates });
+      jumpTo({ coordinates });
     },
-    [flyTo, setSoughtAddresses, soughtAddresses]
+    [jumpTo, setSoughtAddresses, soughtAddresses]
   );
 
   const removeSoughtAddresses = useCallback(
@@ -428,6 +412,7 @@ export default function Map() {
 
     const clickEvents = [
       { name: 'outline', key: 'network' },
+      { name: 'dottedOutline', key: 'network' },
       {
         name: 'demands',
         key: 'demands',
@@ -734,7 +719,7 @@ export default function Map() {
                   <CardSearchDetails
                     key={soughtAddress.id}
                     address={soughtAddress}
-                    onClick={flyTo}
+                    onClick={jumpTo}
                     onClickClose={removeSoughtAddresses}
                     onContacted={markAddressAsContacted}
                     collapsed={

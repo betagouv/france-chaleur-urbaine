@@ -75,7 +75,6 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
 
   useEffect(() => {
     const { address } = router.query;
-    console.log(router.query);
 
     if (address) {
       setAddress(address as string);
@@ -85,7 +84,6 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
   }, [router.query]);
 
   useEffect(() => {
-    console.log(router.query);
     const { address } = router.query;
     if (address && suggestions.length > 0) {
       handleSelect(address as string, suggestions);

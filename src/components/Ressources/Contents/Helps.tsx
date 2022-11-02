@@ -76,12 +76,12 @@ const Helps = () => {
       <List>
         <li>
           Remplacement d’équipements de chauffage ou de production d’eau chaude
-          sanitaire au charbon, au fioul ou au gaz autres qu’à condensation au
-          profit d’un raccordement à un réseau de chaleur alimenté
-          majoritairement par des énergies renouvelables ou de récupération (ou,
-          à défaut, en cas d’impossibilité technique ou économique du
-          raccordement, de la mise en place d’équipements de chauffage ou de
-          production d’eau chaude sanitaire ne consommant ni charbon ni fioul)
+          sanitaire au charbon, au fioul ou au gaz au profit d’un raccordement à
+          un réseau de chaleur alimenté majoritairement par des énergies
+          renouvelables ou de récupération (ou, à défaut, en cas d’impossibilité
+          technique ou économique du raccordement, de la mise en place
+          d’équipements de chauffage ou de production d’eau chaude sanitaire ne
+          consommant ni charbon ni fioul)
         </li>
         <li>
           Bâtiments résidentiels collectifs et du secteur tertiaire existant

@@ -54,35 +54,3 @@ jobs:
         run: yarn build
         env:
           CI: true
-
-      - name: Share artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: next-build-artifact
-          path: out
-          retention-days: 5
-
-  deployment:
-    runs-on: ubuntu-latest
-    needs: Prepare
-    steps:
-      - name: Download build artifact
-        if: github.ref == 'refs/heads/dev'
-        uses: actions/download-artifact@v2
-        with:
-          name: next-build-artifact
-
-      - name: Set default Branch 🐛
-        if: github.ref == 'refs/heads/dev'
-        run: git config --global init.defaultBranch dev
-        env:
-          PORT: 3000
-
-      - name: deploy 🚀
-        if: github.ref == 'refs/heads/dev'
-        uses: JamesIves/github-pages-deploy-action@3.6.2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: . # The folder the action should deploy.
-          CLEAN: true # Automatically remove deleted files from the deploy branch
