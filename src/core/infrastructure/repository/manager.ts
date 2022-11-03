@@ -28,6 +28,21 @@ export const getAllDemandsFrom = async (
   return records.map((record) => record.fields as Demand);
 };
 
+export const getAllStaledDemandsSince = async (
+  dateDiff: number
+): Promise<Demand[]> => {
+  const records = await base(tableNameFcuDemands)
+    .select({
+      sort: [{ field: 'Date demandes', direction: 'desc' }],
+      filterByFormula: `AND(
+        IS_BEFORE({Date demandes}, DATEADD(TODAY(), ${dateDiff}, "days")),
+        OR({Status} = "", {Status} = "En attente de prise en charge")
+        )`,
+    })
+    .all();
+  return records.map((record) => record.fields as Demand);
+};
+
 export const getGestionnaires = (demand: Demand): string[] => {
   let city = demand.Ville;
   if (!city) {

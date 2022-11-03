@@ -6,7 +6,7 @@ import { sendInscriptionEmail } from './email';
 
 export const updateUsers = async () => {
   const newEmails: string[] = [];
-  const gestionnaires = await base('FCU - Tags gestionnaires').select().all();
+  const airtableUsers = await base('FCU - Gestionnaires').select().all();
   const users = await db('users')
     .select('email')
     .where('role', USER_ROLE.GESTIONNAIRE);
@@ -14,38 +14,53 @@ export const updateUsers = async () => {
   const salt = await bcrypt.genSalt(10);
 
   const emails = ['demo', 'paris'];
-  for (let i = 0; i < gestionnaires.length; i++) {
-    const gestionnaire = gestionnaires[i];
-    const tag = gestionnaire.get('Nom tag');
-    if (!tag) {
+  for (let i = 0; i < airtableUsers.length; i++) {
+    const user = airtableUsers[i];
+    const gestionnaire = user.get('Gestionnaire');
+    if (!gestionnaire) {
       continue;
     }
-    emails.push(`${tag} - FCU`.toLowerCase());
-    if (!existingEmails.has(`${tag} - FCU`.toLowerCase())) {
-      console.log(`Create account for ${tag} - FCU on ${tag}.`);
+    emails.push(`${gestionnaire} - FCU`.toLowerCase());
+    if (!existingEmails.has(`${gestionnaire} - FCU`.toLowerCase())) {
+      console.log(
+        `Create account for ${gestionnaire} - FCU on ${gestionnaire}.`
+      );
       await db('users').insert({
-        email: `${tag} - FCU`.toLowerCase(),
-        password: bcrypt.hashSync(`${tag} ${process.env.ACCES_PASSWORD}`, salt),
-        gestionnaire: tag,
+        email: `${gestionnaire} - FCU`.toLowerCase(),
+        password: bcrypt.hashSync(
+          `${gestionnaire} ${process.env.ACCES_PASSWORD}`,
+          salt
+        ),
+        gestionnaire,
+        receive_new_demands: false,
+        receive_old_demands: false,
       });
     }
-    for (let j = 1; j < 10; j++) {
-      let email = gestionnaire.get(`Email ${j}`) as string;
-      if (email) {
-        email = email.toLowerCase();
-        emails.push(email);
-        if (!existingEmails.has(email)) {
-          console.log(`Create account for ${email} on ${tag}.`);
-          newEmails.push(email);
-          await db('users').insert({
-            email,
-            password: bcrypt.hashSync(
-              Math.random().toString(36).slice(2, 10),
-              salt
-            ),
-            gestionnaire: tag,
-          });
-        }
+    let email = user.get('Email') as string;
+    if (email) {
+      email = email.toLowerCase().trim();
+      emails.push(email);
+      const newDemands = user.get('Nouvelle demande') === true;
+      const oldDemands = user.get('Relance') === true;
+      if (!existingEmails.has(email)) {
+        console.log(`Create account for ${email} on ${gestionnaire}.`);
+        newEmails.push(email);
+        await db('users').insert({
+          email,
+          password: bcrypt.hashSync(
+            Math.random().toString(36).slice(2, 10),
+            salt
+          ),
+          gestionnaire,
+          receive_new_demands: newDemands,
+          receive_old_demands: oldDemands,
+        });
+      } else {
+        await db('users').where({ email }).update({
+          receive_new_demands: newDemands,
+          receive_old_demands: oldDemands,
+          gestionnaire,
+        });
       }
     }
   }
@@ -55,7 +70,6 @@ export const updateUsers = async () => {
 
   if (toDelete.length > 0) {
     console.log('Delete emails:', toDelete);
-    await db('users').delete().whereIn('email', toDelete);
   } else {
     console.log('Nothing to delete');
   }
