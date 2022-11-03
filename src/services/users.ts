@@ -2,8 +2,10 @@ import bcrypt from 'bcryptjs';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import db from '../db';
 import base from '../db/airtable';
+import { sendInscriptionEmail } from './email';
 
 export const updateUsers = async () => {
+  const newEmails: string[] = [];
   const gestionnaires = await base('FCU - Tags gestionnaires').select().all();
   const users = await db('users')
     .select('email')
@@ -34,6 +36,7 @@ export const updateUsers = async () => {
         emails.push(email);
         if (!existingEmails.has(email)) {
           console.log(`Create account for ${email} on ${tag}.`);
+          newEmails.push(email);
           await db('users').insert({
             email,
             password: bcrypt.hashSync(
@@ -55,5 +58,10 @@ export const updateUsers = async () => {
     await db('users').delete().whereIn('email', toDelete);
   } else {
     console.log('Nothing to delete');
+  }
+
+  if (newEmails.length > 0) {
+    console.log('Sending mails');
+    await Promise.all(newEmails.map((email) => sendInscriptionEmail(email)));
   }
 };

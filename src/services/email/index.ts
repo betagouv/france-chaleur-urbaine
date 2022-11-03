@@ -62,6 +62,22 @@ export const sendNewDemands = async (
   );
 };
 
+export const sendInscriptionEmail = async (email: string): Promise<void> => {
+  const html = await ejs.renderFile(
+    './src/services/email/views/inscription.ejs',
+    {
+      link: process.env.NEXTAUTH_URL,
+      email,
+    }
+  );
+
+  return send(
+    ['floclemy@gmail.com'],
+    '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire',
+    html
+  );
+};
+
 export const sendResetPasswordEmail = async (
   email: string,
   token: string
