@@ -1,7 +1,7 @@
 import {
   getConso,
   getNbLogement,
-} from '@core/infrastructure/repository/addresseInformation';
+} from '@core/infrastructure/repository/address';
 import { getGestionnaires } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
