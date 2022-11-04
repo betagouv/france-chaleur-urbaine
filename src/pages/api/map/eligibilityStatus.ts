@@ -1,10 +1,10 @@
-import { closestNetwork } from '@core/infrastructure/repository/addresseInformation';
-import networkByIris from '@core/infrastructure/repository/network_by_iris.json';
+import {
+  closestNetwork,
+  isOnAnIRISNetwork,
+} from '@core/infrastructure/repository/addresseInformation';
 import inZDP from '@core/infrastructure/repository/zdp';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withCors } from 'src/services/api/cors';
-import { axiosHttpClient } from 'src/services/http';
-import { AddressPyrisResponse } from 'src/types/AddressPyrisResponse';
 import { ErrorResponse } from 'src/types/ErrorResponse';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 
@@ -28,9 +28,7 @@ const eligibilityStatusgibilityStatus = async (
     }
     const coords = { lat: Number(lat), lon: Number(lon) };
     const zdpPromise = inZDP(coords.lat, coords.lon);
-    const addressPyrisPromise = axiosHttpClient.get<AddressPyrisResponse>(
-      `${process.env.NEXT_PUBLIC_PYRIS_BASE_URL}coords?geojson=false&lat=${lat}&lon=${lon}`
-    );
+    const irisNetwork = isOnAnIRISNetwork(coords.lat, coords.lon);
 
     const network = await closestNetwork(coords.lat, coords.lon);
     if (network.distance !== null && Number(network.distance) < 1000) {
@@ -43,13 +41,8 @@ const eligibilityStatusgibilityStatus = async (
       });
     }
 
-    const addressPyris = await addressPyrisPromise;
-    const irisCode = Number(addressPyris.complete_code);
-    const foundNetwork = networkByIris.some(
-      (network) => Number(network.code) === irisCode
-    );
     return res.status(200).json({
-      isEligible: foundNetwork,
+      isEligible: await irisNetwork,
       distance: null,
       inZDP: await zdpPromise,
       isBasedOnIris: true,
