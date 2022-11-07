@@ -49,15 +49,50 @@ export const sendNewDemands = async (
   email: string,
   demands: number
 ): Promise<void> => {
-  const html = await ejs.renderFile('./src/services/email/views/demands.ejs', {
-    demands,
-    link: `${process.env.NEXTAUTH_URL}/connexion`,
-    email,
-  });
+  const html = await ejs.renderFile(
+    './src/services/email/views/new-demands.ejs',
+    {
+      demands,
+      link: `${process.env.NEXTAUTH_URL}/connexion`,
+      email,
+    }
+  );
 
   return send(
     ['floclemy@gmail.com'],
     '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire',
+    html
+  );
+};
+
+export const sendOldDemands = async (email: string): Promise<void> => {
+  const html = await ejs.renderFile(
+    './src/services/email/views/old-demands.ejs',
+    {
+      link: `${process.env.NEXTAUTH_URL}/connexion`,
+      email,
+    }
+  );
+
+  return send(
+    ['floclemy@gmail.com'],
+    '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge',
+    html
+  );
+};
+
+export const sendInscriptionEmail = async (email: string): Promise<void> => {
+  const html = await ejs.renderFile(
+    './src/services/email/views/inscription.ejs',
+    {
+      link: process.env.NEXTAUTH_URL,
+      email,
+    }
+  );
+
+  return send(
+    ['floclemy@gmail.com'],
+    '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire',
     html
   );
 };
