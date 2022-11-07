@@ -7,9 +7,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { withCors } from 'src/services/api/cors';
 import { ErrorResponse } from 'src/types/ErrorResponse';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
+import { v4 as uuidv4 } from 'uuid';
 
 const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
-const eligibilityStatusgibilityStatus = async (
+const eligibilitygibilityStatus = async (
   req: NextApiRequest,
   res: NextApiResponse<HeatNetworksResponse | ErrorResponse>
 ) => {
@@ -17,7 +18,8 @@ const eligibilityStatusgibilityStatus = async (
     return res.status(501);
   }
   try {
-    console.log(req.rawHeaders, req.query);
+    const id = uuidv4();
+    console.log(id, `Demande d'éligibilité pour ${req.query}`);
     const { lat, lon } = req.query as Record<string, string>;
 
     if (!lat || !lon) {
@@ -33,22 +35,25 @@ const eligibilityStatusgibilityStatus = async (
 
     const network = await closestNetwork(coords.lat, coords.lon);
     if (network.distance !== null && Number(network.distance) < 1000) {
-      return res.status(200).json({
+      const result = {
         isEligible: Number(network.distance) <= THRESHOLD,
         distance: Math.round(network.distance),
         inZDP: await zdpPromise,
         isBasedOnIris: false,
         futurNetwork: network.date !== null,
-      });
+      };
+      console.log(id, result);
+      return res.status(200).json(result);
     }
-
-    return res.status(200).json({
+    const result = {
       isEligible: await irisNetwork,
       distance: null,
       inZDP: await zdpPromise,
       isBasedOnIris: true,
       futurNetwork: false,
-    });
+    };
+    console.log(id, result);
+    return res.status(200).json(result);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log(error);
@@ -60,4 +65,4 @@ const eligibilityStatusgibilityStatus = async (
   }
 };
 
-export default withCors(eligibilityStatusgibilityStatus);
+export default withCors(eligibilitygibilityStatus);

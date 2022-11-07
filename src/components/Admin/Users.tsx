@@ -11,7 +11,7 @@ const columns = [
   },
   {
     name: 'last_connection',
-    label: 'Dernière connection',
+    label: 'Dernière connexion',
     render: ({ last_connection }: UserResponse) => (
       <>
         {last_connection ? new Date(last_connection).toLocaleDateString() : ''}
