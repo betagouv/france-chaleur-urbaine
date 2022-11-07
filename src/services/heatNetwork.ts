@@ -11,15 +11,12 @@ export class HeatNetworkService {
   constructor(http: HttpClient) {
     this.httpClient = http;
   }
-  async findByCoords(
-    { lon, lat }: Coords,
-    city: string
-  ): Promise<HeatNetworksResponse> {
+  async findByCoords({ lon, lat }: Coords): Promise<HeatNetworksResponse> {
     try {
       return await this.httpClient.get<HeatNetworksResponse>(
         `${
           process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
-        }/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${city}`
+        }/api/map/eligibilityStatus?lat=${lat}&lon=${lon}`
       );
     } catch (e) {
       throw new ServiceError(e);
