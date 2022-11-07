@@ -9,7 +9,11 @@ import {
 import param from 'src/services/Map/param';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
-import { LegendDeskData } from './components/LegendDesc';
+import {
+  LegendDeskData,
+  maxIconSize,
+  minIconSize,
+} from './components/LegendDesc';
 
 const { minZoomData } = param;
 
@@ -274,14 +278,19 @@ export const energyLayerStyle = {
     'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
     'icon-size': [
       'case',
-      ...LegendDeskData.energy.flatMap(({ mapCase, size }, i, arr) => {
-        const { ope, value } = mapCase;
-        const isLastEntry = i === arr.length - 1;
-        const symbolRatio = getSymbolRatio(size);
-        return !isLastEntry
-          ? [[ope, ['get', NB_LOT], value], symbolRatio]
-          : [symbolRatio];
-      }),
+      ['<', ['get', NB_LOT], LegendDeskData.energy.min],
+      getSymbolRatio(minIconSize),
+      ['<', ['get', NB_LOT], LegendDeskData.energy.max],
+      [
+        'interpolate',
+        ['linear'],
+        ['get', NB_LOT],
+        LegendDeskData.energy.min,
+        getSymbolRatio(minIconSize),
+        LegendDeskData.energy.max,
+        getSymbolRatio(maxIconSize),
+      ],
+      getSymbolRatio(maxIconSize),
     ],
   },
   paint: {
@@ -322,14 +331,19 @@ export const gasUsageLayerStyle = {
     'circle-color': ['match', ['get', TYPE_GAS], ...arrColorFromDefTypeGas],
     'circle-radius': [
       'case',
-      ...LegendDeskData.gasUsage.flatMap(({ mapCase, size }, i, arr) => {
-        const { ope, value } = mapCase;
-        const isLastEntry = i === arr.length - 1;
-        const radiusValue = size / 2;
-        return !isLastEntry
-          ? [[ope, ['get', CONSO], value], radiusValue]
-          : [radiusValue];
-      }),
+      ['<', ['get', CONSO], LegendDeskData.gasUsage.min],
+      minIconSize / 2,
+      ['<', ['get', CONSO], LegendDeskData.gasUsage.max],
+      [
+        'interpolate',
+        ['linear'],
+        ['get', CONSO],
+        LegendDeskData.gasUsage.min,
+        minIconSize / 2,
+        LegendDeskData.gasUsage.max,
+        maxIconSize / 2,
+      ],
+      maxIconSize / 2,
     ],
     'circle-opacity': [
       'interpolate',

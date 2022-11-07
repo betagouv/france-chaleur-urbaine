@@ -1,50 +1,53 @@
 import React from 'react';
 import { themeDefEnergy } from 'src/services/Map/businessRules';
+import { defaultLayerDisplay } from 'src/services/Map/param';
 import DPELegend from './DPELegend';
 import ScaleLegend from './ScaleLegend';
 
+export const minIconSize = 12;
+export const maxIconSize = 30;
+
 export const LegendDeskData = {
-  energy: [
-    { label: '<\u00a030', mapCase: { ope: '<', value: 30 }, size: 11 },
-    {
-      label: '30\u00a0à\u00a0100',
-      mapCase: { ope: '<', value: 100 },
-      size: 18,
-    },
-    { label: '>\u00a0100', mapCase: { ope: '>', value: 100 }, size: 23 },
-  ],
-  gasUsage: [
-    { label: '<\u00a0100', mapCase: { ope: '<', value: 100 }, size: 12 },
-    {
-      label: '100\u00a0à\u00a01000',
-      mapCase: { ope: '<', value: 1000 },
-      size: 18,
-    },
-    { label: '>\u00a01000', mapCase: { ope: '>', value: 1000 }, size: 29 },
-  ],
+  energy: {
+    min: 10,
+    max: 150,
+  },
+  gasUsage: {
+    min: 50,
+    max: 2000,
+  },
 };
 
-const LegendDesc: Record<string, () => React.ReactElement> = {
-  EnergyGas: () => (
+const LegendDesc: Record<
+  string,
+  (onValuesChange?: (values: [number, number]) => void) => React.ReactElement
+> = {
+  EnergyGas: (onValuesChange) => (
     <ScaleLegend
       label="Nombre de lots d'habitation"
-      color={`${themeDefEnergy.gas.color}88`}
-      scaleLabels={LegendDeskData.energy}
+      color={themeDefEnergy.gas.color}
+      domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
+      defaultValues={defaultLayerDisplay.energyGasValues}
+      onChange={(values) => onValuesChange && onValuesChange(values)}
     />
   ),
-  EnergyFuel: () => (
+  EnergyFuel: (onValuesChange) => (
     <ScaleLegend
       label="Nombre de lots d'habitation"
-      color={`${themeDefEnergy.fuelOil.color}88`}
-      scaleLabels={LegendDeskData.energy}
+      color={themeDefEnergy.fuelOil.color}
+      domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
+      defaultValues={defaultLayerDisplay.energyFuelValues}
+      onChange={(values) => onValuesChange && onValuesChange(values)}
     />
   ),
-  GasUsage: () => (
+  GasUsage: (onValuesChange) => (
     <ScaleLegend
       circle
       label="Niveau de consommation de gaz (MWh)"
       color="#D9D9D9"
-      scaleLabels={LegendDeskData.gasUsage}
+      defaultValues={defaultLayerDisplay.gasUsageValues}
+      domain={[LegendDeskData.gasUsage.min, LegendDeskData.gasUsage.max]}
+      onChange={(values) => onValuesChange && onValuesChange(values)}
     />
   ),
   DPE: () => <DPELegend />,
