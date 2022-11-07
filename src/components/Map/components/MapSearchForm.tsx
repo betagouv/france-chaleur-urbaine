@@ -17,10 +17,7 @@ const MapSearchForm = ({
   ): Promise<void> => {
     const [lon, lat] = geoAddress.geometry.coordinates;
 
-    const network = await heatNetworkService.findByCoords(
-      { lat, lon },
-      geoAddress.properties.city
-    );
+    const network = await heatNetworkService.findByCoords({ lat, lon });
     const addressDetail = {
       network,
       geoAddress,
