@@ -17,6 +17,7 @@ const eligibilityStatusgibilityStatus = async (
     return res.status(501);
   }
   try {
+    console.log(req.rawHeaders, req.query);
     const { lat, lon, city } = req.query as Record<string, string>;
 
     if (!lat || !lon || !city) {
