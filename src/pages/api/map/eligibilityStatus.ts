@@ -18,11 +18,11 @@ const eligibilityStatusgibilityStatus = async (
   }
   try {
     console.log(req.rawHeaders, req.query);
-    const { lat, lon, city } = req.query as Record<string, string>;
+    const { lat, lon } = req.query as Record<string, string>;
 
-    if (!lat || !lon || !city) {
+    if (!lat || !lon) {
       res.status(400).json({
-        message: 'Parameters city, lat and lon are required',
+        message: 'Parameters lat and lon are required',
         code: 'Bad Arguments',
       });
       return;

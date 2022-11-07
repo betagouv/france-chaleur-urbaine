@@ -64,12 +64,11 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   const checkEligibility = useCallback(
     async (
       coords: Coords,
-      city: string,
       callBack: (response: HeatNetworksResponse) => void
     ) => {
       try {
         setStatus('loading');
-        const networkData = await heatNetworkService.findByCoords(coords, city);
+        const networkData = await heatNetworkService.findByCoords(coords);
         callBack(networkData);
         setStatus('success');
       } catch (e) {
@@ -86,17 +85,14 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       }
       const [lon, lat] = geoAddress.geometry.coordinates;
       const coords = { lon, lat };
-      await checkEligibility(
-        coords,
-        geoAddress.properties.city,
-        (response: HeatNetworksResponse) =>
-          setData({
-            ...data,
-            address,
-            coords,
-            geoAddress,
-            eligibility: response,
-          })
+      await checkEligibility(coords, (response: HeatNetworksResponse) =>
+        setData({
+          ...data,
+          address,
+          coords,
+          geoAddress,
+          eligibility: response,
+        })
       );
     },
     [checkEligibility, data, onFetch]
