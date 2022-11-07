@@ -15,17 +15,17 @@ export const ScaleLegendLabel = styled.label`
   margin-bottom: 0.2em;
 `;
 
-export const Input = styled.input``;
-
-export const ScaleLegendBody = styled.div<{ checkbox?: boolean }>`
+export const ScaleLegendBody = styled.div`
+  width: 100%;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 46px;
+`;
 
-  ${({ checkbox }) =>
-    checkbox &&
-    css`
-      padding: 0 0.3em;
-    `}
+export const ScaleSlider = styled.div`
+  flex: 1 1 auto;
+  position: relative;
 `;
 
 export const ScaleLegendLabelWrapper = styled.div`

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { TypeLayerDisplay } from 'src/services/Map/param';
 import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import LegendDesc from './LegendDesc';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
@@ -15,9 +16,15 @@ function LegendGroupLabel({
   layerDisplay,
   linkto,
   onChangeEntry,
+  onValuesChange,
 }: TypeGroupLegend & {
-  layerDisplay: Record<string, string[] | boolean>;
+  layerDisplay: TypeLayerDisplay;
   onChangeEntry: (groupName: string, idEntry: string) => void;
+  onValuesChange?: (
+    groupName: string,
+    idEntry: string,
+    values: [number, number]
+  ) => void;
 }) {
   const disable = useMemo(
     () =>
@@ -35,9 +42,11 @@ function LegendGroupLabel({
           {entries.map((entry: TypeLegendEntry) => (
             <LegendEntry
               checked={
-                layerDisplay?.[id] instanceof Array
-                  ? (layerDisplay?.[id] as string[])?.includes(entry.id)
-                  : (layerDisplay?.[id] as boolean)
+                layerDisplay?.[id as keyof TypeLayerDisplay] instanceof Array
+                  ? (
+                      layerDisplay?.[id as keyof TypeLayerDisplay] as string[]
+                    )?.includes(entry.id)
+                  : (layerDisplay?.[id as keyof TypeLayerDisplay] as boolean)
               }
               type={subGroup ? 'subGroup' : 'group'}
               key={entry.id}
@@ -47,7 +56,11 @@ function LegendGroupLabel({
             />
           ))}
         </div>
-        {subLegend && LegendDesc[subLegend]?.()}
+        {subLegend &&
+          LegendDesc[subLegend]?.(
+            (values) =>
+              onValuesChange && onValuesChange(id, entries[0].id, values)
+          )}
       </GroupeLabelWrapper>
     </>
   );

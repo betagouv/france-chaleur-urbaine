@@ -374,6 +374,7 @@ export default function Map() {
     },
     [layerDisplay]
   );
+
   const toogleGasUsageGroupeVisibility = useCallback(() => {
     setLayerDisplay({
       ...layerDisplay,
@@ -669,12 +670,26 @@ export default function Map() {
 
     // Energy
     const TYPE_ENERGY = 'energie_utilisee';
-    const energyFilter = layerDisplay.energy.flatMap((energyName) =>
-      objTypeEnergy[energyName].map((energyLabel: string) => [
-        '==',
-        ['get', TYPE_ENERGY],
-        energyLabel,
-      ])
+    const energyFilter = layerDisplay.energy.flatMap(
+      (energyName: 'gas' | 'fuelOil') =>
+        objTypeEnergy[energyName].map((energyLabel: string) => {
+          const values =
+            energyName === 'gas'
+              ? layerDisplay.energyGasValues
+              : layerDisplay.energyFuelValues;
+
+          return [
+            'all',
+            values
+              ? [
+                  'all',
+                  ['>=', ['get', 'nb_logements'], values[0]],
+                  ['<=', ['get', 'nb_logements'], values[1]],
+                ]
+              : true,
+            ['==', ['get', TYPE_ENERGY], energyLabel],
+          ];
+        })
     );
     map.current.setFilter('energy', ['any', ...energyFilter]);
 
@@ -687,7 +702,17 @@ export default function Map() {
     ]);
     map.current.setFilter(
       'gasUsage',
-      layerDisplay.gasUsageGroup && ['any', ...gasUsageFilter]
+      layerDisplay.gasUsageGroup && [
+        'all',
+        layerDisplay.gasUsageValues
+          ? [
+              'all',
+              ['>=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[0]],
+              ['<=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[1]],
+            ]
+          : true,
+        ['any', ...gasUsageFilter],
+      ]
     );
   }, [layerDisplay, mapState]);
 
@@ -755,6 +780,33 @@ export default function Map() {
                 }
                 case 'gasUsageGroup': {
                   toogleGasUsageGroupeVisibility();
+                  break;
+                }
+              }
+            }}
+            onValuesChange={(
+              groupName: string,
+              idEntry: string,
+              values: [number, number]
+            ) => {
+              switch (groupName) {
+                case 'energy': {
+                  idEntry === 'gas'
+                    ? setLayerDisplay({
+                        ...layerDisplay,
+                        energyGasValues: values,
+                      })
+                    : setLayerDisplay({
+                        ...layerDisplay,
+                        energyFuelValues: values,
+                      });
+                  break;
+                }
+                case 'gasUsage': {
+                  setLayerDisplay({
+                    ...layerDisplay,
+                    gasUsageValues: values,
+                  });
                   break;
                 }
               }

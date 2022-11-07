@@ -15,19 +15,28 @@ enum Layer {
 }
 
 export const layerNameOptions = Object.values(Layer);
-const energyNameOptions = ['fuelOil', 'gas'];
+const energyNameOptions: ('gas' | 'fuelOil')[] = ['fuelOil', 'gas'];
 const gasUsageNameOptions = ['R', 'T', 'I'];
 
 export type LayerNameOption = typeof layerNameOptions[number];
 export type EnergyNameOption = typeof energyNameOptions[number];
 export type gasUsageNameOption = typeof gasUsageNameOptions[number];
 
-export type TypeLayerDisplay = Record<string, boolean | string[]> & {
+export type TypeLayerDisplay = {
+  outline: boolean;
+  dottedOutline: boolean;
+  zoneDP: boolean;
+  demands: boolean;
+  gasUsageGroup: boolean;
+  buildings: boolean;
   gasUsage: string[];
-  energy: string[];
+  energy: ('gas' | 'fuelOil')[];
+  gasUsageValues: [number, number];
+  energyGasValues: [number, number];
+  energyFuelValues: [number, number];
 };
 
-const defaultLayerDisplay: TypeLayerDisplay = {
+export const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
   dottedOutline: true,
   zoneDP: false,
@@ -36,6 +45,9 @@ const defaultLayerDisplay: TypeLayerDisplay = {
   buildings: false,
   gasUsage: gasUsageNameOptions,
   energy: energyNameOptions,
+  gasUsageValues: [1000, Number.MAX_VALUE],
+  energyGasValues: [50, Number.MAX_VALUE],
+  energyFuelValues: [50, Number.MAX_VALUE],
 };
 
 const legendData: (string | TypeGroupLegend)[] = [
