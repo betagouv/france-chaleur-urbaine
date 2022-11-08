@@ -54,12 +54,11 @@ export const sendNewDemands = async (
     {
       demands,
       link: `${process.env.NEXTAUTH_URL}/connexion`,
-      email,
     }
   );
 
   return send(
-    ['floclemy@gmail.com'],
+    [email],
     '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire',
     html
   );
@@ -70,12 +69,11 @@ export const sendOldDemands = async (email: string): Promise<void> => {
     './src/services/email/views/old-demands.ejs',
     {
       link: `${process.env.NEXTAUTH_URL}/connexion`,
-      email,
     }
   );
 
   return send(
-    ['floclemy@gmail.com'],
+    [email],
     '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge',
     html
   );
@@ -86,12 +84,11 @@ export const sendInscriptionEmail = async (email: string): Promise<void> => {
     './src/services/email/views/inscription.ejs',
     {
       link: process.env.NEXTAUTH_URL,
-      email,
     }
   );
 
   return send(
-    ['floclemy@gmail.com'],
+    [email],
     '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire',
     html
   );
