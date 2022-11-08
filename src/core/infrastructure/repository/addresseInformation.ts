@@ -1,7 +1,5 @@
 import db from 'src/db';
 
-const DEBUG = !!(process.env.API_DEBUG_MODE || null);
-
 export const closestNetwork = async (
   lat: number,
   lon: number
@@ -21,7 +19,6 @@ export const closestNetwork = async (
     .orderBy('distance')
     .first();
 
-  DEBUG && console.info(`Minimum distance is ${network.distance} meters.`);
   return network;
 };
 
