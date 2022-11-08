@@ -13,47 +13,73 @@ const changePasswordRequest = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  if (req.method !== 'POST') {
-    return res.status(501);
+  try {
+    if (req.method !== 'POST') {
+      return res.status(501);
+    }
+
+    if (!(await changePasswordSchema.isValid(req.body))) {
+      return res
+        .status(400)
+        .send('Une erreur est survenue, veuillez ressayer...');
+    }
+
+    const decodedToken: { email: string; resetToken: string } = jwt.verify(
+      req.body.token,
+      process.env.NEXTAUTH_SECRET as string
+    ) as { email: string; resetToken: string };
+
+    if (!decodedToken) {
+      return res
+        .status(400)
+        .send(
+          'Lien invalide. Veuillez redemander un lien de réinitialisation.'
+        );
+    }
+
+    const user = await db('users').where('email', decodedToken.email).first();
+    if (!user) {
+      return res.status(400).send('Email incorrect');
+    }
+
+    if (!user.reset_token) {
+      return res
+        .status(400)
+        .send(
+          'Ce lien a déjà été utilisé. Veuillez redemander un lien de réinitialisation.'
+        );
+    }
+
+    if (user.reset_token !== decodedToken.resetToken) {
+      return res
+        .status(400)
+        .send(
+          'Lien invalide. Veuillez redemander un lien de réinitialisation.'
+        );
+    }
+
+    const password = req.body.password as string;
+    if (
+      password.length < 8 ||
+      !/[a-z]/.test(password) ||
+      !/[A-Z]/.test(password) ||
+      !/[0-9]/.test(password)
+    ) {
+      return res.status(400).send('Le mot de passe est trop simple.');
+    }
+    const salt = await bcrypt.genSalt(10);
+
+    await db('users')
+      .update({ reset_token: null, password: bcrypt.hashSync(password, salt) })
+      .where('id', user.id);
+
+    return res.status(200).send('Success');
+  } catch (e) {
+    console.error(e);
+    return res
+      .status(500)
+      .send('Une erreur est survenue, veuillez ressayer...');
   }
-
-  if (!(await changePasswordSchema.isValid(req.body))) {
-    return res.status(400).send('Error');
-  }
-
-  const decodedToken: { email: string; resetToken: string } = jwt.verify(
-    req.body.token,
-    process.env.NEXTAUTH_SECRET as string
-  ) as { email: string; resetToken: string };
-
-  if (!decodedToken) {
-    return res.status(400).send('Error');
-  }
-
-  const user = await db('users')
-    .where('email', decodedToken.email)
-    .andWhere('reset_token', decodedToken.resetToken)
-    .first();
-  if (!user) {
-    return res.status(400).send('Error');
-  }
-
-  const password = req.body.password as string;
-  if (
-    password.length < 8 ||
-    !/[a-z]/.test(password) ||
-    !/[A-Z]/.test(password) ||
-    !/[0-9]/.test(password)
-  ) {
-    return res.status(400).send('Error');
-  }
-  const salt = await bcrypt.genSalt(10);
-
-  await db('users')
-    .update({ reset_token: null, password: bcrypt.hashSync(password, salt) })
-    .where('id', user.id);
-
-  return res.status(200).send('Success');
 };
 
 export default changePasswordRequest;
