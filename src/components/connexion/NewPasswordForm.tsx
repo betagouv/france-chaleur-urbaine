@@ -11,7 +11,7 @@ const NewPasswordForm = ({ token }: { token: string }) => {
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [error, setError] = useState('');
-  const [fail, setFail] = useState(false);
+  const [fail, setFail] = useState('');
 
   useEffect(() => {
     setError('');
@@ -33,11 +33,11 @@ const NewPasswordForm = ({ token }: { token: string }) => {
   const reset = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!error) {
-      setFail(false);
+      setFail('');
       passwordService
         .changePassword(token, password)
         .then(() => router.push('/connexion'))
-        .catch(() => setFail(true));
+        .catch((e) => setFail(e.response.data));
     }
   };
   return (
@@ -57,12 +57,7 @@ const NewPasswordForm = ({ token }: { token: string }) => {
         onChange={(e) => setConfirmation(e.target.value)}
       />
       {error && <PasswordAlert type="error" title={error} />}
-      {fail && (
-        <PasswordAlert
-          type="error"
-          title="Une erreur est survenue, veuillez ressayer..."
-        />
-      )}
+      {fail && <PasswordAlert type="error" title={fail} />}
       <Button submit>Changer mon mot de passe</Button>
     </Container>
   );
