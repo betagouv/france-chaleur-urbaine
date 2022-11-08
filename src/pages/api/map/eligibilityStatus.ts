@@ -7,7 +7,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { withCors } from 'src/services/api/cors';
 import { ErrorResponse } from 'src/types/ErrorResponse';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
-import { v4 as uuidv4 } from 'uuid';
 
 const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
 const eligibilitygibilityStatus = async (
@@ -18,9 +17,7 @@ const eligibilitygibilityStatus = async (
     return res.status(501);
   }
   try {
-    const id = uuidv4();
     const { lat, lon } = req.query as Record<string, string>;
-    console.log(id, `Demande d'éligibilité pour [${lat},${lon}]`);
 
     if (!lat || !lon) {
       res.status(400).json({
@@ -42,7 +39,6 @@ const eligibilitygibilityStatus = async (
         isBasedOnIris: false,
         futurNetwork: network.date !== null,
       };
-      console.log(id, result);
       return res.status(200).json(result);
     }
     const result = {
@@ -52,7 +48,6 @@ const eligibilitygibilityStatus = async (
       isBasedOnIris: true,
       futurNetwork: false,
     };
-    console.log(id, result);
     return res.status(200).json(result);
   } catch (error) {
     // eslint-disable-next-line no-console
