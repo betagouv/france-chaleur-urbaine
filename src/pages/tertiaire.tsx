@@ -178,7 +178,7 @@ Pour atteindre les objectifs du dispositif, vous pouvez optimiser l'exploitation
 #### Obligation  
 
 **de réduction des consommations d’énergie finale de l’ensemble du parc tertaire d’au moins :**  
-:know-more-link{href="https://www.ecologie.gouv.fr/sites/default/files/20064_EcoEnergieTertiaire-4pages-2-1.pdf"}
+:know-more-link{href="https://www.ecologie.gouv.fr/sites/default/files/20064_EcoEnergieTertiaire-4pages-web.pdf"}
 
 ::cartridge[**-40%** en 2030]{theme="yellow" className="presentation-rcu-tertiaire-percent"}  
 ::cartridge[**-50%** en 2040]{theme="yellow" className="presentation-rcu-tertiaire-percent"}  
