@@ -19,8 +19,8 @@ const eligibilitygibilityStatus = async (
   }
   try {
     const id = uuidv4();
-    console.log(id, `Demande d'éligibilité pour ${req.query}`);
     const { lat, lon } = req.query as Record<string, string>;
+    console.log(id, `Demande d'éligibilité pour [${lat},${lon}]`);
 
     if (!lat || !lon) {
       res.status(400).json({
