@@ -82,7 +82,12 @@ const oldDemands = async (users: User[]) => {
 };
 
 export const dailyManagerMail = async () => {
-  const users: User[] = await db('users').select('gestionnaire', 'email');
+  const users: User[] = await db('users').select(
+    'gestionnaire',
+    'email',
+    'receive_new_demands',
+    'receive_old_demands'
+  );
 
   await newDemands(users);
   await oldDemands(users);
