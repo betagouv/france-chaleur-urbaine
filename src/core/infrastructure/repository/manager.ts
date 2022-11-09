@@ -16,16 +16,18 @@ export const getAllDemands = async (): Promise<Demand[]> => {
   );
 };
 
-export const getAllDemandsFrom = async (
-  dateDiff: number
-): Promise<Demand[]> => {
+export const getAllNewDemands = async (): Promise<Demand[]> => {
   const records = await base(tableNameFcuDemands)
     .select({
-      sort: [{ field: 'Date demandes', direction: 'desc' }],
-      filterByFormula: `IS_AFTER({Date demandes}, DATEADD(TODAY(), ${dateDiff}, "days"))`,
+      filterByFormula: `AND(
+        {Gestionnaires validés} = TRUE(),
+        {Notification envoyé} = ""
+        )`,
     })
     .all();
-  return records.map((record) => record.fields as Demand);
+  return records.map(
+    (record) => ({ id: record.id, ...record.fields } as Demand)
+  );
 };
 
 export const getAllStaledDemandsSince = async (
@@ -33,14 +35,15 @@ export const getAllStaledDemandsSince = async (
 ): Promise<Demand[]> => {
   const records = await base(tableNameFcuDemands)
     .select({
-      sort: [{ field: 'Date demandes', direction: 'desc' }],
       filterByFormula: `AND(
-        IS_BEFORE({Date demandes}, DATEADD(TODAY(), ${dateDiff}, "days")),
+        IS_BEFORE({Notification envoyé}, DATEADD(TODAY(), ${dateDiff}, "days")),
         OR({Status} = "", {Status} = "En attente de prise en charge")
         )`,
     })
     .all();
-  return records.map((record) => record.fields as Demand);
+  return records.map(
+    (record) => ({ id: record.id, ...record.fields } as Demand)
+  );
 };
 
 export const getGestionnaires = (demand: Demand): string[] => {
