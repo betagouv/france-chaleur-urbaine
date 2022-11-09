@@ -40,12 +40,10 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
           if (!error && records && records[0]) {
             const gestionnaires = getGestionnaires(values);
-            const [conso, nbLogement, existingGestionnaires] =
-              await Promise.all([
-                getConso(values.Latitude, values.Longitude),
-                getNbLogement(values.Latitude, values.Longitude),
-                base('FCU - Tags gestionnaires').select().all(),
-              ]);
+            const [conso, nbLogement] = await Promise.all([
+              getConso(values.Latitude, values.Longitude),
+              getNbLogement(values.Latitude, values.Longitude),
+            ]);
 
             await base('FCU - Utilisateurs').update(
               records[0].getId(),
@@ -57,21 +55,6 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
                 'ID BNB': nbLogement ? nbLogement.fid : undefined,
               },
               { typecast: true }
-            );
-
-            await Promise.all(
-              gestionnaires
-                .filter((gestionnaire) =>
-                  existingGestionnaires.every(
-                    (existingGestionnaire) =>
-                      existingGestionnaire.get('Nom tag') !== gestionnaire
-                  )
-                )
-                .map((gestionnaire) =>
-                  base('FCU - Tags gestionnaires').create({
-                    'Nom tag': gestionnaire,
-                  })
-                )
             );
           }
         }
