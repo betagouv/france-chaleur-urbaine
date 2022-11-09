@@ -1,8 +1,9 @@
 import db from 'src/db';
+import base from 'src/db/airtable';
 import { Demand } from 'src/types/Summary/Demand';
 import { User } from 'src/types/User';
 import {
-  getAllDemandsFrom,
+  getAllNewDemands,
   getAllStaledDemandsSince,
 } from '../core/infrastructure/repository/manager';
 import { sendNewDemands, sendOldDemands } from './email';
@@ -44,10 +45,7 @@ const groupUsers = (
 const newDemands = async (users: User[]) => {
   const groupedUsers = groupUsers(users, (user) => user.receive_new_demands);
 
-  const today = new Date();
-  const isMonday = today.getDay() === 1;
-
-  const demands = await getAllDemandsFrom(isMonday ? -3 : -1);
+  const demands = await getAllNewDemands();
   const groupedDemands = groupDemands(demands);
 
   let count = 0;
@@ -57,6 +55,15 @@ const newDemands = async (users: User[]) => {
       count++;
       const email = gestionnaireUsers[i];
       await sendNewDemands(email, groupedDemands[gestionnaire].length);
+      if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION !== 'true') {
+        await Promise.all(
+          groupedDemands[gestionnaire].map((demand) =>
+            base('FCU - Utilisateurs').update(demand.id, {
+              'Notification envoyé': new Date().toDateString(),
+            })
+          )
+        );
+      }
     }
   }
 
