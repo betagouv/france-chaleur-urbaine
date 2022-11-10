@@ -104,7 +104,7 @@ const Helps = () => {
           et le type d’équipement déposé. 
         </li>
         <li>
-          Le raccordement d’un bâtiment raccordé existant est éligible si et
+          Le raccordement d’un bâtiment déraccordé existant est éligible si et
           seulement si le déraccordement a eu lieu au moins 5 ans auparavant et
           que celui-ci n’a pas fait l’objet d’une demande de certificats
           d’économie d’énergie.
