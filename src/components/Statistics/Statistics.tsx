@@ -37,8 +37,12 @@ const Statistics = () => {
       onError: (err) => console.warn('errorDataEligibilityTest >>', err),
     });
 
-  const dataEligibilityTest = useMemo(
-    () =>
+  const dataEligibilityTest = useMemo(() => {
+    if (rawDataEligibilityTest?.result.values.result === 'error') {
+      return [];
+    }
+
+    return (
       rawDataEligibilityTest?.result.values
         .map((arr: any[], i: number) =>
           arr.reduce(
@@ -51,9 +55,9 @@ const Statistics = () => {
             { filters: rawDataEligibilityTest?.result.filters[i] }
           )
         )
-        .reverse() ?? [],
-    [rawDataEligibilityTest?.result]
-  );
+        .reverse() ?? []
+    );
+  }, [rawDataEligibilityTest?.result]);
 
   const formatedDataEligibilityTest = [
     ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
@@ -79,16 +83,20 @@ const Statistics = () => {
     }
   );
 
-  const dataVisits = useMemo(
-    () =>
+  const dataVisits = useMemo(() => {
+    if (rawDataVisits?.result.values.result === 'error') {
+      return [];
+    }
+
+    return (
       rawDataVisits?.result.values
         .map((data: any, i: number) => ({
           filters: rawDataVisits.result.filters[i],
           ...data,
         }))
-        .reverse() ?? [],
-    [rawDataVisits?.result]
-  );
+        .reverse() ?? []
+    );
+  }, [rawDataVisits?.result]);
 
   const formatedDataVisits = [
     ['x', 'Visiteurs'],
@@ -227,18 +235,22 @@ const Statistics = () => {
       </Slice>
       <Slice padding={8}>
         <GraphsWrapper>
-          <Graph
-            title="Nombre de visiteurs / mois"
-            errors={errorVisits}
-            data={dataVisits}
-            formatedData={formatedDataVisits}
-          />
-          <Graph
-            title="Nombre d'adresses testées / mois"
-            errors={errorDataEligibilityTest}
-            data={dataEligibilityTest}
-            formatedData={formatedDataEligibilityTest}
-          />
+          {formatedDataVisits.length > 1 && (
+            <Graph
+              title="Nombre de visiteurs / mois"
+              errors={errorVisits}
+              data={dataVisits}
+              formatedData={formatedDataVisits}
+            />
+          )}
+          {formatedDataEligibilityTest.length > 1 && (
+            <Graph
+              title="Nombre d'adresses testées / mois"
+              errors={errorDataEligibilityTest}
+              data={dataEligibilityTest}
+              formatedData={formatedDataEligibilityTest}
+            />
+          )}
           <Graph
             title="Demandes de contacts / mois"
             errors={errorMonthContact}
