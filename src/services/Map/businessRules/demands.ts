@@ -8,13 +8,9 @@ export const themeDefDemands: any = {
 export const displayModeDeChauffage = (demand: Demand) => {
   if (
     demand['Mode de chauffage'] &&
-    demand['Mode de chauffage'].toLowerCase() === 'électricité'
-  ) {
-    return 'Électricité';
-  } else if (
-    demand['Mode de chauffage'] &&
     (demand['Mode de chauffage'].toLowerCase().trim() === 'gaz' ||
-      demand['Mode de chauffage'].toLowerCase().trim() === 'fioul')
+      demand['Mode de chauffage'].toLowerCase().trim() === 'fioul' ||
+      demand['Mode de chauffage'].toLowerCase() === 'électricité')
   ) {
     return `${demand['Mode de chauffage'][0].toUpperCase()}${demand[
       'Mode de chauffage'
