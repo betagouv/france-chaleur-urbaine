@@ -32,7 +32,7 @@ const addUser = async (
   process.exit(0);
 };
 
-if (process.argv.length !== 5) {
+if (process.argv.length !== 5 && process.argv.length !== 6) {
   console.info(
     'Usage: export NODE_PATH=./ && npx ts-node scripts/addUser.ts email password role [gestionnaire]'
   );
