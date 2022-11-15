@@ -28,7 +28,7 @@ _Sur le conseil de France Chaleur Urbaine, la copropriété d’Anne obtient des
 
 ::cartridge[**Soit 400€ par lot environ.**]
 
-_Les travaux durent **4&nbsp;mois** en tout&nbsp;!_`,
+_Les travaux durent **2&nbsp;mois** en tout&nbsp;!_`,
     imgSrc: `/img/user-experience-3.png`,
     imgAlt: `Charge et travaux pour un raccordement au Réseau de chaleur`,
     reverse: true,

@@ -72,7 +72,7 @@ const Helps = () => {
           Accéder à la liste des signataires de la charte
         </a>
       </Source>
-      <Simulator />
+      <Simulator withMargin />
       <Subtitle>Quelles sont les conditions d’attribution ?</Subtitle>
       <List>
         <li>

@@ -1,18 +1,18 @@
 [
   {
-    "value": "6199 km",
+    "value": "6529 km",
     "description": "Longueur cumulée des réseaux de chaleur en France"
   },
   {
-    "value": "60,5%",
+    "value": "62,6%",
     "description": "Taux moyen d'énergies renouvelables et de récupération"
   },
   {
-    "value": "5,6 millions",
+    "value": "4,8 millions",
     "description": "Tonnes de CO2 évitées en 2020 grâce à l'utilisation des réseaux de chaleur"
   },
   {
-    "value": "2,46 millions",
-    "description": "Total d'équivalents logements raccordés"
+    "value": "44 945",
+    "description": "Bâtiments raccordés"
   }
 ]

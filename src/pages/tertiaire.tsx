@@ -4,6 +4,7 @@ import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
 import SimulateurCO2 from '@components/SimulatorCO2';
+import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
@@ -136,13 +137,14 @@ export default function Home() {
             pageBody={`
 Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
 # Optez pour un chauffage écologique et économique`}
-            formLabel="Votre bâtiment peut-il être raccordé&nbsp;?"
+            formLabel="Votre bâtiment pourrait-il être raccordé&nbsp;?"
             energyInputsLabels={{
               collectif: 'Central',
               individuel: 'Individuel',
             }}
             checkEligibility
             needGradient
+            withBulkEligibility
           />
 
           <Slice theme="color" padding={4}>
@@ -217,7 +219,7 @@ c’est jusqu'à :
             padding={8}
             header={`## Un moyen efficace de lutter contre le changement climatique`}
           >
-            <SimulateurCO2 typeSurf="tertiaire">
+            <SimulateurCO2 typeSurf={TypeSurf.tertiaire}>
               <MarkdownWrapper
                 value={`
 :::puce-icon{icon="./icons/picto-warning.svg"}

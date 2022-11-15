@@ -1,64 +1,45 @@
+import { Select, TextInput } from '@dataesr/react-dsfr';
 import styled, { css } from 'styled-components';
 
-const inputStyle = css`
-  background-color: #fff;
-  border: 1px solid #fff;
-  padding: 0.6em 1em;
-  border-radius: 2em;
-  font-size: 1rem;
-  width: 16em;
-  height: 2.75em;
+export const Input = styled(TextInput)<{ withMargin?: boolean }>`
+  display: inline-block;
+  ${({ withMargin }) =>
+    withMargin &&
+    css`
+      margin-left: 8px;
+    `}
 `;
 
-export const Input = styled.input`
-  ${inputStyle}
+export const SurfSelect = styled(Select)`
+  margin-right: 32px;
+  max-width: 300px;
 `;
-
-const SelectWrapper = styled.div.attrs({ className: 'select-wrapper' })`
-  ${inputStyle}
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: stretch;
-  width: calc(16em + 2em);
-  padding: 0em 0.5em;
-  overflow: hidden;
-
-  select {
-    text-align: right;
-    font-size: 1em;
-    height: 100%;
-    border: 0 none transparent;
-    background-color: transparent;
-    color: #4550e5;
-
-    outline: none;
-
-    option {
-    }
-  }
-`;
-export const Select = (props: any) => (
-  <SelectWrapper>
-    <select title={props.title} {...props} />
-  </SelectWrapper>
-);
 
 const breakPoint = '1050px';
 
-export const Container = styled.div`
+export const Container = styled.div<{ custom: boolean }>`
   display: flex;
   flex-direction: column;
 
   @media (min-width: ${breakPoint}) {
     flex-direction: row;
   }
+  ${({ custom }) =>
+    custom &&
+    css`
+      color: #4550e5;
+      margin: auto;
+      background-color: #f9f8f6;
+      border: 1px solid #e7e7e7;
+      border-radius: 40px;
+      padding: 32px;
+    `}
 `;
+
 export const ContainerBody = styled.div`
   flex: 2;
   position: relative;
-  padding-top: 1.5em;
-
+  padding-top: 32px;
   &:after {
     content: '';
     display: block;
@@ -75,10 +56,11 @@ export const ContainerBody = styled.div`
 
   @media (min-width: ${breakPoint}) {
     padding-top: unset;
-    padding-left: 3em;
-
+    padding-bottom: unset;
+    padding-left: 32px;
     &:after {
       right: unset;
+      top: 0;
       bottom: 0;
 
       width: 1px;
@@ -87,19 +69,23 @@ export const ContainerBody = styled.div`
   }
 `;
 
-export const SimulatorWrapper = styled.div`
+export const SimulatorWrapper = styled.div<{ withPadding: boolean }>`
   flex: 3;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  padding-bottom: 1.5em;
+  ${({ withPadding }) =>
+    withPadding &&
+    css`
+      padding-bottom: 1.5em;
 
-  @media (min-width: ${breakPoint}) {
-    padding-bottom: unset;
-    padding-right: 3em;
-  }
+      @media (min-width: ${breakPoint}) {
+        padding-bottom: unset;
+        padding-right: 3em;
+      }
+    `}
 `;
 
 export const SimulatorHeader = styled.p`
@@ -107,9 +93,8 @@ export const SimulatorHeader = styled.p`
 `;
 export const SimulatorFormWrapper = styled.div`
   width: 100%;
-  align-items: center;
+  align-items: flex-start;
   max-width: 700px;
-  align-self: center;
   display: flex;
   flex-direction: column;
 
@@ -140,11 +125,26 @@ export const SimulatorForm = styled.form`
     &:last-child {
       margin: 0;
     }
+
+    div {
+      display: inline-block;
+    }
+
+    input {
+      min-width: 250px;
+      max-width: 350px;
+    }
+
+    select {
+      min-width: 280px;
+      max-width: 400px;
+      margin-bottom: 8px;
+    }
   }
 `;
-export const SimulatorFormResult = styled.div<{ inline?: boolean }>`
-  margin: 1em 0;
-
+export const SimulatorFormResult = styled.div<{
+  inline?: boolean;
+}>`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -279,6 +279,7 @@ export const SimulatorFormResult = styled.div<{ inline?: boolean }>`
   }
 `;
 export const SimulatorFooter = styled.div`
+  max-width: fit-content;
   padding-top: 1.5rem;
   font-size: 0.7em;
   line-height: 1.25;

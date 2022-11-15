@@ -1,15 +1,24 @@
 import { Select, TextInput } from '@dataesr/react-dsfr';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   Container,
+  Disclaimer,
   Form,
   Inputs,
+  RedirectionButton,
   Result,
   ResultValue,
   Title,
 } from './Simulator.styles';
 
-const Simulator = () => {
+const Simulator = ({
+  withMargin,
+  withRedirection,
+}: {
+  withMargin?: boolean;
+  withRedirection?: boolean;
+}) => {
   const [structure, setStructure] = useState('Résidentiel');
   const [value, setValue] = useState('');
 
@@ -30,7 +39,7 @@ const Simulator = () => {
   help = help * 0.75 * parseFloat(process.env.PRIX_SPOT_C2E || '6');
 
   return (
-    <Container>
+    <Container withMargin={withMargin}>
       <Title>
         Estimer le montant du Coup de pouce « Chauffage des bâtiments
         résidentiels collectifs et tertiaires » pour le raccordement de mon
@@ -58,30 +67,41 @@ const Simulator = () => {
             onChange={(e) => setValue(e.target.value)}
           />
         </Inputs>
-        {value && intValue > 0 && (
+        <div>
           <Result>
             <ResultValue>
               {help.toLocaleString('fr-FR', {
                 style: 'currency',
                 currency: 'EUR',
+                maximumFractionDigits: 0,
               })}
               *
             </ResultValue>
             {structure === 'Résidentiel' && (
               <span>
                 Soit{' '}
-                {(help / intValue).toLocaleString('fr-FR', {
+                {(intValue ? help / intValue : 0).toLocaleString('fr-FR', {
                   style: 'currency',
                   currency: 'EUR',
+                  maximumFractionDigits: 0,
                 })}
                 /logement
               </span>
             )}
           </Result>
-        )}
+          <Disclaimer>
+            *Montants donnés à titre indicatif. Contacter un des signataires de
+            la charte pour obtenir une offre.
+          </Disclaimer>
+        </div>
       </Form>
-      *Montants donnés à titre indicatif. Contacter un des signataires de la
-      charte pour obtenir une offre.
+      {withRedirection && (
+        <RedirectionButton>
+          <Link href="/ressources/aides#contenu">
+            Tout savoir sur cette aide
+          </Link>
+        </RedirectionButton>
+      )}
     </Container>
   );
 };

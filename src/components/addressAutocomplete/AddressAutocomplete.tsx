@@ -27,7 +27,7 @@ type AddressProps = {
   popoverClassName?: string;
   onAddressSelected: (
     address: string,
-    geoAddress: SuggestionItem
+    geoAddress?: SuggestionItem
   ) => Promise<void>;
   onChange?: (e: string) => void;
 };
@@ -65,8 +65,8 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
     (address: string, suggestions: SuggestionItem[]) => {
       const geoAddress = findAddressInSuggestions(address, suggestions);
       setAddress(address);
-      setSeeSuggestions(false);
       if (geoAddress) {
+        setSeeSuggestions(false);
         onAddressSelected(address, geoAddress);
       }
     },
@@ -81,7 +81,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
       setSeeSuggestions(false);
       fetchSuggestions(address as string);
     }
-  }, [router.query]);
+  }, [router.query, fetchSuggestions]);
 
   useEffect(() => {
     const { address } = router.query;
@@ -89,7 +89,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
       handleSelect(address as string, suggestions);
       router.replace(router.pathname);
     }
-  }, [router.query, suggestions, handleSelect]);
+  }, [router.query, suggestions, handleSelect, router]);
 
   const shouldDisplaySuggestions = useMemo(
     () => seeSuggestions && status !== 'idle' && status !== 'loading',
@@ -101,6 +101,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
     const value = event.currentTarget.value;
     setAddress(value);
     setSeeSuggestions(true);
+    onAddressSelected(value);
     if (onChange) {
       onChange(value);
     }

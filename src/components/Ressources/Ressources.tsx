@@ -38,11 +38,11 @@ const Ressources = () => {
       <Slice padding={8}>
         <Banner>
           <BannerTitle>
-            <b>43 945 bâtiments</b> sont déjà raccordés à l’un des{' '}
-            <b>833 réseaux de chaleur français !</b>
+            <b>44 945 bâtiments</b> sont déjà raccordés à l’un des{' '}
+            <b>898 réseaux de chaleur français !</b>
           </BannerTitle>
           <BannerDescription>
-            Ils bénéficient d’une chaleur produite à plus de <b>60%</b> par des
+            Ils bénéficient d’une chaleur produite à plus de <b>62%</b> par des
             énergies renouvelables et de récupération locales.
           </BannerDescription>
           <BannerImage alt="" src="/img/ressources-end.png" />

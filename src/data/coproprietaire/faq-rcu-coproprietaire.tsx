@@ -1,13 +1,13 @@
 const faqRcuCoproprietaire = [
   {
     label: 'Quelles énergies alimentent les réseaux de chaleur ?',
-    body: `Les réseaux de chaleur sont alimentés en moyenne à 60 % par des énergies renouvelables et de récupération disponibles localement (ENR&R). Cette chaleur "verte" est principalement issue :
+    body: `Les réseaux de chaleur sont alimentés en moyenne à 62 % par des énergies renouvelables et de récupération disponibles localement (ENR&R). Cette chaleur "verte" est principalement issue :
 
 - de la récupération de la chaleur issue de l’incinération de nos déchets, première source d'ENR&R dans les réseaux de chaleur ;
 - de la combustion de la biomasse (bois déchet, bois issu de l’élagage urbain d’hiver, produits forestiers issus de l’exploitation ou de l’entretien des forêts, résidus agricoles…) ;
 - de la géothermie (chaleur extraite du sous-sol).
 
-Les 40 % restants correspondent majoritairement à du gaz naturel.  
+Les 32 % restants correspondent majoritairement à du gaz naturel.  
 Il est à noter que le mix énergétique est variable d’un réseau à l’autre et que le gaz est généralement utilisé en appoint/secours pour assurer la continuité du service.
 `,
   },

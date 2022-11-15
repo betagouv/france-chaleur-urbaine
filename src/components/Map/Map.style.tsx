@@ -17,7 +17,6 @@ import {
 
 const { minZoomData } = param;
 
-const mapOverZindex = 100;
 const mapControlZindex = 110;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
@@ -43,22 +42,6 @@ export const MapStyle: any = createGlobalStyle<{
         left: 0;
         width: 100%;
       }
-    }
-
-    .maplibregl-control-container,
-    .mapboxgl-control-container {
-      > [class*=mapboxgl-] {
-        z-index: ${mapOverZindex};
-      }
-    }
-
-    .maplibregl-marker,
-    .mapboxgl-marker {
-      z-index: ${mapOverZindex};
-    }
-
-    .popover-map-search-form {
-      z-index: ${mapControlZindex + 1} !important;
     }
 
     .popup-map-layer {

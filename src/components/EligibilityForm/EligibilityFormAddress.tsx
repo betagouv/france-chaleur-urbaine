@@ -79,7 +79,11 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   );
 
   const handleAddressSelected = useCallback(
-    async (address: string, geoAddress: SuggestionItem): Promise<void> => {
+    async (address: string, geoAddress?: SuggestionItem): Promise<void> => {
+      if (!geoAddress) {
+        return;
+      }
+
       if (onFetch) {
         onFetch({ address, geoAddress });
       }
