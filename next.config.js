@@ -1,9 +1,74 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const helmet = require('helmet');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
 const isGithubCI = process.env.NODE_ENV === 'production' && process.env.CI;
+
+const csp = {
+  ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+  'script-src': [
+    "'self'",
+    'https://stats.data.gouv.fr/matomo.js',
+    "'sha256-TXnVHDn1j7ztxp+9fAgGYQt5MDdGcfG3DMT2sJR4v/I='",
+    "'sha256-uoDYfYhkG1Rred64INgKWU540cb8GBpVb+EoZcz/Zyo='",
+    "'sha256-eGdlwoVjdfoAxTtVJ5JOqj8MsevToXdxA0rkY5IXIxk='",
+    "'sha256-5nUSiKlxGJiE3JicLfPYxYZShtQfFZM0jtHZyyPijTE='",
+    "'sha256-PAh6kZHWrs47demJXB9x6PfCgghwAf4BZ4ncKf/BhiU='",
+    "'sha256-vHLisyhJqlXs8efpQOmla3M8/VBRwdzde5ZgWIhJQEA='",
+    "'sha256-3I33qFPfa/PLrN/3rrrC4vJBjmKYiuXWQ+ZfnHiEWmo='",
+  ],
+  'connect-src': [
+    "'self'",
+    'https://openmaptiles.geo.data.gouv.fr',
+    'https://openmaptiles.github.io',
+    'https://france-chaleur-urbaine.beta.gouv.fr/',
+    'https://api-adresse.data.gouv.fr/',
+  ],
+  'img-src': ["'self'", 'https:', 'data:'],
+  'worker-src': ["'self'", 'blob:'],
+};
+
+if (process.env.UNSAFE_EVAL === 'true') {
+  csp['script-src'].push("'unsafe-eval'");
+}
+
+const securityHeaders = [
+  {
+    key: 'X-Content-Type-Options',
+    value: 'nosniff',
+  },
+  {
+    key: 'X-XSS-Protection',
+    value: '1; mode=block',
+  },
+  {
+    key: 'X-Frame-Options',
+    value: 'SAMEORIGIN',
+  },
+  {
+    key: 'Content-Security-Policy',
+    value: Object.keys(csp)
+      .map((key) => `${key} ${csp[key].join(' ')}`)
+      .join(';'),
+  },
+];
+
+const securityHeadersIFramable = [
+  {
+    key: 'X-Frame-Options',
+    value: '',
+  },
+
+  {
+    key: 'Content-Security-Policy',
+    value: Object.keys(csp)
+      .filter((key) => key !== 'frame-ancestors')
+      .map((key) => `${key} ${csp[key].join(' ')}`)
+      .join(';'),
+  },
+];
 
 module.exports = withBundleAnalyzer({
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,
@@ -21,6 +86,15 @@ module.exports = withBundleAnalyzer({
         destination: '/documentation/guide-france-chaleur-urbaine.pdf',
         permanent: false,
       },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: securityHeaders,
+      },
+      { source: '/form', headers: securityHeadersIFramable },
     ];
   },
 });

@@ -50,6 +50,7 @@
     "ejs": "^3.1.8",
     "formik": "^2.2.9",
     "geojson-vt": "^3.2.1",
+    "helmet": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.3.0",
     "maplibre-gl": "^2.4.0",
