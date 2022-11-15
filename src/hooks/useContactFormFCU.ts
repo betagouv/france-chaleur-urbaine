@@ -48,7 +48,7 @@ const callMarkup__handleOnSubmitContact = (data: AddressDataType) => {
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
 const useContactFormFCU = () => {
-  const EligibilityFormContactRef = useRef(null);
+  const EligibilityFormContactRef = useRef<null | HTMLDivElement>(null);
 
   const [addressData, setAddressData] = useState<AddressDataType>({});
   const [contactReady, setContactReady] = useState(false);
@@ -60,11 +60,12 @@ const useContactFormFCU = () => {
   const timeoutScroller = useCallback(
     (delai: number, callback?: () => void) =>
       window.setTimeout(() => {
-        const { current }: any = EligibilityFormContactRef;
-        current?.scrollIntoView({
+        EligibilityFormContactRef.current?.scrollIntoView({
           behavior: 'smooth',
         });
-        if (callback) callback();
+        if (callback) {
+          callback();
+        }
       }, delai),
     []
   );

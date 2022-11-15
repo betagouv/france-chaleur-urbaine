@@ -13,6 +13,7 @@ import {
   Cartridge,
   CheckItem,
   CounterItem,
+  CountItem,
   isExternalLink,
   KnowMoreLink,
   MarkdownWrapperStyled,
@@ -86,6 +87,7 @@ const MarkdownWrapper: React.FC<{
       {
         processor({
           'check-item': CheckItem,
+          'count-item': CountItem,
           'counter-item': CounterItem,
           'consent-link': ConsentLink,
           cartridge: Cartridge,

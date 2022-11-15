@@ -36,15 +36,20 @@ const GreenEnergies = () => {
       Le recours aux énergies fossiles (charbon, fioul, gaz) est à la baisse ces
       dernières années : celles-ci sont progressivement remplacées par des
       énergies renouvelables et de récupération.
+      <br />
+      <br />
       <CenteredImage>
+        <h3>Bouquet énergetique 2021</h3>
+        <p>(énergie entrante)</p>
         <img
           src="/img/ressources-green-energies.png"
           alt=""
-          className="fr-mt-4w"
+          className="fr-mt-1w"
         />
       </CenteredImage>
       <Source>
-        Source : SNCU (Enquête annuelle des réseaux de chaleur et de froid 2021)
+        Source : SNCU (Enquête annuelle des réseaux de chaleur et de froid 2022
+        portant sur l'année 2021)
       </Source>
     </>
   );

@@ -5,6 +5,7 @@ import {
   HeaderOperator,
   Logo,
   NavItem,
+  NavSubItem,
   Service,
   Tool,
   ToolItem,
@@ -22,12 +23,34 @@ const fcuHeaderDesc = `Un service public pour faciliter et accélérer les racco
 
 const ToolItems = ({ session }: { session: Session | null }) => (
   <Tool>
-    <ToolItemGroup>
-      {session ? (
+    {session ? (
+      <ToolItemGroup>
         <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
           Se déconnecter
         </ToolItem>
-      ) : (
+        <ToolItem
+          asLink={
+            <Link href="/gestionnaire">
+              <a className="fr-link">Espace gestionnaire</a>
+            </Link>
+          }
+        >
+          Espace gestionnaire
+        </ToolItem>
+        {session.user.role === USER_ROLE.ADMIN && (
+          <ToolItem
+            asLink={
+              <Link href="/admin">
+                <a className="fr-link">Admin</a>
+              </Link>
+            }
+          >
+            Admin
+          </ToolItem>
+        )}
+      </ToolItemGroup>
+    ) : (
+      <ToolItemGroup>
         <ToolItem
           asLink={
             <Link href="/connexion">
@@ -37,8 +60,8 @@ const ToolItems = ({ session }: { session: Session | null }) => (
         >
           Espace gestionnaire
         </ToolItem>
-      )}
-    </ToolItemGroup>
+      </ToolItemGroup>
+    )}
   </Tool>
 );
 
@@ -82,47 +105,48 @@ const Header = ({
         {fullscreen && (
           <li>
             <img
-              height={56}
+              height={50}
               src="/logo-fcu.png"
               alt="logo france chaleur urbaine"
             />
           </li>
         )}
-        {menu.map(({ label, url }) => (
-          <NavItem
-            key={url}
-            title={label}
-            current={currentMenu === url}
-            asLink={
-              <div>
-                <Link href={url}>{label}</Link>
-              </div>
-            }
-          />
-        ))}
-        {session && (
-          <>
+        {menu.map(({ label, url, subMenus }) =>
+          url ? (
             <NavItem
-              title="Espace gestionnaire"
-              current={currentMenu === '/gestionnaire'}
+              key={url}
+              title={label}
+              current={currentMenu === url}
               asLink={
-                <div>
-                  <Link href="/gestionnaire">Espace gestionnaire</Link>
-                </div>
+                <Link href={url} legacyBehavior={false}>
+                  <a href={url}>{label}</a>
+                </Link>
               }
             />
-            {session.user.role === USER_ROLE.ADMIN && (
-              <NavItem
-                title="Admin"
-                current={currentMenu === '/admin'}
-                asLink={
-                  <div>
-                    <Link href="/admin">Admin</Link>
-                  </div>
-                }
-              />
-            )}
-          </>
+          ) : (
+            <NavItem
+              key={label}
+              title={label}
+              current={
+                subMenus &&
+                subMenus.some((subMenu) => subMenu.url === currentMenu)
+              }
+            >
+              {subMenus &&
+                subMenus.map(({ url, label }) => (
+                  <NavSubItem
+                    key={url}
+                    title={label}
+                    current={currentMenu === url}
+                    asLink={
+                      <Link href={url} legacyBehavior={false}>
+                        <a href={url}>{label}</a>
+                      </Link>
+                    }
+                  />
+                ))}
+            </NavItem>
+          )
         )}
         {fullscreen && (
           <FullScreenItems>

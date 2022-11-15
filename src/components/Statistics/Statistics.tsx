@@ -222,7 +222,7 @@ const Statistics = () => {
           <span>
             <i>
               Pour une consommation moyenne de 10 MWh/an, avec un réseau de
-              chaleur alimenté à 60% par des énergies renouvelables (= taux
+              chaleur alimenté à 62% par des énergies renouvelables (= taux
               moyen pour les réseaux de chaleur français)
             </i>
           </span>

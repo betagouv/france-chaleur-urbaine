@@ -23,6 +23,48 @@ export class HeatNetworkService {
     }
   }
 
+  async bulkEligibility(
+    addresses: string[],
+    email: string
+  ): Promise<{
+    id: string;
+    progress: number;
+    result?: string;
+    error?: boolean;
+  }> {
+    return this.httpClient
+      .post(
+        `${
+          process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
+        }/api/map/bulkEligibilityStatus`,
+        { addresses, email }
+      )
+      .then((response) => response.data);
+  }
+
+  async bulkEligibilityValues(id: string): Promise<{
+    id: string;
+    progress: number;
+    result?: any[];
+    error?: boolean;
+  }> {
+    return this.httpClient.get(
+      `${
+        process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
+      }/api/map/bulkEligibilityStatus/${id}`
+    );
+  }
+
+  async bulkEligibilityExport(id: string): Promise<string> {
+    return this.httpClient
+      .post(
+        `${
+          process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
+        }/api/map/bulkEligibilityStatus/${id}`
+      )
+      .then((response) => response.data);
+  }
+
   async summary(bounds: number[][]): Promise<Summary> {
     try {
       return await this.httpClient.get<Summary>(

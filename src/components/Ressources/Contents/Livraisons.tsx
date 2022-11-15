@@ -9,11 +9,11 @@ const Livraisons = () => {
           réseaux de chaleur !
         </b>
       </p>
-      <Subtitle>En 2020, on compte :</Subtitle>
+      <Subtitle>En 2022, on compte :</Subtitle>
       <Statistics>
         <div>
           <Statistic>
-            <b>43 045</b>
+            <b>44 945</b>
           </Statistic>
           Bâtiments raccordés
           <br />
@@ -21,13 +21,13 @@ const Livraisons = () => {
         </div>
         <div>
           <Statistic>
-            <b>6 199</b> km
+            <b>6 529</b> km
           </Statistic>
           De longueurs desservies
         </div>
         <div>
           <Statistic>
-            <b>25,4</b> TWh
+            <b>29,8</b> TWh
           </Statistic>
           De chaleur livrée nette
         </div>
@@ -36,10 +36,10 @@ const Livraisons = () => {
       Les principaux secteurs desservis par les réseaux de chaleur sont :
       <ul>
         <li>
-          le secteur <b>résidentiel</b> : 54,3 % des livraisons.
+          le secteur <b>résidentiel</b> : 52,7 % des livraisons.
         </li>
         <li>
-          le secteur <b>tertiaire</b> : 36,1 % des livraisons.
+          le secteur <b>tertiaire</b> : 35,8 % des livraisons.
         </li>
       </ul>
       <br />

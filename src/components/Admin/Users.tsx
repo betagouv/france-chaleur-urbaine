@@ -35,6 +35,7 @@ const Users = () => {
   return (
     <TableContainer>
       <Table
+        caption="Connexion"
         columns={columns}
         data={users}
         rowKey="email"

@@ -14,7 +14,7 @@ export const SliceContactFormStyle: any = createGlobalStyle` // TODO: Wait Fix f
 
 export const HeadSliceContainer = styled.div<{ needGradient?: boolean }>`
   background: transparent;
-  min-height: 630px;
+  min-height: 510px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,7 +87,7 @@ export const FormLabel = styled.div`
   font-weight: 500;
   letter-spacing: -0.05rem;
   font-size: 1.25rem;
-  margin-bottom: 32px;
+  margin: 32px 0 16px 0;
 `;
 
 export const FormWarningMessage = styled.div<{ show?: boolean }>`

@@ -1,6 +1,6 @@
 export const headerHeight = `185px`;
 export const tabHeaderHeight = `105px`;
-export const fullscreenHeaderHeight = `63px`;
+export const fullscreenHeaderHeight = `56px`;
 export const footerHeight = `291px`;
 export const tabFooterHeight = `534px`;
 export const fullscreenFooterHeight = `301px`;
@@ -11,16 +11,25 @@ export const menu = [
     url: '/',
   },
   {
-    label: 'Copropriété',
-    url: '/coproprietaire',
-  },
-  {
-    label: 'Tertiaire',
-    url: '/tertiaire',
-  },
-  {
-    label: 'Collectivité/Exploitant',
-    url: '/collectivites-et-exploitants',
+    label: 'Vous êtes :',
+    subMenus: [
+      {
+        label: 'Copropriétaire',
+        url: '/coproprietaire',
+      },
+      {
+        label: 'Gestionnaire de bâtiments tertiaires',
+        url: '/tertiaire',
+      },
+      {
+        label: 'Collectivité ou exploitant',
+        url: '/collectivites-et-exploitants',
+      },
+      {
+        label: 'Conseiller énergie',
+        url: '/conseiller',
+      },
+    ],
   },
   {
     label: 'Cartographie',
