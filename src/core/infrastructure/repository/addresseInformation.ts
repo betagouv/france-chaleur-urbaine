@@ -1,4 +1,22 @@
 import db from 'src/db';
+import inZDP from './zdp';
+
+const isOnAnIRISNetwork = async (
+  lat: number,
+  lon: number
+): Promise<boolean> => {
+  const result = await db('network_iris')
+    .where(
+      db.raw(`ST_INTERSECTS(
+      ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
+      ST_Transform(geom, 2154)
+    )
+  `)
+    )
+    .first();
+
+  return !!result;
+};
 
 export const closestNetwork = async (
   lat: number,
@@ -20,23 +38,6 @@ export const closestNetwork = async (
     .first();
 
   return network;
-};
-
-export const isOnAnIRISNetwork = async (
-  lat: number,
-  lon: number
-): Promise<boolean> => {
-  const result = await db('network_iris')
-    .where(
-      db.raw(`ST_INTERSECTS(
-      ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-      ST_Transform(geom, 2154)
-    )
-  `)
-    )
-    .first();
-
-  return !!result;
 };
 
 export const getConso = async (
@@ -140,4 +141,39 @@ export const getNbLogementById = async (
     .where('fid', id)
     .first();
   return result;
+};
+
+const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
+
+export const getElibilityStatus = async (
+  lat: number,
+  lon: number
+): Promise<{
+  isEligible: boolean;
+  distance: number | null;
+  inZDP: boolean;
+  isBasedOnIris: boolean;
+  futurNetwork: boolean;
+}> => {
+  const zdpPromise = inZDP(lat, lon);
+  const irisNetwork = isOnAnIRISNetwork(lat, lon);
+
+  const network = await closestNetwork(lat, lon);
+  if (network.distance !== null && Number(network.distance) < 1000) {
+    return {
+      isEligible: Number(network.distance) <= THRESHOLD,
+      distance: Math.round(network.distance),
+      inZDP: await zdpPromise,
+      isBasedOnIris: false,
+      futurNetwork: network.date !== null,
+    };
+  }
+  const isEligible = await irisNetwork;
+  return {
+    isEligible,
+    distance: isEligible ? null : Math.round(network.distance),
+    inZDP: await zdpPromise,
+    isBasedOnIris: true,
+    futurNetwork: false,
+  };
 };
