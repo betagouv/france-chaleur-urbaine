@@ -11,6 +11,7 @@ const csp = {
   'script-src': [
     "'self'",
     'https://stats.data.gouv.fr/matomo.js',
+    'https://www.gstatic.com/',
     "'sha256-TXnVHDn1j7ztxp+9fAgGYQt5MDdGcfG3DMT2sJR4v/I='",
     "'sha256-uoDYfYhkG1Rred64INgKWU540cb8GBpVb+EoZcz/Zyo='",
     "'sha256-eGdlwoVjdfoAxTtVJ5JOqj8MsevToXdxA0rkY5IXIxk='",
