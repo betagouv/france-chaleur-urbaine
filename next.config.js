@@ -26,6 +26,7 @@ const csp = {
     'https://openmaptiles.github.io',
     'https://france-chaleur-urbaine.beta.gouv.fr/',
     'https://api-adresse.data.gouv.fr/',
+    'https://stats.data.gouv.fr',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
   'worker-src': ["'self'", 'blob:'],
