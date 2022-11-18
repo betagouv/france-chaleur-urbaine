@@ -1,10 +1,3 @@
-import ConsentBanner from '@components/ConsentBanner';
-import {
-  FacebookMarkup,
-  GoogleAdsMarkup,
-  LinkedInMarkup,
-  MatomoMarkup,
-} from '@components/Markup';
 import Document, {
   DocumentContext,
   Head,
@@ -44,17 +37,7 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="fr" prefix="og: http://ogp.me/ns#">
-        <Head>
-          <ConsentBanner>
-            <MatomoMarkup
-              matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
-              siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
-            />
-            <GoogleAdsMarkup googleId="10794036298" />
-            <FacebookMarkup facebookId="3064783047067401" />
-            <LinkedInMarkup tagId="3494650" />
-          </ConsentBanner>
-        </Head>
+        <Head />
         <body>
           <Main />
           <NextScript />

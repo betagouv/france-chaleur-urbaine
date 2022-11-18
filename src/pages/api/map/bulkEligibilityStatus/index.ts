@@ -77,7 +77,7 @@ const bulkEligibilitygibilityStatus = async (
         headers: form.getHeaders(),
       }
     );
-
+    console.log(addressesCSV, addressesCoords);
     const addressesInformation = addressesCoords.data.split('\n');
     const results = [
       "Adresse,Adresse testée,Score,Eligibilité,Distance,Basé sur l'iris,PDP,Réseau en construction",

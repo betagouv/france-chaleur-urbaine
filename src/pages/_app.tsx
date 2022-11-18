@@ -1,3 +1,10 @@
+import ConsentBanner from '@components/ConsentBanner';
+import {
+  FacebookMarkup,
+  GoogleAdsMarkup,
+  LinkedInMarkup,
+  MatomoMarkup,
+} from '@components/Markup';
 import { LayoutProvider, MainLayout } from '@components/shared/layout';
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 import '@reach/combobox/styles.css';
@@ -5,6 +12,7 @@ import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import {
   HeatNetworkService,
   ServicesContext,
@@ -103,6 +111,8 @@ function MyApp({
 }: AppProps<{
   session: Session;
 }>) {
+  const router = useRouter();
+
   return (
     <>
       <GlobalStyle />
@@ -117,6 +127,17 @@ function MyApp({
         }}
       >
         <Head>
+          {router.pathname !== '/form' && (
+            <ConsentBanner>
+              <MatomoMarkup
+                matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
+                siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
+              />
+              <GoogleAdsMarkup googleId="10794036298" />
+              <FacebookMarkup facebookId="3064783047067401" />
+              <LinkedInMarkup tagId="3494650" />
+            </ConsentBanner>
+          )}
           {favicons.map(
             (
               faviconProps: { rel: string; href: string; type?: string },
