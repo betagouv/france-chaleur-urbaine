@@ -171,7 +171,7 @@ export const getElibilityStatus = async (
   const isEligible = await irisNetwork;
   return {
     isEligible,
-    distance: isEligible ? null : Math.round(network.distance),
+    distance: null,
     inZDP: await zdpPromise,
     isBasedOnIris: true,
     futurNetwork: false,
