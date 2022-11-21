@@ -1,4 +1,6 @@
 import db from 'src/db';
+import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
+import XLSX from 'xlsx';
 import inZDP from './zdp';
 
 const isOnAnIRISNetwork = async (
@@ -144,6 +146,58 @@ export const getNbLogementById = async (
 };
 
 const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
+
+const headers = [
+  'Adresse',
+  'Adresse testée',
+  "Indice de fiabilité de l'adresse testée",
+  'Bâtiment potentiellement raccordable',
+  'Distance au réseau (m) si < 1000 m',
+  "Tracé non disponible mais présence d'un réseau dans la zone",
+  'PDP (périmètre de développement prioritaire)',
+];
+
+const legend = [
+  ['Adresse', 'Adresse reçue par France Chaleur Urbaine'],
+  ['Adresse testée', 'Adresse testée par France Chaleur Urbaine'],
+  [
+    "Indice de fiabilité de l'adresse testée",
+    "Min = 0 , Max = 1, Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement testée",
+  ],
+  [
+    'Bâtiment potentiellement raccordable',
+    "Résultat compilant distance au réseau et présence d'un réseau dans la zone",
+  ],
+  ['Distance au réseau (m) si < 1000 m', 'Distance au réseau le plus proche'],
+  [
+    "Tracé non disponible mais présence d'un réseau dans la zone",
+    "Lorsque nous ne disposons pas de tracé d'un réseau à proximité de l'adresse testée, nous vérifions s'il existe une consommation de chaleur sur un réseau dans le quartier (données à l'iris mise à disposition par le MTE). Le cas échéant, c'est qu'il existe un réseau à proximité",
+  ],
+  [
+    'PDP (périmètre de développement prioritaire)',
+    "Si l'adresse est comprise dans un PDP, son raccordement peut être obligatoire (valable pour les nouveaux bâtiments ou ceux renouvelant leur installation de chauffage au-dessus d'une certaine puissance)",
+  ],
+];
+
+export const getExport = (addresses: any[]) => {
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(
+    [headers].concat(
+      addresses.map((address) => [
+        address.address,
+        address.label,
+        address.score,
+        address.isEligible ? 'Oui' : 'Non',
+        address.distance,
+        address.isEligible && address.isBasedOnIris ? 'Oui' : 'Non',
+        address.inZDP ? 'Oui' : 'Non',
+      ])
+    )
+  );
+  XLSX.utils.book_append_sheet(wb, ws, 'Résultats');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(legend), 'Légende');
+  return XLSX.write(wb, { bookType: EXPORT_FORMAT.XLSX, type: 'base64' });
+};
 
 export const getElibilityStatus = async (
   lat: number,
