@@ -7,6 +7,13 @@ import nodemailer from 'nodemailer';
 dotenv.config({ path: '.env.local' });
 dotenv.config();
 
+type Attachment = {
+  filename: string;
+  content: string;
+  contentType: string;
+  encoding: string;
+};
+
 const mailTransport = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
@@ -24,7 +31,8 @@ const send = (
   subject: string,
   html: string,
   ccEmail = [],
-  bccEmail = []
+  bccEmail = [],
+  attachments: Attachment[] = []
 ): Promise<void> => {
   const mail = {
     to: toEmail.join(','),
@@ -34,6 +42,7 @@ const send = (
     replyTo: process.env.SENDING_EMAIL,
     subject,
     html,
+    attachments,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
     headers: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
   };
@@ -103,4 +112,26 @@ export const sendResetPasswordEmail = async (
   });
 
   return send([email], 'Réinitialisation de votre mot de passe FCU.', html);
+};
+
+export const sendBulkEligibilityResult = async (
+  id: string,
+  email: string,
+  attachment: Attachment
+): Promise<void> => {
+  const html = await ejs.renderFile(
+    './src/services/email/views/bulk-eligibility.ejs',
+    {
+      link: `${process.env.NEXTAUTH_URL}/carte?id=${id}`,
+    }
+  );
+
+  return send(
+    [email],
+    '[France Chaleur Urbaine] Résultat de votre test.',
+    html,
+    [],
+    [],
+    [attachment]
+  );
 };
