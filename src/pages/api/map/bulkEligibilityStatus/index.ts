@@ -27,7 +27,11 @@ const sendMail = async (id: string, email: string, addresses: any[]) => {
     content: getExport(addresses),
     encoding: 'base64',
   });
-  return;
+
+  await db('eligibility_demands').insert({
+    eligibility_test_id: id,
+    email,
+  });
 };
 
 const bulkEligibilitygibilityStatus = async (
@@ -55,21 +59,14 @@ const bulkEligibilitygibilityStatus = async (
     .first();
 
   if (existingValue) {
-    res.status(200).json({
-      id: existingValue.id,
-      error: existingValue.in_error,
-      progress: existingValue.progress / addresses.length,
-      result: existingValue.result,
-    });
-
+    res.status(200).send('File already exists, send email');
     while (!existingValue.result && !existingValue.in_error) {
       existingValue = await db('eligibility_tests')
-        .where('hash', hash)
-        .andWhere('version', version)
+        .where('id', existingValue.id)
         .first();
     }
 
-    if (existingValue.in_error) {
+    if (!existingValue.in_error) {
       await sendMail(existingValue.id, email, JSON.parse(existingValue.result));
     }
 
@@ -81,15 +78,13 @@ const bulkEligibilitygibilityStatus = async (
     await db('eligibility_tests').insert({
       id,
       version,
-      email,
       hash,
       addresses_count: addresses.length,
     });
 
-    res.status(200).json({
-      id: id,
-      progress: 0,
-    });
+    res
+      .status(200)
+      .send('File do not exists, computing result then send email');
 
     const form = new FormData();
     form.append('data', addressesCSV, 'file.csv');
@@ -132,11 +127,9 @@ const bulkEligibilitygibilityStatus = async (
       }
     }
 
-    const result = results.join('\n');
     await db('eligibility_tests')
       .update({
-        progress: addresses.length,
-        result,
+        result: JSON.stringify(results),
         error_count: errorCount,
         eligibile_count: eligibileCount,
       })
