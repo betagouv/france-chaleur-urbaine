@@ -111,7 +111,7 @@ export const sendResetPasswordEmail = async (
     link: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
   });
 
-  return send([email], 'Réinitialisation de votre mot de passe FCU.', html);
+  return send([email], 'Réinitialisation de votre mot de passe FCU', html);
 };
 
 export const sendBulkEligibilityResult = async (
@@ -128,7 +128,7 @@ export const sendBulkEligibilityResult = async (
 
   return send(
     [email],
-    '[France Chaleur Urbaine] Résultat de votre test.',
+    '[France Chaleur Urbaine] Résultat de votre test',
     html,
     [],
     [],
