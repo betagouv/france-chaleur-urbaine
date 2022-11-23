@@ -6,6 +6,14 @@ import { sendInscriptionEmail } from './email';
 
 export const updateUsers = async () => {
   const newEmails: string[] = [];
+  const demands = await base('FCU - Utilisateurs').select().all();
+  const managers = demands
+    .flatMap((demand) => demand.get('Gestionnaires') as string[])
+    .filter(
+      (manager, index, values) =>
+        values.findIndex((x) => x === manager) === index
+    );
+
   const airtableUsers = await base('FCU - Gestionnaires').select().all();
   const users = await db('users')
     .select('email')
@@ -13,13 +21,15 @@ export const updateUsers = async () => {
   const existingEmails = new Set(users.map((user) => user.email));
   const salt = await bcrypt.genSalt(10);
 
+  const existingManager: string[] = [];
   const emails = ['demo', 'paris'];
   for (let i = 0; i < airtableUsers.length; i++) {
     const user = airtableUsers[i];
-    const gestionnaire = user.get('Gestionnaire');
+    const gestionnaire = user.get('Gestionnaire') as string;
     if (!gestionnaire) {
       continue;
     }
+    existingManager.push(gestionnaire);
     emails.push(`${gestionnaire} - FCU`.toLowerCase());
     if (!existingEmails.has(`${gestionnaire} - FCU`.toLowerCase())) {
       console.log(
@@ -64,12 +74,14 @@ export const updateUsers = async () => {
       }
     }
   }
+
   const toDelete = Array.from(existingEmails).filter(
     (email) => !emails.includes(email)
   );
 
   if (toDelete.length > 0) {
     console.log('Delete emails:', toDelete);
+    await db('users').delete().whereIn('email', toDelete);
   } else {
     console.log('Nothing to delete');
   }
@@ -78,4 +90,23 @@ export const updateUsers = async () => {
     console.log('Sending mails');
     await Promise.all(newEmails.map((email) => sendInscriptionEmail(email)));
   }
+
+  await Promise.all(
+    managers
+      .filter((manager) => !existingManager.includes(manager))
+      .map((manager) =>
+        base('FCU - Gestionnaires').create(
+          [
+            {
+              fields: {
+                Gestionnaire: manager,
+              },
+            },
+          ],
+          {
+            typecast: true,
+          }
+        )
+      )
+  );
 };
