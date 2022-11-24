@@ -55,12 +55,12 @@ export const getGestionnaires = (demand: Demand): string[] => {
   return [city].concat(gestionnaires[city] || []);
 };
 
-export const getDemands = async (user: User): Promise<Demand[] | null> => {
-  if (!user) {
-    return null;
+export const getDemands = async (user: User): Promise<Demand[]> => {
+  if (!user || !user.gestionnaires) {
+    return [];
   }
 
-  const isDemoUser = user.gestionnaire === 'DEMO';
+  const isDemoUser = user.gestionnaires.includes('DEMO');
   const records = await base(tableNameFcuDemands)
     .select({
       sort: [{ field: 'Date demandes', direction: 'desc' }],
@@ -74,7 +74,11 @@ export const getDemands = async (user: User): Promise<Demand[] | null> => {
           const gestionnaires = record.get('Gestionnaires') as string[];
           return (
             gestionnaires &&
-            gestionnaires.includes(isDemoUser ? 'Paris' : user.gestionnaire)
+            gestionnaires.some(
+              (gestionnaire) =>
+                (isDemoUser && gestionnaire === 'Paris') ||
+                user.gestionnaires.includes(gestionnaire)
+            )
           );
         });
   return isDemoUser
@@ -102,7 +106,10 @@ export const getDemand = async (
   const gestionnaires = record.get('Gestionnaires') as string[];
   if (
     user &&
-    (user.role === USER_ROLE.ADMIN || gestionnaires.includes(user.gestionnaire))
+    (user.role === USER_ROLE.ADMIN ||
+      gestionnaires.some((gestionnaire) =>
+        user.gestionnaires.includes(gestionnaire)
+      ))
   ) {
     return { id: record.id, ...record.fields } as Demand;
   }

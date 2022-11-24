@@ -33,11 +33,13 @@ const groupUsers = (
     .filter((user) => user.email.includes('@'))
     .filter(extraFilter)
     .forEach((user) => {
-      if (groupedUsers[user.gestionnaire]) {
-        groupedUsers[user.gestionnaire].push(user.email);
-      } else {
-        groupedUsers[user.gestionnaire] = [user.email];
-      }
+      user.gestionnaires.forEach((gestionnaire) => {
+        if (groupedUsers[gestionnaire]) {
+          groupedUsers[gestionnaire].push(user.email);
+        } else {
+          groupedUsers[gestionnaire] = [user.email];
+        }
+      });
     });
   return groupedUsers;
 };
