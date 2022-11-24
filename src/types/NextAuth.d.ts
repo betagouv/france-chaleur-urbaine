@@ -8,7 +8,7 @@ declare module 'next-auth' {
 
   interface User {
     role: USER_ROLE;
-    gestionnaire: string;
+    gestionnaires: string[];
     email: string;
   }
 }
