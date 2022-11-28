@@ -1,6 +1,7 @@
 import Hoverable from '@components/Hoverable';
 import { Button, Icon } from '@dataesr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import turfArea from '@turf/area';
 import { Polygon } from 'geojson';
 import { Map } from 'maplibre-gl';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -38,6 +39,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   const [drawing, setDrawing] = useState(false);
   const [bounds, setBounds] = useState<number[][]>();
   const [summary, setSummary] = useState<Summary>();
+  const [size, setSize] = useState<number>();
 
   useEffect(() => {
     setZoneCollapsed(window.innerWidth < 1251);
@@ -46,13 +48,17 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   useEffect(() => {
     if (map && draw) {
       map.on('draw.create', () => {
-        const geometry = draw.getAll().features[0].geometry as Polygon;
+        const data = draw.getAll();
+        const geometry = data.features[0].geometry as Polygon;
         setBounds(geometry.coordinates[0]);
+        setSize(turfArea(data) / 1000_000);
       });
 
       map.on('draw.update', () => {
-        const geometry = draw.getAll().features[0].geometry as Polygon;
+        const data = draw.getAll();
+        const geometry = data.features[0].geometry as Polygon;
         setBounds(geometry.coordinates[0]);
+        setSize(turfArea(data) / 1000_000);
       });
 
       map.on('draw.modechange', ({ mode }) => {
@@ -65,7 +71,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
 
   useEffect(() => {
     setSummary(undefined);
-    if (bounds) {
+    if (bounds && size && size <= 5) {
       zoneIndex.current += 1;
       const currentZoneIndex = zoneIndex.current;
       heatNetworkService.summary(bounds).then((result) => {
@@ -74,7 +80,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
         }
       });
     }
-  }, [heatNetworkService, bounds]);
+  }, [heatNetworkService, bounds, size]);
 
   const exportData = useCallback(async () => {
     if (bounds) {
@@ -100,7 +106,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
       </CollapseZone>
       {!zoneCollapsed && (
         <>
-          {!drawing && (!bounds || summary) && (
+          {!drawing && ((size && size > 5) || !bounds || summary) && (
             <ZoneButton
               icon="ri-edit-2-line"
               size="sm"
@@ -124,8 +130,30 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                   </div>
                   <span>
                     Pour afficher et exporter des données, définissez une zone
-                    en cliquant sur au moins trois points puis validez cette
-                    zone en rejoignant le premier point.
+                    de moins de 5 km² en cliquant sur au moins trois points puis
+                    validez cette zone en rejoignant le premier point.
+                  </span>
+                </Explanation>
+              ) : size && size > 5 ? (
+                <Explanation>
+                  <div>
+                    <Icon name="ri-treasure-map-line" size="lg" />
+                    <ExplanationTitle>
+                      Merci de réduire la taille de la zone
+                    </ExplanationTitle>
+                  </div>
+                  <span>
+                    La zone définie est trop grande ({size.toFixed(2)} km²),
+                    veuillez réduire la taille de recherche. Si vous avez besoin
+                    de statistiques sur une zone élargie ou plus précise,
+                    n'hésitez pas à{' '}
+                    <a
+                      href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      nous contacter
+                    </a>
                   </span>
                 </Explanation>
               ) : bounds && !summary ? (
@@ -136,7 +164,7 @@ const ZoneInfos = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                   </div>
                   <span>
                     Extraction des données correspondant à la zone définie en
-                    cours (peut être long si la zone définie est trop grande)...
+                    cours...
                   </span>
                 </Explanation>
               ) : (
