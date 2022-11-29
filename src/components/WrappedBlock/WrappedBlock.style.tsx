@@ -1,9 +1,12 @@
 import styled from 'styled-components';
 
-export const Container = styled.div<{ reverse?: boolean; direction?: string }>`
+export const Container = styled.div<{
+  reverse?: boolean;
+  direction?: string;
+}>`
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: 'space-around';
 
   @media (min-width: 992px) {
     flex-direction: ${({ reverse, direction }) =>

@@ -14,7 +14,7 @@ export const SliceContactFormStyle: any = createGlobalStyle` // TODO: Wait Fix f
 
 export const HeadSliceContainer = styled.div<{ needGradient?: boolean }>`
   background: transparent;
-  min-height: 630px;
+  min-height: 510px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -87,7 +87,7 @@ export const FormLabel = styled.div`
   font-weight: 500;
   letter-spacing: -0.05rem;
   font-size: 1.25rem;
-  margin-bottom: 32px;
+  margin: 32px 0 16px 0;
 `;
 
 export const FormWarningMessage = styled.div<{ show?: boolean }>`
@@ -95,13 +95,13 @@ export const FormWarningMessage = styled.div<{ show?: boolean }>`
   padding: 0.2em 0 0.2em 1em;
   border-left: 3px solid var(--error);
   background-color: #ffffff66;
-  opacity: 0;
+  display: none;
   transition: opacity 0.25s ease;
 
   ${({ show }) =>
     show &&
     css`
-      opacity: 1;
+      display: block;
     `}
 `;
 
@@ -136,15 +136,14 @@ const shadowRolling = keyframes`
 `;
 
 export const LoaderWrapper = styled.div<{ show?: boolean }>`
-  position: relative;
-  top: -35px;
+  position: absolute;
   z-index: 0;
-  opacity: 0;
+  display: none;
 
   ${({ show }) =>
     show &&
     css`
-      opacity: 1;
+      display: block;
     `}
 `;
 
@@ -156,7 +155,16 @@ export const Loader = styled.span<{ color?: string }>`
   margin: 15px auto;
   position: relative;
   color: ${({ color }) => color || 'currentColor'};
-  left: -100px;
   box-sizing: border-box;
   animation: ${shadowRolling} 2s linear infinite;
+`;
+
+export const Separator = styled.div`
+  margin: 8px;
+  border-top: 1px solid white;
+`;
+
+export const Buttons = styled.div`
+  margin-top: 16px;
+  text-align: right;
 `;

@@ -52,6 +52,10 @@ export const Statistic = styled.div`
 `;
 
 export const CenteredImage = styled.div`
+  h3,
+  p {
+    margin-bottom: 0;
+  }
   text-align: center;
 `;
 
