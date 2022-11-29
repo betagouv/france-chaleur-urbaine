@@ -18,7 +18,10 @@ const reducer = {
       const key = fields['Date demandes'];
 
       nbTotal++;
-      if (fields['Éligibilité']) {
+      if (
+        fields['Éligibilité'] &&
+        (!fields['Distance au réseau'] || fields['Distance au réseau'] <= 100)
+      ) {
         nbEligible++;
       } else {
         nbUneligible++;
