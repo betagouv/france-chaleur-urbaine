@@ -37,7 +37,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
         >
           Espace gestionnaire
         </ToolItem>
-        {session.user.role === USER_ROLE.ADMIN && (
+        {session.user.role === USER_ROLE.ADMIN ? (
           <ToolItem
             asLink={
               <Link href="/admin">
@@ -47,6 +47,8 @@ const ToolItems = ({ session }: { session: Session | null }) => (
           >
             Admin
           </ToolItem>
+        ) : (
+          <></>
         )}
       </ToolItemGroup>
     ) : (

@@ -27,7 +27,6 @@ const Comment = ({
 
   return (
     <TextAreaInput
-      type="text"
       textarea
       defaultValue={demand.Commentaire}
       onChange={onChangeHandler}
