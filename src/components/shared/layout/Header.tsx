@@ -14,8 +14,9 @@ import {
 import { Session } from 'next-auth';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import { Fragment, useContext } from 'react';
 import { USER_ROLE } from 'src/types/enum/UserRole';
+import LayoutContext from './LayoutContext';
 import { menu } from './MainLayout.data';
 import { FullScreenHeader, FullScreenItems } from './MainLayout.style';
 
@@ -75,6 +76,8 @@ const Header = ({
   fullscreen: boolean;
 }) => {
   const { data: session } = useSession();
+  const { indexLink } = useContext(LayoutContext);
+
   const Container = fullscreen ? FullScreenHeader : Fragment;
 
   return (
@@ -97,7 +100,7 @@ const Header = ({
                 </a>
               }
               description={fcuHeaderDesc}
-              asLink={<Link href={'/'} title="Revenir à l'accueil" />}
+              asLink={<Link href={indexLink} title="Revenir à l'accueil" />}
             />
           )}
           {!fullscreen && <ToolItems session={session} />}
@@ -113,6 +116,16 @@ const Header = ({
             />
           </li>
         )}
+        <NavItem
+          title={'Accueil'}
+          current={currentMenu === indexLink}
+          asLink={
+            <Link href={indexLink} legacyBehavior={false}>
+              {'Accueil'}
+            </Link>
+          }
+        />
+
         {menu.map(({ label, url, subMenus }) =>
           url ? (
             <NavItem

@@ -13,6 +13,8 @@ import {
   Logo,
 } from '@dataesr/react-dsfr';
 import Link from 'next/link';
+import { useContext } from 'react';
+import LayoutContext from './LayoutContext';
 import { GithubLogo } from './MainLayout.style';
 
 const fcuFooterDesc = `France Chaleur Urbaine est un projet d'innovation pour accélérer
@@ -21,12 +23,14 @@ const fcuFooterDesc = `France Chaleur Urbaine est un projet d'innovation pour ac
   d'origine renouvelable.`;
 
 const Footer = () => {
+  const { indexLink } = useContext(LayoutContext);
+
   return (
     <FooterDS>
       <FooterBody description={fcuFooterDesc}>
         <Logo
           splitCharacter={10}
-          asLink={<Link href={'/'} title="Revenir à l'accueil" />}
+          asLink={<Link href={indexLink} title="Revenir à l'accueil" />}
         >
           République Française
         </Logo>

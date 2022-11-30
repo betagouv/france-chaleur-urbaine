@@ -7,10 +7,6 @@ export const fullscreenFooterHeight = `301px`;
 
 export const menu = [
   {
-    label: 'Accueil',
-    url: '/',
-  },
-  {
     label: 'Vous êtes :',
     subMenus: [
       {
