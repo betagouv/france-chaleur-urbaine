@@ -13,8 +13,12 @@ const MapSearchForm = ({
 
   const handleAddressSelected = async (
     address: string,
-    geoAddress: SuggestionItem
+    geoAddress?: SuggestionItem
   ): Promise<void> => {
+    if (!geoAddress) {
+      return;
+    }
+
     const [lon, lat] = geoAddress.geometry.coordinates;
 
     const network = await heatNetworkService.findByCoords({ lat, lon });

@@ -1,3 +1,4 @@
+import BulkEligibility from '@components/Admin/BulkEligibility';
 import Users from '@components/Admin/Users';
 import MainContainer from '@components/shared/layout';
 import { GetServerSideProps } from 'next';
@@ -13,6 +14,7 @@ export default function Admin(): JSX.Element {
       </Head>
       <MainContainer currentMenu="/admin" fullscreen>
         <Users />
+        <BulkEligibility />
       </MainContainer>
     </>
   );

@@ -24,7 +24,7 @@ const login = async (email: string, password: string) => {
 
   return {
     id: user.id,
-    gestionnaire: user.gestionnaire,
+    gestionnaires: user.gestionnaires,
     role: user.role,
     email: user.email,
   };
@@ -44,7 +44,7 @@ export default nextAuth({
           ...token,
           role: user.role,
           email: user.email,
-          gestionnaire: user.gestionnaire,
+          gestionnaires: user.gestionnaires,
         };
       }
       return token;
@@ -56,7 +56,7 @@ export default nextAuth({
           user: {
             role: token.role,
             email: token.email,
-            gestionnaire: token.gestionnaire,
+            gestionnaires: token.gestionnaires,
           },
         } as Session;
       }

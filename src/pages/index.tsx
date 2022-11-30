@@ -109,6 +109,7 @@ export default function Home() {
             pageBody="Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français"
             formLabel="Votre immeuble pourrait-il être raccordé à un&nbsp;réseau&nbsp;de&nbsp;chaleur&nbsp;?"
             checkEligibility
+            withBulkEligibility
           />
           <Slice
             padding={10}

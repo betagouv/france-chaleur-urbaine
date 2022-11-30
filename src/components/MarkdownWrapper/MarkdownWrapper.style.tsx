@@ -218,6 +218,31 @@ export const CheckItem = styled.div.attrs<CheckItemType>(
   ${({ checked }) => (checked ? CheckItemDefault : CheckItemFCU)}
 `;
 
+const CountPuce = styled.div`
+  display: inline-block;
+  margin-right: 8px;
+  background-color: #4550e5;
+  color: white;
+  width: 23px;
+  height: 23px;
+  font-size: 14px;
+  border-radius: 50%;
+  text-align: center;
+`;
+
+export const CountItem = ({
+  number,
+  children,
+}: {
+  number: number;
+  children: string;
+}) => (
+  <div>
+    <CountPuce>{number}</CountPuce>
+    {children}
+  </div>
+);
+
 type PuceIconType = {
   icon: string;
 };

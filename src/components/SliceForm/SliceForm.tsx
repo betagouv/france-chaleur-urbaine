@@ -3,6 +3,7 @@ import {
   EligibilityFormContact,
   EligibilityFormMessageConfirmation,
 } from '@components/EligibilityForm';
+import { FormLabel } from '@components/HeadSliceForm/HeadSliceForm.style';
 import Slice from '@components/Slice';
 import { useContactFormFCU } from '@hooks';
 import React from 'react';
@@ -35,6 +36,11 @@ const HeadSlice: React.FC = () => {
       <Slice>
         <Container>
           <EligibilityFormAddress
+            formLabel={
+              <FormLabel>
+                Votre immeuble pourrait-il être raccordé&nbsp;?
+              </FormLabel>
+            }
             onChange={handleOnChangeAddress}
             onFetch={handleOnFetchAddress}
             onSuccess={handleOnSuccessAddress}

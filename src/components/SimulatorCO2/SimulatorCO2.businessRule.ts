@@ -1,4 +1,4 @@
-enum TypeSurf {
+export enum TypeSurf {
   copropriete = 'copropriete',
   tertiaire = 'tertiaire',
 }
@@ -34,8 +34,12 @@ export const getConso = (
   surf: number,
   typeSurf: TypeSurf
 ): number | undefined => {
-  if (conso) return conso;
-  if (log) return log * equiLog;
+  if (conso) {
+    return conso;
+  }
+  if (log) {
+    return log * equiLog;
+  }
   if (surf) {
     switch (typeSurf) {
       case TypeSurf.copropriete: {
