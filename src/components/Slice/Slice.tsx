@@ -17,7 +17,6 @@ const Slice: React.FC<
     className?: string;
     theme?: string;
     padding?: number;
-    bleedColor?: string | [string, string];
     direction?: string;
   } & SliceContainerWrapperType
 > = ({
@@ -30,15 +29,9 @@ const Slice: React.FC<
   bg,
   bgPos,
   bgSize,
-  bgWidth,
   bgColor,
-  bleedColor,
   direction,
 }) => {
-  const [bleedColorStart = '', bleedColorEnd = ''] = Array.isArray(bleedColor)
-    ? bleedColor
-    : [bleedColor, bleedColor];
-
   return (
     <SliceSection
       id={id}
@@ -51,9 +44,7 @@ const Slice: React.FC<
           bg={bg}
           bgPos={bgPos}
           bgSize={bgSize}
-          bgWidth={bgWidth}
           bgColor={bgColor}
-          bleedColors={[bleedColorStart, bleedColorEnd]}
         >
           <SliceContainer className="fr-container">
             {header && (

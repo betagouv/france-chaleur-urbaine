@@ -6,7 +6,6 @@ import {
 import { FormLabel } from '@components/HeadSliceForm/HeadSliceForm.style';
 import Slice from '@components/Slice';
 import { useContactFormFCU } from '@hooks';
-import React from 'react';
 import {
   Container,
   FormWarningMessage,
@@ -15,7 +14,13 @@ import {
   SliceContactFormStyle,
 } from './SliceForm.style';
 
-const HeadSlice: React.FC = () => {
+const HeadSlice = ({
+  title,
+  colored,
+}: {
+  title?: string;
+  colored?: boolean;
+}) => {
   const {
     EligibilityFormContactRef,
     addressData,
@@ -36,9 +41,10 @@ const HeadSlice: React.FC = () => {
       <Slice>
         <Container>
           <EligibilityFormAddress
+            colored={colored}
             formLabel={
-              <FormLabel>
-                Votre immeuble pourrait-il être raccordé&nbsp;?
+              <FormLabel colored={colored}>
+                {title || 'Votre immeuble pourrait-il être raccordé&nbsp;?'}
               </FormLabel>
             }
             onChange={handleOnChangeAddress}

@@ -238,14 +238,7 @@ const HeadSlice = ({
 
   return (
     <>
-      <Slice
-        theme="grey"
-        bg={bg}
-        bgPos={bgPos}
-        bgWidth={1600}
-        bgColor="#CDE3F0"
-        padding={8}
-      >
+      <Slice theme="grey" bg={bg} bgPos={bgPos} bgColor="#CDE3F0" padding={8}>
         <HeadSliceContainer needGradient={needGradient}>
           <Container>{WrappedChild}</Container>
         </HeadSliceContainer>

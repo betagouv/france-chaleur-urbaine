@@ -82,8 +82,8 @@ export const PageBody = styled.div`
   }
 `;
 
-export const FormLabel = styled.div`
-  color: #2731b1;
+export const FormLabel = styled.div<{ colored?: boolean }>`
+  color: ${({ colored }) => (colored ? 'white' : '#2731b1')};
   font-weight: 500;
   letter-spacing: -0.05rem;
   font-size: 1.25rem;
