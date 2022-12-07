@@ -2,6 +2,8 @@ import {
   exportDataSummary,
   getDataSummary,
 } from '@core/infrastructure/repository/dataSummary';
+import turfArea from '@turf/area';
+import { polygon } from '@turf/helpers';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ErrorResponse } from 'src/types/ErrorResponse';
@@ -9,7 +11,7 @@ import { Summary } from 'src/types/Summary';
 
 export default async function eligibilityStatusgibilityStatus(
   req: NextApiRequest,
-  res: NextApiResponse<Summary | ErrorResponse>
+  res: NextApiResponse<Summary | ErrorResponse | string>
 ) {
   try {
     const coordinates = JSON.parse(
@@ -22,7 +24,12 @@ export default async function eligibilityStatusgibilityStatus(
         code: 'Bad Arguments',
       });
     }
-
+    const size = turfArea(polygon([coordinates]));
+    if (size > 5_000_000) {
+      return res
+        .status(400)
+        .send('Cannot compute stats on area bigger than 5 km²');
+    }
     if (req.method === 'GET') {
       const data = await getDataSummary(coordinates);
       return res.json(data);
