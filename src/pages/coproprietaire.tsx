@@ -17,6 +17,7 @@ import {
   testimonies,
   userExperience,
 } from '@data/coproprietaire';
+import { MediaVideo } from '@dataesr/react-dsfr';
 import Head from 'next/head';
 
 const currentPage = 'coproprietaire';
@@ -66,10 +67,6 @@ Vous êtes chauffé au fioul ou au gaz&nbsp;?
 **>Téléchargez notre guide et accédez à notre espace documentation**
 :::`}
             />
-            <MarkdownWrapper
-              value=':button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" tagName="downloadLink" trackEvent="Guide FCU, coproprietaire" target="_blank"}'
-              className="fcuSolutionForFuturFooter"
-            />
           </Slice>
 
           <Slice padding={10} theme="grey">
@@ -81,6 +78,22 @@ Vous êtes chauffé au fioul ou au gaz&nbsp;?
               value={fcuSolutionForFutur.listing}
               className="fcuSolutionForFuturListing"
             />
+            <MarkdownWrapper
+              value=':button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" tagName="downloadLink" trackEvent="Guide FCU, coproprietaire" target="_blank"}'
+              className="fcuSolutionForFuturFooter"
+            />
+            <Slice padding={4}>
+              <MediaVideo>
+                <video
+                  width="100%"
+                  controls
+                  src="/videos/FCU-accueil.mp4"
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore: needed by DSFR
+                  href="/videos/FCU-accueil.mp4"
+                />
+              </MediaVideo>
+            </Slice>
           </Slice>
 
           <Slice
@@ -139,7 +152,7 @@ _Les tarifs sont donnés à titre d’exemple en s’inspirant d’un cas réel 
             ))}
             <Slice>
               <MarkdownWrapper
-                value={`:button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" tagName="downloadLink" trackEvent="Guide FCU, ${currentPage}" target="_blank"}`}
+                value={`:button-link[Plus de précisions sur notre guide]{href="./guide-france-chaleur-urbaine" tagName="downloadLink" trackEvent="Guide FCU, ${currentPage}" target="_blank"}`}
                 className="fcuSolutionForFuturFooter"
               />
             </Slice>

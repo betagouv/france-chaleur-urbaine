@@ -1,6 +1,14 @@
 import styled, { css } from 'styled-components';
 
-export const CheckEligibilityFormLabel = styled.div`
+export const CheckEligibilityFormLabel = styled.div<{ colored?: boolean }>`
+  ${({ colored }) =>
+    colored &&
+    css`
+      label,
+      legend {
+        color: white !important;
+      }
+    `}
   display: block;
   overflow: hidden;
   max-height: 500px;
@@ -27,7 +35,6 @@ export const ContactFormContentWrapper = styled.div<{
   cardMode?: boolean;
 }>`
   flex: 1;
-
   ${({ cardMode }) =>
     !cardMode &&
     css`

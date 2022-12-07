@@ -17,6 +17,7 @@ type CheckEligibilityFormProps = {
   heatingLabel?: React.ReactNode;
   energyInputsLabels?: EnergyInputsLabelsType;
   cardMode?: boolean;
+  colored?: boolean;
   onChange?: (...arg: any) => void;
   onFetch?: (...arg: any) => void;
   onSuccess?: (...arg: any) => void;
@@ -34,6 +35,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   heatingLabel,
   energyInputsLabels = energyInputsDefaultLabels,
   cardMode,
+  colored,
   onChange,
   onFetch,
   onSuccess,
@@ -123,7 +125,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   return (
     <>
       {children}
-      <CheckEligibilityFormLabel>
+      <CheckEligibilityFormLabel colored={colored}>
         <SelectEnergy
           label={heatingLabel}
           name="heatingType"
