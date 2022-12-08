@@ -17,6 +17,7 @@ const csp = {
     "'sha256-PAh6kZHWrs47demJXB9x6PfCgghwAf4BZ4ncKf/BhiU='",
     "'sha256-vHLisyhJqlXs8efpQOmla3M8/VBRwdzde5ZgWIhJQEA='",
     "'sha256-3I33qFPfa/PLrN/3rrrC4vJBjmKYiuXWQ+ZfnHiEWmo='",
+    "'sha256-ksltjYbI6Uoozfn80t6ROvA1rBbTP9X8qGPGwHmWBpA='",
     'https://stats.data.gouv.fr',
     'https://static.axept.io',
     'https://connect.facebook.net',
@@ -26,6 +27,7 @@ const csp = {
     'https://googleads.g.doubleclick.net',
     'https://connect.facebook.net',
     'https://snap.licdn.com',
+    'https://cdn.taboola.com',
   ],
   'connect-src': [
     "'self'",
@@ -36,6 +38,7 @@ const csp = {
     'https://api-adresse.data.gouv.fr/',
     'https://stats.data.gouv.fr',
     'https://cdn.linkedin.oribi.io',
+    'https://trc.taboola.com',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
   'worker-src': ["'self'", 'blob:'],
