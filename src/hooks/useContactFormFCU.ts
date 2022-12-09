@@ -3,6 +3,7 @@ import markupData, {
   googleAdsEvent,
   linkedInEvent,
   matomoEvent,
+  taboolaEvent,
 } from '@components/Markup';
 import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
 import { useCallback, useRef, useState } from 'react';
@@ -13,6 +14,7 @@ const callMarkup__handleOnFetchAddress = (address: string) => {
   linkedInEvent(markupData.eligibilityTest.linkedInEvent);
   facebookEvent(markupData.eligibilityTest.facebookEvent);
   googleAdsEvent('10986886666', markupData.eligibilityTest.googleAdsEvent);
+  taboolaEvent('lead', '1511088');
 };
 
 const callMarkup__handleOnSuccessAddress = ({
