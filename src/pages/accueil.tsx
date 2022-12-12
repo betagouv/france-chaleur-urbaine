@@ -1,40 +1,12 @@
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import MainContainer from '@components/shared/layout';
+import { GlobalStyle } from '@components/shared/layout/Global.style';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import { Logo, MediaVideo } from '@dataesr/react-dsfr';
-import { createGlobalStyle } from 'styled-components';
-
-const GlobalStyle: any = createGlobalStyle`
-  .accueil-title {
-    gap: 32px;
-    max-width: 900px;
-    margin: auto;
-    align-items: center;
-    h3 {
-      color: #000074 !important;
-      margin: 0
-    }
-  }
-
-  .accueil-list {
-    display: flex;
-    justify-content: space-around;
-    flex-direction: row;
-    flex-wrap: wrap;
-    div {
-      max-width: 300px;
-    }
-  }
-
-  .video {
-    width: 75%;
-    margin: auto;
-  }
-`;
 
 const Accueil = () => {
   return (
@@ -56,7 +28,7 @@ Plus que jamais, faites un choix d’avenir !
           <MarkdownWrapper value="### France Chaleur Urbaine est un *service public gratuit* qui agit comme tiers de confiance *entre gestionnaires des réseaux de chaleur et copropriétés.*"></MarkdownWrapper>
         </WrappedBlock>
         <Slice padding={4}>
-          <MediaVideo className="video">
+          <MediaVideo className="small-video">
             <video
               width="100%"
               controls

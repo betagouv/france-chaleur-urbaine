@@ -83,16 +83,17 @@ Vous êtes chauffé au fioul ou au gaz&nbsp;?
               className="fcuSolutionForFuturFooter"
             />
             <Slice padding={4}>
-              <MediaVideo>
+              <MediaVideo className="small-video">
                 <video
                   width="100%"
                   controls
                   src="/videos/FCU-accueil.mp4"
+                  poster="/videos/FCU-accueil.jpg"
                   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                   // @ts-ignore: needed by DSFR
                   href="/videos/FCU-accueil.mp4"
                 />
-              </MediaVideo>
+              </MediaVideo>{' '}
             </Slice>
           </Slice>
 
