@@ -107,4 +107,30 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
       }
     }
   }
+
+  .small-video {
+    width: 75%;
+    margin: auto;
+  }
+
+  .accueil-title {
+    gap: 32px;
+    max-width: 900px;
+    margin: auto;
+    align-items: center;
+    h3 {
+      color: #000074 !important;
+      margin: 0
+    }
+  }
+
+  .accueil-list {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    flex-wrap: wrap;
+    div {
+      max-width: 300px;
+    }
+  } 
 `;
