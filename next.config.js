@@ -39,6 +39,7 @@ const csp = {
     'https://stats.data.gouv.fr',
     'https://cdn.linkedin.oribi.io',
     'https://trc.taboola.com',
+    'https://wxs.ign.fr',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
   'worker-src': ["'self'", 'blob:'],

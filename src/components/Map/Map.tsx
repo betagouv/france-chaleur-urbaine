@@ -3,6 +3,11 @@ import { Icon } from '@dataesr/react-dsfr';
 import { usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import {
+  MapboxStyleDefinition,
+  MapboxStyleSwitcherControl,
+} from 'mapbox-gl-style-switcher';
+import 'mapbox-gl-style-switcher/styles.css';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
@@ -40,6 +45,7 @@ import {
   zoneDPLayerStyle,
 } from './Map.style';
 import { formatBodyPopup } from './MapPopup';
+import satelliteConfig from './satellite.config';
 
 const {
   defaultZoom,
@@ -53,6 +59,19 @@ const {
 } = mapParam;
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
+
+const styles: MapboxStyleDefinition[] = [
+  {
+    title: 'Carte',
+    uri: 'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json',
+  },
+  {
+    title: 'Satellite',
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore: Wrong npm types
+    uri: satelliteConfig,
+  },
+];
 
 export default function Map() {
   const { heatNetworkService } = useServices();
@@ -221,6 +240,65 @@ export default function Map() {
     });
   }, [layerDisplay]);
 
+  const loadFilters = useCallback(() => {
+    layerNameOptions.forEach((layerId) =>
+      map.current.getLayer(layerId)
+        ? map.current.setLayoutProperty(
+            layerId,
+            'visibility',
+            layerDisplay[layerId] ? 'visible' : 'none'
+          )
+        : console.warn(`Layer '${layerId}' is not set on map`)
+    );
+
+    // Energy
+    const TYPE_ENERGY = 'energie_utilisee';
+    const energyFilter = layerDisplay.energy.flatMap(
+      (energyName: 'gas' | 'fuelOil') =>
+        objTypeEnergy[energyName].map((energyLabel: string) => {
+          const values =
+            energyName === 'gas'
+              ? layerDisplay.energyGasValues
+              : layerDisplay.energyFuelValues;
+
+          return [
+            'all',
+            values
+              ? [
+                  'all',
+                  ['>=', ['get', 'nb_logements'], values[0]],
+                  ['<=', ['get', 'nb_logements'], values[1]],
+                ]
+              : true,
+            ['==', ['get', TYPE_ENERGY], energyLabel],
+          ];
+        })
+    );
+    map.current.setFilter('energy', ['any', ...energyFilter]);
+
+    // GasUsage
+    const TYPE_GAS = 'code_grand';
+    const gasUsageFilter = layerDisplay.gasUsage.map((gasUsageName) => [
+      '==',
+      ['get', TYPE_GAS],
+      gasUsageName,
+    ]);
+    map.current.setFilter(
+      'gasUsage',
+      layerDisplay.gasUsageGroup && [
+        'all',
+        layerDisplay.gasUsageValues
+          ? [
+              'all',
+              ['>=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[0]],
+              ['<=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[1]],
+            ]
+          : true,
+        ['any', ...gasUsageFilter],
+      ]
+    );
+  }, [map, layerDisplay]);
+
   // ----------------
   // --- Load Map ---
   // ----------------
@@ -236,7 +314,7 @@ export default function Map() {
     map.current = new maplibregl.Map({
       attributionControl: false,
       container: mapContainer.current,
-      style: `https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json`,
+      style: styles[0].uri,
       center: [lng, lat],
       zoom: defaultZoom,
       maxZoom,
@@ -247,6 +325,17 @@ export default function Map() {
     map.current.addControl(
       new maplibregl.GeolocateControl({
         fitBoundsOptions: { maxZoom: 13 },
+      })
+    );
+    map.current.addControl(
+      new MapboxStyleSwitcherControl(styles, {
+        defaultStyle: 'Carte',
+        eventListeners: {
+          onChange: () => {
+            setMapState('pending');
+            return true;
+          },
+        },
       })
     );
 
@@ -261,11 +350,126 @@ export default function Map() {
       { name: 'gasUsage', key: 'consommation' },
       { name: 'energy', key: 'energy' },
     ];
+
     const onMapClick = (e: any, key: string) => {
       const properties = e.features[0].properties;
       const { lat, lng } = e.lngLat;
       updateClickedPoint([lng, lat], { [key]: properties });
     };
+
+    map.current.on('sourcedata', (e: any) => {
+      if (
+        (e.sourceId === 'openmaptiles' || e.sourceId === 'raster-tiles') &&
+        e.isSourceLoaded
+      ) {
+        const origin =
+          process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
+
+        // --------------------
+        // --- Heat Network ---
+        // --------------------
+        map.current.addSource('heatNetwork', {
+          type: 'vector',
+          tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
+        });
+
+        map.current.addLayer({
+          id: 'outline',
+          source: 'heatNetwork',
+          'source-layer': 'outline',
+          ...outlineLayerStyle,
+        });
+
+        map.current.addLayer({
+          id: 'dottedOutline',
+          source: 'heatNetwork',
+          'source-layer': 'outline',
+          ...dottedOutlineLayerStyle,
+        });
+
+        // ---------------
+        // --- Zone DP ---
+        // ---------------
+        map.current.addSource('zoneDP', {
+          type: 'vector',
+          tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
+        });
+
+        map.current.addLayer({
+          id: 'zoneDP',
+          source: 'zoneDP',
+          'source-layer': 'zoneDP',
+          ...zoneDPLayerStyle,
+        });
+
+        // -----------------
+        // --- Buildings ---
+        // -----------------
+        map.current.addSource('buildings', {
+          type: 'vector',
+          tiles: [`${origin}/api/map/buildings/{z}/{x}/{y}`],
+          maxzoom: maxZoom,
+          minzoom: minZoomData,
+        });
+
+        map.current.addLayer({
+          id: 'buildings',
+          source: 'buildings',
+          'source-layer': 'buildings',
+          ...buildingsLayerStyle,
+        });
+
+        // -----------------
+        // --- Gas Usage ---
+        // -----------------
+        map.current.addSource('gasUsage', {
+          type: 'vector',
+          tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
+          maxzoom: maxZoom,
+          minzoom: minZoomData,
+        });
+
+        map.current.addLayer({
+          id: 'gasUsage',
+          source: 'gasUsage',
+          'source-layer': 'gasUsage',
+          ...gasUsageLayerStyle,
+        });
+
+        // --------------
+        // --- Energy ---
+        // --------------
+        map.current.addSource('energy', {
+          type: 'vector',
+          tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
+          maxzoom: maxZoom,
+          minzoom: minZoomData,
+        });
+
+        map.current.addLayer({
+          id: 'energy',
+          source: 'energy',
+          'source-layer': 'energy',
+          ...energyLayerStyle,
+        });
+
+        // -----------------
+        // --- Demands ---
+        // -----------------
+        map.current.addSource('demands', {
+          type: 'vector',
+          tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+        });
+
+        map.current.addLayer({
+          id: 'demands',
+          source: 'demands',
+          'source-layer': 'demands',
+          ...demandsLayerStyle,
+        });
+        setMapState('loaded');
+      }
+    });
 
     map.current.on('load', () => {
       map.current.loadImage(
@@ -316,116 +520,6 @@ export default function Map() {
             unit: 'metric',
           });
           map.current.addControl(scaleControl, 'bottom-left');
-
-          // -------------------
-          // --- MAP CONTENT ---
-          // -------------------
-
-          const origin =
-            process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
-
-          // --------------------
-          // --- Heat Network ---
-          // --------------------
-          map.current.addSource('heatNetwork', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
-          });
-
-          map.current.addLayer({
-            id: 'outline',
-            source: 'heatNetwork',
-            'source-layer': 'outline',
-            ...outlineLayerStyle,
-          });
-
-          map.current.addLayer({
-            id: 'dottedOutline',
-            source: 'heatNetwork',
-            'source-layer': 'outline',
-            ...dottedOutlineLayerStyle,
-          });
-
-          // ---------------
-          // --- Zone DP ---
-          // ---------------
-          map.current.addSource('zoneDP', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
-          });
-
-          map.current.addLayer({
-            id: 'zoneDP',
-            source: 'zoneDP',
-            'source-layer': 'zoneDP',
-            ...zoneDPLayerStyle,
-          });
-
-          // -----------------
-          // --- Buildings ---
-          // -----------------
-          map.current.addSource('buildings', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/buildings/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          });
-
-          map.current.addLayer({
-            id: 'buildings',
-            source: 'buildings',
-            'source-layer': 'buildings',
-            ...buildingsLayerStyle,
-          });
-
-          // -----------------
-          // --- Gas Usage ---
-          // -----------------
-          map.current.addSource('gasUsage', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          });
-
-          map.current.addLayer({
-            id: 'gasUsage',
-            source: 'gasUsage',
-            'source-layer': 'gasUsage',
-            ...gasUsageLayerStyle,
-          });
-
-          // --------------
-          // --- Energy ---
-          // --------------
-          map.current.addSource('energy', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          });
-
-          map.current.addLayer({
-            id: 'energy',
-            source: 'energy',
-            'source-layer': 'energy',
-            ...energyLayerStyle,
-          });
-
-          // -----------------
-          // --- Demands ---
-          // -----------------
-          map.current.addSource('demands', {
-            type: 'vector',
-            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
-          });
-
-          map.current.addLayer({
-            id: 'demands',
-            source: 'demands',
-            'source-layer': 'demands',
-            ...demandsLayerStyle,
-          });
         }
       );
     });
@@ -516,71 +610,13 @@ export default function Map() {
     }
   }, [setSoughtAddresses, soughtAddresses]);
 
-  // ---------------------
-  // --- Update Filter ---
-  // ---------------------
   useEffect(() => {
     if (mapState === 'pending') {
       return;
     }
 
-    layerNameOptions.forEach((layerId) =>
-      map.current.getLayer(layerId)
-        ? map.current.setLayoutProperty(
-            layerId,
-            'visibility',
-            layerDisplay[layerId] ? 'visible' : 'none'
-          )
-        : console.warn(`Layer '${layerId}' is not set on map`)
-    );
-
-    // Energy
-    const TYPE_ENERGY = 'energie_utilisee';
-    const energyFilter = layerDisplay.energy.flatMap(
-      (energyName: 'gas' | 'fuelOil') =>
-        objTypeEnergy[energyName].map((energyLabel: string) => {
-          const values =
-            energyName === 'gas'
-              ? layerDisplay.energyGasValues
-              : layerDisplay.energyFuelValues;
-
-          return [
-            'all',
-            values
-              ? [
-                  'all',
-                  ['>=', ['get', 'nb_logements'], values[0]],
-                  ['<=', ['get', 'nb_logements'], values[1]],
-                ]
-              : true,
-            ['==', ['get', TYPE_ENERGY], energyLabel],
-          ];
-        })
-    );
-    map.current.setFilter('energy', ['any', ...energyFilter]);
-
-    // GasUsage
-    const TYPE_GAS = 'code_grand';
-    const gasUsageFilter = layerDisplay.gasUsage.map((gasUsageName) => [
-      '==',
-      ['get', TYPE_GAS],
-      gasUsageName,
-    ]);
-    map.current.setFilter(
-      'gasUsage',
-      layerDisplay.gasUsageGroup && [
-        'all',
-        layerDisplay.gasUsageValues
-          ? [
-              'all',
-              ['>=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[0]],
-              ['<=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[1]],
-            ]
-          : true,
-        ['any', ...gasUsageFilter],
-      ]
-    );
-  }, [layerDisplay, mapState]);
+    loadFilters();
+  }, [loadFilters, mapState]);
 
   return (
     <>
