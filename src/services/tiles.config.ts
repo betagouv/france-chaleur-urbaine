@@ -138,8 +138,8 @@ export const tilesInfo: Record<string, TileInfo> = {
   },
   gas: {
     source: 'database',
-    table: 'Donnees_de_conso_et_pdl_gaz_nat_2020',
-    tiles: 'Donnees_de_conso_et_pdl_gaz_nat_2020_tiles',
+    table: 'donnees_de_consos',
+    tiles: 'donnees_de_consos_tiles',
     id: 'rownum',
     extraWhere: (query) => query.whereIn('code_grand', ['R', 'T', 'I']),
     properties: [
