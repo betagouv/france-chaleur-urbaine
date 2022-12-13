@@ -75,7 +75,7 @@ const getNetworkSummary = async (
     );
 
 const getGasSummary = async (coordinates: number[][]): Promise<GasSummary[]> =>
-  db('Donnees_de_conso_et_pdl_gaz_nat_2020 as gas')
+  db('donnees_de_consos as gas')
     .select(
       'conso_nb',
       'pdl_nb',
@@ -120,7 +120,7 @@ const getEnergySummary = async (
 const exportGasSummary = async (
   coordinates: number[][]
 ): Promise<GasSummary[]> =>
-  db('Donnees_de_conso_et_pdl_gaz_nat_2020 as gas')
+  db('donnees_de_consos as gas')
     .select(
       'adresse',
       'nom_commun',

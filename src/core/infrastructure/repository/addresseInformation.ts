@@ -46,7 +46,7 @@ export const getConso = async (
   lat: number,
   lon: number
 ): Promise<{ conso_nb: number; rownum: string } | null> => {
-  const result = await db('Donnees_de_conso_et_pdl_gaz_nat_2020')
+  const result = await db('donnees_de_consos')
     .select('rownum', 'conso_nb')
     .where(
       db.raw(`
@@ -63,7 +63,7 @@ export const getConso = async (
 export const getConsoById = async (
   id: string
 ): Promise<{ conso_nb: number; rownum: string } | null> => {
-  const result = await db('Donnees_de_conso_et_pdl_gaz_nat_2020')
+  const result = await db('donnees_de_consos')
     .select('rownum', 'conso_nb')
     .where('rownum', id)
     .first();
