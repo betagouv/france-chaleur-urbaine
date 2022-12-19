@@ -1,6 +1,6 @@
 export interface EligibilityDemand {
   id: string;
-  email: string;
+  emails: string[];
   version: string;
   addresses_count: number;
   progress: number;

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/react';
 import db from 'src/db';
+import { EligibilityDemand } from 'src/types/EligibilityDemand';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 
 export default async function eligibilityDemands(
@@ -33,7 +34,20 @@ export default async function eligibilityDemands(
           'in_error',
         ])
         .orderBy('created_at', 'desc');
-      return res.status(200).json(demands);
+      const demandsById: Record<string, EligibilityDemand> = {};
+      demands.forEach((demand) => {
+        const existingDemand = demandsById[demand.id];
+        if (existingDemand) {
+          existingDemand.emails.push(demand.email);
+        } else {
+          demandsById[demand.id] = {
+            ...demand,
+            email: undefined,
+            emails: [demand.email],
+          };
+        }
+      });
+      return res.status(200).json(Object.values(demandsById));
     }
 
     return res.status(501);
