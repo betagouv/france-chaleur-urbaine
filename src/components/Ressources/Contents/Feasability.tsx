@@ -16,7 +16,7 @@ const Feasability = () => {
         <li>Du mode de chauffage actuel :</li>
         <Row className="fr-my-4w">
           <Col n="sm-0 md-2" className="fr-hidden fr-unhidden-md">
-            <LeftImage src="/img/ressources-feasability-1.svg" alt="" />
+            <LeftImage src="/img/ressources-feasability-3.svg" alt="" />
           </Col>
           <Col n="sm-12 md-9" offset="1">
             ◦ si le bâtiment est équipé d’un système de chauffage collectif (gaz
@@ -39,7 +39,7 @@ const Feasability = () => {
             <br />
           </Col>
           <Col n="sm-0 md-2" className="fr-hidden fr-unhidden-md">
-            <LeftImage src="/img/ressources-feasability-3.svg" alt="" />
+            <LeftImage src="/img/ressources-feasability-1.svg" alt="" />
           </Col>
           <Col n="sm-12 md-9" offset="1">
             ◦ si le bâtiment est équipé d’un système de chauffage individuel
