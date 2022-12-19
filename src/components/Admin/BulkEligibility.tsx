@@ -9,8 +9,9 @@ import { TableContainer } from './Users.styles';
 const columns = [
   { name: 'id', label: 'Id' },
   {
-    name: 'email',
-    label: 'Email',
+    name: 'emails',
+    label: 'Emails',
+    render: ({ emails }: EligibilityDemand) => emails.join(', '),
   },
   {
     name: 'created_at',
@@ -62,7 +63,13 @@ const BulkEligibility = () => {
   return (
     <TableContainer>
       <Table
-        caption="Demandes d'éligibilités"
+        caption={`Demandes d'éligibilités - ${eligibilityDemands.reduce(
+          (acc, value) => acc + value.addresses_count - value.error_count,
+          0
+        )} adresses testées - ${eligibilityDemands.reduce(
+          (acc, value) => acc + value.eligibile_count,
+          0
+        )} adresses éligibles`}
         columns={columns}
         data={eligibilityDemands}
         rowKey="id"
