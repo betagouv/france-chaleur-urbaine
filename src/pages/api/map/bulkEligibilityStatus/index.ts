@@ -12,12 +12,79 @@ import { sendBulkEligibilityResult } from 'src/services/email';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
-const version = 1;
+const version = 2;
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
   addresses: yup.array().of(yup.string()).min(1).required(),
 });
+
+// from https://www.bennadel.com/blog/1504-ask-ben-parsing-csv-strings-with-javascript-exec-regular-expression-command.htm
+const CSVToArray = (strData: string, strDelimiter: string) => {
+  // Check to see if the delimiter is defined. If not,
+  // then default to comma.
+  strDelimiter = strDelimiter || ',';
+
+  // Create a regular expression to parse the CSV values.
+  const objPattern = new RegExp(
+    // Delimiters.
+    '(\\' +
+      strDelimiter +
+      '|\\r?\\n|\\r|^)' +
+      // Quoted fields.
+      '(?:"([^"]*(?:""[^"]*)*)"|' +
+      // Standard fields.
+      '([^"\\' +
+      strDelimiter +
+      '\\r\\n]*))',
+    'gi'
+  );
+
+  // Create an array to hold our data. Give the array
+  // a default empty first row.
+  const arrData: string[][] = [[]];
+
+  // Create an array to hold our individual pattern
+  // matching groups.
+  let arrMatches = null;
+
+  // Keep looping over the regular expression matches
+  // until we can no longer find a match.
+  while ((arrMatches = objPattern.exec(strData))) {
+    // Get the delimiter that was found.
+    const strMatchedDelimiter = arrMatches[1];
+
+    // Check to see if the given delimiter has a length
+    // (is not the start of string) and if it matches
+    // field delimiter. If id does not, then we know
+    // that this delimiter is a row delimiter.
+    if (strMatchedDelimiter.length && strMatchedDelimiter != strDelimiter) {
+      // Since we have reached a new row of data,
+      // add an empty row to our data array.
+      arrData.push([]);
+    }
+
+    // Now that we have our delimiter out of the way,
+    // let's check to see which kind of value we
+    // captured (quoted or unquoted).
+    let strMatchedValue: string;
+    if (arrMatches[2]) {
+      // We found a quoted value. When we capture
+      // this value, unescape any double quotes.
+      strMatchedValue = arrMatches[2].replace(new RegExp('""', 'g'), '"');
+    } else {
+      // We found a non-quoted value.
+      strMatchedValue = arrMatches[3];
+    }
+
+    // Now that we have our value string, let's add
+    // it to the data array.
+    arrData[arrData.length - 1].push(strMatchedValue);
+  }
+
+  // Return the parsed data.
+  return arrData;
+};
 
 const sendMail = async (id: string, email: string, addresses: any[]) => {
   await sendBulkEligibilityResult(id, email, {
@@ -68,6 +135,11 @@ const bulkEligibilitygibilityStatus = async (
 
     if (!existingValue.in_error) {
       await sendMail(existingValue.id, email, JSON.parse(existingValue.result));
+    } else {
+      await db('eligibility_demands').insert({
+        eligibility_test_id: existingValue.id,
+        email,
+      });
     }
 
     return;
@@ -101,13 +173,16 @@ const bulkEligibilitygibilityStatus = async (
       }
     );
 
-    const addressesInformation = addressesCoords.data.split('\n');
+    const addressesInformation = CSVToArray(
+      addressesCoords.data as string,
+      ','
+    );
     const results = [];
     let errorCount = 0;
     let eligibileCount = 0;
 
     for (let i = 1; i < addressesInformation.length - 1; i++) {
-      const informations: string[] = addressesInformation[i].split(',');
+      const informations: string[] = addressesInformation[i];
       const score = informations[informations.length - 1];
       const label = informations[informations.length - 2];
       const lon = informations[informations.length - 3];
@@ -139,6 +214,10 @@ const bulkEligibilitygibilityStatus = async (
   } catch (e) {
     console.error(e);
     await db('eligibility_tests').update({ in_error: true }).where('id', id);
+    await db('eligibility_demands').insert({
+      eligibility_test_id: id,
+      email,
+    });
   }
 };
 
