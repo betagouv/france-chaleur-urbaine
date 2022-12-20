@@ -45,6 +45,9 @@ const callMarkup__handleOnSubmitContact = (data: AddressDataType) => {
     : 'contactFormIneligible';
   matomoEvent(markupData[markupEligibilityKey].matomoEvent, [address]);
   facebookEvent(markupData[markupEligibilityKey].facebookEvent);
+  if (eligibility) {
+    taboolaEvent('complete_registration', '1511088');
+  }
 };
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
