@@ -38,6 +38,23 @@ ST_WITHIN(
 )
 `;
 
+const getCloseQuery = (
+  coordinates: number[][],
+  geom: string,
+  distance: number
+) => `
+ST_DISTANCE(
+  ST_Transform(${geom}, 2154),
+  ST_Transform(
+    ST_MakeLine(
+      Array[${coordinates.map(
+        (coords) => `ST_SetSRID(ST_MakePoint(${coords}), 4326)`
+      )}]
+    )
+  , 2154) 
+) < ${distance}
+`;
+
 const getNetworkSummary = async (
   coordinates: number[][]
 ): Promise<NetworkSummary[]> =>
@@ -207,7 +224,7 @@ const exportEnergyFioulSummary = async (
     .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'fioul')
     .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
-export const getDataSummary = async (
+export const getPolygonSummary = async (
   coordinates: number[][]
 ): Promise<Summary> => {
   const regions = await getRegions(coordinates);
@@ -226,7 +243,7 @@ export const getDataSummary = async (
   };
 };
 
-export const exportDataSummary = async (
+export const exportPolygonSummary = async (
   coordinates: number[][],
   exportType: EXPORT_FORMAT
 ): Promise<{ content: any; name: string }> => {
@@ -258,4 +275,16 @@ export const exportDataSummary = async (
     ],
     'export_fcu'
   );
+};
+
+export const getLineSummary = async (coordinates: number[][]) => {
+  const [result10, result50] = await Promise.all([
+    db('donnees_de_consos as gas')
+      .select('conso_nb', 'pdl_nb')
+      .where(db.raw(getCloseQuery(coordinates, 'geom', 10))),
+    db('donnees_de_consos as gas')
+      .select('conso_nb', 'pdl_nb')
+      .where(db.raw(getCloseQuery(coordinates, 'geom', 50))),
+  ]);
+  return { 10: result10, 50: result50 };
 };

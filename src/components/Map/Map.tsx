@@ -27,7 +27,7 @@ import mapParam, {
   TypeLayerDisplay,
 } from '../../services/Map/param';
 import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
-import ZoneInfos from './components/ZoneInfos';
+import ZoneInfos from './components/SummaryBoxes';
 import { useMapPopup } from './hooks';
 import {
   buildingsLayerStyle,

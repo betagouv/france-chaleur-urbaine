@@ -546,10 +546,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@dataesr/react-dsfr@^3.4.15":
-  version "3.4.15"
-  resolved "https://registry.yarnpkg.com/@dataesr/react-dsfr/-/react-dsfr-3.4.15.tgz#701ea7b2ce6b9be805e8e8c37b2ae579c4ff85cd"
-  integrity sha512-f0UW7gpOkpjQkROsF9Pfam+M/I2j+ZzXq8xPJy9hNcLLokUykwCHXFtM+6dye7s2UuRnw5d2hSQt0lxmltkJIw==
+"@dataesr/react-dsfr@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@dataesr/react-dsfr/-/react-dsfr-3.5.0.tgz#36c23acee0c306bcb959d3ee3b436aec206a62b4"
+  integrity sha512-lcwiyXeCwBkn97FCv+twjmTnqujaQyQVgoo5R8wEaNwXcUIWwcHTa5x8O13FpTOvayUiEpzawP2glSwCaEoiiA==
   dependencies:
     "@babel/runtime" "^7.19.4"
     "@gouvfr/dsfr" "1.7.2"
@@ -1327,10 +1327,34 @@
     "@turf/helpers" "^6.5.0"
     "@turf/meta" "^6.5.0"
 
+"@turf/distance@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/distance/-/distance-6.5.0.tgz#21f04d5f86e864d54e2abde16f35c15b4f36149a"
+  integrity sha512-xzykSLfoURec5qvQJcfifw/1mJa+5UwByZZ5TZ8iaqjGYN0vomhV9aiSLeYdUGtYRESZ+DYC/OzY+4RclZYgMg==
+  dependencies:
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
+
 "@turf/helpers@^6.5.0":
   version "6.5.0"
   resolved "https://registry.npmjs.org/@turf/helpers/-/helpers-6.5.0.tgz"
   integrity sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw==
+
+"@turf/invariant@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-6.5.0.tgz#970afc988023e39c7ccab2341bd06979ddc7463f"
+  integrity sha512-Wv8PRNCtPD31UVbdJE/KVAWKe7l6US+lJItRR/HOEW3eh+U/JwRCSUl/KZ7bmjM/C+zLNoreM2TU6OoLACs4eg==
+  dependencies:
+    "@turf/helpers" "^6.5.0"
+
+"@turf/length@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@turf/length/-/length-6.5.0.tgz#ff4e9072d5f997e1c32a1311d214d184463f83fa"
+  integrity sha512-5pL5/pnw52fck3oRsHDcSGrj9HibvtlrZ0QNy2OcW8qBFDNgZ4jtl6U7eATVoyWPKBHszW3dWETW+iLV7UARig==
+  dependencies:
+    "@turf/distance" "^6.5.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/meta" "^6.5.0"
 
 "@turf/meta@^6.5.0":
   version "6.5.0"
