@@ -4,6 +4,7 @@ import { Coords } from 'src/types/Coords';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { Summary } from 'src/types/Summary';
+import { Densite } from 'src/types/Summary/Densite';
 import { ServiceError } from './errors';
 
 export class HeatNetworkService {
@@ -65,10 +66,22 @@ export class HeatNetworkService {
       .then((response) => response.data);
   }
 
+  async densite(line: number[][]): Promise<Densite> {
+    try {
+      return await this.httpClient.get<Densite>(
+        `/api/map/summary?type=line&coordinates=${encodeURIComponent(
+          JSON.stringify(line)
+        )}`
+      );
+    } catch (e) {
+      throw new ServiceError(e);
+    }
+  }
+
   async summary(bounds: number[][]): Promise<Summary> {
     try {
       return await this.httpClient.get<Summary>(
-        `/api/map/summary?coordinates=${encodeURIComponent(
+        `/api/map/summary?type=polygon&coordinates=${encodeURIComponent(
           JSON.stringify(bounds)
         )}`
       );
@@ -76,6 +89,7 @@ export class HeatNetworkService {
       throw new ServiceError(e);
     }
   }
+
   getFileToDownload = async (
     response: AxiosResponse
   ): Promise<{ fileName: string; blob: Blob }> => {
@@ -112,7 +126,7 @@ export class HeatNetworkService {
     try {
       return await this.httpClient
         .post(
-          `/api/map/summary?format=${format}&coordinates=${encodeURIComponent(
+          `/api/map/summary?type=polygon&format=${format}&coordinates=${encodeURIComponent(
             JSON.stringify(bounds)
           )}`
         )
