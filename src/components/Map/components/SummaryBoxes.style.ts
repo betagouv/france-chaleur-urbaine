@@ -14,7 +14,7 @@ export const ZoneInfosWrapper = styled.div`
   width: 100%;
   gap: 16px;
   background-color: white;
-  padding-top: 16px;
+  padding: 16px;
   border-radius: 8px;
   border: 1px solid #dddddd;
   .fr-tabs__panel {
@@ -75,6 +75,7 @@ export const DrawButton = styled(Button)`
   bottom: -24px;
   left: 50%;
   transform: translateX(-50%);
+  width: max-content !important;
 `;
 
 export const InfoIcon = styled.span`

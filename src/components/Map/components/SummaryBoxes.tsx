@@ -163,9 +163,9 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                     <Explanation>
                       <span>
                         La zone définie est trop grande ({size.toFixed(2)} km²),
-                        veuillez réduire la taille de recherche (maximum 5
-                        km²).Si vous avez besoin de statistiques sur une zone
-                        élargie ou plus précise, n'hésitez pas à{' '}
+                        veuillez réduire la taille de recherche (maximum 5 km²).
+                        Si vous avez besoin de statistiques sur une zone élargie
+                        ou plus précise, n'hésitez pas à{' '}
                         <a
                           href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
                           target="_blank"
