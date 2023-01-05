@@ -73,6 +73,15 @@ const styles: MapboxStyleDefinition[] = [
   },
 ];
 
+const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
+  if (map.getSource(sourceId)) {
+    return;
+  }
+
+  map.addSource(sourceId, data);
+  layers.forEach((layer) => map.addLayer(layer));
+};
+
 export default function Map() {
   const { heatNetworkService } = useServices();
 
@@ -368,105 +377,134 @@ export default function Map() {
         // --------------------
         // --- Heat Network ---
         // --------------------
-        map.current.addSource('heatNetwork', {
-          type: 'vector',
-          tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
-        });
-
-        map.current.addLayer({
-          id: 'outline',
-          source: 'heatNetwork',
-          'source-layer': 'outline',
-          ...outlineLayerStyle,
-        });
-
-        map.current.addLayer({
-          id: 'dottedOutline',
-          source: 'heatNetwork',
-          'source-layer': 'outline',
-          ...dottedOutlineLayerStyle,
-        });
+        addSource(
+          map.current,
+          'heatNetwork',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
+          },
+          [
+            {
+              id: 'outline',
+              source: 'heatNetwork',
+              'source-layer': 'outline',
+              ...outlineLayerStyle,
+            },
+            {
+              id: 'dottedOutline',
+              source: 'heatNetwork',
+              'source-layer': 'outline',
+              ...dottedOutlineLayerStyle,
+            },
+          ]
+        );
 
         // ---------------
         // --- Zone DP ---
         // ---------------
-        map.current.addSource('zoneDP', {
-          type: 'vector',
-          tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
-        });
-
-        map.current.addLayer({
-          id: 'zoneDP',
-          source: 'zoneDP',
-          'source-layer': 'zoneDP',
-          ...zoneDPLayerStyle,
-        });
+        addSource(
+          map.current,
+          'zoneDP',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
+          },
+          [
+            {
+              id: 'zoneDP',
+              source: 'zoneDP',
+              'source-layer': 'zoneDP',
+              ...zoneDPLayerStyle,
+            },
+          ]
+        );
 
         // -----------------
         // --- Buildings ---
         // -----------------
-        map.current.addSource('buildings', {
-          type: 'vector',
-          tiles: [`${origin}/api/map/buildings/{z}/{x}/{y}`],
-          maxzoom: maxZoom,
-          minzoom: minZoomData,
-        });
-
-        map.current.addLayer({
-          id: 'buildings',
-          source: 'buildings',
-          'source-layer': 'buildings',
-          ...buildingsLayerStyle,
-        });
+        addSource(
+          map.current,
+          'buildings',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/buildings/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          },
+          [
+            {
+              id: 'buildings',
+              source: 'buildings',
+              'source-layer': 'buildings',
+              ...buildingsLayerStyle,
+            },
+          ]
+        );
 
         // -----------------
         // --- Gas Usage ---
         // -----------------
-        map.current.addSource('gasUsage', {
-          type: 'vector',
-          tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
-          maxzoom: maxZoom,
-          minzoom: minZoomData,
-        });
-
-        map.current.addLayer({
-          id: 'gasUsage',
-          source: 'gasUsage',
-          'source-layer': 'gasUsage',
-          ...gasUsageLayerStyle,
-        });
+        addSource(
+          map.current,
+          'gasUsage',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          },
+          [
+            {
+              id: 'gasUsage',
+              source: 'gasUsage',
+              'source-layer': 'gasUsage',
+              ...gasUsageLayerStyle,
+            },
+          ]
+        );
 
         // --------------
         // --- Energy ---
         // --------------
-        map.current.addSource('energy', {
-          type: 'vector',
-          tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
-          maxzoom: maxZoom,
-          minzoom: minZoomData,
-        });
-
-        map.current.addLayer({
-          id: 'energy',
-          source: 'energy',
-          'source-layer': 'energy',
-          ...energyLayerStyle,
-        });
+        addSource(
+          map.current,
+          'energy',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          },
+          [
+            {
+              id: 'energy',
+              source: 'energy',
+              'source-layer': 'energy',
+              ...energyLayerStyle,
+            },
+          ]
+        );
 
         // -----------------
         // --- Demands ---
         // -----------------
-        map.current.addSource('demands', {
-          type: 'vector',
-          tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
-        });
-
-        map.current.addLayer({
-          id: 'demands',
-          source: 'demands',
-          'source-layer': 'demands',
-          ...demandsLayerStyle,
-        });
+        addSource(
+          map.current,
+          'demands',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+          },
+          [
+            {
+              id: 'demands',
+              source: 'demands',
+              'source-layer': 'demands',
+              ...demandsLayerStyle,
+            },
+          ]
+        );
         setMapState('loaded');
       }
     });

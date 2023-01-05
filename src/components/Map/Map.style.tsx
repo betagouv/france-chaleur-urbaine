@@ -112,7 +112,7 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
 
-  max-width: calc(100vw - 333px);
+  max-width: calc(100vw - 333px - 40px);
   width: 1100px;
   padding: 32px;
   bottom: 0;
