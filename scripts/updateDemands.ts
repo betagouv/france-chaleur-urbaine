@@ -21,9 +21,6 @@ const updateDemands = async () => {
       (demand) => demand.get('Latitude') && demand.get('Longitude')
     )) {
       console.log('Demande', i++);
-      if (i < 237) {
-        continue;
-      }
       const latitude = demand.get('Latitude') as number;
       const longitude = demand.get('Longitude') as number;
 
