@@ -1,4 +1,13 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import {
+  Alert,
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  TextInput,
+} from '@dataesr/react-dsfr';
+import { updateAirtable } from '@helpers/airtable';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { AddressDataType } from 'src/types/AddressData';
 import styled from 'styled-components';
 import { ContactFormEligibilityResult } from './components';
@@ -7,6 +16,17 @@ const UnderlinedLink = styled.a`
   text-decoration: none;
   color: white;
 `;
+
+const choices = [
+  'Moteur de recherche',
+  'Pub web',
+  'Article sur un site internet',
+  "Bureau d'étude",
+  'Espace France Rénov’',
+  'Bouche à oreille',
+  'Services municipaux',
+];
+
 const EligibilityFormMessageConfirmation = ({
   addressData = {},
   cardMode,
@@ -14,6 +34,31 @@ const EligibilityFormMessageConfirmation = ({
   addressData: AddressDataType;
   cardMode?: boolean;
 }) => {
+  const [other, setOther] = useState('');
+  const [sondage, setSondage] = useState<string[]>([]);
+  const [sondageAnswered, setSondageAnswered] = useState(false);
+  const answer = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.checked) {
+      setSondage(sondage.filter((value) => value !== e.target.name));
+    } else {
+      setSondage(Array.from(new Set([...sondage, e.target.name])));
+    }
+  };
+
+  const sendSondage = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (addressData.airtableId) {
+      await updateAirtable(
+        addressData.airtableId,
+        {
+          sondage: sondage.includes('Autre') ? [...sondage, other] : sondage,
+        },
+        'FCU - Utilisateurs'
+      );
+      setSondageAnswered(true);
+    }
+  };
+
   const linkToMap =
     addressData?.geoAddress?.geometry?.coordinates &&
     (!addressData.eligibility?.isBasedOnIris
@@ -62,6 +107,47 @@ Sans attendre, [téléchargez notre guide pratique](/documentation/guide-france-
           }
         />
       </ContactFormEligibilityResult>
+      {addressData.airtableId &&
+        (sondageAnswered ? (
+          <Alert type="success" title="Merci pour votre contribution"></Alert>
+        ) : (
+          <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
+            <form onSubmit={sendSondage}>
+              <h4>Aidez-nous à améliorer notre service :</h4>
+              <CheckboxGroup
+                legend="Comment avez-vous connu France Chaleur Urbaine ?"
+                required
+              >
+                {choices.map((choice) => (
+                  <Checkbox
+                    key={choice}
+                    label={choice}
+                    id={choice}
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore: Create proper type
+                    onClick={answer}
+                  />
+                ))}
+                <Checkbox
+                  label="Autre"
+                  id="Autre"
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore: Create proper type
+                  onClick={answer}
+                />
+                {sondage.includes('Autre') && (
+                  <TextInput
+                    required
+                    value={other}
+                    placeholder="Veuillez préciser"
+                    onChange={(e) => setOther(e.target.value)}
+                  />
+                )}
+              </CheckboxGroup>
+              <Button submit>Valider</Button>
+            </form>
+          </div>
+        ))}
       <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
         <UnderlinedLink
           className="fr-md-auto"

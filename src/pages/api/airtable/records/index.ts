@@ -5,6 +5,7 @@ import {
 import { getGestionnaires } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
+import { v4 as uuidv4 } from 'uuid';
 
 const creationCallBack =
   (res: NextApiResponse<any>) => (err: any, records: any) => {
@@ -27,7 +28,11 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   const { type, ...values } = req.body;
   if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
     console.log('Sending to', type, values);
-    return res.status(200).send(`Sending to ${type} ${JSON.stringify(values)}`);
+    return res.status(200).json({
+      type: type,
+      values: values,
+      ids: [{ id: uuidv4() }],
+    });
   }
 
   switch (type) {

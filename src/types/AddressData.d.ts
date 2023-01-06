@@ -12,4 +12,5 @@ export type AddressDataType = {
   heatingType?: AvailableHeating;
   structure?: AvailableStructure;
   eligibility?: HeatNetworksResponse;
+  airtableId?: string;
 };

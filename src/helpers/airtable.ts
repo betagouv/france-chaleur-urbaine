@@ -98,8 +98,22 @@ export const submitToAirtable = async (
   values: any,
   type: string
 ): Promise<Response> => {
-  return fetch('./api/airtable/create-record', {
+  return fetch('./api/airtable/records', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ ...values, type }),
+  });
+};
+
+export const updateAirtable = async (
+  recordId: string,
+  values: any,
+  type: string
+): Promise<Response> => {
+  return fetch(`./api/airtable/records/${recordId}`, {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
