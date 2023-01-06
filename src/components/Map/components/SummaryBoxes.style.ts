@@ -10,6 +10,10 @@ export const Container = styled.div<{ customCursor?: boolean }>`
 `;
 
 export const ZoneInfosWrapper = styled.div`
+  font-size: 14px;
+  button {
+    font-size: 14px;
+  }
   position: relative;
   width: 100%;
   gap: 16px;

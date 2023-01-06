@@ -38,7 +38,6 @@ export const Info = styled.div<{ alignTop?: boolean }>`
 
 export const Title = styled.div`
   font-weight: 600;
-  font-size: 14px;
   margin-bottom: 8px;
 `;
 
