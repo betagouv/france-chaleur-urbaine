@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import {
   IconWrapper,
   Info,
@@ -18,7 +19,7 @@ const ZoneInfo = ({
   color: 'blue' | 'green';
   alignTop?: boolean;
   withBackground?: boolean;
-  title: string;
+  title: ReactNode;
   icon?: string;
   values: { label: string; value: string | number }[];
 }) => {

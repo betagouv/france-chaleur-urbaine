@@ -114,9 +114,17 @@ const useContactFormFCU = () => {
       }
       setMessageSent(true);
       callMarkup__handleOnSubmitContact((data as AddressDataType) || {});
-      await submitToAirtable(formatDataToAirtable(data), 'FCU - Utilisateurs');
+      const response = await submitToAirtable(
+        formatDataToAirtable(data),
+        'FCU - Utilisateurs'
+      );
+      const responseData = await response.json();
       const scrollTimer = timeoutScroller(500);
-      setAddressData({ ...addressData, ...data });
+      setAddressData({
+        ...addressData,
+        ...data,
+        airtableId: responseData.ids[0]?.id,
+      });
       setMessageReceived(true);
       return () => window.clearTimeout(scrollTimer);
     },

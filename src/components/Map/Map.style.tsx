@@ -20,7 +20,6 @@ const { minZoomData } = param;
 const mapControlZindex = 110;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
-export const mapMinMedia = '@media (max-width: 750px) ';
 
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
@@ -112,14 +111,10 @@ export const MapStyle: any = createGlobalStyle<{
 export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
-  overflow: hidden;
 
-  max-width: calc(100vw - 333px);
+  max-width: calc(100vw - 333px - 40px);
   width: 1100px;
   padding: 32px;
-  ${mapMinMedia} {
-    padding: 32px 32px 16px 32px;
-  }
   bottom: 0;
   left: ${({ legendCollapsed }) =>
     legendCollapsed ? '50vw' : 'calc((100vw - 333px)/2 + 333px)'};
@@ -168,9 +163,6 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   &:hover {
     & > .hover-info {
       display: block;
-      ${mapMinMedia} {
-        display: none;
-      }
     }
   }
 `;

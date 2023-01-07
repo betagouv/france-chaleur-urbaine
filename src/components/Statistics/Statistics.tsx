@@ -29,6 +29,8 @@ const monthToString = [
   'decembre',
 ];
 
+const today = new Date();
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Statistics = () => {
@@ -122,12 +124,21 @@ const Statistics = () => {
       rawDataMonthContact
         ? Object.entries(
             (rawDataMonthContact as Record<string, ReturnApiStatAirtable>) || {}
-          ).map(([key, value]) => {
-            return {
-              period: new Date(key),
-              ...value,
-            };
-          })
+          )
+            .filter(
+              ([key]) =>
+                key !==
+                `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
+                  2,
+                  '0'
+                )}`
+            )
+            .map(([key, value]) => {
+              return {
+                period: new Date(key),
+                ...value,
+              };
+            })
         : undefined,
     [rawDataMonthContact]
   );
@@ -183,6 +194,44 @@ const Statistics = () => {
     ],
     ...(dataCountContact
       ? dataCountContact.map((val) => {
+          const { date, nbTotal, nbEligible, nbUneligible } = val;
+          return [date, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
+        })
+      : []),
+  ];
+
+  const { data: rawDataCountBulkContact, error: errorCountBulkContact } =
+    useSWR('/api/statistiques/bulk', fetcher, {
+      onError: (err) => console.warn('errorCountContact >>', err),
+    });
+
+  const dataCountBulkContact = useMemo(
+    () =>
+      rawDataCountBulkContact
+        ? Object.entries(
+            (rawDataCountBulkContact as Record<
+              string,
+              ReturnApiStatAirtable
+            >) || {}
+          ).map(([, { date, ...value }]) => {
+            return {
+              date: new Date(date),
+              ...value,
+            };
+          })
+        : undefined,
+    [rawDataCountBulkContact]
+  );
+
+  const formatedDataCountBulkContact = [
+    [
+      { type: 'date', label: 'Date' },
+      'Total des prises de contact',
+      'Contact pour adresses non éligibles',
+      'Contact pour adresses éligibles',
+    ],
+    ...(dataCountBulkContact
+      ? dataCountBulkContact.map((val) => {
           const { date, nbTotal, nbEligible, nbUneligible } = val;
           return [date, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
         })
@@ -262,6 +311,12 @@ const Statistics = () => {
             errors={errorCountContact}
             data={dataCountContact}
             formatedData={formatedDataCountContact}
+          />
+          <Graph
+            title="Demandes de contacts par fichier cumulées"
+            errors={errorCountBulkContact}
+            data={dataCountBulkContact}
+            formatedData={formatedDataCountBulkContact}
           />
         </GraphsWrapper>
       </Slice>

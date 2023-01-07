@@ -1,6 +1,5 @@
 import { Button } from '@dataesr/react-dsfr';
 import styled, { css } from 'styled-components';
-import { mapMinMedia } from '../Map.style';
 
 export const Container = styled.div<{ customCursor?: boolean }>`
   ${({ customCursor }) =>
@@ -11,15 +10,20 @@ export const Container = styled.div<{ customCursor?: boolean }>`
 `;
 
 export const ZoneInfosWrapper = styled.div`
+  font-size: 14px;
+  button {
+    font-size: 14px;
+  }
   position: relative;
   width: 100%;
-  display: flex;
-  flex-wrap: wrap;
   gap: 16px;
   background-color: white;
   padding: 16px;
   border-radius: 8px;
   border: 1px solid #dddddd;
+  .fr-tabs__panel {
+    padding: 8px !important;
+  }
 `;
 
 export const Export = styled.div`
@@ -28,30 +32,17 @@ export const Export = styled.div`
   bottom: 16px;
 `;
 
-export const ZoneButton = styled(Button)`
-  position: absolute;
-  top: 8px;
-  right: 40px;
-`;
-
 export const CollapseZone = styled.button<{ zoneCollapsed: boolean }>`
   position: absolute;
   padding-bottom: 24px;
   left: 50%;
   top: 32px;
-  ${mapMinMedia} {
-    left: 64px;
-    top: 29px;
-  }
   ${({ zoneCollapsed }) =>
     zoneCollapsed &&
     css`
       top: 64px;
-      ${mapMinMedia} {
-        top: 45px;
-      }
     `}
-  transform: translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
   border-radius: 10px;
   background-color: white;
   border: solid 1px #dddddd;
@@ -63,11 +54,12 @@ export const CollapseZone = styled.button<{ zoneCollapsed: boolean }>`
   &:hover {
     & > .hover-info {
       display: block;
-      ${mapMinMedia} {
-        display: none;
-      }
     }
   }
+`;
+export const Explanations = styled.div`
+  display: flex;
+  gap: 32px;
 `;
 
 export const Explanation = styled.div`
@@ -76,6 +68,28 @@ export const Explanation = styled.div`
   gap: 8px;
 `;
 
-export const ExplanationTitle = styled.span`
-  font-weight: bold;
+export const ZoneInfos = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+`;
+
+export const DrawButton = styled(Button)`
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content !important;
+`;
+
+export const InfoIcon = styled.span`
+  margin-left: 8px;
+  & > .hover-info {
+    width: 300px;
+  }
+  &:hover {
+    & > .hover-info {
+      display: block;
+    }
+  }
 `;
