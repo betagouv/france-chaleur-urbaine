@@ -1,10 +1,12 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+export const Container = styled.div<{ large?: boolean }>`
   width: 100%;
-  @media (min-width: 1150px) {
+  ${({ large }) =>
+    !large &&
+    `@media (min-width: 1150px) {
     width: 50%;
-  }
+  }`}
 `;
 
 export const GraphWrapper = styled.div`
