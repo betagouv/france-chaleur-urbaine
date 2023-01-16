@@ -19,7 +19,7 @@ module.exports = {
   siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
   generateRobotsTxt: true, // (optional)
   additionalPaths: () => {
-    return ressources.map((key) => ({ loc: `/ressource/${key}` }));
+    return ressources.map((key) => ({ loc: `/ressources/${key}` }));
   },
   // ...other options
 };
