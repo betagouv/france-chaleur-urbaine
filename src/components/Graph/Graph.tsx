@@ -6,15 +6,22 @@ const Graph = ({
   errors,
   data,
   formatedData,
+  large,
+  withSum,
 }: {
   title: string;
   errors: any;
   data: any;
   formatedData: any[];
   date?: boolean;
+  large?: boolean;
+  withSum?: boolean;
 }) => {
+  const total = formatedData
+    .slice(1)
+    .reduce((acc, current) => acc + current[1], 0);
   return (
-    <Container>
+    <Container large={large}>
       <GraphWrapper>
         {errors ? (
           <div>
@@ -31,7 +38,7 @@ const Graph = ({
             loader={<div>Chargement du graph...</div>}
             data={formatedData}
             options={{
-              title,
+              title: withSum ? `${title} - ${total} au total` : title,
               colors: ['#0078f3', '#f60700', '#1f8d49', '#009099'],
               hAxis: {
                 slantedText: true,

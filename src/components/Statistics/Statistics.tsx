@@ -68,11 +68,17 @@ const Statistics = () => {
       const label = `${
         !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
       } ${year}`;
+      // Bug en mai et juin qui fait que le nombre d'evenements est faux
+      const data =
+        label === 'mai 2022' || label === 'juin 2022'
+          ? 'nb_visits'
+          : 'nb_events';
       return [
         label,
-        entry?.['Formulaire de test - Envoi']?.nb_visits || 0,
-        entry?.['Formulaire de test - Adresse Inéligible']?.nb_visits || 0,
-        entry?.['Formulaire de test - Adresse Éligible']?.nb_visits || 0,
+        entry['Formulaire de test - Adresse Inéligible'][data] +
+          entry['Formulaire de test - Adresse Éligible'][data],
+        entry['Formulaire de test - Adresse Inéligible'][data],
+        entry['Formulaire de test - Adresse Éligible'][data],
       ];
     }),
   ];
@@ -213,27 +219,35 @@ const Statistics = () => {
               string,
               ReturnApiStatAirtable
             >) || {}
-          ).map(([, { date, ...value }]) => {
-            return {
-              date: new Date(date),
-              ...value,
-            };
-          })
+          )
+            .filter(
+              ([key]) =>
+                key !==
+                `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
+                  2,
+                  '0'
+                )}`
+            )
+            .map(([key, value]) => {
+              return {
+                period: new Date(key),
+                ...value,
+              };
+            })
         : undefined,
     [rawDataCountBulkContact]
   );
 
   const formatedDataCountBulkContact = [
-    [
-      { type: 'date', label: 'Date' },
-      'Total des prises de contact',
-      'Contact pour adresses non éligibles',
-      'Contact pour adresses éligibles',
-    ],
+    ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
     ...(dataCountBulkContact
       ? dataCountBulkContact.map((val) => {
-          const { date, nbTotal, nbEligible, nbUneligible } = val;
-          return [date, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
+          const { period, nbTotal, nbEligible, nbUneligible } = val;
+          const label = `${
+            monthToString[period.getMonth()]
+          } ${period.getFullYear()}`;
+
+          return [label, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
         })
       : []),
   ];
@@ -290,6 +304,8 @@ const Statistics = () => {
               errors={errorVisits}
               data={dataVisits}
               formatedData={formatedDataVisits}
+              large
+              withSum
             />
           )}
           {formatedDataEligibilityTest.length > 1 && (
@@ -298,8 +314,16 @@ const Statistics = () => {
               errors={errorDataEligibilityTest}
               data={dataEligibilityTest}
               formatedData={formatedDataEligibilityTest}
+              withSum
             />
           )}
+          <Graph
+            title="Adresses testées par liste / mois"
+            errors={errorCountBulkContact}
+            data={dataCountBulkContact}
+            formatedData={formatedDataCountBulkContact}
+            withSum
+          />
           <Graph
             title="Demandes de contacts / mois"
             errors={errorMonthContact}
@@ -311,12 +335,6 @@ const Statistics = () => {
             errors={errorCountContact}
             data={dataCountContact}
             formatedData={formatedDataCountContact}
-          />
-          <Graph
-            title="Demandes de contacts par fichier cumulées"
-            errors={errorCountBulkContact}
-            data={dataCountBulkContact}
-            formatedData={formatedDataCountBulkContact}
           />
         </GraphsWrapper>
       </Slice>
