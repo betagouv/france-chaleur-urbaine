@@ -18,6 +18,8 @@ export type Document = {
   content: ReactNode;
 };
 
+// Don't forget to update next-sitemap.config on updating key here
+
 export const issues: Record<string, Document> = {
   reseau: {
     title: 'Qu’est-ce qu’un réseau de chaleur ?',
