@@ -7,6 +7,7 @@ import turfArea from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import turfLength from '@turf/length';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { withCors } from 'src/services/api/cors';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 
 const polygonSummary = async (
@@ -59,10 +60,7 @@ const lineSummary = async (
   return res.status(501);
 };
 
-export default async function summary(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+const summary = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const coordinates = JSON.parse(
       decodeURIComponent((req.query as Record<string, string>).coordinates)
@@ -94,4 +92,6 @@ export default async function summary(
       code: 'Internal Server Error',
     });
   }
-}
+};
+
+export default withCors(summary);
