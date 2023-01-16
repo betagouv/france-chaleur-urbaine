@@ -58,7 +58,10 @@ const reducer = {
       };
 
       value.nbTotal++;
-      if (fields['Éligibilité']) {
+      if (
+        fields['Éligibilité'] &&
+        (!fields['Distance au réseau'] || fields['Distance au réseau'] <= 100)
+      ) {
         value.nbEligible++;
       } else {
         value.nbUneligible++;

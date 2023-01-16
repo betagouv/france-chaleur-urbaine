@@ -69,7 +69,9 @@ export class HeatNetworkService {
   async densite(line: number[][]): Promise<Densite> {
     try {
       return await this.httpClient.get<Densite>(
-        `/api/map/summary?type=line&coordinates=${encodeURIComponent(
+        `${
+          process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
+        }/api/map/summary?type=line&coordinates=${encodeURIComponent(
           JSON.stringify(line)
         )}`
       );
@@ -81,7 +83,9 @@ export class HeatNetworkService {
   async summary(bounds: number[][]): Promise<Summary> {
     try {
       return await this.httpClient.get<Summary>(
-        `/api/map/summary?type=polygon&coordinates=${encodeURIComponent(
+        `${
+          process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
+        }/api/map/summary?type=polygon&coordinates=${encodeURIComponent(
           JSON.stringify(bounds)
         )}`
       );
@@ -126,7 +130,9 @@ export class HeatNetworkService {
     try {
       return await this.httpClient
         .post(
-          `/api/map/summary?type=polygon&format=${format}&coordinates=${encodeURIComponent(
+          `${
+            process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
+          }/api/map/summary?type=polygon&format=${format}&coordinates=${encodeURIComponent(
             JSON.stringify(bounds)
           )}`
         )

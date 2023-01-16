@@ -8,27 +8,31 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       .whereNull('in_error')
       .orderBy('created_at', 'asc');
 
-    let nbTotal = 0;
-    let nbEligible = 0;
+    const defaultMonthValue = {
+      nbTotal: 0,
+      nbEligible: 0,
+      nbUneligible: 0,
+    };
 
     return res.status(200).json(
       data.reduce((acc, value) => {
         const date: Date = new Date(value.created_at);
-        const key = date.toISOString().split('T')[0];
+        const keys = date.toISOString().split('T')[0].split('-');
+        const key = `${keys[0]}-${keys[1]}`;
 
-        nbTotal += value.addresses_count - value.error_count;
-        nbEligible += value.eligibile_count;
+        const current = {
+          ...(acc[key] || defaultMonthValue),
+        };
+
+        current.nbTotal += value.addresses_count - value.error_count;
+        current.nbEligible += value.eligibile_count;
+        current.nbUneligible = current.nbTotal - current.nbEligible;
 
         return !key
           ? acc
           : {
               ...acc,
-              [key]: {
-                date: key,
-                nbTotal,
-                nbEligible,
-                nbUneligible: nbTotal - nbEligible,
-              },
+              [key]: current,
             };
       }, {})
     );
