@@ -29,7 +29,8 @@
     "db:migrate": "knex migrate:latest",
     "db:new": "knex migrate:make",
     "db:revert": "knex migrate:rollback",
-    "db:revert:one": "knex migrate:down"
+    "db:revert:one": "knex migrate:down",
+    "scalingo-postbuild": "yarn build && next-sitemap"
   },
   "dependencies": {
     "@dataesr/react-dsfr": "^3.5.2",
@@ -60,8 +61,10 @@
     "maplibre-gl": "^2.4.0",
     "next": "^12.3.1",
     "next-auth": "^4.18.8",
+    "next-sitemap": "^3.1.45",
     "nodemailer": "^6.9.0",
     "pg": "^8.8.0",
+    "prettier": "2.8.1",
     "react": "^18.2.0",
     "react-compound-slider": "^3.4.0",
     "react-dom": "^18.2.0",
@@ -128,7 +131,6 @@
     "lint-staged": "^13.1.0",
     "nock": "^13.3.0",
     "node-mocks-http": "^1.12.1",
-    "prettier": "^2.8.3",
     "prettier-plugin-organize-imports": "^3.2.2",
     "sinon": "^15.0.1",
     "ts-jest": "^29.0.5",
