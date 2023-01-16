@@ -319,8 +319,8 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                         title="Distance"
                         values={[
                           {
-                            label: 'Km',
-                            value: densite.size.toFixed(2),
+                            label: 'm',
+                            value: Math.round(densite.size * 1000),
                           },
                         ]}
                       />
