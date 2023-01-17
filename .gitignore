@@ -52,3 +52,8 @@ yarn-error.log*
 /docker/db/*.dat
 
 dump.pgsql
+public/robots.txt
+
+public/sitemap-0.xml
+
+public/sitemap.xml
