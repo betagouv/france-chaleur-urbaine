@@ -3,32 +3,50 @@
     "linkedInEvent": [5492674],
     "facebookEvent": ["FindLocation"],
     "googleAdsEvent": ["6QaoCJfrtN8DEIqs-vYo"],
-    "matomoEvent": ["Eligibilité", "Formulaire de test - Envoi"]
+    "matomoEvent": {
+      "form": ["Eligibilité", "Formulaire de test - Envoi"],
+      "map": ["Eligibilité", "Formulaire de test - Carte - Envoi"]
+    }
   },
   "eligibilityTestOK": {
     "linkedInEvent": [5392842],
     "googleAdsEvent": ["esqECJTrtN8DEIqs-vYo"],
-    "matomoEvent": ["Eligibilité", "Formulaire de test - Adresse Éligible"]
+    "matomoEvent": {
+      "form": ["Eligibilité", "Formulaire de test - Adresse Éligible"],
+      "map": ["Eligibilité", "Formulaire de test - Carte - Adresse Éligible"]
+    }
   },
   "eligibilityTestKO": {
     "linkedInEvent": [5492666],
     "googleAdsEvent": ["9WD8CJrrtN8DEIqs-vYo"],
-    "matomoEvent": ["Eligibilité", "Formulaire de test - Adresse Inéligible"]
+    "matomoEvent": {
+      "form": ["Eligibilité", "Formulaire de test - Adresse Inéligible"],
+      "map": ["Eligibilité", "Formulaire de test - Carte - Adresse Inéligible"]
+    }
   },
   "eligibilityTestUnknow": {
     "linkedInEvent": [5492682],
     "googleAdsEvent": ["9WD8CJrrtN8DEIqs-vYo"],
-    "matomoEvent": ["Eligibilité", "Formulaire de test - Adresse Inconnue"]
+    "matomoEvent": {
+      "form": ["Eligibilité", "Formulaire de test - Adresse Inconnue"],
+      "map": ["Eligibilité", "Formulaire de test - Carte - Adresse Inconnue"]
+    }
   },
   "contactFormEligible": {
     "facebookEvent": ["Contact"],
-    "matomoEvent": ["Eligibilité", "Formulaire de contact éligible - Envoi"]
+    "matomoEvent": {
+      "form": ["Eligibilité", "Formulaire de contact éligible - Envoi"],
+      "map": ["Eligibilité", "Formulaire de contact éligible - Carte - Envoi"]
+    }
   },
   "contactFormIneligible": {
     "facebookEvent": ["Contact"],
-    "matomoEvent": ["Eligibilité", "Formulaire de contact inéligible - Envoi"]
+    "matomoEvent": {
+      "form": ["Eligibilité", "Formulaire de contact inéligible - Envoi"],
+      "map": ["Eligibilité", "Formulaire de contact inéligible - Carte - Envoi"]
+    }
   },
   "downloadLink": {
-    "matomoEvent": ["Téléchargement"]
+    "matomoEvent": { "form": ["Téléchargement"], "map": ["Téléchargement"] }
   }
 }

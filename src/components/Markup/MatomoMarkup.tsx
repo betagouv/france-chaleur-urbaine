@@ -60,24 +60,11 @@ const MatomoMarkup = ({
 
 export default MatomoMarkup;
 
-const getTarteaucitronjsMatomoConsent = () =>
-  window?.tarteaucitron?.proTemp
-    ?.split('!')
-    ?.reduce((acc: Record<string, unknown>, entry: string) => {
-      const [key, value]: string[] = entry.split('=');
-      return { ...acc, [key]: value !== 'false' };
-    }, {})?.['matomo'];
-
 export const matomoEvent = (
   matomoEventValues: string[] = [],
   userEventValues: (string | number)[] = []
 ) => {
-  const eventParam = [
-    ...matomoEventValues,
-    ...(userEventValues.length === 0 || getTarteaucitronjsMatomoConsent()
-      ? userEventValues
-      : ['Consentement non accordé']),
-  ];
+  const eventParam = [...matomoEventValues, ...userEventValues];
   if (eventParam.length === 0) {
     console.warn(
       'matomoEvent > Event Params is required - Event is not send to Matomo'

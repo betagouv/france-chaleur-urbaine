@@ -1,6 +1,6 @@
 import Hoverable from '@components/Hoverable';
 import { Icon } from '@dataesr/react-dsfr';
-import { usePersistedState } from '@hooks';
+import { useContactFormFCU, usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import {
@@ -84,6 +84,7 @@ const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
 
 export default function Map() {
   const { heatNetworkService } = useServices();
+  const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
   const [collapsedCardIndex, setCollapsedCardIndex] = useState(0);
   const mapContainer: null | { current: any } = useRef(null);
@@ -167,6 +168,15 @@ export default function Map() {
           addressDetails,
           search,
         };
+        handleOnFetchAddress({ address }, true);
+        handleOnSuccessAddress(
+          {
+            address,
+            geoAddress: addressDetails.geoAddress,
+            eligibility: addressDetails.network,
+          },
+          true
+        );
         setSoughtAddresses([...soughtAddresses, newAddress]);
         setCollapsedCardIndex(0);
       } else {
@@ -175,7 +185,13 @@ export default function Map() {
 
       jumpTo({ coordinates });
     },
-    [jumpTo, setSoughtAddresses, soughtAddresses]
+    [
+      handleOnFetchAddress,
+      handleOnSuccessAddress,
+      jumpTo,
+      setSoughtAddresses,
+      soughtAddresses,
+    ]
   );
 
   const removeSoughtAddresses = useCallback(
