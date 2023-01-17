@@ -1,4 +1,5 @@
 import Hoverable from '@components/Hoverable';
+import { matomoEvent } from '@components/Markup';
 import { Button, Icon, Tab, Tabs } from '@dataesr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
@@ -65,11 +66,13 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   }, []);
 
   useEffect(() => {
+    matomoEvent(['Carto', 'Zone définie']);
     setSummary(undefined);
     if (bounds && size && size < 5) {
       zoneIndex.current += 1;
       const currentZoneIndex = zoneIndex.current;
       heatNetworkService.summary(bounds).then((result) => {
+        matomoEvent(['Carto', 'Donées recues']);
         if (currentZoneIndex === zoneIndex.current) {
           setSummary(result);
         }
@@ -78,11 +81,13 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   }, [heatNetworkService, bounds, size]);
 
   useEffect(() => {
+    matomoEvent(['Carto', 'Tracé défini']);
     setDensite(undefined);
     if (lines) {
       lineIndex.current += 1;
       const currentLineIndex = lineIndex.current;
       heatNetworkService.densite(lines).then((result) => {
+        matomoEvent(['Carto', 'Densité recu']);
         if (currentLineIndex === lineIndex.current) {
           setDensite(result);
         }
@@ -381,9 +386,11 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                     setBounds(undefined);
                     setLines(undefined);
                     if (tabIndex === 0) {
+                      matomoEvent(['Carto', 'Définir une zone']);
                       setDrawing('polygon');
                       draw.changeMode('draw_polygon');
                     } else {
+                      matomoEvent(['Carto', 'Définir un tracé']);
                       setDrawing('line');
                       draw.changeMode('draw_line_string');
                     }

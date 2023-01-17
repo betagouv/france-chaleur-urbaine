@@ -8,6 +8,7 @@ import SimulateurCO2 from '@components/SimulatorCO2';
 import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
+import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import {
@@ -17,7 +18,6 @@ import {
   testimonies,
   userExperience,
 } from '@data/coproprietaire';
-import { MediaVideo } from '@dataesr/react-dsfr';
 import Head from 'next/head';
 
 const currentPage = 'coproprietaire';
@@ -83,17 +83,12 @@ Vous êtes chauffé au fioul ou au gaz&nbsp;?
               className="fcuSolutionForFuturFooter"
             />
             <Slice padding={4}>
-              <MediaVideo className="small-video">
-                <video
-                  width="100%"
-                  controls
-                  src="/videos/FCU-accueil.mp4"
-                  poster="/videos/FCU-accueil.jpg"
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore: needed by DSFR
-                  href="/videos/FCU-accueil.mp4"
-                />
-              </MediaVideo>{' '}
+              <TrackedVideo
+                width="100%"
+                src="/videos/FCU-accueil.mp4"
+                poster="/videos/FCU-accueil.jpg"
+                className="small-video"
+              />
             </Slice>
           </Slice>
 
