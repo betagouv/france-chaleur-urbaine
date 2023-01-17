@@ -4,10 +4,10 @@ import Partners from '@components/Partners/Partners';
 import MainContainer from '@components/shared/layout';
 import Slice, { SliceImg } from '@components/Slice';
 import TextList from '@components/TextList';
+import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import { dataNumberRcu, presentationRcu } from '@data/home';
-import { MediaVideo } from '@dataesr/react-dsfr';
 import Head from 'next/head';
 import styled, { createGlobalStyle } from 'styled-components';
 
@@ -117,17 +117,11 @@ export default function Home() {
             direction="row"
           >
             <WrappedText {...presentationRcu} />
-            <MediaVideo>
-              <video
-                width="100%"
-                controls
-                poster="/img/rcu-illustation.svg"
-                src="/videos/FCU-RC.mp4"
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore: needed by DSFR
-                href="/videos/FCU-RC.mp4"
-              />
-            </MediaVideo>
+            <TrackedVideo
+              width="100%"
+              poster="/img/rcu-illustation.svg"
+              src="/videos/FCU-RC.mp4"
+            />
           </Slice>
           <Slice theme="color" padding={5}>
             <BlockquoteSlice>

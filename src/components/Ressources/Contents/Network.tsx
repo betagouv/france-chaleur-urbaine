@@ -1,4 +1,5 @@
-import { Col, MediaVideo, Row } from '@dataesr/react-dsfr';
+import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
+import { Col, Row } from '@dataesr/react-dsfr';
 import { List, Source, Subtitle } from './Contents.styles';
 
 const Network = () => {
@@ -62,17 +63,11 @@ const Network = () => {
         </a>
       </Source>
       <br />
-      <MediaVideo>
-        <video
-          height="100%"
-          controls
-          poster="/img/ressources-network.png"
-          src="/videos/FCU-RC.mp4"
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore: needed by DSFR
-          href="/videos/FCU-RC.mp4"
-        />
-      </MediaVideo>
+      <TrackedVideo
+        height="100%"
+        poster="/img/ressources-network.png"
+        src="/videos/FCU-RC.mp4"
+      />
     </>
   );
 };
