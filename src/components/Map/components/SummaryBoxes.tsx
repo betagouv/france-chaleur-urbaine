@@ -66,9 +66,9 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   }, []);
 
   useEffect(() => {
-    matomoEvent(['Carto', 'Zone définie']);
     setSummary(undefined);
     if (bounds && size && size < 5) {
+      matomoEvent(['Carto', 'Zone définie']);
       zoneIndex.current += 1;
       const currentZoneIndex = zoneIndex.current;
       heatNetworkService.summary(bounds).then((result) => {
@@ -81,9 +81,9 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   }, [heatNetworkService, bounds, size]);
 
   useEffect(() => {
-    matomoEvent(['Carto', 'Tracé défini']);
     setDensite(undefined);
     if (lines) {
+      matomoEvent(['Carto', 'Tracé défini']);
       lineIndex.current += 1;
       const currentLineIndex = lineIndex.current;
       heatNetworkService.densite(lines).then((result) => {
