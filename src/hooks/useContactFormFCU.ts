@@ -9,8 +9,14 @@ import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
 import { useCallback, useRef, useState } from 'react';
 import { AddressDataType } from 'src/types/AddressData';
 
-const callMarkup__handleOnFetchAddress = (address: string) => {
-  matomoEvent(markupData.eligibilityTest.matomoEvent, [address]);
+const callMarkup__handleOnFetchAddress = (
+  address: string,
+  fromMap?: boolean
+) => {
+  matomoEvent(
+    markupData.eligibilityTest.matomoEvent[fromMap ? 'map' : 'form'],
+    [address]
+  );
   linkedInEvent(markupData.eligibilityTest.linkedInEvent);
   facebookEvent(markupData.eligibilityTest.facebookEvent);
   googleAdsEvent('10986886666', markupData.eligibilityTest.googleAdsEvent);
@@ -20,30 +26,40 @@ const callMarkup__handleOnFetchAddress = (address: string) => {
 const callMarkup__handleOnSuccessAddress = ({
   eligibility,
   address,
+  fromMap,
 }: {
   eligibility: boolean;
   address?: string;
+  fromMap?: boolean;
 }) => {
   if (eligibility) {
-    matomoEvent(markupData.eligibilityTestOK.matomoEvent, [
-      address || 'Adresse indefini',
-    ]);
+    matomoEvent(
+      markupData.eligibilityTestOK.matomoEvent[fromMap ? 'map' : 'form'],
+      [address || 'Adresse indefini']
+    );
     linkedInEvent(markupData.eligibilityTestOK.linkedInEvent);
     googleAdsEvent('10986886666', markupData.eligibilityTestOK.googleAdsEvent);
   } else {
-    matomoEvent(markupData.eligibilityTestKO.matomoEvent, [
-      address || 'Adresse indefini',
-    ]);
+    matomoEvent(
+      markupData.eligibilityTestKO.matomoEvent[fromMap ? 'map' : 'form'],
+      [address || 'Adresse indefini']
+    );
     linkedInEvent(markupData.eligibilityTestKO.linkedInEvent);
     googleAdsEvent('10986886666', markupData.eligibilityTestKO.googleAdsEvent);
   }
 };
-const callMarkup__handleOnSubmitContact = (data: AddressDataType) => {
+const callMarkup__handleOnSubmitContact = (
+  data: AddressDataType,
+  fromMap?: boolean
+) => {
   const { eligibility, address = '' } = data;
   const markupEligibilityKey = eligibility
     ? 'contactFormEligible'
     : 'contactFormIneligible';
-  matomoEvent(markupData[markupEligibilityKey].matomoEvent, [address]);
+  matomoEvent(
+    markupData[markupEligibilityKey].matomoEvent[fromMap ? 'map' : 'form'],
+    [address]
+  );
   facebookEvent(markupData[markupEligibilityKey].facebookEvent);
   if (eligibility) {
     taboolaEvent('complete_registration', '1511088');
@@ -81,20 +97,26 @@ const useContactFormFCU = () => {
     setShowWarning(!!(address && !heatingType));
   }, []);
 
-  const handleOnFetchAddress = ({ address }: { address: any }) => {
+  const handleOnFetchAddress = (
+    { address }: { address: any },
+    fromMap?: boolean
+  ) => {
     setLoadingStatus('loading');
     setMessageSent(false);
     setMessageReceived(false);
-    callMarkup__handleOnFetchAddress(address);
+    callMarkup__handleOnFetchAddress(address, fromMap);
   };
 
   const handleOnSuccessAddress = useCallback(
-    (data: AddressDataType) => {
+    (data: AddressDataType, fromMap?: boolean, dontNotify?: boolean) => {
       const { address, heatingType, eligibility } = data;
-      callMarkup__handleOnSuccessAddress({
-        eligibility: eligibility ? eligibility.isEligible : false,
-        address,
-      });
+      if (!dontNotify) {
+        callMarkup__handleOnSuccessAddress({
+          eligibility: eligibility ? eligibility.isEligible : false,
+          address,
+          fromMap,
+        });
+      }
       setAddressData(data);
       if (address && heatingType) {
         setContactReady(true);
@@ -108,12 +130,15 @@ const useContactFormFCU = () => {
   );
 
   const handleOnSubmitContact = useCallback(
-    async (data?: AddressDataType) => {
+    async (data?: AddressDataType, fromMap?: boolean) => {
       if (data && data.structure !== 'Tertiaire') {
         data.company = '';
       }
       setMessageSent(true);
-      callMarkup__handleOnSubmitContact((data as AddressDataType) || {});
+      callMarkup__handleOnSubmitContact(
+        (data as AddressDataType) || {},
+        fromMap
+      );
       const response = await submitToAirtable(
         formatDataToAirtable(data),
         'FCU - Utilisateurs'

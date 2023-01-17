@@ -4,7 +4,7 @@ import {
   EligibilityFormMessageConfirmation,
 } from '@components/EligibilityForm';
 import { useContactFormFCU } from '@hooks';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   CardSearchDetailsFormStyle,
   ContactFormWrapper,
@@ -28,8 +28,13 @@ const CardSearchDetailsForm: React.FC<{
 
   const [formIsSend, setFormIsSend] = useState(false);
 
+  const onSuccess = useCallback(
+    // Notification of success is done directly when receving the result, because of the heatingtype late asking
+    (data: any) => handleOnSuccessAddress(data, true, true),
+    [handleOnSuccessAddress]
+  );
   const handleSubmitForm = (data: Record<string, any>) => {
-    handleOnSubmitContact(data);
+    handleOnSubmitContact(data, true);
     onSubmit?.(data);
     setFormIsSend(true);
   };
@@ -42,7 +47,7 @@ const CardSearchDetailsForm: React.FC<{
           fullAddress={fullAddress}
           onChange={handleOnChangeAddress}
           onFetch={handleOnFetchAddress}
-          onSuccess={handleOnSuccessAddress}
+          onSuccess={onSuccess}
           cardMode
         />
       </ContactFormWrapper>

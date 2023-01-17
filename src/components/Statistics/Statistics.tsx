@@ -33,6 +33,13 @@ const today = new Date();
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
+const getEntryValue = (entry: any, value: string, data: string) => {
+  if (entry && entry[value]) {
+    return entry[value][data];
+  }
+  return 0;
+};
+
 const Statistics = () => {
   const { data: rawDataEligibilityTest, error: errorDataEligibilityTest } =
     useSWR('/api/statistiques/actions', fetcher, {
@@ -43,7 +50,6 @@ const Statistics = () => {
     if (rawDataEligibilityTest?.result.values.result === 'error') {
       return [];
     }
-
     return (
       rawDataEligibilityTest?.result.values
         .map((arr: any[], i: number) =>
@@ -75,10 +81,30 @@ const Statistics = () => {
           : 'nb_events';
       return [
         label,
-        entry['Formulaire de test - Adresse Inéligible'][data] +
-          entry['Formulaire de test - Adresse Éligible'][data],
-        entry['Formulaire de test - Adresse Inéligible'][data],
-        entry['Formulaire de test - Adresse Éligible'][data],
+        getEntryValue(entry, 'Formulaire de test - Adresse Inéligible', data) +
+          getEntryValue(
+            entry,
+            'Formulaire de test - Carte - Adresse Inéligible',
+            data
+          ) +
+          getEntryValue(entry, 'Formulaire de test - Adresse Éligible', data) +
+          getEntryValue(
+            entry,
+            'Formulaire de test - Carte - Adresse Éligible',
+            data
+          ),
+        getEntryValue(entry, 'Formulaire de test - Adresse Inéligible', data) +
+          getEntryValue(
+            entry,
+            'Formulaire de test - Carte - Adresse Inéligible',
+            data
+          ),
+        getEntryValue(entry, 'Formulaire de test - Adresse Éligible', data) +
+          getEntryValue(
+            entry,
+            'Formulaire de test - Carte - Adresse Éligible',
+            data
+          ),
       ];
     }),
   ];
