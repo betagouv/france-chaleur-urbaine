@@ -5,13 +5,13 @@ import { Container } from './BulkEligibilityForm.styles';
 
 const BulkEligibilityForm = () => {
   const { heatNetworkService } = useServices();
-  const [addresses, setAddresses] = useState<string[]>();
+  const [addresses, setAddresses] = useState<string>();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
 
   const readFile = (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files || event.target.files.length === 0) {
-      setAddresses([]);
+      setAddresses('');
       return;
     }
 
@@ -19,12 +19,7 @@ const BulkEligibilityForm = () => {
     reader.onload = async (e) => {
       if (e.target) {
         const text = e.target.result as string;
-        setAddresses(
-          text
-            .split('\n')
-            .map((line) => line.trim())
-            .filter((line) => line)
-        );
+        setAddresses(text);
       }
     };
     reader.readAsText(event.target.files[0]);
@@ -64,10 +59,7 @@ const BulkEligibilityForm = () => {
             value={email}
             required
           />
-          <Button
-            disabled={!email || !addresses || addresses.length === 0}
-            submit
-          >
+          <Button disabled={!email || !addresses} submit>
             Tester le fichier d’adresses
           </Button>
         </form>

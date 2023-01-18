@@ -12,11 +12,11 @@ import { sendBulkEligibilityResult } from 'src/services/email';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
-const version = 2;
+const version = 3;
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
-  addresses: yup.array().of(yup.string()).min(1).required(),
+  addresses: yup.string().required(),
 });
 
 // from https://www.bennadel.com/blog/1504-ask-ben-parsing-csv-strings-with-javascript-exec-regular-expression-command.htm
@@ -116,8 +116,15 @@ const bulkEligibilitygibilityStatus = async (
   }
 
   const { addresses, email } = req.body;
+  const addressesCSV = ['']
+    .concat(
+      CSVToArray(addresses, ',')
+        .map((x) => x.join(','))
+        .filter((x) => x)
+        .map((x) => `"${x}"`)
+    )
+    .join('\n');
 
-  const addressesCSV = [''].concat(addresses).join('\n');
   const hash = crypto.createHash('sha1').update(addressesCSV).digest('hex');
 
   let existingValue = await db('eligibility_tests')
