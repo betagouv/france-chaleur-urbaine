@@ -95,6 +95,7 @@ export const gestionnaires: Record<string, string[]> = {
   Vaujours: ['ALEC_MVE'],
   'Vaux-le-Pénil': ['Dalkia', 'Dalkia_IDF'],
   Villemomble: ['ALEC_MVE'],
+  Villejuif: ['SEMHACH'],
   'Villiers-sur-Marne': ['ALEC_MVE'],
   Vincennes: ['ALEC_MVE'],
   Voreppe: ['Dalkia', 'Dalkia_Voreppe'],
