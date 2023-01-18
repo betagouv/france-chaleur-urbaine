@@ -16,8 +16,8 @@ const Accueil = () => {
       <HeadSliceForm
         bg="/img/head-slice-bg-accueil.png"
         pageBody={`
-Plus que jamais, faites un choix d’avenir !
-# Le chauffage urbain allie écologie, confort et économie`}
+Un choix tourné vers l'avenir !
+# Avec le chauffage urbain, faites des économies`}
         formLabel="Vérifiez immédiatement si votre immeuble pourrait être raccordé !"
         checkEligibility
       />
