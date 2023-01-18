@@ -41,8 +41,15 @@ export class DemandsService {
         .post(`/api/demands`)
         .then(async (response) => {
           const a = document.createElement('a');
-          a.download = 'demands_fcu.csv';
-          a.href = URL.createObjectURL(new Blob([response.data]));
+          a.download = 'demands_fcu.xlsx';
+
+          const byteCharacters = window.atob(response.data);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          a.href = URL.createObjectURL(new Blob([byteArray]));
           a.addEventListener('click', () => {
             setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
           });
