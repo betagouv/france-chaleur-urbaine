@@ -25,7 +25,7 @@ export class HeatNetworkService {
   }
 
   async bulkEligibility(
-    addresses: string[],
+    addresses: string,
     email: string
   ): Promise<{
     id: string;
