@@ -30,6 +30,8 @@ const bulkEligibilitygibilityStatus = async (
   } else if (req.method === 'POST') {
     if (existingValue && existingValue.result) {
       return res.send(getExport(JSON.parse(existingValue.result)));
+    } else {
+      return res.send(existingValue.file);
     }
   }
   return res.status(501);
