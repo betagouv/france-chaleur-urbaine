@@ -31,7 +31,9 @@ const columns = [
   {
     name: 'download',
     label: 'Telecharger',
-    render: ({ id }: EligibilityDemand) => <DownloadButton id={id} />,
+    render: ({ id, in_error }: EligibilityDemand) => (
+      <DownloadButton id={id} inError={in_error} />
+    ),
   },
   {
     name: 'map',

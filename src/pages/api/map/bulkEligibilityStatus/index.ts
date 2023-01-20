@@ -8,7 +8,11 @@ import FormData from 'form-data';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import db from 'src/db';
 import { withCors } from 'src/services/api/cors';
-import { sendBulkEligibilityResult } from 'src/services/email';
+import {
+  sendBulkEligibilityError,
+  sendBulkEligibilityErrorAdmin,
+  sendBulkEligibilityResult,
+} from 'src/services/email';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
@@ -101,6 +105,18 @@ const sendMail = async (id: string, email: string, addresses: any[]) => {
   });
 };
 
+const sendErrorMail = async (email: string, addresses: string) => {
+  await Promise.all([
+    sendBulkEligibilityError(email),
+    sendBulkEligibilityErrorAdmin(process.env.ERROR_EMAIL, email, {
+      filename: 'file.txt',
+      contentType: 'text/plain',
+      content: addresses,
+      encoding: 'utf-8',
+    }),
+  ]);
+};
+
 const bulkEligibilitygibilityStatus = async (
   req: NextApiRequest,
   res: NextApiResponse<
@@ -159,6 +175,7 @@ const bulkEligibilitygibilityStatus = async (
       version,
       hash,
       addresses_count: addresses.length,
+      file: addresses,
     });
 
     res
@@ -220,6 +237,7 @@ const bulkEligibilitygibilityStatus = async (
     await sendMail(id, email, results);
   } catch (e) {
     console.error(e);
+    await sendErrorMail(email, addresses);
     await db('eligibility_tests').update({ in_error: true }).where('id', id);
     await db('eligibility_demands').insert({
       eligibility_test_id: id,
