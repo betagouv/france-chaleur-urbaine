@@ -73,10 +73,13 @@ const post = async (res: NextApiResponse, user: User) => {
     return res.status(204).send(null);
   }
 
-  const csv = getSpreadSheet(exportColumn, demands, EXPORT_FORMAT.CSV);
+  const csv = getSpreadSheet(exportColumn, demands, EXPORT_FORMAT.XLSX);
 
-  res.setHeader('Content-Type', 'text/csv');
-  res.setHeader('Content-Disposition', `attachment; filename=demands_fcu.csv`);
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  );
+  res.setHeader('Content-Disposition', `attachment; filename=demands_fcu.xlsx`);
 
   return res.status(200).send(csv);
 };

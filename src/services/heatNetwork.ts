@@ -100,7 +100,7 @@ export class HeatNetworkService {
     let fileName = `export.xlsx`;
 
     const contentDisposition = response.headers['content-disposition'];
-    const contentType = `${response.headers['content-type']}`;
+    const contentType = response.headers['content-type'];
 
     if (contentDisposition) {
       const content = contentDisposition.split('filename=');
