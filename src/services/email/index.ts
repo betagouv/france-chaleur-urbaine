@@ -135,3 +135,43 @@ export const sendBulkEligibilityResult = async (
     [attachment]
   );
 };
+
+export const sendBulkEligibilityErrorAdmin = async (
+  emails: string | undefined,
+  user: string,
+  attachment: Attachment
+): Promise<void> => {
+  if (!emails) {
+    return;
+  }
+
+  const html = await ejs.renderFile(
+    './src/services/email/views/bulk-eligibility-error-admin.ejs',
+    {
+      user,
+    }
+  );
+
+  return send(
+    emails.split(','),
+    "[France Chaleur Urbaine] Erreur lors d'un test",
+    html,
+    [],
+    [],
+    [attachment]
+  );
+};
+
+export const sendBulkEligibilityError = async (
+  email: string
+): Promise<void> => {
+  const html = await ejs.renderFile(
+    './src/services/email/views/bulk-eligibility-error.ejs'
+  );
+
+  return send(
+    [email],
+    '[France Chaleur Urbaine] Erreur lors de votre test',
+    html
+  );
+};
