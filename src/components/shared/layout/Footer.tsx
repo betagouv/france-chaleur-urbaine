@@ -116,7 +116,16 @@ const Footer = () => {
           />{' '}
           Github
         </FooterLink>
-        <FooterCopy>licence etalab-2.0</FooterCopy>
+        <FooterCopy>
+          Sauf mention contraire, tous les contenus de ce site sont sous{' '}
+          <a
+            href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
+            target="_blank"
+            rel="noreferrer"
+          >
+            licence etalab-2.0
+          </a>
+        </FooterCopy>
       </FooterBottom>
     </FooterDS>
   );

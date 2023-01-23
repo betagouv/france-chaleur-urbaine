@@ -77,7 +77,9 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
 
   .fr-footer {
     margin-top: 2px;
-
+  }
+  
+  .fr-footer__partners-logos {
     a[target=_blank] {
       &::after {
         display: none;
