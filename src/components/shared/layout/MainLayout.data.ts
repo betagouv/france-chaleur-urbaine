@@ -35,4 +35,8 @@ export const menu = [
     label: 'Documentation',
     url: '/ressources',
   },
+  {
+    label: 'Nous contacter',
+    url: '/contact',
+  },
 ];
