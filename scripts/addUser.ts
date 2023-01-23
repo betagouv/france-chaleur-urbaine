@@ -26,7 +26,7 @@ const addUser = async (
     email,
     password: bcrypt.hashSync(password, salt),
     role,
-    gestionnaires: gestionnaire ? [gestionnaire] : undefined,
+    gestionnaires: gestionnaire ? [gestionnaire] : [],
   });
   console.info('User created');
   process.exit(0);
