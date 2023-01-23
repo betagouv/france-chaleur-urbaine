@@ -18,9 +18,9 @@ export const layerNameOptions = Object.values(Layer);
 const energyNameOptions: ('gas' | 'fuelOil')[] = ['fuelOil', 'gas'];
 const gasUsageNameOptions = ['R', 'T', 'I'];
 
-export type LayerNameOption = typeof layerNameOptions[number];
-export type EnergyNameOption = typeof energyNameOptions[number];
-export type gasUsageNameOption = typeof gasUsageNameOptions[number];
+export type LayerNameOption = (typeof layerNameOptions)[number];
+export type EnergyNameOption = (typeof energyNameOptions)[number];
+export type gasUsageNameOption = (typeof gasUsageNameOptions)[number];
 
 export type TypeLayerDisplay = {
   outline: boolean;
