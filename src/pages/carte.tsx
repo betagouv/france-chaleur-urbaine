@@ -14,7 +14,7 @@ const MapWrapper = styled.div`
   }
 `;
 
-function LegalMentions() {
+function carte() {
   return (
     <>
       <Head>
@@ -29,4 +29,4 @@ function LegalMentions() {
   );
 }
 
-export default LegalMentions;
+export default carte;
