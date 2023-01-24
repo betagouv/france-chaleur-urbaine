@@ -272,7 +272,7 @@ const HeadSlice = ({
         </Slice>
 
         {withBulkEligibility && (
-          <div ref={bulkEligibilityRef}>
+          <div ref={bulkEligibilityRef} id="test-liste">
             {displayBulkEligibility && (
               <Slice
                 padding={8}
