@@ -4,7 +4,7 @@ import {
 } from '@components/HeadSliceForm/HeadSliceForm.style';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
-import { Container, Image } from './Header.styles';
+import { Container } from './Header.styles';
 
 const Header = ({
   title,
@@ -22,7 +22,6 @@ const Header = ({
       bgColor="#CDE3F0"
     >
       <Container>
-        <Image alt="" src="/img/ressources-left.svg" />
         <div>
           <PageTitle className="fr-mb-4w">{title}</PageTitle>
           <PageBody>

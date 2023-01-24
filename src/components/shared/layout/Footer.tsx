@@ -105,6 +105,9 @@ const Footer = () => {
         <FooterLink asLink={<Link href="/stats" prefetch={false}></Link>}>
           <a className="fr-footer__bottom-link">Statistiques</a>
         </FooterLink>
+        <FooterLink asLink={<Link href="/contact" prefetch={false}></Link>}>
+          <a className="fr-footer__bottom-link">Contact</a>
+        </FooterLink>
         <FooterLink
           target="_blank"
           href="https://github.com/betagouv/france-chaleur-urbaine"
