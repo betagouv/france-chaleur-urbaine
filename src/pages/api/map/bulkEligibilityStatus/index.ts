@@ -16,7 +16,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
-const version = 3;
+const version = 4;
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -137,7 +137,7 @@ const bulkEligibilitygibilityStatus = async (
       CSVToArray(addresses, ',')
         .map((x) => x.join(','))
         .filter((x) => x)
-        .map((x) => `"${x}"`)
+        .map((x) => `"${x.replaceAll('"', '')}"`)
     )
     .join('\n');
 
