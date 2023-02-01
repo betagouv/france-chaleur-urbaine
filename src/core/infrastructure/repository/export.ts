@@ -27,7 +27,10 @@ export const getSpreadSheet = <T>(
   const ws = XLSX.utils.aoa_to_sheet(convertToStringArray(columns, data));
   XLSX.utils.book_append_sheet(wb, ws);
 
-  return XLSX.write(wb, { bookType: format, type: 'base64' });
+  return XLSX.write(wb, {
+    bookType: format,
+    type: format === EXPORT_FORMAT.CSV ? 'string' : 'base64',
+  });
 };
 
 export const zip = async (files: any[], name: string): Promise<any> => {
