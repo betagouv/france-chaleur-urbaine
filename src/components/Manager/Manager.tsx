@@ -63,6 +63,7 @@ const defaultSort: SortParamType = { key: 'Date demandes', order: 'desc' };
 const Manager = () => {
   const { demandsService } = useServices();
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
   const [sort, setSort] = useState<SortParamType>(defaultSort);
@@ -89,7 +90,10 @@ const Manager = () => {
   );
 
   useEffect(() => {
-    demandsService.fetch().then(setDemands);
+    demandsService.fetch().then((values) => {
+      setDemands(values);
+      setLoading(false);
+    });
   }, [demandsService]);
 
   const updateDemand = useCallback(
@@ -213,31 +217,35 @@ const Manager = () => {
 
   return (
     <Container>
-      {demands.length > 0 && (
-        <>
-          <ManagerHeader
-            demands={demands}
-            setFilteredDemands={onFilterUpdate}
-            setPage={setPage}
-          />
-          <TableContainer>
-            <div>
-              {filteredDemands.length > 0 ? (
-                <Table
-                  columns={demandRowsParams}
-                  data={filteredDemands}
-                  rowKey="N° de dossier"
-                  pagination
-                  paginationPosition="center"
-                  page={page}
-                  setPage={setPage}
-                />
-              ) : (
-                <NoResult>Aucun résultats</NoResult>
-              )}
-            </div>
-          </TableContainer>
-        </>
+      <ManagerHeader
+        demands={demands}
+        setFilteredDemands={onFilterUpdate}
+        setPage={setPage}
+      />
+      {demands.length > 0 ? (
+        <TableContainer>
+          <div>
+            {filteredDemands.length > 0 ? (
+              <Table
+                columns={demandRowsParams}
+                data={filteredDemands}
+                rowKey="N° de dossier"
+                pagination
+                paginationPosition="center"
+                page={page}
+                setPage={setPage}
+              />
+            ) : (
+              <NoResult>Aucun résultats</NoResult>
+            )}
+          </div>
+        </TableContainer>
+      ) : (
+        <h2>
+          {loading
+            ? 'Chargement de vos données en cours...'
+            : "Vous n'avez pas encore reçu de demandes"}
+        </h2>
       )}
     </Container>
   );

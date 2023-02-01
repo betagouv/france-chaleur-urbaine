@@ -65,13 +65,17 @@ const BulkEligibility = () => {
   return (
     <TableContainer>
       <Table
-        caption={`Demandes d'éligibilités - ${eligibilityDemands.reduce(
-          (acc, value) => acc + value.addresses_count - value.error_count,
-          0
-        )} adresses testées - ${eligibilityDemands.reduce(
-          (acc, value) => acc + value.eligibile_count,
-          0
-        )} adresses éligibles`}
+        caption={`Demandes d'éligibilités - ${eligibilityDemands
+          .filter((demand) => !demand.in_error)
+          .reduce(
+            (acc, value) => acc + value.addresses_count - value.error_count,
+            0
+          )} adresses testées - ${eligibilityDemands
+          .filter((demand) => !demand.in_error)
+          .reduce(
+            (acc, value) => acc + value.eligibile_count,
+            0
+          )} adresses éligibles`}
         columns={columns}
         data={eligibilityDemands}
         rowKey="id"
