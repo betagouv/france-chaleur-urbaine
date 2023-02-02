@@ -148,14 +148,23 @@ export const formatBodyPopup = ({
                 <br />
                 `
                 : ''
-            }
+            } 
+            <strong>Identifiant&nbsp;:</strong> ${
+              network['Identifiant reseau']
+                ? `${network['Identifiant reseau']}`
+                : 'Non connu'
+            }<br />
             <strong>Gestionnaire&nbsp;:</strong> ${
               network.Gestionnaire ? `${network.Gestionnaire}` : 'Non connu'
             }<br />
             <strong>Taux EnR&R&nbsp;:</strong> ${
               network['Taux EnR&R'] ? `${network['Taux EnR&R']}%` : 'Non connu'
-            }
-            <br />
+            }<br /> 
+            <strong>Contenu&nbsp;CO2&nbsp;:</strong> ${
+              network['contenu CO2 ACV']
+                ? `${network['contenu CO2 ACV'] * 100} g/kWh`
+                : 'Non connu'
+            }<br />
           `
               : ''
           }

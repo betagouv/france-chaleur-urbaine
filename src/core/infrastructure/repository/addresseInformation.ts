@@ -26,14 +26,16 @@ export const closestNetwork = async (
 ): Promise<{
   distance: number;
   date?: Date;
+  'Identifiant reseau': string;
+  'Taux EnR&R': number;
 }> => {
   const network = await db('reseaux_de_chaleur')
     .select(
       db.raw(
         `ST_Distance(
-    ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-    ST_Transform(geom, 2154)
-  ) as distance, date`
+          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
+          ST_Transform(geom, 2154)
+        ) as distance, date, "Identifiant reseau", "Taux EnR&R"`
       )
     )
     .orderBy('distance')
@@ -155,6 +157,8 @@ const headers = [
   'Distance au réseau (m) si < 1000 m',
   "Tracé non disponible mais présence d'un réseau dans la zone",
   'PDP (périmètre de développement prioritaire)',
+  'Identifiant du réseau le plus proche',
+  'Taux EnR&R du réseau le plus proche',
 ];
 
 const legend = [
@@ -191,6 +195,8 @@ export const getExport = (addresses: any[]) => {
         address.distance,
         address.isEligible && address.isBasedOnIris ? 'Oui' : 'Non',
         address.inZDP ? 'Oui' : 'Non',
+        address.id,
+        address.tauxENRR,
       ])
     )
   );
@@ -208,6 +214,8 @@ export const getElibilityStatus = async (
   inZDP: boolean;
   isBasedOnIris: boolean;
   futurNetwork: boolean;
+  id: string | null;
+  tauxENRR: number | null;
 }> => {
   const zdpPromise = inZDP(lat, lon);
   const irisNetwork = isOnAnIRISNetwork(lat, lon);
@@ -220,6 +228,8 @@ export const getElibilityStatus = async (
       inZDP: await zdpPromise,
       isBasedOnIris: false,
       futurNetwork: network.date !== null,
+      id: network['Identifiant reseau'],
+      tauxENRR: network['Taux EnR&R'],
     };
   }
   const isEligible = await irisNetwork;
@@ -229,5 +239,7 @@ export const getElibilityStatus = async (
     inZDP: await zdpPromise,
     isBasedOnIris: true,
     futurNetwork: false,
+    id: null,
+    tauxENRR: null,
   };
 };
