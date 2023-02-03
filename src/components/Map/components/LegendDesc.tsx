@@ -2,6 +2,7 @@ import React from 'react';
 import { themeDefEnergy } from 'src/services/Map/businessRules';
 import { defaultLayerDisplay } from 'src/services/Map/param';
 import DPELegend from './DPELegend';
+import RDCLegend from './RDCLegend';
 import ScaleLegend from './ScaleLegend';
 
 export const minIconSize = 12;
@@ -51,6 +52,7 @@ const LegendDesc: Record<
     />
   ),
   DPE: () => <DPELegend />,
+  RDC: () => <RDCLegend />,
 };
 
 export default LegendDesc;

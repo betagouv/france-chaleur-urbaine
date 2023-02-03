@@ -8,7 +8,6 @@ import {
 
 enum Layer {
   outline = 'outline',
-  dottedOutline = 'dottedOutline',
   demands = 'demands',
   zoneDP = 'zoneDP',
   buildings = 'buildings',
@@ -24,7 +23,6 @@ export type gasUsageNameOption = (typeof gasUsageNameOptions)[number];
 
 export type TypeLayerDisplay = {
   outline: boolean;
-  dottedOutline: boolean;
   zoneDP: boolean;
   demands: boolean;
   gasUsageGroup: boolean;
@@ -38,7 +36,6 @@ export type TypeLayerDisplay = {
 
 export const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
-  dottedOutline: true,
   zoneDP: false,
   demands: true,
   gasUsageGroup: true,
@@ -57,18 +54,20 @@ const legendData: (string | TypeGroupLegend)[] = [
       {
         id: 'outline',
         label: 'Réseaux de chaleur',
-        className: 'legend-heat-network',
-      },
-    ],
-    type: 'list',
-  },
-  {
-    id: 'futur-heat-network',
-    entries: [
-      {
-        id: 'dottedOutline',
-        label: 'Futurs réseaux de chaleur',
-        className: 'legend-futur-heat-network',
+        subLegend: 'RDC',
+        info: (
+          <>
+            Pour les réseaux classés, le raccordement des bâtiments neufs ou
+            renouvelant leur installation de chauffage au-dessus d'une certaine
+            puissance est obligatoire dès lors qu'ils sont situés dans le
+            périmètre de développement prioritaire (sauf dérogation).
+            <br />
+            Les réseaux affichés comme classés sont ceux listés par arrêté du 23
+            décembre 2022. Collectivités : pour signaler un dé-classement,
+            cliquez sur Contribuer.
+          </>
+        ),
+        infoPosition: 'bottom',
       },
     ],
     type: 'list',
@@ -79,7 +78,6 @@ const legendData: (string | TypeGroupLegend)[] = [
       {
         id: 'zoneDP',
         label: 'Périmètres de développement prioritaire',
-        info: "Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage au-dessus d'une certaine puissance est obligatoire",
         className: 'legend-zoneDP',
       },
     ],

@@ -159,7 +159,7 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   border: solid 1px #dddddd;
   height: 60px;
   width: 51px;
-  overflow: hidden;
+  overflow: visible;
   &:hover {
     & > .hover-info {
       display: block;
@@ -178,14 +178,20 @@ export const outlineLayerStyle = {
     'line-cap': 'round',
   },
   paint: {
-    'line-color': themeDefHeatNetwork.outline.color,
+    'line-color': [
+      'case',
+      ['has', 'date'],
+      themeDefHeatNetwork.futur.color,
+      ['has', 'reseaux classes'],
+      themeDefHeatNetwork.classed.color,
+      themeDefHeatNetwork.outline.color,
+    ],
     'line-width': 3,
     'line-dasharray': [1, 0],
     'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
   },
   filter: ['!', ['has', 'date']],
 };
-
 export const dottedOutlineLayerStyle = {
   type: 'line',
   layout: {
@@ -193,7 +199,14 @@ export const dottedOutlineLayerStyle = {
     'line-cap': 'round',
   },
   paint: {
-    'line-color': themeDefHeatNetwork.outline.color,
+    'line-color': [
+      'case',
+      ['has', 'date'],
+      themeDefHeatNetwork.futur.color,
+      ['has', 'reseaux classes'],
+      themeDefHeatNetwork.classed.color,
+      themeDefHeatNetwork.outline.color,
+    ],
     'line-width': 3,
     'line-dasharray': [2, 3],
     'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],

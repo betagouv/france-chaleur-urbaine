@@ -275,6 +275,11 @@ export default function Map() {
           )
         : console.warn(`Layer '${layerId}' is not set on map`)
     );
+    map.current.setLayoutProperty(
+      'dottedOutline',
+      'visibility',
+      layerDisplay.outline ? 'visible' : 'none'
+    );
 
     // Energy
     const TYPE_ENERGY = 'energie_utilisee';
@@ -366,7 +371,6 @@ export default function Map() {
 
     const clickEvents = [
       { name: 'outline', key: 'network' },
-      { name: 'dottedOutline', key: 'network' },
       {
         name: 'demands',
         key: 'demands',
