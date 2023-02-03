@@ -142,19 +142,19 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
 
   .legend-heat-network-marker {
     :before {
-      border-top: 3px solid ${themeDefHeatNetwork.outline.color};
+      border-top: 8px solid ${themeDefHeatNetwork.outline.color};
     }
   }
 
   .legend-classed-heat-network-marker {
     :before {
-      border-top: 3px solid ${themeDefHeatNetwork.classed.color};
+      border-top: 8px solid ${themeDefHeatNetwork.classed.color};
     }
   }
 
   .legend-futur-heat-network-marker {
     :before {
-      border-top: 3px solid ${themeDefHeatNetwork.futur.color};
+      border-top: 8px solid ${themeDefHeatNetwork.futur.color};
     }
   }
 

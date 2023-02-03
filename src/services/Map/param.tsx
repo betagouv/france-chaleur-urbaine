@@ -37,7 +37,7 @@ export type TypeLayerDisplay = {
 export const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
   zoneDP: false,
-  demands: true,
+  demands: false,
   gasUsageGroup: true,
   buildings: false,
   gasUsage: gasUsageNameOptions,
