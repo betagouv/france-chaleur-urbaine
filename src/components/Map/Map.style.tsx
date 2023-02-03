@@ -190,28 +190,6 @@ export const outlineLayerStyle = {
     'line-dasharray': [1, 0],
     'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
   },
-  filter: ['!', ['has', 'date']],
-};
-export const dottedOutlineLayerStyle = {
-  type: 'line',
-  layout: {
-    'line-join': 'round',
-    'line-cap': 'round',
-  },
-  paint: {
-    'line-color': [
-      'case',
-      ['has', 'date'],
-      themeDefHeatNetwork.futur.color,
-      ['has', 'reseaux classes'],
-      themeDefHeatNetwork.classed.color,
-      themeDefHeatNetwork.outline.color,
-    ],
-    'line-width': 3,
-    'line-dasharray': [2, 3],
-    'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
-  },
-  filter: ['has', 'date'],
 };
 
 // --------------

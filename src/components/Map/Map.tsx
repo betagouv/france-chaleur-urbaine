@@ -33,7 +33,6 @@ import {
   buildingsLayerStyle,
   CollapseLegend,
   demandsLayerStyle,
-  dottedOutlineLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
   Legend,
@@ -275,11 +274,6 @@ export default function Map() {
           )
         : console.warn(`Layer '${layerId}' is not set on map`)
     );
-    map.current.setLayoutProperty(
-      'dottedOutline',
-      'visibility',
-      layerDisplay.outline ? 'visible' : 'none'
-    );
 
     // Energy
     const TYPE_ENERGY = 'energie_utilisee';
@@ -410,12 +404,6 @@ export default function Map() {
               source: 'heatNetwork',
               'source-layer': 'outline',
               ...outlineLayerStyle,
-            },
-            {
-              id: 'dottedOutline',
-              source: 'heatNetwork',
-              'source-layer': 'outline',
-              ...dottedOutlineLayerStyle,
             },
           ]
         );
