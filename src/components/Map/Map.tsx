@@ -388,26 +388,6 @@ export default function Map() {
         const origin =
           process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
 
-        // --------------------
-        // --- Heat Network ---
-        // --------------------
-        addSource(
-          map.current,
-          'heatNetwork',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
-          },
-          [
-            {
-              id: 'outline',
-              source: 'heatNetwork',
-              'source-layer': 'outline',
-              ...outlineLayerStyle,
-            },
-          ]
-        );
-
         // ---------------
         // --- Zone DP ---
         // ---------------
@@ -424,6 +404,26 @@ export default function Map() {
               source: 'zoneDP',
               'source-layer': 'zoneDP',
               ...zoneDPLayerStyle,
+            },
+          ]
+        );
+
+        // --------------------
+        // --- Heat Network ---
+        // --------------------
+        addSource(
+          map.current,
+          'heatNetwork',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
+          },
+          [
+            {
+              id: 'outline',
+              source: 'heatNetwork',
+              'source-layer': 'outline',
+              ...outlineLayerStyle,
             },
           ]
         );
