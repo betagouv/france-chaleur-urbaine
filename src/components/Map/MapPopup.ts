@@ -158,11 +158,14 @@ export const formatBodyPopup = ({
               network.Gestionnaire ? `${network.Gestionnaire}` : 'Non connu'
             }<br />
             <strong>Taux EnR&R&nbsp;:</strong> ${
-              network['Taux EnR&R'] ? `${network['Taux EnR&R']}%` : 'Non connu'
+              network['Taux EnR&R'] !== null &&
+              network['Taux EnR&R'] !== undefined
+                ? `${network['Taux EnR&R']}%`
+                : 'Non connu'
             }<br /> 
-            <strong>Contenu&nbsp;CO2&nbsp;:</strong> ${
+            <strong>Contenu&nbsp;CO2&nbsp;ACV&nbsp;:</strong> ${
               network['contenu CO2 ACV']
-                ? `${network['contenu CO2 ACV'] * 100} g/kWh`
+                ? `${Math.round(network['contenu CO2 ACV'] * 1000)} g/kWh`
                 : 'Non connu'
             }<br />
           `

@@ -1,5 +1,6 @@
 import Hoverable from '@components/Hoverable';
 import { Icon } from '@dataesr/react-dsfr';
+import { ReactNode } from 'react';
 import { LayerNameOption } from 'src/services/Map/param';
 import LegendDesc from './LegendDesc';
 import {
@@ -14,12 +15,14 @@ import {
 export type TypeLegendEntry = {
   id: LayerNameOption;
   label: string;
-  info?: string;
+  info?: ReactNode;
+  infoPosition?: 'top' | 'right' | 'top-centered' | 'bottom';
   className?: string;
   type?: string;
   bgColor?: string;
   subLegend?: string;
 };
+
 function LegendEntry({
   id,
   bgColor,
@@ -27,6 +30,7 @@ function LegendEntry({
   type,
   label,
   info,
+  infoPosition,
   checked,
   readOnly,
   onChange,
@@ -60,7 +64,7 @@ function LegendEntry({
         {info && (
           <InfoIcon>
             <Icon size="lg" name="ri-information-fill" />
-            <Hoverable>{info}</Hoverable>
+            <Hoverable position={infoPosition}>{info}</Hoverable>
           </InfoIcon>
         )}
       </LabelLegendInputLabelWrapper>

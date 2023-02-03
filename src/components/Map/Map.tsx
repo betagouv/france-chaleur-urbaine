@@ -33,7 +33,6 @@ import {
   buildingsLayerStyle,
   CollapseLegend,
   demandsLayerStyle,
-  dottedOutlineLayerStyle,
   energyLayerStyle,
   gasUsageLayerStyle,
   Legend,
@@ -366,7 +365,6 @@ export default function Map() {
 
     const clickEvents = [
       { name: 'outline', key: 'network' },
-      { name: 'dottedOutline', key: 'network' },
       {
         name: 'demands',
         key: 'demands',
@@ -406,12 +404,6 @@ export default function Map() {
               source: 'heatNetwork',
               'source-layer': 'outline',
               ...outlineLayerStyle,
-            },
-            {
-              id: 'dottedOutline',
-              source: 'heatNetwork',
-              'source-layer': 'outline',
-              ...dottedOutlineLayerStyle,
             },
           ]
         );
