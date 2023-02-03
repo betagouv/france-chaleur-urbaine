@@ -22,7 +22,7 @@ export const LabelLegendWrapper = styled.div`
 `;
 
 export const LabelLegendMarker = styled.div<{ bgColor?: string }>`
-  width: 32px;
+  width: 46px;
   height: 1rem;
   display: inline-flex;
   vertical-align: text-bottom;

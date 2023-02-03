@@ -128,9 +128,11 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
   }
 
   .legend-futur-heat-network-marker,
+  .legend-classed-heat-network-marker,
   .legend-heat-network-marker {
     top: -3px;
     :before {
+      border-radius: 4px;
       margin: 0 4px;
       width: 100%;
       height: 0;
@@ -140,14 +142,19 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
 
   .legend-heat-network-marker {
     :before {
-      border-radius: 4px;
-      border-top: 3px solid ${themeDefHeatNetwork.outline.color};
+      border-top: 8px solid ${themeDefHeatNetwork.outline.color};
+    }
+  }
+
+  .legend-classed-heat-network-marker {
+    :before {
+      border-top: 8px solid ${themeDefHeatNetwork.classed.color};
     }
   }
 
   .legend-futur-heat-network-marker {
     :before {
-      border-top: 3px dashed ${themeDefHeatNetwork.outline.color};
+      border-top: 8px solid ${themeDefHeatNetwork.futur.color};
     }
   }
 

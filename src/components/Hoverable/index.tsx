@@ -6,7 +6,7 @@ const Hoverable = ({
   position,
 }: {
   children: ReactNode;
-  position?: 'top' | 'right' | 'top-centered';
+  position?: 'top' | 'right' | 'top-centered' | 'bottom';
 }) => {
   return (
     <Container position={position || 'top'} className="hover-info">
