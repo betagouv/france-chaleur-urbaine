@@ -186,8 +186,12 @@ export const outlineLayerStyle = {
       themeDefHeatNetwork.classed.color,
       themeDefHeatNetwork.outline.color,
     ],
-    'line-width': 3,
-    'line-dasharray': [1, 0],
+    'line-width': [
+      'case',
+      ['boolean', ['feature-state', 'hover'], false],
+      3,
+      2,
+    ],
     'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
   },
 };
