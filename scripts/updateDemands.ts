@@ -31,9 +31,11 @@ const updateDemands = async () => {
         !demand.get('Identifiant réseau')
       ) {
         const result = await closestNetwork(latitude, longitude);
-        newValue['Distance au réseau'] = Math.round(result.distance);
-        (newValue['Identifiant réseau'] = result['Identifiant reseau']),
-          (shouldUpdate = true);
+        if (result.distance < 1000) {
+          newValue['Distance au réseau'] = Math.round(result.distance);
+          newValue['Identifiant réseau'] = result['Identifiant reseau'];
+          shouldUpdate = true;
+        }
       }
       if (!demand.get('Conso')) {
         const conso = await (demand.get('ID Conso')
