@@ -1,3 +1,4 @@
+import { Title } from './DPELegend.style';
 import {
   LabelLegendHead,
   LabelLegendInputLabel,
@@ -7,26 +8,29 @@ import {
 
 const RDCLegend = () => {
   return (
-    <div className="fr-my-1w">
-      <LabelLegendInputLabelWrapper>
-        <LabelLegendInputLabel>
-          <LabelLegendMarker className="legend-classed-heat-network-marker" />
-          <LabelLegendHead>Classés</LabelLegendHead>
-        </LabelLegendInputLabel>
-      </LabelLegendInputLabelWrapper>
-      <LabelLegendInputLabelWrapper>
-        <LabelLegendInputLabel>
-          <LabelLegendMarker className="legend-heat-network-marker" />
-          <LabelLegendHead>Non classés</LabelLegendHead>
-        </LabelLegendInputLabel>
-      </LabelLegendInputLabelWrapper>
-      <LabelLegendInputLabelWrapper>
-        <LabelLegendInputLabel>
-          <LabelLegendMarker className="legend-futur-heat-network-marker" />
-          <LabelLegendHead>En construction</LabelLegendHead>
-        </LabelLegendInputLabel>
-      </LabelLegendInputLabelWrapper>
-    </div>
+    <>
+      <Title>Cliquer sur un réseau pour connaître ses caractéristiques</Title>
+      <div className="fr-m-1w">
+        <LabelLegendInputLabelWrapper>
+          <LabelLegendInputLabel>
+            <LabelLegendMarker className="legend-classed-heat-network-marker" />
+            <LabelLegendHead>Classés</LabelLegendHead>
+          </LabelLegendInputLabel>
+        </LabelLegendInputLabelWrapper>
+        <LabelLegendInputLabelWrapper>
+          <LabelLegendInputLabel>
+            <LabelLegendMarker className="legend-heat-network-marker" />
+            <LabelLegendHead>Non classés</LabelLegendHead>
+          </LabelLegendInputLabel>
+        </LabelLegendInputLabelWrapper>
+        <LabelLegendInputLabelWrapper>
+          <LabelLegendInputLabel>
+            <LabelLegendMarker className="legend-futur-heat-network-marker" />
+            <LabelLegendHead>En construction</LabelLegendHead>
+          </LabelLegendInputLabel>
+        </LabelLegendInputLabelWrapper>
+      </div>
+    </>
   );
 };
 

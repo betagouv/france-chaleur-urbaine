@@ -10,11 +10,12 @@ import {
   tilesInfo,
 } from '../src/services/tiles.config';
 
-const geoJSONQuery = (properties: string[]) =>
+const geoJSONQuery = (properties: string[], id: string) =>
   db.raw(
     `json_build_object(
     'type', 'FeatureCollection',
     'features', json_agg(json_build_object(
+      'id', "${id}",
       'type', 'Feature',
       'geometry', ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom,4326)))::json,
       'properties', json_build_object(
@@ -147,7 +148,7 @@ const fillTiles = async (
                 xmax,
                 ymin,
                 ymax
-              ).first(geoJSONQuery(tileInfo.properties))
+              ).first(geoJSONQuery(tileInfo.properties, tileInfo.id))
             )
             .whereNotNull('geom');
           const newList = tempGeoJSON.json_build_object.features;
@@ -168,7 +169,9 @@ const fillTiles = async (
     } else {
       geoJSON = await tileInfo
         .extraWhere(
-          dbTable(tileInfo.table).first(geoJSONQuery(tileInfo.properties))
+          dbTable(tileInfo.table).first(
+            geoJSONQuery(tileInfo.properties, tileInfo.id)
+          )
         )
         .whereNotNull('geom');
     }
