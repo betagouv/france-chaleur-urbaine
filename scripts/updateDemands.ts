@@ -26,10 +26,14 @@ const updateDemands = async () => {
 
       const newValue: any = {};
       let shouldUpdate = false;
-      if (!demand.get('Distance au réseau')) {
-        const { distance } = await closestNetwork(latitude, longitude);
-        newValue['Distance au réseau'] = Math.round(distance);
-        shouldUpdate = true;
+      if (
+        !demand.get('Distance au réseau') ||
+        !demand.get('Identifiant réseau')
+      ) {
+        const result = await closestNetwork(latitude, longitude);
+        newValue['Distance au réseau'] = Math.round(result.distance);
+        (newValue['Identifiant réseau'] = result['Identifiant reseau']),
+          (shouldUpdate = true);
       }
       if (!demand.get('Conso')) {
         const conso = await (demand.get('ID Conso')

@@ -1,4 +1,5 @@
 import {
+  closestNetwork,
   getConso,
   getNbLogement,
 } from '@core/infrastructure/repository/addresseInformation';
@@ -45,9 +46,10 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
 
           if (!error && records && records[0]) {
             const gestionnaires = getGestionnaires(values);
-            const [conso, nbLogement] = await Promise.all([
+            const [conso, nbLogement, network] = await Promise.all([
               getConso(values.Latitude, values.Longitude),
               getNbLogement(values.Latitude, values.Longitude),
+              closestNetwork(values.Latitude, values.Longitude),
             ]);
 
             await base('FCU - Utilisateurs').update(
@@ -58,6 +60,9 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
                 'ID Conso': conso ? conso.rownum : undefined,
                 Logement: nbLogement ? nbLogement.nb_logements : undefined,
                 'ID BNB': nbLogement ? nbLogement.fid : undefined,
+                'Identifiant réseau': network
+                  ? network['Identifiant reseau']
+                  : undefined,
               },
               { typecast: true }
             );

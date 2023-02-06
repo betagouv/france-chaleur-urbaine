@@ -28,6 +28,7 @@ export const closestNetwork = async (
   date?: Date;
   'Identifiant reseau': string;
   'Taux EnR&R': number;
+  'contenu CO2 ACV': number;
 }> => {
   const network = await db('reseaux_de_chaleur')
     .select(
@@ -35,7 +36,7 @@ export const closestNetwork = async (
         `ST_Distance(
           ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
           ST_Transform(geom, 2154)
-        ) as distance, date, "Identifiant reseau", "Taux EnR&R"`
+        ) as distance, date, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV"`
       )
     )
     .orderBy('distance')
@@ -159,6 +160,7 @@ const headers = [
   'PDP (périmètre de développement prioritaire)',
   'Identifiant du réseau le plus proche',
   'Taux EnR&R du réseau le plus proche',
+  'Contenu CO2 ACV (g/kWh)',
 ];
 
 const legend = [
@@ -197,6 +199,7 @@ export const getExport = (addresses: any[]) => {
         address.inZDP ? 'Oui' : 'Non',
         address.id,
         address.tauxENRR,
+        address.co2 ? Math.round(address.co2 * 1000) : null,
       ])
     )
   );
@@ -216,6 +219,7 @@ export const getElibilityStatus = async (
   futurNetwork: boolean;
   id: string | null;
   tauxENRR: number | null;
+  co2: number | null;
 }> => {
   const zdpPromise = inZDP(lat, lon);
   const irisNetwork = isOnAnIRISNetwork(lat, lon);
@@ -230,6 +234,7 @@ export const getElibilityStatus = async (
       futurNetwork: network.date !== null,
       id: network['Identifiant reseau'],
       tauxENRR: network['Taux EnR&R'],
+      co2: network['contenu CO2 ACV'],
     };
   }
   const isEligible = await irisNetwork;
@@ -241,5 +246,6 @@ export const getElibilityStatus = async (
     futurNetwork: false,
     id: null,
     tauxENRR: null,
+    co2: null,
   };
 };
