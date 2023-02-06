@@ -132,14 +132,11 @@ const bulkEligibilitygibilityStatus = async (
   }
 
   const { addresses, email } = req.body;
-  const addressesCSV = ['']
-    .concat(
-      CSVToArray(addresses, ',')
-        .map((x) => x.join(','))
-        .filter((x) => x)
-        .map((x) => `"${x.replaceAll('"', '')}"`)
-    )
-    .join('\n');
+  const formattedAddresses = CSVToArray(addresses, ',')
+    .map((x) => x.join(','))
+    .filter((x) => x)
+    .map((x) => `"${x.replaceAll('"', '')}"`);
+  const addressesCSV = [''].concat(formattedAddresses).join('\n');
 
   const hash = crypto.createHash('sha1').update(addressesCSV).digest('hex');
 
@@ -174,7 +171,7 @@ const bulkEligibilitygibilityStatus = async (
       id,
       version,
       hash,
-      addresses_count: addresses.length,
+      addresses_count: formattedAddresses.length,
       file: addresses,
     });
 
