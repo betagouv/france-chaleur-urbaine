@@ -46,6 +46,23 @@ import {
 import { formatBodyPopup } from './MapPopup';
 import satelliteConfig from './satellite.config';
 
+let hoveredStateId: any;
+const setHoveringState = (map: any, hover: boolean) => {
+  if (hoveredStateId) {
+    map.setFeatureState(
+      {
+        source: 'heatNetwork',
+        id: hoveredStateId,
+        sourceLayer: 'outline',
+      },
+      { hover }
+    );
+    if (!hover) {
+      hoveredStateId = null;
+    }
+  }
+};
+
 const {
   defaultZoom,
   maxZoom,
@@ -544,6 +561,18 @@ export default function Map() {
             map.current.on('mouseleave', name, function () {
               map.current.getCanvas().style.cursor = '';
             });
+          });
+
+          map.current.on('mouseenter', 'outline', function (e: any) {
+            if (e.features.length > 0) {
+              setHoveringState(map.current, false);
+              hoveredStateId = e.features[0].id;
+              setHoveringState(map.current, true);
+            }
+          });
+
+          map.current.on('mouseleave', 'outline', function () {
+            setHoveringState(map.current, false);
           });
 
           // ----------------

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const Title = styled.p`
   font-size: 13px;
+  line-height: 18px;
   font-weight: 500;
   font-style: italic;
   margin-bottom: 0;
