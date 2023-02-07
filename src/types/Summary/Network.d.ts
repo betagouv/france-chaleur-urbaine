@@ -4,7 +4,7 @@ export interface NetworkSummary {
   Gestionnaire: string;
   commentaires: string;
   'Identifiant reseau': string;
-  'reseaux classes': string;
+  'reseaux classes': boolean;
   'contenu CO2 ACV': number;
   date: Date;
 }
