@@ -9,7 +9,7 @@ const IFrame = () => {
       theme="grey"
       header={`## L’iframe France Chaleur Urbaine
             
-*Offrez aux visiteurs de votre site la possibilité de vérifier immédiatement s'ils sont raccordables à un réseau de chaleur*`}
+*Offrez aux visiteurs de votre site la possibilité de vérifier immédiatement s'ils sont raccordables à un chauffage urbain*`}
       direction="row"
     >
       <WrappedText

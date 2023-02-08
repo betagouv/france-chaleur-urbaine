@@ -181,7 +181,7 @@ maîtrise du tarif des énergies._`}
               <WrappedText
                 textClassName="enjeu-societe-description"
                 body={`
-::check-item[Valoriser les informations de votre réseau sur la cartographie France chaleur urbaine]
+::check-item[Valoriser les informations de votre réseau [sur la cartographie](/carte) France chaleur urbaine]
 ::check-item[Découvrez les potentiels de raccordement sur votre territoire]
 ::check-item[Soyez mis en contact avec des copropriétaires et propriétaires de bâtiments tertiaires qui souhaitent être raccordés]
 

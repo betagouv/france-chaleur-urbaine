@@ -61,7 +61,7 @@ Bailleurs sociaux, bureaux d’étude, syndics, conseillers France Renov...
               body={`
 Visualisez sur une même carte :
 
-::check-item[Les tracés des réseaux de chaleur actuel]
+::check-item[Les tracés des réseaux de chaleur]
 ::check-item[Les bâtiments et leur mode de chauffage]
 ::check-item[La liste des adresses que vous avez testées]
 
@@ -81,7 +81,7 @@ Visualisez sur une même carte :
               body={`
 *Le 100 rue du Paradis est un immeuble chauffé par une chaudière collective au gaz ayant 20 ans.*
 
-Un conseiller en rénovation ou le gestionnaire de l’immeuble cherche un chauffage *plus performant et responsable* et vérifie sur *France Chaleur Urbaine* si le bâtiment est raccordable. 
+Un conseiller en rénovation ou le gestionnaire de l’immeuble cherche un chauffage *[plus performant et responsable](/ressources/avantages#contenu)* et vérifie sur *France Chaleur Urbaine* si le bâtiment est raccordable. 
 
 *Un réseau de chaleur passe à 15 mètres !*
 
@@ -94,7 +94,7 @@ Le conseiller en rénovation ou le gestionnaire de l’immeuble demande via Fran
               center
               body={`
 *Les frais de raccordement s’élèvent à 105 000 €.*
-*Le “Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires” permet de réduire ce coût à 50 000 €, soit 400 € par lot.*
+*Le « [Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires](/ressources/aides#contenu) » permet de réduire ce coût à 50 000 €, soit 400 € par lot.*
 
 Les travaux durent 2 mois en tout, sans nuisance !
 

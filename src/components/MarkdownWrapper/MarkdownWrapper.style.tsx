@@ -160,15 +160,12 @@ export const Cartridge = styled.div<{ theme: string }>`
 
 const CheckItemFCU = css`
   margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
 
   color: #4550e5;
 
   &::before {
     content: '';
-    display: block;
+    display: inline;
     padding-top: 0.15rem;
     margin-right: 0.5rem;
     color: #4550e5;

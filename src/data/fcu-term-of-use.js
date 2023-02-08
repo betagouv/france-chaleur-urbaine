@@ -34,10 +34,10 @@ Le service est une application web qui vous permet de :
 L’Utilisateur peut renseigner l’adresse d’un bâtiment pour savoir s’il est situé à proximité d’un réseau de chaleur.
 
 - __*Formulaire de contact et d’information*__  
-L’Utilisateur peut demander à être mis en relation avec le gestionnaire du réseau de chaleur, ou à ce que sa demande soit portée à la connaissance de la collectivité (en l’absence de réseau de chaleur notamment). La localisation de l’ensemble des demandes de contact reçues sur le site a vocation à être affichée sur la cartographie, sans divulguer l’identité ni les coordonnées du demandeur. L’utilisateur accepte que ses données soient collectées et utilisées à des fin d’analyse par le ministère de la transition écologique. Il accepte que sa demande soit communiquée au gestionnaire du réseau le plus proche, à la collectivité territoriale sur laquelle est située son adresse, ainsi qu’à l’espace France Rénov local.
+L’Utilisateur peut demander à être mis en relation avec le gestionnaire du réseau de chaleur, ou à ce que sa demande soit portée à la connaissance de la collectivité (en l’absence de réseau de chaleur notamment). La localisation de l’ensemble des demandes de contact reçues sur le site a vocation à être affichée [sur la cartographie](/carte), sans divulguer l’identité ni les coordonnées du demandeur. L’utilisateur accepte que ses données soient collectées et utilisées à des fin d’analyse par le ministère de la transition écologique. Il accepte que sa demande soit communiquée au gestionnaire du réseau le plus proche, à la collectivité territoriale sur laquelle est située son adresse, ainsi qu’à l’espace France Rénov local.
 
 - __*Formulaire de contribution à la cartographie*__
-L’utilisateur peut transmettre des informations et données/tracés à afficher sur la cartographie, ou signaler une erreur.
+L’utilisateur peut transmettre des informations et données/tracés à afficher [sur la cartographie](/carte), ou signaler une erreur.
 
 ### Responsabilités
 
