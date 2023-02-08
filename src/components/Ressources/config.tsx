@@ -35,7 +35,7 @@ export const issues: Record<string, Document> = {
     ),
     content: <Network />,
   },
-  'energie-vertes': {
+  'energies-verte': {
     title: 'Les réseaux de chaleur : des énergies vertes',
     description: (
       <>

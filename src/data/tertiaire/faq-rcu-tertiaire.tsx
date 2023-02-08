@@ -27,7 +27,7 @@ Au niveau contractuel, les relations entre les différents acteurs sont régies 
   },
   {
     label: 'Quelles sont les aides financières disponibles ?',
-    body: `Le [coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires](https://www.ecologie.gouv.fr/coup-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires) peut être mobilisé lors du remplacement d'une chaudière fioul ou gaz (hors condensation) par un raccordement à un réseau de chaleur alimenté majoritairement par des énergies renouvelables et de récupération.`,
+    body: `Le [coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires](/ressources/aides#contenu) peut être mobilisé lors du remplacement d'une chaudière fioul ou gaz (hors condensation) par un raccordement à un réseau de chaleur alimenté majoritairement par des énergies renouvelables et de récupération.`,
   },
 ];
 

@@ -11,7 +11,7 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 
 const additionWishValues = [
   'Tracé du réseau',
-  'Périmètre de la zone de développement prioritaire',
+  'Périmètre de développement prioritaire',
   "Tracé d'une extension prévue du réseau",
   'Informations tarifaires',
   'autre',
