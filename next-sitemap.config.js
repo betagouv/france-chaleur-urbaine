@@ -2,7 +2,7 @@
 
 const ressources = [
   'reseau',
-  'energie-vertes',
+  'energies-verte',
   'atouts',
   'livraisons',
   'role',

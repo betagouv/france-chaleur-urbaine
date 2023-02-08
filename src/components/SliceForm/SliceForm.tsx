@@ -44,7 +44,7 @@ const HeadSlice = ({
             colored={colored}
             formLabel={
               <FormLabel colored={colored}>
-                {title || 'Votre immeuble pourrait-il être raccordé&nbsp;?'}
+                {title || 'Votre immeuble pourrait-il être raccordé ?'}
               </FormLabel>
             }
             onChange={handleOnChangeAddress}

@@ -104,7 +104,7 @@ Vous êtes chauffé au fioul ou au gaz&nbsp;?
 **À partir du 1er juillet 2022,** de nouvelles normes environnementales, 
 qui visent à limiter les émissions de gaz à effet de serre, entreront en 
 vigueur et **excluent l'installation de nouvelles chaudières au fioul.**  
-**Des aides accompagnent cette transition.**
+**[Des aides](/ressources/aides#contenu) accompagnent cette transition.**
 :::
               `}
               />

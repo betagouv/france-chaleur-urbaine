@@ -136,7 +136,7 @@ export default function Home() {
             bg="/img/head-slice-bg-tertiaire.png"
             pageBody={`
 Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
-# Optez pour un chauffage écologique et économique`}
+# Optez pour le chauffage urbain, écologique et économique`}
             formLabel="Votre bâtiment pourrait-il être raccordé&nbsp;?"
             energyInputsLabels={{
               collectif: 'Central',
@@ -174,7 +174,7 @@ Vos bâtiments présentent une surface d’activités tertiaires (ou un cumul de
 
 Pour atteindre les objectifs du dispositif, vous pouvez optimiser l'exploitation de vos bâtiments, moderniser vos équipements, ou encore engager des travaux de rénovation énergétique.  
 
-**C’est aussi le moment de changer votre mode de chauffage pour une solution moins émettrice de gaz à effet de serre&nbsp;!**
+**C’est aussi le moment de changer votre mode de chauffage pour [une solution moins émettrice de gaz à effet de serre](/ressources/role#contenu)&nbsp;!**
 
 :::cartridge{theme="grey" className="presentation-rcu-tertiaire-cartridge"}
 #### Obligation  
@@ -224,7 +224,7 @@ c’est jusqu'à :
                 value={`
 :::puce-icon{icon="./icons/picto-warning.svg"}
 **À partir du 1er juillet 2022,** de nouvelles normes environnementales, qui visent à limiter les émissions de gaz à effet de serre, entreront en vigueur et **excluent l'installation de nouvelles chaudières au fioul.**  
-**Des aides accompagnent cette transition.**
+**[Des aides](/ressources/aides#contenu) accompagnent cette transition.**
 :::
               `}
               />
@@ -247,9 +247,9 @@ c’est jusqu'à :
             className="aides-rcu"
           >
             <MarkdownWrapper
-              value={`##### Vous souhaitez raccorder vos locaux à un réseau de chaleur&nbsp;?  
+              value={`##### Vous souhaitez raccorder vos locaux au chauffage urbain&nbsp;?  
 
-Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires&nbsp;»](https://www.ecologie.gouv.fr/coup-pouce-chauffage-des-batiments-residentiels-collectifs-et-tertiaires)** a pour objectif d’inciter financièrement les propriétaires ou gestionnaires de bâtiments tertiaires à remplacer leurs équipements de chauffage au charbon, au fioul ou au gaz au profit d’un raccordement à un réseau de chaleur.  
+Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires&nbsp;»](/ressources/aides#contenu)** a pour objectif d’inciter financièrement les propriétaires ou gestionnaires de bâtiments tertiaires à remplacer leurs équipements de chauffage au charbon, au fioul ou au gaz au profit d’un raccordement à un réseau de chaleur.  
               `}
               className="aides-rcu-body"
             />
