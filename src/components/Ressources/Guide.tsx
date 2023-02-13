@@ -1,3 +1,4 @@
+import { matomoEvent } from '@components/Markup';
 import { Button } from '@dataesr/react-dsfr';
 import { Container, Content, GuideImage, TopLeft } from './Guide.styles';
 
@@ -10,7 +11,17 @@ const Guide = () => {
         Téléchargez notre guide de raccordement
         <br />
         <br />
-        <Button>Toutes les infos sur notre guide</Button>
+        <Button
+          onClick={() => {
+            matomoEvent(['Téléchargement', 'Guide FCU', 'Ressources']);
+            window.open(
+              '/documentation/guide-france-chaleur-urbaine.pdf',
+              '_blank'
+            );
+          }}
+        >
+          Toutes les infos sur notre guide
+        </Button>
       </Content>
       <GuideImage
         src="/img/ressources-guide.png"
