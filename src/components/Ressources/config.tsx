@@ -14,6 +14,7 @@ import Strengths from './Contents/Strengths';
 
 export type Document = {
   title: string;
+  altTitle?: string;
   description: ReactNode;
   content: ReactNode;
 };
@@ -37,6 +38,7 @@ export const issues: Record<string, Document> = {
   },
   'energies-verte': {
     title: 'Les réseaux de chaleur : des énergies vertes',
+    altTitle: 'Quelles énergies alimentent les réseaux de chaleur',
     description: (
       <>
         Les réseaux de chaleur français sont alimentés en moyenne à{' '}
@@ -106,6 +108,7 @@ export const understandings: Record<string, Document> = {
   },
   aides: {
     title: 'Des aides financières conséquentes pour se raccorder',
+    altTitle: 'Quelles aides financières pour se raccorder',
     description: (
       <>
         Depuis le 1er septembre 2022, le coup de pouce{' '}
