@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
 import db from 'src/db';
+import { authenticatedUser } from 'src/services/api/authentication';
 import { EligibilityDemand } from 'src/types/EligibilityDemand';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 
@@ -9,8 +9,7 @@ export default async function eligibilityDemands(
   res: NextApiResponse
 ) {
   try {
-    const session = await getSession({ req });
-    const user = session?.user;
+    const user = await authenticatedUser(req);
     if (!user || user.role !== USER_ROLE.ADMIN) {
       return res.status(204).json([]);
     }

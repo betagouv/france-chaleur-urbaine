@@ -18,10 +18,6 @@ const login = async (email: string, password: string) => {
     return null;
   }
 
-  await db('users')
-    .where({ id: user.id })
-    .update({ last_connection: new Date() });
-
   return {
     id: user.id,
     gestionnaires: user.gestionnaires,
