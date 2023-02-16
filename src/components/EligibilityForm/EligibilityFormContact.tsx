@@ -26,6 +26,37 @@ type KeyPrimaryType =
   | 'provinceIneligible'
   | undefined;
 
+const bordeauxMetropoleCityCodes = [
+  '33003',
+  '33004',
+  '33013',
+  '33032',
+  '33039',
+  '33056',
+  '33063',
+  '33065',
+  '33069',
+  '33075',
+  '33096',
+  '33119',
+  '33162',
+  '33167',
+  '33192',
+  '33200',
+  '33249',
+  '33273',
+  '33281',
+  '33312',
+  '33318',
+  '33376',
+  '33434',
+  '33449',
+  '33487',
+  '33519',
+  '33522',
+  '33550',
+];
+
 export const getContactResult = (
   heatingType: AvailableHeating,
   eligibility?: HeatNetworksResponse
@@ -203,12 +234,24 @@ const EligibilityFormContact = ({
       eligibility: computedEligibility,
       headerTypo,
     }: any = getContactResult(addressData.heatingType, addressData.eligibility);
+
+    const addBordeauxLink =
+      addressData.geoAddress?.properties.citycode &&
+      bordeauxMetropoleCityCodes.includes(
+        addressData.geoAddress?.properties.citycode
+      );
+
     return {
       distance: addressData.eligibility?.distance,
       futurNetwork: addressData.eligibility?.futurNetwork,
       header,
       futurHeader,
-      body,
+      body: addBordeauxLink
+        ? (body as string).replace(
+            '[France Rénov’](https://france-renov.gouv.fr/)',
+            '[France Rénov’](https://france-renov.gouv.fr/) et [Bordeaux Métropole](https://www.bordeaux-metropole.fr/)'
+          )
+        : body,
       bodyLight,
       computedEligibility,
       headerTypo,
