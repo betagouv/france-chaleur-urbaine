@@ -12,7 +12,7 @@ const Helps = () => {
         Certificats d’économies d’énergie (CEE)*
       </b>
       . Elle est versée par des entreprises signataires de la charte coup de
-      pouce "Chauffage des bâtiments résidentiels collectifs et tertiaires ».
+      pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires ».
       <br />
       <br />
       <Highlight>
