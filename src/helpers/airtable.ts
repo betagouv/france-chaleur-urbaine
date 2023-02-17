@@ -67,6 +67,8 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     termOfUse,
     city,
     postcode,
+    department,
+    region,
     phone,
   } = values;
 
@@ -91,6 +93,8 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     'J’accepte les CGU': termOfUse,
     Ville: city,
     'Code Postal': postcode,
+    Departement: department,
+    Region: region,
   };
 };
 
