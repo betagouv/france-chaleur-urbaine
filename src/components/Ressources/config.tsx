@@ -160,7 +160,7 @@ export const growths: Record<string, Document> = {
     altTitle:
       "Par quels dispositifs financiers l'Etat soutient-il les réseaux de chaleur ?",
     description:
-      'Plusieurs dispositifs financiers sont mis en place par État pour accompagner le développement des réseaux de chaleur.',
+      'Plusieurs dispositifs financiers sont mis en place par l’État pour accompagner le développement des réseaux de chaleur.',
     content: <State />,
   },
 };
