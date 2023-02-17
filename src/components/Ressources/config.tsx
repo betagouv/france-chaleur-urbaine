@@ -114,7 +114,7 @@ export const understandings: Record<string, Document> = {
     description: (
       <>
         Depuis le 1er septembre 2022, le coup de pouce{' '}
-        <b>"Chauffage des bâtiments résidentiels collectifs et tertiaires ”</b>{' '}
+        <b>« Chauffage des bâtiments résidentiels collectifs et tertiaires »</b>{' '}
         permet d’obtenir des aides financières conséquentes pour se raccorder.
       </>
     ),
