@@ -14,6 +14,7 @@ import Strengths from './Contents/Strengths';
 
 export type Document = {
   title: string;
+  altTitle?: string;
   description: ReactNode;
   content: ReactNode;
 };
@@ -37,6 +38,7 @@ export const issues: Record<string, Document> = {
   },
   'energies-verte': {
     title: 'Les réseaux de chaleur : des énergies vertes',
+    altTitle: 'Quelles énergies alimentent les réseaux de chaleur ?',
     description: (
       <>
         Les réseaux de chaleur français sont alimentés en moyenne à{' '}
@@ -71,6 +73,8 @@ export const issues: Record<string, Document> = {
   },
   role: {
     title: 'Un rôle clé dans la transition énergétique',
+    altTitle:
+      'Quel est le rôle du chauffage urbain dans la transition énergétique ?',
     description: (
       <>
         Les bâtiments (résidentiels et tertiaires) sont responsables de près de
@@ -106,10 +110,11 @@ export const understandings: Record<string, Document> = {
   },
   aides: {
     title: 'Des aides financières conséquentes pour se raccorder',
+    altTitle: 'Quelles aides financières pour se raccorder ?',
     description: (
       <>
         Depuis le 1er septembre 2022, le coup de pouce{' '}
-        <b>"Chauffage des bâtiments résidentiels collectifs et tertiaires ”</b>{' '}
+        <b>« Chauffage des bâtiments résidentiels collectifs et tertiaires »</b>{' '}
         permet d’obtenir des aides financières conséquentes pour se raccorder.
       </>
     ),
@@ -152,8 +157,10 @@ export const growths: Record<string, Document> = {
   },
   etat: {
     title: 'L’État investit dans les réseaux de chaleur',
+    altTitle:
+      "Par quels dispositifs financiers l'Etat soutient-il les réseaux de chaleur ?",
     description:
-      'Plusieurs dispositifs financiers sont mis en place par État pour accompagner le développement des réseaux de chaleur.',
+      'Plusieurs dispositifs financiers sont mis en place par l’État pour accompagner le développement des réseaux de chaleur.',
     content: <State />,
   },
 };

@@ -1,6 +1,6 @@
 import { updateDemand } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/react';
+import { authenticatedUser } from 'src/services/api/authentication';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import * as yup from 'yup';
 
@@ -26,8 +26,8 @@ export default async function demand(
   res: NextApiResponse
 ) {
   const { demandId } = req.query;
-  const session = await getSession({ req });
-  if (!session?.user) {
+  const user = await authenticatedUser(req);
+  if (!user) {
     return res.status(204).json({});
   }
 
@@ -41,7 +41,7 @@ export default async function demand(
       return res.status(400).send('Error');
     }
 
-    const demand = await updateDemand(session.user, demandId as string, body);
+    const demand = await updateDemand(user, demandId as string, body);
 
     const error = (demand as any)?.error;
     if (error) {

@@ -2,7 +2,7 @@ import { getSpreadSheet } from '@core/infrastructure/repository/export';
 import { getDemands } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { User } from 'next-auth';
-import { getSession } from 'next-auth/react';
+import { authenticatedUser } from 'src/services/api/authentication';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ExportColumn } from 'src/types/ExportColumn';
 import { Demand } from 'src/types/Summary/Demand';
@@ -89,8 +89,7 @@ export default async function demands(
   res: NextApiResponse
 ) {
   try {
-    const session = await getSession({ req });
-    const user = session?.user;
+    const user = await authenticatedUser(req);
     if (!user) {
       return res.status(204).json([]);
     }

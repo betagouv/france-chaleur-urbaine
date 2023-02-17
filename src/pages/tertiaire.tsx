@@ -1,6 +1,7 @@
-import Accordions from '@components/accordions';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import { growths, issues, understandings } from '@components/Ressources/config';
+import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
 import SimulateurCO2 from '@components/SimulatorCO2';
@@ -8,11 +9,7 @@ import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
-import {
-  comparatifRcu,
-  faqRcuTertiaire,
-  fcuSolutionForFutur,
-} from '@data/tertiaire';
+import { comparatifRcu, fcuSolutionForFutur } from '@data/tertiaire';
 import Head from 'next/head';
 import { createGlobalStyle } from 'styled-components';
 
@@ -112,6 +109,13 @@ const TertiaireStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/sty
     }
   }
 `;
+
+const tertiaireCards = {
+  'energies-verte': issues['energies-verte'],
+  aides: understandings.aides,
+  avantages: understandings.avantages,
+  acteurs: growths.acteurs,
+};
 
 export default function Home() {
   return (
@@ -263,9 +267,8 @@ Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels co
               className="aides-rcu-body"
             />
           </Slice>
-
-          <Slice padding={6}>
-            <Accordions data={faqRcuTertiaire} />
+          <Slice theme="color">
+            <Understanding cards={tertiaireCards} />
           </Slice>
         </div>
       </MainContainer>

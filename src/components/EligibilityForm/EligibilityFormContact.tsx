@@ -260,13 +260,18 @@ const EligibilityFormContact = ({
 
   const handleSubmitForm = useCallback(
     async (values: Record<string, string | number>) => {
-      const sendedValues = {
+      const sendedValues: any = {
         ...addressData,
         ...values,
         computedEligibility,
-        city: addressData?.geoAddress?.properties?.city,
-        postcode: addressData?.geoAddress?.properties?.postcode,
       };
+      if (addressData?.geoAddress?.properties) {
+        sendedValues.city = addressData.geoAddress.properties.city;
+        sendedValues.postcode = addressData.geoAddress.properties.postcode;
+        const context = addressData.geoAddress.properties.context.split(',');
+        sendedValues.department = (context[1] || '').trim();
+        sendedValues.region = (context[2] || '').trim();
+      }
 
       if (onSubmit) {
         onSubmit(sendedValues);

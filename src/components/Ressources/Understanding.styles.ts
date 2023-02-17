@@ -10,7 +10,7 @@ export const UnderstandingCards = styled.div`
 `;
 
 export const UnderstandingCard = styled(Card)`
-  width: 300px;
+  width: 270px;
   height: initial !important;
   p {
     color: black !important;

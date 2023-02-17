@@ -1,21 +1,25 @@
 import { CardDescription, CardTitle } from '@dataesr/react-dsfr';
 import Link from 'next/link';
-import { understandings } from './config';
+import { Document, understandings } from './config';
 import {
   BottomLink,
   UnderstandingCard,
   UnderstandingCards,
 } from './Understanding.styles';
 
-const Understanding = () => {
+const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {
   return (
     <UnderstandingCards>
-      {Object.entries(understandings).map(([key, understanding]) => (
+      {Object.entries(cards || understandings).map(([key, understanding]) => (
         <UnderstandingCard
           key={key}
           asLink={<Link href={`/ressources/${key}`} />}
         >
-          <CardTitle>{understanding.title}</CardTitle>
+          <CardTitle>
+            {cards && understanding.altTitle
+              ? understanding.altTitle
+              : understanding.title}
+          </CardTitle>
           <CardDescription>
             {understanding.description}
             <br />
