@@ -1,5 +1,6 @@
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import { growths, issues, understandings } from '@components/Ressources/config';
 import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
@@ -108,6 +109,13 @@ const TertiaireStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/sty
     }
   }
 `;
+
+const tertiaireCards = {
+  'energies-verte': issues['energies-verte'],
+  aides: understandings.aides,
+  avantages: understandings.avantages,
+  acteurs: growths.acteurs,
+};
 
 export default function Home() {
   return (
@@ -260,7 +268,7 @@ Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels co
             />
           </Slice>
           <Slice theme="color">
-            <Understanding tertiaire />
+            <Understanding cards={tertiaireCards} />
           </Slice>
         </div>
       </MainContainer>
