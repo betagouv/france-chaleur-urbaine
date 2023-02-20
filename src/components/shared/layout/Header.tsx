@@ -20,8 +20,6 @@ import LayoutContext from './LayoutContext';
 import { menu } from './MainLayout.data';
 import { FullScreenHeader, FullScreenItems } from './MainLayout.style';
 
-const fcuHeaderDesc = `Un service public pour faciliter et accélérer les raccordements aux réseaux de chaleur`;
-
 const ToolItems = ({ session }: { session: Session | null }) => (
   <Tool>
     {session ? (
@@ -99,7 +97,7 @@ const Header = ({
                   France Chaleur Urbaine
                 </a>
               }
-              description={fcuHeaderDesc}
+              description="Faciliter les raccordements aux réseaux de chaleur"
               asLink={<Link href={indexLink} title="Revenir à l'accueil" />}
             />
           )}

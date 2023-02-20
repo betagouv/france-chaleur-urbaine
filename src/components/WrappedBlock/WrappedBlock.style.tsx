@@ -6,7 +6,9 @@ export const Container = styled.div<{
 }>`
   display: flex;
   flex-direction: column;
-  justify-content: 'space-around';
+  justify-content: space-around;
+  align-items: center;
+  gap: 32px;
 
   @media (min-width: 992px) {
     flex-direction: ${({ reverse, direction }) =>

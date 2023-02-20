@@ -26,6 +26,12 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     max-width: 122px;
   }
 
+  .fcuCoproGuide {
+    min-width: 330px;
+    margin-bottom: 80px;
+    text-align: center;
+  }
+
   .fcuSolutionForFuturBody,
   .fcuSolutionForFuturFooter {
     text-align: center;
@@ -75,27 +81,35 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
   .slice-comparatif-rcu {
     > div {
       flex: 3;
-    width: auto;
-    max-width: none;
+      width: auto;
+      max-width: none;
     }
 
+    .rcu-comparatif-image-tertiaire,
     .rcu-comparatif-image {
       position: relative;
       border-radius: 2.5rem;
       background-color: #F9F8F6;
       padding: 2rem 0 1rem !important;
 
-      flex: 3;
       justify-content: space-between;
       width: auto;
       max-width: none;
-
+      
       .rcu-comparatif-image-legend {
         margin: 1rem;
         text-align: center;
         color: #4550E5;
       }
     }
+    
+    .rcu-comparatif-image {
+      flex-grow: 0;
+    }
+    .rcu-comparatif-image-tertiaire {
+      flex: 3;
+    }
+
     .rcu-comparatif-warning {
       flex: 1;
       width: auto;

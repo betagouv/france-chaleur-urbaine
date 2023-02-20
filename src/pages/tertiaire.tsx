@@ -4,7 +4,7 @@ import { growths, issues, understandings } from '@components/Ressources/config';
 import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
-import SimulateurCO2 from '@components/SimulatorCO2';
+import SimulatorCO2 from '@components/SimulatorCO2';
 import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
@@ -223,7 +223,7 @@ c’est jusqu'à :
             padding={8}
             header={`## Un moyen efficace de lutter contre le changement climatique`}
           >
-            <SimulateurCO2 typeSurf={TypeSurf.tertiaire}>
+            <SimulatorCO2 typeSurf={TypeSurf.tertiaire}>
               <MarkdownWrapper
                 value={`
 :::puce-icon{icon="./icons/picto-warning.svg"}
@@ -232,7 +232,7 @@ c’est jusqu'à :
 :::
               `}
               />
-            </SimulateurCO2>
+            </SimulatorCO2>
           </Slice>
 
           <Slice

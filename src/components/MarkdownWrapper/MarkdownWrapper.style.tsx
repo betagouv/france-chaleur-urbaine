@@ -140,6 +140,13 @@ export const Cartridge = styled.div<{ theme: string }>`
             color: #fff;
           `;
         }
+        case 'white': {
+          return css`
+            border: 1px solid #d2d4f0;
+            background-color: white;
+            color: #4550e5;
+          `;
+        }
         case 'yellow': {
           return css`
             background-color: #efc73f;

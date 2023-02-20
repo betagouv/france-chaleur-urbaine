@@ -1,6 +1,6 @@
 import { Select, TextInput } from '@dataesr/react-dsfr';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import {
   Container,
   Disclaimer,
@@ -13,11 +13,15 @@ import {
 } from './Simulator.styles';
 
 const Simulator = ({
+  cartridge,
   withMargin,
   withRedirection,
+  children,
 }: {
+  cartridge?: boolean;
   withMargin?: boolean;
   withRedirection?: boolean;
+  children?: ReactNode;
 }) => {
   const [structure, setStructure] = useState('Résidentiel');
   const [value, setValue] = useState('');
@@ -39,14 +43,25 @@ const Simulator = ({
   help = help * 0.75 * parseFloat(process.env.PRIX_SPOT_C2E || '6');
 
   return (
-    <Container withMargin={withMargin}>
-      <Title>
-        Estimer le montant du Coup de pouce « Chauffage des bâtiments
-        résidentiels collectifs et tertiaires » pour le raccordement de mon
-        bâtiment
-      </Title>
-      <Form>
-        <Inputs>
+    <Container withMargin={withMargin} cartridge={cartridge}>
+      {cartridge ? (
+        <>
+          <h4>Quelles aides pour se raccorder ?</h4>
+          <p>
+            Le coup de pouce "Chauffage des bâtiments résidentiels collectifs et
+            tertiaires ” permet d’obtenir des aides financières conséquentes
+            pour se raccorder.
+          </p>
+        </>
+      ) : (
+        <Title>
+          Estimer le montant du Coup de pouce « Chauffage des bâtiments
+          résidentiels collectifs et tertiaires » pour le raccordement de mon
+          bâtiment
+        </Title>
+      )}
+      <Form cartridge={cartridge}>
+        <Inputs cartridge={cartridge}>
           <Select
             options={[
               { label: 'Résidentiel', value: 'Résidentiel' },
@@ -68,7 +83,7 @@ const Simulator = ({
           />
         </Inputs>
         <div>
-          <Result>
+          <Result cartridge={cartridge}>
             <ResultValue>
               {help.toLocaleString('fr-FR', {
                 style: 'currency',
@@ -89,7 +104,7 @@ const Simulator = ({
               </span>
             )}
           </Result>
-          <Disclaimer>
+          <Disclaimer cartridge={cartridge}>
             *Montants donnés à titre indicatif. Contacter un des signataires de
             la charte pour obtenir une offre.
           </Disclaimer>
@@ -102,6 +117,7 @@ const Simulator = ({
           </Link>
         </RedirectionButton>
       )}
+      {children}
     </Container>
   );
 };

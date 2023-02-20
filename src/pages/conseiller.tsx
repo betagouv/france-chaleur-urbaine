@@ -7,7 +7,7 @@ import Simulator from '@components/Ressources/Contents/Simulator';
 import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
-import SimulateurCO2 from '@components/SimulatorCO2';
+import SimulatorCO2 from '@components/SimulatorCO2';
 import Slice from '@components/Slice';
 import WrappedText from '@components/WrappedText';
 import Head from 'next/head';
@@ -53,7 +53,7 @@ Bailleurs sociaux, bureaux d’étude, syndics, conseillers France Renov...
           padding={8}
           header={`## Estimer les émissions de CO2 évitées par le raccordement d’un bâtiment à un réseau de chaleur*`}
         >
-          <SimulateurCO2 />
+          <SimulatorCO2 />
         </Slice>
         <Simulator withRedirection />
         <Slice
