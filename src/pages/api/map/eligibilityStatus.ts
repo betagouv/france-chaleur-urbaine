@@ -4,7 +4,7 @@ import { withCors } from 'src/services/api/cors';
 import { ErrorResponse } from 'src/types/ErrorResponse';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 
-const eligibilitygibilityStatus = async (
+const eligibilityStatus = async (
   req: NextApiRequest,
   res: NextApiResponse<HeatNetworksResponse | ErrorResponse>
 ) => {
@@ -34,4 +34,4 @@ const eligibilitygibilityStatus = async (
   }
 };
 
-export default withCors(eligibilitygibilityStatus);
+export default withCors(eligibilityStatus);
