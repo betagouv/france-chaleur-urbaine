@@ -1,28 +1,3 @@
-const formatDistanceToAirtable: (
-  distance?: number,
-  heatingType?: string
-) => string | false = (distance, heatingType) => {
-  if (!distance || !heatingType) return false;
-
-  const enableValue = [
-    '< 100m, collectif',
-    '< 100m, individuel',
-    '> 100m et < 200m, collectif',
-    '> 100m et < 200m, individuel',
-    '> 200m, collectif',
-    '> 200m, individuel',
-  ];
-
-  const distStep =
-    distance <= 100
-      ? '< 100m'
-      : distance <= 200
-      ? '> 100m et < 200m'
-      : '> 200m';
-  const formatedDistance = `${distStep}, ${heatingType}`;
-  return !enableValue.includes(formatedDistance) && formatedDistance;
-};
-
 const formatHeatingEnergyToAirtable: (heatingEnergy: string) => string = (
   heatingEnergy
 ) => {
@@ -64,7 +39,6 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     lastName,
     company,
     email,
-    termOfUse,
     city,
     postcode,
     department,
@@ -87,10 +61,6 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     'Type de chauffage': formatHeatingTypeToAirtable(heatingType),
     'Distance au réseau': eligibility?.distance,
     'en ZDP': eligibility.inZDP ? 'Oui' : 'Non',
-    'Choix en fonction de la distance au réseau':
-      formatDistanceToAirtable(eligibility?.distance, heatingType) ||
-      'inconnue',
-    'J’accepte les CGU': termOfUse,
     Ville: city,
     'Code Postal': postcode,
     Departement: department,
