@@ -62,6 +62,15 @@ const ToolItems = ({ session }: { session: Session | null }) => (
       <ToolItemGroup>
         <ToolItem
           asLink={
+            <Link href="/qui-sommes-nous">
+              <a className="fr-link">Qui sommes-nous ?</a>
+            </Link>
+          }
+        >
+          Qui sommes-nous ?
+        </ToolItem>
+        <ToolItem
+          asLink={
             <Link href="/connexion">
               <a className="fr-link">Espace gestionnaire</a>
             </Link>
