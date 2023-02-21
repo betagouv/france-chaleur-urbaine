@@ -9,6 +9,7 @@ import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
+import WrappedText from '@components/WrappedText';
 import { comparatifRcu, fcuSolutionForFutur } from '@data/tertiaire';
 import Head from 'next/head';
 import { createGlobalStyle } from 'styled-components';
@@ -269,6 +270,19 @@ Le dispositif **[«&nbsp;Coup de pouce chauffage des bâtiments résidentiels co
           </Slice>
           <Slice theme="color">
             <Understanding cards={tertiaireCards} />
+          </Slice>
+          <Slice theme="color-light" padding={8}>
+            <WrappedText
+              center
+              body={`#### Raccordement des bâtiments tertiaires au chauffage urbain
+
+:small[Un contexte favorable]
+
+:small[Au niveau européen, la France ne se place qu’en 20ème position en termes de recours aux réseaux de chaleur, avec environ 5 % des besoins en chaleur du pays couverts par le chauffage urbain. Le secteur tertiaire représente près de 36 % des livraisons annuelles de chaleur par les réseaux.]
+
+:small[Aujourd’hui, de nombreux établissements tertiaires sont amenés à réaliser des travaux de rénovation thermique pour réduire leurs consommations d’énergie et satisfaire les obligations du dispositif éco-énergie tertiaire. C’est le moment opportun pour changer de mode de chauffage et opter pour un raccordement au réseau de chaleur dès lors que celui-ci est possible. Le [coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaire](/ressources/aides#contenu) permet de réduire significativement les frais de raccordement.]
+`}
+            />
           </Slice>
         </div>
       </MainContainer>
