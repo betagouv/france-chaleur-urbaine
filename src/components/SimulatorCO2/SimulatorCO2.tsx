@@ -106,7 +106,6 @@ const SimulatorCO2: React.FC<{
         <fieldset>
           ou
           <Input
-            withMargin
             type="number"
             placeholder={data?.label?.surf}
             onChange={(e) => setSurf(parseFloat(e.target.value))}
@@ -117,7 +116,6 @@ const SimulatorCO2: React.FC<{
         <fieldset>
           ou
           <Input
-            withMargin
             type="number"
             placeholder={data?.label?.log}
             onChange={(e) => setLog(parseInt(e.target.value))}

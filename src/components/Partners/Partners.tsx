@@ -58,7 +58,7 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
         <PartnerImages>
           {logos.map(({ key, image, title, link }, index) => (
             <PartnerLink
-              display={index >= firstLogo}
+              show={index >= firstLogo}
               href={link}
               target="_blank"
               rel="noreferrer noopener"

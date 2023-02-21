@@ -166,7 +166,9 @@ export const Cartridge = styled.div<{ theme: string }>`
 `;
 
 const CheckItemFCU = css`
-  margin-bottom: 1.5rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
 
   color: #4550e5;
 
@@ -175,6 +177,7 @@ const CheckItemFCU = css`
     display: inline;
     padding-top: 0.15rem;
     margin-right: 0.5rem;
+    margin-bottom: 4px;
     color: #4550e5;
     padding: 0;
     line-height: 1;

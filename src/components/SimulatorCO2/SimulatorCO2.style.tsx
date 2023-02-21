@@ -39,14 +39,12 @@ export const SurfSelect = styled(Select)`
   max-width: 300px;
 `;
 
-export const Input = styled(TextInput)<{ withMargin?: boolean }>`
+export const Input = styled(TextInput)`
   display: inline-block;
   width: calc(100% - 30px);
-  ${({ withMargin }) =>
-    withMargin &&
-    css`
-      margin-left: 8px;
-    `}
+  &:not(first-child) {
+    margin-left: 8px;
+  }
 `;
 
 export const CartridgeSimulatorForm = styled.form`

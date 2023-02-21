@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+export const Title = styled.h2`
+  color: #4550e5;
+`;
+
 export const Row = styled.div`
   display: flex;
   gap: 32px;
@@ -20,5 +24,15 @@ export const Logos = styled.div`
     ::after {
       display: none !important;
     }
+  }
+`;
+
+export const Description = styled.div`
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 27px;
+  color: #000074;
+  b {
+    color: #4550e5;
   }
 `;
