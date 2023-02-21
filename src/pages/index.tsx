@@ -1,90 +1,27 @@
+import Infographies from '@components/Coproprietaire/Infographies';
+import Simulators from '@components/Coproprietaire/Simulators';
+import UseCase from '@components/Coproprietaire/UseCase';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import Partners from '@components/Partners/Partners';
+import { matomoEvent } from '@components/Markup';
+import { issues } from '@components/Ressources/config';
+import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
-import Slice, { SliceImg } from '@components/Slice';
+import { GlobalStyle } from '@components/shared/layout/Global.style';
+import Slice from '@components/Slice';
+import SliceForm from '@components/SliceForm';
 import TextList from '@components/TextList';
-import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
 import WrappedBlock from '@components/WrappedBlock';
-import WrappedText from '@components/WrappedText';
-import { dataNumberRcu, presentationRcu } from '@data/home';
+import { dataNumberRcu } from '@data';
+import { comparatifRcu } from '@data/coproprietaire';
+import { Button } from '@dataesr/react-dsfr';
 import Head from 'next/head';
-import styled, { createGlobalStyle } from 'styled-components';
 
-const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
-  .slice-migration-solution {
-    background-repeat: no-repeat;
-    background-position: right calc(50% - 25rem) bottom 50%;
-
-    @media (min-width: 990px) {
-      background-image: radial-gradient(circle, #EEF9FD 0%, #EEF9FD min(280px, 50vw), transparent min(280px, 50vw), transparent 100%);
-    }
-
-    .warning {
-      @media (min-width: 990px) {
-        padding-left: 13rem;
-      }
-
-      p {
-        font-size: 1.1rem;
-        font-size: 0.95rem;
-        line-height: 1.8;
-      }
-    }
-  }
-
-  .slice-schema-container {
-    .presentation-rcu-icon {
-      &:first-of-type {
-        margin-top: 3em;
-      }
-    }
-  }
-
-  .user-experience-description {
-    position: relative;
-    padding-left: 5.75em;
-  }
-
-  .presentation-rcu {
-    max-width: 650px;
-  }
-
-  .enjeu-societe-description-wrapper {
-    padding: 0 3rem;
-  }
-  .enjeu-societe-description--container {
-    z-index: 1;
-  }
-  .enjeu-societe-description {
-    margin-left: 2em;
-    
-
-    .list-item {
-      max-width: 350px;
-    }
-  }
-
-  .enjeu-societe-img {
-    max-width: 122px;
-
-    @media (max-width: 991px) {
-      position: absolute;
-      opacity: 0.25;
-    }
-  }
-`;
-
-const BlockquoteSlice = styled.div`
-  text-align: center;
-  font-size: 1.25rem;
-  font-weight: bold;
-
-  blockquote {
-    margin: 0;
-    font-weight: normal;
-  }
-`;
+const coproprietaireCards = {
+  reseau: issues.reseau,
+  atouts: issues.atouts,
+  'energies-verte': issues['energies-verte'],
+};
 
 export default function Home() {
   return (
@@ -100,105 +37,79 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainContainer currentMenu="/">
+      <MainContainer currentMenu={'/'}>
         <div>
           <GlobalStyle />
+
           <HeadSliceForm
             bg="/img/head-slice-bg-home.png"
-            pageTitle="Les réseaux de chaleur, une énergie d’avenir"
-            pageBody="Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français"
-            formLabel="Votre immeuble pourrait-il être raccordé à un&nbsp;réseau&nbsp;de&nbsp;chaleur&nbsp;?"
+            pageBody={`**Vous êtes copropriétaire en ville ?**
+Améliorez votre confort et baissez vos factures !
+# Le chauffage urbain, une solution écologique et économique pour votre copropriété.`}
+            formLabel="Testez votre adresse en 2 clics"
             checkEligibility
-            withBulkEligibility
+            needGradient
           />
-          <Slice
-            padding={10}
-            className="slice-schema-container"
-            direction="row"
-          >
-            <WrappedText {...presentationRcu} />
-            <TrackedVideo
-              width="100%"
-              poster="/img/rcu-illustation.svg"
-              src="/videos/FCU-RC.mp4"
-            />
+          <Slice padding={8} theme="grey">
+            <Infographies />
           </Slice>
-          <Slice theme="color" padding={5}>
-            <BlockquoteSlice>
-              <blockquote>
-                “Le dérèglement climatique est déjà en cours. Si nous n’agissons
-                pas maintenant <br />
-                pour limiter ses conséquences, nous le subirons de manière
-                brutale.”
-              </blockquote>
-              Rapport du GIEC, février 2022
-            </BlockquoteSlice>
+          <Slice padding={8} direction="row">
+            <MarkdownWrapper
+              value={`## **Les avantages** du service public et des énergies locales et renouvelables
+::check-item[Réduisez vos factures de chauffage jusqu’a 40%]
+::check-item[Bénéficiez de subventions mises en place par l’Etat et d’une TVA à 5,5%]
+::check-item[Supprimez votre chaudière fioul ou gaz]
+::check-item[Faites un geste pour la planète en réduisant vos émissions de CO2 jusqu’à 50%]
+              `}
+            />
+            <div className="fcuCoproGuide">
+              <img src="/img/copro_guide.jpg" alt="Guide de raccordement" />
+              <div>
+                <Button
+                  onClick={() => {
+                    matomoEvent([
+                      'Téléchargement',
+                      'Guide FCU',
+                      'coproprietaire',
+                    ]);
+                    window.open(
+                      '/documentation/guide-france-chaleur-urbaine.pdf',
+                      '_blank'
+                    );
+                  }}
+                >
+                  Télécharger le guide de raccordement
+                </Button>
+              </div>
+            </div>
+          </Slice>
+          <Slice padding={8} theme="grey">
+            <UseCase />
+          </Slice>
+
+          <Slice
+            padding={8}
+            className="slice-comparatif-rcu"
+            header={`### La solution de chauffage la plus compétitive`}
+          >
+            <WrappedBlock data={comparatifRcu} reverse />
           </Slice>
           <Slice
             theme="grey"
-            padding={10}
-            header={`## Le chauffage, un enjeu de société  
-
-_France Chaleur Urbaine est un service public qui promeut les réseaux de chaleur, afin  
-de répondre à deux enjeux majeurs : la lutte contre le changement climatique et la  
-maîtrise du tarif des énergies._`}
-            direction="row"
+            padding={8}
+            header={`### Faites des économies en luttant contre le changement climatique`}
           >
-            <WrappedBlock
-              className="enjeu-societe-description-wrapper"
-              direction="column"
-            >
-              <MarkdownWrapper
-                value={`
-##### VOUS ÊTES UN PARTICULIER OU  
-##### PROPRIETAIRE DE BÂTIMENTS TERTIAIRES`}
-              />
-              <WrappedText
-                textClassName="enjeu-societe-description"
-                body={`
-::check-item[Découvrez si un réseau de chaleur passe près de votre immeuble]
-::check-item[Trouvez toutes les informations pour faire un raccordement]
-::check-item[Soyez mis en relation avec le gestionnaire du réseau le plus proche]
-
-:button-link[Copropriétaire]{href="./coproprietaire"}
-:button-link[Tertiaire]{href="./tertiaire"}
-`}
-                imgClassName="enjeu-societe-img"
-                imgSrc="/img/enjeu-de-societe-particulier.svg"
-                imgAlt="Portrait d’Anne"
-                reverse={true}
-              />
-            </WrappedBlock>
-            <WrappedBlock
-              className="enjeu-societe-description-wrapper"
-              direction="column"
-            >
-              <MarkdownWrapper
-                value={`
-##### VOUS ÊTES UNE COLLECTIVITÉ OU UN  
-##### EXPLOITANT DE RÉSEAUX DE CHALEUR`}
-              />
-              <WrappedText
-                textClassName="enjeu-societe-description"
-                body={`
-::check-item[Valoriser les informations de votre réseau [sur la cartographie](/carte) France chaleur urbaine]
-::check-item[Découvrez les potentiels de raccordement sur votre territoire]
-::check-item[Soyez mis en contact avec des copropriétaires et propriétaires de bâtiments tertiaires qui souhaitent être raccordés]
-
-:button-link[Collectivités/Exploitants]{href="./collectivites-et-exploitants"}
-`}
-                imgClassName="enjeu-societe-img"
-                imgSrc="/img/enjeu-de-societe-exploitant.svg"
-                imgAlt="Portrait d’Anne"
-                reverse={true}
-              />
-            </WrappedBlock>
+            <Simulators />
           </Slice>
-          <Slice theme="color" padding={5}>
+          <Slice>
+            <Understanding cards={coproprietaireCards} />
+          </Slice>
+          <Slice theme="grey" padding={4}>
+            <SliceForm />
+          </Slice>
+          <Slice theme="color" padding={8}>
             <TextList data={dataNumberRcu} />
           </Slice>
-          <Partners />
-          <SliceImg src="/img/home-footer-bg.jpg" />
         </div>
       </MainContainer>
     </>
