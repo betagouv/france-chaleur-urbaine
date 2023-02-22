@@ -14,7 +14,7 @@ const UseCase = () => {
       <Text>
         <h2>Ils sont statisfaits :</h2>
         <p>
-          Découvrez en vidéo comment se passe concrêtement un raccordement au
+          Découvrez en vidéo comment se passe concrètement un raccordement au
           chauffage urbain.
         </p>
         <TrackedVideo
@@ -24,7 +24,7 @@ const UseCase = () => {
         />
       </Text>
       <Box theme="blue">
-        <h2>Cas Concret</h2>
+        <h2>Cas concret</h2>
         <h3>Qui ?</h3>
         <p>
           Copropriété chauffée au gaz collectif de 126 logements répartis en 3

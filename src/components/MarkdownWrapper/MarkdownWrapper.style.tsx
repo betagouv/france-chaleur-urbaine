@@ -6,14 +6,23 @@ export const isExternalLink = (href: string) =>
 
 type MarkdownWrapperStyledProps = {
   className?: string;
+  withPadding?: boolean;
 };
 export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps>(
   ({ className }: MarkdownWrapperStyledProps) => ({
     className: `md-wrapper ${className || ''}`,
   })
 )<MarkdownWrapperStyledProps>`
+  ${({ withPadding }) =>
+    withPadding &&
+    `
+    @media (min-width: 992px) {
+      padding: 0 3rem;
+    }
+    `}
   h1,
   h2 {
+    line-height: 1.5rem;
     color: #000074;
   }
   h3,
@@ -81,9 +90,7 @@ export const ButtonLink = styled.a.attrs(
       className: `fr-btn ${className || ''}`,
     };
   }
-)`
-  margin-bottom: 16px;
-`;
+)``;
 
 export const CounterItem = styled.div`
   display: flex;
@@ -225,6 +232,29 @@ export const CheckItem = styled.div.attrs<CheckItemType>(
   ${({ checked }) => (checked ? CheckItemDefault : CheckItemFCU)}
 `;
 
+export const ThumbItem = styled.div`
+  ${CheckItemFCU}
+  color: white;
+  margin-bottom: 0;
+  &::before {
+    margin-bottom: 0;
+    font-size: 40px;
+    margin-top: -16px;
+    background-image: url('/icons/picto-thumb.svg');
+  }
+`;
+
+export const WhiteCheckItem = styled.div`
+  ${CheckItemFCU}
+  color: white;
+  margin-bottom: 0;
+  &::before {
+    margin-bottom: 4px;
+    font-size: 35px;
+    background-image: url('/icons/picto-check.svg');
+  }
+`;
+
 const CountPuce = styled.div`
   display: inline-block;
   margin-right: 8px;
@@ -282,4 +312,10 @@ export const KnowMoreLink = styled.a.attrs(({ href }) => ({
   &::after {
     content: unset;
   }
+`;
+
+export const SmallText = styled.p`
+  font-size: 14px !important;
+  line-height: 20px !important;
+  margin-bottom: 8px;
 `;

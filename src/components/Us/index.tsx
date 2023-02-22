@@ -55,9 +55,17 @@ const Us = () => {
             l’environnement, de l’aménagement et des transports (DRIEAT)
             d’Ile-de-France porte le projet. Florence Lévy, chargée de mission
             transition énergétique, pilote le projet en tant qu’intrapreneuse.
+            <br />
+            En savoir plus :{' '}
+            <Link
+              href="https://www.drieat.ile-de-france.developpement-durable.gouv.fr/"
+              target="_blank"
+            >
+              https://www.drieat.ile-de-france.developpement-durable.gouv.fr/
+            </Link>
           </li>
           <li>
-            <b>BETA GOUV.FR</b> : France Chaleur Urbaine est une start-up d’Etat
+            <b>BETA.GOUV.FR</b> : France Chaleur Urbaine est une start-up d’Etat
             du programme Beta.gouv.fr de la Direction interministérielle du
             numérique (DINUM), qui aide les administrations publiques à
             construire des services numériques utiles, simples et faciles à

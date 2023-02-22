@@ -69,13 +69,13 @@ export const PageBody = styled.div`
   font-weight: bold;
 
   p {
-    font-size: 1em;
-    line-height: 1.5em;
+    font-size: 20px;
+    line-height: 30px;
   }
 
   h1 {
     color: #4550e5;
-    font-size: 2em;
+    font-size: 38px;
     line-height: 1.1;
     letter-spacing: -0.01em;
     margin-bottom: 0.2em;

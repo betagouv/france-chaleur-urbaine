@@ -18,6 +18,9 @@ import {
   KnowMoreLink,
   MarkdownWrapperStyled,
   PuceIcon,
+  SmallText,
+  ThumbItem,
+  WhiteCheckItem,
 } from './MarkdownWrapper.style';
 
 const RoutedLink = (props: any) => {
@@ -67,6 +70,7 @@ const MarkdownWrapper: React.FC<{
   id?: JSX.IntrinsicAttributes;
   className?: string;
   style?: React.CSSProperties;
+  withPadding?: boolean;
 }> = ({ children, value, id, className, ...props }) => {
   const [md, setMd]: [string, (s: string) => void] = useState('');
 
@@ -89,12 +93,15 @@ const MarkdownWrapper: React.FC<{
           'check-item': CheckItem,
           'count-item': CountItem,
           'counter-item': CounterItem,
+          'thumb-item': ThumbItem,
+          'white-check-item': WhiteCheckItem,
           'consent-link': ConsentLink,
           cartridge: Cartridge,
           'puce-icon': PuceIcon,
           highlight: Highlight,
           'button-link': ButtonLink,
           'know-more-link': KnowMoreLink,
+          small: SmallText,
         }).processSync(md).result
       }
     </MarkdownWrapperStyled>

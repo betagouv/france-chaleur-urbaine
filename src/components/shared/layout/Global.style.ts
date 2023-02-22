@@ -115,10 +115,6 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
       width: auto;
       max-width: none;
       color: var(--bf500);
-
-      @media (min-width: 992px) {
-        padding-left: 4rem;
-      }
     }
   }
 

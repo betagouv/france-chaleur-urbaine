@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
   gap: 32px;
 
   color: #000091;
@@ -26,7 +26,7 @@ export const Container = styled.div`
 `;
 
 export const Text = styled.div`
-  width: 500px;
+  width: 600px;
 `;
 
 export const Images = styled.div`

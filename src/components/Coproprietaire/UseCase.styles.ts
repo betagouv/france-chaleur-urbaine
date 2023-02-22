@@ -2,7 +2,7 @@ import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import styled from 'styled-components';
 
 export const Box = styled(Cartridge)`
-  @media (min-width: 1045px) {
+  @media (min-width: 1145px) {
     margin-top: -130px;
   }
   padding: 32px;
@@ -17,16 +17,18 @@ export const Box = styled(Cartridge)`
 `;
 
 export const CartridgeTitle = styled.div`
-  font-size: 28px;
+  font-size: 27px;
   font-weight: 800;
   line-height: 22px;
   margin-bottom: 4px;
 `;
 
 export const CartridgeContent = styled.div`
-  font-size: 24px;
+  font-size: 22px;
+  font-weight: bold;
 `;
 
 export const CartridgeContentValue = styled.span`
-  font-size: 28px;
+  font-size: 26px;
+  font-weight: bold;
 `;
