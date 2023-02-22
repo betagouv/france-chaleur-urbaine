@@ -48,8 +48,8 @@ const Simulator = ({
         <>
           <h4>Quelles aides pour se raccorder ?</h4>
           <p>
-            Le coup de pouce "Chauffage des bâtiments résidentiels collectifs et
-            tertiaires ” permet d’obtenir des aides financières conséquentes
+            Le coup de pouce « Chauffage des bâtiments résidentiels collectifs
+            et tertiaires » permet d’obtenir des aides financières conséquentes
             pour se raccorder.
           </p>
         </>

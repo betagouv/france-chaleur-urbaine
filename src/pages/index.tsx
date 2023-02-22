@@ -6,7 +6,7 @@ import MarkdownWrapper from '@components/MarkdownWrapper';
 import { MarkdownWrapperStyled } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { matomoEvent } from '@components/Markup';
 import ClassedNetwork from '@components/Ressources/ClassedNetwork';
-import { issues } from '@components/Ressources/config';
+import { issues, understandings } from '@components/Ressources/config';
 import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
@@ -24,6 +24,7 @@ const coproprietaireCards = {
   reseau: issues.reseau,
   atouts: issues.atouts,
   'energies-verte': issues['energies-verte'],
+  faisabilite: understandings.faisabilite,
 };
 
 export default function Home() {
@@ -68,8 +69,8 @@ Améliorez votre confort et baissez vos factures !
               </MarkdownWrapperStyled>
               <MarkdownWrapper
                 value={`
-::check-item[Réduisez vos factures de chauffage jusqu’a 40%]
-::check-item[Bénéficiez de subventions mises en place par l’Etat et d’une TVA à 5,5%]
+::check-item[Réduisez vos factures de chauffage jusqu’à 40%]
+::check-item[Bénéficiez de subventions mises en place par l’État et d’une TVA à 5,5%]
 ::check-item[Supprimez votre chaudière fioul ou gaz]
 ::check-item[Faites un geste pour la planète en réduisant vos émissions de CO2 jusqu’à 50%]
               `}
@@ -122,18 +123,18 @@ Améliorez votre confort et baissez vos factures !
               withPadding
               value={`
 :::puce-icon{icon="/icons/picto-warning.svg"}
-**Certains bâtiments ont désormais l'obligation de se raccorder aux réseaux de chaleur “classés”, qui répondent aux trois critères suivants :** 
+**Certains bâtiments ont désormais l'obligation de se raccorder aux réseaux de chaleur « classés », qui répondent aux trois critères suivants :** 
 ::thumb-item[Taux d’EnR&R de plus de 50%]
 ::thumb-item[Comptage de la chaleur livrée réalisé]
 ::thumb-item[Équilibre financier assuré]
 
-:button-link[Voir les réseaux classés sur la carto]{href="/carte" className="fr-btn--sm fr-btn--secondary fr-mt-2w"}
+:button-link[Voir les réseaux classés sur la carte]{href="/carte" className="fr-btn--sm fr-btn--secondary fr-mt-2w"}
 `}
             />
             <MarkdownWrapper
               withPadding
               value={`
-**Sont concernés, dans un certain périmètre autour de ces réseaux, appelé “périmètre de développement prioritaire” :**
+**Sont concernés, dans un certain périmètre autour de ces réseaux, appelé « périmètre de développement prioritaire » :**
 ::white-check-item[Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à 30kW*]
 ::white-check-item[Tout bâtiment renouvelant son installation de chauffage au-dessus de 30kW*]{className='fr-mb-2w'}
 
@@ -157,7 +158,7 @@ Améliorez votre confort et baissez vos factures !
 
 :small[Le chauffage représente 67 % de la consommation d’énergie des foyers français et près de 20 % des émissions de gaz à effet de serre nationales. L’augmentation des prix de l’énergie pèse sur le budget des ménages : 40 % des logements sont encore chauffés au gaz, dont les prix ont augmenté de 41 % en 10 ans.]
 
-:small[Pour réduire l’impact écologique d’une copropriété et ses factures d’énergie, la rénovation thermique est le premier réflexe à avoir. Le [remplacement d’un chauffage collectif au gaz ou fioul](ressources/avantages) par un raccordement à un réseau de chaleur permet également d’y contribuer. Alimentés majoritairement par des [énergies renouvelables et de récupération](/ressources/energies-verte) locales, les réseaux de chaleur émettent deux fois moins de gaz à effet de serre qu’un chauffage gaz ou fioul et offrent des prix stables et compétitifs.]
+:small[Pour réduire l’impact écologique d’une copropriété et ses factures d’énergie, la rénovation thermique est le premier réflexe à avoir. Le [remplacement d’un chauffage collectif au gaz ou fioul](ressources/avantages) par un raccordement à un réseau de chaleur permet également d’y contribuer. Alimentés majoritairement par des [énergies renouvelables et de récupération](/ressources/energies-verte#contenu) locales, les réseaux de chaleur émettent deux fois moins de gaz à effet de serre qu’un chauffage gaz ou fioul et offrent des prix stables et compétitifs.]
 `}
             />
           </Slice>

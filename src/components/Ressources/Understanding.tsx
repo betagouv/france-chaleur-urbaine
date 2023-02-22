@@ -13,7 +13,9 @@ const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {
     <UnderstandingCards>
       {Object.entries(cards || understandings).map(([key, understanding]) => (
         <CardContainer key={key}>
-          <UnderstandingCard asLink={<Link href={`/ressources/${key}`} />}>
+          <UnderstandingCard
+            asLink={<Link href={`/ressources/${key}#contenu`} />}
+          >
             <CardTitle>
               {cards && understanding.altTitle
                 ? understanding.altTitle

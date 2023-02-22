@@ -156,7 +156,7 @@ const SimulatorCO2: React.FC<{
         <>
           <h4>Moins de gaz à effet de serre !</h4>
           <p>
-            Estimez les émissions de CO2 évitées par le raccordement de votre
+            Estimez les émissions de CO2 évitées grâce au raccordement de votre
             copropriété à un réseau de chaleur*
           </p>
           <CartridgeSimulatorForm>{form}</CartridgeSimulatorForm>
