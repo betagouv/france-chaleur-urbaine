@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import db from 'src/db';
 import base from 'src/db/airtable';
 import { sendResetPasswordEmail } from 'src/services/email';
+import { Airtable } from 'src/types/enum/Airtable';
 import * as yup from 'yup';
 
 const resetPasswordSchema = yup.object().shape({
@@ -22,7 +23,7 @@ const reset = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const user = await db('users').where('email', email).first();
   if (!user) {
-    await base('FCU - Connexion espace gestionnaire').create([
+    await base(Airtable.CONNEXION).create([
       {
         fields: {
           Email: email,
