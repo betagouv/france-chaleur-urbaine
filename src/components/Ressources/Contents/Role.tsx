@@ -83,7 +83,7 @@ const contents = [
       <>
         Mise en place du{' '}
         <b>
-          <Link href="/ressources/aides">
+          <Link href="/ressources/aides#contenu">
             coup de pouce chauffage des bâtiments résidentiels collectifs et
             tertiaires
           </Link>

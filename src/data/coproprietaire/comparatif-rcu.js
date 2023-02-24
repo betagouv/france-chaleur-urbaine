@@ -13,7 +13,7 @@ const comparatifRcu = [
       className: 'rcu-comparatif-warning',
       body: `Le **chauffage urbain** est le mode de chauffage le moins cher sur le marché loin devant le gaz, l’électricité et le fioul dont les tarifs ne cessent d’augmenter.
       
-La figure ci-contre montre le coût global annuel chauffage + eau chaude sanitaire pour un logement collectif moyen (70 m2) construit entre 2005 et 2012 (consommation : 96 kWhu/m2/an) d’après l’enquête annuelle sur le prix de vente de la chaleur et du froid en 2020 réalisé par l’association Amorce.`,
+La figure ci-contre montre le coût global annuel chauffage + eau chaude sanitaire pour un logement collectif moyen (70 m2) construit entre 2005 et 2012 (consommation : 96 kWhu/m2/an) d’après l’enquête annuelle sur le prix de vente de la chaleur et du froid en 2020 réalisée par l’association Amorce.`,
     },
   },
 ];
