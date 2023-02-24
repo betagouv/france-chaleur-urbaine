@@ -5,11 +5,13 @@ import {
   getNbLogement,
   getNbLogementById,
 } from '../src/core/infrastructure/repository/addresseInformation';
+import { Airtable } from '../src/types/enum/Airtable';
+
 import base from '../src/db/airtable';
 
 const updateDemands = async () => {
   try {
-    const demands = await base('FCU - Utilisateurs').select().all();
+    const demands = await base(Airtable.UTILISATEURS).select().all();
     console.log(
       demands.filter(
         (demand) => demand.get('Latitude') && demand.get('Longitude')
@@ -63,7 +65,7 @@ const updateDemands = async () => {
         }
       }
       if (shouldUpdate) {
-        await base('FCU - Utilisateurs').update(demand.getId(), newValue);
+        await base(Airtable.UTILISATEURS).update(demand.getId(), newValue);
       }
     }
   } catch (e) {

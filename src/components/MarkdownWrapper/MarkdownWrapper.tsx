@@ -18,6 +18,7 @@ import {
   KnowMoreLink,
   MarkdownWrapperStyled,
   PuceIcon,
+  SmallText,
 } from './MarkdownWrapper.style';
 
 const RoutedLink = (props: any) => {
@@ -95,6 +96,7 @@ const MarkdownWrapper: React.FC<{
           highlight: Highlight,
           'button-link': ButtonLink,
           'know-more-link': KnowMoreLink,
+          small: SmallText,
         }).processSync(md).result
       }
     </MarkdownWrapperStyled>

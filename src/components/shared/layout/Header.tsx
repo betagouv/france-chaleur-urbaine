@@ -20,23 +20,18 @@ import LayoutContext from './LayoutContext';
 import { menu } from './MainLayout.data';
 import { FullScreenHeader, FullScreenItems } from './MainLayout.style';
 
-const fcuHeaderDesc = `Un service public pour faciliter et accélérer les raccordements aux réseaux de chaleur`;
-
 const ToolItems = ({ session }: { session: Session | null }) => (
   <Tool>
     {session ? (
       <ToolItemGroup>
-        <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
-          Se déconnecter
-        </ToolItem>
         <ToolItem
           asLink={
-            <Link href="/gestionnaire">
-              <a className="fr-link">Espace gestionnaire</a>
+            <Link href="/qui-sommes-nous">
+              <a className="fr-link">Qui sommes-nous ?</a>
             </Link>
           }
         >
-          Espace gestionnaire
+          Qui sommes-nous ?
         </ToolItem>
         {session.user.role === USER_ROLE.ADMIN ? (
           <ToolItem
@@ -51,9 +46,30 @@ const ToolItems = ({ session }: { session: Session | null }) => (
         ) : (
           <></>
         )}
+        <ToolItem
+          asLink={
+            <Link href="/gestionnaire">
+              <a className="fr-link">Espace gestionnaire</a>
+            </Link>
+          }
+        >
+          Espace gestionnaire
+        </ToolItem>
+        <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
+          Se déconnecter
+        </ToolItem>
       </ToolItemGroup>
     ) : (
       <ToolItemGroup>
+        <ToolItem
+          asLink={
+            <Link href="/qui-sommes-nous">
+              <a className="fr-link">Qui sommes-nous ?</a>
+            </Link>
+          }
+        >
+          Qui sommes-nous ?
+        </ToolItem>
         <ToolItem
           asLink={
             <Link href="/connexion">
@@ -99,7 +115,7 @@ const Header = ({
                   France Chaleur Urbaine
                 </a>
               }
-              description={fcuHeaderDesc}
+              description="Faciliter les raccordements aux réseaux de chaleur"
               asLink={<Link href={indexLink} title="Revenir à l'accueil" />}
             />
           )}

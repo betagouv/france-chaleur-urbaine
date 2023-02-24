@@ -1,0 +1,23 @@
+{
+  "date": "1er janvier 2023",
+  "data": [
+    {
+      "value": "> 413",
+      "description": "Réseaux répertoriés sur la cartographie"
+    },
+    {
+      "value": "> 848",
+      "description": "Demandes de contacts"
+    },
+    {
+      "value": "> 10 000",
+      "description": "Nombre de logements concernés par des raccordements à l’étude"
+    },
+    {
+      "value": "~ 15 000",
+      "description": "Tonnes de CO2 potentiellement économisées par an",
+      "type": "orange-circle"
+    }
+  ],
+  "note": "Par raccordements à l’étude, on désigne ceux pour lesquels une étude de faisabilité technico-économique est en cours au niveau du gestionnaire du réseau, ou a été transmise à la copropriété ou au bâtiment tertiaire. En copropriété, la proposition du gestionnaire de réseau devra ensuite être votée en AG avant que les travaux ne puissent démarrer."
+}

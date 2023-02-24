@@ -9,6 +9,7 @@ import {
 import { updateAirtable } from '@helpers/airtable';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { AddressDataType } from 'src/types/AddressData';
+import { Airtable } from 'src/types/enum/Airtable';
 import styled from 'styled-components';
 import { ContactFormEligibilityResult } from './components';
 
@@ -53,7 +54,7 @@ const EligibilityFormMessageConfirmation = ({
         {
           sondage: sondage.includes('Autre') ? [...sondage, other] : sondage,
         },
-        'FCU - Utilisateurs'
+        Airtable.UTILISATEURS
       );
       setSondageAnswered(true);
     }

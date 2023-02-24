@@ -1,5 +1,6 @@
 import db from 'src/db';
 import base from 'src/db/airtable';
+import { Airtable } from 'src/types/enum/Airtable';
 import { Demand } from 'src/types/Summary/Demand';
 import { User } from 'src/types/User';
 import {
@@ -60,7 +61,7 @@ const newDemands = async (users: User[]) => {
       if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION !== 'true') {
         await Promise.all(
           groupedDemands[gestionnaire].map((demand) =>
-            base('FCU - Utilisateurs').update(demand.id, {
+            base(Airtable.UTILISATEURS).update(demand.id, {
               'Notification envoyé': new Date().toDateString(),
             })
           )

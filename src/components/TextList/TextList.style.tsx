@@ -6,6 +6,7 @@ export const Cards = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 32px;
+  margin-bottom: 16px;
 `;
 
 export const Card = styled.div<{ type?: string }>`
@@ -14,12 +15,12 @@ export const Card = styled.div<{ type?: string }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   overflow: visible;
   flex: 1;
   ${({ type }) =>
     type === 'orange-circle' &&
     css`
-      top: -50px;
       padding: 16px;
       position: relative;
       justify-content: center;

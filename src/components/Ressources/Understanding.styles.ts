@@ -11,13 +11,17 @@ export const UnderstandingCards = styled.div`
 
 export const UnderstandingCard = styled(Card)`
   width: 270px;
-  height: initial !important;
   p {
     color: black !important;
   }
 `;
 
+export const CardContainer = styled.div`
+  position: relative;
+`;
+
 export const BottomLink = styled.div`
+  color: black;
   position: absolute;
   bottom: 12px;
   right: 55px;

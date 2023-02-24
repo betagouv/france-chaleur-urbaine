@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
+import { Airtable } from 'src/types/enum/Airtable';
 
 const creationCallBack =
   (res: NextApiResponse<any>) => (err: any, records: any) => {
@@ -30,8 +31,8 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   }
 
   switch (type) {
-    case 'FCU - Utilisateurs': {
-      base('FCU - Utilisateurs').update(
+    case Airtable.UTILISATEURS: {
+      base(Airtable.UTILISATEURS).update(
         id as string,
         { Sondage: values.sondage },
         { typecast: true },
