@@ -46,13 +46,19 @@ export const getAllStaledDemandsSince = async (
   );
 };
 
-export const getGestionnaires = (demand: Demand): string[] => {
+export const getGestionnaires = (demand: Demand, network: string): string[] => {
   let city = demand.Ville;
   if (!city) {
     const address = demand.Adresse.split(' ');
     city = address[address.length - 1];
   }
-  return [city].concat(gestionnaires[city] || []);
+  const config = gestionnaires[city];
+  if (config) {
+    if (!config.network || config.network === network) {
+      return [city].concat(config.gestionnaires);
+    }
+  }
+  return [city];
 };
 
 export const getDemands = async (user: User): Promise<Demand[]> => {

@@ -45,13 +45,16 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
           creationCallBack(res)(error, records);
 
           if (!error && records && records[0]) {
-            const gestionnaires = getGestionnaires(values);
             const [conso, nbLogement, network] = await Promise.all([
               getConso(values.Latitude, values.Longitude),
               getNbLogement(values.Latitude, values.Longitude),
               closestNetwork(values.Latitude, values.Longitude),
             ]);
 
+            const gestionnaires = getGestionnaires(
+              values,
+              network ? network['Identifiant reseau'] : ''
+            );
             await base('FCU - Utilisateurs').update(
               records[0].getId(),
               {
