@@ -8,6 +8,7 @@ import markupData, {
 import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
 import { useCallback, useRef, useState } from 'react';
 import { AddressDataType } from 'src/types/AddressData';
+import { Airtable } from 'src/types/enum/Airtable';
 
 const callMarkup__handleOnFetchAddress = (
   address: string,
@@ -141,7 +142,7 @@ const useContactFormFCU = () => {
       );
       const response = await submitToAirtable(
         formatDataToAirtable(data),
-        'FCU - Utilisateurs'
+        Airtable.UTILISATEURS
       );
       const responseData = await response.json();
       const scrollTimer = timeoutScroller(500);
