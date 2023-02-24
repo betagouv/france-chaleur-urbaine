@@ -175,7 +175,7 @@ export const growths: Record<string, Document> = {
   etat: {
     title: 'L’État investit dans les réseaux de chaleur',
     altTitle:
-      "Par quels dispositifs financiers l'Etat soutient-il les réseaux de chaleur ?",
+      "Par quels dispositifs financiers l'État soutient-il les réseaux de chaleur ?",
     description:
       'Plusieurs dispositifs financiers sont mis en place par l’État pour accompagner le développement des réseaux de chaleur.',
     content: <State />,

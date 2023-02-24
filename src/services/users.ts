@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { Airtable } from 'src/types/enum/Airtable';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import db from '../db';
 import base from '../db/airtable';
@@ -6,7 +7,7 @@ import { sendInscriptionEmail } from './email';
 
 export const updateUsers = async () => {
   const newEmails: string[] = [];
-  const demands = await base('FCU - Utilisateurs').select().all();
+  const demands = await base(Airtable.UTILISATEURS).select().all();
   const managers = demands
     .flatMap((demand) => demand.get('Gestionnaires') as string[])
     .filter(

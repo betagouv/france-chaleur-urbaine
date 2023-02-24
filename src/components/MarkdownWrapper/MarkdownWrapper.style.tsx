@@ -273,3 +273,9 @@ export const KnowMoreLink = styled.a.attrs(({ href }) => ({
     content: unset;
   }
 `;
+
+export const SmallText = styled.p`
+  font-size: 14px !important;
+  line-height: 20px !important;
+  margin-bottom: 8px;
+`;

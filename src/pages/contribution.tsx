@@ -6,6 +6,7 @@ import { submitToAirtable } from '@helpers/airtable';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ReactNode, useState } from 'react';
+import { Airtable } from 'src/types/enum/Airtable';
 
 type ResultType = {
   type: 'success' | 'error';
@@ -39,7 +40,7 @@ function Contribution() {
 
   const submit = async (data: any) => {
     try {
-      await submitToAirtable(data, 'FCU - Contribution');
+      await submitToAirtable(data, Airtable.CONTRIBUTION);
       if (data.Souhait === 'Ajout de données') {
         router.push(
           'https://e.pcloud.com/#page=puplink&code=XjWZ2YJ44fMhie47yc9zWyMA35OElcQ7'

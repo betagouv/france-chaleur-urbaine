@@ -2,6 +2,7 @@ import { Alert, Button } from '@dataesr/react-dsfr';
 import { submitToAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
+import { Airtable } from 'src/types/enum/Airtable';
 import { Container, Email } from './Newsletter.styles';
 
 const Newsletter = () => {
@@ -11,7 +12,7 @@ const Newsletter = () => {
   const addToNewsletter = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    submitToAirtable({ Email: email }, 'FCU - Newsletter').then(() =>
+    submitToAirtable({ Email: email }, Airtable.NEWSLETTER).then(() =>
       setSent(true)
     );
   };
