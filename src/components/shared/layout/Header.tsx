@@ -17,7 +17,7 @@ import { Fragment, useContext } from 'react';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import LayoutContext from './LayoutContext';
 import { menu } from './MainLayout.data';
-import { FullScreenHeader, FullScreenItems } from './MainLayout.style';
+import { FullScreenHeader } from './MainLayout.style';
 
 const ToolItems = ({ session }: { session: Session | null }) => (
   <Tool>
@@ -153,11 +153,6 @@ const Header = ({
             }
           />
         ))}
-        {fullscreen && (
-          <FullScreenItems>
-            <ToolItems session={session} />
-          </FullScreenItems>
-        )}
       </HeaderNav>
     </HeaderDS>
   );
