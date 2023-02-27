@@ -25,12 +25,6 @@ export const TextContainer = styled.div`
   > h2 {
     color: #000074;
   }
-  p,
-  em,
-  strong {
-    font-size: 1.25rem;
-    line-height: 2rem;
-  }
   em {
     color: #4550e5;
     font-style: normal;

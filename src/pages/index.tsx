@@ -77,7 +77,7 @@ Améliorez votre confort et baissez vos factures !
               />
             </div>
             <div className="fcuCoproGuide">
-              <img src="/img/copro_guide.jpg" alt="Guide de raccordement" />
+              <img src="/img/copro_guide.png" alt="Guide de raccordement" />
               <div>
                 <Button
                   onClick={() => {
