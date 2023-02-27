@@ -3,8 +3,10 @@ import Actors from './Contents/Actors';
 import Advantages from './Contents/Advantages';
 import Bill from './Contents/Bill';
 import Feasability from './Contents/Feasability';
+import Fundings from './Contents/Fundings';
 import GreenEnergies from './Contents/GreenEnergies';
 import Helps from './Contents/Helps';
+import History from './Contents/History';
 import Livraisons from './Contents/Livraisons';
 import Network from './Contents/Network';
 import Priority from './Contents/Priority';
@@ -71,10 +73,17 @@ export const issues: Record<string, Document> = {
     ),
     content: <Livraisons />,
   },
+  histoire: {
+    title:
+      'Quand et comment le chauffage urbain s’est-il développé en France ?',
+    description:
+      'Les premiers réseaux de chaleur français ont vu le jour au début du 20ème siècle, où ils apparaissent  comme un moyen de lutter contre les nuisances du chauffage au charbon et au bois individuel (approvisionnement, pollution, incendies...).',
+    content: <History />,
+  },
   role: {
     title: 'Un rôle clé dans la transition énergétique',
     altTitle:
-      'Quel est le rôle du chauffage urbain dans la transition énergétique ?',
+      'Quel est le rôle du chauffage urbain dans la transition énergétique ?',
     description: (
       <>
         Les bâtiments (résidentiels et tertiaires) sont responsables de près de
@@ -109,16 +118,25 @@ export const understandings: Record<string, Document> = {
     content: <Advantages />,
   },
   aides: {
-    title: 'Des aides financières conséquentes pour se raccorder',
+    title:
+      'Le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires : une aide financière conséquente pour se raccorder',
     altTitle: 'Quelles aides financières pour se raccorder ?',
     description: (
       <>
         Depuis le 1er septembre 2022, le coup de pouce{' '}
         <b>« Chauffage des bâtiments résidentiels collectifs et tertiaires »</b>{' '}
-        permet d’obtenir des aides financières conséquentes pour se raccorder.
+        permet de réduire significativement le coût du raccordement à un réseau
+        de chaleur.
       </>
     ),
     content: <Helps />,
+  },
+  financement: {
+    title:
+      'Financer le raccordement de sa copropriété dans le cadre d’une rénovation globale',
+    description:
+      'Lorsque le raccordement au réseau de chaleur s’intègre dans des travaux de rénovation globale, des aides complémentaires au "Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires" sont mobilisables.',
+    content: <Fundings />,
   },
   facture: {
     title: 'Comprendre la facture de chauffage de ma copropriété',
@@ -158,7 +176,7 @@ export const growths: Record<string, Document> = {
   etat: {
     title: 'L’État investit dans les réseaux de chaleur',
     altTitle:
-      "Par quels dispositifs financiers l'Etat soutient-il les réseaux de chaleur ?",
+      "Par quels dispositifs financiers l'État soutient-il les réseaux de chaleur ?",
     description:
       'Plusieurs dispositifs financiers sont mis en place par l’État pour accompagner le développement des réseaux de chaleur.',
     content: <State />,

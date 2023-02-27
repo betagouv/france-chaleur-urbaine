@@ -60,7 +60,9 @@ const Helps = () => {
         {/* id is put here because of the sticky header...*/}
         <b id="simulateur">
           Le bénéficiaire doit donc se rapprocher de chaque signataire de la
-          charte proposant l’offre pour connaître le montant des primes.
+          charte proposant l’offre pour connaître le montant des primes. Les
+          montants pouvant varier significativement d'un signataire à l'autre,
+          il est important de comparer les offres proposées.
         </b>
       </Highlight>
       <Source>

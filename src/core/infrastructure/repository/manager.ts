@@ -1,14 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { User } from 'next-auth';
 import base from 'src/db/airtable';
+import { Airtable } from 'src/types/enum/Airtable';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import { Demand } from 'src/types/Summary/Demand';
 import { gestionnaires } from './gestionnaires.config';
 
-const tableNameFcuDemands = 'FCU - Utilisateurs';
-
 export const getAllDemands = async (): Promise<Demand[]> => {
-  const records = await base(tableNameFcuDemands)
+  const records = await base(Airtable.UTILISATEURS)
     .select({ sort: [{ field: 'Date demandes', direction: 'desc' }] })
     .all();
   return records.map(
@@ -17,7 +16,7 @@ export const getAllDemands = async (): Promise<Demand[]> => {
 };
 
 export const getAllNewDemands = async (): Promise<Demand[]> => {
-  const records = await base(tableNameFcuDemands)
+  const records = await base(Airtable.UTILISATEURS)
     .select({
       filterByFormula: `AND(
         {Gestionnaires validés} = TRUE(),
@@ -33,7 +32,7 @@ export const getAllNewDemands = async (): Promise<Demand[]> => {
 export const getAllStaledDemandsSince = async (
   dateDiff: number
 ): Promise<Demand[]> => {
-  const records = await base(tableNameFcuDemands)
+  const records = await base(Airtable.UTILISATEURS)
     .select({
       filterByFormula: `AND(
         IS_BEFORE({Notification envoyé}, DATEADD(TODAY(), ${dateDiff}, "days")),
@@ -46,13 +45,19 @@ export const getAllStaledDemandsSince = async (
   );
 };
 
-export const getGestionnaires = (demand: Demand): string[] => {
+export const getGestionnaires = (demand: Demand, network: string): string[] => {
   let city = demand.Ville;
   if (!city) {
     const address = demand.Adresse.split(' ');
     city = address[address.length - 1];
   }
-  return [city].concat(gestionnaires[city] || []);
+  const config = gestionnaires[city];
+  if (config) {
+    if (!config.network || config.network === network) {
+      return [city].concat(config.gestionnaires);
+    }
+  }
+  return [city];
 };
 
 export const getDemands = async (user: User): Promise<Demand[]> => {
@@ -61,7 +66,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
   }
 
   const isDemoUser = user.gestionnaires.includes('DEMO');
-  const records = await base(tableNameFcuDemands)
+  const records = await base(Airtable.UTILISATEURS)
     .select({
       sort: [{ field: 'Date demandes', direction: 'desc' }],
     })
@@ -102,7 +107,7 @@ export const getDemand = async (
   user: User,
   demandId: string
 ): Promise<Demand | null> => {
-  const record = await base(tableNameFcuDemands).find(demandId);
+  const record = await base(Airtable.UTILISATEURS).find(demandId);
   const gestionnaires = record.get('Gestionnaires') as string[];
   if (
     user &&
@@ -126,7 +131,7 @@ export const updateDemand = async (
     return null;
   }
 
-  const record = await base(tableNameFcuDemands)
+  const record = await base(Airtable.UTILISATEURS)
     .update([{ id: demandId, fields: update }])
     .then((records) => records[0]);
   return { id: record.id, ...record.fields } as Demand;

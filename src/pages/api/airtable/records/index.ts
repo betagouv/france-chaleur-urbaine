@@ -6,6 +6,7 @@ import {
 import { getGestionnaires } from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
+import { Airtable } from 'src/types/enum/Airtable';
 import { v4 as uuidv4 } from 'uuid';
 
 const creationCallBack =
@@ -37,22 +38,25 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   }
 
   switch (type) {
-    case 'FCU - Utilisateurs': {
-      base('FCU - Utilisateurs').create(
+    case Airtable.UTILISATEURS: {
+      base(Airtable.UTILISATEURS).create(
         [{ fields: values }],
         { typecast: true },
         async (error, records) => {
           creationCallBack(res)(error, records);
 
           if (!error && records && records[0]) {
-            const gestionnaires = getGestionnaires(values);
             const [conso, nbLogement, network] = await Promise.all([
               getConso(values.Latitude, values.Longitude),
               getNbLogement(values.Latitude, values.Longitude),
               closestNetwork(values.Latitude, values.Longitude),
             ]);
 
-            await base('FCU - Utilisateurs').update(
+            const gestionnaires = getGestionnaires(
+              values,
+              network ? network['Identifiant reseau'] : ''
+            );
+            await base(Airtable.UTILISATEURS).update(
               records[0].getId(),
               {
                 Gestionnaires: gestionnaires,
@@ -71,20 +75,20 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
       );
       break;
     }
-    case 'FCU - Contribution':
-      base('FCU - Contribution').create(
+    case Airtable.CONTRIBUTION:
+      base(Airtable.CONTRIBUTION).create(
         [{ fields: values }],
         creationCallBack(res)
       );
       break;
-    case 'FCU - Newsletter':
-      base('FCU - Newsletter').create(
+    case Airtable.NEWSLETTER:
+      base(Airtable.NEWSLETTER).create(
         [{ fields: values }],
         creationCallBack(res)
       );
       break;
-    case 'FCU - Indicateurs':
-      base('FCU - Indicateurs').create(
+    case Airtable.CONTACT:
+      base(Airtable.CONTACT).create(
         [{ fields: { ...values, Date: new Date() } }],
         creationCallBack(res)
       );

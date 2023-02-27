@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import { Airtable } from 'src/types/enum/Airtable';
 
 type BasicTileInfo = {
   table: string;
@@ -71,7 +72,7 @@ export const preTable: (region: string) => Record<string, string> = (
 export const tilesInfo: Record<string, TileInfo> = {
   demands: {
     source: 'airtable',
-    table: 'FCU - Utilisateurs',
+    table: Airtable.UTILISATEURS,
     properties: [
       'Mode de chauffage',
       'Adresse',
