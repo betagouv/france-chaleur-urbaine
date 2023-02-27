@@ -5,7 +5,6 @@ import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { MarkdownWrapperStyled } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { matomoEvent } from '@components/Markup';
-import ClassedNetwork from '@components/Ressources/ClassedNetwork';
 import { issues, understandings } from '@components/Ressources/config';
 import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
@@ -141,7 +140,6 @@ Améliorez votre confort et baissez vos factures !
 :small[* Ce seuil de puissance peut être relevé par la collectivité]
 `}
             />
-            <ClassedNetwork />
           </Slice>
           <Slice theme="grey" padding={4}>
             <SliceForm />
