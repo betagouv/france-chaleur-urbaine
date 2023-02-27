@@ -1,3 +1,4 @@
+import { Highlight } from '@dataesr/react-dsfr';
 import { useRef } from 'react';
 import { Description } from '../RessourceContent.styles';
 import { List, Source, Subtitle } from './Contents.styles';
@@ -18,7 +19,7 @@ const Fundings = () => {
               maPrimeRenovCoproRef.current.scrollIntoView()
             }
           >
-            MaPrimeRénov’Copropriétés
+            <u>MaPrimeRénov’Copropriétés</u>
           </li>
           <li
             onClick={() =>
@@ -26,22 +27,24 @@ const Fundings = () => {
               maPrimeRenovSereRef.current.scrollIntoView()
             }
           >
-            MaPrimeRénov’Sérénité
+            <u>MaPrimeRénov’Sérénité</u>
           </li>
           <li
             onClick={() =>
               coupDePouceRef.current && coupDePouceRef.current.scrollIntoView()
             }
           >
-            Le coup de pouce "rénovation performante de bâtiment résidentiel
-            collectif"
+            <u>
+              Le coup de pouce "rénovation performante de bâtiment résidentiel
+              collectif"
+            </u>
           </li>
           <li
             onClick={() =>
               ecoPretIndiRef.current && ecoPretIndiRef.current.scrollIntoView()
             }
           >
-            L’Éco-prêt à taux zéro "individuel"
+            <u>L’Éco-prêt à taux zéro "individuel"</u>
           </li>
           <li
             onClick={() =>
@@ -49,7 +52,7 @@ const Fundings = () => {
               ecoPretCoproRef.current.scrollIntoView()
             }
           >
-            L’Éco-prêt à taux zéro "copropriétés"
+            <u>L’Éco-prêt à taux zéro "copropriétés"</u>
           </li>
         </ul>
       </Description>
@@ -58,7 +61,7 @@ const Fundings = () => {
         MaPrimeRénov’Copropriétés peut être versée aux syndics des copropriétés
         pour les travaux effectués sur les parties communes, lorsque le
         raccordement s’inscrit dans des travaux de rénovation globale, avec un
-        gain énergétique supérieur à 35 %,
+        gain énergétique supérieur à 35 %.
       </b>
       <br />
       <br />
@@ -76,7 +79,6 @@ const Fundings = () => {
         </li>
         <li>Copropriété immatriculée au registre national des copropriétés.</li>
       </List>
-      <br />
       <br />
       <b>Quel est le montant de l’aide ?</b>
       <br />
@@ -138,7 +140,6 @@ const Fundings = () => {
         </li>
       </List>
       <br />
-      <br />
       <b>Quel est le montant de l’aide ?</b>
       <br />
       <br />
@@ -152,7 +153,6 @@ const Fundings = () => {
           taxes), avec une prime versé de 12 250 € maximum.
         </li>
       </List>
-      <br />
       <br />
       Pour en savoir plus :{' '}
       <a
@@ -181,14 +181,14 @@ const Fundings = () => {
       </b>
       <br />
       <br />
-      <b>
-        Le raccordement aux réseaux de chaleur alimentés majoritairement par des
-        énergies renouvelables ou de récupération est alors obligatoire lorsque
-        cette rénovation globale inclut le changement du mode de chauffage du
-        bâtiment.
-      </b>
-      <br />
-      <br />
+      <Highlight>
+        <b>
+          Le raccordement aux réseaux de chaleur alimentés majoritairement par
+          des énergies renouvelables ou de récupération est alors obligatoire
+          lorsque cette rénovation globale inclut le changement du mode de
+          chauffage du bâtiment.
+        </b>
+      </Highlight>
       Seule une dérogation justifiant l'impossibilité technique ou économique du
       raccordement délivrée par le gestionnaire du réseau de chaleur permet de
       bénéficier de ce coup de pouce en installant un mode de chauffage
@@ -218,7 +218,6 @@ const Fundings = () => {
           être inscrites sur le registre d'immatriculation des copropriétés
         </li>
       </List>
-      <br />
       <br />
       <b>Quel est le montant de la prime ?</b>
       <br />
@@ -266,9 +265,9 @@ const Fundings = () => {
       toiture terrasse et les façades, remplacer les menuiseries, changer le
       système de ventilation, installer des robinets thermostatiques et
       remplacer les chaudières fioul par un raccordement à un réseau de chaleur
-      efficace. Avant les travaux, la copropriété consomme 400 kWh/m² an en
-      énergie finale. Après les travaux, la copropriété consomme 220 kWh/m² an
-      en énergie finale. Pour un coût total de travaux de 510 000 €, une
+      efficace. Avant les travaux, la copropriété consomme 400 kWh/m² par an en
+      énergie finale. Après les travaux, la copropriété consomme 220 kWh/m² par
+      an en énergie finale. Pour un coût total de travaux de 510 000 €, une
       copropriété peut toucher une prime de 189 000 €, soit 6 300 € d'aide par
       logement.
       <br />
@@ -324,7 +323,6 @@ const Fundings = () => {
           Reconnue garant de l'environnement (RGE).
         </li>
       </List>
-      <br />
       <br />
       <b>Quelles banques proposent ce prêt ?</b>
       <br />
@@ -383,7 +381,6 @@ const Fundings = () => {
         </li>
       </List>
       <br />
-      <br />
       <b>Quels types de travaux sont éligibles ?</b>
       <br />
       <br />
@@ -406,7 +403,6 @@ const Fundings = () => {
         </li>
       </List>
       <br />
-      <br />
       <b>Quelles banques distribuent l'éco-PTZ copropriétés ?</b>
       <br />
       <br />
@@ -427,18 +423,19 @@ const Fundings = () => {
       <br />
       <br />
       <br />
-      <b>
-        Pour aller plus loin, contactez l’
-        <a
-          href="https://france-renov.gouv.fr/espaces-conseil-fr"
-          target="_blank"
-          rel="noreferrer"
-        >
-          espace France Rénov, le plus proche de chez vous
-        </a>{' '}
-        !
-      </b>
-      <br />
+      <Highlight>
+        <b>
+          Pour aller plus loin, contactez l’
+          <a
+            href="https://france-renov.gouv.fr/espaces-conseil-fr"
+            target="_blank"
+            rel="noreferrer"
+          >
+            espace France Rénov, le plus proche de chez vous
+          </a>{' '}
+          !
+        </b>
+      </Highlight>
       <br />
       <Source>
         Voir aussi le récapitulatif des aides 2023 :{' '}
