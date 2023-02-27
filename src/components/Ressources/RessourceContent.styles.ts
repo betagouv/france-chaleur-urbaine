@@ -17,4 +17,7 @@ export const Title = styled.h1`
 export const Description = styled.div`
   color: #000074;
   margin: 32px 0;
+  li {
+    cursor: pointer;
+  }
 `;

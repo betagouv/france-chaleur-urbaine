@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 export const Subtitle = styled.h2`
+  scroll-margin: 100px;
   color: #4550e5;
   font-weight: 600;
   font-size: 28px;
