@@ -47,13 +47,27 @@ const polygonSummary = async (
 };
 
 const lineSummary = async (
-  coordinates: number[][],
+  coordinates: number[][][],
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
   if (req.method === 'GET') {
-    const size = turfLength(lineString(coordinates));
-    const data = await getLineSummary(coordinates);
+    const size = coordinates.reduce(
+      (acc, value) => acc + turfLength(lineString(value)),
+      0
+    );
+    const summaries = await Promise.all(
+      coordinates.map((coordinate) => getLineSummary(coordinate))
+    );
+    const data = summaries.reduce(
+      (acc, value) => {
+        return {
+          '10': acc['10'].concat(value['10']),
+          '50': acc['50'].concat(value['50']),
+        };
+      },
+      { '10': [], '50': [] } as { '10': any[]; '50': any[] }
+    );
     return res.json({ size, data });
   }
 
@@ -64,7 +78,7 @@ const summary = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const coordinates = JSON.parse(
       decodeURIComponent((req.query as Record<string, string>).coordinates)
-    ) as number[][];
+    );
 
     const type = req.query.type as string;
 

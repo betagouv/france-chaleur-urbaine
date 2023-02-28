@@ -66,7 +66,7 @@ export class HeatNetworkService {
       .then((response) => response.data);
   }
 
-  async densite(line: number[][]): Promise<Densite> {
+  async densite(line: number[][][]): Promise<Densite> {
     try {
       return await this.httpClient.get<Densite>(
         `${
