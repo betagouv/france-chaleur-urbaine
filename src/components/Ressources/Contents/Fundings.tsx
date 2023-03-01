@@ -344,7 +344,7 @@ const Fundings = () => {
       <Subtitle ref={ecoPretCoproRef}>
         L’Éco-prêt à taux zéro « copropriétés »
       </Subtitle>
-      L’éco-prêt à taux zéro « copropriétés » (« éco-PTZ copropriétés ») est un
+      L’éco-prêt à taux zéro « copropriétés » (« éco-PTZ copropriétés ») est un{' '}
       <b>
         prêt collectif octroyé au syndicat des copropriétaires, pour le compte
         des copropriétaires qui souhaitent y participer.
