@@ -1,4 +1,4 @@
-import { Table } from '@dataesr/react-dsfr';
+import { Table, TextInput } from '@dataesr/react-dsfr';
 import { useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import { UserResponse } from 'src/types/UserResponse';
@@ -24,23 +24,38 @@ const Users = () => {
   const { adminService } = useServices();
 
   const [users, setUsers] = useState<UserResponse[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserResponse[]>([]);
+  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     adminService.getUsers().then(setUsers);
   }, [adminService]);
-  if (users.length === 0) {
-    return null;
-  }
+
+  useEffect(() => {
+    if (filter) {
+      setFilteredUsers(
+        users.filter((user) => user.email.includes(filter.toLowerCase()))
+      );
+    } else {
+      setFilteredUsers(users);
+    }
+  }, [users, filter]);
 
   return (
     <TableContainer>
       <Table
         caption="Connexion"
         columns={columns}
-        data={users}
+        data={filteredUsers}
         rowKey="email"
         pagination
         paginationPosition="center"
+      />
+      {filteredUsers.length === 0 && <p>Pas de résultat</p>}
+      <TextInput
+        placeholder="Email"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
       />
     </TableContainer>
   );
