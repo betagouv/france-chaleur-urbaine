@@ -3,9 +3,9 @@ import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
 import Link from 'next/link';
 import { MutableRefObject } from 'react';
 import { Subtitle } from './Contents.styles';
-import { Container, WithImage, WithVideo } from './Heating.styles';
+import { Container, WithImage, WithVideo } from './DistrictHeating.styles';
 
-const Heating = ({
+const DistrictHeating = ({
   chauffageUrbainRef,
   avantagesRef,
   chargeRef,
@@ -516,4 +516,4 @@ const Heating = ({
   );
 };
 
-export default Heating;
+export default DistrictHeating;

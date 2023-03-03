@@ -1,4 +1,4 @@
-import Heating from '@components/Ressources/Contents/Heating';
+import Heating from '@components/Ressources/Contents/DistrictHeating';
 import Header from '@components/Ressources/Header';
 import { StickyWrapper } from '@components/Ressources/Ressource.styles';
 import {
@@ -21,7 +21,7 @@ const ChauffageUrbain = () => {
     <>
       <Header
         title="Découvrez le chauffage urbain"
-        description="Changez pour un chauffage écologique à prix compétitif  déjà adopté par 6 millions de Français !"
+        description="Changez pour un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !"
       />
       <StickyForm />
       <StickyWrapper>
