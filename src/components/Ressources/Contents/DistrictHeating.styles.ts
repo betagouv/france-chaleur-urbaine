@@ -12,7 +12,9 @@ export const WithVideo = styled.div`
   gap: 32px;
   > div {
     width: calc(50% - 16px);
-    min-width: 450px;
+    @media (max-width: 992px) {
+      width: 100%;
+    }
   }
 
   video {
@@ -35,6 +37,5 @@ export const WithImage = styled.div`
   > div:first-child {
     flex-grow: 1;
     width: calc(50% - 16px);
-    min-width: 450px;
   }
 `;
