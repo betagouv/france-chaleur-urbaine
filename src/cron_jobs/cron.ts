@@ -9,6 +9,13 @@ new cron.CronJob({
 });
 
 new cron.CronJob({
+  cronTime: '05 10 * * 1', // le lundi à 10:05
+  onTick: () => launchJob('dailyRelanceMail'),
+  start: true,
+  timeZone: 'Europe/Paris',
+});
+
+new cron.CronJob({
   cronTime: '00 * * * *', // toutes les heures
   onTick: () => launchJob('updateUsers'),
   start: true,

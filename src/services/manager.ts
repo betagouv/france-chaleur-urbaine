@@ -3,11 +3,14 @@ import base from 'src/db/airtable';
 import { Airtable } from 'src/types/enum/Airtable';
 import { Demand } from 'src/types/Summary/Demand';
 import { User } from 'src/types/User';
+import { v4 as uuidv4 } from 'uuid';
 import {
   getAllNewDemands,
   getAllStaledDemandsSince,
+  getAllToRelanceDemands,
+  getToRelanceDemand,
 } from '../core/infrastructure/repository/manager';
-import { sendNewDemands, sendOldDemands } from './email';
+import { sendNewDemands, sendOldDemands, sendRelanceMail } from './email';
 
 const groupDemands = (demands: Demand[]): Record<string, Demand[]> => {
   const groupedDemands: Record<string, Demand[]> = {};
@@ -105,4 +108,28 @@ export const dailyManagerMail = async () => {
 
   await newDemands(users);
   await oldDemands(users);
+};
+
+export const updateRelanceAnswer = async (id: string, relanced: boolean) => {
+  const demand = await getToRelanceDemand(id);
+  if (demand) {
+    await base(Airtable.UTILISATEURS).update(demand.id, {
+      'Recontacté par le gestionnaire': relanced ? 'Oui' : 'Non',
+    });
+  }
+};
+
+export const dailyRelanceMail = async () => {
+  const demands = await getAllToRelanceDemands();
+  for (let i = 0; i < demands.length; i++) {
+    const demand = demands[i];
+    const relanced = demand['Relance envoyée'];
+    const uuid = uuidv4();
+    await base(Airtable.UTILISATEURS).update(demand.id, {
+      [relanced ? 'Seconde relance envoyée' : 'Relance envoyée']:
+        new Date().toDateString(),
+      'Relance ID': uuid,
+    });
+    await sendRelanceMail(demand, uuid);
+  }
 };
