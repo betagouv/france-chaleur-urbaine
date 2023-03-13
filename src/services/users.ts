@@ -24,7 +24,7 @@ export const updateUsers = async () => {
   const salt = await bcrypt.genSalt(10);
 
   let existingManager: string[] = [];
-  const emails = ['demo', 'paris'];
+  const emails = ['demo'];
   for (let i = 0; i < airtableUsers.length; i++) {
     const user = airtableUsers[i];
     const gestionnaires = user.get('Gestionnaires') as string[];
