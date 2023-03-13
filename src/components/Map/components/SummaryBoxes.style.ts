@@ -1,5 +1,6 @@
 import { Button } from '@dataesr/react-dsfr';
 import styled, { css } from 'styled-components';
+import { mapMediumMedia } from '../Map.style';
 
 export const Container = styled.div<{ customCursor?: boolean }>`
   ${({ customCursor }) =>
@@ -72,6 +73,23 @@ export const ZoneInfos = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+`;
+
+export const DrawButtons = styled.div`
+  display: flex;
+  gap: 32px;
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content !important;
+
+  .hideable {
+    display: block;
+    ${mapMediumMedia} {
+      display: none;
+    }
+  }
 `;
 
 export const DrawButton = styled(Button)`

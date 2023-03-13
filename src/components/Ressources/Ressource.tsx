@@ -49,7 +49,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
     <>
       <Header
         title="Découvrez les réseaux de chaleur"
-        description="Changez pour un chauffage écologique à prix compétitif  déjà adopté par 6 millions de Français !"
+        description="Changez pour un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !"
       />
       <div id="contenu" />
       <StickyForm />

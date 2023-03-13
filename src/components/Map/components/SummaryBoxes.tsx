@@ -16,6 +16,7 @@ import {
   CollapseZone,
   Container,
   DrawButton,
+  DrawButtons,
   Explanation,
   Export,
   InfoIcon,
@@ -57,7 +58,7 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
   const [drawing, setDrawing] = useState('');
   const [size, setSize] = useState<number>();
   const [bounds, setBounds] = useState<number[][]>();
-  const [lines, setLines] = useState<number[][]>();
+  const [lines, setLines] = useState<number[][][]>();
   const [summary, setSummary] = useState<Summary>();
   const [densite, setDensite] = useState<Densite>();
 
@@ -112,20 +113,28 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
           setBounds(geometry.coordinates[0]);
           setSize(turfArea(data) / 1000_000);
         } else if (data.features[0].geometry.type === 'LineString') {
-          const geometry = data.features[0].geometry as LineString;
-          setLines(geometry.coordinates);
+          setLines(
+            data.features.map((feature) => {
+              return (feature.geometry as LineString).coordinates;
+            })
+          );
         }
       });
 
       map.on('draw.update', () => {
         const data = draw.getAll();
         if (data.features[0].geometry.type === 'Polygon') {
+          matomoEvent(['Carto', 'Zone mise à jour']);
           const geometry = data.features[0].geometry as Polygon;
           setBounds(geometry.coordinates[0]);
           setSize(turfArea(data) / 1000_000);
         } else if (data.features[0].geometry.type === 'LineString') {
-          const geometry = data.features[0].geometry as LineString;
-          setLines(geometry.coordinates);
+          matomoEvent(['Carto', 'Tracé mis à jour']);
+          setLines(
+            data.features.map((feature) => {
+              return (feature.geometry as LineString).coordinates;
+            })
+          );
         }
       });
 
@@ -313,8 +322,10 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                       <span>
                         Pour calculer une distance et la densité thermique
                         linéaire associée, définissez un tracé en cliquant sur
-                        au moins deux points puis validez en cliquant sur
-                        entrée.
+                        deux points ou plus, puis validez en cliquant sur
+                        entrée. Vous pouvez alors ajouter des segments à votre
+                        tracé, ou en retirez. Vous pouvez aussi cliquer sur les
+                        points pour les déplacer.
                       </span>
                     </Explanation>
                   ) : (
@@ -376,8 +387,7 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                 </Tab>
               </Tabs>
               {((size && size > 5) ||
-                (tabIndex === 0 && (!bounds || summary)) ||
-                (tabIndex === 1 && (!lines || densite))) && (
+                (tabIndex === 0 && (!bounds || summary))) && (
                 <DrawButton
                   size="sm"
                   icon="ri-edit-2-line"
@@ -385,18 +395,84 @@ const SummaryBoxes = ({ map, draw }: { map: Map; draw: MapboxDraw }) => {
                     draw.deleteAll();
                     setBounds(undefined);
                     setLines(undefined);
-                    if (tabIndex === 0) {
-                      matomoEvent(['Carto', 'Définir une zone']);
-                      setDrawing('polygon');
-                      draw.changeMode('draw_polygon');
-                    } else {
+                    matomoEvent(['Carto', 'Définir une zone']);
+                    setDrawing('polygon');
+                    draw.changeMode('draw_polygon');
+                  }}
+                >
+                  Définir une zone
+                </DrawButton>
+              )}
+              {tabIndex === 1 && densite && (
+                <DrawButtons>
+                  <Button
+                    size="sm"
+                    icon="ri-edit-2-line"
+                    onClick={() => {
+                      draw.deleteAll();
+                      setBounds(undefined);
+                      setLines(undefined);
                       matomoEvent(['Carto', 'Définir un tracé']);
                       setDrawing('line');
                       draw.changeMode('draw_line_string');
-                    }
+                    }}
+                  >
+                    Définir un nouveau tracé
+                  </Button>
+                  <Button
+                    className="hideable"
+                    size="sm"
+                    icon="ri-add-line"
+                    onClick={() => {
+                      setDrawing('line');
+                      matomoEvent(['Carto', 'Ajouter un segment']);
+                      draw.changeMode('draw_line_string');
+                    }}
+                  >
+                    Ajouter un segment
+                  </Button>
+                  <Button
+                    className="hideable"
+                    size="sm"
+                    icon="ri-close-line"
+                    onClick={() => {
+                      const selected = draw.getSelectedIds();
+                      if (selected.length > 0) {
+                        matomoEvent(['Carto', 'Supprimer un segment']);
+                        const all = draw.getAll();
+                        draw.delete(selected);
+                        setLines(
+                          all.features
+                            .filter(
+                              (feature) =>
+                                !selected.includes(feature.id as string)
+                            )
+                            .map((feature) => {
+                              return (feature.geometry as LineString)
+                                .coordinates;
+                            })
+                        );
+                      }
+                    }}
+                  >
+                    Supprimer le segment
+                  </Button>
+                </DrawButtons>
+              )}
+              {tabIndex === 1 && !lines && (
+                <DrawButton
+                  size="sm"
+                  icon="ri-edit-2-line"
+                  onClick={() => {
+                    draw.deleteAll();
+                    setBounds(undefined);
+                    setLines(undefined);
+                    matomoEvent(['Carto', 'Définir un tracé']);
+                    setDrawing('line');
+                    draw.changeMode('draw_line_string');
                   }}
                 >
-                  {tabIndex === 0 ? 'Définir une zone' : 'Définir un tracé'}
+                  Définir un tracé
                 </DrawButton>
               )}
             </ZoneInfosWrapper>

@@ -46,18 +46,20 @@ const groupUsers = (
 };
 
 const newDemands = async (users: User[]) => {
+  const sent: string[] = [];
   const groupedUsers = groupUsers(users, (user) => user.receive_new_demands);
 
   const demands = await getAllNewDemands();
   const groupedDemands = groupDemands(demands);
 
-  let count = 0;
   for (const gestionnaire in groupedDemands) {
     const gestionnaireUsers = groupedUsers[gestionnaire] || [];
     for (let i = 0; i < gestionnaireUsers.length; i++) {
-      count++;
       const email = gestionnaireUsers[i];
-      await sendNewDemands(email, groupedDemands[gestionnaire].length);
+      if (!sent.includes(email)) {
+        await sendNewDemands(email, groupedDemands[gestionnaire].length);
+        sent.push(email);
+      }
       if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION !== 'true') {
         await Promise.all(
           groupedDemands[gestionnaire].map((demand) =>
@@ -70,25 +72,27 @@ const newDemands = async (users: User[]) => {
     }
   }
 
-  console.log(`${count} email(s) envoyé(s) pour les nouvelles demandes.`);
+  console.log(`${sent.length} email(s) envoyé(s) pour les nouvelles demandes.`);
 };
 
 const oldDemands = async (users: User[]) => {
+  const sent: string[] = [];
   const groupedUsers = groupUsers(users, (user) => user.receive_old_demands);
   const demands = await getAllStaledDemandsSince(-7);
   const groupedDemands = groupDemands(demands);
 
-  let count = 0;
   for (const gestionnaire in groupedDemands) {
     const gestionnaireUsers = groupedUsers[gestionnaire] || [];
     for (let i = 0; i < gestionnaireUsers.length; i++) {
-      count++;
       const email = gestionnaireUsers[i];
-      await sendOldDemands(email);
+      if (!sent.includes(email)) {
+        await sendOldDemands(email);
+        sent.push(email);
+      }
     }
   }
 
-  console.log(`${count} email(s) envoyé(s) pour les vieilles demandes.`);
+  console.log(`${sent.length} email(s) envoyé(s) pour les vieilles demandes.`);
 };
 
 export const dailyManagerMail = async () => {
