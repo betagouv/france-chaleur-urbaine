@@ -155,7 +155,7 @@ const DistrictHeating = ({
           </ul>
         </div>
         <Infographie
-          src="/img/FCU_Infographie_Avenir.jpg"
+          src="/img/FCU_Infographie_Avenir_small.jpg"
           alt="Une solution d'avenir"
         />
       </WithImage>
@@ -346,7 +346,7 @@ const DistrictHeating = ({
           justifiant les motifs.
         </div>
         <Infographie
-          src="/img/FCU_Infographie_Classement.jpg"
+          src="/img/FCU_Infographie_Classement_small.jpg"
           alt="Classement des réseaux de chaleur"
         />
       </WithImage>

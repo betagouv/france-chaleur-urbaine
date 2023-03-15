@@ -3,7 +3,10 @@ import {
   getConso,
   getNbLogement,
 } from '@core/infrastructure/repository/addresseInformation';
-import { getGestionnaires } from '@core/infrastructure/repository/manager';
+import {
+  getGestionnaires,
+  getToRelanceDemand,
+} from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
 import { Airtable } from 'src/types/enum/Airtable';
@@ -38,6 +41,15 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   }
 
   switch (type) {
+    case Airtable.RELANCE: {
+      const demand = await getToRelanceDemand(values.id);
+      if (demand) {
+        base(Airtable.UTILISATEURS).update(demand.id, {
+          'Commentaire relance': values.comment,
+        });
+      }
+      break;
+    }
     case Airtable.UTILISATEURS: {
       base(Airtable.UTILISATEURS).create(
         [{ fields: values }],

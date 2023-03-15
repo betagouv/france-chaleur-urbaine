@@ -29,6 +29,43 @@ export const getAllNewDemands = async (): Promise<Demand[]> => {
   );
 };
 
+export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
+  const records = await base(Airtable.UTILISATEURS)
+    .select({
+      filterByFormula: `OR(
+        AND(
+          IS_BEFORE({Date de la demande}, DATEADD(TODAY(), -1, "months")),
+          {Relance à activer} = TRUE(),
+          {Recontacté par le gestionnaire} = "",
+          {Relance envoyée} = ""
+        ),
+        AND(
+          IS_BEFORE({Date de la demande}, DATEADD(TODAY(), -45, "days")),
+          {Recontacté par le gestionnaire} = "",
+          {Relance à activer} = TRUE(),
+          {Relance envoyée} != "",
+          {Seconde relance envoyée} = ""
+        )
+      )`,
+    })
+    .all();
+  return records.map(
+    (record) => ({ id: record.id, ...record.fields } as Demand)
+  );
+};
+
+export const getToRelanceDemand = async (
+  id: string
+): Promise<Demand | undefined> => {
+  const records = await base(Airtable.UTILISATEURS)
+    .select({
+      filterByFormula: `{Relance ID} = "${id}"`,
+    })
+    .all();
+  return records.map(
+    (record) => ({ id: record.id, ...record.fields } as Demand)
+  )[0];
+};
 export const getAllStaledDemandsSince = async (
   dateDiff: number
 ): Promise<Demand[]> => {

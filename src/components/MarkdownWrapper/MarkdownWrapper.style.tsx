@@ -2,7 +2,7 @@ import markupData, { matomoEvent } from '@components/Markup';
 import styled, { css } from 'styled-components';
 
 export const isExternalLink = (href: string) =>
-  href && href.search(/(^http)|(^mailto)/) >= 0;
+  href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
 
 type MarkdownWrapperStyledProps = {
   className?: string;
