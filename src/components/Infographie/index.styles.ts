@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const ImageContainer = styled.a`
   position: relative;
+  display: block;
   text-decoration: none !important;
   background-image: none !important;
   line-height: 0;
