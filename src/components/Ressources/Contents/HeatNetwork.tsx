@@ -152,7 +152,7 @@ const HeatNetwork = ({
           </ul>
         </div>
         <Infographie
-          src="/img/FCU_Infographie_Enrr.jpg"
+          src="/img/FCU_Infographie_Enrr_small.jpg"
           alt="Les énergies renouvelables et de récupération"
         />
       </WithImage>
@@ -394,7 +394,7 @@ const HeatNetwork = ({
           </ul>
         </div>
         <Infographie
-          src="/img/FCU_Infographie_Avenir.jpg"
+          src="/img/FCU_Infographie_Avenir_small.jpg"
           alt="Une solution d'avenir"
         />
       </WithImage>
@@ -632,7 +632,7 @@ const HeatNetwork = ({
         </div>
         <Infographie
           height={294}
-          src="/img/FCU_Infographie_Classement.jpg"
+          src="/img/FCU_Infographie_Classement_small.jpg"
           alt="Classement des réseaux de chaleur"
         />
       </WithImage>
