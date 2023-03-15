@@ -11,7 +11,7 @@ const Infographie = ({
   height?: number;
 }) => {
   return (
-    <ImageContainer href={src} target="_blank">
+    <ImageContainer href={src.replace('_small', '')} target="_blank">
       <img width={216} height={height || 350} src={src} alt={alt} />
       <Glass>
         <Icon name="ri-search-eye-fill" size="2x" />
