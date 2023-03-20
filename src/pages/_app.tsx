@@ -34,6 +34,8 @@ const og = {
   domaine: 'france-chaleur-urbaine.beta.gouv.fr',
   url: 'https://france-chaleur-urbaine.beta.gouv.fr/',
   title: 'Accélérons les raccordements aux réseaux de chaleur.',
+  decretTertiaireDescription:
+    'Raccorder son bâtiment au réseau de chaleur, c’est jusqu’à 23 % de réduction de consommations d’énergie comptabilisée ! En application de l’arrêté du 13 avril 2022 relatif aux obligations d’actions de réduction des consommations d’énergie finale dans des bâtiments à usage tertiaire, un coefficient de 0,77 est appliqué aux calculs des consommations d’énergie des bâtiments raccordés aux réseaux de chaleur.',
   description:
     'Une solution de chauffage écologique et économique exploitant des énergies renouvelables et de récupération locales.',
   twitterCard: 'summary_large_image',
@@ -132,6 +134,7 @@ function MyApp({
     };
   }, [router]);
 
+  console.log(router);
   return (
     <>
       <GlobalStyle />
@@ -170,13 +173,27 @@ function MyApp({
           <title>
             Facilitez le raccordement à un chauffage économique et écologique
           </title>
-          <meta name="description" content={og.description} />
+          <meta
+            name="description"
+            content={
+              router.pathname === '/decret-tertiaire'
+                ? og.decretTertiaireDescription
+                : og.description
+            }
+          />
 
           {/* <!-- Facebook Meta Tags --> */}
           <meta property="og:url" content={og.url} />
           <meta property="og:type" content={og.type} />
           <meta property="og:title" content={og.title} />
-          <meta property="og:description" content={og.description} />
+          <meta
+            property="og:description"
+            content={
+              router.pathname === '/decret-tertiaire'
+                ? og.decretTertiaireDescription
+                : og.description
+            }
+          />
           <meta property="og:image" content={og.imagePreview} />
 
           {/* <!-- Twitter Meta Tags --> */}
