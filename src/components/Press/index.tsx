@@ -21,7 +21,7 @@ Alors que l’urgence climatique est sans précédent, les réseaux de chaleur p
 
 Pourtant, les réseaux de chaleur, ces **canalisations souterraines** qui servent à acheminer de la chaleur renouvelable ou de récupération depuis une unité de production locale (installation géothermique, incinérateur de déchets, chaufferie biomasse etc.) vers les bâtiments qui lui sont raccordés, souffrent historiquement d’un manque de visibilité, auprès du grand public en général et des copropriétaires en particulier. Et ce alors même qu’il existe aujourd’hui une obligation de raccordement pour certains bâtiments…
 
-Le service public **France Chaleur Urbaine, entièrement financé par l’État,** a pour mission de faire connaître le chauffage urbain et de faciliter raccordements. Il se place ainsi en tiers de confiance entre les copropriétaires et les gestionnaires des réseaux. Il permet à chacun de déterminer **en quelques clics si un raccordement est envisageable pour son immeuble** et le cas échéant **d’être mis en contact, gratuitement et sans engagement, avec le bon interlocuteur pour concrétiser le raccordement.** 
+Le service public **France Chaleur Urbaine, entièrement financé par l’État,** a pour mission de faire connaître le chauffage urbain et de faciliter les raccordements. Il se place ainsi en tiers de confiance entre les copropriétaires et les gestionnaires des réseaux. Il permet à chacun de déterminer **en quelques clics si un raccordement est envisageable pour son immeuble** et le cas échéant **d’être mis en contact, gratuitement et sans engagement, avec le bon interlocuteur pour concrétiser le raccordement.** 
 
 **A propos de France Chaleur Urbaine, retrouvez [notre dossier de presse ici](/documentation/dossier-presse.pdf)**
 

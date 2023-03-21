@@ -99,4 +99,5 @@ export default [
     title: 'Homeland',
     link: 'https://www.homeland.immo/',
   },
+  { image: './logo-Matera.png', title: 'Matera', link: 'https://matera.eu/fr' },
 ];

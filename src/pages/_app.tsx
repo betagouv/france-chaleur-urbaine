@@ -134,7 +134,6 @@ function MyApp({
     };
   }, [router]);
 
-  console.log(router);
   return (
     <>
       <GlobalStyle />

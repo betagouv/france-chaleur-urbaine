@@ -68,6 +68,12 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
               values,
               network ? network['Identifiant reseau'] : ''
             );
+
+            const toRelance =
+              network &&
+              network.distance < 200 &&
+              values['Type de chauffage'] === 'Collectif';
+
             await base(Airtable.UTILISATEURS).update(
               records[0].getId(),
               {
@@ -79,6 +85,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
                 'Identifiant réseau': network
                   ? network['Identifiant reseau']
                   : undefined,
+                'Relance à activer': toRelance,
               },
               { typecast: true }
             );
