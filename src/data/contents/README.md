@@ -1,5 +1,4 @@
 ---
-description: Yooo
 layout: editorial
 ---
 
