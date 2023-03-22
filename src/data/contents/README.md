@@ -1,5 +1,6 @@
 ---
 description: Yooo
+layout: editorial
 ---
 
 # Mon titre
