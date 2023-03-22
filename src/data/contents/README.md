@@ -1,9 +1,9 @@
-# Une obligation de raccordement pour certains bâtiments ?
+# Se chauffer à prix stables
 
-C'est le cas sur les réseaux de chaleur classés.
+💰 Un chauffage à prix stables ? C'est possible avec les réseaux de chaleur !
 
-❓ Mais de quoi parle-t-on exactement ? Quels sont les réseaux et bâtiments concernés ?
+📈 La crise énergétique influence les prix du gaz, de l'électricité et du fioul, qui ne cessent d'augmenter.
 
-🔎 Pour y voir plus clair en un coup d’œil, c'est ici ! 👇
+✅ Les réseaux de chaleur disposent de tarifs compétitifs et moins fluctuants que les énergies purement fossiles. Entre 2015 et 2021, le prix de la chaleur fournie par les réseaux n'a augmenté que de +5%, 24% de moins que celui du gaz !
 
-![](.gitbook/assets/FCU\_Infographie\_classement.jpg)
+<figure><img src=".gitbook/assets/comparaison_evo_prix.jpg" alt=""><figcaption></figcaption></figure>
