@@ -1,3 +1,4 @@
+import { Article } from 'src/types/Article';
 import readme from './README.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
@@ -6,7 +7,7 @@ const importFile = (file: string) => {
   return file.replace('(.gitbook/assets/', '(/contents/');
 };
 
-export const articles = [
+export const articles: Article[] = [
   {
     slug: 'une-obligation-de-raccordement-pour-certains-bâtiments',
     title: 'Une obligation de raccordement pour certains bâtiments ?',
@@ -29,5 +30,3 @@ export const articles = [
 
 export const getArticle = (slug: string) =>
   articles.find((article) => article.slug === slug);
-
-export const firstsArticles = articles.slice(0, 3);

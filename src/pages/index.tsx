@@ -1,3 +1,4 @@
+import LastArticles from '@components/Articles/LastArticles';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Partners from '@components/Partners/Partners';
@@ -198,6 +199,10 @@ maîtrise du tarif des énergies._`}
             <TextList data={dataNumberRcu} />
           </Slice>
           <Partners />
+          <Slice theme="grey" padding={8}>
+            <h2>Nos articles</h2>
+            <LastArticles />
+          </Slice>
           <SliceImg src="/img/home-footer-bg.jpg" />
         </div>
       </MainContainer>

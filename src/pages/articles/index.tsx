@@ -1,7 +1,7 @@
+import Article from '@components/Articles/Article';
 import MainContainer from '@components/shared/layout/MainContainer';
 import Slice from '@components/Slice';
 import { articles } from '@data/contents';
-import { Card, CardHeader, CardImage, CardTitle } from '@dataesr/react-dsfr';
 
 const Articles = () => {
   return (
@@ -9,17 +9,9 @@ const Articles = () => {
       <Slice padding={8}>
         <h1>Nos articles</h1>
         {articles.map((article) => (
-          <Card
-            key={article.title}
-            isHorizontal
-            href={`/articles/${article.slug}`}
-            className="fr-mt-4w"
-          >
-            <CardHeader>
-              <CardImage src={article.image}></CardImage>
-            </CardHeader>
-            <CardTitle>{article.title}</CardTitle>
-          </Card>
+          <div key={article.title} className="fr-mt-4w">
+            <Article article={article} isHorizontal />
+          </div>
         ))}
       </Slice>
     </MainContainer>
