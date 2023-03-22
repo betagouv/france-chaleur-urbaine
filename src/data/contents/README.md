@@ -8,5 +8,6 @@ layout: editorial
 
 ## Yo
 
-1. Hello
-2. C'est cool
+1. Hello&#x20;
+2. C'est coo
+
