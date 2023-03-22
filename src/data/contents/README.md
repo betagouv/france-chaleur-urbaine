@@ -1,13 +1,9 @@
----
-layout: editorial
----
+# Une obligation de raccordement pour certains bâtiments ?
 
-# Mon titre
+C'est le cas sur les réseaux de chaleur classés.
 
-![](.gitbook/assets/collectivite-presentation-2.png)
+❓ Mais de quoi parle-t-on exactement ? Quels sont les réseaux et bâtiments concernés ?
 
-## Yo
+🔎 Pour y voir plus clair en un coup d’œil, c'est ici ! 👇
 
-1. Hello&#x20;
-2. C'est coo
-
+![](.gitbook/assets/FCU\_Infographie\_classement.jpg)
