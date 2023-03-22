@@ -4,4 +4,4 @@
 🚌 Retrouvez notre campagne publicitaire sur les abribus à Bordeaux dès aujourd'hui.\
 🤝 Cette campagne est réalisée en lien avec [Bordeaux Métropole](https://www.linkedin.com/company/bordeaux-m%C3%A9tropole/), [Mixéner](https://www.linkedin.com/company/mixener-groupebme/) et [ENGIE](https://www.linkedin.com/company/engie/).
 
-<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/image (4).png" alt=""><figcaption></figcaption></figure>
