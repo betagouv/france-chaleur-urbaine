@@ -1,27 +1,16 @@
----
-cover: .gitbook/assets/avion.jpg
-coverY: 0
----
+# L'appel à projets 1 ville 1 réseau de l'ADEME est relancé
 
-# 6,63 millions d'allers-retours Paris New-York évités
+Les réseaux de chaleur ne sont pas réservés aux grandes villes !
 
-Les réseaux de chaleur sont un moyen concret et efficace de lutter contre le réchauffement climatique !
+Votre collectivité couvre une population inférieure à 50 000 habitants et vous envisagez la création d'un réseau de chaleur ou de froid sur votre territoire ?
 
-En 2021, l'émission de 6,63 millions de tonnes de CO2 a été évitée grâce aux réseaux de chaleur, l'équivalent d'autant d'allers-retours Paris / New-York en avion.
+L'ADEME relance son appel à projets "Une ville, un réseau", avec un financement des études allant jusqu'à 80 % ! Cette seconde édition est ouverte jusqu'au 15 septembre 2023.
 
-Chaque raccordement compte pour sortir de notre dépendance aux énergies fossiles.\
-🛫 Alors décollage vers un avenir décarbonné !\
-[#avenir](https://www.linkedin.com/feed/hashtag/?keywords=avenir\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7042448094117998592) [#transitionécologique](https://www.linkedin.com/feed/hashtag/?keywords=transition%C3%A9cologique\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7042448094117998592) [#transitionenergétique](https://www.linkedin.com/feed/hashtag/?keywords=transitionenerg%C3%A9tique\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7042448094117998592)
+Retrouvez l'appel à projets ici :&#x20;
 
-\
+[https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20230306/etudes-reseaux-chaleur-renouvelables-2-edition-jusqua-80-etudes?cible=78](https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20230306/etudes-reseaux-chaleur-renouvelables-2-edition-jusqua-80-etudes?cible=78)
+
+<figure><img src=".gitbook/assets/PostMars.jpg" alt=""><figcaption></figcaption></figure>
 
 
-<div>
 
-<figure><img src=".gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
-
- 
-
-<figure><img src=".gitbook/assets/avion.jpg" alt=""><figcaption></figcaption></figure>
-
-</div>
