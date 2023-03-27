@@ -1,11 +1,11 @@
 ---
-cover: .gitbook/assets/2023-03-22 13_44_43-02.02.2023_DP_Geothermie.pdf (1).png
+cover: .gitbook/assets/05.jpg
 coverY: 0
 ---
 
 # Un plan national d'action pour la géothermie
 
-↗ Augmenter la part des énergies renouvelables dans les réseaux de chaleur ? C'est un enjeu crucial, qui passera notamment par le développement de la géothermie profonde.
+&#x20;Augmenter la part des énergies renouvelables dans les réseaux de chaleur ? C'est un enjeu crucial, qui passera notamment par le développement de la géothermie profonde.
 
 🔎 Aujourd'hui, seule 5,5% de la chaleur livrée par les réseaux est produite par des installations géothermiques, dont près des 3/4 sont situées en Ile-de-France.
 
@@ -20,3 +20,13 @@ coverY: 0
 Pour en savoir plus, c'est ici 👇
 
 [https://www.ecologie.gouv.fr/sites/default/files/02.02.2023\_DP\_Geothermie.pdf](https://www.ecologie.gouv.fr/sites/default/files/02.02.2023\_DP\_Geothermie.pdf)
+
+<div>
+
+<figure><img src=".gitbook/assets/geo.jpg" alt=""><figcaption></figcaption></figure>
+
+ 
+
+<figure><img src=".gitbook/assets/05.jpg" alt=""><figcaption></figcaption></figure>
+
+</div>

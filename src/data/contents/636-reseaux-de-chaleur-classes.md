@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/07.jpg
+coverY: 0
+---
+
 # 636 réseaux de chaleur classés
 
 🔎 Saviez-vous que certains bâtiments ont désormais l'obligation de se raccorder à un réseau de chaleur ?

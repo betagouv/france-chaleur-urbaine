@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/avion.jpg
+coverY: 0
+---
+
 # 6,63 millions d'allers-retours Paris New-York évités
 
 Les réseaux de chaleur sont un moyen concret et efficace de lutter contre le réchauffement climatique !
@@ -11,4 +16,12 @@ Chaque raccordement compte pour sortir de notre dépendance aux énergies fossil
 \
 
 
+<div>
+
 <figure><img src=".gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
+
+ 
+
+<figure><img src=".gitbook/assets/avion.jpg" alt=""><figcaption></figcaption></figure>
+
+</div>
