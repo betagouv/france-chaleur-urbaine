@@ -32,4 +32,5 @@ export type Demand = DemandSummary &
     Logement: number;
     'Gestionnaire Logement': number;
     'Relance envoyée': string;
+    'Affecté à': string;
   };

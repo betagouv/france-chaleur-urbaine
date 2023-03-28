@@ -46,6 +46,10 @@ const exportColumn: ExportColumn<Demand>[] = [
         : demand['Gestionnaire Distance au réseau'],
   },
   {
+    header: 'Affecté à',
+    value: 'Affecté à',
+  },
+  {
     header: 'Nb logements',
     value: (demand) =>
       demand['Gestionnaire Logement'] === undefined
