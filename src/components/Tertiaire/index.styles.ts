@@ -2,19 +2,12 @@ import { createGlobalStyle } from 'styled-components';
 
 export const TertiaireStyle: any = createGlobalStyle`
   .presentation-rcu-tertiaire {
-    .presentation-rcu-tertiaire-cartridge {
-      margin-bottom: 32px;
-      @media (min-width: 992px) {
-        margin-bottom: 0;
-        margin-right: 16px;
-      }
-    }
     .presentation-rcu-tertiaire-body {
       flex: 1;
       color: var(--bf500);
 
       @media (min-width: 992px) {
-        margin-left: 16px;
+        padding: 0 3rem;
       }
 
       p {
@@ -22,19 +15,59 @@ export const TertiaireStyle: any = createGlobalStyle`
         line-height: 1.5;
       }
     }
-    
-    .presentation-rcu-tertiaire-cartridges {
-      display: flex;
-      gap: 32px;
-      justify-content: center;
-      margin-bottom: 16px;
-      b {
+
+    .presentation-rcu-tertiaire-cartridge {
+      position: relative;
+
+      @media (max-width: 991px) {
+        padding: 1em 1.5em;
+      }
+
+      @media (min-width: 992px) {
+        padding-right: 17.5rem;
+      }
+
+      .presentation-rcu-tertiaire-percent {
         display: block;
-        font-size: 1.6em;
+        text-align: center;
+
+        top: 3rem;
+        right: 1em;
+        font-size: 0.85em !important;
+
+        margin: 0.1em;
+
+        @media (min-width: 440px) {
+          display: inline-block;
+        }
+
+        @media (min-width: 992px) {
+          position: absolute;
+        }
+
+        strong {
+          display: block;
+          font-size: 1.6em;
+          margin-bottom: -0.2em;
+        }
+
+        @media (min-width: 992px) {
+          &:nth-child(2n) {
+            margin-right: 5.5em;
+          }
+
+          &:nth-child(3n) {
+            margin-right: 11em;
+          }
+        }
       }
     }
 
     .presentation-rcu-tertiaire-cartridge-conso {
+      @media (min-width: 992px) {
+        margin-right: 4.5em;
+      }
+
       strong {
         display: block;
         font-size: 4.2em;
