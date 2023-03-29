@@ -13,19 +13,20 @@ const LastArticles = () => {
         <Article article={articles[1]} />
       </div>
       <RemainingArticles className="fr-col-12 fr-col-lg-4 fr-py-3w">
-        <div className="fr-mb-4w">
-          {articles.slice(2).map((article) => (
-            <Link
-              key={article.title}
-              isSimple
-              as={
-                <div>
-                  <Link href={`/articles/${article.slug}`}>
-                    {article.title}
-                  </Link>
-                </div>
-              }
-            />
+        <div className="fr-mb-3w">
+          {articles.slice(2, 6).map((article) => (
+            <div className="fr-mb-1w" key={article.title}>
+              <Link
+                isSimple
+                as={
+                  <div>
+                    <Link href={`/articles/${article.slug}`}>
+                      {article.title}
+                    </Link>
+                  </div>
+                }
+              />
+            </div>
           ))}
         </div>
         <div>
