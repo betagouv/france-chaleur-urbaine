@@ -1,4 +1,9 @@
-import { Button, Select, TextInput } from '@dataesr/react-dsfr';
+import {
+  Button,
+  SearchableSelect,
+  Select,
+  TextInput,
+} from '@dataesr/react-dsfr';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
@@ -79,11 +84,32 @@ const ManagerHeader = ({
 
   const [exporting, setExporting] = useState(false);
 
+  const [gestionnaireOptions, setGestionnaireOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
+
   const [nameFilter, setNameFilter] = useState('');
   const [addressFilter, setAddressFilter] = useState('');
   const [filterModeChauffage, setFilterModeChauffage] = useState('');
   const [filterTypeChauffage, setFilterTypeChauffage] = useState('');
   const [statusFilter, setStatusFiler] = useState('');
+  const [gestionnaireFilter, setGestionnaireFilter] = useState('');
+
+  useEffect(() => {
+    setGestionnaireOptions(
+      demands
+        .map((demand) => demand['Affecté à'])
+        .filter(
+          (gestionnaire, index, gestionnaires) =>
+            gestionnaire && gestionnaires.indexOf(gestionnaire) === index
+        )
+        .sort((a, b) => a.localeCompare(b))
+        .map((gestionnaire) => ({
+          label: gestionnaire,
+          value: gestionnaire,
+        }))
+    );
+  }, [demands]);
 
   useEffect(() => {
     let filteredDemands = demands;
@@ -122,6 +148,12 @@ const ManagerHeader = ({
       );
     }
 
+    if (gestionnaireFilter) {
+      filteredDemands = filteredDemands.filter(
+        (demand) => demand['Affecté à'] === gestionnaireFilter
+      );
+    }
+
     setFilteredDemands(filteredDemands);
   }, [
     addressFilter,
@@ -129,6 +161,7 @@ const ManagerHeader = ({
     statusFilter,
     filterModeChauffage,
     filterTypeChauffage,
+    gestionnaireFilter,
     demands,
     setFilteredDemands,
   ]);
@@ -184,6 +217,16 @@ const ManagerHeader = ({
           options={typeDeChauffageOptions}
         />
       </Filter>
+      {gestionnaireOptions.length > 1 && (
+        <Filter>
+          <SearchableSelect
+            label="Gestionnaire:"
+            options={gestionnaireOptions}
+            selected={gestionnaireFilter}
+            onChange={setGestionnaireFilter}
+          />
+        </Filter>
+      )}
       <ExportButton>
         {exporting ? (
           <Oval height={40} width={40} />

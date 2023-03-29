@@ -60,6 +60,10 @@ const exportColumn: ExportColumn<Demand>[] = [
         : demand['Gestionnaire Conso'],
   },
   { header: 'Commentaires', value: 'Commentaire' },
+  {
+    header: 'Affecté à',
+    value: 'Affecté à',
+  },
 ];
 
 const get = async (res: NextApiResponse, user: User) => {

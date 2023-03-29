@@ -473,10 +473,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@dataesr/react-dsfr@^3.5.6":
-  version "3.5.6"
-  resolved "https://registry.yarnpkg.com/@dataesr/react-dsfr/-/react-dsfr-3.5.6.tgz#3b8b8fd7fc15f4c250ba002d86dbb945d3dba1bd"
-  integrity sha512-p1Eb3A9pEkjTnP/P4xSMvtrbdYovnWRZNEyeuJWpTQbrGd+snKkbnuUjmMFNygZzctGxxYdZFjHIJ0j/kJsp/w==
+"@dataesr/react-dsfr@^3.5.13":
+  version "3.5.13"
+  resolved "https://registry.yarnpkg.com/@dataesr/react-dsfr/-/react-dsfr-3.5.13.tgz#1a355b7b304881f02ff74d02ba1ddf4cceed534c"
+  integrity sha512-bLknxacQkLxSMvSHO6M4d9WUjmwt66tSrHV3jMnGLHLin5kHt1EtYPcVmmarSa+oyzlmTtE6Rm4Lr70EjTk8LQ==
   dependencies:
     "@babel/runtime" "^7.19.4"
     "@gouvfr/dsfr" "1.7.2"

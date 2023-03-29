@@ -214,6 +214,7 @@ const Manager = () => {
         <Comment demand={demand} updateDemand={updateDemand} />
       ),
     },
+    { name: 'Affecté à', label: 'Affecté à' },
   ];
 
   return (
