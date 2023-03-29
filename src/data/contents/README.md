@@ -1,9 +1,16 @@
-# Une obligation de raccordement pour certains bâtiments ?
+# L'appel à projets 1 ville 1 réseau de l'ADEME est relancé
 
-C'est le cas sur les réseaux de chaleur classés.
+Les réseaux de chaleur ne sont pas réservés aux grandes villes !
 
-❓ Mais de quoi parle-t-on exactement ? Quels sont les réseaux et bâtiments concernés ?
+Votre collectivité couvre une population inférieure à 50 000 habitants et vous envisagez la création d'un réseau de chaleur ou de froid sur votre territoire ?
 
-🔎 Pour y voir plus clair en un coup d’œil, c'est ici ! 👇
+L'ADEME relance son appel à projets "Une ville, un réseau", avec un financement des études allant jusqu'à 80 % ! Cette seconde édition est ouverte jusqu'au 15 septembre 2023.
 
-![](.gitbook/assets/FCU\_Infographie\_classement.jpg)
+Retrouvez l'appel à projets ici :&#x20;
+
+[https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20230306/etudes-reseaux-chaleur-renouvelables-2-edition-jusqua-80-etudes?cible=78](https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20230306/etudes-reseaux-chaleur-renouvelables-2-edition-jusqua-80-etudes?cible=78)
+
+<figure><img src=".gitbook/assets/PostMars.jpg" alt=""><figcaption></figcaption></figure>
+
+
+
