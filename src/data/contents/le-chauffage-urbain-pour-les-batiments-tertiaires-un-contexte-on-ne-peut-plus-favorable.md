@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/11.jpg
+coverY: 0
+---
+
 # Le chauffage urbain pour les bâtiments tertiaires : un contexte on ne peut plus favorable !
 
 🏆 Comme pour les logements collectifs, il s'agit du mode de chauffage le plus économique\
@@ -8,3 +13,5 @@
 
 
 <figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
+
+<figure><img src=".gitbook/assets/11.jpg" alt=""><figcaption></figcaption></figure>
