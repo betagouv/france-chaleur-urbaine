@@ -25,6 +25,7 @@ export type DataType =
   | 'gas'
   | 'energy'
   | 'zoneDP'
+  | 'raccordements'
   | 'demands'
   | 'buildings';
 
@@ -80,6 +81,15 @@ export const tilesInfo: Record<string, TileInfo> = {
       'Structure',
     ],
     sourceLayer: 'demands',
+  },
+  raccordements: {
+    source: 'database',
+    table: 'batiments_raccordes_rdc',
+    tiles: 'raccordements_tiles',
+    id: 'fid',
+    extraWhere: (query) => query.whereLike('ID', '%C'),
+    properties: ['fid', 'ADRESSE', 'CONSO', 'PDL', 'ID'],
+    sourceLayer: 'raccordements',
   },
   network: {
     source: 'database',

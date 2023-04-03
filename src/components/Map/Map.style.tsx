@@ -338,6 +338,27 @@ export const demandsLayerStyle = {
   },
 };
 
+export const raccordementsLayerStyle = {
+  type: 'symbol',
+  layout: {
+    'icon-image': 'energy-picto',
+    'icon-overlap': 'always',
+    'icon-size': 0.5,
+  },
+  paint: {
+    'icon-color': themeDefHeatNetwork.classed.color,
+    'icon-opacity': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      minZoomData + 0.2,
+      0,
+      minZoomData + 0.5 + 1,
+      0.65,
+    ],
+  },
+};
+
 export const zoneDPLayerStyle = {
   type: 'fill',
   paint: {

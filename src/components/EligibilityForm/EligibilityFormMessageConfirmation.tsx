@@ -60,7 +60,9 @@ const EligibilityFormMessageConfirmation = ({
     }
   };
 
-  const linkToMap = `./carte/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`;
+  const linkToMap =
+    addressData?.geoAddress?.geometry?.coordinates &&
+    `./carte/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`;
 
   const { structure, computedEligibility } = addressData;
 

@@ -177,6 +177,13 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       border: 2px solid ${themeDefDemands.stroke.color};
     }
   }
+  .legend-raccordements-marker {
+    :before {
+      width: 14px;
+      height: 14px;
+      background-color: ${themeDefHeatNetwork.classed.color};
+    }
+  }
 
   .legend-energy-marker {
     width: .6rem;
