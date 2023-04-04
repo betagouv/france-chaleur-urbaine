@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/10.jpg
-coverY: 0
----
-
 # Se chauffer à prix stables
 
 💰 Un chauffage à prix stables ? C'est possible avec les réseaux de chaleur !
@@ -13,4 +8,3 @@ coverY: 0
 
 <figure><img src=".gitbook/assets/comparaison_evo_prix.jpg" alt=""><figcaption></figcaption></figure>
 
-![](.gitbook/assets/10.jpg)

@@ -1,6 +1,7 @@
 import { Highlight } from '@dataesr/react-dsfr';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import rehypeRaw from 'rehype-raw';
 import rehypeReact from 'rehype-react';
 import remarkBreaks from 'remark-breaks';
 import remarkDirective from 'remark-directive';
@@ -52,7 +53,8 @@ const processor = (extender: Record<string, unknown> = {}) =>
     .use(remarkParse)
     .use(remarkDirective)
     .use(remarkDirectiveRehype)
-    .use(remarkRehype)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
     .use(rehypeReact, {
       createElement: React.createElement,
       Fragment: React.Fragment,

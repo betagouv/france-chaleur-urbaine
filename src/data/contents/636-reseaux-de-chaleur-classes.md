@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/07.jpg
-coverY: 0
----
-
 # 636 réseaux de chaleur classés
 
 🔎 Saviez-vous que certains bâtiments ont désormais l'obligation de se raccorder à un réseau de chaleur ?
@@ -18,6 +13,3 @@ Il s'agit des bâtiments neufs ou renouvelant leur installation de chauffage au 
 Rendez-vous sur la cartographie France Chaleur Urbaine !
 
 <figure><img src=".gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
-
-<figure><img src=".gitbook/assets/07.jpg" alt=""><figcaption></figcaption></figure>
-

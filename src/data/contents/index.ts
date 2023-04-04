@@ -16,21 +16,24 @@ import tousNosVoeuxPour_2023 from './tous-nos-voeux-pour-2023.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
 
 const importFile = (file: string) => {
-  return file.replace('(.gitbook/assets/', '(/contents/');
+  return file.replace('.gitbook/assets/', '/contents/');
 };
 
 export const articles: Article[] = [
   {
+    image: '/contents/08.jpg',
     title: "L'appel à projets 1 ville 1 réseau de l'ADEME est relancé",
     slug: 'l-appel-à-projets-1-ville-1-réseau-de-l-ademe-est-relancé',
     content: importFile(readme),
   },
   {
+    image: '/contents/09.jpg',
     title: '1600 réseaux à créer ou étendre',
     slug: '1600-réseaux-à-créer-ou-étendre',
     content: importFile(reseauxACreerOuEtendre),
   },
   {
+    image: '/contents/avion.jpg',
     title: "6,63 millions d'allers-retours Paris New-York évités",
     slug: '6-63-millions-d-allers-retours-paris-new-york-évités',
     content: importFile(readme_1),
@@ -41,11 +44,13 @@ export const articles: Article[] = [
     content: importFile(franceChaleurUrbaineSeConstruitAvecSesUsagers),
   },
   {
+    image: '/contents/02.jpg',
     title: 'Une obligation de raccordement pour certains bâtiments',
     slug: 'une-obligation-de-raccordement-pour-certains-bâtiments',
     content: importFile(page_2),
   },
   {
+    image: '/contents/11.jpg',
     title:
       'Le chauffage urbain pour les bâtiments tertiaires : un contexte on ne peut plus favorable !',
     slug: 'le-chauffage-urbain-pour-les-bâtiments-tertiaires-un-contexte-on-ne-peut-plus-favorable',
@@ -54,41 +59,49 @@ export const articles: Article[] = [
     ),
   },
   {
+    image: '/contents/03.jpg',
     title: "Le chauffage le plus économique pour l'habitat collectif",
     slug: 'le-chauffage-le-plus-économique-pour-l-habitat-collectif',
     content: importFile(leChauffageLePlusEconomiquePourLhabitatCollectif),
   },
   {
+    image: '/contents/04.jpg',
     title: 'Faisons connaître le chauffage urbain !',
     slug: 'faisons-connaître-le-chauffage-urbain',
     content: importFile(faisonsConnaitreLeChauffageUrbain),
   },
   {
+    image: '/contents/10.jpg',
     title: 'Se chauffer à prix stables',
     slug: 'se-chauffer-à-prix-stables',
     content: importFile(seChaufferAPrixStables),
   },
   {
+    image: '/contents/12.jpg',
     title: 'Le chauffage urbain dans la presse',
     slug: 'le-chauffage-urbain-dans-la-presse',
     content: importFile(leChauffageUrbainDansLaPresse),
   },
   {
+    image: '/contents/05.jpg',
     title: "Un plan national d'action pour la géothermie",
     slug: 'un-plan-national-d-action-pour-la-géothermie',
     content: importFile(unPlanNationalDactionPourLaGeothermie),
   },
   {
+    image: '/contents/06.jpg',
     title: 'Dossier spécial sur les réseaux de chaleur',
     slug: 'dossier-spécial-sur-les-réseaux-de-chaleur',
     content: importFile(dossierSpecialSurLesReseauxDeChaleur),
   },
   {
+    image: '/contents/07.jpg',
     title: '636 réseaux de chaleur classés',
     slug: '636-réseaux-de-chaleur-classés',
     content: importFile(reseauxDeChaleurClasses),
   },
   {
+    image: '/contents/13.jpg',
     title: 'Les syndics et France Chaleur Urbaine',
     slug: 'les-syndics-et-france-chaleur-urbaine',
     content: importFile(lesSyndicsEtFranceChaleurUrbaine),

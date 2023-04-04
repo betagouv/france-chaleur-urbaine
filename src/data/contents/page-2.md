@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/02.jpg
-coverY: 0
----
-
 # Une obligation de raccordement pour certains bâtiments
 
 C'est le cas sur les réseaux de chaleur classés.
@@ -17,6 +12,5 @@ C'est le cas sur les réseaux de chaleur classés.
 
  
 
-<figure><img src=".gitbook/assets/02.jpg" alt=""><figcaption></figcaption></figure>
 
 </div>
