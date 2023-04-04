@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/09.jpg
+coverY: 0
+---
+
 # 1600 réseaux à créer ou étendre
 
 🏁 La loi impose un objectif ambitieux aux réseaux de chaleur, à la hauteur des enjeux de la  transition énergétique. En 2030, la quantité de chaleur et de froid renouvelables livrée par les réseaux devra être multipliée par 5, par rapport à 2012
