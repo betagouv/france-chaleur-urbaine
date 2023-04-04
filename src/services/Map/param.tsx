@@ -11,6 +11,7 @@ enum Layer {
   demands = 'demands',
   zoneDP = 'zoneDP',
   buildings = 'buildings',
+  raccordements = 'raccordements',
 }
 
 export const layerNameOptions = Object.values(Layer);
@@ -25,6 +26,7 @@ export type TypeLayerDisplay = {
   outline: boolean;
   zoneDP: boolean;
   demands: boolean;
+  raccordements: boolean;
   gasUsageGroup: boolean;
   buildings: boolean;
   gasUsage: string[];
@@ -38,6 +40,7 @@ export const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
   zoneDP: false,
   demands: false,
+  raccordements: false,
   gasUsageGroup: true,
   buildings: false,
   gasUsage: gasUsageNameOptions,
@@ -145,6 +148,18 @@ const legendData: (string | TypeGroupLegend)[] = [
     ],
     subLegend: 'EnergyFuel',
     type: 'group',
+  },
+  'separator',
+  {
+    id: 'raccordements',
+    entries: [
+      {
+        id: 'raccordements',
+        label: 'Batiments raccordés à un réseau de chaleur',
+        className: 'legend-raccordements',
+      },
+    ],
+    type: 'list',
   },
   'separator',
   {

@@ -41,6 +41,7 @@ import {
   MapStyle,
   objTypeEnergy,
   outlineLayerStyle,
+  raccordementsLayerStyle,
   zoneDPLayerStyle,
 } from './Map.style';
 import { formatBodyPopup } from './MapPopup';
@@ -389,6 +390,7 @@ export default function Map() {
       { name: 'buildings', key: 'buildings' },
       { name: 'gasUsage', key: 'consommation' },
       { name: 'energy', key: 'energy' },
+      { name: 'raccordements', key: 'raccordement' },
     ];
 
     const onMapClick = (e: any, key: string) => {
@@ -527,6 +529,28 @@ export default function Map() {
               source: 'demands',
               'source-layer': 'demands',
               ...demandsLayerStyle,
+            },
+          ]
+        );
+
+        // -----------------
+        // --- Raccordements ---
+        // -----------------
+        addSource(
+          map.current,
+          'raccordements',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/raccordements/{z}/{x}/{y}`],
+            maxzoom: maxZoom,
+            minzoom: minZoomData,
+          },
+          [
+            {
+              id: 'raccordements',
+              source: 'raccordements',
+              'source-layer': 'raccordements',
+              ...raccordementsLayerStyle,
             },
           ]
         );
