@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/14 (1).jpg
+coverY: 0
+---
+
 # France Chaleur Urbaine se construit avec ses usagers
 
 France Chaleur Urbaine est une start-up d'Etat qui se construit pour et avec ses usagers !
