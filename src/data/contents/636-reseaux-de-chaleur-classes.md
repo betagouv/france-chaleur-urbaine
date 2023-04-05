@@ -13,3 +13,5 @@ Il s'agit des bâtiments neufs ou renouvelant leur installation de chauffage au 
 Rendez-vous sur la cartographie France Chaleur Urbaine !
 
 <figure><img src=".gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+
+![](.gitbook/assets/636.jpg)

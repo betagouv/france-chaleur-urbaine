@@ -8,3 +8,4 @@ C'est à lire dans notre article !
 [https://www.construction21.org/france/articles/h/densifier-les-reseaux-de-chaleur-un-contexte-favorable-et-un-potentiel-considerable-mais-des-defis-a-relever.html](https://www.construction21.org/france/articles/h/densifier-les-reseaux-de-chaleur-un-contexte-favorable-et-un-potentiel-considerable-mais-des-defis-a-relever.html)
 
 ![](.gitbook/assets/construction.jpg)
+
