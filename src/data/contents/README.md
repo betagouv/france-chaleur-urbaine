@@ -1,23 +1,15 @@
 ---
-cover: .gitbook/assets/08.jpg
+cover: .gitbook/assets/15.jpg
 coverY: 0
 ---
 
-# L'appel à projets 1 ville 1 réseau de l'ADEME est relancé
+# La décarbonation des réseaux de chaleur est en marche !
 
-Les réseaux de chaleur ne sont pas réservés aux grandes villes !
+↘ En 10 ans, les émissions de CO2 associées au chauffage urbain ont diminué de 42%. Aujourd'hui, elles s'élèvent à 125 g CO2 ACV/kWh seulement, contre 227 g CO2/kWh pour le gaz et 324 gCO2/kWh pour le fioul.\
+\
+🎯 Et ce n'est pas fini ! Objectif ? Réduire encore ces émissions de 33% dès 2030, grâce au remplacement massif des énergies fossiles par des énergies renouvelables et de récupération... et atteindre la neutralité carbone en 2050.\
+\
+Source : enquête annuelle des réseaux de chaleur et de froid réalisée par la [FEDENE](https://www.linkedin.com/company/fedene/) (édition 2022)
 
-Votre collectivité couvre une population inférieure à 50 000 habitants et vous envisagez la création d'un réseau de chaleur ou de froid sur votre territoire ?
-
-L'ADEME relance son appel à projets "Une ville, un réseau", avec un financement des études allant jusqu'à 80 % ! Cette seconde édition est ouverte jusqu'au 15 septembre 2023.
-
-Retrouvez l'appel à projets ici :&#x20;
-
-[https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20230306/etudes-reseaux-chaleur-renouvelables-2-edition-jusqua-80-etudes?cible=78](https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20230306/etudes-reseaux-chaleur-renouvelables-2-edition-jusqua-80-etudes?cible=78)
-
-<figure><img src=".gitbook/assets/PostMars.jpg" alt=""><figcaption></figcaption></figure>
-
-<figure><img src=".gitbook/assets/08.jpg" alt=""><figcaption></figcaption></figure>
-
-
+<figure><img src=".gitbook/assets/42.jpg" alt=""><figcaption></figcaption></figure>
 
