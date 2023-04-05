@@ -16,7 +16,7 @@ import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
 
 const importFile = (file: string) => {
-  return file.replace('.gitbook/assets/', '/contents/');
+  return file.replaceAll('.gitbook/assets/', '/contents/');
 };
 
 export const articles: Article[] = [
