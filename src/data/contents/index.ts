@@ -12,7 +12,6 @@ import page_2 from './page-2.md';
 import readme_1 from './README (1).md';
 import readme from './README.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
-import tousNosVoeuxPour_2023 from './tous-nos-voeux-pour-2023.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
 
 const importFile = (file: string) => {
@@ -106,11 +105,6 @@ export const articles: Article[] = [
     title: 'Les syndics et France Chaleur Urbaine',
     slug: 'les-syndics-et-france-chaleur-urbaine',
     content: importFile(lesSyndicsEtFranceChaleurUrbaine),
-  },
-  {
-    title: 'Tous nos vœux pour 2023 !',
-    slug: 'tous-nos-vœux-pour-2023',
-    content: importFile(tousNosVoeuxPour_2023),
   },
 ];
 

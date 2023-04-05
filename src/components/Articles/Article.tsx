@@ -10,11 +10,9 @@ const Article = ({
 }) => {
   return (
     <Card isHorizontal={isHorizontal} href={`/articles/${article.slug}`}>
-      {article.image && (
-        <CardHeader>
-          <CardImage src={article.image}></CardImage>
-        </CardHeader>
-      )}
+      <CardHeader>
+        <CardImage src={article.image}></CardImage>
+      </CardHeader>
       <CardTitle>{article.title}</CardTitle>
     </Card>
   );

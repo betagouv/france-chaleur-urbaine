@@ -14,4 +14,3 @@
 * [Dossier spécial sur les réseaux de chaleur](dossier-special-sur-les-reseaux-de-chaleur.md)
 * [636 réseaux de chaleur classés](636-reseaux-de-chaleur-classes.md)
 * [Les syndics et France Chaleur Urbaine](les-syndics-et-france-chaleur-urbaine.md)
-* [Tous nos vœux pour 2023 !](tous-nos-voeux-pour-2023.md)
