@@ -200,7 +200,7 @@ maîtrise du tarif des énergies._`}
           </Slice>
           <Partners />
           <Slice theme="grey" padding={8}>
-            <h2>Nos articles</h2>
+            <h2>Nos actus</h2>
             <LastArticles />
           </Slice>
           <SliceImg src="/img/home-footer-bg.jpg" />

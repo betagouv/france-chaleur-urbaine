@@ -5,9 +5,9 @@ import { articles } from '@data/contents';
 
 const Articles = () => {
   return (
-    <MainContainer currentMenu="/articles">
+    <MainContainer currentMenu="/actus">
       <Slice padding={8}>
-        <h1>Nos articles</h1>
+        <h1>Nos actus</h1>
         {articles.map((article) => (
           <div key={article.title} className="fr-mt-4w">
             <Article article={article} isHorizontal />

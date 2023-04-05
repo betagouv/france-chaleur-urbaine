@@ -4,6 +4,14 @@ import Slice from '@components/Slice';
 import { getArticle } from '@data/contents';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { createGlobalStyle } from 'styled-components';
+
+const Style = createGlobalStyle`
+.content {
+  img {
+    width: 100%;
+  }
+}`;
 
 const Article = () => {
   const router = useRouter();
@@ -18,14 +26,15 @@ const Article = () => {
     if (article) {
       setContent(article.content);
     } else {
-      router.push('/articles');
+      router.push('/actus');
     }
   }, [router]);
 
   return (
-    <MainContainer currentMenu="/articles">
+    <MainContainer currentMenu="/actus">
       <Slice padding={8}>
-        <MarkdownWrapper value={content} />
+        <Style />
+        <MarkdownWrapper value={content} className="content" />
       </Slice>
     </MainContainer>
   );

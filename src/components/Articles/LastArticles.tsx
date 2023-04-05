@@ -20,9 +20,7 @@ const LastArticles = () => {
                 isSimple
                 as={
                   <div>
-                    <Link href={`/articles/${article.slug}`}>
-                      {article.title}
-                    </Link>
+                    <Link href={`/actus/${article.slug}`}>{article.title}</Link>
                   </div>
                 }
               />
@@ -33,9 +31,9 @@ const LastArticles = () => {
           <Link
             isSimple
             as={
-              <Link href="/articles">
+              <Link href="/actus">
                 <>
-                  Voir tous les articles <Icon name="ri-arrow-right-line" />
+                  Voir toutes les actus <Icon name="ri-arrow-right-line" />
                 </>
               </Link>
             }

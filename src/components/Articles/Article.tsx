@@ -9,7 +9,7 @@ const Article = ({
   isHorizontal?: boolean;
 }) => {
   return (
-    <Card isHorizontal={isHorizontal} href={`/articles/${article.slug}`}>
+    <Card isHorizontal={isHorizontal} href={`/actus/${article.slug}`}>
       <CardHeader>
         <CardImage src={article.image}></CardImage>
       </CardHeader>
