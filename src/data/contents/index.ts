@@ -4,6 +4,7 @@ import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
 import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urbaine-se-construit-avec-ses-usagers.md';
+import lappelAProjets1Ville1ReseauDeLademeEstRelance from './lappel-a-projets-1-ville-1-reseau-de-lademe-est-relance.md';
 import leChauffageLePlusEconomiquePourLhabitatCollectif from './le-chauffage-le-plus-economique-pour-lhabitat-collectif.md';
 import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.md';
 import leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorable from './le-chauffage-urbain-pour-les-batiments-tertiaires-un-contexte-on-ne-peut-plus-favorable.md';
@@ -20,10 +21,16 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/15.jpg',
+    title: 'La décarbonation des réseaux de chaleur est en marche !',
+    slug: 'la-décarbonation-des-réseaux-de-chaleur-est-en-marche',
+    content: importFile(readme),
+  },
+  {
     image: '/contents/08.jpg',
     title: "L'appel à projets 1 ville 1 réseau de l'ADEME est relancé",
     slug: 'l-appel-à-projets-1-ville-1-réseau-de-l-ademe-est-relancé',
-    content: importFile(readme),
+    content: importFile(lappelAProjets1Ville1ReseauDeLademeEstRelance),
   },
   {
     image: '/contents/09.jpg',

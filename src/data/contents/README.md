@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/15.jpg
-coverY: 0
----
-
 # La décarbonation des réseaux de chaleur est en marche !
 
 ↘ En 10 ans, les émissions de CO2 associées au chauffage urbain ont diminué de 42%. Aujourd'hui, elles s'élèvent à 125 g CO2 ACV/kWh seulement, contre 227 g CO2/kWh pour le gaz et 324 gCO2/kWh pour le fioul.\
