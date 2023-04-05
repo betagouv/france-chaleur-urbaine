@@ -13,3 +13,4 @@ Source : enquête annuelle des réseaux de chaleur et de froid réalisée par la
 
 <figure><img src=".gitbook/assets/42.jpg" alt=""><figcaption></figcaption></figure>
 
+![](.gitbook/assets/\_42.jpg)

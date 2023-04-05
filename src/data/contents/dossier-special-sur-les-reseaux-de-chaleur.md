@@ -12,6 +12,5 @@ C'est à lire dans notre article !
 
 [https://www.construction21.org/france/articles/h/densifier-les-reseaux-de-chaleur-un-contexte-favorable-et-un-potentiel-considerable-mais-des-defis-a-relever.html](https://www.construction21.org/france/articles/h/densifier-les-reseaux-de-chaleur-un-contexte-favorable-et-un-potentiel-considerable-mais-des-defis-a-relever.html)
 
-<figure><img src=".gitbook/assets/06.jpg" alt=""><figcaption><p>vignette</p></figcaption></figure>
-
 ![](.gitbook/assets/construction.jpg)
+

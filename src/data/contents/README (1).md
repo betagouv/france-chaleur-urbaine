@@ -16,12 +16,6 @@ Chaque raccordement compte pour sortir de notre dépendance aux énergies fossil
 \
 
 
-<div>
-
 <figure><img src=".gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
 
- 
-
-<figure><img src=".gitbook/assets/avion.jpg" alt=""><figcaption></figcaption></figure>
-
-</div>
+![](.gitbook/assets/663.jpg)

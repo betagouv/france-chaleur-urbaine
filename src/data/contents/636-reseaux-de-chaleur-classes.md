@@ -19,5 +19,4 @@ Rendez-vous sur la cartographie France Chaleur Urbaine !
 
 <figure><img src=".gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
 
-<figure><img src=".gitbook/assets/07.jpg" alt=""><figcaption></figcaption></figure>
-
+![](.gitbook/assets/636.jpg)

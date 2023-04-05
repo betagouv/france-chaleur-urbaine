@@ -17,7 +17,5 @@ Retrouvez l'appel à projets ici :&#x20;
 
 <figure><img src=".gitbook/assets/PostMars.jpg" alt=""><figcaption></figcaption></figure>
 
-<figure><img src=".gitbook/assets/08.jpg" alt=""><figcaption></figcaption></figure>
-
-
+![](.gitbook/assets/1ville.jpg)
 

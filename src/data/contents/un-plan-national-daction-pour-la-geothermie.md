@@ -21,12 +21,6 @@ Pour en savoir plus, c'est ici 👇
 
 [https://www.ecologie.gouv.fr/sites/default/files/02.02.2023\_DP\_Geothermie.pdf](https://www.ecologie.gouv.fr/sites/default/files/02.02.2023\_DP\_Geothermie.pdf)
 
-<div>
-
 <figure><img src=".gitbook/assets/geo.jpg" alt=""><figcaption></figcaption></figure>
 
- 
-
-<figure><img src=".gitbook/assets/05.jpg" alt=""><figcaption></figcaption></figure>
-
-</div>
+![](.gitbook/assets/geo2.jpg)

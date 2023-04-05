@@ -14,3 +14,5 @@ France Chaleur Urbaine est une start-up d'Etat qui se construit pour et avec ses
 Vivement le prochain atelier !
 
 <figure><img src=".gitbook/assets/image (5).png" alt=""><figcaption></figcaption></figure>
+
+![](.gitbook/assets/co.jpg)
