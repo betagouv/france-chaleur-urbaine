@@ -39,6 +39,7 @@ export const articles: Article[] = [
     content: importFile(readme_1),
   },
   {
+    image: '/contents/14 (1).jpg',
     title: 'France Chaleur Urbaine se construit avec ses usagers',
     slug: 'france-chaleur-urbaine-se-construit-avec-ses-usagers',
     content: importFile(franceChaleurUrbaineSeConstruitAvecSesUsagers),
