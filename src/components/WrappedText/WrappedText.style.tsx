@@ -29,12 +29,15 @@ export const ImageContainer = styled.div`
 export const TextContainer = styled.div<ContainerType>`
   flex: 1;
 
-  @media (min-width: 992px) {
-    padding: ${({ reverse }) => (reverse ? '0 0 0 3em' : '0 3em 0 0')};
-  }
-
   > h2 {
     color: #000074;
+  }
+
+  p,
+  em,
+  strong {
+    font-size: 1.25rem;
+    line-height: 2rem;
   }
   em {
     color: #4550e5;

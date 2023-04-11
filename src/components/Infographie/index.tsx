@@ -1,5 +1,4 @@
 import { Icon } from '@dataesr/react-dsfr';
-import Image from 'next/image';
 import { Glass, ImageContainer } from './index.styles';
 
 const Infographie = ({
@@ -12,8 +11,8 @@ const Infographie = ({
   height?: number;
 }) => {
   return (
-    <ImageContainer href={src} target="_blank">
-      <Image width={216} height={height || 350} src={src} alt={alt} />
+    <ImageContainer href={src.replace('_small', '')} target="_blank">
+      <img width={216} height={height || 350} src={src} alt={alt} />
       <Glass>
         <Icon name="ri-search-eye-fill" size="2x" />
       </Glass>

@@ -3,7 +3,10 @@ import {
   getConso,
   getNbLogement,
 } from '@core/infrastructure/repository/addresseInformation';
-import { getGestionnaires } from '@core/infrastructure/repository/manager';
+import {
+  getGestionnaires,
+  getToRelanceDemand,
+} from '@core/infrastructure/repository/manager';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
 import { Airtable } from 'src/types/enum/Airtable';
@@ -38,6 +41,15 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
   }
 
   switch (type) {
+    case Airtable.RELANCE: {
+      const demand = await getToRelanceDemand(values.id);
+      if (demand) {
+        base(Airtable.UTILISATEURS).update(demand.id, {
+          'Commentaire relance': values.comment,
+        });
+      }
+      break;
+    }
     case Airtable.UTILISATEURS: {
       base(Airtable.UTILISATEURS).create(
         [{ fields: values }],
@@ -56,6 +68,12 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
               values,
               network ? network['Identifiant reseau'] : ''
             );
+
+            const toRelance =
+              network &&
+              network.distance < 200 &&
+              values['Type de chauffage'] === 'Collectif';
+
             await base(Airtable.UTILISATEURS).update(
               records[0].getId(),
               {
@@ -67,6 +85,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
                 'Identifiant réseau': network
                   ? network['Identifiant reseau']
                   : undefined,
+                'Relance à activer': toRelance,
               },
               { typecast: true }
             );

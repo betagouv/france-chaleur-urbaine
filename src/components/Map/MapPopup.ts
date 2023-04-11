@@ -2,6 +2,7 @@ import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
+import { RaccordementSummary } from 'src/types/Summary/Raccordement';
 import { objTypeEnergy } from './Map.style';
 
 const writeTypeConso = (typeConso: string | unknown) => {
@@ -36,12 +37,14 @@ export const formatBodyPopup = ({
   demands,
   energy,
   network,
+  raccordement,
 }: {
   buildings?: EnergySummary;
   consommation?: GasSummary;
   energy?: EnergySummary;
   demands?: DemandSummary;
   network?: NetworkSummary;
+  raccordement?: RaccordementSummary;
 }) => {
   const {
     nb_logements,
@@ -61,10 +64,18 @@ export const formatBodyPopup = ({
     'Type de chauffage': type_chauffage_demands,
     Structure: structure,
   } = demands || {};
+  const {
+    ADRESSE: address_raccordement,
+    CONSO: conso_raccordement,
+    ID: id_raccordement,
+  } = raccordement || {};
 
   const energie_utilisee = energie_utilisee_buildings || mode_chauffage_demands;
   const textAddress =
-    addr_label_buildings || addr_label_consommation || addr_label_demands;
+    addr_label_buildings ||
+    addr_label_consommation ||
+    addr_label_demands ||
+    address_raccordement;
   const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
 
   const displayNetwork =
@@ -120,6 +131,16 @@ export const formatBodyPopup = ({
               ? `<strong>Consommations de gaz&nbsp;:</strong> ${conso_nb.toFixed(
                   2
                 )}&nbsp;MWh<br />`
+              : ''
+          }
+          ${
+            conso_raccordement && conso_raccordement !== 'secret'
+              ? `<strong>Consommation de chaleur&nbsp;:</strong> ${conso_raccordement}&nbsp;MWh<br />`
+              : ''
+          }
+          ${
+            id_raccordement && !displayNetwork
+              ? `<strong>Identifiant&nbsp;:</strong> ${id_raccordement}`
               : ''
           }
           ${

@@ -28,76 +28,91 @@ const ContactForm = () => {
     setSent(true);
   };
 
-  return sent ? (
-    <Alert
-      type="success"
-      title="Merci pour votre message"
-      description="Nous reviendrons rapidement vers vous."
-    />
-  ) : (
-    <form onSubmit={submit}>
-      <TextInput
-        required
-        label="Votre nom :"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <TextInput
-        required
-        label="Votre prénom :"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-      />
-      <TextInput
-        required
-        type="email"
-        label="Votre adresse e-mail :"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <TextInput
-        label="Votre numéro de téléphone :"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-      />
-      <Select
-        required
-        label="Objet du message :"
-        options={[
-          {
-            value: '',
-            label: "- Selectionner l'objet de votre message -",
-            disabled: true,
-            hidden: true,
-          },
-          {
-            value: 'Suivi',
-            label: 'Suivre une demande déposée sur France Chaleur Urbaine',
-          },
-          {
-            value: 'question',
-            label: 'Poser une question sur les réseaux de chaleur',
-          },
-          { value: 'partenariat', label: 'Établir un partenariat' },
-          { value: 'suggestion', label: 'Faire une suggestion pour le site' },
-          { value: 'probleme', label: 'Signaler un problème sur le site' },
-          { value: 'autre', label: 'Autre' },
-        ]}
-        selected={reason}
-        onChange={(e) => setReason(e.target.value)}
-      />
-      <TextInput
-        required
-        textarea
-        label="Votre message :"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        rows={5}
-      />
-      <Button className="fr-mt-2w" submit>
-        Envoyer
-      </Button>
-    </form>
+  return (
+    <>
+      <h5>
+        Vous avez une question suite à votre demande sur France Chaleur
+        Urbaine ? Vous souhaitez nous faire part de suggestions pour améliorer
+        notre service ? Vous êtes intéressé par un partenariat avec France
+        Chaleur Urbaine ? Pour ces questions ou toute autre, n’hésitez pas à
+        nous contacter via le formulaire ci-dessous : nous reviendrons
+        rapidement vers vous.
+      </h5>
+      {sent ? (
+        <Alert
+          type="success"
+          title="Merci pour votre message"
+          description="Nous reviendrons rapidement vers vous."
+        />
+      ) : (
+        <form onSubmit={submit}>
+          <TextInput
+            required
+            label="Votre nom :"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextInput
+            required
+            label="Votre prénom :"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <TextInput
+            required
+            type="email"
+            label="Votre adresse e-mail :"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextInput
+            label="Votre numéro de téléphone :"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          <Select
+            required
+            label="Objet du message :"
+            options={[
+              {
+                value: '',
+                label: "- Selectionner l'objet de votre message -",
+                disabled: true,
+                hidden: true,
+              },
+              {
+                value: 'Suivi',
+                label: 'Suivre une demande déposée sur France Chaleur Urbaine',
+              },
+              {
+                value: 'question',
+                label: 'Poser une question sur les réseaux de chaleur',
+              },
+              { value: 'partenariat', label: 'Établir un partenariat' },
+              {
+                value: 'suggestion',
+                label: 'Faire une suggestion pour le site',
+              },
+              { value: 'probleme', label: 'Signaler un problème sur le site' },
+              { value: 'autre', label: 'Autre' },
+            ]}
+            selected={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+          <TextInput
+            required
+            textarea
+            label="Votre message :"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={5}
+          />
+          <Button className="fr-mt-2w" submit>
+            Envoyer
+          </Button>
+        </form>
+      )}
+    </>
   );
 };
 

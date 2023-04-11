@@ -62,9 +62,7 @@ const EligibilityFormMessageConfirmation = ({
 
   const linkToMap =
     addressData?.geoAddress?.geometry?.coordinates &&
-    (!addressData.eligibility?.isBasedOnIris
-      ? `./carte/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`
-      : `https://carto.viaseva.org/public/viaseva/map/?coord=${addressData.geoAddress.geometry.coordinates.reverse()}&zoom=15`);
+    `./carte/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`;
 
   const { structure, computedEligibility } = addressData;
 

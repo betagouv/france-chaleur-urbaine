@@ -29,6 +29,43 @@ export const getAllNewDemands = async (): Promise<Demand[]> => {
   );
 };
 
+export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
+  const records = await base(Airtable.UTILISATEURS)
+    .select({
+      filterByFormula: `OR(
+        AND(
+          IS_BEFORE({Date de la demande}, DATEADD(TODAY(), -1, "months")),
+          {Relance à activer} = TRUE(),
+          {Recontacté par le gestionnaire} = "",
+          {Relance envoyée} = ""
+        ),
+        AND(
+          IS_BEFORE({Date de la demande}, DATEADD(TODAY(), -45, "days")),
+          {Recontacté par le gestionnaire} = "",
+          {Relance à activer} = TRUE(),
+          {Relance envoyée} != "",
+          {Seconde relance envoyée} = ""
+        )
+      )`,
+    })
+    .all();
+  return records.map(
+    (record) => ({ id: record.id, ...record.fields } as Demand)
+  );
+};
+
+export const getToRelanceDemand = async (
+  id: string
+): Promise<Demand | undefined> => {
+  const records = await base(Airtable.UTILISATEURS)
+    .select({
+      filterByFormula: `{Relance ID} = "${id}"`,
+    })
+    .all();
+  return records.map(
+    (record) => ({ id: record.id, ...record.fields } as Demand)
+  )[0];
+};
 export const getAllStaledDemandsSince = async (
   dateDiff: number
 ): Promise<Demand[]> => {
@@ -65,7 +102,6 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
     return [];
   }
 
-  const isDemoUser = user.gestionnaires.includes('DEMO');
   const records = await base(Airtable.UTILISATEURS)
     .select({
       sort: [{ field: 'Date demandes', direction: 'desc' }],
@@ -81,12 +117,12 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
             gestionnaires &&
             gestionnaires.some(
               (gestionnaire) =>
-                (isDemoUser && gestionnaire === 'Paris') ||
+                (user.role === USER_ROLE.DEMO && gestionnaire === 'Paris') ||
                 user.gestionnaires.includes(gestionnaire)
             )
           );
         });
-  return isDemoUser
+  return user.role === USER_ROLE.DEMO
     ? filteredRecords.map(
         (record) =>
           ({
@@ -103,18 +139,21 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
       );
 };
 
-export const getDemand = async (
+const getDemand = async (
   user: User,
   demandId: string
 ): Promise<Demand | null> => {
+  if (!user || user.role === USER_ROLE.ADMIN) {
+    return null;
+  }
+
   const record = await base(Airtable.UTILISATEURS).find(demandId);
   const gestionnaires = record.get('Gestionnaires') as string[];
   if (
-    user &&
-    (user.role === USER_ROLE.ADMIN ||
-      gestionnaires.some((gestionnaire) =>
-        user.gestionnaires.includes(gestionnaire)
-      ))
+    user.role === USER_ROLE.ADMIN ||
+    gestionnaires.some((gestionnaire) =>
+      user.gestionnaires.includes(gestionnaire)
+    )
   ) {
     return { id: record.id, ...record.fields } as Demand;
   }

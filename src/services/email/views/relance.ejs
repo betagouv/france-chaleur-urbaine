@@ -1,0 +1,83 @@
+<style>
+  .loginButton {
+    background-color: #000091;
+    color: white;
+    font-size: 1.25rem;
+    line-height: 2rem;
+    min-height: 3.5rem;
+    padding: 0.75rem 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    margin-right: 16px;
+  }
+</style>
+<html>
+  <body>
+    <div style="background-color: #f5f5ff; padding: 32px 16px">
+      <div style="background-color: white; margin: auto; max-width: 800px">
+        <div style="box-shadow: 0 2px 7px 0 rgb(0 0 0 / 21%)">
+          <img
+            style="height: 200px"
+            alt="France Chaleur Urbaine"
+            src="https://raw.githubusercontent.com/betagouv/france-chaleur-urbaine/dev/public/logo-fcu-with-typo.jpg"
+          />
+          <div style="padding: 16px 32px">
+            <div style="overflow-wrap: break-word">
+              <p>Bonjour <%= firstName %>,</p>
+              <p>
+                Le <%= date %>, vous avez utilisé France Chaleur Urbaine pour
+                être mis en relation avec le gestionnaire du réseau de chaleur
+                le plus proche de votre adresse, et obtenir une proposition
+                tarifaire. Merci encore pour votre confiance.
+              </p>
+              <p>
+                Nous souhaiterions
+                <b>
+                  nous assurer que notre service a bien répondu à vos attentes
+                </b>
+                et que votre projet de raccordement a pu avancer.
+              </p>
+              <br />
+              <p>
+                Avez-vous été contacté(e) par le gestionnaire du réseau de
+                chaleur ?
+              </p>
+              <br />
+              <p>
+                <a href="<%= link %>true" class="loginButton"> 👍 Oui </a>
+                <a href="<%= link %>false" class="loginButton"> 👎 Non </a>
+              </p>
+              <br />
+              <p>
+                <a href="https://app.calendso.incubateur.net/camillefwok/15min">
+                  Je prends rendez-vous
+                </a>
+                avec France Chaleur Urbaine
+              </p>
+              <br />
+              <p>
+                N'hésitez pas si vous avez la moindre question, nous nous tenons
+                à votre disposition.
+              </p>
+              <p>Cordialement,</p>
+              <p>L'équipe France Chaleur Urbaine</p>
+              <p>
+                Suivez notre actualité sur
+                <a
+                  href="https://www.linkedin.com/company/france-chaleur-urbaine?originalSubdomain=fr"
+                  >Linkedin</a
+                >
+                et <a href="https://twitter.com/FChaleurUrbaine">Twitter</a>
+              </p>
+            </div>
+          </div>
+          <img
+            style="height: 150px; margin-left: 32px"
+            alt="France Chaleur Urbaine"
+            src="https://upload.wikimedia.org/wikipedia/fr/2/22/Republique-francaise-logo.svg"
+          />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

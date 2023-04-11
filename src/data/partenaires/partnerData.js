@@ -90,13 +90,9 @@ export default [
     link: 'https://www.dalkia.fr/',
   },
   {
-    image: './logo-ENEMAT.png',
-    title: 'ENEMAT',
-    link: 'https://enemat.fr/operations/raccordement-reseau-chaleur-prime-cee',
-  },
-  {
     image: './logo-HOMELAND.png',
     title: 'Homeland',
     link: 'https://www.homeland.immo/',
   },
+  { image: './logo-Matera.png', title: 'Matera', link: 'https://matera.eu/fr' },
 ];

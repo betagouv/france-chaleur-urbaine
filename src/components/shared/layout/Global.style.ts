@@ -90,16 +90,19 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
       position: relative;
       border-radius: 2.5rem;
       background-color: #F9F8F6;
-      padding: 2rem 0 1rem !important;
+      padding: 2rem 0 !important;
 
       justify-content: space-between;
       width: auto;
       max-width: none;
       
       .rcu-comparatif-image-legend {
-        margin: 1rem;
+        margin: 1rem 1rem 0 1rem;
         text-align: center;
         color: #4550E5;
+        p {
+          margin-bottom: 0;
+        }
       }
     }
     

@@ -43,6 +43,7 @@ const Graph = ({
               hAxis: {
                 slantedText: true,
                 slantedTextAngle: 30,
+                format: 'MMMM YYYY',
               },
             }}
           />

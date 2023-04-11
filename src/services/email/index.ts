@@ -3,6 +3,7 @@ import ejs from 'ejs';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore: type not official
 import nodemailer from 'nodemailer';
+import { Demand } from 'src/types/Summary/Demand';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -174,4 +175,21 @@ export const sendBulkEligibilityError = async (
     '[France Chaleur Urbaine] Erreur lors de votre test',
     html
   );
+};
+
+export const sendRelanceMail = async (
+  demand: Demand,
+  id: string
+): Promise<void> => {
+  const html = await ejs.renderFile('./src/services/email/views/relance.ejs', {
+    firstName: demand.Prénom,
+    date: new Date(demand['Date demandes']).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+    link: `${process.env.NEXTAUTH_URL}/statisfaction?id=${id}&satisfaction=`,
+  });
+
+  return send([demand.Mail], 'Votre demande sur France Chaleur Urbaine', html);
 };
