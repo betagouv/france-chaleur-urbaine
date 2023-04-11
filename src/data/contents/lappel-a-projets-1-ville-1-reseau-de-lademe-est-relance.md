@@ -10,7 +10,5 @@ Retrouvez l'appel à projets ici :&#x20;
 
 [https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20230306/etudes-reseaux-chaleur-renouvelables-2-edition-jusqua-80-etudes?cible=78](https://agirpourlatransition.ademe.fr/entreprises/aides-financieres/20230306/etudes-reseaux-chaleur-renouvelables-2-edition-jusqua-80-etudes?cible=78)
 
-<figure><img src=".gitbook/assets/PostMars.jpg" alt=""><figcaption></figcaption></figure>
-
 ![](.gitbook/assets/1ville.jpg)
 

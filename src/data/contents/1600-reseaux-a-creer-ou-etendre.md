@@ -11,6 +11,4 @@ C'est le résultat du [schéma directeur national](https://www.reseauxdechaleur2
 
 
 
-<figure><img src=".gitbook/assets/1600reseaux.jpg" alt=""><figcaption></figcaption></figure>
-
 ![](.gitbook/assets/1600.jpg)

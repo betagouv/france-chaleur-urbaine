@@ -6,6 +6,4 @@
 \
 🔎 Comparer le coût global annuel pour un logement moyen ? C'est ici ! 👇
 
-<figure><img src=".gitbook/assets/image (3).png" alt=""><figcaption></figcaption></figure>
-
 ![](<.gitbook/assets/prix (1).jpg>)

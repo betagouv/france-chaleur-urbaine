@@ -7,6 +7,4 @@
 🔎 Pour comparer en un coup d'œil le coût de la chaleur pour un bâtiment tertiaire moyen, ci-dessous des données extraites de la dernière enquête [Association AMORCE](https://www.linkedin.com/company/association-amorce/) / [ADEME](https://www.linkedin.com/company/ademe/) sur le prix de vente de la chaleur (édition 2022 sur l'année 2021)\
 
 
-<figure><img src=".gitbook/assets/image (1).png" alt=""><figcaption></figcaption></figure>
-
 ![](.gitbook/assets/prix2.jpg)
