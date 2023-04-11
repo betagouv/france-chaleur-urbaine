@@ -11,6 +11,4 @@ coverY: 0
 \
 Source : enquête annuelle des réseaux de chaleur et de froid réalisée par la [FEDENE](https://www.linkedin.com/company/fedene/) (édition 2022)
 
-<figure><img src=".gitbook/assets/42.jpg" alt=""><figcaption></figcaption></figure>
-
 ![](.gitbook/assets/\_42.jpg)

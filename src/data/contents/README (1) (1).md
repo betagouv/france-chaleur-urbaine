@@ -12,6 +12,4 @@ En 2021, l'émission de 6,63 millions de tonnes de CO2 a été évitée grâce a
 Chaque raccordement compte pour sortir de notre dépendance aux énergies fossiles.\
 🛫 Alors décollage vers un avenir décarboné !
 
-<figure><img src=".gitbook/assets/image (6).png" alt=""><figcaption></figcaption></figure>
-
 ![](.gitbook/assets/663.jpg)
