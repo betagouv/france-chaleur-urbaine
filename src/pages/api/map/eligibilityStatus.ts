@@ -12,16 +12,16 @@ const eligibilityStatus = async (
     return res.status(501);
   }
   try {
-    const { lat, lon } = req.query as Record<string, string>;
+    const { lat, lon, city } = req.query as Record<string, string>;
 
-    if (!lat || !lon) {
+    if (!lat || !lon || !city) {
       res.status(400).json({
-        message: 'Parameters lat and lon are required',
+        message: 'Parameters city, lat and lon are required',
         code: 'Bad Arguments',
       });
       return;
     }
-    const result = await getElibilityStatus(Number(lat), Number(lon));
+    const result = await getElibilityStatus(Number(lat), Number(lon), city);
     return res.status(200).json(result);
   } catch (error) {
     // eslint-disable-next-line no-console
