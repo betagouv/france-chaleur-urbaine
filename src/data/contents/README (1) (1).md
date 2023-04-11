@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/avion.jpg
-coverY: 0
----
-
 # 6,63 millions d'allers-retours Paris New-York évités
 
 Les réseaux de chaleur sont un moyen concret et efficace de lutter contre le réchauffement climatique !
