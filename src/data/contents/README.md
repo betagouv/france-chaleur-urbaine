@@ -11,4 +11,4 @@ coverY: 0
 
 🤓 Retrouvez les chiffres clés pour avoir une vision d'ensemble en une infographie.
 
-![](.gitbook/assets/FCU\_Infographie4.jpg)
+![](.gitbook/assets/menage.jpg)
