@@ -148,8 +148,6 @@ export const getNbLogementById = async (
   return result;
 };
 
-const THRESHOLD = parseInt(process.env.NEXT_THRESHOLD || '0', 10);
-
 const headers = [
   'Adresse',
   'Adresse testée',
@@ -208,11 +206,20 @@ export const getExport = (addresses: any[]) => {
   return XLSX.write(wb, { bookType: EXPORT_FORMAT.XLSX, type: 'base64' });
 };
 
+const isEligible = (distance: number, city: string) => {
+  if (city && city.toLowerCase() === 'paris') {
+    return { isEligible: distance <= 100, veryEligibleDistance: 60 };
+  }
+  return { isEligible: distance <= 200, veryEligibleDistance: 100 };
+};
+
 export const getElibilityStatus = async (
   lat: number,
-  lon: number
+  lon: number,
+  city: string
 ): Promise<{
   isEligible: boolean;
+  veryEligibleDistance: number | null;
   distance: number | null;
   inZDP: boolean;
   isBasedOnIris: boolean;
@@ -227,7 +234,7 @@ export const getElibilityStatus = async (
   const network = await closestNetwork(lat, lon);
   if (network.distance !== null && Number(network.distance) < 1000) {
     return {
-      isEligible: Number(network.distance) <= THRESHOLD,
+      ...isEligible(Number(network.distance), city),
       distance: Math.round(network.distance),
       inZDP: await zdpPromise,
       isBasedOnIris: false,
@@ -237,10 +244,10 @@ export const getElibilityStatus = async (
       co2: network['contenu CO2 ACV'],
     };
   }
-  const isEligible = await irisNetwork;
   return {
-    isEligible,
+    isEligible: await irisNetwork,
     distance: null,
+    veryEligibleDistance: null,
     inZDP: await zdpPromise,
     isBasedOnIris: true,
     futurNetwork: false,

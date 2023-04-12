@@ -67,10 +67,13 @@ export const getContactResult = (
       keyPrimary = eligibility.isEligible
         ? 'provinceElligible'
         : 'provinceIneligible';
-    } else if (eligibility.distance !== null) {
-      if (eligibility.distance <= 100) {
+    } else if (
+      eligibility.distance !== null &&
+      eligibility.veryEligibleDistance !== null
+    ) {
+      if (eligibility.distance <= eligibility.veryEligibleDistance) {
         keyPrimary = 'lt100';
-      } else if (eligibility.distance <= 200) {
+      } else if (eligibility.isEligible) {
         keyPrimary = 'lt200';
       }
     }
