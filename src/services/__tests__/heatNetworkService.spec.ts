@@ -11,21 +11,21 @@ describe('heatNetwork service', () => {
   test('should correctly fetch data', () => {
     // Given
     const coords: Coords = { lat: 1, lon: 0 };
-    const expectedUrl = `${baseURL}?lat=${coords.lat}&lon=${coords.lon}`;
+    const expectedUrl = `${baseURL}?lat=${coords.lat}&lon=${coords.lon}&city=Marseille`;
     const service = new HeatNetworkService(FakeHttpClient);
     // When
-    service.findByCoords(coords);
+    service.findByCoords(coords, 'Marseille');
     // Then
     expect(FakeHttpClient.get).toHaveBeenNthCalledWith(1, expectedUrl);
   });
   test('should throw an error fetching fails', async () => {
     // Given
     const coords: Coords = { lat: 1, lon: 0 };
-    const expectedUrl = `${baseURL}?lat=${coords.lat}&lon=${coords.lon}`;
+    const expectedUrl = `${baseURL}?lat=${coords.lat}&lon=${coords.lon}&city=Marseille`;
     const service = new HeatNetworkService(FakeHttpClient);
     FakeHttpClient.get.mockRejectedValue({});
     // When
-    await service.findByCoords(coords).catch((resultError) => {
+    await service.findByCoords(coords, 'Marseille').catch((resultError) => {
       // Then
       expect(FakeHttpClient.get).toHaveBeenNthCalledWith(1, expectedUrl);
       expect(resultError).rejects;
