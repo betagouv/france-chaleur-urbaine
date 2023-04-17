@@ -12,6 +12,7 @@ import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-ur
 import page_2 from './page-2.md';
 import readme_1_1 from './README (1) (1).md';
 import readme_1 from './README (1).md';
+import readme_2 from './README (2).md';
 import readme from './README.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
@@ -22,10 +23,16 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/17.jpg',
+    title: 'Les réseaux de chaleur : des énergies verte',
+    slug: 'les-réseaux-de-chaleur-des-énergies-verte',
+    content: importFile(readme),
+  },
+  {
     image: '/contents/16.jpg',
     title: 'Les ménages français et le chauffage',
     slug: 'les-ménages-français-et-le-chauffage',
-    content: importFile(readme),
+    content: importFile(readme_2),
   },
   {
     image: '/contents/15.jpg',

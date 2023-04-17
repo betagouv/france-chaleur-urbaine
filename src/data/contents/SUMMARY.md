@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Les ménages français et le chauffage](README.md)
+* [Les réseaux de chaleur : des énergies verte](README.md)
+* [Les ménages français et le chauffage](<README (2).md>)
 * [La décarbonation des réseaux de chaleur est en marche !](<README (1).md>)
 * [L'appel à projets 1 ville 1 réseau de l'ADEME est relancé](lappel-a-projets-1-ville-1-reseau-de-lademe-est-relance.md)
 * [1600 réseaux à créer ou étendre](1600-reseaux-a-creer-ou-etendre.md)
