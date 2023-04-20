@@ -1,20 +1,14 @@
 ---
-cover: .gitbook/assets/17.jpg
+cover: .gitbook/assets/18.jpg
 coverY: 0
 ---
 
-# Les réseaux de chaleur : des énergies verte
+# La géothermie profonde
 
-🌳 Les réseaux de chaleur sont-ils vraiment écologiques ? C'est une question que les usagers de France Chaleur Urbaine nous posent souvent. La réponse est oui ! Pourquoi ? Parce qu'ils exploitent des énergies renouvelables et de récupération locales faiblement carbonées :&#x20;
+🤓 Toujours dans notre démarche de faciliter la compréhension par le grand public des réseaux de chaleur, nous entamons une série explicative sur les énergies renouvelables et de récupération qui alimentent les réseaux.\
+\
+1/ La [#géothermie](https://www.linkedin.com/feed/hashtag/?keywords=g%C3%A9othermie\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7053986241528131584) profonde, qui ne représente aujourd'hui 5.5 % du mix énergétique des réseaux de chaleur, mais dont le potentiel de développement est important : pour atteindre l'objectif fixé par la programmation pluriannuelle de l'énergie à l'horizon 2028, il faudra plus que doubler la production actuelle ! Un objectif auquel doit contribuer le plan d'action pour la géothermie publié début février par le Gouvernement.\
+\
+🔎 La géothermie, de quoi parle-t-on ? Une fiche pédagogique pour rendre accessibles à tous les informations de base ci-dessous, à partager largement !
 
-👉 la géothermie profonde, source d'énergie inépuisable que les réseaux de chaleur sont les seuls à exploiter&#x20;
-
-👉 la chaleur issue de l'incinération des ordures ménagères, qui est de toute façon produite et que le chauffage urbain permet de récupérer et valoriser&#x20;
-
-👉 la biomasse, issue de la gestion durable des forêts françaises et que les réseaux de chaleur permettent d'exploiter dans des systèmes performants préservant la qualité de l'air&#x20;
-
-👉 mais aussi : le solaire thermique, encore peu utilisé en France, mais très développé chez certains de nos voisins européens (Suède, Danemark,...) / la chaleur récupérée des datacenters /...&#x20;
-
-💚 Grâce au recours massif à ces énergies, la part de gaz et de fioul dans les réseaux de chaleur diminue d'année en année ! Quelques chiffres pour y voir plus clair ci-dessous :
-
-![](.gitbook/assets/enr.jpg)
+<figure><img src=".gitbook/assets/geothermie.jpg" alt=""><figcaption></figcaption></figure>
