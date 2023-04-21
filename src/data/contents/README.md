@@ -1,4 +1,5 @@
 ---
+cover: .gitbook/assets/champigny04.jpg
 coverY: 0
 ---
 
