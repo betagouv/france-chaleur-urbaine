@@ -1,6 +1,7 @@
 # Table of contents
 
-* [La géothermie profonde](README.md)
+* [Visite d'un forage de géothermie](README.md)
+* [La géothermie profonde](<README (1).md>)
 * [Les réseaux de chaleur : des énergies vertes](les-reseaux-de-chaleur-des-energies-vertes.md)
 * [Les ménages français et le chauffage](<README (2).md>)
 * [La décarbonation des réseaux de chaleur est en marche !](<README (1) (2).md>)

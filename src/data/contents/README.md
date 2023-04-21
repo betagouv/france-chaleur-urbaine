@@ -1,14 +1,11 @@
 ---
-cover: .gitbook/assets/18.jpg
 coverY: 0
 ---
 
-# La géothermie profonde
+# Visite d'un forage de géothermie
 
-🤓 Toujours dans notre démarche de faciliter la compréhension par le grand public des réseaux de chaleur, nous entamons une série explicative sur les énergies renouvelables et de récupération qui alimentent les réseaux.\
-\
-1/ La [#géothermie](https://www.linkedin.com/feed/hashtag/?keywords=g%C3%A9othermie\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7053986241528131584) profonde, qui ne représente aujourd'hui 5.5 % du mix énergétique des réseaux de chaleur, mais dont le potentiel de développement est important : pour atteindre l'objectif fixé par la programmation pluriannuelle de l'énergie à l'horizon 2028, il faudra plus que doubler la production actuelle ! Un objectif auquel doit contribuer le plan d'action pour la géothermie publié début février par le Gouvernement.\
-\
-🔎 La géothermie, de quoi parle-t-on ? Une fiche pédagogique pour rendre accessibles à tous les informations de base ci-dessous, à partager largement !
+Pour illustrer en images la [#géothermie](https://www.linkedin.com/feed/hashtag/?keywords=g%C3%A9othermie\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7055143326697549824) profonde, dont nous vous parlions dans notre dernier post, direction [Ville de Champigny-sur-Marne](https://www.linkedin.com/company/villedechampignysurmarne/) (94) !\
+Ce mardi, l'équipe France Chaleur Urbaine était sur le forage débuté mi-février, qui permettra d'ici mi-mai d'atteindre la nappe du Dogger dont la température avoisine les 70°C. Un [#réseaudechaleur](https://www.linkedin.com/feed/hashtag/?keywords=r%C3%A9seaudechaleur\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7055143326697549824) de 9 km permettra ensuite d'acheminer la chaleur géothermique vers 52 postes de livraison.\
+Un grand merci à [Groupe Coriance](https://www.linkedin.com/company/groupe-coriance/) et [Audrey CONSTANTIN](https://www.linkedin.com/in/ACoAABcGCLUBPGObMQkIy3K8ZDyqcWyvfPouqvE) pour l'organisation de cette visite.
 
-<figure><img src=".gitbook/assets/geothermie.jpg" alt=""><figcaption></figcaption></figure>
+![](.gitbook/assets/champigny03.jpg)![](.gitbook/assets/champigny02.jpg)![](<.gitbook/assets/champigny01 (1).jpg>)
