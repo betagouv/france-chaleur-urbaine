@@ -313,6 +313,14 @@ const EligibilityFormContact = ({
               <MarkdownWrapper
                 value={futurNetwork && futurHeader ? futurHeader : header}
               />
+              {addressData.eligibility?.inZDP && (
+                <>
+                  Votre bâtiment est situé dans le périmètre de développement
+                  prioritaire du réseau : une obligation de raccordement peut
+                  s’appliquer en cas de renouvellement de votre mode de
+                  chauffage.
+                </>
+              )}
               {readableDistance && (
                 <em className="distance">
                   Un réseau de chaleur se {futurNetwork ? 'trouvera' : 'trouve'}{' '}

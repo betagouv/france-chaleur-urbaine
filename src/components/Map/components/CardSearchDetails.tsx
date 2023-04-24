@@ -29,7 +29,7 @@ const CardSearchDetails = ({
   collapsed,
   setCollapsed,
 }: CardSearchDetailsProps) => {
-  const { distance, isEligible, futurNetwork } =
+  const { distance, isEligible, futurNetwork, inZDP } =
     storedAddress.addressDetails?.network || {};
 
   const [contactFormVisible, setContactFormVisible] = useState(false);
@@ -53,17 +53,54 @@ const CardSearchDetails = ({
       (isEligible && distance === null) ||
       (distance !== null && distance < 100)
     ) {
-      return futurNetwork
+      const baseMessage = futurNetwork
         ? 'Bonne nouvelle ! Un réseau de chaleur passera bientôt à proximité de cette adresse (prévu ou en construction).'
         : 'Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.';
+      return inZDP ? (
+        <>
+          {baseMessage}
+          <br />
+          Votre bâtiment est situé dans le périmètre de développement
+          prioritaire du réseau : une obligation de raccordement peut
+          s’appliquer en cas de renouvellement de votre mode de chauffage.
+        </>
+      ) : (
+        baseMessage
+      );
     }
     if (distance !== null && distance < 200) {
-      return futurNetwork
+      const baseMessage = futurNetwork
         ? 'Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs (prévu ou en construction).'
         : 'Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois le réseau n’est pas très loin.';
+      return inZDP ? (
+        <>
+          {baseMessage}
+          <br />
+          Votre bâtiment est situé dans le périmètre de développement
+          prioritaire du réseau : une obligation de raccordement peut
+          s’appliquer en cas de renouvellement de votre mode de chauffage.
+        </>
+      ) : (
+        baseMessage
+      );
     }
-    return "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";
-  }, [distance, isEligible, futurNetwork]);
+    {
+      const baseMessage =
+        "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";
+      return inZDP ? (
+        <>
+          {baseMessage}
+          <br />
+          Toutefois, votre bâtiment est situé dans le périmètre de développement
+          prioritaire du réseau : le réseau se développe et une obligation de
+          raccordement peut s’appliquer en cas de renouvellement de votre mode
+          de chauffage.
+        </>
+      ) : (
+        baseMessage
+      );
+    }
+  }, [distance, isEligible, futurNetwork, inZDP]);
 
   const onClickHandler = useCallback(
     (evt: React.MouseEvent<HTMLElement>) => {
@@ -112,6 +149,7 @@ const CardSearchDetails = ({
         <section>
           <EligibilityResult isEligible={isEligible}>
             {eligibilityWording}
+            {inZDP && <></>}
             <div>
               <strong>
                 {readableDistance &&
@@ -137,7 +175,7 @@ const CardSearchDetails = ({
                 <header>
                   {isEligible
                     ? 'Vous souhaitez en savoir plus et être recontacté par le gestionnaire du réseau ?'
-                    : 'Vous souhaitez tout de même faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
+                    : 'Vous souhaitez faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
                 </header>
               )}
               {!contactFormVisible && !storedAddress.contacted && (
