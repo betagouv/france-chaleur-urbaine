@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/champigny04.jpg
-coverY: 0
----
-
 # Visite d'un forage de géothermie
 
 Pour illustrer en images la [#géothermie](https://www.linkedin.com/feed/hashtag/?keywords=g%C3%A9othermie\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7055143326697549824) profonde, dont nous vous parlions dans notre dernier post, direction [Ville de Champigny-sur-Marne](https://www.linkedin.com/company/villedechampignysurmarne/) (94) !\

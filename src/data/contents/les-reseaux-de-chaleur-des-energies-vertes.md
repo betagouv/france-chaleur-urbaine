@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/17.jpg
-coverY: 0
----
-
 # Les réseaux de chaleur : des énergies verte
 
 🌳 Les réseaux de chaleur sont-ils vraiment écologiques ? C'est une question que les usagers de France Chaleur Urbaine nous posent souvent. La réponse est oui ! Pourquoi ? Parce qu'ils exploitent des énergies renouvelables et de récupération locales faiblement carbonées :&#x20;
