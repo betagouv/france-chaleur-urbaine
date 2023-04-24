@@ -3,6 +3,7 @@ import { SuggestionItem } from './Suggestions';
 export interface HeatNetworksResponse {
   isEligible: boolean;
   distance: number | null;
+  veryEligibleDistance: number | null;
   inZDP: boolean;
   isBasedOnIris: boolean;
   futurNetwork: boolean;

@@ -12,7 +12,6 @@ import {
 import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
-import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import { Button } from '@dataesr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
@@ -122,7 +121,10 @@ const HeadSlice = ({
     const [lon, lat] = geoAddress.geometry.coordinates;
     const coords = { lon, lat };
 
-    const networkData = await heatNetworkService.findByCoords(coords);
+    const networkData = await heatNetworkService.findByCoords(
+      coords,
+      geoAddress.properties.city
+    );
 
     handleOnSuccessAddress({
       address,
@@ -276,25 +278,24 @@ const HeadSlice = ({
             {displayBulkEligibility && (
               <Slice
                 padding={8}
-                theme="grey"
-                header={`## Vous souhaitez tester un grand nombre d’adresses pour identifier des bâtiments proches des réseaux de chaleur ? Rien de plus simple !`}
+                theme={alwaysDisplayBulkForm ? undefined : 'grey'}
                 direction="row"
               >
-                <WrappedBlock direction="column">
+                <div className="fr-col-lg-6 fr-col-md-12 fr-pr-4w">
                   <WrappedText
                     body={`
-::count-item[*Téléchargez votre fichier (une ligne par adresse)*]{number=1}
-::count-item[*Renseignez votre email*]{number=2}
-::count-item[*Recevez en quelques minutes par mail le résultat de votre test*]{number=3}
-::count-item[*Visualisez l’ensemble des adresses testées sur notre cartographie*]{number=4}
+### Testez un grand nombre d’adresses pour identifier des bâtiments proches des réseaux de chaleur !
+::count-item[*Téléchargez votre fichier (une ligne par adresse) et renseignez votre email*]{number=1}
+::count-item[*Recevez par mail le résultat de votre test*]{number=2}
+::count-item[*Visualisez les adresses testées sur notre cartographie*]{number=3}
+::count-item[*Vous pourrez ensuite sélectionner dans la liste les adresses celles pour lesquelles vous souhaitez être* **mis en relation par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.**]{number=4}
 `}
                   />
+                </div>
+                <div className="fr-col-lg-6 fr-col-md-12">
                   <BulkEligibilityForm />
-                </WrappedBlock>
-                <WrappedBlock direction="column">
-                  <WrappedText body="Vous pourrez ensuite sélectionner dans la liste des adresses celles pour lesquelles vous souhaitez être mis en relation par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur." />
-                  <img width="80%" src="/img/carto-addresses.svg" />
-                </WrappedBlock>
+                  <img width="100%" src="/img/carto-addresses.svg" />
+                </div>
               </Slice>
             )}
           </div>

@@ -53,8 +53,8 @@ const BulkEligibilityForm = () => {
           />
 
           <TextInput
-            label="Email :"
             type="email"
+            placeholder="Tapez ici votre email *"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             required

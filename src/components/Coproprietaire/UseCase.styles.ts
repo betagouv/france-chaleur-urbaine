@@ -6,7 +6,7 @@ export const Box = styled(Cartridge)`
     margin-bottom: -130px;
   }
   padding: 32px;
-  width: 450px;
+  max-width: 450px;
   h3 {
     margin-top: 16px;
     margin-bottom: 8px;

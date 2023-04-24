@@ -43,7 +43,11 @@ const Simulator = ({
   help = help * 0.75 * parseFloat(process.env.PRIX_SPOT_C2E || '6');
 
   return (
-    <Container withMargin={withMargin} cartridge={cartridge}>
+    <Container
+      withMargin={withMargin}
+      cartridge={cartridge}
+      withRedirection={withRedirection}
+    >
       {!cartridge && (
         <Title>
           Estimer le montant du Coup de pouce « Chauffage des bâtiments

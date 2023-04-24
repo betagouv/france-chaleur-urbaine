@@ -1,3 +1,4 @@
+import LastArticles from '@components/Articles/LastArticles';
 import Advantages from '@components/Coproprietaire/Advantages';
 import Infographies from '@components/Coproprietaire/Infographies';
 import Informations from '@components/Coproprietaire/Informations';
@@ -112,6 +113,10 @@ Cette obligation s’applique dans une certaine zone autour du réseau, qualifi�
           </Slice>
           <Slice theme="grey">
             <Understanding cards={coproprietaireCards} />
+          </Slice>
+          <Slice padding={8}>
+            <h2>Nos actus</h2>
+            <LastArticles />
           </Slice>
         </div>
       </MainContainer>

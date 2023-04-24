@@ -16,7 +16,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
-const version = 6;
+const version = 7;
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -185,6 +185,7 @@ const bulkEligibilitygibilityStatus = async (
     form.append('result_columns', 'longitude');
     form.append('result_columns', 'result_label');
     form.append('result_columns', 'result_score');
+    form.append('result_columns', 'result_city');
 
     const addressesCoords = await axios.post(
       'https://api-adresse.data.gouv.fr/search/csv/',
@@ -204,16 +205,24 @@ const bulkEligibilitygibilityStatus = async (
 
     for (let i = 1; i < addressesInformation.length - 1; i++) {
       const informations: string[] = addressesInformation[i];
-      const score = informations[informations.length - 1];
-      const label = informations[informations.length - 2];
-      const lon = informations[informations.length - 3];
-      const lat = informations[informations.length - 4];
-      const address = informations.slice(0, informations.length - 4).join(',');
+      const city = informations[informations.length - 1];
+      const score = informations[informations.length - 2];
+      const label = informations[informations.length - 3];
+      const lon = informations[informations.length - 4];
+      const lat = informations[informations.length - 5];
+      const address = informations.slice(0, informations.length - 5).join(',');
 
       const result = label
-        ? await getElibilityStatus(Number(lat), Number(lon))
+        ? await getElibilityStatus(Number(lat), Number(lon), city)
         : { isEligible: null };
-      results.push({ ...result, address, score, label, lat, lon });
+      results.push({
+        ...result,
+        address,
+        score: Math.round(Number.parseFloat(score) * 1000) / 1000,
+        label,
+        lat,
+        lon,
+      });
 
       if (result.isEligible) {
         eligibileCount++;

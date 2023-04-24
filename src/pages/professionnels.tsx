@@ -1,6 +1,8 @@
+import LastArticles from '@components/Articles/LastArticles';
 import HeadSliceForm from '@components/HeadSliceForm';
 import IFrame from '@components/IFrame/IFrame';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { issues, understandings } from '@components/Ressources/config';
 import Simulator from '@components/Ressources/Contents/Simulator';
 
@@ -8,8 +10,12 @@ import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
 import SimulatorCO2 from '@components/SimulatorCO2';
+import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
 import Slice from '@components/Slice';
+import Owner from '@components/Tertiaire/Owner';
+import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
+import { comparatifRcu } from '@data/tertiaire';
 import Head from 'next/head';
 
 const currentPage = 'professionnels';
@@ -48,45 +54,82 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
           alwaysDisplayBulkForm
           withBulkEligibility
         />
-        <Slice
-          theme="white"
-          padding={8}
-          header={`## Estimer les émissions de CO2 évitées par le raccordement d’un bâtiment à un réseau de chaleur*`}
-        >
-          <SimulatorCO2 />
+        <Slice padding={8} theme="grey">
+          <WrappedBlock>
+            <WrappedText
+              body={`
+### Le chauffage urbain, de nombreux avantages pour tous types de bâtiments de logements ou tertaires :
+::arrow-item[Réduction des factures de chauffage jusqu’à 40%]
+::arrow-item[Subventions mises en place par l’État et TVA à 5,5%]
+::arrow-item[Garantie d’un service public]
+::arrow-item[Diminution des émissions de CO2  jusqu’à 50%]
+        `}
+            />
+            <Cartridge theme="blue">
+              <WrappedText
+                body={`
+### France Chaleur Urbaine est un service gratuit du Ministère de la transition énergétique qui accompagne et outille les professionnels :
+::white-arrow-item[**[Cartographie](/carte)**  (réseaux actuels et en construction, bâtiments et leur mode de chauffage, extraction de données,...)]
+::white-arrow-item[**[Test](#test-liste)** de liste d’adresses]
+::white-arrow-item[Simulateur **[d’aide](#simulateur-aide)** et **[d’émissions de C02](#simulateur-co2)**]
+::white-arrow-item[Informations **légales**]
+        `}
+              />
+            </Cartridge>
+          </WrappedBlock>
         </Slice>
-        <Simulator withRedirection />
-        <Slice
-          padding={8}
-          header={`
-## La cartographie France Chaleur Urbaine
 
-*Un outil incontournable au service de l’accélération des raccordements*
-`}
-        >
+        <Slice padding={8}>
           <WrappedText
             textClassName="slice-carto-text"
             body={`
-Visualisez sur une même carte :
-
-::check-item[Les tracés des réseaux de chaleur]
-::check-item[Les bâtiments et leur mode de chauffage]
-::check-item[La liste des adresses que vous avez testées]
-
+::arrow-item[Localisez les réseaux de chaleur et accéder à leurs caractéristiques principales (taux ENR et contenu CO2 réglementaires,...)]
+::arrow-item[Identifiez les réseaux classés et découvrez leur périmètre de développement prioritaire (zone où s'applique une obligation de raccordement pour certains bâtiments)]
+::arrow-item[Visualisez et exportez des données sur les bâtiments (consommation énergétique, mode de chauffage...)]
 :button-link[Voir la cartographie]{href="./carte"}
 `}
             imgSrc="/img/rcu-carto.jpg"
             reverse
           />
         </Slice>
-
+        <Slice
+          padding={8}
+          theme="grey"
+          className="slice-comparatif-rcu"
+          header={`### La solution de chauffage la plus compétitive pour les bâtiments tertiaires !`}
+          id="simulateur-aide"
+        >
+          <WrappedBlock data={comparatifRcu} reverse>
+            <Simulator cartridge withRedirection />
+          </WrappedBlock>
+        </Slice>
+        <Owner />
         <IFrame />
 
-        <Slice theme="white" padding={8}>
+        <Slice
+          theme="color"
+          id="simulateur-co2"
+          padding={8}
+          header={'## Un moyen de lutter contre le changement climatique'}
+        >
+          <SimulatorCO2 typeSurf={TypeSurf.tertiaire}>
+            <MarkdownWrapper
+              value={`
+:::puce-icon{icon="./icons/picto-warning.svg"}
+**À partir du 1er juillet 2022,** de nouvelles normes environnementales, qui visent à limiter les émissions de gaz à effet de serre, entreront en vigueur et **excluent l'installation de nouvelles chaudières au fioul.**  
+**[Des aides](/ressources/aides#contenu) accompagnent cette transition.**
+:::
+              `}
+            />
+          </SimulatorCO2>
+        </Slice>
+
+        <Slice theme="grey" padding={8}>
           <Slice header={`## Comment se passe un raccordement&nbsp;?`} />
           <WrappedText
             center
             body={`
+::counter-item[01.] 
 *Le 100 rue du Paradis est un immeuble chauffé par une chaudière collective au gaz ayant 20 ans.*
 
 Un conseiller en rénovation ou le gestionnaire de l’immeuble cherche un chauffage *[plus performant et responsable](/ressources/avantages#contenu)* et vérifie sur *France Chaleur Urbaine* si le bâtiment est raccordable. 
@@ -97,10 +140,12 @@ Le conseiller en rénovation ou le gestionnaire de l’immeuble demande via Fran
 `}
             imgSrc="/img/user-experience-simple-1.svg"
             reverse
+            textClassName="user-experience-description"
           />
           <WrappedText
             center
             body={`
+::counter-item[02.] 
 *Les frais de raccordement s’élèvent à 105 000 €.*
 *Le « [Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires](/ressources/aides#contenu) » permet de réduire ce coût à 50 000 €, soit 400 € par lot.*
 
@@ -111,6 +156,7 @@ Depuis, l’immeuble bénéficie d’une bonne température de chauffe, d’une 
 *Une démarche écologique et économique.*
 `}
             imgSrc="/img/user-experience-simple-2.svg"
+            textClassName="user-experience-description"
           />
           <Slice>
             <MarkdownWrapper
@@ -119,8 +165,12 @@ Depuis, l’immeuble bénéficie d’une bonne température de chauffe, d’une 
             />
           </Slice>
         </Slice>
-        <Slice theme="color">
+        <Slice>
           <Understanding cards={conseillerCards} />
+        </Slice>
+        <Slice padding={8} theme="grey">
+          <h2>Nos actus</h2>
+          <LastArticles />
         </Slice>
       </MainContainer>
     </>

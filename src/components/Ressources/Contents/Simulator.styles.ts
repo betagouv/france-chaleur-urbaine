@@ -4,15 +4,18 @@ import styled from 'styled-components';
 export const Container = styled.div<{
   withMargin?: boolean;
   cartridge?: boolean;
+  withRedirection?: boolean;
 }>`
-  ${({ cartridge }) =>
+  ${({ cartridge, withRedirection }) =>
     cartridge
       ? `
-          background-color: rgba(205, 227, 240, 0.2);;
-          width: 450px;
+          background-color:  ${
+            withRedirection ? '#4550e5' : 'rgba(205, 227, 240, 0.2)'
+          };
+          max-width: 450px;
           border-radius: 0.7em;
         `
-      : 'background-color: #4550e5'}
+      : 'background-color: #4550e5;'}
   color: white;
   h4 {
     color: white;
