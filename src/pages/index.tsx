@@ -4,7 +4,6 @@ import Infographies from '@components/Coproprietaire/Infographies';
 import Informations from '@components/Coproprietaire/Informations';
 import Simulators from '@components/Coproprietaire/Simulators';
 import UseCase from '@components/Coproprietaire/UseCase';
-
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { issues, understandings } from '@components/Ressources/config';
