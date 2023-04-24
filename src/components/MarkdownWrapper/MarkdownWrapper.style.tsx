@@ -22,7 +22,6 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
     `}
   h1,
   h2 {
-    line-height: 1.5rem;
     color: #000074;
   }
   h3,
@@ -278,6 +277,48 @@ export const CountItem = ({
     <CountPuce>{number}</CountPuce>
     {children}
   </div>
+);
+
+const ArrowPuce = styled.div`
+  ${CheckItemFCU}
+  align-items: flex-start;
+  strong {
+    font-weight: 900;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  &::before {
+    margin-bottom: 0;
+    font-size: 24px;
+    margin-top: -8px;
+    background-image: url('/icons/picto-arrow.svg');
+  }
+`;
+
+const WhiteArrowPuce = styled(ArrowPuce)`
+  color: white;
+  em {
+    font-size: 16px;
+    line-height: 24px;
+    color: black !important;
+    background-color: #f8d86e;
+  }
+  &::before {
+    background-image: url('/icons/picto-white-arrow.svg');
+  }
+`;
+
+export const ArrowItem = ({ children }: { children: string }) => (
+  <ArrowPuce>
+    <div>{children}</div>
+  </ArrowPuce>
+);
+
+export const WhiteArrowItem = ({ children }: { children: string }) => (
+  <WhiteArrowPuce>
+    <div>{children}</div>
+  </WhiteArrowPuce>
 );
 
 type PuceIconType = {

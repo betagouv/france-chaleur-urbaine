@@ -1,6 +1,6 @@
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
-import { Container, Text } from './Infographies.styles';
+import { Container, Title } from './Infographies.styles';
 import {
   Box,
   CartridgeContent,
@@ -11,8 +11,8 @@ import {
 const UseCase = () => {
   return (
     <Container>
-      <Text>
-        <h2>Ils sont statisfaits :</h2>
+      <Title>
+        <h2>Ils sont satisfaits :</h2>
         <p>
           Découvrez en vidéo comment se passe concrètement un raccordement au
           chauffage urbain.
@@ -22,7 +22,7 @@ const UseCase = () => {
           src="/videos/FCU-accueil.mp4"
           poster="/videos/FCU-accueil.jpg"
         />
-      </Text>
+      </Title>
       <Box theme="blue">
         <h2>Cas concret</h2>
         <h3>Qui ?</h3>

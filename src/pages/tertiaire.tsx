@@ -16,7 +16,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainContainer currentMenu="/tertiaire">
+      <MainContainer currentMenu="/professionnels">
         <Tertiaire />
       </MainContainer>
     </>

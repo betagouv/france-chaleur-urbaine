@@ -12,7 +12,7 @@ import Slice from '@components/Slice';
 import WrappedText from '@components/WrappedText';
 import Head from 'next/head';
 
-const currentPage = 'conseiller';
+const currentPage = 'professionnels';
 const conseillerCards = {
   'energies-verte': issues['energies-verte'],
   avantages: understandings.avantages,
@@ -20,7 +20,7 @@ const conseillerCards = {
   prioritaire: understandings.prioritaire,
 };
 
-const Conseiller = () => {
+const Professionnels = () => {
   return (
     <>
       <Head>
@@ -40,8 +40,8 @@ const Conseiller = () => {
         <HeadSliceForm
           bg="/img/head-slice-bg-professionnels.svg"
           pageBody={`
-Bailleurs sociaux, bureaux d’étude, syndics, conseillers France Renov...
-# Avec le chauffage urbain, faites un choix d’avenir, écologique et économique`}
+Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, syndics, ...
+# Faites un choix d’avenir, écologique et économique`}
           formLabel="Le bâtiment pourrait-il être raccordé à un réseau de chaleur&nbsp;?"
           checkEligibility
           needGradient
@@ -127,4 +127,4 @@ Depuis, l’immeuble bénéficie d’une bonne température de chauffe, d’une 
   );
 };
 
-export default Conseiller;
+export default Professionnels;

@@ -9,6 +9,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import {
+  ArrowItem,
   ButtonLink,
   Cartridge,
   CheckItem,
@@ -20,6 +21,7 @@ import {
   PuceIcon,
   SmallText,
   ThumbItem,
+  WhiteArrowItem,
   WhiteCheckItem,
 } from './MarkdownWrapper.style';
 
@@ -92,6 +94,8 @@ const MarkdownWrapper: React.FC<{
         processor({
           'check-item': CheckItem,
           'count-item': CountItem,
+          'arrow-item': ArrowItem,
+          'white-arrow-item': WhiteArrowItem,
           'counter-item': CounterItem,
           'thumb-item': ThumbItem,
           'white-check-item': WhiteCheckItem,

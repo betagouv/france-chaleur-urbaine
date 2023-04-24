@@ -89,7 +89,6 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     .rcu-comparatif-image {
       position: relative;
       border-radius: 2.5rem;
-      background-color: #F9F8F6;
       padding: 2rem 0 !important;
 
       justify-content: space-between;
@@ -108,9 +107,12 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     
     .rcu-comparatif-image {
       flex-grow: 0;
+      background-color: white;
+
     }
     .rcu-comparatif-image-tertiaire {
       flex: 3;
+      background-color: #F9F8F6;
     }
 
     .rcu-comparatif-warning {

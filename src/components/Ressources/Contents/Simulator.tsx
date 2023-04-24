@@ -44,16 +44,7 @@ const Simulator = ({
 
   return (
     <Container withMargin={withMargin} cartridge={cartridge}>
-      {cartridge ? (
-        <>
-          <h4>Quelles aides pour se raccorder ?</h4>
-          <p>
-            Le coup de pouce « Chauffage des bâtiments résidentiels collectifs
-            et tertiaires » permet d’obtenir des aides financières conséquentes
-            pour se raccorder.
-          </p>
-        </>
-      ) : (
+      {!cartridge && (
         <Title>
           Estimer le montant du Coup de pouce « Chauffage des bâtiments
           résidentiels collectifs et tertiaires » pour le raccordement de mon
@@ -105,8 +96,7 @@ const Simulator = ({
             )}
           </Result>
           <Disclaimer cartridge={cartridge}>
-            *Montants donnés à titre indicatif. Contacter un des signataires de
-            la charte pour obtenir une offre.
+            *Montants donnés à titre indicatif.
           </Disclaimer>
         </div>
       </Form>

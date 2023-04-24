@@ -5,13 +5,14 @@ export const Container = styled.div<{
   withMargin?: boolean;
   cartridge?: boolean;
 }>`
-  background-color: #4550e5;
   ${({ cartridge }) =>
-    cartridge &&
-    `
-    width: 500px;
-    border-radius: 0.7em;
-  `}
+    cartridge
+      ? `
+          background-color: rgba(205, 227, 240, 0.2);;
+          width: 450px;
+          border-radius: 0.7em;
+        `
+      : 'background-color: #4550e5'}
   color: white;
   h4 {
     color: white;

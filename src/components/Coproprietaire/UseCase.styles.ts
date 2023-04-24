@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export const Box = styled(Cartridge)`
   @media (min-width: 1145px) {
-    margin-top: -130px;
+    margin-bottom: -130px;
   }
   padding: 32px;
   width: 450px;

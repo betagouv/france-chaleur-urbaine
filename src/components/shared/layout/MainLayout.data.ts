@@ -7,23 +7,23 @@ export const fullscreenFooterHeight = `301px`;
 
 export const menu = [
   {
-    label: 'Gestionnaire de bâtiments tertiaires',
-    url: '/tertiaire',
+    label: 'Professionnels',
+    url: '/professionnels',
   },
   {
-    label: 'Collectivité ou exploitant',
+    label: 'Collectivité, Exploitant',
     url: '/collectivites-et-exploitants',
-  },
-  {
-    label: 'Conseiller énergie, syndic, bailleur social...',
-    url: '/conseiller',
   },
   {
     label: 'Cartographie',
     url: '/carte',
   },
   {
-    label: 'Documentation',
+    label: 'Allez plus loin',
     url: '/ressources',
+  },
+  {
+    label: 'Nous contacter',
+    url: '/contact',
   },
 ];

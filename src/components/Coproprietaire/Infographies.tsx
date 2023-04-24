@@ -1,62 +1,64 @@
-import { Icon } from '@dataesr/react-dsfr';
-import Image from 'next/image';
-import {
-  Container,
-  Glass,
-  ImageContainer,
-  Images,
-  Text,
-} from './Infographies.styles';
+import { Glass, ImageContainer } from '@components/Infographie/index.styles';
+import { matomoEvent } from '@components/Markup';
+import WrappedText from '@components/WrappedText/WrappedText';
+import { Button, Icon } from '@dataesr/react-dsfr';
+import { Container, Title } from './Infographies.styles';
 
 const Infographies = () => {
   return (
-    <Container>
-      <Text>
-        <h2> Une énergie d'avenir</h2>
-        <h3>
+    <>
+      <Title>
+        <h2>
           Un chauffage <b>écologique</b> à <b>prix compétitif</b> déjà adopté
           par 6 millions de Français
-        </h3>
-        <p>
-          Un réseau de chaleur est un système de <b>canalisations</b> qui permet
-          d’acheminer vers un ensemble de <b>bâtiments</b> de la <b>chaleur</b>{' '}
-          produite <b>localement</b>, avec{' '}
-          <b>des sources d’énergies renouvelables ou de récupération</b>{' '}
-          (géothermie, biomasse, chaleur issue de l'incinération des
-          déchets...).
-        </p>
-      </Text>
-      <div>
-        <Images>
+        </h2>
+      </Title>
+      <Container>
+        <div className="fr-col-12 fr-col-md-6 fr-col-lg-7">
+          <WrappedText
+            body={`
+### Un réseau de chauffage urbain, c’est quoi ?
+::arrow-item[Un réseau de chaleur est un **système de canalisations souterraines qui acheminent vers des bâtiments de la chaleur** produite localement, avec des énergies renouvelables et de récupération (Incinération des ordures ménagères, biomasse, géothermie...).]
+::arrow-item[Cette chaleur est transportée jusqu'à **une sous-station installée dans votre copropriété**, qui assure le transfert avec les canalisations internes à l’immeuble, desservant les différents logements.]
+::arrow-item[Dans la plupart des cas, **le réseau de chaleur appartient à une collectivité territoriale et est géré en concession par un exploitant**, qui s’occupe notamment des raccordements.]
+::arrow-item[**France Chaleur Urbaine**, service du ministère de la transition énergétique, **vous informe et vous met en relation** avec le gestionnaire du réseau le plus proche de chez vous.]
+`}
+          />
+          <div className="fcuCoproGuide">
+            <img src="/img/copro_guide.png" alt="Guide de raccordement" />
+            <div>
+              <Button
+                onClick={() => {
+                  matomoEvent([
+                    'Téléchargement',
+                    'Guide FCU',
+                    'coproprietaire',
+                  ]);
+                  window.open(
+                    '/documentation/guide-france-chaleur-urbaine.pdf',
+                    '_blank'
+                  );
+                }}
+              >
+                Télécharger notre guide
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="fr-col-12 fr-col-md-6 fr-offset-lg-1 fr-col-lg-4">
           <ImageContainer href="/img/FCU_Infographie.jpg" target="_blank">
-            <Image
-              width={216}
-              height={350}
-              src="/img/copro_infographie_1.jpg"
-              alt="Infographie 1"
+            <img
+              width="100%"
+              src="/img/FCU_Infographie.jpg"
+              alt="Une solution d'avenir"
             />
             <Glass>
               <Icon name="ri-search-eye-fill" size="2x" />
             </Glass>
           </ImageContainer>
-          <ImageContainer href="/img/FCU_Infographie2.jpg" target="_blank">
-            <Image
-              width={216}
-              height={350}
-              src="/img/copro_infographie_2.jpg"
-              alt="Infographie 2"
-            />
-            <Glass>
-              <Icon name="ri-search-eye-fill" size="2x" />
-            </Glass>
-          </ImageContainer>
-        </Images>
-        <span>
-          Découvrez tous les <b>enjeux</b> des réseaux de chaleur en{' '}
-          <b>2 infographies</b>
-        </span>
-      </div>
-    </Container>
+        </div>
+      </Container>
+    </>
   );
 };
 
