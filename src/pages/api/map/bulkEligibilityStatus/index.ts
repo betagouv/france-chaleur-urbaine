@@ -16,7 +16,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
-const version = 6;
+const version = 7;
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -215,7 +215,14 @@ const bulkEligibilitygibilityStatus = async (
       const result = label
         ? await getElibilityStatus(Number(lat), Number(lon), city)
         : { isEligible: null };
-      results.push({ ...result, address, score, label, lat, lon });
+      results.push({
+        ...result,
+        address,
+        score: Math.round(Number.parseFloat(score) * 1000) / 1000,
+        label,
+        lat,
+        lon,
+      });
 
       if (result.isEligible) {
         eligibileCount++;
