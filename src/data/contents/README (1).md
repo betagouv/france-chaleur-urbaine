@@ -1,9 +1,9 @@
-# La décarbonation des réseaux de chaleur est en marche !
+# La géothermie profonde
 
-↘ En 10 ans, les émissions de CO2 associées au chauffage urbain ont diminué de 42%. Aujourd'hui, elles s'élèvent à 125 g CO2 ACV/kWh seulement, contre 227 g CO2/kWh pour le gaz et 324 gCO2/kWh pour le fioul.\
+🤓 Toujours dans notre démarche de faciliter la compréhension par le grand public des réseaux de chaleur, nous entamons une série explicative sur les énergies renouvelables et de récupération qui alimentent les réseaux.\
 \
-🎯 Et ce n'est pas fini ! Objectif ? Réduire encore ces émissions de 33% dès 2030, grâce au remplacement massif des énergies fossiles par des énergies renouvelables et de récupération... et atteindre la neutralité carbone en 2050.\
+1/ La géothermie profonde, qui ne représente aujourd'hui 5.5 % du mix énergétique des réseaux de chaleur, mais dont le potentiel de développement est important : pour atteindre l'objectif fixé par la programmation pluriannuelle de l'énergie à l'horizon 2028, il faudra plus que doubler la production actuelle ! Un objectif auquel doit contribuer le plan d'action pour la géothermie publié début février par le Gouvernement.\
 \
-Source : enquête annuelle des réseaux de chaleur et de froid réalisée par la [FEDENE](https://www.linkedin.com/company/fedene/) (édition 2022)
+🔎 La géothermie, de quoi parle-t-on ? Une fiche pédagogique pour rendre accessibles à tous les informations de base ci-dessous, à partager largement !
 
-![](.gitbook/assets/\_42.jpg)
+<figure><img src=".gitbook/assets/geothermie.jpg" alt=""><figcaption></figcaption></figure>
