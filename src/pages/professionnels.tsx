@@ -44,7 +44,7 @@ const Professionnels = () => {
         <GlobalStyle />
 
         <HeadSliceForm
-          bg="/img/head-slice-bg-professionnels.svg"
+          bg="/img/head-slice-bg-professionnels.png"
           pageBody={`
 Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, syndics, ...
 # Faites un choix d’avenir, écologique et économique`}
@@ -155,7 +155,7 @@ Depuis, l’immeuble bénéficie d’une bonne température de chauffe, d’une 
 
 *Une démarche écologique et économique.*
 `}
-            imgSrc="/img/user-experience-simple-2.svg"
+            imgSrc="/img/user-experience-simple-2.png"
             textClassName="user-experience-description"
           />
           <Slice>

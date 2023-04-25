@@ -1,10 +1,10 @@
 import Slice from '@components/Slice';
 import WrappedText from '@components/WrappedText';
 
-const IFrame = () => {
+const IFrame = ({ theme }: { theme?: string }) => {
   return (
-    <Slice id="iframe" padding={8} theme="grey" direction="row">
-      <WrappedText imgSrc="/img/iframe.svg" reverse>
+    <Slice id="iframe" padding={8} theme={theme} direction="row">
+      <WrappedText imgSrc="/img/iframe.png" reverse>
         <div className="slice-carto-text">
           <h3>
             Offrez aux visiteurs de votre site la possibilité de vérifier

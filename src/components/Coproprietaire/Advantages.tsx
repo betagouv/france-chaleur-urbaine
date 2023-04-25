@@ -1,5 +1,5 @@
 import { Advantage } from './Advantages.styles';
-import { Title } from './Infographies.styles';
+import { Title } from './Explanation.styles';
 import { Container } from './Informations.styles';
 
 const Advantages = () => {

@@ -1,6 +1,6 @@
 import {
-  Header as HeaderDS,
   HeaderBody,
+  Header as HeaderDS,
   HeaderNav,
   HeaderOperator,
   Logo,
@@ -25,7 +25,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
       <ToolItemGroup>
         <ToolItem
           asLink={
-            <Link href="/qui-sommes-nous">
+            <Link legacyBehavior href="/qui-sommes-nous">
               <a className="fr-link">Qui sommes-nous ?</a>
             </Link>
           }
@@ -35,7 +35,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
         {session.user.role === USER_ROLE.ADMIN ? (
           <ToolItem
             asLink={
-              <Link href="/admin">
+              <Link legacyBehavior href="/admin">
                 <a className="fr-link">Admin</a>
               </Link>
             }
@@ -47,7 +47,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
         )}
         <ToolItem
           asLink={
-            <Link href="/gestionnaire">
+            <Link legacyBehavior href="/gestionnaire">
               <a className="fr-link">Espace gestionnaire</a>
             </Link>
           }
@@ -62,7 +62,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
       <ToolItemGroup>
         <ToolItem
           asLink={
-            <Link href="/qui-sommes-nous">
+            <Link legacyBehavior href="/qui-sommes-nous">
               <a className="fr-link">Qui sommes-nous ?</a>
             </Link>
           }
@@ -71,7 +71,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
         </ToolItem>
         <ToolItem
           asLink={
-            <Link href="/connexion">
+            <Link legacyBehavior href="/connexion">
               <a className="fr-link">Espace gestionnaire</a>
             </Link>
           }
@@ -115,7 +115,13 @@ const Header = ({
                 </a>
               }
               description="Faciliter les raccordements aux réseaux de chaleur"
-              asLink={<Link href={indexLink} title="Revenir à l'accueil" />}
+              asLink={
+                <Link
+                  legacyBehavior
+                  href={indexLink}
+                  title="Revenir à l'accueil"
+                />
+              }
             />
           )}
           {!fullscreen && <ToolItems session={session} />}
@@ -132,13 +138,9 @@ const Header = ({
           </li>
         )}
         <NavItem
-          title={'Copropriétaire'}
+          title="Copropriétaire"
           current={currentMenu === indexLink}
-          asLink={
-            <Link href={indexLink} legacyBehavior={false}>
-              {'Copropriétaire'}
-            </Link>
-          }
+          asLink={<Link href={indexLink}>Copropriétaire</Link>}
         />
 
         {menu.map(({ label, url }) => (
@@ -146,11 +148,7 @@ const Header = ({
             key={url}
             title={label}
             current={currentMenu === url}
-            asLink={
-              <Link href={url} legacyBehavior={false}>
-                {label}
-              </Link>
-            }
+            asLink={<Link href={url}>{label}</Link>}
           />
         ))}
       </HeaderNav>

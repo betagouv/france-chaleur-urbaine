@@ -1,18 +1,18 @@
-import AddressAutocomplete from '@components/addressAutocomplete';
 import {
   EligibilityFormContact,
   EligibilityFormMessageConfirmation,
   EnergyInputsLabelsType,
 } from '@components/EligibilityForm';
 import BulkEligibilityForm from '@components/EligibilityForm/BulkEligibilityForm';
+import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
 import {
   CheckEligibilityFormLabel,
   SelectEnergy,
 } from '@components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
 import WrappedText from '@components/WrappedText';
+import AddressAutocomplete from '@components/addressAutocomplete';
 import { Button } from '@dataesr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
 import { useRouter } from 'next/router';
@@ -294,7 +294,7 @@ const HeadSlice = ({
                 </div>
                 <div className="fr-col-lg-6 fr-col-md-12">
                   <BulkEligibilityForm />
-                  <img width="100%" src="/img/carto-addresses.svg" />
+                  <img width="100%" src="/img/carto-addresses.png" />
                 </div>
               </Slice>
             )}

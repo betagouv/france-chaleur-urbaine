@@ -1,7 +1,7 @@
 import Simulator from '@components/Ressources/Contents/Simulator';
 import WrappedText from '@components/WrappedText/WrappedText';
 import Link from 'next/link';
-import { Container } from './Infographies.styles';
+import { Container } from './Explanation.styles';
 
 const Simulators = () => {
   return (

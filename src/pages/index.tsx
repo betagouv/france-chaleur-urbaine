@@ -1,6 +1,6 @@
 import LastArticles from '@components/Articles/LastArticles';
 import Advantages from '@components/Coproprietaire/Advantages';
-import Infographies from '@components/Coproprietaire/Infographies';
+import Explanation from '@components/Coproprietaire/Explanation';
 import Informations from '@components/Coproprietaire/Informations';
 import Simulators from '@components/Coproprietaire/Simulators';
 import UseCase from '@components/Coproprietaire/UseCase';
@@ -57,7 +57,7 @@ Améliorez votre confort et baissez vos factures !
             <Advantages />
           </Slice>
           <Slice padding={8}>
-            <Infographies />
+            <Explanation />
           </Slice>
           <Slice
             padding={8}

@@ -14,7 +14,7 @@ const Accueil = () => {
     <MainContainer currentMenu={'/accueil'}>
       <GlobalStyle />
       <HeadSliceForm
-        bg="/img/head-slice-bg-accueil.png"
+        bg="/img/head-slice-bg-accueil.jpg"
         pageBody={`
 Un choix tourné vers l'avenir !
 # Avec le chauffage urbain, faites des économies`}

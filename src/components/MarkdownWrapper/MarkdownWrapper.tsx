@@ -14,9 +14,8 @@ import {
   ButtonLink,
   Cartridge,
   CheckItem,
-  CounterItem,
   CountItem,
-  isExternalLink,
+  CounterItem,
   KnowMoreLink,
   MarkdownWrapperStyled,
   PuceIcon,
@@ -24,6 +23,7 @@ import {
   ThumbItem,
   WhiteArrowItem,
   WhiteCheckItem,
+  isExternalLink,
 } from './MarkdownWrapper.style';
 
 const RoutedLink = (props: any) => {
@@ -35,11 +35,7 @@ const RoutedLink = (props: any) => {
         ? ['nofollow', 'noopener', 'noreferrer'].join(' ')
         : '',
   };
-  return (
-    <Link href={href} prefetch={false} passHref>
-      <a {...props} {...extProps} />
-    </Link>
-  );
+  return <Link {...props} {...extProps} />;
 };
 
 const ConsentLink: React.FC<{

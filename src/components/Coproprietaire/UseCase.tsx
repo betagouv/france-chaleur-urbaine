@@ -1,6 +1,6 @@
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
-import { Container, Title } from './Infographies.styles';
+import { Container, Title } from './Explanation.styles';
 import {
   Box,
   CartridgeContent,
