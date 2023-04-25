@@ -8,10 +8,13 @@ import lappelAProjets1Ville1ReseauDeLademeEstRelance from './lappel-a-projets-1-
 import leChauffageLePlusEconomiquePourLhabitatCollectif from './le-chauffage-le-plus-economique-pour-lhabitat-collectif.md';
 import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.md';
 import leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorable from './le-chauffage-urbain-pour-les-batiments-tertiaires-un-contexte-on-ne-peut-plus-favorable.md';
+import lesReseauxDeChaleurDesEnergiesVertes from './les-reseaux-de-chaleur-des-energies-vertes.md';
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
 import page_2 from './page-2.md';
 import readme_1_1 from './README (1) (1).md';
+import readme_1_2 from './README (1) (2).md';
 import readme_1 from './README (1).md';
+import readme_2 from './README (2).md';
 import readme from './README.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
@@ -22,16 +25,34 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/champigny04.jpg',
+    title: "Visite d'un forage de géothermie",
+    slug: 'visite-d-un-forage-de-géothermie',
+    content: importFile(readme),
+  },
+  {
+    image: '/contents/18.jpg',
+    title: 'La géothermie profonde',
+    slug: 'la-géothermie-profonde',
+    content: importFile(readme_1),
+  },
+  {
+    image: '/contents/17.jpg',
+    title: 'Les réseaux de chaleur : des énergies vertes',
+    slug: 'les-réseaux-de-chaleur-des-énergies-vertes',
+    content: importFile(lesReseauxDeChaleurDesEnergiesVertes),
+  },
+  {
     image: '/contents/16.jpg',
     title: 'Les ménages français et le chauffage',
     slug: 'les-ménages-français-et-le-chauffage',
-    content: importFile(readme),
+    content: importFile(readme_2),
   },
   {
     image: '/contents/15.jpg',
     title: 'La décarbonation des réseaux de chaleur est en marche !',
     slug: 'la-décarbonation-des-réseaux-de-chaleur-est-en-marche',
-    content: importFile(readme_1),
+    content: importFile(readme_1_2),
   },
   {
     image: '/contents/08.jpg',
