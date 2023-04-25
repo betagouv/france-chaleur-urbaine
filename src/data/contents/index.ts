@@ -1,6 +1,9 @@
 import { Article } from 'src/types/Article';
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
+import readme_1_1 from './README (1) (1).md';
+import readme_1 from './README (1).md';
+import readme from './README.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
 import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urbaine-se-construit-avec-ses-usagers.md';
@@ -10,9 +13,6 @@ import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.
 import leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorable from './le-chauffage-urbain-pour-les-batiments-tertiaires-un-contexte-on-ne-peut-plus-favorable.md';
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
 import page_2 from './page-2.md';
-import readme_1_1 from './README (1) (1).md';
-import readme_1 from './README (1).md';
-import readme from './README.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
 

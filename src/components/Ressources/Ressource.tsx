@@ -8,12 +8,12 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { growths, issues, understandings } from './config';
 import Guide from './Guide';
 import Header from './Header';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
 import StickyForm from './StickyForm';
+import { growths, issues, understandings } from './config';
 
 const getContent = (ressourceKey: string) => {
   return (

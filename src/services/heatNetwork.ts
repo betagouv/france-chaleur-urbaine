@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
 import { HttpClient } from 'src/services/http';
 import { Coords } from 'src/types/Coords';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
+import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ServiceError } from './errors';
 
 export class HeatNetworkService {

@@ -1,12 +1,12 @@
 import { CardDescription, CardTitle } from '@dataesr/react-dsfr';
 import Link from 'next/link';
-import { Document, understandings } from './config';
 import {
   BottomLink,
   CardContainer,
   UnderstandingCard,
   UnderstandingCards,
 } from './Understanding.styles';
+import { Document, understandings } from './config';
 
 const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {
   return (

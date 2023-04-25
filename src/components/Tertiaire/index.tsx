@@ -1,17 +1,17 @@
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import { growths, issues, understandings } from '@components/Ressources/config';
 import Understanding from '@components/Ressources/Understanding';
-import { GlobalStyle } from '@components/shared/layout/Global.style';
+import { growths, issues, understandings } from '@components/Ressources/config';
 import Simulator from '@components/SimulatorCO2';
 import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
+import { GlobalStyle } from '@components/shared/layout/Global.style';
 import { comparatifRcu, fcuSolutionForFutur } from '@data/tertiaire';
-import { TertiaireStyle } from './index.styles';
 import Owner from './Owner';
+import { TertiaireStyle } from './index.styles';
 
 const tertiaireCards = {
   'energies-verte': issues['energies-verte'],

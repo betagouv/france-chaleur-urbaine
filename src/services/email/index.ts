@@ -188,7 +188,7 @@ export const sendRelanceMail = async (
       month: 'long',
       day: 'numeric',
     }),
-    link: `${process.env.NEXTAUTH_URL}/statisfaction?id=${id}&satisfaction=`,
+    link: `${process.env.NEXTAUTH_URL}/satisfaction?id=${id}&satisfaction=`,
   });
 
   return send([demand.Mail], 'Votre demande sur France Chaleur Urbaine', html);

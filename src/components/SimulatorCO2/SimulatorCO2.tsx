@@ -2,13 +2,13 @@ import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { Select } from '@dataesr/react-dsfr';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
+  TypeEnergy,
+  TypeSurf,
   dataEnergy,
   getConso,
   getEconomy,
   getEmissionCO2,
   getPercentGasReduct,
-  TypeEnergy,
-  TypeSurf,
 } from './SimulatorCO2.businessRule';
 import { dataSimulator } from './SimulatorCO2.data';
 import {
