@@ -15,8 +15,8 @@ const Informations = () => {
         <Information className="fr-col-md-12 fr-col-lg-3">
           <WhiteCheckItem>
             <div>
-              Découvrir <b>instantanément</b> si un réseau passe près de chez
-              vous
+              Découvrir <b>instantanément</b> si un réseau de chaleur passe près
+              de chez vous
             </div>
           </WhiteCheckItem>
         </Information>

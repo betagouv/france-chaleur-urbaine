@@ -11,7 +11,7 @@ export const menu = [
     url: '/professionnels',
   },
   {
-    label: 'Collectivité, Exploitant',
+    label: 'Collectivité, exploitant',
     url: '/collectivites-et-exploitants',
   },
   {

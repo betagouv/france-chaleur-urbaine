@@ -57,7 +57,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
         <Container className="fr-my-4w" as="main">
           <Row>
             <Col n="md-3 12">
-              <SideMenu title="Aller plus loin :" buttonLabel="Sommaire">
+              <SideMenu title="Allez plus loin :" buttonLabel="Sommaire">
                 <SideMenuItem
                   title="Les enjeux de la transition énergétique avec les réseaux de chaleur"
                   expandedDefault
@@ -70,6 +70,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                         <Link
                           href={`/ressources/${key}#contenu`}
                           scroll={false}
+                          legacyBehavior
                         >
                           <a
                             className="fr-sidemenu__link fr-link--md"
@@ -100,6 +101,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                           <Link
                             href={`/ressources/${key}#contenu`}
                             scroll={false}
+                            legacyBehavior
                           >
                             <a
                               className="fr-sidemenu__link fr-link--md"
@@ -130,6 +132,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                         <Link
                           href={`/ressources/${key}#contenu`}
                           scroll={false}
+                          legacyBehavior
                         >
                           <a
                             className="fr-sidemenu__link fr-link--md"

@@ -24,7 +24,7 @@ Le présent document a pour objet de régler les relations entre les différents
 ### Objet
 
 Le service est une application web qui vous permet de :
-- Saisir l’adresse d’un bâtiment et savoir s’il est situé à proximité d’un réseau de chaleur. Par “à proximité”, le service désigne les bâtiments qui sont à moins de 100 mètres d’un réseau de chaleur ce qui accroît la probabilité de pouvoir réaliser un raccordement.
+- Saisir l’adresse d’un bâtiment et savoir s’il est situé à proximité d’un réseau de chaleur. Par « à proximité », le service désigne les bâtiments qui sont à moins de 100 mètres d’un réseau de chaleur ce qui accroît la probabilité de pouvoir réaliser un raccordement.
 - Saisir vos coordonnées en vue d’obtenir des informations  techniques et commerciales de la part de l’opérateur du réseau de chaleur à proximité
 - Consulter une carte montrant les tracés des réseaux de chaleur, les potentiels de raccordement à l’adresse, et la localisation des demandes reçues sur France Chaleur Urbaine. Cette dernière information a pour objectif de susciter des projets de création d’extensions ou de nouveaux réseaux là où de fortes attentes sont identifiées.
 

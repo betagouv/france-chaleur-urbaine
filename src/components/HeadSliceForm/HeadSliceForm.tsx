@@ -3,7 +3,6 @@ import {
   EligibilityFormMessageConfirmation,
   EnergyInputsLabelsType,
 } from '@components/EligibilityForm';
-import BulkEligibilityForm from '@components/EligibilityForm/BulkEligibilityForm';
 import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
 import {
   CheckEligibilityFormLabel,
@@ -11,21 +10,15 @@ import {
 } from '@components/EligibilityForm/components';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
-import WrappedText from '@components/WrappedText';
 import AddressAutocomplete from '@components/addressAutocomplete';
 import { Button } from '@dataesr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
 import { useRouter } from 'next/router';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { AvailableHeating } from 'src/types/AddressData';
 import { SuggestionItem } from 'src/types/Suggestions';
+import BulkEligibilitySlice from './BulkEligibilitySlice';
 import {
   Buttons,
   Container,
@@ -50,7 +43,7 @@ type HeadBannerType = {
   pageBody?: string;
   children?: React.ReactNode;
   needGradient?: boolean;
-  alwaysDisplayBulkForm?: boolean;
+  externBulkForm?: boolean;
   withBulkEligibility?: boolean;
 };
 
@@ -63,7 +56,7 @@ const HeadSlice = ({
   pageBody,
   children,
   needGradient,
-  alwaysDisplayBulkForm,
+  externBulkForm,
   withBulkEligibility,
 }: HeadBannerType) => {
   const {
@@ -88,10 +81,7 @@ const HeadSlice = ({
   const [address, setAddress] = useState('');
   const [autoValidate, setAutoValidate] = useState(false);
 
-  const bulkEligibilityRef = useRef<null | HTMLDivElement>(null);
-  const [displayBulkEligibility, setDisplayBulkEligibility] = useState(
-    !!alwaysDisplayBulkForm
-  );
+  const [displayBulkEligibility, setDisplayBulkEligibility] = useState(false);
 
   const child = useMemo(
     () =>
@@ -209,9 +199,7 @@ const HeadSlice = ({
                   secondary
                   onClick={() => {
                     setDisplayBulkEligibility(true);
-                    bulkEligibilityRef.current?.scrollIntoView({
-                      behavior: 'smooth',
-                    });
+                    router.push('#test-liste');
                   }}
                 >
                   Ou tester une liste d’adresses
@@ -273,32 +261,10 @@ const HeadSlice = ({
           <EligibilityFormMessageConfirmation addressData={addressData} />
         </Slice>
 
-        {withBulkEligibility && (
-          <div ref={bulkEligibilityRef} id="test-liste">
-            {displayBulkEligibility && (
-              <Slice
-                padding={8}
-                theme={alwaysDisplayBulkForm ? undefined : 'grey'}
-                direction="row"
-              >
-                <div className="fr-col-lg-6 fr-col-md-12 fr-pr-4w">
-                  <WrappedText
-                    body={`
-### Testez un grand nombre d’adresses pour identifier des bâtiments proches des réseaux de chaleur !
-::count-item[*Téléchargez votre fichier (une ligne par adresse) et renseignez votre email*]{number=1}
-::count-item[*Recevez par mail le résultat de votre test*]{number=2}
-::count-item[*Visualisez les adresses testées sur notre cartographie*]{number=3}
-::count-item[*Vous pourrez ensuite sélectionner dans la liste les adresses celles pour lesquelles vous souhaitez être* **mis en relation par France Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de chaleur.**]{number=4}
-`}
-                  />
-                </div>
-                <div className="fr-col-lg-6 fr-col-md-12">
-                  <BulkEligibilityForm />
-                  <img width="100%" src="/img/carto-addresses.png" />
-                </div>
-              </Slice>
-            )}
-          </div>
+        {!externBulkForm && withBulkEligibility && (
+          <BulkEligibilitySlice
+            displayBulkEligibility={displayBulkEligibility}
+          />
         )}
       </div>
     </>

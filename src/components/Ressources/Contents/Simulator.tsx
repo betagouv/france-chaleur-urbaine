@@ -17,13 +17,17 @@ const Simulator = ({
   withMargin,
   withRedirection,
   children,
+  defaultStructure,
+  withTitle,
 }: {
   cartridge?: boolean;
   withMargin?: boolean;
   withRedirection?: boolean;
   children?: ReactNode;
+  defaultStructure?: string;
+  withTitle?: boolean;
 }) => {
-  const [structure, setStructure] = useState('Résidentiel');
+  const [structure, setStructure] = useState(defaultStructure || 'Résidentiel');
   const [value, setValue] = useState('');
 
   useEffect(() => {
@@ -48,7 +52,7 @@ const Simulator = ({
       cartridge={cartridge}
       withRedirection={withRedirection}
     >
-      {!cartridge && (
+      {withTitle && (
         <Title>
           Estimer le montant du Coup de pouce « Chauffage des bâtiments
           résidentiels collectifs et tertiaires » pour le raccordement de mon

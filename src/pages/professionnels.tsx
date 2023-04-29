@@ -1,5 +1,6 @@
 import LastArticles from '@components/Articles/LastArticles';
 import HeadSliceForm from '@components/HeadSliceForm';
+import BulkEligibilitySlice from '@components/HeadSliceForm/BulkEligibilitySlice';
 import IFrame from '@components/IFrame/IFrame';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
@@ -51,10 +52,10 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
           formLabel="Le bâtiment pourrait-il être raccordé à un réseau de chaleur&nbsp;?"
           checkEligibility
           needGradient
-          alwaysDisplayBulkForm
+          externBulkForm
           withBulkEligibility
         />
-        <Slice padding={8} theme="grey">
+        <Slice padding={8}>
           <WrappedBlock>
             <WrappedText
               body={`
@@ -65,7 +66,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
 ::arrow-item[Diminution des émissions de CO2  jusqu’à 50%]
         `}
             />
-            <Cartridge theme="blue">
+            <Cartridge style={{ maxWidth: '500px' }} theme="blue">
               <WrappedText
                 body={`
 ### France Chaleur Urbaine est un service gratuit du Ministère de la transition énergétique qui accompagne et outille les professionnels :
@@ -78,7 +79,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
             </Cartridge>
           </WrappedBlock>
         </Slice>
-
+        <BulkEligibilitySlice displayBulkEligibility />
         <Slice padding={8}>
           <WrappedText
             textClassName="slice-carto-text"
@@ -100,7 +101,12 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
           id="simulateur-aide"
         >
           <WrappedBlock data={comparatifRcu} reverse>
-            <Simulator cartridge withRedirection />
+            <Simulator
+              cartridge
+              withRedirection
+              defaultStructure="Tertiaire"
+              withTitle
+            />
           </WrappedBlock>
         </Slice>
         <Owner />
@@ -171,6 +177,19 @@ Depuis, l’immeuble bénéficie d’une bonne température de chauffe, d’une 
         <Slice padding={8} theme="grey">
           <h2>Nos actus</h2>
           <LastArticles />
+        </Slice>
+        <Slice theme="color-light" padding={8}>
+          <WrappedText
+            center
+            body={`#### Raccordement des bâtiments tertiaires au chauffage urbain
+
+:small[Un contexte favorable]
+
+:small[Au niveau européen, la France ne se place qu’en 20ème position en termes de recours aux réseaux de chaleur, avec environ 5 % des besoins en chaleur du pays couverts par le chauffage urbain. Le secteur tertiaire représente près de 36 % des livraisons annuelles de chaleur par les réseaux.]
+
+:small[Aujourd’hui, de nombreux établissements tertiaires sont amenés à réaliser des travaux de rénovation thermique pour réduire leurs consommations d’énergie et satisfaire les obligations du dispositif éco-énergie tertiaire. C’est le moment opportun pour changer de mode de chauffage et opter pour un raccordement au réseau de chaleur dès lors que celui-ci est possible. Le [coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaire](/ressources/aides#contenu) permet de réduire significativement les frais de raccordement.]
+`}
+          />
         </Slice>
       </MainContainer>
     </>

@@ -61,7 +61,7 @@ Le projet peut alors être soumis au vote de l’assemblée générale de la cop
 - le bâtiment est équipé d’un système de chauffage individuel avec un système de distribution de la chaleur à eau → il possède les équipements adaptés au sein des logements ;
 - le bâtiment est équipé d’un système de chauffage individuel électrique → les équipements nécessaires à la desserte de la chaleur au sein de la copropriété devront être mis en place, ce qui peut s’avérer coûteux et techniquement compliqué. 
 
-C’est le gestionnaire du réseau de chaleur auquel la copropriété se raccorde qui est en charge de la réalisation des travaux sur le réseau dit “primaire”, qui s’arrête au pied de l’immeuble. Ces travaux sont suivis par la copropriété, qui est associée aux réunions de chantier. Sur le réseau “secondaire”, interne à l’immeuble, les travaux sont gérés par le syndic de copropriété.
+C’est le gestionnaire du réseau de chaleur auquel la copropriété se raccorde qui est en charge de la réalisation des travaux sur le réseau dit « primaire », qui s’arrête au pied de l’immeuble. Ces travaux sont suivis par la copropriété, qui est associée aux réunions de chantier. Sur le réseau « secondaire », interne à l’immeuble, les travaux sont gérés par le syndic de copropriété.
 `,
   },
   {

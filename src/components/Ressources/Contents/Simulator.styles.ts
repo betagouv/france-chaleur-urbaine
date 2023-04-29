@@ -32,10 +32,10 @@ export const Container = styled.div<{
 `;
 
 export const Title = styled.div`
-  margin: auto;
-  font-size: 28px;
+  margin: 0 auto 16px auto;
+  font-size: 20px;
   font-weight: 700;
-  line-height: 34px;
+  line-height: 25px;
   max-width: 950px;
 `;
 

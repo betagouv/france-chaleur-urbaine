@@ -110,7 +110,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     }
     
     .rcu-comparatif-image {
-      flex-grow: 0;
+      flex-grow: 1;
       background-color: white;
 
     }
@@ -163,6 +163,10 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     }
     @media (min-width: 992px) {
       padding-left: 64px;
+    }
+
+    a {
+      margin-top: 16px;
     }
 
     @media (max-width: 991px) {
