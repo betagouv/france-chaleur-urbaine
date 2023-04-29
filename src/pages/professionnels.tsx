@@ -1,4 +1,5 @@
 import LastArticles from '@components/Articles/LastArticles';
+import Infographies from '@components/Coproprietaire/Infographies';
 import HeadSliceForm from '@components/HeadSliceForm';
 import BulkEligibilitySlice from '@components/HeadSliceForm/BulkEligibilitySlice';
 import IFrame from '@components/IFrame/IFrame';
@@ -110,6 +111,10 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
           </WrappedBlock>
         </Slice>
         <Owner />
+        <Slice padding={8} theme="grey">
+          <Infographies />
+        </Slice>
+
         <IFrame />
 
         <Slice

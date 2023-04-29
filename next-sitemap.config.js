@@ -15,6 +15,7 @@ const ressources = [
   'prioritaire',
   'acteurs',
   'etat',
+  'supports',
 ];
 
 module.exports = {

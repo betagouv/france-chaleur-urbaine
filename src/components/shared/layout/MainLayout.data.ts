@@ -19,7 +19,7 @@ export const menu = [
     url: '/carte',
   },
   {
-    label: 'Allez plus loin',
+    label: 'Aller plus loin',
     url: '/ressources',
   },
   {

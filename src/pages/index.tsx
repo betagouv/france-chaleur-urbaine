@@ -1,6 +1,7 @@
 import LastArticles from '@components/Articles/LastArticles';
 import Advantages from '@components/Coproprietaire/Advantages';
 import Explanation from '@components/Coproprietaire/Explanation';
+import Infographies from '@components/Coproprietaire/Infographies';
 import Informations from '@components/Coproprietaire/Informations';
 import Simulators from '@components/Coproprietaire/Simulators';
 import UseCase from '@components/Coproprietaire/UseCase';
@@ -110,6 +111,9 @@ Cette obligation s’applique dans une certaine zone autour du réseau, qualifi�
 :small[* Ce seuil de puissance peut être relevé par la collectivité]
 `}
             />
+          </Slice>
+          <Slice padding={8}>
+            <Infographies />
           </Slice>
           <Slice theme="grey">
             <Understanding cards={coproprietaireCards} />

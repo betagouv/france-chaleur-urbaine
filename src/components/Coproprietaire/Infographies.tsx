@@ -5,9 +5,9 @@ const Infographies = () => {
     <WrappedText
       center
       imgSrc="/img/infographies.svg"
-      body={`Tout comprendre sur les réseaux de chaleur et les enjeux autour de la transition énergétique avec nos *infographies*.
+      body={`Retrouvez tous nos supports de communication pour comprendre simplement et rapidement les enjeux liés aux réseaux de chaleur ou faire connaître notre service.
 
-:button-link[Voir les infographies]{href="/infographies"}
+:button-link[Voir les supports]{href="/ressources/supports#contenu"}
 `}
       reverse
     ></WrappedText>

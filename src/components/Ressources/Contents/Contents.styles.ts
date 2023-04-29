@@ -70,3 +70,24 @@ export const BlueText = styled.span`
   color: #4550e5;
   font-weight: bold;
 `;
+
+export const SupportImages = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  font-size: 14px;
+  line-height: 16px;
+  margin-bottom: 16px;
+
+  p {
+    max-width: 150px;
+    margin-bottom: 0;^su
+  }
+
+  a {
+    background-image: none;
+    &::after {
+      content: '' !important;
+    }
+  }
+`;

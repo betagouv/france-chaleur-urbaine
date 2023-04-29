@@ -13,9 +13,13 @@ import Header from './Header';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
 import StickyForm from './StickyForm';
-import { growths, issues, understandings } from './config';
+import { growths, issues, supports, understandings } from './config';
 
 const getContent = (ressourceKey: string) => {
+  if (ressourceKey === 'supports') {
+    return supports;
+  }
+
   return (
     issues[ressourceKey] ||
     understandings[ressourceKey] ||
@@ -57,7 +61,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
         <Container className="fr-my-4w" as="main">
           <Row>
             <Col n="md-3 12">
-              <SideMenu title="Allez plus loin :" buttonLabel="Sommaire">
+              <SideMenu title="Aller plus loin :" buttonLabel="Sommaire">
                 <SideMenuItem
                   title="Les enjeux de la transition énergétique avec les réseaux de chaleur"
                   expandedDefault
@@ -150,11 +154,40 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                     </SideMenuLink>
                   ))}
                 </SideMenuItem>
+                <SideMenuItem
+                  title="Nos supports de communication"
+                  expandedDefault
+                  current={ressourceKey === 'supports'}
+                >
+                  <SideMenuLink
+                    asLink={
+                      <Link
+                        href={`/ressources/supports#contenu`}
+                        scroll={false}
+                        legacyBehavior
+                      >
+                        <a
+                          className="fr-sidemenu__link fr-link--md"
+                          aria-current={
+                            ressourceKey === 'supports' ? 'page' : undefined
+                          }
+                        >
+                          Retrouvez ici tous nos supports de communication à
+                          partager autour de vous !
+                        </a>
+                      </Link>
+                    }
+                    current={ressourceKey === 'supports'}
+                  >
+                    Retrouvez ici tous nos supports de communication à partager
+                    autour de vous !
+                  </SideMenuLink>
+                </SideMenuItem>
               </SideMenu>
             </Col>
             <Col n="md-9 12">
               <RessourceContent content={getContent(ressourceKey)} />
-              <Guide />
+              {ressourceKey !== 'supports' && <Guide />}
             </Col>
           </Row>
         </Container>
