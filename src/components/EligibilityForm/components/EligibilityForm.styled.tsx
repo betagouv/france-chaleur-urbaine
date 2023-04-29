@@ -83,6 +83,10 @@ export const ContactFormFooter = styled.div`
   flex-direction: column;
   margin-top: 16px;
 `;
+export const ContactMapResult = styled.div`
+  height: 370px;
+  width: 100%;
+`;
 
 export const ContactFormResultMessage = styled.div<{
   eligible?: boolean;

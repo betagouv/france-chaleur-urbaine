@@ -1,3 +1,4 @@
+import Map from '@components/Map/Map';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Link from 'next/link';
 import { useCallback, useMemo } from 'react';
@@ -6,9 +7,9 @@ import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import {
   ContactForm,
   ContactFormContentWrapper,
-  ContactFormEligibilityMessage,
   ContactFormResultMessage,
   ContactFormWrapper,
+  ContactMapResult,
 } from './components';
 
 type EligibilityFormContactType = {
@@ -224,7 +225,6 @@ const EligibilityFormContact = ({
     futurNetwork,
     header,
     futurHeader,
-    body,
     bodyLight,
     computedEligibility,
     headerTypo,
@@ -339,9 +339,29 @@ const EligibilityFormContact = ({
                 </Link>
               )}
             </ContactFormResultMessage>
-            <ContactFormEligibilityMessage cardMode>
-              <MarkdownWrapper value={body} />
-            </ContactFormEligibilityMessage>
+            <ContactMapResult>
+              <Map
+                center={
+                  addressData.coords && [
+                    addressData.coords.lon,
+                    addressData.coords.lat,
+                  ]
+                }
+                initialLayerDisplay={{
+                  outline: true,
+                  zoneDP: true,
+                  demands: false,
+                  raccordements: false,
+                  gasUsageGroup: false,
+                  buildings: false,
+                  gasUsage: [],
+                  energy: [],
+                  gasUsageValues: [1000, Number.MAX_VALUE],
+                  energyGasValues: [50, Number.MAX_VALUE],
+                  energyFuelValues: [50, Number.MAX_VALUE],
+                }}
+              />
+            </ContactMapResult>
           </>
         ) : (
           bodyLight && (

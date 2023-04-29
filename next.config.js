@@ -110,6 +110,7 @@ module.exports = withBundleAnalyzer({
         headers: securityHeaders,
       },
       { source: '/form', headers: securityHeadersIFramable },
+      { source: '/map', headers: securityHeadersIFramable },
     ];
   },
   webpack: function (config) {

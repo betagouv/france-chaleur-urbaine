@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
+import { iframedPaths } from 'src/services/iframe';
 import Footer from './Footer';
 import Header from './Header';
 import LayoutContext from './LayoutContext';
@@ -20,7 +21,7 @@ const MainLayout: React.FC<MainLayout> = ({ children }) => {
   const { currentMenu, fullscreen } = useContext(LayoutContext);
   const router = useRouter();
 
-  if (router.pathname === '/form') {
+  if (iframedPaths.includes(router.pathname)) {
     return <div>{children}</div>;
   }
 
