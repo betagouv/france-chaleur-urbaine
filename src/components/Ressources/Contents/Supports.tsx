@@ -37,13 +37,13 @@ const Supports = () => {
           </Link>
         </div>
         <div>
-          <Link href="/img/FCU_Infographie_Enrr.jpg" target="_blank">
+          <Link href="/img/FCU_Infographie_Geo.jpg" target="_blank">
             <img src="/img/support_geothermie.png" alt="" />
             <p>La géothermie</p>
           </Link>
         </div>
         <div>
-          <Link href="/img/FCU_Infographie_Enrr.jpg" target="_blank">
+          <Link href="/img/FCU_Infographie_Biomasse.jpg" target="_blank">
             <img src="/img/support_biomasse.png" alt="" />
             <p>La biomasse</p>
           </Link>
@@ -51,8 +51,8 @@ const Supports = () => {
       </SupportImages>
       <Subtitle>Dossier de presse</Subtitle>
       <SupportImages>
-        <div>
-          <Link href="/documentation/dossier-presse.pdg" target="_blank">
+        <div className="fr-mb-4w">
+          <Link href="/documentation/dossier-presse.pdf" target="_blank">
             <img src="/img/support_dossier_presse.png" alt="" />
           </Link>
         </div>
@@ -75,37 +75,52 @@ const Supports = () => {
       <Subtitle>Campagne de pub</Subtitle>
       <SupportImages>
         <div>
-          <img src="/img/support_pub1.png" alt="" />
-          <p>Affiche abribus</p>
+          <Link href="/img/PUB-PANNEAU.pdf" target="_blank">
+            <img src="/img/support_pub1.png" alt="" />
+            <p>Affiche abribus</p>
+          </Link>
         </div>
         <div>
-          <img src="/img/support_pub2.png" alt="" />
-          <p>Pub Facebook</p>
+          <Link href="/img/support_pub1_big.jpg" target="_blank">
+            <img src="/img/support_pub2.png" alt="" />
+            <p>Pub Facebook</p>
+          </Link>
         </div>
         <div>
-          <img src="/img/support_pub3.png" alt="" />
-          <p>Pub Facebook</p>
+          <Link href="/img/support_pub3_big.jpg" target="_blank">
+            <img src="/img/support_pub3.png" alt="" />
+            <p>Pub Facebook</p>
+          </Link>
         </div>
       </SupportImages>
       <Subtitle>Visuels de promotion</Subtitle>
       <SupportImages>
         <div>
-          <img src="/img/support_affiche1.png" alt="" />
-          <p>Affiche d’information</p>
+          <Link href="/img/FCU-Affiche.pdf" target="_blank">
+            <img src="/img/support_affiche1.png" alt="" />
+            <p>Affiche d’information</p>
+          </Link>
         </div>
         <div>
-          <img src="/img/support_video2.jpeg" alt="" />
-          <p>Post LinkedIn ou Facebook</p>
+          <Link href="/img/LINKED.jpg" target="_blank">
+            <img src="/img/support_video2.jpeg" alt="" />
+            <p>Post LinkedIn ou Facebook</p>
+          </Link>
         </div>
         <div>
-          <img src="/img/support_video3.png" alt="" />
-          <p>Post LinkedIn ou Facebook</p>
+          <Link href="/img/support_affiche3_big.jpg" target="_blank">
+            <img src="/img/support_video3.png" alt="" />
+            <p>Post LinkedIn ou Facebook</p>
+          </Link>
         </div>
       </SupportImages>
       <Subtitle>Guide de raccordement pour les copros</Subtitle>
       <SupportImages>
         <div>
-          <Link href="/guide_raccordement_des_coproprietes.pdf" target="_blank">
+          <Link
+            href="/documentation/guide-france-chaleur-urbaine.pdf"
+            target="_blank"
+          >
             <img src="/img/support_guide.png" alt="" />
           </Link>
         </div>
