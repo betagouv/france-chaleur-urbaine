@@ -33,7 +33,7 @@
     "scalingo-postbuild": "yarn build && next-sitemap"
   },
   "dependencies": {
-    "@dataesr/react-dsfr": "^3.5.15",
+    "@dataesr/react-dsfr": "^3.5.16",
     "@faker-js/faker": "^7.6.0",
     "@mapbox/mapbox-gl-draw": "^1.4.1",
     "@next/bundle-analyzer": "^13.3.1",
