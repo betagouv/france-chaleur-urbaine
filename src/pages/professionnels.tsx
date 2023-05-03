@@ -85,7 +85,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
           <WrappedText
             textClassName="slice-carto-text"
             body={`
-::arrow-item[Localisez les réseaux de chaleur et accéder à leurs caractéristiques principales (taux ENR et contenu CO2 réglementaires,...)]
+::arrow-item[Localisez les réseaux de chaleur et accédez à leurs caractéristiques principales (taux ENR et contenu CO2 réglementaires,...)]
 ::arrow-item[Identifiez les réseaux classés et découvrez leur périmètre de développement prioritaire (zone où s'applique une obligation de raccordement pour certains bâtiments)]
 ::arrow-item[Visualisez et exportez des données sur les bâtiments (consommation énergétique, mode de chauffage...)]
 :button-link[Voir la cartographie]{href="./carte"}

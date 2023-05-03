@@ -49,6 +49,7 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
   em {
     color: #4550e5;
     font-style: normal;
+    font-size: 14px;
   }
   strong {
     color: #4550e5;

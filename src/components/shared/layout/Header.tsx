@@ -138,9 +138,11 @@ const Header = ({
           </li>
         )}
         <NavItem
-          title="Copropriétaire"
+          title="Copropriétaire, conseil syndical"
           current={currentMenu === indexLink}
-          asLink={<Link href={indexLink}>Copropriétaire</Link>}
+          asLink={
+            <Link href={indexLink}>Copropriétaire, conseil syndical</Link>
+          }
         />
 
         {menu.map(({ label, url }) => (
