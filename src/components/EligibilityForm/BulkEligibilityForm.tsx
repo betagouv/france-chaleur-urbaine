@@ -18,7 +18,7 @@ const BulkEligibilityForm = () => {
     }
 
     if (event.target.files[0].size > 1048576) {
-      setError('Le fichier ne doit pas depasser 1Mb.');
+      setError('Le fichier ne doit pas dépasser 1Mb.');
       return;
     }
 
