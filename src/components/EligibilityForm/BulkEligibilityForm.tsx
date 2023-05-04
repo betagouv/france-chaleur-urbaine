@@ -67,7 +67,7 @@ const BulkEligibilityForm = () => {
             value={email}
             required
           />
-          <Button disabled={!email || !addresses || error} submit>
+          <Button disabled={!email || !addresses || !!error} submit>
             Tester le fichier d’adresses
           </Button>
         </form>
