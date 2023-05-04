@@ -1,9 +1,9 @@
 import {
-  Footer as FooterDS,
   FooterBody,
   FooterBodyItem,
   FooterBottom,
   FooterCopy,
+  Footer as FooterDS,
   FooterLink,
   FooterOperator,
   FooterPartners,
@@ -83,12 +83,20 @@ const Footer = () => {
       <FooterBottom>
         <FooterLink
           href="/accessibilite"
-          asLink={<Link href="/accessibilite" prefetch={false}></Link>}
+          asLink={
+            <Link legacyBehavior href="/accessibilite" prefetch={false}></Link>
+          }
         >
           <a className="fr-footer__bottom-link">Accessibilité: non conforme</a>
         </FooterLink>
         <FooterLink
-          asLink={<Link href="/mentions-legales" prefetch={false}></Link>}
+          asLink={
+            <Link
+              legacyBehavior
+              href="/mentions-legales"
+              prefetch={false}
+            ></Link>
+          }
         >
           <a className="fr-footer__bottom-link">Mentions légales & CGU</a>
         </FooterLink>
@@ -97,15 +105,23 @@ const Footer = () => {
         </FooterLink>
         <FooterLink
           asLink={
-            <Link href="/politique-de-confidentialite" prefetch={false}></Link>
+            <Link
+              legacyBehavior
+              href="/politique-de-confidentialite"
+              prefetch={false}
+            ></Link>
           }
         >
           <a className="fr-footer__bottom-link">Données personnelles</a>
         </FooterLink>
-        <FooterLink asLink={<Link href="/stats" prefetch={false}></Link>}>
+        <FooterLink
+          asLink={<Link legacyBehavior href="/stats" prefetch={false}></Link>}
+        >
           <a className="fr-footer__bottom-link">Statistiques</a>
         </FooterLink>
-        <FooterLink asLink={<Link href="/contact" prefetch={false}></Link>}>
+        <FooterLink
+          asLink={<Link legacyBehavior href="/contact" prefetch={false}></Link>}
+        >
           <a className="fr-footer__bottom-link">Contact</a>
         </FooterLink>
         <FooterLink

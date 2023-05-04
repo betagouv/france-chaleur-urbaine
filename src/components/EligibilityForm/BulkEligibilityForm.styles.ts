@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  margin-top: 16px;
-  max-width: 450px;
+  margin-bottom: 16px;
 
   .fr-upload-group {
     margin-bottom: 8px;

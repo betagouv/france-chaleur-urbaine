@@ -1,1 +1,1 @@
-export { default, SliceImg } from './Slice';
+export { SliceImg, default } from './Slice';

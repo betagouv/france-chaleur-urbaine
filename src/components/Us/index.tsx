@@ -2,7 +2,7 @@ import MarkdownWrapper from '@components/MarkdownWrapper';
 import { List } from '@components/Ressources/Contents/Contents.styles';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
-import { dataNumberUs } from '@data';
+import { dataNumberFcu } from '@data';
 import { FooterPartnersLogo, Logo } from '@dataesr/react-dsfr';
 import Link from 'next/link';
 import { Description, Logos, Row, Title } from './index.styles';
@@ -32,16 +32,16 @@ const Us = () => {
         <Title>Nos missions :</Title>
         <List>
           <li>
-            <b>Outiller</b> : mise à disposition d’outils afin de valoriser les
-            réseaux de chaleur (test de raccordement, cartographie des réseaux,
-            simulateur de CO2...)
+            <b>Outiller</b> : Mise à disposition d’outils afin de valoriser les
+            réseaux de chaleur : test de raccordement, cartographie des réseaux,
+            simulateur de CO2...
           </li>
           <li>
-            <b>Informer</b> : centralisation d’informations et de données sur
+            <b>Informer</b> : Centralisation d’informations et de données sur
             les réseaux de chaleur et potentiels de raccordement.
           </li>
           <li>
-            <b>Mettre en lien</b> : mise en relation de prospects intéressés par
+            <b>Mettre en lien</b> : Mise en relation de prospects intéressés par
             la solution réseau de chaleur avec les gestionnaires des réseaux les
             plus proches
           </li>
@@ -51,7 +51,7 @@ const Us = () => {
         <Title>L'équipe :</Title>
         <List>
           <li>
-            <b>DRIEAT</b> : la Direction régionale et interdépartementale de
+            <b>DRIEAT</b> : La Direction régionale et interdépartementale de
             l’environnement, de l’aménagement et des transports (DRIEAT)
             d’Ile-de-France porte le projet. Florence Lévy, chargée de mission
             transition énergétique, pilote le projet en tant qu’intrapreneuse.
@@ -109,9 +109,9 @@ const Us = () => {
         </Logos>
       </Slice>
       <Slice padding={4} theme="color">
-        <h3>Au {dataNumberUs.date}, France Chaleur Urbaine c’est :</h3>
-        <TextList data={dataNumberUs.data} />
-        <i>{dataNumberUs.note}</i>
+        <h3>Au {dataNumberFcu.date}, France Chaleur Urbaine c’est :</h3>
+        <TextList data={dataNumberFcu.data} />
+        <i>{dataNumberFcu.note}</i>
       </Slice>
     </>
   );

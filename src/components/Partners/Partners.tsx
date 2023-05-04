@@ -58,7 +58,7 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
         <PartnerImages>
           {logos.map(({ key, image, title, link }, index) => (
             <PartnerLink
-              display={index >= firstLogo}
+              show={index >= firstLogo}
               href={link}
               target="_blank"
               rel="noreferrer noopener"
@@ -79,11 +79,11 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
           target="_blank"
           rel="noopener noreferrer"
         >
-          Rejoindre notre réseau
+          Devenir partenaire
         </a>
         <a
           className="fr-btn fr-btn--secondary"
-          href="/documentation/FCU_dossier_presentation.pdf"
+          href="/documentation/dossier-presse.pdf"
           target="_blank"
           rel="noopener noreferrer"
         >

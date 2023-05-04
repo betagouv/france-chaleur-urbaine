@@ -7,7 +7,7 @@ import Head from 'next/head';
 import styled from 'styled-components';
 
 const MapWrapper = styled.div`
-  height: calc(100vh - ${tabHeaderHeight} - 60px);
+  height: calc(100vh - ${tabHeaderHeight});
 
   @media (min-width: 992px) {
     height: calc(100vh - ${fullscreenHeaderHeight});

@@ -1,8 +1,8 @@
 import WrappedText from '@components/WrappedText';
 import Link from 'next/link';
-import { growths } from './config';
 import { Questions } from './Growth.styles';
 import { Block, BlockTitle } from './Issues.styles';
+import { growths } from './config';
 
 const Growth = () => {
   return (

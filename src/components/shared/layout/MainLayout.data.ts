@@ -1,38 +1,25 @@
 export const headerHeight = `185px`;
 export const tabHeaderHeight = `105px`;
-export const fullscreenHeaderHeight = `56px`;
+export const fullscreenHeaderHeight = `80px`;
 export const footerHeight = `291px`;
 export const tabFooterHeight = `534px`;
 export const fullscreenFooterHeight = `301px`;
 
 export const menu = [
   {
-    label: 'Vous êtes :',
-    subMenus: [
-      {
-        label: 'Copropriétaire',
-        url: '/coproprietaire',
-      },
-      {
-        label: 'Gestionnaire de bâtiments tertiaires',
-        url: '/tertiaire',
-      },
-      {
-        label: 'Collectivité ou exploitant',
-        url: '/collectivites-et-exploitants',
-      },
-      {
-        label: 'Conseiller énergie, syndic, bailleur social...',
-        url: '/conseiller',
-      },
-    ],
+    label: 'Professionnels',
+    url: '/professionnels',
+  },
+  {
+    label: 'Collectivité, exploitant',
+    url: '/collectivites-et-exploitants',
   },
   {
     label: 'Cartographie',
     url: '/carte',
   },
   {
-    label: 'Documentation',
+    label: 'Aller plus loin',
     url: '/ressources',
   },
   {

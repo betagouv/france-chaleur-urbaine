@@ -10,16 +10,20 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import {
+  ArrowItem,
   ButtonLink,
   Cartridge,
   CheckItem,
-  CounterItem,
   CountItem,
-  isExternalLink,
+  CounterItem,
   KnowMoreLink,
   MarkdownWrapperStyled,
   PuceIcon,
   SmallText,
+  ThumbItem,
+  WhiteArrowItem,
+  WhiteCheckItem,
+  isExternalLink,
 } from './MarkdownWrapper.style';
 
 const RoutedLink = (props: any) => {
@@ -31,20 +35,18 @@ const RoutedLink = (props: any) => {
         ? ['nofollow', 'noopener', 'noreferrer'].join(' ')
         : '',
   };
-  return (
-    <Link href={href} prefetch={false} passHref>
-      <a {...props} {...extProps} />
-    </Link>
-  );
+  return <Link {...props} {...extProps} />;
 };
 
 const ConsentLink: React.FC<{
   children?: React.ReactNode;
   ForceBlock: React.ElementType;
 }> = ({ children, ForceBlock = React.Fragment }) => (
-  <ForceBlock>
-    <a href="#consentement">{children}</a>
-  </ForceBlock>
+  <>
+    <ForceBlock>
+      <a href="#consentement">{children}</a>
+    </ForceBlock>
+  </>
 );
 
 const processor = (extender: Record<string, unknown> = {}) =>
@@ -70,6 +72,7 @@ const MarkdownWrapper: React.FC<{
   id?: JSX.IntrinsicAttributes;
   className?: string;
   style?: React.CSSProperties;
+  withPadding?: boolean;
 }> = ({ children, value, id, className, ...props }) => {
   const [md, setMd]: [string, (s: string) => void] = useState('');
 
@@ -91,7 +94,11 @@ const MarkdownWrapper: React.FC<{
         processor({
           'check-item': CheckItem,
           'count-item': CountItem,
+          'arrow-item': ArrowItem,
+          'white-arrow-item': WhiteArrowItem,
           'counter-item': CounterItem,
+          'thumb-item': ThumbItem,
+          'white-check-item': WhiteCheckItem,
           'consent-link': ConsentLink,
           cartridge: Cartridge,
           'puce-icon': PuceIcon,

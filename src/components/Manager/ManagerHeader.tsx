@@ -7,8 +7,8 @@ import {
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
-import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import { Demand } from 'src/types/Summary/Demand';
+import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import { ExportButton, Filter, Filters } from './ManagerHeader.styles';
 
 const typeDeChauffageOptions = [

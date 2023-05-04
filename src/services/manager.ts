@@ -1,8 +1,8 @@
 import db from 'src/db';
 import base from 'src/db/airtable';
-import { Airtable } from 'src/types/enum/Airtable';
 import { Demand } from 'src/types/Summary/Demand';
 import { User } from 'src/types/User';
+import { Airtable } from 'src/types/enum/Airtable';
 import { v4 as uuidv4 } from 'uuid';
 import {
   getAllNewDemands,

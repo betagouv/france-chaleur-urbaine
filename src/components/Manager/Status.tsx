@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import { Demand } from 'src/types/Summary/Demand';
+import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import { StatusSelect } from './Status.styles';
 
 const statusOptions = Object.values(DEMANDE_STATUS).map((status: string) => ({

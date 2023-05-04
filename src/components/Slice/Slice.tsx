@@ -18,6 +18,7 @@ const Slice: React.FC<
     theme?: string;
     padding?: number;
     direction?: string;
+    justifyContent?: string;
   } & SliceContainerWrapperType
 > = ({
   children,
@@ -31,6 +32,7 @@ const Slice: React.FC<
   bgSize,
   bgColor,
   direction,
+  justifyContent,
 }) => {
   return (
     <SliceSection
@@ -52,7 +54,9 @@ const Slice: React.FC<
                 <MarkdownWrapper value={header} className="slice-header" />
               </header>
             )}
-            <SliceBody direction={direction}>{children}</SliceBody>
+            <SliceBody direction={direction} justifyContent={justifyContent}>
+              {children}
+            </SliceBody>
           </SliceContainer>
         </SliceContainerWrapper>
       </div>

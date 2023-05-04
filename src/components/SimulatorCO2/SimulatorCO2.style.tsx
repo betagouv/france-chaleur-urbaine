@@ -1,18 +1,71 @@
+import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { Select, TextInput } from '@dataesr/react-dsfr';
 import styled, { css } from 'styled-components';
 
-export const Input = styled(TextInput)<{ withMargin?: boolean }>`
-  display: inline-block;
-  ${({ withMargin }) =>
-    withMargin &&
-    css`
-      margin-left: 8px;
-    `}
+export const Box = styled(Cartridge)`
+  width: 500px;
+  padding: 32px;
+`;
+
+export const SimulatorResult = styled(Cartridge)`
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-size: 15px;
+  line-height: 15px;
+`;
+
+export const BigResult = styled.span`
+  margin-right: 8px;
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 21px;
+`;
+
+export const SmallResult = styled.span`
+  margin-right: 8px;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 21px;
+`;
+
+export const Separator = styled.div`
+  height: 80px;
+  border-right: solid 1px white;
 `;
 
 export const SurfSelect = styled(Select)`
   margin-right: 32px;
   max-width: 300px;
+`;
+
+export const Input = styled(TextInput)`
+  display: inline-block;
+  width: calc(100% - 30px);
+  &:not(first-child) {
+    margin-left: 8px;
+  }
+`;
+
+export const CartridgeSimulatorForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  fieldset {
+    border: none;
+    text-align: right;
+
+    select {
+      margin-bottom: 8px;
+    }
+  }
+`;
+
+export const CartridgeSimulatorFooter = styled.div`
+  margin: 4px 16px 8px 16px;
+  font-size: 11px;
+  line-height: 13px;
 `;
 
 const breakPoint = '1050px';
@@ -69,79 +122,6 @@ export const ContainerBody = styled.div`
   }
 `;
 
-export const SimulatorWrapper = styled.div<{ withPadding: boolean }>`
-  flex: 3;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  ${({ withPadding }) =>
-    withPadding &&
-    css`
-      padding-bottom: 1.5em;
-
-      @media (min-width: ${breakPoint}) {
-        padding-bottom: unset;
-        padding-right: 3em;
-      }
-    `}
-`;
-
-export const SimulatorHeader = styled.p`
-  font-size: 1.25em;
-`;
-export const SimulatorFormWrapper = styled.div`
-  width: 100%;
-  align-items: flex-start;
-  max-width: 700px;
-  display: flex;
-  flex-direction: column;
-
-  @media (min-width: 992px) {
-    flex-direction: row;
-  }
-
-  @media (min-width: ${breakPoint}) {
-    max-width: none;
-    align-self: unset;
-  }
-`;
-export const SimulatorForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  @media (min-width: 992px) {
-    flex: 1;
-  }
-
-  fieldset {
-    padding: 0;
-    border: none;
-    margin: 0 0 0.75em 0;
-    text-align: right;
-
-    &:last-child {
-      margin: 0;
-    }
-
-    div {
-      display: inline-block;
-    }
-
-    input {
-      min-width: 250px;
-      max-width: 350px;
-    }
-
-    select {
-      min-width: 280px;
-      max-width: 400px;
-      margin-bottom: 8px;
-    }
-  }
-`;
 export const SimulatorFormResult = styled.div<{
   inline?: boolean;
 }>`
@@ -278,11 +258,86 @@ export const SimulatorFormResult = styled.div<{
     }
   }
 `;
+
+export const SimulatorWrapper = styled.div<{ withPadding: boolean }>`
+  flex: 3;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  ${({ withPadding }) =>
+    withPadding &&
+    css`
+      padding-bottom: 1.5em;
+
+      @media (min-width: ${breakPoint}) {
+        padding-bottom: unset;
+        padding-right: 3em;
+      }
+    `}
+`;
+
+export const SimulatorHeader = styled.p`
+  font-size: 1.25em;
+`;
+
+export const SimulatorFormWrapper = styled.div`
+  width: 100%;
+  align-items: flex-start;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 992px) {
+    flex-direction: row;
+  }
+
+  @media (min-width: ${breakPoint}) {
+    max-width: none;
+    align-self: unset;
+  }
+`;
+
+export const SimulatorForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  @media (min-width: 992px) {
+    flex: 1;
+  }
+
+  fieldset {
+    padding: 0;
+    border: none;
+    margin: 0 0 0.75em 0;
+    text-align: right;
+
+    &:last-child {
+      margin: 0;
+    }
+
+    div {
+      display: inline-block;
+    }
+
+    input {
+      min-width: 250px;
+      max-width: 350px;
+    }
+
+    select {
+      min-width: 280px;
+      max-width: 400px;
+      margin-bottom: 8px;
+    }
+  }
+`;
+
 export const SimulatorFooter = styled.div`
   max-width: fit-content;
   padding-top: 1.5rem;
   font-size: 0.7em;
   line-height: 1.25;
 `;
-
-export const SimulatorBodyWrapper = styled.div``;

@@ -8,7 +8,7 @@ type ContainerType = {
 export const Container = styled.div<ContainerType>`
   display: inline-flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
 
   @media (min-width: 992px) {
     flex-direction: ${({ reverse }) => (reverse ? ' row-reverse' : 'row')};

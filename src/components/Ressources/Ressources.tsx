@@ -1,3 +1,4 @@
+import Infographies from '@components/Coproprietaire/Infographies';
 import Slice from '@components/Slice';
 import Growth from './Growth';
 import Header from './Header';
@@ -19,6 +20,9 @@ const Ressources = () => {
         description="Retrouvez toute notre documentation pour approfondir votre connaissance des réseaux de chaleur."
       />
       <StickyForm />
+      <Slice padding={8}>
+        <Infographies />
+      </Slice>
       <Slice padding={8} theme="grey">
         <Issues />
       </Slice>

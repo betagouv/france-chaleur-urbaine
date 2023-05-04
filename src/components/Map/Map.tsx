@@ -21,30 +21,30 @@ import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 import mapParam, {
   EnergyNameOption,
-  gasUsageNameOption,
   LayerNameOption,
-  layerNameOptions,
   TypeLayerDisplay,
+  gasUsageNameOption,
+  layerNameOptions,
 } from '../../services/Map/param';
-import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
-import ZoneInfos from './components/SummaryBoxes';
-import { useMapPopup } from './hooks';
 import {
-  buildingsLayerStyle,
   CollapseLegend,
-  demandsLayerStyle,
-  energyLayerStyle,
-  gasUsageLayerStyle,
   Legend,
   LegendSeparator,
   MapControlWrapper,
   MapStyle,
+  buildingsLayerStyle,
+  demandsLayerStyle,
+  energyLayerStyle,
+  gasUsageLayerStyle,
   objTypeEnergy,
   outlineLayerStyle,
   raccordementsLayerStyle,
   zoneDPLayerStyle,
 } from './Map.style';
 import { formatBodyPopup } from './MapPopup';
+import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
+import ZoneInfos from './components/SummaryBoxes';
+import { useMapPopup } from './hooks';
 import satelliteConfig from './satellite.config';
 
 let hoveredStateId: any;

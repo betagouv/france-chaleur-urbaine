@@ -8,10 +8,10 @@ import { Map } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
 import { GasSummary } from 'src/types/Summary/Gas';
+import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import {
   CollapseZone,
   Container,

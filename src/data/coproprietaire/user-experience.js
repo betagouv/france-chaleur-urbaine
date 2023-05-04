@@ -8,7 +8,6 @@ La chaudière collective au gaz ayant 20&nbsp;ans elle se demande avec le consei
 Elle vérifie sur **France Chaleur Urbaine** si la copropriété est raccordable.`,
     imgSrc: `/img/user-experience-1.png`,
     imgAlt: `Portrait d’Anne`,
-    reverse: true,
   },
   {
     body: `::counter-item[02.]  
@@ -18,6 +17,7 @@ un réseau de chaleur alimenté par la géothermie** passe à 15 mètres.
 Par l’entremise de France Chaleur Urbaine, le gestionnaire du réseau prend contact avec Anne pour l’informer **sur les conditions de raccordement.**`,
     imgSrc: `/img/user-experience-2.png`,
     imgAlt: `Présentation de France Chaleur Urbaine`,
+    reverse: true,
   },
   {
     body: `::counter-item[03.]
@@ -31,7 +31,6 @@ _Sur le conseil de France Chaleur Urbaine, la copropriété d’Anne obtient des
 _Les travaux durent **2&nbsp;mois** en tout&nbsp;!_`,
     imgSrc: `/img/user-experience-3.png`,
     imgAlt: `Charge et travaux pour un raccordement au Réseau de chaleur`,
-    reverse: true,
   },
   {
     body: `::counter-item[04.]  
@@ -42,6 +41,7 @@ Grâce au réseau de chaleur, la copropriété bénéficie d’une **bonne temp�
 Toute la copropriété est heureuse d’avoir eu une **démarche écologique et économique** qui a été simplifiée par l’accompagnement de **France Chaleur Urbaine**.`,
     imgSrc: `/img/user-experience-4.png`,
     imgAlt: `Le confort d’un éeseau de chaleur Urbaine`,
+    reverse: true,
   },
 ];
 

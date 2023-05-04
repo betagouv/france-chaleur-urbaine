@@ -6,12 +6,20 @@ export const isExternalLink = (href: string) =>
 
 type MarkdownWrapperStyledProps = {
   className?: string;
+  withPadding?: boolean;
 };
 export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps>(
   ({ className }: MarkdownWrapperStyledProps) => ({
     className: `md-wrapper ${className || ''}`,
   })
 )<MarkdownWrapperStyledProps>`
+  ${({ withPadding }) =>
+    withPadding &&
+    `
+    @media (min-width: 992px) {
+      padding: 0 3rem;
+    }
+    `}
   h1,
   h2 {
     color: #000074;
@@ -41,6 +49,9 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
   em {
     color: #4550e5;
     font-style: normal;
+    strong {
+      font-size: 14px;
+    }
   }
   strong {
     color: #4550e5;
@@ -81,9 +92,7 @@ export const ButtonLink = styled.a.attrs(
       className: `fr-btn ${className || ''}`,
     };
   }
-)`
-  margin-bottom: 16px;
-`;
+)``;
 
 export const CounterItem = styled.div`
   display: flex;
@@ -140,6 +149,13 @@ export const Cartridge = styled.div<{ theme: string }>`
             color: #fff;
           `;
         }
+        case 'white': {
+          return css`
+            border: 1px solid #d2d4f0;
+            background-color: white;
+            color: #4550e5;
+          `;
+        }
         case 'yellow': {
           return css`
             background-color: #efc73f;
@@ -159,7 +175,9 @@ export const Cartridge = styled.div<{ theme: string }>`
 `;
 
 const CheckItemFCU = css`
-  margin-bottom: 1.5rem;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
 
   color: #4550e5;
 
@@ -168,6 +186,7 @@ const CheckItemFCU = css`
     display: inline;
     padding-top: 0.15rem;
     margin-right: 0.5rem;
+    margin-bottom: 4px;
     color: #4550e5;
     padding: 0;
     line-height: 1;
@@ -215,6 +234,29 @@ export const CheckItem = styled.div.attrs<CheckItemType>(
   ${({ checked }) => (checked ? CheckItemDefault : CheckItemFCU)}
 `;
 
+export const ThumbItem = styled.div`
+  ${CheckItemFCU}
+  color: white;
+  margin-bottom: 0;
+  &::before {
+    margin-bottom: 0;
+    font-size: 40px;
+    margin-top: -16px;
+    background-image: url('/icons/picto-thumb.svg');
+  }
+`;
+
+export const WhiteCheckItem = styled.div`
+  ${CheckItemFCU}
+  color: white;
+  margin-bottom: 0;
+  &::before {
+    margin-bottom: 4px;
+    font-size: 35px;
+    background-image: url('/icons/picto-check.svg');
+  }
+`;
+
 const CountPuce = styled.div`
   display: inline-block;
   margin-right: 8px;
@@ -238,6 +280,48 @@ export const CountItem = ({
     <CountPuce>{number}</CountPuce>
     {children}
   </div>
+);
+
+const ArrowPuce = styled.div`
+  ${CheckItemFCU}
+  align-items: flex-start;
+  strong {
+    font-weight: 900;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  &::before {
+    margin-bottom: 0;
+    font-size: 24px;
+    margin-top: -8px;
+    background-image: url('/icons/picto-arrow.svg');
+  }
+`;
+
+const WhiteArrowPuce = styled(ArrowPuce)`
+  color: white;
+  em {
+    font-size: 16px;
+    line-height: 24px;
+    color: black !important;
+    background-color: #f8d86e;
+  }
+  &::before {
+    background-image: url('/icons/picto-white-arrow.svg');
+  }
+`;
+
+export const ArrowItem = ({ children }: { children: string }) => (
+  <ArrowPuce>
+    <div>{children}</div>
+  </ArrowPuce>
+);
+
+export const WhiteArrowItem = ({ children }: { children: string }) => (
+  <WhiteArrowPuce>
+    <div>{children}</div>
+  </WhiteArrowPuce>
 );
 
 type PuceIconType = {

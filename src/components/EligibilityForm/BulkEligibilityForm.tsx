@@ -6,12 +6,19 @@ import { Container } from './BulkEligibilityForm.styles';
 const BulkEligibilityForm = () => {
   const { heatNetworkService } = useServices();
   const [addresses, setAddresses] = useState<string>();
+  const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
 
   const readFile = (event: ChangeEvent<HTMLInputElement>) => {
+    setError('');
     if (!event.target.files || event.target.files.length === 0) {
       setAddresses('');
+      return;
+    }
+
+    if (event.target.files[0].size > 1048576) {
+      setError('Le fichier ne doit pas dépasser 1Mb.');
       return;
     }
 
@@ -50,16 +57,17 @@ const BulkEligibilityForm = () => {
             label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
             onChange={readFile}
             accept=".txt, .csv"
+            errorMessage={error}
           />
 
           <TextInput
-            label="Email :"
             type="email"
+            placeholder="Tapez ici votre email *"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             required
           />
-          <Button disabled={!email || !addresses} submit>
+          <Button disabled={!email || !addresses || !!error} submit>
             Tester le fichier d’adresses
           </Button>
         </form>
