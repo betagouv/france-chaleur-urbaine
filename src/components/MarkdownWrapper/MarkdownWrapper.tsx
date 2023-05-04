@@ -42,9 +42,11 @@ const ConsentLink: React.FC<{
   children?: React.ReactNode;
   ForceBlock: React.ElementType;
 }> = ({ children, ForceBlock = React.Fragment }) => (
-  <ForceBlock>
-    <a href="#consentement">{children}</a>
-  </ForceBlock>
+  <>
+    <ForceBlock>
+      <a href="#consentement">{children}</a>
+    </ForceBlock>
+  </>
 );
 
 const processor = (extender: Record<string, unknown> = {}) =>
