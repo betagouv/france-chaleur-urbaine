@@ -9,7 +9,6 @@ export {
   fullscreenHeaderHeight,
   headerHeight,
   tabFooterHeight,
-  tabHeaderHeight,
 } from './MainLayout.data';
 
 type MainLayout = {

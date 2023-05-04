@@ -1,3 +1,4 @@
+import { SliceBody } from '@components/Slice/Slice.style';
 import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
@@ -24,6 +25,15 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
 
   .enjeu-societe-img {
     max-width: 122px;
+  }
+
+  .fcuCoproGuide {
+    min-width: 330px;
+    margin-bottom: 80px;
+    text-align: center;
+    img {
+      max-width: 100%;
+    }
   }
 
   .fcuSolutionForFuturBody,
@@ -75,23 +85,20 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
   .slice-comparatif-rcu {
     > div {
       flex: 3;
-    width: auto;
-    max-width: none;
+      width: auto;
+      max-width: none;
     }
 
+    .rcu-comparatif-image-tertiaire,
     .rcu-comparatif-image {
       position: relative;
       border-radius: 2.5rem;
-      background-color: #F9F8F6;
       padding: 2rem 0 !important;
 
-      flex: 3;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
+      justify-content: space-between;
       width: auto;
       max-width: none;
-
+      
       .rcu-comparatif-image-legend {
         margin: 1rem 1rem 0 1rem;
         text-align: center;
@@ -101,15 +108,22 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
         }
       }
     }
+    
+    .rcu-comparatif-image {
+      flex-grow: 1;
+      background-color: white;
+
+    }
+    .rcu-comparatif-image-tertiaire {
+      flex: 3;
+      background-color: #F9F8F6;
+    }
+
     .rcu-comparatif-warning {
       flex: 1;
       width: auto;
       max-width: none;
       color: var(--bf500);
-
-      @media (min-width: 992px) {
-        padding-left: 4rem;
-      }
     }
   }
 
@@ -137,5 +151,90 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     div {
       max-width: 300px;
     }
-  } 
+  }
+
+  .slice-carto-text {
+    color: #000074;
+    h3 {
+      color: #000074 !important;
+    }
+    b {
+      color: #4550E5
+    }
+    @media (min-width: 992px) {
+      padding-left: 64px;
+    }
+
+    a {
+      margin-top: 16px;
+    }
+
+    @media (max-width: 991px) {
+      a {
+        margin: 0 auto;
+        display: block;
+        max-width: 14em;
+        text-align: center;
+      }
+    }
+  }
+
+  .presentation-rcu-tertiaire {
+    ${SliceBody} {
+      align-items: center;
+    }
+
+    .presentation-rcu-tertiaire-cartridge {
+      margin-bottom: 32px;
+      @media (min-width: 992px) {
+        margin-bottom: 0;
+        margin-right: 16px;
+      }
+    }
+
+    .presentation-rcu-tertiaire-body {
+      @media (min-width: 992px) {
+        margin-left: 16px;
+      }
+    }
+
+    .presentation-rcu-tertiaire-cartridge,
+    .presentation-rcu-tertiaire-body {
+      flex: 1;
+      color: var(--bf500);
+
+      p {
+        font-size: 1.12rem;
+        line-height: 1.5;
+      }
+    }
+    
+    .presentation-rcu-tertiaire-cartridges {
+      display: flex;
+      gap: 16px;
+      @media (min-width: 992px) {
+        gap: 32px;
+      }
+      justify-content: center;
+      margin-bottom: 16px;
+      b {
+        display: block;
+        font-size: 1.6em;
+      }
+    }
+
+    .presentation-rcu-tertiaire-cartridge-conso {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      
+      strong {
+        display: block;
+        font-size: 4.2em;
+        float: left;
+        line-height: 1;
+        margin-right: 0.3em;
+      }
+    }
+  }
 `;

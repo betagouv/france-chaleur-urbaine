@@ -1,11 +1,10 @@
 import {
-  Header as HeaderDS,
   HeaderBody,
+  Header as HeaderDS,
   HeaderNav,
   HeaderOperator,
   Logo,
   NavItem,
-  NavSubItem,
   Service,
   Tool,
   ToolItem,
@@ -18,7 +17,7 @@ import { Fragment, useContext } from 'react';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import LayoutContext from './LayoutContext';
 import { menu } from './MainLayout.data';
-import { FullScreenHeader, FullScreenItems } from './MainLayout.style';
+import { FullScreenHeader } from './MainLayout.style';
 
 const ToolItems = ({ session }: { session: Session | null }) => (
   <Tool>
@@ -26,7 +25,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
       <ToolItemGroup>
         <ToolItem
           asLink={
-            <Link href="/qui-sommes-nous">
+            <Link legacyBehavior href="/qui-sommes-nous">
               <a className="fr-link">Qui sommes-nous ?</a>
             </Link>
           }
@@ -36,7 +35,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
         {session.user.role === USER_ROLE.ADMIN ? (
           <ToolItem
             asLink={
-              <Link href="/admin">
+              <Link legacyBehavior href="/admin">
                 <a className="fr-link">Admin</a>
               </Link>
             }
@@ -48,7 +47,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
         )}
         <ToolItem
           asLink={
-            <Link href="/gestionnaire">
+            <Link legacyBehavior href="/gestionnaire">
               <a className="fr-link">Espace gestionnaire</a>
             </Link>
           }
@@ -63,7 +62,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
       <ToolItemGroup>
         <ToolItem
           asLink={
-            <Link href="/qui-sommes-nous">
+            <Link legacyBehavior href="/qui-sommes-nous">
               <a className="fr-link">Qui sommes-nous ?</a>
             </Link>
           }
@@ -72,7 +71,7 @@ const ToolItems = ({ session }: { session: Session | null }) => (
         </ToolItem>
         <ToolItem
           asLink={
-            <Link href="/connexion">
+            <Link legacyBehavior href="/connexion">
               <a className="fr-link">Espace gestionnaire</a>
             </Link>
           }
@@ -116,7 +115,13 @@ const Header = ({
                 </a>
               }
               description="Faciliter les raccordements aux réseaux de chaleur"
-              asLink={<Link href={indexLink} title="Revenir à l'accueil" />}
+              asLink={
+                <Link
+                  legacyBehavior
+                  href={indexLink}
+                  title="Revenir à l'accueil"
+                />
+              }
             />
           )}
           {!fullscreen && <ToolItems session={session} />}
@@ -133,57 +138,21 @@ const Header = ({
           </li>
         )}
         <NavItem
-          title={'Accueil'}
+          title="Copropriétaire, conseil syndical"
           current={currentMenu === indexLink}
           asLink={
-            <Link href={indexLink} legacyBehavior={false}>
-              {'Accueil'}
-            </Link>
+            <Link href={indexLink}>Copropriétaire, conseil syndical</Link>
           }
         />
 
-        {menu.map(({ label, url, subMenus }) =>
-          url ? (
-            <NavItem
-              key={url}
-              title={label}
-              current={currentMenu === url}
-              asLink={
-                <Link href={url} legacyBehavior={false}>
-                  {label}
-                </Link>
-              }
-            />
-          ) : (
-            <NavItem
-              key={label}
-              title={label}
-              current={
-                subMenus &&
-                subMenus.some((subMenu) => subMenu.url === currentMenu)
-              }
-            >
-              {subMenus &&
-                subMenus.map(({ url, label }) => (
-                  <NavSubItem
-                    key={url}
-                    title={label}
-                    current={currentMenu === url}
-                    asLink={
-                      <Link href={url} legacyBehavior={false}>
-                        {label}
-                      </Link>
-                    }
-                  />
-                ))}
-            </NavItem>
-          )
-        )}
-        {fullscreen && (
-          <FullScreenItems>
-            <ToolItems session={session} />
-          </FullScreenItems>
-        )}
+        {menu.map(({ label, url }) => (
+          <NavItem
+            key={url}
+            title={label}
+            current={currentMenu === url}
+            asLink={<Link href={url}>{label}</Link>}
+          />
+        ))}
       </HeaderNav>
     </HeaderDS>
   );

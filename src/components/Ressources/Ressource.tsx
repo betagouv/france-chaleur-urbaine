@@ -8,14 +8,18 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { growths, issues, understandings } from './config';
 import Guide from './Guide';
 import Header from './Header';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
 import StickyForm from './StickyForm';
+import { growths, issues, supports, understandings } from './config';
 
 const getContent = (ressourceKey: string) => {
+  if (ressourceKey === 'supports') {
+    return supports;
+  }
+
   return (
     issues[ressourceKey] ||
     understandings[ressourceKey] ||
@@ -70,6 +74,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                         <Link
                           href={`/ressources/${key}#contenu`}
                           scroll={false}
+                          legacyBehavior
                         >
                           <a
                             className="fr-sidemenu__link fr-link--md"
@@ -100,6 +105,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                           <Link
                             href={`/ressources/${key}#contenu`}
                             scroll={false}
+                            legacyBehavior
                           >
                             <a
                               className="fr-sidemenu__link fr-link--md"
@@ -130,6 +136,7 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                         <Link
                           href={`/ressources/${key}#contenu`}
                           scroll={false}
+                          legacyBehavior
                         >
                           <a
                             className="fr-sidemenu__link fr-link--md"
@@ -147,11 +154,40 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                     </SideMenuLink>
                   ))}
                 </SideMenuItem>
+                <SideMenuItem
+                  title="Nos supports de communication"
+                  expandedDefault
+                  current={ressourceKey === 'supports'}
+                >
+                  <SideMenuLink
+                    asLink={
+                      <Link
+                        href={`/ressources/supports#contenu`}
+                        scroll={false}
+                        legacyBehavior
+                      >
+                        <a
+                          className="fr-sidemenu__link fr-link--md"
+                          aria-current={
+                            ressourceKey === 'supports' ? 'page' : undefined
+                          }
+                        >
+                          Retrouvez ici tous nos supports de communication à
+                          partager autour de vous !
+                        </a>
+                      </Link>
+                    }
+                    current={ressourceKey === 'supports'}
+                  >
+                    Retrouvez ici tous nos supports de communication à partager
+                    autour de vous !
+                  </SideMenuLink>
+                </SideMenuItem>
               </SideMenu>
             </Col>
             <Col n="md-9 12">
               <RessourceContent content={getContent(ressourceKey)} />
-              <Guide />
+              {ressourceKey !== 'supports' && <Guide />}
             </Col>
           </Row>
         </Container>

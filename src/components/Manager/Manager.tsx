@@ -1,8 +1,8 @@
 import { Table } from '@dataesr/react-dsfr';
 import { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
-import { RowsParams } from 'src/services/demands';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
+import { RowsParams } from 'src/services/demands';
 import { Demand } from 'src/types/Summary/Demand';
 import AdditionalInformation from './AdditionalInformation';
 import Addresse from './Addresse';

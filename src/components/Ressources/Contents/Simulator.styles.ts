@@ -1,9 +1,25 @@
 import { Button } from '@dataesr/react-dsfr';
 import styled from 'styled-components';
 
-export const Container = styled.div<{ withMargin?: boolean }>`
-  background-color: #4550e5;
+export const Container = styled.div<{
+  withMargin?: boolean;
+  cartridge?: boolean;
+  withRedirection?: boolean;
+}>`
+  ${({ cartridge, withRedirection }) =>
+    cartridge
+      ? `
+          background-color:  ${
+            withRedirection ? '#4550e5' : 'rgba(205, 227, 240, 0.2)'
+          };
+          max-width: 450px;
+          border-radius: 0.7em;
+        `
+      : 'background-color: #4550e5;'}
   color: white;
+  h4 {
+    color: white;
+  }
   padding: 32px;
   ${({ withMargin }) =>
     withMargin &&
@@ -16,31 +32,50 @@ export const Container = styled.div<{ withMargin?: boolean }>`
 `;
 
 export const Title = styled.div`
-  margin: auto;
-  font-size: 28px;
+  margin: 0 auto 16px auto;
+  font-size: 20px;
   font-weight: 700;
-  line-height: 34px;
+  line-height: 25px;
   max-width: 950px;
 `;
 
-export const Form = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 32px;
-  margin: 32px;
+export const Form = styled.div<{
+  cartridge?: boolean;
+}>`
+  ${({ cartridge }) =>
+    !cartridge &&
+    `
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 32px;
+      margin: 32px;
+  `}
 `;
 
-export const Inputs = styled.div`
+export const Inputs = styled.div<{
+  cartridge?: boolean;
+}>`
   padding-top: 11px;
   height: 125px;
+  ${({ cartridge }) =>
+    cartridge &&
+    `
+      width: 100%;
+      .fr-select-group {
+        margin-bottom: 16px !important;
+      }
+  `}
+
   input {
     min-width: 225px;
   }
 `;
 
-export const Result = styled.div`
+export const Result = styled.div<{
+  cartridge?: boolean;
+}>`
   width: fit-content;
   background-color: #efc73f;
   border-radius: 12px;
@@ -55,11 +90,25 @@ export const Result = styled.div`
     min-width: 300px;
   }
   height: 125px;
+  ${({ cartridge }) =>
+    cartridge &&
+    `
+    color: #4550e5;
+  `}
 `;
 
-export const Disclaimer = styled.div`
+export const Disclaimer = styled.div<{
+  cartridge?: boolean;
+}>`
   margin-top: 8px;
   max-width: 400px;
+  ${({ cartridge }) =>
+    cartridge &&
+    `
+      font-size: 11px;
+      line-height: 13px;
+      max-width: 100%;
+    `}
 `;
 
 export const ResultValue = styled.div`

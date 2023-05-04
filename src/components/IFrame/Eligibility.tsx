@@ -1,9 +1,9 @@
-import AddressAutocomplete from '@components/addressAutocomplete';
+import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
 import {
   CheckEligibilityFormLabel,
   SelectEnergy,
 } from '@components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
+import AddressAutocomplete from '@components/addressAutocomplete';
 import { Button } from '@dataesr/react-dsfr';
 import { useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';

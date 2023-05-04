@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { User } from 'next-auth';
 import base from 'src/db/airtable';
+import { Demand } from 'src/types/Summary/Demand';
 import { Airtable } from 'src/types/enum/Airtable';
 import { USER_ROLE } from 'src/types/enum/UserRole';
-import { Demand } from 'src/types/Summary/Demand';
 import { gestionnaires } from './gestionnaires.config';
 
 export const getAllDemands = async (): Promise<Demand[]> => {

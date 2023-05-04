@@ -95,9 +95,14 @@ export const SliceContainer = styled.div`
   }
 `;
 
-export const SliceBody = styled.div<{ direction?: string }>`
+export const SliceBody = styled.div<{
+  direction?: string;
+  justifyContent?: string;
+}>`
   display: flex;
   flex-direction: column;
+  ${({ justifyContent }) =>
+    justifyContent && `justify-content: ${justifyContent};`}
 
   @media (min-width: 992px) {
     flex-direction: ${({ direction }) => direction || 'column'};
