@@ -175,7 +175,9 @@ export const Cartridge = styled.div<{ theme: string }>`
 `;
 
 const CheckItemFCU = css`
-  margin-bottom: 12px;
+  &:not(:last-child) {
+    margin-bottom: 12px;
+  }
   display: flex;
   align-items: center;
 

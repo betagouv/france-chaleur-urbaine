@@ -1,5 +1,5 @@
-import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
+import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 import {
   localTypeEnergy,
   localTypeGas,

@@ -12,6 +12,10 @@ const InputWraper = styled.div`
     opacity: 0;
     max-height: 0;
   }
+
+  .fr-form-group {
+    margin-bottom: 0;
+  }
 `;
 
 export const fieldLabelInformation = {

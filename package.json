@@ -26,6 +26,7 @@
     "prettier-check": "prettier --check src",
     "prelint": "yarn prettier-check",
     "lint": "eslint src/ -c .eslintrc.json --ext js,jsx,ts,tsx,json",
+    "lint:fix": "prettier --write src && eslint src/ -c .eslintrc.json --ext js,jsx,ts,tsx,json --fix",
     "db:migrate": "knex migrate:latest",
     "db:new": "knex migrate:make",
     "db:revert": "knex migrate:rollback",

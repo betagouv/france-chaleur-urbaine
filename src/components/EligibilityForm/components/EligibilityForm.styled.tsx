@@ -18,15 +18,15 @@ export const CheckEligibilityFormLabel = styled.div<{ colored?: boolean }>`
 export const ContactFormWrapper = styled.div<{ cardMode?: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: stretch;
 
   ${({ cardMode }) => css`
     ${!cardMode ? 'padding: 24px 0' : ''};
+    gap: ${cardMode ? '0' : '32px'};
 
     @media (min-width: 992px) {
       flex-direction: ${cardMode ? 'column' : 'row'};
-      gap: ${cardMode ? '0' : '32px'};
     }
   `}
 `;
@@ -90,35 +90,17 @@ export const ContactMapResult = styled.div`
 
 export const ContactFormResultMessage = styled.div<{
   eligible?: boolean;
-  headerTypo?: string;
   cardMode?: boolean;
 }>`
-  box-shadow: inset 8px 0 0 0
-    ${({ eligible }) => (eligible ? '#00eb5e' : '#ea7c3f')};
+  box-shadow: inset ${(cardMode) => (cardMode ? '8px' : '16px')} 0 0 0
+    ${({ eligible }) => (eligible ? '#78EB7B' : '#FAAC18')};
   background-color: var(--g200);
-  margin: 8px 0;
-
-  ${({ cardMode, headerTypo }) => css`
-    padding: ${cardMode ? '8px 16px' : '32px 48px'};
-    font-size: ${(cardMode && '14px') ||
-    (headerTypo === 'small' && '18px') ||
-    '25px'};
-  `}
-
+  margin-bottom: 8px;
+  font-size: ${({ cardMode }) => (cardMode ? '14px' : '16px')};
+  line-height: ${({ cardMode }) => (cardMode ? '18px' : '20px')};
+  padding: ${({ cardMode }) => (cardMode ? '8px 16px' : '32px')};
   p {
-    font-size: ${({ cardMode, headerTypo }) =>
-      (cardMode && '14px') || (headerTypo === 'small' && '18px') || '25px'};
-    line-height: 1.35;
-    margin-bottom: ${({ cardMode, headerTypo }) =>
-      (cardMode && '7px') || (headerTypo === 'small' && '9px') || '12.5px'};
-  }
-
-  em.distance {
-    display: block;
-    margin: 8px 0 0 0;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 16px;
+    ${(cardMode) => cardMode && 'margin-bottom: 0;'}
   }
 `;
 

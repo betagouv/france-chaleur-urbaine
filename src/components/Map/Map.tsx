@@ -562,7 +562,7 @@ const Map = ({
 
     map.current.on('load', () => {
       map.current.loadImage(
-        './icons/rect.png',
+        '/icons/rect.png',
         (error: any, image: Record<string, unknown>) => {
           if (error) {
             throw error;
