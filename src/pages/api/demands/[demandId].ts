@@ -26,7 +26,7 @@ export default async function demand(
   res: NextApiResponse
 ) {
   const { demandId } = req.query;
-  const user = await authenticatedUser(req, res);
+  const user = await authenticatedUser(req);
   if (!user) {
     return res.status(204).json({});
   }

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import nextAuth, { AuthOptions, Session } from 'next-auth';
+import nextAuth, { Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import db from 'src/db';
 
@@ -26,7 +26,7 @@ const login = async (email: string, password: string) => {
   };
 };
 
-export const nextAuthOptions: AuthOptions = {
+export default nextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/connexion',
@@ -78,6 +78,4 @@ export const nextAuthOptions: AuthOptions = {
       },
     }),
   ],
-};
-
-export default nextAuth(nextAuthOptions);
+});

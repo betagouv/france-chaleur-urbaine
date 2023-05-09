@@ -5,7 +5,7 @@ import { USER_ROLE } from 'src/types/enum/UserRole';
 
 export default async function users(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const user = await authenticatedUser(req, res);
+    const user = await authenticatedUser(req);
     if (!user || user.role !== USER_ROLE.ADMIN) {
       return res.status(204).json([]);
     }

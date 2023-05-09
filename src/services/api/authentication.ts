@@ -1,13 +1,12 @@
-import { nextAuthOptions } from '@pages/api/auth/[...nextauth]';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { User, getServerSession } from 'next-auth';
+import { NextApiRequest } from 'next';
+import { User } from 'next-auth';
+import { getSession } from 'next-auth/react';
 import db from 'src/db';
 
 export const authenticatedUser = async (
-  req: NextApiRequest,
-  res: NextApiResponse
+  req: NextApiRequest
 ): Promise<User | null> => {
-  const session = await getServerSession(req, res, nextAuthOptions);
+  const session = await getSession({ req });
   if (!session) {
     return null;
   }
