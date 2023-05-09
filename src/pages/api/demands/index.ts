@@ -93,7 +93,7 @@ export default async function demands(
   res: NextApiResponse
 ) {
   try {
-    const user = await authenticatedUser(req);
+    const user = await authenticatedUser(req, res);
     if (!user) {
       return res.status(204).json([]);
     }
