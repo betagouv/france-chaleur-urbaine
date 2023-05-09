@@ -9,7 +9,7 @@ export default async function eligibilityDemands(
   res: NextApiResponse
 ) {
   try {
-    const user = await authenticatedUser(req);
+    const user = await authenticatedUser(req, res);
     if (!user || user.role !== USER_ROLE.ADMIN) {
       return res.status(204).json([]);
     }
