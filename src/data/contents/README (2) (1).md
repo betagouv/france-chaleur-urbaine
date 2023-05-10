@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/champigny04.jpg
-coverY: 0
----
-
 # Visite d'un forage de géothermie
 
 Pour illustrer en images la géothermie profonde, dont nous vous parlions dans notre dernier post, direction Champigny-sur-Marne (94) !

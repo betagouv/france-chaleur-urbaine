@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/23.jpg
-coverY: 0
----
-
 # Dispositif éco-énergie tertiaire
 
 Vous êtes propriétaire ou gestionnaire de bâtiments tertiaires d'une surface (ou d'un cumul de surfaces) égale ou supérieure à 1 000 m² ?
