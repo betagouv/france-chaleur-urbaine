@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Dispositif éco-énergie tertiaire](README.md)
+* [Visite d'une chaufferie biomasse](visite-dune-chaufferie-biomasse.md)
 * [La biomasse](<README (2).md>)
 * [Visite d'un forage de géothermie](<README (2) (1).md>)
 * [La géothermie profonde](<README (1).md>)
