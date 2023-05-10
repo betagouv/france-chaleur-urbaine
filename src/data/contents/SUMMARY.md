@@ -1,10 +1,11 @@
 # Table of contents
 
-* [La biomasse](README.md)
-* [Visite d'un forage de géothermie](<README (2).md>)
+* [Dispositif éco-énergie tertiaire](README.md)
+* [La biomasse](<README (2).md>)
+* [Visite d'un forage de géothermie](<README (2) (1).md>)
 * [La géothermie profonde](<README (1).md>)
 * [Les réseaux de chaleur : des énergies vertes](les-reseaux-de-chaleur-des-energies-vertes.md)
-* [Les ménages français et le chauffage](<README (2) (1).md>)
+* [Les ménages français et le chauffage](<README (2) (1) (1).md>)
 * [La décarbonation des réseaux de chaleur est en marche !](<README (1) (2).md>)
 * [L'appel à projets 1 ville 1 réseau de l'ADEME est relancé](lappel-a-projets-1-ville-1-reseau-de-lademe-est-relance.md)
 * [1600 réseaux à créer ou étendre](1600-reseaux-a-creer-ou-etendre.md)
