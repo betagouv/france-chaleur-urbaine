@@ -9,7 +9,10 @@ export const FullScreenHeader = styled.div`
 export const FullScreenItems = styled.div`
   flex-grow: 1;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  .fr-header__search {
+    display: none;
+  }
 `;
 
 export const GithubLogo = styled.img`
