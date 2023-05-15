@@ -1,9 +1,17 @@
-# La biomasse
+# Dispositif éco-énergie tertiaire
 
-🤓 N° 2 dans notre série sur les énergies renouvelables et de récupération qui alimentent les réseaux de chaleur : la biomasse, qui reste la principale source d'énergie renouvelable dans notre pays.&#x20;
+Vous êtes propriétaire ou gestionnaire de bâtiments tertiaires d'une surface (ou d'un cumul de surfaces) égale ou supérieure à 1 000 m² ?
 
-🌳 Il s'agit d'une ressource abondante en France, qui favorise l'autonomie des territoires et permet le développement d'une économie circulaire. L'usage de la biomasse pour l'énergie est amené à se développer fortement, sur la base de ressources issues d'une gestion durable, en bonne articulation avec les usages autres qu'énergétiques, et en limitant son impact en termes de qualité de l'air grâce à des installations performantes.&#x20;
+👉 Ces bâtiments sont assujettis au dispositif éco-énergie tertiaire. Leurs consommations d’énergie finale devront être réduites de 40% en 2030, 50% en 2040 et 60% en 2050.
 
-🔎 Pour comprendre l'essentiel en un coup d’œil, notre fiche pédagogique, toujours à partager largement !
+Pour atteindre les objectifs du dispositif, vous pouvez optimiser l'exploitation de vos bâtiments, moderniser vos équipements, ou encore engager des travaux de rénovation énergétique.
 
-<figure><img src=".gitbook/assets/biomasse.jpg" alt=""><figcaption></figcaption></figure>
+Vous pouvez aussi opter pour un raccordement à un réseau de chaleur !
+
+🎯 Grâce au jeu des coefficients de conversion en énergie finale, jusqu'à 23% de réduction de consommation peuvent être comptabilisées rien qu'en raccordant vos bâtiments à un réseau de chaleur.
+
+Avec le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires, le coût du raccordement est fortement réduit.
+
+🔎 Rendez-vous sans attendre sur France Chaleur Urbaine pour vérifier si un réseau de chaleur se situe à proximité de votre parc tertiaire !
+
+![](.gitbook/assets/23%.jpg)
