@@ -85,6 +85,7 @@ const cacheAirtableTiles = () => {
 };
 
 cacheAirtableTiles();
+
 const getTiles = async (type: DataType, x: number, y: number, z: number) => {
   const tileInfo = tilesInfo[type];
   if (tileInfo.source === 'database') {

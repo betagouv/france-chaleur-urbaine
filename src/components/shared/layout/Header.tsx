@@ -95,6 +95,7 @@ const Header = ({
 
   const Container = fullscreen ? FullScreenHeader : Fragment;
 
+  console.log(currentMenu);
   return (
     <HeaderDS>
       <Container>

@@ -19,6 +19,7 @@ import {
 } from 'src/types/HeatNetworksResponse';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
+import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import mapParam, {
   EnergyNameOption,
   LayerNameOption,
@@ -64,16 +65,7 @@ const setHoveringState = (map: any, hover: boolean) => {
   }
 };
 
-const {
-  defaultZoom,
-  maxZoom,
-  minZoom,
-  minZoomData,
-  lng,
-  lat,
-  defaultLayerDisplay,
-  legendData,
-} = mapParam;
+const { defaultZoom, maxZoom, minZoom, minZoomData } = mapParam;
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
@@ -99,7 +91,19 @@ const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
   layers.forEach((layer) => map.addLayer(layer));
 };
 
-export default function Map() {
+const Map = ({
+  withLegend,
+  withDrawing,
+  initialLayerDisplay,
+  legendData,
+  center,
+}: {
+  initialLayerDisplay: TypeLayerDisplay;
+  legendData?: (string | TypeGroupLegend)[];
+  withLegend?: boolean;
+  withDrawing?: boolean;
+  center?: [number, number];
+}) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
@@ -121,7 +125,7 @@ export default function Map() {
 
   const [mapState, setMapState] = useState('pending');
   const [layerDisplay, setLayerDisplay] =
-    useState<TypeLayerDisplay>(defaultLayerDisplay);
+    useState<TypeLayerDisplay>(initialLayerDisplay);
 
   const [soughtAddresses, setSoughtAddresses] = usePersistedState(
     'mapSoughtAddresses',
@@ -341,29 +345,27 @@ export default function Map() {
     );
   }, [map, layerDisplay]);
 
-  // ----------------
-  // --- Load Map ---
-  // ----------------
   useEffect(() => {
     if (mapState === 'loaded' || map.current) {
       return;
     }
 
-    draw.current = new MapboxDraw({
-      displayControlsDefault: false,
-    });
-
     map.current = new maplibregl.Map({
       attributionControl: false,
       container: mapContainer.current,
       style: styles[0].uri,
-      center: [lng, lat],
+      center: center || [mapParam.lng, mapParam.lat],
       zoom: defaultZoom,
       maxZoom,
       minZoom,
     });
 
-    map.current.addControl(draw.current);
+    if (withDrawing) {
+      draw.current = new MapboxDraw({
+        displayControlsDefault: false,
+      });
+      map.current.addControl(draw.current);
+    }
     map.current.addControl(
       new maplibregl.GeolocateControl({
         fitBoundsOptions: { maxZoom: 13 },
@@ -560,7 +562,7 @@ export default function Map() {
 
     map.current.on('load', () => {
       map.current.loadImage(
-        './icons/rect.png',
+        '/icons/rect.png',
         (error: any, image: Record<string, unknown>) => {
           if (error) {
             throw error;
@@ -646,6 +648,17 @@ export default function Map() {
   }, [router.query, heatNetworkService]);
 
   useEffect(() => {
+    if (map.current && center) {
+      new maplibregl.Marker({
+        color: '#4550e5',
+      })
+        .setLngLat(center)
+        .addTo(map.current);
+      jumpTo({ coordinates: center, zoom: 13 });
+    }
+  }, [jumpTo, map, center]);
+
+  useEffect(() => {
     if (!router.isReady) {
       return;
     }
@@ -660,7 +673,7 @@ export default function Map() {
         coordinates,
         zoom: zoom ? parseInt(zoom as string, 10) : 12,
       });
-    } else if (!id && navigator.geolocation) {
+    } else if (!center && !id && navigator.geolocation) {
       if (navigator.permissions) {
         navigator.permissions
           .query({ name: 'geolocation' })
@@ -679,11 +692,8 @@ export default function Map() {
         });
       }
     }
-  }, [jumpTo, router]);
+  }, [jumpTo, center, router]);
 
-  // ---------------------
-  // --- Search result ---
-  // ---------------------
   useEffect(() => {
     let shouldUpdate = false;
     const newSoughtAddresses = soughtAddresses.map(
@@ -719,107 +729,118 @@ export default function Map() {
 
   return (
     <>
-      <MapStyle legendCollapsed={legendCollapsed} />
+      <MapStyle legendCollapsed={!withLegend || legendCollapsed} />
       <div className="map-wrap">
-        <CollapseLegend
-          legendCollapsed={legendCollapsed}
-          onClick={() => setLegendCollapsed(!legendCollapsed)}
-        >
-          <Hoverable position="right">
-            {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
-          </Hoverable>
-          <Icon
-            size="2x"
-            name={
-              legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'
-            }
-          />
-        </CollapseLegend>
-        <Legend legendCollapsed={legendCollapsed}>
-          <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-          <LegendSeparator />
-          {soughtAddresses.length > 0 && (
-            <>
-              {soughtAddresses
-                .map((soughtAddress, index) => (
-                  <CardSearchDetails
-                    key={soughtAddress.id}
-                    address={soughtAddress}
-                    onClick={jumpTo}
-                    onClickClose={removeSoughtAddresses}
-                    onContacted={markAddressAsContacted}
-                    collapsed={
-                      collapsedCardIndex !== soughtAddresses.length - 1 - index
-                    }
-                    setCollapsed={(collapsed) => {
-                      if (collapsed) {
-                        setCollapsedCardIndex(-1);
-                      } else {
-                        setCollapsedCardIndex(
-                          soughtAddresses.length - 1 - index
-                        );
-                      }
-                    }}
-                  />
-                ))
-                .reverse()}
+        {withLegend && (
+          <>
+            <CollapseLegend
+              legendCollapsed={legendCollapsed}
+              onClick={() => setLegendCollapsed(!legendCollapsed)}
+            >
+              <Hoverable position="right">
+                {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
+              </Hoverable>
+              <Icon
+                size="2x"
+                name={
+                  legendCollapsed
+                    ? 'ri-arrow-right-s-fill'
+                    : 'ri-arrow-left-s-fill'
+                }
+              />
+            </CollapseLegend>
+            <Legend legendCollapsed={legendCollapsed}>
+              <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               <LegendSeparator />
-            </>
-          )}
-          <MapLegend
-            data={legendData}
-            onToogleFeature={toggleLayer}
-            onToogleInGroup={(groupeName: string, idEntry?: any) => {
-              switch (groupeName) {
-                case 'energy': {
-                  toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
-                  break;
-                }
-                case 'gasUsage': {
-                  toogleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
-                  break;
-                }
-                case 'gasUsageGroup': {
-                  toogleGasUsageGroupeVisibility();
-                  break;
-                }
-              }
-            }}
-            onValuesChange={(
-              groupName: string,
-              idEntry: string,
-              values: [number, number]
-            ) => {
-              switch (groupName) {
-                case 'energy': {
-                  idEntry === 'gas'
-                    ? setLayerDisplay({
+              {soughtAddresses.length > 0 && (
+                <>
+                  {soughtAddresses
+                    .map((soughtAddress, index) => (
+                      <CardSearchDetails
+                        key={soughtAddress.id}
+                        address={soughtAddress}
+                        onClick={jumpTo}
+                        onClickClose={removeSoughtAddresses}
+                        onContacted={markAddressAsContacted}
+                        collapsed={
+                          collapsedCardIndex !==
+                          soughtAddresses.length - 1 - index
+                        }
+                        setCollapsed={(collapsed) => {
+                          if (collapsed) {
+                            setCollapsedCardIndex(-1);
+                          } else {
+                            setCollapsedCardIndex(
+                              soughtAddresses.length - 1 - index
+                            );
+                          }
+                        }}
+                      />
+                    ))
+                    .reverse()}
+                  <LegendSeparator />
+                </>
+              )}
+              <MapLegend
+                data={legendData || mapParam.legendData}
+                onToogleFeature={toggleLayer}
+                onToogleInGroup={(groupeName: string, idEntry?: any) => {
+                  switch (groupeName) {
+                    case 'energy': {
+                      toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
+                      break;
+                    }
+                    case 'gasUsage': {
+                      toogleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
+                      break;
+                    }
+                    case 'gasUsageGroup': {
+                      toogleGasUsageGroupeVisibility();
+                      break;
+                    }
+                  }
+                }}
+                onValuesChange={(
+                  groupName: string,
+                  idEntry: string,
+                  values: [number, number]
+                ) => {
+                  switch (groupName) {
+                    case 'energy': {
+                      idEntry === 'gas'
+                        ? setLayerDisplay({
+                            ...layerDisplay,
+                            energyGasValues: values,
+                          })
+                        : setLayerDisplay({
+                            ...layerDisplay,
+                            energyFuelValues: values,
+                          });
+                      break;
+                    }
+                    case 'gasUsage': {
+                      setLayerDisplay({
                         ...layerDisplay,
-                        energyGasValues: values,
-                      })
-                    : setLayerDisplay({
-                        ...layerDisplay,
-                        energyFuelValues: values,
+                        gasUsageValues: values,
                       });
-                  break;
-                }
-                case 'gasUsage': {
-                  setLayerDisplay({
-                    ...layerDisplay,
-                    gasUsageValues: values,
-                  });
-                  break;
-                }
-              }
-            }}
-            layerDisplay={layerDisplay}
-          />
-        </Legend>
-        <MapControlWrapper legendCollapsed={legendCollapsed}>
-          <ZoneInfos map={map.current} draw={draw.current} />
-        </MapControlWrapper>
+                      break;
+                    }
+                  }
+                }}
+                layerDisplay={layerDisplay}
+              />
+            </Legend>
+          </>
+        )}
+        {withDrawing && (
+          <MapControlWrapper legendCollapsed={legendCollapsed}>
+            <ZoneInfos map={map.current} draw={draw.current} />
+          </MapControlWrapper>
+        )}
         <div ref={mapContainer} className="map" />
       </div>
     </>
   );
-}
+};
+
+export default Map;
