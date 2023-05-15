@@ -1,4 +1,5 @@
 import { TypeLayerDisplay } from 'src/services/Map/param';
+import { LegendGroupId } from './enum/LegendGroupId';
 
 export type TypeGroupLegend = {
   id: LegendGroupId;

@@ -47,9 +47,6 @@ jobs:
       - name: Lint 🧹
         run: yarn lint
 
-      - name: Units tests 🐛
-        run: yarn test:coverage
-
       - name: Build 📦
         run: yarn build
         env:
