@@ -42,23 +42,14 @@ const EligibilityFormContact = ({
   cardMode,
   onSubmit,
 }: EligibilityFormContactType) => {
-  const {
-    futurNetwork,
-    futurHeader,
-    body,
-    bodyLight,
-    computedEligibility,
-    text,
-  } = useMemo(() => {
+  const { body, computedEligibility, text } = useMemo(() => {
     if (!addressData.eligibility) {
       return {};
     }
 
     const {
       header,
-      futurHeader,
       body,
-      bodyLight,
       eligibility: computedEligibility,
       text,
     }: any = getEligibilityResult(
@@ -81,16 +72,13 @@ const EligibilityFormContact = ({
       : '';
 
     return {
-      futurNetwork: addressData.eligibility.futurNetwork,
       header,
-      futurHeader,
       body: addBordeauxLink
         ? (computedBody as string).replace(
             '[France Rénov’](https://france-renov.gouv.fr/)',
             '[France Rénov’](https://france-renov.gouv.fr/) et [Bordeaux Métropole](https://www.bordeaux-metropole.fr/)'
           )
         : computedBody,
-      bodyLight,
       computedEligibility,
       text,
     };
@@ -124,9 +112,7 @@ const EligibilityFormContact = ({
         {!cardMode ? (
           <>
             <ContactFormResultMessage eligible={computedEligibility}>
-              <MarkdownWrapper
-                value={futurNetwork && futurHeader ? futurHeader : body}
-              />
+              <MarkdownWrapper value={body} />
             </ContactFormResultMessage>
             <ContactMapResult>
               <Map
@@ -153,9 +139,13 @@ const EligibilityFormContact = ({
             </ContactMapResult>
           </>
         ) : (
-          bodyLight && (
-            <ContactFormResultMessage eligible={computedEligibility} cardMode>
-              <MarkdownWrapper value={bodyLight} />
+          addressData.heatingType === 'individuel' && (
+            <ContactFormResultMessage eligible={false} cardMode>
+              <MarkdownWrapper
+                value={
+                  'Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble'
+                }
+              />
             </ContactFormResultMessage>
           )
         )}

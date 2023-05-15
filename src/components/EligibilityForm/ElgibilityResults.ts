@@ -1,9 +1,9 @@
 import { AvailableHeating } from 'src/types/AddressData';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 
+// 3 rue du petit bois 78370 Plaisir
 const closeCollectif = {
   eligibility: true,
-  futurHeader: `**Bonne nouvelle ! Un réseau de chaleur passera bientôt à proximité de cette adresse (prévu ou en construction).**`,
   body: (
     distance: number,
     inZDP: boolean,
@@ -36,40 +36,35 @@ ${
 `,
 };
 
+// 3 rue du petit bois 78370 Plaisir
 const closeIndividual = {
-  eligibility: false,
-  futurHeader: `Un réseau de chaleur passera bientôt à proximité de votre adresse (prévu ou en construction), toutefois au vu de votre chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.`,
   body: (distance: number) => `
 ::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur (${distance}).]
 ::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage).]
+::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
   `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
 Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
   `,
-
-  bodyLight: `
-Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble`,
 };
 
+// 1 rue du berry 78370 Plaisir
 const intermediateCollectif = {
-  eligibility: true,
-  futurHeader: `**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs (prévu ou en construction).**`,
   body: (
     distance: number,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null
   ) => `
-::arrow-item[Il n’existe pour le moment pas de réseau de chaleur à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin (${distance}).]
+::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin (${distance}).]
 ${
   inZDP
-    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut s’appliquer ([en savoir plus](/ressources/prioritaire#contenu)).]'
+    ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut s’appliquer ([en savoir plus](/ressources/prioritaire#contenu)).]'
     : ''
 }
-::arrow-item[Avec un chauffage collectif, votre immeuble dispose déjà des équipements nécessaires : il s’agit du cas le plus favorable pour un raccordement !]
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
@@ -86,24 +81,70 @@ ${
   `,
 };
 
+// 1 rue du berry 78370 Plaisir
 const farIndividual = {
-  eligibility: false,
   body: (distance: number) => `
 ::arrow-item[**Votre immeuble n'est pas situé à proximité** immédiate d’un réseau de chaleur (${distance}).]
-::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
+::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage).]
+::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
     `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
 Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
     `,
-  bodyLight: `
-Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble`,
 };
 
+// Limours
+const farCollectifOutZdp = {
+  body: () => `
+::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse. Toutefois les réseaux de chaleur se développent !]
+::arrow-item[Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, **pensez à améliorer l’isolation thermique de votre immeuble**. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
+::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
+`,
+  text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+**Contribuez au développement des réseaux de chaleur en faisant connaître votre souhait de vous raccorder !** Laissez-nous vos coordonnées pour être tenu informé par le gestionnaire du réseau le plus proche ou par votre collectivité des projets d’extension de réseau ou de création de réseau dans votre quartier.
+`,
+};
+
+// Rue pablo neruda 76610 Le havre
+const closeFuturCollectif = {
+  eligibility: true,
+  body: (
+    distance: number,
+    inZDP: boolean,
+    gestionnaire: string | null,
+    tauxENRR: number | null
+  ) => `
+### Bonne nouvelle !
+
+
+::arrow-item[**Un réseau de chaleur passera bientôt à proximité** immédiate de votre adresse (${distance}) (réseau prévu ou en construction).]
+${
+  inZDP
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer ([en savoir plus](/ressources/prioritaire#contenu)).]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du futur réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR
+          ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.`
+          : ''
+      }]`
+    : ''
+}
+`,
+  text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+`,
+};
+
+// 2 rue hardenberg 92220 Bagneux
 const farCollectifInZdp = {
-  eligibility: false,
   body: (
     distance: number,
     inZDP: boolean,
@@ -111,7 +152,7 @@ const farCollectifInZdp = {
     tauxENRR: number | null
   ) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse.]
-::arrow-item[Toutefois, les réseaux de chaleur se développent et vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut s’appliquer (en savoir plus).]
+::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut s’appliquer (en savoir plus).]
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
@@ -128,40 +169,112 @@ ${
 `,
 };
 
-const farCollectifOutZdp = {
-  eligibility: false,
-  body: () => `
-::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse. Toutefois les réseaux de chaleur se développent !]
-::arrow-item[Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, pensez à améliorer l’isolation thermique de votre immeuble. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage [ici](https://france-renov.gouv.fr/renovation/chauffage).]
+// rue des hirondelles 76610 le havre
+const intermediateFuturCollectif = {
+  body: (
+    distance: number,
+    inZDP: boolean,
+    gestionnaire: string | null,
+    tauxENRR: number | null
+  ) => `
+::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** (${distance}) (réseau prévu ou en construction).]
+${
+  inZDP
+    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut s’appliquer ([en savoir plus](/ressources/prioritaire#contenu)).]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du futur réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR
+          ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.`
+          : ''
+      }]`
+    : ''
+}
+  `,
+  text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+  `,
+};
+
+// Metz
+const irisCollectif = {
+  eligibility: true,
+  body: (distance: number, inZDP: boolean) => `
+### Bonne nouvelle !
+
+
+::arrow-item[**Un réseau de chaleur passe à proximité** de votre adresse.]
+${
+  inZDP
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer ([en savoir plus](/ressources/prioritaire#contenu)).]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
 `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
-**Contribuez au développement des réseaux de chaleur en faisant connaître votre souhait de vous raccorder !** Laissez-nous vos coordonnées pour être tenu informé par le gestionnaire du réseau le plus proche ou par votre collectivité des projets d’extension de réseau ou de création de réseau dans votre quartier.
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
 `,
 };
 
-const iris = {};
+// rue des hirondelles 76610 le havre
+const closeFuturIndividual = {
+  body: (distance: number) => `
+::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur en projet ou en construction (${distance}).]
+::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
+::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
+::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
+  `,
+  text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
+  `,
+};
+
+// Metz
+const irisIndividual = {
+  body: () => `
+::arrow-item[**Votre immeuble est situé à proximité** d’un réseau de chaleur.]
+::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
+::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
+::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
+`,
+  text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
+`,
+};
 
 export const getEligibilityResult = (
   heatingType: AvailableHeating,
   eligibility?: HeatNetworksResponse
 ) => {
   if (eligibility && heatingType) {
+    const futurNetwork = eligibility.futurNetwork;
     if (eligibility.isEligible) {
       if (eligibility.isBasedOnIris) {
-        return iris;
+        return heatingType === 'collectif' ? irisCollectif : irisIndividual;
       }
       if (
         eligibility.distance !== null &&
         eligibility.veryEligibleDistance !== null
       ) {
         if (eligibility.distance <= eligibility.veryEligibleDistance) {
-          return heatingType === 'collectif' ? closeCollectif : closeIndividual;
+          if (heatingType === 'collectif') {
+            return futurNetwork ? closeFuturCollectif : closeCollectif;
+          }
+          return futurNetwork ? closeFuturIndividual : closeIndividual;
         }
-        return heatingType === 'collectif'
-          ? intermediateCollectif
-          : farIndividual;
+        if (heatingType === 'collectif') {
+          return futurNetwork
+            ? intermediateFuturCollectif
+            : intermediateCollectif;
+        }
+        return farIndividual;
       }
     }
 
