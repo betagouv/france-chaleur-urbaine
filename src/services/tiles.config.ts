@@ -109,6 +109,15 @@ export const tilesInfo: Record<string, TileInfo> = {
     ],
     sourceLayer: 'outline',
   },
+  futurNetwork: {
+    source: 'database',
+    table: 'reseaux_en_construction',
+    tiles: 'reseaux_en_construction_tiles',
+    id: 'id',
+    extraWhere: (query) => query,
+    properties: ['id', 'mise_en_service', 'gestionnaire'],
+    sourceLayer: 'futurOutline',
+  },
   zoneDP: {
     source: 'database',
     table: 'zone_de_developpement_prioritaire',
