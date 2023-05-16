@@ -86,6 +86,9 @@ const securityHeadersIFramable = [
 ];
 
 module.exports = withBundleAnalyzer({
+  compiler: {
+    styledComponents: true,
+  },
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,
   basePath: isGithubCI ? '/france-chaleur-urbaine' : undefined,
   // swcMinify: true, // Need Fix on the Rust Compiler SWC: Incompatibility with MapLibre
@@ -110,6 +113,7 @@ module.exports = withBundleAnalyzer({
         headers: securityHeaders,
       },
       { source: '/form', headers: securityHeadersIFramable },
+      { source: '/map', headers: securityHeadersIFramable },
     ];
   },
   webpack: function (config) {

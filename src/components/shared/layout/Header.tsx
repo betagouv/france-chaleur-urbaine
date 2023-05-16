@@ -17,7 +17,17 @@ import { Fragment, useContext } from 'react';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import LayoutContext from './LayoutContext';
 import { menu } from './MainLayout.data';
-import { FullScreenHeader } from './MainLayout.style';
+import { FullScreenHeader, FullScreenItems } from './MainLayout.style';
+
+const LogoutItem = () => (
+  <Tool>
+    <ToolItemGroup>
+      <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
+        Se déconnecter
+      </ToolItem>
+    </ToolItemGroup>
+  </Tool>
+);
 
 const ToolItems = ({ session }: { session: Session | null }) => (
   <Tool>
@@ -95,6 +105,8 @@ const Header = ({
 
   const Container = fullscreen ? FullScreenHeader : Fragment;
 
+  const showLogout =
+    currentMenu === '/gestionnaire' || currentMenu === '/admin';
   return (
     <HeaderDS>
       <Container>
@@ -124,7 +136,11 @@ const Header = ({
               }
             />
           )}
-          {!fullscreen && <ToolItems session={session} />}
+          {fullscreen ? (
+            showLogout && <LogoutItem />
+          ) : (
+            <ToolItems session={session} />
+          )}
         </HeaderBody>
       </Container>
       <HeaderNav>
@@ -153,6 +169,11 @@ const Header = ({
             asLink={<Link href={url}>{label}</Link>}
           />
         ))}
+        {fullscreen && showLogout && (
+          <FullScreenItems>
+            <LogoutItem />
+          </FullScreenItems>
+        )}
       </HeaderNav>
     </HeaderDS>
   );

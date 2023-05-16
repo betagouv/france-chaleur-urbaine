@@ -7,6 +7,9 @@ export interface HeatNetworksResponse {
   inZDP: boolean;
   isBasedOnIris: boolean;
   futurNetwork: boolean;
+  tauxENRR: number | null;
+  gestionnaire: string | null;
+  co2: number | null;
 }
 
 export interface AddressDetail {

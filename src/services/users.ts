@@ -43,6 +43,7 @@ export const updateUsers = async () => {
           `Create account for ${email} on ${gestionnaires.join(', ')}.`
         );
         newEmails.push(email);
+        existingEmails.add(email);
         await db('users').insert({
           email,
           password: bcrypt.hashSync(
@@ -65,13 +66,15 @@ export const updateUsers = async () => {
 
   for (let i = 0; i < existingManager.length; i++) {
     const gestionnaire = existingManager[i];
-    emails.push(`${gestionnaire} - FCU`.toLowerCase());
-    if (!existingEmails.has(`${gestionnaire} - FCU`.toLowerCase())) {
+    const gestionnaireFakeMail = `${gestionnaire} - FCU`.toLowerCase();
+    emails.push(gestionnaireFakeMail);
+    if (!existingEmails.has(gestionnaireFakeMail)) {
       console.log(
         `Create account for ${gestionnaire} - FCU on ${gestionnaire}.`
       );
+      existingEmails.add(gestionnaireFakeMail);
       await db('users').insert({
-        email: `${gestionnaire} - FCU`.toLowerCase(),
+        email: gestionnaireFakeMail,
         password: bcrypt.hashSync(
           `${gestionnaire} ${process.env.ACCES_PASSWORD}`,
           salt

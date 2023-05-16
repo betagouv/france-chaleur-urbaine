@@ -4,6 +4,7 @@ import MainContainer, {
   tabHeaderHeight,
 } from '@components/shared/layout';
 import Head from 'next/head';
+import param from 'src/services/Map/param';
 import styled from 'styled-components';
 
 const MapWrapper = styled.div`
@@ -22,7 +23,11 @@ function carte() {
       </Head>
       <MainContainer currentMenu="/carte" fullscreen>
         <MapWrapper>
-          <Map />
+          <Map
+            withDrawing
+            withLegend
+            initialLayerDisplay={param.defaultLayerDisplay}
+          />
         </MapWrapper>
       </MainContainer>
     </>
