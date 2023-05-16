@@ -23,12 +23,6 @@ const RDCLegend = () => {
             <LabelLegendHead>Non classés</LabelLegendHead>
           </LabelLegendInputLabel>
         </LabelLegendInputLabelWrapper>
-        <LabelLegendInputLabelWrapper>
-          <LabelLegendInputLabel>
-            <LabelLegendMarker className="legend-futur-heat-network-marker" />
-            <LabelLegendHead>En construction</LabelLegendHead>
-          </LabelLegendInputLabel>
-        </LabelLegendInputLabelWrapper>
       </div>
     </>
   );

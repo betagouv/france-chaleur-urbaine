@@ -135,7 +135,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       border-radius: 4px;
       margin: 0 4px;
       width: 100%;
-      height: 0;
+      height: 0 !important;
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
@@ -153,8 +153,20 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
   }
 
   .legend-futur-heat-network-marker {
+    margin-bottom: 0;
     :before {
       border-top: 8px solid ${themeDefHeatNetwork.futur.color};
+    }
+  }
+  
+  .legend-futur-heat-network-zone-marker {
+    margin-top: 0;
+    :before {
+      margin: 0 4px;
+      width: 32px;
+      background-color: ${themeDefHeatNetwork.futur.color};
+      opacity: 0.46;
+      margin-bottom: calc(0.25em - 1.5px)
     }
   }
 

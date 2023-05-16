@@ -196,6 +196,14 @@ export const outlineLayerStyle = {
   },
 };
 
+export const futurOutlineLayerStyle = {
+  type: 'fill',
+  paint: {
+    'fill-color': themeDefHeatNetwork.futur.color,
+    'fill-opacity': 0.46,
+  },
+};
+
 // --------------
 // --- Energy ---
 // --------------

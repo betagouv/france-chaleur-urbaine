@@ -36,6 +36,7 @@ import {
   buildingsLayerStyle,
   demandsLayerStyle,
   energyLayerStyle,
+  futurOutlineLayerStyle,
   gasUsageLayerStyle,
   objTypeEnergy,
   outlineLayerStyle,
@@ -385,6 +386,7 @@ const Map = ({
 
     const clickEvents = [
       { name: 'outline', key: 'network' },
+      { name: 'futurOutline', key: 'futurNetwork' },
       {
         name: 'demands',
         key: 'demands',
@@ -445,6 +447,23 @@ const Map = ({
               source: 'heatNetwork',
               'source-layer': 'outline',
               ...outlineLayerStyle,
+            },
+          ]
+        );
+
+        addSource(
+          map.current,
+          'heatFuturNetwork',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/futurNetwork/{z}/{x}/{y}`],
+          },
+          [
+            {
+              id: 'futurOutline',
+              source: 'heatFuturNetwork',
+              'source-layer': 'futurOutline',
+              ...futurOutlineLayerStyle,
             },
           ]
         );

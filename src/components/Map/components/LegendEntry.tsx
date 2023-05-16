@@ -51,15 +51,17 @@ function LegendEntry({
       />
 
       <LabelLegendInputLabelWrapper>
-        <LabelLegendInputLabel>
-          {className && (
-            <LabelLegendMarker
-              className={`legend-marker ${className}-marker`}
-              bgColor={bgColor && `${bgColor}`}
-            />
-          )}
-          <LabelLegendHead type={type}>{label}</LabelLegendHead>
-        </LabelLegendInputLabel>
+        {label && (
+          <LabelLegendInputLabel>
+            {className && (
+              <LabelLegendMarker
+                className={`legend-marker ${className}-marker`}
+                bgColor={bgColor && `${bgColor}`}
+              />
+            )}
+            <LabelLegendHead type={type}>{label}</LabelLegendHead>
+          </LabelLegendInputLabel>
+        )}
         {subLegend && LegendDesc[subLegend]?.()}
         {info && (
           <InfoIcon>

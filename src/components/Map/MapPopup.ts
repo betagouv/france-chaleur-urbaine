@@ -1,5 +1,6 @@
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
+import { FuturNetworkSummary } from 'src/types/Summary/FuturNetwork';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
@@ -37,6 +38,7 @@ export const formatBodyPopup = ({
   demands,
   energy,
   network,
+  futurNetwork,
   raccordement,
 }: {
   buildings?: EnergySummary;
@@ -44,6 +46,7 @@ export const formatBodyPopup = ({
   energy?: EnergySummary;
   demands?: DemandSummary;
   network?: NetworkSummary;
+  futurNetwork?: FuturNetworkSummary;
   raccordement?: RaccordementSummary;
 }) => {
   const {
@@ -79,7 +82,8 @@ export const formatBodyPopup = ({
   const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
 
   const displayNetwork =
-    network && !(buildings || consommation || demands || energy);
+    (network || futurNetwork) &&
+    !(buildings || consommation || demands || energy);
   const bodyPopup = `
     ${
       textAddress
@@ -159,7 +163,7 @@ export const formatBodyPopup = ({
               : ''
           }
           ${
-            displayNetwork
+            displayNetwork && network
               ? `
             ${
               network.commentaires
@@ -192,6 +196,21 @@ export const formatBodyPopup = ({
           `
               : ''
           }
+                ${
+                  displayNetwork && futurNetwork
+                    ? `<strong>Gestionnaire&nbsp;:</strong> ${
+                        futurNetwork.gestionnaire
+                          ? `${futurNetwork.gestionnaire}`
+                          : 'Non connu'
+                      }<br />
+              <strong>Mise en service&nbsp;:</strong> ${
+                futurNetwork.mise_en_service
+                  ? `${futurNetwork.mise_en_service}`
+                  : 'Non connu'
+              }<br />
+              `
+                    : ''
+                }
         </section>
       `}
   `;

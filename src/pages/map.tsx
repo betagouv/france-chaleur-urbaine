@@ -10,8 +10,9 @@ const legendMapping: Record<LegendGroupId, string> = {
   [LegendGroupId.energy]: 'fioul',
   [LegendGroupId.demands]: 'demandes',
   [LegendGroupId.raccordements]: 'raccordements',
-  [LegendGroupId.buildings]: 'bat',
+  [LegendGroupId.buildings]: 'dpe',
   [LegendGroupId.heatNetwork]: '',
+  [LegendGroupId.futurheatNetwork]: 'futur_reseau',
   [LegendGroupId.gasUsage]: 'conso_gaz',
 };
 const MapPage = () => {
@@ -53,15 +54,20 @@ const MapPage = () => {
           displayArray
             ? {
                 outline: true,
-                zoneDP: displayArray.includes('pdp'),
-                demands: displayArray.includes('demandes'),
-                raccordements: displayArray.includes('raccordements'),
-                gasUsageGroup: displayArray.includes('conso_gaz'),
-                buildings: displayArray.includes('dpe'),
-                gasUsage: displayArray.includes('conso_gaz')
+                futurOutline: displayArray.includes(
+                  legendMapping['futur-heat-network']
+                ),
+                zoneDP: displayArray.includes(legendMapping.zoneDP),
+                demands: displayArray.includes(legendMapping.demands),
+                raccordements: displayArray.includes(
+                  legendMapping.raccordements
+                ),
+                gasUsageGroup: displayArray.includes(legendMapping.gasUsage),
+                buildings: displayArray.includes(legendMapping.buildings),
+                gasUsage: displayArray.includes(legendMapping.gasUsage)
                   ? ['R', 'T', 'I']
                   : [],
-                energy: displayArray.includes('batiment')
+                energy: displayArray.includes(legendMapping.energy)
                   ? ['gas', 'fuelOil']
                   : [],
                 gasUsageValues: [1000, Number.MAX_VALUE],
@@ -70,6 +76,7 @@ const MapPage = () => {
               }
             : {
                 outline: true,
+                futurOutline: false,
                 zoneDP: false,
                 demands: false,
                 raccordements: false,
