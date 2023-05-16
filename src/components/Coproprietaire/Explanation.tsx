@@ -18,7 +18,7 @@ const Explanation = () => {
           <WrappedText
             body={`
 ### Un réseau de chauffage urbain, c’est quoi ?
-::arrow-item[Un réseau de chaleur est un **système de canalisations souterraines qui acheminent vers des bâtiments de la chaleur** produite localement, avec des énergies renouvelables et de récupération (Incinération des ordures ménagères, biomasse, géothermie...).]
+::arrow-item[Un réseau de chaleur est un **système de canalisations souterraines qui permettent d'acheminer vers des bâtiments de la chaleur** produite localement, avec des énergies renouvelables et de récupération (Incinération des ordures ménagères, biomasse, géothermie...).]
 ::arrow-item[Cette chaleur est transportée jusqu'à **une sous-station installée dans votre copropriété**, qui assure le transfert avec les canalisations internes à l’immeuble, desservant les différents logements.]
 ::arrow-item[Dans la plupart des cas, **le réseau de chaleur appartient à une collectivité territoriale et est géré en concession par un exploitant**, qui s’occupe notamment des raccordements.]
 ::arrow-item[**France Chaleur Urbaine**, service du ministère de la transition énergétique, **vous informe et vous met en relation** avec le gestionnaire du réseau le plus proche de chez vous.]
