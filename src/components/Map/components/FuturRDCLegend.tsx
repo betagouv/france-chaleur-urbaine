@@ -17,7 +17,7 @@ const FuturRDCLegend = () => {
         </MultipleLabelLegendMarkerWrapper>
         <div>
           <LabelLegendHead>
-            En Construction ou en cours de mise en service
+            En construction ou en cours de mise en service
           </LabelLegendHead>
           <LabelLegend>(tracé ou zone si tracé non disponible)</LabelLegend>
         </div>

@@ -165,7 +165,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       margin: 0 4px;
       width: 32px;
       background-color: ${themeDefHeatNetwork.futur.color};
-      opacity: 0.46;
+      opacity: 0.47;
       margin-bottom: calc(0.25em - 1.5px)
     }
   }
