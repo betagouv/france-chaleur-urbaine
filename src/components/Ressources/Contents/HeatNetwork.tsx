@@ -57,7 +57,7 @@ const HeatNetwork = ({
               <b>
                 une unité de production de chaleur, qui peut notamment exploiter
                 des{' '}
-                <Link href="/ressources/energies-verte#contenu">
+                <Link href="/ressources/energies-vertes#contenu">
                   énergies renouvelables et de récupération
                 </Link>{' '}
                 locales ;
@@ -113,7 +113,7 @@ const HeatNetwork = ({
           En 2021, les{' '}
           <b>
             réseaux de chaleur sont alimentés en moyenne à 62,6 % par des{' '}
-            <Link href="/ressources/energies-verte#contenu">
+            <Link href="/ressources/energies-vertes#contenu">
               énergies renouvelables et de récupération
             </Link>
           </b>

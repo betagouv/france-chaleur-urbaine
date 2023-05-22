@@ -14,7 +14,7 @@ import Owner from './Owner';
 import { TertiaireStyle } from './index.styles';
 
 const tertiaireCards = {
-  'energies-verte': issues['energies-verte'],
+  'energies-vertes': issues['energies-vertes'],
   aides: understandings.aides,
   avantages: understandings.avantages,
   acteurs: growths.acteurs,

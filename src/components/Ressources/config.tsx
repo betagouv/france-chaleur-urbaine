@@ -46,7 +46,7 @@ export const issues: Record<string, Document> = {
     ),
     content: <Network />,
   },
-  'energies-verte': {
+  'energies-vertes': {
     title: 'Les réseaux de chaleur : des énergies vertes',
     altTitle: 'Quelles énergies alimentent les réseaux de chaleur ?',
     description: (

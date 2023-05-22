@@ -20,7 +20,7 @@ import Head from 'next/head';
 const coproprietaireCards = {
   reseau: issues.reseau,
   atouts: issues.atouts,
-  'energies-verte': issues['energies-verte'],
+  'energies-vertes': issues['energies-vertes'],
   faisabilite: understandings.faisabilite,
 };
 
@@ -96,7 +96,7 @@ Améliorez votre confort et baissez vos factures !
 :::puce-icon{icon="/icons/picto-warning.svg"}
 De nombreux réseaux de chaleur sont désormais « classés », ce qui signifie que **certains bâtiments ont l'obligation de se raccorder**
 
-Cette obligation s’applique dans une certaine zone autour du réseau, qualifiée de **périmètre de développement prioritaire.**
+Cette [obligation](/ressources/prioritaire#contenu) s’applique dans une certaine zone autour du réseau, qualifiée de **périmètre de développement prioritaire.**
 
 :button-link[Voir les réseaux classés sur la carte]{href="/carte" className="fr-btn--sm fr-mt-2w"}
 `}
@@ -131,7 +131,7 @@ Cette obligation s’applique dans une certaine zone autour du réseau, qualifi�
 
 :small[Le chauffage représente 67 % de la consommation d’énergie des foyers français et près de 20 % des émissions de gaz à effet de serre nationales. L’augmentation des prix de l’énergie pèse sur le budget des ménages : 40 % des logements sont encore chauffés au gaz, dont les prix ont augmenté de 41 % en 10 ans.]
 
-:small[Pour réduire l’impact écologique d’une copropriété et ses factures d’énergie, la rénovation thermique est le premier réflexe à avoir. Le [remplacement d’un chauffage collectif au gaz ou fioul](/ressources/avantages#contenu) par un raccordement à un réseau de chaleur permet également d’y contribuer. Alimentés majoritairement par des [énergies renouvelables et de récupération](/ressources/energies-verte#contenu) locales, les réseaux de chaleur émettent deux fois moins de gaz à effet de serre qu’un chauffage gaz ou fioul et offrent des prix stables et compétitifs.]
+:small[Pour réduire l’impact écologique d’une copropriété et ses factures d’énergie, la rénovation thermique est le premier réflexe à avoir. Le [remplacement d’un chauffage collectif au gaz ou fioul](/ressources/avantages#contenu) par un raccordement à un réseau de chaleur permet également d’y contribuer. Alimentés majoritairement par des [énergies renouvelables et de récupération](/ressources/energies-vertes#contenu) locales, les réseaux de chaleur émettent deux fois moins de gaz à effet de serre qu’un chauffage gaz ou fioul et offrent des prix stables et compétitifs.]
 `}
             />
           </Slice>
