@@ -7,6 +7,7 @@ import readme_1 from './README (1).md';
 import readme_2_1_1 from './README (2) (1) (1).md';
 import readme_2_1 from './README (2) (1).md';
 import readme_2 from './README (2).md';
+import readme_3 from './README (3).md';
 import readme from './README.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
@@ -28,15 +29,22 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/24.jpg',
+    title:
+      'Part des énergies renouvelables dans la consommation finale brute d’énergie en France',
+    slug: 'part-des-énergies-renouvelables-dans-la-consommation-finale-brute-d-énergie-en-france',
+    content: importFile(readme),
+  },
+  {
     image: '/contents/23.jpg',
     title: 'Dispositif éco-énergie tertiaire',
-    slug: 'dispositif_éco_énergie_tertiaire',
-    content: importFile(readme),
+    slug: 'dispositif-éco-énergie-tertiaire',
+    content: importFile(readme_3),
   },
   {
     image: '/contents/20.jpg',
     title: "Visite d'une chaufferie biomasse",
-    slug: 'visite_d_une_chaufferie_biomasse',
+    slug: 'visite-d-une-chaufferie-biomasse',
     content: importFile(visiteDuneChaufferieBiomasse),
   },
   {

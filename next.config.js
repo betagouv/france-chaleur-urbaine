@@ -112,6 +112,7 @@ module.exports = withBundleAnalyzer({
         source: '/:path*',
         headers: securityHeaders,
       },
+      { source: '/viaseva', headers: securityHeadersIFramable },
       { source: '/form', headers: securityHeadersIFramable },
       { source: '/map', headers: securityHeadersIFramable },
     ];

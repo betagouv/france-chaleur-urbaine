@@ -49,7 +49,7 @@ const DistrictHeating = ({
               <b>une unité de production de chaleur :</b> il s’agit
               d’installations robustes et fiables, surveillées en permanence et
               entretenues par des professionnels. Elles exploitent{' '}
-              <Link href="/ressources/energies-verte#contenu">
+              <Link href="/ressources/energies-vertes#contenu">
                 différents types d’énergie
               </Link>
               {' '}:{' '}

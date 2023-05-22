@@ -22,7 +22,7 @@ import Head from 'next/head';
 
 const currentPage = 'professionnels';
 const conseillerCards = {
-  'energies-verte': issues['energies-verte'],
+  'energies-vertes': issues['energies-vertes'],
   avantages: understandings.avantages,
   aides: understandings.aides,
   prioritaire: understandings.prioritaire,
@@ -60,7 +60,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
           <WrappedBlock>
             <WrappedText
               body={`
-### Le chauffage urbain, de nombreux avantages pour tous types de bâtiments de logements ou tertaires :
+### Le chauffage urbain, [de nombreux avantages](/ressources/atouts#contenu) pour tous types de bâtiments de logements ou tertaires :
 ::arrow-item[Réduction des factures de chauffage jusqu’à 40%]
 ::arrow-item[Subventions mises en place par l’État et TVA à 5,5%]
 ::arrow-item[Garantie d’un service public]
@@ -145,7 +145,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
 
 Un conseiller en rénovation ou le gestionnaire de l’immeuble cherche un chauffage *[plus performant et responsable](/ressources/avantages#contenu)* et vérifie sur *France Chaleur Urbaine* si le bâtiment est raccordable. 
 
-*Un réseau de chaleur passe à 15 mètres !*
+*Un [réseau de chaleur](/reseaux-chaleur#contenu) passe à 15 mètres !*
 
 Le conseiller en rénovation ou le gestionnaire de l’immeuble demande via France Chaleur Urbaine à être *mis en relation avec le gestionnaire du réseau de chaleur*, qui le recontacte pour l’informer sur les conditions de raccordement.
 `}
