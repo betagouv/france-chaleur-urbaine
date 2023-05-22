@@ -1,17 +1,7 @@
-# Dispositif éco-énergie tertiaire
+# Part des énergies renouvelables dans la consommation finale brute d’énergie en France
 
-Vous êtes propriétaire ou gestionnaire de bâtiments tertiaires d'une surface (ou d'un cumul de surfaces) égale ou supérieure à 1 000 m² ?
+Suite à la récente [publication du service données et statistiques du Ministère de la transition écologique](https://www.statistiques.developpement-durable.gouv.fr/chiffres-cles-des-energies-renouvelables-edition-2022) sur les énergies renouvelables en France, on peut se féliciter de voir qu'elles occupent une part croissante dans la consommation finale brute d'énergie en 2022. Cette part progresse de +1,4 points par rapport à 2021, atteignant ainsi 20,7 %. Cependant l’objectif 2020 issu des directives européennes n'est toujours pas atteint puisqu’il fixait cette part à 23%.&#x20;
 
-👉 Ces bâtiments sont assujettis au dispositif éco-énergie tertiaire. Leurs consommations d’énergie finale devront être réduites de 40% en 2030, 50% en 2040 et 60% en 2050.
+Poursuivons l'effort engagé pour atteindre les 33% fixés par la loi énergie climat pour 2030 !
 
-Pour atteindre les objectifs du dispositif, vous pouvez optimiser l'exploitation de vos bâtiments, moderniser vos équipements, ou encore engager des travaux de rénovation énergétique.
-
-Vous pouvez aussi opter pour un raccordement à un réseau de chaleur !
-
-🎯 Grâce au jeu des coefficients de conversion en énergie finale, jusqu'à 23% de réduction de consommation peuvent être comptabilisées rien qu'en raccordant vos bâtiments à un réseau de chaleur.
-
-Avec le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires, le coût du raccordement est fortement réduit.
-
-🔎 Rendez-vous sans attendre sur France Chaleur Urbaine pour vérifier si un réseau de chaleur se situe à proximité de votre parc tertiaire !
-
-![](.gitbook/assets/23%.jpg)
+<figure><img src=".gitbook/assets/enrobjec.jpg" alt=""><figcaption></figcaption></figure>
