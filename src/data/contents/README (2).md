@@ -1,9 +1,9 @@
-# Visite d'un forage de géothermie
+# La biomasse
 
-Pour illustrer en images la géothermie profonde, dont nous vous parlions dans notre dernier post, direction Champigny-sur-Marne (94) !
+🤓 N° 2 dans notre série sur les énergies renouvelables et de récupération qui alimentent les réseaux de chaleur : la biomasse, qui reste la principale source d'énergie renouvelable dans notre pays.&#x20;
 
-Ce mardi, l'équipe France Chaleur Urbaine était sur le forage débuté mi-février, qui permettra d'ici mi-mai d'atteindre la nappe du Dogger dont la température avoisine les 70°C. Un réseau de chaleur de 9 km permettra ensuite d'acheminer la chaleur géothermique vers 52 postes de livraison.
+🌳 Il s'agit d'une ressource abondante en France, qui favorise l'autonomie des territoires et permet le développement d'une économie circulaire. L'usage de la biomasse pour l'énergie est amené à se développer fortement, sur la base de ressources issues d'une gestion durable, en bonne articulation avec les usages autres qu'énergétiques, et en limitant son impact en termes de qualité de l'air grâce à des installations performantes.&#x20;
 
-Un grand merci à [Coriance](https://groupe-coriance.fr/) pour l'organisation de cette visite.
+🔎 Pour comprendre l'essentiel en un coup d’œil, notre fiche pédagogique, toujours à partager largement !
 
-![](<.gitbook/assets/champigny01 (2).jpg>)![](<.gitbook/assets/champigny02 (2).jpg>)![](.gitbook/assets/champigny03.jpg)
+<figure><img src=".gitbook/assets/biomasse.jpg" alt=""><figcaption></figcaption></figure>

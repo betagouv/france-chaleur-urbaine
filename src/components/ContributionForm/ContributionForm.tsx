@@ -9,10 +9,14 @@ import {
 } from '@dataesr/react-dsfr';
 import { ChangeEvent, FormEvent, useState } from 'react';
 
-const additionWishValues = [
+const additionWishValuesWithFormat = [
   'Tracé du réseau',
   'Périmètre de développement prioritaire',
   "Tracé d'une extension prévue du réseau",
+];
+
+const additionWishValues = [
+  ...additionWishValuesWithFormat,
   'Informations tarifaires',
   'autre',
 ];
@@ -160,6 +164,14 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
           ? 'Télécharger mes données'
           : 'Envoyer'}
       </Button>
+      {wish === 'Ajout de données' &&
+        additionWishValuesWithFormat.some((x) => additionWish.includes(x)) && (
+          <span className="fr-hint-text">
+            Formats acceptés : .shp, gpkg (geopackage), .geojson, .dxf, .gdb,
+            .tab, .kmz <br />A défaut, un .dwg peut être transmis, mais il ne
+            pourra être exploité que s'il est géolocalisé
+          </span>
+        )}
     </form>
   );
 };

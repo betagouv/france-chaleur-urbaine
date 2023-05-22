@@ -1,4 +1,5 @@
 import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
+import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 import {
   localTypeEnergy,
   localTypeGas,
@@ -52,7 +53,7 @@ export const defaultLayerDisplay: TypeLayerDisplay = {
 
 const legendData: (string | TypeGroupLegend)[] = [
   {
-    id: 'heat-network',
+    id: LegendGroupId.heatNetwork,
     entries: [
       {
         id: 'outline',
@@ -76,7 +77,7 @@ const legendData: (string | TypeGroupLegend)[] = [
     type: 'list',
   },
   {
-    id: 'zoneDP',
+    id: LegendGroupId.zoneDP,
     entries: [
       {
         id: 'zoneDP',
@@ -89,7 +90,7 @@ const legendData: (string | TypeGroupLegend)[] = [
   'contributeButton',
   'separator',
   {
-    id: 'demands',
+    id: LegendGroupId.demands,
     entries: [
       {
         id: 'demands',
@@ -101,7 +102,7 @@ const legendData: (string | TypeGroupLegend)[] = [
   },
   'separator',
   {
-    id: 'gasUsageGroup',
+    id: LegendGroupId.gasUsageGroup,
     entries: [
       {
         id: 'gasUsageGroup',
@@ -112,7 +113,7 @@ const legendData: (string | TypeGroupLegend)[] = [
     type: 'group',
   },
   {
-    id: 'gasUsage',
+    id: LegendGroupId.gasUsage,
     entries: defaultLayerDisplay.gasUsage.map((id: string) => ({
       id,
       label: localTypeGas[id] || localTypeGas.unknow,
@@ -125,7 +126,7 @@ const legendData: (string | TypeGroupLegend)[] = [
     linkto: ['gasUsageGroup'],
   },
   {
-    id: 'energy',
+    id: LegendGroupId.energy,
     entries: [
       {
         id: 'gas',
@@ -138,7 +139,7 @@ const legendData: (string | TypeGroupLegend)[] = [
   },
   'separator',
   {
-    id: 'energy',
+    id: LegendGroupId.energy,
     entries: [
       {
         id: 'fuelOil',
@@ -151,7 +152,7 @@ const legendData: (string | TypeGroupLegend)[] = [
   },
   'separator',
   {
-    id: 'raccordements',
+    id: LegendGroupId.raccordements,
     entries: [
       {
         id: 'raccordements',
@@ -163,7 +164,7 @@ const legendData: (string | TypeGroupLegend)[] = [
   },
   'separator',
   {
-    id: 'buildings',
+    id: LegendGroupId.buildings,
     entries: [
       {
         id: 'buildings',

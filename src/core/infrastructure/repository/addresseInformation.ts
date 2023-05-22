@@ -29,6 +29,7 @@ export const closestNetwork = async (
   'Identifiant reseau': string;
   'Taux EnR&R': number;
   'contenu CO2 ACV': number;
+  Gestionnaire: string;
 }> => {
   const network = await db('reseaux_de_chaleur')
     .select(
@@ -36,7 +37,7 @@ export const closestNetwork = async (
         `ST_Distance(
           ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
           ST_Transform(geom, 2154)
-        ) as distance, date, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV"`
+        ) as distance, date, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire"`
       )
     )
     .orderBy('distance')
@@ -226,6 +227,7 @@ export const getElibilityStatus = async (
   futurNetwork: boolean;
   id: string | null;
   tauxENRR: number | null;
+  gestionnaire: string | null;
   co2: number | null;
 }> => {
   const zdpPromise = inZDP(lat, lon);
@@ -242,6 +244,7 @@ export const getElibilityStatus = async (
       id: network['Identifiant reseau'],
       tauxENRR: network['Taux EnR&R'],
       co2: network['contenu CO2 ACV'],
+      gestionnaire: network['Gestionnaire'],
     };
   }
   return {
@@ -254,5 +257,6 @@ export const getElibilityStatus = async (
     id: null,
     tauxENRR: null,
     co2: null,
+    gestionnaire: null,
   };
 };

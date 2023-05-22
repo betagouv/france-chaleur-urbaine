@@ -24,6 +24,7 @@ import {
 import { AdminService } from 'src/services/admin';
 import { DemandsService } from 'src/services/demands';
 import { axiosHttpClient } from 'src/services/http';
+import { iframedPaths } from 'src/services/iframe';
 import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
 
@@ -148,7 +149,7 @@ function MyApp({
         }}
       >
         <Head>
-          {router.pathname !== '/form' && (
+          {!iframedPaths.includes(router.pathname) && (
             <ConsentBanner>
               <MatomoMarkup
                 matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}

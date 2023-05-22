@@ -27,9 +27,9 @@ import {
 } from './MarkdownWrapper.style';
 
 const RoutedLink = (props: any) => {
-  const { href } = props;
+  const { href, target } = props;
   const extProps = {
-    target: href && isExternalLink(href) ? '_blank' : undefined,
+    target: target || (href && isExternalLink(href) ? '_blank' : undefined),
     rel:
       href && isExternalLink(href)
         ? ['nofollow', 'noopener', 'noreferrer'].join(' ')
