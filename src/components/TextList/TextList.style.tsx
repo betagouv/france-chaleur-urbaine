@@ -10,8 +10,8 @@ export const Cards = styled.div`
 `;
 
 export const Card = styled.div<{ type?: string }>`
-  max-width: 210px;
-  min-width: 210px;
+  max-width: 260px;
+  min-width: 260px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -21,6 +21,8 @@ export const Card = styled.div<{ type?: string }>`
   ${({ type }) =>
     type === 'orange-circle' &&
     css`
+      max-width: 210px;
+      min-width: 210px;
       padding: 16px;
       position: relative;
       justify-content: center;
