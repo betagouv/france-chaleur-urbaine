@@ -180,8 +180,6 @@ export const outlineLayerStyle = {
   paint: {
     'line-color': [
       'case',
-      ['has', 'date'],
-      themeDefHeatNetwork.futur.color,
       ['has', 'reseaux classes'],
       themeDefHeatNetwork.classed.color,
       themeDefHeatNetwork.outline.color,
@@ -197,6 +195,14 @@ export const outlineLayerStyle = {
 };
 
 export const futurOutlineLayerStyle = {
+  ...outlineLayerStyle,
+  paint: {
+    ...outlineLayerStyle.paint,
+    'line-color': themeDefHeatNetwork.futur.color,
+  },
+};
+
+export const futurZoneLayerStyle = {
   type: 'fill',
   paint: {
     'fill-color': themeDefHeatNetwork.futur.color,

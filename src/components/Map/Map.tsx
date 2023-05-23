@@ -37,6 +37,7 @@ import {
   demandsLayerStyle,
   energyLayerStyle,
   futurOutlineLayerStyle,
+  futurZoneLayerStyle,
   gasUsageLayerStyle,
   objTypeEnergy,
   outlineLayerStyle,
@@ -288,15 +289,24 @@ const Map = ({
   }, [layerDisplay]);
 
   const loadFilters = useCallback(() => {
-    layerNameOptions.forEach((layerId) =>
-      map.current.getLayer(layerId)
-        ? map.current.setLayoutProperty(
-            layerId,
+    layerNameOptions.forEach((layerId) => {
+      if (map.current.getLayer(layerId)) {
+        if (layerId === 'futurOutline') {
+          map.current.setLayoutProperty(
+            'futurZone',
             'visibility',
             layerDisplay[layerId] ? 'visible' : 'none'
-          )
-        : console.warn(`Layer '${layerId}' is not set on map`)
-    );
+          );
+        }
+        map.current.setLayoutProperty(
+          layerId,
+          'visibility',
+          layerDisplay[layerId] ? 'visible' : 'none'
+        );
+      } else {
+        console.warn(`Layer '${layerId}' is not set on map`);
+      }
+    });
 
     // Energy
     const TYPE_ENERGY = 'energie_utilisee';
@@ -460,9 +470,17 @@ const Map = ({
           },
           [
             {
+              id: 'futurZone',
+              source: 'heatFuturNetwork',
+              'source-layer': 'futurOutline',
+              filter: ['==', ['get', 'reseaux_ou_zones'], null],
+              ...futurZoneLayerStyle,
+            },
+            {
               id: 'futurOutline',
               source: 'heatFuturNetwork',
               'source-layer': 'futurOutline',
+              filter: ['==', ['get', 'reseaux_ou_zones'], true],
               ...futurOutlineLayerStyle,
             },
           ]

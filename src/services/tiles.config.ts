@@ -102,7 +102,6 @@ export const tilesInfo: Record<string, TileInfo> = {
       'Taux EnR&R',
       'Gestionnaire',
       'commentaires',
-      'date',
       'Identifiant reseau',
       'reseaux classes',
       'contenu CO2 ACV',
@@ -111,11 +110,11 @@ export const tilesInfo: Record<string, TileInfo> = {
   },
   futurNetwork: {
     source: 'database',
-    table: 'reseaux_en_construction',
-    tiles: 'reseaux_en_construction_tiles',
+    table: 'zones_et_reseaux_en_construction',
+    tiles: 'zones_et_reseaux_en_construction_tiles',
     id: 'id',
     extraWhere: (query) => query,
-    properties: ['id', 'mise_en_service', 'gestionnaire'],
+    properties: ['id', 'mise_en_service', 'gestionnaire', 'reseaux_ou_zones'],
     sourceLayer: 'futurOutline',
   },
   zoneDP: {

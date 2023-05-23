@@ -96,6 +96,8 @@ const legendData: (string | TypeGroupLegend)[] = [
       {
         id: 'futurOutline',
         subLegend: 'FuturRDC',
+        info: "Projets financés par l'ADEME ou signalés par les collectivités et exploitants.",
+        infoPosition: 'bottom',
       },
     ],
     type: 'list',

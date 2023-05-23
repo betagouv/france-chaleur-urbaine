@@ -1,7 +1,8 @@
 import db from 'src/db';
+import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import XLSX from 'xlsx';
-import inZDP from './zdp';
+import isInZDP from './zdp';
 
 const isOnAnIRISNetwork = async (
   lat: number,
@@ -25,7 +26,6 @@ export const closestNetwork = async (
   lon: number
 ): Promise<{
   distance: number;
-  date?: Date;
   'Identifiant reseau': string;
   'Taux EnR&R': number;
   'contenu CO2 ACV': number;
@@ -37,10 +37,52 @@ export const closestNetwork = async (
         `ST_Distance(
           ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
           ST_Transform(geom, 2154)
-        ) as distance, date, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire"`
+        ) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire"`
       )
     )
     .orderBy('distance')
+    .first();
+
+  return network;
+};
+
+const closestFuturNetwork = async (
+  lat: number,
+  lon: number
+): Promise<{
+  distance: number;
+  gestionnaire: string;
+}> => {
+  const network = await db('zones_et_reseaux_en_construction')
+    .select(
+      db.raw(
+        `ST_Distance(
+          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
+          ST_Transform(geom, 2154)
+        ) as distance, "gestionnaire"`
+      )
+    )
+    .where('reseaux_ou_zones', false)
+    .orderBy('distance')
+    .first();
+
+  return network;
+};
+const closestInFuturNetwork = async (
+  lat: number,
+  lon: number
+): Promise<{
+  gestionnaire: string;
+}> => {
+  const network = await db('zones_et_reseaux_en_construction')
+    .where(
+      db.raw(`ST_INTERSECTS(
+          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
+          ST_Transform(geom, 2154)
+        )
+      `)
+    )
+    .andWhere('reseaux_ou_zones', true)
     .first();
 
   return network;
@@ -218,40 +260,60 @@ export const getElibilityStatus = async (
   lat: number,
   lon: number,
   city: string
-): Promise<{
-  isEligible: boolean;
-  veryEligibleDistance: number | null;
-  distance: number | null;
-  inZDP: boolean;
-  isBasedOnIris: boolean;
-  futurNetwork: boolean;
-  id: string | null;
-  tauxENRR: number | null;
-  gestionnaire: string | null;
-  co2: number | null;
-}> => {
-  const zdpPromise = inZDP(lat, lon);
-  const irisNetwork = isOnAnIRISNetwork(lat, lon);
-
-  const network = await closestNetwork(lat, lon);
+): Promise<HeatNetworksResponse> => {
+  const [inZDP, irisNetwork, inFuturNetwork, futurNetwork, network] =
+    await Promise.all([
+      isInZDP(lat, lon),
+      isOnAnIRISNetwork(lat, lon),
+      closestInFuturNetwork(lat, lon),
+      closestFuturNetwork(lat, lon),
+      closestNetwork(lat, lon),
+    ]);
   if (network.distance !== null && Number(network.distance) < 1000) {
     return {
       ...isEligible(Number(network.distance), city),
       distance: Math.round(network.distance),
-      inZDP: await zdpPromise,
+      inZDP,
       isBasedOnIris: false,
-      futurNetwork: network.date !== null,
+      futurNetwork: false,
       id: network['Identifiant reseau'],
       tauxENRR: network['Taux EnR&R'],
       co2: network['contenu CO2 ACV'],
       gestionnaire: network['Gestionnaire'],
     };
   }
+  if (futurNetwork.distance !== null && Number(futurNetwork.distance) < 1000) {
+    return {
+      ...isEligible(Number(futurNetwork.distance), city),
+      distance: Math.round(futurNetwork.distance),
+      inZDP,
+      isBasedOnIris: false,
+      futurNetwork: true,
+      id: null,
+      tauxENRR: null,
+      co2: null,
+      gestionnaire: futurNetwork.gestionnaire,
+    };
+  }
+  if (inFuturNetwork) {
+    return {
+      isEligible: true,
+      distance: null,
+      veryEligibleDistance: null,
+      inZDP,
+      isBasedOnIris: false,
+      futurNetwork: true,
+      id: null,
+      tauxENRR: null,
+      co2: null,
+      gestionnaire: inFuturNetwork.gestionnaire,
+    };
+  }
   return {
-    isEligible: await irisNetwork,
+    isEligible: irisNetwork,
     distance: null,
     veryEligibleDistance: null,
-    inZDP: await zdpPromise,
+    inZDP,
     isBasedOnIris: true,
     futurNetwork: false,
     id: null,

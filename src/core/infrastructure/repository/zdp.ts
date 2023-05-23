@@ -1,6 +1,6 @@
 import db from 'src/db';
 
-const inZDP = async (lat: number, lon: number): Promise<boolean> => {
+const isInZDP = async (lat: number, lon: number): Promise<boolean> => {
   const zdp = await db('zone_de_developpement_prioritaire')
     .select('id')
     .where(
@@ -14,4 +14,4 @@ const inZDP = async (lat: number, lon: number): Promise<boolean> => {
   return zdp !== undefined;
 };
 
-export default inZDP;
+export default isInZDP;
