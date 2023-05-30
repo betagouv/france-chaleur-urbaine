@@ -2,6 +2,7 @@ import Map from '@components/Map/Map';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
+import { getReadableDistance } from 'src/services/Map/distance';
 import { AddressDataType } from 'src/types/AddressData';
 import {
   bordeauxMetropoleCityCodes,
@@ -20,20 +21,6 @@ type EligibilityFormContactType = {
   isSent?: boolean;
   cardMode?: boolean;
   onSubmit?: (...arg: any) => void;
-};
-
-const readableDistance = (distance?: number | null) => {
-  if (distance === null || distance === undefined) {
-    return '';
-  }
-
-  if (distance < 1) {
-    return '< 1m';
-  }
-  if (distance >= 1000) {
-    return `${distance / 1000}km`;
-  }
-  return `${distance}m`;
 };
 
 const EligibilityFormContact = ({
@@ -64,7 +51,7 @@ const EligibilityFormContact = ({
       );
     const computedBody = body
       ? body(
-          readableDistance(addressData.eligibility.distance),
+          getReadableDistance(addressData.eligibility.distance),
           addressData.eligibility.inZDP,
           addressData.eligibility.gestionnaire,
           addressData.eligibility.tauxENRR
