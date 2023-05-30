@@ -3,11 +3,6 @@ import { Icon } from '@dataesr/react-dsfr';
 import { useContactFormFCU, usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import {
-  MapboxStyleDefinition,
-  MapboxStyleSwitcherControl,
-} from 'mapbox-gl-style-switcher';
-import 'mapbox-gl-style-switcher/styles.css';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
@@ -27,6 +22,7 @@ import mapParam, {
   gasUsageNameOption,
   layerNameOptions,
 } from '../../services/Map/param';
+
 import {
   CollapseLegend,
   Legend,
@@ -45,6 +41,7 @@ import {
   zoneDPLayerStyle,
 } from './Map.style';
 import { formatBodyPopup } from './MapPopup';
+import { MapboxStyleSwitcherControl } from './StyleSwitcher';
 import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
 import ZoneInfos from './components/SummaryBoxes';
 import { useMapPopup } from './hooks';
@@ -71,7 +68,7 @@ const { defaultZoom, maxZoom, minZoom, minZoomData } = mapParam;
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
-const styles: MapboxStyleDefinition[] = [
+const styles = [
   {
     title: 'Carte',
     uri: 'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json',
