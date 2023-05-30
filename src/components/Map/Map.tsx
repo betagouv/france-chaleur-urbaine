@@ -36,6 +36,8 @@ import {
   buildingsLayerStyle,
   demandsLayerStyle,
   energyLayerStyle,
+  futurOutlineLayerStyle,
+  futurZoneLayerStyle,
   gasUsageLayerStyle,
   objTypeEnergy,
   outlineLayerStyle,
@@ -49,13 +51,13 @@ import { useMapPopup } from './hooks';
 import satelliteConfig from './satellite.config';
 
 let hoveredStateId: any;
-const setHoveringState = (map: any, hover: boolean) => {
+const setHoveringState = (map: any, hover: boolean, sourceLayer: string) => {
   if (hoveredStateId) {
     map.setFeatureState(
       {
         source: 'heatNetwork',
         id: hoveredStateId,
-        sourceLayer: 'outline',
+        sourceLayer,
       },
       { hover }
     );
@@ -287,15 +289,24 @@ const Map = ({
   }, [layerDisplay]);
 
   const loadFilters = useCallback(() => {
-    layerNameOptions.forEach((layerId) =>
-      map.current.getLayer(layerId)
-        ? map.current.setLayoutProperty(
-            layerId,
+    layerNameOptions.forEach((layerId) => {
+      if (map.current.getLayer(layerId)) {
+        if (layerId === 'futurOutline') {
+          map.current.setLayoutProperty(
+            'futurZone',
             'visibility',
             layerDisplay[layerId] ? 'visible' : 'none'
-          )
-        : console.warn(`Layer '${layerId}' is not set on map`)
-    );
+          );
+        }
+        map.current.setLayoutProperty(
+          layerId,
+          'visibility',
+          layerDisplay[layerId] ? 'visible' : 'none'
+        );
+      } else {
+        console.warn(`Layer '${layerId}' is not set on map`);
+      }
+    });
 
     // Energy
     const TYPE_ENERGY = 'energie_utilisee';
@@ -385,6 +396,8 @@ const Map = ({
 
     const clickEvents = [
       { name: 'outline', key: 'network' },
+      { name: 'futurOutline', key: 'futurNetwork' },
+      { name: 'futurZone', key: 'futurNetwork' },
       {
         name: 'demands',
         key: 'demands',
@@ -445,6 +458,31 @@ const Map = ({
               source: 'heatNetwork',
               'source-layer': 'outline',
               ...outlineLayerStyle,
+            },
+          ]
+        );
+
+        addSource(
+          map.current,
+          'heatFuturNetwork',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/futurNetwork/{z}/{x}/{y}`],
+          },
+          [
+            {
+              id: 'futurZone',
+              source: 'heatFuturNetwork',
+              'source-layer': 'futurOutline',
+              filter: ['==', ['get', 'is_zone'], true],
+              ...futurZoneLayerStyle,
+            },
+            {
+              id: 'futurOutline',
+              source: 'heatFuturNetwork',
+              'source-layer': 'futurOutline',
+              filter: ['==', ['get', 'is_zone'], false],
+              ...futurOutlineLayerStyle,
             },
           ]
         );
@@ -591,14 +629,26 @@ const Map = ({
 
           map.current.on('mouseenter', 'outline', function (e: any) {
             if (e.features.length > 0) {
-              setHoveringState(map.current, false);
+              setHoveringState(map.current, false, 'outline');
               hoveredStateId = e.features[0].id;
-              setHoveringState(map.current, true);
+              setHoveringState(map.current, true, 'outline');
             }
           });
 
           map.current.on('mouseleave', 'outline', function () {
-            setHoveringState(map.current, false);
+            setHoveringState(map.current, false, 'outline');
+          });
+
+          map.current.on('mouseenter', 'futurOutline', function (e: any) {
+            if (e.features.length > 0) {
+              setHoveringState(map.current, false, 'futurOutline');
+              hoveredStateId = e.features[0].id;
+              setHoveringState(map.current, true, 'futurOutline');
+            }
+          });
+
+          map.current.on('mouseleave', 'futurOutline', function () {
+            setHoveringState(map.current, false, 'futurOutline');
           });
 
           // ----------------

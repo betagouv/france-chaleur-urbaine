@@ -6,5 +6,4 @@ export interface NetworkSummary {
   'Identifiant reseau': string;
   'reseaux classes': boolean;
   'contenu CO2 ACV': number;
-  date: Date;
 }
