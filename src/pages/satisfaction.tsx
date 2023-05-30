@@ -45,7 +45,9 @@ function Satisfaction() {
               <h5>Merci pour votre retour !</h5>
               Les gestionnaires des réseaux de chaleur recevant actuellement un
               nombre important de demandes, les délais de prise en charge
-              peuvent être allongés.
+              peuvent être allongés. N'hésitez pas à vérifier vos spams, les
+              mails de gestionnaires peuvent être considérés comme indésirables
+              par votre boîte mail.
               <br />
               Nous relançons le gestionnaire du réseau concerné par votre
               demande afin que vous puissiez être recontacté au plus vite. Nous
