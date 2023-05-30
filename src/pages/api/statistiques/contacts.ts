@@ -48,7 +48,6 @@ const reducer = {
     };
     return (acc: Record<string, CalcResult>, fields: Demand) => {
       const date = fields['Date demandes'];
-      console.log(fields);
       const [year, month] = date.split('-');
 
       const key = `${year}-${month}`;
