@@ -114,7 +114,7 @@ export const tilesInfo: Record<string, TileInfo> = {
     tiles: 'zones_et_reseaux_en_construction_tiles',
     id: 'id',
     extraWhere: (query) => query,
-    properties: ['id', 'mise_en_service', 'gestionnaire', 'reseaux_ou_zones'],
+    properties: ['id', 'mise_en_service', 'gestionnaire', 'is_zone'],
     sourceLayer: 'futurOutline',
   },
   zoneDP: {

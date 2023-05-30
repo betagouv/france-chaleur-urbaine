@@ -62,7 +62,7 @@ const closestFuturNetwork = async (
         ) as distance, "gestionnaire"`
       )
     )
-    .where('reseaux_ou_zones', false)
+    .where('is_zone', false)
     .orderBy('distance')
     .first();
 
@@ -82,7 +82,7 @@ const closestInFuturNetwork = async (
         )
       `)
     )
-    .andWhere('reseaux_ou_zones', true)
+    .andWhere('is_zone', true)
     .first();
 
   return network;
@@ -195,10 +195,11 @@ const headers = [
   'Adresse',
   'Adresse testée',
   "Indice de fiabilité de l'adresse testée",
-  'Bâtiment potentiellement raccordable',
+  'Bâtiment potentiellement raccordable à un réseau existant',
   'Distance au réseau (m) si < 1000 m',
   "Tracé non disponible mais présence d'un réseau dans la zone",
   'PDP (périmètre de développement prioritaire)',
+  'Bâtiment potentiellement raccordable à un réseau en construction',
   'Identifiant du réseau le plus proche',
   'Taux EnR&R du réseau le plus proche',
   'Contenu CO2 ACV (g/kWh)',
@@ -212,7 +213,7 @@ const legend = [
     "Min = 0 , Max = 1, Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement testée",
   ],
   [
-    'Bâtiment potentiellement raccordable',
+    'Bâtiment potentiellement raccordable à un réseau existant',
     "Résultat compilant distance au réseau et présence d'un réseau dans la zone",
   ],
   ['Distance au réseau (m) si < 1000 m', 'Distance au réseau le plus proche'],
@@ -224,6 +225,19 @@ const legend = [
     'PDP (périmètre de développement prioritaire)',
     "Si l'adresse est comprise dans un PDP, son raccordement peut être obligatoire (valable pour les nouveaux bâtiments ou ceux renouvelant leur installation de chauffage au-dessus d'une certaine puissance)",
   ],
+  [
+    'Bâtiment potentiellement raccordable à un réseau en construction',
+    'Le bâtiment est à moins de 100 m du tracé d’un réseau en construction, ou situé dans une zone sur laquelle nous avons connaissance d’un réseau en construction ou en cours de mise en service (voir carte pour visualiser les zones)',
+  ],
+  ['Identifiant du réseau le plus proche', 'Identifiant réseau national'],
+  [
+    'Taux EnR&R du réseau le plus proche',
+    'Taux d’énergies renouvelables et de récupération issu de l’arrêté DPE du 16 mars 2023 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716)',
+  ],
+  [
+    'Contenu CO2 ACV (g/kWh)',
+    'Contenu CO2 en analyse du cycle de vie issu de l’arrêté DPE du 16 mars 2023 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716)',
+  ],
 ];
 
 export const getExport = (addresses: any[]) => {
@@ -234,10 +248,11 @@ export const getExport = (addresses: any[]) => {
         address.address,
         address.label,
         address.score,
-        address.isEligible ? 'Oui' : 'Non',
+        address.isEligible && !address.futurNetwork ? 'Oui' : 'Non',
         address.distance,
         address.isEligible && address.isBasedOnIris ? 'Oui' : 'Non',
         address.inZDP ? 'Oui' : 'Non',
+        address.isEligible && address.futurNetwork ? 'Oui' : 'Non',
         address.id,
         address.tauxENRR,
         address.co2 ? Math.round(address.co2 * 1000) : null,
@@ -269,9 +284,12 @@ export const getElibilityStatus = async (
       closestFuturNetwork(lat, lon),
       closestNetwork(lat, lon),
     ]);
-  if (network.distance !== null && Number(network.distance) < 1000) {
+
+  const eligibility = isEligible(Number(network.distance), city);
+  const futurEligibility = isEligible(Number(futurNetwork.distance), city);
+  if (eligibility.isEligible) {
     return {
-      ...isEligible(Number(network.distance), city),
+      ...eligibility,
       distance: Math.round(network.distance),
       inZDP,
       isBasedOnIris: false,
@@ -282,9 +300,9 @@ export const getElibilityStatus = async (
       gestionnaire: network['Gestionnaire'],
     };
   }
-  if (futurNetwork.distance !== null && Number(futurNetwork.distance) < 1000) {
+  if (futurEligibility.isEligible) {
     return {
-      ...isEligible(Number(futurNetwork.distance), city),
+      ...futurEligibility,
       distance: Math.round(futurNetwork.distance),
       inZDP,
       isBasedOnIris: false,
@@ -295,6 +313,7 @@ export const getElibilityStatus = async (
       gestionnaire: futurNetwork.gestionnaire,
     };
   }
+
   if (inFuturNetwork) {
     return {
       isEligible: true,
@@ -309,6 +328,35 @@ export const getElibilityStatus = async (
       gestionnaire: inFuturNetwork.gestionnaire,
     };
   }
+
+  if (Number(network.distance) < 1000) {
+    return {
+      ...eligibility,
+      distance: Math.round(network.distance),
+      inZDP,
+      isBasedOnIris: false,
+      futurNetwork: false,
+      id: network['Identifiant reseau'],
+      tauxENRR: network['Taux EnR&R'],
+      co2: network['contenu CO2 ACV'],
+      gestionnaire: network['Gestionnaire'],
+    };
+  }
+
+  if (Number(futurNetwork.distance) < 1000) {
+    return {
+      ...futurEligibility,
+      distance: Math.round(futurNetwork.distance),
+      inZDP,
+      isBasedOnIris: false,
+      futurNetwork: true,
+      id: null,
+      tauxENRR: null,
+      co2: null,
+      gestionnaire: futurNetwork.gestionnaire,
+    };
+  }
+
   return {
     isEligible: irisNetwork,
     distance: null,

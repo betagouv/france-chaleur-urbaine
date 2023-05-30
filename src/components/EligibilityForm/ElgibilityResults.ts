@@ -13,7 +13,9 @@ const closeCollectif = {
 ### Bonne nouvelle !
 
 
-::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse (${distance}).]
+::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${
+    distance ? `(${distance})` : ''
+  }.]
 ${
   inZDP
     ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
@@ -39,7 +41,9 @@ ${
 // 3 rue du petit bois 78370 Plaisir
 const closeIndividual = {
   body: (distance: number) => `
-::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur (${distance}).]
+::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur ${
+    distance ? `(${distance})` : ''
+  }.]
 ::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
 ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
@@ -58,7 +62,9 @@ const intermediateCollectif = {
     gestionnaire: string | null,
     tauxENRR: number | null
   ) => `
-::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin (${distance}).]
+::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin ${
+    distance ? `(${distance})` : ''
+  }.]
 ${
   inZDP
     ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
@@ -122,7 +128,9 @@ const closeFuturCollectif = {
 ### Bonne nouvelle !
 
 
-::arrow-item[**Un réseau de chaleur passera bientôt à proximité** immédiate de votre adresse (${distance}) (réseau prévu ou en construction).]
+::arrow-item[**Un réseau de chaleur passera bientôt à proximité** immédiate de votre adresse ${
+    distance ? `(${distance})` : ''
+  } (réseau prévu ou en construction).]
 ${
   inZDP
     ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
@@ -154,7 +162,7 @@ const farCollectifInZdp = {
     tauxENRR: number | null
   ) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse.]
-::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>)).]
+::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
@@ -179,7 +187,9 @@ const intermediateFuturCollectif = {
     gestionnaire: string | null,
     tauxENRR: number | null
   ) => `
-::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** (${distance}) (réseau prévu ou en construction).]
+::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** ${
+    distance ? `(${distance})` : ''
+  } (réseau prévu ou en construction).]
 ${
   inZDP
     ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
@@ -226,7 +236,9 @@ ${
 // rue des hirondelles 76610 le havre
 const closeFuturIndividual = {
   body: (distance: number) => `
-::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur en projet ou en construction (${distance}).]
+::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur en projet ou en construction ${
+    distance ? `(${distance})` : ''
+  }.]
 ::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
 ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
@@ -277,6 +289,11 @@ export const getEligibilityResult = (
             : intermediateCollectif;
         }
         return farIndividual;
+      }
+      if (eligibility.distance === null && futurNetwork) {
+        return heatingType === 'collectif'
+          ? closeFuturCollectif
+          : closeFuturIndividual;
       }
     }
 

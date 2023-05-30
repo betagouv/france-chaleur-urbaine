@@ -54,7 +54,7 @@ const MapPage = () => {
           displayArray
             ? {
                 outline: true,
-                'futurOutline-futurZone': displayArray.includes(
+                futurOutline: displayArray.includes(
                   legendMapping['futur-heat-network']
                 ),
                 zoneDP: displayArray.includes(legendMapping.zoneDP),
@@ -76,7 +76,7 @@ const MapPage = () => {
               }
             : {
                 outline: true,
-                'futurOutline-futurZone': false,
+                futurOutline: false,
                 zoneDP: false,
                 demands: false,
                 raccordements: false,
