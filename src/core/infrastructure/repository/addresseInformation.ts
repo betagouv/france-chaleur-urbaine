@@ -287,7 +287,10 @@ export const getElibilityStatus = async (
 
   const eligibility = isEligible(Number(network.distance), city);
   const futurEligibility = isEligible(Number(futurNetwork.distance), city);
-  if (eligibility.isEligible) {
+  if (
+    eligibility.isEligible &&
+    Number(network.distance) < eligibility.veryEligibleDistance
+  ) {
     return {
       ...eligibility,
       distance: Math.round(network.distance),
@@ -300,7 +303,10 @@ export const getElibilityStatus = async (
       gestionnaire: network['Gestionnaire'],
     };
   }
-  if (futurEligibility.isEligible) {
+  if (
+    futurEligibility.isEligible &&
+    Number(futurNetwork.distance) < futurEligibility.veryEligibleDistance
+  ) {
     return {
       ...futurEligibility,
       distance: Math.round(futurNetwork.distance),
