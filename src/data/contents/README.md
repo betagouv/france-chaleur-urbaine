@@ -1,7 +1,9 @@
-# Part des énergies renouvelables dans la consommation finale brute d’énergie en France
+# La chaleur fatale
 
-Suite à la récente [publication du service données et statistiques du Ministère de la transition écologique](https://www.statistiques.developpement-durable.gouv.fr/chiffres-cles-des-energies-renouvelables-edition-2022) sur les énergies renouvelables en France, on peut se féliciter de voir qu'elles occupent une part croissante dans la consommation finale brute d'énergie en 2022. Cette part progresse de +1,4 points par rapport à 2021, atteignant ainsi 20,7 %. Cependant l’objectif 2020 issu des directives européennes n'est toujours pas atteint puisqu’il fixait cette part à 23%.&#x20;
+N° 3 dans notre série sur les énergies renouvelables et de récupération qui alimentent les réseaux de chaleur : la chaleur fatale.&#x20;
 
-Poursuivons l'effort engagé pour atteindre les 33% fixés par la loi énergie climat pour 2030 !
+⌨️ La chaleur fatale ou "chaleur de récupération" désigne la chaleur inéluctablement rejetée par un procédé dont ce n'est pas la vocation première. Les réseaux de chaleur constituent l'un des seuls moyens de récupérer et valoriser cette énergie qui serait autrement perdue, sans générer aucune émission de CO2 additionnelle ! Aujourd'hui, les innovations techniques permettent d'exploiter des sources de chaleur fatale de plus en plus variées. L'enjeu est de taille pour décarboner nos modes de chauffage.&#x20;
 
-<figure><img src=".gitbook/assets/enrobjec.jpg" alt=""><figcaption></figcaption></figure>
+👉 Comme d’habitude avec nos infographies : comprendre l’essentiel en un coup d'œil. A partager largement !
+
+![](.gitbook/assets/fatale.jpg)

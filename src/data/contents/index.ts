@@ -7,6 +7,7 @@ import readme_1 from './README (1).md';
 import readme_2_1_1 from './README (2) (1) (1).md';
 import readme_2_1 from './README (2) (1).md';
 import readme_2 from './README (2).md';
+import readme_3_1 from './README (3) (1).md';
 import readme_3 from './README (3).md';
 import readme from './README.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
@@ -29,17 +30,23 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/fatale2.jpg',
+    title: 'La chaleur fatale',
+    slug: 'la-chaleur-fatale',
+    content: importFile(readme),
+  },
+  {
     image: '/contents/24.jpg',
     title:
       'Part des énergies renouvelables dans la consommation finale brute d’énergie en France',
     slug: 'part-des-énergies-renouvelables-dans-la-consommation-finale-brute-d-énergie-en-france',
-    content: importFile(readme),
+    content: importFile(readme_3),
   },
   {
     image: '/contents/23.jpg',
     title: 'Dispositif éco-énergie tertiaire',
     slug: 'dispositif-éco-énergie-tertiaire',
-    content: importFile(readme_3),
+    content: importFile(readme_3_1),
   },
   {
     image: '/contents/20.jpg',

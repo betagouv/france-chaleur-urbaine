@@ -9,6 +9,7 @@ import {
 
 enum Layer {
   outline = 'outline',
+  futurOutline = 'futurOutline',
   demands = 'demands',
   zoneDP = 'zoneDP',
   buildings = 'buildings',
@@ -25,6 +26,7 @@ export type gasUsageNameOption = (typeof gasUsageNameOptions)[number];
 
 export type TypeLayerDisplay = {
   outline: boolean;
+  futurOutline: boolean;
   zoneDP: boolean;
   demands: boolean;
   raccordements: boolean;
@@ -39,6 +41,7 @@ export type TypeLayerDisplay = {
 
 export const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
+  futurOutline: false,
   zoneDP: false,
   demands: false,
   raccordements: false,
@@ -83,6 +86,18 @@ const legendData: (string | TypeGroupLegend)[] = [
         id: 'zoneDP',
         label: 'Périmètres de développement prioritaire',
         className: 'legend-zoneDP',
+      },
+    ],
+    type: 'list',
+  },
+  {
+    id: LegendGroupId.futurheatNetwork,
+    entries: [
+      {
+        id: 'futurOutline',
+        subLegend: 'FuturRDC',
+        info: "Projets financés par l'ADEME ou signalés par les collectivités et exploitants.",
+        infoPosition: 'bottom',
       },
     ],
     type: 'list',

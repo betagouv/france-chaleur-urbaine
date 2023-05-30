@@ -21,6 +21,10 @@ export const LabelLegendWrapper = styled.div`
   }
 `;
 
+export const MultipleLabelLegendMarkerWrapper = styled.div`
+  width: 54px;
+`;
+
 export const LabelLegendMarker = styled.div<{ bgColor?: string }>`
   width: 46px;
   height: 1rem;
@@ -56,6 +60,11 @@ export const LabelLegendHead = styled.div<{ type?: string }>`
     css`
       line-height: 1.45;
     `}
+`;
+
+export const LabelLegend = styled.div`
+  font-size: 12px;
+  line-height: 14px;
 `;
 
 export const InfoIcon = styled.div`

@@ -16,7 +16,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
-const version = 7;
+const version = 8;
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),

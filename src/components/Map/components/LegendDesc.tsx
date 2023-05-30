@@ -2,6 +2,7 @@ import React from 'react';
 import { themeDefEnergy } from 'src/services/Map/businessRules';
 import { defaultLayerDisplay } from 'src/services/Map/param';
 import DPELegend from './DPELegend';
+import FuturRDCLegend from './FuturRDCLegend';
 import RDCLegend from './RDCLegend';
 import ScaleLegend from './ScaleLegend';
 
@@ -53,6 +54,7 @@ const LegendDesc: Record<
   ),
   DPE: () => <DPELegend />,
   RDC: () => <RDCLegend />,
+  FuturRDC: () => <FuturRDCLegend />,
 };
 
 export default LegendDesc;

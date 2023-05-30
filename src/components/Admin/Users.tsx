@@ -42,7 +42,7 @@ const Users = () => {
   }, [users, filter]);
 
   return (
-    <TableContainer>
+    <TableContainer small>
       <Table
         caption="Connexion"
         columns={columns}

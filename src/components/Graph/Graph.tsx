@@ -25,8 +25,8 @@ const Graph = ({
       <GraphWrapper>
         {errors ? (
           <div>
-            Erreur lors du chargement des données statistique, veuillez nous
-            excuser et re-essayer plus tard.
+            Erreur lors du chargement des données statistiques, veuillez nous
+            excuser et réessayer plus tard.
           </div>
         ) : !data ? (
           'Chargement des données...'

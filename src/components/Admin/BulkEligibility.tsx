@@ -1,4 +1,4 @@
-import { Icon, Table } from '@dataesr/react-dsfr';
+import { Icon, Table, TextInput } from '@dataesr/react-dsfr';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useServices } from 'src/services';
@@ -51,6 +51,10 @@ const columns = [
 const BulkEligibility = () => {
   const { adminService } = useServices();
 
+  const [filter, setFilter] = useState('');
+  const [filteredEligibilityDemands, setFilteredEligibilityDemands] = useState<
+    EligibilityDemand[]
+  >([]);
   const [eligibilityDemands, setEligibilityDemands] = useState<
     EligibilityDemand[]
   >([]);
@@ -58,29 +62,44 @@ const BulkEligibility = () => {
   useEffect(() => {
     adminService.getEligibilityDemand().then(setEligibilityDemands);
   }, [adminService]);
-  if (eligibilityDemands.length === 0) {
-    return null;
-  }
+
+  useEffect(() => {
+    if (filter) {
+      setFilteredEligibilityDemands(
+        eligibilityDemands.filter((demand) =>
+          demand.emails.some((email) => email.includes(filter.toLowerCase()))
+        )
+      );
+    } else {
+      setFilteredEligibilityDemands(eligibilityDemands);
+    }
+  }, [eligibilityDemands, filter]);
 
   return (
     <TableContainer>
       <Table
-        caption={`Demandes d'éligibilités - ${eligibilityDemands
+        caption={`Demandes d'éligibilités - ${filteredEligibilityDemands
           .filter((demand) => !demand.in_error)
           .reduce(
             (acc, value) => acc + value.addresses_count - value.error_count,
             0
-          )} adresses testées - ${eligibilityDemands
+          )} adresses testées - ${filteredEligibilityDemands
           .filter((demand) => !demand.in_error)
           .reduce(
             (acc, value) => acc + value.eligibile_count,
             0
           )} adresses éligibles`}
         columns={columns}
-        data={eligibilityDemands}
+        data={filteredEligibilityDemands}
         rowKey="id"
         pagination
         paginationPosition="center"
+      />
+      {filteredEligibilityDemands.length === 0 && <p>Pas de résultat</p>}
+      <TextInput
+        placeholder="Email"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
       />
     </TableContainer>
   );

@@ -124,6 +124,7 @@ const EligibilityFormContact = ({
                 }
                 initialLayerDisplay={{
                   outline: true,
+                  futurOutline: true,
                   zoneDP: true,
                   demands: false,
                   raccordements: false,
