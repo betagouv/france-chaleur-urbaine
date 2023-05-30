@@ -48,6 +48,12 @@ const Supports = () => {
             <p>La biomasse</p>
           </Link>
         </div>
+        <div>
+          <Link href="/img/FCU_Infographie_fatale.jpg" target="_blank">
+            <img src="/img/FCU_Infographie_fatale.jpg" alt="" width={150} />
+            <p>La chaleur fatale</p>
+          </Link>
+        </div>
       </SupportImages>
       <Subtitle>Dossier de presse</Subtitle>
       <SupportImages>
