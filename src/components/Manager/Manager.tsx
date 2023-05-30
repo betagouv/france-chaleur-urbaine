@@ -238,7 +238,7 @@ const Manager = () => {
                 setPage={setPage}
               />
             ) : (
-              <NoResult>Aucun résultats</NoResult>
+              <NoResult>Aucun résultat</NoResult>
             )}
           </div>
         </TableContainer>
