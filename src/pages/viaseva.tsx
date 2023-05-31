@@ -1,4 +1,6 @@
 import Map from '@components/Map/Map';
+import mapParam from 'src/services/Map/param';
+import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 
 const ViasevaMap = () => {
   return (
@@ -19,6 +21,11 @@ const ViasevaMap = () => {
           energyGasValues: [50, Number.MAX_VALUE],
           energyFuelValues: [50, Number.MAX_VALUE],
         }}
+        withLegend
+        legendTitle="Réseaux de chaleur"
+        legendData={mapParam.legendData.filter(
+          (x) => typeof x !== 'string' && x.id === LegendGroupId.heatNetwork
+        )}
       />
     </div>
   );

@@ -113,6 +113,7 @@ const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
 const Map = ({
   withLegend,
   withDrawing,
+  legendTitle,
   initialLayerDisplay,
   legendData,
   center,
@@ -122,6 +123,7 @@ const Map = ({
   withLegend?: boolean;
   withDrawing?: boolean;
   center?: [number, number];
+  legendTitle?: string;
 }) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -851,6 +853,7 @@ const Map = ({
                 </>
               )}
               <MapLegend
+                legendTitle={legendTitle}
                 data={legendData || mapParam.legendData}
                 onToogleFeature={toggleLayer}
                 onToogleInGroup={(groupeName: string, idEntry?: any) => {
