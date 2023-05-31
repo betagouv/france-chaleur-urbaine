@@ -280,10 +280,10 @@ export const exportPolygonSummary = async (
 export const getLineSummary = async (coordinates: number[][]) => {
   const [result10, result50] = await Promise.all([
     db('donnees_de_consos as gas')
-      .select('conso_nb', 'pdl_nb')
+      .select('conso_nb', 'pdl_nb', 'rownum')
       .where(db.raw(getCloseQuery(coordinates, 'geom', 10))),
     db('donnees_de_consos as gas')
-      .select('conso_nb', 'pdl_nb')
+      .select('conso_nb', 'pdl_nb', 'rownum')
       .where(db.raw(getCloseQuery(coordinates, 'geom', 50))),
   ]);
   return { 10: result10, 50: result50 };

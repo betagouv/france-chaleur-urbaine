@@ -62,8 +62,18 @@ const lineSummary = async (
     const data = summaries.reduce(
       (acc, value) => {
         return {
-          '10': acc['10'].concat(value['10']),
-          '50': acc['50'].concat(value['50']),
+          '10': acc['10']
+            .concat(value['10'])
+            .filter(
+              (value, index, array) =>
+                array.findIndex((v) => v.rownum === value.rownum) === index
+            ),
+          '50': acc['50']
+            .concat(value['50'])
+            .filter(
+              (value, index, array) =>
+                array.findIndex((v) => v.rownum === value.rownum) === index
+            ),
         };
       },
       { '10': [], '50': [] } as { '10': any[]; '50': any[] }
