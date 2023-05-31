@@ -46,7 +46,10 @@ const Explanation = () => {
           </div>
         </div>
         <div className="fr-col-12 fr-col-md-6 fr-offset-lg-1 fr-col-lg-4">
-          <ImageContainer href="/img/FCU_Infographie.jpg" target="_blank">
+          <ImageContainer
+            href="/img/FCU_Infographie_Avenir.jpg"
+            target="_blank"
+          >
             <img
               width="100%"
               src="/img/FCU_Infographie_small.jpeg"
