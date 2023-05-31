@@ -167,6 +167,7 @@ const bulkEligibilitygibilityStatus = async (
 
   const id = uuidv4();
   try {
+    console.log(`${hash} : Launch bulk eligibility computation`);
     await db('eligibility_tests').insert({
       id,
       version,
@@ -241,7 +242,9 @@ const bulkEligibilitygibilityStatus = async (
       .where('id', id);
 
     await sendMail(id, email, results);
+    console.log(`${hash} : Computed bulk eligibility computation`);
   } catch (e) {
+    console.error(`${hash} : Crashed bulk eligibility computation`);
     console.error(e);
     await sendErrorMail(email, addresses);
     await db('eligibility_tests').update({ in_error: true }).where('id', id);

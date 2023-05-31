@@ -128,8 +128,8 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
           ({
             id: record.id,
             ...record.fields,
-            Nom: faker.name.lastName(),
-            Prénom: faker.name.firstName(),
+            Nom: faker.person.lastName(),
+            Prénom: faker.person.firstName(),
             Mail: faker.internet.email(),
             Téléphone: faker.phone.number('0#########'),
           } as Demand)
