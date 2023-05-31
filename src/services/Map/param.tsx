@@ -10,6 +10,7 @@ import {
 enum Layer {
   outline = 'outline',
   futurOutline = 'futurOutline',
+  coldOutline = 'coldOutline',
   demands = 'demands',
   zoneDP = 'zoneDP',
   buildings = 'buildings',
@@ -27,6 +28,7 @@ export type gasUsageNameOption = (typeof gasUsageNameOptions)[number];
 export type TypeLayerDisplay = {
   outline: boolean;
   futurOutline: boolean;
+  coldOutline: boolean;
   zoneDP: boolean;
   demands: boolean;
   raccordements: boolean;
@@ -42,6 +44,7 @@ export type TypeLayerDisplay = {
 export const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
   futurOutline: false,
+  coldOutline: false,
   zoneDP: false,
   demands: false,
   raccordements: false,
@@ -60,7 +63,6 @@ const legendData: (string | TypeGroupLegend)[] = [
     entries: [
       {
         id: 'outline',
-        label: 'Réseaux de chaleur',
         subLegend: 'RDC',
         info: (
           <>
@@ -84,8 +86,10 @@ const legendData: (string | TypeGroupLegend)[] = [
     entries: [
       {
         id: 'zoneDP',
-        label: 'Périmètres de développement prioritaire',
+        label: 'Périmètres de développement prioritaire des réseaux classés',
         className: 'legend-zoneDP',
+        info: "Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage au-dessus d'une certaine puissance est obligatoire",
+        infoPosition: 'bottom',
       },
     ],
     type: 'list',
@@ -98,6 +102,17 @@ const legendData: (string | TypeGroupLegend)[] = [
         subLegend: 'FuturRDC',
         info: "Projets financés par l'ADEME ou signalés par les collectivités et exploitants.",
         infoPosition: 'bottom',
+      },
+    ],
+    type: 'list',
+  },
+  {
+    id: LegendGroupId.coldNetwork,
+    entries: [
+      {
+        id: 'coldOutline',
+        label: 'Réseaux de froid',
+        className: 'legend-cold-network',
       },
     ],
     type: 'list',

@@ -12,12 +12,16 @@ export const LabelLegendInputLabel = styled.div`
 export const LabelLegendWrapper = styled.div`
   font-size: 0.95em;
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
+
+  input {
+    margin-top: 2px;
+  }
 
   label {
     display: flex;
     flex-direction: row;
-    align-items: baseline;
+    align-items: flex-start;
   }
 `;
 
@@ -50,10 +54,14 @@ export const LabelLegendMarker = styled.div<{ bgColor?: string }>`
     `}
 `;
 
-export const LabelLegendHead = styled.div<{ type?: string }>`
+export const LabelLegendHead = styled.div<{
+  type?: string;
+  fullWidth?: boolean;
+}>`
   font-size: 14px;
   font-weight: 600;
   line-height: 18px;
+  ${({ fullWidth }) => !fullWidth && 'max-width: 205px;'}
 
   ${({ type }) =>
     type === 'group' &&

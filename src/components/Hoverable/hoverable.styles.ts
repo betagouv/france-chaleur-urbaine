@@ -22,12 +22,12 @@ export const Container = styled.div<{
         `;
       case 'bottom':
         return css`
-          top: 38px;
-          right: 0;
+          top: 24px;
+          right: 8px;
         `;
       default:
         return css`
-          bottom: 38px;
+          bottom: 24px;
           right: 0;
         `;
     }

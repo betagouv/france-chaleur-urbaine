@@ -117,6 +117,23 @@ export const tilesInfo: Record<string, TileInfo> = {
     properties: ['id', 'mise_en_service', 'gestionnaire', 'is_zone'],
     sourceLayer: 'futurOutline',
   },
+  coldNetwork: {
+    source: 'database',
+    table: 'reseaux_de_froid',
+    tiles: 'reseaux_de_froid_tiles',
+    id: 'id',
+    extraWhere: (query) => query,
+    properties: [
+      'id',
+      'Taux EnR&R',
+      'Gestionnaire',
+      'commentaires',
+      'Identifiant reseau',
+      'reseaux classes',
+      'contenu CO2 ACV',
+    ],
+    sourceLayer: 'coldOutline',
+  },
   zoneDP: {
     source: 'database',
     table: 'zone_de_developpement_prioritaire',

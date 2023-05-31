@@ -194,6 +194,14 @@ export const outlineLayerStyle = {
   },
 };
 
+export const coldOutlineLayerStyle = {
+  ...outlineLayerStyle,
+  paint: {
+    ...outlineLayerStyle.paint,
+    'line-color': themeDefHeatNetwork.cold.color,
+  },
+};
+
 export const futurOutlineLayerStyle = {
   ...outlineLayerStyle,
   paint: {

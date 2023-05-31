@@ -6,7 +6,8 @@ const ViasevaMap = () => {
       <Map
         initialLayerDisplay={{
           outline: true,
-          futurOutline: true,
+          futurOutline: false,
+          coldOutline: false,
           zoneDP: false,
           demands: false,
           raccordements: false,
