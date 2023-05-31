@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres_fcu
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   maildev:
     image: maildev/maildev
@@ -14,8 +14,8 @@ services:
       MAILDEV_INCOMING_USER: mailuser
       MAILDEV_INCOMING_PASS: mailpassword
     ports:
-      - "1080:1080"
-      - "1025:1025"
+      - '1080:1080'
+      - '1025:1025'
 
   web:
     build: ./docker/web
@@ -26,10 +26,10 @@ services:
       MAIL_USER: mailuser
       MAIL_HOST: maildev
       MAIL_PORT: 1025
-      MAIL_SECURE: "false"
-      MAIL_REQUIRE_TLS: "false"
+      MAIL_SECURE: 'false'
+      MAIL_REQUIRE_TLS: 'false'
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - .:/app
     depends_on: # https://docs.docker.com/compose/startup-order/

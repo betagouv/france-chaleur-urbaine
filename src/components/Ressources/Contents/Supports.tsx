@@ -7,7 +7,7 @@ const Supports = () => {
       <Subtitle>Infographies</Subtitle>
       <SupportImages>
         <div>
-          <Link href="/img/FCU_Infographie.jpg" target="_blank">
+          <Link href="/img/FCU_Infographie_Avenir.jpg" target="_blank">
             <img src="/img/support_FCU_Infographie.png" alt="" />
             <p>Les réseaux de chaleur : une solution d’avenir</p>
           </Link>
