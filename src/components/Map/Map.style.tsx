@@ -23,6 +23,7 @@ export const mapMediumMedia = '@media (max-width: 1250px) ';
 
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
+  drawing: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
       position: relative;
@@ -41,6 +42,13 @@ export const MapStyle: any = createGlobalStyle<{
         left: 0;
         width: 100%;
       }
+
+      ${({ drawing }) =>
+        drawing &&
+        `
+      .maplibregl-canvas {
+        cursor: crosshair;
+      }`}
     }
 
     .popup-map-layer {

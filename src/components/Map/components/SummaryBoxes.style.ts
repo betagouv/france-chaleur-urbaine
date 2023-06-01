@@ -2,14 +2,6 @@ import { Button } from '@dataesr/react-dsfr';
 import styled, { css } from 'styled-components';
 import { mapMediumMedia } from '../Map.style';
 
-export const Container = styled.div<{ customCursor?: boolean }>`
-  ${({ customCursor }) =>
-    customCursor &&
-    css`
-      cursor: crosshair !important;
-    `}
-`;
-
 export const ZoneInfosWrapper = styled.div`
   font-size: 14px;
   button {
