@@ -13,6 +13,7 @@ const legendMapping: Record<LegendGroupId, string> = {
   [LegendGroupId.buildings]: 'dpe',
   [LegendGroupId.heatNetwork]: '',
   [LegendGroupId.futurheatNetwork]: 'futur_reseau',
+  [LegendGroupId.coldNetwork]: 'reseau_froid',
   [LegendGroupId.gasUsage]: 'conso_gaz',
 };
 const MapPage = () => {
@@ -57,6 +58,9 @@ const MapPage = () => {
                 futurOutline: displayArray.includes(
                   legendMapping['futur-heat-network']
                 ),
+                coldOutline: displayArray.includes(
+                  legendMapping['cold-network']
+                ),
                 zoneDP: displayArray.includes(legendMapping.zoneDP),
                 demands: displayArray.includes(legendMapping.demands),
                 raccordements: displayArray.includes(
@@ -77,6 +81,7 @@ const MapPage = () => {
             : {
                 outline: true,
                 futurOutline: false,
+                coldOutline: false,
                 zoneDP: false,
                 demands: false,
                 raccordements: false,

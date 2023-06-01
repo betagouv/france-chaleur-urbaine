@@ -30,6 +30,7 @@ import {
   MapControlWrapper,
   MapStyle,
   buildingsLayerStyle,
+  coldOutlineLayerStyle,
   demandsLayerStyle,
   energyLayerStyle,
   futurOutlineLayerStyle,
@@ -48,11 +49,16 @@ import { useMapPopup } from './hooks';
 import satelliteConfig from './satellite.config';
 
 let hoveredStateId: any;
-const setHoveringState = (map: any, hover: boolean, sourceLayer: string) => {
+const setHoveringState = (
+  map: any,
+  hover: boolean,
+  source: string,
+  sourceLayer: string
+) => {
   if (hoveredStateId) {
     map.setFeatureState(
       {
-        source: 'heatNetwork',
+        source,
         id: hoveredStateId,
         sourceLayer,
       },
@@ -62,6 +68,20 @@ const setHoveringState = (map: any, hover: boolean, sourceLayer: string) => {
       hoveredStateId = null;
     }
   }
+};
+
+const addHover = (map: any, source: string, sourceLayer: string) => {
+  map.current.on('mouseenter', sourceLayer, function (e: any) {
+    if (e.features.length > 0) {
+      setHoveringState(map.current, false, source, sourceLayer);
+      hoveredStateId = e.features[0].id;
+      setHoveringState(map.current, true, source, sourceLayer);
+    }
+  });
+
+  map.current.on('mouseleave', sourceLayer, function () {
+    setHoveringState(map.current, false, source, sourceLayer);
+  });
 };
 
 const { defaultZoom, maxZoom, minZoom, minZoomData } = mapParam;
@@ -393,6 +413,7 @@ const Map = ({
 
     const clickEvents = [
       { name: 'outline', key: 'network' },
+      { name: 'coldOutline', key: 'network' },
       { name: 'futurOutline', key: 'futurNetwork' },
       { name: 'futurZone', key: 'futurNetwork' },
       {
@@ -444,17 +465,17 @@ const Map = ({
         // --------------------
         addSource(
           map.current,
-          'heatNetwork',
+          'coldNetwork',
           {
             type: 'vector',
-            tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
+            tiles: [`${origin}/api/map/coldNetwork/{z}/{x}/{y}`],
           },
           [
             {
-              id: 'outline',
-              source: 'heatNetwork',
-              'source-layer': 'outline',
-              ...outlineLayerStyle,
+              id: 'coldOutline',
+              source: 'coldNetwork',
+              'source-layer': 'coldOutline',
+              ...coldOutlineLayerStyle,
             },
           ]
         );
@@ -480,6 +501,23 @@ const Map = ({
               'source-layer': 'futurOutline',
               filter: ['==', ['get', 'is_zone'], false],
               ...futurOutlineLayerStyle,
+            },
+          ]
+        );
+
+        addSource(
+          map.current,
+          'heatNetwork',
+          {
+            type: 'vector',
+            tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
+          },
+          [
+            {
+              id: 'outline',
+              source: 'heatNetwork',
+              'source-layer': 'outline',
+              ...outlineLayerStyle,
             },
           ]
         );
@@ -624,29 +662,9 @@ const Map = ({
             });
           });
 
-          map.current.on('mouseenter', 'outline', function (e: any) {
-            if (e.features.length > 0) {
-              setHoveringState(map.current, false, 'outline');
-              hoveredStateId = e.features[0].id;
-              setHoveringState(map.current, true, 'outline');
-            }
-          });
-
-          map.current.on('mouseleave', 'outline', function () {
-            setHoveringState(map.current, false, 'outline');
-          });
-
-          map.current.on('mouseenter', 'futurOutline', function (e: any) {
-            if (e.features.length > 0) {
-              setHoveringState(map.current, false, 'futurOutline');
-              hoveredStateId = e.features[0].id;
-              setHoveringState(map.current, true, 'futurOutline');
-            }
-          });
-
-          map.current.on('mouseleave', 'futurOutline', function () {
-            setHoveringState(map.current, false, 'futurOutline');
-          });
+          addHover(map, 'heatNetwork', 'outline');
+          addHover(map, 'heatFuturNetwork', 'futurOutline');
+          addHover(map, 'coldNetwork', 'coldOutline');
 
           // ----------------
           // --- Controls ---

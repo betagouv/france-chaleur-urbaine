@@ -3,7 +3,9 @@ import { useRouter } from 'next/router';
 import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import { TypeLayerDisplay } from '../../../services/Map/param';
 import { LegendSeparator } from '../Map.style';
+import { Title } from './DPELegend.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
+import { LabelLegendHead } from './LegendEntry.styled';
 import LegendGroupLabel from './LegendGroupLabel';
 import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
 
@@ -29,6 +31,12 @@ function MapLegend({
   return (
     <>
       <LegendGlobalStyle />
+      <LabelLegendHead fullWidth>
+        Réseaux de chaleur et de froid
+      </LabelLegendHead>
+      <Title className="fr-mb-1w">
+        Cliquer sur un réseau pour connaître ses caractéristiques
+      </Title>
       {data.map((group, i) => {
         if (group === 'separator') {
           return <LegendSeparator key={`separator-${i}`} />;
@@ -85,13 +93,14 @@ function MapLegend({
 
           if (type === 'list') {
             return entries.map((entry: TypeLegendEntry) => (
-              <LegendEntry
-                checked={!!layerDisplay[entry.id]}
-                key={entry.id}
-                onChange={onToogleFeature}
-                subLegend={subLegend}
-                {...entry}
-              />
+              <div className="fr-mt-1w" key={entry.id}>
+                <LegendEntry
+                  checked={!!layerDisplay[entry.id]}
+                  onChange={onToogleFeature}
+                  subLegend={subLegend}
+                  {...entry}
+                />
+              </div>
             ));
           }
         }

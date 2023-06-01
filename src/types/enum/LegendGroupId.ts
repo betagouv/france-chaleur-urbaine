@@ -1,6 +1,7 @@
 export enum LegendGroupId {
   heatNetwork = 'heat-network',
   futurheatNetwork = 'futur-heat-network',
+  coldNetwork = 'cold-network',
   zoneDP = 'zoneDP',
   demands = 'demands',
   gasUsageGroup = 'gasUsageGroup',

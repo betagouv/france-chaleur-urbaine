@@ -129,11 +129,13 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
 
   .legend-futur-heat-network-marker,
   .legend-classed-heat-network-marker,
-  .legend-heat-network-marker {
+  .legend-heat-network-marker,
+  .legend-cold-network-marker {
     top: -3px;
     :before {
       border-radius: 4px;
       margin: 0 4px;
+      min-width: 38px;
       width: 100%;
       height: 0 !important;
       margin-bottom: calc(0.25em - 1.5px)
@@ -170,9 +172,16 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
     }
   }
 
+  .legend-cold-network-marker {
+    width: 46px;
+    :before {
+      border-top: 8px solid ${themeDefHeatNetwork.cold.color};
+    }
+  }
+  
   .legend-zoneDP-marker {
     :before {
-      margin: 0 4px;
+      margin: 0 7px 0 7px;
       width: 32px;
       background-color: ${themeDefZoneDP.fill.color};
       opacity: ${themeDefZoneDP.fill.opacity};
@@ -198,13 +207,13 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
   }
 
   .legend-energy-marker {
-    width: .6rem;
+    width: 12px !important;
+    margin-top: 0;
 
     ::before {
-      width: 0.5rem;
-      height: 0.5rem;
+      width: 0.5rem !important;
+      height: 0.5rem !important;
       border-radius: 50%;
-      margin-bottom: calc(0.25em - 1.5px);
     }
   }
 `;
