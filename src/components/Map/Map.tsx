@@ -126,6 +126,7 @@ const Map = ({
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
+  const [drawing, setDrawing] = useState(false);
   const [collapsedCardIndex, setCollapsedCardIndex] = useState(0);
   const mapContainer: null | { current: any } = useRef(null);
   const map: null | { current: any } = useRef(null);
@@ -794,7 +795,10 @@ const Map = ({
 
   return (
     <>
-      <MapStyle legendCollapsed={!withLegend || legendCollapsed} />
+      <MapStyle
+        legendCollapsed={!withLegend || legendCollapsed}
+        drawing={drawing}
+      />
       <div className="map-wrap">
         {withLegend && (
           <>
@@ -899,7 +903,11 @@ const Map = ({
         )}
         {withDrawing && (
           <MapControlWrapper legendCollapsed={legendCollapsed}>
-            <ZoneInfos map={map.current} draw={draw.current} />
+            <ZoneInfos
+              map={map.current}
+              draw={draw.current}
+              setDrawing={setDrawing}
+            />
           </MapControlWrapper>
         )}
         <div ref={mapContainer} className="map" />
