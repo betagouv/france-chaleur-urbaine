@@ -1,5 +1,6 @@
 import { Button, Icon } from '@dataesr/react-dsfr';
 import { useCallback, useMemo, useState } from 'react';
+import { getReadableDistance } from 'src/services/Map/distance';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 import {
@@ -34,19 +35,10 @@ const CardSearchDetails = ({
 
   const [contactFormVisible, setContactFormVisible] = useState(false);
 
-  const readableDistance = useMemo(() => {
-    if (distance === null) {
-      return '';
-    }
-
-    if (distance < 1) {
-      return '< 1m';
-    }
-    if (distance >= 1000) {
-      return `${distance / 1000}km`;
-    }
-    return `${distance}m`;
-  }, [distance]);
+  const readableDistance = useMemo(
+    () => getReadableDistance(distance),
+    [distance]
+  );
 
   const eligibilityWording = useMemo(() => {
     if (
