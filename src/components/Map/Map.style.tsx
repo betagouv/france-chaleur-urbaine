@@ -134,9 +134,13 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   }
 `;
 
-export const Legend = styled.div<{ legendCollapsed: boolean }>`
+export const Legend = styled.div<{
+  legendCollapsed: boolean;
+  withoutLogo?: boolean;
+}>`
   z-index: ${mapControlZindex + 1};
   overflow: auto;
+  ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
   ${({ legendCollapsed }) =>
     legendCollapsed &&
     css`
@@ -428,4 +432,18 @@ export const buildingsLayerStyle = {
 export const Buttons = styled.div`
   display: flex;
   justify-content: space-evenly;
+`;
+
+export const LegendLogo = styled.div<{
+  legendCollapsed: boolean;
+}>`
+  width: 332px;
+  position: absolute;
+  background-color: white;
+  ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
+  bottom: 0px;
+  z-index: 9999;
+  img {
+    width: 50%;
+  }
 `;

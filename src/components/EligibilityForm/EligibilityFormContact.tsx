@@ -103,6 +103,7 @@ const EligibilityFormContact = ({
             </ContactFormResultMessage>
             <ContactMapResult>
               <Map
+                withoutLogo
                 center={
                   addressData.coords && [
                     addressData.coords.lon,

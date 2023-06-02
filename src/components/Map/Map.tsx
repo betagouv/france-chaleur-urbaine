@@ -26,6 +26,7 @@ import mapParam, {
 import {
   CollapseLegend,
   Legend,
+  LegendLogo,
   LegendSeparator,
   MapControlWrapper,
   MapStyle,
@@ -111,6 +112,7 @@ const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
 };
 
 const Map = ({
+  withoutLogo,
   withLegend,
   withDrawing,
   legendTitle,
@@ -118,6 +120,7 @@ const Map = ({
   legendData,
   center,
 }: {
+  withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
   legendData?: (string | TypeGroupLegend)[];
   withLegend?: boolean;
@@ -820,7 +823,7 @@ const Map = ({
                 }
               />
             </CollapseLegend>
-            <Legend legendCollapsed={legendCollapsed}>
+            <Legend legendCollapsed={legendCollapsed} withoutLogo={withoutLogo}>
               <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               <LegendSeparator />
               {soughtAddresses.length > 0 && (
@@ -902,6 +905,14 @@ const Map = ({
                 layerDisplay={layerDisplay}
               />
             </Legend>
+            {!withoutLogo && (
+              <LegendLogo legendCollapsed={legendCollapsed}>
+                <img
+                  src="/logo-fcu-with-typo.jpg"
+                  alt="logo france chaleur urbaine"
+                />
+              </LegendLogo>
+            )}
           </>
         )}
         {withDrawing && (
