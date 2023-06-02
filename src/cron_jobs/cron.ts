@@ -3,7 +3,14 @@ import { launchJob } from './launch';
 
 new cron.CronJob({
   cronTime: '00 10 * * 1-5', // du lundi au vendredi à 10:00
-  onTick: () => launchJob('dailyManagerMail'),
+  onTick: () => launchJob('dailyNewManagerMail'),
+  start: true,
+  timeZone: 'Europe/Paris',
+});
+
+new cron.CronJob({
+  cronTime: '55 9 * * 2', // le mardi à 09:55
+  onTick: () => launchJob('weeklyOldManagerMail'),
   start: true,
   timeZone: 'Europe/Paris',
 });

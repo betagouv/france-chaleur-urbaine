@@ -1,8 +1,13 @@
-import { dailyManagerMail, dailyRelanceMail } from 'src/services/manager';
+import {
+  dailyNewManagerMail,
+  dailyRelanceMail,
+  weeklyOldManagerMail,
+} from 'src/services/manager';
 import { updateUsers } from 'src/services/users';
 
 export const jobs: Record<string, any> = {
-  dailyManagerMail,
+  dailyNewManagerMail,
+  weeklyOldManagerMail,
   dailyRelanceMail,
   updateUsers,
 };
