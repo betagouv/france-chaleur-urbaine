@@ -4,8 +4,6 @@ import {
   GoogleAdsMarkup,
   LinkedInMarkup,
   MatomoMarkup,
-  taboolaEvent,
-  TaboolaMarkup,
 } from '@components/Markup';
 import { LayoutProvider, MainLayout } from '@components/shared/layout';
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
@@ -15,7 +13,6 @@ import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 import 'src/components/Map/StyleSwitcher/styles.css';
 import {
   HeatNetworkService,
@@ -124,17 +121,6 @@ function MyApp({
   session: Session;
 }>) {
   const router = useRouter();
-  useEffect(() => {
-    const handleRouteChange = () => {
-      taboolaEvent('page_view', '1511088');
-    };
-
-    router.events.on('routeChangeStart', handleRouteChange);
-
-    return () => {
-      router.events.off('routeChangeStart', handleRouteChange);
-    };
-  }, [router]);
 
   return (
     <>
@@ -159,7 +145,6 @@ function MyApp({
               <GoogleAdsMarkup googleId="10794036298" />
               <FacebookMarkup facebookId="3064783047067401" />
               <LinkedInMarkup tagId="3494650" />
-              <TaboolaMarkup id="1511088" />
             </ConsentBanner>
           )}
           {favicons.map(
