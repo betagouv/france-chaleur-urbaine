@@ -3,7 +3,6 @@ import markupData, {
   googleAdsEvent,
   linkedInEvent,
   matomoEvent,
-  taboolaEvent,
 } from '@components/Markup';
 import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
 import { useCallback, useRef, useState } from 'react';
@@ -21,7 +20,6 @@ const callMarkup__handleOnFetchAddress = (
   linkedInEvent(markupData.eligibilityTest.linkedInEvent);
   facebookEvent(markupData.eligibilityTest.facebookEvent);
   googleAdsEvent('10986886666', markupData.eligibilityTest.googleAdsEvent);
-  taboolaEvent('lead', '1511088');
 };
 
 const callMarkup__handleOnSuccessAddress = ({
@@ -62,9 +60,6 @@ const callMarkup__handleOnSubmitContact = (
     [address]
   );
   facebookEvent(markupData[markupEligibilityKey].facebookEvent);
-  if (eligibility) {
-    taboolaEvent('complete_registration', '1511088');
-  }
 };
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";

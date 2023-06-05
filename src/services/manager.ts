@@ -98,7 +98,18 @@ const oldDemands = async (users: User[]) => {
   console.log(`${sent.length} email(s) envoyé(s) pour les vieilles demandes.`);
 };
 
-export const dailyManagerMail = async () => {
+export const weeklyOldManagerMail = async () => {
+  const users: User[] = await db('users').select(
+    'gestionnaires',
+    'email',
+    'receive_new_demands',
+    'receive_old_demands'
+  );
+
+  await oldDemands(users);
+};
+
+export const dailyNewManagerMail = async () => {
   const users: User[] = await db('users').select(
     'gestionnaires',
     'email',
@@ -107,7 +118,6 @@ export const dailyManagerMail = async () => {
   );
 
   await newDemands(users);
-  await oldDemands(users);
 };
 
 export const updateRelanceAnswer = async (id: string, relanced: boolean) => {
