@@ -1,5 +1,6 @@
 import Input from '@components/shared/input';
 import RadioGroup from '@components/shared/RadioGroup';
+import { Alert } from '@dataesr/react-dsfr';
 import { Field, useFormikContext } from 'formik';
 import styled from 'styled-components';
 import * as Yup from 'yup';
@@ -24,6 +25,12 @@ export const fieldLabelInformation = {
     inputs: [
       { value: 'Copropriété', label: 'Copropriété', id: 'copropriete' },
       { value: 'Tertiaire', label: 'Tertiaire', id: 'tertiaire' },
+      {
+        value: 'Maison individuelle',
+        label: 'Maison individuelle',
+        id: 'maison',
+      },
+      { value: 'Bailleur social', label: 'Bailleur social', id: 'bailleur' },
     ],
   },
   lastName: 'Nom :',
@@ -87,6 +94,14 @@ const ContactInformation = ({ cardMode }: { cardMode?: boolean }) => {
           />
         </InputWraper>
       </fieldset>
+      {values.structure === 'Maison individuelle' && (
+        <Alert
+          className="fr-mt-2w"
+          type="warning"
+          small
+          description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est possible que le gestionnaire du réseau ne donne pas suite à votre demande."
+        />
+      )}
       <fieldset className="fr-fieldset">
         <InputWraper className="fr-my-1w">
           <Field
