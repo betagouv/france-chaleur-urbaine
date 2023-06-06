@@ -54,6 +54,12 @@ const Supports = () => {
             <p>La chaleur fatale</p>
           </Link>
         </div>
+        <div>
+          <Link href="/img/FCU_Infographie_Froid.jpg" target="_blank">
+            <img src="/img/FCU_Infographie_Froid.jpg" alt="" width={150} />
+            <p>Les réseaux de froid</p>
+          </Link>
+        </div>
       </SupportImages>
       <Subtitle>Dossier de presse</Subtitle>
       <SupportImages>
