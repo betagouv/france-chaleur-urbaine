@@ -18,7 +18,7 @@ export const CheckEligibilityFormLabel = styled.div<{ colored?: boolean }>`
 export const ContactFormWrapper = styled.div<{ cardMode?: boolean }>`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: stretch;
 
   ${({ cardMode }) => css`
@@ -93,7 +93,7 @@ export const ContactFormResultMessage = styled.div<{
   cardMode?: boolean;
 }>`
   box-shadow: inset ${(cardMode) => (cardMode ? '8px' : '16px')} 0 0 0
-    ${({ eligible }) => (eligible ? '#78EB7B' : '#FAAC18')};
+    ${({ eligible }) => (eligible ? '#78EB7B' : '#ea7c3f')};
   background-color: var(--g200);
   margin-bottom: 8px;
   font-size: ${({ cardMode }) => (cardMode ? '14px' : '16px')};
