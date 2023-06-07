@@ -9,6 +9,7 @@ import readme_2_1 from './README (2) (1).md';
 import readme_2 from './README (2).md';
 import readme_3_1 from './README (3) (1).md';
 import readme_3 from './README (3).md';
+import readme_4 from './README (4).md';
 import readme from './README.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
@@ -30,10 +31,16 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/vignettefroid.jpg',
+    title: 'Les réseaux de froid',
+    slug: 'les-réseaux-de-froid',
+    content: importFile(readme),
+  },
+  {
     image: '/contents/fatale2.jpg',
     title: 'La chaleur fatale',
     slug: 'la-chaleur-fatale',
-    content: importFile(readme),
+    content: importFile(readme_4),
   },
   {
     image: '/contents/24.jpg',
