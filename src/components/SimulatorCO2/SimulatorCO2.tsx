@@ -86,60 +86,47 @@ const SimulatorCO2: React.FC<{
     []
   );
 
-  const data = useMemo(
-    () => dataSimulator[typeSurf || simulatorType],
-    [typeSurf, simulatorType]
-  );
-
   const form = (
     <>
-      {data?.label?.conso && (
-        <fieldset>
-          <Input
-            type="number"
-            placeholder={data?.label?.conso}
-            onChange={(e) => setConso(parseFloat(e.target.value))}
-          />
-        </fieldset>
-      )}
-      {data?.label?.surf && (
-        <fieldset>
-          ou
-          <Input
-            type="number"
-            placeholder={data?.label?.surf}
-            onChange={(e) => setSurf(parseFloat(e.target.value))}
-          />
-        </fieldset>
-      )}
-      {data?.label?.log && (
-        <fieldset>
-          ou
-          <Input
-            type="number"
-            placeholder={data?.label?.log}
-            onChange={(e) => setLog(parseInt(e.target.value))}
-          />
-        </fieldset>
-      )}
-      {data?.label?.chauffage && (
-        <fieldset>
-          <Select
-            onChange={selectHandleChange}
-            selected={energy}
-            options={[
-              {
-                label: data?.label?.chauffage,
-                value: '',
-              },
-            ].concat(
-              Object.entries(dataEnergy)
-                .filter(([key]) => key !== 'rdc')
-                .map(([key, { label }]) => ({ label, value: key }))
-            )}
-          />
-        </fieldset>
-      )}
+      <fieldset>
+        <Input
+          type="number"
+          placeholder={dataSimulator.label.conso}
+          onChange={(e) => setConso(parseFloat(e.target.value))}
+        />
+      </fieldset>
+      <fieldset>
+        ou
+        <Input
+          type="number"
+          placeholder={dataSimulator.label.surf}
+          onChange={(e) => setSurf(parseFloat(e.target.value))}
+        />
+      </fieldset>
+      <fieldset>
+        ou
+        <Input
+          type="number"
+          placeholder={dataSimulator.label.log}
+          onChange={(e) => setLog(parseInt(e.target.value))}
+        />
+      </fieldset>
+      <fieldset>
+        <Select
+          onChange={selectHandleChange}
+          selected={energy}
+          options={[
+            {
+              label: dataSimulator.label.chauffage,
+              value: '',
+            },
+          ].concat(
+            Object.entries(dataEnergy)
+              .filter(([key]) => key !== 'rdc')
+              .map(([key, { label }]) => ({ label, value: key }))
+          )}
+        />
+      </fieldset>
     </>
   );
 
@@ -171,7 +158,7 @@ const SimulatorCO2: React.FC<{
             1 t de CO2 = 190 allers-retours Paris-Bordeaux en train
             <br />
             <br />
-            {data?.annotation?.map((note: string, i: number) => (
+            {dataSimulator.annotation.map((note: string, i: number) => (
               <div key={i}>{note}</div>
             ))}
           </CartridgeSimulatorFooter>
@@ -179,10 +166,12 @@ const SimulatorCO2: React.FC<{
       ) : (
         <>
           <SimulatorWrapper withPadding={!!typeSurf}>
-            {typeSurf && <SimulatorHeader>{data.chapo}</SimulatorHeader>}
+            {typeSurf && (
+              <SimulatorHeader>{dataSimulator.chapo}</SimulatorHeader>
+            )}
             <SimulatorFormWrapper>
               <SimulatorForm>{form}</SimulatorForm>
-              <SimulatorFormResult inline={typeSurf && data.styleInline}>
+              <SimulatorFormResult inline>
                 <Cartridge
                   theme="yellow"
                   className="cartridge simulator-result-economy"
@@ -210,7 +199,7 @@ const SimulatorCO2: React.FC<{
               </SimulatorFormResult>
             </SimulatorFormWrapper>
             <SimulatorFooter>
-              {data?.annotation?.map((note: string, i: number) => (
+              {dataSimulator.annotation.map((note: string, i: number) => (
                 <div key={i}>{note}</div>
               ))}
             </SimulatorFooter>
