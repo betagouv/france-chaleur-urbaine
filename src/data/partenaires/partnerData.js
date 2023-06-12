@@ -94,5 +94,14 @@ export default [
     title: 'Homeland',
     link: 'https://www.homeland.immo/',
   },
-  { image: './logo-Matera.png', title: 'Matera', link: 'https://matera.eu/fr' },
+  {
+    image: './logo-Matera.png',
+    title: 'Matera',
+    link: 'https://matera.eu/fr',
+  },
+  {
+    image: './logo-ENGIE.jpg',
+    title: 'Engie',
+    link: 'https://www.engie-solutions.com/',
+  },
 ];
