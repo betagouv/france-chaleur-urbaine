@@ -22,7 +22,6 @@ const ViasevaMap = () => {
           energyFuelValues: [50, Number.MAX_VALUE],
         }}
         withLegend
-        legendTitle="Réseaux de chaleur et de froid"
         legendData={mapParam.legendData.filter(
           (x) =>
             typeof x !== 'string' &&
