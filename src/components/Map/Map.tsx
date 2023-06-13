@@ -116,12 +116,16 @@ const Map = ({
   initialLayerDisplay,
   legendData,
   center,
+  withCenterPin,
+  noPopup,
 }: {
   initialLayerDisplay: TypeLayerDisplay;
   legendData?: (string | TypeGroupLegend)[];
   withLegend?: boolean;
   withDrawing?: boolean;
   center?: [number, number];
+  withCenterPin?: boolean;
+  noPopup?: boolean;
 }) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -163,7 +167,7 @@ const Map = ({
 
   const router = useRouter();
   const [, , updateClickedPoint] = useMapPopup(map.current, {
-    bodyFormater: formatBodyPopup,
+    bodyFormater: (args) => formatBodyPopup(args),
     className: 'popup-map-layer',
   });
 
@@ -505,7 +509,7 @@ const Map = ({
             },
           ]
         );
-
+        const network = router.query.network;
         addSource(
           map.current,
           'heatNetwork',
@@ -519,6 +523,9 @@ const Map = ({
               source: 'heatNetwork',
               'source-layer': 'outline',
               ...outlineLayerStyle,
+              ...(network
+                ? { filter: ['==', ['get', 'Identifiant reseau'], network] }
+                : {}),
             },
           ]
         );
@@ -645,23 +652,25 @@ const Map = ({
           setMapState('loaded');
           map.current.addImage('energy-picto', image, { sdf: true });
 
-          clickEvents.map(({ name, key }) => {
-            map.current.on('click', name, (e: any) => {
-              onMapClick(e, key);
-            });
+          if (!noPopup) {
+            clickEvents.map(({ name, key }) => {
+              map.current.on('click', name, (e: any) => {
+                onMapClick(e, key);
+              });
 
-            map.current.on('touchend', name, (e: any) => {
-              onMapClick(e, key);
-            });
+              map.current.on('touchend', name, (e: any) => {
+                onMapClick(e, key);
+              });
 
-            map.current.on('mouseenter', name, function () {
-              map.current.getCanvas().style.cursor = 'pointer';
-            });
+              map.current.on('mouseenter', name, function () {
+                map.current.getCanvas().style.cursor = 'pointer';
+              });
 
-            map.current.on('mouseleave', name, function () {
-              map.current.getCanvas().style.cursor = '';
+              map.current.on('mouseleave', name, function () {
+                map.current.getCanvas().style.cursor = '';
+              });
             });
-          });
+          }
 
           addHover(map, 'heatNetwork', 'outline');
           addHover(map, 'heatFuturNetwork', 'futurOutline');
@@ -715,14 +724,16 @@ const Map = ({
 
   useEffect(() => {
     if (map.current && center) {
-      new maplibregl.Marker({
-        color: '#4550e5',
-      })
-        .setLngLat(center)
-        .addTo(map.current);
+      if (withCenterPin) {
+        new maplibregl.Marker({
+          color: '#4550e5',
+        })
+          .setLngLat(center)
+          .addTo(map.current);
+      }
       jumpTo({ coordinates: center, zoom: 13 });
     }
-  }, [jumpTo, map, center]);
+  }, [jumpTo, map, center, withCenterPin]);
 
   useEffect(() => {
     if (!router.isReady) {
