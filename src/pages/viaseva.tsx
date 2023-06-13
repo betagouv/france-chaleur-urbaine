@@ -7,9 +7,9 @@ const ViasevaMap = () => {
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
         initialLayerDisplay={{
-          outline: false,
+          outline: true,
           futurOutline: false,
-          coldOutline: false,
+          coldOutline: true,
           zoneDP: false,
           demands: false,
           raccordements: false,
