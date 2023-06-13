@@ -7,7 +7,7 @@ const ViasevaMap = () => {
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
         initialLayerDisplay={{
-          outline: true,
+          outline: false,
           futurOutline: false,
           coldOutline: false,
           zoneDP: false,
@@ -24,7 +24,10 @@ const ViasevaMap = () => {
         withLegend
         legendTitle="Réseaux de chaleur"
         legendData={mapParam.legendData.filter(
-          (x) => typeof x !== 'string' && x.id === LegendGroupId.heatNetwork
+          (x) =>
+            typeof x !== 'string' &&
+            (x.id === LegendGroupId.heatNetwork ||
+              x.id === LegendGroupId.coldNetwork)
         )}
       />
     </div>
