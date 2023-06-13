@@ -29,6 +29,10 @@ const ViasevaMap = () => {
             (x.id === LegendGroupId.heatNetwork ||
               x.id === LegendGroupId.coldNetwork)
         )}
+        legendLogoOpt={{
+          src: '/logo-viaseva.svg',
+          alt: 'logo viaseva',
+        }}
       />
     </div>
   );

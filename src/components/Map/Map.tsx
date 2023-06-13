@@ -15,6 +15,7 @@ import {
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
+import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
 import mapParam, {
   EnergyNameOption,
   LayerNameOption,
@@ -27,6 +28,7 @@ import {
   CollapseLegend,
   Legend,
   LegendLogo,
+  LegendLogoList,
   LegendSeparator,
   MapControlWrapper,
   MapStyle,
@@ -119,6 +121,7 @@ const Map = ({
   initialLayerDisplay,
   legendData,
   center,
+  legendLogoOpt,
 }: {
   withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
@@ -127,6 +130,7 @@ const Map = ({
   withDrawing?: boolean;
   center?: [number, number];
   legendTitle?: string;
+  legendLogoOpt?: TypeLegendLogo;
 }) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -906,12 +910,19 @@ const Map = ({
               />
             </Legend>
             {!withoutLogo && (
-              <LegendLogo legendCollapsed={legendCollapsed}>
-                <img
-                  src="/logo-fcu-with-typo.jpg"
-                  alt="logo france chaleur urbaine"
-                />
-              </LegendLogo>
+              <LegendLogoList legendCollapsed={legendCollapsed}>
+                <LegendLogo>
+                  <img
+                    src="/logo-fcu-with-typo.jpg"
+                    alt="logo france chaleur urbaine"
+                  />
+                </LegendLogo>
+                {legendLogoOpt && (
+                  <LegendLogo>
+                    <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
+                  </LegendLogo>
+                )}
+              </LegendLogoList>
             )}
           </>
         )}

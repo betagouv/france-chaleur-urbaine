@@ -434,16 +434,22 @@ export const Buttons = styled.div`
   justify-content: space-evenly;
 `;
 
-export const LegendLogo = styled.div<{
+export const LegendLogoList = styled.div<{
   legendCollapsed: boolean;
 }>`
   width: 332px;
   position: absolute;
-  background-color: white;
-  ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
   bottom: 0px;
   z-index: 9999;
+  background: #ffffff;
+  ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
+`;
+
+export const LegendLogo = styled.div`
+  width: 166px;
+  background-color: white;
   img {
-    width: 50%;
+    width: 100%;
   }
+  display: inline-block;
 `;
