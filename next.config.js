@@ -27,7 +27,6 @@ const csp = {
     'https://googleads.g.doubleclick.net',
     'https://connect.facebook.net',
     'https://snap.licdn.com',
-    'https://cdn.taboola.com',
   ],
   'connect-src': [
     "'self'",
@@ -38,7 +37,6 @@ const csp = {
     'https://api-adresse.data.gouv.fr/',
     'https://stats.data.gouv.fr',
     'https://cdn.linkedin.oribi.io',
-    'https://trc.taboola.com',
     'https://wxs.ign.fr',
   ],
   'img-src': ["'self'", 'https:', 'data:'],

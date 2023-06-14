@@ -1,5 +1,6 @@
 import Map from '@components/Map/Map';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import { Alert } from '@dataesr/react-dsfr';
 import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
 import { getReadableDistance } from 'src/services/Map/distance';
@@ -130,13 +131,12 @@ const EligibilityFormContact = ({
           </>
         ) : (
           addressData.heatingType === 'individuel' && (
-            <ContactFormResultMessage eligible={false} cardMode>
-              <MarkdownWrapper
-                value={
-                  'Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble'
-                }
-              />
-            </ContactFormResultMessage>
+            <Alert
+              className="fr-mt-2w"
+              type="warning"
+              small
+              description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
+            />
           )
         )}
       </ContactFormContentWrapper>
