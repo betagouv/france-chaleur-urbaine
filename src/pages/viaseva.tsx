@@ -31,6 +31,7 @@ const ViasevaMap = () => {
         legendLogoOpt={{
           src: '/logo-viaseva.svg',
           alt: 'logo viaseva',
+          height: '61px',
         }}
       />
     </div>

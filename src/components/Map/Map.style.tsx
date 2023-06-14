@@ -443,6 +443,7 @@ export const LegendLogoList = styled.div<{
   z-index: 9999;
   background: #ffffff;
   ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
+  height:100px;
 `;
 
 export const LegendLogo = styled.div`
@@ -450,6 +451,8 @@ export const LegendLogo = styled.div`
   background-color: white;
   img {
     width: 100%;
+    vertical-align: middle;
   }
   display: inline-block;
+  height: 100%;
 `;

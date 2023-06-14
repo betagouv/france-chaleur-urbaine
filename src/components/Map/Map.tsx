@@ -919,7 +919,11 @@ const Map = ({
                 </LegendLogo>
                 {legendLogoOpt && (
                   <LegendLogo>
-                    <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
+                    <img
+                      src={legendLogoOpt.src}
+                      alt={legendLogoOpt.alt}
+                      height={legendLogoOpt.height}
+                    />
                   </LegendLogo>
                 )}
               </LegendLogoList>
