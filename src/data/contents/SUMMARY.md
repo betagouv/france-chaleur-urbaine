@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Visite d'un datacenter](README.md)
+* [Visite du réseau de froid d'Annecy](README.md)
+* [Visite d'un datacenter](visite-dun-datacenter.md)
 * [Les réseaux de froid](<README (3).md>)
 * [La chaleur fatale](<README (4).md>)
 * [Part des énergies renouvelables dans la consommation finale brute d’énergie en France](<README (3) (1).md>)
