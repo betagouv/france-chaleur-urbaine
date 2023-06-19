@@ -7,6 +7,7 @@ import readme_1 from './README (1).md';
 import readme_2_1_1 from './README (2) (1) (1).md';
 import readme_2_1 from './README (2) (1).md';
 import readme_2 from './README (2).md';
+import readme_3_1_1 from './README (3) (1) (1).md';
 import readme_3_1 from './README (3) (1).md';
 import readme_3 from './README (3).md';
 import readme_4 from './README (4).md';
@@ -23,6 +24,7 @@ import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-ur
 import page_2 from './page-2.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
+import visiteDunDatacenter from './visite-dun-datacenter.md';
 import visiteDuneChaufferieBiomasse from './visite-dune-chaufferie-biomasse.md';
 
 const importFile = (file: string) => {
@@ -31,10 +33,22 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/vignetteAnnecy.jpg',
+    title: "Visite du réseau de froid d'Annecy",
+    slug: 'visite-du-réseau-de-froid-d-annecy',
+    content: importFile(readme),
+  },
+  {
+    image: '/contents/vignetteDataCenter.jpg',
+    title: "Visite d'un datacenter",
+    slug: 'visite-d-un-datacenter',
+    content: importFile(visiteDunDatacenter),
+  },
+  {
     image: '/contents/vignettefroid.jpg',
     title: 'Les réseaux de froid',
     slug: 'les-réseaux-de-froid',
-    content: importFile(readme),
+    content: importFile(readme_3),
   },
   {
     image: '/contents/fatale2.jpg',
@@ -47,13 +61,13 @@ export const articles: Article[] = [
     title:
       'Part des énergies renouvelables dans la consommation finale brute d’énergie en France',
     slug: 'part-des-énergies-renouvelables-dans-la-consommation-finale-brute-d-énergie-en-france',
-    content: importFile(readme_3),
+    content: importFile(readme_3_1),
   },
   {
     image: '/contents/23.jpg',
     title: 'Dispositif éco-énergie tertiaire',
     slug: 'dispositif-éco-énergie-tertiaire',
-    content: importFile(readme_3_1),
+    content: importFile(readme_3_1_1),
   },
   {
     image: '/contents/20.jpg',
