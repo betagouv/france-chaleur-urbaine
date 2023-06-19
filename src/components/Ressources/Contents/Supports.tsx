@@ -61,6 +61,33 @@ const Supports = () => {
           </Link>
         </div>
       </SupportImages>
+      <Subtitle>Reportages</Subtitle>
+      <SupportImages>
+        <div>
+          <Link href="/documentation/geothermie_champigny.pdf" target="_blank">
+            <img src="/img/geothermie_champigny.jpeg" alt="" />
+            <p>Forage géothermique de Champigny-sur-Marne</p>
+          </Link>
+        </div>
+        <div>
+          <Link href="/documentation/chaufferie_surville.pdf" target="_blank">
+            <img src="/img/chaufferie_surville.jpeg" alt="" />
+            <p>Chaufferie biomasse de Surville</p>
+          </Link>
+        </div>
+        <div>
+          <Link href="/documentation/datacenter_equinix.pdf" target="_blank">
+            <img src="/img/datacenter_equinix.jpeg" alt="" />
+            <p>Datacenter Equinix à Saint-Denis</p>
+          </Link>
+        </div>
+        <div>
+          <Link href="/documentation/reseau_froid_annecy.pdf" target="_blank">
+            <img src="/img/reseau_froid_annecy.jpeg" alt="" />
+            <p>Réseau de froid d’Annecy</p>
+          </Link>
+        </div>
+      </SupportImages>
       <Subtitle>Dossier de presse</Subtitle>
       <SupportImages>
         <div className="fr-mb-4w">
