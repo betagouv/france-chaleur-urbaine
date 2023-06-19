@@ -1,8 +1,8 @@
 import { Alert } from '@dataesr/react-dsfr';
 import styled from 'styled-components';
 
-export const Container = styled.form`
-  width: 500px;
+export const Container = styled.form<{ fullWidth?: boolean }>`
+  ${({ fullWidth }) => !fullWidth && 'width: 500px;'}
   margin: 32px auto;
   padding: 32px;
   button {
