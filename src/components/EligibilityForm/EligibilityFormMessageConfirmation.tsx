@@ -22,6 +22,7 @@ const choices = [
   'Moteur de recherche',
   'Pub web',
   'Article sur un site internet',
+  'Pub télé',
   "Bureau d'étude",
   'Espace France Rénov’',
   'Bouche à oreille',
