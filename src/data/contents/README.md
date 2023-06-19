@@ -1,13 +1,27 @@
-# Les réseaux de froid
+# Visite d'un data center
 
-❄️ Les réseaux de froid, vous connaissez ?\
-Dans un contexte d’urbanisation croissante, de réchauffement climatique et de vieillissement de la population, le rafraichissement des bâtiments devient un enjeu majeur.\
+Après notre infographie sur la chaleur fatale, direction Saint-Denis (93) pour une illustration en image, avec la visite du datacenter [Equinix](https://www.linkedin.com/company/equinix/).\
 \
-☀️A l'approche de l'été, c'est le moment de mettre en avant les réseaux de froid, un système de refroidissement nettement plus performant que les climatisations individuelles et à faible impact environnemental.\
+L'accroissement continu des usages du numérique entraîne une multiplication des datacenters, fortement consommateurs d'énergie et dont l'empreinte carbone n'est pas négligeable. Pour réduire leur impact environnemental, l'une des solutions consiste à récupérer la chaleur produite par les serveurs, afin d'alimenter les réseaux de chaleur.\
 \
-En France, on compte aujourd'hui 35 réseaux de froid. Un nombre appelé à largement augmenter dans les années à venir, pour couvrir des besoins en froid croissants et répondre aux objectifs réglementaires.\
+👉 C'est ce que met en œuvre [Equinix](https://www.linkedin.com/company/equinix/) à Saint-Denis !\
 \
-👉 Pour comprendre les réseaux de froid en un coup d'œil, c'est ci-dessous !\
-Et pour localiser les réseaux de froid, France Chaleur Urbaine propose désormais leur affichage sur sa carte.
+En 2024, la chaleur de son datacenter alimentera le réseau de chaleur du [SMIREC Syndicat mixte des réseaux d'énergie calorifique](https://www.linkedin.com/in/ACoAADMxsCQB3VlRzuR-CxiTOxUtx6kW-PvURks), exploité par Plaine Commune Energie ([ENGIE](https://www.linkedin.com/company/engie/)), et permettra notamment de chauffer le centre aquatique des Jeux Olympiques. 🏊‍♂️
 
-<figure><img src=".gitbook/assets/froid.jpg" alt=""><figcaption></figcaption></figure>
+<div>
+
+<figure><img src=".gitbook/assets/saint-denis.jpg" alt=""><figcaption></figcaption></figure>
+
+ 
+
+<figure><img src=".gitbook/assets/saint-denis2 (3).jpg" alt=""><figcaption></figcaption></figure>
+
+ 
+
+<figure><img src=".gitbook/assets/saint-denis3 (3).jpg" alt=""><figcaption></figcaption></figure>
+
+ 
+
+<figure><img src=".gitbook/assets/saint-denis4 (1).jpg" alt=""><figcaption></figcaption></figure>
+
+</div>
