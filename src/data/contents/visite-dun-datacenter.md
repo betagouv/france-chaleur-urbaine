@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/vignetteDataCenter.jpg
+coverY: 0
+---
+
 # Visite d'un datacenter
 
 Après notre infographie sur la chaleur fatale, direction Saint-Denis (93) pour une illustration en image, avec la visite du datacenter [Equinix](https://www.equinix.fr/).\
