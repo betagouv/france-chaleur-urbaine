@@ -1,13 +1,24 @@
-# Les réseaux de froid
+# Visite du réseau de froid d'Annecy
 
-❄️ Les réseaux de froid, vous connaissez ?\
-Dans un contexte d’urbanisation croissante, de réchauffement climatique et de vieillissement de la population, le rafraichissement des bâtiments devient un enjeu majeur.\
-\
-☀️A l'approche de l'été, c'est le moment de mettre en avant les réseaux de froid, un système de refroidissement nettement plus performant que les climatisations individuelles et à faible impact environnemental.\
-\
-En France, on compte aujourd'hui 35 réseaux de froid. Un nombre appelé à largement augmenter dans les années à venir, pour couvrir des besoins en froid croissants et répondre aux objectifs réglementaires.\
-\
-👉 Pour comprendre les réseaux de froid en un coup d'œil, c'est ci-dessous !\
-Et pour localiser les réseaux de froid, France Chaleur Urbaine propose désormais leur affichage sur sa carte.
+Après notre infographie sur les réseaux de froid, direction Annecy (74) pour un exemple en images, avec la visite du premier réseau de chaleur et de froid alimenté par un lac en France.
 
-<figure><img src=".gitbook/assets/froid.jpg" alt=""><figcaption></figcaption></figure>
+\
+Baptisé « [Ali énergie](https://boucle-eau-tresums.idex.fr/web/p) », ce réseau innovant a été mis en service en avril 2023 par la société [IDEX](https://www.idex.fr/). En été l'eau du lac, plus fraîche que la température ambiante, permet d'assurer le rafraîchissement des bâtiments tout en évitant les nuisances des climatiseurs individuels.
+
+<div>
+
+<figure><img src=".gitbook/assets/annecy (1).jpg" alt=""><figcaption></figcaption></figure>
+
+ 
+
+<figure><img src=".gitbook/assets/annecy2 (1).jpg" alt=""><figcaption></figcaption></figure>
+
+ 
+
+<figure><img src=".gitbook/assets/annecy3.jpg" alt=""><figcaption></figcaption></figure>
+
+ 
+
+<figure><img src=".gitbook/assets/annecy4.jpg" alt=""><figcaption></figcaption></figure>
+
+</div>
