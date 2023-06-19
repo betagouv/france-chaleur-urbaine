@@ -7,11 +7,11 @@ Baptisé « [Ali énergie](https://boucle-eau-tresums.idex.fr/web/p) », ce rés
 
 <div>
 
-<figure><img src=".gitbook/assets/annecy.jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/annecy (1).jpg" alt=""><figcaption></figcaption></figure>
 
  
 
-<figure><img src=".gitbook/assets/annecy2.jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/annecy2 (1).jpg" alt=""><figcaption></figcaption></figure>
 
  
 
