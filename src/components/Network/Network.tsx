@@ -164,7 +164,8 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Fluide caloporteur - eau chaude</b>
               </div>
               <div>
-                {network['%_fluide_caloporteur_eau_chaude'].toFixed(2)} %
+                {network['%_fluide_caloporteur_eau_chaude']?.toFixed(2) || '0'}
+                 %
               </div>
             </BoxContent>
             <BoxContent>
@@ -172,14 +173,18 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Fluide caloporteur - eau surchauffée</b>
               </div>
               <div>
-                {network['%_fluide_caloporteur_eau_surchauffee'].toFixed(2)} %
+                {network['%_fluide_caloporteur_eau_surchauffee']?.toFixed(2) ||
+                  '0'}
+                 %
               </div>
             </BoxContent>
             <BoxContent>
               <div>
                 <b>Fluide caloporteur - vapeur</b>
               </div>
-              <div>{network['%_fluide_caloporteur_vapeur'].toFixed(2)} %</div>
+              <div>
+                {network['%_fluide_caloporteur_vapeur']?.toFixed(2) || '0'} %
+              </div>
             </BoxContent>
           </Box>
           <Box>
