@@ -80,7 +80,7 @@ const Network = ({ network }: { network: Network }) => {
               <div>
                 <b>Contenu CO2 ACV</b>
               </div>
-              <div>{network['contenu CO2 ACV']} g CO2/kWh</div>
+              <div>{network['contenu CO2 ACV'] * 1000} g CO2/kWh</div>
             </BoxContent>
             <BoxContent>
               <div>
