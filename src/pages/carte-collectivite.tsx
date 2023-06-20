@@ -1,18 +1,16 @@
 import Map from '@components/Map/Map';
-import { viasevaPopup } from '@components/Map/MapPopup';
 import mapParam from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 
-const ViasevaMap = () => {
+const CollectivityMap = () => {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
-        customPopup={viasevaPopup}
         initialLayerDisplay={{
           outline: true,
           futurOutline: false,
-          coldOutline: true,
-          zoneDP: false,
+          coldOutline: false,
+          zoneDP: true,
           demands: false,
           raccordements: false,
           gasUsageGroup: false,
@@ -24,20 +22,16 @@ const ViasevaMap = () => {
           energyFuelValues: [50, Number.MAX_VALUE],
         }}
         withLegend
+        legendTitle="Réseaux de chaleur"
         legendData={mapParam.legendData.filter(
           (x) =>
             typeof x !== 'string' &&
             (x.id === LegendGroupId.heatNetwork ||
-              x.id === LegendGroupId.coldNetwork)
+              x.id === LegendGroupId.zoneDP)
         )}
-        legendLogoOpt={{
-          src: '/logo-viaseva.svg',
-          alt: 'logo viaseva',
-          height: '56px',
-        }}
       />
     </div>
   );
 };
 
-export default ViasevaMap;
+export default CollectivityMap;

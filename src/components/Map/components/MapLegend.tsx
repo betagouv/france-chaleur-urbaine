@@ -12,6 +12,7 @@ import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
 function MapLegend({
   data,
   layerDisplay,
+  legendTitle,
   onToogleFeature,
   onToogleInGroup,
   onValuesChange,
@@ -19,6 +20,7 @@ function MapLegend({
   data: (string | TypeGroupLegend)[];
   hasResults?: boolean;
   layerDisplay: TypeLayerDisplay;
+  legendTitle?: string;
   onToogleFeature: (idEntry: any) => void;
   onToogleInGroup: (groupeName: string, idEntry: string) => void;
   onValuesChange?: (
@@ -32,7 +34,7 @@ function MapLegend({
     <>
       <LegendGlobalStyle />
       <LabelLegendHead fullWidth>
-        Réseaux de chaleur et de froid
+        {legendTitle || 'Réseaux de chaleur et de froid'}
       </LabelLegendHead>
       <Title className="fr-mb-1w">
         Cliquer sur un réseau pour connaître ses caractéristiques
