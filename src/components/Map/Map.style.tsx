@@ -192,7 +192,7 @@ export const outlineLayerStyle = {
   paint: {
     'line-color': [
       'case',
-      ['has', 'reseaux classes'],
+      ['boolean', ['get', 'reseaux classes']],
       themeDefHeatNetwork.classed.color,
       themeDefHeatNetwork.outline.color,
     ],
