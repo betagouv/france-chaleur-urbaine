@@ -59,4 +59,7 @@ export interface NetworkSummary {
   'Identifiant reseau': string;
   'reseaux classes': boolean;
   'contenu CO2 ACV': number;
+  nom_reseau: string;
+  livraisons_totale_MWh: number;
+  nb_pdl: number;
 }

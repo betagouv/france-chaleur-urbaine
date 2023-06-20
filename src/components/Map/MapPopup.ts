@@ -188,11 +188,14 @@ export const formatBodyPopup = ({
                 ? `${network['Taux EnR&R']}%`
                 : 'Non connu'
             }<br /> 
-            <strong>Contenu&nbsp;CO2&nbsp;ACV&nbsp;:</strong> ${
+            <strong>Contenu&nbsp;CO<sub>2</sub>&nbsp;ACV&nbsp;:</strong> ${
               network['contenu CO2 ACV']
                 ? `${Math.round(network['contenu CO2 ACV'] * 1000)} g/kWh`
                 : 'Non connu'
             }<br />
+            <a href="/reseaux/${
+              network['Identifiant reseau']
+            }">Voir plus d'information</a>
           `
               : ''
           }
@@ -215,4 +218,35 @@ export const formatBodyPopup = ({
       `}
   `;
   return bodyPopup;
+};
+
+export const viasevaPopup = ({ network }: { network?: NetworkSummary }) => {
+  if (!network) {
+    return '';
+  }
+
+  return `
+  <section>
+  ${network.nom_reseau ? `<h3>${network.nom_reseau}</h3>` : ''}
+  <strong>Taux EnR&R&nbsp;:</strong> ${
+    network['Taux EnR&R'] ? `${network['Taux EnR&R']}%` : 'Non connu'
+  }<br />  
+  <strong>Contenu&nbsp;CO<sub>2</sub>&nbsp;ACV&nbsp;:</strong> ${
+    network['contenu CO2 ACV']
+      ? `${Math.round(network['contenu CO2 ACV'] * 1000)} g/kWh`
+      : 'Non connu'
+  }<br />
+  <strong>Livraison totale de chaleur&nbsp;:</strong> ${
+    network.livraisons_totale_MWh
+      ? `${network.livraisons_totale_MWh} MWh`
+      : 'Non connu'
+  }<br />  
+  <strong>Equivalents logements&nbsp;:</strong> ${
+    network.nb_pdl ? network.nb_pdl : 'Non connu'
+  }<br />  
+  <a href="/reseaux/${
+    network['Identifiant reseau']
+  }">Voir plus d'information</a>
+  </section>
+  `;
 };

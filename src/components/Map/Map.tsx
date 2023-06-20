@@ -124,6 +124,7 @@ const Map = ({
   withCenterPin,
   noPopup,
   legendLogoOpt,
+  customPopup,
 }: {
   withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
@@ -135,6 +136,7 @@ const Map = ({
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
   noPopup?: boolean;
+  customPopup?: (args: any) => string;
 }) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -176,7 +178,8 @@ const Map = ({
 
   const router = useRouter();
   const [, , updateClickedPoint] = useMapPopup(map.current, {
-    bodyFormater: (args) => formatBodyPopup(args),
+    bodyFormater: (args) =>
+      customPopup ? customPopup(args) : formatBodyPopup(args),
     className: 'popup-map-layer',
   });
 

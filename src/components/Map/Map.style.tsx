@@ -54,6 +54,7 @@ export const MapStyle: any = createGlobalStyle<{
     .popup-map-layer {
       z-index: 111;
       font-size: 14px;
+      max-width: 300px !important;
 
       &.maplibregl-popup-anchor-left  .maplibregl-popup-tip {
         border-right-color: #4550e5;
