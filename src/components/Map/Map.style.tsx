@@ -454,5 +454,4 @@ export const LegendLogo = styled.div`
     vertical-align: middle;
   }
   display: inline-block;
-  height: 100%;
 `;
