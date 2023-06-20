@@ -54,6 +54,7 @@ export const MapStyle: any = createGlobalStyle<{
     .popup-map-layer {
       z-index: 111;
       font-size: 14px;
+      max-width: 300px !important;
 
       &.maplibregl-popup-anchor-left  .maplibregl-popup-tip {
         border-right-color: #4550e5;
@@ -134,9 +135,13 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   }
 `;
 
-export const Legend = styled.div<{ legendCollapsed: boolean }>`
+export const Legend = styled.div<{
+  legendCollapsed: boolean;
+  withoutLogo?: boolean;
+}>`
   z-index: ${mapControlZindex + 1};
   overflow: auto;
+  ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
   ${({ legendCollapsed }) =>
     legendCollapsed &&
     css`
@@ -428,4 +433,26 @@ export const buildingsLayerStyle = {
 export const Buttons = styled.div`
   display: flex;
   justify-content: space-evenly;
+`;
+
+export const LegendLogoList = styled.div<{
+  legendCollapsed: boolean;
+}>`
+  width: 332px;
+  position: absolute;
+  bottom: 0px;
+  z-index: 9999;
+  background: #ffffff;
+  ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
+  height:100px;
+`;
+
+export const LegendLogo = styled.div`
+  width: 166px;
+  background-color: white;
+  img {
+    width: 100%;
+    vertical-align: middle;
+  }
+  display: inline-block;
 `;
