@@ -1,6 +1,6 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
-import { Container } from './index.styles';
+import { Container, Image } from './index.styles';
 
 const Press = () => {
   return (
@@ -27,7 +27,7 @@ Le service public **France Chaleur Urbaine, entièrement financé par l’État,
 
 Pour nous contacter : [france-chaleur-urbaine@developpement-durable.gouv.fr](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr)`}
         />
-        <img
+        <Image
           src="/img/FCU_Infographie_Menage.jpg"
           alt="Les ménages français et le chauffage"
         />
