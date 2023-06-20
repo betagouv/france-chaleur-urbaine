@@ -195,7 +195,7 @@ export const formatBodyPopup = ({
             }<br />
             <a href="/reseaux/${
               network['Identifiant reseau']
-            }">Voir plus d'information</a>
+            }">Voir plus d'informations</a>
           `
               : ''
           }
@@ -246,7 +246,7 @@ export const viasevaPopup = ({ network }: { network?: NetworkSummary }) => {
   }<br />  
   <a href="/reseaux/${
     network['Identifiant reseau']
-  }">Voir plus d'information</a>
+  }">Voir plus d'informations</a>
   </section>
   `;
 };
