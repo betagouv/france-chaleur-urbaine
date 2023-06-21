@@ -193,9 +193,6 @@ export const formatBodyPopup = ({
                 ? `${Math.round(network['contenu CO2 ACV'] * 1000)} g/kWh`
                 : 'Non connu'
             }<br />
-            <a href="/reseaux/${
-              network['Identifiant reseau']
-            }">Voir plus d'informations</a>
           `
               : ''
           }
