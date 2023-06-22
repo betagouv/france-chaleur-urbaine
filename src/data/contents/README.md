@@ -21,4 +21,8 @@ Afin de mieux comprendre les leviers d’accélération des raccordements aux r�
 
 **→ En conclusion, afin de faire basculer la décision en faveur d’un réseau de chaleur lors d’un changement de mode de chauffage, l’information et la pédagogie sont des leviers cruciaux.** La transition écologique et énergétique doit se faire en accompagnant, en rassurant et en démontrant à chaque étape l’intérêt pour la copropriété de se raccorder. Les tarifs compétitifs offerts par les réseaux de chaleur, qui exploitent des énergies renouvelables et de récupération locales, et les aides financières disponibles pour les raccordements, peuvent répondre aux inquiétudes exprimées par les copropriétaires sur les critères économiques.
 
-Le service public [**France Chaleur Urbaine**](https://france-chaleur-urbaine.beta.gouv.fr/) a pour mission d’informer le grand public afin de faciliter les raccordements. Il se place en tiers de confiance entre les copropriétaires et les gestionnaires des réseaux et permet à chacun de déterminer **en quelques clics si un raccordement est envisageable pour son immeuble** et \*\*\*\*le cas échéant **d’être mis en relation, gratuitement et sans engagement, avec le bon interlocuteur pour concrétiser le raccordement.**
+Le service public [**France Chaleur Urbaine**](https://france-chaleur-urbaine.beta.gouv.fr/) a pour mission d’informer le grand public afin de faciliter les raccordements. Il se place en tiers de confiance entre les copropriétaires et les gestionnaires des réseaux et permet à chacun de déterminer **en quelques clics si un raccordement est envisageable pour son immeuble** et le cas échéant **d’être mis en relation, gratuitement et sans engagement, avec le bon interlocuteur pour concrétiser le raccordement.**
+
+> **CTA : Consultez l'enquête**&#x20;
+
+![](.gitbook/assets/Enquete.jpg)![](<.gitbook/assets/vignette-enquete (1).jpg>)
