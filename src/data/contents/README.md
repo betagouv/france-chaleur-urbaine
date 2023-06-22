@@ -3,13 +3,13 @@ cover: .gitbook/assets/vignette-enquete.jpg
 coverY: 0
 ---
 
-# L'enquête IFOP pour France Chaleur Urbaine
+# Une enquête IFOP pour France Chaleur Urbaine
 
 ### Un levier incontournable de la transition énergétique encore mal connu
 
 **Les réseaux de chaleur sont-ils connus des copropriétaires, principaux concernés par ce mode de chauffage adapté aux bâtiments collectifs ? Comment sont-ils perçus ? De manière plus générale, quels sont les critères qui prédominent lors du changement de chauffage en copropriété ?**
 
-**La décarbonation du secteur du bâtiment**, responsable de \*_**18% des émissions de gaz à effet de serre nationale, est l’une des priorités pour faire face à l’urgence climatique et à la crise énergétique. Le Gouvernement vient de lancer une concertation nationale**_** pour préparer et accélérer cette décarbonation. L’un des leviers identifiés est le remplacement des chaudières fossiles par des modes de chauffage moins carbonés, avec par exemple le raccordement à des réseaux de chaleur. Le Secrétariat général à la planification écologique prévoit ainsi que les réseaux de chaleur constitueront dans les années à venir “un vecteur très important du développement de la chaleur renouvelable”, avec un doublement du nombre de raccordements annuels attendu, soit jusqu’à 360 000 logements raccordés par an.**
+La **décarbonation du secteur du bâtiment**, responsable de 18% des émissions de gaz à effet de serre nationale, est l’une des **priorités** pour faire face à l’urgence climatique et à la crise énergétique. Le Gouvernement vient de lancer une **concertation nationale**\* pour préparer et accélérer cette décarbonation. L’un des leviers identifiés est le remplacement des chaudières fossiles par des modes de chauffage moins carbonés, avec par exemple le raccordement à des réseaux de chaleur. Le Secrétariat général à la planification écologique prévoit ainsi que **les réseaux de chaleur constitueront dans les années à venir “un vecteur très important du développement de la chaleur renouvelable”, avec un doublement du nombre de raccordements annuels attendu, soit jusqu’à 360 000 logements raccordés par an.**
 
 Afin de mieux comprendre les leviers d’accélération des raccordements aux réseaux de chaleur, France Chaleur Urbaine a missionné l’IFOP pour la réalisation d’une enquête, réalisée auprès d’un échantillon représentatif de la population française propriétaire d’un appartement au sein d’une commune de plus de 10 000 habitants.
 
@@ -23,6 +23,6 @@ Afin de mieux comprendre les leviers d’accélération des raccordements aux r�
 
 Le service public [**France Chaleur Urbaine**](https://france-chaleur-urbaine.beta.gouv.fr/) a pour mission d’informer le grand public afin de faciliter les raccordements. Il se place en tiers de confiance entre les copropriétaires et les gestionnaires des réseaux et permet à chacun de déterminer **en quelques clics si un raccordement est envisageable pour son immeuble** et le cas échéant **d’être mis en relation, gratuitement et sans engagement, avec le bon interlocuteur pour concrétiser le raccordement.**
 
-> **CTA : Consultez l'enquête**&#x20;
+> [**Consulter l'enquête**](https://france-chaleur-urbaine.beta.gouv.fr/documentation/enquete\_IFOP.pdf)&#x20;
 
 ![](.gitbook/assets/Enquete.jpg)![](<.gitbook/assets/vignette-enquete (1).jpg>)

@@ -1,6 +1,6 @@
 # Table of contents
 
-* [L'enquête IFOP pour France Chaleur Urbaine](README.md)
+* [Une enquête IFOP pour France Chaleur Urbaine](README.md)
 * [Visite du réseau de froid d'Annecy](<README (3).md>)
 * [Visite d'un datacenter](visite-dun-datacenter.md)
 * [Les réseaux de froid](<README (3) (1).md>)
