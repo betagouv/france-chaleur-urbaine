@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Une enquête IFOP pour France Chaleur Urbaine](README.md)
+* [Préparation de la loi de programmation sur l'énergie et le climat](README.md)
+* [Une enquête IFOP pour France Chaleur Urbaine](une-enquete-ifop-pour-france-chaleur-urbaine.md)
 * [Visite du réseau de froid d'Annecy](<README (3).md>)
 * [Visite d'un datacenter](visite-dun-datacenter.md)
 * [Les réseaux de froid](<README (3) (1).md>)
