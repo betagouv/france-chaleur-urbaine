@@ -1,24 +1,7 @@
-# Visite du réseau de froid d'Annecy
+# Préparation de la loi de programmation sur l'énergie et le climat
 
-Après notre infographie sur les réseaux de froid, direction Annecy (74) pour un exemple en images, avec la visite du premier réseau de chaleur et de froid alimenté par un lac en France.
+Quelle place pour les réseaux de chaleur dans la politique énergétique française ?\
+Le secrétariat général à la planification écologique a récemment diffusé un document de travail, établi dans le cadre de la préparation de la loi de programmation sur l'énergie et le climat attendue à l'automne.\
+Les réseaux de chaleur y sont décrits comme "un vecteur très important du développement de la chaleur renouvelable", avec des objectifs ambitieux envisagés👇
 
-\
-Baptisé « [Ali énergie](https://boucle-eau-tresums.idex.fr/web/p) », ce réseau innovant a été mis en service en avril 2023 par la société [IDEX](https://www.idex.fr/). En été l'eau du lac, plus fraîche que la température ambiante, permet d'assurer le rafraîchissement des bâtiments tout en évitant les nuisances des climatiseurs individuels.
-
-<div>
-
-<figure><img src=".gitbook/assets/annecy (1).jpg" alt=""><figcaption></figcaption></figure>
-
- 
-
-<figure><img src=".gitbook/assets/annecy2 (1).jpg" alt=""><figcaption></figcaption></figure>
-
- 
-
-<figure><img src=".gitbook/assets/annecy3.jpg" alt=""><figcaption></figcaption></figure>
-
- 
-
-<figure><img src=".gitbook/assets/annecy4.jpg" alt=""><figcaption></figcaption></figure>
-
-</div>
+![](.gitbook/assets/objectifs2030.jpg)

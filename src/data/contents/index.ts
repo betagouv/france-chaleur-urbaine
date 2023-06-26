@@ -7,6 +7,7 @@ import readme_1 from './README (1).md';
 import readme_2_1_1 from './README (2) (1) (1).md';
 import readme_2_1 from './README (2) (1).md';
 import readme_2 from './README (2).md';
+import readme_3_1_1_1 from './README (3) (1) (1) (1).md';
 import readme_3_1_1 from './README (3) (1) (1).md';
 import readme_3_1 from './README (3) (1).md';
 import readme_3 from './README (3).md';
@@ -24,6 +25,7 @@ import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-ur
 import page_2 from './page-2.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
+import uneEnqueteIfopPourFranceChaleurUrbaine from './une-enquete-ifop-pour-france-chaleur-urbaine.md';
 import visiteDunDatacenter from './visite-dun-datacenter.md';
 import visiteDuneChaufferieBiomasse from './visite-dune-chaufferie-biomasse.md';
 
@@ -33,10 +35,22 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/objectif.jpg',
+    title: "Préparation de la loi de programmation sur l'énergie et le climat",
+    slug: 'preparation-de-la-loi-de-programmation-sur-lenergie-et-le-climat',
+    content: importFile(readme),
+  },
+  {
+    image: '/contents/vignette-enquete.jpg',
+    title: 'Une enquête IFOP pour France Chaleur Urbaine',
+    slug: 'une-enquete-ifop-pour-france-chaleur-urbaine',
+    content: importFile(uneEnqueteIfopPourFranceChaleurUrbaine),
+  },
+  {
     image: '/contents/vignetteAnnecy.jpg',
     title: "Visite du réseau de froid d'Annecy",
     slug: 'visite-du-réseau-de-froid-d-annecy',
-    content: importFile(readme),
+    content: importFile(readme_3),
   },
   {
     image: '/contents/vignetteDataCenter.jpg',
@@ -48,7 +62,7 @@ export const articles: Article[] = [
     image: '/contents/vignettefroid.jpg',
     title: 'Les réseaux de froid',
     slug: 'les-réseaux-de-froid',
-    content: importFile(readme_3),
+    content: importFile(readme_3_1),
   },
   {
     image: '/contents/fatale2.jpg',
@@ -61,13 +75,13 @@ export const articles: Article[] = [
     title:
       'Part des énergies renouvelables dans la consommation finale brute d’énergie en France',
     slug: 'part-des-énergies-renouvelables-dans-la-consommation-finale-brute-d-énergie-en-france',
-    content: importFile(readme_3_1),
+    content: importFile(readme_3_1_1),
   },
   {
     image: '/contents/23.jpg',
     title: 'Dispositif éco-énergie tertiaire',
     slug: 'dispositif-éco-énergie-tertiaire',
-    content: importFile(readme_3_1_1),
+    content: importFile(readme_3_1_1_1),
   },
   {
     image: '/contents/20.jpg',
