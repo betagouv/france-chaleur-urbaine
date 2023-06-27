@@ -1,2 +1,7 @@
 // Attention: change also the next config csp
-export const iframedPaths = ['/form', '/map', '/viaseva'];
+export const iframedPaths = [
+  '/form',
+  '/map',
+  '/viaseva',
+  '/carte-collectivite',
+];

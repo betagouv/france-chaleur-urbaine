@@ -15,6 +15,7 @@ import {
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
+import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
 import mapParam, {
   EnergyNameOption,
   LayerNameOption,
@@ -26,6 +27,8 @@ import mapParam, {
 import {
   CollapseLegend,
   Legend,
+  LegendLogo,
+  LegendLogoList,
   LegendSeparator,
   MapControlWrapper,
   MapStyle,
@@ -111,21 +114,29 @@ const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
 };
 
 const Map = ({
+  withoutLogo,
   withLegend,
   withDrawing,
+  legendTitle,
   initialLayerDisplay,
   legendData,
   center,
   withCenterPin,
   noPopup,
+  legendLogoOpt,
+  customPopup,
 }: {
+  withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
   legendData?: (string | TypeGroupLegend)[];
   withLegend?: boolean;
   withDrawing?: boolean;
   center?: [number, number];
+  legendTitle?: string;
+  legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
   noPopup?: boolean;
+  customPopup?: (args: any) => string;
 }) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -167,7 +178,8 @@ const Map = ({
 
   const router = useRouter();
   const [, , updateClickedPoint] = useMapPopup(map.current, {
-    bodyFormater: (args) => formatBodyPopup(args),
+    bodyFormater: (args) =>
+      customPopup ? customPopup(args) : formatBodyPopup(args),
     className: 'popup-map-layer',
   });
 
@@ -829,7 +841,7 @@ const Map = ({
                 }
               />
             </CollapseLegend>
-            <Legend legendCollapsed={legendCollapsed}>
+            <Legend legendCollapsed={legendCollapsed} withoutLogo={withoutLogo}>
               <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               <LegendSeparator />
               {soughtAddresses.length > 0 && (
@@ -862,6 +874,7 @@ const Map = ({
                 </>
               )}
               <MapLegend
+                legendTitle={legendTitle}
                 data={legendData || mapParam.legendData}
                 onToogleFeature={toggleLayer}
                 onToogleInGroup={(groupeName: string, idEntry?: any) => {
@@ -910,6 +923,25 @@ const Map = ({
                 layerDisplay={layerDisplay}
               />
             </Legend>
+            {!withoutLogo && (
+              <LegendLogoList legendCollapsed={legendCollapsed}>
+                <LegendLogo>
+                  <img
+                    src="/logo-fcu-with-typo.jpg"
+                    alt="logo france chaleur urbaine"
+                  />
+                </LegendLogo>
+                {legendLogoOpt && (
+                  <LegendLogo>
+                    <img
+                      src={legendLogoOpt.src}
+                      alt={legendLogoOpt.alt}
+                      height={legendLogoOpt.height}
+                    />
+                  </LegendLogo>
+                )}
+              </LegendLogoList>
+            )}
           </>
         )}
         {withDrawing && (

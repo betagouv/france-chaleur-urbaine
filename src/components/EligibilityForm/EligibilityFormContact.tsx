@@ -105,6 +105,7 @@ const EligibilityFormContact = ({
             <ContactMapResult>
               <Map
                 withCenterPin
+                withoutLogo
                 center={
                   addressData.coords && [
                     addressData.coords.lon,

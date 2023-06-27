@@ -24,6 +24,7 @@ function carte() {
       <MainContainer currentMenu="/carte" fullscreen>
         <MapWrapper>
           <Map
+            withoutLogo
             withDrawing
             withLegend
             initialLayerDisplay={param.defaultLayerDisplay}

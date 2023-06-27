@@ -11,6 +11,14 @@ import {
   Title,
 } from './Network.styles';
 
+const getConso = (conso: number) => {
+  if (conso > 1000) {
+    return `${(conso / 1000).toFixed(2)} GWh`;
+  }
+
+  return `${conso.toFixed(2)} MWh`;
+};
+
 const getGraphOptions = (network: Network) => [
   ['Catégorie', 'Production'],
   ['UVE', network.prod_MWh_dechets_internes + network.prod_MWh_UIOM, '#d1570c'],
@@ -72,7 +80,7 @@ const Network = ({ network }: { network: Network }) => {
               <div>
                 <b>Contenu CO2 ACV</b>
               </div>
-              <div>{network['contenu CO2 ACV']} g CO2/kWh</div>
+              <div>{network['contenu CO2 ACV'] * 1000} g CO2/kWh</div>
             </BoxContent>
             <BoxContent>
               <div>
@@ -122,15 +130,15 @@ const Network = ({ network }: { network: Network }) => {
               <div>
                 <b>Livraisons totales de chaleur</b>
               </div>
-              <div>{network.livraisons_totale_MWh} MWh</div>
+              <div>{getConso(network.livraisons_totale_MWh)}</div>
             </BoxContent>
             <BoxContent>
               <div className="fr-ml-2w">dont résidentiel</div>
-              <div>{network.livraisons_residentiel_MWh} MWh</div>
+              <div>{getConso(network.livraisons_residentiel_MWh)}</div>
             </BoxContent>
             <BoxContent>
               <div className="fr-ml-2w">dont tertiaire</div>
-              <div>{network.livraisons_tertiaire_MWh} MWh</div>
+              <div>{getConso(network.livraisons_tertiaire_MWh)}</div>
             </BoxContent>
             <BoxContent>
               <div>
@@ -155,19 +163,28 @@ const Network = ({ network }: { network: Network }) => {
               <div>
                 <b>Fluide caloporteur - eau chaude</b>
               </div>
-              <div>{network['%_fluide_caloporteur_eau_chaude']} %</div>
+              <div>
+                {network['%_fluide_caloporteur_eau_chaude']?.toFixed(2) || '0'}
+                 %
+              </div>
             </BoxContent>
             <BoxContent>
               <div>
                 <b>Fluide caloporteur - eau surchauffée</b>
               </div>
-              <div>{network['%_fluide_caloporteur_eau_surchauffee']} %</div>
+              <div>
+                {network['%_fluide_caloporteur_eau_surchauffee']?.toFixed(2) ||
+                  '0'}
+                 %
+              </div>
             </BoxContent>
             <BoxContent>
               <div>
                 <b>Fluide caloporteur - vapeur</b>
               </div>
-              <div>{network['%_fluide_caloporteur_vapeur']} %</div>
+              <div>
+                {network['%_fluide_caloporteur_vapeur']?.toFixed(2) || '0'} %
+              </div>
             </BoxContent>
           </Box>
           <Box>
@@ -255,10 +272,17 @@ const Network = ({ network }: { network: Network }) => {
         </div>
       </div>
       <p className="fr-mt-4w fr-hint-text">
-        Sources : Annuaire Via Sèva / Arrêté du 16 mars 2023 relatif au
-        classement des réseaux de chaleur et de froid / Enquête annuelle des
-        réseaux de chaleur et de froid, édition 2022 pour l’année 2021, SNCU /
-        Données locales de l’énergie pour l’année 2021, SDES{' '}
+        Sources : Annuaire Via Sèva /{' '}
+        <a
+          href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Arrêté du 16 mars 2023 (DPE)
+        </a>{' '}
+        / Enquête annuelle des réseaux de chaleur et de froid, édition 2022 pour
+        l’année 2021, SNCU / Données locales de l’énergie pour l’année 2021,
+        SDES{' '}
       </p>
     </>
   );

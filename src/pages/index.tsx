@@ -7,6 +7,7 @@ import Simulators from '@components/Coproprietaire/Simulators';
 import UseCase from '@components/Coproprietaire/UseCase';
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import Partners from '@components/Partners/Partners';
 import { issues, understandings } from '@components/Ressources/config';
 import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
@@ -121,6 +122,9 @@ Cette [obligation](/ressources/prioritaire#contenu) s’applique dans une certai
           <Slice padding={8}>
             <h2>Nos actus</h2>
             <LastArticles />
+          </Slice>
+          <Slice>
+            <Partners />
           </Slice>
           <Slice theme="color-light" padding={8}>
             <WrappedText

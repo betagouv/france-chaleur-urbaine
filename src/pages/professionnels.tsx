@@ -5,6 +5,7 @@ import BulkEligibilitySlice from '@components/HeadSliceForm/BulkEligibilitySlice
 import IFrame from '@components/IFrame/IFrame';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
+import Partners from '@components/Partners/Partners';
 import { issues, understandings } from '@components/Ressources/config';
 import Simulator from '@components/Ressources/Contents/Simulator';
 
@@ -182,6 +183,9 @@ Depuis, l’immeuble bénéficie d’une bonne température de chauffe, d’une 
         <Slice padding={8} theme="grey">
           <h2>Nos actus</h2>
           <LastArticles />
+        </Slice>
+        <Slice>
+          <Partners />
         </Slice>
         <Slice theme="color-light" padding={8}>
           <WrappedText

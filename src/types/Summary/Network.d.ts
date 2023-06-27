@@ -16,9 +16,9 @@ export interface Network {
   longueur_reseau: number;
   nb_pdl: number;
   annee_creation: number;
-  '%_fluide_caloporteur_eau_chaude': number;
-  '%_fluide_caloporteur_eau_surchauffee': number;
-  '%_fluide_caloporteur_vapeur': number;
+  '%_fluide_caloporteur_eau_chaude'?: number;
+  '%_fluide_caloporteur_eau_surchauffee'?: number;
+  '%_fluide_caloporteur_vapeur'?: number;
   MO: string;
   adresse_mo: string;
   CP_MO: string;
@@ -59,4 +59,7 @@ export interface NetworkSummary {
   'Identifiant reseau': string;
   'reseaux classes': boolean;
   'contenu CO2 ACV': number;
+  nom_reseau: string;
+  livraisons_totale_MWh: number;
+  nb_pdl: number;
 }
