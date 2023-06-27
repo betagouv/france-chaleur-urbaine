@@ -90,41 +90,6 @@ const Network = ({ network }: { network: Network }) => {
             </BoxContent>
           </BlueBox>
           <Box>
-            <h3>Informations tarifaires</h3>
-            <BoxContent>
-              <div>
-                <b>Prix moyen de la chaleur (2021)</b>
-              </div>
-              <div>{network.PM} €/MWh</div>
-            </BoxContent>
-            <br />
-            <div>
-              <b>Prix moyen par catégorie d'abonnés (2021)</b>
-            </div>
-            <BoxContent>
-              <div className="fr-ml-2w">Logements</div>
-              <div>{network.PM_L} €/MWh</div>
-            </BoxContent>
-            <BoxContent>
-              <div className="fr-ml-2w">Tertiaire</div>
-              <div>{network.PM_T} €/MWh</div>
-            </BoxContent>
-            <br />
-            <div>
-              <b>Poids respectifs des parts fixe et variable</b>
-            </div>
-            <BoxContent>
-              <div className="fr-ml-2w">
-                % de la part variable (fonction des consommations)
-              </div>
-              <div>{network['PV%']}%</div>
-            </BoxContent>
-            <BoxContent>
-              <div className="fr-ml-2w"> % de la part fixe (abonnement)</div>
-              <div>{network['PF%']}%</div>
-            </BoxContent>
-          </Box>
-          <Box>
             <h3>Caractéristiques techniques</h3>
             <BoxContent>
               <div>
@@ -185,6 +150,41 @@ const Network = ({ network }: { network: Network }) => {
               <div>
                 {network['%_fluide_caloporteur_vapeur']?.toFixed(2) || '0'} %
               </div>
+            </BoxContent>
+          </Box>
+          <Box>
+            <h3>Informations tarifaires</h3>
+            <BoxContent>
+              <div>
+                <b>Prix moyen de la chaleur (2021)</b>
+              </div>
+              <div>{network.PM} €/MWh</div>
+            </BoxContent>
+            <br />
+            <div>
+              <b>Prix moyen par catégorie d'abonnés (2021)</b>
+            </div>
+            <BoxContent>
+              <div className="fr-ml-2w">Logements</div>
+              <div>{network.PM_L} €/MWh</div>
+            </BoxContent>
+            <BoxContent>
+              <div className="fr-ml-2w">Tertiaire</div>
+              <div>{network.PM_T} €/MWh</div>
+            </BoxContent>
+            <br />
+            <div>
+              <b>Poids respectifs des parts fixe et variable</b>
+            </div>
+            <BoxContent>
+              <div className="fr-ml-2w">
+                % de la part variable (fonction des consommations)
+              </div>
+              <div>{network['PV%']}%</div>
+            </BoxContent>
+            <BoxContent>
+              <div className="fr-ml-2w"> % de la part fixe (abonnement)</div>
+              <div>{network['PF%']}%</div>
             </BoxContent>
           </Box>
           <Box>
