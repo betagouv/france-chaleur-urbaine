@@ -20,4 +20,4 @@ Le service public [**France Chaleur Urbaine**](https://france-chaleur-urbaine.be
 
 > [**Consulter l'enquête**](https://france-chaleur-urbaine.beta.gouv.fr/documentation/enquete\_IFOP.pdf)&#x20;
 
-![](.gitbook/assets/Enquete.jpg)![](<.gitbook/assets/vignette-enquete (1).jpg>)
+![](<.gitbook/assets/vignette-enquete (1).jpg>)![](.gitbook/assets/EnqueteChiffre.jpg)
