@@ -238,7 +238,7 @@ export const viasevaPopup = ({ network }: { network?: NetworkSummary }) => {
       ? `${network.livraisons_totale_MWh} MWh`
       : 'Non connu'
   }<br />  
-  <strong>Equivalent-logements&nbsp;:</strong> ${
+  <strong>Nombre de bâtiments raccordés&nbsp;:</strong> ${
     network.nb_pdl ? network.nb_pdl : 'Non connu'
   }<br />  
   <a href="/reseaux/${
