@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 export const Container = styled.div<{
-  position: 'top' | 'right' | 'top-centered' | 'bottom';
+  position: 'top' | 'right' | 'top-centered' | 'bottom' | 'bottom-centered';
 }>`
   display: none;
   width: max-content;
@@ -24,6 +24,12 @@ export const Container = styled.div<{
         return css`
           top: 24px;
           right: 8px;
+        `;
+      case 'bottom-centered':
+        return css`
+          top: 24px;
+          left: 50%;
+          transform: translateX(-50%);
         `;
       default:
         return css`

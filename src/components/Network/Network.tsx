@@ -1,3 +1,4 @@
+import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
 import { useMemo } from 'react';
 import Chart from 'react-google-charts';
@@ -6,6 +7,7 @@ import {
   BlueBox,
   Box,
   BoxContent,
+  BoxIcon,
   Colmun,
   MapContainer,
   Title,
@@ -84,7 +86,19 @@ const Network = ({ network }: { network: Network }) => {
             </BoxContent>
             <BoxContent>
               <div>
-                <b>Rendement</b>
+                <BoxIcon>
+                  <span>
+                    <b>Rendement</b>
+                  </span>
+                  <HoverableIcon
+                    iconSize="1x"
+                    iconName="ri-information-fill"
+                    position="bottom-centered"
+                  >
+                    Rapport entre l'énergie thermique livrée aux abonnés et
+                    l'énergie thermique injectée dans le réseau.
+                  </HoverableIcon>
+                </BoxIcon>
               </div>
               <div>{network['Rend%']} %</div>
             </BoxContent>
@@ -153,7 +167,21 @@ const Network = ({ network }: { network: Network }) => {
             </BoxContent>
           </Box>
           <Box>
-            <h3>Informations tarifaires</h3>
+            <BoxIcon>
+              <span>
+                <h3>Informations tarifaires</h3>
+              </span>
+              <HoverableIcon
+                iconSize="lg"
+                iconName="ri-information-fill"
+                position="top-centered"
+              >
+                La comparaison avec le prix des autres énergies n’est pertinente
+                qu’en coût global annuel, en intégrant les coûts d’exploitation,
+                de maintenance et d’investissement, amortis sur la durée de vie
+                des installations.
+              </HoverableIcon>
+            </BoxIcon>
             <BoxContent>
               <div>
                 <b>Prix moyen de la chaleur (2021)</b>

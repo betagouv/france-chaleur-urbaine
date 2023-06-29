@@ -37,3 +37,9 @@ export const BoxContent = styled.div`
 export const MapContainer = styled.div`
   height: 655px;
 `;
+
+export const BoxIcon = styled.div`
+  span {
+    display: inline-flex;
+  }
+`;
