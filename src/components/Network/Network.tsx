@@ -91,7 +91,6 @@ const Network = ({ network }: { network: Network }) => {
                     <b>Rendement</b>
                   </span>
                   <HoverableIcon
-                    iconSize="1x"
                     iconName="ri-information-fill"
                     position="bottom-centered"
                   >

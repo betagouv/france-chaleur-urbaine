@@ -26,8 +26,8 @@ const HoverableIcon = ({
 }) => {
   return (
     <Container>
-      <Icon size={iconSize} name={iconName} />
-      <Hoverable position={position}>{children}</Hoverable>
+      <Icon size={iconSize || '1x'} name={iconName} />
+      <Hoverable position={position || 'top'}>{children}</Hoverable>
     </Container>
   );
 };
