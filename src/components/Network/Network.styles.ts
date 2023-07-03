@@ -35,7 +35,7 @@ export const BoxContent = styled.div`
   gap: 16px;
 `;
 
-export const AdressContent = styled.div`
+export const AddressContent = styled.div`
   text-align: right;
 `;
 
