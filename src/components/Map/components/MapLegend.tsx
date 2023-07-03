@@ -61,7 +61,7 @@ function MapLegend({
         if (group === 'sources') {
           return (
             <Sources key={'sources'}>
-              <Link href="/carto_sources.pdf" target="_blank">
+              <Link href="/documentation/carto_sources.pdf" target="_blank">
                 Sources
               </Link>
             </Sources>
