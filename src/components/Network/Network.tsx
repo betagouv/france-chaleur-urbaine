@@ -246,7 +246,8 @@ const Network = ({ network }: { network: Network }) => {
                     <br />
                   </>
                 )}
-                {network.CP_MO} {network.ville_mo}
+                {network.CP_MO && network.CP_MO !== '0' && network.CP_MO}{' '}
+                {network.ville_mo && network.ville_mo}
               </AddressContent>
             </BoxContent>
             <br />
@@ -267,7 +268,10 @@ const Network = ({ network }: { network: Network }) => {
                     <br />
                   </>
                 )}
-                {network.CP_gestionnaire} {network.ville_gestionnaire}
+                {network.CP_gestionnaire &&
+                  network.CP_gestionnaire !== '0' &&
+                  network.CP_gestionnaire}{' '}
+                {network.ville_gestionnaire && network.ville_gestionnaire}
               </AddressContent>
             </BoxContent>
           </Box>
