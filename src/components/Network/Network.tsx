@@ -282,7 +282,7 @@ const Network = ({ network }: { network: Network }) => {
               chartLanguage="FR-fr"
               loader={<div>Chargement du graph...</div>}
               data={graphOptions.map((mix, index) =>
-                index === 0 ? mix : [mix[0], { v: mix[1], f: `${mix[1]}` }]
+                index === 0 ? mix : [mix[0], mix[1]]
               )}
               options={{
                 colors: graphOptions
