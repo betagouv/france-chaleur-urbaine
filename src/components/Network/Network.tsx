@@ -246,6 +246,18 @@ const Network = ({ network }: { network: Network }) => {
                 {network.ville_gestionnaire}
               </div>
             </BoxContent>
+            {network.website_gestionnaire && (
+              <BoxContent>
+                <div>
+                  <b>Site Internet</b>
+                </div>
+                <div>
+                  <a href="{network.website_gestionnaire}" target="_blank">
+                    {network.website_gestionnaire}
+                  </a>
+                </div>
+              </BoxContent>
+            )}
           </Box>
         </Colmun>
         <div className="fr-col-12 fr-col-lg-6">

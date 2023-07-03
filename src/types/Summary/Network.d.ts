@@ -49,6 +49,7 @@ export interface Network {
   prod_MWh_autres_nonENR: number;
   lon: number;
   lat: number;
+  website_gestionnaire: string;
 }
 
 export interface NetworkSummary {
