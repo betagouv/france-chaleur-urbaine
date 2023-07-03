@@ -2,6 +2,7 @@ import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
 import { useMemo } from 'react';
 import Chart from 'react-google-charts';
+import { getConso } from 'src/services/Map/conso';
 import { Network } from 'src/types/Summary/Network';
 import {
   BlueBox,
@@ -12,14 +13,6 @@ import {
   MapContainer,
   Title,
 } from './Network.styles';
-
-const getConso = (conso: number) => {
-  if (conso > 1000) {
-    return `${(conso / 1000).toFixed(2)} GWh`;
-  }
-
-  return `${conso.toFixed(2)} MWh`;
-};
 
 const getGraphOptions = (network: Network) => [
   ['Catégorie', 'Production'],

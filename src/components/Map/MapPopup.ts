@@ -1,3 +1,4 @@
+import { getConso } from 'src/services/Map/conso';
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
 import { FuturNetworkSummary } from 'src/types/Summary/FuturNetwork';
@@ -235,7 +236,7 @@ export const viasevaPopup = ({ network }: { network?: NetworkSummary }) => {
   }<br />
   <strong>Livraison totale de chaleur&nbsp;:</strong> ${
     network.livraisons_totale_MWh
-      ? `${network.livraisons_totale_MWh} MWh`
+      ? getConso(network.livraisons_totale_MWh)
       : 'Non connu'
   }<br />  
   <strong>Nombre de bâtiments raccordés&nbsp;:</strong> ${
