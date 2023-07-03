@@ -182,25 +182,37 @@ const Network = ({ network }: { network: Network }) => {
                 des installations.
               </HoverableIcon>
             </BoxIcon>
-            <BoxContent>
-              <div>
-                <b>Prix moyen de la chaleur (2021)</b>
-              </div>
-              <div>{network.PM} €/MWh</div>
-            </BoxContent>
-            <br />
-            <div>
-              <b>Prix moyen par catégorie d'abonnés (2021)</b>
-            </div>
-            <BoxContent>
-              <div className="fr-ml-2w">Logements</div>
-              <div>{network.PM_L} €/MWh</div>
-            </BoxContent>
-            <BoxContent>
-              <div className="fr-ml-2w">Tertiaire</div>
-              <div>{network.PM_T} €/MWh</div>
-            </BoxContent>
-            <br />
+            {network.PM && (
+              <>
+                <BoxContent>
+                  <div>
+                    <b>Prix moyen de la chaleur (2021)</b>
+                  </div>
+                  <div>{network.PM} €/MWh</div>
+                </BoxContent>
+                <br />
+              </>
+            )}
+            {(network.PM_L || network.PM_T) && (
+              <>
+                <div>
+                  <b>Prix moyen par catégorie d'abonnés (2021)</b>
+                </div>
+                {network.PM_L && (
+                  <BoxContent>
+                    <div className="fr-ml-2w">Logements</div>
+                    <div>{network.PM_L} €/MWh</div>
+                  </BoxContent>
+                )}
+                {network.PM_T && (
+                  <BoxContent>
+                    <div className="fr-ml-2w">Tertiaire</div>
+                    <div>{network.PM_T} €/MWh</div>
+                  </BoxContent>
+                )}
+                <br />
+              </>
+            )}
             <div>
               <b>Poids respectifs des parts fixe et variable</b>
             </div>
