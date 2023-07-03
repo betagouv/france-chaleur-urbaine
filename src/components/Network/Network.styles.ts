@@ -32,6 +32,11 @@ export const Colmun = styled.div`
 export const BoxContent = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 16px;
+`;
+
+export const AdressContent = styled.div`
+  text-align: right;
 `;
 
 export const MapContainer = styled.div`

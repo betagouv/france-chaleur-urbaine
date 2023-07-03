@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import Chart from 'react-google-charts';
 import { Network } from 'src/types/Summary/Network';
 import {
+  AdressContent,
   BlueBox,
   Box,
   BoxContent,
@@ -226,9 +227,9 @@ const Network = ({ network }: { network: Network }) => {
               <div>
                 <b>Adresse</b>
               </div>
-              <div>
+              <AdressContent>
                 {network.adresse_mo} {network.CP_MO} {network.ville_mo}
-              </div>
+              </AdressContent>
             </BoxContent>
             <br />
             <BoxContent>
@@ -241,10 +242,11 @@ const Network = ({ network }: { network: Network }) => {
               <div>
                 <b>Adresse</b>
               </div>
-              <div>
-                {network.adresse_gestionnaire} {network.CP_gestionnaire}{' '}
-                {network.ville_gestionnaire}
-              </div>
+              <AdressContent>
+                {network.adresse_gestionnaire}
+                <br />
+                {network.CP_gestionnaire} {network.ville_gestionnaire}
+              </AdressContent>
             </BoxContent>
           </Box>
         </Colmun>
