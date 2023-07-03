@@ -11,7 +11,6 @@ export const Blocks = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 32px;
-  margin: 32px 0;
   justify-content: space-between;
 `;
 

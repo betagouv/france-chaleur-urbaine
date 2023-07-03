@@ -16,6 +16,7 @@ const ressources = [
   'acteurs',
   'etat',
   'supports',
+  'reseau-de-froid',
 ];
 
 module.exports = {

@@ -13,7 +13,13 @@ import Header from './Header';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
 import StickyForm from './StickyForm';
-import { growths, issues, supports, understandings } from './config';
+import {
+  coldNetworks,
+  growths,
+  issues,
+  supports,
+  understandings,
+} from './config';
 
 const getContent = (ressourceKey: string) => {
   if (ressourceKey === 'supports') {
@@ -23,7 +29,8 @@ const getContent = (ressourceKey: string) => {
   return (
     issues[ressourceKey] ||
     understandings[ressourceKey] ||
-    growths[ressourceKey]
+    growths[ressourceKey] ||
+    coldNetworks[ressourceKey]
   );
 };
 
@@ -151,6 +158,36 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                       current={ressourceKey === key}
                     >
                       {growth.title}
+                    </SideMenuLink>
+                  ))}
+                </SideMenuItem>
+                <SideMenuItem
+                  title="Les réseaux de froid, un enjeu pour l'avenir"
+                  expandedDefault
+                  current={Object.keys(coldNetworks).includes(ressourceKey)}
+                >
+                  {Object.entries(coldNetworks).map(([key, resource]) => (
+                    <SideMenuLink
+                      key={key}
+                      asLink={
+                        <Link
+                          href={`/ressources/${key}#contenu`}
+                          scroll={false}
+                          legacyBehavior
+                        >
+                          <a
+                            className="fr-sidemenu__link fr-link--md"
+                            aria-current={
+                              ressourceKey === key ? 'page' : undefined
+                            }
+                          >
+                            {resource.title}
+                          </a>
+                        </Link>
+                      }
+                      current={ressourceKey === key}
+                    >
+                      {resource.title}
                     </SideMenuLink>
                   ))}
                 </SideMenuItem>
