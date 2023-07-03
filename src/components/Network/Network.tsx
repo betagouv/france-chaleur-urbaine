@@ -258,7 +258,7 @@ const Network = ({ network }: { network: Network }) => {
               chartLanguage="FR-fr"
               loader={<div>Chargement du graph...</div>}
               data={graphOptions.map((mix, index) =>
-                index === 0 ? mix : [mix[0], { v: mix[1], f: `${mix[1]} MWh` }]
+                index === 0 ? mix : [mix[0], { v: mix[1], f: `${mix[1]}` }]
               )}
               options={{
                 colors: graphOptions
@@ -273,6 +273,15 @@ const Network = ({ network }: { network: Network }) => {
                 },
                 pieSliceText: 'none',
               }}
+              formatters={[
+                {
+                  type: 'NumberFormat',
+                  column: 1,
+                  options: {
+                    pattern: '#.## MWh',
+                  },
+                },
+              ]}
             />
           </Box>
           <MapContainer className="fr-mt-2w">
