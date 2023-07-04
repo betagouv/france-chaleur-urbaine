@@ -4,11 +4,11 @@ export const Banner = styled.div`
   position: relative;
   background-color: #e7ebfc;
   padding: 64px;
-  margin: 32px;
   gap: 16px;
   color: #4550e5;
   font-weight: 400;
   @media (min-width: 992px) {
+    margin-bottom: 128px;
     div {
       width: calc(60% - 32px);
     }
@@ -18,7 +18,6 @@ export const Banner = styled.div`
 export const BannerTitle = styled.div`
   font-size: 30px;
   line-height: 35px;
-  margin-bottom: 32px;
 `;
 
 export const BannerDescription = styled.div`
