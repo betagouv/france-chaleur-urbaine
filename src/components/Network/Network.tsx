@@ -2,6 +2,7 @@ import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
 import { useMemo } from 'react';
 import Chart from 'react-google-charts';
+import { getConso } from 'src/services/Map/conso';
 import { Network } from 'src/types/Summary/Network';
 import {
   AddressContent,
@@ -13,14 +14,6 @@ import {
   MapContainer,
   Title,
 } from './Network.styles';
-
-const getConso = (conso: number) => {
-  if (conso > 1000) {
-    return `${(conso / 1000).toFixed(2)} GWh`;
-  }
-
-  return `${conso.toFixed(2)} MWh`;
-};
 
 const getGraphOptions = (network: Network) => [
   ['Catégorie', 'Production'],
@@ -297,6 +290,22 @@ const Network = ({ network }: { network: Network }) => {
                 {network.ville_gestionnaire && network.ville_gestionnaire}
               </AddressContent>
             </BoxContent>
+            {network.website_gestionnaire && (
+              <BoxContent>
+                <div>
+                  <b>Site Internet</b>
+                </div>
+                <div>
+                  <a
+                    href="{network.website_gestionnaire}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {network.website_gestionnaire}
+                  </a>
+                </div>
+              </BoxContent>
+            )}
           </Box>
         </Colmun>
         <div className="fr-col-12 fr-col-lg-6">

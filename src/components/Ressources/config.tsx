@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import Actors from './Contents/Actors';
 import Advantages from './Contents/Advantages';
 import Bill from './Contents/Bill';
+import ColdNetwork from './Contents/ColdNetwork';
 import Feasability from './Contents/Feasability';
 import Fundings from './Contents/Fundings';
 import GreenEnergies from './Contents/GreenEnergies';
@@ -188,5 +189,14 @@ export const growths: Record<string, Document> = {
     description:
       'Plusieurs dispositifs financiers sont mis en place par l’État pour accompagner le développement des réseaux de chaleur.',
     content: <State />,
+  },
+};
+
+export const coldNetworks: Record<string, Document> = {
+  'reseau-de-froid': {
+    title: 'Découvrir les réseaux de froid',
+    description:
+      'Un réseau de froid est constitué de canalisations souterraines qui permettent d’acheminer du froid vers un ensemble de bâtiments, avec une efficacité énergétique supérieure aux systèmes individuels ou collectifs centraux habituels. Les réseaux de froid sont majoritairement utilisés pour la climatisation des bâtiments tertiaires.',
+    content: <ColdNetwork />,
   },
 };

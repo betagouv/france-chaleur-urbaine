@@ -1,6 +1,5 @@
 import { Button } from '@dataesr/react-dsfr';
 import styled, { css } from 'styled-components';
-import { mapMediumMedia } from '../Map.style';
 
 export const ZoneInfosWrapper = styled.div`
   font-size: 14px;
@@ -78,7 +77,7 @@ export const DrawButtons = styled.div`
 
   .hideable {
     display: block;
-    ${mapMediumMedia} {
+    @media (max-width: 715px) {
       display: none;
     }
   }
