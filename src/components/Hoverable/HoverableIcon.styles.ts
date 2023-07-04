@@ -6,7 +6,8 @@ export const Container = styled.div`
   right: -9px;
   top: 3px;
   & > .hover-info {
-    width: 300px;
+    width: max-content;
+    max-width: 300px;
   }
   &:hover {
     & > .hover-info {
