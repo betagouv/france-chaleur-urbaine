@@ -1,3 +1,4 @@
+import LastArticles from '@components/Articles/LastArticles';
 import Infographies from '@components/Coproprietaire/Infographies';
 import Slice from '@components/Slice';
 import ColdNetwork from './ColdNetwork';
@@ -18,6 +19,10 @@ const Ressources = () => {
       <StickyForm />
       <Slice padding={8}>
         <Infographies />
+      </Slice>
+      <Slice padding={8}>
+        <h2>Nos actus</h2>
+        <LastArticles />
       </Slice>
       <Slice padding={8} theme="grey">
         <Issues />
