@@ -252,7 +252,11 @@ const Network = ({ network }: { network: Network }) => {
                   <b>Site Internet</b>
                 </div>
                 <div>
-                  <a href="{network.website_gestionnaire}" target="_blank">
+                  <a
+                    href="{network.website_gestionnaire}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {network.website_gestionnaire}
                   </a>
                 </div>
