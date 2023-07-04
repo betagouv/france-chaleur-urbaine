@@ -1,3 +1,4 @@
+import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import { Table } from '@dataesr/react-dsfr';
 import { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
@@ -174,6 +175,13 @@ const Manager = () => {
           )}
         >
           Distance au réseau (m)
+          <HoverableIcon
+            iconName="ri-information-fill"
+            position="bottom-centered"
+            iconSize="lg"
+          >
+            Distance à vol d'oiseau
+          </HoverableIcon>
         </ColHeader>
       ),
       render: (demand) => (
@@ -214,7 +222,22 @@ const Manager = () => {
         <Comment demand={demand} updateDemand={updateDemand} />
       ),
     },
-    { name: 'Affecté à', label: 'Affecté à' },
+    {
+      name: 'Affecté à',
+      label: (
+        <>
+          Affecté à
+          <HoverableIcon
+            iconName="ri-information-fill"
+            position="bottom"
+            iconSize="lg"
+          >
+            "Non affecté" : demande éloignée du réseau non transmise aux
+            opérateurs
+          </HoverableIcon>
+        </>
+      ),
+    },
   ];
 
   return (
