@@ -173,9 +173,12 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   height: 60px;
   width: 51px;
   overflow: visible;
-  &:hover {
-    & > .hover-info {
-      display: block;
+  // ugly hack => hover create issue in mobile
+  @media (min-width: 520px) {
+    &:hover {
+      & > .hover-info {
+        display: block;
+      }
     }
   }
 `;
