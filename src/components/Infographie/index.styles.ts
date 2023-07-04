@@ -6,6 +6,7 @@ export const ImageContainer = styled.a`
   text-decoration: none !important;
   background-image: none !important;
   line-height: 0;
+  width: fit-content;
   height: fit-content;
   ::after {
     display: none !important;

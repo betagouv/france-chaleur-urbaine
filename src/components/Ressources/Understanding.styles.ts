@@ -4,7 +4,6 @@ import styled from 'styled-components';
 export const UnderstandingCards = styled.div`
   display: flex;
   flex-wrap: wrap;
-  margin: 64px 0;
   padding: 8px;
   gap: 32px;
 `;
