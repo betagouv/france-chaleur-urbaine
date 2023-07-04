@@ -3,6 +3,13 @@ import { viasevaPopup } from '@components/Map/MapPopup';
 import mapParam from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 
+const visibleId = [
+  LegendGroupId.heatNetwork,
+  LegendGroupId.coldNetwork,
+  LegendGroupId.zoneDP,
+  LegendGroupId.futurheatNetwork,
+];
+
 const ViasevaMap = () => {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
@@ -25,10 +32,7 @@ const ViasevaMap = () => {
         }}
         withLegend
         legendData={mapParam.legendData.filter(
-          (x) =>
-            typeof x !== 'string' &&
-            (x.id === LegendGroupId.heatNetwork ||
-              x.id === LegendGroupId.coldNetwork)
+          (x) => typeof x !== 'string' && visibleId.includes(x.id)
         )}
         legendLogoOpt={{
           src: '/logo-viaseva.svg',
