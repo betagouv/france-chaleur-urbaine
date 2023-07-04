@@ -224,19 +224,23 @@ const Network = ({ network }: { network: Network }) => {
                     <div>
                       <b>Poids respectifs des parts fixe et variable</b>
                     </div>
-                    <BoxContent>
-                      <div className="fr-ml-2w">
-                        % de la part variable (fonction des consommations)
-                      </div>
-                      <div>{network['PV%']}%</div>
-                    </BoxContent>
-                    <BoxContent>
-                      <div className="fr-ml-2w">
-                        {' '}
-                        % de la part fixe (abonnement)
-                      </div>
-                      <div>{network['PF%']}%</div>
-                    </BoxContent>
+                    {network['PV%'] && (
+                      <BoxContent>
+                        <div className="fr-ml-2w">
+                          % de la part variable (fonction des consommations)
+                        </div>
+                        <div>{network['PV%']}%</div>
+                      </BoxContent>
+                    )}
+                    {network['PF%'] && (
+                      <BoxContent>
+                        <div className="fr-ml-2w">
+                          {' '}
+                          % de la part fixe (abonnement)
+                        </div>
+                        <div>{network['PF%']}%</div>
+                      </BoxContent>
+                    )}
                   </>
                 )}
               </>
