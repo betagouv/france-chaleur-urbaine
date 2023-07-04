@@ -15,6 +15,12 @@ import {
   Title,
 } from './Network.styles';
 
+const getFullURL = (link: string) => {
+  return link.startsWith('http://') || link.startsWith('https://')
+    ? link
+    : `https://${link}`;
+};
+
 const getGraphOptions = (network: Network) => [
   ['Catégorie', 'Production'],
   ['UVE', network.prod_MWh_dechets_internes + network.prod_MWh_UIOM, '#d1570c'],
@@ -290,22 +296,23 @@ const Network = ({ network }: { network: Network }) => {
                 {network.ville_gestionnaire && network.ville_gestionnaire}
               </AddressContent>
             </BoxContent>
-            {network.website_gestionnaire && (
-              <BoxContent>
-                <div>
-                  <b>Site Internet</b>
-                </div>
-                <div>
-                  <a
-                    href="{network.website_gestionnaire}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {network.website_gestionnaire}
-                  </a>
-                </div>
-              </BoxContent>
-            )}
+            {network.website_gestionnaire &&
+              network.website_gestionnaire.trim() !== 'NON' && (
+                <BoxContent>
+                  <div>
+                    <b>Site Internet</b>
+                  </div>
+                  <div>
+                    <a
+                      href={getFullURL(network.website_gestionnaire)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {network.website_gestionnaire}
+                    </a>
+                  </div>
+                </BoxContent>
+              )}
           </Box>
         </Colmun>
         <div className="fr-col-12 fr-col-lg-6">
