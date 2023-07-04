@@ -182,50 +182,69 @@ const Network = ({ network }: { network: Network }) => {
                 des installations.
               </HoverableIcon>
             </BoxIcon>
-            {network.PM && (
+            {network.PM ||
+            network.PM_L ||
+            network.PM_T ||
+            network['PV%'] ||
+            network['PF%'] ? (
               <>
-                <BoxContent>
-                  <div>
-                    <b>Prix moyen de la chaleur (2021)</b>
-                  </div>
-                  <div>{network.PM} €/MWh</div>
-                </BoxContent>
-                <br />
-              </>
-            )}
-            {(network.PM_L || network.PM_T) && (
-              <>
-                <div>
-                  <b>Prix moyen par catégorie d'abonnés (2021)</b>
-                </div>
-                {network.PM_L && (
-                  <BoxContent>
-                    <div className="fr-ml-2w">Logements</div>
-                    <div>{network.PM_L} €/MWh</div>
-                  </BoxContent>
+                {network.PM && (
+                  <>
+                    <BoxContent>
+                      <div>
+                        <b>Prix moyen de la chaleur (2021)</b>
+                      </div>
+                      <div>{network.PM} €/MWh</div>
+                    </BoxContent>
+                    <br />
+                  </>
                 )}
-                {network.PM_T && (
-                  <BoxContent>
-                    <div className="fr-ml-2w">Tertiaire</div>
-                    <div>{network.PM_T} €/MWh</div>
-                  </BoxContent>
+                {(network.PM_L || network.PM_T) && (
+                  <>
+                    <div>
+                      <b>Prix moyen par catégorie d'abonnés (2021)</b>
+                    </div>
+                    {network.PM_L && (
+                      <BoxContent>
+                        <div className="fr-ml-2w">Logements</div>
+                        <div>{network.PM_L} €/MWh</div>
+                      </BoxContent>
+                    )}
+                    {network.PM_T && (
+                      <BoxContent>
+                        <div className="fr-ml-2w">Tertiaire</div>
+                        <div>{network.PM_T} €/MWh</div>
+                      </BoxContent>
+                    )}
+                    <br />
+                  </>
                 )}
-                <br />
+                {(network['PV%'] || network['PF%']) && (
+                  <>
+                    <div>
+                      <b>Poids respectifs des parts fixe et variable</b>
+                    </div>
+                    <BoxContent>
+                      <div className="fr-ml-2w">
+                        % de la part variable (fonction des consommations)
+                      </div>
+                      <div>{network['PV%']}%</div>
+                    </BoxContent>
+                    <BoxContent>
+                      <div className="fr-ml-2w">
+                        {' '}
+                        % de la part fixe (abonnement)
+                      </div>
+                      <div>{network['PF%']}%</div>
+                    </BoxContent>
+                  </>
+                )}
               </>
-            )}
-            <div>
-              <b>Poids respectifs des parts fixe et variable</b>
-            </div>
-            <BoxContent>
-              <div className="fr-ml-2w">
-                % de la part variable (fonction des consommations)
+            ) : (
+              <div>
+                Ces informations ne sont pas disponibles pour le moment.
               </div>
-              <div>{network['PV%']}%</div>
-            </BoxContent>
-            <BoxContent>
-              <div className="fr-ml-2w"> % de la part fixe (abonnement)</div>
-              <div>{network['PF%']}%</div>
-            </BoxContent>
+            )}
           </Box>
           <Box>
             <h3>Contacts</h3>
