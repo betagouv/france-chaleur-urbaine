@@ -1,14 +1,14 @@
 ---
-cover: .gitbook/assets/18.jpg
+cover: .gitbook/assets/objectif.jpg
 coverY: 0
 ---
 
-# La géothermie profonde
+# Préparation de la loi de programmation sur l'énergie et le climat
 
-🤓 Toujours dans notre démarche de faciliter la compréhension par le grand public des réseaux de chaleur, nous entamons une série explicative sur les énergies renouvelables et de récupération qui alimentent les réseaux.\
-\
-1/ La géothermie profonde, qui ne représente aujourd'hui 5.5 % du mix énergétique des réseaux de chaleur, mais dont le potentiel de développement est important : pour atteindre l'objectif fixé par la programmation pluriannuelle de l'énergie à l'horizon 2028, il faudra plus que doubler la production actuelle ! Un objectif auquel doit contribuer le plan d'action pour la géothermie publié début février par le Gouvernement.\
-\
-🔎 La géothermie, de quoi parle-t-on ? Une fiche pédagogique pour rendre accessibles à tous les informations de base ci-dessous, à partager largement !
+Quelle place pour les réseaux de chaleur dans la politique énergétique française ?
 
-<figure><img src=".gitbook/assets/geothermie.jpg" alt=""><figcaption></figcaption></figure>
+Le Secrétariat général à la planification écologique a récemment diffusé un [document de travail](https://www.gouvernement.fr/upload/media/content/0001/06/3a74943433702a0247ca9f7190177a37710a9678.pdf), établi dans le cadre de la préparation de la loi de programmation sur l'énergie et le climat attendue à l'automne.
+
+Les réseaux de chaleur y sont décrits comme "un vecteur très important du développement de la chaleur renouvelable", avec des objectifs ambitieux envisagés👇
+
+![](.gitbook/assets/objectifs2030.jpg)
