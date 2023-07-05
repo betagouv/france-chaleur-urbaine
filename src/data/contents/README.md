@@ -1,9 +1,11 @@
-# Préparation de la loi de programmation sur l'énergie et le climat
+---
+cover: .gitbook/assets/bonnenouvelle.jpg
+coverY: 0
+---
 
-Quelle place pour les réseaux de chaleur dans la politique énergétique française ?
+# Bonnes nouvelles pour les réseaux de chaleur
 
-Le Secrétariat général à la planification écologique a récemment diffusé un [document de travail](https://www.gouvernement.fr/upload/media/content/0001/06/3a74943433702a0247ca9f7190177a37710a9678.pdf), établi dans le cadre de la préparation de la loi de programmation sur l'énergie et le climat attendue à l'automne.
+💡L'enquête [GROUPE IFOP](https://www.linkedin.com/company/ifop/) récemment menée pour France Chaleur Urbaine nous éclaire sur l'opinion des [#copropriétaires](https://www.linkedin.com/feed/hashtag/?keywords=copropri%C3%A9taires\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7081951048663232513) à propos des réseaux de chaleur. Ces informations sont précieuses pour orienter notre stratégie mais aussi pour comprendre les marges de progression à un niveau plus large. Il nous semble donc important de communiquer sur les chiffres les plus manquants.\
+😃 Aujourd'hui, on commence par les bonnes nouvelles !
 
-Les réseaux de chaleur y sont décrits comme "un vecteur très important du développement de la chaleur renouvelable", avec des objectifs ambitieux envisagés👇
-
-![](.gitbook/assets/objectifs2030.jpg)
+![](.gitbook/assets/ChiffreEnquete01.jpg)
