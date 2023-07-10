@@ -430,7 +430,7 @@ const Map = ({
 
     const clickEvents = [
       { name: 'outline', key: 'network' },
-      { name: 'coldOutline', key: 'network' },
+      { name: 'coldOutline', key: 'coldNetwork' },
       { name: 'futurOutline', key: 'futurNetwork' },
       { name: 'futurZone', key: 'futurNetwork' },
       {

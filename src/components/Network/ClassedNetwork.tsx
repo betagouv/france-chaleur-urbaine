@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Container, Separator } from './ClassedNetwork.styles';
 
 const ClassedNetwork = () => {
@@ -15,7 +16,8 @@ const ClassedNetwork = () => {
       <div>
         Une obligation de raccordement s'applique
         <br />
-        pour certains bâtiments (En savoir plus)
+        pour certains bâtiments (
+        <Link href="/ressources/reseau-classe#contenu">En savoir plus</Link>)
       </div>
     </Container>
   );

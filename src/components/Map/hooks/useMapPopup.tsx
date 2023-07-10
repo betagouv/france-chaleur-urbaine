@@ -26,6 +26,7 @@ const useMapPopup = (
         demands,
         energy,
         network,
+        coldNetwork,
         raccordement,
         futurNetwork,
       }: any
@@ -49,6 +50,7 @@ const useMapPopup = (
           ...(consommation ? { consommation } : {}),
           ...(demands ? { demands } : {}),
           ...(energy ? { energy } : {}),
+          ...(coldNetwork ? { network: { ...coldNetwork, isCold: true } } : {}),
           ...(network ? { network } : {}),
           ...(raccordement ? { raccordement } : {}),
           ...(futurNetwork ? { futurNetwork } : {}),

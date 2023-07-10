@@ -64,4 +64,5 @@ export interface NetworkSummary {
   nom_reseau: string;
   livraisons_totale_MWh: number;
   nb_pdl: number;
+  isCold?: boolean;
 }
