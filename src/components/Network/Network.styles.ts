@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const Title = styled.h1`
   color: #000074;
+  margin-bottom: 0;
 `;
 
 export const BlueBox = styled.div`
