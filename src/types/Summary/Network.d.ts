@@ -50,6 +50,7 @@ export interface Network {
   lon: number;
   lat: number;
   website_gestionnaire: string;
+  'reseaux classes': boolean;
 }
 
 export interface NetworkSummary {
