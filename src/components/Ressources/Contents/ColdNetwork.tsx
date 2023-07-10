@@ -1,4 +1,5 @@
 import { Highlight } from '@dataesr/react-dsfr';
+import Link from 'next/link';
 import { List, Subtitle } from './Contents.styles';
 
 const ColdNetwork = () => {
@@ -135,7 +136,7 @@ const ColdNetwork = () => {
         raccorder ?
       </Subtitle>
       France Chaleur Urbaine intègre progressivement les tracés des réseaux de
-      froid dans sa cartographie.{' '}
+      froid dans sa <Link href="/carte">cartographie</Link>.{' '}
       <b>
         En renseignant votre adresse et en activant la couche “Réseaux de
         froid”, vous pourrez donc visualiser si un réseau de froid passe à
