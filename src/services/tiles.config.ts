@@ -130,7 +130,6 @@ export const tilesInfo: Record<string, TileInfo> = {
       'id',
       'Taux EnR&R',
       'Gestionnaire',
-      'commentaires',
       'Identifiant reseau',
       'reseaux classes',
       'contenu CO2 ACV',
