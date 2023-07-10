@@ -3,8 +3,8 @@ const faqRcuTertiaire = [
     label: 'Quelles énergies alimentent les réseaux de chaleur ?',
     body: `Les réseaux de chaleur sont alimentés en moyenne à 62 % par des énergies renouvelables et de récupération disponibles localement (ENR&R). Cette chaleur "verte" est principalement issue :
 
-- de la récupération de la chaleur issue de l’incinération de nos déchets, première source d'ENR&R dans les réseaux de chaleur ;
-- de la combustion de la biomasse (bois déchet, bois issu de l’élagage urbain d’hiver, produits forestiers issus de l’exploitation ou de l’entretien des forêts, résidus agricoles…) ;
+- de la récupération de la chaleur issue de l’incinération de nos déchets, première source d'ENR&R dans les réseaux de chaleur ;
+- de la combustion de la biomasse (bois déchet, bois issu de l’élagage urbain d’hiver, produits forestiers issus de l’exploitation ou de l’entretien des forêts, résidus agricoles…) ;
 - de la géothermie (chaleur extraite du sous-sol).
 
 Les 38 % restants correspondent majoritairement à du gaz naturel.  
@@ -20,8 +20,8 @@ Il est à noter que le mix énergétique est variable d’un réseau à l’autr
     label: 'Quels sont les acteurs d’un réseau de chaleur ?',
     body: `Dans le secteur des réseaux de chaleur, les notions d’abonnés et d’usagers ne recouvrent pas tout à fait la même chose que dans les domaines de distribution et fourniture d’électricité ou de gaz, en alimentation individuelle. Ces deux entités sont en effet bien distinctes : on retrouve d’un côté les abonnés (syndic de copropriété,…) et de l’autre les usagers (propriétaires, locataires…).
 Au niveau contractuel, les relations entre les différents acteurs sont régies par un certain nombre de contrats :
-- la collectivité travaille en régie ou délègue et contrôle la production et la distribution de la chaleur sur le réseau primaire à un exploitant, via un contrat de concession de service public ;
-- l’exploitant conclut un contrat d’abonnement (règlement de service + police d’abonnement), avec les abonnés (clients) auxquels il fournit de la chaleur ;
+- la collectivité travaille en régie ou délègue et contrôle la production et la distribution de la chaleur sur le réseau primaire à un exploitant, via un contrat de concession de service public ;
+- l’exploitant conclut un contrat d’abonnement (règlement de service + police d’abonnement), avec les abonnés (clients) auxquels il fournit de la chaleur ;
 - les abonnés re-facturent par la suite le service aux usagers, conformément au règlement de copropriété.
 `,
   },

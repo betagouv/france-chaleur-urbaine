@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import Actors from './Contents/Actors';
 import Advantages from './Contents/Advantages';
 import Bill from './Contents/Bill';
+import ClassedNetwork from './Contents/ClassedNetwork';
 import ColdNetwork from './Contents/ColdNetwork';
 import Feasability from './Contents/Feasability';
 import Fundings from './Contents/Fundings';
@@ -156,6 +157,12 @@ export const understandings: Record<string, Document> = {
       </>
     ),
     content: <Bill />,
+  },
+  'reseau-classe': {
+    title: 'Qu’est-ce qu’un réseau classé ?',
+    description:
+      'Le classement d’un réseau instaure une obligation de raccordement pour certains bâtiments, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire.',
+    content: <ClassedNetwork />,
   },
   prioritaire: {
     title:

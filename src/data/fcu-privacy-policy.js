@@ -23,10 +23,10 @@ Les données à caractère personnel traitées sont relatives à :
 - Statut dans la copropriété
 
 ### Finalités
-- Transfert de vos informations à l’opérateur de réseau de chaleur de votre quartier pour prise de contact commercial ;
-- communication par mail d’informations ponctuelles sur l’évolution du service France Chaleur Urbaine ;
-- demande ponctuelle par mail d’entretien téléphonique par l’équipe France Chaleur Urbaine en vue de connaître votre retour d’expérience et suggestions pour améliorer le service France Chaleur Urbaine ;
-- agrégation anonymisées des données en vue d’analyses statistiques ;
+- Transfert de vos informations à l’opérateur de réseau de chaleur de votre quartier pour prise de contact commercial ;
+- communication par mail d’informations ponctuelles sur l’évolution du service France Chaleur Urbaine ;
+- demande ponctuelle par mail d’entretien téléphonique par l’équipe France Chaleur Urbaine en vue de connaître votre retour d’expérience et suggestions pour améliorer le service France Chaleur Urbaine ;
+- agrégation anonymisées des données en vue d’analyses statistiques ;
 - d’enrichissement des bases de données de l’administration publique.
 
 ### Base légale du traitement de données
@@ -52,10 +52,10 @@ En cas de violation de données, seront informés les référents métier, la CN
 ### Droits des personnes concernées
 
 En vertu de l’article 13 du règlement (UE) n°2016/679 du Parlement européen et du Conseil du 27 avril 2016 relatif à la protection des personnes physiques à l’égard du traitement des données à caractère personnel et à la libre circulation de ces données, il est rappelé à chaque utilisateur dont les données sont collectées dans le cadre de l’utilisation ou de la connexion à la plateforme France Chaleur Urbaine qu’il dispose des droits suivants concernant ses données à caractère personnel :
-- Droit d’information ;
-- Droit d’accès aux données ;
-- Droit de rectification et droit d’effacement des données ;
-- Droit de limitation du traitement relatif à la personne concernée ;
+- Droit d’information ;
+- Droit d’accès aux données ;
+- Droit de rectification et droit d’effacement des données ;
+- Droit de limitation du traitement relatif à la personne concernée ;
 - Droit au retrait du consentement en matière de cookies.
 
 Vous pouvez exercer ces droits en contactant par :

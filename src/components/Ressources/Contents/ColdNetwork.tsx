@@ -20,17 +20,17 @@ const ColdNetwork = () => {
             <li>
               soit par des groupes froid à absorption, utilisant une source
               chaude (5% des réseaux seulement). Exemple : réseau de froid de la
-              Cartoucherie à Toulouse géré par Eneriance (Coriance) ;
+              Cartoucherie à Toulouse géré par Eneriance (Coriance) ;
             </li>
           </List>
         </li>
         <li>
           <b>une réserve de glace et eau glacée,</b> qui permet de limiter
-          l’usage de la centrale frigorifique pendant les heures de pointe ;
+          l’usage de la centrale frigorifique pendant les heures de pointe ;
         </li>
         <li>
           <b>un réseau de distribution,</b> qui achemine l’eau glacée entre les
-          sites de production et les bâtiments ;
+          sites de production et les bâtiments ;
         </li>
         <li>
           <b>des sous-stations d’échange</b> au pied des bâtiments, qui assurent
