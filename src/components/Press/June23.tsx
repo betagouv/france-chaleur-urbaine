@@ -2,7 +2,7 @@ import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
 import { Container } from './index.styles';
 
-const Press = () => {
+const June2023 = () => {
   return (
     <Container>
       <Slice padding={4}>
@@ -47,4 +47,4 @@ Pour nous contacter : [france-chaleur-urbaine@developpement-durable.gouv.fr](mai
   );
 };
 
-export default Press;
+export default June2023;

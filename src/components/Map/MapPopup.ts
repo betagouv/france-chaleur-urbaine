@@ -218,12 +218,15 @@ export const formatBodyPopup = ({
   return bodyPopup;
 };
 
-export const viasevaPopup = ({ network }: { network?: NetworkSummary }) => {
-  if (!network) {
-    return '';
-  }
-
-  return `
+export const viasevaPopup = ({
+  network,
+  futurNetwork,
+}: {
+  network?: NetworkSummary;
+  futurNetwork?: FuturNetworkSummary;
+}) => {
+  if (network) {
+    return `
   <section>
   ${network.nom_reseau ? `<h3>${network.nom_reseau}</h3>` : ''}
   <strong>Taux EnR&R&nbsp;:</strong> ${
@@ -241,10 +244,27 @@ export const viasevaPopup = ({ network }: { network?: NetworkSummary }) => {
   }<br />  
   <strong>Nombre de bâtiments raccordés&nbsp;:</strong> ${
     network.nb_pdl ? network.nb_pdl : 'Non connu'
-  }<br />  
-  <a href="/reseaux/${
-    network['Identifiant reseau']
-  }">Voir plus d'informations</a>
+  }<br /> 
+  ${
+    network['Identifiant reseau'] && network['Identifiant reseau'].includes('C')
+      ? `<a href="/reseaux/${network['Identifiant reseau']}">Voir plus d'informations</a>`
+      : ''
+  }
   </section>
   `;
+  }
+
+  if (futurNetwork) {
+    return `
+    <strong>Gestionnaire&nbsp;:</strong> ${
+      futurNetwork.gestionnaire ? `${futurNetwork.gestionnaire}` : 'Non connu'
+    }<br />
+    <strong>Mise en service&nbsp;:</strong> ${
+      futurNetwork.mise_en_service
+        ? `${futurNetwork.mise_en_service}`
+        : 'Non connu'
+    }<br />`;
+  }
+
+  return '';
 };

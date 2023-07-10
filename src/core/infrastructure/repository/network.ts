@@ -54,7 +54,6 @@ export const getNetwork = (id: string): Promise<Network> =>
       'prod_MWh_autres_nonENR',
       db.raw('ST_X(ST_Transform(ST_Centroid(geom), 4326)) as lon'),
       db.raw('ST_Y(ST_Transform(ST_Centroid(geom), 4326)) as lat'),
-      'nom_reseau',
       'website_gestionnaire',
       'reseaux classes'
     )
