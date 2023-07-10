@@ -56,7 +56,7 @@ const DistrictHeating = ({
               <ul>
                 <li>
                   des <b>énergies de récupération</b>, en particulier la chaleur
-                  issue de l’incinération des ordures ménagères ;
+                  issue de l’incinération des ordures ménagères ;
                 </li>
                 <li>
                   des <b>énergies renouvelables</b> : combustion de la biomasse
@@ -387,7 +387,7 @@ const DistrictHeating = ({
         <ul>
           <li>
             tout <b>bâtiment neuf</b> dont les besoins de chauffage sont
-            supérieurs à une puissance de 30 kW ;
+            supérieurs à une puissance de 30 kW ;
           </li>
           <li>
             tout <b>bâtiment renouvelant son installation de chauffage</b>{' '}
@@ -406,15 +406,15 @@ const DistrictHeating = ({
         <ul>
           <li>
             besoins de chaleur ou de froid incompatibles avec les
-            caractéristiques techniques du réseau ;
+            caractéristiques techniques du réseau ;
           </li>
           <li>
             installation qui ne peut être alimentée par le réseau dans les
-            délais nécessaires ;
+            délais nécessaires ;
           </li>
           <li>
             solution mise en œuvre alimentée par des énergies renouvelables et
-            de récupération à un taux supérieur à celui du réseau classé ;
+            de récupération à un taux supérieur à celui du réseau classé ;
           </li>
           <li>
             coût manifestement disproportionné pour le raccordement et

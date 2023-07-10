@@ -17,6 +17,7 @@ const ressources = [
   'etat',
   'supports',
   'reseau-de-froid',
+  'reseau-classe',
 ];
 
 module.exports = {
