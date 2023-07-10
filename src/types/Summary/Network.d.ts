@@ -50,6 +50,7 @@ export interface Network {
   lon: number;
   lat: number;
   website_gestionnaire: string;
+  'reseaux classes': boolean;
 }
 
 export interface NetworkSummary {
@@ -63,4 +64,5 @@ export interface NetworkSummary {
   nom_reseau: string;
   livraisons_totale_MWh: number;
   nb_pdl: number;
+  isCold?: boolean;
 }

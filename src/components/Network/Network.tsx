@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import Chart from 'react-google-charts';
 import { getConso } from 'src/services/Map/conso';
 import { Network } from 'src/types/Summary/Network';
+import ClassedNetwork from './ClassedNetwork';
 import {
   AddressContent,
   BlueBox,
@@ -68,7 +69,12 @@ const Network = ({ network }: { network: Network }) => {
       <Title>
         {network.nom_reseau} ({network['Identifiant reseau']})
       </Title>
-      <div className="fr-grid-row fr-grid-row--gutters">
+      {network['reseaux classes'] && (
+        <div className="fr-mt-1w">
+          <ClassedNetwork />
+        </div>
+      )}
+      <div className="fr-grid-row fr-grid-row--gutters fr-mt-4w">
         <Colmun className="fr-col-12 fr-col-lg-6">
           <BlueBox>
             <h3>Performances environnementales</h3>

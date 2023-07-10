@@ -218,33 +218,59 @@ export const formatBodyPopup = ({
   return bodyPopup;
 };
 
-export const viasevaPopup = ({ network }: { network?: NetworkSummary }) => {
-  if (!network) {
-    return '';
-  }
-
-  return `
+export const viasevaPopup = ({
+  network,
+  futurNetwork,
+}: {
+  network?: NetworkSummary;
+  futurNetwork?: FuturNetworkSummary;
+}) => {
+  if (network) {
+    return `
   <section>
   ${network.nom_reseau ? `<h3>${network.nom_reseau}</h3>` : ''}
-  <strong>Taux EnR&R&nbsp;:</strong> ${
-    network['Taux EnR&R'] ? `${network['Taux EnR&R']}%` : 'Non connu'
-  }<br />  
+  ${
+    network.isCold
+      ? ''
+      : `<strong>Taux EnR&R&nbsp;:</strong> ${
+          network['Taux EnR&R'] ? `${network['Taux EnR&R']}%` : 'Non connu'
+        }<br />`
+  } 
   <strong>Contenu&nbsp;CO<sub>2</sub>&nbsp;ACV&nbsp;:</strong> ${
     network['contenu CO2 ACV']
       ? `${Math.round(network['contenu CO2 ACV'] * 1000)} g/kWh`
       : 'Non connu'
   }<br />
-  <strong>Livraison totale de chaleur&nbsp;:</strong> ${
-    network.livraisons_totale_MWh
-      ? getConso(network.livraisons_totale_MWh)
-      : 'Non connu'
-  }<br />  
+  <strong>Livraison totale de ${
+    network.isCold ? 'froid' : 'chaleur'
+  }&nbsp;:</strong> ${
+      network.livraisons_totale_MWh
+        ? getConso(network.livraisons_totale_MWh)
+        : 'Non connu'
+    }<br />  
   <strong>Nombre de bâtiments raccordés&nbsp;:</strong> ${
     network.nb_pdl ? network.nb_pdl : 'Non connu'
-  }<br />  
-  <a href="/reseaux/${
-    network['Identifiant reseau']
-  }">Voir plus d'informations</a>
+  }<br /> 
+  ${
+    network['Identifiant reseau'] && !network.isCold
+      ? `<a href="/reseaux/${network['Identifiant reseau']}">Voir plus d'informations</a>`
+      : ''
+  }
   </section>
   `;
+  }
+
+  if (futurNetwork) {
+    return `
+    <strong>Gestionnaire&nbsp;:</strong> ${
+      futurNetwork.gestionnaire ? `${futurNetwork.gestionnaire}` : 'Non connu'
+    }<br />
+    <strong>Mise en service&nbsp;:</strong> ${
+      futurNetwork.mise_en_service
+        ? `${futurNetwork.mise_en_service}`
+        : 'Non connu'
+    }<br />`;
+  }
+
+  return '';
 };

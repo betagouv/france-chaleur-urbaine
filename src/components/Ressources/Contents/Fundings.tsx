@@ -391,7 +391,7 @@ const Fundings = () => {
       <List>
         <li>
           Soit réaliser au moins une action d’amélioration de la performance
-          énergétique ;
+          énergétique ;
         </li>
         <li>
           Soit atteindre un niveau de « performance énergétique globale »

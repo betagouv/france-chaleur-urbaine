@@ -1,4 +1,5 @@
 import { Highlight } from '@dataesr/react-dsfr';
+import Link from 'next/link';
 import { List, Subtitle } from './Contents.styles';
 
 const ColdNetwork = () => {
@@ -19,17 +20,17 @@ const ColdNetwork = () => {
             <li>
               soit par des groupes froid à absorption, utilisant une source
               chaude (5% des réseaux seulement). Exemple : réseau de froid de la
-              Cartoucherie à Toulouse géré par Eneriance (Coriance) ;
+              Cartoucherie à Toulouse géré par Eneriance (Coriance) ;
             </li>
           </List>
         </li>
         <li>
           <b>une réserve de glace et eau glacée,</b> qui permet de limiter
-          l’usage de la centrale frigorifique pendant les heures de pointe ;
+          l’usage de la centrale frigorifique pendant les heures de pointe ;
         </li>
         <li>
           <b>un réseau de distribution,</b> qui achemine l’eau glacée entre les
-          sites de production et les bâtiments ;
+          sites de production et les bâtiments ;
         </li>
         <li>
           <b>des sous-stations d’échange</b> au pied des bâtiments, qui assurent
@@ -135,7 +136,7 @@ const ColdNetwork = () => {
         raccorder ?
       </Subtitle>
       France Chaleur Urbaine intègre progressivement les tracés des réseaux de
-      froid dans sa cartographie.{' '}
+      froid dans sa <Link href="/carte">cartographie</Link>.{' '}
       <b>
         En renseignant votre adresse et en activant la couche “Réseaux de
         froid”, vous pourrez donc visualiser si un réseau de froid passe à

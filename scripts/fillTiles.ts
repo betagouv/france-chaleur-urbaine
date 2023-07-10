@@ -46,9 +46,7 @@ const dbTable = (
             ? `AND fid BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}
                AND ST_INTERSECTS(
                 ST_Transform(geom, 3857),
-                ST_Segmentize(ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857),${
-                (xmax - xmin) / 4
-              })
+                ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857)
               )
             `
             : ''
@@ -74,8 +72,8 @@ const tileToEnvelope = (x: number, y: number, z: number) => {
 
   const xmin = worldMercMin + tileMercSize * x;
   const xmax = worldMercMin + tileMercSize * (x + 1);
-  const ymin = worldMercMax - tileMercSize * (y + 1);
-  const ymax = worldMercMax - tileMercSize * y;
+  const ymin = worldMercMax - tileMercSize * y;
+  const ymax = worldMercMax - tileMercSize * (y + 1);
 
   return {
     xmin: xmin - 1,
@@ -112,7 +110,7 @@ const fillTiles = async (
     if (table === 'buildings' || table === 'energy') {
       const list: any[] = [];
       const { xmin, ymin } = tileToEnvelope(x13Min, y13Min, 13);
-      const { xmin: xmax, ymin: ymax } = tileToEnvelope(x13Max, y13Max, 13);
+      const { xmax, ymax } = tileToEnvelope(x13Max, y13Max, 13);
 
       console.info('Compute region');
       const regions = await db('regions')
@@ -121,9 +119,7 @@ const fillTiles = async (
           db.raw(`
         ST_Intersects(
           ST_Transform(geom, 3857),
-          ST_Segmentize(ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857),${
-            (xmax - xmin) / 4
-          })
+          ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857)
       )
       `)
         );
@@ -135,7 +131,7 @@ const fillTiles = async (
         const region = regions[r].bnb_nom;
         console.log('Region', region);
         console.time(region);
-        for (let i = 1; i <= 2692791; i += 500000) {
+        for (let i = 1; i <= 2692791; i += 250000) {
           console.info('Part', i);
           const tempGeoJSON = await tileInfo
             .extraWhere(
@@ -143,7 +139,7 @@ const fillTiles = async (
                 tileInfo.table,
                 region,
                 i,
-                i + 500000 - 1,
+                i + 250000 - 1,
                 xmin,
                 xmax,
                 ymin,
