@@ -398,17 +398,24 @@ const Network = ({ network }: { network: Network }) => {
         </div>
       </div>
       <p className="fr-mt-4w fr-hint-text">
-        Sources : Annuaire Via Sèva /{' '}
-        <a
-          href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Arrêté du 16 mars 2023 (DPE)
-        </a>{' '}
-        / Enquête annuelle des réseaux de chaleur et de froid, édition 2022 pour
-        l’année 2021, SNCU / Données locales de l’énergie pour l’année 2021,
-        SDES{' '}
+        {network.Gestionnaire &&
+        network.Gestionnaire.toLowerCase().includes('engie') ? (
+          'Sources : ENGIE Solutions / Enquête annuelle des réseaux de chaleur et de froid, édition 2022 pour l’année 2021, SNCU'
+        ) : (
+          <>
+            Sources : Annuaire Via Sèva /{' '}
+            <a
+              href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Arrêté du 16 mars 2023 (DPE)
+            </a>{' '}
+            / Enquête annuelle des réseaux de chaleur et de froid, édition 2022
+            pour l’année 2021, SNCU / Données locales de l’énergie pour l’année
+            2021, SDES
+          </>
+        )}
       </p>
     </>
   );
