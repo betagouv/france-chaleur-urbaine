@@ -1,4 +1,10 @@
-import { Card, CardHeader, CardImage, CardTitle } from '@dataesr/react-dsfr';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardImage,
+  CardTitle,
+} from '@dataesr/react-dsfr';
 import { Article as ArticleType } from 'src/types/Article';
 
 const Article = ({
@@ -9,11 +15,14 @@ const Article = ({
   isHorizontal?: boolean;
 }) => {
   return (
-    <Card isHorizontal={isHorizontal} href={`/actus/${article.slug}`}>
+    <Card isHorizontal={isHorizontal} href={`/actus/${article.slug}`} size="sm">
       <CardHeader>
         <CardImage src={article.image}></CardImage>
       </CardHeader>
       <CardTitle>{article.title}</CardTitle>
+      <CardDescription>
+        Publié le {article.publishedDate.toLocaleDateString('fr-FR')}
+      </CardDescription>
     </Card>
   );
 };
