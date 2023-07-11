@@ -401,6 +401,15 @@ const Map = ({
   }, [map, layerDisplay]);
 
   useEffect(() => {
+    if (withDrawing && draw.current === null && map.current) {
+      draw.current = new MapboxDraw({
+        displayControlsDefault: false,
+      });
+      map.current.addControl(draw.current);
+    }
+  }, [withDrawing, map, draw]);
+
+  useEffect(() => {
     if (mapState === 'loaded' || map.current) {
       return;
     }
@@ -414,13 +423,6 @@ const Map = ({
       maxZoom,
       minZoom,
     });
-
-    if (withDrawing) {
-      draw.current = new MapboxDraw({
-        displayControlsDefault: false,
-      });
-      map.current.addControl(draw.current);
-    }
     map.current.addControl(
       new maplibregl.GeolocateControl({
         fitBoundsOptions: { maxZoom: 13 },
