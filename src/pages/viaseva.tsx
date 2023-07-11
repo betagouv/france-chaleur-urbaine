@@ -18,7 +18,7 @@ const ViasevaMap = () => {
         initialLayerDisplay={{
           outline: true,
           futurOutline: false,
-          coldOutline: true,
+          coldOutline: false,
           zoneDP: false,
           demands: false,
           raccordements: false,
