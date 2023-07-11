@@ -189,6 +189,7 @@ const Manager = () => {
           demand={demand}
           field="Distance au réseau"
           updateDemand={updateDemand}
+          type="number"
         />
       ),
     },
@@ -201,6 +202,7 @@ const Manager = () => {
           demand={demand}
           field="Logement"
           updateDemand={updateDemand}
+          type="number"
         />
       ),
     },
@@ -212,6 +214,7 @@ const Manager = () => {
           demand={demand}
           field="Conso"
           updateDemand={updateDemand}
+          type="number"
         />
       ),
     },
@@ -234,8 +237,20 @@ const Manager = () => {
           >
             "Non affecté" : demande éloignée du réseau non transmise aux
             opérateurs
+            <br />
+            <br />
+            Vous pouvez ajouter ou modifier une affectation : le changement sera
+            effectif après validation manuelle par l'équipe FCU.
           </HoverableIcon>
         </>
+      ),
+      render: (demand) => (
+        <AdditionalInformation
+          demand={demand}
+          field="Affecté à"
+          updateDemand={updateDemand}
+          type="text"
+        />
       ),
     },
   ];
