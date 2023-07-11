@@ -8,10 +8,12 @@ const AdditionalInformation = ({
   demand,
   field,
   updateDemand,
+  type,
 }: {
   demand: Demand;
-  field: 'Conso' | 'Logement' | 'Distance au réseau';
+  field: 'Conso' | 'Logement' | 'Distance au réseau' | 'Affecté à';
   updateDemand: (demandId: string, demand: Partial<Demand>) => void;
+  type: 'number' | 'text';
 }) => {
   const [value, setValue] = useState('');
   useEffect(() => {
@@ -22,18 +24,19 @@ const AdditionalInformation = ({
         setValue(demand[field].toString());
       }
     }
-  }, [demand, field]);
+  }, [demand, field, value]);
 
   const onChangeHandler = useMemo(
     () =>
       debounce(
         (e) =>
           updateDemand(demand.id, {
-            [`Gestionnaire ${field}`]: parseFloat(e.target.value),
+            [`Gestionnaire ${field}`]:
+              type === 'number' ? parseFloat(e.target.value) : e.target.value,
           }),
         500
       ),
-    [demand.id, updateDemand, field]
+    [demand.id, updateDemand, field, type]
   );
 
   useEffect(() => () => onChangeHandler.cancel(), [onChangeHandler]);
@@ -41,9 +44,13 @@ const AdditionalInformation = ({
   return (
     <Container>
       <TextInput
-        type="number"
+        type={type}
         value={value}
         onChange={(e) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore: force type
+          demand[`Gestionnaire ${field}`] =
+            type === 'number' ? parseFloat(e.target.value) : e.target.value;
           setValue(e.target.value);
           onChangeHandler(e);
         }}
