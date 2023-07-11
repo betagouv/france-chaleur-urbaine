@@ -87,6 +87,13 @@ const Network = ({ network }: { network: Network }) => {
             <BoxContent>
               <div>
                 <b>Contenu CO2 ACV</b>
+                <HoverableIcon
+                  iconName="ri-information-fill"
+                  position="bottom-centered"
+                >
+                  ACV : en analyse du cycle de vie (émissions directes et
+                  indirectes).
+                </HoverableIcon>
               </div>
               <div>{network['contenu CO2 ACV'] * 1000} g CO2/kWh</div>
             </BoxContent>
