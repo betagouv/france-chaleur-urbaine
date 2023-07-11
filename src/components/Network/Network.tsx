@@ -112,7 +112,11 @@ const Network = ({ network }: { network: Network }) => {
                   </HoverableIcon>
                 </BoxIcon>
               </div>
-              <div>{network['Rend%']} %</div>
+              <div>
+                {network['Rend%'] === null
+                  ? 'Non connu'
+                  : `${network['Rend%']} %`}
+              </div>
             </BoxContent>
           </BlueBox>
           <Box>
@@ -155,7 +159,9 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Fluide caloporteur - eau chaude</b>
               </div>
               <div>
-                {network['%_fluide_caloporteur_eau_chaude']?.toFixed(2) || '0'}
+                {network['%_fluide_caloporteur_eau_chaude']
+                  ? Math.round(network['%_fluide_caloporteur_eau_chaude'])
+                  : '0'}
                  %
               </div>
             </BoxContent>
@@ -164,8 +170,9 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Fluide caloporteur - eau surchauffée</b>
               </div>
               <div>
-                {network['%_fluide_caloporteur_eau_surchauffee']?.toFixed(2) ||
-                  '0'}
+                {network['%_fluide_caloporteur_eau_surchauffee']
+                  ? Math.round(network['%_fluide_caloporteur_eau_surchauffee'])
+                  : '0'}
                  %
               </div>
             </BoxContent>
@@ -174,7 +181,10 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Fluide caloporteur - vapeur</b>
               </div>
               <div>
-                {network['%_fluide_caloporteur_vapeur']?.toFixed(2) || '0'} %
+                {network['%_fluide_caloporteur_vapeur']
+                  ? Math.round(network['%_fluide_caloporteur_vapeur'])
+                  : '0'}
+                 %
               </div>
             </BoxContent>
           </Box>
@@ -358,7 +368,7 @@ const Network = ({ network }: { network: Network }) => {
                   type: 'NumberFormat',
                   column: 1,
                   options: {
-                    pattern: '#.## MWh',
+                    pattern: '# MWh',
                   },
                 },
               ]}
