@@ -5,6 +5,7 @@ import Chart from 'react-google-charts';
 import { getConso } from 'src/services/Map/conso';
 import { Network } from 'src/types/Summary/Network';
 import ClassedNetwork from './ClassedNetwork';
+import ColdNetwork from './ColdNetwork';
 import {
   AddressContent,
   BlueBox,
@@ -63,6 +64,7 @@ const getGraphOptions = (network: Network) => [
 
 const Network = ({ network }: { network: Network }) => {
   const graphOptions = useMemo(() => getGraphOptions(network), [network]);
+  const isCold = network['Identifiant reseau'].includes('F');
 
   return (
     <>
@@ -74,16 +76,23 @@ const Network = ({ network }: { network: Network }) => {
           <ClassedNetwork />
         </div>
       )}
+      {isCold && (
+        <div className="fr-mt-1w">
+          <ColdNetwork />
+        </div>
+      )}
       <div className="fr-grid-row fr-grid-row--gutters fr-mt-4w">
         <Colmun className="fr-col-12 fr-col-lg-6">
           <BlueBox>
             <h3>Performances environnementales</h3>
-            <BoxContent>
-              <div>
-                <b>Taux d’EnR&R</b>
-              </div>
-              <div>{network['Taux EnR&R']} %</div>
-            </BoxContent>
+            {!isCold && (
+              <BoxContent>
+                <div>
+                  <b>Taux d’EnR&R</b>
+                </div>
+                <div>{network['Taux EnR&R']} %</div>
+              </BoxContent>
+            )}
             <BoxContent>
               <div>
                 <b>Contenu CO2 ACV</b>
@@ -97,33 +106,35 @@ const Network = ({ network }: { network: Network }) => {
               </div>
               <div>{network['contenu CO2 ACV'] * 1000} g CO2/kWh</div>
             </BoxContent>
-            <BoxContent>
-              <div>
-                <BoxIcon>
-                  <span>
-                    <b>Rendement</b>
-                  </span>
-                  <HoverableIcon
-                    iconName="ri-information-fill"
-                    position="bottom-centered"
-                  >
-                    Rapport entre l'énergie thermique livrée aux abonnés et
-                    l'énergie thermique injectée dans le réseau.
-                  </HoverableIcon>
-                </BoxIcon>
-              </div>
-              <div>
-                {network['Rend%'] === null
-                  ? 'Non connu'
-                  : `${network['Rend%']} %`}
-              </div>
-            </BoxContent>
+            {!isCold && (
+              <BoxContent>
+                <div>
+                  <BoxIcon>
+                    <span>
+                      <b>Rendement</b>
+                    </span>
+                    <HoverableIcon
+                      iconName="ri-information-fill"
+                      position="bottom-centered"
+                    >
+                      Rapport entre l'énergie thermique livrée aux abonnés et
+                      l'énergie thermique injectée dans le réseau.
+                    </HoverableIcon>
+                  </BoxIcon>
+                </div>
+                <div>
+                  {network['Rend%'] === null
+                    ? 'Non connu'
+                    : `${network['Rend%']} %`}
+                </div>
+              </BoxContent>
+            )}
           </BlueBox>
           <Box>
             <h3>Caractéristiques techniques</h3>
             <BoxContent>
               <div>
-                <b>Livraisons totales de chaleur</b>
+                <b>Livraisons totales de {isCold ? 'froid' : 'chaleur'}</b>
               </div>
               <div>{getConso(network.livraisons_totale_MWh)}</div>
             </BoxContent>
@@ -154,124 +165,132 @@ const Network = ({ network }: { network: Network }) => {
               </div>
               <div>{network.annee_creation}</div>
             </BoxContent>
-            <BoxContent>
-              <div>
-                <b>Fluide caloporteur - eau chaude</b>
-              </div>
-              <div>
-                {network['%_fluide_caloporteur_eau_chaude']
-                  ? Math.round(network['%_fluide_caloporteur_eau_chaude'])
-                  : '0'}
-                 %
-              </div>
-            </BoxContent>
-            <BoxContent>
-              <div>
-                <b>Fluide caloporteur - eau surchauffée</b>
-              </div>
-              <div>
-                {network['%_fluide_caloporteur_eau_surchauffee']
-                  ? Math.round(network['%_fluide_caloporteur_eau_surchauffee'])
-                  : '0'}
-                 %
-              </div>
-            </BoxContent>
-            <BoxContent>
-              <div>
-                <b>Fluide caloporteur - vapeur</b>
-              </div>
-              <div>
-                {network['%_fluide_caloporteur_vapeur']
-                  ? Math.round(network['%_fluide_caloporteur_vapeur'])
-                  : '0'}
-                 %
-              </div>
-            </BoxContent>
-          </Box>
-          <Box>
-            <BoxIcon>
-              <span>
-                <h3>Informations tarifaires</h3>
-              </span>
-              <HoverableIcon
-                iconSize="lg"
-                iconName="ri-information-fill"
-                position="top-centered"
-              >
-                La comparaison avec le prix des autres énergies n’est pertinente
-                qu’en coût global annuel, en intégrant les coûts d’exploitation,
-                de maintenance et d’investissement, amortis sur la durée de vie
-                des installations.
-              </HoverableIcon>
-            </BoxIcon>
-            {network.PM ||
-            network.PM_L ||
-            network.PM_T ||
-            network['PV%'] ||
-            network['PF%'] ? (
+            {!isCold && (
               <>
-                {network.PM && (
-                  <>
-                    <BoxContent>
-                      <div>
-                        <b>Prix moyen de la chaleur (2021)</b>
-                      </div>
-                      <div>{network.PM} €/MWh</div>
-                    </BoxContent>
-                    <br />
-                  </>
-                )}
-                {(network.PM_L || network.PM_T) && (
-                  <>
-                    <div>
-                      <b>Prix moyen par catégorie d'abonnés (2021)</b>
-                    </div>
-                    {network.PM_L && (
-                      <BoxContent>
-                        <div className="fr-ml-2w">Logements</div>
-                        <div>{network.PM_L} €/MWh</div>
-                      </BoxContent>
-                    )}
-                    {network.PM_T && (
-                      <BoxContent>
-                        <div className="fr-ml-2w">Tertiaire</div>
-                        <div>{network.PM_T} €/MWh</div>
-                      </BoxContent>
-                    )}
-                    <br />
-                  </>
-                )}
-                {(network['PV%'] || network['PF%']) && (
-                  <>
-                    <div>
-                      <b>Poids respectifs des parts fixe et variable</b>
-                    </div>
-                    {network['PV%'] && (
-                      <BoxContent>
-                        <div className="fr-ml-2w">
-                          % de la part variable (fonction des consommations)
-                        </div>
-                        <div>{network['PV%']}%</div>
-                      </BoxContent>
-                    )}
-                    {network['PF%'] && (
-                      <BoxContent>
-                        <div className="fr-ml-2w">
-                          {' '}
-                          % de la part fixe (abonnement)
-                        </div>
-                        <div>{network['PF%']}%</div>
-                      </BoxContent>
-                    )}
-                  </>
-                )}
+                <BoxContent>
+                  <div>
+                    <b>Fluide caloporteur - eau chaude</b>
+                  </div>
+                  <div>
+                    {network['%_fluide_caloporteur_eau_chaude']
+                      ? Math.round(network['%_fluide_caloporteur_eau_chaude'])
+                      : '0'}
+                     %
+                  </div>
+                </BoxContent>
+                <BoxContent>
+                  <div>
+                    <b>Fluide caloporteur - eau surchauffée</b>
+                  </div>
+                  <div>
+                    {network['%_fluide_caloporteur_eau_surchauffee']
+                      ? Math.round(
+                          network['%_fluide_caloporteur_eau_surchauffee']
+                        )
+                      : '0'}
+                     %
+                  </div>
+                </BoxContent>
+                <BoxContent>
+                  <div>
+                    <b>Fluide caloporteur - vapeur</b>
+                  </div>
+                  <div>
+                    {network['%_fluide_caloporteur_vapeur']
+                      ? Math.round(network['%_fluide_caloporteur_vapeur'])
+                      : '0'}
+                     %
+                  </div>
+                </BoxContent>
               </>
-            ) : (
-              <div>
-                Ces informations ne sont pas disponibles pour le moment.
-              </div>
             )}
           </Box>
+          {!isCold && (
+            <Box>
+              <BoxIcon>
+                <span>
+                  <h3>Informations tarifaires</h3>
+                </span>
+                <HoverableIcon
+                  iconSize="lg"
+                  iconName="ri-information-fill"
+                  position="top-centered"
+                >
+                  La comparaison avec le prix des autres énergies n’est
+                  pertinente qu’en coût global annuel, en intégrant les coûts
+                  d’exploitation, de maintenance et d’investissement, amortis
+                  sur la durée de vie des installations.
+                </HoverableIcon>
+              </BoxIcon>
+              {network.PM ||
+              network.PM_L ||
+              network.PM_T ||
+              network['PV%'] ||
+              network['PF%'] ? (
+                <>
+                  {network.PM && (
+                    <>
+                      <BoxContent>
+                        <div>
+                          <b>Prix moyen de la chaleur (2021)</b>
+                        </div>
+                        <div>{network.PM} €/MWh</div>
+                      </BoxContent>
+                      <br />
+                    </>
+                  )}
+                  {(network.PM_L || network.PM_T) && (
+                    <>
+                      <div>
+                        <b>Prix moyen par catégorie d'abonnés (2021)</b>
+                      </div>
+                      {network.PM_L && (
+                        <BoxContent>
+                          <div className="fr-ml-2w">Logements</div>
+                          <div>{network.PM_L} €/MWh</div>
+                        </BoxContent>
+                      )}
+                      {network.PM_T && (
+                        <BoxContent>
+                          <div className="fr-ml-2w">Tertiaire</div>
+                          <div>{network.PM_T} €/MWh</div>
+                        </BoxContent>
+                      )}
+                      <br />
+                    </>
+                  )}
+                  {(network['PV%'] || network['PF%']) && (
+                    <>
+                      <div>
+                        <b>Poids respectifs des parts fixe et variable</b>
+                      </div>
+                      {network['PV%'] && (
+                        <BoxContent>
+                          <div className="fr-ml-2w">
+                            % de la part variable (fonction des consommations)
+                          </div>
+                          <div>{network['PV%']}%</div>
+                        </BoxContent>
+                      )}
+                      {network['PF%'] && (
+                        <BoxContent>
+                          <div className="fr-ml-2w">
+                            {' '}
+                            % de la part fixe (abonnement)
+                          </div>
+                          <div>{network['PF%']}%</div>
+                        </BoxContent>
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
+                <div>
+                  Ces informations ne sont pas disponibles pour le moment.
+                </div>
+              )}
+            </Box>
+          )}
           <Box>
             <h3>Contacts</h3>
             <BoxContent>
@@ -339,49 +358,51 @@ const Network = ({ network }: { network: Network }) => {
           </Box>
         </Colmun>
         <div className="fr-col-12 fr-col-lg-6">
-          <Box>
-            <h3>Mix énergétique</h3>
-            <Chart
-              width="100%"
-              height="400px"
-              chartType="PieChart"
-              chartLanguage="FR-fr"
-              loader={<div>Chargement du graph...</div>}
-              data={graphOptions.map((mix, index) =>
-                index === 0 ? mix : [mix[0], mix[1]]
-              )}
-              options={{
-                colors: graphOptions
-                  .slice(1)
-                  .map((option) => option[2] as string),
-                chartArea: { width: '100%', height: '90%' },
-                pieHole: 0.6,
-                legend: {
-                  position: 'labeled',
-                  alignment: 'center',
-                  labeledValueText: 'percent',
-                },
-                pieSliceText: 'none',
-              }}
-              formatters={[
-                {
-                  type: 'NumberFormat',
-                  column: 1,
-                  options: {
-                    pattern: '# MWh',
+          {!isCold && (
+            <Box>
+              <h3>Mix énergétique</h3>
+              <Chart
+                width="100%"
+                height="400px"
+                chartType="PieChart"
+                chartLanguage="FR-fr"
+                loader={<div>Chargement du graph...</div>}
+                data={graphOptions.map((mix, index) =>
+                  index === 0 ? mix : [mix[0], mix[1]]
+                )}
+                options={{
+                  colors: graphOptions
+                    .slice(1)
+                    .map((option) => option[2] as string),
+                  chartArea: { width: '100%', height: '90%' },
+                  pieHole: 0.6,
+                  legend: {
+                    position: 'labeled',
+                    alignment: 'center',
+                    labeledValueText: 'percent',
                   },
-                },
-              ]}
-            />
-          </Box>
+                  pieSliceText: 'none',
+                }}
+                formatters={[
+                  {
+                    type: 'NumberFormat',
+                    column: 1,
+                    options: {
+                      pattern: '# MWh',
+                    },
+                  },
+                ]}
+              />
+            </Box>
+          )}
           <MapContainer className="fr-mt-2w">
             <Map
               noPopup
               center={[network.lon, network.lat]}
               initialLayerDisplay={{
-                outline: true,
+                outline: !isCold,
                 futurOutline: false,
-                coldOutline: false,
+                coldOutline: isCold,
                 zoneDP: false,
                 demands: false,
                 raccordements: false,

@@ -464,6 +464,7 @@ const Map = ({
         (e.sourceId === 'openmaptiles' || e.sourceId === 'raster-tiles') &&
         e.isSourceLoaded
       ) {
+        const network = router.query.network;
         const origin =
           process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
 
@@ -503,6 +504,9 @@ const Map = ({
               source: 'coldNetwork',
               'source-layer': 'coldOutline',
               ...coldOutlineLayerStyle,
+              ...(network
+                ? { filter: ['==', ['get', 'Identifiant reseau'], network] }
+                : {}),
             },
           ]
         );
@@ -531,7 +535,6 @@ const Map = ({
             },
           ]
         );
-        const network = router.query.network;
         addSource(
           map.current,
           'heatNetwork',

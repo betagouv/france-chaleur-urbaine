@@ -183,17 +183,26 @@ export const formatBodyPopup = ({
             <strong>Gestionnaire&nbsp;:</strong> ${
               network.Gestionnaire ? `${network.Gestionnaire}` : 'Non connu'
             }<br />
-            <strong>Taux EnR&R&nbsp;:</strong> ${
-              network['Taux EnR&R'] !== null &&
-              network['Taux EnR&R'] !== undefined
-                ? `${network['Taux EnR&R']}%`
-                : 'Non connu'
-            }<br /> 
+            ${
+              !network.isCold
+                ? `<strong>Taux EnR&R&nbsp;:</strong> ${
+                    network['Taux EnR&R'] !== null &&
+                    network['Taux EnR&R'] !== undefined
+                      ? `${network['Taux EnR&R']}%`
+                      : 'Non connu'
+                  }<br />`
+                : ''
+            }
             <strong>Contenu&nbsp;CO<sub>2</sub>&nbsp;ACV&nbsp;:</strong> ${
               network['contenu CO2 ACV']
                 ? `${Math.round(network['contenu CO2 ACV'] * 1000)} g/kWh`
                 : 'Non connu'
             }<br />
+            ${
+              network['Identifiant reseau']
+                ? `<a href="/reseaux/${network['Identifiant reseau']}">Voir plus d'informations</a>`
+                : ''
+            }          
           `
               : ''
           }
@@ -252,7 +261,7 @@ export const viasevaPopup = ({
     network.nb_pdl ? network.nb_pdl : 'Non connu'
   }<br /> 
   ${
-    network['Identifiant reseau'] && !network.isCold
+    network['Identifiant reseau']
       ? `<a href="/reseaux/${network['Identifiant reseau']}">Voir plus d'informations</a>`
       : ''
   }
@@ -262,6 +271,7 @@ export const viasevaPopup = ({
 
   if (futurNetwork) {
     return `
+    <section>
     <strong>Gestionnaire&nbsp;:</strong> ${
       futurNetwork.gestionnaire ? `${futurNetwork.gestionnaire}` : 'Non connu'
     }<br />
@@ -269,7 +279,8 @@ export const viasevaPopup = ({
       futurNetwork.mise_en_service
         ? `${futurNetwork.mise_en_service}`
         : 'Non connu'
-    }<br />`;
+    }
+    </section>`;
   }
 
   return '';

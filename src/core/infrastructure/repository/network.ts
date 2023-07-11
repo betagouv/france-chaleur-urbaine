@@ -59,3 +59,31 @@ export const getNetwork = (id: string): Promise<Network> =>
     )
     .where('Identifiant reseau', id)
     .first();
+
+export const getColdNetwork = (id: string): Promise<Network> =>
+  db('reseaux_de_froid')
+    .select(
+      'Taux EnR&R',
+      'Identifiant reseau',
+      'Gestionnaire',
+      'contenu CO2 ACV',
+      'nom_reseau',
+      'livraisons_totale_MWh',
+      'livraisons_residentiel_MWh',
+      'livraisons_tertiaire_MWh',
+      'longueur_reseau',
+      'nb_pdl',
+      'annee_creation',
+      'MO',
+      'adresse_mo',
+      'CP_MO',
+      'ville_mo',
+      'adresse_gestionnaire',
+      'CP_gestionnaire',
+      'ville_gestionnaire',
+      db.raw('ST_X(ST_Transform(ST_Centroid(geom), 4326)) as lon'),
+      db.raw('ST_Y(ST_Transform(ST_Centroid(geom), 4326)) as lat'),
+      'website_gestionnaire'
+    )
+    .where('Identifiant reseau', id)
+    .first();
