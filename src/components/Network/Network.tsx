@@ -87,6 +87,13 @@ const Network = ({ network }: { network: Network }) => {
             <BoxContent>
               <div>
                 <b>Contenu CO2 ACV</b>
+                <HoverableIcon
+                  iconName="ri-information-fill"
+                  position="bottom-centered"
+                >
+                  ACV : en analyse du cycle de vie (émissions directes et
+                  indirectes).
+                </HoverableIcon>
               </div>
               <div>{network['contenu CO2 ACV'] * 1000} g CO2/kWh</div>
             </BoxContent>
@@ -105,7 +112,11 @@ const Network = ({ network }: { network: Network }) => {
                   </HoverableIcon>
                 </BoxIcon>
               </div>
-              <div>{network['Rend%']} %</div>
+              <div>
+                {network['Rend%'] === null
+                  ? 'Non connu'
+                  : `${network['Rend%']} %`}
+              </div>
             </BoxContent>
           </BlueBox>
           <Box>
@@ -148,7 +159,9 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Fluide caloporteur - eau chaude</b>
               </div>
               <div>
-                {network['%_fluide_caloporteur_eau_chaude']?.toFixed(2) || '0'}
+                {network['%_fluide_caloporteur_eau_chaude']
+                  ? Math.round(network['%_fluide_caloporteur_eau_chaude'])
+                  : '0'}
                  %
               </div>
             </BoxContent>
@@ -157,8 +170,9 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Fluide caloporteur - eau surchauffée</b>
               </div>
               <div>
-                {network['%_fluide_caloporteur_eau_surchauffee']?.toFixed(2) ||
-                  '0'}
+                {network['%_fluide_caloporteur_eau_surchauffee']
+                  ? Math.round(network['%_fluide_caloporteur_eau_surchauffee'])
+                  : '0'}
                  %
               </div>
             </BoxContent>
@@ -167,7 +181,10 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Fluide caloporteur - vapeur</b>
               </div>
               <div>
-                {network['%_fluide_caloporteur_vapeur']?.toFixed(2) || '0'} %
+                {network['%_fluide_caloporteur_vapeur']
+                  ? Math.round(network['%_fluide_caloporteur_vapeur'])
+                  : '0'}
+                 %
               </div>
             </BoxContent>
           </Box>
@@ -351,7 +368,7 @@ const Network = ({ network }: { network: Network }) => {
                   type: 'NumberFormat',
                   column: 1,
                   options: {
-                    pattern: '#.## MWh',
+                    pattern: '# MWh',
                   },
                 },
               ]}
@@ -381,17 +398,24 @@ const Network = ({ network }: { network: Network }) => {
         </div>
       </div>
       <p className="fr-mt-4w fr-hint-text">
-        Sources : Annuaire Via Sèva /{' '}
-        <a
-          href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Arrêté du 16 mars 2023 (DPE)
-        </a>{' '}
-        / Enquête annuelle des réseaux de chaleur et de froid, édition 2022 pour
-        l’année 2021, SNCU / Données locales de l’énergie pour l’année 2021,
-        SDES{' '}
+        {network.Gestionnaire &&
+        network.Gestionnaire.toLowerCase().includes('engie') ? (
+          'Sources : ENGIE Solutions / Enquête annuelle des réseaux de chaleur et de froid, édition 2022 pour l’année 2021, SNCU'
+        ) : (
+          <>
+            Sources : Annuaire Via Sèva /{' '}
+            <a
+              href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Arrêté du 16 mars 2023 (DPE)
+            </a>{' '}
+            / Enquête annuelle des réseaux de chaleur et de froid, édition 2022
+            pour l’année 2021, SNCU / Données locales de l’énergie pour l’année
+            2021, SDES
+          </>
+        )}
       </p>
     </>
   );

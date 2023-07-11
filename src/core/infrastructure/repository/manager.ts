@@ -143,7 +143,7 @@ const getDemand = async (
   user: User,
   demandId: string
 ): Promise<Demand | null> => {
-  if (!user || user.role === USER_ROLE.ADMIN) {
+  if (!user || user.role !== USER_ROLE.ADMIN) {
     return null;
   }
 
