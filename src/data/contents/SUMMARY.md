@@ -1,7 +1,8 @@
 # Table of contents
 
-* [Les chiffres de l'enquête IFOP 1](README.md)
-* [Préparation de la loi de programmation sur l'énergie et le climat](<README (1).md>)
+* [Les chiffres de l'enquête IFOP 2](README.md)
+* [Les chiffres de l'enquête IFOP 1](<README (1).md>)
+* [Préparation de la loi de programmation sur l'énergie et le climat](<README (1) (2).md>)
 * [Une enquête IFOP pour France Chaleur Urbaine](une-enquete-ifop-pour-france-chaleur-urbaine.md)
 * [Visite du réseau de froid d'Annecy](<README (3).md>)
 * [Visite d'un datacenter](visite-dun-datacenter.md)
@@ -15,7 +16,7 @@
 * [La géothermie profonde](<README (1) (1).md>)
 * [Les réseaux de chaleur : des énergies vertes](les-reseaux-de-chaleur-des-energies-vertes.md)
 * [Les ménages français et le chauffage](<README (2) (1) (1).md>)
-* [La décarbonation des réseaux de chaleur est en marche !](<README (1) (2).md>)
+* [La décarbonation des réseaux de chaleur est en marche !](<README (1) (2) (1).md>)
 * [L'appel à projets 1 ville 1 réseau de l'ADEME est relancé](lappel-a-projets-1-ville-1-reseau-de-lademe-est-relance.md)
 * [1600 réseaux à créer ou étendre](1600-reseaux-a-creer-ou-etendre.md)
 * [6,63 millions d'allers-retours Paris New-York évités](<README (1) (1) (1).md>)
