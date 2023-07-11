@@ -24,6 +24,7 @@ export const mapMediumMedia = '@media (max-width: 1250px) ';
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
   drawing: boolean;
+  withProMode: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
       position: relative;
@@ -35,9 +36,11 @@ export const MapStyle: any = createGlobalStyle<{
     .map {
       position: absolute;
       left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : '333px')};
+      ${({ withProMode }) => withProMode && 'top: 41px;'}
       width: ${({ legendCollapsed }) =>
         legendCollapsed ? '100%' : 'calc(100% - 333px)'};
-      height: 100%;
+      height: ${({ withProMode }) =>
+        withProMode ? 'calc(100% - 41px)' : '100%'};
       ${mapMediumMedia} {
         left: 0;
         width: 100%;
@@ -458,4 +461,32 @@ export const LegendLogo = styled.div`
     vertical-align: middle;
   }
   display: inline-block;
+`;
+
+export const ProMode = styled.div<{ legendCollapsed: boolean }>`
+  background-color: white;
+  width: ${({ legendCollapsed }) =>
+    legendCollapsed ? '100%' : 'calc(100% - 333px)'};
+  height: fit-content;
+  border-bottom: solid 1px #dddddd;
+
+  .fr-toggle {
+    width: fit-content;
+    padding: 8px 16px;
+  }
+
+  .fr-toggle__label {
+    color: var(--bf500);
+    font-weight: bold;
+
+    &::before {
+      margin-top: 0;
+      content: '' !important;
+    }
+
+    &::after {
+      top: 8px;
+      right: 32px !important;
+    }
+  }
 `;

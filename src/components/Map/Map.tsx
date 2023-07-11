@@ -1,12 +1,19 @@
 import Hoverable from '@components/Hoverable';
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon, Toggle } from '@dataesr/react-dsfr';
 import { useContactFormFCU, usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useServices } from 'src/services';
 import {
   AddressDetail,
@@ -32,6 +39,7 @@ import {
   LegendSeparator,
   MapControlWrapper,
   MapStyle,
+  ProMode,
   buildingsLayerStyle,
   coldOutlineLayerStyle,
   demandsLayerStyle,
@@ -125,6 +133,7 @@ const Map = ({
   noPopup,
   legendLogoOpt,
   customPopup,
+  setProMode,
 }: {
   withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
@@ -137,6 +146,7 @@ const Map = ({
   withCenterPin?: boolean;
   noPopup?: boolean;
   customPopup?: (args: any) => string;
+  setProMode?: Dispatch<SetStateAction<boolean>>;
 }) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -821,6 +831,7 @@ const Map = ({
       <MapStyle
         legendCollapsed={!withLegend || legendCollapsed}
         drawing={drawing}
+        withProMode={!!setProMode}
       />
       <div className="map-wrap">
         {withLegend && (
@@ -953,7 +964,23 @@ const Map = ({
             />
           </MapControlWrapper>
         )}
-        <div ref={mapContainer} className="map" />
+        {setProMode && (
+          <ProMode legendCollapsed={!withLegend || legendCollapsed}>
+            <Toggle
+              label="Mode professionnel"
+              hasLabelLeft
+              onChange={(e) => {
+                setLayerDisplay(
+                  e.target.checked
+                    ? mapParam.defaultLayerDisplay
+                    : initialLayerDisplay
+                );
+                setProMode(e.target.checked);
+              }}
+            />
+          </ProMode>
+        )}
+        <div ref={mapContainer} className="map"></div>
       </div>
     </>
   );

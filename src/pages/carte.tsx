@@ -4,7 +4,9 @@ import MainContainer, {
   tabHeaderHeight,
 } from '@components/shared/layout';
 import Head from 'next/head';
+import { useState } from 'react';
 import param from 'src/services/Map/param';
+import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 import styled from 'styled-components';
 
 const MapWrapper = styled.div`
@@ -15,7 +17,15 @@ const MapWrapper = styled.div`
   }
 `;
 
-function carte() {
+const defaultLegendIds = [
+  LegendGroupId.heatNetwork,
+  LegendGroupId.coldNetwork,
+  LegendGroupId.zoneDP,
+  LegendGroupId.futurheatNetwork,
+];
+
+const Carte = () => {
+  const [proMode, setProMode] = useState(false);
   return (
     <>
       <Head>
@@ -25,14 +35,37 @@ function carte() {
         <MapWrapper>
           <Map
             withoutLogo
-            withDrawing
+            withDrawing={proMode}
             withLegend
-            initialLayerDisplay={param.defaultLayerDisplay}
+            initialLayerDisplay={{
+              outline: true,
+              futurOutline: false,
+              coldOutline: true,
+              zoneDP: false,
+              demands: false,
+              raccordements: false,
+              gasUsageGroup: false,
+              buildings: false,
+              gasUsage: [],
+              energy: [],
+              gasUsageValues: [1000, Number.MAX_VALUE],
+              energyGasValues: [50, Number.MAX_VALUE],
+              energyFuelValues: [50, Number.MAX_VALUE],
+            }}
+            setProMode={setProMode}
+            legendData={
+              proMode
+                ? undefined
+                : param.legendData.filter(
+                    (x) =>
+                      typeof x !== 'string' && defaultLegendIds.includes(x.id)
+                  )
+            }
           />
         </MapWrapper>
       </MainContainer>
     </>
   );
-}
+};
 
-export default carte;
+export default Carte;
