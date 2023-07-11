@@ -183,7 +183,7 @@ export const sendRelanceMail = async (
 ): Promise<void> => {
   const html = await ejs.renderFile('./src/services/email/views/relance.ejs', {
     firstName: demand.Prénom,
-    date: new Date(demand['Date demandes']).toLocaleDateString(undefined, {
+    date: new Date(demand['Date demandes']).toLocaleDateString('fr-FR', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
