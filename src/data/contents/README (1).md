@@ -1,14 +1,13 @@
 ---
-cover: .gitbook/assets/objectif.jpg
+cover: .gitbook/assets/bonnenouvelle.jpg
 coverY: 0
 ---
 
-# Préparation de la loi de programmation sur l'énergie et le climat
+# Les chiffres de l'enquête IFOP 1
 
-Quelle place pour les réseaux de chaleur dans la politique énergétique française ?
+💡L'[enquête IFOP](https://france-chaleur-urbaine.beta.gouv.fr/documentation/enquete\_IFOP.pdf) récemment menée pour France Chaleur Urbaine nous éclaire sur l'opinion des copropriétaires à propos des réseaux de chaleur. Ces informations sont précieuses pour orienter notre stratégie mais aussi pour comprendre les marges de progression à un niveau plus large. Il nous semble donc important de communiquer sur les chiffres les plus manquants.
 
-Le Secrétariat général à la planification écologique a récemment diffusé un [document de travail](https://www.gouvernement.fr/upload/media/content/0001/06/3a74943433702a0247ca9f7190177a37710a9678.pdf), établi dans le cadre de la préparation de la loi de programmation sur l'énergie et le climat attendue à l'automne.
+\
+😃 Commençons par les bonnes nouvelles !
 
-Les réseaux de chaleur y sont décrits comme "un vecteur très important du développement de la chaleur renouvelable", avec des objectifs ambitieux envisagés👇
-
-![](.gitbook/assets/objectifs2030.jpg)
+![](.gitbook/assets/ChiffreEnquete01.jpg)

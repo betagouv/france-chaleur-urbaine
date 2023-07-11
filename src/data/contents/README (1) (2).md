@@ -1,14 +1,14 @@
 ---
-cover: .gitbook/assets/15.jpg
+cover: .gitbook/assets/objectif.jpg
 coverY: 0
 ---
 
-# La décarbonation des réseaux de chaleur est en marche !
+# Préparation de la loi de programmation sur l'énergie et le climat
 
-↘ En 10 ans, les émissions de CO2 associées au chauffage urbain ont diminué de 42%. Aujourd'hui, elles s'élèvent à 125 g CO2 ACV/kWh seulement, contre 227 g CO2/kWh pour le gaz et 324 gCO2/kWh pour le fioul.\
-\
-🎯 Et ce n'est pas fini ! Objectif ? Réduire encore ces émissions de 33% dès 2030, grâce au remplacement massif des énergies fossiles par des énergies renouvelables et de récupération... et atteindre la neutralité carbone en 2050.\
-\
-Source : enquête annuelle des réseaux de chaleur et de froid réalisée par la [FEDENE](https://www.linkedin.com/company/fedene/) (édition 2022)
+Quelle place pour les réseaux de chaleur dans la politique énergétique française ?
 
-![](.gitbook/assets/\_42.jpg)
+Le Secrétariat général à la planification écologique a récemment diffusé un [document de travail](https://www.gouvernement.fr/upload/media/content/0001/06/3a74943433702a0247ca9f7190177a37710a9678.pdf), établi dans le cadre de la préparation de la loi de programmation sur l'énergie et le climat attendue à l'automne.
+
+Les réseaux de chaleur y sont décrits comme "un vecteur très important du développement de la chaleur renouvelable", avec des objectifs ambitieux envisagés👇
+
+![](.gitbook/assets/objectifs2030.jpg)
