@@ -11,7 +11,7 @@ export const getAllDemands = async (): Promise<Demand[]> => {
     .select({ sort: [{ field: 'Date demandes', direction: 'desc' }] })
     .all();
   return records.map(
-    (record) => ({ id: record.id, ...record.fields } as Demand)
+    (record) => ({ id: record.id, ...record.fields }) as Demand
   );
 };
 
@@ -25,7 +25,7 @@ export const getAllNewDemands = async (): Promise<Demand[]> => {
     })
     .all();
   return records.map(
-    (record) => ({ id: record.id, ...record.fields } as Demand)
+    (record) => ({ id: record.id, ...record.fields }) as Demand
   );
 };
 
@@ -50,7 +50,7 @@ export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
     })
     .all();
   return records.map(
-    (record) => ({ id: record.id, ...record.fields } as Demand)
+    (record) => ({ id: record.id, ...record.fields }) as Demand
   );
 };
 
@@ -63,7 +63,7 @@ export const getToRelanceDemand = async (
     })
     .all();
   return records.map(
-    (record) => ({ id: record.id, ...record.fields } as Demand)
+    (record) => ({ id: record.id, ...record.fields }) as Demand
   )[0];
 };
 export const getAllStaledDemandsSince = async (
@@ -78,7 +78,7 @@ export const getAllStaledDemandsSince = async (
     })
     .all();
   return records.map(
-    (record) => ({ id: record.id, ...record.fields } as Demand)
+    (record) => ({ id: record.id, ...record.fields }) as Demand
   );
 };
 
@@ -132,10 +132,10 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
             Prénom: faker.person.firstName(),
             Mail: faker.internet.email(),
             Téléphone: faker.phone.number('0#########'),
-          } as Demand)
+          }) as Demand
       )
     : filteredRecords.map(
-        (record) => ({ id: record.id, ...record.fields } as Demand)
+        (record) => ({ id: record.id, ...record.fields }) as Demand
       );
 };
 

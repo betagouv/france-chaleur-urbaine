@@ -21,7 +21,7 @@
     "build:analyze": "ANALYZE=true yarn build",
     "start": "next start -p $PORT",
     "prepare": "husky install",
-    "prettier-check": "prettier --check src",
+    "prettier-check": "prettier --write src",
     "prelint": "yarn prettier-check",
     "lint": "eslint src/ -c .eslintrc.json --ext js,jsx,ts,tsx,json",
     "lint:fix": "prettier --write src && eslint src/ -c .eslintrc.json --ext js,jsx,ts,tsx,json --fix",
