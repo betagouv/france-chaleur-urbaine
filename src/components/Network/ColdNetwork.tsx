@@ -1,12 +1,12 @@
-import { Container } from './ClassedNetwork.styles';
+import { Container } from './ColdNetwork.styles';
 
 const ColdNetwork = () => {
   return (
     <Container>
-      <img src="/icons/classed-network.svg" alt="" width={60} height={60} />
+      <img src="/icons/cold-network.svg" alt="" width={53} height={53} />
       <div>
         <b>
-          RESEAU
+          RÉSEAU
           <br />
           DE FROID
         </b>
