@@ -8,7 +8,7 @@ const July2023 = () => {
       <Slice padding={4}>
         <MarkdownWrapper
           value={`# Communiqué de presse
-10 juillet 2023
+21 juillet 2023
 # Les réseaux de froid : une solution écologique pour lutter contre la chaleur en ville
 <br />
 

@@ -1,7 +1,10 @@
 import Network from '@components/Network/Network';
 import Slice from '@components/Slice/Slice';
 import MainContainer from '@components/shared/layout/MainContainer';
-import { getNetwork } from '@core/infrastructure/repository/network';
+import {
+  getColdNetwork,
+  getNetwork,
+} from '@core/infrastructure/repository/network';
 import { Breadcrumb, BreadcrumbItem } from '@dataesr/react-dsfr';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
@@ -40,7 +43,9 @@ export const getStaticProps: GetStaticProps<{
   network: Network;
 }> = async (context) => {
   if (context.params?.network && typeof context.params.network === 'string') {
-    const network = await getNetwork(context.params.network);
+    const network = await (context.params.network.includes('F')
+      ? getColdNetwork(context.params.network)
+      : getNetwork(context.params.network));
     if (network) {
       return { props: { network } };
     }
