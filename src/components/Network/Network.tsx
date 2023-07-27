@@ -104,7 +104,11 @@ const Network = ({ network }: { network: Network }) => {
                   indirectes).
                 </HoverableIcon>
               </div>
-              <div>{network['contenu CO2 ACV'] * 1000} g CO2/kWh</div>
+              <div>
+                {network['contenu CO2 ACV']
+                  ? `${network['contenu CO2 ACV'] * 1000} g CO2/kWh`
+                  : 'Non connu'}
+              </div>
             </BoxContent>
           </BlueBox>
           <Box>
