@@ -90,7 +90,12 @@ const Network = ({ network }: { network: Network }) => {
                 <div>
                   <b>Taux d’EnR&R</b>
                 </div>
-                <div>{network['Taux EnR&R']} %</div>
+                <div>
+                  {network['Taux EnR&R'] !== null &&
+                  network['Taux EnR&R'] !== undefined
+                    ? `${network['Taux EnR&R']}%`
+                    : 'Non connu'}
+                </div>
               </BoxContent>
             )}
             <BoxContent>
