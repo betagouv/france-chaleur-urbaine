@@ -106,29 +106,6 @@ const Network = ({ network }: { network: Network }) => {
               </div>
               <div>{network['contenu CO2 ACV'] * 1000} g CO2/kWh</div>
             </BoxContent>
-            {!isCold && (
-              <BoxContent>
-                <div>
-                  <BoxIcon>
-                    <span>
-                      <b>Rendement</b>
-                    </span>
-                    <HoverableIcon
-                      iconName="ri-information-fill"
-                      position="bottom-centered"
-                    >
-                      Rapport entre l'énergie thermique livrée aux abonnés et
-                      l'énergie thermique injectée dans le réseau.
-                    </HoverableIcon>
-                  </BoxIcon>
-                </div>
-                <div>
-                  {network['Rend%'] === null
-                    ? 'Non connu'
-                    : `${network['Rend%']} %`}
-                </div>
-              </BoxContent>
-            )}
           </BlueBox>
           <Box>
             <h3>Caractéristiques techniques</h3>
@@ -158,6 +135,29 @@ const Network = ({ network }: { network: Network }) => {
               </div>
               <div>{network.longueur_reseau} km</div>
             </BoxContent>
+            {!isCold && (
+              <BoxContent>
+                <div>
+                  <BoxIcon>
+                    <span>
+                      <b>Rendement</b>
+                    </span>
+                    <HoverableIcon
+                      iconName="ri-information-fill"
+                      position="bottom-centered"
+                    >
+                      Rapport entre l'énergie thermique livrée aux abonnés et
+                      l'énergie thermique injectée dans le réseau.
+                    </HoverableIcon>
+                  </BoxIcon>
+                </div>
+                <div>
+                  {network['Rend%'] === null
+                    ? 'Non connu'
+                    : `${network['Rend%']} %`}
+                </div>
+              </BoxContent>
+            )}
             <br />
             <BoxContent>
               <div>
