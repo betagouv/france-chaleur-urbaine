@@ -304,14 +304,16 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Adresse</b>
               </div>
               <AddressContent>
-                {network.adresse_mo && (
+                {network.adresse_mo && network.adresse_mo !== '0' && (
                   <>
                     {network.adresse_mo}
                     <br />
                   </>
                 )}
                 {network.CP_MO && network.CP_MO !== '0' && network.CP_MO}{' '}
-                {network.ville_mo && network.ville_mo}
+                {network.ville_mo &&
+                  network.ville_mo !== '0' &&
+                  network.ville_mo}
               </AddressContent>
             </BoxContent>
             <br />
@@ -326,16 +328,19 @@ const Network = ({ network }: { network: Network }) => {
                 <b>Adresse</b>
               </div>
               <AddressContent>
-                {network.adresse_gestionnaire && (
-                  <>
-                    {network.adresse_gestionnaire}
-                    <br />
-                  </>
-                )}
+                {network.adresse_gestionnaire &&
+                  network.adresse_gestionnaire !== '0' && (
+                    <>
+                      {network.adresse_gestionnaire}
+                      <br />
+                    </>
+                  )}
                 {network.CP_gestionnaire &&
                   network.CP_gestionnaire !== '0' &&
                   network.CP_gestionnaire}{' '}
-                {network.ville_gestionnaire && network.ville_gestionnaire}
+                {network.ville_gestionnaire &&
+                  network.ville_gestionnaire !== '0' &&
+                  network.ville_gestionnaire}
               </AddressContent>
             </BoxContent>
             {network.website_gestionnaire &&
