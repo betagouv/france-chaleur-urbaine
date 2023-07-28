@@ -448,7 +448,8 @@ const Network = ({ network }: { network: Network }) => {
             </a>{' '}
             / Enquête annuelle des réseaux de chaleur et de froid, édition 2022
             pour l’année 2021, SNCU / Données locales de l’énergie pour l’année
-            2021, SDES
+            2021, SDES <br />
+            <img src="/logo-viaseva.svg" alt="logo viaseva" height="75px" />
           </>
         )}
       </p>
