@@ -253,10 +253,10 @@ export const viasevaPopup = ({
   <strong>Livraison totale de ${
     network.isCold ? 'froid' : 'chaleur'
   }&nbsp;:</strong> ${
-    network.livraisons_totale_MWh
-      ? getConso(network.livraisons_totale_MWh)
-      : 'Non connu'
-  }<br />  
+      network.livraisons_totale_MWh
+        ? getConso(network.livraisons_totale_MWh)
+        : 'Non connu'
+    }<br />  
   <strong>Nombre de bâtiments raccordés&nbsp;:</strong> ${
     network.nb_pdl ? network.nb_pdl : 'Non connu'
   }<br /> 

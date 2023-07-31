@@ -92,7 +92,7 @@ const SimulatorCO2: React.FC<{
         <Input
           type="number"
           placeholder={dataSimulator.label.conso}
-          onChange={(e: any) => setConso(parseFloat(e.target.value))}
+          onChange={(e) => setConso(parseFloat(e.target.value))}
         />
       </fieldset>
       <fieldset>
@@ -100,7 +100,7 @@ const SimulatorCO2: React.FC<{
         <Input
           type="number"
           placeholder={dataSimulator.label.surf}
-          onChange={(e: any) => setSurf(parseFloat(e.target.value))}
+          onChange={(e) => setSurf(parseFloat(e.target.value))}
         />
       </fieldset>
       <fieldset>
@@ -108,7 +108,7 @@ const SimulatorCO2: React.FC<{
         <Input
           type="number"
           placeholder={dataSimulator.label.log}
-          onChange={(e: any) => setLog(parseInt(e.target.value))}
+          onChange={(e) => setLog(parseInt(e.target.value))}
         />
       </fieldset>
       <fieldset>
@@ -136,7 +136,7 @@ const SimulatorCO2: React.FC<{
         <SurfSelect
           selected={simulatorType}
           options={buildingTypeSelectOptions}
-          onChange={(e: any) => setSimulatorType(e.target.value)}
+          onChange={(e) => setSimulatorType(e.target.value)}
         />
       )}
       {typeSurf === TypeSurf.copropriete ? (

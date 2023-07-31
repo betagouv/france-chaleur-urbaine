@@ -56,9 +56,7 @@ export const MapCard = styled.div<MapCardType>`
   section {
     padding: 8px;
     scrollbar-gutter: stable both-edges;
-    transition:
-      max-height 0.75s ease,
-      padding 0.5s ease 0.25s;
+    transition: max-height 0.75s ease, padding 0.5s ease 0.25s;
   }
 `;
 

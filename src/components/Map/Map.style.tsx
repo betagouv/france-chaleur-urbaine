@@ -154,8 +154,7 @@ export const Legend = styled.div<{
   padding: 16px;
   background: #ffffff;
   border: 1px solid #dddddd;
-  box-shadow:
-    0px 16px 16px -16px rgba(0, 0, 0, 0.32),
+  box-shadow: 0px 16px 16px -16px rgba(0, 0, 0, 0.32),
     0px 8px 16px rgba(0, 0, 0, 0.1);
 `;
 
