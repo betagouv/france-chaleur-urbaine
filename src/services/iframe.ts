@@ -4,4 +4,5 @@ export const iframedPaths = [
   '/map',
   '/viaseva',
   '/carte-collectivite',
+  '/page-reseaux/*',
 ];
