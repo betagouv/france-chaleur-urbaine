@@ -12,7 +12,7 @@ export const updateUsers = async () => {
     .flatMap((demand) => demand.get('Gestionnaires') as string[])
     .filter(
       (manager, index, values) =>
-        values.findIndex((x) => x === manager) === index
+        manager && values.findIndex((x) => x === manager) === index
     );
 
   const airtableUsers = await base('FCU - Gestionnaires').select().all();
