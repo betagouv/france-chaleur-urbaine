@@ -14,7 +14,7 @@ const useMapPopup = (
   const userPopUp = useRef(new maplibregl.Popup({ className }));
   const [clickedPoint, setClickedPoint]: [
     any | never[],
-    React.Dispatch<any | never[]>
+    React.Dispatch<any | never[]>,
   ] = useState([]);
 
   const updateClickedPoint = useCallback(
