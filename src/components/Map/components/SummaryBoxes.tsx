@@ -4,9 +4,9 @@ import { Button, Icon, Tab, Tabs } from '@dataesr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
 import { LineString, Polygon } from 'geojson';
-import { Map } from 'maplibre-gl';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
+import { MapRef } from 'react-map-gl';
 import { useServices } from 'src/services';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
@@ -51,7 +51,7 @@ const SummaryBoxes = ({
   draw,
   setDrawing,
 }: {
-  map: Map;
+  map: MapRef;
   draw: MapboxDraw;
   setDrawing: Dispatch<SetStateAction<boolean>>;
 }) => {

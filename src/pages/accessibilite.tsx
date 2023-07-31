@@ -62,6 +62,7 @@ function Accessibilite() {
                 <li>Styled Component</li>
                 <li>Markdown</li>
                 <li>Maplibre</li>
+                <li>React Map GL</li>
                 <li>Tarteaucitron</li>
               </ul>
               <p>

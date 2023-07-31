@@ -33,14 +33,14 @@ export const MapStyle: any = createGlobalStyle<{
       height: 100%;
     }
 
-    .map {
-      position: absolute;
+    .map, .maplibregl-map.mapboxgl-map {
+      position: absolute !important;
       left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : '333px')};
       ${({ withProMode }) => withProMode && 'top: 41px;'}
       width: ${({ legendCollapsed }) =>
-        legendCollapsed ? '100%' : 'calc(100% - 333px)'};
+        legendCollapsed ? '100%' : 'calc(100% - 333px) !important'};
       height: ${({ withProMode }) =>
-        withProMode ? 'calc(100% - 41px)' : '100%'};
+        withProMode ? 'calc(100% - 41px) !important' : '100%'};
       ${mapMediumMedia} {
         left: 0;
         width: 100%;
@@ -151,6 +151,7 @@ export const Legend = styled.div<{
       display: none;
     `}
   width: 333px;
+  min-width: 333px;
   padding: 16px;
   background: #ffffff;
   border: 1px solid #dddddd;

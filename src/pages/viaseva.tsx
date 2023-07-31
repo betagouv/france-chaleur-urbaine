@@ -1,5 +1,4 @@
 import Map from '@components/Map/Map';
-import { viasevaPopup } from '@components/Map/MapPopup';
 import mapParam from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 
@@ -14,7 +13,6 @@ const ViasevaMap = () => {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
-        customPopup={viasevaPopup}
         initialLayerDisplay={{
           outline: true,
           futurOutline: false,
@@ -39,6 +37,7 @@ const ViasevaMap = () => {
           alt: 'logo viaseva',
           height: '56px',
         }}
+        is_viaseva={true}
       />
     </div>
   );
