@@ -3,5 +3,6 @@ export const iframedPaths = [
   '/form',
   '/map',
   '/viaseva',
+  '/engie',
   '/carte-collectivite',
 ];

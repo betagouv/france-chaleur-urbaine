@@ -447,7 +447,7 @@ export const LegendLogoList = styled.div<{
 }>`
   width: 332px;
   position: absolute;
-  bottom: 0px;
+  bottom: 4px;
   z-index: 9999;
   background: #ffffff;
   ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}

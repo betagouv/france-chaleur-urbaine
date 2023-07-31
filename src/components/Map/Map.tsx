@@ -121,6 +121,32 @@ const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
   layers.forEach((layer) => map.addLayer(layer));
 };
 
+const getNetworkFilter = (
+  network?: string,
+  filter?: any[],
+  initialFilter?: any[]
+) => {
+  if (network) {
+    return { filter: ['==', ['get', 'Identifiant reseau'], network] };
+  }
+
+  if (filter && initialFilter) {
+    return { filter: ['all', filter, initialFilter] };
+  }
+
+  if (filter) {
+    return {
+      filter,
+    };
+  }
+
+  if (initialFilter) {
+    return { filter: initialFilter };
+  }
+
+  return {};
+};
+
 const Map = ({
   withoutLogo,
   withLegend,
@@ -134,6 +160,7 @@ const Map = ({
   legendLogoOpt,
   customPopup,
   setProMode,
+  filter,
 }: {
   withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
@@ -147,6 +174,7 @@ const Map = ({
   noPopup?: boolean;
   customPopup?: (args: any) => string;
   setProMode?: Dispatch<SetStateAction<boolean>>;
+  filter?: any[];
 }) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -466,7 +494,7 @@ const Map = ({
         (e.sourceId === 'openmaptiles' || e.sourceId === 'raster-tiles') &&
         e.isSourceLoaded
       ) {
-        const network = router.query.network;
+        const network = router.query.network as string;
         const origin =
           process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
 
@@ -506,9 +534,7 @@ const Map = ({
               source: 'coldNetwork',
               'source-layer': 'coldOutline',
               ...coldOutlineLayerStyle,
-              ...(network
-                ? { filter: ['==', ['get', 'Identifiant reseau'], network] }
-                : {}),
+              ...getNetworkFilter(network, filter),
             },
           ]
         );
@@ -525,14 +551,22 @@ const Map = ({
               id: 'futurZone',
               source: 'heatFuturNetwork',
               'source-layer': 'futurOutline',
-              filter: ['==', ['get', 'is_zone'], true],
+              ...getNetworkFilter(undefined, filter, [
+                '==',
+                ['get', 'is_zone'],
+                true,
+              ]),
               ...futurZoneLayerStyle,
             },
             {
               id: 'futurOutline',
               source: 'heatFuturNetwork',
               'source-layer': 'futurOutline',
-              filter: ['==', ['get', 'is_zone'], false],
+              ...getNetworkFilter(undefined, filter, [
+                '==',
+                ['get', 'is_zone'],
+                false,
+              ]),
               ...futurOutlineLayerStyle,
             },
           ]
@@ -550,9 +584,7 @@ const Map = ({
               source: 'heatNetwork',
               'source-layer': 'outline',
               ...outlineLayerStyle,
-              ...(network
-                ? { filter: ['==', ['get', 'Identifiant reseau'], network] }
-                : {}),
+              ...getNetworkFilter(network, filter),
             },
           ]
         );
@@ -949,11 +981,7 @@ const Map = ({
                 </LegendLogo>
                 {legendLogoOpt && (
                   <LegendLogo>
-                    <img
-                      src={legendLogoOpt.src}
-                      alt={legendLogoOpt.alt}
-                      height={legendLogoOpt.height}
-                    />
+                    <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
                   </LegendLogo>
                 )}
               </LegendLogoList>
