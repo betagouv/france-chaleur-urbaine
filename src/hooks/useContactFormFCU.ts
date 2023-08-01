@@ -59,6 +59,10 @@ const callMarkup__handleOnSubmitContact = (
     markupData[markupEligibilityKey].matomoEvent[fromMap ? 'map' : 'form'],
     [address]
   );
+  googleAdsEvent(
+    '10986886666',
+    markupData[markupEligibilityKey].googleAdsEvent
+  );
   facebookEvent(markupData[markupEligibilityKey].facebookEvent);
 };
 
