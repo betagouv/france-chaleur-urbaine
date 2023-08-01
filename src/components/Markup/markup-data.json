@@ -34,6 +34,7 @@
   },
   "contactFormEligible": {
     "facebookEvent": ["Contact"],
+    "googleAdsEvent": ["HVOOCJy2wcsYEIqs-vYo"],
     "matomoEvent": {
       "form": ["Eligibilité", "Formulaire de contact éligible - Envoi"],
       "map": ["Eligibilité", "Formulaire de contact éligible - Carte - Envoi"]
@@ -41,6 +42,7 @@
   },
   "contactFormIneligible": {
     "facebookEvent": ["Contact"],
+    "googleAdsEvent": ["TUsSCJ-2wcsYEIqs-vYo"],
     "matomoEvent": {
       "form": ["Eligibilité", "Formulaire de contact inéligible - Envoi"],
       "map": ["Eligibilité", "Formulaire de contact inéligible - Carte - Envoi"]
