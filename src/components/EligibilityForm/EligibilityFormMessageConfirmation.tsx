@@ -21,12 +21,13 @@ const UnderlinedLink = styled.a`
 const choices = [
   'Moteur de recherche',
   'Pub web',
-  'Article sur un site internet',
+  'Article',
   'Pub télé',
   "Bureau d'étude",
   'Espace France Rénov’',
   'Bouche à oreille',
   'Services municipaux',
+  'Webinaire',
 ];
 
 const EligibilityFormMessageConfirmation = ({
