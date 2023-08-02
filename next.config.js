@@ -114,6 +114,7 @@ module.exports = withBundleAnalyzer({
       { source: '/viaseva', headers: securityHeadersIFramable },
       { source: '/form', headers: securityHeadersIFramable },
       { source: '/map', headers: securityHeadersIFramable },
+      { source: '/page-reseaux/:network', headers: securityHeadersIFramable },
     ];
   },
   webpack: function (config) {
