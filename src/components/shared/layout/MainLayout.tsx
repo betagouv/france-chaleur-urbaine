@@ -21,7 +21,7 @@ const MainLayout: React.FC<MainLayout> = ({ children }) => {
   const { currentMenu, fullscreen } = useContext(LayoutContext);
   const router = useRouter();
 
-  if (iframedPaths.includes(router.pathname)) {
+  if (iframedPaths.some((path) => router.pathname.match(path))) {
     return <div>{children}</div>;
   }
 

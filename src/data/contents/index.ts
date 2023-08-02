@@ -1,7 +1,9 @@
 import { Article } from 'src/types/Article';
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
+import readme_1_1_1 from './README (1) (1) (1).md';
 import readme_1_1 from './README (1) (1).md';
+import readme_1_2_1 from './README (1) (2) (1).md';
 import readme_1_2 from './README (1) (2).md';
 import readme_1 from './README (1).md';
 import readme_2_1_1 from './README (2) (1) (1).md';
@@ -12,6 +14,7 @@ import readme_3_1_1 from './README (3) (1) (1).md';
 import readme_3_1 from './README (3) (1).md';
 import readme_3 from './README (3).md';
 import readme_4 from './README (4).md';
+import readme_5 from './README (5).md';
 import readme from './README.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
@@ -35,10 +38,31 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/vignette-collectivite.jpg',
+    title: "Les chiffres de l'enquête IFOP 3",
+    slug: 'les-chiffres-de-lenquete-ifop-3',
+    content: importFile(readme),
+    publishedDate: new Date('2023-07-18'),
+  },
+  {
+    image: '/contents/effortinformation.jpg',
+    title: "Les chiffres de l'enquête IFOP 2",
+    slug: 'les-chiffres-de-lenquete-ifop-2',
+    content: importFile(readme_5),
+    publishedDate: new Date('2023-07-06'),
+  },
+  {
+    image: '/contents/bonnenouvelle.jpg',
+    title: "Les chiffres de l'enquête IFOP 1",
+    slug: 'les-chiffres-de-lenquete-ifop-1',
+    content: importFile(readme_1),
+    publishedDate: new Date('2023-07-04'),
+  },
+  {
     image: '/contents/objectif.jpg',
     title: "Préparation de la loi de programmation sur l'énergie et le climat",
     slug: 'preparation-de-la-loi-de-programmation-sur-lenergie-et-le-climat',
-    content: importFile(readme),
+    content: importFile(readme_1_2),
     publishedDate: new Date('2023-06-27'),
   },
   {
@@ -116,7 +140,7 @@ export const articles: Article[] = [
     image: '/contents/18.jpg',
     title: 'La géothermie profonde',
     slug: 'la-géothermie-profonde',
-    content: importFile(readme_1),
+    content: importFile(readme_1_1),
     publishedDate: new Date('2023-04-25'),
   },
   {
@@ -137,7 +161,7 @@ export const articles: Article[] = [
     image: '/contents/15.jpg',
     title: 'La décarbonation des réseaux de chaleur est en marche !',
     slug: 'la-décarbonation-des-réseaux-de-chaleur-est-en-marche',
-    content: importFile(readme_1_2),
+    content: importFile(readme_1_2_1),
     publishedDate: new Date('2023-04-11'),
   },
   {
@@ -158,7 +182,7 @@ export const articles: Article[] = [
     image: '/contents/avion.jpg',
     title: "6,63 millions d'allers-retours Paris New-York évités",
     slug: '6-63-millions-d-allers-retours-paris-new-york-évités',
-    content: importFile(readme_1_1),
+    content: importFile(readme_1_1_1),
     publishedDate: new Date('2023-04-11'),
   },
   {

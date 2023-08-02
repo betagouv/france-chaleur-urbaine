@@ -112,8 +112,10 @@ module.exports = withBundleAnalyzer({
       },
       { source: '/carte-collectivite', headers: securityHeadersIFramable },
       { source: '/viaseva', headers: securityHeadersIFramable },
+      { source: '/engie', headers: securityHeadersIFramable },
       { source: '/form', headers: securityHeadersIFramable },
       { source: '/map', headers: securityHeadersIFramable },
+      { source: '/page-reseaux/:network', headers: securityHeadersIFramable },
     ];
   },
   webpack: function (config) {

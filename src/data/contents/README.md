@@ -1,9 +1,14 @@
-# Préparation de la loi de programmation sur l'énergie et le climat
+# Les chiffres de l'enquête IFOP 3
 
-Quelle place pour les réseaux de chaleur dans la politique énergétique française ?
+Toujours grâce à [l'enquête IFOP](https://france-chaleur-urbaine.beta.gouv.fr/documentation/enquete\_IFOP.pdf\*) pour France Chaleur Urbaine sur les copropriétaires et les réseaux de chaleur, on découvre que ce sont bien les collectivités qui sont identifiées comme la porte d'entrée pour obtenir des informations.
 
-Le Secrétariat général à la planification écologique a récemment diffusé un [document de travail](https://www.gouvernement.fr/upload/media/content/0001/06/3a74943433702a0247ca9f7190177a37710a9678.pdf), établi dans le cadre de la préparation de la loi de programmation sur l'énergie et le climat attendue à l'automne.
+\
+France Chaleur Urbaine s'est justement fixé pour mission de les aider à faire connaître leur réseaux de chaleur, en mettant à leur disposition :\
+👉 une [cartographie](https://france-chaleur-urbaine.beta.gouv.fr/carte) interactive pour faire connaître les tracés de leurs réseaux, projets d’extension, périmètres de développement prioritaire... désormais intégrable sur tout site internet\
+👉 des [éléments pour communiquer](https://france-chaleur-urbaine.beta.gouv.fr/ressources/supports#contenu) auprès du grand public : kit de communication, campagne de pub...\
+France Chaleur Urbaine c'est aussi un espace gestionnaire partagé accessible aux collectivités et exploitants, pour retrouver l'ensemble des demandes reçues sur leurs réseaux.
 
-Les réseaux de chaleur y sont décrits comme "un vecteur très important du développement de la chaleur renouvelable", avec des objectifs ambitieux envisagés👇
+\
+🤝 Collectivités, n'hésitez pas à nous contacter pour découvrir tout ce que France Chaleur Urbaine peut faire pour vous !
 
-![](.gitbook/assets/objectifs2030.jpg)
+![](.gitbook/assets/Collectivite.jpg)

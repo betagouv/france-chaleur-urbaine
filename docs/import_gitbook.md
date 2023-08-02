@@ -8,8 +8,7 @@
     - Si erreurs de merge, TOUJOURS prendre la version qui est sur feat/content
 <br/><br/>
 
-3. Format :
-    - src/data/contents : tout le contenu des articles (.md et images)
+3. Dans src/data/contents : tout le contenu des articles (.md et images)
     - SUMMARY.md : le listing des articles du gitbook
     - index.ts : le listing des articles sur le site FCU
 <br/><br/>
