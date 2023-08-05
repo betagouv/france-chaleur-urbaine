@@ -7,9 +7,7 @@ import * as Yup from 'yup';
 
 const InputWraper = styled.div`
   opacity: 1;
-  transition:
-    opacity 0.25s ease,
-    max-height 0.5s ease;
+  transition: opacity 0.25s ease, max-height 0.5s ease;
 
   &.hidden {
     opacity: 0;

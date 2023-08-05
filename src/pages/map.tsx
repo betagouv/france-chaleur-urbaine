@@ -7,6 +7,7 @@ const legendMapping: Record<LegendGroupId, string> = {
   [LegendGroupId.zoneDP]: 'pdp',
   [LegendGroupId.gasUsageGroup]: 'conso_gaz',
   [LegendGroupId.energy]: 'gaz',
+  [LegendGroupId.energy]: 'fioul',
   [LegendGroupId.demands]: 'demandes',
   [LegendGroupId.raccordements]: 'raccordements',
   [LegendGroupId.buildings]: 'dpe',
