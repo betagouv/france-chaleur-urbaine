@@ -1,4 +1,5 @@
 import Map from '@components/Map/Map';
+import { viasevaPopup } from '@components/Map/MapPopup';
 import mapParam from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 
@@ -9,10 +10,11 @@ const visibleId = [
   LegendGroupId.futurheatNetwork,
 ];
 
-const ViasevaMap = () => {
+const EngieMap = () => {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
+        customPopup={viasevaPopup}
         initialLayerDisplay={{
           outline: true,
           futurOutline: false,
@@ -33,13 +35,25 @@ const ViasevaMap = () => {
           (x) => typeof x !== 'string' && visibleId.includes(x.id)
         )}
         legendLogoOpt={{
-          src: '/logo-viaseva.svg',
-          alt: 'logo viaseva',
+          src: '/logo-ENGIE.jpg',
+          alt: 'logo ENGIE',
         }}
-        is_viaseva={true}
+        filter={[
+          'any',
+          [
+            'in',
+            'engie',
+            ['downcase', ['coalesce', ['get', 'gestionnaire'], '']],
+          ],
+          [
+            'in',
+            'engie',
+            ['downcase', ['coalesce', ['get', 'Gestionnaire'], '']],
+          ],
+        ]}
       />
     </div>
   );
 };
 
-export default ViasevaMap;
+export default EngieMap;

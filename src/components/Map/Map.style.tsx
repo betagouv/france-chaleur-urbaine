@@ -447,7 +447,7 @@ export const LegendLogoList = styled.div<{
 }>`
   width: 332px;
   position: absolute;
-  bottom: 0px;
+  bottom: 4px;
   z-index: 9999;
   background: #ffffff;
   ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
@@ -468,6 +468,11 @@ export const ProMode = styled.div<{ legendCollapsed: boolean }>`
   background-color: white;
   width: ${({ legendCollapsed }) =>
     legendCollapsed ? '100%' : 'calc(100% - 333px)'};
+  ${({ legendCollapsed }) =>
+    !legendCollapsed &&
+    `@media (max-width: 600px) {
+      display: none;
+    }`}
   height: fit-content;
   border-bottom: solid 1px #dddddd;
 
