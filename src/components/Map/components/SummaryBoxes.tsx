@@ -51,7 +51,7 @@ const SummaryBoxes = ({
   draw,
   setDrawing,
 }: {
-  map: MapRef;
+  map?: MapRef | null;
   draw: MapboxDraw;
   setDrawing: Dispatch<SetStateAction<boolean>>;
 }) => {
