@@ -68,7 +68,7 @@ import {
   raccordementsLayerStyle,
   zoneDPLayerStyle,
 } from './Map.style';
-import satelliteConfig from './satellite.config';
+import satelliteConfig from './satellite.config.json';
 import { MapboxStyleSwitcherControl } from './StyleSwitcher';
 
 let hoveredStateId: any;
