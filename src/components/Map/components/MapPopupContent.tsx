@@ -6,7 +6,7 @@ import { FuturNetworkSummary } from 'src/types/Summary/FuturNetwork';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
-import { objTypeEnergy } from '../Map/Map.style';
+import { objTypeEnergy } from '../Map.style';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {

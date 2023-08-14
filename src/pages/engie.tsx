@@ -1,5 +1,5 @@
 import Map from '@components/Map/Map';
-import { viasevaPopup } from '@components/Map/MapPopup';
+import { viasevaPopup } from '@components/Map/components/MapPopup';
 import mapParam from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 

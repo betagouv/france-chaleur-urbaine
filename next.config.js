@@ -27,6 +27,8 @@ const csp = {
     'https://googleads.g.doubleclick.net',
     'https://connect.facebook.net',
     'https://snap.licdn.com',
+    'https://api.tiles.mapbox.com/',
+    'https://api.mapbox.com/',
   ],
   'connect-src': [
     "'self'",
@@ -38,9 +40,18 @@ const csp = {
     'https://stats.data.gouv.fr',
     'https://cdn.linkedin.oribi.io',
     'https://wxs.ign.fr',
+    'https://api.mapbox.com/',
+    'https://a.tiles.mapbox.com/',
+    'https://b.tiles.mapbox.com/',
+    'https://events.mapbox.com/',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
   'worker-src': ["'self'", 'blob:'],
+  /*'style-src': [
+    'https://api.mapbox.com/',
+    'https://api.tiles.mapbox.com/',
+    'https://fonts.googleapis.com/',
+  ],*/
 };
 
 if (process.env.UNSAFE_EVAL === 'true') {

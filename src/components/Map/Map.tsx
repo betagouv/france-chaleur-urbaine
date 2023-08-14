@@ -42,8 +42,10 @@ import mapParam, {
   TypeLayerDisplay,
 } from '../../services/Map/param';
 
-import { MapPopupInfos } from 'src/types/MapPopupInfos';
+import { MapMarkerInfos, MapPopupInfos } from 'src/types/MapComponentsInfos';
 import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
+import MapMarker from './components/MapMarker';
+import MapPopup from './components/MapPopup';
 import ZoneInfos from './components/SummaryBoxes';
 import {
   buildingsLayerStyle,
@@ -66,7 +68,6 @@ import {
   raccordementsLayerStyle,
   zoneDPLayerStyle,
 } from './Map.style';
-import MapPopup from './MapPopup';
 import satelliteConfig from './satellite.config';
 import { MapboxStyleSwitcherControl } from './StyleSwitcher';
 
@@ -195,6 +196,7 @@ const Map = ({
   const mapRef = useRef<MapRef>(null);
   const draw: null | { current: any } = useRef(null);
   const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
+  const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
   useEffect(() => {
@@ -216,8 +218,7 @@ const Map = ({
     {
       beforeStorage: (value: any) => {
         const newValue = value.map((address: any) => {
-          const { marker, ...parsableAddress } = address;
-          return parsableAddress;
+          return address;
         });
         return newValue;
       },
@@ -257,11 +258,12 @@ const Map = ({
   const jumpToWithPin = useCallback(() => {
     if (mapRef.current && center) {
       if (withCenterPin) {
-        new maplibregl.Marker({
-          color: '#4550e5',
-        })
-          .setLngLat(center)
-          .addTo(mapRef.current.getMap());
+        const newMarker = {
+          key: getAddressId(center),
+          latitude: center[1],
+          longitude: center[0],
+        };
+        setMarkersList([newMarker]);
       }
       jumpTo({ coordinates: center, zoom: 13 });
     }
@@ -320,7 +322,7 @@ const Map = ({
   );
 
   const removeSoughtAddresses = useCallback(
-    (result: { marker?: any; coordinates?: Point }) => {
+    (result: { coordinates?: Point }) => {
       if (!result.coordinates) {
         return;
       }
@@ -336,7 +338,10 @@ const Map = ({
 
       soughtAddresses.splice(addressIndex, 1);
       setSoughtAddresses([...soughtAddresses]);
-      result.marker?.remove();
+
+      setMarkersList((current) =>
+        current.filter((marker) => marker.key !== id)
+      );
     },
     [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
   );
@@ -509,43 +514,43 @@ const Map = ({
       { name: 'raccordements', key: 'raccordement' },
     ];
 
-    e.target.loadImage(
-      '/icons/rect.png',
-      (error: any, image: Record<string, unknown>) => {
-        if (error) {
-          throw error;
-        }
-
-        setMapState('loaded');
-        e.target.addImage('energy-picto', image, { sdf: true });
-
-        if (!noPopup) {
-          clickEvents.map(({ name, key }) => {
-            e.target.on('click', name, (e: any) => {
-              onMapClick(e, key);
-            });
-
-            e.target.on('touchend', name, (e: any) => {
-              onMapClick(e, key);
-            });
-
-            e.target.on('mouseenter', name, function () {
-              e.target.getCanvas().style.cursor = 'pointer';
-            });
-
-            e.target.on('mouseleave', name, function () {
-              e.target.getCanvas().style.cursor = '';
-            });
-          });
-        }
-
-        if (mapRef) {
-          addHover(mapRef, 'heatNetwork', 'outline');
-          addHover(mapRef, 'heatFuturNetwork', 'futurOutline');
-          addHover(mapRef, 'coldNetwork', 'coldOutline');
-        }
+    e.target.loadImage('/icons/rect.png', (error, image) => {
+      if (error) {
+        throw error;
       }
-    );
+
+      setMapState('loaded');
+      if (image) {
+        e.target.addImage('energy-picto', image, { sdf: true });
+      }
+
+      if (!noPopup) {
+        clickEvents.map(({ name, key }) => {
+          e.target.on('click', name, (e: any) => {
+            onMapClick(e, key);
+          });
+
+          e.target.on('touchend', name, (e: any) => {
+            onMapClick(e, key);
+          });
+
+          e.target.on('mouseenter', name, function () {
+            e.target.getCanvas().style.cursor = 'pointer';
+          });
+
+          e.target.on('mouseleave', name, function () {
+            e.target.getCanvas().style.cursor = '';
+          });
+        });
+      }
+
+      if (mapRef) {
+        addHover(mapRef, 'heatNetwork', 'outline');
+        addHover(mapRef, 'heatFuturNetwork', 'futurOutline');
+        addHover(mapRef, 'coldNetwork', 'coldOutline');
+        jumpToWithPin();
+      }
+    });
   };
 
   const onSourceDataMap = (e: MapSourceDataEvent) => {
@@ -764,10 +769,6 @@ const Map = ({
     }
   };
 
-  const onRenderMap = () => {
-    jumpToWithPin();
-  };
-
   useEffect(() => {
     const { id } = router.query;
     if (!id || mapRef.current == null) {
@@ -776,23 +777,26 @@ const Map = ({
 
     heatNetworkService.bulkEligibilityValues(id as string).then((response) => {
       if (response.result && mapRef.current) {
+        const newMarkersList: MapMarkerInfos[] = [];
         response.result.forEach((address) => {
-          //Ici on garde old popup si plusieurs à afficher et sur les marker...
-          const popup = new maplibregl.Popup().setText(address.label);
-          new maplibregl.Marker({
+          const newMarker = {
+            key: getAddressId([address.lon, address.lat]),
+            latitude: address.lat,
+            longitude: address.lon,
             color: address.isEligible ? 'green' : 'red',
-          })
-            .setLngLat([address.lon, address.lat])
-            .setPopup(popup)
-            .addTo(mapRef.current.getMap());
+            popup: true,
+            popup_content: address.label,
+          };
+          newMarkersList.push(newMarker);
         });
+        setMarkersList(newMarkersList);
       }
     });
   }, [router.query, heatNetworkService]);
 
   useEffect(() => {
     jumpToWithPin();
-  }, [jumpTo, mapRef, center, withCenterPin, jumpToWithPin]);
+  }, [center, jumpToWithPin]);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -832,28 +836,32 @@ const Map = ({
 
   useEffect(() => {
     let shouldUpdate = false;
+    const newMarkersList: MapMarkerInfos[] = markersList;
     const newSoughtAddresses = soughtAddresses.map(
       (sAddress: any | never[]) => {
-        if (!sAddress.marker && mapRef.current) {
-          const marker = new maplibregl.Marker({
-            color: '#4550e5',
-          })
-            .setLngLat(sAddress.coordinates)
-            .addTo(mapRef.current.getMap());
-          shouldUpdate = true;
-          return {
-            marker,
-            ...sAddress,
-          };
-        } else {
-          return sAddress;
+        if (mapRef.current) {
+          const id = sAddress.id;
+          const markerIndex = newMarkersList.findIndex(
+            (marker) => marker.key === id
+          );
+          if (markerIndex == -1) {
+            const newMarker = {
+              key: sAddress.id,
+              latitude: sAddress.coordinates[1],
+              longitude: sAddress.coordinates[0],
+            };
+            newMarkersList.push(newMarker);
+            shouldUpdate = true;
+          }
         }
+        return sAddress;
       }
     );
     if (shouldUpdate) {
       setSoughtAddresses(newSoughtAddresses);
+      setMarkersList(newMarkersList);
     }
-  }, [setSoughtAddresses, soughtAddresses]);
+  }, [markersList, setMarkersList, setSoughtAddresses, soughtAddresses]);
 
   useEffect(() => {
     if (mapState === 'pending') {
@@ -1026,7 +1034,6 @@ const Map = ({
             maxZoom={maxZoom}
             minZoom={minZoom}
             onLoad={onLoadMap}
-            onRender={onRenderMap}
             onSourceData={onSourceDataMap}
             ref={mapRef}
           >
@@ -1047,6 +1054,17 @@ const Map = ({
                 is_viaseva={is_viaseva || false}
               />
             )}
+            {markersList.length > 0 &&
+              markersList.map((marker: MapMarkerInfos) => (
+                <MapMarker
+                  key={marker.key}
+                  longitude={marker.longitude}
+                  latitude={marker.latitude}
+                  color={marker.color}
+                  popup={marker.popup}
+                  popup_content={marker.popup_content}
+                />
+              ))}
           </MapReactGL>
         </MapProvider>
       </div>
