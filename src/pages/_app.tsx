@@ -136,7 +136,7 @@ function MyApp({
         }}
       >
         <Head>
-          {iframedPaths.some((path) => router.pathname.match(path)) && (
+          {!iframedPaths.some((path) => router.pathname.match(path)) && (
             <ConsentBanner>
               <MatomoMarkup
                 matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
