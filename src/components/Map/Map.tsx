@@ -68,7 +68,6 @@ import {
   raccordementsLayerStyle,
   zoneDPLayerStyle,
 } from './Map.style';
-import satelliteConfig from './satellite.config.json';
 import { MapboxStyleSwitcherControl } from './StyleSwitcher';
 
 let hoveredStateId: any;
@@ -111,17 +110,19 @@ const { defaultZoom, maxZoom, minZoom, minZoomData } = mapParam;
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
+const carteConfig =
+  'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json';
 const styles = [
   {
     title: 'Carte',
-    uri: 'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json',
+    uri: carteConfig,
   },
-  {
+  /*{
     title: 'Satellite',
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore: Wrong npm types
     uri: satelliteConfig,
-  },
+  },*/
 ];
 
 const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
