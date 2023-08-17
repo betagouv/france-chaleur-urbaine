@@ -1,5 +1,4 @@
 import Map from '@components/Map/Map';
-import { viasevaPopup } from '@components/Map/components/MapPopup';
 import mapParam from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 
@@ -14,7 +13,6 @@ const EngieMap = () => {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
-        customPopup={viasevaPopup}
         initialLayerDisplay={{
           outline: true,
           futurOutline: false,
@@ -38,6 +36,7 @@ const EngieMap = () => {
           src: '/logo-ENGIE.jpg',
           alt: 'logo ENGIE',
         }}
+        is_viaseva={true}
         filter={[
           'any',
           [
