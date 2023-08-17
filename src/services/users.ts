@@ -27,10 +27,13 @@ export const updateUsers = async () => {
   const emails = ['demo'];
   for (let i = 0; i < airtableUsers.length; i++) {
     const user = airtableUsers[i];
-    const gestionnaires = user.get('Gestionnaires') as string[];
-    if (!gestionnaires || gestionnaires.length === 0) {
+    const rawGestionnaires = user.get('Gestionnaires') as string[];
+    if (!rawGestionnaires || rawGestionnaires.length === 0) {
       continue;
     }
+    const gestionnaires = rawGestionnaires.map((gestionnaire) => {
+      return gestionnaire.trim();
+    });
     existingManager = existingManager.concat(gestionnaires);
     let email = user.get('Email') as string;
     if (email) {
