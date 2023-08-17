@@ -68,6 +68,7 @@ import {
   raccordementsLayerStyle,
   zoneDPLayerStyle,
 } from './Map.style';
+import satelliteConfig from './satellite.config.json';
 import { MapboxStyleSwitcherControl } from './StyleSwitcher';
 
 let hoveredStateId: any;
@@ -117,12 +118,10 @@ const styles = [
     title: 'Carte',
     uri: carteConfig,
   },
-  /*{
+  {
     title: 'Satellite',
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore: Wrong npm types
     uri: satelliteConfig,
-  },*/
+  },
 ];
 
 const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
@@ -1030,7 +1029,7 @@ const Map = ({
               zoom: defaultZoom,
             }}
             mapLib={maplibregl}
-            mapStyle={styles[0].uri}
+            mapStyle={carteConfig}
             attributionControl={false}
             maxZoom={maxZoom}
             minZoom={minZoom}
