@@ -33,7 +33,7 @@ export const MapStyle: any = createGlobalStyle<{
       height: 100%;
     }
 
-    .map, .maplibregl-map.mapboxgl-map {
+    .map, .maplibregl-map {
       position: absolute !important;
       left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : '333px')};
       ${({ withProMode }) => withProMode && 'top: 41px;'}
