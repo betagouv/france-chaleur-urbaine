@@ -1,5 +1,6 @@
 import Map from '@components/Map/Map';
 import mapParam from 'src/services/Map/param';
+import { MapPopupType } from 'src/types/MapComponentsInfos';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 
 const visibleId = [
@@ -36,7 +37,7 @@ const EngieMap = () => {
           src: '/logo-ENGIE.jpg',
           alt: 'logo ENGIE',
         }}
-        is_viaseva={true}
+        popupType={MapPopupType.ENGIE}
         filter={[
           'any',
           [

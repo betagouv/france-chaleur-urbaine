@@ -47,11 +47,6 @@ const csp = {
   ],
   'img-src': ["'self'", 'https:', 'data:'],
   'worker-src': ["'self'", 'blob:'],
-  /*'style-src': [
-    'https://api.mapbox.com/',
-    'https://api.tiles.mapbox.com/',
-    'https://fonts.googleapis.com/',
-  ],*/
 };
 
 if (process.env.UNSAFE_EVAL === 'true') {

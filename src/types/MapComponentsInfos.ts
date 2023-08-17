@@ -4,11 +4,17 @@ export type MapPopupInfos = {
   content: { [x: string]: any };
 };
 
+export enum MapPopupType {
+  DEFAULT = 'default',
+  ENGIE = 'engie',
+  VIASEVA = 'viaseva',
+}
+
 export type MapMarkerInfos = {
   key: string;
   latitude: number;
   longitude: number;
   color?: string;
   popup?: boolean;
-  popup_content?: string;
+  popupContent?: string;
 };

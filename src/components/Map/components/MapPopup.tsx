@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Popup } from 'react-map-gl';
+import { MapPopupType } from 'src/types/MapComponentsInfos';
 import MapPopupContent, { ViasevaPopupContent } from './MapPopupContent';
 
 const MapPopup = ({
   longitude,
   latitude,
   content,
-  is_viaseva,
+  type = MapPopupType.DEFAULT,
 }: {
   longitude: number;
   latitude: number;
   content: { [x: string]: any };
-  is_viaseva: boolean | false;
+  type?: MapPopupType;
 }) => {
   const [show, setShow] = useState<boolean>(false);
 
@@ -34,9 +35,8 @@ const MapPopup = ({
           className="popup-map-layer"
           onClose={() => setShow(false)}
         >
-          {!is_viaseva ? (
-            <MapPopupContent {...content} />
-          ) : (
+          {type == MapPopupType.DEFAULT && <MapPopupContent {...content} />}
+          {(type == MapPopupType.VIASEVA || type == MapPopupType.ENGIE) && (
             <ViasevaPopupContent {...content} />
           )}
         </Popup>

@@ -6,24 +6,24 @@ const MapMarker = ({
   latitude,
   color = '#4550e5',
   popup = false,
-  popup_content = '',
+  popupContent = '',
 }: {
   longitude: number;
   latitude: number;
   color?: string;
   popup?: boolean;
-  popup_content?: string;
+  popupContent?: string;
 }) => {
   const [show, setShow] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
-    if (popup && popup_content != '') {
+    if (popup && popupContent != '') {
       setShow(showPopup);
     } else {
       setShow(false);
     }
-  }, [popup, popup_content, showPopup]);
+  }, [popup, popupContent, showPopup]);
 
   return (
     <Marker
@@ -32,7 +32,7 @@ const MapMarker = ({
       color={color}
       onClick={() => setShowPopup(true)}
     >
-      {show && popup && popup_content != '' && (
+      {show && popup && popupContent != '' && (
         <Popup
           longitude={longitude}
           latitude={latitude}
@@ -40,7 +40,7 @@ const MapMarker = ({
           onClose={() => setShowPopup(false)}
           onOpen={() => setShowPopup(true)}
         >
-          {popup_content}
+          {popupContent}
         </Popup>
       )}
     </Marker>

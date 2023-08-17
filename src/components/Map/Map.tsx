@@ -42,7 +42,11 @@ import mapParam, {
   TypeLayerDisplay,
 } from '../../services/Map/param';
 
-import { MapMarkerInfos, MapPopupInfos } from 'src/types/MapComponentsInfos';
+import {
+  MapMarkerInfos,
+  MapPopupInfos,
+  MapPopupType,
+} from 'src/types/MapComponentsInfos';
 import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
 import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
@@ -171,7 +175,7 @@ const Map = ({
   noPopup,
   legendLogoOpt,
   setProMode,
-  is_viaseva,
+  popupType = MapPopupType.DEFAULT,
   filter,
 }: {
   withoutLogo?: boolean;
@@ -185,7 +189,7 @@ const Map = ({
   withCenterPin?: boolean;
   noPopup?: boolean;
   setProMode?: Dispatch<SetStateAction<boolean>>;
-  is_viaseva?: boolean;
+  popupType?: MapPopupType;
   filter?: any[];
 }) => {
   const { heatNetworkService } = useServices();
@@ -396,7 +400,7 @@ const Map = ({
   }, [layerDisplay]);
 
   const loadFilters = useCallback(() => {
-    if (mapRef.current == null) {
+    if (!mapRef.current) {
       return;
     }
     layerNameOptions.forEach((layerId) => {
@@ -455,7 +459,7 @@ const Map = ({
       gasUsageName,
     ]);
     mapRef.current
-      ?.getMap()
+      .getMap()
       .setFilter(
         'gasUsage',
         layerDisplay.gasUsageGroup && [
@@ -482,11 +486,6 @@ const Map = ({
   }, [withDrawing, mapRef, draw]);
 
   const onLoadMap = (e: MapboxEvent) => {
-    /*if (mapState === 'loaded' || mapRef.current == null) {
-      //Normalement pas besoin, on ne passe ici qu'une fois et mapRef ne sera pas null
-      return;
-    }*/
-
     e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
         defaultStyle: 'Carte',
@@ -554,7 +553,7 @@ const Map = ({
   };
 
   const onSourceDataMap = (e: MapSourceDataEvent) => {
-    if (mapState === 'loaded' || mapRef.current == null) {
+    if (mapState === 'loaded' || !mapRef.current) {
       return;
     }
 
@@ -771,12 +770,12 @@ const Map = ({
 
   useEffect(() => {
     const { id } = router.query;
-    if (!id || mapRef.current == null) {
+    if (!id || !mapRef.current) {
       return;
     }
 
     heatNetworkService.bulkEligibilityValues(id as string).then((response) => {
-      if (response.result && mapRef.current) {
+      if (response.result) {
         const newMarkersList: MapMarkerInfos[] = [];
         response.result.forEach((address) => {
           const newMarker = {
@@ -785,7 +784,7 @@ const Map = ({
             longitude: address.lon,
             color: address.isEligible ? 'green' : 'red',
             popup: true,
-            popup_content: address.label,
+            popupContent: address.label,
           };
           newMarkersList.push(newMarker);
         });
@@ -996,7 +995,7 @@ const Map = ({
             )}
           </>
         )}
-        {withDrawing && (
+        {withDrawing && mapRef.current && (
           <MapControlWrapper legendCollapsed={legendCollapsed}>
             <ZoneInfos
               map={mapRef.current}
@@ -1039,7 +1038,6 @@ const Map = ({
           >
             <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />
             <NavigationControl
-              showCompass={true}
               showZoom={true}
               visualizePitch={true}
               position="top-left"
@@ -1051,7 +1049,7 @@ const Map = ({
                 latitude={popupInfos.latitude}
                 longitude={popupInfos.longitude}
                 content={popupInfos.content}
-                is_viaseva={is_viaseva || false}
+                type={popupType}
               />
             )}
             {markersList.length > 0 &&
@@ -1062,7 +1060,7 @@ const Map = ({
                   latitude={marker.latitude}
                   color={marker.color}
                   popup={marker.popup}
-                  popup_content={marker.popup_content}
+                  popupContent={marker.popupContent}
                 />
               ))}
           </MapReactGL>
