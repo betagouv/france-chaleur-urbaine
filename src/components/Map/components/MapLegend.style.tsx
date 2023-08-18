@@ -132,7 +132,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
   .legend-heat-network-marker,
   .legend-cold-network-marker {
     top: -3px;
-    ::before {
+    :before {
       border-radius: 4px;
       margin: 0 4px;
       min-width: 38px;
@@ -143,27 +143,27 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
   }
 
   .legend-heat-network-marker {
-    ::before {
+    :before {
       border-top: 8px solid ${themeDefHeatNetwork.outline.color};
     }
   }
 
   .legend-classed-heat-network-marker {
-    ::before {
+    :before {
       border-top: 8px solid ${themeDefHeatNetwork.classed.color};
     }
   }
 
   .legend-futur-heat-network-marker {
     margin-bottom: 0;
-    ::before {
+    :before {
       border-top: 8px solid ${themeDefHeatNetwork.futur.color};
     }
   }
   
   .legend-futur-heat-network-zone-marker {
     margin-top: 0;
-    ::before {
+    :before {
       margin: 0 4px;
       width: 32px;
       background-color: ${themeDefHeatNetwork.futur.color};
@@ -174,13 +174,13 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
 
   .legend-cold-network-marker {
     width: 46px;
-    ::before {
+    :before {
       border-top: 8px solid ${themeDefHeatNetwork.cold.color};
     }
   }
   
   .legend-zoneDP-marker {
-    ::before {
+    :before {
       margin: 0 7px 0 7px;
       width: 32px;
       background-color: ${themeDefZoneDP.fill.color};
@@ -190,7 +190,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
   }
 
   .legend-demands-marker {
-    ::before {
+    :before {
       width: 14px;
       height: 14px;
       border-radius: 50%;
@@ -199,7 +199,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
     }
   }
   .legend-raccordements-marker {
-    ::before {
+    :before {
       width: 14px;
       height: 14px;
       background-color: ${themeDefHeatNetwork.classed.color};

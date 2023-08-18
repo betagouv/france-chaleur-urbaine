@@ -30,7 +30,7 @@ const Newsletter = () => {
             type="email"
             placeholder="Paris@villedeparis.fr"
             value={email}
-            onChange={(e: any) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
           {sending ? (
             <Oval height={40} width={40} />
