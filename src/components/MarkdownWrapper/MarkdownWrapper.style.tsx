@@ -71,26 +71,28 @@ type ExtraEventType = {
   trackEvent?: string;
 };
 
-export const ButtonLink = styled.a.attrs<ExtraEventType>((props) => {
-  const { className, tagName, trackEvent } = props;
-  const getMatomoEventKey = (tagName?: TagName) =>
-    (tagName && markupData?.[tagName]?.matomoEvent.form) || [];
-  const trackEventProps = trackEvent
-    ? {
-        onClick: () => {
-          matomoEvent(
-            getMatomoEventKey(tagName),
-            trackEvent.split(',').map((v) => v.trim())
-          );
-        },
-      }
-    : {};
-  return {
-    ...props,
-    ...trackEventProps,
-    className: `fr-btn ${className || ''}`,
-  };
-})``;
+export const ButtonLink = styled.a.attrs(
+  (props: React.HTMLProps<HTMLLinkElement> & ExtraEventType) => {
+    const { className, tagName, trackEvent } = props;
+    const getMatomoEventKey = (tagName?: TagName) =>
+      (tagName && markupData?.[tagName]?.matomoEvent.form) || [];
+    const trackEventProps = trackEvent
+      ? {
+          onClick: () => {
+            matomoEvent(
+              getMatomoEventKey(tagName),
+              trackEvent.split(',').map((v) => v.trim())
+            );
+          },
+        }
+      : {};
+    return {
+      ...props,
+      ...trackEventProps,
+      className: `fr-btn ${className || ''}`,
+    };
+  }
+)``;
 
 export const CounterItem = styled.div`
   display: flex;

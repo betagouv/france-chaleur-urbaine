@@ -37,7 +37,8 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
               acc[key] = value;
             }
             return acc;
-          }, {}),
+          },
+          {}),
         };
       });
 
