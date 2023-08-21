@@ -1,7 +1,6 @@
 import MapReactGL, {
   AttributionControl,
   GeolocateControl,
-  MapboxEvent,
   MapProvider,
   MapRef,
   MapSourceDataEvent,
@@ -485,7 +484,7 @@ const Map = ({
     }
   }, [withDrawing, mapRef, draw]);
 
-  const onLoadMap = (e: MapboxEvent) => {
+  const onLoadMap = (e: any) => {
     e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
         defaultStyle: 'Carte',
