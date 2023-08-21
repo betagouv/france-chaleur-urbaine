@@ -1,8 +1,21 @@
 import db from 'src/db';
-import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
+import { CityNetwork, HeatNetwork } from 'src/types/HeatNetworksResponse';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import XLSX from 'xlsx';
 import isInZDP from './zdp';
+
+const hasNetworkInCity = async (city: string): Promise<boolean> => {
+  const result = await db('reseaux_de_chaleur')
+    .whereRaw('? = any(communes)', [city])
+    .first();
+  return !!result;
+};
+const hasFuturNetworkInCity = async (city: string): Promise<boolean> => {
+  const result = await db('zones_et_reseaux_en_construction')
+    .whereRaw('? = any(communes)', [city])
+    .first();
+  return !!result;
+};
 
 const isOnAnIRISNetwork = async (
   lat: number,
@@ -271,11 +284,21 @@ const isEligible = (distance: number, city: string) => {
   return { isEligible: distance <= 200, veryEligibleDistance: 100 };
 };
 
+export const getCityElibilityStatus = async (
+  city: string
+): Promise<CityNetwork> => {
+  const [cityHasNetwork, cityHasFuturNetwork] = await Promise.all([
+    hasNetworkInCity(city),
+    hasFuturNetworkInCity(city),
+  ]);
+  return { basedOnCity: true, cityHasNetwork, cityHasFuturNetwork };
+};
+
 export const getElibilityStatus = async (
   lat: number,
   lon: number,
   city: string
-): Promise<HeatNetworksResponse> => {
+): Promise<HeatNetwork> => {
   const [inZDP, irisNetwork, inFuturNetwork, futurNetwork, network] =
     await Promise.all([
       isInZDP(lat, lon),

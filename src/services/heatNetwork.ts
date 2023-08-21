@@ -1,11 +1,11 @@
 import { AxiosResponse } from 'axios';
 import { HttpClient } from 'src/services/http';
-import { Coords } from 'src/types/Coords';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ServiceError } from './errors';
+import { SuggestionItem } from 'src/types/Suggestions';
 
 export class HeatNetworkService {
   httpClient: HttpClient;
@@ -13,13 +13,19 @@ export class HeatNetworkService {
     this.httpClient = http;
   }
   async findByCoords(
-    { lon, lat }: Coords,
-    city: string
+    geoAddress: SuggestionItem
   ): Promise<HeatNetworksResponse> {
     try {
-      return await this.httpClient.get<HeatNetworksResponse>(
-        `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${city}`
-      );
+      if (geoAddress.properties.label === geoAddress.properties.city) {
+        return await this.httpClient.get<HeatNetworksResponse>(
+          `/api/map/cityNetwork?&city=${geoAddress.properties.city}`
+        );
+      } else {
+        const [lon, lat] = geoAddress.geometry.coordinates;
+        return await this.httpClient.get<HeatNetworksResponse>(
+          `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${geoAddress.properties.city}`
+        );
+      }
     } catch (e) {
       throw new ServiceError(e);
     }

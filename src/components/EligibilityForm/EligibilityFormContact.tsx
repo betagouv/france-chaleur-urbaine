@@ -96,22 +96,26 @@ const EligibilityFormContact = ({
 
   return (
     <ContactFormWrapper cardMode={cardMode}>
-      <ContactFormContentWrapper cardMode={cardMode}>
-        {!cardMode ? (
-          <>
-            <ContactFormResultMessage eligible={computedEligibility}>
-              <MarkdownWrapper value={body} />
+      {addressData.eligibility?.basedOnCity && !cardMode ? (
+        <>
+          <ContactFormContentWrapper>
+            <ContactFormResultMessage
+              eligible={
+                addressData.eligibility?.cityHasNetwork ||
+                addressData.eligibility?.cityHasFuturNetwork
+              }
+            >
+              {addressData.eligibility?.cityHasNetwork
+                ? 'Un réseau de chaleur passe dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
+                : addressData.eligibility?.cityHasFuturNetwork
+                ? 'Un réseau de chaleur passera bientôt dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
+                : "Il n'y a pour le moment pas de réseau de chaleur dans cette ville"}
             </ContactFormResultMessage>
             <ContactMapResult>
               <Map
                 withCenterPin
                 withoutLogo
-                center={
-                  addressData.coords && [
-                    addressData.coords.lon,
-                    addressData.coords.lat,
-                  ]
-                }
+                center={addressData.geoAddress?.geometry.coordinates}
                 initialLayerDisplay={{
                   outline: true,
                   futurOutline: true,
@@ -129,37 +133,70 @@ const EligibilityFormContact = ({
                 }}
               />
             </ContactMapResult>
-          </>
-        ) : (
-          addressData.heatingType === 'individuel' && (
-            <Alert
-              className="fr-mt-2w"
-              type="warning"
-              small
-              description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
+          </ContactFormContentWrapper>
+        </>
+      ) : (
+        <>
+          <ContactFormContentWrapper cardMode={cardMode}>
+            {!cardMode ? (
+              <>
+                <ContactFormResultMessage eligible={computedEligibility}>
+                  <MarkdownWrapper value={body} />
+                </ContactFormResultMessage>
+                <ContactMapResult>
+                  <Map
+                    withCenterPin
+                    withoutLogo
+                    center={addressData.geoAddress?.geometry.coordinates}
+                    initialLayerDisplay={{
+                      outline: true,
+                      futurOutline: true,
+                      coldOutline: false,
+                      zoneDP: true,
+                      demands: false,
+                      raccordements: false,
+                      gasUsageGroup: false,
+                      buildings: false,
+                      gasUsage: [],
+                      energy: [],
+                      gasUsageValues: [1000, Number.MAX_VALUE],
+                      energyGasValues: [50, Number.MAX_VALUE],
+                      energyFuelValues: [50, Number.MAX_VALUE],
+                    }}
+                  />
+                </ContactMapResult>
+              </>
+            ) : (
+              addressData.heatingType === 'individuel' && (
+                <Alert
+                  className="fr-mt-2w"
+                  type="warning"
+                  small
+                  description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
+                />
+              )
+            )}
+          </ContactFormContentWrapper>
+          <ContactFormContentWrapper cardMode={cardMode}>
+            {!cardMode && (
+              <>
+                <Image
+                  src="/img/logo_rf.png"
+                  alt="logo france chaleur urbaine"
+                  width={50}
+                  height={45}
+                />
+                <MarkdownWrapper value={text} />
+              </>
+            )}
+            <ContactForm
+              onSubmit={handleSubmitForm}
+              isLoading={isSent}
+              cardMode={cardMode}
             />
-          )
-        )}
-      </ContactFormContentWrapper>
-
-      <ContactFormContentWrapper cardMode={cardMode}>
-        {!cardMode && (
-          <>
-            <Image
-              src="/img/logo_rf.png"
-              alt="logo france chaleur urbaine"
-              width={50}
-              height={45}
-            />
-            <MarkdownWrapper value={text} />
-          </>
-        )}
-        <ContactForm
-          onSubmit={handleSubmitForm}
-          isLoading={isSent}
-          cardMode={cardMode}
-        />
-      </ContactFormContentWrapper>
+          </ContactFormContentWrapper>
+        </>
+      )}
     </ContactFormWrapper>
   );
 };

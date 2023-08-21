@@ -36,6 +36,7 @@ export const Title = styled.div`
 
 export const Form = styled.div`
   position: relative;
+  width: 100%;
 `;
 
 export const Close = styled.div`
