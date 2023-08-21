@@ -1,5 +1,6 @@
 {
   "name": "fcu",
+  "copy_parent_database_urls": true,
   "formation": {
     "web": {
       "amount": 1,
