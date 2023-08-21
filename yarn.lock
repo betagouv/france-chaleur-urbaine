@@ -413,7 +413,7 @@
   resolved "https://registry.yarnpkg.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz#497c67a1cef50d1a2459ba60f315e448d2ad87fe"
   integrity sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==
 
-"@maplibre/maplibre-gl-style-spec@^19.3.0":
+"@maplibre/maplibre-gl-style-spec@^19.2.1", "@maplibre/maplibre-gl-style-spec@^19.3.0":
   version "19.3.0"
   resolved "https://registry.yarnpkg.com/@maplibre/maplibre-gl-style-spec/-/maplibre-gl-style-spec-19.3.0.tgz#00a1dde3d389313b0b9805b57fc0b3d023cfcf19"
   integrity sha512-ZbhX9CTV+Z7vHwkRIasDOwTSzr76e8Q6a55RMsAibjyX6+P0ZNL1qAKNzOjjBDP3+aEfNMl7hHo5knuY6pTAUQ==
@@ -802,6 +802,13 @@
   version "2.7.12"
   resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-2.7.12.tgz#df35dcf717bda00dc7177ba91fadbc8b9a53c5dc"
   integrity sha512-aEMMOWlSTn2lp0liLqHsI/vAkV8858mkhn4fFYZELdLO1o6PEKCkkUfQ/GBp603Xfc3xmasLZsoELJBbje+atw==
+  dependencies:
+    "@types/geojson" "*"
+
+"@types/mapbox-gl@>=1.0.0":
+  version "2.7.13"
+  resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-2.7.13.tgz#35f96ca3f8f651ff0258baf081f4bd501874a78b"
+  integrity sha512-qNffhTdYkeFl8QG9Q1zPPJmcs8PvHgmLa1PcwP1rxvcfMsIgcFr/FnrCttG0ZnH7Kzdd7xfECSRNTWSr4jC3PQ==
   dependencies:
     "@types/geojson" "*"
 
@@ -4675,6 +4682,14 @@ react-loader-spinner@^5.3.4:
     react-is "^18.2.0"
     styled-components "^5.3.5"
     styled-tools "^1.7.2"
+
+react-map-gl@^7.0.25:
+  version "7.1.4"
+  resolved "https://registry.yarnpkg.com/react-map-gl/-/react-map-gl-7.1.4.tgz#20e1f4bc376840ba0112edc34e24023b737f6cae"
+  integrity sha512-04LD3XTqr2Ika0OObAJTvON5ut1DDE0nP2pDgd/+09L6SKahVj6XE7ul694xh7INqB4nml6vc/IlWG0TcSHCoA==
+  dependencies:
+    "@maplibre/maplibre-gl-style-spec" "^19.2.1"
+    "@types/mapbox-gl" ">=1.0.0"
 
 react@^18.2.0:
   version "18.2.0"
