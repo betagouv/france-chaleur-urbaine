@@ -72,7 +72,7 @@ const countdownPoint = keyframes`
 export const NavContainer = styled.div`
   display: flex;
 `;
-export const NavPoint = styled.div`
+export const NavPoint = styled.div<{ duration: number }>`
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -112,8 +112,7 @@ export const NavPoint = styled.div`
 
       transition: width 0.5s ease, right 0.5s ease, background-color 0.5s ease;
       animation: ${countdownPoint} linear;
-      animation-duration: ${({ duration }: { duration: number }) =>
-        `${duration}s`};
+      animation-duration: ${({ duration }) => `${duration}s`};
     }
   }
 `;
