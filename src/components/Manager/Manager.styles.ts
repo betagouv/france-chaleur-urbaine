@@ -63,14 +63,13 @@ export const ManagerContainer = styled.div`
   height: 100%;
   width: 100%;
   display: flex;
+  justify-content: space-between;
 `;
 
 export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
   overflow: auto;
-  width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : '50%')};
+  width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : '69%')};
   height: 100%;
-  box-shadow: ${({ mapCollapsed }) =>
-    mapCollapsed ? 'none' : '16px 0px 8px -8px rgba(0, 0, 0, 0.1)'};
   z-index: ${mapControlZindex + 1};
 
   & .fr-table {
@@ -92,7 +91,7 @@ export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
 
 export const MapContainer = styled.div<{ mapCollapsed: boolean }>`
   height: 100%;
-  width: ${({ mapCollapsed }) => (mapCollapsed ? '0%' : '50%')};
+  width: ${({ mapCollapsed }) => (mapCollapsed ? '0%' : '30%')};
   margin-bottom: 2.5rem;
 `;
 
@@ -103,7 +102,7 @@ export const CollapseMap = styled.button<{
   padding: 0px;
   z-index: ${mapControlZindex + 2};
   left: ${({ mapCollapsed }) =>
-    mapCollapsed ? 'calc(100% - (28px + 16px))' : '50%'};
+    mapCollapsed ? 'calc(100% - (28px + 16px))' : 'calc(70%-16px)'};
   top: 50%;
   border-radius: ${({ mapCollapsed }) =>
     mapCollapsed ? '10px 0px 0px 10px' : '0px 10px 10px 0px'};
