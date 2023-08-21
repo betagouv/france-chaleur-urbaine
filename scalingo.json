@@ -1,8 +1,5 @@
 {
   "name": "fcu",
-  "scripts": {
-    "postdeploy": ""
-  },
   "formation": {
     "web": {
       "amount": 1,
