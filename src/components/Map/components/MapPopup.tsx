@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Popup } from 'react-map-gl';
 import { MapPopupType } from 'src/types/MapComponentsInfos';
 import MapPopupContent, { ViasevaPopupContent } from './MapPopupContent';
+import { Point } from 'src/types/Point';
 
 const MapPopup = ({
   longitude,
@@ -30,7 +31,7 @@ const MapPopup = ({
         <Popup
           longitude={longitude}
           latitude={latitude}
-          offset={[0, -10]}
+          offset={[0, -10] as Point}
           closeButton={false}
           className="popup-map-layer"
           onClose={() => setShow(false)}

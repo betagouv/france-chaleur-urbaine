@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Marker, Popup } from 'react-map-gl';
+import { Point } from 'src/types/Point';
 
 const MapMarker = ({
   longitude,
@@ -36,7 +37,7 @@ const MapMarker = ({
         <Popup
           longitude={longitude}
           latitude={latitude}
-          offset={[0, -10]}
+          offset={[0, -10] as Point}
           onClose={() => setShowPopup(false)}
           onOpen={() => setShowPopup(true)}
         >
