@@ -12,10 +12,5 @@
       "amount": 0,
       "size": "S"
     }
-  },
-  "addons": [
-    {
-      "plan": "postgresql:postgresql-sandbox"
-    }
-  ]
+  }
 }
