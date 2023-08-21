@@ -1,5 +1,7 @@
+import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
-import { Table } from '@dataesr/react-dsfr';
+import Map from '@components/Map/Map';
+import { Icon, Table } from '@dataesr/react-dsfr';
 import { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
@@ -12,7 +14,10 @@ import Contact from './Contact';
 import Contacted from './Contacted';
 import {
   ColHeader,
+  CollapseMap,
   Container,
+  ManagerContainer,
+  MapContainer,
   NoResult,
   TableContainer,
 } from './Manager.styles';
@@ -68,6 +73,7 @@ const Manager = () => {
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
   const [sort, setSort] = useState<SortParamType>(defaultSort);
+  const [mapCollapsed, setMapCollapsed] = useState(false);
 
   const handleSort = useCallback(
     (key: keyof Demand, backupKey?: keyof Demand) => () => {
@@ -263,23 +269,67 @@ const Manager = () => {
         setPage={setPage}
       />
       {demands.length > 0 ? (
-        <TableContainer>
-          <div>
-            {filteredDemands.length > 0 ? (
-              <Table
-                columns={demandRowsParams}
-                data={filteredDemands}
-                rowKey="N° de dossier"
-                pagination
-                paginationPosition="center"
-                page={page}
-                setPage={setPage}
-              />
-            ) : (
-              <NoResult>Aucun résultat</NoResult>
-            )}
-          </div>
-        </TableContainer>
+        <ManagerContainer>
+          <TableContainer mapCollapsed={mapCollapsed}>
+            <div>
+              {filteredDemands.length > 0 ? (
+                <Table
+                  columns={demandRowsParams}
+                  data={filteredDemands}
+                  rowKey="N° de dossier"
+                  pagination
+                  paginationPosition="left"
+                  page={page}
+                  setPage={setPage}
+                  tableID="managerTable"
+                />
+              ) : (
+                <NoResult>Aucun résultat</NoResult>
+              )}
+            </div>
+          </TableContainer>
+          <MapContainer mapCollapsed={mapCollapsed}>
+            <>
+              <CollapseMap
+                mapCollapsed={mapCollapsed}
+                onClick={() => setMapCollapsed(!mapCollapsed)}
+              >
+                <Hoverable position="left">
+                  {mapCollapsed ? 'Agrandir la carte' : 'Réduire la carte'}
+                </Hoverable>
+                <Icon
+                  size="2x"
+                  name={
+                    mapCollapsed
+                      ? 'ri-arrow-left-s-fill'
+                      : 'ri-arrow-right-s-fill'
+                  }
+                />
+              </CollapseMap>
+              {!mapCollapsed && (
+                <Map
+                  noPopup
+                  // center={[network.lon, network.lat]}
+                  initialLayerDisplay={{
+                    outline: true,
+                    futurOutline: true,
+                    coldOutline: false,
+                    zoneDP: true,
+                    demands: false,
+                    raccordements: false,
+                    gasUsageGroup: false,
+                    buildings: false,
+                    gasUsage: [],
+                    energy: [],
+                    gasUsageValues: [1000, Number.MAX_VALUE],
+                    energyGasValues: [50, Number.MAX_VALUE],
+                    energyFuelValues: [50, Number.MAX_VALUE],
+                  }}
+                />
+              )}
+            </>
+          </MapContainer>
+        </ManagerContainer>
       ) : (
         <h2>
           {loading

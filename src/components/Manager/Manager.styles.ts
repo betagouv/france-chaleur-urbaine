@@ -4,6 +4,8 @@ import {
 } from '@components/shared/layout';
 import styled, { css } from 'styled-components';
 
+const mapControlZindex = 110;
+
 export const Container = styled.div`
   margin: auto;
   padding: 16px;
@@ -57,8 +59,19 @@ export const NoResult = styled.div`
   font-weight: bold;
 `;
 
-export const TableContainer = styled.div`
+export const ManagerContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+`;
+
+export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
   overflow: auto;
+  width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : '50%')};
+  height: 100%;
+  box-shadow: ${({ mapCollapsed }) =>
+    mapCollapsed ? 'none' : '16px 0px 8px -8px rgba(0, 0, 0, 0.1)'};
+  z-index: ${mapControlZindex + 1};
 
   & .fr-table {
     padding-top: 0 !important;
@@ -74,5 +87,37 @@ export const TableContainer = styled.div`
 
   & > div {
     width: fit-content;
+  }
+`;
+
+export const MapContainer = styled.div<{ mapCollapsed: boolean }>`
+  height: 100%;
+  width: ${({ mapCollapsed }) => (mapCollapsed ? '0%' : '50%')};
+  margin-bottom: 2.5rem;
+`;
+
+export const CollapseMap = styled.button<{
+  mapCollapsed: boolean;
+}>`
+  position: absolute;
+  padding: 0px;
+  z-index: ${mapControlZindex + 2};
+  left: ${({ mapCollapsed }) =>
+    mapCollapsed ? 'calc(100% - (28px + 16px))' : '50%'};
+  top: 50%;
+  border-radius: ${({ mapCollapsed }) =>
+    mapCollapsed ? '10px 0px 0px 10px' : '0px 10px 10px 0px'};
+  background-color: white;
+  border: solid 1px #dddddd;
+  height: 60px;
+  width: 28px;
+  overflow: visible;
+  // ugly hack => hover create issue in mobile
+  @media (min-width: 520px) {
+    &:hover {
+      & > .hover-info {
+        display: block;
+      }
+    }
   }
 `;
