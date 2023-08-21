@@ -18,9 +18,7 @@ export class HeatNetworkService {
   ): Promise<HeatNetworksResponse> {
     try {
       return await this.httpClient.get<HeatNetworksResponse>(
-        `${
-          process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
-        }/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${city}`
+        `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${city}`
       );
     } catch (e) {
       throw new ServiceError(e);
@@ -37,12 +35,7 @@ export class HeatNetworkService {
     error?: boolean;
   }> {
     return this.httpClient
-      .post(
-        `${
-          process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
-        }/api/map/bulkEligibilityStatus`,
-        { addresses, email }
-      )
+      .post('/api/map/bulkEligibilityStatus', { addresses, email })
       .then((response) => response.data);
   }
 
@@ -52,29 +45,19 @@ export class HeatNetworkService {
     result?: any[];
     error?: boolean;
   }> {
-    return this.httpClient.get(
-      `${
-        process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
-      }/api/map/bulkEligibilityStatus/${id}`
-    );
+    return this.httpClient.get(`/api/map/bulkEligibilityStatus/${id}`);
   }
 
   async bulkEligibilityExport(id: string): Promise<string> {
     return this.httpClient
-      .post(
-        `${
-          process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
-        }/api/map/bulkEligibilityStatus/${id}`
-      )
+      .post(`/api/map/bulkEligibilityStatus/${id}`)
       .then((response) => response.data);
   }
 
   async densite(line: number[][][]): Promise<Densite> {
     try {
       return await this.httpClient.get<Densite>(
-        `${
-          process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
-        }/api/map/summary?type=line&coordinates=${encodeURIComponent(
+        `/api/map/summary?type=line&coordinates=${encodeURIComponent(
           JSON.stringify(line)
         )}`
       );
@@ -86,9 +69,7 @@ export class HeatNetworkService {
   async summary(bounds: number[][]): Promise<Summary> {
     try {
       return await this.httpClient.get<Summary>(
-        `${
-          process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
-        }/api/map/summary?type=polygon&coordinates=${encodeURIComponent(
+        `/api/map/summary?type=polygon&coordinates=${encodeURIComponent(
           JSON.stringify(bounds)
         )}`
       );
@@ -133,9 +114,7 @@ export class HeatNetworkService {
     try {
       return await this.httpClient
         .post(
-          `${
-            process.env.NEXT_PUBLIC_MAP_ORIGIN || ''
-          }/api/map/summary?type=polygon&format=${format}&coordinates=${encodeURIComponent(
+          `/api/map/summary?type=polygon&format=${format}&coordinates=${encodeURIComponent(
             JSON.stringify(bounds)
           )}`
         )

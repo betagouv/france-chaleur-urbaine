@@ -495,8 +495,6 @@ const Map = ({
         e.isSourceLoaded
       ) {
         const network = router.query.network as string;
-        const origin =
-          process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
 
         // ---------------
         // --- Zone DP ---
@@ -506,7 +504,7 @@ const Map = ({
           'zoneDP',
           {
             type: 'vector',
-            tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
+            tiles: ['/api/map/zoneDP/{z}/{x}/{y}'],
           },
           [
             {
