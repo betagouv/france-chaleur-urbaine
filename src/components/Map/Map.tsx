@@ -1025,6 +1025,8 @@ const Map = ({
               longitude: mapParam.lng,
               zoom: defaultZoom,
             }}
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore: Wrong npm types
             mapLib={maplibregl}
             mapStyle={carteConfig}
             attributionControl={false}
