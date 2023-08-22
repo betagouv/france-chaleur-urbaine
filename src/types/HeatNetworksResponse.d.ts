@@ -1,6 +1,6 @@
 import { SuggestionItem } from './Suggestions';
 
-export interface HeatNetworksResponse {
+export type HeatNetwork = {
   isEligible: boolean;
   distance: number | null;
   veryEligibleDistance: number | null;
@@ -11,12 +11,20 @@ export interface HeatNetworksResponse {
   tauxENRR: number | null;
   gestionnaire: string | null;
   co2: number | null;
-}
+};
 
-export interface AddressDetail {
+export type CityNetwork = {
+  basedOnCity: true;
+  cityHasNetwork: boolean;
+  cityHasFuturNetwork: boolean;
+};
+
+export type HeatNetworksResponse = HeatNetwork & CityNetwork;
+
+export type AddressDetail = {
   geoAddress?: SuggestionItem;
   network: HeatNetworksResponse;
-}
+};
 
 export type HandleAddressSelect = (
   address: string,

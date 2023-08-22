@@ -111,10 +111,7 @@ const HeadSlice = ({
     const [lon, lat] = geoAddress.geometry.coordinates;
     const coords = { lon, lat };
 
-    const networkData = await heatNetworkService.findByCoords(
-      coords,
-      geoAddress.properties.city
-    );
+    const networkData = await heatNetworkService.findByCoords(geoAddress);
 
     handleOnSuccessAddress({
       address,
