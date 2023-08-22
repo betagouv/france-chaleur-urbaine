@@ -82,7 +82,9 @@ export const NavPoint = styled.div<{ duration: number }>`
   width: 1em;
   height: 1em;
   margin: 0.25em;
-  transition: width 0.5s ease, background-color 0.5s ease;
+  transition:
+    width 0.5s ease,
+    background-color 0.5s ease;
 
   &:first-child {
     margin-left: 0;
@@ -110,7 +112,10 @@ export const NavPoint = styled.div<{ duration: number }>`
       bottom: 0;
       right: 0;
 
-      transition: width 0.5s ease, right 0.5s ease, background-color 0.5s ease;
+      transition:
+        width 0.5s ease,
+        right 0.5s ease,
+        background-color 0.5s ease;
       animation: ${countdownPoint} linear;
       animation-duration: ${({ duration }) => `${duration}s`};
     }
