@@ -186,7 +186,7 @@ const legendData: (string | TypeGroupLegend)[] = [
     entries: [
       {
         id: 'raccordements',
-        label: 'Batiments raccordés à un réseau de chaleur',
+        label: 'Bâtiments raccordés à un réseau de chaleur',
         className: 'legend-raccordements',
       },
     ],

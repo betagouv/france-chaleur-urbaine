@@ -1,8 +1,6 @@
 {
   "name": "fcu",
-  "scripts": {
-    "postdeploy": "yarn db:migrate"
-  },
+  "copy_parent_database_urls": true,
   "formation": {
     "web": {
       "amount": 1,
@@ -13,9 +11,10 @@
       "size": "S"
     }
   },
-  "addons": [
-    {
-      "plan": "postgresql:postgresql-sandbox"
+  "addons": [],
+  "env": {
+    "IS_REVIEW_APP": {
+      "value": "true"
     }
-  ]
+  }
 }
