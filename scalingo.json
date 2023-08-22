@@ -1,8 +1,6 @@
 {
   "name": "fcu",
-  "scripts": {
-    "postdeploy": ""
-  },
+  "copy_parent_database_urls": true,
   "formation": {
     "web": {
       "amount": 1,

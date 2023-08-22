@@ -164,7 +164,6 @@ export const gestionnaires: Record<
   Suresnes: { gestionnaires: ['Dalkia', 'Dalkia_IDF'] },
   Thiais: { gestionnaires: ['ENGIE_Thiais'] },
   Toulouse: { gestionnaires: ['ToulouseM'] },
-  Tours: { gestionnaires: ['Dalkia', 'Dalkia_Tours'] },
   Valenton: { gestionnaires: ['Dalkia', 'Dalkia_IDF', 'Dalkia_Valenton'] },
   Vaujours: { gestionnaires: ['ALEC_MVE'] },
   'Vaulx-en-Velin': { gestionnaires: ['LyonM'] },
