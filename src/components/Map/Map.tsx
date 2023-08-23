@@ -177,6 +177,7 @@ const Map = ({
   setProMode,
   popupType = MapPopupType.DEFAULT,
   filter,
+  pinsList,
 }: {
   withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
@@ -191,6 +192,7 @@ const Map = ({
   setProMode?: Dispatch<SetStateAction<boolean>>;
   popupType?: MapPopupType;
   filter?: any[];
+  pinsList?: MapMarkerInfos[];
 }) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -263,7 +265,7 @@ const Map = ({
     if (mapRef.current && center) {
       if (withCenterPin) {
         const newMarker = {
-          key: getAddressId(center),
+          id: getAddressId(center),
           latitude: center[1],
           longitude: center[0],
         };
@@ -343,9 +345,7 @@ const Map = ({
       soughtAddresses.splice(addressIndex, 1);
       setSoughtAddresses([...soughtAddresses]);
 
-      setMarkersList((current) =>
-        current.filter((marker) => marker.key !== id)
-      );
+      setMarkersList((current) => current.filter((marker) => marker.id !== id));
     },
     [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
   );
@@ -777,7 +777,7 @@ const Map = ({
         const newMarkersList: MapMarkerInfos[] = [];
         response.result.forEach((address) => {
           const newMarker = {
-            key: getAddressId([address.lon, address.lat]),
+            id: getAddressId([address.lon, address.lat]),
             latitude: address.lat,
             longitude: address.lon,
             color: address.isEligible ? 'green' : 'red',
@@ -839,11 +839,11 @@ const Map = ({
         if (mapRef.current) {
           const id = sAddress.id;
           const markerIndex = newMarkersList.findIndex(
-            (marker) => marker.key === id
+            (marker) => marker.id === id
           );
           if (markerIndex == -1) {
             const newMarker = {
-              key: sAddress.id,
+              id: sAddress.id,
               latitude: sAddress.coordinates[1],
               longitude: sAddress.coordinates[0],
             };
@@ -867,6 +867,19 @@ const Map = ({
 
     loadFilters();
   }, [loadFilters, mapState]);
+
+  useEffect(() => {
+    if (pinsList) {
+      if (pinsList.length > 0) {
+        const centerPin: [number, number] = [
+          pinsList[0].longitude,
+          pinsList[0].latitude,
+        ];
+        jumpTo({ coordinates: centerPin, zoom: 8 });
+      }
+      setMarkersList(pinsList);
+    }
+  }, [jumpTo, pinsList]);
 
   return (
     <>
@@ -1055,12 +1068,16 @@ const Map = ({
             {markersList.length > 0 &&
               markersList.map((marker: MapMarkerInfos) => (
                 <MapMarker
-                  key={marker.key}
+                  key={marker.id}
+                  id={marker.id}
                   longitude={marker.longitude}
                   latitude={marker.latitude}
                   color={marker.color}
                   popup={marker.popup}
                   popupContent={marker.popupContent}
+                  onClickAction={
+                    marker.onClickAction ? marker.onClickAction : undefined
+                  }
                 />
               ))}
           </MapReactGL>

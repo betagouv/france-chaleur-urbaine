@@ -2,7 +2,7 @@ import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
 import { Icon, Table } from '@dataesr/react-dsfr';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
 import { RowsParams } from 'src/services/demands';
@@ -24,6 +24,7 @@ import {
 import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
+import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
 
 type SortParamType = {
   key: keyof Demand;
@@ -73,7 +74,10 @@ const Manager = () => {
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
   const [sort, setSort] = useState<SortParamType>(defaultSort);
+  const refManagerTable: null | { current: any } = useRef(null);
   const [mapCollapsed, setMapCollapsed] = useState(false);
+  const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
+  const [centerPin, setCenterPin] = useState<[number, number]>();
 
   const handleSort = useCallback(
     (key: keyof Demand, backupKey?: keyof Demand) => () => {
@@ -96,6 +100,59 @@ const Manager = () => {
     [sort]
   );
 
+  const onCenterPin = useCallback((demand: any) => {
+    setCenterPin([demand.Longitude, demand.Latitude]);
+  }, []);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const onClickMap = useCallback((id: string) => {
+    /*if (refManagerTable.current) {
+      const rows = refManagerTable.current.querySelectorAll('tr');
+      if (rows && rows.length > 0) {
+        const matchingRow: Node | undefined = rows.find((row: Node) => {
+          if (Object.values(row)[0].key) {
+            const fileNumber = Object.values(row)[0].key;
+            if (id == fileNumber) return row;
+          }
+        });
+      }
+    }*/
+    //TODO -- que faire au clic ?
+  }, []);
+
+  const onUpdateMapPins = useCallback(() => {
+    if (refManagerTable.current) {
+      const addressList: MapMarkerInfos[] = [];
+      const rows = refManagerTable.current.querySelectorAll('tr');
+      if (rows && rows.length > 0) {
+        rows.forEach((row: Node) => {
+          if (Object.values(row)[0].key) {
+            const fileNumber = Object.values(row)[0].key;
+            const matchingDemand: any | undefined = demands.find(
+              (demand: any) => {
+                if (demand['N° de dossier'] == fileNumber) return demand;
+              }
+            );
+            if (matchingDemand) {
+              addressList.push({
+                id: fileNumber,
+                latitude: matchingDemand.Latitude,
+                longitude: matchingDemand.Longitude,
+                popup: true,
+                popupContent: matchingDemand.Adresse,
+                onClickAction: onClickMap,
+              });
+              row.addEventListener('click', () => {
+                onCenterPin(matchingDemand);
+              });
+            }
+          }
+        });
+      }
+      setMapPins(addressList);
+    }
+  }, [demands, onCenterPin, onClickMap]);
+
   useEffect(() => {
     demandsService.fetch().then((values) => {
       setDemands(values);
@@ -115,6 +172,17 @@ const Manager = () => {
     },
     [demands, demandsService]
   );
+
+  useEffect(() => {
+    //TODO à changer - pas une bonne pratique
+    if (refManagerTable.current) {
+      onUpdateMapPins();
+    }
+  }, [onUpdateMapPins, refManagerTable.current]);
+
+  useEffect(() => {
+    onUpdateMapPins();
+  }, [onUpdateMapPins, page]);
 
   const demandRowsParams: RowsParams[] = [
     {
@@ -271,7 +339,7 @@ const Manager = () => {
       {demands.length > 0 ? (
         <ManagerContainer>
           <TableContainer mapCollapsed={mapCollapsed}>
-            <div>
+            <div ref={refManagerTable}>
               {filteredDemands.length > 0 ? (
                 <Table
                   columns={demandRowsParams}
@@ -281,7 +349,6 @@ const Manager = () => {
                   paginationPosition="left"
                   page={page}
                   setPage={setPage}
-                  tableID="managerTable"
                 />
               ) : (
                 <NoResult>Aucun résultat</NoResult>
@@ -309,7 +376,8 @@ const Manager = () => {
               {!mapCollapsed && (
                 <Map
                   noPopup
-                  // center={[network.lon, network.lat]}
+                  withoutLogo
+                  center={centerPin ? centerPin : undefined}
                   initialLayerDisplay={{
                     outline: true,
                     futurOutline: true,
@@ -325,6 +393,7 @@ const Manager = () => {
                     energyGasValues: [50, Number.MAX_VALUE],
                     energyFuelValues: [50, Number.MAX_VALUE],
                   }}
+                  pinsList={mapPins}
                 />
               )}
             </>

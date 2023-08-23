@@ -1,19 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Marker, Popup } from 'react-map-gl';
 import { Point } from 'src/types/Point';
 
 const MapMarker = ({
+  id,
   longitude,
   latitude,
   color = '#4550e5',
   popup = false,
   popupContent = '',
+  onClickAction = undefined,
 }: {
+  id: string;
   longitude: number;
   latitude: number;
   color?: string;
   popup?: boolean;
   popupContent?: string;
+  onClickAction?: (arg: string) => void;
 }) => {
   const [show, setShow] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
@@ -26,12 +30,19 @@ const MapMarker = ({
     }
   }, [popup, popupContent, showPopup]);
 
+  const onClickMarker = useCallback(() => {
+    if (onClickAction != undefined) {
+      onClickAction(id);
+    }
+    setShowPopup(true);
+  }, [onClickAction, id]);
+
   return (
     <Marker
       longitude={longitude}
       latitude={latitude}
       color={color}
-      onClick={() => setShowPopup(true)}
+      onClick={() => onClickMarker()}
     >
       {show && popup && popupContent != '' && (
         <Popup

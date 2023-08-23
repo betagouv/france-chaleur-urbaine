@@ -80,7 +80,10 @@ export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
     max-height: 100% !important;
     & th,
     & td {
-      padding: 0.5rem !important;
+      padding: 0rem !important;
+      & .demandCell {
+        padding: 0.5rem !important;
+      }
     }
   }
 
