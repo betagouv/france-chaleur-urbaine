@@ -92,14 +92,6 @@ const Manager = () => {
     [sort]
   );
 
-  const onFilterUpdate = useCallback(
-    (demands: Demand[]) => {
-      const sortedDemands = getSortBy(demands)(sort);
-      setFilteredDemands(sortedDemands);
-    },
-    [sort]
-  );
-
   const onCenterPin = useCallback((demand: any) => {
     setCenterPin([demand.Longitude, demand.Latitude]);
   }, []);
@@ -152,6 +144,15 @@ const Manager = () => {
       setMapPins(addressList);
     }
   }, [demands, onCenterPin, onClickMap]);
+
+  const onFilterUpdate = useCallback(
+    (demands: Demand[]) => {
+      const sortedDemands = getSortBy(demands)(sort);
+      setFilteredDemands(sortedDemands);
+      onUpdateMapPins();
+    },
+    [sort, onUpdateMapPins]
+  );
 
   useEffect(() => {
     demandsService.fetch().then((values) => {
