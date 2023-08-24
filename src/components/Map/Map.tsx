@@ -1,3 +1,14 @@
+import MapReactGL, {
+  AttributionControl,
+  GeolocateControl,
+  MapEvent,
+  MapProvider,
+  MapRef,
+  MapSourceDataEvent,
+  NavigationControl,
+  ScaleControl,
+} from 'react-map-gl';
+
 import Hoverable from '@components/Hoverable';
 import { Icon, Toggle } from '@dataesr/react-dsfr';
 import { useContactFormFCU, usePersistedState } from '@hooks';
@@ -25,39 +36,44 @@ import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
 import mapParam, {
   EnergyNameOption,
-  LayerNameOption,
-  TypeLayerDisplay,
   gasUsageNameOption,
+  LayerNameOption,
   layerNameOptions,
+  TypeLayerDisplay,
 } from '../../services/Map/param';
 
 import {
+  MapMarkerInfos,
+  MapPopupInfos,
+  MapPopupType,
+} from 'src/types/MapComponentsInfos';
+import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
+import MapMarker from './components/MapMarker';
+import MapPopup from './components/MapPopup';
+import ZoneInfos from './components/SummaryBoxes';
+import {
+  buildingsLayerStyle,
+  coldOutlineLayerStyle,
   CollapseLegend,
+  demandsLayerStyle,
+  energyLayerStyle,
+  futurOutlineLayerStyle,
+  futurZoneLayerStyle,
+  gasUsageLayerStyle,
   Legend,
   LegendLogo,
   LegendLogoList,
   LegendSeparator,
   MapControlWrapper,
   MapStyle,
-  ProMode,
-  buildingsLayerStyle,
-  coldOutlineLayerStyle,
-  demandsLayerStyle,
-  energyLayerStyle,
-  futurOutlineLayerStyle,
-  futurZoneLayerStyle,
-  gasUsageLayerStyle,
   objTypeEnergy,
   outlineLayerStyle,
+  ProMode,
   raccordementsLayerStyle,
   zoneDPLayerStyle,
 } from './Map.style';
-import { formatBodyPopup } from './MapPopup';
+import satelliteConfig from './satellite.config.json';
 import { MapboxStyleSwitcherControl } from './StyleSwitcher';
-import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
-import ZoneInfos from './components/SummaryBoxes';
-import { useMapPopup } from './hooks';
-import satelliteConfig from './satellite.config';
 
 let hoveredStateId: any;
 const setHoveringState = (
@@ -99,15 +115,15 @@ const { defaultZoom, maxZoom, minZoom, minZoomData } = mapParam;
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
+const carteConfig =
+  'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json';
 const styles = [
   {
     title: 'Carte',
-    uri: 'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json',
+    uri: carteConfig,
   },
   {
     title: 'Satellite',
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore: Wrong npm types
     uri: satelliteConfig,
   },
 ];
@@ -158,8 +174,8 @@ const Map = ({
   withCenterPin,
   noPopup,
   legendLogoOpt,
-  customPopup,
   setProMode,
+  popupType = MapPopupType.DEFAULT,
   filter,
 }: {
   withoutLogo?: boolean;
@@ -172,8 +188,8 @@ const Map = ({
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
   noPopup?: boolean;
-  customPopup?: (args: any) => string;
   setProMode?: Dispatch<SetStateAction<boolean>>;
+  popupType?: MapPopupType;
   filter?: any[];
 }) => {
   const { heatNetworkService } = useServices();
@@ -181,20 +197,20 @@ const Map = ({
 
   const [drawing, setDrawing] = useState(false);
   const [collapsedCardIndex, setCollapsedCardIndex] = useState(0);
-  const mapContainer: null | { current: any } = useRef(null);
-  const map: null | { current: any } = useRef(null);
+  const mapRef = useRef<MapRef>(null);
   const draw: null | { current: any } = useRef(null);
+  const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
+  const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 1251);
   }, []);
-
   useEffect(() => {
-    if (map && map.current) {
-      map.current.resize();
+    if (mapRef.current) {
+      mapRef.current.getMap().resize();
     }
-  }, [map, legendCollapsed]);
+  }, [mapRef, legendCollapsed]);
 
   const [mapState, setMapState] = useState('pending');
   const [layerDisplay, setLayerDisplay] =
@@ -206,8 +222,7 @@ const Map = ({
     {
       beforeStorage: (value: any) => {
         const newValue = value.map((address: any) => {
-          const { marker, ...parsableAddress } = address;
-          return parsableAddress;
+          return address;
         });
         return newValue;
       },
@@ -215,11 +230,16 @@ const Map = ({
   );
 
   const router = useRouter();
-  const [, , updateClickedPoint] = useMapPopup(map.current, {
-    bodyFormater: (args) =>
-      customPopup ? customPopup(args) : formatBodyPopup(args),
-    className: 'popup-map-layer',
-  });
+
+  const onMapClick = (e: any, key: string) => {
+    const properties = e.features[0].properties;
+    const { lat, lng } = e.lngLat;
+    setPopupInfos({
+      latitude: lat,
+      longitude: lng,
+      content: { [key]: properties },
+    });
+  };
 
   const jumpTo = useCallback(
     ({
@@ -229,13 +249,29 @@ const Map = ({
       coordinates: [number, number];
       zoom?: number;
     }) => {
-      map.current.jumpTo({
-        center: { lon: coordinates[0], lat: coordinates[1] },
-        zoom: zoom || 16,
-      });
+      if (mapRef.current) {
+        mapRef.current.jumpTo({
+          center: { lon: coordinates[0], lat: coordinates[1] },
+          zoom: zoom || 16,
+        });
+      }
     },
     []
   );
+
+  const jumpToWithPin = useCallback(() => {
+    if (mapRef.current && center) {
+      if (withCenterPin) {
+        const newMarker = {
+          key: getAddressId(center),
+          latitude: center[1],
+          longitude: center[0],
+        };
+        setMarkersList([newMarker]);
+      }
+      jumpTo({ coordinates: center, zoom: 13 });
+    }
+  }, [center, jumpTo, withCenterPin]);
 
   const markAddressAsContacted = (address: Partial<StoredAddress>) => {
     setSoughtAddresses(
@@ -290,7 +326,7 @@ const Map = ({
   );
 
   const removeSoughtAddresses = useCallback(
-    (result: { marker?: any; coordinates?: Point }) => {
+    (result: { coordinates?: Point }) => {
       if (!result.coordinates) {
         return;
       }
@@ -306,7 +342,10 @@ const Map = ({
 
       soughtAddresses.splice(addressIndex, 1);
       setSoughtAddresses([...soughtAddresses]);
-      result.marker?.remove();
+
+      setMarkersList((current) =>
+        current.filter((marker) => marker.key !== id)
+      );
     },
     [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
   );
@@ -361,20 +400,27 @@ const Map = ({
   }, [layerDisplay]);
 
   const loadFilters = useCallback(() => {
+    if (!mapRef.current) {
+      return;
+    }
     layerNameOptions.forEach((layerId) => {
-      if (map.current.getLayer(layerId)) {
+      if (mapRef.current?.getMap().getLayer(layerId)) {
         if (layerId === 'futurOutline') {
-          map.current.setLayoutProperty(
-            'futurZone',
+          mapRef.current
+            .getMap()
+            .setLayoutProperty(
+              'futurZone',
+              'visibility',
+              layerDisplay[layerId] ? 'visible' : 'none'
+            );
+        }
+        mapRef.current
+          .getMap()
+          .setLayoutProperty(
+            layerId,
             'visibility',
             layerDisplay[layerId] ? 'visible' : 'none'
           );
-        }
-        map.current.setLayoutProperty(
-          layerId,
-          'visibility',
-          layerDisplay[layerId] ? 'visible' : 'none'
-        );
       } else {
         console.warn(`Layer '${layerId}' is not set on map`);
       }
@@ -403,7 +449,7 @@ const Map = ({
           ];
         })
     );
-    map.current.setFilter('energy', ['any', ...energyFilter]);
+    mapRef.current.getMap().setFilter('energy', ['any', ...energyFilter]);
 
     // GasUsage
     const TYPE_GAS = 'code_grand';
@@ -412,51 +458,35 @@ const Map = ({
       ['get', TYPE_GAS],
       gasUsageName,
     ]);
-    map.current.setFilter(
-      'gasUsage',
-      layerDisplay.gasUsageGroup && [
-        'all',
-        layerDisplay.gasUsageValues
-          ? [
-              'all',
-              ['>=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[0]],
-              ['<=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[1]],
-            ]
-          : true,
-        ['any', ...gasUsageFilter],
-      ]
-    );
-  }, [map, layerDisplay]);
+    mapRef.current
+      .getMap()
+      .setFilter(
+        'gasUsage',
+        layerDisplay.gasUsageGroup && [
+          'all',
+          layerDisplay.gasUsageValues
+            ? [
+                'all',
+                ['>=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[0]],
+                ['<=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[1]],
+              ]
+            : true,
+          ['any', ...gasUsageFilter],
+        ]
+      );
+  }, [mapRef, layerDisplay]);
 
   useEffect(() => {
-    if (withDrawing && draw.current === null && map.current) {
+    if (withDrawing && draw.current === null && mapRef.current) {
       draw.current = new MapboxDraw({
         displayControlsDefault: false,
       });
-      map.current.addControl(draw.current);
+      mapRef.current.addControl(draw.current);
     }
-  }, [withDrawing, map, draw]);
+  }, [withDrawing, mapRef, draw]);
 
-  useEffect(() => {
-    if (mapState === 'loaded' || map.current) {
-      return;
-    }
-
-    map.current = new maplibregl.Map({
-      attributionControl: false,
-      container: mapContainer.current,
-      style: styles[0].uri,
-      center: center || [mapParam.lng, mapParam.lat],
-      zoom: defaultZoom,
-      maxZoom,
-      minZoom,
-    });
-    map.current.addControl(
-      new maplibregl.GeolocateControl({
-        fitBoundsOptions: { maxZoom: 13 },
-      })
-    );
-    map.current.addControl(
+  const onLoadMap = (e: MapEvent) => {
+    e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
         defaultStyle: 'Carte',
         eventListeners: {
@@ -483,316 +513,287 @@ const Map = ({
       { name: 'raccordements', key: 'raccordement' },
     ];
 
-    const onMapClick = (e: any, key: string) => {
-      const properties = e.features[0].properties;
-      const { lat, lng } = e.lngLat;
-      updateClickedPoint([lng, lat], { [key]: properties });
-    };
+    e.target.loadImage('/icons/rect.png', (error, image) => {
+      if (error) {
+        throw error;
+      }
 
-    map.current.on('sourcedata', (e: any) => {
-      if (
-        (e.sourceId === 'openmaptiles' || e.sourceId === 'raster-tiles') &&
-        e.isSourceLoaded
-      ) {
-        const network = router.query.network as string;
-        const origin =
-          process.env.NEXT_PUBLIC_MAP_ORIGIN ?? document.location.origin;
+      setMapState('loaded');
+      if (image) {
+        e.target.addImage('energy-picto', image, { sdf: true });
+      }
 
-        // ---------------
-        // --- Zone DP ---
-        // ---------------
-        addSource(
-          map.current,
-          'zoneDP',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
-          },
-          [
-            {
-              id: 'zoneDP',
-              source: 'zoneDP',
-              'source-layer': 'zoneDP',
-              ...zoneDPLayerStyle,
-            },
-          ]
-        );
+      if (!noPopup) {
+        clickEvents.map(({ name, key }) => {
+          e.target.on('click', name, (e: any) => {
+            onMapClick(e, key);
+          });
 
-        // --------------------
-        // --- Heat Network ---
-        // --------------------
-        addSource(
-          map.current,
-          'coldNetwork',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/coldNetwork/{z}/{x}/{y}`],
-          },
-          [
-            {
-              id: 'coldOutline',
-              source: 'coldNetwork',
-              'source-layer': 'coldOutline',
-              ...coldOutlineLayerStyle,
-              ...getNetworkFilter(network, filter),
-            },
-          ]
-        );
+          e.target.on('touchend', name, (e: any) => {
+            onMapClick(e, key);
+          });
 
-        addSource(
-          map.current,
-          'heatFuturNetwork',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/futurNetwork/{z}/{x}/{y}`],
-          },
-          [
-            {
-              id: 'futurZone',
-              source: 'heatFuturNetwork',
-              'source-layer': 'futurOutline',
-              ...getNetworkFilter(undefined, filter, [
-                '==',
-                ['get', 'is_zone'],
-                true,
-              ]),
-              ...futurZoneLayerStyle,
-            },
-            {
-              id: 'futurOutline',
-              source: 'heatFuturNetwork',
-              'source-layer': 'futurOutline',
-              ...getNetworkFilter(undefined, filter, [
-                '==',
-                ['get', 'is_zone'],
-                false,
-              ]),
-              ...futurOutlineLayerStyle,
-            },
-          ]
-        );
-        addSource(
-          map.current,
-          'heatNetwork',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
-          },
-          [
-            {
-              id: 'outline',
-              source: 'heatNetwork',
-              'source-layer': 'outline',
-              ...outlineLayerStyle,
-              ...getNetworkFilter(network, filter),
-            },
-          ]
-        );
+          e.target.on('mouseenter', name, function () {
+            e.target.getCanvas().style.cursor = 'pointer';
+          });
 
-        // -----------------
-        // --- Buildings ---
-        // -----------------
-        addSource(
-          map.current,
-          'buildings',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/buildings/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          },
-          [
-            {
-              id: 'buildings',
-              source: 'buildings',
-              'source-layer': 'buildings',
-              ...buildingsLayerStyle,
-            },
-          ]
-        );
+          e.target.on('mouseleave', name, function () {
+            e.target.getCanvas().style.cursor = '';
+          });
+        });
+      }
 
-        // -----------------
-        // --- Gas Usage ---
-        // -----------------
-        addSource(
-          map.current,
-          'gasUsage',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          },
-          [
-            {
-              id: 'gasUsage',
-              source: 'gasUsage',
-              'source-layer': 'gasUsage',
-              ...gasUsageLayerStyle,
-            },
-          ]
-        );
-
-        // --------------
-        // --- Energy ---
-        // --------------
-        addSource(
-          map.current,
-          'energy',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          },
-          [
-            {
-              id: 'energy',
-              source: 'energy',
-              'source-layer': 'energy',
-              ...energyLayerStyle,
-            },
-          ]
-        );
-
-        // -----------------
-        // --- Demands ---
-        // -----------------
-        addSource(
-          map.current,
-          'demands',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
-          },
-          [
-            {
-              id: 'demands',
-              source: 'demands',
-              'source-layer': 'demands',
-              ...demandsLayerStyle,
-            },
-          ]
-        );
-
-        // -----------------
-        // --- Raccordements ---
-        // -----------------
-        addSource(
-          map.current,
-          'raccordements',
-          {
-            type: 'vector',
-            tiles: [`${origin}/api/map/raccordements/{z}/{x}/{y}`],
-            maxzoom: maxZoom,
-            minzoom: minZoomData,
-          },
-          [
-            {
-              id: 'raccordements',
-              source: 'raccordements',
-              'source-layer': 'raccordements',
-              ...raccordementsLayerStyle,
-            },
-          ]
-        );
-        setMapState('loaded');
+      if (mapRef) {
+        addHover(mapRef, 'heatNetwork', 'outline');
+        addHover(mapRef, 'heatFuturNetwork', 'futurOutline');
+        addHover(mapRef, 'coldNetwork', 'coldOutline');
+        jumpToWithPin();
       }
     });
+  };
 
-    map.current.on('load', () => {
-      map.current.loadImage(
-        '/icons/rect.png',
-        (error: any, image: Record<string, unknown>) => {
-          if (error) {
-            throw error;
-          }
+  const onSourceDataMap = (e: MapSourceDataEvent) => {
+    if (mapState === 'loaded' || !mapRef.current) {
+      return;
+    }
 
-          setMapState('loaded');
-          map.current.addImage('energy-picto', image, { sdf: true });
+    if (
+      (e.sourceId === 'openmaptiles' || e.sourceId === 'raster-tiles') &&
+      e.isSourceLoaded
+    ) {
+      const network = router.query.network as string;
 
-          if (!noPopup) {
-            clickEvents.map(({ name, key }) => {
-              map.current.on('click', name, (e: any) => {
-                onMapClick(e, key);
-              });
-
-              map.current.on('touchend', name, (e: any) => {
-                onMapClick(e, key);
-              });
-
-              map.current.on('mouseenter', name, function () {
-                map.current.getCanvas().style.cursor = 'pointer';
-              });
-
-              map.current.on('mouseleave', name, function () {
-                map.current.getCanvas().style.cursor = '';
-              });
-            });
-          }
-
-          addHover(map, 'heatNetwork', 'outline');
-          addHover(map, 'heatFuturNetwork', 'futurOutline');
-          addHover(map, 'coldNetwork', 'coldOutline');
-
-          // ----------------
-          // --- Controls ---
-          // ----------------
-          const navControl = new maplibregl.NavigationControl({
-            showCompass: true,
-            showZoom: true,
-            visualizePitch: true,
-          });
-          map.current.addControl(navControl, 'top-left');
-
-          const attributionControl = new maplibregl.AttributionControl({
-            compact: false,
-          });
-          map.current.addControl(attributionControl, 'bottom-right');
-
-          const scaleControl = new maplibregl.ScaleControl({
-            maxWidth: 100,
-            unit: 'metric',
-          });
-          map.current.addControl(scaleControl, 'bottom-left');
-        }
+      // ---------------
+      // --- Zone DP ---
+      // ---------------
+      addSource(
+        e.target,
+        'zoneDP',
+        {
+          type: 'vector',
+          tiles: ['/api/map/zoneDP/{z}/{x}/{y}'],
+        },
+        [
+          {
+            id: 'zoneDP',
+            source: 'zoneDP',
+            'source-layer': 'zoneDP',
+            ...zoneDPLayerStyle,
+          },
+        ]
       );
-    });
-  });
+
+      // --------------------
+      // --- Heat Network ---
+      // --------------------
+      addSource(
+        e.target,
+        'coldNetwork',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/coldNetwork/{z}/{x}/{y}`],
+        },
+        [
+          {
+            id: 'coldOutline',
+            source: 'coldNetwork',
+            'source-layer': 'coldOutline',
+            ...coldOutlineLayerStyle,
+            ...getNetworkFilter(network, filter),
+          },
+        ]
+      );
+
+      addSource(
+        e.target,
+        'heatFuturNetwork',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/futurNetwork/{z}/{x}/{y}`],
+        },
+        [
+          {
+            id: 'futurZone',
+            source: 'heatFuturNetwork',
+            'source-layer': 'futurOutline',
+            ...getNetworkFilter(undefined, filter, [
+              '==',
+              ['get', 'is_zone'],
+              true,
+            ]),
+            ...futurZoneLayerStyle,
+          },
+          {
+            id: 'futurOutline',
+            source: 'heatFuturNetwork',
+            'source-layer': 'futurOutline',
+            ...getNetworkFilter(undefined, filter, [
+              '==',
+              ['get', 'is_zone'],
+              false,
+            ]),
+
+            ...futurOutlineLayerStyle,
+          },
+        ]
+      );
+      addSource(
+        e.target,
+        'heatNetwork',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
+        },
+        [
+          {
+            id: 'outline',
+            source: 'heatNetwork',
+            'source-layer': 'outline',
+            ...outlineLayerStyle,
+            ...getNetworkFilter(network, filter),
+          },
+        ]
+      );
+
+      // -----------------
+      // --- Buildings ---
+      // -----------------
+      addSource(
+        e.target,
+        'buildings',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/buildings/{z}/{x}/{y}`],
+          maxzoom: maxZoom,
+          minzoom: minZoomData,
+        },
+        [
+          {
+            id: 'buildings',
+            source: 'buildings',
+            'source-layer': 'buildings',
+            ...buildingsLayerStyle,
+          },
+        ]
+      );
+
+      // -----------------
+      // --- Gas Usage ---
+      // -----------------
+      addSource(
+        e.target,
+        'gasUsage',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
+          maxzoom: maxZoom,
+          minzoom: minZoomData,
+        },
+        [
+          {
+            id: 'gasUsage',
+            source: 'gasUsage',
+            'source-layer': 'gasUsage',
+            ...gasUsageLayerStyle,
+          },
+        ]
+      );
+
+      // --------------
+      // --- Energy ---
+      // --------------
+      addSource(
+        e.target,
+        'energy',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
+          maxzoom: maxZoom,
+          minzoom: minZoomData,
+        },
+        [
+          {
+            id: 'energy',
+            source: 'energy',
+            'source-layer': 'energy',
+            ...energyLayerStyle,
+          },
+        ]
+      );
+
+      // -----------------
+      // --- Demands ---
+      // -----------------
+      addSource(
+        e.target,
+        'demands',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
+        },
+        [
+          {
+            id: 'demands',
+            source: 'demands',
+            'source-layer': 'demands',
+            ...demandsLayerStyle,
+          },
+        ]
+      );
+
+      // -----------------
+      // --- Raccordements ---
+      // -----------------
+      addSource(
+        e.target,
+        'raccordements',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/raccordements/{z}/{x}/{y}`],
+          maxzoom: maxZoom,
+          minzoom: minZoomData,
+        },
+        [
+          {
+            id: 'raccordements',
+            source: 'raccordements',
+            'source-layer': 'raccordements',
+            ...raccordementsLayerStyle,
+          },
+        ]
+      );
+      setMapState('loaded');
+    }
+  };
 
   useEffect(() => {
     const { id } = router.query;
-    if (!id) {
+    if (!id || !mapRef.current) {
       return;
     }
 
     heatNetworkService.bulkEligibilityValues(id as string).then((response) => {
       if (response.result) {
+        const newMarkersList: MapMarkerInfos[] = [];
         response.result.forEach((address) => {
-          const popup = new maplibregl.Popup().setText(address.label);
-          new maplibregl.Marker({
+          const newMarker = {
+            key: getAddressId([address.lon, address.lat]),
+            latitude: address.lat,
+            longitude: address.lon,
             color: address.isEligible ? 'green' : 'red',
-          })
-            .setLngLat([address.lon, address.lat])
-            .setPopup(popup)
-            .addTo(map.current);
+            popup: true,
+            popupContent: address.label,
+          };
+          newMarkersList.push(newMarker);
         });
+        setMarkersList(newMarkersList);
       }
     });
   }, [router.query, heatNetworkService]);
 
   useEffect(() => {
-    if (map.current && center) {
-      if (withCenterPin) {
-        new maplibregl.Marker({
-          color: '#4550e5',
-        })
-          .setLngLat(center)
-          .addTo(map.current);
-      }
-      jumpTo({ coordinates: center, zoom: 13 });
-    }
-  }, [jumpTo, map, center, withCenterPin]);
+    jumpToWithPin();
+  }, [center, jumpToWithPin]);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -832,28 +833,32 @@ const Map = ({
 
   useEffect(() => {
     let shouldUpdate = false;
+    const newMarkersList: MapMarkerInfos[] = markersList;
     const newSoughtAddresses = soughtAddresses.map(
       (sAddress: any | never[]) => {
-        if (!sAddress.marker) {
-          const marker = new maplibregl.Marker({
-            color: '#4550e5',
-          })
-            .setLngLat(sAddress.coordinates)
-            .addTo(map.current);
-          shouldUpdate = true;
-          return {
-            marker,
-            ...sAddress,
-          };
-        } else {
-          return sAddress;
+        if (mapRef.current) {
+          const id = sAddress.id;
+          const markerIndex = newMarkersList.findIndex(
+            (marker) => marker.key === id
+          );
+          if (markerIndex == -1) {
+            const newMarker = {
+              key: sAddress.id,
+              latitude: sAddress.coordinates[1],
+              longitude: sAddress.coordinates[0],
+            };
+            newMarkersList.push(newMarker);
+            shouldUpdate = true;
+          }
         }
+        return sAddress;
       }
     );
     if (shouldUpdate) {
       setSoughtAddresses(newSoughtAddresses);
+      setMarkersList(newMarkersList);
     }
-  }, [setSoughtAddresses, soughtAddresses]);
+  }, [markersList, setMarkersList, setSoughtAddresses, soughtAddresses]);
 
   useEffect(() => {
     if (mapState === 'pending') {
@@ -988,10 +993,10 @@ const Map = ({
             )}
           </>
         )}
-        {withDrawing && (
+        {withDrawing && mapRef.current && (
           <MapControlWrapper legendCollapsed={legendCollapsed}>
             <ZoneInfos
-              map={map.current}
+              map={mapRef.current}
               draw={draw.current}
               setDrawing={setDrawing}
             />
@@ -1013,7 +1018,53 @@ const Map = ({
             />
           </ProMode>
         )}
-        <div ref={mapContainer} className="map"></div>
+        <MapProvider>
+          <MapReactGL
+            initialViewState={{
+              latitude: mapParam.lat,
+              longitude: mapParam.lng,
+              zoom: defaultZoom,
+            }}
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore: Wrong npm types
+            mapLib={maplibregl}
+            mapStyle={carteConfig}
+            attributionControl={false}
+            maxZoom={maxZoom}
+            minZoom={minZoom}
+            onLoad={onLoadMap}
+            onSourceData={onSourceDataMap}
+            ref={mapRef}
+          >
+            <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />
+            <NavigationControl
+              showZoom={true}
+              visualizePitch={true}
+              position="top-left"
+            />
+            <AttributionControl compact={false} position="bottom-right" />
+            <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
+            {popupInfos && (
+              <MapPopup
+                latitude={popupInfos.latitude}
+                longitude={popupInfos.longitude}
+                content={popupInfos.content}
+                type={popupType}
+              />
+            )}
+            {markersList.length > 0 &&
+              markersList.map((marker: MapMarkerInfos) => (
+                <MapMarker
+                  key={marker.key}
+                  longitude={marker.longitude}
+                  latitude={marker.latitude}
+                  color={marker.color}
+                  popup={marker.popup}
+                  popupContent={marker.popupContent}
+                />
+              ))}
+          </MapReactGL>
+        </MapProvider>
       </div>
     </>
   );

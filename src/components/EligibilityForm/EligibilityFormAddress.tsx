@@ -1,9 +1,8 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { AddressDataType } from 'src/types/AddressData';
-import { Coords } from 'src/types/Coords';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
@@ -41,9 +40,12 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
   onSuccess,
 }) => {
   const router = useRouter();
-  const [lon, lat] = fullAddress?.addressDetails?.geoAddress?.geometry
-    ?.coordinates || [null, null];
-  const coords = (lon ?? lat) && { lon, lat };
+  const coords = useMemo(() => {
+    const [lon, lat] = fullAddress?.addressDetails?.geoAddress?.geometry
+      ?.coordinates || [null, null];
+    return (lon ?? lat) && { lon, lat };
+  }, [fullAddress]);
+
   const defaultData: AddressDataType = {
     address: fullAddress?.address,
     eligibility: fullAddress?.addressDetails?.network,
@@ -65,13 +67,12 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
 
   const checkEligibility = useCallback(
     async (
-      coords: Coords,
-      city: string,
+      geoAddress: SuggestionItem,
       callBack: (response: HeatNetworksResponse) => void
     ) => {
       try {
         setStatus('loading');
-        const networkData = await heatNetworkService.findByCoords(coords, city);
+        const networkData = await heatNetworkService.findByCoords(geoAddress);
         callBack(networkData);
         setStatus('success');
       } catch (e) {
@@ -90,22 +91,17 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       if (onFetch) {
         onFetch({ address, geoAddress });
       }
-      const [lon, lat] = geoAddress.geometry.coordinates;
-      const coords = { lon, lat };
-      await checkEligibility(
-        coords,
-        geoAddress.properties.city,
-        (response: HeatNetworksResponse) =>
-          setData({
-            ...data,
-            address,
-            coords,
-            geoAddress,
-            eligibility: response,
-          })
+      await checkEligibility(geoAddress, (response: HeatNetworksResponse) =>
+        setData({
+          ...data,
+          address,
+          coords,
+          geoAddress,
+          eligibility: response,
+        })
       );
     },
-    [checkEligibility, data, onFetch]
+    [checkEligibility, coords, data, onFetch]
   );
 
   useEffect(() => {

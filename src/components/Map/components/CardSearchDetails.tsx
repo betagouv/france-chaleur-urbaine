@@ -30,8 +30,15 @@ const CardSearchDetails = ({
   collapsed,
   setCollapsed,
 }: CardSearchDetailsProps) => {
-  const { distance, isEligible, futurNetwork, inZDP } =
-    storedAddress.addressDetails?.network || {};
+  const {
+    basedOnCity,
+    distance,
+    isEligible,
+    futurNetwork,
+    inZDP,
+    cityHasNetwork,
+    cityHasFuturNetwork,
+  } = storedAddress.addressDetails?.network || {};
 
   const [contactFormVisible, setContactFormVisible] = useState(false);
 
@@ -41,6 +48,18 @@ const CardSearchDetails = ({
   );
 
   const eligibilityWording = useMemo(() => {
+    if (basedOnCity) {
+      if (cityHasNetwork) {
+        return 'Un réseau de chaleur passe dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.';
+      }
+
+      if (cityHasFuturNetwork) {
+        return 'Un réseau de chaleur passera bientôt dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.';
+      }
+
+      return "Il n'y a pour le moment pas de réseau de chaleur dans cette ville";
+    }
+
     if (
       (isEligible && distance === null) ||
       (distance !== null && distance < 100)
@@ -92,7 +111,15 @@ const CardSearchDetails = ({
         baseMessage
       );
     }
-  }, [distance, isEligible, futurNetwork, inZDP]);
+  }, [
+    basedOnCity,
+    cityHasNetwork,
+    cityHasFuturNetwork,
+    distance,
+    isEligible,
+    futurNetwork,
+    inZDP,
+  ]);
 
   const onClickHandler = useCallback(
     (evt: React.MouseEvent<HTMLElement>) => {
@@ -120,7 +147,12 @@ const CardSearchDetails = ({
   const displayContactForm = useCallback(() => setContactFormVisible(true), []);
 
   return (
-    <MapCard isEligible={isEligible} collapsed={collapsed}>
+    <MapCard
+      isEligible={
+        basedOnCity ? cityHasFuturNetwork || cityHasNetwork : isEligible
+      }
+      collapsed={collapsed}
+    >
       <header onClick={onClickHandler}>{storedAddress.address}</header>
       <HeaderButtons>
         <button
@@ -139,51 +171,62 @@ const CardSearchDetails = ({
       </HeaderButtons>
       {!collapsed && (
         <section>
-          <EligibilityResult isEligible={isEligible}>
-            {eligibilityWording}
-            {inZDP && <></>}
-            <div>
-              <strong>
-                {readableDistance &&
-                  `Le réseau ${
-                    futurNetwork ? 'passera' : 'passe'
-                  } à ${readableDistance}`}
-              </strong>
-            </div>
-          </EligibilityResult>
-          {!contactFormVisible && storedAddress.contacted ? (
-            <MessageConfirmBox>
-              <Icon
-                name="fr-icon-success-fill"
-                size="lg"
-                color="#78EB7B"
-                iconPosition="right"
-              />
-              Demande envoyée
-            </MessageConfirmBox>
+          {basedOnCity ? (
+            eligibilityWording
           ) : (
-            <ContactFormWrapper>
-              {!storedAddress.contacted && (
-                <header>
-                  {isEligible
-                    ? 'Vous souhaitez en savoir plus et être recontacté par le gestionnaire du réseau ?'
-                    : 'Vous souhaitez faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
-                </header>
+            <>
+              <EligibilityResult
+                isEligible={
+                  basedOnCity
+                    ? cityHasFuturNetwork || cityHasNetwork
+                    : isEligible
+                }
+              >
+                {eligibilityWording}
+                <div>
+                  <strong>
+                    {readableDistance &&
+                      `Le réseau ${
+                        futurNetwork ? 'passera' : 'passe'
+                      } à ${readableDistance}`}
+                  </strong>
+                </div>
+              </EligibilityResult>
+              {!contactFormVisible && storedAddress.contacted ? (
+                <MessageConfirmBox>
+                  <Icon
+                    name="fr-icon-success-fill"
+                    size="lg"
+                    color="#78EB7B"
+                    iconPosition="right"
+                  />
+                  Demande envoyée
+                </MessageConfirmBox>
+              ) : (
+                <ContactFormWrapper>
+                  {!storedAddress.contacted && (
+                    <header>
+                      {isEligible
+                        ? 'Vous souhaitez en savoir plus et être recontacté par le gestionnaire du réseau ?'
+                        : 'Vous souhaitez faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
+                    </header>
+                  )}
+                  {!contactFormVisible && !storedAddress.contacted && (
+                    <ContactFormButtonWrapper>
+                      <Button onClick={displayContactForm}>
+                        Laissez vos coordonnées
+                      </Button>
+                    </ContactFormButtonWrapper>
+                  )}
+                  {contactFormVisible && (
+                    <CardSearchDetailsForm
+                      fullAddress={storedAddress}
+                      onSubmit={markAddressAsContacted}
+                    />
+                  )}
+                </ContactFormWrapper>
               )}
-              {!contactFormVisible && !storedAddress.contacted && (
-                <ContactFormButtonWrapper>
-                  <Button onClick={displayContactForm}>
-                    Laissez vos coordonnées
-                  </Button>
-                </ContactFormButtonWrapper>
-              )}
-              {contactFormVisible && (
-                <CardSearchDetailsForm
-                  fullAddress={storedAddress}
-                  onSubmit={markAddressAsContacted}
-                />
-              )}
-            </ContactFormWrapper>
+            </>
           )}
         </section>
       )}

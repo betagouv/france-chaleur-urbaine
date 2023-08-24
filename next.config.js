@@ -27,6 +27,7 @@ const csp = {
     'https://googleads.g.doubleclick.net',
     'https://connect.facebook.net',
     'https://snap.licdn.com',
+    'https://api.mapbox.com/',
   ],
   'connect-src': [
     "'self'",
@@ -38,6 +39,7 @@ const csp = {
     'https://stats.data.gouv.fr',
     'https://cdn.linkedin.oribi.io',
     'https://wxs.ign.fr',
+    'https://api.mapbox.com/',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
   'worker-src': ["'self'", 'blob:'],
