@@ -78,6 +78,11 @@ export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
 
   & table {
     max-height: 100% !important;
+    tbody tr {
+      :hover {
+        background-color: #cfcfcf !important;
+      }
+    }
     & th,
     & td {
       padding: 0rem !important;
