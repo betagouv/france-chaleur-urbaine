@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+const mapControlZindex = 110;
+
 export const Filters = styled.div`
   display: flex;
   gap: 16px 32px;
@@ -10,6 +12,7 @@ export const Filters = styled.div`
 export const Filter = styled.div`
   width: 290px;
   margin-bottom: 0 !important;
+  z-index: ${mapControlZindex + 2};
 `;
 
 export const ExportButton = styled.div`
