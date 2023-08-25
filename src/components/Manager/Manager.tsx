@@ -92,11 +92,7 @@ const Manager = () => {
     [sort]
   );
 
-  const onCenterPin = useCallback((demand: any) => {
-    setCenterPin([demand.Longitude, demand.Latitude]);
-  }, []);
-
-  const onClickMap = useCallback((id: string) => {
+  const highlightRow = useCallback((id: string) => {
     if (refManagerTable.current) {
       const rows: NodeList = refManagerTable.current.querySelectorAll('tr');
       if (rows && rows.length > 0) {
@@ -118,6 +114,14 @@ const Manager = () => {
     }
   }, []);
 
+  const onCenterPin = useCallback(
+    (demand: any) => {
+      setCenterPin([demand.Longitude, demand.Latitude]);
+      highlightRow(demand['N° de dossier']);
+    },
+    [highlightRow]
+  );
+
   const onUpdateMapPins = useCallback(() => {
     if (refManagerTable.current) {
       const addressList: MapMarkerInfos[] = [];
@@ -138,7 +142,7 @@ const Manager = () => {
                 longitude: matchingDemand.Longitude,
                 popup: true,
                 popupContent: matchingDemand.Adresse,
-                onClickAction: onClickMap,
+                onClickAction: highlightRow,
               });
               row.addEventListener('click', () => {
                 onCenterPin(matchingDemand);
@@ -149,7 +153,7 @@ const Manager = () => {
       }
       setMapPins(addressList);
     }
-  }, [demands, onCenterPin, onClickMap]);
+  }, [demands, onCenterPin, highlightRow]);
 
   const onFilterUpdate = useCallback(
     (demands: Demand[]) => {
