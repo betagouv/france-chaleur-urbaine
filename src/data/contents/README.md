@@ -1,19 +1,15 @@
----
-cover: .gitbook/assets/vignette-collectivite.jpg
-coverY: 0
----
+# Définir des zones d'accélération des énergies renouvelables
 
-# Les chiffres de l'enquête IFOP 3
+🎯 La loi d'accélération de la production d'énergies renouvelables promulguée en mars 2023 réaffirme le rôle crucial des collectivités territoriales et prévoit qu'elles définissent des zones d'accélération où elles souhaitent voir s'implanter prioritairement des projets d'énergies renouvelables.
 
-Toujours grâce à [l'enquête IFOP](https://france-chaleur-urbaine.beta.gouv.fr/documentation/enquete\_IFOP.pdf\*) pour France Chaleur Urbaine sur les copropriétaires et les réseaux de chaleur, on découvre que ce sont bien les collectivités qui sont identifiées comme la porte d'entrée pour obtenir des informations.
+✔ Qui est concerné ? Ce sont les communes qui sont chargées de la définition de ces zones, après concertation avec leurs administrés
 
-\
-France Chaleur Urbaine s'est justement fixé pour mission de les aider à faire connaître leur réseaux de chaleur, en mettant à leur disposition :\
-👉 une [cartographie](https://france-chaleur-urbaine.beta.gouv.fr/carte) interactive pour faire connaître les tracés de leurs réseaux, projets d’extension, périmètres de développement prioritaire... désormais intégrable sur tout site internet\
-👉 des [éléments pour communiquer](https://france-chaleur-urbaine.beta.gouv.fr/ressources/supports#contenu) auprès du grand public : kit de communication, campagne de pub...\
-France Chaleur Urbaine c'est aussi un espace gestionnaire partagé accessible aux collectivités et exploitants, pour retrouver l'ensemble des demandes reçues sur leurs réseaux.
+✔ A quelle échéance ? Ces zones doivent être remontées par les communes à leur référent préfectoral avant le 31 décembre 2023
 
-\
-🤝 Collectivités, n'hésitez pas à nous contacter pour découvrir tout ce que France Chaleur Urbaine peut faire pour vous !
+✔ Sur quelles énergies doivent porter ces zones ? Toutes les énergies renouvelables sont concernées, y compris donc les énergies thermiques qui permettent d'alimenter des réseaux de chaleur.
 
-![](.gitbook/assets/Collectivite.jpg)
+✔ Quels sont les outils mis à disposition des élus ? Pour permettre aux élus de mener à bien cet exercice, un portail cartographique dédié a été conçu par le ministère de la Transition énergétique, le Cerema et l’Institut national de l’information géographique et forestière (IGN).
+
+🗺 La cartographie France Chaleur Urbaine constitue un outil complémentaire qui permet d'identifier des zones pertinentes pour la création de réseaux de chaleur !
+
+Pour découvrir comment, consultez notre [guide dédié](https://france-chaleur-urbaine.beta.gouv.fr/documentation/FCU\_zones\_acceleration\_ENR.pdf)

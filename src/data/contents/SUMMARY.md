@@ -1,6 +1,10 @@
 # Table of contents
 
-* [Les chiffres de l'enquête IFOP 3](README.md)
+* [Définir des zones d'accélération des énergies renouvelables](README.md)
+* [Les réseaux les plus écologiques sont les plus économiques !](les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md)
+* [Des réseaux vertueux](des-reseaux-vertueux.md)
+* [Les réseaux de froid sur notre cartographie](les-reseaux-de-froid-sur-notre-cartographie.md)
+* [Les chiffres de l'enquête IFOP 3](<README (4).md>)
 * [Les chiffres de l'enquête IFOP 2](<README (5).md>)
 * [Les chiffres de l'enquête IFOP 1](<README (1).md>)
 * [Préparation de la loi de programmation sur l'énergie et le climat](<README (1) (2).md>)
@@ -8,7 +12,7 @@
 * [Visite du réseau de froid d'Annecy](<README (3).md>)
 * [Visite d'un datacenter](visite-dun-datacenter.md)
 * [Les réseaux de froid](<README (3) (1).md>)
-* [La chaleur fatale](<README (4).md>)
+* [La chaleur fatale](<README (4) (1).md>)
 * [Part des énergies renouvelables dans la consommation finale brute d’énergie en France](<README (3) (1) (1).md>)
 * [Dispositif éco-énergie tertiaire](<README (3) (1) (1) (1).md>)
 * [Visite d'une chaufferie biomasse](visite-dune-chaufferie-biomasse.md)
