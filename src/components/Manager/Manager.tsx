@@ -96,20 +96,26 @@ const Manager = () => {
     setCenterPin([demand.Longitude, demand.Latitude]);
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onClickMap = useCallback((id: string) => {
-    /*if (refManagerTable.current) {
-      const rows = refManagerTable.current.querySelectorAll('tr');
+    if (refManagerTable.current) {
+      const rows: NodeList = refManagerTable.current.querySelectorAll('tr');
       if (rows && rows.length > 0) {
-        const matchingRow: Node | undefined = rows.find((row: Node) => {
-          if (Object.values(row)[0].key) {
-            const fileNumber = Object.values(row)[0].key;
-            if (id == fileNumber) return row;
+        let matchingRow: any | undefined;
+        rows.forEach((row: any) => {
+          row.style.backgroundColor = 'unset';
+          if (Object.values(row as Node)[0].key) {
+            const fileNumber = Object.values(row as Node)[0].key;
+            if (id == fileNumber) {
+              matchingRow = row;
+              return;
+            }
           }
         });
+        if (matchingRow) {
+          matchingRow.style.backgroundColor = '#cfcfcf';
+        }
       }
-    }*/
-    //TODO -- que faire au clic ?
+    }
   }, []);
 
   const onUpdateMapPins = useCallback(() => {
