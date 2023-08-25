@@ -98,7 +98,7 @@ const Manager = () => {
       if (rows && rows.length > 0) {
         let matchingRow: any | undefined;
         rows.forEach((row: any) => {
-          row.style.backgroundColor = 'unset';
+          row.style.removeProperty('background-color');
           if (Object.values(row as Node)[0].key) {
             const fileNumber = Object.values(row as Node)[0].key;
             if (id == fileNumber) {
