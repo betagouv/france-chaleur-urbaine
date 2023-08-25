@@ -85,10 +85,7 @@ export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
     }
     & th,
     & td {
-      padding: 0rem !important;
-      & .demandCell {
-        padding: 0.5rem !important;
-      }
+      padding: 0.5rem !important;
     }
   }
 
