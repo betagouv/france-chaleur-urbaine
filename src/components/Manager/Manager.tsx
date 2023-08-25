@@ -94,7 +94,8 @@ const Manager = () => {
 
   const highlightRow = useCallback((id: string) => {
     if (refManagerTable.current) {
-      const rows: NodeList = refManagerTable.current.querySelectorAll('tr');
+      const rows: NodeList =
+        refManagerTable.current.querySelectorAll('tbody tr');
       if (rows && rows.length > 0) {
         let matchingRow: any | undefined;
         rows.forEach((row: any) => {
@@ -125,7 +126,7 @@ const Manager = () => {
   const onUpdateMapPins = useCallback(() => {
     if (refManagerTable.current) {
       const addressList: MapMarkerInfos[] = [];
-      const rows = refManagerTable.current.querySelectorAll('tr');
+      const rows = refManagerTable.current.querySelectorAll('tbody tr');
       if (rows && rows.length > 0) {
         rows.forEach((row: Node) => {
           if (Object.values(row)[0].key) {
