@@ -2,11 +2,11 @@ import { getElibilityStatus } from '@core/infrastructure/repository/addresseInfo
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withCors } from 'src/services/api/cors';
 import { ErrorResponse } from 'src/types/ErrorResponse';
-import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
+import { HeatNetwork } from 'src/types/HeatNetworksResponse';
 
 const eligibilityStatus = async (
   req: NextApiRequest,
-  res: NextApiResponse<HeatNetworksResponse | ErrorResponse>
+  res: NextApiResponse<HeatNetwork | ErrorResponse>
 ) => {
   if (req.method !== 'GET') {
     return res.status(501);

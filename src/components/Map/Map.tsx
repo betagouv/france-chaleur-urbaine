@@ -571,7 +571,7 @@ const Map = ({
         'zoneDP',
         {
           type: 'vector',
-          tiles: ['/api/map/zoneDP/{z}/{x}/{y}'],
+          tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
         },
         [
           {
