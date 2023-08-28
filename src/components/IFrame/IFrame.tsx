@@ -20,14 +20,18 @@ const IFrame = ({ theme }: { theme?: string }) => {
           Pour cela, <b>il vous suffit de copier les lignes de code</b>{' '}
           ci-dessous :
           <br />
+          <br />
           {`
 <iframe
-width="900px"
-height="235px"
+width="100%"
 title="France chaleur urbaine - Éligibilité"
 src="https://france-chaleur-urbaine.beta.gouv.fr/form"
 />
 `}
+          <br />
+          <br />
+          Pensez à ajuster les valeurs des variables "width" et "height" pour
+          obtenir un affichage optimal sur votre site.
         </div>
       </WrappedText>
     </Slice>
