@@ -37,7 +37,9 @@ const MapPopup = ({
           onClose={() => setShow(false)}
         >
           {type == MapPopupType.DEFAULT && <MapPopupContent {...content} />}
-          {(type == MapPopupType.VIASEVA || type == MapPopupType.ENGIE) && (
+          {(type == MapPopupType.VIASEVA ||
+            type == MapPopupType.ENGIE ||
+            type === MapPopupType.DALKIA) && (
             <ViasevaPopupContent {...content} />
           )}
         </Popup>
