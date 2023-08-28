@@ -4,13 +4,13 @@ const mapControlZindex = 110;
 
 export const Filters = styled.div`
   display: flex;
-  gap: 16px 32px;
+  gap: 16px 29px;
   flex-wrap: wrap;
   margin-bottom: 16px;
 `;
 
 export const Filter = styled.div`
-  width: 290px;
+  width: 250px;
   margin-bottom: 0 !important;
   z-index: ${mapControlZindex + 2};
 `;
