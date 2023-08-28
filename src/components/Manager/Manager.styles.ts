@@ -64,6 +64,7 @@ export const ManagerContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+  overflow: hidden;
 `;
 
 export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
