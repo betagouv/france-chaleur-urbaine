@@ -7,6 +7,7 @@ export type MapPopupInfos = {
 export enum MapPopupType {
   DEFAULT = 'default',
   ENGIE = 'engie',
+  DALKIA = 'dalkia',
   VIASEVA = 'viaseva',
 }
 
