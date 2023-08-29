@@ -57,6 +57,22 @@ export const defaultLayerDisplay: TypeLayerDisplay = {
   energyFuelValues: [50, Number.MAX_VALUE],
 };
 
+export const simpleLayerDisplay: TypeLayerDisplay = {
+  outline: true,
+  futurOutline: false,
+  coldOutline: false,
+  zoneDP: false,
+  demands: false,
+  raccordements: false,
+  gasUsageGroup: false,
+  buildings: false,
+  gasUsage: [],
+  energy: [],
+  gasUsageValues: [1000, Number.MAX_VALUE],
+  energyGasValues: [50, Number.MAX_VALUE],
+  energyFuelValues: [50, Number.MAX_VALUE],
+};
+
 const legendData: (string | TypeGroupLegend)[] = [
   {
     id: LegendGroupId.heatNetwork,
@@ -217,6 +233,7 @@ const param = {
   lng: 2.3,
   lat: 45,
   defaultLayerDisplay,
+  simpleLayerDisplay,
   legendData,
 };
 

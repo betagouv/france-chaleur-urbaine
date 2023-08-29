@@ -10,7 +10,7 @@ import MapReactGL, {
 } from 'react-map-gl';
 
 import Hoverable from '@components/Hoverable';
-import { Icon, Toggle } from '@dataesr/react-dsfr';
+import { Icon } from '@dataesr/react-dsfr';
 import { useContactFormFCU, usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -174,6 +174,7 @@ const Map = ({
   withCenterPin,
   noPopup,
   legendLogoOpt,
+  proMode,
   setProMode,
   popupType = MapPopupType.DEFAULT,
   filter,
@@ -188,6 +189,7 @@ const Map = ({
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
   noPopup?: boolean;
+  proMode?: boolean;
   setProMode?: Dispatch<SetStateAction<boolean>>;
   popupType?: MapPopupType;
   filter?: any[];
@@ -1004,18 +1006,31 @@ const Map = ({
         )}
         {setProMode && (
           <ProMode legendCollapsed={!withLegend || legendCollapsed}>
-            <Toggle
-              label="Mode professionnel"
-              hasLabelLeft
-              onChange={(e) => {
-                setLayerDisplay(
-                  e.target.checked
-                    ? mapParam.defaultLayerDisplay
-                    : initialLayerDisplay
-                );
-                setProMode(e.target.checked);
-              }}
-            />
+            <div className="fr-toggle fr-toggle--label-left">
+              <input
+                type="checkbox"
+                checked={proMode}
+                defaultChecked={proMode}
+                id="mode-pro-toggle"
+                onChange={(e) => {
+                  setLayerDisplay(
+                    e.target.checked
+                      ? mapParam.defaultLayerDisplay
+                      : mapParam.simpleLayerDisplay
+                  );
+                  setProMode(e.target.checked);
+                }}
+                className="fr-toggle__input"
+              />
+              <label
+                className="fr-toggle__label"
+                htmlFor={'mode-pro-toggle'}
+                data-fr-checked-label="Activé"
+                data-fr-unchecked-label="Désactivé"
+              >
+                Mode professionnel
+              </label>
+            </div>
           </ProMode>
         )}
         <MapProvider>
