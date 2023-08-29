@@ -2,7 +2,8 @@ import LastArticles from '@components/Articles/LastArticles';
 import Infographies from '@components/Coproprietaire/Infographies';
 import HeadSliceForm from '@components/HeadSliceForm';
 import BulkEligibilitySlice from '@components/HeadSliceForm/BulkEligibilitySlice';
-import IFrame from '@components/IFrame/IFrame';
+import IFrame from '@components/IFrame/Form/IFrame';
+import IFrameParametrization from '@components/IFrame/Map/IFrameParametrization';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@components/Partners/Partners';
@@ -98,6 +99,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
             imgSrc="/img/rcu-carto.jpg"
             reverse
           />
+          <IFrameParametrization />
         </Slice>
         <Slice
           padding={8}

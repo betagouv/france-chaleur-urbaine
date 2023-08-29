@@ -41,9 +41,10 @@ const MapPage = () => {
             ? mapParam.legendData
                 .filter(
                   (legend) =>
-                    typeof legend === 'string' ||
-                    legend.id === LegendGroupId.heatNetwork ||
-                    displayLegendArray.includes(legendMapping[legend.id])
+                    legend !== 'contributeButton' &&
+                    (typeof legend === 'string' ||
+                      legend.id === LegendGroupId.heatNetwork ||
+                      displayLegendArray.includes(legendMapping[legend.id]))
                 )
                 .filter(
                   (legend, i, legends) =>
