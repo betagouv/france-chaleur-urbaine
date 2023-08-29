@@ -62,6 +62,7 @@ import {
   gasUsageLayerStyle,
   Legend,
   LegendLogo,
+  LegendLogoLink,
   LegendLogoList,
   LegendSeparator,
   MapControlWrapper,
@@ -1001,12 +1002,16 @@ const Map = ({
             </Legend>
             {!withoutLogo && (
               <LegendLogoList legendCollapsed={legendCollapsed}>
-                <LegendLogo>
+                <LegendLogoLink
+                  href="https://france-chaleur-urbaine.beta.gouv.fr/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <img
                     src="/logo-fcu-with-typo.jpg"
                     alt="logo france chaleur urbaine"
                   />
-                </LegendLogo>
+                </LegendLogoLink>
                 {legendLogoOpt && (
                   <LegendLogo>
                     <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
