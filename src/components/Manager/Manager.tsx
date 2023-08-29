@@ -78,6 +78,7 @@ const Manager = () => {
   const [mapCollapsed, setMapCollapsed] = useState(false);
   const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
   const [centerPin, setCenterPin] = useState<[number, number]>();
+  const [isFirstInit, setIsFirstInit] = useState<boolean>(true);
 
   const handleSort = useCallback(
     (key: keyof Demand, backupKey?: keyof Demand) => () => {
@@ -123,9 +124,8 @@ const Manager = () => {
     [highlightRow]
   );
 
-  const onUpdateMapPins = useCallback(() => {
+  const addOnClick = useCallback(() => {
     if (refManagerTable.current) {
-      const addressList: MapMarkerInfos[] = [];
       const rows = refManagerTable.current.querySelectorAll('tbody tr');
       if (rows && rows.length > 0) {
         rows.forEach((row: Node) => {
@@ -137,32 +137,45 @@ const Manager = () => {
               }
             );
             if (matchingDemand) {
-              addressList.push({
-                id: fileNumber,
-                latitude: matchingDemand.Latitude,
-                longitude: matchingDemand.Longitude,
-                popup: true,
-                popupContent: matchingDemand.Adresse,
-                onClickAction: highlightRow,
-              });
               row.addEventListener('click', () => {
                 onCenterPin(matchingDemand);
               });
             }
           }
         });
+        setIsFirstInit(false);
       }
-      setMapPins(addressList);
     }
-  }, [demands, onCenterPin, highlightRow]);
+  }, [demands, onCenterPin, setIsFirstInit]);
+
+  const onUpdateMapPins = useCallback(() => {
+    const addressList: MapMarkerInfos[] = [];
+    if (filteredDemands) {
+      filteredDemands.forEach((demand: any) => {
+        if (demand.Latitude && demand.Longitude) {
+          addressList.push({
+            id: demand['N° de dossier'],
+            latitude: demand.Latitude,
+            longitude: demand.Longitude,
+            popup: true,
+            popupContent: demand.Adresse,
+            onClickAction: highlightRow,
+          });
+        }
+      });
+    }
+    setMapPins(addressList);
+    if (isFirstInit) {
+      addOnClick();
+    }
+  }, [filteredDemands, highlightRow, isFirstInit, addOnClick]);
 
   const onFilterUpdate = useCallback(
     (demands: Demand[]) => {
       const sortedDemands = getSortBy(demands)(sort);
       setFilteredDemands(sortedDemands);
-      onUpdateMapPins();
     },
-    [sort, onUpdateMapPins]
+    [sort]
   );
 
   useEffect(() => {
@@ -186,15 +199,14 @@ const Manager = () => {
   );
 
   useEffect(() => {
-    //TODO à changer - pas une bonne pratique
-    if (refManagerTable.current) {
+    if (filteredDemands && filteredDemands.length > 0) {
       onUpdateMapPins();
     }
-  }, [onUpdateMapPins, refManagerTable.current]);
+  }, [filteredDemands, onUpdateMapPins]);
 
   useEffect(() => {
-    onUpdateMapPins();
-  }, [onUpdateMapPins, page]);
+    addOnClick();
+  }, [addOnClick, page]);
 
   const demandRowsParams: RowsParams[] = [
     {
