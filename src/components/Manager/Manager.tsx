@@ -26,6 +26,8 @@ import Status from './Status';
 import Tag from './Tag';
 import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
 
+const rowPerPage: number = 10;
+
 type SortParamType = {
   key: keyof Demand;
   backupKey?: keyof Demand;
@@ -71,14 +73,16 @@ const Manager = () => {
   const { demandsService } = useServices();
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [isFirstInit, setIsFirstInit] = useState<boolean>(true);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
   const [sort, setSort] = useState<SortParamType>(defaultSort);
   const refManagerTable: null | { current: any } = useRef(null);
+  const [centerRow, setCenterRow] = useState<string>();
+
   const [mapCollapsed, setMapCollapsed] = useState(false);
   const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
   const [centerPin, setCenterPin] = useState<[number, number]>();
-  const [isFirstInit, setIsFirstInit] = useState<boolean>(true);
 
   const handleSort = useCallback(
     (key: keyof Demand, backupKey?: keyof Demand) => () => {
@@ -93,28 +97,44 @@ const Manager = () => {
     [sort]
   );
 
-  const highlightRow = useCallback((id: string) => {
-    if (refManagerTable.current) {
-      const rows: NodeList =
-        refManagerTable.current.querySelectorAll('tbody tr');
-      if (rows && rows.length > 0) {
-        let matchingRow: any | undefined;
-        rows.forEach((row: any) => {
-          row.style.removeProperty('background-color');
-          if (Object.values(row as Node)[0].key) {
-            const fileNumber = Object.values(row as Node)[0].key;
-            if (id == fileNumber) {
-              matchingRow = row;
-              return;
+  const highlightRow = useCallback(
+    (id: string) => {
+      if (refManagerTable.current) {
+        const rows: NodeList =
+          refManagerTable.current.querySelectorAll('tbody tr');
+        if (rows && rows.length > 0) {
+          let matchingRow: any | undefined;
+          rows.forEach((row: any) => {
+            row.style.removeProperty('background-color');
+            if (Object.values(row as Node)[0].key) {
+              const fileNumber = Object.values(row as Node)[0].key;
+              if (id == fileNumber) {
+                matchingRow = row;
+                return;
+              }
+            }
+          });
+          if (matchingRow) {
+            matchingRow.style.backgroundColor = '#cfcfcf';
+          } else {
+            //Highlight in another page
+            for (let i = 0; i < filteredDemands.length; i += 1) {
+              if (
+                filteredDemands[i] &&
+                id == filteredDemands[i]['N° de dossier']
+              ) {
+                const newPage = Math.floor(i / 10) + 1;
+                setCenterRow(id);
+                setPage(newPage);
+                break;
+              }
             }
           }
-        });
-        if (matchingRow) {
-          matchingRow.style.backgroundColor = '#cfcfcf';
         }
       }
-    }
-  }, []);
+    },
+    [filteredDemands]
+  );
 
   const onCenterPin = useCallback(
     (demand: any) => {
@@ -174,6 +194,7 @@ const Manager = () => {
     (demands: Demand[]) => {
       const sortedDemands = getSortBy(demands)(sort);
       setFilteredDemands(sortedDemands);
+      setPage(1);
     },
     [sort]
   );
@@ -203,6 +224,12 @@ const Manager = () => {
       onUpdateMapPins();
     }
   }, [filteredDemands, onUpdateMapPins]);
+
+  useEffect(() => {
+    if (centerRow) {
+      highlightRow(centerRow);
+    }
+  }, [highlightRow, centerRow]);
 
   useEffect(() => {
     addOnClick();
@@ -373,6 +400,7 @@ const Manager = () => {
                   paginationPosition="left"
                   page={page}
                   setPage={setPage}
+                  perPage={rowPerPage}
                 />
               ) : (
                 <NoResult>Aucun résultat</NoResult>
