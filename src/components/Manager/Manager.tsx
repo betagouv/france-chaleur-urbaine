@@ -136,12 +136,31 @@ const Manager = () => {
     [filteredDemands]
   );
 
+  const highlightPin = useCallback((demand: any) => {
+    const newMapPins: MapMarkerInfos[] = mapPins;
+    let shouldUpdate = false;
+    newMapPins.map((pin: MapMarkerInfos) => {
+      if (pin.id == demand['N° de dossier']) {
+        pin.color = 'red';
+        shouldUpdate = true;
+      } else if (pin.color != '#4550e5') {
+        pin.color = '#4550e5';
+        shouldUpdate = true;
+      }
+    });
+    if (shouldUpdate) {
+      setMapPins(newMapPins);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const onCenterPin = useCallback(
     (demand: any) => {
+      highlightPin(demand);
       setCenterPin([demand.Longitude, demand.Latitude]);
       highlightRow(demand['N° de dossier']);
     },
-    [highlightRow]
+    [highlightPin, highlightRow]
   );
 
   const addOnClick = useCallback(() => {
@@ -166,7 +185,7 @@ const Manager = () => {
         setIsFirstInit(false);
       }
     }
-  }, [demands, onCenterPin, setIsFirstInit]);
+  }, [demands, onCenterPin]);
 
   const onUpdateMapPins = useCallback(() => {
     const addressList: MapMarkerInfos[] = [];
