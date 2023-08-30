@@ -97,6 +97,20 @@ const Manager = () => {
     [sort]
   );
 
+  const highlightPin = useCallback((id: string) => {
+    setMapPins((currentMapPins) => {
+      const newMapPins: MapMarkerInfos[] = currentMapPins;
+      newMapPins.map((pin: MapMarkerInfos) => {
+        if (pin.id == id) {
+          pin.color = 'red';
+        } else if (pin.color != '#4550e5') {
+          pin.color = '#4550e5';
+        }
+      });
+      return newMapPins;
+    });
+  }, []);
+
   const highlightRow = useCallback(
     (id: string) => {
       if (refManagerTable.current) {
@@ -136,31 +150,20 @@ const Manager = () => {
     [filteredDemands]
   );
 
-  const highlightPin = useCallback((demand: any) => {
-    const newMapPins: MapMarkerInfos[] = mapPins;
-    let shouldUpdate = false;
-    newMapPins.map((pin: MapMarkerInfos) => {
-      if (pin.id == demand['N° de dossier']) {
-        pin.color = 'red';
-        shouldUpdate = true;
-      } else if (pin.color != '#4550e5') {
-        pin.color = '#4550e5';
-        shouldUpdate = true;
-      }
-    });
-    if (shouldUpdate) {
-      setMapPins(newMapPins);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const highlight = useCallback(
+    (id: string) => {
+      highlightPin(id);
+      highlightRow(id);
+    },
+    [highlightPin, highlightRow]
+  );
 
   const onCenterPin = useCallback(
     (demand: any) => {
-      highlightPin(demand);
       setCenterPin([demand.Longitude, demand.Latitude]);
-      highlightRow(demand['N° de dossier']);
+      highlight(demand['N° de dossier']);
     },
-    [highlightPin, highlightRow]
+    [highlight]
   );
 
   const addOnClick = useCallback(() => {
@@ -198,7 +201,7 @@ const Manager = () => {
             longitude: demand.Longitude,
             popup: true,
             popupContent: demand.Adresse,
-            onClickAction: highlightRow,
+            onClickAction: highlight,
           });
         }
       });
@@ -207,7 +210,7 @@ const Manager = () => {
     if (isFirstInit) {
       addOnClick();
     }
-  }, [filteredDemands, highlightRow, isFirstInit, addOnClick]);
+  }, [filteredDemands, highlight, isFirstInit, addOnClick]);
 
   const onFilterUpdate = useCallback(
     (demands: Demand[]) => {
@@ -246,9 +249,9 @@ const Manager = () => {
 
   useEffect(() => {
     if (centerRow) {
-      highlightRow(centerRow);
+      highlight(centerRow);
     }
-  }, [highlightRow, centerRow]);
+  }, [highlight, centerRow]);
 
   useEffect(() => {
     addOnClick();
