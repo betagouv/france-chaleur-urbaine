@@ -3,8 +3,8 @@ import MainContainer, {
   fullscreenHeaderHeight,
   tabHeaderHeight,
 } from '@components/shared/layout';
+import { usePersistedState } from '@hooks';
 import Head from 'next/head';
-import { useState } from 'react';
 import param from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 import styled from 'styled-components';
@@ -25,7 +25,9 @@ const defaultLegendIds = [
 ];
 
 const Carte = () => {
-  const [proMode, setProMode] = useState(false);
+  const [proMode, setProMode] = usePersistedState('mapProMode', false, {
+    beforeStorage: (value) => value || false,
+  });
   return (
     <>
       <Head>
@@ -37,29 +39,25 @@ const Carte = () => {
             withoutLogo
             withDrawing={proMode}
             withLegend
-            initialLayerDisplay={{
-              outline: true,
-              futurOutline: false,
-              coldOutline: false,
-              zoneDP: false,
-              demands: false,
-              raccordements: false,
-              gasUsageGroup: false,
-              buildings: false,
-              gasUsage: [],
-              energy: [],
-              gasUsageValues: [1000, Number.MAX_VALUE],
-              energyGasValues: [50, Number.MAX_VALUE],
-              energyFuelValues: [50, Number.MAX_VALUE],
-            }}
+            initialLayerDisplay={
+              proMode ? param.simpleLayerDisplay : param.defaultLayerDisplay
+            }
+            proMode={proMode}
             setProMode={setProMode}
             legendData={
               proMode
                 ? undefined
-                : param.legendData.filter(
-                    (x) =>
-                      typeof x !== 'string' && defaultLegendIds.includes(x.id)
-                  )
+                : param.legendData
+                    .filter(
+                      (x) =>
+                        x !== 'contributeButton' &&
+                        (typeof x === 'string' ||
+                          defaultLegendIds.includes(x.id))
+                    )
+                    .filter(
+                      (legend, i, legends) =>
+                        legend !== 'separator' || legends[i - 1] !== 'separator'
+                    )
             }
           />
         </MapWrapper>

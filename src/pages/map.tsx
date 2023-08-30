@@ -1,5 +1,6 @@
 import Map from '@components/Map/Map';
 import { useRouter } from 'next/router';
+import param from 'src/services/Map/param';
 import mapParam from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 
@@ -77,21 +78,7 @@ const MapPage = () => {
                 energyGasValues: [50, Number.MAX_VALUE],
                 energyFuelValues: [50, Number.MAX_VALUE],
               }
-            : {
-                outline: true,
-                futurOutline: false,
-                coldOutline: false,
-                zoneDP: false,
-                demands: false,
-                raccordements: false,
-                gasUsageGroup: false,
-                buildings: false,
-                gasUsage: [],
-                energy: [],
-                gasUsageValues: [1000, Number.MAX_VALUE],
-                energyGasValues: [50, Number.MAX_VALUE],
-                energyFuelValues: [50, Number.MAX_VALUE],
-              }
+            : param.simpleLayerDisplay
         }
       />
     </div>
