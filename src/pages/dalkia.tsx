@@ -11,7 +11,7 @@ const visibleId = [
   LegendGroupId.futurheatNetwork,
 ];
 
-const ViasevaMap = () => {
+const DalkiaMap = () => {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
@@ -21,13 +21,26 @@ const ViasevaMap = () => {
           (x) => typeof x !== 'string' && visibleId.includes(x.id)
         )}
         legendLogoOpt={{
-          src: '/logo-viaseva.svg',
-          alt: 'logo viaseva',
+          src: '/logo-DALKIA.png',
+          alt: 'logo Dalkia',
         }}
-        popupType={MapPopupType.VIASEVA}
+        popupType={MapPopupType.DALKIA}
+        filter={[
+          'any',
+          [
+            'in',
+            'dalkia',
+            ['downcase', ['coalesce', ['get', 'gestionnaire'], '']],
+          ],
+          [
+            'in',
+            'dalkia',
+            ['downcase', ['coalesce', ['get', 'Gestionnaire'], '']],
+          ],
+        ]}
       />
     </div>
   );
 };
 
-export default ViasevaMap;
+export default DalkiaMap;

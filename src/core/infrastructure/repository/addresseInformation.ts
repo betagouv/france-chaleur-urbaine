@@ -277,7 +277,7 @@ export const getExport = (addresses: any[]) => {
   return XLSX.write(wb, { bookType: EXPORT_FORMAT.XLSX, type: 'base64' });
 };
 
-const isEligible = (distance: number, city: string) => {
+const isEligible = (distance: number, city?: string) => {
   if (city && city.toLowerCase() === 'paris') {
     return { isEligible: distance <= 100, veryEligibleDistance: 60 };
   }
@@ -297,7 +297,7 @@ export const getCityElibilityStatus = async (
 export const getElibilityStatus = async (
   lat: number,
   lon: number,
-  city: string
+  city?: string
 ): Promise<HeatNetwork> => {
   const [inZDP, irisNetwork, inFuturNetwork, futurNetwork, network] =
     await Promise.all([
