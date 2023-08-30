@@ -285,7 +285,7 @@ const Network = ({
                             <div>
                               <b>Prix moyen de la chaleur (2021)</b>
                             </div>
-                            <div>{network.PM} €/MWh</div>
+                            <div>{network.PM} €TTC/MWh</div>
                           </BoxContent>
                           <br />
                         </>
@@ -297,14 +297,32 @@ const Network = ({
                           </div>
                           {network.PM_L && (
                             <BoxContent>
-                              <div className="fr-ml-2w">Logements</div>
-                              <div>{network.PM_L} €/MWh</div>
+                              <div className="fr-ml-2w">
+                                <span>Logements</span>
+                                <HoverableIcon
+                                  iconName="ri-information-fill"
+                                  position="bottom-centered"
+                                >
+                                  Prix moyen pour une copropriété de 30 lots
+                                  avec une consommation de 300 MWh/an
+                                </HoverableIcon>
+                              </div>
+                              <div>{network.PM_L} €TTC/MWh</div>
                             </BoxContent>
                           )}
                           {network.PM_T && (
                             <BoxContent>
-                              <div className="fr-ml-2w">Tertiaire</div>
-                              <div>{network.PM_T} €/MWh</div>
+                              <div className="fr-ml-2w">
+                                <span>Tertiaire</span>
+                                <HoverableIcon
+                                  iconName="ri-information-fill"
+                                  position="bottom-centered"
+                                >
+                                  Prix moyen pour une surface de 1000m² avec une
+                                  consommation de 1500 MWh/an
+                                </HoverableIcon>
+                              </div>
+                              <div>{network.PM_T} €TTC/MWh</div>
                             </BoxContent>
                           )}
                           <br />
