@@ -8,6 +8,7 @@ import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import { LabelLegendHead } from './LegendEntry.styled';
 import LegendGroupLabel from './LegendGroupLabel';
 import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
+import { ButtonLink } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 
 function MapLegend({
   data,
@@ -46,15 +47,28 @@ function MapLegend({
 
         if (group === 'contributeButton') {
           return (
-            <LegendButton key="contribute-button">
-              <Button
-                icon="ri-upload-2-line"
-                onClick={() => router.push('/contribution')}
-                size="sm"
-              >
-                Contribuer
-              </Button>
-            </LegendButton>
+            <>
+              <LegendButton key="contribute-button">
+                <Button
+                  icon="ri-upload-2-line"
+                  onClick={() => router.push('/contribution')}
+                  size="sm"
+                >
+                  Contribuer
+                </Button>
+              </LegendButton>
+              <LegendButton key="contribute-button">
+                <ButtonLink
+                  href="./230830_Opendata_FCU.zip"
+                  tagName="downloadLink"
+                  trackEvent="Tracés, carte"
+                  download
+                  className="fr-btn--sm"
+                >
+                  Télécharger les tracés
+                </ButtonLink>
+              </LegendButton>
+            </>
           );
         }
 

@@ -90,7 +90,7 @@ export const ButtonLink = styled.a.attrs<ExtraEventType>((props) => {
     ...trackEventProps,
     className: `fr-btn ${className || ''}`,
   };
-})``;
+})<ExtraEventType>``;
 
 export const CounterItem = styled.div`
   display: flex;
