@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/63vignette.jpg
+coverY: 0
+---
+
 # Des réseaux vertueux
 
 Le saviez-vous ?
@@ -7,3 +12,5 @@ Le saviez-vous ?
 Aujourd'hui, la part des énergies renouvelables et de récupération dans la chaleur consommée en France est de 24% seulement... un pourcentage qui s'élève à près de 63% dans les réseaux de chaleur, et progresse chaque année !
 
 👉 Le raccordement des bâtiments aux réseaux de chaleur constitue ainsi l'un des leviers pour la décarbonation du secteur. Un doublement du nombre de logements raccordés chaque année est attendu jusqu'en 2030-2035.
+
+![](.gitbook/assets/63.jpg)
