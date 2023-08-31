@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Des informations techniques et tarifaires par réseau](README.md)
+* [Mise en open data des tracés des réseaux de chaleur et de froid](README.md)
+* [Des informations techniques et tarifaires par réseau](<README (7).md>)
 * [Définir des zones d'accélération des énergies renouvelables](<README (6).md>)
 * [Les réseaux les plus écologiques sont les plus économiques !](les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md)
 * [Des réseaux vertueux](des-reseaux-vertueux.md)
