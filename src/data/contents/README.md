@@ -1,15 +1,9 @@
-# Définir des zones d'accélération des énergies renouvelables
+# Des informations techniques et tarifaires par réseau
 
-🎯 La loi d'accélération de la production d'énergies renouvelables promulguée en mars 2023 réaffirme le rôle crucial des collectivités territoriales et prévoit qu'elles définissent des zones d'accélération où elles souhaitent voir s'implanter prioritairement des projets d'énergies renouvelables.
-
-✔ Qui est concerné ? Ce sont les communes qui sont chargées de la définition de ces zones, après concertation avec leurs administrés
-
-✔ A quelle échéance ? Ces zones doivent être remontées par les communes à leur référent préfectoral avant le 31 décembre 2023
-
-✔ Sur quelles énergies doivent porter ces zones ? Toutes les énergies renouvelables sont concernées, y compris donc les énergies thermiques qui permettent d'alimenter des réseaux de chaleur.
-
-✔ Quels sont les outils mis à disposition des élus ? Pour permettre aux élus de mener à bien cet exercice, un portail cartographique dédié a été conçu par le ministère de la Transition énergétique, le Cerema et l’Institut national de l’information géographique et forestière (IGN).
-
-🗺 La cartographie France Chaleur Urbaine constitue un outil complémentaire qui permet d'identifier des zones pertinentes pour la création de réseaux de chaleur !
-
-Pour découvrir comment, consultez notre [guide dédié](https://france-chaleur-urbaine.beta.gouv.fr/documentation/FCU\_zones\_acceleration\_ENR.pdf)
+🔎 Vous recherchez des informations sur un réseau de chaleur ? France Chaleur Urbaine s'est récemment enrichi de fiches par réseau rassemblant de nombreuses informations techniques (mix énergétique, livraisons annuelles du réseau, longueur...), mais aussi des informations tarifaires pour les réseaux classés : une première pour la filière ! De quoi accélérer le développement des réseaux et aider les bureaux d'étude, bailleurs sociaux, collectivités,..., dans leurs missions.\
+\
+Les données, qui portent actuellement sur l'année 2021, seront actualisées suite à la publication des résultats de la prochaine enquête annuelle réalisée par le SNCU.\
+\
+👉 Vous souhaitez accéder à ces fiches ? Il vous suffit pour cela de cliquer sur le réseau concerné sur notre carte, puis sur "Voir plus d'informations".\
+\
+Un grand merci à nos partenaires, et en particulier Via Sèva et le SNCU, sans qui cette diffusion n'aurait pas été possible.

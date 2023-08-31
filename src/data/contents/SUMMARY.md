@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Définir des zones d'accélération des énergies renouvelables](README.md)
+* [Des informations techniques et tarifaires par réseau](README.md)
+* [Définir des zones d'accélération des énergies renouvelables](<README (6).md>)
 * [Les réseaux les plus écologiques sont les plus économiques !](les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md)
 * [Des réseaux vertueux](des-reseaux-vertueux.md)
 * [Les réseaux de froid sur notre cartographie](les-reseaux-de-froid-sur-notre-cartographie.md)
