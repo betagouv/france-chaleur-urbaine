@@ -69,7 +69,7 @@ Le souhait de mise en open data des tracés et données des réseaux de chaleur 
 * les réseaux sont le plus souvent souvent gérés dans le cadre de concessions de service public : le code de la commande publique prévoit alors que le concessionnaire doit fournir à l’autorité concédante sous format électronique, dans un standard ouvert librement réutilisable et exploitable, les données collectées ou produites dans le cadre du service public faisant l’objet du contrat ;
 * la chaleur est considérée comme un rejet dans l’environnement : les tracés des réseaux relèvent donc d’informations relatives à l’émission de substances dans l’environnement, pour laquelle le code de l’environnement a organisé un régime favorable d’accès, avec de rares cas possibles de refus de communication, dans lesquels les tracés des réseaux ne peuvent rentrer.
 
-La note de l’administratrice générale des données, des algorithmes et des codes sources a de même conclu à la communicabilité des données relatives aux taux d’énergies renouvelables des réseaux, ainsi qu’à celle des données de tarification globale et individuelle, nécessaires à la bonne information du consommateur.
+La note de l’Administratrice générale des données, des algorithmes et des codes sources a de même conclu à la communicabilité des données relatives aux taux d’énergies renouvelables des réseaux, ainsi qu’à celle des données de tarification globale et individuelle, nécessaires à la bonne information du consommateur.
 
 Cette clarification du cadre juridique s’appliquant aux données des réseaux de chaleur a constitué un élément clé permettant d’aboutir à leur mise en open data.
 
@@ -87,5 +87,7 @@ De notre retour d’expérience, nous retiendrons que l’ouverture des données
 
 * beaucoup de persévérance, pour convaincre de la nécessité de mise en open data des données, et de son intérêt ;
 * un cadre juridique défini par un document officiel, qui aura été indispensable pour rassurer les acteurs, publics comme privés, de l’absence de tout risque associé à la mise en open data des données.
+
+_Le fichier de tracés est téléchargeable depuis notre_ [_cartographie_](https://france-chaleur-urbaine.beta.gouv.fr/carte) _(Mode professionnel) ou_ [_ici_](https://france-chaleur-urbaine.beta.gouv.fr/professionnels#cartographie)_. Il est également en ligne sur_ [_data.gouv.fr_](https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/)_._
 
 ![](.gitbook/assets/OpenNL.jpg)
