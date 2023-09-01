@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/vignetteOpen.jpg
+coverY: 0
+---
+
 # Mise en open data des tracés des réseaux de chaleur et de froid
 
 ## France Chaleur Urbaine ouvre les données cartographiques des réseaux de chaleur au service de la transition énergétique
@@ -82,3 +87,5 @@ De notre retour d’expérience, nous retiendrons que l’ouverture des données
 
 * beaucoup de persévérance, pour convaincre de la nécessité de mise en open data des données, et de son intérêt ;
 * un cadre juridique défini par un document officiel, qui aura été indispensable pour rassurer les acteurs, publics comme privés, de l’absence de tout risque associé à la mise en open data des données.
+
+![](.gitbook/assets/OpenNL.jpg)
