@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/fichevignette.jpg
-coverY: 0
----
-
 # Des informations techniques et tarifaires par réseau
 
 🔎 Vous recherchez des informations sur un réseau de chaleur ? France Chaleur Urbaine s'est récemment enrichi de fiches par réseau rassemblant de nombreuses informations techniques (mix énergétique, livraisons annuelles du réseau, longueur...), mais aussi des informations tarifaires pour les réseaux classés : une première pour la filière ! De quoi accélérer le développement des réseaux et aider les bureaux d'étude, bailleurs sociaux, collectivités,..., dans leurs missions.\

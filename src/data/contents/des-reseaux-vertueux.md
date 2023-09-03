@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/63vignette.jpg
-coverY: 0
----
-
 # Des réseaux vertueux
 
 Le saviez-vous ?

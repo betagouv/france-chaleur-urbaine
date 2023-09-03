@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteOpen.jpg
-coverY: 0
----
-
 # Mise en open data des tracés des réseaux de chaleur et de froid
 
 ## France Chaleur Urbaine ouvre les données cartographiques des réseaux de chaleur au service de la transition énergétique
