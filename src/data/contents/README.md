@@ -85,4 +85,4 @@ De notre retour d’expérience, nous retiendrons que l’ouverture des données
 
 _Le fichier de tracés est téléchargeable depuis notre_ [_cartographie_](https://france-chaleur-urbaine.beta.gouv.fr/carte) _(Mode professionnel) ou_ [_ici_](https://france-chaleur-urbaine.beta.gouv.fr/professionnels#cartographie)_. Il est également en ligne sur_ [_data.gouv.fr_](https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/)_._
 
-![](.gitbook/assets/OpenNL.jpg)
+![](.gitbook/assets/opendata.jpg)
