@@ -68,7 +68,7 @@ La note de l’Administratrice générale des données, des algorithmes et des c
 
 Cette clarification du cadre juridique s’appliquant aux données des réseaux de chaleur a constitué un élément clé permettant d’aboutir à leur mise en open data.
 
-### Encore des **perspectives d’amélioration**
+### Encore des perspectives d’amélioration
 
 Dans les prochains mois, nous souhaitons améliorer encore la qualité des données diffusées et mises en open data par France Chaleur Urbaine, et notamment :
 
