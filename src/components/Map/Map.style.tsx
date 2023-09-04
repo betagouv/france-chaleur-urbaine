@@ -17,7 +17,7 @@ import {
 
 const { minZoomData } = param;
 
-const mapControlZindex = 110;
+export const mapControlZindex = 110;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
 
@@ -453,6 +453,20 @@ export const LegendLogoList = styled.div<{
   background: #ffffff;
   ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
   height:100px;
+`;
+
+export const LegendLogoLink = styled.a`
+  width: 166px;
+  background-color: white;
+  img {
+    width: 100%;
+    vertical-align: middle;
+  }
+  display: inline-block;
+
+  &::after {
+    display: none !important;
+  }
 `;
 
 export const LegendLogo = styled.div`

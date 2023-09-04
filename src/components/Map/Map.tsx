@@ -62,6 +62,7 @@ import {
   gasUsageLayerStyle,
   Legend,
   LegendLogo,
+  LegendLogoLink,
   LegendLogoList,
   LegendSeparator,
   MapControlWrapper,
@@ -178,6 +179,7 @@ const Map = ({
   setProMode,
   popupType = MapPopupType.DEFAULT,
   filter,
+  pinsList,
 }: {
   withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
@@ -193,6 +195,7 @@ const Map = ({
   setProMode?: Dispatch<SetStateAction<boolean>>;
   popupType?: MapPopupType;
   filter?: any[];
+  pinsList?: MapMarkerInfos[];
 }) => {
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -205,9 +208,11 @@ const Map = ({
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
+
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 1251);
   }, []);
+
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.getMap().resize();
@@ -265,7 +270,7 @@ const Map = ({
     if (mapRef.current && center) {
       if (withCenterPin) {
         const newMarker = {
-          key: getAddressId(center),
+          id: getAddressId(center),
           latitude: center[1],
           longitude: center[0],
         };
@@ -345,9 +350,7 @@ const Map = ({
       soughtAddresses.splice(addressIndex, 1);
       setSoughtAddresses([...soughtAddresses]);
 
-      setMarkersList((current) =>
-        current.filter((marker) => marker.key !== id)
-      );
+      setMarkersList((current) => current.filter((marker) => marker.id !== id));
     },
     [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
   );
@@ -779,7 +782,7 @@ const Map = ({
         const newMarkersList: MapMarkerInfos[] = [];
         response.result.forEach((address) => {
           const newMarker = {
-            key: getAddressId([address.lon, address.lat]),
+            id: getAddressId([address.lon, address.lat]),
             latitude: address.lat,
             longitude: address.lon,
             color: address.isEligible ? 'green' : 'red',
@@ -841,11 +844,11 @@ const Map = ({
         if (mapRef.current) {
           const id = sAddress.id;
           const markerIndex = newMarkersList.findIndex(
-            (marker) => marker.key === id
+            (marker) => marker.id === id
           );
           if (markerIndex == -1) {
             const newMarker = {
-              key: sAddress.id,
+              id: sAddress.id,
               latitude: sAddress.coordinates[1],
               longitude: sAddress.coordinates[0],
             };
@@ -869,6 +872,38 @@ const Map = ({
 
     loadFilters();
   }, [loadFilters, mapState]);
+
+  useEffect(() => {
+    if (pinsList) {
+      if (pinsList.length > 0) {
+        const centerPin: [number, number] = [
+          pinsList[0].longitude,
+          pinsList[0].latitude,
+        ];
+        jumpTo({ coordinates: centerPin, zoom: 8 });
+      }
+      setMarkersList(pinsList);
+    }
+  }, [jumpTo, pinsList]);
+
+  const initialViewState = {
+    latitude: mapParam.lat,
+    longitude: mapParam.lng,
+    zoom: defaultZoom,
+  };
+
+  if (router.query.coord) {
+    const coordinates = (router.query.coord as string)
+      .split(',')
+      .map((point: string) => parseFloat(point)) as [number, number];
+    initialViewState.longitude = coordinates[0];
+    initialViewState.latitude = coordinates[1];
+    initialViewState.zoom = 12;
+  }
+
+  if (router.query.zoom) {
+    initialViewState.zoom = parseInt(router.query.zoom as string, 10);
+  }
 
   return (
     <>
@@ -980,12 +1015,16 @@ const Map = ({
             </Legend>
             {!withoutLogo && (
               <LegendLogoList legendCollapsed={legendCollapsed}>
-                <LegendLogo>
+                <LegendLogoLink
+                  href="https://france-chaleur-urbaine.beta.gouv.fr/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <img
                     src="/logo-fcu-with-typo.jpg"
                     alt="logo france chaleur urbaine"
                   />
-                </LegendLogo>
+                </LegendLogoLink>
                 {legendLogoOpt && (
                   <LegendLogo>
                     <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
@@ -1035,11 +1074,7 @@ const Map = ({
         )}
         <MapProvider>
           <MapReactGL
-            initialViewState={{
-              latitude: mapParam.lat,
-              longitude: mapParam.lng,
-              zoom: defaultZoom,
-            }}
+            initialViewState={initialViewState}
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore: Wrong npm types
             mapLib={maplibregl}
@@ -1070,12 +1105,14 @@ const Map = ({
             {markersList.length > 0 &&
               markersList.map((marker: MapMarkerInfos) => (
                 <MapMarker
-                  key={marker.key}
+                  key={marker.id}
+                  id={marker.id}
                   longitude={marker.longitude}
                   latitude={marker.latitude}
                   color={marker.color}
                   popup={marker.popup}
                   popupContent={marker.popupContent}
+                  onClickAction={marker.onClickAction}
                 />
               ))}
           </MapReactGL>

@@ -12,10 +12,11 @@ export enum MapPopupType {
 }
 
 export type MapMarkerInfos = {
-  key: string;
+  id: string;
   latitude: number;
   longitude: number;
   color?: string;
   popup?: boolean;
   popupContent?: string;
+  onClickAction?: (id: string) => void;
 };
