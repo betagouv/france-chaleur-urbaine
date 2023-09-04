@@ -14,7 +14,10 @@ import readme_3_1_1 from './README (3) (1) (1).md';
 import readme_3_1 from './README (3) (1).md';
 import readme_3 from './README (3).md';
 import readme_4 from './README (4).md';
+import readme_4_1 from './README (4) (1).md';
 import readme_5 from './README (5).md';
+import readme_6 from './README (6).md';
+import readme_7 from './README (7).md';
 import readme from './README.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
@@ -31,6 +34,9 @@ import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-po
 import uneEnqueteIfopPourFranceChaleurUrbaine from './une-enquete-ifop-pour-france-chaleur-urbaine.md';
 import visiteDunDatacenter from './visite-dun-datacenter.md';
 import visiteDuneChaufferieBiomasse from './visite-dune-chaufferie-biomasse.md';
+import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
+import desReseauxVertueux from './des-reseaux-vertueux.md';
+import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
 
 const importFile = (file: string) => {
   return file.replaceAll('.gitbook/assets/', '/contents/');
@@ -38,10 +44,52 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/vignetteOpen.jpg',
+    title: 'Mise en open data des tracés des réseaux de chaleur et de froid',
+    slug: 'mise-en-open-data-des-tracés-des-réseaux-de-chaleur-et-de-froid',
+    content: importFile(readme),
+    publishedDate: new Date('2023-09-01'),
+  },
+  {
+    image: '/contents/fichevignette.jpg',
+    title: 'Des informations techniques et tarifaires par réseau',
+    slug: 'des-informations-techniques-et-tarifaires-par-réseau',
+    content: importFile(readme_7),
+    publishedDate: new Date('2023-08-31'),
+  },
+  {
+    image: '/contents/def-enr.jpg',
+    title: "Définir des zones d'accélération des énergies renouvelables",
+    slug: 'définir-des-zones-d-accélération-des-énergies-renouvelables',
+    content: importFile(readme_6),
+    publishedDate: new Date('2023-08-23'),
+  },
+  {
+    image: '/contents/1,6vignette.jpg',
+    title: 'Les réseaux les plus écologiques sont les plus économiques !',
+    slug: 'les-réseaux-les-plus-écologiques-sont-les-plus-économiques',
+    content: importFile(lesReseauxLesPlusEcologiquesSontLesPlusEconomiques),
+    publishedDate: new Date('2023-08-10'),
+  },
+  {
+    image: '/contents/63vignette.jpg',
+    title: 'Des réseaux vertueux',
+    slug: 'des-réseaux-vertueux',
+    content: importFile(desReseauxVertueux),
+    publishedDate: new Date('2023-08-03'),
+  },
+  {
+    image: '/contents/vignettefroid-art.jpg',
+    title: 'Les réseaux de froid sur notre cartographie',
+    slug: 'les-réseaux-de-froid-sur-notre-cartographie',
+    content: importFile(lesReseauxDeFroidSurNotreCartographie),
+    publishedDate: new Date('2023-07-25'),
+  },
+  {
     image: '/contents/vignette-collectivite.jpg',
     title: "Les chiffres de l'enquête IFOP 3",
     slug: 'les-chiffres-de-lenquete-ifop-3',
-    content: importFile(readme),
+    content: importFile(readme_4),
     publishedDate: new Date('2023-07-18'),
   },
   {
@@ -97,7 +145,7 @@ export const articles: Article[] = [
     image: '/contents/fatale2.jpg',
     title: 'La chaleur fatale',
     slug: 'la-chaleur-fatale',
-    content: importFile(readme_4),
+    content: importFile(readme_4_1),
     publishedDate: new Date('2023-05-25'),
   },
   {

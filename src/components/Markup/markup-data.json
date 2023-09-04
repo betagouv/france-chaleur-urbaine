@@ -42,7 +42,7 @@
   },
   "contactFormIneligible": {
     "facebookEvent": ["Contact"],
-    "googleAdsEvent": ["TUsSCJ-2wcsYEIqs-vYo"],
+    "googleAdsEvent": ["TUsSCJ2wcsYEIqs-vYo"],
     "matomoEvent": {
       "form": ["Eligibilité", "Formulaire de contact inéligible - Envoi"],
       "map": ["Eligibilité", "Formulaire de contact inéligible - Carte - Envoi"]
