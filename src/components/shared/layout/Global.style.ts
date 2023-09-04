@@ -165,8 +165,8 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
       padding-left: 64px;
     }
 
-    a {
-      margin-top: 16px;
+    .button-with-margin {
+      margin-right: 16px;
     }
 
     @media (max-width: 991px) {
@@ -175,6 +175,10 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
         display: block;
         max-width: 14em;
         text-align: center;
+      }
+
+      .button-with-margin {
+        margin: 0 auto 24px auto;
       }
     }
   }

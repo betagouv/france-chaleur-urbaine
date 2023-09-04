@@ -82,14 +82,18 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
           </WrappedBlock>
         </Slice>
         <BulkEligibilitySlice displayBulkEligibility />
-        <Slice padding={8}>
+        <Slice padding={8} id="cartographie">
           <WrappedText
             textClassName="slice-carto-text"
             body={`
 ::arrow-item[Localisez les réseaux de chaleur et accédez à leurs caractéristiques principales (taux ENR et contenu CO2 réglementaires,...)]
 ::arrow-item[Identifiez les réseaux classés et découvrez leur périmètre de développement prioritaire (zone où s'applique une obligation de raccordement pour certains bâtiments)]
 ::arrow-item[Visualisez et exportez des données sur les bâtiments (consommation énergétique, mode de chauffage...)]
+::arrow-item[Téléchargez les tracés et données des réseaux]
+
 :button-link[Voir la cartographie]{href="./carte"}
+
+:button-link[Télécharger les tracés]{href="./230830_Opendata_FCU.zip" tagName="downloadLink" trackEvent="Tracés, ${currentPage}" download}
 `}
             imgSrc="/img/rcu-carto.jpg"
             reverse
