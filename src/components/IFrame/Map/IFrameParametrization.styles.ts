@@ -18,3 +18,9 @@ export const AddressContainer = styled.div`
   margin-top: 16px;
   max-width: 500px;
 `;
+
+export const IFrame = styled.div`
+  max-width: 475px;
+  text-wrap: wrap;
+  overflow-wrap: break-word;
+`;

@@ -2,7 +2,11 @@ import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomp
 import { Checkbox, CheckboxGroup } from '@dataesr/react-dsfr';
 import React, { ChangeEvent, useMemo, useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
-import { AddressContainer, Container } from './IFrameParametrization.styles';
+import {
+  AddressContainer,
+  Container,
+  IFrame,
+} from './IFrameParametrization.styles';
 
 const IFrameParametrization = () => {
   const [coords, setCoords] = useState<{ lon: number; lat: number } | null>(
@@ -12,7 +16,7 @@ const IFrameParametrization = () => {
     'pdp',
     'futur_reseau',
     'reseau_froid',
-    'reseau',
+    'reseau_chaleur',
   ]);
 
   const url = useMemo(() => {
@@ -53,22 +57,20 @@ const IFrameParametrization = () => {
   };
 
   return (
-    <Container id="iframe-carte">
-      <h4>Vous souhaitez afficher notre carte sur votre site ?</h4>
-      Il vous suffit de parametrer les infos que vous voulez voir et de{' '}
-      <b>copier les lignes de code</b> sur votre site.
-      <br />
-      Pensez à ajuster les valeurs des variables "width" et "height" pour
-      obtenir un affichage optimal sur votre site.
+    <Container>
+      <h4>Intégrez notre cartographie à votre site</h4>
+      Il vous suffit de sélectionner les informations que vous voulez afficher
+      et de copier les lignes de code obtenues dans le code source de votre
+      site.
       <br />
       <br />
-      <CheckboxGroup legend="Vous voulez voir :" isInline>
+      <CheckboxGroup legend="Vous voulez afficher:">
         <Checkbox
-          label="Les périmètres de developpement prioritaire"
+          label="Les réseaux de chaleur existants"
           defaultChecked={true}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore: Create proper type
-          onClick={(e) => onCheckBoxClick(e, 'pdp')}
+          onClick={(e) => onCheckBoxClick(e, 'reseau_chaleur')}
         />
         <Checkbox
           label="Les réseaux de chaleur en construction"
@@ -78,6 +80,13 @@ const IFrameParametrization = () => {
           onClick={(e) => onCheckBoxClick(e, 'futur_reseau')}
         />
         <Checkbox
+          label="Les périmètres de developpement prioritaire"
+          defaultChecked={true}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore: Create proper type
+          onClick={(e) => onCheckBoxClick(e, 'pdp')}
+        />
+        <Checkbox
           label="Les réseaux de froid"
           defaultChecked={true}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -85,7 +94,7 @@ const IFrameParametrization = () => {
           onClick={(e) => onCheckBoxClick(e, 'reseau_froid')}
         />
       </CheckboxGroup>
-      <div>Vous voulez centrer la carte sur un endroit en particulier ?</div>
+      <div>Vous souhaitez centrer la carte sur un endroit en particulier ?</div>
       <AddressContainer>
         <AddressAutocomplete
           onAddressSelected={onAddressSelected}
@@ -93,7 +102,7 @@ const IFrameParametrization = () => {
         />
       </AddressContainer>
       <br />
-      <b>
+      <IFrame>
         {`
 <iframe
 width="100%"
@@ -101,19 +110,25 @@ title="France chaleur urbaine - Carte"
 src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}"
 />
 `}
-      </b>
+      </IFrame>
+      <br />
+      Pensez à ajuster les valeurs des variables "width" et "height" pour
+      obtenir un affichage optimal sur votre site. Vous pouvez par ailleurs
+      ajuster le niveau de zoom souhaité dans le lien (entre 1 et 17).
       <br />
       <br />
       <div>
-        Si vous souhaitez une carte personnalisée avec seulement vos réseaux,
-        votre logo ou d'autres informations, n'hesitez pas à{' '}
-        <a
-          href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          nous contacter
-        </a>
+        <b>
+          Si vous souhaitez une carte personnalisée avec seulement vos réseaux,
+          votre logo ou d'autres informations, n'hésitez pas à{' '}
+          <a
+            href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            nous contacter
+          </a>
+        </b>
       </div>
     </Container>
   );

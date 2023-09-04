@@ -1,5 +1,6 @@
 import Map from '@components/Map/Map';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import param from 'src/services/Map/param';
 import mapParam from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
@@ -11,51 +12,61 @@ const legendMapping: Record<LegendGroupId, string> = {
   [LegendGroupId.demands]: 'demandes',
   [LegendGroupId.raccordements]: 'raccordements',
   [LegendGroupId.buildings]: 'dpe',
-  [LegendGroupId.heatNetwork]: '',
+  [LegendGroupId.heatNetwork]: 'reseau_chaleur',
   [LegendGroupId.futurheatNetwork]: 'futur_reseau',
   [LegendGroupId.coldNetwork]: 'reseau_froid',
   [LegendGroupId.gasUsage]: 'conso_gaz',
 };
 const MapPage = () => {
   const router = useRouter();
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (router.isReady) {
+      setIsReady(true);
+    }
+  }, [router]);
+
+  if (!isReady) {
+    return null;
+  }
 
   const { legend, drawing, display, displayLegend } = router.query;
 
-  const displayArray = display ? decodeURI(display as string) : undefined;
+  let displayArray = display ? decodeURI(display as string) : undefined;
   const displayLegendArray = displayLegend
     ? decodeURI(displayLegend as string)
     : undefined;
 
-  if (!router.isReady) {
-    return null;
+  const legendData = displayLegendArray
+    ? mapParam.legendData
+        .filter(
+          (legend) =>
+            legend !== 'contributeButton' &&
+            (typeof legend === 'string' ||
+              displayLegendArray.includes(legendMapping[legend.id]))
+        )
+        .filter(
+          (legend, i, legends) =>
+            legend !== 'separator' || legends[i - 1] !== 'separator'
+        )
+    : mapParam.legendData;
+
+  if (legendData.length === 3) {
+    // Only one selected (+ sources + separator)
+    displayArray = displayLegend as string;
   }
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
-        key={JSON.stringify(router.query)}
         withLegend={legend === 'true'}
         withDrawing={drawing === 'true'}
-        legendData={
-          displayLegendArray
-            ? mapParam.legendData
-                .filter(
-                  (legend) =>
-                    legend !== 'contributeButton' &&
-                    (typeof legend === 'string' ||
-                      legend.id === LegendGroupId.heatNetwork ||
-                      displayLegendArray.includes(legendMapping[legend.id]))
-                )
-                .filter(
-                  (legend, i, legends) =>
-                    legend !== 'separator' || legends[i - 1] !== 'separator'
-                )
-            : mapParam.legendData
-        }
+        legendData={legendData}
         initialLayerDisplay={
           displayArray
             ? {
-                outline: true,
+                outline: displayArray.includes(legendMapping['heat-network']),
                 futurOutline: displayArray.includes(
                   legendMapping['futur-heat-network']
                 ),

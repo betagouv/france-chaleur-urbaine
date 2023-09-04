@@ -3,13 +3,11 @@ import Infographies from '@components/Coproprietaire/Infographies';
 import HeadSliceForm from '@components/HeadSliceForm';
 import BulkEligibilitySlice from '@components/HeadSliceForm/BulkEligibilitySlice';
 import IFrame from '@components/IFrame/Form/IFrame';
-import IFrameParametrization from '@components/IFrame/Map/IFrameParametrization';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@components/Partners/Partners';
 import { issues, understandings } from '@components/Ressources/config';
 import Simulator from '@components/Ressources/Contents/Simulator';
-
 import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
@@ -99,7 +97,6 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
             imgSrc="/img/rcu-carto.jpg"
             reverse
           />
-          <IFrameParametrization />
         </Slice>
         <Slice
           padding={8}
