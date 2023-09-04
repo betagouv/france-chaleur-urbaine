@@ -2,13 +2,12 @@ import LastArticles from '@components/Articles/LastArticles';
 import Infographies from '@components/Coproprietaire/Infographies';
 import HeadSliceForm from '@components/HeadSliceForm';
 import BulkEligibilitySlice from '@components/HeadSliceForm/BulkEligibilitySlice';
-import IFrame from '@components/IFrame/IFrame';
+import IFrame from '@components/IFrame/Form/IFrame';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@components/Partners/Partners';
 import { issues, understandings } from '@components/Ressources/config';
 import Simulator from '@components/Ressources/Contents/Simulator';
-
 import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';

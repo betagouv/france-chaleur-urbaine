@@ -62,6 +62,7 @@ import {
   gasUsageLayerStyle,
   Legend,
   LegendLogo,
+  LegendLogoLink,
   LegendLogoList,
   LegendSeparator,
   MapControlWrapper,
@@ -207,9 +208,11 @@ const Map = ({
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
+
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 1251);
   }, []);
+
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.getMap().resize();
@@ -883,6 +886,25 @@ const Map = ({
     }
   }, [jumpTo, pinsList]);
 
+  const initialViewState = {
+    latitude: mapParam.lat,
+    longitude: mapParam.lng,
+    zoom: defaultZoom,
+  };
+
+  if (router.query.coord) {
+    const coordinates = (router.query.coord as string)
+      .split(',')
+      .map((point: string) => parseFloat(point)) as [number, number];
+    initialViewState.longitude = coordinates[0];
+    initialViewState.latitude = coordinates[1];
+    initialViewState.zoom = 12;
+  }
+
+  if (router.query.zoom) {
+    initialViewState.zoom = parseInt(router.query.zoom as string, 10);
+  }
+
   return (
     <>
       <MapStyle
@@ -993,12 +1015,16 @@ const Map = ({
             </Legend>
             {!withoutLogo && (
               <LegendLogoList legendCollapsed={legendCollapsed}>
-                <LegendLogo>
+                <LegendLogoLink
+                  href="https://france-chaleur-urbaine.beta.gouv.fr/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <img
                     src="/logo-fcu-with-typo.jpg"
                     alt="logo france chaleur urbaine"
                   />
-                </LegendLogo>
+                </LegendLogoLink>
                 {legendLogoOpt && (
                   <LegendLogo>
                     <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
@@ -1048,11 +1074,7 @@ const Map = ({
         )}
         <MapProvider>
           <MapReactGL
-            initialViewState={{
-              latitude: mapParam.lat,
-              longitude: mapParam.lng,
-              zoom: defaultZoom,
-            }}
+            initialViewState={initialViewState}
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore: Wrong npm types
             mapLib={maplibregl}

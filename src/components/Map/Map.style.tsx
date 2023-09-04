@@ -455,6 +455,20 @@ export const LegendLogoList = styled.div<{
   height:100px;
 `;
 
+export const LegendLogoLink = styled.a`
+  width: 166px;
+  background-color: white;
+  img {
+    width: 100%;
+    vertical-align: middle;
+  }
+  display: inline-block;
+
+  &::after {
+    display: none !important;
+  }
+`;
+
 export const LegendLogo = styled.div`
   width: 166px;
   background-color: white;
