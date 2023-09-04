@@ -13,6 +13,9 @@ export const Filter = styled.div`
   width: 250px;
   margin-bottom: 0 !important;
   z-index: ${mapControlZindex + 2};
+  .fr-label {
+    font-size: 0.9rem;
+  }
 `;
 
 export const ExportButton = styled.div`
