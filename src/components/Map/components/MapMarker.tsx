@@ -31,19 +31,15 @@ const MapMarker = ({
   }, [popup, popupContent, showPopup]);
 
   const onClickMarker = useCallback(() => {
-    if (onClickAction != undefined) {
+    if (onClickAction) {
       onClickAction(id);
     }
     setShowPopup(true);
   }, [onClickAction, id]);
 
+  //Using dynamic svg to update color - the color property in Marker can't be change, it's not re-rendering
   return (
-    <Marker
-      longitude={longitude}
-      latitude={latitude}
-      color={color}
-      onClick={() => onClickMarker()}
-    >
+    <Marker longitude={longitude} latitude={latitude} onClick={onClickMarker}>
       <svg display="block" height="41px" width="27px" viewBox="0 0 27 41">
         <g fillRule="nonzero">
           <g transform="translate(3.0, 29.0)" fill="#000000">

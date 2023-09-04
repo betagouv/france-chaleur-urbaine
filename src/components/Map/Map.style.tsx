@@ -17,7 +17,7 @@ import {
 
 const { minZoomData } = param;
 
-const mapControlZindex = 110;
+export const mapControlZindex = 110;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
 

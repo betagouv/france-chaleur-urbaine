@@ -1,10 +1,9 @@
+import { mapControlZindex } from '@components/Map/Map.style';
 import {
   fullscreenHeaderHeight,
   tabHeaderHeight,
 } from '@components/shared/layout';
 import styled, { css } from 'styled-components';
-
-const mapControlZindex = 110;
 
 export const Container = styled.div`
   margin: auto;
@@ -69,7 +68,7 @@ export const ManagerContainer = styled.div`
 
 export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
   overflow: auto;
-  width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : '69%')};
+  width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : 'calc(70% - 16px)')};
   height: 100%;
   z-index: ${mapControlZindex + 1};
 

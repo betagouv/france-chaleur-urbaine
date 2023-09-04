@@ -137,7 +137,7 @@ const Manager = () => {
                 filteredDemands[i] &&
                 id == filteredDemands[i]['N° de dossier']
               ) {
-                const newPage = Math.floor(i / 10) + 1;
+                const newPage = Math.floor(i / rowPerPage) + 1;
                 setCenterRow(id);
                 setPage(newPage);
                 break;

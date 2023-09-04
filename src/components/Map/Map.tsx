@@ -1090,9 +1090,7 @@ const Map = ({
                   color={marker.color}
                   popup={marker.popup}
                   popupContent={marker.popupContent}
-                  onClickAction={
-                    marker.onClickAction ? marker.onClickAction : undefined
-                  }
+                  onClickAction={marker.onClickAction}
                 />
               ))}
           </MapReactGL>
