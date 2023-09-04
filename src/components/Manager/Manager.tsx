@@ -1,6 +1,8 @@
+import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
-import { Table } from '@dataesr/react-dsfr';
-import { useCallback, useEffect, useState } from 'react';
+import Map from '@components/Map/Map';
+import { Icon, Table } from '@dataesr/react-dsfr';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
 import { RowsParams } from 'src/services/demands';
@@ -12,13 +14,19 @@ import Contact from './Contact';
 import Contacted from './Contacted';
 import {
   ColHeader,
+  CollapseMap,
   Container,
+  ManagerContainer,
+  MapContainer,
   NoResult,
   TableContainer,
 } from './Manager.styles';
 import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
+import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
+
+const rowPerPage: number = 10;
 
 type SortParamType = {
   key: keyof Demand;
@@ -65,9 +73,16 @@ const Manager = () => {
   const { demandsService } = useServices();
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [isFirstInit, setIsFirstInit] = useState<boolean>(true);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
   const [sort, setSort] = useState<SortParamType>(defaultSort);
+  const refManagerTable: null | { current: any } = useRef(null);
+  const [centerRow, setCenterRow] = useState<string>();
+
+  const [mapCollapsed, setMapCollapsed] = useState(false);
+  const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
+  const [centerPin, setCenterPin] = useState<[number, number]>();
 
   const handleSort = useCallback(
     (key: keyof Demand, backupKey?: keyof Demand) => () => {
@@ -82,10 +97,126 @@ const Manager = () => {
     [sort]
   );
 
+  const highlightPin = useCallback((id: string) => {
+    setMapPins((currentMapPins) => {
+      const newMapPins: MapMarkerInfos[] = currentMapPins;
+      newMapPins.map((pin: MapMarkerInfos) => {
+        if (pin.id == id) {
+          pin.color = 'red';
+        } else if (pin.color != '#4550e5') {
+          pin.color = '#4550e5';
+        }
+      });
+      return newMapPins;
+    });
+  }, []);
+
+  const highlightRow = useCallback(
+    (id: string) => {
+      if (refManagerTable.current) {
+        const rows: NodeList =
+          refManagerTable.current.querySelectorAll('tbody tr');
+        if (rows && rows.length > 0) {
+          let matchingRow: any | undefined;
+          rows.forEach((row: any) => {
+            row.style.removeProperty('background-color');
+            if (Object.values(row as Node)[0].key) {
+              const fileNumber = Object.values(row as Node)[0].key;
+              if (id == fileNumber) {
+                matchingRow = row;
+                return;
+              }
+            }
+          });
+          if (matchingRow) {
+            matchingRow.style.backgroundColor = '#cfcfcf';
+          } else {
+            //Highlight in another page
+            for (let i = 0; i < filteredDemands.length; i += 1) {
+              if (
+                filteredDemands[i] &&
+                id == filteredDemands[i]['N° de dossier']
+              ) {
+                const newPage = Math.floor(i / rowPerPage) + 1;
+                setCenterRow(id);
+                setPage(newPage);
+                break;
+              }
+            }
+          }
+        }
+      }
+    },
+    [filteredDemands]
+  );
+
+  const highlight = useCallback(
+    (id: string) => {
+      highlightPin(id);
+      highlightRow(id);
+    },
+    [highlightPin, highlightRow]
+  );
+
+  const onCenterPin = useCallback(
+    (demand: any) => {
+      setCenterPin([demand.Longitude, demand.Latitude]);
+      highlight(demand['N° de dossier']);
+    },
+    [highlight]
+  );
+
+  const addOnClick = useCallback(() => {
+    if (refManagerTable.current) {
+      const rows = refManagerTable.current.querySelectorAll('tbody tr');
+      if (rows && rows.length > 0) {
+        rows.forEach((row: Node) => {
+          if (Object.values(row)[0].key) {
+            const fileNumber = Object.values(row)[0].key;
+            const matchingDemand: any | undefined = demands.find(
+              (demand: any) => {
+                if (demand['N° de dossier'] == fileNumber) return demand;
+              }
+            );
+            if (matchingDemand) {
+              row.addEventListener('click', () => {
+                onCenterPin(matchingDemand);
+              });
+            }
+          }
+        });
+        setIsFirstInit(false);
+      }
+    }
+  }, [demands, onCenterPin]);
+
+  const onUpdateMapPins = useCallback(() => {
+    const addressList: MapMarkerInfos[] = [];
+    if (filteredDemands) {
+      filteredDemands.forEach((demand: any) => {
+        if (demand.Latitude && demand.Longitude) {
+          addressList.push({
+            id: demand['N° de dossier'],
+            latitude: demand.Latitude,
+            longitude: demand.Longitude,
+            popup: true,
+            popupContent: demand.Adresse,
+            onClickAction: highlight,
+          });
+        }
+      });
+    }
+    setMapPins(addressList);
+    if (isFirstInit) {
+      addOnClick();
+    }
+  }, [filteredDemands, highlight, isFirstInit, addOnClick]);
+
   const onFilterUpdate = useCallback(
     (demands: Demand[]) => {
       const sortedDemands = getSortBy(demands)(sort);
       setFilteredDemands(sortedDemands);
+      setPage(1);
     },
     [sort]
   );
@@ -109,6 +240,22 @@ const Manager = () => {
     },
     [demands, demandsService]
   );
+
+  useEffect(() => {
+    if (filteredDemands && filteredDemands.length > 0) {
+      onUpdateMapPins();
+    }
+  }, [filteredDemands, onUpdateMapPins]);
+
+  useEffect(() => {
+    if (centerRow) {
+      highlight(centerRow);
+    }
+  }, [highlight, centerRow]);
+
+  useEffect(() => {
+    addOnClick();
+  }, [addOnClick, page]);
 
   const demandRowsParams: RowsParams[] = [
     {
@@ -263,23 +410,69 @@ const Manager = () => {
         setPage={setPage}
       />
       {demands.length > 0 ? (
-        <TableContainer>
-          <div>
-            {filteredDemands.length > 0 ? (
-              <Table
-                columns={demandRowsParams}
-                data={filteredDemands}
-                rowKey="N° de dossier"
-                pagination
-                paginationPosition="center"
-                page={page}
-                setPage={setPage}
-              />
-            ) : (
-              <NoResult>Aucun résultat</NoResult>
-            )}
-          </div>
-        </TableContainer>
+        <ManagerContainer>
+          <TableContainer mapCollapsed={mapCollapsed}>
+            <div ref={refManagerTable}>
+              {filteredDemands.length > 0 ? (
+                <Table
+                  columns={demandRowsParams}
+                  data={filteredDemands}
+                  rowKey="N° de dossier"
+                  pagination
+                  paginationPosition="left"
+                  page={page}
+                  setPage={setPage}
+                  perPage={rowPerPage}
+                />
+              ) : (
+                <NoResult>Aucun résultat</NoResult>
+              )}
+            </div>
+          </TableContainer>
+          <MapContainer mapCollapsed={mapCollapsed}>
+            <>
+              <CollapseMap
+                mapCollapsed={mapCollapsed}
+                onClick={() => setMapCollapsed(!mapCollapsed)}
+              >
+                <Hoverable position="left">
+                  {mapCollapsed ? 'Agrandir la carte' : 'Réduire la carte'}
+                </Hoverable>
+                <Icon
+                  size="2x"
+                  name={
+                    mapCollapsed
+                      ? 'ri-arrow-left-s-fill'
+                      : 'ri-arrow-right-s-fill'
+                  }
+                />
+              </CollapseMap>
+              {!mapCollapsed && (
+                <Map
+                  noPopup
+                  withoutLogo
+                  center={centerPin ? centerPin : undefined}
+                  initialLayerDisplay={{
+                    outline: true,
+                    futurOutline: true,
+                    coldOutline: false,
+                    zoneDP: true,
+                    demands: false,
+                    raccordements: false,
+                    gasUsageGroup: false,
+                    buildings: false,
+                    gasUsage: [],
+                    energy: [],
+                    gasUsageValues: [1000, Number.MAX_VALUE],
+                    energyGasValues: [50, Number.MAX_VALUE],
+                    energyFuelValues: [50, Number.MAX_VALUE],
+                  }}
+                  pinsList={mapPins}
+                />
+              )}
+            </>
+          </MapContainer>
+        </ManagerContainer>
       ) : (
         <h2>
           {loading
