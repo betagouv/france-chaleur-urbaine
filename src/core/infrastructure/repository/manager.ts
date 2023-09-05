@@ -106,6 +106,26 @@ export const getGestionnaires = (demand: Demand, network: string): string[] => {
   return [...new Set(gestionnaires)];
 };
 
+export const getGestionnairesDemands = async (
+  gestionnaires: string[]
+): Promise<Demand[]> => {
+  const records = await base(Airtable.UTILISATEURS)
+    .select({
+      sort: [{ field: 'Date demandes', direction: 'desc' }],
+    })
+    .all();
+
+  return records
+    .map((record) => ({ id: record.id, ...record.fields }) as Demand)
+    .filter(
+      (record) =>
+        record.Gestionnaires &&
+        record.Gestionnaires.some((gestionnaire) =>
+          gestionnaires.includes(gestionnaire)
+        )
+    );
+};
+
 export const getDemands = async (user: User): Promise<Demand[]> => {
   if (!user || !user.gestionnaires) {
     return [];
