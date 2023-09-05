@@ -84,7 +84,7 @@ function MapLegend({
 
         if (group == 'proModeLegend') {
           return (
-            <Title className="fr-mb-1w" key={'proModeLegend'}>
+            <Title key={'proModeLegend'}>
               Pour voir plus de données, contribuer à la carte ou télécharger
               les tracés, activez le "Mode professionnel" en haut de la carte.
             </Title>
