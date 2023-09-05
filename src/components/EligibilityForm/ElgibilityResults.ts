@@ -8,10 +8,10 @@ const closeCollectif = {
     distance: number,
     inZDP: boolean,
     gestionnaire: string | null,
-    tauxENRR: number | null
+    tauxENRR: number | null,
+    city: string
   ) => `
 ### Bonne nouvelle !
-
 
 ::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${
     distance ? `(${distance})` : ''
@@ -29,6 +29,11 @@ ${
           ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.`
           : ''
       }]`
+    : ''
+}
+${
+  city === 'Paris'
+    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
     : ''
 }
 `,
@@ -60,7 +65,8 @@ const intermediateCollectif = {
     distance: number,
     inZDP: boolean,
     gestionnaire: string | null,
-    tauxENRR: number | null
+    tauxENRR: number | null,
+    city: string
   ) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin ${
     distance ? `(${distance})` : ''
@@ -78,6 +84,11 @@ ${
           ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.`
           : ''
       }]`
+    : ''
+}
+${
+  city === 'Paris'
+    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
     : ''
 }
   `,
@@ -123,7 +134,8 @@ const closeFuturCollectif = {
     distance: number,
     inZDP: boolean,
     gestionnaire: string | null,
-    tauxENRR: number | null
+    tauxENRR: number | null,
+    city: string
   ) => `
 ### Bonne nouvelle !
 
@@ -144,6 +156,11 @@ ${
           ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.`
           : ''
       }]`
+    : ''
+}
+${
+  city === 'Paris'
+    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
     : ''
 }
 `,
@@ -185,7 +202,8 @@ const intermediateFuturCollectif = {
     distance: number,
     inZDP: boolean,
     gestionnaire: string | null,
-    tauxENRR: number | null
+    tauxENRR: number | null,
+    city: string
   ) => `
 ::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** ${
     distance ? `(${distance})` : ''
@@ -205,6 +223,11 @@ ${
       }]`
     : ''
 }
+${
+  city === 'Paris'
+    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
+    : ''
+}
   `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
@@ -215,7 +238,13 @@ ${
 // Metz
 const irisCollectif = {
   eligibility: true,
-  body: (distance: number, inZDP: boolean) => `
+  body: (
+    distance: number,
+    inZDP: boolean,
+    gestionnaire: string | null,
+    tauxENRR: number | null,
+    city: string
+  ) => `
 ### Bonne nouvelle !
 
 
@@ -226,6 +255,11 @@ ${
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
+${
+  city === 'Paris'
+    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
+    : ''
+}
 `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
