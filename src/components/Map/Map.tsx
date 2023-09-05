@@ -180,6 +180,7 @@ const Map = ({
   popupType = MapPopupType.DEFAULT,
   filter,
   pinsList,
+  initialZoom,
 }: {
   withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
@@ -196,7 +197,10 @@ const Map = ({
   popupType?: MapPopupType;
   filter?: any[];
   pinsList?: MapMarkerInfos[];
+  initialZoom?: number;
 }) => {
+  const router = useRouter();
+
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
@@ -208,6 +212,14 @@ const Map = ({
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
+
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (router.isReady) {
+      setIsReady(true);
+    }
+  }, [router]);
 
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 1251);
@@ -236,8 +248,6 @@ const Map = ({
     }
   );
 
-  const router = useRouter();
-
   const onMapClick = (e: any, key: string) => {
     const properties = e.features[0].properties;
     const { lat, lng } = e.lngLat;
@@ -265,20 +275,6 @@ const Map = ({
     },
     []
   );
-
-  const jumpToWithPin = useCallback(() => {
-    if (mapRef.current && center) {
-      if (withCenterPin) {
-        const newMarker = {
-          id: getAddressId(center),
-          latitude: center[1],
-          longitude: center[0],
-        };
-        setMarkersList([newMarker]);
-      }
-      jumpTo({ coordinates: center, zoom: 13 });
-    }
-  }, [center, jumpTo, withCenterPin]);
 
   const markAddressAsContacted = (address: Partial<StoredAddress>) => {
     setSoughtAddresses(
@@ -552,7 +548,6 @@ const Map = ({
         addHover(mapRef, 'heatNetwork', 'outline');
         addHover(mapRef, 'heatFuturNetwork', 'futurOutline');
         addHover(mapRef, 'coldNetwork', 'coldOutline');
-        jumpToWithPin();
       }
     });
   };
@@ -797,25 +792,26 @@ const Map = ({
   }, [router.query, heatNetworkService]);
 
   useEffect(() => {
-    jumpToWithPin();
-  }, [center, jumpToWithPin]);
+    if (mapRef.current && center) {
+      if (withCenterPin) {
+        const newMarker = {
+          id: getAddressId(center),
+          latitude: center[1],
+          longitude: center[0],
+        };
+        setMarkersList([newMarker]);
+      }
+      jumpTo({ coordinates: center });
+    }
+  }, [center, withCenterPin]);
 
   useEffect(() => {
     if (!router.isReady) {
       return;
     }
 
-    const { coord, zoom, id } = router.query;
-    if (coord) {
-      const coordinates = (coord as string)
-        .split(',')
-        .map((point: string) => parseFloat(point)) as [number, number];
-
-      jumpTo({
-        coordinates,
-        zoom: zoom ? parseInt(zoom as string, 10) : 12,
-      });
-    } else if (!center && !id && navigator.geolocation) {
+    const { coord, id } = router.query;
+    if (!coord && !center && !id && navigator.geolocation) {
       if (navigator.permissions) {
         navigator.permissions
           .query({ name: 'geolocation' })
@@ -823,14 +819,14 @@ const Map = ({
             if (state === 'granted' || state === 'prompt') {
               navigator.geolocation.getCurrentPosition((pos) => {
                 const { longitude, latitude } = pos.coords;
-                jumpTo({ coordinates: [longitude, latitude], zoom: 12 });
+                jumpTo({ coordinates: [longitude, latitude], zoom: 13 });
               });
             }
           });
       } else {
         navigator.geolocation.getCurrentPosition((pos) => {
           const { longitude, latitude } = pos.coords;
-          jumpTo({ coordinates: [longitude, latitude], zoom: 12 });
+          jumpTo({ coordinates: [longitude, latitude], zoom: 13 });
         });
       }
     }
@@ -886,10 +882,14 @@ const Map = ({
     }
   }, [jumpTo, pinsList]);
 
+  if (!isReady) {
+    return null;
+  }
+
   const initialViewState = {
-    latitude: mapParam.lat,
-    longitude: mapParam.lng,
-    zoom: defaultZoom,
+    latitude: center ? center[1] : mapParam.lat,
+    longitude: center ? center[0] : mapParam.lng,
+    zoom: initialZoom || defaultZoom,
   };
 
   if (router.query.coord) {
@@ -898,7 +898,7 @@ const Map = ({
       .map((point: string) => parseFloat(point)) as [number, number];
     initialViewState.longitude = coordinates[0];
     initialViewState.latitude = coordinates[1];
-    initialViewState.zoom = 12;
+    initialViewState.zoom = initialZoom || 13;
   }
 
   if (router.query.zoom) {
