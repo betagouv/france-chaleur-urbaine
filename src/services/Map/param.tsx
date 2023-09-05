@@ -221,6 +221,7 @@ const legendData: (string | TypeGroupLegend)[] = [
     ],
     type: 'list',
   },
+  'proModeLegend',
   'separator',
   'sources',
 ];
