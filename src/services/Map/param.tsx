@@ -221,6 +221,7 @@ const legendData: (string | TypeGroupLegend)[] = [
     ],
     type: 'list',
   },
+  'proModeLegend',
   'separator',
   'sources',
 ];
@@ -228,7 +229,7 @@ const legendData: (string | TypeGroupLegend)[] = [
 const param = {
   minZoomData: 13,
   minZoom: 4,
-  maxZoom: 17,
+  maxZoom: 17.9,
   defaultZoom: 4,
   lng: 2.3,
   lat: 45,

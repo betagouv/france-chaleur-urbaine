@@ -5,10 +5,19 @@ import {
 } from '@core/infrastructure/repository/network';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 const PageReseau = ({ network }: { network: Network }) => {
   const router = useRouter();
-  if (!network) {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (router.isReady) {
+      setIsReady(true);
+    }
+  }, [router]);
+
+  if (!network || !isReady) {
     return null;
   }
 

@@ -38,7 +38,7 @@ function MapLegend({
         {legendTitle || 'Réseaux de chaleur et de froid'}
       </LabelLegendHead>
       <Title className="fr-mb-1w">
-        Cliquer sur un réseau pour connaître ses caractéristiques
+        Cliquez sur un réseau pour connaître ses caractéristiques
       </Title>
       {data.map((group, i) => {
         if (group === 'separator') {
@@ -79,6 +79,15 @@ function MapLegend({
                 Sources
               </Link>
             </Sources>
+          );
+        }
+
+        if (group == 'proModeLegend') {
+          return (
+            <Title key={'proModeLegend'}>
+              Pour voir plus de données, contribuer à la carte ou télécharger
+              les tracés, activez le "Mode professionnel" en haut de la carte.
+            </Title>
           );
         }
 

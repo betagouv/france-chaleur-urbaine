@@ -4,7 +4,10 @@ import base from 'src/db/airtable';
 import { Demand } from 'src/types/Summary/Demand';
 import { Airtable } from 'src/types/enum/Airtable';
 import { USER_ROLE } from 'src/types/enum/UserRole';
-import { gestionnaires } from './gestionnaires.config';
+import {
+  gestionnairesPerCity,
+  gestionnairesPerNetwork,
+} from './gestionnaires.config';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
   const records = await base(Airtable.UTILISATEURS)
@@ -88,13 +91,19 @@ export const getGestionnaires = (demand: Demand, network: string): string[] => {
     const address = demand.Adresse.split(' ');
     city = address[address.length - 1];
   }
-  const config = gestionnaires[city];
-  if (config) {
-    if (!config.network || config.network === network) {
-      return [city].concat(config.gestionnaires);
+  let gestionnaires = [city];
+  const configPerCity = gestionnairesPerCity[city];
+  if (configPerCity) {
+    if (!configPerCity.network || configPerCity.network === network) {
+      gestionnaires = gestionnaires.concat(configPerCity.gestionnaires);
     }
   }
-  return [city];
+  const configPerNetwork = gestionnairesPerNetwork[network];
+  if (configPerNetwork) {
+    gestionnaires = gestionnaires.concat(configPerNetwork);
+  }
+
+  return [...new Set(gestionnaires)];
 };
 
 export const getDemands = async (user: User): Promise<Demand[]> => {

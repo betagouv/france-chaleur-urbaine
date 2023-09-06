@@ -43,6 +43,7 @@ const MapPage = () => {
         .filter(
           (legend) =>
             legend !== 'contributeButton' &&
+            legend !== 'proModeLegend' &&
             (typeof legend === 'string' ||
               displayLegendArray.includes(legendMapping[legend.id]))
         )
@@ -50,7 +51,7 @@ const MapPage = () => {
           (legend, i, legends) =>
             legend !== 'separator' || legends[i - 1] !== 'separator'
         )
-    : mapParam.legendData;
+    : mapParam.legendData.filter((x) => x !== 'proModeLegend');
 
   if (legendData.length === 3) {
     // Only one selected (+ sources + separator)

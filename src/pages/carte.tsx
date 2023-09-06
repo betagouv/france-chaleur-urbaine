@@ -46,7 +46,7 @@ const Carte = () => {
             setProMode={setProMode}
             legendData={
               proMode
-                ? undefined
+                ? param.legendData.filter((x) => x !== 'proModeLegend')
                 : param.legendData
                     .filter(
                       (x) =>
