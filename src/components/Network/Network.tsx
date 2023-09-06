@@ -486,6 +486,7 @@ const Network = ({
                 <Map
                   noPopup
                   center={[network.lon, network.lat]}
+                  initialZoom={13}
                   initialLayerDisplay={{
                     outline: !isCold,
                     futurOutline: false,
