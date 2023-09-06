@@ -1,6 +1,33 @@
 import base from '../src/db/airtable';
 import { Airtable } from '../src/types/enum/Airtable';
 
+const toIgnore: Record<string, string[]> = {
+  '3303C': ['NoRC'],
+  '4247C': ['NoRC'],
+  '4405C': ['Engie_Nantes', 'ENGIE', 'IDEX', 'Idex_Nantes'],
+  '5414C': ['UEM_Metz'],
+  '6725C': ['ENGIE', 'NoRC'],
+  '7501C': [
+    'Coriance',
+    'Coriance_IDF',
+    'IDEX_Clichy-la-Garenne',
+    'SIPPEREC',
+    'ALEC_MVE',
+    'SMIREC',
+    'ENGIE',
+    'ENGIE_IDF',
+    'IDEX',
+    'IDEX_IDF',
+    'IDEX_Levallois-Perret',
+    'NoRC',
+    'IDEX_Boulogne-Billancourt',
+  ],
+  '9219C': ['ENGIE_Meudon'],
+  '9236C': ['SIPPEREC_BLR', 'SOCACHAL'],
+  '9404C': ['NoRC'],
+  '9422C': ['SOCACHAL', 'Dalkia', 'Dalkia_IDF'],
+};
+
 const dalkiaNetworks: Record<string, string[]> = {
   '7319C': ['Dalkia_centre-est'],
   '3806C': ['Dalkia_centre-est'],
@@ -59,6 +86,13 @@ const getGestionnairesPerNetwork = async () => {
       }
     }
   });
+
+  Object.keys(toIgnore).forEach(
+    (key) =>
+      (networks[key] = networks[key].filter(
+        (gestionnaire) => !toIgnore[key].includes(gestionnaire)
+      ))
+  );
 
   Object.keys(networks)
     .sort()
