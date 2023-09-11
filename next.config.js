@@ -42,6 +42,7 @@ const csp = {
     'https://api.mapbox.com/',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
+  'frame-src': ['https://www.youtube.com/'],
   'worker-src': ["'self'", 'blob:'],
 };
 
