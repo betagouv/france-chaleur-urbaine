@@ -4,6 +4,15 @@ import Slice from '@components/Slice';
 import { getArticle } from '@data/contents';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { createGlobalStyle } from 'styled-components';
+
+const GlobalStyle = createGlobalStyle`
+  .markdown-actu {
+    img {
+      max-width: 100%;
+    }
+  }
+`;
 
 const Article = () => {
   const router = useRouter();
@@ -24,8 +33,9 @@ const Article = () => {
 
   return (
     <MainContainer currentMenu="/actus">
+      <GlobalStyle />
       <Slice padding={8}>
-        <MarkdownWrapper value={content} />
+        <MarkdownWrapper value={content} className="markdown-actu" />
       </Slice>
     </MainContainer>
   );

@@ -28,7 +28,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
   }
 
   .fcuCoproGuide {
-    min-width: 330px;
+    min-width: min(100%, 330px);
     margin-bottom: 80px;
     text-align: center;
     img {
