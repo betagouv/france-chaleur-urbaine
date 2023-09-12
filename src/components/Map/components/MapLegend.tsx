@@ -47,8 +47,8 @@ function MapLegend({
 
         if (group === 'contributeButton') {
           return (
-            <>
-              <LegendButton key="contribute-button">
+            <div key="contribute-button">
+              <LegendButton>
                 <Button
                   icon="ri-upload-2-line"
                   onClick={() => router.push('/contribution')}
@@ -57,7 +57,7 @@ function MapLegend({
                   Contribuer
                 </Button>
               </LegendButton>
-              <LegendButton key="contribute-button">
+              <LegendButton>
                 <ButtonLink
                   href="./230830_Opendata_FCU.zip"
                   tagName="downloadLink"
@@ -68,7 +68,7 @@ function MapLegend({
                   Télécharger les tracés
                 </ButtonLink>
               </LegendButton>
-            </>
+            </div>
           );
         }
 

@@ -28,6 +28,7 @@ const Carte = () => {
   const [proMode, setProMode] = usePersistedState('mapProMode', false, {
     beforeStorage: (value) => value || false,
   });
+
   return (
     <>
       <Head>
@@ -39,9 +40,7 @@ const Carte = () => {
             withoutLogo
             withDrawing={proMode}
             withLegend
-            initialLayerDisplay={
-              proMode ? param.simpleLayerDisplay : param.defaultLayerDisplay
-            }
+            initialLayerDisplay={param.defaultLayerDisplay}
             proMode={proMode}
             setProMode={setProMode}
             legendData={
