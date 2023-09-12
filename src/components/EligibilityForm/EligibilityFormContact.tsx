@@ -55,7 +55,8 @@ const EligibilityFormContact = ({
           getReadableDistance(addressData.eligibility.distance),
           addressData.eligibility.inZDP,
           addressData.eligibility.gestionnaire,
-          addressData.eligibility.tauxENRR
+          addressData.eligibility.tauxENRR,
+          addressData.geoAddress?.properties.city
         )
       : '';
 

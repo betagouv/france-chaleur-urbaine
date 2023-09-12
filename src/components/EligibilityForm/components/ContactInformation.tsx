@@ -101,7 +101,7 @@ const ContactInformation = ({ cardMode }: { cardMode?: boolean }) => {
           className="fr-mt-2w"
           type="warning"
           small
-          description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est possible que le gestionnaire du réseau ne donne pas suite à votre demande."
+          description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
         />
       )}
       <fieldset className="fr-fieldset">
