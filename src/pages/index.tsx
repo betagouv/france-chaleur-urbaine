@@ -3,6 +3,7 @@ import Advantages from '@components/Coproprietaire/Advantages';
 import Explanation from '@components/Coproprietaire/Explanation';
 import Infographies from '@components/Coproprietaire/Infographies';
 import Informations from '@components/Coproprietaire/Informations';
+import Interviews from '@components/Coproprietaire/Interviews';
 import Simulators from '@components/Coproprietaire/Simulators';
 import UseCase from '@components/Coproprietaire/UseCase';
 import HeadSliceForm from '@components/HeadSliceForm';
@@ -55,8 +56,11 @@ Améliorez votre confort et baissez vos factures !
           <Slice padding={4} theme="color">
             <Informations />
           </Slice>
-          <Slice padding={8} theme="grey">
+          <Slice padding={8}>
             <Advantages />
+          </Slice>
+          <Slice padding={8} theme="grey">
+            <Interviews />
           </Slice>
           <Slice padding={8}>
             <Explanation />

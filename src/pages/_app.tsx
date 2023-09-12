@@ -7,6 +7,7 @@ import {
 } from '@components/Markup';
 import { LayoutProvider, MainLayout } from '@components/shared/layout';
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
+import '@gouvfr/dsfr/dist/utility/icons/icons-editor/icons-editor.min.css';
 import '@reach/combobox/styles.css';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';

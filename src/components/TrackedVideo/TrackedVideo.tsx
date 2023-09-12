@@ -12,7 +12,7 @@ const TrackedVideo = ({
 }: {
   height?: string;
   width?: string;
-  poster: string;
+  poster?: string;
   src: string;
   className?: string;
 }) => {
