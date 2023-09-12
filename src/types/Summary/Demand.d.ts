@@ -17,6 +17,7 @@ export type EditableDemandSummary = {
 
 export type Demand = DemandSummary &
   EditableDemandSummary & {
+    id: string;
     Mail: string;
     Téléphone: string;
     Éligibilité: boolean;
@@ -34,4 +35,5 @@ export type Demand = DemandSummary &
     'Relance envoyée': string;
     'Affecté à': string;
     'Gestionnaire Affecté à': string;
+    'Identifiant réseau'?: string;
   };
