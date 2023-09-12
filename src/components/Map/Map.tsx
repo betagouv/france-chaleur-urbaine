@@ -222,6 +222,12 @@ const Map = ({
   }, [router]);
 
   useEffect(() => {
+    setLayerDisplay(
+      proMode ? mapParam.defaultLayerDisplay : mapParam.simpleLayerDisplay
+    );
+  }, [proMode]);
+
+  useEffect(() => {
     setLegendCollapsed(window.innerWidth < 1251);
   }, []);
 
@@ -1052,11 +1058,6 @@ const Map = ({
                 defaultChecked={proMode}
                 id="mode-pro-toggle"
                 onChange={(e) => {
-                  setLayerDisplay(
-                    e.target.checked
-                      ? mapParam.defaultLayerDisplay
-                      : mapParam.simpleLayerDisplay
-                  );
                   setProMode(e.target.checked);
                 }}
                 className="fr-toggle__input"
