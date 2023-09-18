@@ -18,11 +18,13 @@ type ContactFormProps = {
   onSubmit: (values: FormikValues) => void;
   isLoading?: boolean;
   cardMode?: boolean;
+  city?: string;
 };
 export const ContactForm = ({
   onSubmit,
   isLoading,
   cardMode,
+  city,
 }: ContactFormProps) => {
   const formRef = useRef(null);
   const router = useRouter();
@@ -58,7 +60,7 @@ export const ContactForm = ({
     >
       {(formik) => (
         <Form ref={formRef}>
-          <ContactInformation cardMode={cardMode} />
+          <ContactInformation cardMode={cardMode} city={city} />
           <ContactConsent />
           <ContactFormFooter>
             {isLoading ? (

@@ -81,7 +81,13 @@ export const validationSchemasContactInformation = {
     ),
 };
 
-const ContactInformation = ({ cardMode }: { cardMode?: boolean }) => {
+const ContactInformation = ({
+  cardMode,
+  city,
+}: {
+  cardMode?: boolean;
+  city?: string;
+}) => {
   const { values }: any = useFormikContext();
   return (
     <>
@@ -96,14 +102,15 @@ const ContactInformation = ({ cardMode }: { cardMode?: boolean }) => {
           />
         </InputWraper>
       </fieldset>
-      {values.structure === 'Maison individuelle' && (
-        <Alert
-          className="fr-mt-2w"
-          type="warning"
-          small
-          description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
-        />
-      )}
+      {values.structure === 'Maison individuelle' &&
+        city !== 'Charleville-Mézières' && (
+          <Alert
+            className="fr-mt-2w"
+            type="warning"
+            small
+            description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
+          />
+        )}
       <fieldset className="fr-fieldset">
         <InputWraper className="fr-my-1w">
           <Field

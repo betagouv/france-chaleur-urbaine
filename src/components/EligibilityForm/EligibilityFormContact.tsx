@@ -191,6 +191,7 @@ const EligibilityFormContact = ({
               </>
             )}
             <ContactForm
+              city={addressData.geoAddress?.properties.city}
               onSubmit={handleSubmitForm}
               isLoading={isSent}
               cardMode={cardMode}

@@ -35,13 +35,6 @@ export const ContactFormContentWrapper = styled.div<{
   cardMode?: boolean;
 }>`
   flex: 1;
-  ${({ cardMode }) =>
-    !cardMode &&
-    css`
-      &:first-child {
-        flex: 0.8;
-      }
-    `}
 
   h4 {
     color: #4550e5;
