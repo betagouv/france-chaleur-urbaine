@@ -206,6 +206,17 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
     }
   }
 
+  .legend-network-marker {
+    width: 13px;
+    margin-top: 0;
+
+    ::before {
+      width: 0.5rem !important;
+      height: 0.5rem !important;
+      border-radius: 50%;
+    }
+  }
+
   .legend-energy-marker {
     width: 12px !important;
     margin-top: 0;
