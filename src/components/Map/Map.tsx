@@ -774,7 +774,7 @@ const Map = ({
 
   useEffect(() => {
     const { id } = router.query;
-    if (!id || !mapRef.current) {
+    if (!id) {
       return;
     }
 
