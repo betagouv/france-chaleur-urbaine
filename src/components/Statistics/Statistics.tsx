@@ -288,8 +288,8 @@ const Statistics = () => {
             5% par des réseaux de chaleur.
             <div>
               <b>
-                Pourtant, ce mode de chauffage émet minimun 2 fois moins de gaz
-                à effet de serre que le fioul ou le gaz
+                Pourtant, ce mode de chauffage émet au minimum 2 fois moins de
+                gaz à effet de serre que le fioul ou le gaz
               </b>{' '}
               (source : SNCU).
             </div>
