@@ -201,7 +201,7 @@ export const outlineCenterLayerStyle = {
       themeDefHeatNetwork.classed.color,
       themeDefHeatNetwork.outline.color,
     ],
-    'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 1, 13, 10],
+    'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 1, 15, 7],
   },
 };
 
