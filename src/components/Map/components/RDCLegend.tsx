@@ -1,5 +1,4 @@
 import {
-  LabelLegend,
   LabelLegendHead,
   LabelLegendInputLabel,
   LabelLegendMarker,
@@ -14,10 +13,7 @@ const RDCLegend = () => {
       </LabelLegendInputLabel>
       <LabelLegendInputLabel>
         <LabelLegendMarker className="legend-heat-network-marker" />
-        <div>
-          <LabelLegendHead>Réseaux de chaleur non classés</LabelLegendHead>
-          <LabelLegend>(tracé ou point si tracé non disponible)</LabelLegend>
-        </div>
+        <LabelLegendHead>Réseaux de chaleur non classés</LabelLegendHead>
       </LabelLegendInputLabel>
     </>
   );
