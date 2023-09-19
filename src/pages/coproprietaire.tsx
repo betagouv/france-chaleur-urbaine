@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 const Coproprietaire = () => {
   const router = useRouter();
   useEffect(() => {
-    router.replace('/');
+    router.replace(router.asPath.replace('coproprietaire', ''));
   }, [router]);
   return <div></div>;
 };
