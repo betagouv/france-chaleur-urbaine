@@ -204,10 +204,10 @@ const Map = ({
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
+  const [draw, setDraw] = useState<any>();
   const [drawing, setDrawing] = useState(false);
   const [collapsedCardIndex, setCollapsedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
-  const draw: null | { current: any } = useRef(null);
   const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
@@ -483,16 +483,13 @@ const Map = ({
       );
   }, [mapRef, layerDisplay]);
 
-  useEffect(() => {
-    if (withDrawing && draw.current === null && mapRef.current) {
-      draw.current = new MapboxDraw({
-        displayControlsDefault: false,
-      });
-      mapRef.current.addControl(draw.current);
-    }
-  }, [withDrawing, mapRef, draw]);
-
   const onLoadMap = (e: MapEvent) => {
+    const drawControl = new MapboxDraw({
+      displayControlsDefault: false,
+    });
+
+    e.target.addControl(drawControl);
+    setDraw(drawControl);
     e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
         defaultStyle: 'Carte',
@@ -1044,7 +1041,7 @@ const Map = ({
           <MapControlWrapper legendCollapsed={legendCollapsed}>
             <ZoneInfos
               map={mapRef.current}
-              draw={draw.current}
+              draw={draw}
               setDrawing={setDrawing}
             />
           </MapControlWrapper>
