@@ -69,6 +69,7 @@ import {
   MapStyle,
   objTypeEnergy,
   outlineLayerStyle,
+  outlineCenterLayerStyle,
   ProMode,
   raccordementsLayerStyle,
   zoneDPLayerStyle,
@@ -421,6 +422,15 @@ const Map = ({
               layerDisplay[layerId] ? 'visible' : 'none'
             );
         }
+        if (layerId === 'outline') {
+          mapRef.current
+            .getMap()
+            .setLayoutProperty(
+              'outlineCenter',
+              'visibility',
+              layerDisplay[layerId] ? 'visible' : 'none'
+            );
+        }
         mapRef.current
           .getMap()
           .setLayoutProperty(
@@ -504,6 +514,7 @@ const Map = ({
 
     const clickEvents = [
       { name: 'outline', key: 'network' },
+      { name: 'outlineCenter', key: 'network' },
       { name: 'coldOutline', key: 'coldNetwork' },
       { name: 'futurOutline', key: 'futurNetwork' },
       { name: 'futurZone', key: 'futurNetwork' },
@@ -653,7 +664,22 @@ const Map = ({
             source: 'heatNetwork',
             'source-layer': 'outline',
             ...outlineLayerStyle,
-            ...getNetworkFilter(network, filter),
+            ...getNetworkFilter(network, filter, [
+              '==',
+              ['get', 'has_trace'],
+              true,
+            ]),
+          },
+          {
+            id: 'outlineCenter',
+            source: 'heatNetwork',
+            'source-layer': 'outline',
+            ...outlineCenterLayerStyle,
+            ...getNetworkFilter(network, filter, [
+              '==',
+              ['get', 'has_trace'],
+              false,
+            ]),
           },
         ]
       );
