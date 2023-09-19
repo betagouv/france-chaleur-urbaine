@@ -141,7 +141,7 @@ const MapPopupContent = ({
             <>
               <strong>Consommations de gaz&nbsp;:</strong>&nbsp;
               {conso_nb.toFixed(2)}
-              &nbsp;MWh
+              &nbsp;MWh/an
               <br />
             </>
           )}
@@ -149,7 +149,7 @@ const MapPopupContent = ({
           <>
             <strong>Consommation de chaleur&nbsp;:</strong>&nbsp;
             {conso_raccordement}
-            &nbsp;MWh
+            &nbsp;MWh/an
             <br />
           </>
         )}
@@ -274,7 +274,7 @@ export const ViasevaPopupContent = ({
             &nbsp;:&nbsp;
           </strong>
           {network.livraisons_totale_MWh
-            ? getConso(network.livraisons_totale_MWh)
+            ? `${getConso(network.livraisons_totale_MWh)}/an`
             : 'Non connu'}
           <br />
           <strong>Nombre de bâtiments raccordés&nbsp;:</strong>&nbsp;
