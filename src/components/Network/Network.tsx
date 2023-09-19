@@ -381,7 +381,10 @@ const Network = ({
                         <br />
                       </>
                     )}
-                    {network.CP_MO && network.CP_MO !== '0' && network.CP_MO}{' '}
+                    {network.CP_MO &&
+                      network.CP_MO !== '0' &&
+                      network.CP_MO !== '00000' &&
+                      network.CP_MO}{' '}
                     {network.ville_mo &&
                       network.ville_mo !== '0' &&
                       network.ville_mo}
@@ -408,6 +411,7 @@ const Network = ({
                       )}
                     {network.CP_gestionnaire &&
                       network.CP_gestionnaire !== '0' &&
+                      network.CP_gestionnaire !== '00000' &&
                       network.CP_gestionnaire}{' '}
                     {network.ville_gestionnaire &&
                       network.ville_gestionnaire !== '0' &&
