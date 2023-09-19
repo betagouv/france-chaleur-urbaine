@@ -139,7 +139,7 @@ const MapPopupContent = ({
           (!energie_utilisee ||
             objTypeEnergy?.gas.includes(energie_utilisee)) && (
             <>
-              <strong>Consommations de gaz&nbsp;:</strong>&nbsp;
+              <strong>Conso. gaz&nbsp;:</strong>&nbsp;
               {conso_nb.toFixed(2)}
               &nbsp;MWh/an
               <br />
