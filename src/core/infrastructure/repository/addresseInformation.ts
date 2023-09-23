@@ -53,6 +53,7 @@ export const closestNetwork = async (
         ) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire"`
       )
     )
+    .where('has_trace', true)
     .orderBy('distance')
     .first();
 

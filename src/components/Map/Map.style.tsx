@@ -192,6 +192,19 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
 // --- Heat Network ---
 // --------------------
 
+export const outlineCenterLayerStyle = {
+  type: 'circle',
+  paint: {
+    'circle-color': [
+      'case',
+      ['boolean', ['get', 'reseaux classes']],
+      themeDefHeatNetwork.classed.color,
+      themeDefHeatNetwork.outline.color,
+    ],
+    'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 1, 15, 7],
+  },
+};
+
 export const outlineLayerStyle = {
   type: 'line',
   layout: {
