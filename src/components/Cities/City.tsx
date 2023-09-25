@@ -170,7 +170,7 @@ const City = ({ city }: { city: string }) => {
 
   Cette obligation s’applique dans une certaine zone autour du réseau, qualifiée de **périmètre de développement prioritaire.**
 
-  :button-link[Voir le périmètre de développement prioritaire]{href="/ressources/prioritaire#contenu" className="fr-btn--sm fr-mt-2w"}
+  :button-link[Voir le périmètre de développement prioritaire]{href="/carte" className="fr-btn--sm fr-mt-2w"}
     `}
               />
               <MarkdownWrapper
