@@ -17,9 +17,11 @@ type NetworskData = {
 const Networks = ({
   networksData,
   network,
+  cityCoord,
 }: {
   networksData: NetworskData;
   network?: Network;
+  cityCoord?: [number, number];
 }) => {
   return (
     <ContainerNetwork>
@@ -79,26 +81,29 @@ const Networks = ({
         )}
       </div>
       <div className="network-column fr-col-lg-6 fr-col-md-6 fr-col-sm-12 fr-col-xs-12">
-        <Map
-          noPopup
-          center={network && [network.lon, network.lat]}
-          initialZoom={13}
-          initialLayerDisplay={{
-            outline: true,
-            futurOutline: false,
-            coldOutline: false,
-            zoneDP: false,
-            demands: false,
-            raccordements: false,
-            gasUsageGroup: false,
-            buildings: false,
-            gasUsage: [],
-            energy: [],
-            gasUsageValues: [1000, Number.MAX_VALUE],
-            energyGasValues: [50, Number.MAX_VALUE],
-            energyFuelValues: [50, Number.MAX_VALUE],
-          }}
-        />
+        {cityCoord && (
+          <Map
+            noPopup
+            withCenterPin
+            center={cityCoord}
+            initialZoom={11}
+            initialLayerDisplay={{
+              outline: true,
+              futurOutline: false,
+              coldOutline: false,
+              zoneDP: false,
+              demands: false,
+              raccordements: false,
+              gasUsageGroup: false,
+              buildings: false,
+              gasUsage: [],
+              energy: [],
+              gasUsageValues: [1000, Number.MAX_VALUE],
+              energyGasValues: [50, Number.MAX_VALUE],
+              energyFuelValues: [50, Number.MAX_VALUE],
+            }}
+          />
+        )}
       </div>
     </ContainerNetwork>
   );

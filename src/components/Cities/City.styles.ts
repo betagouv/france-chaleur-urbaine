@@ -41,6 +41,14 @@ export const CityContainer = styled.div`
     }
   }
 
+  .fcuCoproGuide {
+    margin-bottom: 16px;
+  }
+
+  .map-wrap {
+    min-height: 500px;
+  }
+
   .simulator {
     .cyFYFT {
       .fvRjEw {

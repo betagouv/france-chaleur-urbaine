@@ -27,6 +27,8 @@ const getCityData = (city: string) => {
 const City = ({ city }: { city: string }) => {
   const [network, setNetwork] = useState<Network>();
   const { heatNetworkService } = useServices();
+  const [cityCoord, setCityCoord] = useState<[number, number]>();
+  const { suggestionService } = useServices();
   const cityData = getCityData(city);
 
   const getNetworkFromDB = useCallback(
@@ -44,11 +46,41 @@ const City = ({ city }: { city: string }) => {
     [heatNetworkService]
   );
 
+  const getCityAddress = useCallback(
+    async (city: string): Promise<void> => {
+      if (!city) {
+        return;
+      }
+
+      const fetchedSuggestions = await suggestionService.fetchSuggestions(
+        city,
+        {
+          limit: '1',
+          type: 'municipality',
+        }
+      );
+      if (
+        fetchedSuggestions &&
+        fetchedSuggestions.features.length > 0 &&
+        fetchedSuggestions.features[0].geometry.coordinates
+      ) {
+        setCityCoord(fetchedSuggestions.features[0].geometry.coordinates);
+      }
+    },
+    [suggestionService]
+  );
+
   useEffect(() => {
     if (cityData && cityData.networksData.identifiant && !network) {
       getNetworkFromDB(cityData.networksData.identifiant);
     }
   }, [cityData, getNetworkFromDB, network]);
+
+  useEffect(() => {
+    if (city && !cityCoord) {
+      getCityAddress(city);
+    }
+  }, [city, cityCoord, getCityAddress]);
 
   return (
     <CityContainer>
@@ -77,6 +109,7 @@ const City = ({ city }: { city: string }) => {
                 <Networks
                   networksData={cityData.networksData}
                   network={network}
+                  cityCoord={cityCoord}
                 ></Networks>
               </Slice>
             )}

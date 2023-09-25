@@ -37,7 +37,7 @@ const Dispositifs = ({
           <ContainerDispositifs>
             {dispositifs.map((dispositif: any, i) => (
               <div
-                className="dispositif-column fr-col-6 fr-col-lg-6"
+                className="dispositif-column fr-col-lg-6 fr-col-md-6 fr-col-sm-12 fr-col-xs-12"
                 key={`${city}'-'+${i}`}
               >
                 {dispositif.title && (
