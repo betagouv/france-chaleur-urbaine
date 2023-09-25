@@ -144,25 +144,17 @@ const getNetworkFilter = (
   filter?: any[],
   initialFilter?: any[]
 ) => {
-  if (network) {
-    return { filter: ['==', ['get', 'Identifiant reseau'], network] };
-  }
-
-  if (filter && initialFilter) {
-    return { filter: ['all', filter, initialFilter] };
-  }
-
-  if (filter) {
-    return {
-      filter,
-    };
-  }
-
-  if (initialFilter) {
-    return { filter: initialFilter };
-  }
-
-  return {};
+  const networkFilter = network
+    ? ['==', ['get', 'Identifiant reseau'], network]
+    : ['literal', true];
+  return {
+    filter: [
+      'all',
+      filter || ['literal', true],
+      initialFilter || ['literal', true],
+      networkFilter,
+    ],
+  };
 };
 
 const Map = ({

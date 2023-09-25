@@ -227,12 +227,12 @@ const legendData: (string | TypeGroupLegend)[] = [
 ];
 
 const param = {
-  minZoomData: 13,
-  minZoom: 4,
+  minZoomData: 12,
+  minZoom: 5,
   maxZoom: 17.9,
-  defaultZoom: 4,
+  defaultZoom: 5,
   lng: 2.3,
-  lat: 45,
+  lat: 47,
   defaultLayerDisplay,
   simpleLayerDisplay,
   legendData,

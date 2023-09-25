@@ -45,7 +45,7 @@ const LegendDesc: Record<
   GasUsage: (onValuesChange) => (
     <ScaleLegend
       circle
-      label="Niveau de consommation de gaz (MWh)"
+      label="Niveau de consommation de gaz (MWh/an)"
       color="#D9D9D9"
       defaultValues={defaultLayerDisplay.gasUsageValues}
       domain={[LegendDeskData.gasUsage.min, LegendDeskData.gasUsage.max]}
