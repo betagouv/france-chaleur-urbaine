@@ -25,7 +25,7 @@ const Networks = ({
 }) => {
   return (
     <ContainerNetwork>
-      <div className="network-column fr-col-lg-6  fr-col-md-6 fr-col-sm-12 fr-col-xs-12">
+      <div className="network-column fr-col-lg-6 fr-col-md-6 fr-col-sm-12 fr-col-12">
         {networksData.gestionnaires && (
           <WrappedText body={`::arrow-item[${networksData.gestionnaires}]`} />
         )}
@@ -80,7 +80,7 @@ const Networks = ({
           </>
         )}
       </div>
-      <div className="network-column fr-col-lg-6 fr-col-md-6 fr-col-sm-12 fr-col-xs-12">
+      <div className="network-column fr-col-lg-6 fr-col-md-6 fr-col-sm-12 fr-col-12">
         {cityCoord && (
           <Map
             noPopup

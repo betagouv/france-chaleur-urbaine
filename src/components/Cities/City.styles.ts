@@ -98,11 +98,13 @@ export const ContainerDispositifs = styled.div`
   justify-content: space-between;
   gap: 32px 0;
 
-  .dispositif-column:nth-child(even) {
-    padding-left: 16px;
-  }
-  .dispositif-column:nth-child(odd) {
-    padding-right: 16px;
+  @media (min-width: 540px540px) {
+    .dispositif-column:nth-child(even) {
+      padding-left: 16px;
+    }
+    .dispositif-column:nth-child(odd) {
+      padding-right: 16px;
+    }
   }
 `;
 
@@ -117,10 +119,12 @@ export const ContainerNetwork = styled.div`
   justify-content: space-between;
   gap: 32px 0;
 
-  .network-column:nth-child(even) {
-    padding-left: 16px;
-  }
-  .network-column:nth-child(odd) {
-    padding-right: 16px;
+  @media (min-width: 540px540px) {
+    .network-column:nth-child(even) {
+      padding-left: 16px;
+    }
+    .network-column:nth-child(odd) {
+      padding-right: 16px;
+    }
   }
 `;
