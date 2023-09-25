@@ -2,29 +2,20 @@ import styled from 'styled-components';
 
 export const CityContainer = styled.div`
   .classed-network,
-  .gSoGrF strong,
-  .fvRjEw {
+  .classed-network strong,
+  .city-description,
+  .city-description strong {
     color: #000091;
   }
 
-  .hMmpXs {
+  .form-title {
     color: #2731b1;
-  }
-
-  .city-description {
-    color: #000091;
-  }
-  .bsdQHK strong {
-    color: #000091;
   }
 
   .bareme-block {
     .slice-header h2 {
       max-width: 600px;
       margin: auto;
-    }
-    .fvRjEw {
-      color: #fff;
     }
   }
 
@@ -50,25 +41,20 @@ export const CityContainer = styled.div`
   }
 
   .simulator {
-    .cyFYFT {
-      .fvRjEw {
-        color: #fff;
-      }
-      h2 {
-        font-size: 20px;
-        font-weight: 700;
-        line-height: 25px;
-        margin-bottom: 32px;
-      }
-      strong,
-      em {
-        font-size: 16px;
-      }
-      em {
-        font-weight: 900;
-      }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 25px;
+      margin-bottom: 32px;
     }
-    .czbdFq {
+    strong,
+    em {
+      font-size: 16px;
+    }
+    em {
+      font-weight: 900;
+    }
+    .simulator-result {
       width: 100%;
       color: #000091;
     }
@@ -98,7 +84,7 @@ export const ContainerDispositifs = styled.div`
   justify-content: space-between;
   gap: 32px 0;
 
-  @media (min-width: 540px540px) {
+  @media (min-width: 540px) {
     .dispositif-column:nth-child(even) {
       padding-left: 16px;
     }
@@ -119,7 +105,12 @@ export const ContainerNetwork = styled.div`
   justify-content: space-between;
   gap: 32px 0;
 
-  @media (min-width: 540px540px) {
+  .network-data div,
+  .network-data div strong {
+    color: #000091;
+  }
+
+  @media (min-width: 540px) {
     .network-column:nth-child(even) {
       padding-left: 16px;
     }

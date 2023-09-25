@@ -33,7 +33,7 @@ const StickyForm = ({ title }: { title?: string }) => {
 
   return (
     <Container>
-      <Title>
+      <Title className="form-title">
         {title || 'Votre bâtiment est-il raccordable à un réseau de chaleur ?'}
       </Title>
       <EligibilityFormAddress

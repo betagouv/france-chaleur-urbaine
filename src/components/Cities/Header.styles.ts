@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const HeaderContainer = styled.div`
-  .city-header-slice .gwcaJX {
+  .city-header-slice .fr-container {
     max-width: 100%;
     width: 100%;
   }
@@ -15,7 +15,7 @@ export const Container = styled.div`
     margin-left: 30%;
   }
 
-  .hskcUE {
+  h1 {
     font-weight: 400;
   }
 `;

@@ -82,7 +82,7 @@ const Simulator = ({
           />
         </Inputs>
         <div>
-          <Result cartridge={cartridge}>
+          <Result cartridge={cartridge} className="simulator-result">
             <ResultValue>
               {help.toLocaleString('fr-FR', {
                 style: 'currency',
