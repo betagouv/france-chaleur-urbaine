@@ -1,12 +1,11 @@
 import Advantages from '@components/Coproprietaire/Advantages';
 import Informations from '@components/Coproprietaire/Informations';
-import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
 import Slice from '@components/Slice';
 import Header from './Header';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { matomoEvent } from '@components/Markup';
 import StickyForm from '@components/StickyForm/StickyForm';
-import { CityContainer, Title } from './City.styles';
+import { CityContainer, ColumnVideoGuide, Title } from './City.styles';
 import WrappedText from '@components/WrappedText';
 import { userExperience, villesData } from '@data/villes';
 import Simulators from '@components/Coproprietaire/Simulators';
@@ -16,6 +15,7 @@ import { Network } from 'src/types/Summary/Network';
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@dataesr/react-dsfr';
 import { useServices } from 'src/services';
+import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
 
 const getCityData = (city: string) => {
   const cityData = villesData.find(
@@ -84,7 +84,7 @@ const City = ({ city }: { city: string }) => {
 
   return (
     <CityContainer>
-      {cityData ? (
+      {cityData && (
         <>
           <Header
             city={cityData.name}
@@ -123,38 +123,13 @@ const City = ({ city }: { city: string }) => {
             <Informations />
           </Slice>
           <Slice padding={8} direction="row" className="video-guide">
-            <div className="column-video-guide">
+            <ColumnVideoGuide>
               <Title>
-                <h3>Découvrez le témoignage d’une copropriété</h3>
+                <h3>Découvrez des témoignages sur le terrain</h3>
               </Title>
-              {city == 'grenoble' || city == 'lyon' ? (
-                <>
-                  <TrackedVideo
-                    width="100%"
-                    src="/videos/FCU-accueil.mp4"
-                    poster="/videos/FCU-accueil.jpg"
-                  />
-                  <MarkdownWrapper
-                    value={`Jean Roby, Membre du conseil syndical
-                    **Copropriété de 385 lots à Lyon**`}
-                  />
-                </>
-              ) : (
-                <>
-                  <TrackedVideo
-                    width="100%"
-                    src="/videos/FCU-accueil.mp4"
-                    poster="/videos/FCU-accueil.jpg"
-                  />
-                  <MarkdownWrapper
-                    value={`Lionel Rechain, Syndic
-                    Florence Osman, Présidente du conseil syndical
-                    **Copropriété de 230 logements à Paris, 16ème arrondissement**`}
-                  />
-                </>
-              )}
-            </div>
-            <div className="column-video-guide">
+              <InterviewsVideos />
+            </ColumnVideoGuide>
+            <ColumnVideoGuide>
               <Title>
                 <h3>Le guide complet sur le raccordement</h3>
               </Title>
@@ -178,7 +153,7 @@ const City = ({ city }: { city: string }) => {
                   </Button>
                 </div>
               </div>
-            </div>
+            </ColumnVideoGuide>
           </Slice>
           {cityData.networksData && cityData.networksData.isClassed && (
             <Slice
@@ -254,8 +229,6 @@ const City = ({ city }: { city: string }) => {
             ))}
           </Slice>
         </>
-      ) : (
-        ''
       )}
     </CityContainer>
   );

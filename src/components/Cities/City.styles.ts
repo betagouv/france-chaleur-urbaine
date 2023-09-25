@@ -19,19 +19,6 @@ export const CityContainer = styled.div`
     }
   }
 
-  .video-guide {
-    h3 {
-      color: #000074;
-    }
-    .column-video-guide {
-      margin-left: auto;
-      margin-right: auto;
-      .fr-responsive-vid {
-        max-width: 400px;
-      }
-    }
-  }
-
   .fcuCoproGuide {
     margin-bottom: 16px;
   }
@@ -117,5 +104,16 @@ export const ContainerNetwork = styled.div`
     .network-column:nth-child(odd) {
       padding-right: 16px;
     }
+  }
+`;
+
+export const ColumnVideoGuide = styled.div`
+  margin-left: auto;
+  margin-right: auto;
+  h3 {
+    color: #000074;
+  }
+  iframe {
+    aspect-ratio: 16 / 9;
   }
 `;
