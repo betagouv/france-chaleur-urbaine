@@ -6,7 +6,7 @@ import Growth from './Growth';
 import Header from './Header';
 import Issues from './Issues';
 import { Banner, BannerImage, BannerTitle } from './Ressources.styles';
-import StickyForm from './StickyForm';
+import StickyForm from '@components/StickyForm/StickyForm';
 import Understanding from './Understanding';
 
 const Ressources = () => {

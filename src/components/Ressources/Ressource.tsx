@@ -12,7 +12,7 @@ import Guide from './Guide';
 import Header from './Header';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
-import StickyForm from './StickyForm';
+import StickyForm from '../StickyForm/StickyForm';
 import {
   coldNetworks,
   growths,
