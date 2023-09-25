@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": false,
   "engines": {
-    "node": "18"
+    "node": "20"
   },
   "description": "Un service public pour faciliter et accélérer les raccordements aux réseaux de chaleur.",
   "repository": {
