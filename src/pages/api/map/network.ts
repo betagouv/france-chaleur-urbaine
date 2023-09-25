@@ -1,9 +1,7 @@
-//import { getCityElibilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import { getNetwork } from '@core/infrastructure/repository/network';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withCors } from 'src/services/api/cors';
 import { ErrorResponse } from 'src/types/ErrorResponse';
-//import { CityNetwork } from 'src/types/HeatNetworksResponse';
 import { Network } from 'src/types/Summary/Network';
 
 const eligibilityStatus = async (
