@@ -1,9 +1,6 @@
 const villesData = [
   {
     name: 'Paris',
-    banner: {
-      src: '/img/banner_ville_paris.jpg',
-    },
     nameNetwork: 'Paris',
     description: `Mis en service en 1927, le réseau de chaleur parisien est l'un des premiers réseaux créés en France. Il s'est progressivement étendu et modernisé.
 **Aujourd'hui, 6000 bâtiments sont desservis par le réseau**: des copropriétés, des entreprises, la quasi-totalité des hôpitaux parisiens, des monuments historiques... Parmi les bâtiments emblématiques raccordés, on peut par exemple mentionner Le Grand Palais, le musée d’Orsay ou encore l’Opéra Garnier. Le raccordement de la cathédrale Notre-Dame de Paris est également en cours. **Le réseau de chaleur de Paris assure ainsi le chauffage d’1/4 des bâtiments de la capitale.**
@@ -36,9 +33,6 @@ Le réseau de la capitale alimente également en énergie **16 réseaux de chale
   },
   {
     name: 'Grenoble',
-    banner: {
-      src: '/img/banner_ville_grenoble.jpg',
-    },
     nameNetwork: 'Grenoble-Alpes Métropole',
     description: `Le réseau de Chauffage Urbain de Grenoble-Alpes Métropole est l’un des réseaux les plus importants en France et présente un taux d’énergies renouvelables et de récupération particulièrement élevé (proche de 80%). Il alimente en chaleur et en eau chaude sanitaire des bâtiments collectifs publics ou privés, à usage résidentiel, tertiaire ou industriel de 7 villes : **Grenoble, Échirolles, Eybens, Gières, La Tronche, Pont-de-Claix, Saint-Martin-d’Hères**. Sont ainsi raccordés près de 400 copropriétés, 83 établissements scolaires, 31 équipements sportifs et 5 centres nautiques, des centres commerciaux, etc. 
   Le réseau est alimenté par **5 sites de production de chaleur** : Athanor, Villeneuve, Poterne, le CEA, Vaucanson et Biomax. Grenoble-Alpes-Métropole poursuit le verdissement du réseau, avec l’**ambition de tendre vers 100 % d’énergies renouvelables et de récupération fin 2033**.`,
@@ -50,9 +44,6 @@ Le réseau de la capitale alimente également en énergie **16 réseaux de chale
   },
   {
     name: 'Lyon',
-    banner: {
-      src: '/img/banner_ville_lyon.jpg',
-    },
     nameNetwork: 'Lyon',
     description: `**Aujourd’hui, le réseau de chaleur urbain Centre Métropole alimente en chauffage collectif et en eau chaude l’équivalent de 45 000 logements.** Le réseau est principalement alimenté par la récupération de l’énergie issue de l’incinération des ordures ménagères, complétée par des chaufferies gaz et biomasse, dont la principale a été mise en service en 2019 à Surville. Le réseau compte plusieurs unités de production : Gerland, Surville, Beauvisage, Bron Parilly, Carré de Soie et Einstein.
     
@@ -86,9 +77,6 @@ A noter que la Métropole compte **4 autres réseaux** : Givors, Ouest Lyonnais,
   },
   {
     name: 'Aix-en-Provence',
-    banner: {
-      src: '/img/banner_ville_aixprovence.jpg',
-    },
     nameNetwork: 'Aix-en-Provence',
     description: `**Le réseau de chaleur d’Aix-en-Provence permet d’éviter le rejet de 18 750 tonnes de CO2 par an grâce au recours à la biomasse.**
 
@@ -105,9 +93,6 @@ La chaufferie bois aixoise ayant atteint sa capacité maximale de production, un
   },
   {
     name: 'Toulouse',
-    banner: {
-      src: '/img/banner_ville_toulouse.jpg',
-    },
     nameNetwork: 'Toulouse',
     description: `L’Unité de Valorisation Énergétique du Mirail permet d’alimenter le réseau de chaleur et de froid de Toulouse à plus de **99 % par des énergies locales**. Le réseau d’Eneriance sollicite une énergie unique : la récupération d’énergie sur traitement des déchets.`,
     networksData: {
@@ -118,10 +103,6 @@ La chaufferie bois aixoise ayant atteint sa capacité maximale de production, un
   },
   {
     name: 'Metz',
-    banner: {
-      src: '/img/banner_ville_metz.jpg',
-      position: 'right bottom',
-    },
     nameNetwork: 'Metz',
     description: `**Le réseau de chauffage urbain de l’Eurométropole de Metz est l’un des plus importants de France.** Il représente aujourd’hui une longueur de 140 kilomètres couvrant une grande partie de la ville de Metz et de sa périphérie. En 2021, plus de 483 GWh de chaleur ont été livrés aux clients, soit l‘équivalent de **plus de 48 000 logements** de type T3 alimentés. **Le réseau bénéficie d’un taux d’énergies renouvelables et de récupération de plus de 65%**, grâce à la valorisation de la chaleur issue de l’incinération des ordures ménagères et à une centrale biomasse utilisant les ressources en bois locales.
 
@@ -134,10 +115,6 @@ Le réseau est né en 1956 : il exploitait alors les installations de production
   },
   {
     name: 'Nantes',
-    banner: {
-      src: '/img/banner_ville_nantes.jpg',
-      position: 'right bottom',
-    },
     nameNetwork: 'Nantes Métropole',
     description: `La métropole compte à ce jour **7 réseaux de chaleur, les principaux étant ceux de Nantes, Nord-Chézine et Bellevue Saint-Herblain**. Au total, 145 km de réseaux chauffent 37 700 logements, soit 12% des logements de la métropole. Sont également raccordés de nombreux équipements publics : CHU, palais de justice, musées, piscine Jules-Verne, Lycée Mandela, campus Tertre et Lombarderie... La chaleur distribuée par les réseaux de la métropole est produite au niveau de différents sites de production : des chaufferies biomasse comme celles de Rezé et Malakoff, qui utilisent principalement des déchets forestiers, mais aussi des centrales d’incinération des ordures ménagères dont la chaleur est récupérée, comme celles de Couëron et de la Prairie de Mauves.
 **Les réseaux de la métropole nantaise poursuivent leur développement.** Une nouvelle branche a par exemple été créé au réseau de Nord-Chézine en 2022, permettant d’alimenter 860 logements supplémentaires ainsi que des bureaux et commerces, et d’éviter l’émission de 1000 tonnes de CO2 par an. Le Sillon de Bretagne, emblématique immeuble de Saint-Herblain, a ainsi pu y être raccordé.
@@ -149,9 +126,6 @@ Le réseau est né en 1956 : il exploitait alors les installations de production
   },
   {
     name: 'Bordeaux',
-    banner: {
-      src: '/img/banner_ville_bordeaux.jpg',
-    },
     nameNetwork: 'Bordeaux Métropole',
     description: `La Métropole bordelaise compte de nombreux réseaux de chaleur, qui desservent notamment **les Hauts de Garonne** (Lormont, Cenon, Floirac), le quartier **Ginko à Bordeaux**, les quartiers **Bacalan** et **Bassins à flots** à Bordeaux, les hôpitaux **Pellegrin** et **Charles Perrens** à Bordeaux, le quartier **Mériadeck** à Bordeaux, **l’Université de Bordeaux**, le quartier de **Pessac–Saige**, la **Base Aérienne 106** à Mérignac, le quartier **Bordeaux-Saint Jean Belcier** (en cours de construction), le quartier du Grand-Parc...
 
@@ -176,9 +150,6 @@ La métropole bordelaise souhaite **doubler le nombre d’habitants raccordés a
   },
   {
     name: 'Strasbourg',
-    banner: {
-      src: '/img/banner_ville_strasbourg.jpg',
-    },
     nameNetwork: 'Strasbourg Métropole',
     description: `Le territoire de l’Eurométropole de Strasbourg comporte plusieurs réseaux de chaleur. **Les réseaux publics de l’Eurométropole alimentent l’équivalent de 50000 logements grâce à 130 km de canalisations. L’énergie qu’ils distribuent est d’origine renouvelable à plus de 50 % (essentiellement bois et ordures ménagères).** Plusieurs quartiers de la métropole sont desservis par ces réseaux, en particulier : Elsau, L’Esplanade, Hautepierre, Wacken...
 
@@ -192,9 +163,6 @@ Pour verdir les réseaux de chaleur de la métropole, différentes sources d’�
   },
   {
     name: 'Rennes',
-    banner: {
-      src: '/img/banner_ville_rennes.jpg',
-    },
     nameNetwork: 'Rennes Métropole',
     description: `Cinq réseaux de chauffage urbain sont en service sur le territoire de Rennes Métropole : 
 - deux réseaux historiques, créés il y a plus de quarante ans : **le réseau Rennes Nord et le réseau Rennes Sud** ; 
@@ -224,9 +192,6 @@ A noter que le territoire compte également des réseaux de chaleur privés, com
   },
   {
     name: 'Dijon',
-    banner: {
-      src: '/img/banner_ville_dijon.jpg',
-    },
     nameNetwork: 'Dijon',
     description: `Dijon comporte **2 réseaux de chaleur interconnectés** : 
 - l’un est géré par Dijon énergies (Dalkia) et alimenté à 76% par des énergies renouvelables et de récupération locales : chaufferies bois , unité de valorisation des déchets
