@@ -77,8 +77,7 @@ Les données et informations personnelles ou relevant du secret des affaires ne 
 
 ### Crédits photo
 
-Les photos sont issues de [Adobe Stock](https://stock.adobe.com/fr/) via la licence de Caroline Fournier, designer pour France Chaleur Urbaine.  
-Les icônes sont issues de [streamline](https://streamlinehq.com) via la licence de Raphaël Yharrassarry, UX designer pour France Chaleur Urbaine.
+Les photos et les illustrations de tous les supports et du site sont issues de [Adobe Stock](https://stock.adobe.com/fr/) via la licence de Caroline Fournier, designer pour France Chaleur Urbaine.  
 
 ### Mise à jour des conditions d’utilisation
 
