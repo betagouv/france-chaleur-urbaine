@@ -1,22 +1,28 @@
+import z from 'zod';
 import { getElibilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withCors } from 'src/services/api/cors';
+
+const EligibilityValidation = z.object({
+  lat: z.number(),
+  lon: z.number(),
+});
 
 const eligibilityStatus = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'GET') {
     return res.status(501);
   }
   try {
-    const { lat, lon } = req.query as Record<string, string>;
+    const inputs = EligibilityValidation.safeParse({
+      lat: Number(req.query.lat as string),
+      lon: Number(req.query.lon as string),
+    });
 
-    if (!lat || !lon) {
-      res.status(400).json({
-        message: 'Parameters lat and lon are required',
-        code: 'Bad Arguments',
-      });
+    if (!inputs.success) {
+      res.status(400).json(inputs.error);
       return;
     }
-    const result = await getElibilityStatus(Number(lat), Number(lon));
+    const result = await getElibilityStatus(inputs.data.lat, inputs.data.lon);
     return res.status(200).json({
       isEligible: result.isEligible,
       distance: result.distance,
