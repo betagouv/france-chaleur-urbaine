@@ -12,7 +12,8 @@ import {
   Title,
 } from './City.styles';
 import WrappedText from '@components/WrappedText';
-import { userExperience, citiesData } from '@data/villes';
+import citiesData from '@data/villes/villes';
+import userExperience from '@data/villes/user-experience';
 import Simulators from '@components/Coproprietaire/Simulators';
 import Dispositifs, { DispositifsData } from './Dispositifs';
 import Networks from './Networks';
