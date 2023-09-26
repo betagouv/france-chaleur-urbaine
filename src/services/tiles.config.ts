@@ -16,6 +16,7 @@ export type DatabaseTileInfo = BasicTileInfo & {
   tiles: string;
   extraWhere: (query: Knex.QueryBuilder) => Knex.QueryBuilder;
   id: string;
+  airtable?: string;
 };
 
 export type TileInfo = AirtableTileInfo | DatabaseTileInfo;
@@ -27,7 +28,9 @@ export type DataType =
   | 'zoneDP'
   | 'raccordements'
   | 'demands'
-  | 'buildings';
+  | 'buildings'
+  | 'futurNetwork'
+  | 'coldNetwork';
 
 const bnbFields = `
   fid as id,
@@ -70,7 +73,7 @@ export const preTable: (region: string) => Record<string, string> = (
     `,
 });
 
-export const tilesInfo: Record<string, TileInfo> = {
+export const tilesInfo: Record<DataType, TileInfo> = {
   demands: {
     source: 'airtable',
     table: Airtable.UTILISATEURS,
@@ -95,6 +98,7 @@ export const tilesInfo: Record<string, TileInfo> = {
     source: 'database',
     table: 'reseaux_de_chaleur',
     tiles: 'reseaux_de_chaleur_tiles',
+    airtable: Airtable.NETWORKS,
     id: 'id',
     extraWhere: (query) => query,
     properties: [
@@ -116,6 +120,7 @@ export const tilesInfo: Record<string, TileInfo> = {
     source: 'database',
     table: 'zones_et_reseaux_en_construction',
     tiles: 'zones_et_reseaux_en_construction_tiles',
+    airtable: Airtable.FUTUR_NETWORKS,
     id: 'id',
     extraWhere: (query) => query,
     properties: ['id', 'mise_en_service', 'gestionnaire', 'is_zone'],
@@ -125,6 +130,7 @@ export const tilesInfo: Record<string, TileInfo> = {
     source: 'database',
     table: 'reseaux_de_froid',
     tiles: 'reseaux_de_froid_tiles',
+    airtable: Airtable.COLD_NETWORKS,
     id: 'id',
     extraWhere: (query) => query,
     properties: [
