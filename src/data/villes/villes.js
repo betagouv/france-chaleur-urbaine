@@ -18,7 +18,8 @@ Le réseau de la capitale alimente également en énergie **16 réseaux de chale
 ::white-arrow-item[Ce barème améliore fortement les conditions d’accès au réseau de chaleur parisien via une réduction très importante des coûts de raccordements pour les bâtiment situés à proximité du réseau, mais aussi via un cadre clair, transparent et prévisible pour le demandeur d’un raccordement.]`,
         link: {
           title: 'Tout savoir sur ce dispositif',
-          href: '/carte',
+          href: 'https://www.cpcu.fr/article/un-bareme-simple-et-attractif-de-raccordement-au-reseau-de-chaleur-parisien/',
+          target: '_blank',
         },
       },
       {
