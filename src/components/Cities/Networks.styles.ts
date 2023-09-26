@@ -5,6 +5,7 @@ export const NetworkContainer = styled.div`
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 32px 0;
+  z-index: 0;
 
   .md-wrapper div,
   .md-wrapper div strong {
@@ -15,6 +16,10 @@ export const NetworkContainer = styled.div`
   strong {
     font-size: 16px;
     line-height: 24px;
+  }
+
+  .map-wrap {
+    min-height: 500px;
   }
 `;
 

@@ -18,10 +18,6 @@ export const CityContainer = styled.div`
       margin: auto;
     }
   }
-
-  .map-wrap {
-    min-height: 500px;
-  }
 `;
 
 export const Title = styled.h2`
