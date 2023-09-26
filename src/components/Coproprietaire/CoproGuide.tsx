@@ -1,23 +1,17 @@
-import { matomoEvent } from '@components/Markup';
-import { Button } from '@dataesr/react-dsfr';
 import { Guide } from './CoproGuide.styles';
+import Link from 'next/link';
 
 const CoproGuide = ({ guideClassName }: { guideClassName?: string }) => {
   return (
     <Guide className={guideClassName}>
       <img src="/img/copro_guide.png" alt="Guide de raccordement" />
-      <div>
-        <Button
-          onClick={() => {
-            matomoEvent(['Téléchargement', 'Guide FCU', 'coproprietaire']);
-            window.open(
-              '/documentation/guide-france-chaleur-urbaine.pdf',
-              '_blank'
-            );
-          }}
+      <div className="fr-btn fr-mt-2w fr-ml-4w">
+        <Link
+          href="/documentation/guide-france-chaleur-urbaine.pdf"
+          target="_blank"
         >
           Télécharger notre guide
-        </Button>
+        </Link>
       </div>
     </Guide>
   );
