@@ -26,26 +26,6 @@ export const CityContainer = styled.div`
   .map-wrap {
     min-height: 500px;
   }
-
-  .simulator {
-    h2 {
-      font-size: 20px;
-      font-weight: 700;
-      line-height: 25px;
-      margin-bottom: 32px;
-    }
-    strong,
-    em {
-      font-size: 16px;
-    }
-    em {
-      font-weight: 900;
-    }
-    .simulator-result {
-      width: 100%;
-      color: #000091;
-    }
-  }
 `;
 
 export const Title = styled.div`
@@ -86,27 +66,6 @@ export const Image = styled.img`
   width: fit-content;
 `;
 
-export const ContainerNetwork = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 32px 0;
-
-  .network-data div,
-  .network-data div strong {
-    color: #000091;
-  }
-
-  @media (min-width: 540px) {
-    .network-column:nth-child(even) {
-      padding-left: 16px;
-    }
-    .network-column:nth-child(odd) {
-      padding-right: 16px;
-    }
-  }
-`;
-
 export const ColumnVideoGuide = styled.div`
   margin-left: auto;
   margin-right: auto;
@@ -115,5 +74,23 @@ export const ColumnVideoGuide = styled.div`
   }
   iframe {
     aspect-ratio: 16 / 9;
+  }
+`;
+
+export const SimulatorsContainer = styled.div`
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 25px;
+    margin-bottom: 32px;
+  }
+  em,
+  strong {
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .simulator-result {
+    width: 100%;
+    color: #000091;
   }
 `;

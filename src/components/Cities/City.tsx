@@ -5,7 +5,12 @@ import Header from './Header';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { matomoEvent } from '@components/Markup';
 import StickyForm from '@components/StickyForm/StickyForm';
-import { CityContainer, ColumnVideoGuide, Title } from './City.styles';
+import {
+  CityContainer,
+  ColumnVideoGuide,
+  SimulatorsContainer,
+  Title,
+} from './City.styles';
 import WrappedText from '@components/WrappedText';
 import { userExperience, villesData } from '@data/villes';
 import Simulators from '@components/Coproprietaire/Simulators';
@@ -198,11 +203,13 @@ const City = ({ city }: { city: string }) => {
                 />
               </Slice>
             )}
-            <Slice padding={8} className="simulator">
-              <Simulators
-                textTitle="Le coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires »"
-                simulatorTitle="Estimez le coup de pouce pour votre résidence"
-              />
+            <Slice padding={8}>
+              <SimulatorsContainer>
+                <Simulators
+                  textTitle="Le coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires »"
+                  simulatorTitle="Estimez le coup de pouce pour votre résidence"
+                />
+              </SimulatorsContainer>
             </Slice>
             {city != 'paris' && cityData.dispositifs && (
               <Slice padding={8}>

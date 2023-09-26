@@ -4,7 +4,7 @@ import Map from '@components/Map/Map';
 import ClassedNetwork from '@components/Network/ClassedNetwork';
 import EnergiesChart from '@components/Network/EnergiesChart';
 import { Network } from 'src/types/Summary/Network';
-import { ContainerNetwork } from './City.styles';
+import { ContainerNetwork, ColumnNetwork } from './Networks.styles';
 import Slice from '@components/Slice';
 
 type NetworskData = {
@@ -25,19 +25,15 @@ const Networks = ({
 }) => {
   return (
     <ContainerNetwork>
-      <div className="network-column fr-col-lg-6 fr-col-md-6 fr-col-sm-12 fr-col-12">
+      <ColumnNetwork className="fr-col-md-6 fr-col-12">
         {networksData.gestionnaires && (
-          <WrappedText
-            body={`::arrow-item[${networksData.gestionnaires}]`}
-            textClassName="network-data"
-          />
+          <WrappedText body={`::arrow-item[${networksData.gestionnaires}]`} />
         )}
         {networksData.isClassed && (
           <>
             {!network && (
               <WrappedText
                 body={`::arrow-item[Certains de ces réseaux sont classés]`}
-                textClassName="network-data"
               />
             )}
             <div className="fr-pb-4w">
@@ -48,13 +44,11 @@ const Networks = ({
         {!network && (
           <WrappedText
             body={`::arrow-item[Pour savoir de quel réseau votre bâtiment dépend, **veuillez tester votre adresse**]`}
-            textClassName="network-data"
           />
         )}
         {networksData.heatedPlaces && (
           <WrappedText
             body={`::arrow-item[Plus de **${networksData.heatedPlaces} logements** chauffés]`}
-            textClassName="network-data"
           />
         )}
         {network && (
@@ -62,20 +56,17 @@ const Networks = ({
             {network.longueur_reseau > 0 && (
               <WrappedText
                 body={`::arrow-item[**${network.longueur_reseau} km** de canalisations souterraines]`}
-                textClassName="network-data"
               />
             )}
             {network['Taux EnR&R'] !== null &&
               network['Taux EnR&R'] !== undefined && (
                 <WrappedText
                   body={`::arrow-item[Le taux **d'énergies renouvelables et de récupération** du réseau est de **${network['Taux EnR&R']} %**]`}
-                  textClassName="network-data"
                 />
               )}
             {network.Gestionnaire && (
               <WrappedText
                 body={`::arrow-item[Le réseau est géré par **${network.Gestionnaire}**.]`}
-                textClassName="network-data"
               />
             )}
             <Slice padding={4}>
@@ -88,8 +79,8 @@ const Networks = ({
             </Slice>
           </>
         )}
-      </div>
-      <div className="network-column fr-col-lg-6 fr-col-md-6 fr-col-sm-12 fr-col-12">
+      </ColumnNetwork>
+      <ColumnNetwork className="fr-col-md-6 fr-col-12">
         {cityCoord && (
           <Map
             noPopup
@@ -113,7 +104,7 @@ const Networks = ({
             }}
           />
         )}
-      </div>
+      </ColumnNetwork>
     </ContainerNetwork>
   );
 };
