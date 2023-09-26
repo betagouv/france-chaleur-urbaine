@@ -23,17 +23,10 @@ import { useServices } from 'src/services';
 import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
 import CoproGuide from '@components/Coproprietaire/CoproGuide';
 
-const getCityData = (city: string) => {
-  const cityData = citiesData.find(
-    (ville: any) => ville.name.toLowerCase() == city.toLowerCase()
-  );
-  return cityData;
-};
-
 const City = ({ city }: { city: string }) => {
   const [network, setNetwork] = useState<Network>();
   const { heatNetworkService } = useServices();
-  const cityData = getCityData(city);
+  const cityData = citiesData[city.toLowerCase()];
 
   const getNetworkFromDB = useCallback(
     async (identifiant: string): Promise<void> => {
