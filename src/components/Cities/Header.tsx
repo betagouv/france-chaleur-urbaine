@@ -6,21 +6,13 @@ import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
 import { Container, HeaderContainer } from './Header.styles';
 
-const Header = ({
-  city,
-  bannerSrc,
-  bannerPos,
-}: {
-  city: string;
-  bannerSrc: string;
-  bannerPos?: string;
-}) => {
+const Header = ({ city, bannerSrc }: { city: string; bannerSrc: string }) => {
   return (
     <HeaderContainer>
       <Slice
         padding={4}
         bg={bannerSrc}
-        bgPos={bannerPos || 'right center'}
+        bgPos="right center"
         bgSize="auto"
         bgColor="#CDE3F0"
         className="city-header-slice"

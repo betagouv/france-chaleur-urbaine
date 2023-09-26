@@ -62,9 +62,6 @@ const City = ({ city }: { city: string }) => {
           <Header
             city={cityData.name}
             bannerSrc={`/img/banner_ville_${city}.jpg`}
-            bannerPos={
-              city == 'metz' || city == 'nantes' ? 'right bottom' : undefined
-            }
           />
           <StickyForm
             title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`}
