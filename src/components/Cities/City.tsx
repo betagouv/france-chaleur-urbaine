@@ -3,7 +3,6 @@ import Informations from '@components/Coproprietaire/Informations';
 import Slice from '@components/Slice';
 import Header from './Header';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import { matomoEvent } from '@components/Markup';
 import StickyForm from '@components/StickyForm/StickyForm';
 import {
   CityContainer,
@@ -19,9 +18,9 @@ import Dispositifs, { DispositifsData } from './Dispositifs';
 import Networks from './Networks';
 import { Network } from 'src/types/Summary/Network';
 import { useCallback, useEffect, useState } from 'react';
-import { Button } from '@dataesr/react-dsfr';
 import { useServices } from 'src/services';
 import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
+import CoproGuide from '@components/Coproprietaire/CoproGuide';
 
 const getCityData = (city: string) => {
   const cityData = villesData.find(
@@ -133,26 +132,7 @@ const City = ({ city }: { city: string }) => {
             </VideoGuideColumn>
             <VideoGuideColumn>
               <Subtitle>Le guide complet sur le raccordement</Subtitle>
-              <div className="fcuCoproGuide">
-                <img src="/img/copro_guide.png" alt="Guide de raccordement" />
-                <div>
-                  <Button
-                    onClick={() => {
-                      matomoEvent([
-                        'Téléchargement',
-                        'Guide FCU',
-                        'coproprietaire',
-                      ]);
-                      window.open(
-                        '/documentation/guide-france-chaleur-urbaine.pdf',
-                        '_blank'
-                      );
-                    }}
-                  >
-                    Télécharger notre guide
-                  </Button>
-                </div>
-              </div>
+              <CoproGuide guideClassName="fr-mb-0" />
             </VideoGuideColumn>
           </Slice>
           {cityData.networksData && cityData.networksData.isClassed && (

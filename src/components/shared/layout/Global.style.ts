@@ -27,15 +27,6 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     max-width: 122px;
   }
 
-  .fcuCoproGuide {
-    min-width: min(100%, 330px);
-    margin-bottom: 80px;
-    text-align: center;
-    img {
-      max-width: 100%;
-    }
-  }
-
   .fcuSolutionForFuturBody,
   .fcuSolutionForFuturFooter {
     text-align: center;

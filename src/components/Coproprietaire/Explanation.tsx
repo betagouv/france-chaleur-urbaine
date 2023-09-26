@@ -1,8 +1,8 @@
 import { Glass, ImageContainer } from '@components/Infographie/index.styles';
-import { matomoEvent } from '@components/Markup';
 import WrappedText from '@components/WrappedText/WrappedText';
-import { Button, Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@dataesr/react-dsfr';
 import { Container, Title } from './Explanation.styles';
+import CoproGuide from './CoproGuide';
 
 const Explanation = () => {
   return (
@@ -24,26 +24,7 @@ const Explanation = () => {
 ::arrow-item[**France Chaleur Urbaine**, service du ministère de la transition énergétique, **vous informe et vous met en relation** avec le gestionnaire du réseau le plus proche de chez vous.]
 `}
           />
-          <div className="fcuCoproGuide">
-            <img src="/img/copro_guide.png" alt="Guide de raccordement" />
-            <div>
-              <Button
-                onClick={() => {
-                  matomoEvent([
-                    'Téléchargement',
-                    'Guide FCU',
-                    'coproprietaire',
-                  ]);
-                  window.open(
-                    '/documentation/guide-france-chaleur-urbaine.pdf',
-                    '_blank'
-                  );
-                }}
-              >
-                Télécharger notre guide
-              </Button>
-            </div>
-          </div>
+          <CoproGuide />
         </div>
         <div className="fr-col-12 fr-col-md-6 fr-offset-lg-1 fr-col-lg-4">
           <ImageContainer
