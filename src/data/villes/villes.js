@@ -1,4 +1,4 @@
-const villesData = [
+const citiesData = [
   {
     name: 'Paris',
     nameNetwork: 'Paris',
@@ -206,4 +206,4 @@ A noter que le territoire compte également des réseaux de chaleur privés, com
   },
 ];
 
-export default villesData;
+export default citiesData;

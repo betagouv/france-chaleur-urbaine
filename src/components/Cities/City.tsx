@@ -12,7 +12,7 @@ import {
   Title,
 } from './City.styles';
 import WrappedText from '@components/WrappedText';
-import { userExperience, villesData } from '@data/villes';
+import { userExperience, citiesData } from '@data/villes';
 import Simulators from '@components/Coproprietaire/Simulators';
 import Dispositifs, { DispositifsData } from './Dispositifs';
 import Networks from './Networks';
@@ -23,7 +23,7 @@ import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
 import CoproGuide from '@components/Coproprietaire/CoproGuide';
 
 const getCityData = (city: string) => {
-  const cityData = villesData.find(
+  const cityData = citiesData.find(
     (ville: any) => ville.name.toLowerCase() == city.toLowerCase()
   );
   return cityData;
