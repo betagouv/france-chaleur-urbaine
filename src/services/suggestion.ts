@@ -9,7 +9,7 @@ export class SuggestionService {
   }
   async fetchSuggestions(
     searchTerm: string,
-    params?: { limit: string; type?: string }
+    params?: { limit: string }
   ): Promise<SuggestionResponse> {
     try {
       const baseURL = process.env.NEXT_PUBLIC_BAN_API_BASE_URL;

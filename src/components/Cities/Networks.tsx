@@ -21,7 +21,7 @@ const Networks = ({
 }: {
   networksData: NetworskData;
   network?: Network;
-  cityCoord?: [number, number];
+  cityCoord: [number, number];
 }) => {
   return (
     <NetworkContainer>
