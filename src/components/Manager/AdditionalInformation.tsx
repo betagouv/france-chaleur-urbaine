@@ -9,11 +9,13 @@ const AdditionalInformation = ({
   field,
   updateDemand,
   type,
+  width,
 }: {
   demand: Demand;
   field: 'Conso' | 'Logement' | 'Distance au réseau' | 'Affecté à';
   updateDemand: (demandId: string, demand: Partial<Demand>) => void;
   type: 'number' | 'text';
+  width?: number;
 }) => {
   const [value, setValue] = useState('');
   useEffect(() => {
@@ -42,7 +44,7 @@ const AdditionalInformation = ({
   useEffect(() => () => onChangeHandler.cancel(), [onChangeHandler]);
 
   return (
-    <Container>
+    <Container width={width}>
       <TextInput
         type={type}
         value={value}
