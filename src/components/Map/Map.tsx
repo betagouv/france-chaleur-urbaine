@@ -215,10 +215,12 @@ const Map = ({
   }, [router]);
 
   useEffect(() => {
-    setLayerDisplay(
-      proMode ? mapParam.defaultLayerDisplay : mapParam.simpleLayerDisplay
-    );
-  }, [proMode]);
+    if (setProMode) {
+      setLayerDisplay(
+        proMode ? mapParam.defaultLayerDisplay : mapParam.simpleLayerDisplay
+      );
+    }
+  }, [proMode, setProMode]);
 
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 1251);
