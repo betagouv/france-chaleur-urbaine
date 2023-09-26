@@ -20,6 +20,9 @@ const demands = async (req: NextApiRequest, res: NextApiResponse) => {
         id: demand.id,
         distance: demand['Distance au réseau'],
         network: demand['Identifiant réseau'],
+        address: demand['Adresse'],
+        buildingType: demand['Structure'],
+        date: demand['Date demandes'],
       }))
     );
   } catch (error) {
