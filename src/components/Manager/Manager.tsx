@@ -397,6 +397,7 @@ const Manager = () => {
           field="Affecté à"
           updateDemand={updateDemand}
           type="text"
+          width={125}
         />
       ),
     },
