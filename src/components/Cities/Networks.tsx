@@ -4,7 +4,7 @@ import Map from '@components/Map/Map';
 import ClassedNetwork from '@components/Network/ClassedNetwork';
 import EnergiesChart from '@components/Network/EnergiesChart';
 import { Network } from 'src/types/Summary/Network';
-import { ContainerNetwork, ColumnNetwork } from './Networks.styles';
+import { NetworkContainer, NetworkColumn } from './Networks.styles';
 import Slice from '@components/Slice';
 
 type NetworskData = {
@@ -24,8 +24,8 @@ const Networks = ({
   cityCoord?: [number, number];
 }) => {
   return (
-    <ContainerNetwork>
-      <ColumnNetwork className="fr-col-md-6 fr-col-12">
+    <NetworkContainer>
+      <NetworkColumn className="fr-col-md-6 fr-col-12">
         {networksData.gestionnaires && (
           <WrappedText body={`::arrow-item[${networksData.gestionnaires}]`} />
         )}
@@ -79,8 +79,8 @@ const Networks = ({
             </Slice>
           </>
         )}
-      </ColumnNetwork>
-      <ColumnNetwork className="fr-col-md-6 fr-col-12">
+      </NetworkColumn>
+      <NetworkColumn className="fr-col-md-6 fr-col-12">
         {cityCoord && (
           <Map
             noPopup
@@ -104,8 +104,8 @@ const Networks = ({
             }}
           />
         )}
-      </ColumnNetwork>
-    </ContainerNetwork>
+      </NetworkColumn>
+    </NetworkContainer>
   );
 };
 

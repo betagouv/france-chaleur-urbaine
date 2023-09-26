@@ -7,8 +7,9 @@ import { matomoEvent } from '@components/Markup';
 import StickyForm from '@components/StickyForm/StickyForm';
 import {
   CityContainer,
-  ColumnVideoGuide,
+  VideoGuideColumn,
   SimulatorsContainer,
+  Subtitle,
   Title,
 } from './City.styles';
 import WrappedText from '@components/WrappedText';
@@ -103,9 +104,7 @@ const City = ({ city }: { city: string }) => {
           />
           <Slice padding={4}>
             <Title>
-              <h2>
-                Votre réseau de chaleur à <b>{cityData.nameNetwork}</b>
-              </h2>
+              Votre réseau de chaleur à <b>{cityData.nameNetwork}</b>
             </Title>
             <MarkdownWrapper
               value={cityData.description}
@@ -127,17 +126,13 @@ const City = ({ city }: { city: string }) => {
           <Slice padding={4} theme="color">
             <Informations />
           </Slice>
-          <Slice padding={8} direction="row" className="video-guide">
-            <ColumnVideoGuide>
-              <Title>
-                <h3>Découvrez des témoignages sur le terrain</h3>
-              </Title>
+          <Slice padding={8} direction="row">
+            <VideoGuideColumn>
+              <Subtitle>Découvrez des témoignages sur le terrain</Subtitle>
               <InterviewsVideos />
-            </ColumnVideoGuide>
-            <ColumnVideoGuide>
-              <Title>
-                <h3>Le guide complet sur le raccordement</h3>
-              </Title>
+            </VideoGuideColumn>
+            <VideoGuideColumn>
+              <Subtitle>Le guide complet sur le raccordement</Subtitle>
               <div className="fcuCoproGuide">
                 <img src="/img/copro_guide.png" alt="Guide de raccordement" />
                 <div>
@@ -158,14 +153,14 @@ const City = ({ city }: { city: string }) => {
                   </Button>
                 </div>
               </div>
-            </ColumnVideoGuide>
+            </VideoGuideColumn>
           </Slice>
           {cityData.networksData && cityData.networksData.isClassed && (
             <Slice
               theme="grey"
               padding={8}
               direction="row"
-              className="classed-network"
+              className="city-classed-network"
             >
               <MarkdownWrapper
                 withPadding
@@ -192,7 +187,7 @@ const City = ({ city }: { city: string }) => {
             theme="color"
             padding={8}
             header={`## Découvrez les dispositifs et les aides auxquels vous avez droit sur ${cityData.name}`}
-            className="bareme-block"
+            className="city-dispositifs-block"
           >
             {city == 'paris' && (
               <Slice padding={8}>

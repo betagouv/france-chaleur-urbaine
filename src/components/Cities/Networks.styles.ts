@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const ContainerNetwork = styled.div`
+export const NetworkContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -18,7 +18,7 @@ export const ContainerNetwork = styled.div`
   }
 `;
 
-export const ColumnNetwork = styled.div`
+export const NetworkColumn = styled.div`
   @media (min-width: 540px) {
     :nth-child(even) {
       padding-left: 16px;

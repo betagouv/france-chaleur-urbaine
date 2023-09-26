@@ -1,6 +1,11 @@
 import WrappedText from '@components/WrappedText/WrappedText';
 import Link from 'next/link';
-import { ContainerDispositifs, Image, Title } from './City.styles';
+import { Image } from './City.styles';
+import {
+  DispositifsContainer,
+  DispositifsColumn,
+  Title,
+} from './Dispositifs.styles';
 
 export type DispositifsData = {
   title?: string;
@@ -29,22 +34,14 @@ const Dispositifs = ({
     <>
       {dispositifs.length > 0 ? (
         <>
-          {dispositifsTitle && (
-            <Title>
-              <h3>{dispositifsTitle}</h3>
-            </Title>
-          )}
-          <ContainerDispositifs>
+          {dispositifsTitle && <Title>{dispositifsTitle}</Title>}
+          <DispositifsContainer>
             {dispositifs.map((dispositif: any, i) => (
-              <div
-                className="dispositif-column fr-col-lg-6 fr-col-md-6 fr-col-sm-12 fr-col-12"
+              <DispositifsColumn
+                className="fr-col-md-6 fr-col-12"
                 key={`${city}'-'+${i}`}
               >
-                {dispositif.title && (
-                  <Title>
-                    <h3>{dispositif.title}</h3>
-                  </Title>
-                )}
+                {dispositif.title && <h4>{dispositif.title}</h4>}
                 {dispositif.img && (
                   <Image src={dispositif.img.src} alt={dispositif.img.alt} />
                 )}
@@ -59,9 +56,9 @@ const Dispositifs = ({
                     </Link>
                   </div>
                 )}
-              </div>
+              </DispositifsColumn>
             ))}
-          </ContainerDispositifs>
+          </DispositifsContainer>
         </>
       ) : (
         ''

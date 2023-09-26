@@ -1,18 +1,18 @@
 import styled from 'styled-components';
 
 export const CityContainer = styled.div`
-  .classed-network,
-  .classed-network strong,
+  .city-classed-network div,
+  .city-classed-network strong,
   .city-description,
   .city-description strong {
     color: #000091;
   }
 
-  .form-title {
+  .sticky-form-title {
     color: #2731b1;
   }
 
-  .bareme-block {
+  .city-dispositifs-block {
     .slice-header h2 {
       max-width: 600px;
       margin: auto;
@@ -28,37 +28,20 @@ export const CityContainer = styled.div`
   }
 `;
 
-export const Title = styled.div`
-  h2 {
-    color: #000091;
-    b {
-      color: #4550e5;
-    }
-    font-size: 33px;
-    font-weight: 600;
-    line-height: 51px;
+export const Title = styled.h2`
+  color: #000091;
+  b {
+    color: #4550e5;
   }
-  h3 {
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 30px;
-  }
+  font-size: 33px;
+  font-weight: 600;
+  line-height: 51px;
 `;
 
-export const ContainerDispositifs = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 32px 0;
-
-  @media (min-width: 540px) {
-    .dispositif-column:nth-child(even) {
-      padding-left: 16px;
-    }
-    .dispositif-column:nth-child(odd) {
-      padding-right: 16px;
-    }
-  }
+export const Subtitle = styled.h3`
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 30px;
 `;
 
 export const Image = styled.img`
@@ -66,9 +49,10 @@ export const Image = styled.img`
   width: fit-content;
 `;
 
-export const ColumnVideoGuide = styled.div`
+export const VideoGuideColumn = styled.div`
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 16px;
   h3 {
     color: #000074;
   }
@@ -86,8 +70,8 @@ export const SimulatorsContainer = styled.div`
   }
   em,
   strong {
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 16px !important;
+    line-height: 24px !important;
   }
   .simulator-result {
     width: 100%;

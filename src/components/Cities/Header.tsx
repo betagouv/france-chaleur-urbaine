@@ -26,17 +26,13 @@ const Header = ({
         className="city-header-slice"
       >
         <Container>
-          <div>
-            <PageBody>
-              <MarkdownWrapper
-                value={`Vous êtes copropriétaire sur ${city} ?`}
-              />
-            </PageBody>
-            <PageTitle className="fr-mb-4w">
-              Le chauffage urbain, une solution <strong>écologique</strong> et{' '}
-              <strong>économique</strong> à {city}
-            </PageTitle>
-          </div>
+          <PageBody>
+            <MarkdownWrapper value={`Vous êtes copropriétaire sur ${city} ?`} />
+          </PageBody>
+          <PageTitle className="fr-mb-4w">
+            Le chauffage urbain, une solution <strong>écologique</strong> et{' '}
+            <strong>économique</strong> à {city}
+          </PageTitle>
         </Container>
       </Slice>
     </HeaderContainer>
