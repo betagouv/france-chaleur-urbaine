@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const HeaderContainer = styled.div`
-  .city-header-slice .fr-container {
+  .fr-container {
     max-width: 100%;
     width: 100%;
   }

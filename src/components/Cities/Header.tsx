@@ -15,7 +15,6 @@ const Header = ({ city, bannerSrc }: { city: string; bannerSrc: string }) => {
         bgPos="right center"
         bgSize="auto"
         bgColor="#CDE3F0"
-        className="city-header-slice"
       >
         <Container>
           <PageBody>

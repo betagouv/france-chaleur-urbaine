@@ -6,6 +6,9 @@ import MarkdownWrapper from '@components/MarkdownWrapper';
 import StickyForm from '@components/StickyForm/StickyForm';
 import {
   CityContainer,
+  CityDescriptionContainer,
+  ClassedNetworkSlice,
+  DispositifsSlice,
   VideoGuideColumn,
   SimulatorsContainer,
   Subtitle,
@@ -61,13 +64,12 @@ const City = ({ city }: { city: string }) => {
             title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`}
           />
           <Slice padding={4}>
-            <Title>
-              Votre réseau de chaleur à <b>{cityData.nameNetwork}</b>
-            </Title>
-            <MarkdownWrapper
-              value={cityData.description}
-              className="city-description"
-            />
+            <CityDescriptionContainer>
+              <Title>
+                Votre réseau de chaleur à <b>{cityData.nameNetwork}</b>
+              </Title>
+              <MarkdownWrapper value={cityData.description} />
+            </CityDescriptionContainer>
             {cityData.networksData && (
               <Slice padding={4}>
                 <Networks
@@ -95,66 +97,64 @@ const City = ({ city }: { city: string }) => {
             </VideoGuideColumn>
           </Slice>
           {cityData.networksData && cityData.networksData.isClassed && (
-            <Slice
-              theme="grey"
-              padding={8}
-              direction="row"
-              className="city-classed-network"
-            >
-              <MarkdownWrapper
-                withPadding
-                value={`
-  :::puce-icon{icon="/icons/picto-warning.svg"}
-  Le réseau de ${cityData.name} est « classé », ce qui signifie que **certains bâtiments ont l'obligation de se raccorder**.
+            <ClassedNetworkSlice>
+              <Slice theme="grey" padding={8} direction="row">
+                <MarkdownWrapper
+                  withPadding
+                  value={`
+:::puce-icon{icon="/icons/picto-warning.svg"}
+Le réseau de ${cityData.name} est « classé », ce qui signifie que **certains bâtiments ont l'obligation de se raccorder**.
 
-  Cette obligation s’applique dans une certaine zone autour du réseau, qualifiée de **périmètre de développement prioritaire.**
+Cette obligation s’applique dans une certaine zone autour du réseau, qualifiée de **périmètre de développement prioritaire.**
 
-  :button-link[Voir le périmètre de développement prioritaire]{href="/carte" className="fr-btn--sm fr-mt-2w"}
-    `}
-              />
-              <MarkdownWrapper
-                withPadding
-                value={`
-  **Sont concernés :**
-  ::arrow-item[Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à 100kW]
-  ::arrow-item[Tout bâtiment renouvelant son installation de chauffage au-dessus de 100kW]
-    `}
-              />
-            </Slice>
+:button-link[Voir le périmètre de développement prioritaire]{href="/carte" className="fr-btn--sm fr-mt-2w"}
+      `}
+                />
+                <MarkdownWrapper
+                  withPadding
+                  value={`
+**Sont concernés :**
+::arrow-item[Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à 100kW]
+::arrow-item[Tout bâtiment renouvelant son installation de chauffage au-dessus de 100kW]
+      `}
+                />
+              </Slice>
+            </ClassedNetworkSlice>
           )}
-          <Slice
-            theme="color"
-            padding={8}
-            header={`## Découvrez les dispositifs et les aides auxquels vous avez droit sur ${cityData.name}`}
-            className="city-dispositifs-block"
-          >
-            {city == 'paris' && (
+          <DispositifsSlice>
+            <Slice
+              theme="color"
+              padding={8}
+              header={`## Découvrez les dispositifs et les aides auxquels vous avez droit sur ${cityData.name}`}
+            >
+              {city == 'paris' && (
+                <Slice padding={8}>
+                  <Dispositifs
+                    city={city}
+                    dispositifsTitle={cityData.dispositifsTitle}
+                    dispositifs={cityData.dispositifs as DispositifsData[]}
+                  />
+                </Slice>
+              )}
               <Slice padding={8}>
-                <Dispositifs
-                  city={city}
-                  dispositifsTitle={cityData.dispositifsTitle}
-                  dispositifs={cityData.dispositifs as DispositifsData[]}
-                />
+                <SimulatorsContainer>
+                  <Simulators
+                    textTitle="Le coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires »"
+                    simulatorTitle="Estimez le coup de pouce pour votre résidence"
+                  />
+                </SimulatorsContainer>
               </Slice>
-            )}
-            <Slice padding={8}>
-              <SimulatorsContainer>
-                <Simulators
-                  textTitle="Le coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires »"
-                  simulatorTitle="Estimez le coup de pouce pour votre résidence"
-                />
-              </SimulatorsContainer>
+              {city != 'paris' && cityData.dispositifs && (
+                <Slice padding={8}>
+                  <Dispositifs
+                    city={city}
+                    dispositifsTitle={cityData.dispositifsTitle}
+                    dispositifs={cityData.dispositifs as DispositifsData[]}
+                  />
+                </Slice>
+              )}
             </Slice>
-            {city != 'paris' && cityData.dispositifs && (
-              <Slice padding={8}>
-                <Dispositifs
-                  city={city}
-                  dispositifsTitle={cityData.dispositifsTitle}
-                  dispositifs={cityData.dispositifs as DispositifsData[]}
-                />
-              </Slice>
-            )}
-          </Slice>
+          </DispositifsSlice>
           <Slice
             theme="grey"
             padding={8}
