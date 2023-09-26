@@ -35,7 +35,7 @@ Le réseau de la capitale alimente également en énergie **16 réseaux de chale
   {
     name: 'Grenoble',
     nameNetwork: 'Grenoble-Alpes Métropole',
-    description: `Le réseau de Chauffage Urbain de Grenoble-Alpes Métropole est l’un des réseaux les plus importants en France et présente un taux d’énergies renouvelables et de récupération particulièrement élevé (proche de 80%). Il alimente en chaleur et en eau chaude sanitaire des bâtiments collectifs publics ou privés, à usage résidentiel, tertiaire ou industriel de 7 villes : **Grenoble, Échirolles, Eybens, Gières, La Tronche, Pont-de-Claix, Saint-Martin-d’Hères**. Sont ainsi raccordés près de 400 copropriétés, 83 établissements scolaires, 31 équipements sportifs et 5 centres nautiques, des centres commerciaux, etc. 
+    description: `Le réseau de chauffage urbain de Grenoble-Alpes Métropole est l’un des réseaux les plus importants en France et présente un taux d’énergies renouvelables et de récupération particulièrement élevé (proche de 80%). Il alimente en chaleur et en eau chaude sanitaire des bâtiments collectifs publics ou privés, à usage résidentiel, tertiaire ou industriel de 7 villes : **Grenoble, Échirolles, Eybens, Gières, La Tronche, Pont-de-Claix, Saint-Martin-d’Hères**. Sont ainsi raccordés près de 400 copropriétés, 83 établissements scolaires, 31 équipements sportifs et 5 centres nautiques, des centres commerciaux, etc. 
   Le réseau est alimenté par **5 sites de production de chaleur** : Athanor, Villeneuve, Poterne, le CEA, Vaucanson et Biomax. Grenoble-Alpes-Métropole poursuit le verdissement du réseau, avec l’**ambition de tendre vers 100 % d’énergies renouvelables et de récupération fin 2033**.`,
     networksData: {
       isClassed: true,
@@ -93,16 +93,6 @@ La chaufferie bois aixoise ayant atteint sa capacité maximale de production, un
     },
   },
   {
-    name: 'Toulouse',
-    nameNetwork: 'Toulouse',
-    description: `L’Unité de Valorisation Énergétique du Mirail permet d’alimenter le réseau de chaleur et de froid de Toulouse à plus de **99 % par des énergies locales**. Le réseau d’Eneriance sollicite une énergie unique : la récupération d’énergie sur traitement des déchets.`,
-    networksData: {
-      isClassed: true,
-      identifiant: '3101C',
-      heatedPlaces: '21 000',
-    },
-  },
-  {
     name: 'Metz',
     nameNetwork: 'Metz',
     description: `**Le réseau de chauffage urbain de l’Eurométropole de Metz est l’un des plus importants de France.** Il représente aujourd’hui une longueur de 140 kilomètres couvrant une grande partie de la ville de Metz et de sa périphérie. En 2021, plus de 483 GWh de chaleur ont été livrés aux clients, soit l‘équivalent de **plus de 48 000 logements** de type T3 alimentés. **Le réseau bénéficie d’un taux d’énergies renouvelables et de récupération de plus de 65%**, grâce à la valorisation de la chaleur issue de l’incinération des ordures ménagères et à une centrale biomasse utilisant les ressources en bois locales.
@@ -154,12 +144,12 @@ La métropole bordelaise souhaite **doubler le nombre d’habitants raccordés a
     nameNetwork: 'Strasbourg Métropole',
     description: `Le territoire de l’Eurométropole de Strasbourg comporte plusieurs réseaux de chaleur. **Les réseaux publics de l’Eurométropole alimentent l’équivalent de 50000 logements grâce à 130 km de canalisations. L’énergie qu’ils distribuent est d’origine renouvelable à plus de 50 % (essentiellement bois et ordures ménagères).** Plusieurs quartiers de la métropole sont desservis par ces réseaux, en particulier : Elsau, L’Esplanade, Hautepierre, Wacken...
 
-**Dans le cadre de son Plan Climat 2030, l’Eurométropole de Strasbourg s’est fixée des objectifs importants pour le développement de ses réseaux : un doublement de la quantité d’énergie distribuée et un taux d’énergies renouvelables de 75% d’ici 2030.**
+**Dans le cadre de son Plan Climat 2030, l’Eurométropole de Strasbourg s’est fixé des objectifs importants pour le développement de ses réseaux : un doublement de la quantité d’énergie distribuée et un taux d’énergies renouvelables de 75% d’ici 2030.**
 
 Pour verdir les réseaux de chaleur de la métropole, différentes sources d’énergies sont utilisées. La biomasse et la valorisation de l’énergie de récupération des groupes froid des Hôpitaux universitaires permettront par exemple de décarboner le réseau de Hautepierre-Poteries, jusqu’à présent 100% fossile, avec un taux d’énergies renouvelables supérieur à 65% attendu dès 2028. Le réseau Strasbourg-Centre, actuellement alimenté par l’énergie récupérée auprès de Sénerval, l’unité de valorisation énergétique qui incinère des déchets sur le Rohrschollen, et par la chaufferie biomasse du Port Autonome, sera également verdi pour atteindre un taux d’énergies renouvelables de plus de 80%. Pour cela, l’approvisionnement en chaleur sera complété par l’énergie récupérée auprès de l’aciérie BSW et des industriels du Port Autonome.`,
     networksData: {
       isClassed: true,
-      gestionnaires: `Les réseaux présents sur la métropole sont gérés par différents opérateurs : **ENGIE, Dalkia, R-CUA...**`,
+      gestionnaires: `Les réseaux présents sur la métropole sont gérés par différents opérateurs : **ENGIE, Strasbourg Centre Energies, R-CUA...**`,
     },
   },
   {
