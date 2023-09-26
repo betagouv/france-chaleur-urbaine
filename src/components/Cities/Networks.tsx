@@ -81,29 +81,27 @@ const Networks = ({
         )}
       </NetworkColumn>
       <NetworkColumn className="fr-col-md-6 fr-col-12">
-        {cityCoord && (
-          <Map
-            noPopup
-            withCenterPin
-            center={cityCoord}
-            initialZoom={11}
-            initialLayerDisplay={{
-              outline: true,
-              futurOutline: false,
-              coldOutline: false,
-              zoneDP: false,
-              demands: false,
-              raccordements: false,
-              gasUsageGroup: false,
-              buildings: false,
-              gasUsage: [],
-              energy: [],
-              gasUsageValues: [1000, Number.MAX_VALUE],
-              energyGasValues: [50, Number.MAX_VALUE],
-              energyFuelValues: [50, Number.MAX_VALUE],
-            }}
-          />
-        )}
+        <Map
+          noPopup
+          withCenterPin
+          center={cityCoord}
+          initialZoom={11}
+          initialLayerDisplay={{
+            outline: true,
+            futurOutline: false,
+            coldOutline: false,
+            zoneDP: false,
+            demands: false,
+            raccordements: false,
+            gasUsageGroup: false,
+            buildings: false,
+            gasUsage: [],
+            energy: [],
+            gasUsageValues: [1000, Number.MAX_VALUE],
+            energyGasValues: [50, Number.MAX_VALUE],
+            energyFuelValues: [50, Number.MAX_VALUE],
+          }}
+        />
       </NetworkColumn>
     </NetworkContainer>
   );
