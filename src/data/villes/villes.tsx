@@ -204,8 +204,7 @@ A noter que le territoire compte également des réseaux de chaleur privés, com
 **Le raccordement au réseau de chaleur se substitue progressivement aux chaufferies collectives gaz et fioul** : 33 % de l’énergie que la ville consomme est aujourd’hui issue de ces réseaux de chaleur, contre 6 % il y a 10 ans. **55 000 équivalent-logements sont aujourd’hui raccordés.** Les réseaux de chaleur alimentent des bâtiments résidentiels, mais également la Cité internationale de la gastronomie et du vin, le CHU, le campus de l’université de Bourgogne, la gendarmerie Deflandre, les quatre piscines (Olympique, Carrousel, Fontaine-d’Ouche et Grésilles), le stade Gaston-Gérard, l’Auditorium, le parc des expositions et le palais des Congrès, La Vapeur, 10 collèges et 23 groupes scolaires....`,
     coord: [5.034852, 47.331938],
     networksData: {
-      isClassed: true,
-      allClassed: true,
+      isClassed: false,
       gestionnaires: `Les réseaux sont gérés par **Dijon Energies (Dalkia)** et **Sodien (Coriance)**`,
     },
   },
