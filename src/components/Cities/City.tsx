@@ -7,7 +7,6 @@ import StickyForm from '@components/StickyForm/StickyForm';
 import {
   CityContainer,
   CityDescriptionContainer,
-  ClassedNetworkSlice,
   DispositifsSlice,
   VideoGuideColumn,
   SimulatorsContainer,
@@ -25,11 +24,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
 import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
 import CoproGuide from '@components/Coproprietaire/CoproGuide';
+import ClassedNetworks from './ClassedNetworks';
 
 const City = ({ city }: { city: string }) => {
   const [network, setNetwork] = useState<Network>();
   const { heatNetworkService } = useServices();
   const cityData = citiesData[city.toLowerCase()];
+  const [isUniqueNetwork, setIsUniqueNetwork] = useState<boolean>(false);
 
   const getNetworkFromDB = useCallback(
     async (identifiant: string): Promise<void> => {
@@ -47,8 +48,9 @@ const City = ({ city }: { city: string }) => {
   );
 
   useEffect(() => {
-    if (cityData && cityData.networksData.identifiant && !network) {
-      getNetworkFromDB(cityData.networksData.identifiant);
+    if (cityData && cityData.networksData.identifiant) {
+      setIsUniqueNetwork(true);
+      if (!network) getNetworkFromDB(cityData.networksData.identifiant);
     }
   }, [cityData, getNetworkFromDB, network]);
 
@@ -66,7 +68,11 @@ const City = ({ city }: { city: string }) => {
           <Slice padding={4}>
             <CityDescriptionContainer>
               <Title>
-                Votre réseau de chaleur à <b>{cityData.nameNetwork}</b>
+                {isUniqueNetwork
+                  ? 'Votre réseau de chaleur '
+                  : 'Vos réseaux de chaleur '}
+                {city == 'strasbourg' ? 'sur ' : 'à '}
+                <b>{cityData.nameNetwork}</b>
               </Title>
               <MarkdownWrapper value={cityData.description} />
             </CityDescriptionContainer>
@@ -97,29 +103,14 @@ const City = ({ city }: { city: string }) => {
             </VideoGuideColumn>
           </Slice>
           {cityData.networksData && cityData.networksData.isClassed && (
-            <ClassedNetworkSlice>
-              <Slice theme="grey" padding={8} direction="row">
-                <MarkdownWrapper
-                  withPadding
-                  value={`
-:::puce-icon{icon="/icons/picto-warning.svg"}
-Le réseau de ${cityData.name} est « classé », ce qui signifie que **certains bâtiments ont l'obligation de se raccorder**.
-
-Cette obligation s’applique dans une certaine zone autour du réseau, qualifiée de **périmètre de développement prioritaire.**
-
-:button-link[Voir le périmètre de développement prioritaire]{href="/carte" className="fr-btn--sm fr-mt-2w"}
-      `}
-                />
-                <MarkdownWrapper
-                  withPadding
-                  value={`
-**Sont concernés :**
-::arrow-item[Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à 100kW]
-::arrow-item[Tout bâtiment renouvelant son installation de chauffage au-dessus de 100kW]
-      `}
-                />
-              </Slice>
-            </ClassedNetworkSlice>
+            <Slice theme="grey" padding={8} direction="row">
+              <ClassedNetworks
+                city={city}
+                nameNetwork={cityData.nameNetwork}
+                allClassed={cityData.networkData?.allClassed}
+                isUniqueNetwork={isUniqueNetwork}
+              />
+            </Slice>
           )}
           <DispositifsSlice>
             <Slice

@@ -70,10 +70,3 @@ export const DispositifsSlice = styled.div`
     margin: auto;
   }
 `;
-
-export const ClassedNetworkSlice = styled.div`
-  div,
-  strong {
-    color: #000091;
-  }
-`;

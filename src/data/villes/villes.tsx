@@ -152,7 +152,7 @@ La métropole bordelaise souhaite **doubler le nombre d’habitants raccordés a
   },
   strasbourg: {
     name: 'Strasbourg',
-    nameNetwork: 'Strasbourg Métropole',
+    nameNetwork: "l'Eurométropole de Strasbourg",
     description: `Le territoire de l’Eurométropole de Strasbourg comporte plusieurs réseaux de chaleur. **Les réseaux publics de l’Eurométropole alimentent l’équivalent de 50000 logements grâce à 130 km de canalisations. L’énergie qu’ils distribuent est d’origine renouvelable à plus de 50 % (essentiellement bois et ordures ménagères).** Plusieurs quartiers de la métropole sont desservis par ces réseaux, en particulier : Elsau, L’Esplanade, Hautepierre, Wacken...
 
 **Dans le cadre de son Plan Climat 2030, l’Eurométropole de Strasbourg s’est fixé des objectifs importants pour le développement de ses réseaux : un doublement de la quantité d’énergie distribuée et un taux d’énergies renouvelables de 75% d’ici 2030.**
@@ -205,6 +205,7 @@ A noter que le territoire compte également des réseaux de chaleur privés, com
     coord: [5.034852, 47.331938],
     networksData: {
       isClassed: true,
+      allClassed: true,
       gestionnaires: `Les réseaux sont gérés par **Dijon Energies (Dalkia)** et **Sodien (Coriance)**`,
     },
   },
