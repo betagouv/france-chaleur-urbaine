@@ -24,7 +24,7 @@ export const NetworkContainer = styled.div`
 `;
 
 export const NetworkColumn = styled.div`
-  @media (min-width: 540px) {
+  @media (min-width: 768px) {
     :nth-child(even) {
       padding-left: 16px;
     }
