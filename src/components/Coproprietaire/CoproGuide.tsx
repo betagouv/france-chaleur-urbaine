@@ -1,3 +1,4 @@
+import { matomoEvent } from '@components/Markup';
 import { Guide } from './CoproGuide.styles';
 import Link from 'next/link';
 
@@ -10,6 +11,10 @@ const CoproGuide = ({ guideClassName }: { guideClassName?: string }) => {
           <Link
             href="/documentation/guide-france-chaleur-urbaine.pdf"
             target="_blank"
+            rel="noreferrer noopener"
+            onClick={() => {
+              matomoEvent(['Téléchargement', 'Guide FCU', 'coproprietaire']);
+            }}
           >
             Télécharger notre guide
           </Link>

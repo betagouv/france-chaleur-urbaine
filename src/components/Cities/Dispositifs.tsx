@@ -52,7 +52,7 @@ const Dispositifs = ({
                       href={dispositif.link.href}
                       target={dispositif.link.target}
                       rel={
-                        dispositif.link.target == '_blank'
+                        dispositif.link.target === '_blank'
                           ? 'noopener noreferrer'
                           : undefined
                       }

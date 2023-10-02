@@ -41,14 +41,13 @@ Cette obligation s’applique dans une certaine zone autour du réseau, qualifi�
 
     setNetworkText(text);
     if (
-      city == 'paris' ||
-      city == 'grenoble' ||
-      city == 'lyon' ||
-      city == 'bordeaux' ||
-      city == 'metz'
+      city === 'paris' ||
+      city === 'grenoble' ||
+      city === 'lyon' ||
+      city === 'bordeaux' ||
+      city === 'metz'
     ) {
-      let kw = `100`;
-      if (city == 'metz') kw = '30';
+      const kw = city === 'metz' ? '30' : '100';
       setConcernedText1(
         `Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à ${kw}kW`
       );

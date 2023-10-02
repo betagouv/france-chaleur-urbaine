@@ -50,7 +50,9 @@ const City = ({ city }: { city: string }) => {
   useEffect(() => {
     if (cityData && cityData.networksData.identifiant) {
       setIsUniqueNetwork(true);
-      if (!network) getNetworkFromDB(cityData.networksData.identifiant);
+      if (!network) {
+        getNetworkFromDB(cityData.networksData.identifiant);
+      }
     }
   }, [cityData, getNetworkFromDB, network]);
 
@@ -71,7 +73,7 @@ const City = ({ city }: { city: string }) => {
                 {isUniqueNetwork
                   ? 'Votre réseau de chaleur '
                   : 'Vos réseaux de chaleur '}
-                {city == 'strasbourg' ? 'sur ' : 'à '}
+                {city === 'strasbourg' ? 'sur ' : 'à '}
                 <b>{cityData.nameNetwork}</b>
               </Title>
               <MarkdownWrapper value={cityData.description} />
@@ -121,7 +123,7 @@ const City = ({ city }: { city: string }) => {
               padding={8}
               header={`## Découvrez les dispositifs et les aides auxquels vous avez droit sur ${cityData.name}`}
             >
-              {city == 'paris' && (
+              {city === 'paris' && (
                 <Slice padding={8}>
                   <Dispositifs
                     city={city}
@@ -138,7 +140,7 @@ const City = ({ city }: { city: string }) => {
                   />
                 </SimulatorsContainer>
               </Slice>
-              {city != 'paris' && cityData.dispositifs && (
+              {city !== 'paris' && cityData.dispositifs && (
                 <Slice padding={8}>
                   <Dispositifs
                     city={city}
