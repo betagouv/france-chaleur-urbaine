@@ -51,7 +51,6 @@ export const upsertUsersFromApi = async (
       .whereIn('email', emails)
   ).map((result) => result.email);
 
-  warnings.forEach((warning) => console.log(warning));
   if (otherUsers.length > 0) {
     warnings.push(
       `Some emails are already managed by FCU, please contact us: ${otherUsers.join(
@@ -59,6 +58,7 @@ export const upsertUsersFromApi = async (
       )}`
     );
   }
+  warnings.forEach((warning) => console.log(warning));
   const salt = await bcrypt.genSalt(10);
   await Promise.all(
     Object.keys(users)
