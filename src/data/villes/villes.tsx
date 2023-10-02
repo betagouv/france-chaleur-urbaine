@@ -13,6 +13,7 @@ Le réseau de la capitale alimente également en énergie **16 réseaux de chale
     coord: [2.347, 48.859],
     networksData: {
       isClassed: true,
+      hasDevelopmentPerimeter: true,
       identifiant: '7501C',
       heatedPlaces: '425 000',
     },
@@ -45,6 +46,7 @@ Le réseau de la capitale alimente également en énergie **16 réseaux de chale
     coord: [5.7243, 45.182081],
     networksData: {
       isClassed: true,
+      hasDevelopmentPerimeter: true,
       identifiant: '3802C',
       heatedPlaces: '100 000',
     },
@@ -60,6 +62,7 @@ A noter que la Métropole compte **4 autres réseaux** : Givors, Ouest Lyonnais,
     coord: [4.835, 45.758],
     networksData: {
       isClassed: true,
+      hasDevelopmentPerimeter: true,
       identifiant: '6905C',
       heatedPlaces: '45 000',
     },
@@ -109,6 +112,7 @@ Le réseau est né en 1956 : il exploitait alors les installations de production
     coord: [6.194897, 49.108385],
     networksData: {
       isClassed: true,
+      hasDevelopmentPerimeter: true,
       identifiant: '5701C',
       heatedPlaces: '48 000',
     },
@@ -136,6 +140,7 @@ La métropole bordelaise souhaite **doubler le nombre d’habitants raccordés a
     coord: [-0.587877, 44.851895],
     networksData: {
       isClassed: true,
+      hasDevelopmentPerimeter: true,
       gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Mixéner, ENGIE, Dalkia...**)`,
     },
     dispositifsTitle: 'Ma Rénov Bordeaux Métropole',
@@ -180,6 +185,7 @@ A noter que le territoire compte également des réseaux de chaleur privés, com
     coord: [-1.68365, 48.110899],
     networksData: {
       isClassed: true,
+      hasDevelopmentPerimeter: true,
       gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Dalkia, ENGIE, SOGEX**)`,
     },
     dispositifsTitle: 'ÉcoTravo',

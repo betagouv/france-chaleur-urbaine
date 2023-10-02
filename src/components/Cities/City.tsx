@@ -107,8 +107,11 @@ const City = ({ city }: { city: string }) => {
               <ClassedNetworks
                 city={city}
                 nameNetwork={cityData.nameNetwork}
-                allClassed={cityData.networkData?.allClassed}
+                allClassed={cityData.networksData?.allClassed}
                 isUniqueNetwork={isUniqueNetwork}
+                hasDevelopmentPerimeter={
+                  cityData.networksData?.hasDevelopmentPerimeter
+                }
               />
             </Slice>
           )}

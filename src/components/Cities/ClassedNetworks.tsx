@@ -7,30 +7,39 @@ const ClassedNetworks = ({
   nameNetwork,
   allClassed,
   isUniqueNetwork,
+  hasDevelopmentPerimeter,
 }: {
   city: string;
   nameNetwork: string;
   allClassed?: boolean;
   isUniqueNetwork?: boolean;
+  hasDevelopmentPerimeter?: boolean;
 }) => {
   const [networkText, setNetworkText] = useState<string>();
   const [concernedText1, setConcernedText1] = useState<string>();
   const [concernedText2, setConcernedText2] = useState<string>();
 
   useEffect(() => {
+    let text = `
+:::puce-icon{icon="/icons/picto-warning.svg"}
+
+`;
     if (isUniqueNetwork) {
-      setNetworkText(
-        `Le réseau de ${nameNetwork} est « classé », ce qui signifie que **certains bâtiments ont l'obligation de se raccorder**.`
-      );
+      text += `Le réseau de ${nameNetwork} est « classé », `;
     } else if (allClassed) {
-      setNetworkText(
-        `Les réseaux de ${nameNetwork} sont « classés », ce qui signifie que **certains bâtiments ont l'obligation de se raccorder**.`
-      );
+      text += `Les réseaux de ${nameNetwork} sont « classés », `;
     } else {
-      setNetworkText(
-        `Certains réseaux de ${nameNetwork} sont « classés », ce qui signifie que **certains bâtiments ont l'obligation de se raccorder**.`
-      );
+      text += `Certains réseaux de ${nameNetwork} sont « classés », `;
     }
+    text += ` ce qui signifie que **certains bâtiments ont l'obligation de se raccorder**.
+
+Cette obligation s’applique dans une certaine zone autour du réseau, qualifiée de **périmètre de développement prioritaire.**
+
+`;
+    if (hasDevelopmentPerimeter)
+      text += `:button-link[Voir le périmètre de développement prioritaire]{href="/carte" className="fr-btn--sm fr-mt-2w"}`;
+
+    setNetworkText(text);
     if (
       city == 'paris' ||
       city == 'grenoble' ||
@@ -54,22 +63,12 @@ const ClassedNetworks = ({
         `Tout bâtiment renouvelant son installation de chauffage au-dessus d’une certaine puissance,  définie par la collectivité`
       );
     }
-  }, [allClassed, city, nameNetwork, isUniqueNetwork]);
+  }, [allClassed, city, nameNetwork, isUniqueNetwork, hasDevelopmentPerimeter]);
 
   return (
     <>
       <ClassedNetworksColumn className="fr-col-md-6 fr-col-12">
-        <MarkdownWrapper
-          withPadding
-          value={`
-  :::puce-icon{icon="/icons/picto-warning.svg"}
-  ${networkText}
-
-  Cette obligation s’applique dans une certaine zone autour du réseau, qualifiée de **périmètre de développement prioritaire.**
-
-  :button-link[Voir le périmètre de développement prioritaire]{href="/carte" className="fr-btn--sm fr-mt-2w"}
-          `}
-        />
+        <MarkdownWrapper withPadding value={networkText} />
       </ClassedNetworksColumn>
       <ClassedNetworksColumn className="fr-col-md-6 fr-col-12">
         <MarkdownWrapper
