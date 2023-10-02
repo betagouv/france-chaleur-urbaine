@@ -4,6 +4,111 @@ import { USER_ROLE } from 'src/types/enum/UserRole';
 import db from '../db';
 import base from '../db/airtable';
 import { sendInscriptionEmail } from './email';
+import { ApiAccount } from 'src/types/ApiAccount';
+import { ApiNetwork } from '@pages/api/v1/users/[key]';
+
+export const upsertUsersFromApi = async (
+  account: ApiAccount,
+  networks: ApiNetwork[]
+) => {
+  const airtableUser = await base(Airtable.GESTIONNAIRES_API).select().all();
+
+  const warnings: string[] = [];
+  const emails = networks.flatMap((user) => user.contacts);
+  await db('users')
+    .delete()
+    .whereNotIn('email', emails)
+    .andWhere('from_api', account.key);
+
+  const existingUsers = await db('users')
+    .select('email')
+    .where('from_api', account.key);
+
+  await Promise.all(
+    airtableUser.map((airtableUser) =>
+      base(Airtable.GESTIONNAIRES_API).destroy(airtableUser.getId())
+    )
+  );
+  const users: Record<string, string[]> = {};
+  networks.forEach((network) => {
+    if (!account.networks.includes(network.id_sncu)) {
+      warnings.push(
+        `Account ${account.key} cannot add user for network ${network.id_sncu}`
+      );
+    } else {
+      network.contacts.forEach((user) => {
+        const contacts = users[user] || [];
+        contacts.push(network.id_sncu);
+        users[user] = contacts;
+      });
+    }
+  });
+
+  const otherUsers = (
+    await db('users')
+      .select('email')
+      .whereNull('from_api')
+      .whereIn('email', emails)
+  ).map((result) => result.email);
+
+  warnings.forEach((warning) => console.log(warning));
+  if (otherUsers.length > 0) {
+    warnings.push(
+      `Some emails are already managed by FCU, please contact us: ${otherUsers.join(
+        ', '
+      )}`
+    );
+  }
+  const salt = await bcrypt.genSalt(10);
+  await Promise.all(
+    Object.keys(users)
+      .filter((user) => !otherUsers.includes(user))
+      .flatMap((user) => {
+        const gestionnaires = users[user].map(
+          (network) => `${account.name}_${network}`
+        );
+        const promises: Promise<any>[] = [
+          db('users')
+            .insert({
+              email: user,
+              password: bcrypt.hashSync(
+                Math.random().toString(36).slice(2, 10),
+                salt
+              ),
+              gestionnaires,
+              from_api: account.key,
+              receive_new_demands: true,
+              receive_old_demands: true,
+            })
+            .onConflict('email')
+            .merge({ gestionnaires }),
+          base(Airtable.GESTIONNAIRES_API).create(
+            [
+              {
+                fields: {
+                  Email: user,
+                  Réseaux: gestionnaires,
+                  Nom: account.name,
+                },
+              },
+            ],
+            {
+              typecast: true,
+            }
+          ),
+        ];
+
+        if (
+          !existingUsers.some((existingUser) => existingUser.email === user)
+        ) {
+          promises.push(sendInscriptionEmail(user));
+        }
+
+        return promises;
+      })
+  );
+  return warnings;
+};
 
 export const updateUsers = async () => {
   const newEmails: string[] = [];
@@ -15,7 +120,7 @@ export const updateUsers = async () => {
         manager && values.findIndex((x) => x === manager) === index
     );
 
-  const airtableUsers = await base('FCU - Gestionnaires').select().all();
+  const airtableUsers = await base(Airtable.GESTIONNAIRES).select().all();
 
   const users = await db('users')
     .select('email')

@@ -420,9 +420,9 @@ const Network = ({
                   center={[network.lon, network.lat]}
                   initialZoom={13}
                   initialLayerDisplay={{
-                    outline: !isCold,
+                    outline: true,
                     futurOutline: false,
-                    coldOutline: isCold,
+                    coldOutline: true,
                     zoneDP: false,
                     demands: false,
                     raccordements: false,
