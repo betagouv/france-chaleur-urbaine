@@ -55,7 +55,7 @@ export const MapStyle: any = createGlobalStyle<{
     }
 
     .popup-map-layer {
-      z-index: 111;
+      z-index: ${mapControlZindex + 1};
       font-size: 14px;
       max-width: 300px !important;
 
@@ -142,7 +142,7 @@ export const Legend = styled.div<{
   legendCollapsed: boolean;
   withoutLogo?: boolean;
 }>`
-  z-index: ${mapControlZindex + 1};
+  z-index: ${mapControlZindex + 2};
   overflow: auto;
   ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
   ${({ legendCollapsed }) =>
