@@ -6,6 +6,7 @@ import { Densite } from 'src/types/Summary/Densite';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ServiceError } from './errors';
 import { SuggestionItem } from 'src/types/Suggestions';
+import { Network } from 'src/types/Summary/Network';
 
 export class HeatNetworkService {
   httpClient: HttpClient;
@@ -26,6 +27,16 @@ export class HeatNetworkService {
           `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${geoAddress.properties.city}`
         );
       }
+    } catch (e) {
+      throw new ServiceError(e);
+    }
+  }
+
+  async findByIdentifiant(identifiant: string): Promise<Network> {
+    try {
+      return await this.httpClient.get<Network>(
+        `/api/map/network?&identifiant=${identifiant}`
+      );
     } catch (e) {
       throw new ServiceError(e);
     }

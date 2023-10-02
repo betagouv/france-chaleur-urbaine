@@ -5,7 +5,7 @@ import {
   Description,
   Title,
 } from '@components/Ressources/RessourceContent.styles';
-import StickyForm from '@components/Ressources/StickyForm';
+import StickyForm from '@components/StickyForm/StickyForm';
 import Slice from '@components/Slice';
 import { useRef } from 'react';
 

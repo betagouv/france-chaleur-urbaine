@@ -1,26 +1,7 @@
-import React, { useState } from 'react';
-import {
-  Logo,
-  Container,
-  Quote,
-  Author,
-  Icon,
-  VideoIndex,
-  VideoIndexes,
-} from './Interviews.styles';
-
-const videos = [
-  'https://www.youtube.com/embed/zsOgW8sIByc',
-  'https://www.youtube.com/embed/iv0gb71XOj4',
-  'https://www.youtube.com/embed/wtNmhwa5_DA',
-  'https://www.youtube.com/embed/2mO97aF1T4c',
-  'https://www.youtube.com/embed/wieL5MpMtnE',
-  'https://www.youtube.com/embed/eDnhC9l5pWI',
-];
+import { Logo, Container, Quote, Author, Icon } from './Interviews.styles';
+import InterviewsVideos from './InterviewsVideos';
 
 const Interviews = () => {
-  const [videoIndex, setVideoIndex] = useState(0);
-
   return (
     <>
       <Logo>
@@ -54,22 +35,7 @@ const Interviews = () => {
           </Author>
         </div>
         <div className="fr-col-12 fr-col-md-6">
-          <iframe
-            width="100%"
-            src={videos[videoIndex]}
-            title="YouTube video player"
-            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          ></iframe>
-          <VideoIndexes>
-            {Array.from({ length: 6 }, (value, index) => (
-              <VideoIndex
-                key={index}
-                active={index === videoIndex}
-                onClick={() => setVideoIndex(index)}
-              />
-            ))}
-          </VideoIndexes>
+          <InterviewsVideos />
         </div>
       </Container>
     </>

@@ -35,7 +35,7 @@ const Graph = ({
             height={'400px'}
             chartType="LineChart"
             chartLanguage="FR-fr"
-            loader={<div>Chargement du graph...</div>}
+            loader={<div>Chargement du graphe...</div>}
             data={formatedData}
             options={{
               title: withSum ? `${title} - ${total} au total` : title,

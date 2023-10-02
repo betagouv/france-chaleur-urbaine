@@ -2,12 +2,20 @@ import Simulator from '@components/Ressources/Contents/Simulator';
 import WrappedText from '@components/WrappedText/WrappedText';
 import Link from 'next/link';
 import { Container } from './Explanation.styles';
+import { Title } from '@components/Ressources/Contents/Simulator.styles';
 
-const Simulators = () => {
+const Simulators = ({
+  textTitle,
+  simulatorTitle,
+}: {
+  textTitle?: string;
+  simulatorTitle?: string;
+}) => {
   return (
     <Container>
       <div className="fr-col-12 fr-col-lg-6">
         <WrappedText
+          title={textTitle}
           body={`
 ::white-arrow-item[Le coup de pouce **« Chauffage des bâtiments résidentiels collectifs et tertiaires »** permet d’obtenir des aides financières conséquentes pour se raccorder.]
 ::white-arrow-item[*Le coût du raccordement peut ainsi être réduit à quelques centaines d’euros par logement* (en fonction de la situation du bâtiment et de ses besoins en chaleur).]
@@ -20,7 +28,10 @@ const Simulators = () => {
           </Link>
         </div>
       </div>
-      <Simulator cartridge></Simulator>
+      <div>
+        {simulatorTitle && <Title>{simulatorTitle}</Title>}
+        <Simulator cartridge></Simulator>
+      </div>
     </Container>
   );
 };
