@@ -20,6 +20,10 @@ export const upsertUsersFromApi = async (
     .whereNotIn('email', emails)
     .andWhere('from_api', account.key);
 
+  const existingUsers = await db('users')
+    .select('email')
+    .where('from_api', account.key);
+
   await Promise.all(
     airtableUser.map((airtableUser) =>
       base(Airtable.GESTIONNAIRES_API).destroy(airtableUser.getId())
@@ -63,7 +67,7 @@ export const upsertUsersFromApi = async (
         const gestionnaires = users[user].map(
           (network) => `${account.name}_${network}`
         );
-        return [
+        const promises: Promise<any>[] = [
           db('users')
             .insert({
               email: user,
@@ -93,6 +97,14 @@ export const upsertUsersFromApi = async (
             }
           ),
         ];
+
+        if (
+          !existingUsers.some((existingUser) => existingUser.email === user)
+        ) {
+          promises.push(sendInscriptionEmail(user));
+        }
+
+        return promises;
       })
   );
   return warnings;
