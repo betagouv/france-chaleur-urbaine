@@ -7,6 +7,7 @@ import {
   Container,
   IFrame,
 } from './IFrameParametrization.styles';
+import IFrameLink from '../Form/IFrameLink';
 
 const IFrameParametrization = () => {
   const [coords, setCoords] = useState<{ lon: number; lat: number } | null>(
@@ -103,13 +104,15 @@ const IFrameParametrization = () => {
       </AddressContainer>
       <br />
       <IFrame>
-        {`
+        <IFrameLink
+          link={`
 <iframe
 width="100%"
 title="France chaleur urbaine - Carte"
 src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}"
 />
 `}
+        />
       </IFrame>
       <br />
       Pensez à ajuster les valeurs des variables "width" et "height" pour

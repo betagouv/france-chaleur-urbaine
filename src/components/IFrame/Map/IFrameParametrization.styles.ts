@@ -20,7 +20,7 @@ export const AddressContainer = styled.div`
 `;
 
 export const IFrame = styled.div`
-  max-width: 475px;
+  margin: auto;
   text-wrap: wrap;
   overflow-wrap: break-word;
 `;
