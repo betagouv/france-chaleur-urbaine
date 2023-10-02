@@ -16,7 +16,9 @@ const RDCLegend = () => {
         <LabelLegendMarker className="legend-heat-network-marker" />
         <div>
           <LabelLegendHead>Réseaux de chaleur non classés</LabelLegendHead>
-          <LabelLegend>(tracé ou point si tracé non disponible)</LabelLegend>
+          <LabelLegend>
+            (tracé ou point au centre de la commune si tracé non disponible)
+          </LabelLegend>
         </div>
       </LabelLegendInputLabel>
     </>
