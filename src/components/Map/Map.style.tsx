@@ -94,7 +94,7 @@ export const MapStyle: any = createGlobalStyle<{
           font-size: 1.5em;
           line-height: 0;
           font-weight: bold;
-          color: #fff;
+          color: #000;
           display: flex;
           align-items: center;
           justify-content: center;

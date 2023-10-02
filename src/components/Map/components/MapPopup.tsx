@@ -32,7 +32,7 @@ const MapPopup = ({
           longitude={longitude}
           latitude={latitude}
           offset={[0, -10] as Point}
-          closeButton={false}
+          closeButton={true}
           className="popup-map-layer"
           onClose={() => setShow(false)}
         >
