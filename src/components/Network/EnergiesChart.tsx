@@ -58,7 +58,7 @@ const EnergiesChart = ({
       height={height || '400px'}
       chartType="PieChart"
       chartLanguage="FR-fr"
-      loader={<div>Chargement du graph...</div>}
+      loader={<div>Chargement du graphe...</div>}
       data={graphOptions.map((mix, index) =>
         index === 0 ? mix : [mix[0], mix[1]]
       )}
