@@ -101,6 +101,15 @@ const Networks = ({
             energyGasValues: [50, Number.MAX_VALUE],
             energyFuelValues: [50, Number.MAX_VALUE],
           }}
+          filter={
+            network
+              ? [
+                  '==',
+                  ['get', 'Identifiant reseau'],
+                  network?.['Identifiant reseau'],
+                ]
+              : ['literal', true]
+          }
         />
       </NetworkColumn>
     </NetworkContainer>
