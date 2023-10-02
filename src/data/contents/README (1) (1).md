@@ -1,9 +1,8 @@
-# La géothermie profonde
+# Les chiffres de l'enquête IFOP 1
 
-🤓 Toujours dans notre démarche de faciliter la compréhension par le grand public des réseaux de chaleur, nous entamons une série explicative sur les énergies renouvelables et de récupération qui alimentent les réseaux.\
-\
-1/ La géothermie profonde, qui ne représente aujourd'hui 5.5 % du mix énergétique des réseaux de chaleur, mais dont le potentiel de développement est important : pour atteindre l'objectif fixé par la programmation pluriannuelle de l'énergie à l'horizon 2028, il faudra plus que doubler la production actuelle ! Un objectif auquel doit contribuer le plan d'action pour la géothermie publié début février par le Gouvernement.\
-\
-🔎 La géothermie, de quoi parle-t-on ? Une fiche pédagogique pour rendre accessibles à tous les informations de base ci-dessous, à partager largement !
+💡L'[enquête IFOP](https://france-chaleur-urbaine.beta.gouv.fr/documentation/enquete\_IFOP.pdf) récemment menée pour France Chaleur Urbaine nous éclaire sur l'opinion des copropriétaires à propos des réseaux de chaleur. Ces informations sont précieuses pour orienter notre stratégie mais aussi pour comprendre les marges de progression à un niveau plus large. Il nous semble donc important de communiquer sur les chiffres les plus manquants.
 
-<figure><img src=".gitbook/assets/geothermie.jpg" alt=""><figcaption></figcaption></figure>
+\
+😃 Commençons par les bonnes nouvelles !
+
+![](.gitbook/assets/ChiffreEnquete01.jpg)

@@ -1,6 +1,7 @@
 import { Article } from 'src/types/Article';
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
+import readme_1_1_1_1 from './README (1) (1) (1) (1).md';
 import readme_1_1_1 from './README (1) (1) (1).md';
 import readme_1_1 from './README (1) (1).md';
 import readme_1_2_1 from './README (1) (2) (1).md';
@@ -45,9 +46,16 @@ const importFile = (file: string) => {
 export const articles: Article[] = [
   {
     image: '/contents/vignetteOpen.jpg',
-    title: 'Mise en open data des tracés des réseaux de chaleur et de froid',
+    title: 'Un guide pour les collectivités',
     slug: 'mise-en-open-data-des-tracés-des-réseaux-de-chaleur-et-de-froid',
     content: importFile(readme),
+    publishedDate: new Date('2023-10-02'),
+  },
+  {
+    image: '/contents/vignetteOpen.jpg',
+    title: 'Mise en open data des tracés des réseaux de chaleur et de froid',
+    slug: 'mise-en-open-data-des-tracés-des-réseaux-de-chaleur-et-de-froid',
+    content: importFile(readme_1),
     publishedDate: new Date('2023-09-01'),
   },
   {
@@ -103,7 +111,7 @@ export const articles: Article[] = [
     image: '/contents/bonnenouvelle.jpg',
     title: "Les chiffres de l'enquête IFOP 1",
     slug: 'les-chiffres-de-lenquete-ifop-1',
-    content: importFile(readme_1),
+    content: importFile(readme_1_1),
     publishedDate: new Date('2023-07-04'),
   },
   {
@@ -188,7 +196,7 @@ export const articles: Article[] = [
     image: '/contents/18.jpg',
     title: 'La géothermie profonde',
     slug: 'la-géothermie-profonde',
-    content: importFile(readme_1_1),
+    content: importFile(readme_1_1_1),
     publishedDate: new Date('2023-04-25'),
   },
   {
@@ -230,7 +238,7 @@ export const articles: Article[] = [
     image: '/contents/avion.jpg',
     title: "6,63 millions d'allers-retours Paris New-York évités",
     slug: '6-63-millions-d-allers-retours-paris-new-york-évités',
-    content: importFile(readme_1_1_1),
+    content: importFile(readme_1_1_1_1),
     publishedDate: new Date('2023-04-11'),
   },
   {
