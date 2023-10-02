@@ -117,6 +117,7 @@ module.exports = withBundleAnalyzer({
       { source: '/viaseva', headers: securityHeadersIFramable },
       { source: '/engie', headers: securityHeadersIFramable },
       { source: '/dalkia', headers: securityHeadersIFramable },
+      { source: '/charleville-mezieres', headers: securityHeadersIFramable },
       { source: '/form', headers: securityHeadersIFramable },
       { source: '/map', headers: securityHeadersIFramable },
       { source: '/page-reseaux/:network', headers: securityHeadersIFramable },
