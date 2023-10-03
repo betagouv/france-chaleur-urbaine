@@ -99,23 +99,27 @@ const oldDemands = async (users: User[]) => {
 };
 
 export const weeklyOldManagerMail = async () => {
-  const users: User[] = await db('users').select(
-    'gestionnaires',
-    'email',
-    'receive_new_demands',
-    'receive_old_demands'
-  );
+  const users: User[] = await db('users')
+    .where('active', true)
+    .select(
+      'gestionnaires',
+      'email',
+      'receive_new_demands',
+      'receive_old_demands'
+    );
 
   await oldDemands(users);
 };
 
 export const dailyNewManagerMail = async () => {
-  const users: User[] = await db('users').select(
-    'gestionnaires',
-    'email',
-    'receive_new_demands',
-    'receive_old_demands'
-  );
+  const users: User[] = await db('users')
+    .where('active', true)
+    .select(
+      'gestionnaires',
+      'email',
+      'receive_new_demands',
+      'receive_old_demands'
+    );
 
   await newDemands(users);
 };

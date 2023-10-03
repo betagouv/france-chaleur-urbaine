@@ -6,7 +6,8 @@ import db from 'src/db';
 const login = async (email: string, password: string) => {
   const user = await db('users')
     .select()
-    .where({ email: email.toLowerCase().trim() })
+    .where('email', email.toLowerCase().trim())
+    .andWhere('active', true)
     .first();
 
   if (!user) {
