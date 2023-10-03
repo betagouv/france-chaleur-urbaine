@@ -22,6 +22,7 @@ const apiUsers = async (req: NextApiRequest, res: NextApiResponse) => {
       return;
     }
 
+    console.log(req.body);
     const input = ApiNetworksValidation.safeParse(req.body);
     if (input.success) {
       const warnings = await upsertUsersFromApi(account, input.data);
