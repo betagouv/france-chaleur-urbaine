@@ -64,7 +64,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
               closestNetwork(values.Latitude, values.Longitude),
             ]);
 
-            const gestionnaires = getGestionnaires(
+            const gestionnaires = await getGestionnaires(
               values,
               network ? network['Identifiant reseau'] : ''
             );

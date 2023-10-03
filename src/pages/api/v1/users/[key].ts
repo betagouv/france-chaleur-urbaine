@@ -6,7 +6,7 @@ import { upsertUsersFromApi } from 'src/services/users';
 
 const ApiNetworkValidation = z.object({
   id_sncu: z.string(),
-  contacts: z.array(z.string()),
+  contacts: z.array(z.string().trim().toLowerCase().email()),
 });
 const ApiNetworksValidation = z.array(ApiNetworkValidation);
 export type ApiNetwork = z.infer<typeof ApiNetworkValidation>;
@@ -22,7 +22,6 @@ const apiUsers = async (req: NextApiRequest, res: NextApiResponse) => {
       return;
     }
 
-    console.log(req.body);
     const input = ApiNetworksValidation.safeParse(req.body);
     if (input.success) {
       const warnings = await upsertUsersFromApi(account, input.data);

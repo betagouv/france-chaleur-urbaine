@@ -8,6 +8,7 @@ import {
   gestionnairesPerCity,
   gestionnairesPerNetwork,
 } from './gestionnaires.config';
+import db from 'src/db';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
   const records = await base(Airtable.UTILISATEURS)
@@ -85,7 +86,10 @@ export const getAllStaledDemandsSince = async (
   );
 };
 
-export const getGestionnaires = (demand: Demand, network: string): string[] => {
+export const getGestionnaires = async (
+  demand: Demand,
+  network: string
+): Promise<string[]> => {
   let city = demand.Ville;
   if (!city) {
     const address = demand.Adresse.split(' ');
@@ -102,6 +106,13 @@ export const getGestionnaires = (demand: Demand, network: string): string[] => {
   if (configPerNetwork) {
     gestionnaires = gestionnaires.concat(configPerNetwork);
   }
+
+  const apiAccounts = await db('api_accounts').select('name', 'networks');
+  apiAccounts.forEach((apiAccount) => {
+    if (apiAccount.networks.includes(network)) {
+      gestionnaires.push(`${apiAccount.name}_${network}`);
+    }
+  });
 
   return [...new Set(gestionnaires)];
 };

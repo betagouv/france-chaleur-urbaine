@@ -19,9 +19,12 @@ const reset = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).send('Error');
   }
 
-  const email = (req.body.email as string).toLowerCase();
+  const email = (req.body.email as string).toLowerCase().trim();
 
-  const user = await db('users').where('email', email).first();
+  const user = await db('users')
+    .where('email', email)
+    .andWhere('active', true)
+    .first();
   if (!user) {
     await base(Airtable.CONNEXION).create([
       {

@@ -14,6 +14,7 @@ export default async function users(req: NextApiRequest, res: NextApiResponse) {
       const users = await db('users')
         .select(['email', 'last_connection'])
         .whereNotNull('last_connection')
+        .andWhere('active', true)
         .orderBy('last_connection', 'desc');
       return res.status(200).json(users);
     }
