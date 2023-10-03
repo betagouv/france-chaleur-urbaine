@@ -237,11 +237,11 @@ export const updateUsers = async () => {
   );
 
   if (toDelete.length > 0) {
-    console.log('Delete emails:', toDelete);
-    await db('users')
+    const result = await db('users')
       .update('active', true)
       .whereIn('email', toDelete)
       .whereNull('from_api');
+    console.log(`${result} email(s) deleted`);
   } else {
     console.log('Nothing to delete');
   }
