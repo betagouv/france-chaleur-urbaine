@@ -1,6 +1,7 @@
 import Slice from '@components/Slice';
 import WrappedText from '@components/WrappedText';
 import IFrameParametrization from '../Map/IFrameParametrization';
+import IFrameLink from './IFrameLink';
 
 const IFrame = ({ theme }: { theme?: string }) => {
   return (
@@ -28,13 +29,15 @@ const IFrame = ({ theme }: { theme?: string }) => {
             ci-dessous :
             <br />
             <br />
-            {`
+            <IFrameLink
+              link={`
 <iframe
 width="100%"
 title="France chaleur urbaine - Éligibilité"
 src="https://france-chaleur-urbaine.beta.gouv.fr/form"
 />
 `}
+            />
             <br />
             <br />
             Pensez à ajuster les valeurs des variables "width" et "height" pour
