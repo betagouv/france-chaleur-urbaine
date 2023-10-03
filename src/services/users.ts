@@ -200,7 +200,7 @@ export const updateUsers = async () => {
 
   if (toDelete.length > 0) {
     console.log('Delete emails:', toDelete);
-    await db('users').delete().whereIn('email', toDelete);
+    await db('users').delete().whereIn('email', toDelete).whereNull('from_api');
   } else {
     console.log('Nothing to delete');
   }
