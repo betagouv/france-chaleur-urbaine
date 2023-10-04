@@ -860,20 +860,18 @@ const Map = ({
     const newMarkersList: MapMarkerInfos[] = markersList;
     const newSoughtAddresses = soughtAddresses.map(
       (sAddress: any | never[]) => {
-        if (mapRef.current) {
-          const id = sAddress.id;
-          const markerIndex = newMarkersList.findIndex(
-            (marker) => marker.id === id
-          );
-          if (markerIndex == -1) {
-            const newMarker = {
-              id: sAddress.id,
-              latitude: sAddress.coordinates[1],
-              longitude: sAddress.coordinates[0],
-            };
-            newMarkersList.push(newMarker);
-            shouldUpdate = true;
-          }
+        const id = sAddress.id;
+        const markerIndex = newMarkersList.findIndex(
+          (marker) => marker.id === id
+        );
+        if (markerIndex === -1) {
+          const newMarker = {
+            id: sAddress.id,
+            latitude: sAddress.coordinates[1],
+            longitude: sAddress.coordinates[0],
+          };
+          newMarkersList.push(newMarker);
+          shouldUpdate = true;
         }
         return sAddress;
       }
