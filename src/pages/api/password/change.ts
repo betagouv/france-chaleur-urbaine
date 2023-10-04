@@ -37,7 +37,10 @@ const changePasswordRequest = async (
         );
     }
 
-    const user = await db('users').where('email', decodedToken.email).first();
+    const user = await db('users')
+      .where('email', decodedToken.email)
+      .andWhere('active', true)
+      .first();
     if (!user) {
       return res.status(400).send('Email incorrect');
     }

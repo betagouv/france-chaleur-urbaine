@@ -6,7 +6,7 @@ import { upsertUsersFromApi } from 'src/services/users';
 
 const ApiNetworkValidation = z.object({
   id_sncu: z.string(),
-  contacts: z.array(z.string()),
+  contacts: z.array(z.string().trim().toLowerCase().email()),
 });
 const ApiNetworksValidation = z.array(ApiNetworkValidation);
 export type ApiNetwork = z.infer<typeof ApiNetworkValidation>;

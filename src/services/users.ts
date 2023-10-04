@@ -11,12 +11,12 @@ export const upsertUsersFromApi = async (
   account: ApiAccount,
   networks: ApiNetwork[]
 ) => {
-  const airtableUser = await base(Airtable.GESTIONNAIRES_API).select().all();
+  const airtableUsers = await base(Airtable.GESTIONNAIRES_API).select().all();
 
   const warnings: string[] = [];
   const emails = networks.flatMap((user) => user.contacts);
   await db('users')
-    .delete()
+    .update('active', false)
     .whereNotIn('email', emails)
     .andWhere('from_api', account.key);
 
@@ -25,9 +25,25 @@ export const upsertUsersFromApi = async (
     .where('from_api', account.key);
 
   await Promise.all(
-    airtableUser.map((airtableUser) =>
-      base(Airtable.GESTIONNAIRES_API).destroy(airtableUser.getId())
-    )
+    airtableUsers
+      .filter((airtableUser) => !airtableUser.get('Tags FCU'))
+      .map((airtableUser) =>
+        base(Airtable.GESTIONNAIRES_API).destroy(airtableUser.getId())
+      )
+  );
+
+  await Promise.all(
+    airtableUsers
+      .filter(
+        (airtableUser) =>
+          airtableUser.get('Tags FCU') &&
+          !emails.includes(airtableUser.get('Email') as string)
+      )
+      .map((airtableUser) =>
+        base(Airtable.GESTIONNAIRES_API).update(airtableUser.id, {
+          Réseaux: [],
+        })
+      )
   );
   const users: Record<string, string[]> = {};
   networks.forEach((network) => {
@@ -51,7 +67,6 @@ export const upsertUsersFromApi = async (
       .whereIn('email', emails)
   ).map((result) => result.email);
 
-  warnings.forEach((warning) => console.log(warning));
   if (otherUsers.length > 0) {
     warnings.push(
       `Some emails are already managed by FCU, please contact us: ${otherUsers.join(
@@ -59,14 +74,21 @@ export const upsertUsersFromApi = async (
       )}`
     );
   }
+  warnings.forEach((warning) => console.log(warning));
   const salt = await bcrypt.genSalt(10);
   await Promise.all(
     Object.keys(users)
-      .filter((user) => !otherUsers.includes(user))
+      .filter((user) => user && !otherUsers.includes(user))
       .flatMap((user) => {
         const gestionnaires = users[user].map(
           (network) => `${account.name}_${network}`
         );
+        const airtableUser = airtableUsers.find(
+          (airtableUser) => airtableUser.get('Email') === user
+        );
+        const fcuTags = airtableUser
+          ? (airtableUser.get('Tags FCU') as string[])
+          : [];
         const promises: Promise<any>[] = [
           db('users')
             .insert({
@@ -75,27 +97,42 @@ export const upsertUsersFromApi = async (
                 Math.random().toString(36).slice(2, 10),
                 salt
               ),
-              gestionnaires,
+              gestionnaires:
+                airtableUser && fcuTags && fcuTags.length > 0
+                  ? gestionnaires.concat(fcuTags)
+                  : gestionnaires,
               from_api: account.key,
               receive_new_demands: true,
               receive_old_demands: true,
             })
             .onConflict('email')
-            .merge({ gestionnaires }),
-          base(Airtable.GESTIONNAIRES_API).create(
-            [
-              {
-                fields: {
+            .merge({ gestionnaires, active: true }),
+          airtableUser && fcuTags && fcuTags.length > 0
+            ? base(Airtable.GESTIONNAIRES_API).update(
+                airtableUser.id,
+                {
                   Email: user,
                   Réseaux: gestionnaires,
                   Nom: account.name,
                 },
-              },
-            ],
-            {
-              typecast: true,
-            }
-          ),
+                {
+                  typecast: true,
+                }
+              )
+            : base(Airtable.GESTIONNAIRES_API).create(
+                [
+                  {
+                    fields: {
+                      Email: user,
+                      Réseaux: gestionnaires,
+                      Nom: account.name,
+                    },
+                  },
+                ],
+                {
+                  typecast: true,
+                }
+              ),
         ];
 
         if (
@@ -167,6 +204,7 @@ export const updateUsers = async () => {
           receive_new_demands: newDemands,
           receive_old_demands: oldDemands,
           gestionnaires,
+          active: true,
         });
       }
     }
@@ -199,8 +237,11 @@ export const updateUsers = async () => {
   );
 
   if (toDelete.length > 0) {
-    console.log('Delete emails:', toDelete);
-    await db('users').delete().whereIn('email', toDelete);
+    const result = await db('users')
+      .update('active', true)
+      .whereIn('email', toDelete)
+      .whereNull('from_api');
+    console.log(`${result} email(s) deleted`);
   } else {
     console.log('Nothing to delete');
   }
