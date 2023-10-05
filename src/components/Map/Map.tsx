@@ -174,6 +174,7 @@ const Map = ({
   filter,
   pinsList,
   initialZoom,
+  geolocDisabled,
 }: {
   withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
@@ -191,6 +192,7 @@ const Map = ({
   filter?: any[];
   pinsList?: MapMarkerInfos[];
   initialZoom?: number;
+  geolocDisabled?: boolean;
 }) => {
   const router = useRouter();
 
@@ -826,7 +828,7 @@ const Map = ({
       }
       jumpTo({ coordinates: center });
     }
-  }, [center, withCenterPin]);
+  }, [center, jumpTo, withCenterPin]);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -834,7 +836,7 @@ const Map = ({
     }
 
     const { coord, id } = router.query;
-    if (!coord && !center && !id && navigator.geolocation) {
+    if (!geolocDisabled && !coord && !center && !id && navigator.geolocation) {
       if (navigator.permissions) {
         navigator.permissions
           .query({ name: 'geolocation' })
@@ -853,7 +855,7 @@ const Map = ({
         });
       }
     }
-  }, [jumpTo, center, router]);
+  }, [jumpTo, center, router, geolocDisabled]);
 
   useEffect(() => {
     let shouldUpdate = false;
