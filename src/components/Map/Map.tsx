@@ -567,7 +567,8 @@ const Map = ({
 
     if (
       (e.sourceId === 'openmaptiles' || e.sourceId === 'raster-tiles') &&
-      e.isSourceLoaded
+      e.isSourceLoaded &&
+      e.tile
     ) {
       const network = router.query.network as string;
 
