@@ -19,6 +19,7 @@ import readme_4_1 from './README (4) (1).md';
 import readme_5 from './README (5).md';
 import readme_6 from './README (6).md';
 import readme_7 from './README (7).md';
+import readme_8 from './README (8).md';
 import readme from './README.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
@@ -45,10 +46,17 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
-    image: '/contents/vignetteOpen.jpg',
-    title: 'Un guide pour les collectivités',
-    slug: 'mise-en-open-data-des-tracés-des-réseaux-de-chaleur-et-de-froid',
+    image: '/contents/solaire.jpg',
+    title: 'Le solaire thermique',
+    slug: 'le-solaire-thermique',
     content: importFile(readme),
+    publishedDate: new Date('2023-10-02'),
+  },
+  {
+    image: '/contents/guidecolt.jpg',
+    title: 'Un guide pour les collectivités',
+    slug: 'un-guide-pour-les-collectivites',
+    content: importFile(readme_8),
     publishedDate: new Date('2023-10-02'),
   },
   {

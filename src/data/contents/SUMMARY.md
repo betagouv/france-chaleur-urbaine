@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Un guide pour les collectivités](README.md)
+* [Le solaire thermique](README.md)
+* [Un guide pour les collectivités](<README (8).md>)
 * [Mise en open data des tracés des réseaux de chaleur et de froid](<README (1).md>)
 * [Des informations techniques et tarifaires par réseau](<README (7).md>)
 * [Définir des zones d'accélération des énergies renouvelables](<README (6).md>)
