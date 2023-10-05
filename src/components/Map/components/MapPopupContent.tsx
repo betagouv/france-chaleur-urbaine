@@ -213,7 +213,11 @@ const MapPopupContent = ({
               : 'Non connu'}
             <br />
             {network['Identifiant reseau'] && (
-              <Link href={'/reseaux/' + network['Identifiant reseau']}>
+              <Link
+                href={'/reseaux/' + network['Identifiant reseau']}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
                 Voir plus d'informations
               </Link>
             )}
@@ -281,9 +285,13 @@ export const ViasevaPopupContent = ({
           {network.nb_pdl ? network.nb_pdl : 'Non connu'}
           <br />
           {network['Identifiant reseau'] && (
-            <a href={'/reseaux/' + network['Identifiant reseau']}>
+            <Link
+              href={'/reseaux/' + network['Identifiant reseau']}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
               Voir plus d'informations
-            </a>
+            </Link>
           )}
         </section>
       ) : (
