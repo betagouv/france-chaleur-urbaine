@@ -57,7 +57,7 @@ export const articles: Article[] = [
     title: 'Un guide pour les collectivités',
     slug: 'un-guide-pour-les-collectivites',
     content: importFile(readme_8),
-    publishedDate: new Date('2023-10-02'),
+    publishedDate: new Date('2023-09-26'),
   },
   {
     image: '/contents/vignetteOpen.jpg',
