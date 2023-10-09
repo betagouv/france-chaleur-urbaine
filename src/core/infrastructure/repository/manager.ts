@@ -111,6 +111,7 @@ export const getGestionnaires = async (
   apiAccounts.forEach((apiAccount) => {
     if (apiAccount.networks.includes(network)) {
       gestionnaires.push(`${apiAccount.name}_${network}`);
+      gestionnaires.push(apiAccount.name);
     }
   });
 
