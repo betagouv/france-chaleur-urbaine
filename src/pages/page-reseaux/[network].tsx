@@ -30,7 +30,9 @@ const PageReseau = ({ network }: { network: Network }) => {
     displayBlocks = blocs;
   }
 
-  return <Network network={network} displayBlocks={displayBlocks} />;
+  return (
+    <Network network={network} displayBlocks={displayBlocks} externalLinks />
+  );
 };
 
 export async function getStaticPaths() {
