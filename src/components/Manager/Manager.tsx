@@ -469,6 +469,7 @@ const Manager = () => {
                     energyFuelValues: [50, Number.MAX_VALUE],
                   }}
                   pinsList={mapPins}
+                  geolocDisabled
                 />
               )}
             </>

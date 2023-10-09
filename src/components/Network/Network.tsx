@@ -43,9 +43,11 @@ const hasSecondColumn = (isCold: boolean, displayBlocks?: string[]) => {
 const Network = ({
   network,
   displayBlocks,
+  externalLinks,
 }: {
   network: Network;
   displayBlocks?: string[];
+  externalLinks?: boolean;
 }) => {
   const isCold = network['Identifiant reseau'].includes('F');
 
@@ -58,7 +60,7 @@ const Network = ({
           </Title>
           {network['reseaux classes'] && (
             <div className="fr-mt-1w">
-              <ClassedNetwork />
+              <ClassedNetwork externalLinks={externalLinks} />
             </div>
           )}
           {isCold && (
