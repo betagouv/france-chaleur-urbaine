@@ -58,17 +58,31 @@ const EnergiesChart = ({
 }) => {
   const graphOptions = useMemo(() => getGraphOptions(network), [network]);
   const [legendOptions, setLegendOptions] = useState<GraphLegend>({});
+  const [chartAreaWidth, setChartAreaWidth] = useState<string>('100%');
 
-  useEffect(() => {
-    if (window.innerWidth >= 992) {
+  const updateChartOptions = () => {
+    console.log(window.innerWidth);
+    if (window.innerWidth >= 1100) {
       setLegendOptions({
         position: 'labeled',
         alignment: 'center',
         labeledValueText: 'percent',
       });
+      setChartAreaWidth('100%');
     } else {
-      setLegendOptions({});
+      setLegendOptions({
+        alignment: 'center',
+      });
+      setChartAreaWidth('90%');
     }
+  };
+
+  useEffect(() => {
+    updateChartOptions();
+    window.addEventListener('resize', updateChartOptions);
+    return () => {
+      window.removeEventListener('resize', updateChartOptions);
+    };
   }, []);
 
   return (
@@ -83,7 +97,7 @@ const EnergiesChart = ({
       )}
       options={{
         colors: graphOptions.slice(1).map((option) => option[2] as string),
-        chartArea: { width: '100%', height: '90%' },
+        chartArea: { width: chartAreaWidth, height: '90%' },
         pieHole: 0.6,
         legend: legendOptions,
         pieSliceText: 'none',
