@@ -1,6 +1,7 @@
 import { Article } from 'src/types/Article';
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
+import readme_1_1_1_1 from './README (1) (1) (1) (1).md';
 import readme_1_1_1 from './README (1) (1) (1).md';
 import readme_1_1 from './README (1) (1).md';
 import readme_1_2_1 from './README (1) (2) (1).md';
@@ -18,6 +19,7 @@ import readme_4_1 from './README (4) (1).md';
 import readme_5 from './README (5).md';
 import readme_6 from './README (6).md';
 import readme_7 from './README (7).md';
+import readme_8 from './README (8).md';
 import readme from './README.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
@@ -44,10 +46,24 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/solaire.jpg',
+    title: 'Le solaire thermique',
+    slug: 'le-solaire-thermique',
+    content: importFile(readme),
+    publishedDate: new Date('2023-10-02'),
+  },
+  {
+    image: '/contents/guidecolt.jpg',
+    title: 'Un guide pour les collectivités',
+    slug: 'un-guide-pour-les-collectivites',
+    content: importFile(readme_8),
+    publishedDate: new Date('2023-09-26'),
+  },
+  {
     image: '/contents/vignetteOpen.jpg',
     title: 'Mise en open data des tracés des réseaux de chaleur et de froid',
     slug: 'mise-en-open-data-des-tracés-des-réseaux-de-chaleur-et-de-froid',
-    content: importFile(readme),
+    content: importFile(readme_1),
     publishedDate: new Date('2023-09-01'),
   },
   {
@@ -103,7 +119,7 @@ export const articles: Article[] = [
     image: '/contents/bonnenouvelle.jpg',
     title: "Les chiffres de l'enquête IFOP 1",
     slug: 'les-chiffres-de-lenquete-ifop-1',
-    content: importFile(readme_1),
+    content: importFile(readme_1_1),
     publishedDate: new Date('2023-07-04'),
   },
   {
@@ -188,7 +204,7 @@ export const articles: Article[] = [
     image: '/contents/18.jpg',
     title: 'La géothermie profonde',
     slug: 'la-géothermie-profonde',
-    content: importFile(readme_1_1),
+    content: importFile(readme_1_1_1),
     publishedDate: new Date('2023-04-25'),
   },
   {
@@ -230,7 +246,7 @@ export const articles: Article[] = [
     image: '/contents/avion.jpg',
     title: "6,63 millions d'allers-retours Paris New-York évités",
     slug: '6-63-millions-d-allers-retours-paris-new-york-évités',
-    content: importFile(readme_1_1_1),
+    content: importFile(readme_1_1_1_1),
     publishedDate: new Date('2023-04-11'),
   },
   {

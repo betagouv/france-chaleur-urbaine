@@ -17,7 +17,7 @@ const RDCLegend = () => {
         <div>
           <LabelLegendHead>Réseaux de chaleur non classés</LabelLegendHead>
           <LabelLegend>
-            (tracé ou point au centre de la commune si tracé non disponible)
+            (tracé ou cercle au centre de la commune si tracé non disponible)
           </LabelLegend>
         </div>
       </LabelLegendInputLabel>

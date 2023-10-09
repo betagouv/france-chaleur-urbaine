@@ -41,10 +41,6 @@ export const MapStyle: any = createGlobalStyle<{
         legendCollapsed ? '100%' : 'calc(100% - 333px) !important'};
       height: ${({ withProMode }) =>
         withProMode ? 'calc(100% - 41px) !important' : '100%'};
-      ${mapMediumMedia} {
-        left: 0;
-        width: 100%;
-      }
 
       ${({ drawing }) =>
         drawing &&
@@ -195,13 +191,39 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
 export const outlineCenterLayerStyle = {
   type: 'circle',
   paint: {
-    'circle-color': [
+    'circle-stroke-color': [
       'case',
       ['boolean', ['get', 'reseaux classes']],
       themeDefHeatNetwork.classed.color,
       themeDefHeatNetwork.outline.color,
     ],
-    'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 1, 15, 7],
+    'circle-stroke-width': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      5,
+      2,
+      8,
+      2,
+      9,
+      3,
+      15,
+      4,
+    ],
+    'circle-color': '#fff',
+    'circle-radius': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      5,
+      0,
+      8,
+      0,
+      9,
+      4,
+      15,
+      10,
+    ],
   },
 };
 
