@@ -1106,7 +1106,9 @@ const Map = ({
             onSourceData={onSourceDataMap}
             ref={mapRef}
           >
-            <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />
+            {!geolocDisabled && (
+              <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />
+            )}
             <NavigationControl
               showZoom={true}
               visualizePitch={true}
