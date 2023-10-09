@@ -41,10 +41,6 @@ export const MapStyle: any = createGlobalStyle<{
         legendCollapsed ? '100%' : 'calc(100% - 333px) !important'};
       height: ${({ withProMode }) =>
         withProMode ? 'calc(100% - 41px) !important' : '100%'};
-      ${mapMediumMedia} {
-        left: 0;
-        width: 100%;
-      }
 
       ${({ drawing }) =>
         drawing &&
