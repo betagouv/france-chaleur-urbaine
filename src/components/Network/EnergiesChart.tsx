@@ -61,7 +61,6 @@ const EnergiesChart = ({
   const [chartAreaWidth, setChartAreaWidth] = useState<string>('100%');
 
   const updateChartOptions = () => {
-    console.log(window.innerWidth);
     if (window.innerWidth >= 1100) {
       setLegendOptions({
         position: 'labeled',
