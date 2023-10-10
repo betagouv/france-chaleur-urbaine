@@ -73,6 +73,8 @@ import {
   raccordementsLayerStyle,
   zoneDPLayerStyle,
   TopLegend,
+  TopLegendProMode,
+  TopLegendSwitch,
 } from './Map.style';
 import satelliteConfig from './satellite.config.json';
 import { MapboxStyleSwitcherControl } from './StyleSwitcher';
@@ -209,6 +211,7 @@ const Map = ({
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
+  const [displayTopLegendSwitch, setDisplayTopLegendSwitch] = useState(false);
 
   const [isReady, setIsReady] = useState(false);
 
@@ -226,9 +229,27 @@ const Map = ({
     }
   }, [proMode, setProMode]);
 
+  const onResizeWindow = useCallback(() => {
+    if (window.innerWidth < 1251) {
+      setLegendCollapsed(true);
+      if (withTopLegendSwitch && withLegend) {
+        setDisplayTopLegendSwitch(true);
+      }
+    } else {
+      setLegendCollapsed(false);
+      if (withTopLegendSwitch && withLegend) {
+        setDisplayTopLegendSwitch(false);
+      }
+    }
+  }, [withLegend, withTopLegendSwitch]);
+
   useEffect(() => {
-    setLegendCollapsed(window.innerWidth < 1251);
-  }, []);
+    onResizeWindow();
+    window.addEventListener('resize', onResizeWindow);
+    return () => {
+      window.removeEventListener('resize', onResizeWindow);
+    };
+  }, [onResizeWindow]);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -936,12 +957,14 @@ const Map = ({
       <MapStyle
         legendCollapsed={!withLegend || legendCollapsed}
         drawing={drawing}
-        withTopLegend={!!setProMode || (withLegend && withTopLegendSwitch)}
+        withTopLegend={!!setProMode || displayTopLegendSwitch}
+        withProMode={!!setProMode}
+        withTopLegendSwitch={displayTopLegendSwitch}
       />
       <div className="map-wrap">
         {withLegend && (
           <>
-            {!withTopLegendSwitch && (
+            {!displayTopLegendSwitch && (
               <CollapseLegend
                 legendCollapsed={legendCollapsed}
                 onClick={() => setLegendCollapsed(!legendCollapsed)}
@@ -961,7 +984,11 @@ const Map = ({
                 />
               </CollapseLegend>
             )}
-            <Legend legendCollapsed={legendCollapsed} withoutLogo={withoutLogo}>
+            <Legend
+              legendCollapsed={legendCollapsed}
+              withoutLogo={withoutLogo}
+              withTopLegendSwitch={displayTopLegendSwitch}
+            >
               <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               <LegendSeparator />
               {soughtAddresses.length > 0 && (
@@ -1073,50 +1100,56 @@ const Map = ({
             />
           </MapControlWrapper>
         )}
-        {setProMode && (
+        {(setProMode || displayTopLegendSwitch) && (
           <TopLegend legendCollapsed={!withLegend || legendCollapsed}>
-            <div className="fr-toggle fr-toggle--label-left">
-              <input
-                type="checkbox"
-                checked={proMode}
-                id="mode-pro-toggle"
-                onChange={(e) => {
-                  setProMode(e.target.checked);
-                }}
-                className="fr-toggle__input"
-              />
-              <label
-                className="fr-toggle__label"
-                htmlFor={'mode-pro-toggle'}
-                data-fr-checked-label="Activé"
-                data-fr-unchecked-label="Désactivé"
-              >
-                Mode professionnel
-              </label>
-            </div>
-          </TopLegend>
-        )}
-        {withLegend && withTopLegendSwitch && (
-          <TopLegend legendCollapsed={legendCollapsed}>
-            <div className="fr-toggle fr-toggle--label-left">
-              <input
-                type="checkbox"
-                checked={!legendCollapsed}
-                id="top-switch-legend-toggle"
-                onChange={(e) => {
-                  setLegendCollapsed(!e.target.checked);
-                }}
-                className="fr-toggle__input"
-              />
-              <label
-                className="fr-toggle__label"
-                htmlFor={'top-switch-legend-toggle'}
-                data-fr-checked-label="Activé"
-                data-fr-unchecked-label="Désactivé"
-              >
-                {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
-              </label>
-            </div>
+            {setProMode && (
+              <TopLegendProMode legendCollapsed={legendCollapsed}>
+                <div className="fr-toggle fr-toggle--label-left">
+                  <input
+                    type="checkbox"
+                    checked={proMode}
+                    id="mode-pro-toggle"
+                    onChange={(e) => {
+                      setProMode(e.target.checked);
+                    }}
+                    className="fr-toggle__input"
+                  />
+                  <label
+                    className="fr-toggle__label"
+                    htmlFor={'mode-pro-toggle'}
+                    data-fr-checked-label="Activé"
+                    data-fr-unchecked-label="Désactivé"
+                  >
+                    Mode professionnel
+                  </label>
+                </div>
+              </TopLegendProMode>
+            )}
+            {displayTopLegendSwitch && (
+              <TopLegendSwitch legendCollapsed={legendCollapsed}>
+                <div className="fr-toggle fr-toggle--label-left">
+                  <input
+                    type="checkbox"
+                    checked={!legendCollapsed}
+                    id="top-switch-legend-toggle"
+                    onChange={(e) => {
+                      setLegendCollapsed(!e.target.checked);
+                    }}
+                    className="fr-toggle__input"
+                  />
+                  <label
+                    className="fr-toggle__label"
+                    htmlFor={'top-switch-legend-toggle'}
+                    data-fr-checked-label="Activé"
+                    data-fr-unchecked-label="Désactivé"
+                  >
+                    {legendCollapsed
+                      ? 'Afficher la légende'
+                      : 'Masquer la légende'}
+                  </label>
+                </div>
+              </TopLegendSwitch>
+            )}
           </TopLegend>
         )}
         <MapProvider>
