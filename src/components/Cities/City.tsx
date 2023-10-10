@@ -65,7 +65,7 @@ const City = ({ city }: { city: string }) => {
             bannerSrc={`/img/banner_ville_${city}.jpg`}
           />
           <StickyForm
-            title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`}
+            title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`}
           />
           <Slice padding={4}>
             <CityDescriptionContainer>
