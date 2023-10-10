@@ -246,7 +246,7 @@ const Network = ({
                             <div>
                               <b>Prix moyen de la chaleur (2021)</b>
                             </div>
-                            <div>{network.PM} €TTC/MWh</div>
+                            <div>{network.PM.toFixed(2)} €TTC/MWh</div>
                           </BoxContent>
                           <br />
                         </>
