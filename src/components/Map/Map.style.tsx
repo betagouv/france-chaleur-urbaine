@@ -514,40 +514,7 @@ export const LegendLogo = styled.div`
   display: inline-block;
 `;
 
-export const ProMode = styled.div<{ legendCollapsed: boolean }>`
-  background-color: white;
-  width: ${({ legendCollapsed }) =>
-    legendCollapsed ? '100%' : 'calc(100% - 333px)'};
-  ${({ legendCollapsed }) =>
-    !legendCollapsed &&
-    `@media (max-width: 600px) {
-      display: none;
-    }`}
-  height: fit-content;
-  border-bottom: solid 1px #dddddd;
-
-  .fr-toggle {
-    width: fit-content;
-    padding: 8px 16px;
-  }
-
-  .fr-toggle__label {
-    color: var(--bf500);
-    font-weight: bold;
-
-    &::before {
-      margin-top: 0;
-      content: '' !important;
-    }
-
-    &::after {
-      top: 8px;
-      right: 32px !important;
-    }
-  }
-`;
-
-export const TopSwitchLegend = styled.div<{
+export const TopLegend = styled.div<{
   legendCollapsed: boolean;
 }>`
   background-color: white;

@@ -70,10 +70,9 @@ import {
   objTypeEnergy,
   outlineLayerStyle,
   outlineCenterLayerStyle,
-  ProMode,
   raccordementsLayerStyle,
   zoneDPLayerStyle,
-  TopSwitchLegend,
+  TopLegend,
 } from './Map.style';
 import satelliteConfig from './satellite.config.json';
 import { MapboxStyleSwitcherControl } from './StyleSwitcher';
@@ -1075,7 +1074,7 @@ const Map = ({
           </MapControlWrapper>
         )}
         {setProMode && (
-          <ProMode legendCollapsed={!withLegend || legendCollapsed}>
+          <TopLegend legendCollapsed={!withLegend || legendCollapsed}>
             <div className="fr-toggle fr-toggle--label-left">
               <input
                 type="checkbox"
@@ -1095,10 +1094,10 @@ const Map = ({
                 Mode professionnel
               </label>
             </div>
-          </ProMode>
+          </TopLegend>
         )}
         {withLegend && withTopLegendSwitch && (
-          <TopSwitchLegend legendCollapsed={legendCollapsed}>
+          <TopLegend legendCollapsed={legendCollapsed}>
             <div className="fr-toggle fr-toggle--label-left">
               <input
                 type="checkbox"
@@ -1118,7 +1117,7 @@ const Map = ({
                 {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
               </label>
             </div>
-          </TopSwitchLegend>
+          </TopLegend>
         )}
         <MapProvider>
           <MapReactGL
