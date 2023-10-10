@@ -1080,7 +1080,6 @@ const Map = ({
               <input
                 type="checkbox"
                 checked={proMode}
-                defaultChecked={proMode}
                 id="mode-pro-toggle"
                 onChange={(e) => {
                   setProMode(e.target.checked);
