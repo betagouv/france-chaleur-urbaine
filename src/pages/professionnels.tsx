@@ -92,7 +92,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
 
 :button-link[Voir la cartographie]{href="./carte"}
 
-:button-link[Télécharger les tracés]{href="./230830_Opendata_FCU.zip" tagName="downloadLink" trackEvent="Tracés, ${currentPage}" download}
+:button-link[Télécharger les tracés]{href="./061023_Opendata_FCU.zip" tagName="downloadLink" trackEvent="Tracés, ${currentPage}" download}
 `}
             imgSrc="/img/rcu-carto.jpg"
             reverse
