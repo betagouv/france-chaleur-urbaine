@@ -62,6 +62,7 @@ const MapPage = () => {
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
         withLegend={legend === 'true'}
+        withTopLegendSwitch={legend === 'true'}
         withDrawing={drawing === 'true'}
         legendData={legendData}
         initialLayerDisplay={

@@ -17,6 +17,7 @@ const EngieMap = () => {
       <Map
         initialLayerDisplay={param.simpleLayerDisplay}
         withLegend
+        withTopLegendSwitch
         legendData={mapParam.legendData.filter(
           (x) => typeof x !== 'string' && visibleId.includes(x.id)
         )}
