@@ -592,8 +592,12 @@ export const TopLegendProMode = styled.div<{
 export const TopLegendSwitch = styled.div<{
   legendCollapsed: boolean;
 }>`
+  margin-left: 24px;
   @media (max-width: 600px) {
     width: 100%;
     display: block;
+  }
+  .fr-toggle__label {
+    color: var(--blue-france-113);
   }
 `;
