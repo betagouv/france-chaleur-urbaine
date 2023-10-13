@@ -1,7 +1,7 @@
 # Table of contents
 
-* [Page](README.md)
-* [Le solaire thermique](<README (9).md>)
+* [La cartographie la plus exhaustive des réseaux de chaleur et de froid](README.md)
+* [Le solaire thermique](README.md)
 * [Un guide pour les collectivités](<README (8).md>)
 * [Mise en open data des tracés des réseaux de chaleur et de froid](<README (1).md>)
 * [Des informations techniques et tarifaires par réseau](<README (7).md>)
