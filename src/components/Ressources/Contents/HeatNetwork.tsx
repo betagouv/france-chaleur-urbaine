@@ -474,9 +474,7 @@ const HeatNetwork = ({
       </b>
       . La gestion du réseau en régie par la collectivité suppose qu’elle
       dispose au sein de ses services de moyens techniques et humains suffisants
-      pour assurer le fonctionnement et l’entretien des installations. Au total,
-      80 % de la chaleur livrée par les réseaux au niveau national est issue de
-      réseaux concédés.
+      pour assurer le fonctionnement et l’entretien des installations.
       <br />
       <br />
       Du fait de la diversité des modes de gestion et de la multitude d’acteurs
