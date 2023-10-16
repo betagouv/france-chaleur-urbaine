@@ -22,6 +22,8 @@ const MatomoMarkup = ({
               _paq.push(['trackPageView']);
               _paq.push(["disableCookies"]);
               _paq.push(['enableLinkTracking']);
+              // https://matomo.org/faq/how-to/how-do-i-track-a-website-within-an-iframe/ 
+              _paq.push(['setCookieSameSite', 'None']);
               (function() {
                 var u="${matomoUrl}";
                 _paq.push(['setTrackerUrl', u+'matomo.php']);
