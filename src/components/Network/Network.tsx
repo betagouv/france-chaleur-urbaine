@@ -246,7 +246,7 @@ const Network = ({
                             <div>
                               <b>Prix moyen de la chaleur (2021)</b>
                             </div>
-                            <div>{network.PM.toFixed(2)} €TTC/MWh</div>
+                            <div>{Math.round(network.PM)} €TTC/MWh</div>
                           </BoxContent>
                           <br />
                         </>
@@ -268,7 +268,7 @@ const Network = ({
                                   avec une consommation de 300 MWh/an
                                 </HoverableIcon>
                               </div>
-                              <div>{network.PM_L} €TTC/MWh</div>
+                              <div>{Math.round(network.PM_L)} €TTC/MWh</div>
                             </BoxContent>
                           )}
                           {network.PM_T && (
@@ -283,7 +283,7 @@ const Network = ({
                                   consommation de 1500 MWh/an
                                 </HoverableIcon>
                               </div>
-                              <div>{network.PM_T} €TTC/MWh</div>
+                              <div>{Math.round(network.PM_T)} €TTC/MWh</div>
                             </BoxContent>
                           )}
                           <br />
