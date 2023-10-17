@@ -13,6 +13,12 @@ const getValue = (network: Record<FieldSet>, key: string) => {
   const value = network.get(key);
   return value === 'NULL' ? null : value;
 };
+
+const getBooleanValue = (network: Record<FieldSet>, key: string) => {
+  const value = getValue(network, key);
+  return value === undefined ? false : value;
+};
+
 const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {
   if (table === 'network' || table === 'coldNetwork') {
     return {
@@ -30,7 +36,7 @@ const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {
       PM_L: getValue(network, 'PM_L'),
       PM_T: getValue(network, 'PM_T'),
       'Rend%': getValue(network, 'Rend%'),
-      reseaux_techniques: getValue(network, 'reseaux_techniques'),
+      reseaux_techniques: getBooleanValue(network, 'reseaux_techniques'),
       nom_reseau: getValue(network, 'nom_reseau'),
       departement: getValue(network, 'departement'),
       region: getValue(network, 'region'),
@@ -103,10 +109,11 @@ const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {
         network,
         'livraisons_residentiel_MWh'
       ),
-      'reseaux classes': getValue(network, 'reseaux classes'),
+      'reseaux classes': getBooleanValue(network, 'reseaux classes'),
       website_gestionnaire: getValue(network, 'website_gestionnaire'),
       CP_MO: getValue(network, 'CP_MO'),
       CP_gestionnaire: getValue(network, 'CP_gestionnaire'),
+      has_trace: getBooleanValue(network, 'has_trace'),
     };
   }
 
@@ -114,7 +121,7 @@ const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {
     mise_en_service: getValue(network, 'mise_en_service'),
     gestionnaire: getValue(network, 'gestionnaire'),
     communes: getValue(network, 'communes'),
-    is_zone: getValue(network, 'is_zone'),
+    is_zone: getBooleanValue(network, 'is_zone'),
   };
 };
 
