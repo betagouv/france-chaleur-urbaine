@@ -60,7 +60,7 @@ Améliorez votre confort et baissez vos factures !
             <Advantages />
           </Slice>
           <Slice padding={8} theme="grey">
-            <Interviews />
+            <Interviews from="henry" />
           </Slice>
           <Slice padding={8}>
             <Explanation />

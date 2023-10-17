@@ -168,6 +168,10 @@ const bulkEligibilitygibilityStatus = async (
   const id = uuidv4();
   try {
     console.log(`${hash} : Launch bulk eligibility computation`);
+    res
+      .status(200)
+      .send('File do not exists, computing result then send email');
+
     await db('eligibility_tests').insert({
       id,
       version,
@@ -175,10 +179,6 @@ const bulkEligibilitygibilityStatus = async (
       addresses_count: formattedAddresses.length,
       file: addresses,
     });
-
-    res
-      .status(200)
-      .send('File do not exists, computing result then send email');
 
     const form = new FormData();
     form.append('data', addressesCSV, 'file.csv');

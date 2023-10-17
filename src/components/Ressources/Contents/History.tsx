@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { CenteredImage } from './Contents.styles';
 
 const History = () => {
@@ -67,7 +68,17 @@ const History = () => {
       <br />
       <br />
       Aujourd’hui, différents dispositifs sont mis en place par l’État pour
-      soutenir le développement de la filière.
+      soutenir le développement de la filière. Des réseaux de chaleur existent
+      dans la plupart des grandes villes, par exemple{' '}
+      <Link href="/villes/paris">Paris</Link>,{' '}
+      <Link href="/villes/rennes">Rennes</Link>,{' '}
+      <Link href="/villes/nantes">Nantes</Link>,{' '}
+      <Link href="/villes/bordeaux">Bordeaux</Link>,{' '}
+      <Link href="/villes/strasbourg">Strasbourg</Link>,{' '}
+      <Link href="/villes/metz">Metz</Link>,{' '}
+      <Link href="/villes/grenoble">Grenoble</Link>,{' '}
+      <Link href="/villes/lyon">Lyon</Link>,{' '}
+      <Link href="/villes/aix-en-provence">Aix-en-Provence</Link>,...
       <br />
       <br />
       <CenteredImage>
