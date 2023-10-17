@@ -138,12 +138,13 @@ function MyApp({
         }}
       >
         <Head>
+          {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
+          <MatomoMarkup
+            matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
+            siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
+          />
           {!iframedPaths.some((path) => router.pathname.match(path)) && (
             <ConsentBanner>
-              <MatomoMarkup
-                matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
-                siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
-              />
               <GoogleAdsMarkup googleId="10794036298" />
               <FacebookMarkup facebookId="3064783047067401" />
               <LinkedInMarkup tagId="3494650" />
