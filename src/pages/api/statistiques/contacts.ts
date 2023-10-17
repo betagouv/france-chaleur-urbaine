@@ -42,6 +42,7 @@ const reducer = {
   },
   monthly: () => {
     const defaultMonthValue = {
+      date: '',
       nbTotal: 0,
       nbEligible: 0,
       nbUneligible: 0,
@@ -57,6 +58,7 @@ const reducer = {
           defaultMonthValue),
       };
 
+      value.date = key;
       value.nbTotal++;
       if (
         fields['Éligibilité'] &&
