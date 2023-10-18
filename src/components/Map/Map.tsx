@@ -211,7 +211,6 @@ const Map = ({
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
-  const [displayTopLegendSwitch, setDisplayTopLegendSwitch] = useState(false);
 
   const [isReady, setIsReady] = useState(false);
 
@@ -232,16 +231,10 @@ const Map = ({
   const onResizeWindow = useCallback(() => {
     if (window.innerWidth < 1251) {
       setLegendCollapsed(true);
-      if (withHideLegendSwitch && withLegend) {
-        setDisplayTopLegendSwitch(true);
-      }
     } else {
       setLegendCollapsed(false);
-      if (withHideLegendSwitch && withLegend) {
-        setDisplayTopLegendSwitch(false);
-      }
     }
-  }, [withLegend, withHideLegendSwitch]);
+  }, []);
 
   useEffect(() => {
     onResizeWindow();
@@ -957,14 +950,14 @@ const Map = ({
       <MapStyle
         legendCollapsed={!withLegend || legendCollapsed}
         drawing={drawing}
-        withTopLegend={!!setProMode || displayTopLegendSwitch}
+        withTopLegend={!!setProMode || withHideLegendSwitch}
         withProMode={!!setProMode}
-        withHideLegendSwitch={displayTopLegendSwitch}
+        withHideLegendSwitch={withHideLegendSwitch}
       />
       <div className="map-wrap">
         {withLegend && (
           <>
-            {!displayTopLegendSwitch && (
+            {!withHideLegendSwitch && (
               <CollapseLegend
                 legendCollapsed={legendCollapsed}
                 onClick={() => setLegendCollapsed(!legendCollapsed)}
@@ -987,7 +980,7 @@ const Map = ({
             <Legend
               legendCollapsed={legendCollapsed}
               withoutLogo={withoutLogo}
-              withHideLegendSwitch={displayTopLegendSwitch}
+              withHideLegendSwitch={withHideLegendSwitch}
             >
               <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               <LegendSeparator />
@@ -1100,7 +1093,7 @@ const Map = ({
             />
           </MapControlWrapper>
         )}
-        {(setProMode || displayTopLegendSwitch) && (
+        {(setProMode || withHideLegendSwitch) && (
           <TopLegend legendCollapsed={!withLegend || legendCollapsed}>
             {setProMode && (
               <TopLegendProMode legendCollapsed={legendCollapsed}>
@@ -1125,7 +1118,7 @@ const Map = ({
                 </div>
               </TopLegendProMode>
             )}
-            {displayTopLegendSwitch && (
+            {withHideLegendSwitch && (
               <TopLegendSwitch legendCollapsed={legendCollapsed}>
                 <div className="fr-toggle fr-toggle--label-left">
                   <input

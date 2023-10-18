@@ -151,7 +151,7 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
 export const Legend = styled.div<{
   legendCollapsed: boolean;
   withoutLogo?: boolean;
-  withHideLegendSwitch: boolean;
+  withHideLegendSwitch?: boolean;
 }>`
   z-index: ${mapControlZindex + 2};
   overflow: auto;
