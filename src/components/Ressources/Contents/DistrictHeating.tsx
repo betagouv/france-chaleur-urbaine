@@ -217,11 +217,23 @@ const DistrictHeating = ({
       <br />
       La majorité des réseaux de chaleur de taille importante sont ainsi
       concédés par les collectivités à des opérateurs, via des délégations de
-      service public : 80 % des livraisons de chaleur au niveau national sont
-      issues de réseaux concédés. La gestion du réseau en régie par la
-      collectivité suppose en effet qu’elle dispose au sein de ses services de
-      moyens techniques et humains qui lui permettent d’assurer le
-      fonctionnement et l’entretien des installations.
+      service public. La gestion du réseau en régie par la collectivité suppose
+      en effet qu’elle dispose au sein de ses services de moyens techniques et
+      humains qui lui permettent d’assurer le fonctionnement et l’entretien des
+      installations.
+      <br />
+      <br />
+      Aujourd'hui, la majorité des grandes villes ont équipé leur territoire de
+      réseaux de chaleur. C'est par exemple le cas à{' '}
+      <Link href="/villes/paris">Paris</Link>,{' '}
+      <Link href="/villes/rennes">Rennes</Link>,{' '}
+      <Link href="/villes/nantes">Nantes</Link>,{' '}
+      <Link href="/villes/bordeaux">Bordeaux</Link>,{' '}
+      <Link href="/villes/strasbourg">Strasbourg</Link>,{' '}
+      <Link href="/villes/metz">Metz</Link>,{' '}
+      <Link href="/villes/grenoble">Grenoble</Link>,{' '}
+      <Link href="/villes/lyon">Lyon</Link>,{' '}
+      <Link href="/villes/aix-en-provence">Aix-en-Provence</Link>,...
       <br />
       <br />
       Le fait qu’il existe différents modes de gestion et de nombreux acteurs

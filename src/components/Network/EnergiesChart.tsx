@@ -1,6 +1,12 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Chart from 'react-google-charts';
 import { Network } from 'src/types/Summary/Network';
+
+type GraphLegend = {
+  position?: string;
+  alignment?: string;
+  labeledValueText?: string;
+};
 
 const getGraphOptions = (network: Network) => [
   ['Catégorie', 'Production'],
@@ -51,6 +57,32 @@ const EnergiesChart = ({
   height?: string;
 }) => {
   const graphOptions = useMemo(() => getGraphOptions(network), [network]);
+  const [legendOptions, setLegendOptions] = useState<GraphLegend>({});
+  const [chartAreaWidth, setChartAreaWidth] = useState<string>('100%');
+
+  const updateChartOptions = () => {
+    if (window.innerWidth >= 1100) {
+      setLegendOptions({
+        position: 'labeled',
+        alignment: 'center',
+        labeledValueText: 'percent',
+      });
+      setChartAreaWidth('100%');
+    } else {
+      setLegendOptions({
+        alignment: 'center',
+      });
+      setChartAreaWidth('90%');
+    }
+  };
+
+  useEffect(() => {
+    updateChartOptions();
+    window.addEventListener('resize', updateChartOptions);
+    return () => {
+      window.removeEventListener('resize', updateChartOptions);
+    };
+  }, []);
 
   return (
     <Chart
@@ -64,13 +96,9 @@ const EnergiesChart = ({
       )}
       options={{
         colors: graphOptions.slice(1).map((option) => option[2] as string),
-        chartArea: { width: '100%', height: '90%' },
+        chartArea: { width: chartAreaWidth, height: '90%' },
         pieHole: 0.6,
-        legend: {
-          position: 'labeled',
-          alignment: 'center',
-          labeledValueText: 'percent',
-        },
+        legend: legendOptions,
         pieSliceText: 'none',
       }}
       formatters={[

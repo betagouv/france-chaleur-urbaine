@@ -9,6 +9,7 @@ const BulkEligibilityForm = () => {
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const readFile = (event: ChangeEvent<HTMLInputElement>) => {
     setError('');
@@ -38,8 +39,10 @@ const BulkEligibilityForm = () => {
       return;
     }
 
+    setIsSubmitting(true);
     heatNetworkService.bulkEligibility(addresses, email).then(() => {
       setSent(true);
+      setIsSubmitting(false);
     });
   };
 
@@ -67,7 +70,10 @@ const BulkEligibilityForm = () => {
             value={email}
             required
           />
-          <Button disabled={!email || !addresses || !!error} submit>
+          <Button
+            disabled={isSubmitting || !email || !addresses || !!error}
+            submit
+          >
             Tester le fichier d’adresses
           </Button>
         </form>

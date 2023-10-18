@@ -1,7 +1,23 @@
 import { Logo, Container, Quote, Author, Icon } from './Interviews.styles';
 import InterviewsVideos from './InterviewsVideos';
 
-const Interviews = () => {
+const quotes = {
+  henry: {
+    name: 'Henry Hostein',
+    title: 'Président de conseil syndical',
+    quote:
+      'Je conseille vivement le raccordement à un réseau de chaleur pour des raisons économiques et écologiques.',
+  },
+  florence: {
+    name: 'Florence Osman',
+    title: 'Présidente de conseil syndical',
+    quote:
+      'Cela fait une économie de 60% de gaz et au niveau économique de 40% !',
+  },
+};
+
+const Interviews = ({ from }: { from: 'henry' | 'florence' }) => {
+  const { name, title, quote } = quotes[from];
   return (
     <>
       <Logo>
@@ -22,15 +38,12 @@ const Interviews = () => {
             urbain !
           </p>
           <Icon className="fr-icon-quote-line" />
-          <Quote>
-            “Je conseille vivement le raccordement à un réseau de chaleur pour
-            des raisons économiques et écologiques.”
-          </Quote>
+          <Quote>“{quote}”</Quote>
           <Author>
             <b>
-              Henry Hostein
+              {name}
               <br />
-              Président de conseil syndical
+              {title}
             </b>
           </Author>
         </div>

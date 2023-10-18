@@ -236,6 +236,18 @@ const HeatNetwork = ({
       énergétique national.
       <br />
       <br />
+      Des réseaux de chaleur existent dans la plupart des grandes villes, par
+      exemple <Link href="/villes/paris">Paris</Link>,{' '}
+      <Link href="/villes/rennes">Rennes</Link>,{' '}
+      <Link href="/villes/nantes">Nantes</Link>,{' '}
+      <Link href="/villes/bordeaux">Bordeaux</Link>,{' '}
+      <Link href="/villes/strasbourg">Strasbourg</Link>,{' '}
+      <Link href="/villes/metz">Metz</Link>,{' '}
+      <Link href="/villes/grenoble">Grenoble</Link>,{' '}
+      <Link href="/villes/lyon">Lyon</Link>,{' '}
+      <Link href="/villes/aix-en-provence">Aix-en-Provence</Link>,...
+      <br />
+      <br />
       <br />
       <br />
       <Subtitle ref={caracteristiquesRef}>
@@ -474,9 +486,7 @@ const HeatNetwork = ({
       </b>
       . La gestion du réseau en régie par la collectivité suppose qu’elle
       dispose au sein de ses services de moyens techniques et humains suffisants
-      pour assurer le fonctionnement et l’entretien des installations. Au total,
-      80 % de la chaleur livrée par les réseaux au niveau national est issue de
-      réseaux concédés.
+      pour assurer le fonctionnement et l’entretien des installations.
       <br />
       <br />
       Du fait de la diversité des modes de gestion et de la multitude d’acteurs
