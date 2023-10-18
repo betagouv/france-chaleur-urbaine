@@ -228,22 +228,6 @@ const Map = ({
     }
   }, [proMode, setProMode]);
 
-  const onResizeWindow = useCallback(() => {
-    if (window.innerWidth < 1251) {
-      setLegendCollapsed(true);
-    } else {
-      setLegendCollapsed(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    onResizeWindow();
-    window.addEventListener('resize', onResizeWindow);
-    return () => {
-      window.removeEventListener('resize', onResizeWindow);
-    };
-  }, [onResizeWindow]);
-
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.getMap().resize();
