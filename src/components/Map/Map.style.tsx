@@ -26,7 +26,7 @@ export const MapStyle: any = createGlobalStyle<{
   drawing: boolean;
   withTopLegend: boolean;
   withProMode: boolean;
-  withTopLegendSwitch: boolean;
+  withHideLegendSwitch: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
       position: relative;
@@ -43,9 +43,9 @@ export const MapStyle: any = createGlobalStyle<{
         legendCollapsed ? '100%' : 'calc(100% - 333px) !important'};
       height: ${({ withTopLegend }) =>
         withTopLegend ? 'calc(100% - 41px) !important' : '100%'};
-      ${({ withProMode, withTopLegendSwitch, legendCollapsed }) =>
+      ${({ withProMode, withHideLegendSwitch, legendCollapsed }) =>
         withProMode &&
-        withTopLegendSwitch &&
+        withHideLegendSwitch &&
         (legendCollapsed
           ? `@media (max-width: 600px) {
               top: 65px;
@@ -151,7 +151,7 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
 export const Legend = styled.div<{
   legendCollapsed: boolean;
   withoutLogo?: boolean;
-  withTopLegendSwitch: boolean;
+  withHideLegendSwitch: boolean;
 }>`
   z-index: ${mapControlZindex + 2};
   overflow: auto;
@@ -169,8 +169,8 @@ export const Legend = styled.div<{
   box-shadow:
     0px 16px 16px -16px rgba(0, 0, 0, 0.32),
     0px 8px 16px rgba(0, 0, 0, 0.1);
-  ${({ withTopLegendSwitch, legendCollapsed }) =>
-    withTopLegendSwitch &&
+  ${({ withHideLegendSwitch, legendCollapsed }) =>
+    withHideLegendSwitch &&
     !legendCollapsed &&
     css`
       top: 41px;

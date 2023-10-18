@@ -162,7 +162,7 @@ const getNetworkFilter = (
 const Map = ({
   withoutLogo,
   withLegend,
-  withTopLegendSwitch,
+  withHideLegendSwitch,
   withDrawing,
   legendTitle,
   initialLayerDisplay,
@@ -183,7 +183,7 @@ const Map = ({
   initialLayerDisplay: TypeLayerDisplay;
   legendData?: (string | TypeGroupLegend)[];
   withLegend?: boolean;
-  withTopLegendSwitch?: boolean;
+  withHideLegendSwitch?: boolean;
   withDrawing?: boolean;
   center?: [number, number];
   legendTitle?: string;
@@ -232,16 +232,16 @@ const Map = ({
   const onResizeWindow = useCallback(() => {
     if (window.innerWidth < 1251) {
       setLegendCollapsed(true);
-      if (withTopLegendSwitch && withLegend) {
+      if (withHideLegendSwitch && withLegend) {
         setDisplayTopLegendSwitch(true);
       }
     } else {
       setLegendCollapsed(false);
-      if (withTopLegendSwitch && withLegend) {
+      if (withHideLegendSwitch && withLegend) {
         setDisplayTopLegendSwitch(false);
       }
     }
-  }, [withLegend, withTopLegendSwitch]);
+  }, [withLegend, withHideLegendSwitch]);
 
   useEffect(() => {
     onResizeWindow();
@@ -959,7 +959,7 @@ const Map = ({
         drawing={drawing}
         withTopLegend={!!setProMode || displayTopLegendSwitch}
         withProMode={!!setProMode}
-        withTopLegendSwitch={displayTopLegendSwitch}
+        withHideLegendSwitch={displayTopLegendSwitch}
       />
       <div className="map-wrap">
         {withLegend && (
@@ -987,7 +987,7 @@ const Map = ({
             <Legend
               legendCollapsed={legendCollapsed}
               withoutLogo={withoutLogo}
-              withTopLegendSwitch={displayTopLegendSwitch}
+              withHideLegendSwitch={displayTopLegendSwitch}
             >
               <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               <LegendSeparator />
