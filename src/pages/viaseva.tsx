@@ -17,7 +17,7 @@ const ViasevaMap = () => {
       <Map
         initialLayerDisplay={param.simpleLayerDisplay}
         withLegend
-        withTopLegendSwitch
+        withHideLegendSwitch
         legendData={mapParam.legendData.filter(
           (x) => typeof x !== 'string' && visibleId.includes(x.id)
         )}
