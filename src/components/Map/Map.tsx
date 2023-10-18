@@ -73,7 +73,6 @@ import {
   raccordementsLayerStyle,
   zoneDPLayerStyle,
   TopLegend,
-  TopLegendProMode,
   TopLegendSwitch,
 } from './Map.style';
 import satelliteConfig from './satellite.config.json';
@@ -1080,7 +1079,10 @@ const Map = ({
         {(setProMode || withHideLegendSwitch) && (
           <TopLegend legendCollapsed={!withLegend || legendCollapsed}>
             {setProMode && (
-              <TopLegendProMode legendCollapsed={legendCollapsed}>
+              <TopLegendSwitch
+                legendCollapsed={legendCollapsed}
+                isProMode={true}
+              >
                 <div className="fr-toggle fr-toggle--label-left">
                   <input
                     type="checkbox"
@@ -1100,7 +1102,7 @@ const Map = ({
                     Mode professionnel
                   </label>
                 </div>
-              </TopLegendProMode>
+              </TopLegendSwitch>
             )}
             {withHideLegendSwitch && (
               <TopLegendSwitch legendCollapsed={legendCollapsed}>

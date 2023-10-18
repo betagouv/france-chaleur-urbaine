@@ -575,22 +575,9 @@ export const TopLegend = styled.div<{
   }
 `;
 
-export const TopLegendProMode = styled.div<{
-  legendCollapsed: boolean;
-}>`
-  @media (max-width: 600px) {
-    width: 100%;
-    display: block;
-  }
-  ${({ legendCollapsed }) =>
-    !legendCollapsed &&
-    `@media (max-width: 600px) {
-      display: none;
-    }`}
-`;
-
 export const TopLegendSwitch = styled.div<{
-  legendCollapsed: boolean;
+  legendCollapsed?: boolean;
+  isProMode?: boolean;
 }>`
   margin-left: 24px;
   @media (max-width: 600px) {
@@ -600,4 +587,10 @@ export const TopLegendSwitch = styled.div<{
   .fr-toggle__label {
     color: var(--blue-france-113);
   }
+  ${({ legendCollapsed, isProMode }) =>
+    !legendCollapsed &&
+    isProMode &&
+    `@media (max-width: 600px) {
+      display: none;
+    }`}
 `;
