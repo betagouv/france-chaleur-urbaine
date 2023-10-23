@@ -68,6 +68,7 @@ const Simulator = ({
             ]}
             selected={structure}
             onChange={(e) => setStructure(e.target.value)}
+            aria-label="Type de logement"
           />
           <TextInput
             type="number"
