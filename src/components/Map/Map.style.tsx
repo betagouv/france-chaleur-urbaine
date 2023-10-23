@@ -24,7 +24,9 @@ export const mapMediumMedia = '@media (max-width: 1250px) ';
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
   drawing: boolean;
+  withTopLegend: boolean;
   withProMode: boolean;
+  withHideLegendSwitch: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
       position: relative;
@@ -36,11 +38,23 @@ export const MapStyle: any = createGlobalStyle<{
     .map, .maplibregl-map {
       position: absolute !important;
       left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : '333px')};
-      ${({ withProMode }) => withProMode && 'top: 41px;'}
+      ${({ withTopLegend }) => withTopLegend && 'top: 41px;'}
       width: ${({ legendCollapsed }) =>
         legendCollapsed ? '100%' : 'calc(100% - 333px) !important'};
-      height: ${({ withProMode }) =>
-        withProMode ? 'calc(100% - 41px) !important' : '100%'};
+      height: ${({ withTopLegend }) =>
+        withTopLegend ? 'calc(100% - 41px) !important' : '100%'};
+      ${({ withProMode, withHideLegendSwitch, legendCollapsed }) =>
+        withProMode &&
+        withHideLegendSwitch &&
+        (legendCollapsed
+          ? `@media (max-width: 600px) {
+              top: 65px;
+              height: calc(100% - 65px) !important;
+            }`
+          : `@media (max-width: 600px) {
+              top: 41px;
+              height: calc(100% - 41px) !important;
+            }`)}
 
       ${({ drawing }) =>
         drawing &&
@@ -137,6 +151,7 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
 export const Legend = styled.div<{
   legendCollapsed: boolean;
   withoutLogo?: boolean;
+  withHideLegendSwitch?: boolean;
 }>`
   z-index: ${mapControlZindex + 2};
   overflow: auto;
@@ -154,6 +169,15 @@ export const Legend = styled.div<{
   box-shadow:
     0px 16px 16px -16px rgba(0, 0, 0, 0.32),
     0px 8px 16px rgba(0, 0, 0, 0.1);
+  ${({ withHideLegendSwitch, legendCollapsed }) =>
+    withHideLegendSwitch &&
+    !legendCollapsed &&
+    css`
+      top: 41px;
+      position: absolute;
+      height: 100%;
+    `}
+  }
 `;
 
 export const LegendSeparator = styled.div`
@@ -514,15 +538,19 @@ export const LegendLogo = styled.div`
   display: inline-block;
 `;
 
-export const ProMode = styled.div<{ legendCollapsed: boolean }>`
+export const TopLegend = styled.div<{
+  legendCollapsed: boolean;
+}>`
   background-color: white;
   width: ${({ legendCollapsed }) =>
     legendCollapsed ? '100%' : 'calc(100% - 333px)'};
-  ${({ legendCollapsed }) =>
-    !legendCollapsed &&
-    `@media (max-width: 600px) {
-      display: none;
-    }`}
+  @media (max-width: 600px) {
+    width: 100%;
+    display: block;
+  }
+  @media (max-width: 1251px) {
+    display: flex;
+  }
   height: fit-content;
   border-bottom: solid 1px #dddddd;
 
@@ -545,4 +573,24 @@ export const ProMode = styled.div<{ legendCollapsed: boolean }>`
       right: 32px !important;
     }
   }
+`;
+
+export const TopLegendSwitch = styled.div<{
+  legendCollapsed?: boolean;
+  isProMode?: boolean;
+}>`
+  margin-left: 24px;
+  @media (max-width: 600px) {
+    width: 100%;
+    display: block;
+  }
+  .fr-toggle__label {
+    color: var(--blue-france-113);
+  }
+  ${({ legendCollapsed, isProMode }) =>
+    !legendCollapsed &&
+    isProMode &&
+    `@media (max-width: 600px) {
+      display: none;
+    }`}
 `;

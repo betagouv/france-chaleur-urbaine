@@ -24,6 +24,7 @@ const CharlevilleMezieresMap = () => {
           energyFuelValues: [50, Number.MAX_VALUE],
         }}
         withLegend
+        withHideLegendSwitch
         center={[4.717692, 49.767402]}
         initialZoom={12}
         legendData={mapParam.legendData.filter(
