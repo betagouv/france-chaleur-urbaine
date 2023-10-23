@@ -23,9 +23,9 @@ const InterviewsVideos = () => {
         allowFullScreen
       ></iframe>
       <VideoIndexes>
-        {Array.from({ length: 6 }, (value, index) => (
+        {videos.map((value, index) => (
           <VideoIndex
-            key={index}
+            key={value}
             active={index === videoIndex}
             onClick={() => setVideoIndex(index)}
             aria-label={`Afficher le témoignage ${index + 1}`}
