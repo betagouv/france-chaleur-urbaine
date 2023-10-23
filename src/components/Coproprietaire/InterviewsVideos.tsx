@@ -28,6 +28,7 @@ const InterviewsVideos = () => {
             key={index}
             active={index === videoIndex}
             onClick={() => setVideoIndex(index)}
+            aria-label={`Afficher le témoignage ${index + 1}`}
           />
         ))}
       </VideoIndexes>

@@ -32,6 +32,7 @@ class MapboxStyleSwitcherControl {
     this.mapStyleContainer = document.createElement('div');
     this.styleButton = document.createElement('button');
     this.styleButton.type = 'button';
+    this.styleButton.setAttribute('aria-label', 'changer le style de la carte');
     this.mapStyleContainer.classList.add('maplibregl-style-list');
     for (const style of this.styles) {
       const styleElement = document.createElement('button');
