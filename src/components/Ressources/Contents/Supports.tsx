@@ -55,6 +55,16 @@ const Supports = () => {
           </Link>
         </div>
         <div>
+          <Link href="/contents/FCU_Infographie-Solaire.jpg" target="_blank">
+            <img
+              src="/contents/FCU_Infographie-Solaire.jpg"
+              alt=""
+              width={150}
+            />
+            <p>Solaire thermique</p>
+          </Link>
+        </div>
+        <div>
           <Link href="/img/FCU_Infographie_Froid.jpg" target="_blank">
             <img src="/img/FCU_Infographie_Froid.jpg" alt="" width={150} />
             <p>Les réseaux de froid</p>
