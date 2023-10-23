@@ -13,26 +13,26 @@ const Advantages = () => {
       </Title>
       <Container>
         <Advantage className="fr-col-md-12 fr-col-lg-3">
-          <img src="/img/copro_advantages_1.svg" />
+          <img src="/img/copro_advantages_1.svg" alt="" />
           <div>
             Réduisez vos factures de chauffage <b>jusqu’à 40%</b>
           </div>
         </Advantage>
         <Advantage className="fr-col-md-12 fr-col-lg-3">
-          <img src="/img/copro_advantages_2.svg" />
+          <img src="/img/copro_advantages_2.svg" alt="" />
           <div>
             Bénéficiez de <b>subventions</b> mises en place par l’État et d’une{' '}
             <b>TVA à 5,5%</b>
           </div>
         </Advantage>
         <Advantage className="fr-col-md-12 fr-col-lg-3">
-          <img src="/img/copro_advantages_3.svg" />
+          <img src="/img/copro_advantages_3.svg" alt="" />
           <div>
             Gagnez en <b>sécurité</b> en supprimant votre chaudière fioul ou gaz
           </div>
         </Advantage>
         <Advantage className="fr-col-md-12 fr-col-lg-3">
-          <img src="/img/copro_advantages_4.svg" />
+          <img src="/img/copro_advantages_4.svg" alt="" />
           <div>
             Diminuez vos émissions de CO2 <b>jusqu’à 50%</b>
           </div>

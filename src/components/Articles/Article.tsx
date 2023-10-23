@@ -17,7 +17,7 @@ const Article = ({
   return (
     <Card isHorizontal={isHorizontal} href={`/actus/${article.slug}`} size="sm">
       <CardHeader>
-        <CardImage src={article.image}></CardImage>
+        <CardImage src={article.image} alt=""></CardImage>
       </CardHeader>
       <CardTitle>{article.title}</CardTitle>
       <CardDescription>
