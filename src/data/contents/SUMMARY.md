@@ -1,7 +1,9 @@
 # Table of contents
 
-* [La cartographie la plus exhaustive des réseaux de chaleur et de froid](README.md)
-* [Le solaire thermique](README.md)
+* [Visite de l'unité de valorisation énergétique Isséane](README.md)
+* [Les réseaux de chaleur en moins de 15 secondes](les-reseaux-de-chaleur-en-moins-de-15-secondes.md)
+* [La cartographie la plus exhaustive des réseaux de chaleur et de froid](<README (10).md>)
+* [Le solaire thermique](<README (9).md>)
 * [Un guide pour les collectivités](<README (8).md>)
 * [Mise en open data des tracés des réseaux de chaleur et de froid](<README (1).md>)
 * [Des informations techniques et tarifaires par réseau](<README (7).md>)
