@@ -11,12 +11,12 @@ import { fillTiles } from './utils/tiles';
 
 const getValue = (network: Record<FieldSet>, key: string) => {
   const value = network.get(key);
-  return value === 'NULL' ? null : value;
+  return value === 'NULL' || value === undefined ? null : value;
 };
 
 const getBooleanValue = (network: Record<FieldSet>, key: string) => {
   const value = getValue(network, key);
-  return value === undefined ? false : value;
+  return value === undefined || value === null ? false : value;
 };
 
 const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {

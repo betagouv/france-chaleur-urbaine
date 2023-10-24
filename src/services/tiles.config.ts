@@ -99,10 +99,10 @@ export const tilesInfo: Record<DataType, TileInfo> = {
     table: 'reseaux_de_chaleur',
     tiles: 'reseaux_de_chaleur_tiles',
     airtable: Airtable.NETWORKS,
-    id: 'id',
+    id: 'id_fcu',
     extraWhere: (query) => query,
     properties: [
-      'id',
+      'id_fcu',
       'Taux EnR&R',
       'Gestionnaire',
       'commentaires',
