@@ -1,9 +1,7 @@
-# La cartographie la plus exhaustive des réseaux de chaleur et de froid
+# Visite de l'unité de valorisation énergétique Isséane
 
-📢 Aujourd'hui France Chaleur Urbaine propose la [cartographie interactive](https://france-chaleur-urbaine.beta.gouv.fr/carte) des réseaux de chaleur et de froid la plus complète à l'échelle nationale.\
+Pour découvrir en images les installations qui alimentent les réseaux de chaleur aujourd'hui direction Issy-les-Moulineaux !\
 \
-🗺 Les tracés, en open data, des 640 réseaux recensés représentent ainsi 90% des livraisons de chaleur annuelles en France ! S'il nous manque encore plus de 200 tracés, il s'agit donc de petits réseaux, desservant parfois quelques bâtiments seulement.\
+♨ Nous vous emmenons visiter l'unité de valorisation énergétique Isséane du [Syctom](https://www.syctom-paris.fr/accueil.html). Grâce à ses trois unités de valorisation énergétique (UVE), traitant les déchets de 5,7 millions d'habitants, le Syctom produit chaque année 3,5 millions de tonnes de vapeur qui viennent alimenter le réseau de chaleur de la Ville de Paris, géré par la CPCU. La chaleur issue de ces UVE représente ainsi plus de 40% du mix énergétique du réseau parisien et chauffe près de 300 000 équivalent-logements.\
 \
-Nous ne les oublions pas pour autant ! Depuis peu, nous indiquons par un repère sur la carte les communes où existe un réseau dont le tracé n'est pas disponible... et nous poursuivons en parallèle notre mission de recensement des tracés auprès des collectivités, toujours animés par la conviction que la plus grande disponibilité possible de ces données et leur centralisation servent largement au développement des réseaux, et donc à la capacité à atteindre les objectifs fixés pour 2030.\
-\
-💡 Bon à savoir également : la cartographie France Chaleur Urbaine peut désormais être intégrée très facilement sur n'importe quel site internet, grâce à notre [iframe paramétrable](https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants#iframe-carte).\
+Mise en service en 2007, Isséane est la plus récente de ces trois UVE. La suite dans notre diaporama ci-dessous ! 👇\
