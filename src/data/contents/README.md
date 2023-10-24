@@ -6,7 +6,7 @@ Pour découvrir en images les installations qui alimentent les réseaux de chale
 \
 Mise en service en 2007, Isséane est la plus récente de ces trois UVE. La suite en image ci-dessous ! 👇
 
-![](.gitbook/assets/10.jpg)\
+![](.gitbook/assets/1.jpg)\
 ![](.gitbook/assets/2.jpg)
 
 ![](.gitbook/assets/3.jpg)
