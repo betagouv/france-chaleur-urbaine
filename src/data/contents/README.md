@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/isseane.jpg
+coverY: 0
+---
+
 # Visite de l'unité de valorisation énergétique Isséane
 
 Pour découvrir en images les installations qui alimentent les réseaux de chaleur aujourd'hui direction Issy-les-Moulineaux !\
