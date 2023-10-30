@@ -1,13 +1,9 @@
-# Le solaire thermique
+# Page
 
-🤓 N°4 dans notre série sur les énergies renouvelables et de récupération qui alimentent les réseaux de chaleur : le solaire thermique.
-
-☀ En France, l'énergie solaire est majoritairement utilisée pour la production d'électricité, via des panneaux photovoltaïques. Pourtant, quoi de plus naturel que de récupérer directement sa chaleur, pour la production d'eau chaude sanitaire ou le chauffage ? C'est le principe des installations de solaire thermique, qui peuvent être installées directement sur des bâtiments ou alimenter des réseaux de chaleur.
-
-La possibilité de concentrer l'énergie solaire pour produire des hautes températures a été comprise dès l'Antiquité. Mais ce n'est qu'au XIXème siècle que l'usage du solaire thermique commence à se répandre, avec les premiers chauffe-eaux solaires. Ces dernières années, les grandes installations de solaire thermique se sont multipliées chez certains de nos voisins européens, notamment au Danemark ou en Suède. Elles demeurent toutefois encore assez peu nombreuses en France...
-
-👉 N'attendons plus pour développer l'usage de cette énergie 100% renouvelable et disponible partout !
-
-Et pour faire connaître le solaire thermique autour de vous, n'hésitez pas à partager notre infographie. 👇
-
-![](.gitbook/assets/FCU\_Infographie-Solaire.jpg)
+📢 Aujourd'hui France Chaleur Urbaine propose la [cartographie interactive](https://france-chaleur-urbaine.beta.gouv.fr/carte) des réseaux de chaleur et de froid la plus complète à l'échelle nationale.\
+\
+🗺 Les tracés, en open data, des 640 réseaux recensés représentent ainsi 90% des livraisons de chaleur annuelles en France ! S'il nous manque encore plus de 200 tracés, il s'agit donc de petits réseaux, desservant parfois quelques bâtiments seulement.\
+\
+Nous ne les oublions pas pour autant ! Depuis peu, nous indiquons par un repère sur la carte les communes où existe un réseau dont le tracé n'est pas disponible... et nous poursuivons en parallèle notre mission de recensement des tracés auprès des collectivités, toujours animés par la conviction que la plus grande disponibilité possible de ces données et leur centralisation servent largement au développement des réseaux, et donc à la capacité à atteindre les objectifs fixés pour 2030.\
+\
+💡 Bon à savoir également : la cartographie France Chaleur Urbaine peut désormais être intégrée très facilement sur n'importe quel site internet, grâce à notre [iframe paramétrable](https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants#iframe-carte).\
