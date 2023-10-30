@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/video.jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en moins de 15 secondes
 
 🏢 En France, près de 20% des émissions nationales de gaz à effet de serre sont liées au chauffage des bâtiments.\
