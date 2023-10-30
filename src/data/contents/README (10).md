@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/90.jpg
+coverY: 0
+---
+
 # La cartographie la plus exhaustive des réseaux de chaleur et de froid
 
 📢 Aujourd'hui France Chaleur Urbaine propose la [cartographie interactive](https://france-chaleur-urbaine.beta.gouv.fr/carte) des réseaux de chaleur et de froid la plus complète à l'échelle nationale.\
@@ -6,4 +11,6 @@
 \
 Nous ne les oublions pas pour autant ! Depuis peu, nous indiquons par un repère sur la carte les communes où existe un réseau dont le tracé n'est pas disponible... et nous poursuivons en parallèle notre mission de recensement des tracés auprès des collectivités, toujours animés par la conviction que la plus grande disponibilité possible de ces données et leur centralisation servent largement au développement des réseaux, et donc à la capacité à atteindre les objectifs fixés pour 2030.\
 \
-💡 Bon à savoir également : la cartographie France Chaleur Urbaine peut désormais être intégrée très facilement sur n'importe quel site internet, grâce à notre [iframe paramétrable](https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants#iframe-carte).\
+💡 Bon à savoir également : la cartographie France Chaleur Urbaine peut désormais être intégrée très facilement sur n'importe quel site internet, grâce à notre [iframe paramétrable](https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants#iframe-carte).
+
+![](<.gitbook/assets/chaleur90 (1).jpg>)\
