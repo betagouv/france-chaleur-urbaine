@@ -78,4 +78,5 @@ export const NumberItalicText = styled.span`
 
 export const LastActuDate = styled.div`
   margin-bottom: 24px;
+  font-size: 0.9rem;
 `;

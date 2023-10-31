@@ -390,7 +390,7 @@ const Statistics = () => {
         <StatisticsSliceContainer>
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer>
-              <LastActuDate>Au {statistics.lastActu}</LastActuDate>
+              <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
               <NumberContainer>
                 <NumberBlock className="fr-col-md-5 fr-col-12">
                   <NumberHighlight>{statistics.connection}</NumberHighlight>
@@ -421,7 +421,7 @@ const Statistics = () => {
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
-              <LastActuDate>Au {statistics.lastActu}</LastActuDate>
+              <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
               <NumberContainer>
                 <NumberBlock>
                   <NumberHighlight>{statistics.networks}</NumberHighlight>
@@ -614,7 +614,7 @@ const Statistics = () => {
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
-              <LastActuDate>Au {statistics.lastActu}</LastActuDate>
+              <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
               <NumberContainer>
                 <NumberBlock>
                   <NumberHighlight>
