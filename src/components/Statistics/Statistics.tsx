@@ -607,7 +607,7 @@ const Statistics = () => {
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
-                {formatedDataVisits.length > 1 && (
+                {formatedDataVisitsMap.length > 1 && (
                   <Graph
                     title="Nombre de visiteurs sur la cartographie"
                     errors={errorVisitsMap}
