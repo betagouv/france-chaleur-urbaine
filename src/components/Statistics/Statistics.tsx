@@ -17,6 +17,7 @@ import {
 } from './Statistics.style';
 import statistics from '@data/statistics';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
+import Link from 'next/link';
 
 type ReturnApiStatAirtable = {
   date: string;
@@ -626,7 +627,10 @@ const Statistics = () => {
                   <NumberHighlight>
                     {statistics.iFrameIntegration}
                   </NumberHighlight>
-                  Intégrations de nos iframes
+                  Intégrations de nos{' '}
+                  <Link href="/collectivites-et-exploitants#iframe-carte">
+                    iframes
+                  </Link>
                 </NumberBlock>
                 <NumberBlock className="fr-mt-2w">
                   <NumberHighlight>{totalDownload}</NumberHighlight>
