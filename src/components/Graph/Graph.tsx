@@ -13,6 +13,7 @@ const Graph = ({
   titleTextStyle,
   hAxisTextStyle,
   vAxisTextStyle,
+  colors,
 }: {
   title: string;
   errors: any;
@@ -26,6 +27,7 @@ const Graph = ({
   titleTextStyle?: any;
   hAxisTextStyle?: any;
   vAxisTextStyle?: any;
+  colors?: string[];
 }) => {
   const total = formatedData
     .slice(1)
@@ -51,7 +53,7 @@ const Graph = ({
             options={{
               title: withSum ? `${title} - ${total} au total` : title,
               titleTextStyle: titleTextStyle,
-              colors: ['#83B0F3', '#64B847', '#1f8d49', '#009099'],
+              colors: colors || ['#0078f3', '#f60700', '#1f8d49', '#009099'],
               hAxis: {
                 slantedText: true,
                 slantedTextAngle: 30,

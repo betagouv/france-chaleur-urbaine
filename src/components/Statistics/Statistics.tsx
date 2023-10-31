@@ -46,6 +46,7 @@ const graphOptions = {
   titleTextStyle: { fontSize: 16, bold: false },
   hAxisTextStyle: { color: '7C8DB5' },
   vAxisTextStyle: { color: '7C8DB5' },
+  colors: ['#83B0F3', '#64B847', '#1f8d49', '#009099'],
 };
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
