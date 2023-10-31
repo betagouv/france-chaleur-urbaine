@@ -1,10 +1,11 @@
 const statistics = {
-  connection: '470',
+  connection: '500',
   CO2Tons: '28 000',
   networks: '640',
   heatPercent: '90',
   connectionPercent: '27',
-  iFrameIntegration: '4',
+  iFrameIntegration: '8',
+  lastActu: '1er novembre 2023',
 };
 
 export default statistics;

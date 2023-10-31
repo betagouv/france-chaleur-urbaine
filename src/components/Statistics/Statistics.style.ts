@@ -25,22 +25,25 @@ export const Column = styled.div`
   }
 `;
 
-export const GraphsWrapper = styled.div`
+export const ColumnContainer = styled.div<{
+  padding?: string;
+}>`
   border: #e3e8f3 solid 1px;
   border-radius: 10px;
+  padding: ${({ padding }) => padding || '2rem'};
+  height: 100%;
+`;
+
+export const GraphsWrapper = styled.div`
   width: 100%;
 `;
 
-export const NumberColumn = styled.div`
+export const NumberContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   height: 100%;
   align-content: flex-start;
   gap: 24px 0;
-
-  border: #e3e8f3 solid 1px;
-  border-radius: 10px;
-  padding: 2rem;
 `;
 
 export const NumberBlock = styled.div``;
@@ -67,4 +70,8 @@ export const NumberHoverableIcon = styled.span`
 export const NumberItalicText = styled.span`
   font-style: italic;
   font-size: 0.8rem;
+`;
+
+export const LastActuDate = styled.div`
+  margin-bottom: 24px;
 `;

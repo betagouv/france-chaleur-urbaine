@@ -4,10 +4,12 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 import {
   Column,
+  ColumnContainer,
   Container,
   GraphsWrapper,
+  LastActuDate,
   NumberBlock,
-  NumberColumn,
+  NumberContainer,
   NumberHighlight,
   NumberHoverableIcon,
   NumberItalicText,
@@ -393,218 +395,243 @@ const Statistics = () => {
       <Slice>
         <StatisticsSliceContainer>
           <Column className="fr-col-md-8 fr-col-12">
-            <NumberColumn>
-              <NumberBlock className="fr-col-md-5">
-                <NumberHighlight>{statistics.connection}</NumberHighlight>
-                Raccordements à l'étude
-                <HoverableIcon
-                  iconName="ri-information-fill"
-                  position="bottom"
-                  iconSize="1x"
-                >
-                  Par raccordements à l’étude, on désigne ceux pour lesquels une
-                  étude de faisabilité technico-économique est en cours au
-                  niveau du gestionnaire du réseau, ou a été transmise à la
-                  copropriété ou au bâtiment tertiaire. En copropriété, la
-                  proposition du gestionnaire de réseau devra ensuite être votée
-                  en AG avant que les travaux ne puissent démarrer.
-                </HoverableIcon>
-              </NumberBlock>
-              <NumberBlock className="fr-col-md-7">
-                <NumberHighlight>~ {statistics.CO2Tons}</NumberHighlight>
-                Tonnes de CO2 potentiellement économisées par an
-                <br />
-                <NumberItalicText>
-                  1 tonne = 1 aller-retour Paris-New York en avion
-                </NumberItalicText>
-              </NumberBlock>
-            </NumberColumn>
+            <ColumnContainer>
+              <LastActuDate>Au {statistics.lastActu}</LastActuDate>
+              <NumberContainer>
+                <NumberBlock className="fr-col-md-5">
+                  <NumberHighlight>{statistics.connection}</NumberHighlight>
+                  Raccordements à l'étude
+                  <HoverableIcon
+                    iconName="ri-information-fill"
+                    position="bottom"
+                    iconSize="1x"
+                  >
+                    Par raccordements à l’étude, on désigne ceux pour lesquels
+                    une étude de faisabilité technico-économique est en cours au
+                    niveau du gestionnaire du réseau, ou a été transmise à la
+                    copropriété ou au bâtiment tertiaire. En copropriété, la
+                    proposition du gestionnaire de réseau devra ensuite être
+                    votée en AG avant que les travaux ne puissent démarrer.
+                  </HoverableIcon>
+                </NumberBlock>
+                <NumberBlock className="fr-col-md-7">
+                  <NumberHighlight>~ {statistics.CO2Tons}</NumberHighlight>
+                  Tonnes de CO2 potentiellement économisées par an
+                  <br />
+                  <NumberItalicText>
+                    1 tonne = 1 aller-retour Paris-New York en avion
+                  </NumberItalicText>
+                </NumberBlock>
+              </NumberContainer>
+            </ColumnContainer>
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
-            <NumberColumn>
-              <NumberBlock>
-                <NumberHighlight>{statistics.networks}</NumberHighlight>
-                Réseaux recensés représentant
-              </NumberBlock>
-              <NumberBlock className="fr-mt-2w">
-                <NumberHighlight>{statistics.heatPercent}%</NumberHighlight>
-                de la chaleur livrée par les réseaux en France
-              </NumberBlock>
-            </NumberColumn>
+            <ColumnContainer>
+              <NumberContainer>
+                <NumberBlock>
+                  <NumberHighlight>{statistics.networks}</NumberHighlight>
+                  Réseaux recensés représentant
+                </NumberBlock>
+                <NumberBlock className="fr-mt-2w">
+                  <NumberHighlight>{statistics.heatPercent}%</NumberHighlight>
+                  de la chaleur livrée par les réseaux en France
+                </NumberBlock>
+              </NumberContainer>
+            </ColumnContainer>
           </Column>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer>
           <Column className="fr-col-md-8 fr-col-12">
-            <GraphsWrapper>
-              {formatedDataCountContact.length > 1 && (
-                <Graph
-                  title="Nombre de demandes de mise en contact avec un gestionnaire"
-                  errors={errorCountContact}
-                  data={dataCountContact}
-                  formatedData={formatedDataCountContact}
-                  {...graphOptions}
-                />
-              )}
-            </GraphsWrapper>
+            <ColumnContainer padding="1rem">
+              <GraphsWrapper>
+                {formatedDataCountContact.length > 1 && (
+                  <Graph
+                    title="Nombre de demandes de mise en contact avec un gestionnaire"
+                    errors={errorCountContact}
+                    data={dataCountContact}
+                    formatedData={formatedDataCountContact}
+                    {...graphOptions}
+                  />
+                )}
+              </GraphsWrapper>
+            </ColumnContainer>
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
-            <NumberColumn>
-              <NumberBlock>
-                <NumberHighlight>
-                  {totalContactDemands.toLocaleString('fr-FR')}
-                </NumberHighlight>
-                Total des demandes de mise en contact avec un gestionnaire
-              </NumberBlock>
-              <NumberBlock className="fr-mt-2w">
-                <NumberHighlight>
-                  <span>{statistics.connectionPercent}%</span>
-                  <NumberHoverableIcon>
-                    <HoverableIcon
-                      iconName="ri-information-fill"
-                      position="bottom"
-                      iconSize="1x"
-                    >
-                      A savoir : une partie des demandes déposées (environ 50%)
-                      ne peut aboutir en raison d'une distance trop importante
-                      au réseau ou d'un mode de chauffage préexistant
-                      individuel.
-                    </HoverableIcon>
-                  </NumberHoverableIcon>
-                </NumberHighlight>
-                Des mises en contact aboutissent à un raccordement à l’étude
-              </NumberBlock>
-            </NumberColumn>
+            <ColumnContainer>
+              <NumberContainer>
+                <NumberBlock>
+                  <NumberHighlight>
+                    {totalContactDemands.toLocaleString('fr-FR')}
+                  </NumberHighlight>
+                  Total des demandes de mise en contact avec un gestionnaire
+                </NumberBlock>
+                <NumberBlock className="fr-mt-2w">
+                  <NumberHighlight>
+                    <span>{statistics.connectionPercent}%</span>
+                    <NumberHoverableIcon>
+                      <HoverableIcon
+                        iconName="ri-information-fill"
+                        position="bottom"
+                        iconSize="1x"
+                      >
+                        A savoir : une partie des demandes déposées (environ
+                        50%) ne peut aboutir en raison d'une distance trop
+                        importante au réseau ou d'un mode de chauffage
+                        préexistant individuel.
+                      </HoverableIcon>
+                    </NumberHoverableIcon>
+                  </NumberHighlight>
+                  Des mises en contact aboutissent à un raccordement à l’étude
+                </NumberBlock>
+              </NumberContainer>
+            </ColumnContainer>
           </Column>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer>
           <Column className="fr-col-md-8 fr-col-12">
-            <GraphsWrapper>
-              {formatedDataEligibilityTest.length > 1 && (
-                <Graph
-                  title="Nombre d’adresses testées (par mois)"
-                  errors={errorDataEligibilityTest}
-                  data={dataEligibilityTest}
-                  formatedData={formatedDataEligibilityTest}
-                  {...graphOptions}
-                />
-              )}
-            </GraphsWrapper>
+            <ColumnContainer padding="1rem">
+              <GraphsWrapper>
+                {formatedDataEligibilityTest.length > 1 && (
+                  <Graph
+                    title="Nombre d’adresses testées (par mois)"
+                    errors={errorDataEligibilityTest}
+                    data={dataEligibilityTest}
+                    formatedData={formatedDataEligibilityTest}
+                    {...graphOptions}
+                  />
+                )}
+              </GraphsWrapper>
+            </ColumnContainer>
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
-            <NumberColumn>
-              <NumberBlock>
-                <NumberHighlight>
-                  {totalAddressTests.toLocaleString('fr-FR')}
-                </NumberHighlight>
-                Total nombre d’adresses testées
-              </NumberBlock>
-              <NumberBlock className="fr-mt-2w">
-                <NumberHighlight>
-                  <span>{Math.round(percentAddressPossible)}%</span>
-                  <NumberHoverableIcon>
-                    <HoverableIcon
-                      iconName="ri-information-fill"
-                      position="bottom"
-                      iconSize="1x"
-                    >
-                      "Potentiellement raccordables" : tests effectués pour des
-                      bâtiments situés à moins de 100 m d'un réseau avec un
-                      chauffage préexistant collectif.
-                    </HoverableIcon>
-                  </NumberHoverableIcon>
-                </NumberHighlight>
-                D’adresses potentiellement raccordables
-              </NumberBlock>
-            </NumberColumn>
+            <ColumnContainer>
+              <NumberContainer>
+                <NumberBlock>
+                  <NumberHighlight>
+                    {totalAddressTests.toLocaleString('fr-FR')}
+                  </NumberHighlight>
+                  Total nombre d’adresses testées
+                </NumberBlock>
+                <NumberBlock className="fr-mt-2w">
+                  <NumberHighlight>
+                    <span>{Math.round(percentAddressPossible)}%</span>
+                    <NumberHoverableIcon>
+                      <HoverableIcon
+                        iconName="ri-information-fill"
+                        position="bottom"
+                        iconSize="1x"
+                      >
+                        "Potentiellement raccordables" : tests effectués pour
+                        des bâtiments situés à moins de 100 m d'un réseau avec
+                        un chauffage préexistant collectif.
+                      </HoverableIcon>
+                    </NumberHoverableIcon>
+                  </NumberHighlight>
+                  D’adresses potentiellement raccordables
+                </NumberBlock>
+              </NumberContainer>
+            </ColumnContainer>
           </Column>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer>
           <Column className="fr-col-md-8 fr-col-12">
-            <GraphsWrapper>
-              {formatedDataCountBulkContact.length > 1 && (
-                <Graph
-                  title="Nombre d’adresses testées par liste (par mois)"
-                  errors={errorCountBulkContact}
-                  data={dataCountBulkContact}
-                  formatedData={formatedDataCountBulkContact}
-                  {...graphOptions}
-                />
-              )}
-            </GraphsWrapper>
+            <ColumnContainer padding="1rem">
+              <GraphsWrapper>
+                {formatedDataCountBulkContact.length > 1 && (
+                  <Graph
+                    title="Nombre d’adresses testées par liste (par mois)"
+                    errors={errorCountBulkContact}
+                    data={dataCountBulkContact}
+                    formatedData={formatedDataCountBulkContact}
+                    {...graphOptions}
+                  />
+                )}
+              </GraphsWrapper>
+            </ColumnContainer>
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
-            <NumberColumn>
-              <NumberBlock>
-                <NumberHighlight>
-                  {totalBulkTests.toLocaleString('fr-FR')}
-                </NumberHighlight>
-                Total nombre d’adresses testées par liste d’adresse
-              </NumberBlock>
-            </NumberColumn>
+            <ColumnContainer>
+              <NumberContainer>
+                <NumberBlock>
+                  <NumberHighlight>
+                    {totalBulkTests.toLocaleString('fr-FR')}
+                  </NumberHighlight>
+                  Total nombre d’adresses testées par liste d’adresse
+                </NumberBlock>
+              </NumberContainer>
+            </ColumnContainer>
           </Column>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer>
           <Column className="fr-col-md-8 fr-col-12">
-            <GraphsWrapper>
-              {formatedDataVisits.length > 1 && (
-                <Graph
-                  title="Nombre de visiteurs"
-                  errors={errorVisits}
-                  data={dataVisits}
-                  formatedData={formatedDataVisits}
-                  {...graphOptions}
-                />
-              )}
-            </GraphsWrapper>
+            <ColumnContainer padding="1rem">
+              <GraphsWrapper>
+                {formatedDataVisits.length > 1 && (
+                  <Graph
+                    title="Nombre de visiteurs"
+                    errors={errorVisits}
+                    data={dataVisits}
+                    formatedData={formatedDataVisits}
+                    {...graphOptions}
+                  />
+                )}
+              </GraphsWrapper>
+            </ColumnContainer>
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
-            <NumberColumn>
-              <NumberBlock>
-                <NumberHighlight>
-                  {Math.round(percentAddressTests)}%
-                </NumberHighlight>
-                Des visiteurs testent une adresse
-              </NumberBlock>
-            </NumberColumn>
+            <ColumnContainer>
+              <NumberContainer>
+                <NumberBlock>
+                  <NumberHighlight>
+                    {Math.round(percentAddressTests)}%
+                  </NumberHighlight>
+                  Des visiteurs testent une adresse
+                </NumberBlock>
+              </NumberContainer>
+            </ColumnContainer>
           </Column>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer>
           <Column className="fr-col-md-8 fr-col-12">
-            <GraphsWrapper>
-              {formatedDataVisits.length > 1 && (
-                <Graph
-                  title="Nombre de visiteurs sur la cartographie"
-                  errors={errorVisitsMap}
-                  data={dataVisitsMap}
-                  formatedData={formatedDataVisitsMap}
-                  {...graphOptions}
-                />
-              )}
-            </GraphsWrapper>
+            <ColumnContainer padding="1rem">
+              <GraphsWrapper>
+                {formatedDataVisits.length > 1 && (
+                  <Graph
+                    title="Nombre de visiteurs sur la cartographie"
+                    errors={errorVisitsMap}
+                    data={dataVisitsMap}
+                    formatedData={formatedDataVisitsMap}
+                    {...graphOptions}
+                  />
+                )}
+              </GraphsWrapper>
+            </ColumnContainer>
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
-            <NumberColumn>
-              <NumberBlock>
-                <NumberHighlight>
-                  {statistics.iFrameIntegration}
-                </NumberHighlight>
-                Intégrations de nos iframes
-              </NumberBlock>
-              <NumberBlock className="fr-mt-2w">
-                <NumberHighlight>{totalDownload}</NumberHighlight>
-                Téléchargements des tracés sur le site
-              </NumberBlock>
-            </NumberColumn>
+            <ColumnContainer>
+              <NumberContainer>
+                <NumberBlock>
+                  <NumberHighlight>
+                    {statistics.iFrameIntegration}
+                  </NumberHighlight>
+                  Intégrations de nos iframes
+                </NumberBlock>
+                <NumberBlock className="fr-mt-2w">
+                  <NumberHighlight>{totalDownload}</NumberHighlight>
+                  Téléchargements des tracés sur le site
+                </NumberBlock>
+              </NumberContainer>
+            </ColumnContainer>
           </Column>
         </StatisticsSliceContainer>
       </Slice>
