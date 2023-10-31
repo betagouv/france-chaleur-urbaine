@@ -3,7 +3,7 @@ const statistics = {
   CO2Tons: '28 000',
   networks: '640',
   heatPercent: '90',
-  connectionPercent: '27',
+  connectionPercent: '25',
   iFrameIntegration: '8',
   lastActu: '1er novembre 2023',
 };
