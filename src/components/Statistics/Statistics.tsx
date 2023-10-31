@@ -271,8 +271,6 @@ const Statistics = () => {
       }
     }
   );
-  console.log('formatedDataCountBulkContact');
-  console.log(formatedDataCountBulkContact);
 
   const { data: rawDataVisitsMap, error: errorVisitsMap } = useSWR(
     '/api/statistiques/visitsMap',
@@ -306,8 +304,6 @@ const Statistics = () => {
       }
     }
   );
-  console.log('formatedDataVisitsMap');
-  console.log(formatedDataVisitsMap);
 
   const totalContactDemands = useMemo(() => {
     //Not using formatted data because we want all data and not only since 2022
