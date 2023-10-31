@@ -17,11 +17,13 @@ export const StatisticsSliceContainer = styled.div`
 `;
 
 export const Column = styled.div`
-  :nth-child(even) {
-    padding-left: 1rem;
-  }
-  :nth-child(odd) {
-    padding-right: 1rem;
+  @media (min-width: 768px) {
+    :nth-child(even) {
+      padding-left: 1rem;
+    }
+    :nth-child(odd) {
+      padding-right: 1rem;
+    }
   }
 `;
 
@@ -46,7 +48,9 @@ export const NumberContainer = styled.div`
   gap: 24px 0;
 `;
 
-export const NumberBlock = styled.div``;
+export const NumberBlock = styled.div`
+  width: 100%;
+`;
 
 export const NumberHighlight = styled.div`
   color: #4550e5;

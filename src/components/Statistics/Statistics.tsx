@@ -392,7 +392,7 @@ const Statistics = () => {
             <ColumnContainer>
               <LastActuDate>Au {statistics.lastActu}</LastActuDate>
               <NumberContainer>
-                <NumberBlock className="fr-col-md-5">
+                <NumberBlock className="fr-col-md-5 fr-col-12">
                   <NumberHighlight>{statistics.connection}</NumberHighlight>
                   Raccordements à l'étude
                   <HoverableIcon
@@ -408,7 +408,7 @@ const Statistics = () => {
                     votée en AG avant que les travaux ne puissent démarrer.
                   </HoverableIcon>
                 </NumberBlock>
-                <NumberBlock className="fr-col-md-7">
+                <NumberBlock className="fr-col-md-7 fr-col-12">
                   <NumberHighlight>~ {statistics.CO2Tons}</NumberHighlight>
                   Tonnes de CO2 potentiellement économisées par an
                   <br />
