@@ -29,7 +29,7 @@ type ReturnApiStatAirtable = {
 const getYearsList = () => {
   const years = [];
   const currentYear = new Date().getFullYear();
-  for (let year = 2022; year !== currentYear + 1; year++) {
+  for (let year = 2022; year <= currentYear; year++) {
     years.push(year.toString());
   }
   return years;
