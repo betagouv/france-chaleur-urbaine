@@ -427,6 +427,7 @@ const Statistics = () => {
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
+              <LastActuDate>Au {statistics.lastActu}</LastActuDate>
               <NumberContainer>
                 <NumberBlock>
                   <NumberHighlight>{statistics.networks}</NumberHighlight>
@@ -619,6 +620,7 @@ const Statistics = () => {
           </Column>
           <Column className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
+              <LastActuDate>Au {statistics.lastActu}</LastActuDate>
               <NumberContainer>
                 <NumberBlock>
                   <NumberHighlight>
