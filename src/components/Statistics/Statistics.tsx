@@ -26,7 +26,16 @@ type ReturnApiStatAirtable = {
   nbUneligible: number;
 };
 
-const yearList = ['2022', '2023'];
+const getYearsList = () => {
+  const years = [];
+  const currentYear = new Date().getFullYear();
+  for (let year = 2022; year !== currentYear + 1; year++) {
+    years.push(year.toString());
+  }
+  return years;
+};
+const yearsList = getYearsList();
+
 const monthToString = [
   'Janvier',
   'Février',
@@ -65,8 +74,8 @@ const getFormattedDataSum = (formatedData: any[][]) => {
   let nbTotal = 0;
   formatedData &&
     formatedData.map((data, key) => {
-      if (key != 0) {
-        for (let i = 1; i <= yearList.length; i++) {
+      if (key !== 0) {
+        for (let i = 1; i <= yearsList.length; i++) {
           nbTotal += data[i];
         }
       }
@@ -82,10 +91,12 @@ const getFormattedData = (
     return [];
   }
   const returnData = Array.from({ length: 12 }, (n, i) =>
-    new Array(yearList.length + 1).fill(monthToString[i], 0, 1).fill(null, 1, 3)
+    new Array(yearsList.length + 1)
+      .fill(monthToString[i], 0, 1)
+      .fill(null, 1, 3)
   );
   let notEmpty = false;
-  yearList.forEach((year: string, i) => {
+  yearsList.forEach((year: string, i) => {
     monthToString.forEach((month: string, j) => {
       data.find((entry: any) => {
         const value = getValueFonction(year, j, entry);
@@ -97,7 +108,7 @@ const getFormattedData = (
     });
   });
   if (notEmpty) {
-    returnData.unshift(['x', ...yearList]);
+    returnData.unshift(['x', ...yearsList]);
   }
   return returnData;
 };
@@ -129,42 +140,35 @@ const Statistics = () => {
     );
   }, [rawDataEligibilityTest?.result]);
 
-  const getFormatedDataEligibilityTest = () => {
-    return getFormattedData(
-      dataEligibilityTest,
-      (year: string, monthIndex: number, entry: any) => {
-        const [entryYear, entryMonth] = entry?.filters?.date?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-          const key =
-            year === '2022' && (monthIndex === 4 || monthIndex === 5)
-              ? 'nb_visits'
-              : 'nb_events'; //Mai et juin
-          return (
-            getEntryValue(
-              entry,
-              'Formulaire de test - Adresse Inéligible',
-              key
-            ) +
-            getEntryValue(
-              entry,
-              'Formulaire de test - Carte - Adresse Inéligible',
-              key
-            ) +
-            getEntryValue(entry, 'Formulaire de test - Adresse Éligible', key) +
-            getEntryValue(
-              entry,
-              'Formulaire de test - Carte - Adresse Éligible',
-              key
-            )
-          );
-        }
+  const formatedDataEligibilityTest = getFormattedData(
+    dataEligibilityTest,
+    (year: string, monthIndex: number, entry: any) => {
+      const [entryYear, entryMonth] = entry?.filters?.date?.split('-') || [
+        'YYYY',
+        'MM',
+      ];
+      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+        const key =
+          year === '2022' && (monthIndex === 4 || monthIndex === 5)
+            ? 'nb_visits'
+            : 'nb_events'; //Mai et juin
+        return (
+          getEntryValue(entry, 'Formulaire de test - Adresse Inéligible', key) +
+          getEntryValue(
+            entry,
+            'Formulaire de test - Carte - Adresse Inéligible',
+            key
+          ) +
+          getEntryValue(entry, 'Formulaire de test - Adresse Éligible', key) +
+          getEntryValue(
+            entry,
+            'Formulaire de test - Carte - Adresse Éligible',
+            key
+          )
+        );
       }
-    );
-  };
-  const formatedDataEligibilityTest = getFormatedDataEligibilityTest();
+    }
+  );
 
   const { data: rawDataVisits, error: errorVisits } = useSWR(
     '/api/statistiques/visits',
@@ -189,21 +193,18 @@ const Statistics = () => {
     );
   }, [rawDataVisits?.result]);
 
-  const getFormatedDataVisits = () => {
-    return getFormattedData(
-      dataVisits,
-      (year: string, monthIndex: number, entry: any) => {
-        const [entryYear, entryMonth] = entry?.filters?.date?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-          return entry.nb_uniq_visitors;
-        }
+  const formatedDataVisits = getFormattedData(
+    dataVisits,
+    (year: string, monthIndex: number, entry: any) => {
+      const [entryYear, entryMonth] = entry?.filters?.date?.split('-') || [
+        'YYYY',
+        'MM',
+      ];
+      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+        return entry.nb_uniq_visitors;
       }
-    );
-  };
-  const formatedDataVisits = getFormatedDataVisits();
+    }
+  );
 
   const { data: rawDataCountContact, error: errorCountContact } = useSWR(
     '/api/statistiques/contacts?group=monthly',
@@ -226,21 +227,15 @@ const Statistics = () => {
         : undefined,
     [rawDataCountContact]
   );
-  const getFormatedDataCountContact = () => {
-    return getFormattedData(
-      dataCountContact,
-      (year: string, monthIndex: number, entry: any) => {
-        const [entryYear, entryMonth] = entry?.date?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-          return entry.nbTotal;
-        }
+  const formatedDataCountContact = getFormattedData(
+    dataCountContact,
+    (year: string, monthIndex: number, entry: any) => {
+      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
+      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+        return entry.nbTotal;
       }
-    );
-  };
-  const formatedDataCountContact = getFormatedDataCountContact();
+    }
+  );
 
   const { data: rawDataCountBulkContact, error: errorCountBulkContact } =
     useSWR('/api/statistiques/bulk', fetcher, {
@@ -264,21 +259,20 @@ const Statistics = () => {
         : undefined,
     [rawDataCountBulkContact]
   );
-  const getFormatedDataCountBulkContact = () => {
-    return getFormattedData(
-      dataCountBulkContact,
-      (year: string, monthIndex: number, entry: any) => {
-        const [entryYear, entryMonth] = entry?.period?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-          return entry.nbTotal;
-        }
+  const formatedDataCountBulkContact = getFormattedData(
+    dataCountBulkContact,
+    (year: string, monthIndex: number, entry: any) => {
+      const [entryYear, entryMonth] = entry?.period?.split('-') || [
+        'YYYY',
+        'MM',
+      ];
+      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+        return entry.nbTotal;
       }
-    );
-  };
-  const formatedDataCountBulkContact = getFormatedDataCountBulkContact();
+    }
+  );
+  console.log('formatedDataCountBulkContact');
+  console.log(formatedDataCountBulkContact);
 
   const { data: rawDataVisitsMap, error: errorVisitsMap } = useSWR(
     '/api/statistiques/visitsMap',
@@ -303,25 +297,28 @@ const Statistics = () => {
     );
   }, [rawDataVisitsMap?.result]);
 
-  const getFormatedDataVisitsMap = () => {
-    return getFormattedData(
-      dataVisitsMap,
-      (year: string, monthIndex: number, entry: any) => {
-        const [entryYear, entryMonth] = entry?.date?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-          return entry.nb_visits;
-        }
+  const formatedDataVisitsMap = getFormattedData(
+    dataVisitsMap,
+    (year: string, monthIndex: number, entry: any) => {
+      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
+      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+        return entry.nb_visits;
       }
-    );
-  };
-  const formatedDataVisitsMap = getFormatedDataVisitsMap();
+    }
+  );
+  console.log('formatedDataVisitsMap');
+  console.log(formatedDataVisitsMap);
 
   const totalContactDemands = useMemo(() => {
-    return getFormattedDataSum(formatedDataCountContact);
-  }, [formatedDataCountContact]);
+    //Not using formatted data because we want all data and not only since 2022
+    let nbTotal = 0;
+    if (dataCountContact) {
+      dataCountContact.map((row: any) => {
+        nbTotal += row.nbTotal;
+      });
+    }
+    return nbTotal;
+  }, [dataCountContact]);
 
   const totalAddressTests = useMemo(() => {
     return getFormattedDataSum(formatedDataEligibilityTest);
