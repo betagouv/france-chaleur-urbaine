@@ -70,9 +70,10 @@ import {
   objTypeEnergy,
   outlineLayerStyle,
   outlineCenterLayerStyle,
-  ProMode,
   raccordementsLayerStyle,
   zoneDPLayerStyle,
+  TopLegend,
+  TopLegendSwitch,
 } from './Map.style';
 import satelliteConfig from './satellite.config.json';
 import { MapboxStyleSwitcherControl } from './StyleSwitcher';
@@ -160,6 +161,7 @@ const getNetworkFilter = (
 const Map = ({
   withoutLogo,
   withLegend,
+  withHideLegendSwitch,
   withDrawing,
   legendTitle,
   initialLayerDisplay,
@@ -180,6 +182,7 @@ const Map = ({
   initialLayerDisplay: TypeLayerDisplay;
   legendData?: (string | TypeGroupLegend)[];
   withLegend?: boolean;
+  withHideLegendSwitch?: boolean;
   withDrawing?: boolean;
   center?: [number, number];
   legendTitle?: string;
@@ -934,28 +937,38 @@ const Map = ({
       <MapStyle
         legendCollapsed={!withLegend || legendCollapsed}
         drawing={drawing}
+        withTopLegend={!!setProMode || withHideLegendSwitch}
         withProMode={!!setProMode}
+        withHideLegendSwitch={withHideLegendSwitch}
       />
       <div className="map-wrap">
         {withLegend && (
           <>
-            <CollapseLegend
+            {!withHideLegendSwitch && (
+              <CollapseLegend
+                legendCollapsed={legendCollapsed}
+                onClick={() => setLegendCollapsed(!legendCollapsed)}
+              >
+                <Hoverable position="right">
+                  {legendCollapsed
+                    ? 'Afficher la légende'
+                    : 'Masquer la légende'}
+                </Hoverable>
+                <Icon
+                  size="2x"
+                  name={
+                    legendCollapsed
+                      ? 'ri-arrow-right-s-fill'
+                      : 'ri-arrow-left-s-fill'
+                  }
+                />
+              </CollapseLegend>
+            )}
+            <Legend
               legendCollapsed={legendCollapsed}
-              onClick={() => setLegendCollapsed(!legendCollapsed)}
+              withoutLogo={withoutLogo}
+              withHideLegendSwitch={withHideLegendSwitch}
             >
-              <Hoverable position="right">
-                {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
-              </Hoverable>
-              <Icon
-                size="2x"
-                name={
-                  legendCollapsed
-                    ? 'ri-arrow-right-s-fill'
-                    : 'ri-arrow-left-s-fill'
-                }
-              />
-            </CollapseLegend>
-            <Legend legendCollapsed={legendCollapsed} withoutLogo={withoutLogo}>
               <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               <LegendSeparator />
               {soughtAddresses.length > 0 && (
@@ -1067,29 +1080,60 @@ const Map = ({
             />
           </MapControlWrapper>
         )}
-        {setProMode && (
-          <ProMode legendCollapsed={!withLegend || legendCollapsed}>
-            <div className="fr-toggle fr-toggle--label-left">
-              <input
-                type="checkbox"
-                checked={proMode}
-                defaultChecked={proMode}
-                id="mode-pro-toggle"
-                onChange={(e) => {
-                  setProMode(e.target.checked);
-                }}
-                className="fr-toggle__input"
-              />
-              <label
-                className="fr-toggle__label"
-                htmlFor={'mode-pro-toggle'}
-                data-fr-checked-label="Activé"
-                data-fr-unchecked-label="Désactivé"
+        {(setProMode || withHideLegendSwitch) && (
+          <TopLegend legendCollapsed={!withLegend || legendCollapsed}>
+            {setProMode && (
+              <TopLegendSwitch
+                legendCollapsed={legendCollapsed}
+                isProMode={true}
               >
-                Mode professionnel
-              </label>
-            </div>
-          </ProMode>
+                <div className="fr-toggle fr-toggle--label-left">
+                  <input
+                    type="checkbox"
+                    checked={proMode}
+                    id="mode-pro-toggle"
+                    onChange={(e) => {
+                      setProMode(e.target.checked);
+                    }}
+                    className="fr-toggle__input"
+                  />
+                  <label
+                    className="fr-toggle__label"
+                    htmlFor={'mode-pro-toggle'}
+                    data-fr-checked-label="Activé"
+                    data-fr-unchecked-label="Désactivé"
+                  >
+                    Mode professionnel
+                  </label>
+                </div>
+              </TopLegendSwitch>
+            )}
+            {withHideLegendSwitch && (
+              <TopLegendSwitch legendCollapsed={legendCollapsed}>
+                <div className="fr-toggle fr-toggle--label-left">
+                  <input
+                    type="checkbox"
+                    checked={!legendCollapsed}
+                    id="top-switch-legend-toggle"
+                    onChange={(e) => {
+                      setLegendCollapsed(!e.target.checked);
+                    }}
+                    className="fr-toggle__input"
+                  />
+                  <label
+                    className="fr-toggle__label"
+                    htmlFor={'top-switch-legend-toggle'}
+                    data-fr-checked-label="Activé"
+                    data-fr-unchecked-label="Désactivé"
+                  >
+                    {legendCollapsed
+                      ? 'Afficher la légende'
+                      : 'Masquer la légende'}
+                  </label>
+                </div>
+              </TopLegendSwitch>
+            )}
+          </TopLegend>
         )}
         <MapProvider>
           <MapReactGL
