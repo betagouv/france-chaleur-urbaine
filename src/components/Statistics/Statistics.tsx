@@ -220,29 +220,27 @@ const Statistics = () => {
       rawDataCountContact
         ? Object.entries(
             (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
-          )
-            .filter(
-              ([key]) =>
-                key !==
-                `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
-                  2,
-                  '0'
-                )}`
-            )
-            .map(([, { ...value }]) => {
-              return {
-                ...value,
-              };
-            })
+          ).map(([, { ...value }]) => {
+            return {
+              ...value,
+            };
+          })
         : undefined,
     [rawDataCountContact]
   );
   const formatedDataCountContact = getFormattedData(
     dataCountContact,
     (year: string, monthIndex: number, entry: any) => {
-      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
-      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-        return entry.nbTotal;
+      if (
+        entry.date !== `${today.getFullYear()}-${String(today.getMonth() + 1)}`
+      ) {
+        const [entryYear, entryMonth] = entry?.date?.split('-') || [
+          'YYYY',
+          'MM',
+        ];
+        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+          return entry.nbTotal;
+        }
       }
     }
   );
