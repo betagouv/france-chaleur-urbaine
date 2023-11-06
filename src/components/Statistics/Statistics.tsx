@@ -496,15 +496,13 @@ const Statistics = () => {
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
-                {formatedDataEligibilityTest.length > 1 && (
-                  <Graph
-                    title="Nombre d’adresses testées"
-                    errors={errorDataEligibilityTest}
-                    data={dataEligibilityTest}
-                    formatedData={formatedDataEligibilityTest}
-                    {...graphOptions}
-                  />
-                )}
+                <Graph
+                  title="Nombre d’adresses testées"
+                  errors={errorDataEligibilityTest}
+                  data={dataEligibilityTest}
+                  formatedData={formatedDataEligibilityTest}
+                  {...graphOptions}
+                />
               </GraphsWrapper>
             </ColumnContainer>
           </Column>
@@ -544,15 +542,13 @@ const Statistics = () => {
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
-                {formatedDataVisits.length > 1 && (
-                  <Graph
-                    title="Nombre de visiteurs"
-                    errors={errorVisits}
-                    data={dataVisits}
-                    formatedData={formatedDataVisits}
-                    {...graphOptions}
-                  />
-                )}
+                <Graph
+                  title="Nombre de visiteurs"
+                  errors={errorVisits}
+                  data={dataVisits}
+                  formatedData={formatedDataVisits}
+                  {...graphOptions}
+                />
               </GraphsWrapper>
             </ColumnContainer>
           </Column>
@@ -575,15 +571,13 @@ const Statistics = () => {
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
-                {formatedDataVisitsMap.length > 1 && (
-                  <Graph
-                    title="Nombre de visiteurs sur la cartographie"
-                    errors={errorVisitsMap}
-                    data={dataVisitsMap}
-                    formatedData={formatedDataVisitsMap}
-                    {...graphOptions}
-                  />
-                )}
+                <Graph
+                  title="Nombre de visiteurs sur la cartographie"
+                  errors={errorVisitsMap}
+                  data={dataVisitsMap}
+                  formatedData={formatedDataVisitsMap}
+                  {...graphOptions}
+                />
               </GraphsWrapper>
             </ColumnContainer>
           </Column>
@@ -614,15 +608,13 @@ const Statistics = () => {
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
-                {formatedDataCountBulkContact.length > 1 && (
-                  <Graph
-                    title="Nombre d’adresses testées par liste"
-                    errors={errorCountBulkContact}
-                    data={dataCountBulkContact}
-                    formatedData={formatedDataCountBulkContact}
-                    {...graphOptions}
-                  />
-                )}
+                <Graph
+                  title="Nombre d’adresses testées par liste"
+                  errors={errorCountBulkContact}
+                  data={dataCountBulkContact}
+                  formatedData={formatedDataCountBulkContact}
+                  {...graphOptions}
+                />
               </GraphsWrapper>
             </ColumnContainer>
           </Column>
