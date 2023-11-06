@@ -449,15 +449,13 @@ const Statistics = () => {
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
-                {formatedDataCountContact.length > 1 && (
-                  <Graph
-                    title="Nombre de demandes de mise en contact avec un gestionnaire"
-                    errors={errorCountContact}
-                    data={dataCountContact}
-                    formatedData={formatedDataCountContact}
-                    {...graphOptions}
-                  />
-                )}
+                <Graph
+                  title="Nombre de demandes de mise en contact avec un gestionnaire"
+                  errors={errorCountContact}
+                  data={dataCountContact}
+                  formatedData={formatedDataCountContact}
+                  {...graphOptions}
+                />
               </GraphsWrapper>
             </ColumnContainer>
           </Column>
