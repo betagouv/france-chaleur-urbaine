@@ -498,6 +498,54 @@ const Statistics = () => {
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
+                {formatedDataEligibilityTest.length > 1 && (
+                  <Graph
+                    title="Nombre d’adresses testées"
+                    errors={errorDataEligibilityTest}
+                    data={dataEligibilityTest}
+                    formatedData={formatedDataEligibilityTest}
+                    {...graphOptions}
+                  />
+                )}
+              </GraphsWrapper>
+            </ColumnContainer>
+          </Column>
+          <Column className="fr-col-md-4 fr-col-12">
+            <ColumnContainer>
+              <NumberContainer>
+                <NumberBlock>
+                  <NumberHighlight>
+                    {totalAddressTests.toLocaleString('fr-FR')}
+                  </NumberHighlight>
+                  Total d'adresses testées
+                </NumberBlock>
+                <NumberBlock className="fr-mt-2w">
+                  <NumberHighlight>
+                    <span>{Math.round(percentAddressPossible)}%</span>
+                    <NumberHoverableIcon>
+                      <HoverableIcon
+                        iconName="ri-information-fill"
+                        position="bottom"
+                        iconSize="1x"
+                      >
+                        "Potentiellement raccordables" : tests effectués pour
+                        des bâtiments situés à moins de 100 m d'un réseau avec
+                        un chauffage préexistant collectif.
+                      </HoverableIcon>
+                    </NumberHoverableIcon>
+                  </NumberHighlight>
+                  Des adresses testées sont potentiellement raccordables
+                </NumberBlock>
+              </NumberContainer>
+            </ColumnContainer>
+          </Column>
+        </StatisticsSliceContainer>
+      </Slice>
+      <Slice>
+        <StatisticsSliceContainer>
+          <Column className="fr-col-md-8 fr-col-12">
+            <ColumnContainer padding="1rem">
+              <GraphsWrapper>
                 {formatedDataVisits.length > 1 && (
                   <Graph
                     title="Nombre de visiteurs"
@@ -557,54 +605,6 @@ const Statistics = () => {
                 <NumberBlock className="fr-mt-2w">
                   <NumberHighlight>{totalDownload}</NumberHighlight>
                   Téléchargements des tracés sur le site
-                </NumberBlock>
-              </NumberContainer>
-            </ColumnContainer>
-          </Column>
-        </StatisticsSliceContainer>
-      </Slice>
-      <Slice>
-        <StatisticsSliceContainer>
-          <Column className="fr-col-md-8 fr-col-12">
-            <ColumnContainer padding="1rem">
-              <GraphsWrapper>
-                {formatedDataEligibilityTest.length > 1 && (
-                  <Graph
-                    title="Nombre d’adresses testées"
-                    errors={errorDataEligibilityTest}
-                    data={dataEligibilityTest}
-                    formatedData={formatedDataEligibilityTest}
-                    {...graphOptions}
-                  />
-                )}
-              </GraphsWrapper>
-            </ColumnContainer>
-          </Column>
-          <Column className="fr-col-md-4 fr-col-12">
-            <ColumnContainer>
-              <NumberContainer>
-                <NumberBlock>
-                  <NumberHighlight>
-                    {totalAddressTests.toLocaleString('fr-FR')}
-                  </NumberHighlight>
-                  Total d'adresses testées
-                </NumberBlock>
-                <NumberBlock className="fr-mt-2w">
-                  <NumberHighlight>
-                    <span>{Math.round(percentAddressPossible)}%</span>
-                    <NumberHoverableIcon>
-                      <HoverableIcon
-                        iconName="ri-information-fill"
-                        position="bottom"
-                        iconSize="1x"
-                      >
-                        "Potentiellement raccordables" : tests effectués pour
-                        des bâtiments situés à moins de 100 m d'un réseau avec
-                        un chauffage préexistant collectif.
-                      </HoverableIcon>
-                    </NumberHoverableIcon>
-                  </NumberHighlight>
-                  Des adresses testées sont potentiellement raccordables
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>
