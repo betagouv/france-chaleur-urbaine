@@ -1,13 +1,26 @@
-# Le solaire thermique
+# Visite de l'unité de valorisation énergétique Isséane
 
-🤓 N°4 dans notre série sur les énergies renouvelables et de récupération qui alimentent les réseaux de chaleur : le solaire thermique.
+Pour découvrir les installations qui alimentent les réseaux de chaleur, direction Issy-les-Moulineaux !\
+\
+♨ Nous vous emmenons visiter l'unité de valorisation énergétique Isséane du [Syctom](https://www.syctom-paris.fr/accueil.html). Grâce à ses trois unités de valorisation énergétique (UVE), traitant les déchets de 5,7 millions d'habitants, le Syctom produit chaque année 3,5 millions de tonnes de vapeur qui viennent alimenter le réseau de chaleur de la Ville de Paris, géré par la CPCU. La chaleur issue de ces UVE représente ainsi plus de 40% du mix énergétique du réseau parisien et chauffe près de 300 000 équivalent-logements.\
+\
+Mise en service en 2007, Isséane est la plus récente de ces trois UVE. La suite en images ci-dessous ! 👇
 
-☀ En France, l'énergie solaire est majoritairement utilisée pour la production d'électricité, via des panneaux photovoltaïques. Pourtant, quoi de plus naturel que de récupérer directement sa chaleur, pour la production d'eau chaude sanitaire ou le chauffage ? C'est le principe des installations de solaire thermique, qui peuvent être installées directement sur des bâtiments ou alimenter des réseaux de chaleur.
+![](.gitbook/assets/1.jpg)\
+![](.gitbook/assets/2.jpg)
 
-La possibilité de concentrer l'énergie solaire pour produire des hautes températures a été comprise dès l'Antiquité. Mais ce n'est qu'au XIXème siècle que l'usage du solaire thermique commence à se répandre, avec les premiers chauffe-eaux solaires. Ces dernières années, les grandes installations de solaire thermique se sont multipliées chez certains de nos voisins européens, notamment au Danemark ou en Suède. Elles demeurent toutefois encore assez peu nombreuses en France...
+![](.gitbook/assets/3.jpg)
 
-👉 N'attendons plus pour développer l'usage de cette énergie 100% renouvelable et disponible partout !
+![](.gitbook/assets/4.jpg)
 
-Et pour faire connaître le solaire thermique autour de vous, n'hésitez pas à partager notre infographie. 👇
+![](.gitbook/assets/5.jpg)
 
-![](.gitbook/assets/FCU\_Infographie-Solaire.jpg)
+![](.gitbook/assets/6.jpg)
+
+![](.gitbook/assets/7.jpg)
+
+![](.gitbook/assets/8.jpg)
+
+![](.gitbook/assets/9.jpg)
+
+![](.gitbook/assets/10.jpg)

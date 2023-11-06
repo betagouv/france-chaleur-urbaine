@@ -20,6 +20,8 @@ import readme_5 from './README (5).md';
 import readme_6 from './README (6).md';
 import readme_7 from './README (7).md';
 import readme_8 from './README (8).md';
+import readme_9 from './README (9).md';
+import readme_10 from './README (10).md';
 import readme from './README.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
@@ -39,6 +41,7 @@ import visiteDuneChaufferieBiomasse from './visite-dune-chaufferie-biomasse.md';
 import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
 import desReseauxVertueux from './des-reseaux-vertueux.md';
 import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
+import lesReseauxDeChaleurEnMoinsDe15Secondes from './les-reseaux-de-chaleur-en-moins-de-15-secondes.md';
 
 const importFile = (file: string) => {
   return file.replaceAll('.gitbook/assets/', '/contents/');
@@ -46,10 +49,32 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/isseane.jpg',
+    title: "Visite de l'unité de valorisation énergétique Isséane",
+    slug: 'visite-de-l-unité-de-valorisation-énergétique-isséane',
+    content: importFile(readme),
+    publishedDate: new Date('2023-10-24'),
+  },
+  {
+    image: '/contents/video.jpg',
+    title: 'Les réseaux de chaleur en moins de 15 secondes',
+    slug: 'les-réseaux-de-chaleur-en-moins-de-15-secondes',
+    content: importFile(lesReseauxDeChaleurEnMoinsDe15Secondes),
+    publishedDate: new Date('2023-10-18'),
+  },
+  {
+    image: '/contents/90.jpg',
+    title:
+      'La cartographie la plus exhaustive des réseaux de chaleur et de froid',
+    slug: 'la-cartographie-la-plus-exhaustive-des-réseaux-de-chaleur-et-de-froid',
+    content: importFile(readme_10),
+    publishedDate: new Date('2023-10-10'),
+  },
+  {
     image: '/contents/solaire.jpg',
     title: 'Le solaire thermique',
     slug: 'le-solaire-thermique',
-    content: importFile(readme),
+    content: importFile(readme_9),
     publishedDate: new Date('2023-10-02'),
   },
   {
@@ -288,7 +313,7 @@ export const articles: Article[] = [
     publishedDate: new Date('2023-04-11'),
   },
   {
-    image: '/contents/10.jpg',
+    image: '/contents/10 (1).jpg',
     title: 'Se chauffer à prix stables',
     slug: 'se-chauffer-à-prix-stables',
     content: importFile(seChaufferAPrixStables),
