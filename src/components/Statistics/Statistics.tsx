@@ -51,6 +51,8 @@ const monthToString = [
   'Décembre',
 ];
 
+const today = new Date();
+
 const graphOptions = {
   large: true,
   legendPosition: 'top',
@@ -213,17 +215,25 @@ const Statistics = () => {
       onError: (err) => console.warn('errorCountContact >>', err),
     }
   );
-
   const dataCountContact = useMemo(
     () =>
       rawDataCountContact
         ? Object.entries(
             (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
-          ).map(([, { ...value }]) => {
-            return {
-              ...value,
-            };
-          })
+          )
+            .filter(
+              ([key]) =>
+                key !==
+                `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
+                  2,
+                  '0'
+                )}`
+            )
+            .map(([, { ...value }]) => {
+              return {
+                ...value,
+              };
+            })
         : undefined,
     [rawDataCountContact]
   );
