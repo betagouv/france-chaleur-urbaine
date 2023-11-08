@@ -62,6 +62,9 @@ export const NumberHighlight = styled.div`
     vertical-align: top;
   }
 `;
+export const LoadingTextHighlight = styled.span`
+  font-size: 24px;
+`;
 
 export const NumberHoverableIcon = styled.span`
   color: var(--text-default-grey);

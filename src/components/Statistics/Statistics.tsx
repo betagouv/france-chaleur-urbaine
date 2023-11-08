@@ -8,6 +8,7 @@ import {
   Container,
   GraphsWrapper,
   LastActuDate,
+  LoadingTextHighlight,
   NumberBlock,
   NumberContainer,
   NumberHighlight,
@@ -493,10 +494,12 @@ const Statistics = () => {
                     {totalContactDemands > 0 ? (
                       totalContactDemands.toLocaleString('fr-FR')
                     ) : (
-                      <span>
-                        Chargement en cours...
+                      <>
+                        <LoadingTextHighlight>
+                          Chargement en cours...
+                        </LoadingTextHighlight>
                         <br />
-                      </span>
+                      </>
                     )}
                   </NumberHighlight>
                   Total des demandes de mise en contact avec un gestionnaire
