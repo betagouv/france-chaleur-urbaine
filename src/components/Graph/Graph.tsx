@@ -8,6 +8,12 @@ const Graph = ({
   formatedData,
   large,
   withSum,
+  legendPosition,
+  legendAlignment,
+  titleTextStyle,
+  hAxisTextStyle,
+  vAxisTextStyle,
+  colors,
 }: {
   title: string;
   errors: any;
@@ -16,6 +22,12 @@ const Graph = ({
   date?: boolean;
   large?: boolean;
   withSum?: boolean;
+  legendPosition?: string;
+  legendAlignment?: string;
+  titleTextStyle?: any;
+  hAxisTextStyle?: any;
+  vAxisTextStyle?: any;
+  colors?: string[];
 }) => {
   const total = formatedData
     .slice(1)
@@ -33,17 +45,27 @@ const Graph = ({
         ) : (
           <Chart
             height={'400px'}
+            width={'100%'}
             chartType="LineChart"
             chartLanguage="FR-fr"
             loader={<div>Chargement du graphe...</div>}
             data={formatedData}
             options={{
               title: withSum ? `${title} - ${total} au total` : title,
-              colors: ['#0078f3', '#f60700', '#1f8d49', '#009099'],
+              titleTextStyle: titleTextStyle,
+              colors: colors || ['#0078f3', '#f60700', '#1f8d49', '#009099'],
               hAxis: {
                 slantedText: true,
                 slantedTextAngle: 30,
                 format: 'MMMM YYYY',
+                textStyle: hAxisTextStyle,
+              },
+              vAxis: {
+                textStyle: vAxisTextStyle,
+              },
+              legend: {
+                position: legendPosition ? legendPosition : 'right',
+                alignment: legendAlignment,
               },
             }}
           />
