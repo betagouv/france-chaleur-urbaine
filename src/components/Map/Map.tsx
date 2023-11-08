@@ -61,6 +61,7 @@ import {
   futurZoneLayerStyle,
   gasUsageLayerStyle,
   Legend,
+  LegendContainer,
   LegendLogo,
   LegendLogoLink,
   LegendLogoList,
@@ -966,89 +967,90 @@ const Map = ({
             )}
             <Legend
               legendCollapsed={legendCollapsed}
-              withoutLogo={withoutLogo}
               withHideLegendSwitch={withHideLegendSwitch}
             >
-              <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-              <LegendSeparator />
-              {soughtAddresses.length > 0 && (
-                <>
-                  {soughtAddresses
-                    .map((soughtAddress, index) => (
-                      <CardSearchDetails
-                        key={soughtAddress.id}
-                        address={soughtAddress}
-                        onClick={jumpTo}
-                        onClickClose={removeSoughtAddresses}
-                        onContacted={markAddressAsContacted}
-                        collapsed={
-                          collapsedCardIndex !==
-                          soughtAddresses.length - 1 - index
-                        }
-                        setCollapsed={(collapsed) => {
-                          if (collapsed) {
-                            setCollapsedCardIndex(-1);
-                          } else {
-                            setCollapsedCardIndex(
-                              soughtAddresses.length - 1 - index
-                            );
+              <LegendContainer withoutLogo={withoutLogo}>
+                <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+                <LegendSeparator />
+                {soughtAddresses.length > 0 && (
+                  <>
+                    {soughtAddresses
+                      .map((soughtAddress, index) => (
+                        <CardSearchDetails
+                          key={soughtAddress.id}
+                          address={soughtAddress}
+                          onClick={jumpTo}
+                          onClickClose={removeSoughtAddresses}
+                          onContacted={markAddressAsContacted}
+                          collapsed={
+                            collapsedCardIndex !==
+                            soughtAddresses.length - 1 - index
                           }
-                        }}
-                      />
-                    ))
-                    .reverse()}
-                  <LegendSeparator />
-                </>
-              )}
-              <MapLegend
-                legendTitle={legendTitle}
-                data={legendData || mapParam.legendData}
-                onToogleFeature={toggleLayer}
-                onToogleInGroup={(groupeName: string, idEntry?: any) => {
-                  switch (groupeName) {
-                    case 'energy': {
-                      toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
-                      break;
+                          setCollapsed={(collapsed) => {
+                            if (collapsed) {
+                              setCollapsedCardIndex(-1);
+                            } else {
+                              setCollapsedCardIndex(
+                                soughtAddresses.length - 1 - index
+                              );
+                            }
+                          }}
+                        />
+                      ))
+                      .reverse()}
+                    <LegendSeparator />
+                  </>
+                )}
+                <MapLegend
+                  legendTitle={legendTitle}
+                  data={legendData || mapParam.legendData}
+                  onToogleFeature={toggleLayer}
+                  onToogleInGroup={(groupeName: string, idEntry?: any) => {
+                    switch (groupeName) {
+                      case 'energy': {
+                        toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
+                        break;
+                      }
+                      case 'gasUsage': {
+                        toogleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
+                        break;
+                      }
+                      case 'gasUsageGroup': {
+                        toogleGasUsageGroupeVisibility();
+                        break;
+                      }
                     }
-                    case 'gasUsage': {
-                      toogleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
-                      break;
+                  }}
+                  onValuesChange={(
+                    groupName: string,
+                    idEntry: string,
+                    values: [number, number]
+                  ) => {
+                    switch (groupName) {
+                      case 'energy': {
+                        idEntry === 'gas'
+                          ? setLayerDisplay({
+                              ...layerDisplay,
+                              energyGasValues: values,
+                            })
+                          : setLayerDisplay({
+                              ...layerDisplay,
+                              energyFuelValues: values,
+                            });
+                        break;
+                      }
+                      case 'gasUsage': {
+                        setLayerDisplay({
+                          ...layerDisplay,
+                          gasUsageValues: values,
+                        });
+                        break;
+                      }
                     }
-                    case 'gasUsageGroup': {
-                      toogleGasUsageGroupeVisibility();
-                      break;
-                    }
-                  }
-                }}
-                onValuesChange={(
-                  groupName: string,
-                  idEntry: string,
-                  values: [number, number]
-                ) => {
-                  switch (groupName) {
-                    case 'energy': {
-                      idEntry === 'gas'
-                        ? setLayerDisplay({
-                            ...layerDisplay,
-                            energyGasValues: values,
-                          })
-                        : setLayerDisplay({
-                            ...layerDisplay,
-                            energyFuelValues: values,
-                          });
-                      break;
-                    }
-                    case 'gasUsage': {
-                      setLayerDisplay({
-                        ...layerDisplay,
-                        gasUsageValues: values,
-                      });
-                      break;
-                    }
-                  }
-                }}
-                layerDisplay={layerDisplay}
-              />
+                  }}
+                  layerDisplay={layerDisplay}
+                />
+              </LegendContainer>
             </Legend>
             {!withoutLogo && (
               <LegendLogoList legendCollapsed={legendCollapsed}>

@@ -150,12 +150,10 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
 
 export const Legend = styled.div<{
   legendCollapsed: boolean;
-  withoutLogo?: boolean;
   withHideLegendSwitch?: boolean;
 }>`
   z-index: ${mapControlZindex + 2};
   overflow: auto;
-  ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
   ${({ legendCollapsed }) =>
     legendCollapsed &&
     css`
@@ -175,9 +173,15 @@ export const Legend = styled.div<{
     css`
       top: 41px;
       position: absolute;
-      height: 100%;
+      height: calc(100% - 41px);
     `}
   }
+`;
+
+export const LegendContainer = styled.div<{
+  withoutLogo?: boolean;
+}>`
+  ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
 `;
 
 export const LegendSeparator = styled.div`
@@ -507,7 +511,7 @@ export const LegendLogoList = styled.div<{
 }>`
   width: 332px;
   position: absolute;
-  bottom: 4px;
+  bottom: 0px;
   z-index: 9999;
   background: #ffffff;
   ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
