@@ -72,13 +72,24 @@ const getEntryValue = (entry: any, value: string, data: string) => {
   return 0;
 };
 
-const getFormattedDataSum = (formatedData: any[][]) => {
+const getFormattedDataSum = (
+  formatedData: any[][],
+  startYear?: number,
+  startMonth?: number
+) => {
+  //Month : 1 to 12
   let nbTotal = 0;
   formatedData &&
-    formatedData.map((data, key) => {
+    formatedData.map((data, key: number) => {
       if (key !== 0) {
         for (let i = 1; i <= yearsList.length; i++) {
-          nbTotal += data[i];
+          if (startYear && startMonth) {
+            if (parseInt(yearsList[i - 1]) >= startYear && key >= startMonth) {
+              nbTotal += data[i];
+            }
+          } else {
+            nbTotal += data[i];
+          }
         }
       }
     });
@@ -270,12 +281,16 @@ const Statistics = () => {
   const formatedDataCountBulkContact = getFormattedData(
     dataCountBulkContact,
     (year: string, monthIndex: number, entry: any) => {
-      const [entryYear, entryMonth] = entry?.period?.split('-') || [
-        'YYYY',
-        'MM',
-      ];
-      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-        return entry.nbTotal;
+      if (
+        entry.date !== `${today.getFullYear()}-${String(today.getMonth() + 1)}`
+      ) {
+        const [entryYear, entryMonth] = entry?.period?.split('-') || [
+          'YYYY',
+          'MM',
+        ];
+        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+          return entry.nbTotal;
+        }
       }
     }
   );
@@ -333,12 +348,23 @@ const Statistics = () => {
   }, [formatedDataCountBulkContact]);
 
   const percentAddressTests = useMemo(() => {
-    const nbVisits = getFormattedDataSum(formatedDataVisits);
-    if (nbVisits && totalAddressTests) {
-      return (totalAddressTests / nbVisits) * 100;
+    const startYear = 2023;
+    const startMonth = 5;
+    const nbAdressesTests = getFormattedDataSum(
+      formatedDataEligibilityTest,
+      startYear,
+      startMonth
+    );
+    const nbVisits = getFormattedDataSum(
+      formatedDataVisits,
+      startYear,
+      startMonth
+    );
+    if (nbVisits && nbAdressesTests) {
+      return (nbAdressesTests / nbVisits) * 100;
     }
     return 0;
-  }, [formatedDataVisits, totalAddressTests]);
+  }, [formatedDataEligibilityTest, formatedDataVisits]);
 
   const percentAddressPossible = useMemo(() => {
     let nbTotal = 0;
