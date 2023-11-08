@@ -464,7 +464,14 @@ const Statistics = () => {
               <NumberContainer>
                 <NumberBlock>
                   <NumberHighlight>
-                    {totalContactDemands.toLocaleString('fr-FR')}
+                    {totalContactDemands > 0 ? (
+                      totalContactDemands.toLocaleString('fr-FR')
+                    ) : (
+                      <span>
+                        Chargement en cours...
+                        <br />
+                      </span>
+                    )}
                   </NumberHighlight>
                   Total des demandes de mise en contact avec un gestionnaire
                 </NumberBlock>
