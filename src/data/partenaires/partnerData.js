@@ -104,4 +104,9 @@ export default [
     title: 'Engie',
     link: 'https://www.engie-solutions.com/',
   },
+  {
+    image: './logo-UNAM.png',
+    title: 'UNAM',
+    link: 'https://unam-territoires.fr/',
+  },
 ];
