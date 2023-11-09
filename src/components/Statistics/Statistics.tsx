@@ -283,7 +283,8 @@ const Statistics = () => {
     dataCountBulkContact,
     (year: string, monthIndex: number, entry: any) => {
       if (
-        entry.date !== `${today.getFullYear()}-${String(today.getMonth() + 1)}`
+        entry.period !==
+        `${today.getFullYear()}-${String(today.getMonth() + 1)}`
       ) {
         const [entryYear, entryMonth] = entry?.period?.split('-') || [
           'YYYY',
