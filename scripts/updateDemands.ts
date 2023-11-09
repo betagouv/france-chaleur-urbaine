@@ -30,12 +30,14 @@ const updateDemands = async () => {
       let shouldUpdate = false;
       if (
         !demand.get('Distance au réseau') ||
-        !demand.get('Identifiant réseau')
+        !demand.get('Identifiant réseau') ||
+        !demand.get('Nom réseau')
       ) {
         const result = await closestNetwork(latitude, longitude);
         if (result.distance < 1000) {
           newValue['Distance au réseau'] = Math.round(result.distance);
           newValue['Identifiant réseau'] = result['Identifiant reseau'];
+          newValue['Nom réseau'] = result.nom_reseau;
           shouldUpdate = true;
         }
       }

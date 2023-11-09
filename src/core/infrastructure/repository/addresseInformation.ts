@@ -43,6 +43,7 @@ export const closestNetwork = async (
   'Taux EnR&R': number;
   'contenu CO2 ACV': number;
   Gestionnaire: string;
+  nom_reseau: string;
 }> => {
   const network = await db('reseaux_de_chaleur')
     .select(
@@ -50,7 +51,7 @@ export const closestNetwork = async (
         `ST_Distance(
           ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
           ST_Transform(geom, 2154)
-        ) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire"`
+        ) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire", nom_reseau`
       )
     )
     .where('has_trace', true)

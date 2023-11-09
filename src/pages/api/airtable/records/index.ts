@@ -85,6 +85,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
                 'Identifiant réseau': network
                   ? network['Identifiant reseau']
                   : undefined,
+                'Nom réseau': network ? network.nom_reseau : undefined,
                 'Relance à activer': toRelance,
               },
               { typecast: true }
