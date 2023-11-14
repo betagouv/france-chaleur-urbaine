@@ -341,6 +341,7 @@ const Manager = () => {
       ),
     },
     { name: 'Identifiant réseau', label: 'ID réseau le plus proche' },
+    { name: 'Nom réseau', label: 'Nom du réseau le plus proche' },
     {
       name: 'Nb logements',
       label: 'Nb logements (lots)',

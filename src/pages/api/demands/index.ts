@@ -45,6 +45,8 @@ const exportColumn: ExportColumn<Demand>[] = [
         ? demand['Distance au réseau']
         : demand['Gestionnaire Distance au réseau'],
   },
+  { header: 'ID réseau le plus proche', value: 'Identifiant réseau' },
+  { header: 'Nom du réseau le plus proche', value: 'Nom réseau' },
   {
     header: 'Nb logements',
     value: (demand) =>
