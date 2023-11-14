@@ -22,7 +22,9 @@ import readme_7 from './README (7).md';
 import readme_8 from './README (8).md';
 import readme_9 from './README (9).md';
 import readme_10 from './README (10).md';
+import readme_11 from './README (11).md';
 import readme from './README.md';
+import demandes from './2000-demandes.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
 import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urbaine-se-construit-avec-ses-usagers.md';
@@ -34,6 +36,7 @@ import lesReseauxDeChaleurDesEnergiesVertes from './les-reseaux-de-chaleur-des-e
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
 import page_2 from './page-2.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
+import unGuidePourLesExploitants from './un-guide-pour-les-exploitants.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
 import uneEnqueteIfopPourFranceChaleurUrbaine from './une-enquete-ifop-pour-france-chaleur-urbaine.md';
 import visiteDunDatacenter from './visite-dun-datacenter.md';
@@ -50,9 +53,30 @@ const importFile = (file: string) => {
 export const articles: Article[] = [
   {
     image: '/contents/isseane.jpg',
+    title: 'Enquête 2023 des réseaux de chaleur et de froid',
+    slug: 'enquete-2023-des-reseaux-de-chaleur-et-de-froid',
+    content: importFile(readme),
+    publishedDate: new Date('2023-11-14'),
+  },
+  {
+    image: '/contents/isseane.jpg',
+    title: '2000 demandes',
+    slug: '2000-demandes',
+    content: importFile(demandes),
+    publishedDate: new Date('2023-11-14'),
+  },
+  {
+    image: '/contents/isseane.jpg',
+    title: 'Un guide pour les exploitants',
+    slug: 'un-guide-pour-les-exploitants',
+    content: importFile(unGuidePourLesExploitants),
+    publishedDate: new Date('2023-11-14'),
+  },
+  {
+    image: '/contents/isseane.jpg',
     title: "Visite de l'unité de valorisation énergétique Isséane",
     slug: 'visite-de-l-unité-de-valorisation-énergétique-isséane',
-    content: importFile(readme),
+    content: importFile(readme_11),
     publishedDate: new Date('2023-10-24'),
   },
   {
