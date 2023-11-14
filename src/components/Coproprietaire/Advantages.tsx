@@ -15,7 +15,7 @@ const Advantages = () => {
         <Advantage className="fr-col-md-12 fr-col-lg-3">
           <img src="/img/copro_advantages_1.svg" />
           <div>
-            Réduisez vos factures de chauffage <b>jusqu’à 40%</b>
+            Réduisez vos factures de chauffage <b>jusqu’à 30%</b>
           </div>
         </Advantage>
         <Advantage className="fr-col-md-12 fr-col-lg-3">
