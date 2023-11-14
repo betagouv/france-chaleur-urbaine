@@ -1,12 +1,13 @@
-version: '3'
 services:
   db:
-    build: ./docker/db
+    image: postgis/postgis:14-3.4-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres_fcu
     ports:
       - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
 
   maildev:
     image: maildev/maildev
@@ -34,3 +35,6 @@ services:
       - .:/app
     depends_on: # https://docs.docker.com/compose/startup-order/
       - db
+
+volumes:
+  db:
