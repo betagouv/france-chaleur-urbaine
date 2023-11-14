@@ -12,6 +12,8 @@ import {
   Title,
 } from './Simulator.styles';
 
+const prixSpotCEE = 8.42; // €/MWh cumac
+
 const Simulator = ({
   cartridge,
   withMargin,
@@ -44,7 +46,7 @@ const Simulator = ({
     }
   }
 
-  help = help * 0.75 * parseFloat(process.env.PRIX_SPOT_C2E || '6');
+  help = help * 0.75 * prixSpotCEE;
 
   return (
     <Container
