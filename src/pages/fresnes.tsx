@@ -24,7 +24,7 @@ export default function Home() {
         </title>
       </Head>
 
-      <MainContainer currentMenu={'/landing'}>
+      <MainContainer currentMenu={'/'}>
         <div>
           <GlobalStyle />
           <HeadSliceForm
