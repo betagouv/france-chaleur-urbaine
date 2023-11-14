@@ -34,13 +34,13 @@ const UseCase = () => {
         <p>4 mois</p>
         <h3>Coût du raccordement :</h3>
         <Cartridge theme="yellow">
-          <CartridgeTitle>105 000€ - 54 000€ d’aides</CartridgeTitle>
+          <CartridgeTitle>105 000€ - 76 000€ d’aides</CartridgeTitle>
           (Coup de pouce chauffage des bâtiments résidentiels collectifs et
           tertiaires)
           <br />
           <br />
           <CartridgeContent>
-            Soit <CartridgeContentValue>400€</CartridgeContentValue> par lot
+            Soit <CartridgeContentValue>230€</CartridgeContentValue> par lot
             environ.
           </CartridgeContent>
         </Cartridge>
