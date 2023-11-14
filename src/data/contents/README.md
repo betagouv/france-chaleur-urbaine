@@ -1,31 +1,13 @@
----
-cover: .gitbook/assets/isseane.jpg
-coverY: 0
----
+# Enquête 2023 des réseaux de chaleur et de froid
 
-# Visite de l'unité de valorisation énergétique Isséane
-
-Pour découvrir les installations qui alimentent les réseaux de chaleur, direction Issy-les-Moulineaux !\
+Comment évoluent les réseaux de chaleur français ? Ils poursuivent leur décarbonation et confirment le rôle majeur qu'ils ont à jouer dans la transition énergétique\
 \
-♨ Nous vous emmenons visiter l'unité de valorisation énergétique Isséane du [Syctom](https://www.syctom-paris.fr/accueil.html). Grâce à ses trois unités de valorisation énergétique (UVE), traitant les déchets de 5,7 millions d'habitants, le Syctom produit chaque année 3,5 millions de tonnes de vapeur qui viennent alimenter le réseau de chaleur de la Ville de Paris, géré par la CPCU. La chaleur issue de ces UVE représente ainsi plus de 40% du mix énergétique du réseau parisien et chauffe près de 300 000 équivalent-logements.\
+📈 C'est ce que nous dévoile la dernière enquête annuelle des réseaux de chaleur et de froid, réalisée par la FEDENE avec le concours de l'Association Amorce et sous tutelle du service des données et statistiques du Ministère de la transition écologique.\
 \
-Mise en service en 2007, Isséane est la plus récente de ces trois UVE. La suite en images ci-dessous ! 👇
+✔ En 2022, le taux moyen d'énergies renouvelables et de récupération des réseaux s'élève à 66,5%, contre 62,6% en 2021. En 10 ans, ce taux a été multiplié par 1,8, ce qui a permis de réduire le contenu CO2 des réseaux de 200 gCO2/kWh en 2012 à 112 gCO2/kWh en 2022 (en analyse du cycle de vie, incluant les émissions indirectes).\
+\
+🎯 L'effort doit encore s'intensifier pour atteindre les objectifs 2030 qui visent 75% d'énergies renouvelables et de récupération et un contenu CO2 de 79 gC02/kWh.\
+\
+Vous souhaitez en savoir plus ? Ci-dessous le lien vers la synthèse de l'enquête. 👇
 
-![](.gitbook/assets/1.jpg)\
-![](.gitbook/assets/2.jpg)
-
-![](.gitbook/assets/3.jpg)
-
-![](.gitbook/assets/4.jpg)
-
-![](.gitbook/assets/5.jpg)
-
-![](.gitbook/assets/6.jpg)
-
-![](.gitbook/assets/7.jpg)
-
-![](.gitbook/assets/8.jpg)
-
-![](.gitbook/assets/9.jpg)
-
-![](.gitbook/assets/10.jpg)
+[https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene\_enquete\_version-numerique.pdf](https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene\_enquete\_version-numerique.pdf)
