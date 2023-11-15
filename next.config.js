@@ -114,14 +114,21 @@ module.exports = withBundleAnalyzer({
         source: '/:path*',
         headers: securityHeaders,
       },
-      { source: '/carte-collectivite', headers: securityHeadersIFramable },
-      { source: '/viaseva', headers: securityHeadersIFramable },
-      { source: '/engie', headers: securityHeadersIFramable },
-      { source: '/dalkia', headers: securityHeadersIFramable },
-      { source: '/charleville-mezieres', headers: securityHeadersIFramable },
-      { source: '/form', headers: securityHeadersIFramable },
-      { source: '/map', headers: securityHeadersIFramable },
-      { source: '/page-reseaux/:network', headers: securityHeadersIFramable },
+
+      // Attention: keep in sync with src/services/iframe.ts
+      ...[
+        '/carte-collectivite',
+        '/charleville-mezieres',
+        '/dalkia',
+        '/engie',
+        '/form',
+        '/map',
+        '/page-reseaux/:network',
+        '/viaseva',
+      ].map((source) => ({
+        source,
+        headers: securityHeadersIFramable,
+      })),
     ];
   },
   webpack: function (config) {
