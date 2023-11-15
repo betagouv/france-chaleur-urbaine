@@ -164,6 +164,7 @@ const Map = ({
   withLegend,
   withHideLegendSwitch,
   withDrawing,
+  withBorder,
   legendTitle,
   initialLayerDisplay,
   legendData,
@@ -185,6 +186,7 @@ const Map = ({
   withLegend?: boolean;
   withHideLegendSwitch?: boolean;
   withDrawing?: boolean;
+  withBorder?: boolean;
   center?: [number, number];
   legendTitle?: string;
   legendLogoOpt?: TypeLegendLogo;
@@ -941,6 +943,7 @@ const Map = ({
         withTopLegend={!!setProMode || withHideLegendSwitch}
         withProMode={!!setProMode}
         withHideLegendSwitch={withHideLegendSwitch}
+        withBorder={withBorder}
       />
       <div className="map-wrap">
         {withLegend && (

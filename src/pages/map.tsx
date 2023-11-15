@@ -64,6 +64,7 @@ const MapPage = () => {
         withLegend={legend === 'true'}
         withHideLegendSwitch={legend === 'true'}
         withDrawing={drawing === 'true'}
+        withBorder
         legendData={legendData}
         initialLayerDisplay={
           displayArray
