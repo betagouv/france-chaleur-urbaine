@@ -76,7 +76,7 @@ const ContactForm = () => {
             options={[
               {
                 value: '',
-                label: "- Selectionner l'objet de votre message -",
+                label: "- Sélectionner l'objet de votre message -",
                 disabled: true,
                 hidden: true,
               },
