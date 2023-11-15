@@ -20,8 +20,8 @@ Par l’entremise de France Chaleur Urbaine, le gestionnaire du réseau prend co
     body: `::counter-item[03.]
 Les frais de raccordements s’élèvent à **120 000€**.
 La copropriété d’Anne obtient des aides au titre du Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires.
-**Le coût du raccordement baisse à 50 000€ !**
-**Soit 400€ par lot environ.**
+**Le coût du raccordement baisse à 76 000€ !**
+**Soit 230€ par lot environ.**
 
 Les travaux durent 4 mois en tout comprenant le remplacement de la chaudière par une sous-station et le raccordement au réseau passant à 15 m.`,
     imgSrc: `/img/user-experience-3.png`,

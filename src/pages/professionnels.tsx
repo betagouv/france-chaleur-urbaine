@@ -162,7 +162,7 @@ Le conseiller en rénovation ou le gestionnaire de l’immeuble demande via Fran
             body={`
 ::counter-item[02.] 
 *Les frais de raccordement s’élèvent à 105 000 €.*
-*Le « [Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires](/ressources/aides#contenu) » permet de réduire ce coût à 50 000 €, soit 400 € par lot.*
+*Le « [Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires](/ressources/aides#contenu) » permet de réduire ce coût à 29 000 €, soit 230 € par lot.*
 
 Les travaux durent 2 mois en tout, sans nuisance !
 
