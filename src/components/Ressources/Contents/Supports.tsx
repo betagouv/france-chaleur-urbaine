@@ -97,6 +97,12 @@ const Supports = () => {
             <p>Réseau de froid d’Annecy</p>
           </Link>
         </div>
+        <div>
+          <Link href="/documentation/FCU_Isseane.pdf" target="_blank">
+            <img src="/img/FCU_Isseane.jpg" alt="" width={150} />
+            <p>Unité de valorisation énergétique d'Issy-les-Moulineaux</p>
+          </Link>
+        </div>
       </SupportImages>
       <Subtitle>Dossier de presse</Subtitle>
       <SupportImages>
