@@ -1,5 +1,3 @@
-/** @type {import('next-sitemap').IConfig} */
-
 const ressources = [
   'reseau',
   'energies-vertes',
@@ -20,6 +18,7 @@ const ressources = [
   'reseau-classe',
 ];
 
+/** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
   generateRobotsTxt: true, // (optional)
