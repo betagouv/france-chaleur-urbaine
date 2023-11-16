@@ -34,7 +34,8 @@ export const MapStyle: any = createGlobalStyle<{
       display: flex;
       width: 100%;
       height: 100%;
-      border: ${({ withBorder }) => (withBorder ? '1px solid' : undefined)}
+      border: ${({ withBorder }) =>
+        withBorder ? '1px solid #c3c3c3' : undefined}
     }
 
     .map, .maplibregl-map {
