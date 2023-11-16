@@ -22,6 +22,7 @@ const CollectivityMap = () => {
           energyFuelValues: [50, Number.MAX_VALUE],
         }}
         withLegend
+        withBorder
         withHideLegendSwitch
         legendTitle="Réseaux de chaleur"
         legendData={mapParam.legendData.filter(

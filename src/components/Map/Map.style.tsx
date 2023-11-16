@@ -27,12 +27,15 @@ export const MapStyle: any = createGlobalStyle<{
   withTopLegend: boolean;
   withProMode: boolean;
   withHideLegendSwitch: boolean;
+  withBorder: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
       position: relative;
       display: flex;
       width: 100%;
       height: 100%;
+      border: ${({ withBorder }) =>
+        withBorder ? '1px solid #c3c3c3' : undefined}
     }
 
     .map, .maplibregl-map {

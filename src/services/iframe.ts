@@ -1,11 +1,11 @@
 // Attention: change also the next config csp
 export const iframedPaths = [
+  '/carte-collectivite',
+  '/charleville-mezieres',
+  '/dalkia',
+  '/engie',
   '/form',
   '/map',
-  '/viaseva',
-  '/engie',
-  '/dalkia',
-  '/charleville-mezieres',
-  '/carte-collectivite',
   '/page-reseaux/*',
+  '/viaseva',
 ];
