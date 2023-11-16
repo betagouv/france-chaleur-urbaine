@@ -1,12 +1,15 @@
 services:
   db:
     image: postgis/postgis:14-3.4-alpine
+    shm_size: 256m
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres_fcu
     ports:
       - '5432:5432'
     volumes:
+      - ./docker/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - db:/var/lib/postgresql/data
 
   maildev:
