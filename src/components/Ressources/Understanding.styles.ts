@@ -6,6 +6,7 @@ export const UnderstandingCards = styled.div`
   flex-wrap: wrap;
   padding: 8px;
   gap: 32px;
+  justify-content: center;
 `;
 
 export const UnderstandingCard = styled(Card)`
