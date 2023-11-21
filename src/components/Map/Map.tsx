@@ -7,14 +7,14 @@ import MapReactGL, {
   MapSourceDataEvent,
   NavigationControl,
   ScaleControl,
-} from 'react-map-gl';
+} from 'react-map-gl/maplibre';
+// import MapReactGL from 'react-map-gl/maplibre';
 
 import Hoverable from '@components/Hoverable';
 import { Icon } from '@dataesr/react-dsfr';
 import { useContactFormFCU, usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import {
@@ -1143,9 +1143,6 @@ const Map = ({
         <MapProvider>
           <MapReactGL
             initialViewState={initialViewState}
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore: Wrong npm types
-            mapLib={maplibregl}
             mapStyle={carteConfig}
             attributionControl={false}
             maxZoom={maxZoom}
