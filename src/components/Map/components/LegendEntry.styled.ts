@@ -9,10 +9,11 @@ export const LabelLegendInputLabel = styled.div`
   display: flex;
 `;
 
-export const LabelLegendWrapper = styled.div`
+export const LabelLegendWrapper = styled.label`
   font-size: 0.95em;
   display: flex;
   align-items: flex-start;
+  cursor: pointer;
 
   input {
     margin-top: 2px;
