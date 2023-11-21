@@ -23,6 +23,11 @@
 
 ## Deuxième étape - en dev
 
+Script :
+```sh
+./scripts/copyLocalNetworkToRemote.sh preprod reseaux_de_chaleur
+```
+
 1. Se connecter sur Scalingo : `scalingo --region osc-fr1 --app france-chaleur-urbaine-dev db-tunnel SCALINGO_POSTGRESQL_URL`
     - Le mot de passe est dans Scalingo
     - On peut maintenant accéder à la base de dev sur 127.0.0.1:10000
@@ -45,11 +50,16 @@
 6. Aller redémarrer le container *web* sur Scalingo
 
 7. Tester
-    - france-chaleur-urbaine-dev.osc-fr1.scalingo.io
+    - https://france-chaleur-urbaine-dev.osc-fr1.scalingo.io
     - Vérifier les adresses que Sebastien nous envoie à vérifier
 <br/><br/>
 
 ## Dernière étape - mise en prod
+
+Script :
+```sh
+./scripts/copyLocalNetworkToRemote.sh prod reseaux_de_chaleur
+```
 
 1. Se connecter sur Scalingo : `scalingo --region osc-fr1 --app france-chaleur-urbaine db-tunnel SCALINGO_POSTGRESQL_URL`
     - Le mot de passe est dans Scalingo
