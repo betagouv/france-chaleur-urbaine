@@ -43,7 +43,7 @@ const getCloseQuery = (
   geom: string,
   distance: number
 ) => `
-ST_DISTANCE(
+ST_DWithin(
   ST_Transform(${geom}, 2154),
   ST_Transform(
     ST_MakeLine(
@@ -51,8 +51,9 @@ ST_DISTANCE(
         (coords) => `ST_SetSRID(ST_MakePoint(${coords}), 4326)`
       )}]
     )
-  , 2154) 
-) < ${distance}
+  , 2154),
+  ${distance}
+)
 `;
 
 const getNetworkSummary = async (
@@ -100,10 +101,10 @@ const getGasSummary = async (coordinates: number[][]): Promise<GasSummary[]> =>
       EXISTS (
         SELECT *
         FROM reseaux_de_chaleur rdc
-        WHERE ST_Distance(
+        WHERE ST_DWithin(
           ST_Transform(rdc.geom, 2154),
-          ST_Transform(gas.geom, 2154)
-          ) < 50
+          ST_Transform(gas.geom, 2154),
+          50)
         LIMIT 1
       ) as is_close
       `)
@@ -121,10 +122,10 @@ const getEnergySummary = async (
       EXISTS (
         SELECT *
         FROM reseaux_de_chaleur rdc
-        WHERE ST_Distance(
+        WHERE ST_DWithin(
           ST_Transform(rdc.geom, 2154),
-          ST_Transform(energy.geom_adresse, 2154)
-          ) < 50
+          ST_Transform(energy.geom_adresse, 2154),
+          50)
         LIMIT 1
       ) as is_close
       `)
@@ -148,10 +149,10 @@ const exportGasSummary = async (
         EXISTS (
           SELECT *
           FROM reseaux_de_chaleur rdc
-          WHERE ST_Distance(
+          WHERE ST_DWithin(
             ST_Transform(rdc.geom, 2154),
-            ST_Transform(gas.geom, 2154)
-            ) < 50
+            ST_Transform(gas.geom, 2154),
+            50)
           LIMIT 1
         ) as is_close
       `)
@@ -169,10 +170,11 @@ const exportEnergyGasSummary = async (
         EXISTS (
           SELECT *
           FROM reseaux_de_chaleur rdc
-          WHERE ST_Distance(
+          WHERE ST_DWithin(
             ST_Transform(rdc.geom, 2154),
-            ST_Transform(energy.geom_adresse, 2154)
-            ) < 50
+            ST_Transform(energy.geom_adresse, 2154),
+            50,
+            )
           LIMIT 1
         ) as is_close
       `),
@@ -202,10 +204,10 @@ const exportEnergyFioulSummary = async (
         EXISTS (
           SELECT *
           FROM reseaux_de_chaleur rdc
-          WHERE ST_Distance(
+          WHERE ST_DWithin(
             ST_Transform(rdc.geom, 2154),
-            ST_Transform(energy.geom_adresse, 2154)
-            ) < 50
+            ST_Transform(energy.geom_adresse, 2154),
+            50)
           LIMIT 1
         ) as is_close
       `),
