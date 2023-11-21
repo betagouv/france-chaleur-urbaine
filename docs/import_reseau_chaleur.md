@@ -72,3 +72,21 @@
 
 6. Tester
     - Vérifier les adresses que Sebastien nous envoie à vérifier
+
+
+## Pour les autres réseaux / tables
+
+1. Réseaux de froid
+    - Tables : *reseaux_de_froid* et *reseaux_de_froid_tiles*
+    - Dans les scripts *network* devient *coldNetwork*
+    - Même process que pour les réseaux de chaleur
+
+2. Réseaux en construction
+    - Tables : *zones_et_reseaux_en_construction* et *zones_et_reseaux_en_construction_tiles*
+    - Dans les scripts *network* devient *futurNetwork*
+    - Même process que pour les réseaux de chaleur
+
+2. Zone de développement prioritaire
+    - Tables : *zone_de_developpement_prioritaire* et *zone_de_developpement_prioritaire_tiles*
+    - Dans les scripts *network* devient *zoneDP*
+    - Les données ne sont pas présentes dans le AirTable donc il faut sauter cette étape et utiliser le script fillTiles directement
