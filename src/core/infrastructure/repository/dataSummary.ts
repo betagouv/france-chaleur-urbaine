@@ -102,7 +102,7 @@ const getGasSummary = async (coordinates: number[][]): Promise<GasSummary[]> =>
         SELECT *
         FROM reseaux_de_chaleur rdc
         WHERE ST_DWithin(
-          ST_Transform(rdc.geom, 2154),
+          rdc.geom,
           ST_Transform(gas.geom, 2154),
           50)
         LIMIT 1
@@ -123,7 +123,7 @@ const getEnergySummary = async (
         SELECT *
         FROM reseaux_de_chaleur rdc
         WHERE ST_DWithin(
-          ST_Transform(rdc.geom, 2154),
+          rdc.geom,
           ST_Transform(energy.geom_adresse, 2154),
           50)
         LIMIT 1
@@ -150,7 +150,7 @@ const exportGasSummary = async (
           SELECT *
           FROM reseaux_de_chaleur rdc
           WHERE ST_DWithin(
-            ST_Transform(rdc.geom, 2154),
+            rdc.geom,
             ST_Transform(gas.geom, 2154),
             50)
           LIMIT 1
@@ -171,7 +171,7 @@ const exportEnergyGasSummary = async (
           SELECT *
           FROM reseaux_de_chaleur rdc
           WHERE ST_DWithin(
-            ST_Transform(rdc.geom, 2154),
+            rdc.geom,
             ST_Transform(energy.geom_adresse, 2154),
             50,
             )
@@ -205,7 +205,7 @@ const exportEnergyFioulSummary = async (
           SELECT *
           FROM reseaux_de_chaleur rdc
           WHERE ST_DWithin(
-            ST_Transform(rdc.geom, 2154),
+            rdc.geom,
             ST_Transform(energy.geom_adresse, 2154),
             50)
           LIMIT 1
