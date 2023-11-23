@@ -6,7 +6,7 @@ import { FuturNetworkSummary } from 'src/types/Summary/FuturNetwork';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
-import { objTypeEnergy } from '../Map.style';
+import { objTypeEnergy, PopupTitle } from '../Map.style';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {
@@ -180,6 +180,9 @@ const MapPopupContent = ({
         )}
         {displayNetwork && network && (
           <>
+            {network.nom_reseau && (
+              <PopupTitle>{network.nom_reseau}</PopupTitle>
+            )}
             {network.commentaires && (
               <>
                 <strong>{network.commentaires}</strong>
