@@ -83,6 +83,8 @@ const Manager = () => {
   const [mapCollapsed, setMapCollapsed] = useState(false);
   const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
   const [centerPin, setCenterPin] = useState<[number, number]>();
+  const [firstCenterPin, setFirstCenterPin] = useState<[number, number]>();
+  const [initialZoom, setInitialZoom] = useState<number>(8);
 
   const handleSort = useCallback(
     (key: keyof Demand, backupKey?: keyof Demand) => () => {
@@ -97,12 +99,18 @@ const Manager = () => {
     [sort]
   );
 
+  const setMapCenter = (pin: [number, number]) => {
+    setCenterPin(pin);
+    setInitialZoom(16);
+  };
+
   const highlightPin = useCallback((id: string) => {
     setMapPins((currentMapPins) => {
       const newMapPins: MapMarkerInfos[] = currentMapPins;
       newMapPins.map((pin: MapMarkerInfos) => {
         if (pin.id == id) {
           pin.color = 'red';
+          setMapCenter([pin.longitude, pin.latitude]);
         } else if (pin.color != '#4550e5') {
           pin.color = '#4550e5';
         }
@@ -158,14 +166,6 @@ const Manager = () => {
     [highlightPin, highlightRow]
   );
 
-  const onCenterPin = useCallback(
-    (demand: any) => {
-      setCenterPin([demand.Longitude, demand.Latitude]);
-      highlight(demand['N° de dossier']);
-    },
-    [highlight]
-  );
-
   const addOnClick = useCallback(() => {
     if (refManagerTable.current) {
       const rows = refManagerTable.current.querySelectorAll('tbody tr');
@@ -180,7 +180,7 @@ const Manager = () => {
             );
             if (matchingDemand) {
               row.addEventListener('click', () => {
-                onCenterPin(matchingDemand);
+                highlight(matchingDemand['N° de dossier']);
               });
             }
           }
@@ -188,13 +188,15 @@ const Manager = () => {
         setIsFirstInit(false);
       }
     }
-  }, [demands, onCenterPin]);
+  }, [demands, highlight]);
 
   const onUpdateMapPins = useCallback(() => {
     const addressList: MapMarkerInfos[] = [];
+    let firstDemand: any;
     if (filteredDemands) {
       filteredDemands.forEach((demand: any) => {
         if (demand.Latitude && demand.Longitude) {
+          !firstDemand && (firstDemand = demand);
           addressList.push({
             id: demand['N° de dossier'],
             latitude: demand.Latitude,
@@ -209,8 +211,11 @@ const Manager = () => {
     setMapPins(addressList);
     if (isFirstInit) {
       addOnClick();
+      if (firstDemand) {
+        setFirstCenterPin([firstDemand.Longitude, firstDemand.Latitude]);
+      }
     }
-  }, [filteredDemands, highlight, isFirstInit, addOnClick]);
+  }, [filteredDemands, isFirstInit, highlight, addOnClick]);
 
   const onFilterUpdate = useCallback(
     (demands: Demand[]) => {
@@ -453,7 +458,8 @@ const Manager = () => {
                 <Map
                   noPopup
                   withoutLogo
-                  center={centerPin ? centerPin : undefined}
+                  center={centerPin ? centerPin : firstCenterPin}
+                  initialZoom={initialZoom}
                   initialLayerDisplay={{
                     outline: true,
                     futurOutline: true,
