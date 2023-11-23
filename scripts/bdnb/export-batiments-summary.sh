@@ -1,8 +1,7 @@
 #!/bin/bash -e
 
-# Permet d'exporter les métriques demandées à partir de la table batiments_summary, elle-même construite à partir
-# des informations de bdnb_registre_2022
-# 3 fichiers CSV sont exportés : -50m, -100m et -150m.
+# Permet d'exporter les fichiers CSV à partir des tables batiments_summary_*, construites avec le script prepare-batiments-summary.sh
+
 sql="psql postgres://postgres:postgres_fcu@localhost:5432"
 
 SECONDS=0
