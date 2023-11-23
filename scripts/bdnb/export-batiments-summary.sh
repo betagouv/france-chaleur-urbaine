@@ -4,8 +4,8 @@
 # des informations de bdnb_registre_2022
 # 3 fichiers CSV sont exportés : -50m, -100m et -150m.
 sql="psql postgres://postgres:postgres_fcu@localhost:5432"
-sourceTable=batiments_summary
-outfileFilePrefix=export_bdnb_registre_2022_batiments_logements_11-2023
+
+SECONDS=0
 
 queryColumns=$(
   cat <<EOF
@@ -141,6 +141,8 @@ queryColumns=$(
 EOF
 )
 
+sourceTable=batiments_summary_reseaux_de_chaleur
+outfileFilePrefix=export_bdnb_registre_2022_proches_reseaux_chaleur_11-2023
 $sql <<EOF >${outfileFilePrefix}_moins50m.csv
 COPY (
 SELECT
@@ -171,4 +173,46 @@ GROUP BY code_departement_insee, departement, region
 ) TO stdout WITH CSV DELIMITER ',' HEADER;
 EOF
 
-echo "Fichiers exportés avec succès"
+sourceTable=batiments_summary_reseaux_en_construction
+outfileFilePrefix=export_bdnb_registre_2022_proches_reseaux_construction_11-2023
+$sql <<EOF >${outfileFilePrefix}_moins50m.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_close_50 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+$sql <<EOF >${outfileFilePrefix}_moins100m.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_close_100 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+$sql <<EOF >${outfileFilePrefix}_moins150m.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_close_150 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+$sql <<EOF >${outfileFilePrefix}_dans_zone.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_in_zone is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+echo "> Fichiers exportés avec succès ($SECONDS secondes)"

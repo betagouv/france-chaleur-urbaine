@@ -6,37 +6,17 @@
 # Les requêtes travaillent sur un sous-ensemble de la bdnb 24 millions de lignes qui est découpée par tranches de 10k batiments
 # pour paralléliser au mieux, car certaines tranches de batiments mettent quelques millisecondes à être traitées tandis que
 # d'autres mettent jusqu'à 20 minutes...
-# Grâce à cette parallélisation, le script met 25 minutes en local et utilise 2400 tables temporaires.
+# Grâce à cette parallélisation qui utilise 2400 tables temporaires, le script met 25 minutes en local à traiter les tests de
+# proximité avec les réseaux de chaleur.
 
-# Configuration
-outputTable=batiments_summary
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR"/lib.sh
 
-SECONDS=0
-sql="psql --quiet --no-align --pset=tuples_only postgres://postgres:postgres_fcu@localhost:5432"
+# Décommenter pour écrire dans un fichier en plus de la sortie standard
+# exec &> >(tee batiments-summary.log)
 
-seriesQueryPart="
-SELECT
-  generate_series(1, 24000000, 10000) as start_id,
-  generate_series(10000, 24000000, 10000) as end_id
-"
-
-# Ecrit dans un fichier en plus de la sortie standard
-exec &> >(tee batiments-summary.log)
-
-# 1. Suppression des tables temporaires si existantes
-$sql -c "$(
-  $sql <<EOF
-SELECT
-  'drop table if exists ${outputTable}_' || row_number() over () || ';'
-FROM (
-  $seriesQueryPart
-) as sub;
-EOF
-)"
-
-# 2. Lancement des calculs de proximité en parallèle
-queryPart=$(
-  cat <<EOF
+# 1. Test d'existance qu'un batiment est à proximité des réseaux de chaleur
+split_bdnb_table_query batiments_summary_reseaux_de_chaleur "
 SELECT
   id,
   code_departement_insee,
@@ -78,52 +58,66 @@ SELECT
 
 FROM bdnb_registre_2022 as batiment
 LEFT JOIN departements ON departements.code = batiment.code_departement_insee
-EOF
-)
+"
 
-queries=$(
-  $sql -F SEPARATOR <<EOF
+# 2. Test d'existance qu'un batiment est à proximité des réseaux en constuction OU qu'un batiment est dans les zones en constuction
+split_bdnb_table_query batiments_summary_reseaux_en_construction "
 SELECT
-  'create unlogged table ${outputTable}_' || row_number() over () || ' as ($queryPart WHERE id BETWEEN ' || start_id || ' AND ' || end_id || '); select ''${outputTable}_' || row_number() over () || '''; SEPARATOR'
-FROM (
-  $seriesQueryPart
-) as sub;
-EOF
-)
+  id,
+  code_departement_insee,
+  departements.nom as departement,
+  departements.region,
+  dpe_mix_arrete_type_installation_chauffage,
+  dpe_mix_arrete_type_energie_chauffage,
+  ffo_bat_nb_log,
 
-parallel --jobs $(nproc) --delimiter SEPARATOR /usr/bin/time -f '%E' $sql -c "{}" <<EOF
-$queries
-EOF
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_DWithin(
+        batiment.geom,
+        reseau.geom,
+        50
+      )
+	    AND is_zone is false
+    LIMIT 1
+  ) as is_close_50,
 
-echo "> Calculs terminés ($SECONDS secondes)"
-SECONDS=0
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_DWithin(
+        batiment.geom,
+        reseau.geom,
+        100
+      )
+	    AND is_zone is false
+    LIMIT 1
+  ) as is_close_100,
 
-# 3. Réassemblage de la table
-queries=$(
-  $sql <<EOF
-select string_agg('SELECT * FROM ${outputTable}_' || id, ' UNION ALL ')
-from (
-  select row_number() over () as id
-  FROM (
-    $seriesQueryPart
-  ) c1
-) c2
-EOF
-)
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_DWithin(
+        batiment.geom,
+        reseau.geom,
+        150
+      )
+	    AND is_zone is false
+    LIMIT 1
+  ) as is_close_150,
 
-$sql -c "CREATE TABLE $outputTable AS (
-$queries
-)"
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_Intersects(
+        batiment.geom,
+        reseau.geom
+      )
+      AND is_zone is true
+    LIMIT 1
+  ) as is_in_zone
 
-echo "> Table finale assemblée $outputTable ($SECONDS secondes)"
-
-# 4. Nettoyage des tables temporaires
-$sql -c "$(
-  $sql <<EOF
-SELECT
-  'drop table if exists ${outputTable}_' || row_number() over () || ';'
-FROM (
-  $seriesQueryPart
-) as sub;
-EOF
-)"
+FROM bdnb_registre_2022 as batiment
+LEFT JOIN departements ON departements.code = batiment.code_departement_insee
+"

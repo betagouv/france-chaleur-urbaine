@@ -6,7 +6,7 @@ Prérequis :
   - reseaux_de_chaleur
 - psql (CLI postgresql)
 - [parallel](https://www.gnu.org/software/parallel/)
-- probablement avoir tuné la configuration postgresql pour avoir plus de buffers
+- probablement avoir tuné la configuration postgresql pour augmenter la taille des buffers
 
 ## Étapes
 
@@ -26,7 +26,11 @@ EOF
 # correction des 360 codes via données de Sébastien (puis il en restera que 4)
 psql postgres://postgres:postgres_fcu@localhost:5432 -f ./scripts/bdnb/fix-bdnb-registre-sans-code-departement.sql
 
-# précalcul de toutes les données de proximité dans une table temporaire prête à être exploitée
+# création d'un index spgist (partitionné et un peu plus efficace que gist) sur la geom des réseaux
+psql postgres://postgres:postgres_fcu@localhost:5432 -c "create index if not exists reseaux_de_chaleur_geom_spidx on reseaux_de_chaleur using spgist(geom);"
+psql postgres://postgres:postgres_fcu@localhost:5432 -c "create index if not exists zones_et_reseaux_en_construction_geom_spidx on zones_et_reseaux_en_construction using spgist(geom);"
+
+# précalcul de toutes les données de proximité dans des tables prêtes à être exploitées
 ./prepare-batiments-summary.sh
 
 # export des métriques en CSV
