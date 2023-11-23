@@ -104,9 +104,12 @@ const SummaryBoxes = ({
 
   const exportData = async (bounds: number[][]) => {
     if (bounds) {
-      setExporting(true);
-      await heatNetworkService.downloadSummary(bounds, EXPORT_FORMAT.CSV);
-      setExporting(false);
+      try {
+        setExporting(true);
+        await heatNetworkService.downloadSummary(bounds, EXPORT_FORMAT.CSV);
+      } finally {
+        setExporting(false);
+      }
     }
   };
 

@@ -155,7 +155,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
         <p>
           <Alert
             type="error"
-            title={'Merci de selectionner le type d’ajout.'}
+            title={'Merci de sélectionner le type d’ajout.'}
           />
         </p>
       )}
