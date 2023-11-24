@@ -295,9 +295,6 @@ GROUP BY code_departement_insee, departement, region
 ) TO stdout WITH CSV DELIMITER ',' HEADER;
 EOF
 
-sourceTable=parc_immobilier_etat_20211231_summary_reseaux_de_chaleur
-outfileFilePrefix=export_parc_immobilier_etat_11-2023
-
 queryColumns=$(
   cat <<EOF
   code_departement_insee,
@@ -359,12 +356,14 @@ queryColumns=$(
 EOF
 )
 
+sourceTable=parc_immobilier_etat_20211231_summary
+outfileFilePrefix=export_parc_immobilier_etat_proches_reseaux_chaleur_11-2023
 $sql <<EOF >${outfileFilePrefix}_moins50m.csv
 COPY (
 SELECT
   $queryColumns
 FROM ${sourceTable}
-WHERE is_close_50 is true
+WHERE is_close_rdc_50 is true
 GROUP BY code_departement_insee, departement, region
 ) TO stdout WITH CSV DELIMITER ',' HEADER;
 EOF
@@ -374,7 +373,7 @@ COPY (
 SELECT
   $queryColumns
 FROM ${sourceTable}
-WHERE is_close_100 is true
+WHERE is_close_rdc_100 is true
 GROUP BY code_departement_insee, departement, region
 ) TO stdout WITH CSV DELIMITER ',' HEADER;
 EOF
@@ -384,7 +383,48 @@ COPY (
 SELECT
   $queryColumns
 FROM ${sourceTable}
-WHERE is_close_150 is true
+WHERE is_close_rdc_150 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+outfileFilePrefix=export_parc_immobilier_etat_proches_reseaux_construction_11-2023
+$sql <<EOF >${outfileFilePrefix}_moins50m.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_close_reseau_construction_50 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+$sql <<EOF >${outfileFilePrefix}_moins100m.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_close_reseau_construction_100 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+$sql <<EOF >${outfileFilePrefix}_moins150m.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_close_reseau_construction_150 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+$sql <<EOF >${outfileFilePrefix}_dans_zone.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_in_zone_construction is true
 GROUP BY code_departement_insee, departement, region
 ) TO stdout WITH CSV DELIMITER ',' HEADER;
 EOF
