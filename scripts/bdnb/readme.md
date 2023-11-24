@@ -3,6 +3,7 @@
 Prérequis :
 - posséder les tables :
   - bdnb_registre_2022 (provenance Sébastien)
+  - Donnees_de_conso_et_pdl_gaz_nat_2022 (provenance Sébastien)
   - reseaux_de_chaleur
 - psql (CLI postgresql)
 - [parallel](https://www.gnu.org/software/parallel/)

@@ -2,13 +2,28 @@ sql="psql --quiet --no-align --pset=tuples_only postgres://postgres:postgres_fcu
 
 # Exécute une requête sur une table en la découpant en sous-tables
 # Puis la table finale est réassemblée à partir des sous-tables.
-split_bdnb_table_query() {
+split_table_query() {
   local outputTable="$1"
   if [[ -z $outputTable ]]; then
     echo "Missing param outputTable" >&2
     return 1
   fi
-  local query="$2"
+  local idField="$2"
+  if [[ -z $idField ]]; then
+    echo "Missing param idField" >&2
+    return 1
+  fi
+  local step="$3"
+  if [[ -z $step ]]; then
+    echo "Missing param step" >&2
+    return 1
+  fi
+  local maxId="$4"
+  if [[ -z $maxId ]]; then
+    echo "Missing param query" >&2
+    return 1
+  fi
+  local query="$5"
   if [[ -z $query ]]; then
     echo "Missing param query" >&2
     return 1
@@ -16,11 +31,10 @@ split_bdnb_table_query() {
 
   echo "> Début de création de la table $outputTable"
 
-  # spécifique à la volumétrie de la BDNB
   local seriesQueryPart="
   SELECT
-    generate_series(1, 24000000, 10000) as start_id,
-    generate_series(10000, 24000000, 10000) as end_id
+    generate_series(1, $maxId, $step) as start_id,
+    generate_series($step, $maxId, $step) as end_id
   "
 
   echo "> Suppression des tables temporaires"
@@ -44,7 +58,7 @@ EOF
   local queries=$(
     $sql -F SEPARATOR <<EOF
   SELECT
-    'create unlogged table ${outputTable}_' || row_number() over () || ' as ($query WHERE id BETWEEN ' || start_id || ' AND ' || end_id || '); select ''${outputTable}_' || row_number() over () || '''; SEPARATOR'
+    'create unlogged table ${outputTable}_' || row_number() over () || ' as ($query WHERE ${idField} BETWEEN ' || start_id || ' AND ' || end_id || '); select ''${outputTable}_' || row_number() over () || '''; SEPARATOR'
   FROM (
     $seriesQueryPart
   ) as sub;

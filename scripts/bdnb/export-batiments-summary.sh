@@ -214,4 +214,85 @@ GROUP BY code_departement_insee, departement, region
 ) TO stdout WITH CSV DELIMITER ',' HEADER;
 EOF
 
+sourceTable=conso_summary_reseaux_de_chaleur
+outfileFilePrefix=export_consos_11-2023
+$sql <<EOF >${outfileFilePrefix}.csv
+COPY (
+SELECT
+  code_departement_insee,
+  departement,
+  region,
+  count(*) as nb_batiments,
+
+  SUM (
+    CASE WHEN code_grand_secteur = 'R' AND is_close_150_rdc is true THEN conso_nb ELSE 0 END
+  ) AS "Résidentiel -150m réseau",
+  SUM (
+    CASE WHEN code_grand_secteur = 'R' AND is_close_100_rdc is true THEN conso_nb ELSE 0 END
+  ) AS "Résidentiel -100m réseau",
+  SUM (
+    CASE WHEN code_grand_secteur = 'R' AND is_close_50_rdc is true THEN conso_nb ELSE 0 END
+  ) AS "Résidentiel -50m réseau",
+  SUM (
+    CASE WHEN code_grand_secteur = 'R' AND is_close_150_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Résidentiel -150m réseau construction",
+  SUM (
+    CASE WHEN code_grand_secteur = 'R' AND is_close_100_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Résidentiel -100m réseau construction",
+  SUM (
+    CASE WHEN code_grand_secteur = 'R' AND is_close_50_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Résidentiel -50m réseau construction",
+  SUM (
+    CASE WHEN code_grand_secteur = 'R' AND is_in_zone_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Résidentiel dans zone construction",
+
+  SUM (
+    CASE WHEN code_grand_secteur = 'T' AND is_close_150_rdc is true THEN conso_nb ELSE 0 END
+  ) AS "Tertiaire -150m réseau",
+  SUM (
+    CASE WHEN code_grand_secteur = 'T' AND is_close_100_rdc is true THEN conso_nb ELSE 0 END
+  ) AS "Tertiaire -100m réseau",
+  SUM (
+    CASE WHEN code_grand_secteur = 'T' AND is_close_50_rdc is true THEN conso_nb ELSE 0 END
+  ) AS "Tertiaire -50m réseau",
+  SUM (
+    CASE WHEN code_grand_secteur = 'T' AND is_close_150_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Tertiaire -150m réseau construction",
+  SUM (
+    CASE WHEN code_grand_secteur = 'T' AND is_close_100_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Tertiaire -100m réseau construction",
+  SUM (
+    CASE WHEN code_grand_secteur = 'T' AND is_close_50_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Tertiaire -50m réseau construction",
+  SUM (
+    CASE WHEN code_grand_secteur = 'T' AND is_in_zone_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Tertiaire dans zone construction",
+
+  SUM (
+    CASE WHEN code_grand_secteur = 'I' AND is_close_150_rdc is true THEN conso_nb ELSE 0 END
+  ) AS "Industriel -150m réseau",
+  SUM (
+    CASE WHEN code_grand_secteur = 'I' AND is_close_100_rdc is true THEN conso_nb ELSE 0 END
+  ) AS "Industriel -100m réseau",
+  SUM (
+    CASE WHEN code_grand_secteur = 'I' AND is_close_50_rdc is true THEN conso_nb ELSE 0 END
+  ) AS "Industriel -50m réseau",
+  SUM (
+    CASE WHEN code_grand_secteur = 'I' AND is_close_150_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Industriel -150m réseau construction",
+  SUM (
+    CASE WHEN code_grand_secteur = 'I' AND is_close_100_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Industriel -100m réseau construction",
+  SUM (
+    CASE WHEN code_grand_secteur = 'I' AND is_close_50_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Industriel -50m réseau construction",
+  SUM (
+    CASE WHEN code_grand_secteur = 'I' AND is_in_zone_construction is true THEN conso_nb ELSE 0 END
+  ) AS "Industriel dans zone construction"
+
+FROM ${sourceTable}
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
 echo "> Fichiers exportés avec succès ($SECONDS secondes)"

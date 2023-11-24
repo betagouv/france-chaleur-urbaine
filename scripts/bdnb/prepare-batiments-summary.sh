@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # exec &> >(tee batiments-summary.log)
 
 # 1. Test d'existance qu'un batiment est à proximité des réseaux de chaleur
-split_bdnb_table_query batiments_summary_reseaux_de_chaleur "
+split_table_query batiments_summary_reseaux_de_chaleur id 10000 24000000 "
 SELECT
   id,
   code_departement_insee,
@@ -61,7 +61,7 @@ LEFT JOIN departements ON departements.code = batiment.code_departement_insee
 "
 
 # 2. Test d'existance qu'un batiment est à proximité des réseaux en constuction OU qu'un batiment est dans les zones en constuction
-split_bdnb_table_query batiments_summary_reseaux_en_construction "
+split_table_query batiments_summary_reseaux_en_construction id 10000 24000000 "
 SELECT
   id,
   code_departement_insee,
@@ -79,7 +79,7 @@ SELECT
         reseau.geom,
         50
       )
-	    AND is_zone is false
+      AND is_zone is false
     LIMIT 1
   ) as is_close_50,
 
@@ -91,7 +91,7 @@ SELECT
         reseau.geom,
         100
       )
-	    AND is_zone is false
+      AND is_zone is false
     LIMIT 1
   ) as is_close_100,
 
@@ -103,7 +103,7 @@ SELECT
         reseau.geom,
         150
       )
-	    AND is_zone is false
+      AND is_zone is false
     LIMIT 1
   ) as is_close_150,
 
@@ -120,4 +120,98 @@ SELECT
 
 FROM bdnb_registre_2022 as batiment
 LEFT JOIN departements ON departements.code = batiment.code_departement_insee
+"
+
+# 3. Consos cumulées de batiments à proximité des réseaux en constuction et dans les zones en constuction
+split_table_query conso_summary_reseaux_de_chaleur rownum 1000 240000 "
+SELECT
+  rownum,
+  substring(result_citycode, 0, 3) as code_departement_insee,
+  departements.nom as departement,
+  departements.region,
+  \"CODE_GRAND_SECTEUR\" as code_grand_secteur,
+  conso_nb,
+
+  EXISTS (
+    SELECT *
+    FROM reseaux_de_chaleur reseau
+    WHERE ST_DWithin(
+        reseau.geom,
+        batiment.geom,
+        50
+      )
+    LIMIT 1
+  ) as is_close_50_rdc,
+
+  EXISTS (
+    SELECT *
+    FROM reseaux_de_chaleur reseau
+    WHERE ST_DWithin(
+        reseau.geom,
+        batiment.geom,
+        100
+      )
+    LIMIT 1
+  ) as is_close_100_rdc,
+
+  EXISTS (
+    SELECT *
+    FROM reseaux_de_chaleur reseau
+    WHERE ST_DWithin(
+        reseau.geom,
+        batiment.geom,
+        150
+      )
+    LIMIT 1
+  ) as is_close_150_rdc,
+
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_DWithin(
+        batiment.geom,
+        reseau.geom,
+        50
+      )
+      AND is_zone is false
+    LIMIT 1
+  ) as is_close_50_construction,
+
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_DWithin(
+        batiment.geom,
+        reseau.geom,
+        100
+      )
+      AND is_zone is false
+    LIMIT 1
+  ) as is_close_100_construction,
+
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_DWithin(
+        batiment.geom,
+        reseau.geom,
+        150
+      )
+      AND is_zone is false
+    LIMIT 1
+  ) as is_close_150_construction,
+
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_Intersects(
+        batiment.geom,
+        reseau.geom
+      )
+      AND is_zone is true
+    LIMIT 1
+  ) as is_in_zone_construction
+
+FROM \"Donnees_de_conso_et_pdl_gaz_nat_2022\" as batiment
+LEFT JOIN departements ON departements.code = substring(result_citycode, 0, 3)
 "
