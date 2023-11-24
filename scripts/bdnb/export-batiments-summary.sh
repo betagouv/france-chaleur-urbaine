@@ -295,4 +295,98 @@ GROUP BY code_departement_insee, departement, region
 ) TO stdout WITH CSV DELIMITER ',' HEADER;
 EOF
 
+sourceTable=parc_immobilier_etat_20211231_summary_reseaux_de_chaleur
+outfileFilePrefix=export_parc_immobilier_etat_11-2023
+
+queryColumns=$(
+  cat <<EOF
+  code_departement_insee,
+  departement,
+  region,
+  count(*) as nb_batiments,
+
+  sum (
+    CASE WHEN type_de_chauffage = 'Fioul, Gaz' THEN 1 ELSE 0 END
+  ) as "nb batiments - Fioul, Gaz",
+  sum (
+    CASE WHEN type_de_chauffage = 'Réseau de chaleur, Réseau de chaleur' THEN 1 ELSE 0 END
+  ) as "nb batiments - Réseau de chaleur, Réseau de chaleur",
+  sum (
+    CASE WHEN type_de_chauffage = 'Bois' THEN 1 ELSE 0 END
+  ) as "nb batiments - Bois",
+  sum (
+    CASE WHEN type_de_chauffage = 'Gaz, Gaz' THEN 1 ELSE 0 END
+  ) as "nb batiments - Gaz, Gaz",
+  sum (
+    CASE WHEN type_de_chauffage = 'Électricité, Gaz' THEN 1 ELSE 0 END
+  ) as "nb batiments - Électricité, Gaz",
+  sum (
+    CASE WHEN type_de_chauffage = 'Propane' THEN 1 ELSE 0 END
+  ) as "nb batiments - Propane",
+  sum (
+    CASE WHEN type_de_chauffage = 'Électricité' THEN 1 ELSE 0 END
+  ) as "nb batiments - Électricité",
+  sum (
+    CASE WHEN type_de_chauffage = 'Réseau de chaleur' THEN 1 ELSE 0 END
+  ) as "nb batiments - Réseau de chaleur",
+  sum (
+    CASE WHEN type_de_chauffage = 'Gaz, Électricité' THEN 1 ELSE 0 END
+  ) as "nb batiments - Gaz, Électricité",
+  sum (
+    CASE WHEN type_de_chauffage = 'Électricité, Électricité' THEN 1 ELSE 0 END
+  ) as "nb batiments - Électricité, Électricité",
+  sum (
+    CASE WHEN type_de_chauffage = 'Fioul, Fioul' THEN 1 ELSE 0 END
+  ) as "nb batiments - Fioul, Fioul",
+  sum (
+    CASE WHEN type_de_chauffage = 'Réseau de chaleur, Électricité' THEN 1 ELSE 0 END
+  ) as "nb batiments - Réseau de chaleur, Électricité",
+  sum (
+    CASE WHEN type_de_chauffage = 'Réseau de chaleur, Fioul' THEN 1 ELSE 0 END
+  ) as "nb batiments - Réseau de chaleur, Fioul",
+  sum (
+    CASE WHEN type_de_chauffage = 'Électricité, Réseau de chaleur' THEN 1 ELSE 0 END
+  ) as "nb batiments - Électricité, Réseau de chaleur",
+  sum (
+    CASE WHEN type_de_chauffage = 'Gaz' THEN 1 ELSE 0 END
+  ) as "nb batiments - Gaz",
+  sum (
+    CASE WHEN type_de_chauffage = 'Fioul' THEN 1 ELSE 0 END
+  ) as "nb batiments - Fioul",
+  sum (
+    CASE WHEN type_de_chauffage is null THEN 1 ELSE 0 END
+  ) as "nb batiments - Non renseigné"
+EOF
+)
+
+$sql <<EOF >${outfileFilePrefix}_moins50m.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_close_50 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+$sql <<EOF >${outfileFilePrefix}_moins100m.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_close_100 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
+$sql <<EOF >${outfileFilePrefix}_moins150m.csv
+COPY (
+SELECT
+  $queryColumns
+FROM ${sourceTable}
+WHERE is_close_150 is true
+GROUP BY code_departement_insee, departement, region
+) TO stdout WITH CSV DELIMITER ',' HEADER;
+EOF
+
 echo "> Fichiers exportés avec succès ($SECONDS secondes)"

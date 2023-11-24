@@ -215,3 +215,46 @@ SELECT
 FROM \"Donnees_de_conso_et_pdl_gaz_nat_2022\" as batiment
 LEFT JOIN departements ON departements.code = substring(result_citycode, 0, 3)
 "
+
+# 4. Test d'existance qu'un batiment du parc immobilier de l'état est à proximité des réseaux de chaleur
+split_table_query parc_immobilier_etat_20211231_summary_reseaux_de_chaleur fid 1000 30000 "
+SELECT
+  fid,
+  LPAD(dept, 2, ''0'') as code_departement_insee,
+  departements.nom as departement,
+  departements.region,
+  type_de_chauffage,
+
+  EXISTS (
+    SELECT *
+    FROM reseaux_de_chaleur reseau
+    WHERE ST_DWithin(
+      batiment.geom,
+      reseau.geom,
+      50)
+    LIMIT 1
+  ) as is_close_50,
+
+  EXISTS (
+    SELECT *
+    FROM reseaux_de_chaleur reseau
+    WHERE ST_DWithin(
+      batiment.geom,
+      reseau.geom,
+      100)
+    LIMIT 1
+  ) as is_close_100,
+
+  EXISTS (
+    SELECT *
+    FROM reseaux_de_chaleur reseau
+    WHERE ST_DWithin(
+      batiment.geom,
+      reseau.geom,
+      150)
+    LIMIT 1
+  ) as is_close_150
+
+FROM parc_immobilier_etat_20211231 as batiment
+LEFT JOIN departements ON departements.code = LPAD(batiment.dept, 2, ''0'')
+"
