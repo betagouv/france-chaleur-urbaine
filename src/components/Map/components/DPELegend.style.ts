@@ -19,9 +19,9 @@ export const Boxes = styled.div`
 `;
 
 export const Box = styled.div<{ color: string }>`
-  width: 25px;
-  height: 25px;
-  padding-left: 6px;
+  width: 24px;
+  height: 24px;
+  text-align: center;
   background-color: ${({ color }) => color};
   color: white;
   font-size: 18px;
