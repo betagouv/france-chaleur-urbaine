@@ -603,7 +603,7 @@ export const TopLegendSwitch = styled.div<{
 `;
 
 export const PopupTitle = styled.h3`
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1.5rem;
   margin-bottom: 8px;
 `;
