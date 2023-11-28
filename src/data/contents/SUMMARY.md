@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Enquête 2023 des réseaux de chaleur et de froid](README.md)
+* [Optimiser son réseau de chaleur](README.md)
+* [Enquête 2023 des réseaux de chaleur et de froid](<README (12).md>)
 * [2000 demandes](2000-demandes.md)
 * [Un guide pour les exploitants](un-guide-pour-les-exploitants.md)
 * [Visite de l'unité de valorisation énergétique Isséane](<README (11).md>)
