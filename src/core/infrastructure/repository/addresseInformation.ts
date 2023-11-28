@@ -286,7 +286,7 @@ const isEligible = (distance: number, city?: string) => {
   return { isEligible: distance <= 200, veryEligibleDistance: 100 };
 };
 
-export const getCityElibilityStatus = async (
+export const getCityEligilityStatus = async (
   city: string
 ): Promise<CityNetwork> => {
   const [cityHasNetwork, cityHasFuturNetwork] = await Promise.all([
@@ -296,7 +296,7 @@ export const getCityElibilityStatus = async (
   return { basedOnCity: true, cityHasNetwork, cityHasFuturNetwork };
 };
 
-export const getElibilityStatus = async (
+export const getEligilityStatus = async (
   lat: number,
   lon: number,
   city?: string
