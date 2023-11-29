@@ -1,8 +1,12 @@
-import { Map } from 'maplibre-gl';
-import { ControlPosition, IControl } from 'react-map-gl/maplibre';
+import { Map, ControlPosition, IControl } from 'maplibre-gl';
 
-// Lib CSS not compatible with v3 of maplibre
-// So this file is copied and adapted (types) from https://github.com/el/style-switcher/blob/197ca86775e7ad8fa4a07b99be2133517982d32f/lib/index.ts
+/*
+Lib CSS not compatible with v3 of maplibre
+So this file is copied and adapted from https://github.com/el/style-switcher/blob/197ca86775e7ad8fa4a07b99be2133517982d32f/lib/index.ts
+Modifications:
+- changed CSS classes from mapboxgl* to maplibregl* (also in the CSS file)
+- some types where changed to use maplibre
+*/
 export type MapboxStyleDefinition = {
   title: string;
   uri: string;
@@ -65,12 +69,12 @@ export class MapboxStyleSwitcherControl implements IControl {
   public onAdd(map: Map): HTMLElement {
     this.map = map;
     this.controlContainer = document.createElement('div');
-    this.controlContainer.classList.add('mapboxgl-ctrl');
-    this.controlContainer.classList.add('mapboxgl-ctrl-group');
+    this.controlContainer.classList.add('maplibregl-ctrl');
+    this.controlContainer.classList.add('maplibregl-ctrl-group');
     this.mapStyleContainer = document.createElement('div');
     this.styleButton = document.createElement('button');
     this.styleButton.type = 'button';
-    this.mapStyleContainer.classList.add('mapboxgl-style-list');
+    this.mapStyleContainer.classList.add('maplibregl-style-list');
     for (const style of this.styles) {
       const styleElement = document.createElement('button');
       styleElement.type = 'button';
@@ -106,8 +110,8 @@ export class MapboxStyleSwitcherControl implements IControl {
       }
       this.mapStyleContainer.appendChild(styleElement);
     }
-    this.styleButton.classList.add('mapboxgl-ctrl-icon');
-    this.styleButton.classList.add('mapboxgl-style-switcher');
+    this.styleButton.classList.add('maplibregl-ctrl-icon');
+    this.styleButton.classList.add('maplibregl-style-switcher');
     this.styleButton.addEventListener('click', (event) => {
       if (this.events && this.events.onSelect && this.events.onSelect(event)) {
         return;
