@@ -1,4 +1,4 @@
-import { getElibilityStatus } from '@core/infrastructure/repository/addresseInformation';
+import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withCors } from 'src/services/api/cors';
 import { ErrorResponse } from 'src/types/ErrorResponse';
@@ -21,7 +21,7 @@ const eligibilityStatus = async (
       });
       return;
     }
-    const result = await getElibilityStatus(Number(lat), Number(lon), city);
+    const result = await getEligilityStatus(Number(lat), Number(lon), city);
     return res.status(200).json(result);
   } catch (error) {
     // eslint-disable-next-line no-console
