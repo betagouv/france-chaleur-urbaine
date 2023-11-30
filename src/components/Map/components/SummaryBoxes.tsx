@@ -6,7 +6,7 @@ import turfArea from '@turf/area';
 import { LineString, Polygon } from 'geojson';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
-import { MapRef } from 'react-map-gl';
+import { MapRef } from 'react-map-gl/maplibre';
 import { useServices } from 'src/services';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
@@ -177,7 +177,7 @@ const SummaryBoxes = ({
                 setTabIndex(index);
               }}
             >
-              {/* 
+              {/*
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 @ts-ignore: to fix in react-dsfr */}
               <Tab label="Extraire des données sur les bâtiments">
@@ -313,7 +313,7 @@ const SummaryBoxes = ({
                   </ZoneInfos>
                 )}
               </Tab>
-              {/* 
+              {/*
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 @ts-ignore: to fix in react-dsfr */}
               <Tab label="Calculer une densité thermique linéaire">

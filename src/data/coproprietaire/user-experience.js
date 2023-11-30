@@ -33,8 +33,8 @@ _Les travaux durent *2&nbsp;mois* en tout&nbsp;!_`,
     imgAlt: `Charge et travaux pour un raccordement au Réseau de chaleur`,
   },
   {
-    body: `::counter-item[04.]  
-::cartridge[_Depuis Anne profite d’une chaleur **fiable et garantie, pour 108€/mois pour son T4**._]{className=cartridge-4}
+    body: `::counter-item[04.]
+::cartridge[Depuis Anne profite d’une chaleur **fiable et garantie, pour 108€/mois pour son T4**.]{className=cartridge-4}
 
 Grâce au réseau de chaleur, la copropriété bénéficie d’une **bonne température de chauffe** et d’une distribution de l'eau chaude **sans aucune panne** et avec **un budget maîtrisé**.
 

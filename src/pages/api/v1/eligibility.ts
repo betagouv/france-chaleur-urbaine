@@ -1,5 +1,5 @@
 import z from 'zod';
-import { getElibilityStatus } from '@core/infrastructure/repository/addresseInformation';
+import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withCors } from 'src/services/api/cors';
 
@@ -22,7 +22,7 @@ const eligibilityStatus = async (req: NextApiRequest, res: NextApiResponse) => {
       res.status(400).json(inputs.error);
       return;
     }
-    const result = await getElibilityStatus(inputs.data.lat, inputs.data.lon);
+    const result = await getEligilityStatus(inputs.data.lat, inputs.data.lon);
     return res.status(200).json({
       isEligible: result.isEligible,
       distance: result.distance,

@@ -1,5 +1,5 @@
 import {
-  getElibilityStatus,
+  getEligilityStatus,
   getExport,
 } from '@core/infrastructure/repository/addresseInformation';
 import axios from 'axios';
@@ -214,7 +214,7 @@ const bulkEligibilitygibilityStatus = async (
       const address = informations.slice(0, informations.length - 5).join(',');
 
       const result = label
-        ? await getElibilityStatus(Number(lat), Number(lon), city)
+        ? await getEligilityStatus(Number(lat), Number(lon), city)
         : { isEligible: null };
       results.push({
         ...result,

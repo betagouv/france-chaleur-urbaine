@@ -1,20 +1,18 @@
 import MapReactGL, {
   AttributionControl,
   GeolocateControl,
-  MapEvent,
   MapProvider,
   MapRef,
   MapSourceDataEvent,
   NavigationControl,
   ScaleControl,
-} from 'react-map-gl';
+} from 'react-map-gl/maplibre';
 
 import Hoverable from '@components/Hoverable';
 import { Icon } from '@dataesr/react-dsfr';
 import { useContactFormFCU, usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import {
@@ -77,7 +75,11 @@ import {
   TopLegendSwitch,
 } from './Map.style';
 import satelliteConfig from './satellite.config.json';
-import { MapboxStyleSwitcherControl } from './StyleSwitcher';
+import {
+  MapboxStyleDefinition,
+  MapboxStyleSwitcherControl,
+} from './StyleSwitcher';
+import { ExpressionSpecification, MapLibreEvent } from 'maplibre-gl';
 
 let hoveredStateId: any;
 const setHoveringState = (
@@ -121,14 +123,14 @@ const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
 const carteConfig =
   'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json';
-const styles = [
+const styles: MapboxStyleDefinition[] = [
   {
     title: 'Carte',
     uri: carteConfig,
   },
   {
     title: 'Satellite',
-    uri: satelliteConfig,
+    uri: satelliteConfig as any,
   },
 ];
 
@@ -447,7 +449,7 @@ const Map = ({
 
     // Energy
     const TYPE_ENERGY = 'energie_utilisee';
-    const energyFilter = layerDisplay.energy.flatMap(
+    const energyFilter = layerDisplay.energy.flatMap<ExpressionSpecification>(
       (energyName: 'gas' | 'fuelOil') =>
         objTypeEnergy[energyName].map((energyLabel: string) => {
           const values =
@@ -472,11 +474,9 @@ const Map = ({
 
     // GasUsage
     const TYPE_GAS = 'code_grand';
-    const gasUsageFilter = layerDisplay.gasUsage.map((gasUsageName) => [
-      '==',
-      ['get', TYPE_GAS],
-      gasUsageName,
-    ]);
+    const gasUsageFilter = layerDisplay.gasUsage.map<ExpressionSpecification>(
+      (gasUsageName) => ['==', ['get', TYPE_GAS], gasUsageName]
+    );
     mapRef.current
       .getMap()
       .setFilter(
@@ -495,12 +495,12 @@ const Map = ({
       );
   }, [mapRef, layerDisplay]);
 
-  const onLoadMap = (e: MapEvent) => {
+  const onLoadMap = (e: MapLibreEvent) => {
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
     });
 
-    e.target.addControl(drawControl);
+    e.target.addControl(drawControl as any);
     setDraw(drawControl);
     e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
@@ -1143,9 +1143,6 @@ const Map = ({
         <MapProvider>
           <MapReactGL
             initialViewState={initialViewState}
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore: Wrong npm types
-            mapLib={maplibregl}
             mapStyle={carteConfig}
             attributionControl={false}
             maxZoom={maxZoom}
