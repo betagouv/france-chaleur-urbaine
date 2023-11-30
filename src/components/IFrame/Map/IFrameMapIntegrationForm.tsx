@@ -3,8 +3,11 @@ import { Checkbox, CheckboxGroup } from '@dataesr/react-dsfr';
 import React, { useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { AddressContainer } from './IFrameParametrization.styles';
-import IFrameLink from '../Form/IFrameLink';
 import { Coords } from 'src/types/Coords';
+import {
+  DivQuestionCenterMap,
+  StyledIFrameLink,
+} from './IFrameMapIntegrationForm.styles';
 
 const selectableLayers = [
   {
@@ -80,9 +83,9 @@ const IFrameMapIntegrationForm = () => {
           />
         ))}
       </CheckboxGroup>
-      <div style={{ fontSize: '18px', color: '#4550E5' }}>
+      <DivQuestionCenterMap>
         Vous souhaitez centrer la carte sur un endroit en particulier ?
-      </div>
+      </DivQuestionCenterMap>
       <AddressContainer>
         <AddressAutocomplete
           onAddressSelected={onAddressSelected}
@@ -90,8 +93,7 @@ const IFrameMapIntegrationForm = () => {
           placeholder="Tapez ici votre adresse"
         />
       </AddressContainer>
-      <IFrameLink
-        style={{ color: '#000074', wordBreak: 'break-all' }}
+      <StyledIFrameLink
         className="fr-mt-3w"
         link={`<iframe title="France chaleur urbaine - Carte" src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}" width="100%" height="600" />`}
       />
