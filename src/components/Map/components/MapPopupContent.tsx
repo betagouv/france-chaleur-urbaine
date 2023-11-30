@@ -258,7 +258,7 @@ export const ViasevaPopupContent = ({
     <>
       {network ? (
         <section>
-          {network.nom_reseau && <h3>{network.nom_reseau}</h3>}
+          {network.nom_reseau && <PopupTitle>{network.nom_reseau}</PopupTitle>}
           {!network.isCold && (
             <>
               <strong>Taux EnR&R&nbsp;:</strong>&nbsp;
