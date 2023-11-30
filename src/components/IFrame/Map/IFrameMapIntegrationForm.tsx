@@ -91,7 +91,8 @@ const IFrameMapIntegrationForm = () => {
         />
       </AddressContainer>
       <IFrameLink
-        style={{ color: '#000074', marginTop: '20px', wordBreak: 'break-all' }}
+        style={{ color: '#000074', wordBreak: 'break-all' }}
+        className="fr-mt-3w"
         link={`<iframe title="France chaleur urbaine - Carte" src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}" width="100%" height="600" />`}
       />
     </>
