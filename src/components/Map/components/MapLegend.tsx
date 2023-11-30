@@ -1,4 +1,11 @@
-import { Button, Link } from '@dataesr/react-dsfr';
+import {
+  Button,
+  Link,
+  Modal,
+  ModalClose,
+  ModalContent,
+  ModalTitle,
+} from '@dataesr/react-dsfr';
 import { useRouter } from 'next/router';
 import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import { TypeLayerDisplay } from '../../../services/Map/param';
@@ -9,6 +16,7 @@ import { LabelLegendHead } from './LegendEntry.styled';
 import LegendGroupLabel from './LegendGroupLabel';
 import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
 import { ButtonLink } from '@components/MarkdownWrapper/MarkdownWrapper.style';
+import { useState } from 'react';
 
 function MapLegend({
   data,
@@ -31,6 +39,8 @@ function MapLegend({
   ) => void;
 }) {
   const router = useRouter();
+  const [showStatsModal, setShowStatsModal] = useState(false);
+
   return (
     <>
       <LegendGlobalStyle />
@@ -69,6 +79,19 @@ function MapLegend({
                 </ButtonLink>
               </LegendButton>
             </div>
+          );
+        }
+
+        if (group === 'statsParTerritoire') {
+          return (
+            <Button
+              tertiary
+              key="statsParTerritoire"
+              onClick={() => setShowStatsModal(true)}
+              size="sm"
+            >
+              Potentiel de raccordement par territoire
+            </Button>
           );
         }
 
@@ -131,6 +154,16 @@ function MapLegend({
         }
         return null;
       })}
+      <Modal
+        isOpen={showStatsModal}
+        hide={() => {
+          setShowStatsModal(false);
+        }}
+      >
+        <ModalClose>Fermer</ModalClose>
+        <ModalTitle>Titre de la modale</ModalTitle>
+        <ModalContent>Contenu de la modale</ModalContent>
+      </Modal>
     </>
   );
 }
