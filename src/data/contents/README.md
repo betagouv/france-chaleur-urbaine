@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/friday.jpg
+coverY: 0
+---
+
 # Black Friday, Green Friday
 
 💸 Black Friday, Green Friday, et si on conciliait les deux ? Avec les réseaux de chaleur, le chauffage est moins cher et plus vert !\
@@ -7,3 +12,5 @@ Se chauffer avec un réseau de chaleur, c'est moins 50% d'émissions de CO2 par 
 📢 Une offre à saisir sans plus attendre !\
 \
 👉 Pour vérifier si vous êtes raccordable, testez votre adresse sur [France Chaleur Urbaine](https://france-chaleur-urbaine.beta.gouv.fr/).
+
+![](.gitbook/assets/blackfriday.png)
