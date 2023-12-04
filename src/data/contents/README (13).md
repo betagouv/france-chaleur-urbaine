@@ -13,4 +13,4 @@ Les réseaux de chaleur doivent rester compétitifs et s'adapter à des besoins 
 
 Inscriptions : [https://framaforms.org/optimisation-des-reseaux-de-chaleur-1698669947](https://framaforms.org/optimisation-des-reseaux-de-chaleur-1698669947)
 
-![](.gitbook/assets/FCU\_Infographie6.jpg)\
+![](<.gitbook/assets/FCU\_Infographie6 (1).jpg>)\
