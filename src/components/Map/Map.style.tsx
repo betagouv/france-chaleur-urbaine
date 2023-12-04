@@ -127,6 +127,11 @@ export const MapStyle: any = createGlobalStyle<{
         }
       }
     }
+    .maplibregl-control-container {
+      .maplibregl-ctrl-bottom-right {
+        width: calc(100% - 80px);
+      }
+    }
 `;
 
 // --------------------------

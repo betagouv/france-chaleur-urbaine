@@ -31,6 +31,7 @@ const CollectivityMap = () => {
             (x.id === LegendGroupId.heatNetwork ||
               x.id === LegendGroupId.zoneDP)
         )}
+        withFCUAttribution
       />
     </div>
   );
