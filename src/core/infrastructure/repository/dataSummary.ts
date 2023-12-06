@@ -30,11 +30,12 @@ const getWithinQuery = (coordinates: number[][], geom: string) => `
 ST_WITHIN(
   ST_Transform(${geom}, 4326),
   ST_MakePolygon(
-    ST_MakeLine(
+    (
       Array[${coordinates.map(
         (coords) => `ST_SetSRID(ST_MakePoint(${coords}), 4326)`
       )}]
-    ))
+    )
+  )
 )
 `;
 
