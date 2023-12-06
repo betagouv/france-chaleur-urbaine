@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Optimiser son réseau de chaleur](README.md)
+* [Black Friday, Green Friday](README.md)
+* [Optimiser son réseau de chaleur](<README (13).md>)
 * [Enquête 2023 des réseaux de chaleur et de froid](<README (12).md>)
 * [2000 demandes](2000-demandes.md)
 * [Un guide pour les exploitants](un-guide-pour-les-exploitants.md)

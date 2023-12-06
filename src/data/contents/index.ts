@@ -24,6 +24,7 @@ import readme_9 from './README (9).md';
 import readme_10 from './README (10).md';
 import readme_11 from './README (11).md';
 import readme_12 from './README (12).md';
+import readme_13 from './README (13).md';
 import readme from './README.md';
 import demandes from './2000-demandes.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
@@ -54,10 +55,17 @@ const importFile = (file: string) => {
 export const articles: Article[] = [
   {
     image: '/contents/isseane.jpg',
+    title: 'Black Friday, Green Friday',
+    slug: 'black-friday-green-friday',
+    content: importFile(readme),
+    publishedDate: new Date('2023-11-28'),
+  },
+  {
+    image: '/contents/isseane.jpg',
     title: 'Optimiser son réseau de chaleur',
     slug: 'optimiser-son-reseau-de-chaleur',
-    content: importFile(readme),
-    publishedDate: new Date('2023-11-14'),
+    content: importFile(readme_13),
+    publishedDate: new Date('2023-11-28'),
   },
   {
     image: '/contents/isseane.jpg',
