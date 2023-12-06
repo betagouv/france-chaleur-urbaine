@@ -1,13 +1,11 @@
-# Enquête 2023 des réseaux de chaleur et de froid
+# Optimiser son réseau de chaleur
 
-Comment évoluent les réseaux de chaleur français ? Ils poursuivent leur décarbonation et confirment le rôle majeur qu'ils ont à jouer dans la transition énergétique\
+Les réseaux de chaleur doivent rester compétitifs et s'adapter à des besoins et des exigences qui évoluent. Leur modernisation et l'amélioration de leurs performances passent par la mise en œuvre de différentes techniques d'optimisation, qui permettent par exemple de limiter les pertes thermiques ou encore de réduire les consommations électriques associées au fonctionnement du réseau.\
 \
-📈 C'est ce que nous dévoile la dernière enquête annuelle des réseaux de chaleur et de froid, réalisée par la FEDENE avec le concours de l'Association Amorce et sous tutelle du service des données et statistiques du Ministère de la transition écologique.\
+🔎 Nous vous présentons ci-dessous un panorama non exhaustif de ces techniques. Aujourd'hui, des approches numériques innovantes viennent en appui ou en complément de ces méthodes, et peuvent également contribuer à l'optimisation des réseaux.\
 \
-✔ En 2022, le taux moyen d'énergies renouvelables et de récupération des réseaux s'élève à 66,5%, contre 62,6% en 2021. En 10 ans, ce taux a été multiplié par 1,8, ce qui a permis de réduire le contenu CO2 des réseaux de 200 gCO2/kWh en 2012 à 112 gCO2/kWh en 2022 (en analyse du cycle de vie, incluant les émissions indirectes).\
-\
-🎯 L'effort doit encore s'intensifier pour atteindre les objectifs 2030 qui visent 75% d'énergies renouvelables et de récupération et un contenu CO2 de 79 gC02/kWh.\
-\
-Vous souhaitez en savoir plus ? Ci-dessous le lien vers la synthèse de l'enquête. 👇
+📢 Pour en discuter de vive voix, nous vous convions à un webinaire dédié à ce sujet le lundi 4 décembre 2023 à 14h, organisé en partenariat avec la [FNCCR](https://www.fnccr.asso.fr/) au titre du dispositif [ACTEE](https://programme-cee-actee.fr/). Nous aurons le plaisir de donner la parole à Vincent Bizouard de [Manergy](https://www.manergy.fr/) sur les méthodes d'optimisation, puis de prendre connaissance des retours d'expérience d'Aude Rosener pour [Bordeaux Métropole](https://www.bordeaux-metropole.fr/) et de Jacqui Cullen et Lucas Bizzo pour l'[Eurométropole de Strasbourg](https://www.strasbourg.eu/).
 
-[https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene\_enquete\_version-numerique.pdf](https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene\_enquete\_version-numerique.pdf)
+Inscriptions : [https://framaforms.org/optimisation-des-reseaux-de-chaleur-1698669947](https://framaforms.org/optimisation-des-reseaux-de-chaleur-1698669947)
+
+\

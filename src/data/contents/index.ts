@@ -23,6 +23,7 @@ import readme_8 from './README (8).md';
 import readme_9 from './README (9).md';
 import readme_10 from './README (10).md';
 import readme_11 from './README (11).md';
+import readme_12 from './README (12).md';
 import readme from './README.md';
 import demandes from './2000-demandes.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
@@ -53,9 +54,16 @@ const importFile = (file: string) => {
 export const articles: Article[] = [
   {
     image: '/contents/isseane.jpg',
+    title: 'Optimiser son réseau de chaleur',
+    slug: 'optimiser-son-reseau-de-chaleur',
+    content: importFile(readme),
+    publishedDate: new Date('2023-11-14'),
+  },
+  {
+    image: '/contents/isseane.jpg',
     title: 'Enquête 2023 des réseaux de chaleur et de froid',
     slug: 'enquete-2023-des-reseaux-de-chaleur-et-de-froid',
-    content: importFile(readme),
+    content: importFile(readme_12),
     publishedDate: new Date('2023-11-14'),
   },
   {
