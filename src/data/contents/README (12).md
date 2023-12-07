@@ -10,4 +10,4 @@ Comment évoluent les réseaux de chaleur français ? Ils poursuivent leur déca
 \
 Vous souhaitez en savoir plus ? Ci-dessous le lien vers la synthèse de l'enquête. 👇
 
-[https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene\_enquete\_version-numerique.pdf](https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene\_enquete\_version-numerique.pdf)
+{% embed url="https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene_enquete_version-numerique.pdf" %}

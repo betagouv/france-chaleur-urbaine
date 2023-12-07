@@ -54,35 +54,35 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
-    image: '/contents/isseane.jpg',
+    image: '/contents/friday.jpg',
     title: 'Black Friday, Green Friday',
     slug: 'black-friday-green-friday',
     content: importFile(readme),
     publishedDate: new Date('2023-11-28'),
   },
   {
-    image: '/contents/isseane.jpg',
+    image: '/contents/Optimiser-vignette.jpg',
     title: 'Optimiser son réseau de chaleur',
     slug: 'optimiser-son-reseau-de-chaleur',
     content: importFile(readme_13),
     publishedDate: new Date('2023-11-28'),
   },
   {
-    image: '/contents/isseane.jpg',
+    image: '/contents/enquete2.jpg',
     title: 'Enquête 2023 des réseaux de chaleur et de froid',
     slug: 'enquete-2023-des-reseaux-de-chaleur-et-de-froid',
     content: importFile(readme_12),
     publishedDate: new Date('2023-11-14'),
   },
   {
-    image: '/contents/isseane.jpg',
+    image: '/contents/2000Vignette.jpg',
     title: '2000 demandes',
     slug: '2000-demandes',
     content: importFile(demandes),
     publishedDate: new Date('2023-11-14'),
   },
   {
-    image: '/contents/isseane.jpg',
+    image: '/contents/guideExploitantV.jpg',
     title: 'Un guide pour les exploitants',
     slug: 'un-guide-pour-les-exploitants',
     content: importFile(unGuidePourLesExploitants),

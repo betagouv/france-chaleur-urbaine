@@ -10,4 +10,6 @@
 \- 376 990 adresses testées par des professionnels grâce à notre fonctionnalité permettant le test en masse d'un grand nombre d'adresses : un outil précieux pour les bailleurs sociaux et gestionnaires de bâtiments tertiaires, qui peuvent ainsi identifier en un instant les bâtiments potentiellement raccordables de leur parc ;\
 \- 417 téléchargements du jeu de tracés mis en open data il y a 2 mois seulement.\
 \
-Cette évolution reflète la montée en puissance de France Chaleur Urbaine, mais aussi un intérêt croissant pour les réseaux de chaleur de la part du grand public et des professionnels, dont nous ne pouvons que nous féliciter ! 👏\
+Cette évolution reflète la montée en puissance de France Chaleur Urbaine, mais aussi un intérêt croissant pour les réseaux de chaleur de la part du grand public et des professionnels, dont nous ne pouvons que nous féliciter ! 👏
+
+![](/contents/2000.jpg)\
