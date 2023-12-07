@@ -70,6 +70,19 @@ const Supports = () => {
             <p>Les réseaux de froid</p>
           </Link>
         </div>
+        <div>
+          <Link
+            href="/img/FCU_optimisation_reseaux-chaleur.jpg"
+            target="_blank"
+          >
+            <img
+              src="/img/FCU_optimisation_reseaux-chaleur.jpg"
+              alt=""
+              width={150}
+            />
+            <p>Optimiser son réseau de chaleur</p>
+          </Link>
+        </div>
       </SupportImages>
       <Subtitle>Reportages</Subtitle>
       <SupportImages>
