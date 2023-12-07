@@ -127,6 +127,7 @@ export const MapStyle: any = createGlobalStyle<{
         }
       }
     }
+    /*HACK : keep the attributions links visible even when the scale legend is zoom at the max*/
     .maplibregl-control-container {
       .maplibregl-ctrl-bottom-right {
         width: calc(100% - 150px);
