@@ -8,6 +8,6 @@ Comment évoluent les réseaux de chaleur français ? Ils poursuivent leur déca
 \
 🎯 L'effort doit encore s'intensifier pour atteindre les objectifs 2030 qui visent 75% d'énergies renouvelables et de récupération et un contenu CO2 de 79 gC02/kWh.\
 \
-Vous souhaitez en savoir plus ? Ci-dessous le lien vers la synthèse de l'enquête. 👇
+Vous souhaitez en savoir plus ? Ci-dessous le lien vers la synthèse de l'enquête&#x20;
 
-{% embed url="https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene_enquete_version-numerique.pdf" %}
+[https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene\_enquete\_version-numerique.pdf](https://www.fedene.fr/wp-content/uploads/sites/2/2023/11/Fedene\_enquete\_version-numerique.pdf)
