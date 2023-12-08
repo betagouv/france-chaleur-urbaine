@@ -181,6 +181,7 @@ const Map = ({
   pinsList,
   initialZoom,
   geolocDisabled,
+  withFCUAttribution,
 }: {
   withoutLogo?: boolean;
   initialLayerDisplay: TypeLayerDisplay;
@@ -201,6 +202,7 @@ const Map = ({
   pinsList?: MapMarkerInfos[];
   initialZoom?: number;
   geolocDisabled?: boolean;
+  withFCUAttribution?: boolean;
 }) => {
   const router = useRouter();
 
@@ -1159,7 +1161,15 @@ const Map = ({
               visualizePitch={true}
               position="top-left"
             />
-            <AttributionControl compact={false} position="bottom-right" />
+            <AttributionControl
+              compact={false}
+              position="bottom-right"
+              customAttribution={
+                withFCUAttribution
+                  ? "<a href='https://france-chaleur-urbaine.beta.gouv.fr/' target='_blank'>France Chaleur Urbaine</a>"
+                  : undefined
+              }
+            />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
             {popupInfos && (
               <MapPopup

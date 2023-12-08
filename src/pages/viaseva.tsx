@@ -27,6 +27,7 @@ const ViasevaMap = () => {
           alt: 'logo viaseva',
         }}
         popupType={MapPopupType.VIASEVA}
+        withFCUAttribution
       />
     </div>
   );

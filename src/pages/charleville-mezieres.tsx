@@ -35,6 +35,7 @@ const CharlevilleMezieresMap = () => {
           src: '/logo-CM.svg',
           alt: 'logo Charleville Mezieres',
         }}
+        withFCUAttribution
       />
     </div>
   );
