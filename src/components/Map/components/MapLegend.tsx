@@ -1,11 +1,4 @@
-import {
-  Button,
-  Link,
-  Modal,
-  ModalClose,
-  ModalContent,
-  ModalTitle,
-} from '@dataesr/react-dsfr';
+import { Button, Link } from '@dataesr/react-dsfr';
 import { useRouter } from 'next/router';
 import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import { TypeLayerDisplay } from '../../../services/Map/param';
@@ -17,6 +10,7 @@ import LegendGroupLabel from './LegendGroupLabel';
 import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
 import { ButtonLink } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { useState } from 'react';
+import ModalCarteFrance from './ModalCarteFrance';
 
 function MapLegend({
   data,
@@ -154,16 +148,10 @@ function MapLegend({
         }
         return null;
       })}
-      <Modal
+      <ModalCarteFrance
         isOpen={showStatsModal}
-        hide={() => {
-          setShowStatsModal(false);
-        }}
-      >
-        <ModalClose>Fermer</ModalClose>
-        <ModalTitle>Titre de la modale</ModalTitle>
-        <ModalContent>Contenu de la modale</ModalContent>
-      </Modal>
+        onClose={() => setShowStatsModal(false)}
+      />
     </>
   );
 }
