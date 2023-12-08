@@ -1166,7 +1166,7 @@ const Map = ({
               position="bottom-right"
               customAttribution={
                 withFCUAttribution
-                  ? "<a href='https://france-chaleur-urbaine.beta.gouv.fr/' target='_blank'>France Chaleur Urbaine</a>"
+                  ? "<a href='https://france-chaleur-urbaine.beta.gouv.fr/' target='_blank' rel='noopener noreferrer'>France Chaleur Urbaine</a>"
                   : undefined
               }
             />
