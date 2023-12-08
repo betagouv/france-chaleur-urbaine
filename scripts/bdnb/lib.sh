@@ -1,5 +1,24 @@
 sql="psql --quiet --no-align --pset=tuples_only postgres://postgres:postgres_fcu@localhost:5432"
 
+case "$(uname -s)" in
+Linux*) machine=Linux ;;
+Darwin*) machine=Mac ;;
+CYGWIN*) machine=Cygwin ;;
+MINGW*) machine=MinGw ;;
+*) machine="UNKNOWN:${unameOut}" ;;
+esac
+
+if [[ "$machine" == "Linux" ]]; then
+  nbCPU=$(nproc)
+  timeFunc="/usr/bin/time -f '%E'"
+elif [[ "$machine" == "Mac" ]]; then
+  nbCPU=$(sysctl -n hw.logicalcpu)
+  timeFunc=time
+else
+  echo "Environnement $machine n'est pas (encore) supporté !" 2>&1
+  exit 1
+fi
+
 # Exécute une requête sur une table en la découpant en sous-tables
 # Puis la table finale est réassemblée à partir des sous-tables.
 split_table_query() {
@@ -64,7 +83,7 @@ EOF
   ) as sub;
 EOF
   )
-  parallel --jobs $(nproc) --delimiter SEPARATOR /usr/bin/time -f '%E' $sql -c "{}" <<EOF
+  parallel --jobs "$nbCPU" --delimiter SEPARATOR $timeFunc $sql -c "{}" <<EOF
   $queries
 EOF
 

@@ -6,7 +6,7 @@ Prérequis :
   - Donnees_de_conso_et_pdl_gaz_nat_2022 (provenance Sébastien)
   - reseaux_de_chaleur
 - psql (CLI postgresql)
-- [parallel](https://www.gnu.org/software/parallel/)
+- [parallel](https://www.gnu.org/software/parallel/) (Pour macOS : `brew install parallel`)
 - probablement avoir tuné la configuration postgresql pour augmenter la taille des buffers
 
 ## Étapes
@@ -25,7 +25,7 @@ WHERE code_departement_insee is null;
 EOF
 
 # correction des 360 codes via données de Sébastien (puis il en restera que 4)
-psql postgres://postgres:postgres_fcu@localhost:5432 -f ./scripts/bdnb/fix-bdnb-registre-sans-code-departement.sql
+psql postgres://postgres:postgres_fcu@localhost:5432 -f fix-bdnb-registre-sans-code-departement.sql
 
 # création d'un index spgist (partitionné et un peu plus efficace que gist) sur la geom des réseaux
 psql postgres://postgres:postgres_fcu@localhost:5432 -c "create index if not exists reseaux_de_chaleur_geom_spidx on reseaux_de_chaleur using spgist(geom);"
