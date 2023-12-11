@@ -1,26 +1,11 @@
-# Visite de l'unité de valorisation énergétique Isséane
+# Black Friday, Green Friday
 
-Pour découvrir les installations qui alimentent les réseaux de chaleur, direction Issy-les-Moulineaux !\
+💸 Black Friday, Green Friday, et si on conciliait les deux ? Avec les réseaux de chaleur, le chauffage est moins cher et plus vert !\
 \
-♨ Nous vous emmenons visiter l'unité de valorisation énergétique Isséane du [Syctom](https://www.syctom-paris.fr/accueil.html). Grâce à ses trois unités de valorisation énergétique (UVE), traitant les déchets de 5,7 millions d'habitants, le Syctom produit chaque année 3,5 millions de tonnes de vapeur qui viennent alimenter le réseau de chaleur de la Ville de Paris, géré par la CPCU. La chaleur issue de ces UVE représente ainsi plus de 40% du mix énergétique du réseau parisien et chauffe près de 300 000 équivalent-logements.\
+Se chauffer avec un réseau de chaleur, c'est moins 50% d'émissions de CO2 par rapport à un chauffage au gaz et moins 65% par rapport au fioul. Et sur la facture, c'est jusqu'à 30% d'économies.\
 \
-Mise en service en 2007, Isséane est la plus récente de ces trois UVE. La suite en images ci-dessous ! 👇
+📢 Une offre à saisir sans plus attendre !\
+\
+👉 Pour vérifier si vous êtes raccordable, testez votre adresse sur [France Chaleur Urbaine](https://france-chaleur-urbaine.beta.gouv.fr/).
 
-![](.gitbook/assets/1.jpg)\
-![](.gitbook/assets/2.jpg)
-
-![](.gitbook/assets/3.jpg)
-
-![](.gitbook/assets/4.jpg)
-
-![](.gitbook/assets/5.jpg)
-
-![](.gitbook/assets/6.jpg)
-
-![](.gitbook/assets/7.jpg)
-
-![](.gitbook/assets/8.jpg)
-
-![](.gitbook/assets/9.jpg)
-
-![](.gitbook/assets/10.jpg)
+![](/contents/blackfriday.jpg)

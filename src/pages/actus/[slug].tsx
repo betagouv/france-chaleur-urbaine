@@ -12,6 +12,9 @@ const GlobalStyle = createGlobalStyle`
       max-width: 100%;
     }
   }
+  a {
+    word-break: break-word; 
+  }
 `;
 
 const Article = () => {

@@ -1,6 +1,11 @@
 # Table of contents
 
-* [Visite de l'unité de valorisation énergétique Isséane](README.md)
+* [Black Friday, Green Friday](README.md)
+* [Optimiser son réseau de chaleur](<README (13).md>)
+* [Enquête 2023 des réseaux de chaleur et de froid](<README (12).md>)
+* [2000 demandes](2000-demandes.md)
+* [Un guide pour les exploitants](un-guide-pour-les-exploitants.md)
+* [Visite de l'unité de valorisation énergétique Isséane](<README (11).md>)
 * [Les réseaux de chaleur en moins de 15 secondes](les-reseaux-de-chaleur-en-moins-de-15-secondes.md)
 * [La cartographie la plus exhaustive des réseaux de chaleur et de froid](<README (10).md>)
 * [Le solaire thermique](<README (9).md>)
