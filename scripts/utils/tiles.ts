@@ -41,7 +41,7 @@ const dbTable = (
       db.raw(
         `${preTable(region)[table]}${
           limitRowIDMin
-            ? `AND fid BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}
+            ? `AND id BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}
                AND ST_INTERSECTS(
                 ST_Transform(geom, 3857),
                 ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857)

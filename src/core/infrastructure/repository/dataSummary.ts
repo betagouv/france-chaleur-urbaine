@@ -123,7 +123,7 @@ const getEnergySummary = async (
         FROM reseaux_de_chaleur rdc
         WHERE ST_Distance(
           ST_Transform(rdc.geom, 2154),
-          ST_Transform(energy.geom_adresse, 2154)
+          ST_Transform(energy.geom, 2154)
           ) < 50
         LIMIT 1
       ) as is_close
@@ -132,7 +132,7 @@ const getEnergySummary = async (
     .whereIn('adedpe202006_logtype_ch_type_ener_corr', ['gaz', 'fioul'])
     .andWhereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
     .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
-    .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
+    .andWhere(db.raw(getWithinQuery(coordinates, 'geom')));
 
 const exportGasSummary = async (
   coordinates: number[][]
@@ -171,7 +171,7 @@ const exportEnergyGasSummary = async (
           FROM reseaux_de_chaleur rdc
           WHERE ST_Distance(
             ST_Transform(rdc.geom, 2154),
-            ST_Transform(energy.geom_adresse, 2154)
+            ST_Transform(energy.geom, 2154)
             ) < 50
           LIMIT 1
         ) as is_close
@@ -189,7 +189,7 @@ const exportEnergyGasSummary = async (
     .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
     .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
     .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'gaz')
-    .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
+    .andWhere(db.raw(getWithinQuery(coordinates, 'geom')));
 
 const exportEnergyFioulSummary = async (
   coordinates: number[][],
@@ -204,7 +204,7 @@ const exportEnergyFioulSummary = async (
           FROM reseaux_de_chaleur rdc
           WHERE ST_Distance(
             ST_Transform(rdc.geom, 2154),
-            ST_Transform(energy.geom_adresse, 2154)
+            ST_Transform(energy.geom, 2154)
             ) < 50
           LIMIT 1
         ) as is_close
@@ -222,7 +222,7 @@ const exportEnergyFioulSummary = async (
     .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
     .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
     .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'fioul')
-    .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
+    .andWhere(db.raw(getWithinQuery(coordinates, 'geom')));
 
 export const getPolygonSummary = async (
   coordinates: number[][]
