@@ -76,11 +76,11 @@ function MapLegend({
           );
         }
 
-        if (group === 'statsParTerritoire') {
+        if (group === 'statsByArea') {
           return (
             <Button
               tertiary
-              key="statsParTerritoire"
+              key="statsByArea"
               onClick={() => setShowStatsModal(true)}
               size="sm"
             >

@@ -42,6 +42,7 @@ export const WrapperDiv = styled.div<{ mode: Mode }>`
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-opacity: 0.25;
+    cursor: pointer;
   }
 
   ${({ mode }) => {

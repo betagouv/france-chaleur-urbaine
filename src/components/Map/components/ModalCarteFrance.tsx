@@ -7,10 +7,22 @@ import {
 import CarteFrance, { DonneeParDepartement, Mode } from './CarteFrance';
 import { useEffect, useMemo, useState } from 'react';
 import {
+  BigBlueNumber,
+  BigBlueText,
   Bin,
+  BlackNumber,
+  BlackNumbersLine,
+  BlackText,
+  BlueNumber,
+  BlueText,
+  DistanceLineText,
+  GreyNumber,
+  GreyText,
   HorizontalSeparator,
   Layout,
+  LegendSourceLine,
   LegendTitle,
+  SourceLink,
   SpinnerWrapper,
   StyledModal,
 } from './ModalCarteFrance.style';
@@ -130,7 +142,7 @@ function ModalCarteFrance(props: Props) {
               </ButtonGroup>
               <HorizontalSeparator />
               <div>
-                <div>
+                <BigBlueText>
                   {(modeCarte === 'departemental'
                     ? departements.find(
                         (d) => d.code === selectedData?.departement
@@ -138,13 +150,27 @@ function ModalCarteFrance(props: Props) {
                     : modeCarte === 'regional'
                     ? regions.find((d) => d.code === selectedData?.departement) // FIXME récupérer les données par région également
                         ?.nom
-                    : 'France') ?? '-'}
-                </div>
-                <div>{selectedData?.departement ?? '-'} réseaux de chaleur</div>
-                <div>{selectedData?.departement ?? '-'} d'EnR&R en moyenne</div>
+                    : 'France') ?? '--'}
+                </BigBlueText>
+                <BlackNumbersLine>
+                  <div>
+                    <BlackNumber>
+                      {selectedData?.departement ?? '--'}
+                    </BlackNumber>
+                    <BlackText>réseaux de chaleur</BlackText>
+                  </div>
+                  <div>
+                    <BlackNumber>
+                      {selectedData ? `${selectedData?.departement}%` : '--'}
+                    </BlackNumber>
+                    <BlackText>d'EnR&R en moyenne</BlackText>
+                  </div>
+                </BlackNumbersLine>
                 <HorizontalSeparator />
-                <div>Distance au réseau le plus proche&nbsp;:</div>
-                <ButtonGroup isInlineFrom="xs">
+                <DistanceLineText>
+                  Distance au réseau le plus proche&nbsp;:
+                </DistanceLineText>
+                <ButtonGroup size="sm" isInlineFrom="xs">
                   <Button
                     secondary={distanceReseau !== '50m'}
                     onClick={() => setDistanceReseau('50m')}
@@ -164,7 +190,7 @@ function ModalCarteFrance(props: Props) {
                     &lt;150 m
                   </Button>
                 </ButtonGroup>
-                <ButtonGroup isInlineFrom="xs">
+                <ButtonGroup size="sm" isInlineFrom="xs">
                   <Button
                     secondary={modeBatimentLogement !== 'batiments'}
                     onClick={() => setModeBatimentLogement('batiments')}
@@ -178,29 +204,52 @@ function ModalCarteFrance(props: Props) {
                     Logements
                   </Button>
                 </ButtonGroup>
-                <div>
+                <BigBlueNumber className="fr-mt-2w">
                   {selectedData?.[distanceReseau]?.[
                     `nb_${modeBatimentLogement}`
-                  ] ?? '-'}{' '}
-                  {modeBatimentLogement} raccordables
-                </div>
-                <div>dont&nbsp;:</div>
-                <div>
+                  ] ?? '--'}
+                </BigBlueNumber>
+                <BlueText>
+                  {modeBatimentLogement} raccordables identifiés
+                  {modeBatimentLogement === 'logements' && (
+                    <>
+                      , soit{' '}
+                      {selectedData
+                        ? getConsoAnnuelleGWhLogements(
+                            selectedData?.[distanceReseau]?.[
+                              `nb_${modeBatimentLogement}`
+                            ] ?? 0
+                          )
+                        : '--'}{' '}
+                      GW/h
+                      <br />
+                      de consommation annuelle environ
+                    </>
+                  )}
+                </BlueText>
+                <BlueText className="fr-mt-1w">dont&nbsp;:</BlueText>
+                <BlueNumber>
                   {selectedData?.[distanceReseau]?.[modeBatimentLogement]
-                    ?.collectif_gaz ?? '-'}{' '}
+                    ?.collectif_gaz ?? '--'}
+                </BlueNumber>
+                <BlueText>
                   {modeBatimentLogement} chauffés au gaz collectif
-                </div>
-                <div>
+                </BlueText>
+                <BlueNumber>
                   {selectedData?.[distanceReseau]?.[modeBatimentLogement]
-                    ?.collectif_fioul ?? '-'}{' '}
+                    ?.collectif_fioul ?? '--'}
+                </BlueNumber>
+                <BlueText>
                   {modeBatimentLogement} chauffés au fioul collectif
-                </div>
-                <div>et&nbsp;:</div>
-                <div>
+                </BlueText>
+                <GreyText className="fr-mt-2w">et&nbsp;:</GreyText>
+                <GreyNumber>
                   {selectedData?.[distanceReseau]?.[modeBatimentLogement]
-                    ?.individuel_gaz ?? '-'}{' '}
+                    ?.individuel_gaz ?? '--'}
+                </GreyNumber>
+                <GreyText>
                   {modeBatimentLogement} chauffés au gaz individuel
-                </div>
+                </GreyText>
               </div>
             </div>
             <div className="fr-col">
@@ -215,20 +264,28 @@ function ModalCarteFrance(props: Props) {
                   )
                 }
               />
-              <div>
-                <LegendTitle>
-                  Nombre de {modeBatimentLogement}
-                  <br />
-                  raccordables
-                </LegendTitle>
-                {dataBins?.map((bin, i) => (
-                  <Bin key={i} color={bin.color}>
-                    {i === 0
-                      ? `> ${bin.minValue}`
-                      : `de ${bin.minValue} à ${bin.maxValue}`}
-                  </Bin>
-                ))}
-              </div>
+              <LegendSourceLine>
+                <div>
+                  <LegendTitle>
+                    Nombre de {modeBatimentLogement}
+                    <br />
+                    raccordables
+                  </LegendTitle>
+                  {dataBins?.map((bin, i) => (
+                    <Bin key={i} color={bin.color}>
+                      {i === 0
+                        ? `> ${bin.minValue}`
+                        : `de ${bin.minValue} à ${bin.maxValue}`}
+                    </Bin>
+                  ))}
+                </div>
+                <SourceLink
+                  href="/documentation/carto_sources.pdf"
+                  target="_blank"
+                >
+                  Sources
+                </SourceLink>
+              </LegendSourceLine>
             </div>
           </Layout>
         )}
@@ -276,7 +333,7 @@ export function calculateBins(
   const dataMax = data
     .filter((v) => !!v) // strip null and undefined values
     .reduce((acc, v) => Math.max(acc, v), 0); // TODO probablement arrondir
-  const binSize = Math.round((dataMax - dataMin) / numberOfBins);
+  const binSize = Math.ceil((dataMax - dataMin) / numberOfBins);
 
   const bins = Array.from({ length: numberOfBins }, (_, i) => {
     const minValue: number = dataMin + i * binSize;
@@ -316,4 +373,9 @@ function interpolateColor(
 
 function hex(i: number): string {
   return `${i < 16 ? '0' : ''}${i.toString(16)}`;
+}
+
+const consoAnnuelleMWhParLogement = 10;
+function getConsoAnnuelleGWhLogements(nbLogements: number): number {
+  return Math.ceil((nbLogements * consoAnnuelleMWhParLogement) / 1000);
 }

@@ -48,7 +48,9 @@
       "nb_batiments": 3239,
       "nb_logements": 17042
     },
-    "departement": "01"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "01",
+    "departement_nom": "Ain"
   },
   {
     "50m": {
@@ -99,7 +101,9 @@
       "nb_batiments": 3350,
       "nb_logements": 13152
     },
-    "departement": "02"
+    "region_nom": "Hauts-de-France",
+    "departement": "02",
+    "departement_nom": "Aisne"
   },
   {
     "50m": {
@@ -150,7 +154,9 @@
       "nb_batiments": 4558,
       "nb_logements": 14790
     },
-    "departement": "03"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "03",
+    "departement_nom": "Allier"
   },
   {
     "50m": {
@@ -201,7 +207,9 @@
       "nb_batiments": 864,
       "nb_logements": 1969
     },
-    "departement": "04"
+    "region_nom": "Provence-Alpes-Côte d'Azur",
+    "departement": "04",
+    "departement_nom": "Alpes-de-Haute-Provence"
   },
   {
     "50m": {
@@ -252,7 +260,9 @@
       "nb_batiments": 2238,
       "nb_logements": 9123
     },
-    "departement": "05"
+    "region_nom": "Provence-Alpes-Côte d'Azur",
+    "departement": "05",
+    "departement_nom": "Hautes-Alpes"
   },
   {
     "50m": {
@@ -303,7 +313,9 @@
       "nb_batiments": 1024,
       "nb_logements": 21686
     },
-    "departement": "06"
+    "region_nom": "Provence-Alpes-Côte d'Azur",
+    "departement": "06",
+    "departement_nom": "Alpes-Maritimes"
   },
   {
     "50m": {
@@ -354,7 +366,9 @@
       "nb_batiments": 1820,
       "nb_logements": 4957
     },
-    "departement": "07"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "07",
+    "departement_nom": "Ardèche"
   },
   {
     "50m": {
@@ -405,7 +419,62 @@
       "nb_batiments": 4424,
       "nb_logements": 18126
     },
-    "departement": "08"
+    "region_nom": "Grand Est",
+    "departement": "08",
+    "departement_nom": "Ardennes"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "region_nom": "Occitanie",
+    "departement": "09",
+    "departement_nom": "Ariège"
   },
   {
     "50m": {
@@ -456,7 +525,9 @@
       "nb_batiments": 469,
       "nb_logements": 5880
     },
-    "departement": "10"
+    "region_nom": "Grand Est",
+    "departement": "10",
+    "departement_nom": "Aube"
   },
   {
     "50m": {
@@ -507,7 +578,9 @@
       "nb_batiments": 2072,
       "nb_logements": 5744
     },
-    "departement": "11"
+    "region_nom": "Occitanie",
+    "departement": "11",
+    "departement_nom": "Aude"
   },
   {
     "50m": {
@@ -558,7 +631,9 @@
       "nb_batiments": 1370,
       "nb_logements": 3543
     },
-    "departement": "12"
+    "region_nom": "Occitanie",
+    "departement": "12",
+    "departement_nom": "Aveyron"
   },
   {
     "50m": {
@@ -609,7 +684,9 @@
       "nb_batiments": 3839,
       "nb_logements": 47451
     },
-    "departement": "13"
+    "region_nom": "Provence-Alpes-Côte d'Azur",
+    "departement": "13",
+    "departement_nom": "Bouches-du-Rhône"
   },
   {
     "50m": {
@@ -660,7 +737,9 @@
       "nb_batiments": 5632,
       "nb_logements": 31475
     },
-    "departement": "14"
+    "region_nom": "Normandie",
+    "departement": "14",
+    "departement_nom": "Calvados"
   },
   {
     "50m": {
@@ -711,7 +790,9 @@
       "nb_batiments": 3487,
       "nb_logements": 14855
     },
-    "departement": "15"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "15",
+    "departement_nom": "Cantal"
   },
   {
     "50m": {
@@ -762,7 +843,9 @@
       "nb_batiments": 647,
       "nb_logements": 1649
     },
-    "departement": "16"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "16",
+    "departement_nom": "Charente"
   },
   {
     "50m": {
@@ -813,7 +896,9 @@
       "nb_batiments": 4137,
       "nb_logements": 17700
     },
-    "departement": "17"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "17",
+    "departement_nom": "Charente-Maritime"
   },
   {
     "50m": {
@@ -864,7 +949,9 @@
       "nb_batiments": 3685,
       "nb_logements": 12147
     },
-    "departement": "18"
+    "region_nom": "Centre-Val de Loire",
+    "departement": "18",
+    "departement_nom": "Cher"
   },
   {
     "50m": {
@@ -915,28 +1002,9 @@
       "nb_batiments": 5482,
       "nb_logements": 18431
     },
-    "departement": "19"
-  },
-  {
-    "50m": null,
-    "100m": {
-      "batiments": {
-        "collectif_gaz": 0,
-        "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
-      },
-      "logements": {
-        "collectif_gaz": 0,
-        "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
-      },
-      "nb_batiments": 1,
-      "nb_logements": 23
-    },
-    "150m": null,
-    "departement": null
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "19",
+    "departement_nom": "Corrèze"
   },
   {
     "50m": {
@@ -987,7 +1055,9 @@
       "nb_batiments": 13814,
       "nb_logements": 100169
     },
-    "departement": "21"
+    "region_nom": "Bourgogne-Franche-Comté",
+    "departement": "21",
+    "departement_nom": "Côte-d'Or"
   },
   {
     "50m": {
@@ -1038,7 +1108,9 @@
       "nb_batiments": 183,
       "nb_logements": 301
     },
-    "departement": "22"
+    "region_nom": "Bretagne",
+    "departement": "22",
+    "departement_nom": "Côtes d'Armor"
   },
   {
     "50m": {
@@ -1089,7 +1161,9 @@
       "nb_batiments": 1728,
       "nb_logements": 4566
     },
-    "departement": "23"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "23",
+    "departement_nom": "Creuse"
   },
   {
     "50m": {
@@ -1140,7 +1214,9 @@
       "nb_batiments": 1897,
       "nb_logements": 6470
     },
-    "departement": "24"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "24",
+    "departement_nom": "Dordogne"
   },
   {
     "50m": {
@@ -1191,7 +1267,9 @@
       "nb_batiments": 2547,
       "nb_logements": 20918
     },
-    "departement": "25"
+    "region_nom": "Bourgogne-Franche-Comté",
+    "departement": "25",
+    "departement_nom": "Doubs"
   },
   {
     "50m": {
@@ -1242,7 +1320,9 @@
       "nb_batiments": 2650,
       "nb_logements": 14409
     },
-    "departement": "26"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "26",
+    "departement_nom": "Drôme"
   },
   {
     "50m": {
@@ -1293,7 +1373,9 @@
       "nb_batiments": 4288,
       "nb_logements": 18091
     },
-    "departement": "27"
+    "region_nom": "Normandie",
+    "departement": "27",
+    "departement_nom": "Eure"
   },
   {
     "50m": {
@@ -1344,7 +1426,9 @@
       "nb_batiments": 2405,
       "nb_logements": 9026
     },
-    "departement": "28"
+    "region_nom": "Centre-Val de Loire",
+    "departement": "28",
+    "departement_nom": "Eure-et-Loir"
   },
   {
     "50m": {
@@ -1395,7 +1479,62 @@
       "nb_batiments": 8390,
       "nb_logements": 40288
     },
-    "departement": "29"
+    "region_nom": "Bretagne",
+    "departement": "29",
+    "departement_nom": "Finistère"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "region_nom": "Corse",
+    "departement": "2A",
+    "departement_nom": "Corse-du-Sud"
   },
   {
     "50m": {
@@ -1446,7 +1585,9 @@
       "nb_batiments": 367,
       "nb_logements": 2060
     },
-    "departement": "2B"
+    "region_nom": "Corse",
+    "departement": "2B",
+    "departement_nom": "Haute-Corse"
   },
   {
     "50m": {
@@ -1497,7 +1638,9 @@
       "nb_batiments": 1142,
       "nb_logements": 12246
     },
-    "departement": "30"
+    "region_nom": "Occitanie",
+    "departement": "30",
+    "departement_nom": "Gard"
   },
   {
     "50m": {
@@ -1548,7 +1691,62 @@
       "nb_batiments": 5462,
       "nb_logements": 49903
     },
-    "departement": "31"
+    "region_nom": "Occitanie",
+    "departement": "31",
+    "departement_nom": "Haute-Garonne"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0,
+        "individuel_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "region_nom": "Occitanie",
+    "departement": "32",
+    "departement_nom": "Gers"
   },
   {
     "50m": {
@@ -1599,7 +1797,9 @@
       "nb_batiments": 12014,
       "nb_logements": 77271
     },
-    "departement": "33"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "33",
+    "departement_nom": "Gironde"
   },
   {
     "50m": {
@@ -1650,7 +1850,9 @@
       "nb_batiments": 704,
       "nb_logements": 5295
     },
-    "departement": "34"
+    "region_nom": "Occitanie",
+    "departement": "34",
+    "departement_nom": "Hérault"
   },
   {
     "50m": {
@@ -1701,7 +1903,9 @@
       "nb_batiments": 8832,
       "nb_logements": 84797
     },
-    "departement": "35"
+    "region_nom": "Bretagne",
+    "departement": "35",
+    "departement_nom": "Ille-et-Vilaine"
   },
   {
     "50m": {
@@ -1752,7 +1956,9 @@
       "nb_batiments": 1904,
       "nb_logements": 5286
     },
-    "departement": "36"
+    "region_nom": "Centre-Val de Loire",
+    "departement": "36",
+    "departement_nom": "Indre"
   },
   {
     "50m": {
@@ -1803,7 +2009,9 @@
       "nb_batiments": 9795,
       "nb_logements": 66238
     },
-    "departement": "37"
+    "region_nom": "Centre-Val de Loire",
+    "departement": "37",
+    "departement_nom": "Indre-et-Loire"
   },
   {
     "50m": {
@@ -1854,7 +2062,9 @@
       "nb_batiments": 15473,
       "nb_logements": 155324
     },
-    "departement": "38"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "38",
+    "departement_nom": "Isère"
   },
   {
     "50m": {
@@ -1905,7 +2115,9 @@
       "nb_batiments": 3287,
       "nb_logements": 14349
     },
-    "departement": "39"
+    "region_nom": "Bourgogne-Franche-Comté",
+    "departement": "39",
+    "departement_nom": "Jura"
   },
   {
     "50m": {
@@ -1956,7 +2168,9 @@
       "nb_batiments": 410,
       "nb_logements": 2101
     },
-    "departement": "40"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "40",
+    "departement_nom": "Landes"
   },
   {
     "50m": {
@@ -2007,7 +2221,9 @@
       "nb_batiments": 2194,
       "nb_logements": 8980
     },
-    "departement": "41"
+    "region_nom": "Centre-Val de Loire",
+    "departement": "41",
+    "departement_nom": "Loir-et-Cher"
   },
   {
     "50m": {
@@ -2058,7 +2274,9 @@
       "nb_batiments": 10112,
       "nb_logements": 50358
     },
-    "departement": "42"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "42",
+    "departement_nom": "Loire"
   },
   {
     "50m": {
@@ -2109,7 +2327,9 @@
       "nb_batiments": 2695,
       "nb_logements": 7343
     },
-    "departement": "43"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "43",
+    "departement_nom": "Haute-Loire"
   },
   {
     "50m": {
@@ -2160,7 +2380,9 @@
       "nb_batiments": 21817,
       "nb_logements": 139898
     },
-    "departement": "44"
+    "region_nom": "Pays de la Loire",
+    "departement": "44",
+    "departement_nom": "Loire-Atlantique"
   },
   {
     "50m": {
@@ -2211,7 +2433,9 @@
       "nb_batiments": 8878,
       "nb_logements": 43053
     },
-    "departement": "45"
+    "region_nom": "Centre-Val de Loire",
+    "departement": "45",
+    "departement_nom": "Loiret"
   },
   {
     "50m": {
@@ -2262,7 +2486,9 @@
       "nb_batiments": 3173,
       "nb_logements": 4343
     },
-    "departement": "46"
+    "region_nom": "Occitanie",
+    "departement": "46",
+    "departement_nom": "Lot"
   },
   {
     "50m": {
@@ -2313,7 +2539,9 @@
       "nb_batiments": 442,
       "nb_logements": 508
     },
-    "departement": "47"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "47",
+    "departement_nom": "Lot-et-Garonne"
   },
   {
     "50m": {
@@ -2364,7 +2592,9 @@
       "nb_batiments": 2757,
       "nb_logements": 6706
     },
-    "departement": "48"
+    "region_nom": "Occitanie",
+    "departement": "48",
+    "departement_nom": "Lozère"
   },
   {
     "50m": {
@@ -2415,7 +2645,9 @@
       "nb_batiments": 10855,
       "nb_logements": 57521
     },
-    "departement": "49"
+    "region_nom": "Pays de la Loire",
+    "departement": "49",
+    "departement_nom": "Maine-et-Loire"
   },
   {
     "50m": {
@@ -2466,7 +2698,9 @@
       "nb_batiments": 812,
       "nb_logements": 6176
     },
-    "departement": "50"
+    "region_nom": "Normandie",
+    "departement": "50",
+    "departement_nom": "Manche"
   },
   {
     "50m": {
@@ -2517,7 +2751,9 @@
       "nb_batiments": 7121,
       "nb_logements": 42566
     },
-    "departement": "51"
+    "region_nom": "Grand Est",
+    "departement": "51",
+    "departement_nom": "Marne"
   },
   {
     "50m": {
@@ -2568,7 +2804,9 @@
       "nb_batiments": 4788,
       "nb_logements": 17749
     },
-    "departement": "52"
+    "region_nom": "Grand Est",
+    "departement": "52",
+    "departement_nom": "Haute-Marne"
   },
   {
     "50m": {
@@ -2619,7 +2857,9 @@
       "nb_batiments": 2681,
       "nb_logements": 12915
     },
-    "departement": "53"
+    "region_nom": "Pays de la Loire",
+    "departement": "53",
+    "departement_nom": "Mayenne"
   },
   {
     "50m": {
@@ -2670,7 +2910,9 @@
       "nb_batiments": 9319,
       "nb_logements": 54596
     },
-    "departement": "54"
+    "region_nom": "Grand Est",
+    "departement": "54",
+    "departement_nom": "Meurthe-et-Moselle"
   },
   {
     "50m": {
@@ -2721,7 +2963,9 @@
       "nb_batiments": 1385,
       "nb_logements": 4623
     },
-    "departement": "55"
+    "region_nom": "Grand Est",
+    "departement": "55",
+    "departement_nom": "Meuse"
   },
   {
     "50m": {
@@ -2772,7 +3016,9 @@
       "nb_batiments": 2094,
       "nb_logements": 9214
     },
-    "departement": "56"
+    "region_nom": "Bretagne",
+    "departement": "56",
+    "departement_nom": "Morbihan"
   },
   {
     "50m": {
@@ -2823,7 +3069,9 @@
       "nb_batiments": 17871,
       "nb_logements": 101188
     },
-    "departement": "57"
+    "region_nom": "Grand Est",
+    "departement": "57",
+    "departement_nom": "Moselle"
   },
   {
     "50m": {
@@ -2874,7 +3122,9 @@
       "nb_batiments": 8314,
       "nb_logements": 18610
     },
-    "departement": "58"
+    "region_nom": "Bourgogne-Franche-Comté",
+    "departement": "58",
+    "departement_nom": "Nièvre"
   },
   {
     "50m": {
@@ -2925,7 +3175,9 @@
       "nb_batiments": 43121,
       "nb_logements": 160245
     },
-    "departement": "59"
+    "region_nom": "Hauts-de-France",
+    "departement": "59",
+    "departement_nom": "Nord"
   },
   {
     "50m": {
@@ -2976,7 +3228,9 @@
       "nb_batiments": 5396,
       "nb_logements": 31327
     },
-    "departement": "60"
+    "region_nom": "Hauts-de-France",
+    "departement": "60",
+    "departement_nom": "Oise"
   },
   {
     "50m": {
@@ -3027,7 +3281,9 @@
       "nb_batiments": 6543,
       "nb_logements": 17201
     },
-    "departement": "61"
+    "region_nom": "Normandie",
+    "departement": "61",
+    "departement_nom": "Orne"
   },
   {
     "50m": {
@@ -3078,7 +3334,9 @@
       "nb_batiments": 16264,
       "nb_logements": 44942
     },
-    "departement": "62"
+    "region_nom": "Hauts-de-France",
+    "departement": "62",
+    "departement_nom": "Pas-de-Calais"
   },
   {
     "50m": {
@@ -3129,7 +3387,9 @@
       "nb_batiments": 6356,
       "nb_logements": 35714
     },
-    "departement": "63"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "63",
+    "departement_nom": "Puy-de-Dôme"
   },
   {
     "50m": {
@@ -3180,7 +3440,9 @@
       "nb_batiments": 5114,
       "nb_logements": 37867
     },
-    "departement": "64"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "64",
+    "departement_nom": "Pyrénées-Atlantiques"
   },
   {
     "50m": {
@@ -3231,7 +3493,9 @@
       "nb_batiments": 577,
       "nb_logements": 924
     },
-    "departement": "65"
+    "region_nom": "Occitanie",
+    "departement": "65",
+    "departement_nom": "Hautes-Pyrénées"
   },
   {
     "50m": {
@@ -3282,7 +3546,9 @@
       "nb_batiments": 496,
       "nb_logements": 544
     },
-    "departement": "66"
+    "region_nom": "Occitanie",
+    "departement": "66",
+    "departement_nom": "Pyrénées-Orientales"
   },
   {
     "50m": {
@@ -3333,7 +3599,9 @@
       "nb_batiments": 7169,
       "nb_logements": 94146
     },
-    "departement": "67"
+    "region_nom": "Grand Est",
+    "departement": "67",
+    "departement_nom": "Bas-Rhin"
   },
   {
     "50m": {
@@ -3384,7 +3652,9 @@
       "nb_batiments": 9691,
       "nb_logements": 48322
     },
-    "departement": "68"
+    "region_nom": "Grand Est",
+    "departement": "68",
+    "departement_nom": "Haut-Rhin"
   },
   {
     "50m": {
@@ -3435,7 +3705,9 @@
       "nb_batiments": 24219,
       "nb_logements": 341795
     },
-    "departement": "69"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "69",
+    "departement_nom": "Rhône"
   },
   {
     "50m": {
@@ -3486,7 +3758,9 @@
       "nb_batiments": 5,
       "nb_logements": 3
     },
-    "departement": "70"
+    "region_nom": "Bourgogne-Franche-Comté",
+    "departement": "70",
+    "departement_nom": "Haute-Saône"
   },
   {
     "50m": {
@@ -3537,7 +3811,9 @@
       "nb_batiments": 9861,
       "nb_logements": 53375
     },
-    "departement": "71"
+    "region_nom": "Bourgogne-Franche-Comté",
+    "departement": "71",
+    "departement_nom": "Saône-et-Loire"
   },
   {
     "50m": {
@@ -3588,7 +3864,9 @@
       "nb_batiments": 6391,
       "nb_logements": 27076
     },
-    "departement": "72"
+    "region_nom": "Pays de la Loire",
+    "departement": "72",
+    "departement_nom": "Sarthe"
   },
   {
     "50m": {
@@ -3639,7 +3917,9 @@
       "nb_batiments": 7542,
       "nb_logements": 59055
     },
-    "departement": "73"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "73",
+    "departement_nom": "Savoie"
   },
   {
     "50m": {
@@ -3690,7 +3970,9 @@
       "nb_batiments": 5299,
       "nb_logements": 48105
     },
-    "departement": "74"
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "departement": "74",
+    "departement_nom": "Haute-Savoie"
   },
   {
     "50m": {
@@ -3741,7 +4023,9 @@
       "nb_batiments": 53391,
       "nb_logements": 1173541
     },
-    "departement": "75"
+    "region_nom": "Ile-de-France",
+    "departement": "75",
+    "departement_nom": "Paris"
   },
   {
     "50m": {
@@ -3792,7 +4076,9 @@
       "nb_batiments": 19558,
       "nb_logements": 102318
     },
-    "departement": "76"
+    "region_nom": "Normandie",
+    "departement": "76",
+    "departement_nom": "Seine-Maritime"
   },
   {
     "50m": {
@@ -3843,7 +4129,9 @@
       "nb_batiments": 11454,
       "nb_logements": 105035
     },
-    "departement": "77"
+    "region_nom": "Ile-de-France",
+    "departement": "77",
+    "departement_nom": "Seine-et-Marne"
   },
   {
     "50m": {
@@ -3894,7 +4182,9 @@
       "nb_batiments": 12873,
       "nb_logements": 121604
     },
-    "departement": "78"
+    "region_nom": "Ile-de-France",
+    "departement": "78",
+    "departement_nom": "Yvelines"
   },
   {
     "50m": {
@@ -3945,7 +4235,9 @@
       "nb_batiments": 458,
       "nb_logements": 897
     },
-    "departement": "79"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "79",
+    "departement_nom": "Deux-Sèvres"
   },
   {
     "50m": {
@@ -3996,7 +4288,9 @@
       "nb_batiments": 9585,
       "nb_logements": 45574
     },
-    "departement": "80"
+    "region_nom": "Hauts-de-France",
+    "departement": "80",
+    "departement_nom": "Somme"
   },
   {
     "50m": {
@@ -4047,7 +4341,9 @@
       "nb_batiments": 2209,
       "nb_logements": 3476
     },
-    "departement": "81"
+    "region_nom": "Occitanie",
+    "departement": "81",
+    "departement_nom": "Tarn"
   },
   {
     "50m": {
@@ -4098,7 +4394,9 @@
       "nb_batiments": 1963,
       "nb_logements": 6435
     },
-    "departement": "82"
+    "region_nom": "Occitanie",
+    "departement": "82",
+    "departement_nom": "Tarn-et-Garonne"
   },
   {
     "50m": {
@@ -4149,7 +4447,9 @@
       "nb_batiments": 755,
       "nb_logements": 5956
     },
-    "departement": "83"
+    "region_nom": "Provence-Alpes-Côte d'Azur",
+    "departement": "83",
+    "departement_nom": "Var"
   },
   {
     "50m": {
@@ -4200,7 +4500,9 @@
       "nb_batiments": 1118,
       "nb_logements": 5948
     },
-    "departement": "84"
+    "region_nom": "Provence-Alpes-Côte d'Azur",
+    "departement": "84",
+    "departement_nom": "Vaucluse"
   },
   {
     "50m": {
@@ -4251,7 +4553,9 @@
       "nb_batiments": 357,
       "nb_logements": 423
     },
-    "departement": "85"
+    "region_nom": "Pays de la Loire",
+    "departement": "85",
+    "departement_nom": "Vendée"
   },
   {
     "50m": {
@@ -4302,7 +4606,9 @@
       "nb_batiments": 4174,
       "nb_logements": 20211
     },
-    "departement": "86"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "86",
+    "departement_nom": "Vienne"
   },
   {
     "50m": {
@@ -4353,7 +4659,9 @@
       "nb_batiments": 5015,
       "nb_logements": 28646
     },
-    "departement": "87"
+    "region_nom": "Nouvelle-Aquitaine",
+    "departement": "87",
+    "departement_nom": "Haute-Vienne"
   },
   {
     "50m": {
@@ -4404,7 +4712,9 @@
       "nb_batiments": 5837,
       "nb_logements": 17575
     },
-    "departement": "88"
+    "region_nom": "Grand Est",
+    "departement": "88",
+    "departement_nom": "Vosges"
   },
   {
     "50m": {
@@ -4455,7 +4765,9 @@
       "nb_batiments": 2269,
       "nb_logements": 9973
     },
-    "departement": "89"
+    "region_nom": "Bourgogne-Franche-Comté",
+    "departement": "89",
+    "departement_nom": "Yonne"
   },
   {
     "50m": {
@@ -4506,7 +4818,9 @@
       "nb_batiments": 175,
       "nb_logements": 916
     },
-    "departement": "90"
+    "region_nom": "Bourgogne-Franche-Comté",
+    "departement": "90",
+    "departement_nom": "Territoire-de-Belfort"
   },
   {
     "50m": {
@@ -4557,7 +4871,9 @@
       "nb_batiments": 8807,
       "nb_logements": 148099
     },
-    "departement": "91"
+    "region_nom": "Ile-de-France",
+    "departement": "91",
+    "departement_nom": "Essonne"
   },
   {
     "50m": {
@@ -4608,7 +4924,9 @@
       "nb_batiments": 16980,
       "nb_logements": 327711
     },
-    "departement": "92"
+    "region_nom": "Ile-de-France",
+    "departement": "92",
+    "departement_nom": "Hauts-de-Seine"
   },
   {
     "50m": {
@@ -4659,7 +4977,9 @@
       "nb_batiments": 24999,
       "nb_logements": 259018
     },
-    "departement": "93"
+    "region_nom": "Ile-de-France",
+    "departement": "93",
+    "departement_nom": "Seine-Saint-Denis"
   },
   {
     "50m": {
@@ -4710,7 +5030,9 @@
       "nb_batiments": 29093,
       "nb_logements": 297702
     },
-    "departement": "94"
+    "region_nom": "Ile-de-France",
+    "departement": "94",
+    "departement_nom": "Val-de-Marne"
   },
   {
     "50m": {
@@ -4761,27 +5083,8 @@
       "nb_batiments": 10660,
       "nb_logements": 124439
     },
-    "departement": "95"
-  },
-  {
-    "50m": null,
-    "100m": null,
-    "150m": {
-      "batiments": {
-        "collectif_gaz": 0,
-        "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
-      },
-      "logements": {
-        "collectif_gaz": 0,
-        "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
-      },
-      "nb_batiments": 1,
-      "nb_logements": 23
-    },
-    "departement": "20"
+    "region_nom": "Ile-de-France",
+    "departement": "95",
+    "departement_nom": "Val-D'Oise"
   }
 ]
