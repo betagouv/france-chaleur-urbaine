@@ -73,13 +73,8 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
         </Arrow>
       </Wrapper>
       <ButtonGroup isInlineFrom="xs" align="center">
-        <a
-          className="fr-btn"
-          href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Devenir partenaire
+        <a className="fr-btn" href="/contact">
+          Rejoindre notre réseau
         </a>
         <a
           className="fr-btn fr-btn--secondary"

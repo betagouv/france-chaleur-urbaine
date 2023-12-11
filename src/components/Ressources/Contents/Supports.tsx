@@ -127,7 +127,7 @@ const Supports = () => {
           </Link>
         </div>
       </SupportImages>
-      <Subtitle>Campagne de pub</Subtitle>
+      <Subtitle id="campagnes-de-pub">Campagne de pub</Subtitle>
       <SupportImages>
         <div>
           <Link href="/img/PUB-PANNEAU.pdf" target="_blank">

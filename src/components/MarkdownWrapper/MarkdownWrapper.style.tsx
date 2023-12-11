@@ -1,4 +1,5 @@
 import markupData, { matomoEvent } from '@components/Markup';
+import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
 export const isExternalLink = (href: string) =>
@@ -71,7 +72,7 @@ type ExtraEventType = {
   trackEvent?: string;
 };
 
-export const ButtonLink = styled.a.attrs<ExtraEventType>((props) => {
+export const ButtonLink = styled(Link).attrs<ExtraEventType>((props) => {
   const { className, tagName, trackEvent } = props;
   const getMatomoEventKey = (tagName?: TagName) =>
     (tagName && markupData?.[tagName]?.matomoEvent.form) || [];
