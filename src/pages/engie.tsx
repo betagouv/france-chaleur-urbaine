@@ -40,6 +40,7 @@ const EngieMap = () => {
             ['downcase', ['coalesce', ['get', 'Gestionnaire'], '']],
           ],
         ]}
+        withFCUAttribution
       />
     </div>
   );

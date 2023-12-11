@@ -40,6 +40,7 @@ const DalkiaMap = () => {
             ['downcase', ['coalesce', ['get', 'Gestionnaire'], '']],
           ],
         ]}
+        withFCUAttribution
       />
     </div>
   );
