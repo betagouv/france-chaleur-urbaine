@@ -329,21 +329,19 @@ export function calculateBins(
   minColor: string,
   maxColor: string
 ): Bin[] {
-  const dataMin = 0;
-  const dataMax = data
-    .filter((v) => !!v) // strip null and undefined values
-    .reduce((acc, v) => Math.max(acc, v), 0); // TODO probablement arrondir
-  const binSize = Math.ceil((dataMax - dataMin) / numberOfBins);
+  const sortedData = [...data].filter((v) => !!v).sort((a, b) => a - b);
+  const binSize = Math.ceil(sortedData.length / numberOfBins);
 
   const bins = Array.from({ length: numberOfBins }, (_, i) => {
-    const minValue: number = dataMin + i * binSize;
-    const maxValue: number = minValue + binSize;
-
     const colorRatio = i / (numberOfBins - 1);
-    const color: string = interpolateColor(minColor, maxColor, colorRatio);
-
-    return { minValue, maxValue, color };
+    return {
+      minValue: sortedData[i * binSize],
+      maxValue: sortedData[Math.min((i + 1) * binSize, sortedData.length) - 1],
+      color: interpolateColor(minColor, maxColor, colorRatio),
+    };
   });
+  // borne min à zéro pour un meilleur affichage
+  bins[0].minValue = 0;
   return bins;
 }
 
