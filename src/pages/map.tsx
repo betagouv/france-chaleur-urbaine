@@ -95,6 +95,7 @@ const MapPage = () => {
               }
             : param.simpleLayerDisplay
         }
+        withFCUAttribution
       />
     </div>
   );

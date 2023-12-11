@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { HTMLAttributes, useState } from 'react';
 import { Container, CopyInfo, IFrameBox } from './IFrameLink.styles';
 
-const IFrameLink = ({ link }: { link: string }) => {
+const IFrameLink = ({
+  link,
+  ...props
+}: { link: string } & HTMLAttributes<HTMLElement>) => {
   const [copied, setCopied] = useState(false);
   const onCopy = () => {
     setCopied(true);
@@ -10,7 +13,7 @@ const IFrameLink = ({ link }: { link: string }) => {
   };
 
   return (
-    <Container>
+    <Container {...props}>
       {copied && <CopyInfo>Copié</CopyInfo>}
       <IFrameBox
         onClick={onCopy}

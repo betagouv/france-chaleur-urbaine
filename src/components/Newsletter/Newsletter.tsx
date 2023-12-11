@@ -22,7 +22,7 @@ const Newsletter = () => {
       {sent ? (
         <Alert
           type="success"
-          title="Vous recevrez desormais notre newsletter. Pensez à verifier vos spams."
+          title="Vous recevrez désormais notre newsletter. Pensez à vérifier vos spams."
         />
       ) : (
         <>

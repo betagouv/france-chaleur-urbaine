@@ -52,7 +52,7 @@ const BulkEligibilityForm = () => {
         <Alert
           type="success"
           title="Fichier bien reçu"
-          description="Le résultat vous sera envoyé par mail (pensez à verifier vos spams)."
+          description="Le résultat vous sera envoyé par mail (pensez à vérifier vos spams)."
         />
       ) : (
         <form onSubmit={checkEligibility}>

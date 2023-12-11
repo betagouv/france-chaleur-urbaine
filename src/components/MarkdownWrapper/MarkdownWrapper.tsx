@@ -26,7 +26,7 @@ import {
   isExternalLink,
 } from './MarkdownWrapper.style';
 
-const RoutedLink = (props: any) => {
+export const RoutedLink = (props: any) => {
   const { href, target } = props;
   const extProps = {
     target: target || (href && isExternalLink(href) ? '_blank' : undefined),
