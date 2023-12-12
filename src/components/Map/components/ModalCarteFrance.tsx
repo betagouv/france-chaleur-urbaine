@@ -214,7 +214,8 @@ function ModalCarteFrance(props: Props) {
                   ] ?? '--'}
                 </BigBlueNumber>
                 <BlueText>
-                  {modeBatimentLogement} raccordables identifiés
+                  {getBatimentLogementLabel(modeBatimentLogement)} raccordables
+                  identifiés
                   {modeBatimentLogement === 'logements' && (
                     <>
                       , soit{' '}
@@ -237,14 +238,16 @@ function ModalCarteFrance(props: Props) {
                     ?.collectif_gaz ?? '--'}
                 </BlueNumber>
                 <BlueText>
-                  {modeBatimentLogement} chauffés au gaz collectif
+                  {getBatimentLogementLabel(modeBatimentLogement)} chauffés au
+                  gaz collectif
                 </BlueText>
                 <BlueNumber className="fr-mt-1w">
                   {selectedData?.[distanceReseau]?.[modeBatimentLogement]
                     ?.collectif_fioul ?? '--'}
                 </BlueNumber>
                 <BlueText>
-                  {modeBatimentLogement} chauffés au fioul collectif
+                  {getBatimentLogementLabel(modeBatimentLogement)} chauffés au
+                  fioul collectif
                 </BlueText>
                 <GreyText className="fr-mt-2w">et&nbsp;:</GreyText>
                 <GreyNumber>
@@ -252,7 +255,8 @@ function ModalCarteFrance(props: Props) {
                     ?.individuel_gaz ?? '--'}
                 </GreyNumber>
                 <GreyText>
-                  {modeBatimentLogement} chauffés au gaz individuel
+                  {getBatimentLogementLabel(modeBatimentLogement)} chauffés au
+                  gaz individuel
                 </GreyText>
               </FirstColumn>
               <SecondColumn>
@@ -270,7 +274,7 @@ function ModalCarteFrance(props: Props) {
                 <LegendSourceLine>
                   <div>
                     <LegendTitle>
-                      Nombre de {modeBatimentLogement}
+                      Nombre de {getBatimentLogementLabel(modeBatimentLogement)}
                       <br />
                       raccordables
                     </LegendTitle>
@@ -381,4 +385,13 @@ function hex(i: number): string {
 const consoAnnuelleMWhParLogement = 10;
 function getConsoAnnuelleGWhLogements(nbLogements: number): number {
   return Math.ceil((nbLogements * consoAnnuelleMWhParLogement) / 1000);
+}
+
+function getBatimentLogementLabel(type: BatimentLogement): string {
+  switch (type) {
+    case 'batiments':
+      return 'bâtiments';
+    case 'logements':
+      return 'logements';
+  }
 }
