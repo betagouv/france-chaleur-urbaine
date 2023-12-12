@@ -11,7 +11,11 @@ export const StyledModal = styled(Modal)`
   justify-content: center;
 `;
 
-export const Layout = styled.div`
+export const ModalContentWrapper = styled.div`
+  margin-top: -2em;
+`;
+
+export const LayoutTwoColons = styled.div`
   display: flex;
 `;
 
@@ -24,10 +28,10 @@ export const BlackNumbersLine = styled.div`
 export const HorizontalSeparator = styled.div`
   width: 100%;
   border: 1px solid #e1e1e1;
-  margin: 16px 0;
 `;
 
 export const DistanceLineText = styled.div`
+  font-size: 13px;
   margin-top: 16px;
   margin-bottom: 8px;
 `;
@@ -40,6 +44,7 @@ export const BigBlueText = styled.div`
   color: #4550e5;
   font-size: 26px;
   font-weight: bold;
+  margin-top: 24px;
 `;
 
 export const BlueText = styled.div`
@@ -59,8 +64,8 @@ export const BlackNumber = styled.div`
 `;
 
 export const BigBlueNumber = styled.div`
-  font-size: 30px;
   color: #4550e5;
+  font-size: 30px;
   font-weight: bold;
 `;
 

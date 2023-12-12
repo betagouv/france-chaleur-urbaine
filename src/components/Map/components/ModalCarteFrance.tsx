@@ -19,9 +19,10 @@ import {
   GreyNumber,
   GreyText,
   HorizontalSeparator,
-  Layout,
+  LayoutTwoColons,
   LegendSourceLine,
   LegendTitle,
+  ModalContentWrapper,
   SourceLink,
   SpinnerWrapper,
   StyledModal,
@@ -118,29 +119,29 @@ function ModalCarteFrance(props: Props) {
             <Oval height={40} width={40} />
           </SpinnerWrapper>
         ) : (
-          <Layout>
-            <div>
-              <ButtonGroup isInlineFrom="xs">
-                <Button
-                  secondary={modeCarte !== 'national'}
-                  onClick={() => setModeCarte('national')}
-                >
-                  National
-                </Button>
-                <Button
-                  secondary={modeCarte !== 'regional'}
-                  onClick={() => setModeCarte('regional')}
-                >
-                  Régional
-                </Button>
-                <Button
-                  secondary={modeCarte !== 'departemental'}
-                  onClick={() => setModeCarte('departemental')}
-                >
-                  Départemental
-                </Button>
-              </ButtonGroup>
-              <HorizontalSeparator />
+          <ModalContentWrapper>
+            <ButtonGroup size="sm" isInlineFrom="xs">
+              <Button
+                secondary={modeCarte !== 'national'}
+                onClick={() => setModeCarte('national')}
+              >
+                National
+              </Button>
+              <Button
+                secondary={modeCarte !== 'regional'}
+                onClick={() => setModeCarte('regional')}
+              >
+                Régional
+              </Button>
+              <Button
+                secondary={modeCarte !== 'departemental'}
+                onClick={() => setModeCarte('departemental')}
+              >
+                Départemental
+              </Button>
+            </ButtonGroup>
+            <HorizontalSeparator />
+            <LayoutTwoColons>
               <div>
                 <BigBlueText>
                   {(modeCarte === 'departemental'
@@ -168,7 +169,7 @@ function ModalCarteFrance(props: Props) {
                     <BlackText>d'EnR&R en moyenne</BlackText>
                   </div>
                 </BlackNumbersLine>
-                <HorizontalSeparator />
+                <HorizontalSeparator className="fr-mt-1w" />
                 <DistanceLineText>
                   Distance au réseau le plus proche&nbsp;:
                 </DistanceLineText>
@@ -223,7 +224,7 @@ function ModalCarteFrance(props: Props) {
                             ] ?? 0
                           )
                         : '--'}{' '}
-                      GW/h
+                      GWh
                       <br />
                       de consommation annuelle environ
                     </>
@@ -253,43 +254,43 @@ function ModalCarteFrance(props: Props) {
                   {modeBatimentLogement} chauffés au gaz individuel
                 </GreyText>
               </div>
-            </div>
-            <div className="fr-col">
-              <CarteFrance
-                mode={modeCarte}
-                donneesParDepartement={donneesParDepartement}
-                onTerritoireSelect={(departementOuRegion) =>
-                  setSelectedData(
-                    statsData.find(
-                      (r) => r.departement === departementOuRegion
-                    )!
-                  )
-                }
-              />
-              <LegendSourceLine>
-                <div>
-                  <LegendTitle>
-                    Nombre de {modeBatimentLogement}
-                    <br />
-                    raccordables
-                  </LegendTitle>
-                  {dataBins?.map((bin, i) => (
-                    <Bin key={i} color={bin.color}>
-                      {i === 0
-                        ? `> ${bin.minValue}`
-                        : `de ${bin.minValue} à ${bin.maxValue}`}
-                    </Bin>
-                  ))}
-                </div>
-                <SourceLink
-                  href="/documentation/FCU_sources_donnees_agregees.pdf"
-                  target="_blank"
-                >
-                  Sources
-                </SourceLink>
-              </LegendSourceLine>
-            </div>
-          </Layout>
+              <div className="fr-col">
+                <CarteFrance
+                  mode={modeCarte}
+                  donneesParDepartement={donneesParDepartement}
+                  onTerritoireSelect={(departementOuRegion) =>
+                    setSelectedData(
+                      statsData.find(
+                        (r) => r.departement === departementOuRegion
+                      )!
+                    )
+                  }
+                />
+                <LegendSourceLine>
+                  <div>
+                    <LegendTitle>
+                      Nombre de {modeBatimentLogement}
+                      <br />
+                      raccordables
+                    </LegendTitle>
+                    {dataBins?.map((bin, i) => (
+                      <Bin key={i} color={bin.color}>
+                        {i === 0
+                          ? `> ${bin.minValue}`
+                          : `de ${bin.minValue} à ${bin.maxValue}`}
+                      </Bin>
+                    ))}
+                  </div>
+                  <SourceLink
+                    href="/documentation/FCU_sources_donnees_agregees.pdf"
+                    target="_blank"
+                  >
+                    Sources
+                  </SourceLink>
+                </LegendSourceLine>
+              </div>
+            </LayoutTwoColons>
+          </ModalContentWrapper>
         )}
       </ModalContent>
     </StyledModal>
