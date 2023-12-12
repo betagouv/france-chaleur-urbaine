@@ -32,6 +32,7 @@ import {
 import departements from '@etalab/decoupage-administratif/data/departements.json';
 import regions from '@etalab/decoupage-administratif/data/regions.json';
 import { Oval } from 'react-loader-spinner';
+import { prettyFormatNumber } from '@utils/strings';
 
 const minFillColor = '#E2E3EE';
 const maxFillColor = '#4550E5';
@@ -157,14 +158,14 @@ function ModalCarteFrance(props: Props) {
                 <BlackNumbersLine>
                   <div>
                     <BlackNumber>
-                      {selectedData?.nb_reseaux ?? '--'}
+                      {prettyFormatNumber(selectedData?.nb_reseaux) ?? '--'}
                     </BlackNumber>
                     <BlackText>réseaux de chaleur</BlackText>
                   </div>
                   <div>
                     <BlackNumber>
                       {selectedData?.taux_enrr
-                        ? `${selectedData?.taux_enrr}%`
+                        ? `${prettyFormatNumber(selectedData?.taux_enrr)}%`
                         : '--'}
                     </BlackNumber>
                     <BlackText>d'EnR&R en moyenne</BlackText>
@@ -209,9 +210,11 @@ function ModalCarteFrance(props: Props) {
                   </Button>
                 </ButtonGroup>
                 <BigBlueNumber className="fr-mt-2w">
-                  {selectedData?.[distanceReseau]?.[
-                    `nb_${modeBatimentLogement}`
-                  ] ?? '--'}
+                  {prettyFormatNumber(
+                    selectedData?.[distanceReseau]?.[
+                      `nb_${modeBatimentLogement}`
+                    ]
+                  ) ?? '--'}
                 </BigBlueNumber>
                 <BlueText>
                   {getBatimentLogementLabel(modeBatimentLogement)} raccordables
@@ -234,16 +237,20 @@ function ModalCarteFrance(props: Props) {
                 </BlueText>
                 <BlueText className="fr-mt-1w">dont&nbsp;:</BlueText>
                 <BlueNumber className="fr-mt-1w">
-                  {selectedData?.[distanceReseau]?.[modeBatimentLogement]
-                    ?.collectif_gaz ?? '--'}
+                  {prettyFormatNumber(
+                    selectedData?.[distanceReseau]?.[modeBatimentLogement]
+                      ?.collectif_gaz
+                  ) ?? '--'}
                 </BlueNumber>
                 <BlueText>
                   {getBatimentLogementLabel(modeBatimentLogement)} chauffés au
                   gaz collectif
                 </BlueText>
                 <BlueNumber className="fr-mt-1w">
-                  {selectedData?.[distanceReseau]?.[modeBatimentLogement]
-                    ?.collectif_fioul ?? '--'}
+                  {prettyFormatNumber(
+                    selectedData?.[distanceReseau]?.[modeBatimentLogement]
+                      ?.collectif_fioul
+                  ) ?? '--'}
                 </BlueNumber>
                 <BlueText>
                   {getBatimentLogementLabel(modeBatimentLogement)} chauffés au
@@ -251,8 +258,10 @@ function ModalCarteFrance(props: Props) {
                 </BlueText>
                 <GreyText className="fr-mt-2w">et&nbsp;:</GreyText>
                 <GreyNumber>
-                  {selectedData?.[distanceReseau]?.[modeBatimentLogement]
-                    ?.individuel_gaz ?? '--'}
+                  {prettyFormatNumber(
+                    selectedData?.[distanceReseau]?.[modeBatimentLogement]
+                      ?.individuel_gaz
+                  ) ?? '--'}
                 </GreyNumber>
                 <GreyText>
                   {getBatimentLogementLabel(modeBatimentLogement)} chauffés au
@@ -281,8 +290,10 @@ function ModalCarteFrance(props: Props) {
                     {dataBins?.map((bin, i) => (
                       <Bin key={i} color={bin.color}>
                         {i === 0
-                          ? `> ${bin.minValue}`
-                          : `de ${bin.minValue} à ${bin.maxValue}`}
+                          ? `≥ ${prettyFormatNumber(bin.minValue)}`
+                          : `de ${prettyFormatNumber(
+                              bin.minValue
+                            )} à ${prettyFormatNumber(bin.maxValue)}`}
                       </Bin>
                     ))}
                   </div>
