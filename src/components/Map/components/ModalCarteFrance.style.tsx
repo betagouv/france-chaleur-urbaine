@@ -7,16 +7,43 @@ export const SpinnerWrapper = styled.div`
 `;
 
 export const StyledModal = styled(Modal)`
-  display: flex;
-  justify-content: center;
+  // Surcharge la disposition par défaut qui est prédéfinie et statique
+  // afin d'avoir plus de contrôle sur la largeur de la modal
+  // cf https://github.com/dataesr/react-dsfr/blob/666f089b2209a9c2d7ef73fe0f79f129923c2b7b/src/components/interface/Modal/Modal.js#L32-L33
+
+  // force la classe fr-col-12 plutôt que fr-col-md-6
+  & > .fr-container-md .fr-col-12 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  & .fr-modal__content {
+    margin-bottom: 16px !important; // 64px par défaut
+  }
 `;
 
 export const ModalContentWrapper = styled.div`
   margin-top: -2em;
 `;
 
-export const LayoutTwoColons = styled.div`
+export const LayoutTwoColumns = styled.div`
   display: flex;
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+  }
+`;
+
+export const FirstColumn = styled.div`
+  flex: 1;
+  flex-grow: 3;
+`;
+
+export const SecondColumn = styled.div`
+  flex: 1;
+  flex-grow: 5;
 `;
 
 export const BlackNumbersLine = styled.div`
@@ -50,6 +77,7 @@ export const BigBlueText = styled.div`
 export const BlueText = styled.div`
   color: #4550e5;
   font-size: 14px;
+  line-height: 1.5em;
 `;
 
 export const GreyText = styled.div`
@@ -105,6 +133,8 @@ export const LegendSourceLine = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: end;
+  font-size: 13px;
+  margin-top: -32px;
 `;
 
 export const SourceLink = styled(Link)`

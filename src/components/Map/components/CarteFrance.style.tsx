@@ -25,6 +25,7 @@ export const Tooltip = styled.div.attrs<TooltipProps>(({ visible, x, y }) => ({
   top: 0;
   left: 0;
   padding: 10px 12px;
+  z-index: 2000;
 `;
 
 export const WrapperDiv = styled.div<{ mode: Mode }>`

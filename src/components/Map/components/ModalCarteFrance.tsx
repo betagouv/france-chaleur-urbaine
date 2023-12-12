@@ -16,13 +16,15 @@ import {
   BlueNumber,
   BlueText,
   DistanceLineText,
+  FirstColumn,
   GreyNumber,
   GreyText,
   HorizontalSeparator,
-  LayoutTwoColons,
+  LayoutTwoColumns,
   LegendSourceLine,
   LegendTitle,
   ModalContentWrapper,
+  SecondColumn,
   SourceLink,
   SpinnerWrapper,
   StyledModal,
@@ -106,7 +108,6 @@ function ModalCarteFrance(props: Props) {
 
   return (
     <StyledModal
-      size="lg"
       isOpen={props.isOpen}
       hide={() => {
         props.onClose();
@@ -141,8 +142,8 @@ function ModalCarteFrance(props: Props) {
               </Button>
             </ButtonGroup>
             <HorizontalSeparator />
-            <LayoutTwoColons>
-              <div>
+            <LayoutTwoColumns>
+              <FirstColumn>
                 <BigBlueText>
                   {(modeCarte === 'departemental'
                     ? departements.find(
@@ -231,14 +232,14 @@ function ModalCarteFrance(props: Props) {
                   )}
                 </BlueText>
                 <BlueText className="fr-mt-1w">dont&nbsp;:</BlueText>
-                <BlueNumber>
+                <BlueNumber className="fr-mt-1w">
                   {selectedData?.[distanceReseau]?.[modeBatimentLogement]
                     ?.collectif_gaz ?? '--'}
                 </BlueNumber>
                 <BlueText>
                   {modeBatimentLogement} chauffés au gaz collectif
                 </BlueText>
-                <BlueNumber>
+                <BlueNumber className="fr-mt-1w">
                   {selectedData?.[distanceReseau]?.[modeBatimentLogement]
                     ?.collectif_fioul ?? '--'}
                 </BlueNumber>
@@ -253,8 +254,8 @@ function ModalCarteFrance(props: Props) {
                 <GreyText>
                   {modeBatimentLogement} chauffés au gaz individuel
                 </GreyText>
-              </div>
-              <div className="fr-col">
+              </FirstColumn>
+              <SecondColumn>
                 <CarteFrance
                   mode={modeCarte}
                   donneesParDepartement={donneesParDepartement}
@@ -288,8 +289,8 @@ function ModalCarteFrance(props: Props) {
                     Sources
                   </SourceLink>
                 </LegendSourceLine>
-              </div>
-            </LayoutTwoColons>
+              </SecondColumn>
+            </LayoutTwoColumns>
           </ModalContentWrapper>
         )}
       </ModalContent>

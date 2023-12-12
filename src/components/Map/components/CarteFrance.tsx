@@ -1,4 +1,5 @@
 import { MouseEventHandler, SyntheticEvent, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Tooltip, WrapperDiv } from './CarteFrance.style';
 
 // component adapted from https://github.com/regisenguehard/carte-france-svg
@@ -35,10 +36,9 @@ function CarteFrance(props: Props) {
     }
     const target = event.target as HTMLElement;
     const offset = 10;
-    const { left, top } = wrapperDivRef.current.getBoundingClientRect();
     setTooltipInfos({
-      x: event.pageX + offset - left,
-      y: event.pageY + offset - top,
+      x: event.pageX + offset,
+      y: event.pageY + offset,
       visible: true,
       content: (
         <div>
@@ -928,13 +928,18 @@ function CarteFrance(props: Props) {
           />
         </g>
       </svg>
-      <Tooltip
-        visible={tooltipInfos.visible}
-        x={tooltipInfos.x}
-        y={tooltipInfos.y}
-      >
-        {tooltipInfos.content}
-      </Tooltip>
+
+      {/* Attach the tooltip to the body so that the tooltip does not get truncated when overflowing */}
+      {createPortal(
+        <Tooltip
+          visible={tooltipInfos.visible}
+          x={tooltipInfos.x}
+          y={tooltipInfos.y}
+        >
+          {tooltipInfos.content}
+        </Tooltip>,
+        document.body
+      )}
     </WrapperDiv>
   );
 }
