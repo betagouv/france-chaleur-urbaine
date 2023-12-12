@@ -152,7 +152,7 @@ function ModalCarteFrance(props: Props) {
                     : modeCarte === 'regional'
                     ? regions.find((d) => d.code === selectedData?.departement) // FIXME récupérer les données par région également
                         ?.nom
-                    : 'France') ?? '--'}
+                    : 'France') ?? `Cliquer sur la carte`}
                 </BigBlueText>
                 <BlackNumbersLine>
                   <div>
