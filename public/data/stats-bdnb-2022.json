@@ -48,6 +48,8 @@
       "nb_batiments": 3239,
       "nb_logements": 17042
     },
+    "taux_enrr": 74.5,
+    "nb_reseaux": 9,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "01",
     "departement_nom": "Ain"
@@ -101,6 +103,8 @@
       "nb_batiments": 3350,
       "nb_logements": 13152
     },
+    "taux_enrr": 78.29,
+    "nb_reseaux": 3,
     "region_nom": "Hauts-de-France",
     "departement": "02",
     "departement_nom": "Aisne"
@@ -154,6 +158,8 @@
       "nb_batiments": 4558,
       "nb_logements": 14790
     },
+    "taux_enrr": 77.43,
+    "nb_reseaux": 10,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "03",
     "departement_nom": "Allier"
@@ -207,6 +213,8 @@
       "nb_batiments": 864,
       "nb_logements": 1969
     },
+    "taux_enrr": 77.45,
+    "nb_reseaux": 5,
     "region_nom": "Provence-Alpes-Côte d'Azur",
     "departement": "04",
     "departement_nom": "Alpes-de-Haute-Provence"
@@ -260,6 +268,8 @@
       "nb_batiments": 2238,
       "nb_logements": 9123
     },
+    "taux_enrr": 94.8,
+    "nb_reseaux": 7,
     "region_nom": "Provence-Alpes-Côte d'Azur",
     "departement": "05",
     "departement_nom": "Hautes-Alpes"
@@ -313,6 +323,8 @@
       "nb_batiments": 1024,
       "nb_logements": 21686
     },
+    "taux_enrr": 89.48,
+    "nb_reseaux": 6,
     "region_nom": "Provence-Alpes-Côte d'Azur",
     "departement": "06",
     "departement_nom": "Alpes-Maritimes"
@@ -366,6 +378,8 @@
       "nb_batiments": 1820,
       "nb_logements": 4957
     },
+    "taux_enrr": 97.02,
+    "nb_reseaux": 7,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "07",
     "departement_nom": "Ardèche"
@@ -419,6 +433,8 @@
       "nb_batiments": 4424,
       "nb_logements": 18126
     },
+    "taux_enrr": 69.49,
+    "nb_reseaux": 14,
     "region_nom": "Grand Est",
     "departement": "08",
     "departement_nom": "Ardennes"
@@ -472,6 +488,8 @@
       "nb_batiments": 0,
       "nb_logements": 0
     },
+    "taux_enrr": null,
+    "nb_reseaux": 0,
     "region_nom": "Occitanie",
     "departement": "09",
     "departement_nom": "Ariège"
@@ -525,6 +543,8 @@
       "nb_batiments": 469,
       "nb_logements": 5880
     },
+    "taux_enrr": 36.23,
+    "nb_reseaux": 3,
     "region_nom": "Grand Est",
     "departement": "10",
     "departement_nom": "Aube"
@@ -578,6 +598,8 @@
       "nb_batiments": 2072,
       "nb_logements": 5744
     },
+    "taux_enrr": 61.06,
+    "nb_reseaux": 3,
     "region_nom": "Occitanie",
     "departement": "11",
     "departement_nom": "Aude"
@@ -631,6 +653,8 @@
       "nb_batiments": 1370,
       "nb_logements": 3543
     },
+    "taux_enrr": 86.68,
+    "nb_reseaux": 5,
     "region_nom": "Occitanie",
     "departement": "12",
     "departement_nom": "Aveyron"
@@ -684,6 +708,8 @@
       "nb_batiments": 3839,
       "nb_logements": 47451
     },
+    "taux_enrr": 50.58,
+    "nb_reseaux": 13,
     "region_nom": "Provence-Alpes-Côte d'Azur",
     "departement": "13",
     "departement_nom": "Bouches-du-Rhône"
@@ -737,6 +763,8 @@
       "nb_batiments": 5632,
       "nb_logements": 31475
     },
+    "taux_enrr": 90,
+    "nb_reseaux": 10,
     "region_nom": "Normandie",
     "departement": "14",
     "departement_nom": "Calvados"
@@ -790,6 +818,8 @@
       "nb_batiments": 3487,
       "nb_logements": 14855
     },
+    "taux_enrr": 92.07,
+    "nb_reseaux": 9,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "15",
     "departement_nom": "Cantal"
@@ -843,6 +873,8 @@
       "nb_batiments": 647,
       "nb_logements": 1649
     },
+    "taux_enrr": 34.35,
+    "nb_reseaux": 10,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "16",
     "departement_nom": "Charente"
@@ -896,6 +928,8 @@
       "nb_batiments": 4137,
       "nb_logements": 17700
     },
+    "taux_enrr": 84.62,
+    "nb_reseaux": 7,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "17",
     "departement_nom": "Charente-Maritime"
@@ -949,6 +983,8 @@
       "nb_batiments": 3685,
       "nb_logements": 12147
     },
+    "taux_enrr": 91.07,
+    "nb_reseaux": 2,
     "region_nom": "Centre-Val de Loire",
     "departement": "18",
     "departement_nom": "Cher"
@@ -1002,6 +1038,8 @@
       "nb_batiments": 5482,
       "nb_logements": 18431
     },
+    "taux_enrr": 95.45,
+    "nb_reseaux": 8,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "19",
     "departement_nom": "Corrèze"
@@ -1055,6 +1093,8 @@
       "nb_batiments": 13814,
       "nb_logements": 100169
     },
+    "taux_enrr": 74.6,
+    "nb_reseaux": 5,
     "region_nom": "Bourgogne-Franche-Comté",
     "departement": "21",
     "departement_nom": "Côte-d'Or"
@@ -1108,6 +1148,8 @@
       "nb_batiments": 183,
       "nb_logements": 301
     },
+    "taux_enrr": 92.41,
+    "nb_reseaux": 15,
     "region_nom": "Bretagne",
     "departement": "22",
     "departement_nom": "Côtes d'Armor"
@@ -1161,6 +1203,8 @@
       "nb_batiments": 1728,
       "nb_logements": 4566
     },
+    "taux_enrr": 94.86,
+    "nb_reseaux": 4,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "23",
     "departement_nom": "Creuse"
@@ -1214,6 +1258,8 @@
       "nb_batiments": 1897,
       "nb_logements": 6470
     },
+    "taux_enrr": 82.05,
+    "nb_reseaux": 6,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "24",
     "departement_nom": "Dordogne"
@@ -1267,6 +1313,8 @@
       "nb_batiments": 2547,
       "nb_logements": 20918
     },
+    "taux_enrr": 86.34,
+    "nb_reseaux": 16,
     "region_nom": "Bourgogne-Franche-Comté",
     "departement": "25",
     "departement_nom": "Doubs"
@@ -1320,6 +1368,8 @@
       "nb_batiments": 2650,
       "nb_logements": 14409
     },
+    "taux_enrr": 57.28,
+    "nb_reseaux": 5,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "26",
     "departement_nom": "Drôme"
@@ -1373,6 +1423,8 @@
       "nb_batiments": 4288,
       "nb_logements": 18091
     },
+    "taux_enrr": 82.73,
+    "nb_reseaux": 8,
     "region_nom": "Normandie",
     "departement": "27",
     "departement_nom": "Eure"
@@ -1426,6 +1478,8 @@
       "nb_batiments": 2405,
       "nb_logements": 9026
     },
+    "taux_enrr": 81.9,
+    "nb_reseaux": 4,
     "region_nom": "Centre-Val de Loire",
     "departement": "28",
     "departement_nom": "Eure-et-Loir"
@@ -1479,6 +1533,8 @@
       "nb_batiments": 8390,
       "nb_logements": 40288
     },
+    "taux_enrr": 92.27,
+    "nb_reseaux": 7,
     "region_nom": "Bretagne",
     "departement": "29",
     "departement_nom": "Finistère"
@@ -1532,6 +1588,8 @@
       "nb_batiments": 0,
       "nb_logements": 0
     },
+    "taux_enrr": null,
+    "nb_reseaux": 0,
     "region_nom": "Corse",
     "departement": "2A",
     "departement_nom": "Corse-du-Sud"
@@ -1585,6 +1643,8 @@
       "nb_batiments": 367,
       "nb_logements": 2060
     },
+    "taux_enrr": 99.85,
+    "nb_reseaux": 1,
     "region_nom": "Corse",
     "departement": "2B",
     "departement_nom": "Haute-Corse"
@@ -1638,6 +1698,8 @@
       "nb_batiments": 1142,
       "nb_logements": 12246
     },
+    "taux_enrr": 59.03,
+    "nb_reseaux": 3,
     "region_nom": "Occitanie",
     "departement": "30",
     "departement_nom": "Gard"
@@ -1691,6 +1753,8 @@
       "nb_batiments": 5462,
       "nb_logements": 49903
     },
+    "taux_enrr": 84.98,
+    "nb_reseaux": 11,
     "region_nom": "Occitanie",
     "departement": "31",
     "departement_nom": "Haute-Garonne"
@@ -1744,6 +1808,8 @@
       "nb_batiments": 0,
       "nb_logements": 0
     },
+    "taux_enrr": null,
+    "nb_reseaux": 0,
     "region_nom": "Occitanie",
     "departement": "32",
     "departement_nom": "Gers"
@@ -1797,6 +1863,8 @@
       "nb_batiments": 12014,
       "nb_logements": 77271
     },
+    "taux_enrr": 67.21,
+    "nb_reseaux": 21,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "33",
     "departement_nom": "Gironde"
@@ -1850,6 +1918,8 @@
       "nb_batiments": 704,
       "nb_logements": 5295
     },
+    "taux_enrr": 44.51,
+    "nb_reseaux": 10,
     "region_nom": "Occitanie",
     "departement": "34",
     "departement_nom": "Hérault"
@@ -1903,6 +1973,8 @@
       "nb_batiments": 8832,
       "nb_logements": 84797
     },
+    "taux_enrr": 51.09,
+    "nb_reseaux": 11,
     "region_nom": "Bretagne",
     "departement": "35",
     "departement_nom": "Ille-et-Vilaine"
@@ -1956,6 +2028,8 @@
       "nb_batiments": 1904,
       "nb_logements": 5286
     },
+    "taux_enrr": 77.64,
+    "nb_reseaux": 6,
     "region_nom": "Centre-Val de Loire",
     "departement": "36",
     "departement_nom": "Indre"
@@ -2009,6 +2083,8 @@
       "nb_batiments": 9795,
       "nb_logements": 66238
     },
+    "taux_enrr": 69.14,
+    "nb_reseaux": 10,
     "region_nom": "Centre-Val de Loire",
     "departement": "37",
     "departement_nom": "Indre-et-Loire"
@@ -2062,6 +2138,8 @@
       "nb_batiments": 15473,
       "nb_logements": 155324
     },
+    "taux_enrr": 83.91,
+    "nb_reseaux": 19,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "38",
     "departement_nom": "Isère"
@@ -2115,6 +2193,8 @@
       "nb_batiments": 3287,
       "nb_logements": 14349
     },
+    "taux_enrr": 69.36,
+    "nb_reseaux": 7,
     "region_nom": "Bourgogne-Franche-Comté",
     "departement": "39",
     "departement_nom": "Jura"
@@ -2168,6 +2248,8 @@
       "nb_batiments": 410,
       "nb_logements": 2101
     },
+    "taux_enrr": 93.12,
+    "nb_reseaux": 4,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "40",
     "departement_nom": "Landes"
@@ -2221,6 +2303,8 @@
       "nb_batiments": 2194,
       "nb_logements": 8980
     },
+    "taux_enrr": 86.71,
+    "nb_reseaux": 6,
     "region_nom": "Centre-Val de Loire",
     "departement": "41",
     "departement_nom": "Loir-et-Cher"
@@ -2274,6 +2358,8 @@
       "nb_batiments": 10112,
       "nb_logements": 50358
     },
+    "taux_enrr": 60.73,
+    "nb_reseaux": 48,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "42",
     "departement_nom": "Loire"
@@ -2327,6 +2413,8 @@
       "nb_batiments": 2695,
       "nb_logements": 7343
     },
+    "taux_enrr": 95.94,
+    "nb_reseaux": 10,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "43",
     "departement_nom": "Haute-Loire"
@@ -2380,6 +2468,8 @@
       "nb_batiments": 21817,
       "nb_logements": 139898
     },
+    "taux_enrr": 71.9,
+    "nb_reseaux": 9,
     "region_nom": "Pays de la Loire",
     "departement": "44",
     "departement_nom": "Loire-Atlantique"
@@ -2433,6 +2523,8 @@
       "nb_batiments": 8878,
       "nb_logements": 43053
     },
+    "taux_enrr": 74.14,
+    "nb_reseaux": 5,
     "region_nom": "Centre-Val de Loire",
     "departement": "45",
     "departement_nom": "Loiret"
@@ -2486,6 +2578,8 @@
       "nb_batiments": 3173,
       "nb_logements": 4343
     },
+    "taux_enrr": 95.09,
+    "nb_reseaux": 15,
     "region_nom": "Occitanie",
     "departement": "46",
     "departement_nom": "Lot"
@@ -2539,6 +2633,8 @@
       "nb_batiments": 442,
       "nb_logements": 508
     },
+    "taux_enrr": 100,
+    "nb_reseaux": 1,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "47",
     "departement_nom": "Lot-et-Garonne"
@@ -2592,6 +2688,8 @@
       "nb_batiments": 2757,
       "nb_logements": 6706
     },
+    "taux_enrr": 99.78,
+    "nb_reseaux": 2,
     "region_nom": "Occitanie",
     "departement": "48",
     "departement_nom": "Lozère"
@@ -2645,6 +2743,8 @@
       "nb_batiments": 10855,
       "nb_logements": 57521
     },
+    "taux_enrr": 72.13,
+    "nb_reseaux": 14,
     "region_nom": "Pays de la Loire",
     "departement": "49",
     "departement_nom": "Maine-et-Loire"
@@ -2698,6 +2798,8 @@
       "nb_batiments": 812,
       "nb_logements": 6176
     },
+    "taux_enrr": 84.52,
+    "nb_reseaux": 6,
     "region_nom": "Normandie",
     "departement": "50",
     "departement_nom": "Manche"
@@ -2751,6 +2853,8 @@
       "nb_batiments": 7121,
       "nb_logements": 42566
     },
+    "taux_enrr": 56.09,
+    "nb_reseaux": 7,
     "region_nom": "Grand Est",
     "departement": "51",
     "departement_nom": "Marne"
@@ -2804,6 +2908,8 @@
       "nb_batiments": 4788,
       "nb_logements": 17749
     },
+    "taux_enrr": 89.59,
+    "nb_reseaux": 8,
     "region_nom": "Grand Est",
     "departement": "52",
     "departement_nom": "Haute-Marne"
@@ -2857,6 +2963,8 @@
       "nb_batiments": 2681,
       "nb_logements": 12915
     },
+    "taux_enrr": 96.41,
+    "nb_reseaux": 4,
     "region_nom": "Pays de la Loire",
     "departement": "53",
     "departement_nom": "Mayenne"
@@ -2910,6 +3018,8 @@
       "nb_batiments": 9319,
       "nb_logements": 54596
     },
+    "taux_enrr": 79.79,
+    "nb_reseaux": 11,
     "region_nom": "Grand Est",
     "departement": "54",
     "departement_nom": "Meurthe-et-Moselle"
@@ -2963,6 +3073,8 @@
       "nb_batiments": 1385,
       "nb_logements": 4623
     },
+    "taux_enrr": 70.66,
+    "nb_reseaux": 5,
     "region_nom": "Grand Est",
     "departement": "55",
     "departement_nom": "Meuse"
@@ -3016,6 +3128,8 @@
       "nb_batiments": 2094,
       "nb_logements": 9214
     },
+    "taux_enrr": 80.21,
+    "nb_reseaux": 7,
     "region_nom": "Bretagne",
     "departement": "56",
     "departement_nom": "Morbihan"
@@ -3069,6 +3183,8 @@
       "nb_batiments": 17871,
       "nb_logements": 101188
     },
+    "taux_enrr": 67.38,
+    "nb_reseaux": 19,
     "region_nom": "Grand Est",
     "departement": "57",
     "departement_nom": "Moselle"
@@ -3122,6 +3238,8 @@
       "nb_batiments": 8314,
       "nb_logements": 18610
     },
+    "taux_enrr": 73.41,
+    "nb_reseaux": 27,
     "region_nom": "Bourgogne-Franche-Comté",
     "departement": "58",
     "departement_nom": "Nièvre"
@@ -3175,6 +3293,8 @@
       "nb_batiments": 43121,
       "nb_logements": 160245
     },
+    "taux_enrr": 70.61,
+    "nb_reseaux": 20,
     "region_nom": "Hauts-de-France",
     "departement": "59",
     "departement_nom": "Nord"
@@ -3228,6 +3348,8 @@
       "nb_batiments": 5396,
       "nb_logements": 31327
     },
+    "taux_enrr": 55.04,
+    "nb_reseaux": 8,
     "region_nom": "Hauts-de-France",
     "departement": "60",
     "departement_nom": "Oise"
@@ -3281,6 +3403,8 @@
       "nb_batiments": 6543,
       "nb_logements": 17201
     },
+    "taux_enrr": 87.74,
+    "nb_reseaux": 6,
     "region_nom": "Normandie",
     "departement": "61",
     "departement_nom": "Orne"
@@ -3334,6 +3458,8 @@
       "nb_batiments": 16264,
       "nb_logements": 44942
     },
+    "taux_enrr": 75.02,
+    "nb_reseaux": 13,
     "region_nom": "Hauts-de-France",
     "departement": "62",
     "departement_nom": "Pas-de-Calais"
@@ -3387,6 +3513,8 @@
       "nb_batiments": 6356,
       "nb_logements": 35714
     },
+    "taux_enrr": 67.82,
+    "nb_reseaux": 13,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "63",
     "departement_nom": "Puy-de-Dôme"
@@ -3440,6 +3568,8 @@
       "nb_batiments": 5114,
       "nb_logements": 37867
     },
+    "taux_enrr": 82.98,
+    "nb_reseaux": 3,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "64",
     "departement_nom": "Pyrénées-Atlantiques"
@@ -3493,6 +3623,8 @@
       "nb_batiments": 577,
       "nb_logements": 924
     },
+    "taux_enrr": 75.24,
+    "nb_reseaux": 1,
     "region_nom": "Occitanie",
     "departement": "65",
     "departement_nom": "Hautes-Pyrénées"
@@ -3546,6 +3678,8 @@
       "nb_batiments": 496,
       "nb_logements": 544
     },
+    "taux_enrr": 98.35,
+    "nb_reseaux": 2,
     "region_nom": "Occitanie",
     "departement": "66",
     "departement_nom": "Pyrénées-Orientales"
@@ -3599,6 +3733,8 @@
       "nb_batiments": 7169,
       "nb_logements": 94146
     },
+    "taux_enrr": 67.7,
+    "nb_reseaux": 31,
     "region_nom": "Grand Est",
     "departement": "67",
     "departement_nom": "Bas-Rhin"
@@ -3652,6 +3788,8 @@
       "nb_batiments": 9691,
       "nb_logements": 48322
     },
+    "taux_enrr": 75.55,
+    "nb_reseaux": 18,
     "region_nom": "Grand Est",
     "departement": "68",
     "departement_nom": "Haut-Rhin"
@@ -3705,6 +3843,8 @@
       "nb_batiments": 24219,
       "nb_logements": 341795
     },
+    "taux_enrr": 64.87,
+    "nb_reseaux": 28,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "69",
     "departement_nom": "Rhône"
@@ -3758,6 +3898,8 @@
       "nb_batiments": 5,
       "nb_logements": 3
     },
+    "taux_enrr": 76.58,
+    "nb_reseaux": 10,
     "region_nom": "Bourgogne-Franche-Comté",
     "departement": "70",
     "departement_nom": "Haute-Saône"
@@ -3811,6 +3953,8 @@
       "nb_batiments": 9861,
       "nb_logements": 53375
     },
+    "taux_enrr": 63.94,
+    "nb_reseaux": 8,
     "region_nom": "Bourgogne-Franche-Comté",
     "departement": "71",
     "departement_nom": "Saône-et-Loire"
@@ -3864,6 +4008,8 @@
       "nb_batiments": 6391,
       "nb_logements": 27076
     },
+    "taux_enrr": 75.67,
+    "nb_reseaux": 5,
     "region_nom": "Pays de la Loire",
     "departement": "72",
     "departement_nom": "Sarthe"
@@ -3917,6 +4063,8 @@
       "nb_batiments": 7542,
       "nb_logements": 59055
     },
+    "taux_enrr": 74.19,
+    "nb_reseaux": 16,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "73",
     "departement_nom": "Savoie"
@@ -3970,6 +4118,8 @@
       "nb_batiments": 5299,
       "nb_logements": 48105
     },
+    "taux_enrr": 72.69,
+    "nb_reseaux": 22,
     "region_nom": "Auvergne-Rhône-Alpes",
     "departement": "74",
     "departement_nom": "Haute-Savoie"
@@ -4023,6 +4173,8 @@
       "nb_batiments": 53391,
       "nb_logements": 1173541
     },
+    "taux_enrr": 48.79,
+    "nb_reseaux": 3,
     "region_nom": "Ile-de-France",
     "departement": "75",
     "departement_nom": "Paris"
@@ -4076,6 +4228,8 @@
       "nb_batiments": 19558,
       "nb_logements": 102318
     },
+    "taux_enrr": 81,
+    "nb_reseaux": 19,
     "region_nom": "Normandie",
     "departement": "76",
     "departement_nom": "Seine-Maritime"
@@ -4129,6 +4283,8 @@
       "nb_batiments": 11454,
       "nb_logements": 105035
     },
+    "taux_enrr": 74.47,
+    "nb_reseaux": 20,
     "region_nom": "Ile-de-France",
     "departement": "77",
     "departement_nom": "Seine-et-Marne"
@@ -4182,6 +4338,8 @@
       "nb_batiments": 12873,
       "nb_logements": 121604
     },
+    "taux_enrr": 47.83,
+    "nb_reseaux": 15,
     "region_nom": "Ile-de-France",
     "departement": "78",
     "departement_nom": "Yvelines"
@@ -4235,6 +4393,8 @@
       "nb_batiments": 458,
       "nb_logements": 897
     },
+    "taux_enrr": 29.08,
+    "nb_reseaux": 4,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "79",
     "departement_nom": "Deux-Sèvres"
@@ -4288,6 +4448,8 @@
       "nb_batiments": 9585,
       "nb_logements": 45574
     },
+    "taux_enrr": 61.86,
+    "nb_reseaux": 4,
     "region_nom": "Hauts-de-France",
     "departement": "80",
     "departement_nom": "Somme"
@@ -4341,6 +4503,8 @@
       "nb_batiments": 2209,
       "nb_logements": 3476
     },
+    "taux_enrr": 68.66,
+    "nb_reseaux": 8,
     "region_nom": "Occitanie",
     "departement": "81",
     "departement_nom": "Tarn"
@@ -4394,6 +4558,8 @@
       "nb_batiments": 1963,
       "nb_logements": 6435
     },
+    "taux_enrr": 91.17,
+    "nb_reseaux": 3,
     "region_nom": "Occitanie",
     "departement": "82",
     "departement_nom": "Tarn-et-Garonne"
@@ -4447,6 +4613,8 @@
       "nb_batiments": 755,
       "nb_logements": 5956
     },
+    "taux_enrr": 89.75,
+    "nb_reseaux": 5,
     "region_nom": "Provence-Alpes-Côte d'Azur",
     "departement": "83",
     "departement_nom": "Var"
@@ -4500,6 +4668,8 @@
       "nb_batiments": 1118,
       "nb_logements": 5948
     },
+    "taux_enrr": 79.65,
+    "nb_reseaux": 3,
     "region_nom": "Provence-Alpes-Côte d'Azur",
     "departement": "84",
     "departement_nom": "Vaucluse"
@@ -4553,6 +4723,8 @@
       "nb_batiments": 357,
       "nb_logements": 423
     },
+    "taux_enrr": 41.1,
+    "nb_reseaux": 3,
     "region_nom": "Pays de la Loire",
     "departement": "85",
     "departement_nom": "Vendée"
@@ -4606,6 +4778,8 @@
       "nb_batiments": 4174,
       "nb_logements": 20211
     },
+    "taux_enrr": 56.52,
+    "nb_reseaux": 7,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "86",
     "departement_nom": "Vienne"
@@ -4659,6 +4833,8 @@
       "nb_batiments": 5015,
       "nb_logements": 28646
     },
+    "taux_enrr": 78.32,
+    "nb_reseaux": 6,
     "region_nom": "Nouvelle-Aquitaine",
     "departement": "87",
     "departement_nom": "Haute-Vienne"
@@ -4712,6 +4888,8 @@
       "nb_batiments": 5837,
       "nb_logements": 17575
     },
+    "taux_enrr": 81.08,
+    "nb_reseaux": 17,
     "region_nom": "Grand Est",
     "departement": "88",
     "departement_nom": "Vosges"
@@ -4765,6 +4943,8 @@
       "nb_batiments": 2269,
       "nb_logements": 9973
     },
+    "taux_enrr": 84.42,
+    "nb_reseaux": 3,
     "region_nom": "Bourgogne-Franche-Comté",
     "departement": "89",
     "departement_nom": "Yonne"
@@ -4818,6 +4998,8 @@
       "nb_batiments": 175,
       "nb_logements": 916
     },
+    "taux_enrr": 26.02,
+    "nb_reseaux": 1,
     "region_nom": "Bourgogne-Franche-Comté",
     "departement": "90",
     "departement_nom": "Territoire-de-Belfort"
@@ -4871,6 +5053,8 @@
       "nb_batiments": 8807,
       "nb_logements": 148099
     },
+    "taux_enrr": 67.18,
+    "nb_reseaux": 18,
     "region_nom": "Ile-de-France",
     "departement": "91",
     "departement_nom": "Essonne"
@@ -4924,6 +5108,8 @@
       "nb_batiments": 16980,
       "nb_logements": 327711
     },
+    "taux_enrr": 44.31,
+    "nb_reseaux": 21,
     "region_nom": "Ile-de-France",
     "departement": "92",
     "departement_nom": "Hauts-de-Seine"
@@ -4977,6 +5163,8 @@
       "nb_batiments": 24999,
       "nb_logements": 259018
     },
+    "taux_enrr": 56.23,
+    "nb_reseaux": 21,
     "region_nom": "Ile-de-France",
     "departement": "93",
     "departement_nom": "Seine-Saint-Denis"
@@ -5030,6 +5218,8 @@
       "nb_batiments": 29093,
       "nb_logements": 297702
     },
+    "taux_enrr": 75.59,
+    "nb_reseaux": 22,
     "region_nom": "Ile-de-France",
     "departement": "94",
     "departement_nom": "Val-de-Marne"
@@ -5083,6 +5273,8 @@
       "nb_batiments": 10660,
       "nb_logements": 124439
     },
+    "taux_enrr": 50.52,
+    "nb_reseaux": 15,
     "region_nom": "Ile-de-France",
     "departement": "95",
     "departement_nom": "Val-D'Oise"

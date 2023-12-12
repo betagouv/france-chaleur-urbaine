@@ -155,13 +155,15 @@ function ModalCarteFrance(props: Props) {
                 <BlackNumbersLine>
                   <div>
                     <BlackNumber>
-                      {selectedData?.departement ?? '--'}
+                      {selectedData?.nb_reseaux ?? '--'}
                     </BlackNumber>
                     <BlackText>réseaux de chaleur</BlackText>
                   </div>
                   <div>
                     <BlackNumber>
-                      {selectedData ? `${selectedData?.departement}%` : '--'}
+                      {selectedData?.taux_enrr
+                        ? `${selectedData?.taux_enrr}%`
+                        : '--'}
                     </BlackNumber>
                     <BlackText>d'EnR&R en moyenne</BlackText>
                   </div>
@@ -298,6 +300,8 @@ export default ModalCarteFrance;
 
 type BDNBStatsParDepartement = {
   departement: string;
+  nb_reseaux: number;
+  taux_enrr: number | null;
   '50m': BDNBStatsParDistanceRDC;
   '100m': BDNBStatsParDistanceRDC;
   '150m': BDNBStatsParDistanceRDC;
