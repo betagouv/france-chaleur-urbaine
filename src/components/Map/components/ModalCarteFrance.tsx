@@ -317,10 +317,9 @@ type BDNBStatsParDistanceRDC = {
 };
 
 type BDNBStatsParTypeChauffage = {
-  individuel_fioul: number;
-  individuel_gaz: number;
   collectif_fioul: number;
   collectif_gaz: number;
+  individuel_gaz: number;
 };
 
 type Bin = {

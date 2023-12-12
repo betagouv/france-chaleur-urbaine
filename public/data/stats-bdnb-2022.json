@@ -4,49 +4,43 @@
       "batiments": {
         "collectif_gaz": 36,
         "individuel_gaz": 109,
-        "collectif_fioul": 6,
-        "individuel_fioul": 24
+        "collectif_fioul": 6
       },
       "logements": {
         "collectif_gaz": 1066,
         "individuel_gaz": 645,
-        "collectif_fioul": 68,
-        "individuel_fioul": 32
+        "collectif_fioul": 68
       },
-      "nb_batiments": 1231,
-      "nb_logements": 11402
+      "nb_batiments": 42,
+      "nb_logements": 1134
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 61,
         "individuel_gaz": 229,
-        "collectif_fioul": 7,
-        "individuel_fioul": 45
+        "collectif_fioul": 7
       },
       "logements": {
         "collectif_gaz": 1543,
         "individuel_gaz": 1079,
-        "collectif_fioul": 69,
-        "individuel_fioul": 58
+        "collectif_fioul": 69
       },
-      "nb_batiments": 2243,
-      "nb_logements": 14247
+      "nb_batiments": 68,
+      "nb_logements": 1612
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 79,
         "individuel_gaz": 380,
-        "collectif_fioul": 13,
-        "individuel_fioul": 54
+        "collectif_fioul": 13
       },
       "logements": {
         "collectif_gaz": 1937,
         "individuel_gaz": 1586,
-        "collectif_fioul": 82,
-        "individuel_fioul": 71
+        "collectif_fioul": 82
       },
-      "nb_batiments": 3239,
-      "nb_logements": 17042
+      "nb_batiments": 92,
+      "nb_logements": 2019
     },
     "taux_enrr": 74.5,
     "nb_reseaux": 9,
@@ -59,49 +53,43 @@
       "batiments": {
         "collectif_gaz": 9,
         "individuel_gaz": 80,
-        "collectif_fioul": 0,
-        "individuel_fioul": 10
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 255,
         "individuel_gaz": 182,
-        "collectif_fioul": 0,
-        "individuel_fioul": 9
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1163,
-      "nb_logements": 8976
+      "nb_batiments": 9,
+      "nb_logements": 255
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 12,
         "individuel_gaz": 192,
-        "collectif_fioul": 0,
-        "individuel_fioul": 27
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 302,
         "individuel_gaz": 430,
-        "collectif_fioul": 0,
-        "individuel_fioul": 27
+        "collectif_fioul": 0
       },
-      "nb_batiments": 2246,
-      "nb_logements": 11306
+      "nb_batiments": 12,
+      "nb_logements": 302
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 19,
         "individuel_gaz": 290,
-        "collectif_fioul": 1,
-        "individuel_fioul": 40
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 428,
         "individuel_gaz": 591,
-        "collectif_fioul": 5,
-        "individuel_fioul": 41
+        "collectif_fioul": 5
       },
-      "nb_batiments": 3350,
-      "nb_logements": 13152
+      "nb_batiments": 20,
+      "nb_logements": 433
     },
     "taux_enrr": 78.29,
     "nb_reseaux": 3,
@@ -114,49 +102,43 @@
       "batiments": {
         "collectif_gaz": 10,
         "individuel_gaz": 141,
-        "collectif_fioul": 0,
-        "individuel_fioul": 20
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 85,
         "individuel_gaz": 587,
-        "collectif_fioul": 0,
-        "individuel_fioul": 23
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1742,
-      "nb_logements": 9294
+      "nb_batiments": 10,
+      "nb_logements": 85
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 25,
         "individuel_gaz": 274,
-        "collectif_fioul": 0,
-        "individuel_fioul": 27
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 290,
         "individuel_gaz": 942,
-        "collectif_fioul": 0,
-        "individuel_fioul": 32
+        "collectif_fioul": 0
       },
-      "nb_batiments": 3208,
-      "nb_logements": 12442
+      "nb_batiments": 25,
+      "nb_logements": 290
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 36,
         "individuel_gaz": 380,
-        "collectif_fioul": 2,
-        "individuel_fioul": 37
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 408,
         "individuel_gaz": 1266,
-        "collectif_fioul": 3,
-        "individuel_fioul": 43
+        "collectif_fioul": 3
       },
-      "nb_batiments": 4558,
-      "nb_logements": 14790
+      "nb_batiments": 38,
+      "nb_logements": 411
     },
     "taux_enrr": 77.43,
     "nb_reseaux": 10,
@@ -169,49 +151,43 @@
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 2,
-        "collectif_fioul": 1,
-        "individuel_fioul": 1
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 18,
         "individuel_gaz": 17,
-        "collectif_fioul": 6,
-        "individuel_fioul": 1
+        "collectif_fioul": 6
       },
-      "nb_batiments": 237,
-      "nb_logements": 806
+      "nb_batiments": 3,
+      "nb_logements": 24
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 4,
         "individuel_gaz": 6,
-        "collectif_fioul": 1,
-        "individuel_fioul": 2
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 50,
         "individuel_gaz": 23,
-        "collectif_fioul": 6,
-        "individuel_fioul": 2
+        "collectif_fioul": 6
       },
-      "nb_batiments": 539,
-      "nb_logements": 1389
+      "nb_batiments": 5,
+      "nb_logements": 56
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 4,
         "individuel_gaz": 10,
-        "collectif_fioul": 1,
-        "individuel_fioul": 2
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 50,
         "individuel_gaz": 30,
-        "collectif_fioul": 6,
-        "individuel_fioul": 2
+        "collectif_fioul": 6
       },
-      "nb_batiments": 864,
-      "nb_logements": 1969
+      "nb_batiments": 5,
+      "nb_logements": 56
     },
     "taux_enrr": 77.45,
     "nb_reseaux": 5,
@@ -224,49 +200,43 @@
       "batiments": {
         "collectif_gaz": 1,
         "individuel_gaz": 0,
-        "collectif_fioul": 28,
-        "individuel_fioul": 29
+        "collectif_fioul": 28
       },
       "logements": {
         "collectif_gaz": 6,
         "individuel_gaz": 0,
-        "collectif_fioul": 550,
-        "individuel_fioul": 93
+        "collectif_fioul": 550
       },
-      "nb_batiments": 1096,
-      "nb_logements": 5231
+      "nb_batiments": 29,
+      "nb_logements": 556
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 3,
         "individuel_gaz": 1,
-        "collectif_fioul": 37,
-        "individuel_fioul": 43
+        "collectif_fioul": 37
       },
       "logements": {
         "collectif_gaz": 13,
         "individuel_gaz": 11,
-        "collectif_fioul": 669,
-        "individuel_fioul": 172
+        "collectif_fioul": 669
       },
-      "nb_batiments": 1750,
-      "nb_logements": 7821
+      "nb_batiments": 40,
+      "nb_logements": 682
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 3,
         "individuel_gaz": 3,
-        "collectif_fioul": 42,
-        "individuel_fioul": 57
+        "collectif_fioul": 42
       },
       "logements": {
         "collectif_gaz": 13,
         "individuel_gaz": 21,
-        "collectif_fioul": 700,
-        "individuel_fioul": 208
+        "collectif_fioul": 700
       },
-      "nb_batiments": 2238,
-      "nb_logements": 9123
+      "nb_batiments": 45,
+      "nb_logements": 713
     },
     "taux_enrr": 94.8,
     "nb_reseaux": 7,
@@ -279,49 +249,43 @@
       "batiments": {
         "collectif_gaz": 27,
         "individuel_gaz": 19,
-        "collectif_fioul": 2,
-        "individuel_fioul": 0
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 1973,
         "individuel_gaz": 702,
-        "collectif_fioul": 102,
-        "individuel_fioul": 0
+        "collectif_fioul": 102
       },
-      "nb_batiments": 478,
-      "nb_logements": 15152
+      "nb_batiments": 29,
+      "nb_logements": 2075
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 38,
         "individuel_gaz": 28,
-        "collectif_fioul": 4,
-        "individuel_fioul": 1
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 2813,
         "individuel_gaz": 912,
-        "collectif_fioul": 152,
-        "individuel_fioul": 16
+        "collectif_fioul": 152
       },
-      "nb_batiments": 705,
-      "nb_logements": 18292
+      "nb_batiments": 42,
+      "nb_logements": 2965
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 53,
         "individuel_gaz": 45,
-        "collectif_fioul": 7,
-        "individuel_fioul": 5
+        "collectif_fioul": 7
       },
       "logements": {
         "collectif_gaz": 3863,
         "individuel_gaz": 1155,
-        "collectif_fioul": 195,
-        "individuel_fioul": 21
+        "collectif_fioul": 195
       },
-      "nb_batiments": 1024,
-      "nb_logements": 21686
+      "nb_batiments": 60,
+      "nb_logements": 4058
     },
     "taux_enrr": 89.48,
     "nb_reseaux": 6,
@@ -334,49 +298,43 @@
       "batiments": {
         "collectif_gaz": 6,
         "individuel_gaz": 16,
-        "collectif_fioul": 7,
-        "individuel_fioul": 23
+        "collectif_fioul": 7
       },
       "logements": {
         "collectif_gaz": 40,
         "individuel_gaz": 225,
-        "collectif_fioul": 28,
-        "individuel_fioul": 60
+        "collectif_fioul": 28
       },
-      "nb_batiments": 789,
-      "nb_logements": 2830
+      "nb_batiments": 13,
+      "nb_logements": 68
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 9,
         "individuel_gaz": 38,
-        "collectif_fioul": 10,
-        "individuel_fioul": 42
+        "collectif_fioul": 10
       },
       "logements": {
         "collectif_gaz": 117,
         "individuel_gaz": 388,
-        "collectif_fioul": 69,
-        "individuel_fioul": 103
+        "collectif_fioul": 69
       },
-      "nb_batiments": 1359,
-      "nb_logements": 4013
+      "nb_batiments": 19,
+      "nb_logements": 186
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 15,
         "individuel_gaz": 43,
-        "collectif_fioul": 11,
-        "individuel_fioul": 54
+        "collectif_fioul": 11
       },
       "logements": {
         "collectif_gaz": 186,
         "individuel_gaz": 404,
-        "collectif_fioul": 74,
-        "individuel_fioul": 123
+        "collectif_fioul": 74
       },
-      "nb_batiments": 1820,
-      "nb_logements": 4957
+      "nb_batiments": 26,
+      "nb_logements": 260
     },
     "taux_enrr": 97.02,
     "nb_reseaux": 7,
@@ -389,49 +347,43 @@
       "batiments": {
         "collectif_gaz": 12,
         "individuel_gaz": 264,
-        "collectif_fioul": 1,
-        "individuel_fioul": 28
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 313,
         "individuel_gaz": 1530,
-        "collectif_fioul": 6,
-        "individuel_fioul": 36
+        "collectif_fioul": 6
       },
-      "nb_batiments": 2009,
-      "nb_logements": 12202
+      "nb_batiments": 13,
+      "nb_logements": 319
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 19,
         "individuel_gaz": 487,
-        "collectif_fioul": 1,
-        "individuel_fioul": 44
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 406,
         "individuel_gaz": 2364,
-        "collectif_fioul": 6,
-        "individuel_fioul": 46
+        "collectif_fioul": 6
       },
-      "nb_batiments": 3358,
-      "nb_logements": 15350
+      "nb_batiments": 20,
+      "nb_logements": 412
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 26,
         "individuel_gaz": 666,
-        "collectif_fioul": 1,
-        "individuel_fioul": 51
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 497,
         "individuel_gaz": 3261,
-        "collectif_fioul": 6,
-        "individuel_fioul": 54
+        "collectif_fioul": 6
       },
-      "nb_batiments": 4424,
-      "nb_logements": 18126
+      "nb_batiments": 27,
+      "nb_logements": 503
     },
     "taux_enrr": 69.49,
     "nb_reseaux": 14,
@@ -444,14 +396,12 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "nb_batiments": 0,
       "nb_logements": 0
@@ -460,14 +410,12 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "nb_batiments": 0,
       "nb_logements": 0
@@ -476,14 +424,12 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "nb_batiments": 0,
       "nb_logements": 0
@@ -499,49 +445,43 @@
       "batiments": {
         "collectif_gaz": 1,
         "individuel_gaz": 11,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 139,
         "individuel_gaz": 186,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 149,
-      "nb_logements": 2933
+      "nb_batiments": 1,
+      "nb_logements": 139
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 22,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 194,
         "individuel_gaz": 197,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 280,
-      "nb_logements": 4884
+      "nb_batiments": 2,
+      "nb_logements": 194
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 5,
         "individuel_gaz": 36,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 217,
         "individuel_gaz": 249,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 469,
-      "nb_logements": 5880
+      "nb_batiments": 5,
+      "nb_logements": 217
     },
     "taux_enrr": 36.23,
     "nb_reseaux": 3,
@@ -554,49 +494,43 @@
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 37,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 20,
         "individuel_gaz": 220,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
-      "nb_batiments": 709,
-      "nb_logements": 2789
+      "nb_batiments": 2,
+      "nb_logements": 20
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 84,
-        "collectif_fioul": 0,
-        "individuel_fioul": 4
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 20,
         "individuel_gaz": 435,
-        "collectif_fioul": 0,
-        "individuel_fioul": 4
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1378,
-      "nb_logements": 4278
+      "nb_batiments": 2,
+      "nb_logements": 20
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 3,
         "individuel_gaz": 128,
-        "collectif_fioul": 0,
-        "individuel_fioul": 7
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 35,
         "individuel_gaz": 479,
-        "collectif_fioul": 0,
-        "individuel_fioul": 7
+        "collectif_fioul": 0
       },
-      "nb_batiments": 2072,
-      "nb_logements": 5744
+      "nb_batiments": 3,
+      "nb_logements": 35
     },
     "taux_enrr": 61.06,
     "nb_reseaux": 3,
@@ -609,49 +543,43 @@
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 29,
-        "collectif_fioul": 0,
-        "individuel_fioul": 12
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 9,
         "individuel_gaz": 76,
-        "collectif_fioul": 0,
-        "individuel_fioul": 12
+        "collectif_fioul": 0
       },
-      "nb_batiments": 517,
-      "nb_logements": 1907
+      "nb_batiments": 2,
+      "nb_logements": 9
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 56,
-        "collectif_fioul": 0,
-        "individuel_fioul": 21
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 9,
         "individuel_gaz": 133,
-        "collectif_fioul": 0,
-        "individuel_fioul": 22
+        "collectif_fioul": 0
       },
-      "nb_batiments": 964,
-      "nb_logements": 2574
+      "nb_batiments": 2,
+      "nb_logements": 9
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 3,
         "individuel_gaz": 83,
-        "collectif_fioul": 0,
-        "individuel_fioul": 26
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 17,
         "individuel_gaz": 191,
-        "collectif_fioul": 0,
-        "individuel_fioul": 28
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1370,
-      "nb_logements": 3543
+      "nb_batiments": 3,
+      "nb_logements": 17
     },
     "taux_enrr": 86.68,
     "nb_reseaux": 5,
@@ -664,49 +592,43 @@
       "batiments": {
         "collectif_gaz": 57,
         "individuel_gaz": 59,
-        "collectif_fioul": 5,
-        "individuel_fioul": 17
+        "collectif_fioul": 5
       },
       "logements": {
         "collectif_gaz": 4161,
         "individuel_gaz": 1187,
-        "collectif_fioul": 140,
-        "individuel_fioul": 35
+        "collectif_fioul": 140
       },
-      "nb_batiments": 1322,
-      "nb_logements": 28804
+      "nb_batiments": 62,
+      "nb_logements": 4301
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 92,
         "individuel_gaz": 113,
-        "collectif_fioul": 11,
-        "individuel_fioul": 26
+        "collectif_fioul": 11
       },
       "logements": {
         "collectif_gaz": 5775,
         "individuel_gaz": 1913,
-        "collectif_fioul": 224,
-        "individuel_fioul": 43
+        "collectif_fioul": 224
       },
-      "nb_batiments": 2552,
-      "nb_logements": 39688
+      "nb_batiments": 103,
+      "nb_logements": 5999
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 117,
         "individuel_gaz": 205,
-        "collectif_fioul": 15,
-        "individuel_fioul": 40
+        "collectif_fioul": 15
       },
       "logements": {
         "collectif_gaz": 6366,
         "individuel_gaz": 2552,
-        "collectif_fioul": 303,
-        "individuel_fioul": 59
+        "collectif_fioul": 303
       },
-      "nb_batiments": 3839,
-      "nb_logements": 47451
+      "nb_batiments": 132,
+      "nb_logements": 6669
     },
     "taux_enrr": 50.58,
     "nb_reseaux": 13,
@@ -719,49 +641,43 @@
       "batiments": {
         "collectif_gaz": 41,
         "individuel_gaz": 185,
-        "collectif_fioul": 4,
-        "individuel_fioul": 37
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 1299,
         "individuel_gaz": 1384,
-        "collectif_fioul": 166,
-        "individuel_fioul": 93
+        "collectif_fioul": 166
       },
-      "nb_batiments": 2017,
-      "nb_logements": 20217
+      "nb_batiments": 45,
+      "nb_logements": 1465
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 54,
         "individuel_gaz": 375,
-        "collectif_fioul": 9,
-        "individuel_fioul": 79
+        "collectif_fioul": 9
       },
       "logements": {
         "collectif_gaz": 1511,
         "individuel_gaz": 2215,
-        "collectif_fioul": 201,
-        "individuel_fioul": 139
+        "collectif_fioul": 201
       },
-      "nb_batiments": 3809,
-      "nb_logements": 26979
+      "nb_batiments": 63,
+      "nb_logements": 1712
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 71,
         "individuel_gaz": 617,
-        "collectif_fioul": 12,
-        "individuel_fioul": 109
+        "collectif_fioul": 12
       },
       "logements": {
         "collectif_gaz": 1819,
         "individuel_gaz": 3205,
-        "collectif_fioul": 207,
-        "individuel_fioul": 172
+        "collectif_fioul": 207
       },
-      "nb_batiments": 5632,
-      "nb_logements": 31475
+      "nb_batiments": 83,
+      "nb_logements": 2026
     },
     "taux_enrr": 90,
     "nb_reseaux": 10,
@@ -774,49 +690,43 @@
       "batiments": {
         "collectif_gaz": 47,
         "individuel_gaz": 241,
-        "collectif_fioul": 8,
-        "individuel_fioul": 37
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 873,
         "individuel_gaz": 1416,
-        "collectif_fioul": 53,
-        "individuel_fioul": 44
+        "collectif_fioul": 53
       },
-      "nb_batiments": 1754,
-      "nb_logements": 10705
+      "nb_batiments": 55,
+      "nb_logements": 926
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 58,
         "individuel_gaz": 370,
-        "collectif_fioul": 13,
-        "individuel_fioul": 62
+        "collectif_fioul": 13
       },
       "logements": {
         "collectif_gaz": 1180,
         "individuel_gaz": 1800,
-        "collectif_fioul": 72,
-        "individuel_fioul": 75
+        "collectif_fioul": 72
       },
-      "nb_batiments": 2773,
-      "nb_logements": 13155
+      "nb_batiments": 71,
+      "nb_logements": 1252
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 62,
         "individuel_gaz": 450,
-        "collectif_fioul": 15,
-        "individuel_fioul": 82
+        "collectif_fioul": 15
       },
       "logements": {
         "collectif_gaz": 1192,
         "individuel_gaz": 2080,
-        "collectif_fioul": 77,
-        "individuel_fioul": 112
+        "collectif_fioul": 77
       },
-      "nb_batiments": 3487,
-      "nb_logements": 14855
+      "nb_batiments": 77,
+      "nb_logements": 1269
     },
     "taux_enrr": 92.07,
     "nb_reseaux": 9,
@@ -829,49 +739,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 11,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 12,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
-      "nb_batiments": 120,
-      "nb_logements": 482
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 38,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 43,
-        "collectif_fioul": 0,
-        "individuel_fioul": 6
+        "collectif_fioul": 0
       },
-      "nb_batiments": 354,
-      "nb_logements": 1003
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 57,
-        "collectif_fioul": 0,
-        "individuel_fioul": 12
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 68,
-        "collectif_fioul": 0,
-        "individuel_fioul": 13
+        "collectif_fioul": 0
       },
-      "nb_batiments": 647,
-      "nb_logements": 1649
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "taux_enrr": 34.35,
     "nb_reseaux": 10,
@@ -884,49 +788,43 @@
       "batiments": {
         "collectif_gaz": 4,
         "individuel_gaz": 131,
-        "collectif_fioul": 0,
-        "individuel_fioul": 16
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 304,
         "individuel_gaz": 777,
-        "collectif_fioul": 0,
-        "individuel_fioul": 18
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1947,
-      "nb_logements": 13371
+      "nb_batiments": 4,
+      "nb_logements": 304
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 8,
         "individuel_gaz": 281,
-        "collectif_fioul": 0,
-        "individuel_fioul": 33
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 394,
         "individuel_gaz": 1260,
-        "collectif_fioul": 0,
-        "individuel_fioul": 38
+        "collectif_fioul": 0
       },
-      "nb_batiments": 3103,
-      "nb_logements": 15517
+      "nb_batiments": 8,
+      "nb_logements": 394
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 13,
         "individuel_gaz": 364,
-        "collectif_fioul": 0,
-        "individuel_fioul": 42
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 596,
         "individuel_gaz": 1661,
-        "collectif_fioul": 0,
-        "individuel_fioul": 46
+        "collectif_fioul": 0
       },
-      "nb_batiments": 4137,
-      "nb_logements": 17700
+      "nb_batiments": 13,
+      "nb_logements": 596
     },
     "taux_enrr": 84.62,
     "nb_reseaux": 7,
@@ -939,49 +837,43 @@
       "batiments": {
         "collectif_gaz": 12,
         "individuel_gaz": 121,
-        "collectif_fioul": 1,
-        "individuel_fioul": 7
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 423,
         "individuel_gaz": 444,
-        "collectif_fioul": 16,
-        "individuel_fioul": 7
+        "collectif_fioul": 16
       },
-      "nb_batiments": 1182,
-      "nb_logements": 7588
+      "nb_batiments": 13,
+      "nb_logements": 439
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 14,
         "individuel_gaz": 274,
-        "collectif_fioul": 2,
-        "individuel_fioul": 20
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 480,
         "individuel_gaz": 1190,
-        "collectif_fioul": 40,
-        "individuel_fioul": 23
+        "collectif_fioul": 40
       },
-      "nb_batiments": 2391,
-      "nb_logements": 10163
+      "nb_batiments": 16,
+      "nb_logements": 520
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 17,
         "individuel_gaz": 446,
-        "collectif_fioul": 3,
-        "individuel_fioul": 32
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 485,
         "individuel_gaz": 1590,
-        "collectif_fioul": 41,
-        "individuel_fioul": 35
+        "collectif_fioul": 41
       },
-      "nb_batiments": 3685,
-      "nb_logements": 12147
+      "nb_batiments": 20,
+      "nb_logements": 526
     },
     "taux_enrr": 91.07,
     "nb_reseaux": 2,
@@ -994,49 +886,43 @@
       "batiments": {
         "collectif_gaz": 38,
         "individuel_gaz": 364,
-        "collectif_fioul": 3,
-        "individuel_fioul": 41
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 841,
         "individuel_gaz": 1495,
-        "collectif_fioul": 13,
-        "individuel_fioul": 64
+        "collectif_fioul": 13
       },
-      "nb_batiments": 2339,
-      "nb_logements": 10598
+      "nb_batiments": 41,
+      "nb_logements": 854
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 53,
         "individuel_gaz": 614,
-        "collectif_fioul": 3,
-        "individuel_fioul": 69
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 1053,
         "individuel_gaz": 2122,
-        "collectif_fioul": 13,
-        "individuel_fioul": 95
+        "collectif_fioul": 13
       },
-      "nb_batiments": 3957,
-      "nb_logements": 14818
+      "nb_batiments": 56,
+      "nb_logements": 1066
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 65,
         "individuel_gaz": 846,
-        "collectif_fioul": 5,
-        "individuel_fioul": 100
+        "collectif_fioul": 5
       },
       "logements": {
         "collectif_gaz": 1181,
         "individuel_gaz": 2802,
-        "collectif_fioul": 33,
-        "individuel_fioul": 139
+        "collectif_fioul": 33
       },
-      "nb_batiments": 5482,
-      "nb_logements": 18431
+      "nb_batiments": 70,
+      "nb_logements": 1214
     },
     "taux_enrr": 95.45,
     "nb_reseaux": 8,
@@ -1049,49 +935,43 @@
       "batiments": {
         "collectif_gaz": 184,
         "individuel_gaz": 829,
-        "collectif_fioul": 6,
-        "individuel_fioul": 61
+        "collectif_fioul": 6
       },
       "logements": {
         "collectif_gaz": 6225,
         "individuel_gaz": 8395,
-        "collectif_fioul": 93,
-        "individuel_fioul": 136
+        "collectif_fioul": 93
       },
-      "nb_batiments": 5305,
-      "nb_logements": 60322
+      "nb_batiments": 190,
+      "nb_logements": 6318
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 251,
         "individuel_gaz": 1563,
-        "collectif_fioul": 13,
-        "individuel_fioul": 138
+        "collectif_fioul": 13
       },
       "logements": {
         "collectif_gaz": 7712,
         "individuel_gaz": 12289,
-        "collectif_fioul": 170,
-        "individuel_fioul": 226
+        "collectif_fioul": 170
       },
-      "nb_batiments": 9689,
-      "nb_logements": 81424
+      "nb_batiments": 264,
+      "nb_logements": 7882
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 325,
         "individuel_gaz": 2170,
-        "collectif_fioul": 18,
-        "individuel_fioul": 191
+        "collectif_fioul": 18
       },
       "logements": {
         "collectif_gaz": 9523,
         "individuel_gaz": 15357,
-        "collectif_fioul": 241,
-        "individuel_fioul": 285
+        "collectif_fioul": 241
       },
-      "nb_batiments": 13814,
-      "nb_logements": 100169
+      "nb_batiments": 343,
+      "nb_logements": 9764
     },
     "taux_enrr": 74.6,
     "nb_reseaux": 5,
@@ -1104,49 +984,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 8,
-      "nb_logements": 36
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
-      "nb_batiments": 59,
-      "nb_logements": 108
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 8,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 32,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
-      "nb_batiments": 183,
-      "nb_logements": 301
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "taux_enrr": 92.41,
     "nb_reseaux": 15,
@@ -1159,49 +1033,43 @@
       "batiments": {
         "collectif_gaz": 4,
         "individuel_gaz": 65,
-        "collectif_fioul": 1,
-        "individuel_fioul": 18
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 53,
         "individuel_gaz": 648,
-        "collectif_fioul": 1,
-        "individuel_fioul": 28
+        "collectif_fioul": 1
       },
-      "nb_batiments": 684,
-      "nb_logements": 2743
+      "nb_batiments": 5,
+      "nb_logements": 54
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 9,
         "individuel_gaz": 96,
-        "collectif_fioul": 1,
-        "individuel_fioul": 47
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 64,
         "individuel_gaz": 750,
-        "collectif_fioul": 1,
-        "individuel_fioul": 67
+        "collectif_fioul": 1
       },
-      "nb_batiments": 1229,
-      "nb_logements": 3739
+      "nb_batiments": 10,
+      "nb_logements": 65
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 10,
         "individuel_gaz": 140,
-        "collectif_fioul": 1,
-        "individuel_fioul": 60
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 73,
         "individuel_gaz": 925,
-        "collectif_fioul": 1,
-        "individuel_fioul": 84
+        "collectif_fioul": 1
       },
-      "nb_batiments": 1728,
-      "nb_logements": 4566
+      "nb_batiments": 11,
+      "nb_logements": 74
     },
     "taux_enrr": 94.86,
     "nb_reseaux": 4,
@@ -1214,49 +1082,43 @@
       "batiments": {
         "collectif_gaz": 23,
         "individuel_gaz": 61,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 377,
         "individuel_gaz": 351,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
-      "nb_batiments": 657,
-      "nb_logements": 3166
+      "nb_batiments": 23,
+      "nb_logements": 377
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 28,
         "individuel_gaz": 132,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 443,
         "individuel_gaz": 842,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1264,
-      "nb_logements": 4999
+      "nb_batiments": 28,
+      "nb_logements": 443
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 30,
         "individuel_gaz": 200,
-        "collectif_fioul": 0,
-        "individuel_fioul": 10
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 461,
         "individuel_gaz": 1160,
-        "collectif_fioul": 0,
-        "individuel_fioul": 9
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1897,
-      "nb_logements": 6470
+      "nb_batiments": 30,
+      "nb_logements": 461
     },
     "taux_enrr": 82.05,
     "nb_reseaux": 6,
@@ -1269,49 +1131,43 @@
       "batiments": {
         "collectif_gaz": 15,
         "individuel_gaz": 103,
-        "collectif_fioul": 9,
-        "individuel_fioul": 21
+        "collectif_fioul": 9
       },
       "logements": {
         "collectif_gaz": 347,
         "individuel_gaz": 761,
-        "collectif_fioul": 62,
-        "individuel_fioul": 61
+        "collectif_fioul": 62
       },
-      "nb_batiments": 1178,
-      "nb_logements": 16188
+      "nb_batiments": 24,
+      "nb_logements": 409
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 27,
         "individuel_gaz": 190,
-        "collectif_fioul": 13,
-        "individuel_fioul": 37
+        "collectif_fioul": 13
       },
       "logements": {
         "collectif_gaz": 465,
         "individuel_gaz": 1266,
-        "collectif_fioul": 82,
-        "individuel_fioul": 85
+        "collectif_fioul": 82
       },
-      "nb_batiments": 1848,
-      "nb_logements": 19166
+      "nb_batiments": 40,
+      "nb_logements": 547
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 32,
         "individuel_gaz": 269,
-        "collectif_fioul": 17,
-        "individuel_fioul": 56
+        "collectif_fioul": 17
       },
       "logements": {
         "collectif_gaz": 575,
         "individuel_gaz": 1538,
-        "collectif_fioul": 100,
-        "individuel_fioul": 114
+        "collectif_fioul": 100
       },
-      "nb_batiments": 2547,
-      "nb_logements": 20918
+      "nb_batiments": 49,
+      "nb_logements": 675
     },
     "taux_enrr": 86.34,
     "nb_reseaux": 16,
@@ -1324,49 +1180,43 @@
       "batiments": {
         "collectif_gaz": 17,
         "individuel_gaz": 81,
-        "collectif_fioul": 1,
-        "individuel_fioul": 10
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 1069,
         "individuel_gaz": 1050,
-        "collectif_fioul": 20,
-        "individuel_fioul": 11
+        "collectif_fioul": 20
       },
-      "nb_batiments": 937,
-      "nb_logements": 10345
+      "nb_batiments": 18,
+      "nb_logements": 1089
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 26,
         "individuel_gaz": 207,
-        "collectif_fioul": 2,
-        "individuel_fioul": 21
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 1231,
         "individuel_gaz": 1442,
-        "collectif_fioul": 98,
-        "individuel_fioul": 26
+        "collectif_fioul": 98
       },
-      "nb_batiments": 1739,
-      "nb_logements": 12471
+      "nb_batiments": 28,
+      "nb_logements": 1329
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 30,
         "individuel_gaz": 313,
-        "collectif_fioul": 3,
-        "individuel_fioul": 40
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 1247,
         "individuel_gaz": 1883,
-        "collectif_fioul": 103,
-        "individuel_fioul": 47
+        "collectif_fioul": 103
       },
-      "nb_batiments": 2650,
-      "nb_logements": 14409
+      "nb_batiments": 33,
+      "nb_logements": 1350
     },
     "taux_enrr": 57.28,
     "nb_reseaux": 5,
@@ -1379,49 +1229,43 @@
       "batiments": {
         "collectif_gaz": 12,
         "individuel_gaz": 204,
-        "collectif_fioul": 0,
-        "individuel_fioul": 16
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 158,
         "individuel_gaz": 805,
-        "collectif_fioul": 0,
-        "individuel_fioul": 152
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1770,
-      "nb_logements": 12306
+      "nb_batiments": 12,
+      "nb_logements": 158
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 18,
         "individuel_gaz": 372,
-        "collectif_fioul": 1,
-        "individuel_fioul": 33
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 178,
         "individuel_gaz": 1189,
-        "collectif_fioul": 2,
-        "individuel_fioul": 171
+        "collectif_fioul": 2
       },
-      "nb_batiments": 3189,
-      "nb_logements": 15648
+      "nb_batiments": 19,
+      "nb_logements": 180
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 23,
         "individuel_gaz": 518,
-        "collectif_fioul": 3,
-        "individuel_fioul": 46
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 227,
         "individuel_gaz": 1505,
-        "collectif_fioul": 25,
-        "individuel_fioul": 190
+        "collectif_fioul": 25
       },
-      "nb_batiments": 4288,
-      "nb_logements": 18091
+      "nb_batiments": 26,
+      "nb_logements": 252
     },
     "taux_enrr": 82.73,
     "nb_reseaux": 8,
@@ -1434,49 +1278,43 @@
       "batiments": {
         "collectif_gaz": 15,
         "individuel_gaz": 87,
-        "collectif_fioul": 0,
-        "individuel_fioul": 23
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 653,
         "individuel_gaz": 1066,
-        "collectif_fioul": 0,
-        "individuel_fioul": 24
+        "collectif_fioul": 0
       },
-      "nb_batiments": 822,
-      "nb_logements": 6381
+      "nb_batiments": 15,
+      "nb_logements": 653
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 20,
         "individuel_gaz": 174,
-        "collectif_fioul": 2,
-        "individuel_fioul": 58
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 676,
         "individuel_gaz": 1357,
-        "collectif_fioul": 8,
-        "individuel_fioul": 58
+        "collectif_fioul": 8
       },
-      "nb_batiments": 1627,
-      "nb_logements": 7792
+      "nb_batiments": 22,
+      "nb_logements": 684
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 23,
         "individuel_gaz": 283,
-        "collectif_fioul": 3,
-        "individuel_fioul": 77
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 682,
         "individuel_gaz": 1579,
-        "collectif_fioul": 11,
-        "individuel_fioul": 76
+        "collectif_fioul": 11
       },
-      "nb_batiments": 2405,
-      "nb_logements": 9026
+      "nb_batiments": 26,
+      "nb_logements": 693
     },
     "taux_enrr": 81.9,
     "nb_reseaux": 4,
@@ -1489,49 +1327,43 @@
       "batiments": {
         "collectif_gaz": 26,
         "individuel_gaz": 440,
-        "collectif_fioul": 2,
-        "individuel_fioul": 97
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 1202,
         "individuel_gaz": 3846,
-        "collectif_fioul": 4,
-        "individuel_fioul": 125
+        "collectif_fioul": 4
       },
-      "nb_batiments": 2950,
-      "nb_logements": 21233
+      "nb_batiments": 28,
+      "nb_logements": 1206
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 35,
         "individuel_gaz": 861,
-        "collectif_fioul": 2,
-        "individuel_fioul": 179
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 1754,
         "individuel_gaz": 7043,
-        "collectif_fioul": 4,
-        "individuel_fioul": 226
+        "collectif_fioul": 4
       },
-      "nb_batiments": 5746,
-      "nb_logements": 31139
+      "nb_batiments": 37,
+      "nb_logements": 1758
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 40,
         "individuel_gaz": 1259,
-        "collectif_fioul": 4,
-        "individuel_fioul": 268
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 1808,
         "individuel_gaz": 10677,
-        "collectif_fioul": 8,
-        "individuel_fioul": 333
+        "collectif_fioul": 8
       },
-      "nb_batiments": 8390,
-      "nb_logements": 40288
+      "nb_batiments": 44,
+      "nb_logements": 1816
     },
     "taux_enrr": 92.27,
     "nb_reseaux": 7,
@@ -1544,14 +1376,12 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "nb_batiments": 0,
       "nb_logements": 0
@@ -1560,14 +1390,12 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "nb_batiments": 0,
       "nb_logements": 0
@@ -1576,14 +1404,12 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "nb_batiments": 0,
       "nb_logements": 0
@@ -1599,49 +1425,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 130,
-      "nb_logements": 887
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 1,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 20,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 258,
-      "nb_logements": 1268
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 1,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 20,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 367,
-      "nb_logements": 2060
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "taux_enrr": 99.85,
     "nb_reseaux": 1,
@@ -1654,49 +1474,43 @@
       "batiments": {
         "collectif_gaz": 10,
         "individuel_gaz": 37,
-        "collectif_fioul": 1,
-        "individuel_fioul": 5
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 1126,
         "individuel_gaz": 1147,
-        "collectif_fioul": 185,
-        "individuel_fioul": 9
+        "collectif_fioul": 185
       },
-      "nb_batiments": 391,
-      "nb_logements": 9370
+      "nb_batiments": 11,
+      "nb_logements": 1311
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 12,
         "individuel_gaz": 76,
-        "collectif_fioul": 1,
-        "individuel_fioul": 12
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 1164,
         "individuel_gaz": 1807,
-        "collectif_fioul": 185,
-        "individuel_fioul": 18
+        "collectif_fioul": 185
       },
-      "nb_batiments": 710,
-      "nb_logements": 10480
+      "nb_batiments": 13,
+      "nb_logements": 1349
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 12,
         "individuel_gaz": 131,
-        "collectif_fioul": 1,
-        "individuel_fioul": 15
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 1164,
         "individuel_gaz": 2529,
-        "collectif_fioul": 185,
-        "individuel_fioul": 23
+        "collectif_fioul": 185
       },
-      "nb_batiments": 1142,
-      "nb_logements": 12246
+      "nb_batiments": 13,
+      "nb_logements": 1349
     },
     "taux_enrr": 59.03,
     "nb_reseaux": 3,
@@ -1709,49 +1523,43 @@
       "batiments": {
         "collectif_gaz": 26,
         "individuel_gaz": 237,
-        "collectif_fioul": 2,
-        "individuel_fioul": 2
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 1667,
         "individuel_gaz": 4264,
-        "collectif_fioul": 236,
-        "individuel_fioul": 1
+        "collectif_fioul": 236
       },
-      "nb_batiments": 1859,
-      "nb_logements": 33769
+      "nb_batiments": 28,
+      "nb_logements": 1903
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 42,
         "individuel_gaz": 476,
-        "collectif_fioul": 2,
-        "individuel_fioul": 4
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 2510,
         "individuel_gaz": 5642,
-        "collectif_fioul": 236,
-        "individuel_fioul": 3
+        "collectif_fioul": 236
       },
-      "nb_batiments": 3609,
-      "nb_logements": 42078
+      "nb_batiments": 44,
+      "nb_logements": 2746
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 52,
         "individuel_gaz": 764,
-        "collectif_fioul": 2,
-        "individuel_fioul": 8
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 2817,
         "individuel_gaz": 7166,
-        "collectif_fioul": 236,
-        "individuel_fioul": 12
+        "collectif_fioul": 236
       },
-      "nb_batiments": 5462,
-      "nb_logements": 49903
+      "nb_batiments": 54,
+      "nb_logements": 3053
     },
     "taux_enrr": 84.98,
     "nb_reseaux": 11,
@@ -1764,14 +1572,12 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "nb_batiments": 0,
       "nb_logements": 0
@@ -1780,14 +1586,12 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "nb_batiments": 0,
       "nb_logements": 0
@@ -1796,14 +1600,12 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "nb_batiments": 0,
       "nb_logements": 0
@@ -1819,49 +1621,43 @@
       "batiments": {
         "collectif_gaz": 52,
         "individuel_gaz": 290,
-        "collectif_fioul": 0,
-        "individuel_fioul": 3
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 6743,
         "individuel_gaz": 3794,
-        "collectif_fioul": 0,
-        "individuel_fioul": 3
+        "collectif_fioul": 0
       },
-      "nb_batiments": 4048,
-      "nb_logements": 51866
+      "nb_batiments": 52,
+      "nb_logements": 6743
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 65,
         "individuel_gaz": 659,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 6873,
         "individuel_gaz": 5693,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
-      "nb_batiments": 8006,
-      "nb_logements": 66296
+      "nb_batiments": 65,
+      "nb_logements": 6873
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 74,
         "individuel_gaz": 1036,
-        "collectif_fioul": 0,
-        "individuel_fioul": 10
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 7122,
         "individuel_gaz": 7292,
-        "collectif_fioul": 0,
-        "individuel_fioul": 10
+        "collectif_fioul": 0
       },
-      "nb_batiments": 12014,
-      "nb_logements": 77271
+      "nb_batiments": 74,
+      "nb_logements": 7122
     },
     "taux_enrr": 67.21,
     "nb_reseaux": 21,
@@ -1874,49 +1670,43 @@
       "batiments": {
         "collectif_gaz": 5,
         "individuel_gaz": 4,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 99,
         "individuel_gaz": 5,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 146,
-      "nb_logements": 2867
+      "nb_batiments": 5,
+      "nb_logements": 99
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 8,
         "individuel_gaz": 25,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 135,
         "individuel_gaz": 431,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
-      "nb_batiments": 399,
-      "nb_logements": 4505
+      "nb_batiments": 8,
+      "nb_logements": 135
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 9,
         "individuel_gaz": 47,
-        "collectif_fioul": 1,
-        "individuel_fioul": 6
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 146,
         "individuel_gaz": 516,
-        "collectif_fioul": 6,
-        "individuel_fioul": 10
+        "collectif_fioul": 6
       },
-      "nb_batiments": 704,
-      "nb_logements": 5295
+      "nb_batiments": 10,
+      "nb_logements": 152
     },
     "taux_enrr": 44.51,
     "nb_reseaux": 10,
@@ -1929,49 +1719,43 @@
       "batiments": {
         "collectif_gaz": 84,
         "individuel_gaz": 514,
-        "collectif_fioul": 0,
-        "individuel_fioul": 20
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 4823,
         "individuel_gaz": 5282,
-        "collectif_fioul": 0,
-        "individuel_fioul": 19
+        "collectif_fioul": 0
       },
-      "nb_batiments": 3477,
-      "nb_logements": 54252
+      "nb_batiments": 84,
+      "nb_logements": 4823
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 115,
         "individuel_gaz": 1014,
-        "collectif_fioul": 3,
-        "individuel_fioul": 49
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 6179,
         "individuel_gaz": 8561,
-        "collectif_fioul": 35,
-        "individuel_fioul": 72
+        "collectif_fioul": 35
       },
-      "nb_batiments": 6178,
-      "nb_logements": 71139
+      "nb_batiments": 118,
+      "nb_logements": 6214
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 155,
         "individuel_gaz": 1482,
-        "collectif_fioul": 6,
-        "individuel_fioul": 75
+        "collectif_fioul": 6
       },
       "logements": {
         "collectif_gaz": 7578,
         "individuel_gaz": 11693,
-        "collectif_fioul": 61,
-        "individuel_fioul": 104
+        "collectif_fioul": 61
       },
-      "nb_batiments": 8832,
-      "nb_logements": 84797
+      "nb_batiments": 161,
+      "nb_logements": 7639
     },
     "taux_enrr": 51.09,
     "nb_reseaux": 11,
@@ -1984,49 +1768,43 @@
       "batiments": {
         "collectif_gaz": 9,
         "individuel_gaz": 28,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 376,
         "individuel_gaz": 59,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
-      "nb_batiments": 444,
-      "nb_logements": 2466
+      "nb_batiments": 9,
+      "nb_logements": 376
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 17,
         "individuel_gaz": 121,
-        "collectif_fioul": 0,
-        "individuel_fioul": 12
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 670,
         "individuel_gaz": 293,
-        "collectif_fioul": 0,
-        "individuel_fioul": 11
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1114,
-      "nb_logements": 4006
+      "nb_batiments": 17,
+      "nb_logements": 670
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 28,
         "individuel_gaz": 234,
-        "collectif_fioul": 1,
-        "individuel_fioul": 24
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 940,
         "individuel_gaz": 468,
-        "collectif_fioul": 0,
-        "individuel_fioul": 23
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1904,
-      "nb_logements": 5286
+      "nb_batiments": 29,
+      "nb_logements": 940
     },
     "taux_enrr": 77.64,
     "nb_reseaux": 6,
@@ -2039,49 +1817,43 @@
       "batiments": {
         "collectif_gaz": 159,
         "individuel_gaz": 428,
-        "collectif_fioul": 7,
-        "individuel_fioul": 17
+        "collectif_fioul": 7
       },
       "logements": {
         "collectif_gaz": 4228,
         "individuel_gaz": 3393,
-        "collectif_fioul": 17,
-        "individuel_fioul": 31
+        "collectif_fioul": 17
       },
-      "nb_batiments": 3810,
-      "nb_logements": 46999
+      "nb_batiments": 166,
+      "nb_logements": 4245
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 197,
         "individuel_gaz": 794,
-        "collectif_fioul": 9,
-        "individuel_fioul": 25
+        "collectif_fioul": 9
       },
       "logements": {
         "collectif_gaz": 5152,
         "individuel_gaz": 4957,
-        "collectif_fioul": 30,
-        "individuel_fioul": 39
+        "collectif_fioul": 30
       },
-      "nb_batiments": 6787,
-      "nb_logements": 57650
+      "nb_batiments": 206,
+      "nb_logements": 5182
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 218,
         "individuel_gaz": 1154,
-        "collectif_fioul": 12,
-        "individuel_fioul": 31
+        "collectif_fioul": 12
       },
       "logements": {
         "collectif_gaz": 5501,
         "individuel_gaz": 6431,
-        "collectif_fioul": 49,
-        "individuel_fioul": 44
+        "collectif_fioul": 49
       },
-      "nb_batiments": 9795,
-      "nb_logements": 66238
+      "nb_batiments": 230,
+      "nb_logements": 5550
     },
     "taux_enrr": 69.14,
     "nb_reseaux": 10,
@@ -2094,49 +1866,43 @@
       "batiments": {
         "collectif_gaz": 164,
         "individuel_gaz": 774,
-        "collectif_fioul": 20,
-        "individuel_fioul": 98
+        "collectif_fioul": 20
       },
       "logements": {
         "collectif_gaz": 8002,
         "individuel_gaz": 13048,
-        "collectif_fioul": 189,
-        "individuel_fioul": 316
+        "collectif_fioul": 189
       },
-      "nb_batiments": 7016,
-      "nb_logements": 104022
+      "nb_batiments": 184,
+      "nb_logements": 8191
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 242,
         "individuel_gaz": 1402,
-        "collectif_fioul": 28,
-        "individuel_fioul": 190
+        "collectif_fioul": 28
       },
       "logements": {
         "collectif_gaz": 10677,
         "individuel_gaz": 19778,
-        "collectif_fioul": 224,
-        "individuel_fioul": 432
+        "collectif_fioul": 224
       },
-      "nb_batiments": 11658,
-      "nb_logements": 133618
+      "nb_batiments": 270,
+      "nb_logements": 10901
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 306,
         "individuel_gaz": 1855,
-        "collectif_fioul": 36,
-        "individuel_fioul": 254
+        "collectif_fioul": 36
       },
       "logements": {
         "collectif_gaz": 12428,
         "individuel_gaz": 24176,
-        "collectif_fioul": 332,
-        "individuel_fioul": 521
+        "collectif_fioul": 332
       },
-      "nb_batiments": 15473,
-      "nb_logements": 155324
+      "nb_batiments": 342,
+      "nb_logements": 12760
     },
     "taux_enrr": 83.91,
     "nb_reseaux": 19,
@@ -2149,49 +1915,43 @@
       "batiments": {
         "collectif_gaz": 20,
         "individuel_gaz": 169,
-        "collectif_fioul": 7,
-        "individuel_fioul": 17
+        "collectif_fioul": 7
       },
       "logements": {
         "collectif_gaz": 449,
         "individuel_gaz": 1147,
-        "collectif_fioul": 25,
-        "individuel_fioul": 18
+        "collectif_fioul": 25
       },
-      "nb_batiments": 1264,
-      "nb_logements": 8165
+      "nb_batiments": 27,
+      "nb_logements": 474
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 44,
         "individuel_gaz": 323,
-        "collectif_fioul": 14,
-        "individuel_fioul": 35
+        "collectif_fioul": 14
       },
       "logements": {
         "collectif_gaz": 754,
         "individuel_gaz": 1699,
-        "collectif_fioul": 118,
-        "individuel_fioul": 38
+        "collectif_fioul": 118
       },
-      "nb_batiments": 2445,
-      "nb_logements": 11431
+      "nb_batiments": 58,
+      "nb_logements": 872
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 55,
         "individuel_gaz": 449,
-        "collectif_fioul": 22,
-        "individuel_fioul": 54
+        "collectif_fioul": 22
       },
       "logements": {
         "collectif_gaz": 881,
         "individuel_gaz": 2269,
-        "collectif_fioul": 137,
-        "individuel_fioul": 64
+        "collectif_fioul": 137
       },
-      "nb_batiments": 3287,
-      "nb_logements": 14349
+      "nb_batiments": 77,
+      "nb_logements": 1018
     },
     "taux_enrr": 69.36,
     "nb_reseaux": 7,
@@ -2204,49 +1964,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 11,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 86,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 134,
-      "nb_logements": 1179
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 33,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 174,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 267,
-      "nb_logements": 1780
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 46,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 188,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
-      "nb_batiments": 410,
-      "nb_logements": 2101
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "taux_enrr": 93.12,
     "nb_reseaux": 4,
@@ -2259,49 +2013,43 @@
       "batiments": {
         "collectif_gaz": 7,
         "individuel_gaz": 70,
-        "collectif_fioul": 0,
-        "individuel_fioul": 4
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 253,
         "individuel_gaz": 757,
-        "collectif_fioul": 0,
-        "individuel_fioul": 4
+        "collectif_fioul": 0
       },
-      "nb_batiments": 742,
-      "nb_logements": 6130
+      "nb_batiments": 7,
+      "nb_logements": 253
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 11,
         "individuel_gaz": 173,
-        "collectif_fioul": 0,
-        "individuel_fioul": 19
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 297,
         "individuel_gaz": 1100,
-        "collectif_fioul": 0,
-        "individuel_fioul": 18
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1411,
-      "nb_logements": 7856
+      "nb_batiments": 11,
+      "nb_logements": 297
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 17,
         "individuel_gaz": 281,
-        "collectif_fioul": 2,
-        "individuel_fioul": 35
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 398,
         "individuel_gaz": 1370,
-        "collectif_fioul": 6,
-        "individuel_fioul": 31
+        "collectif_fioul": 6
       },
-      "nb_batiments": 2194,
-      "nb_logements": 8980
+      "nb_batiments": 19,
+      "nb_logements": 404
     },
     "taux_enrr": 86.71,
     "nb_reseaux": 6,
@@ -2314,49 +2062,43 @@
       "batiments": {
         "collectif_gaz": 96,
         "individuel_gaz": 429,
-        "collectif_fioul": 21,
-        "individuel_fioul": 54
+        "collectif_fioul": 21
       },
       "logements": {
         "collectif_gaz": 3298,
         "individuel_gaz": 2837,
-        "collectif_fioul": 90,
-        "individuel_fioul": 73
+        "collectif_fioul": 90
       },
-      "nb_batiments": 3797,
-      "nb_logements": 30636
+      "nb_batiments": 117,
+      "nb_logements": 3388
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 157,
         "individuel_gaz": 776,
-        "collectif_fioul": 34,
-        "individuel_fioul": 120
+        "collectif_fioul": 34
       },
       "logements": {
         "collectif_gaz": 5340,
         "individuel_gaz": 4609,
-        "collectif_fioul": 148,
-        "individuel_fioul": 176
+        "collectif_fioul": 148
       },
-      "nb_batiments": 6975,
-      "nb_logements": 41030
+      "nb_batiments": 191,
+      "nb_logements": 5488
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 206,
         "individuel_gaz": 1146,
-        "collectif_fioul": 50,
-        "individuel_fioul": 177
+        "collectif_fioul": 50
       },
       "logements": {
         "collectif_gaz": 6269,
         "individuel_gaz": 6367,
-        "collectif_fioul": 218,
-        "individuel_fioul": 258
+        "collectif_fioul": 218
       },
-      "nb_batiments": 10112,
-      "nb_logements": 50358
+      "nb_batiments": 256,
+      "nb_logements": 6487
     },
     "taux_enrr": 60.73,
     "nb_reseaux": 48,
@@ -2369,49 +2111,43 @@
       "batiments": {
         "collectif_gaz": 8,
         "individuel_gaz": 79,
-        "collectif_fioul": 2,
-        "individuel_fioul": 21
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 326,
         "individuel_gaz": 663,
-        "collectif_fioul": 4,
-        "individuel_fioul": 34
+        "collectif_fioul": 4
       },
-      "nb_batiments": 1252,
-      "nb_logements": 4393
+      "nb_batiments": 10,
+      "nb_logements": 330
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 11,
         "individuel_gaz": 127,
-        "collectif_fioul": 3,
-        "individuel_fioul": 34
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 339,
         "individuel_gaz": 861,
-        "collectif_fioul": 5,
-        "individuel_fioul": 49
+        "collectif_fioul": 5
       },
-      "nb_batiments": 2067,
-      "nb_logements": 6152
+      "nb_batiments": 14,
+      "nb_logements": 344
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 14,
         "individuel_gaz": 150,
-        "collectif_fioul": 3,
-        "individuel_fioul": 40
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 387,
         "individuel_gaz": 1011,
-        "collectif_fioul": 5,
-        "individuel_fioul": 57
+        "collectif_fioul": 5
       },
-      "nb_batiments": 2695,
-      "nb_logements": 7343
+      "nb_batiments": 17,
+      "nb_logements": 392
     },
     "taux_enrr": 95.94,
     "nb_reseaux": 10,
@@ -2424,49 +2160,43 @@
       "batiments": {
         "collectif_gaz": 162,
         "individuel_gaz": 1281,
-        "collectif_fioul": 4,
-        "individuel_fioul": 34
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 10520,
         "individuel_gaz": 11410,
-        "collectif_fioul": 51,
-        "individuel_fioul": 38
+        "collectif_fioul": 51
       },
-      "nb_batiments": 8725,
-      "nb_logements": 84861
+      "nb_batiments": 166,
+      "nb_logements": 10571
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 240,
         "individuel_gaz": 2320,
-        "collectif_fioul": 8,
-        "individuel_fioul": 70
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 13922,
         "individuel_gaz": 15657,
-        "collectif_fioul": 85,
-        "individuel_fioul": 80
+        "collectif_fioul": 85
       },
-      "nb_batiments": 15439,
-      "nb_logements": 116108
+      "nb_batiments": 248,
+      "nb_logements": 14007
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 294,
         "individuel_gaz": 3318,
-        "collectif_fioul": 9,
-        "individuel_fioul": 115
+        "collectif_fioul": 9
       },
       "logements": {
         "collectif_gaz": 15311,
         "individuel_gaz": 20224,
-        "collectif_fioul": 91,
-        "individuel_fioul": 126
+        "collectif_fioul": 91
       },
-      "nb_batiments": 21817,
-      "nb_logements": 139898
+      "nb_batiments": 303,
+      "nb_logements": 15402
     },
     "taux_enrr": 71.9,
     "nb_reseaux": 9,
@@ -2479,49 +2209,43 @@
       "batiments": {
         "collectif_gaz": 51,
         "individuel_gaz": 441,
-        "collectif_fioul": 2,
-        "individuel_fioul": 21
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 2145,
         "individuel_gaz": 3003,
-        "collectif_fioul": 13,
-        "individuel_fioul": 26
+        "collectif_fioul": 13
       },
-      "nb_batiments": 3036,
-      "nb_logements": 26574
+      "nb_batiments": 53,
+      "nb_logements": 2158
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 80,
         "individuel_gaz": 826,
-        "collectif_fioul": 9,
-        "individuel_fioul": 49
+        "collectif_fioul": 9
       },
       "logements": {
         "collectif_gaz": 2455,
         "individuel_gaz": 4249,
-        "collectif_fioul": 68,
-        "individuel_fioul": 60
+        "collectif_fioul": 68
       },
-      "nb_batiments": 5885,
-      "nb_logements": 34657
+      "nb_batiments": 89,
+      "nb_logements": 2523
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 106,
         "individuel_gaz": 1276,
-        "collectif_fioul": 13,
-        "individuel_fioul": 70
+        "collectif_fioul": 13
       },
       "logements": {
         "collectif_gaz": 3023,
         "individuel_gaz": 6077,
-        "collectif_fioul": 112,
-        "individuel_fioul": 85
+        "collectif_fioul": 112
       },
-      "nb_batiments": 8878,
-      "nb_logements": 43053
+      "nb_batiments": 119,
+      "nb_logements": 3135
     },
     "taux_enrr": 74.14,
     "nb_reseaux": 5,
@@ -2534,49 +2258,43 @@
       "batiments": {
         "collectif_gaz": 3,
         "individuel_gaz": 20,
-        "collectif_fioul": 1,
-        "individuel_fioul": 21
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 6,
         "individuel_gaz": 47,
-        "collectif_fioul": 1,
-        "individuel_fioul": 27
+        "collectif_fioul": 1
       },
-      "nb_batiments": 2080,
-      "nb_logements": 3016
+      "nb_batiments": 4,
+      "nb_logements": 7
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 4,
         "individuel_gaz": 30,
-        "collectif_fioul": 1,
-        "individuel_fioul": 30
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 6,
         "individuel_gaz": 62,
-        "collectif_fioul": 1,
-        "individuel_fioul": 39
+        "collectif_fioul": 1
       },
-      "nb_batiments": 2695,
-      "nb_logements": 3793
+      "nb_batiments": 5,
+      "nb_logements": 7
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 4,
         "individuel_gaz": 44,
-        "collectif_fioul": 1,
-        "individuel_fioul": 38
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 6,
         "individuel_gaz": 81,
-        "collectif_fioul": 1,
-        "individuel_fioul": 48
+        "collectif_fioul": 1
       },
-      "nb_batiments": 3173,
-      "nb_logements": 4343
+      "nb_batiments": 5,
+      "nb_logements": 7
     },
     "taux_enrr": 95.09,
     "nb_reseaux": 15,
@@ -2589,49 +2307,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 16,
-        "collectif_fioul": 0,
-        "individuel_fioul": 4
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 18,
-        "collectif_fioul": 0,
-        "individuel_fioul": 4
+        "collectif_fioul": 0
       },
-      "nb_batiments": 169,
-      "nb_logements": 222
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 34,
-        "collectif_fioul": 0,
-        "individuel_fioul": 10
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 37,
-        "collectif_fioul": 0,
-        "individuel_fioul": 11
+        "collectif_fioul": 0
       },
-      "nb_batiments": 324,
-      "nb_logements": 380
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 39,
-        "collectif_fioul": 0,
-        "individuel_fioul": 12
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 42,
-        "collectif_fioul": 0,
-        "individuel_fioul": 13
+        "collectif_fioul": 0
       },
-      "nb_batiments": 442,
-      "nb_logements": 508
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "taux_enrr": 100,
     "nb_reseaux": 1,
@@ -2644,49 +2356,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 7,
-        "collectif_fioul": 4,
-        "individuel_fioul": 43
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 9,
-        "collectif_fioul": 18,
-        "individuel_fioul": 108
+        "collectif_fioul": 18
       },
-      "nb_batiments": 1358,
-      "nb_logements": 4212
+      "nb_batiments": 4,
+      "nb_logements": 18
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 13,
-        "collectif_fioul": 12,
-        "individuel_fioul": 76
+        "collectif_fioul": 12
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 14,
-        "collectif_fioul": 50,
-        "individuel_fioul": 159
+        "collectif_fioul": 50
       },
-      "nb_batiments": 2228,
-      "nb_logements": 5913
+      "nb_batiments": 12,
+      "nb_logements": 50
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 18,
-        "collectif_fioul": 12,
-        "individuel_fioul": 102
+        "collectif_fioul": 12
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 25,
-        "collectif_fioul": 50,
-        "individuel_fioul": 192
+        "collectif_fioul": 50
       },
-      "nb_batiments": 2757,
-      "nb_logements": 6706
+      "nb_batiments": 12,
+      "nb_logements": 50
     },
     "taux_enrr": 99.78,
     "nb_reseaux": 2,
@@ -2699,49 +2405,43 @@
       "batiments": {
         "collectif_gaz": 78,
         "individuel_gaz": 508,
-        "collectif_fioul": 2,
-        "individuel_fioul": 41
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 5433,
         "individuel_gaz": 2198,
-        "collectif_fioul": 13,
-        "individuel_fioul": 46
+        "collectif_fioul": 13
       },
-      "nb_batiments": 3939,
-      "nb_logements": 35147
+      "nb_batiments": 80,
+      "nb_logements": 5446
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 145,
         "individuel_gaz": 1025,
-        "collectif_fioul": 4,
-        "individuel_fioul": 83
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 6511,
         "individuel_gaz": 3480,
-        "collectif_fioul": 22,
-        "individuel_fioul": 91
+        "collectif_fioul": 22
       },
-      "nb_batiments": 7419,
-      "nb_logements": 46538
+      "nb_batiments": 149,
+      "nb_logements": 6533
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 185,
         "individuel_gaz": 1515,
-        "collectif_fioul": 8,
-        "individuel_fioul": 130
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 7449,
         "individuel_gaz": 4574,
-        "collectif_fioul": 98,
-        "individuel_fioul": 169
+        "collectif_fioul": 98
       },
-      "nb_batiments": 10855,
-      "nb_logements": 57521
+      "nb_batiments": 193,
+      "nb_logements": 7547
     },
     "taux_enrr": 72.13,
     "nb_reseaux": 14,
@@ -2754,49 +2454,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 16,
-        "collectif_fioul": 0,
-        "individuel_fioul": 4
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 120,
-        "collectif_fioul": 0,
-        "individuel_fioul": 7
+        "collectif_fioul": 0
       },
-      "nb_batiments": 236,
-      "nb_logements": 4789
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 44,
-        "collectif_fioul": 1,
-        "individuel_fioul": 8
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 45,
         "individuel_gaz": 189,
-        "collectif_fioul": 1,
-        "individuel_fioul": 14
+        "collectif_fioul": 1
       },
-      "nb_batiments": 515,
-      "nb_logements": 5372
+      "nb_batiments": 3,
+      "nb_logements": 46
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 79,
-        "collectif_fioul": 1,
-        "individuel_fioul": 13
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 45,
         "individuel_gaz": 305,
-        "collectif_fioul": 1,
-        "individuel_fioul": 19
+        "collectif_fioul": 1
       },
-      "nb_batiments": 812,
-      "nb_logements": 6176
+      "nb_batiments": 3,
+      "nb_logements": 46
     },
     "taux_enrr": 84.52,
     "nb_reseaux": 6,
@@ -2809,49 +2503,43 @@
       "batiments": {
         "collectif_gaz": 35,
         "individuel_gaz": 398,
-        "collectif_fioul": 2,
-        "individuel_fioul": 35
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 1627,
         "individuel_gaz": 1998,
-        "collectif_fioul": 10,
-        "individuel_fioul": 40
+        "collectif_fioul": 10
       },
-      "nb_batiments": 2803,
-      "nb_logements": 29767
+      "nb_batiments": 37,
+      "nb_logements": 1637
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 65,
         "individuel_gaz": 700,
-        "collectif_fioul": 3,
-        "individuel_fioul": 65
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 2120,
         "individuel_gaz": 2952,
-        "collectif_fioul": 29,
-        "individuel_fioul": 75
+        "collectif_fioul": 29
       },
-      "nb_batiments": 5034,
-      "nb_logements": 36428
+      "nb_batiments": 68,
+      "nb_logements": 2149
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 91,
         "individuel_gaz": 1018,
-        "collectif_fioul": 8,
-        "individuel_fioul": 97
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 2386,
         "individuel_gaz": 3949,
-        "collectif_fioul": 46,
-        "individuel_fioul": 106
+        "collectif_fioul": 46
       },
-      "nb_batiments": 7121,
-      "nb_logements": 42566
+      "nb_batiments": 99,
+      "nb_logements": 2432
     },
     "taux_enrr": 56.09,
     "nb_reseaux": 7,
@@ -2864,49 +2552,43 @@
       "batiments": {
         "collectif_gaz": 24,
         "individuel_gaz": 182,
-        "collectif_fioul": 1,
-        "individuel_fioul": 36
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 749,
         "individuel_gaz": 1046,
-        "collectif_fioul": 1,
-        "individuel_fioul": 36
+        "collectif_fioul": 1
       },
-      "nb_batiments": 1769,
-      "nb_logements": 12523
+      "nb_batiments": 25,
+      "nb_logements": 750
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 39,
         "individuel_gaz": 382,
-        "collectif_fioul": 1,
-        "individuel_fioul": 74
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 820,
         "individuel_gaz": 1411,
-        "collectif_fioul": 1,
-        "individuel_fioul": 75
+        "collectif_fioul": 1
       },
-      "nb_batiments": 3406,
-      "nb_logements": 15149
+      "nb_batiments": 40,
+      "nb_logements": 821
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 57,
         "individuel_gaz": 523,
-        "collectif_fioul": 1,
-        "individuel_fioul": 106
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 896,
         "individuel_gaz": 1903,
-        "collectif_fioul": 1,
-        "individuel_fioul": 110
+        "collectif_fioul": 1
       },
-      "nb_batiments": 4788,
-      "nb_logements": 17749
+      "nb_batiments": 58,
+      "nb_logements": 897
     },
     "taux_enrr": 89.59,
     "nb_reseaux": 8,
@@ -2919,49 +2601,43 @@
       "batiments": {
         "collectif_gaz": 10,
         "individuel_gaz": 140,
-        "collectif_fioul": 0,
-        "individuel_fioul": 10
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 433,
         "individuel_gaz": 980,
-        "collectif_fioul": 0,
-        "individuel_fioul": 20
+        "collectif_fioul": 0
       },
-      "nb_batiments": 914,
-      "nb_logements": 6925
+      "nb_batiments": 10,
+      "nb_logements": 433
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 22,
         "individuel_gaz": 282,
-        "collectif_fioul": 0,
-        "individuel_fioul": 28
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 635,
         "individuel_gaz": 1474,
-        "collectif_fioul": 0,
-        "individuel_fioul": 38
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1777,
-      "nb_logements": 9986
+      "nb_batiments": 22,
+      "nb_logements": 635
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 30,
         "individuel_gaz": 417,
-        "collectif_fioul": 0,
-        "individuel_fioul": 40
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 938,
         "individuel_gaz": 1970,
-        "collectif_fioul": 0,
-        "individuel_fioul": 50
+        "collectif_fioul": 0
       },
-      "nb_batiments": 2681,
-      "nb_logements": 12915
+      "nb_batiments": 30,
+      "nb_logements": 938
     },
     "taux_enrr": 96.41,
     "nb_reseaux": 4,
@@ -2974,49 +2650,43 @@
       "batiments": {
         "collectif_gaz": 51,
         "individuel_gaz": 522,
-        "collectif_fioul": 3,
-        "individuel_fioul": 28
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 1324,
         "individuel_gaz": 2882,
-        "collectif_fioul": 13,
-        "individuel_fioul": 20
+        "collectif_fioul": 13
       },
-      "nb_batiments": 3328,
-      "nb_logements": 32244
+      "nb_batiments": 54,
+      "nb_logements": 1337
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 85,
         "individuel_gaz": 1010,
-        "collectif_fioul": 4,
-        "individuel_fioul": 70
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 2189,
         "individuel_gaz": 5442,
-        "collectif_fioul": 14,
-        "individuel_fioul": 65
+        "collectif_fioul": 14
       },
-      "nb_batiments": 6255,
-      "nb_logements": 43536
+      "nb_batiments": 89,
+      "nb_logements": 2203
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 111,
         "individuel_gaz": 1576,
-        "collectif_fioul": 8,
-        "individuel_fioul": 106
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 2572,
         "individuel_gaz": 7980,
-        "collectif_fioul": 38,
-        "individuel_fioul": 103
+        "collectif_fioul": 38
       },
-      "nb_batiments": 9319,
-      "nb_logements": 54596
+      "nb_batiments": 119,
+      "nb_logements": 2610
     },
     "taux_enrr": 79.79,
     "nb_reseaux": 11,
@@ -3029,49 +2699,43 @@
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 45,
-        "collectif_fioul": 0,
-        "individuel_fioul": 4
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 4,
         "individuel_gaz": 416,
-        "collectif_fioul": 0,
-        "individuel_fioul": 6
+        "collectif_fioul": 0
       },
-      "nb_batiments": 498,
-      "nb_logements": 3059
+      "nb_batiments": 2,
+      "nb_logements": 4
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 5,
         "individuel_gaz": 89,
-        "collectif_fioul": 0,
-        "individuel_fioul": 6
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 28,
         "individuel_gaz": 541,
-        "collectif_fioul": 0,
-        "individuel_fioul": 8
+        "collectif_fioul": 0
       },
-      "nb_batiments": 909,
-      "nb_logements": 3859
+      "nb_batiments": 5,
+      "nb_logements": 28
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 7,
         "individuel_gaz": 145,
-        "collectif_fioul": 0,
-        "individuel_fioul": 8
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 30,
         "individuel_gaz": 666,
-        "collectif_fioul": 0,
-        "individuel_fioul": 10
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1385,
-      "nb_logements": 4623
+      "nb_batiments": 7,
+      "nb_logements": 30
     },
     "taux_enrr": 70.66,
     "nb_reseaux": 5,
@@ -3084,49 +2748,43 @@
       "batiments": {
         "collectif_gaz": 32,
         "individuel_gaz": 62,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 1884,
         "individuel_gaz": 608,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
-      "nb_batiments": 397,
-      "nb_logements": 4238
+      "nb_batiments": 32,
+      "nb_logements": 1884
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 41,
         "individuel_gaz": 177,
-        "collectif_fioul": 0,
-        "individuel_fioul": 16
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 2309,
         "individuel_gaz": 1219,
-        "collectif_fioul": 0,
-        "individuel_fioul": 18
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1152,
-      "nb_logements": 6678
+      "nb_batiments": 41,
+      "nb_logements": 2309
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 50,
         "individuel_gaz": 326,
-        "collectif_fioul": 0,
-        "individuel_fioul": 37
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 2649,
         "individuel_gaz": 1705,
-        "collectif_fioul": 0,
-        "individuel_fioul": 40
+        "collectif_fioul": 0
       },
-      "nb_batiments": 2094,
-      "nb_logements": 9214
+      "nb_batiments": 50,
+      "nb_logements": 2649
     },
     "taux_enrr": 80.21,
     "nb_reseaux": 7,
@@ -3139,49 +2797,43 @@
       "batiments": {
         "collectif_gaz": 191,
         "individuel_gaz": 1393,
-        "collectif_fioul": 16,
-        "individuel_fioul": 82
+        "collectif_fioul": 16
       },
       "logements": {
         "collectif_gaz": 3871,
         "individuel_gaz": 11683,
-        "collectif_fioul": 182,
-        "individuel_fioul": 195
+        "collectif_fioul": 182
       },
-      "nb_batiments": 7497,
-      "nb_logements": 65754
+      "nb_batiments": 207,
+      "nb_logements": 4053
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 300,
         "individuel_gaz": 2399,
-        "collectif_fioul": 22,
-        "individuel_fioul": 170
+        "collectif_fioul": 22
       },
       "logements": {
         "collectif_gaz": 5231,
         "individuel_gaz": 16794,
-        "collectif_fioul": 204,
-        "individuel_fioul": 351
+        "collectif_fioul": 204
       },
-      "nb_batiments": 12974,
-      "nb_logements": 85844
+      "nb_batiments": 322,
+      "nb_logements": 5435
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 377,
         "individuel_gaz": 3266,
-        "collectif_fioul": 34,
-        "individuel_fioul": 249
+        "collectif_fioul": 34
       },
       "logements": {
         "collectif_gaz": 6172,
         "individuel_gaz": 20780,
-        "collectif_fioul": 271,
-        "individuel_fioul": 448
+        "collectif_fioul": 271
       },
-      "nb_batiments": 17871,
-      "nb_logements": 101188
+      "nb_batiments": 411,
+      "nb_logements": 6443
     },
     "taux_enrr": 67.38,
     "nb_reseaux": 19,
@@ -3194,49 +2846,43 @@
       "batiments": {
         "collectif_gaz": 24,
         "individuel_gaz": 282,
-        "collectif_fioul": 2,
-        "individuel_fioul": 32
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 337,
         "individuel_gaz": 758,
-        "collectif_fioul": 7,
-        "individuel_fioul": 45
+        "collectif_fioul": 7
       },
-      "nb_batiments": 3040,
-      "nb_logements": 9755
+      "nb_batiments": 26,
+      "nb_logements": 344
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 27,
         "individuel_gaz": 574,
-        "collectif_fioul": 3,
-        "individuel_fioul": 74
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 433,
         "individuel_gaz": 1393,
-        "collectif_fioul": 10,
-        "individuel_fioul": 93
+        "collectif_fioul": 10
       },
-      "nb_batiments": 5777,
-      "nb_logements": 14691
+      "nb_batiments": 30,
+      "nb_logements": 443
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 42,
         "individuel_gaz": 812,
-        "collectif_fioul": 5,
-        "individuel_fioul": 121
+        "collectif_fioul": 5
       },
       "logements": {
         "collectif_gaz": 565,
         "individuel_gaz": 1833,
-        "collectif_fioul": 25,
-        "individuel_fioul": 150
+        "collectif_fioul": 25
       },
-      "nb_batiments": 8314,
-      "nb_logements": 18610
+      "nb_batiments": 47,
+      "nb_logements": 590
     },
     "taux_enrr": 73.41,
     "nb_reseaux": 27,
@@ -3249,49 +2895,43 @@
       "batiments": {
         "collectif_gaz": 277,
         "individuel_gaz": 1742,
-        "collectif_fioul": 16,
-        "individuel_fioul": 62
+        "collectif_fioul": 16
       },
       "logements": {
         "collectif_gaz": 9307,
         "individuel_gaz": 10197,
-        "collectif_fioul": 144,
-        "individuel_fioul": 97
+        "collectif_fioul": 144
       },
-      "nb_batiments": 17174,
-      "nb_logements": 95119
+      "nb_batiments": 293,
+      "nb_logements": 9451
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 395,
         "individuel_gaz": 3154,
-        "collectif_fioul": 26,
-        "individuel_fioul": 117
+        "collectif_fioul": 26
       },
       "logements": {
         "collectif_gaz": 10816,
         "individuel_gaz": 14607,
-        "collectif_fioul": 210,
-        "individuel_fioul": 163
+        "collectif_fioul": 210
       },
-      "nb_batiments": 30875,
-      "nb_logements": 130784
+      "nb_batiments": 421,
+      "nb_logements": 11026
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 494,
         "individuel_gaz": 4470,
-        "collectif_fioul": 36,
-        "individuel_fioul": 167
+        "collectif_fioul": 36
       },
       "logements": {
         "collectif_gaz": 12238,
         "individuel_gaz": 18330,
-        "collectif_fioul": 278,
-        "individuel_fioul": 240
+        "collectif_fioul": 278
       },
-      "nb_batiments": 43121,
-      "nb_logements": 160245
+      "nb_batiments": 530,
+      "nb_logements": 12516
     },
     "taux_enrr": 70.61,
     "nb_reseaux": 20,
@@ -3304,49 +2944,43 @@
       "batiments": {
         "collectif_gaz": 53,
         "individuel_gaz": 183,
-        "collectif_fioul": 4,
-        "individuel_fioul": 31
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 2855,
         "individuel_gaz": 1758,
-        "collectif_fioul": 229,
-        "individuel_fioul": 32
+        "collectif_fioul": 229
       },
-      "nb_batiments": 2070,
-      "nb_logements": 20231
+      "nb_batiments": 57,
+      "nb_logements": 3084
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 63,
         "individuel_gaz": 346,
-        "collectif_fioul": 7,
-        "individuel_fioul": 83
+        "collectif_fioul": 7
       },
       "logements": {
         "collectif_gaz": 2911,
         "individuel_gaz": 2431,
-        "collectif_fioul": 241,
-        "individuel_fioul": 83
+        "collectif_fioul": 241
       },
-      "nb_batiments": 3840,
-      "nb_logements": 27491
+      "nb_batiments": 70,
+      "nb_logements": 3152
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 76,
         "individuel_gaz": 494,
-        "collectif_fioul": 8,
-        "individuel_fioul": 125
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 3234,
         "individuel_gaz": 2684,
-        "collectif_fioul": 242,
-        "individuel_fioul": 126
+        "collectif_fioul": 242
       },
-      "nb_batiments": 5396,
-      "nb_logements": 31327
+      "nb_batiments": 84,
+      "nb_logements": 3476
     },
     "taux_enrr": 55.04,
     "nb_reseaux": 8,
@@ -3359,49 +2993,43 @@
       "batiments": {
         "collectif_gaz": 32,
         "individuel_gaz": 295,
-        "collectif_fioul": 6,
-        "individuel_fioul": 50
+        "collectif_fioul": 6
       },
       "logements": {
         "collectif_gaz": 250,
         "individuel_gaz": 802,
-        "collectif_fioul": 20,
-        "individuel_fioul": 64
+        "collectif_fioul": 20
       },
-      "nb_batiments": 2648,
-      "nb_logements": 10604
+      "nb_batiments": 38,
+      "nb_logements": 270
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 43,
         "individuel_gaz": 552,
-        "collectif_fioul": 8,
-        "individuel_fioul": 109
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 335,
         "individuel_gaz": 1365,
-        "collectif_fioul": 30,
-        "individuel_fioul": 134
+        "collectif_fioul": 30
       },
-      "nb_batiments": 4719,
-      "nb_logements": 14293
+      "nb_batiments": 51,
+      "nb_logements": 365
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 54,
         "individuel_gaz": 734,
-        "collectif_fioul": 9,
-        "individuel_fioul": 162
+        "collectif_fioul": 9
       },
       "logements": {
         "collectif_gaz": 384,
         "individuel_gaz": 1731,
-        "collectif_fioul": 34,
-        "individuel_fioul": 189
+        "collectif_fioul": 34
       },
-      "nb_batiments": 6543,
-      "nb_logements": 17201
+      "nb_batiments": 63,
+      "nb_logements": 418
     },
     "taux_enrr": 87.74,
     "nb_reseaux": 6,
@@ -3414,49 +3042,43 @@
       "batiments": {
         "collectif_gaz": 57,
         "individuel_gaz": 742,
-        "collectif_fioul": 1,
-        "individuel_fioul": 48
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 1110,
         "individuel_gaz": 3897,
-        "collectif_fioul": 0,
-        "individuel_fioul": 46
+        "collectif_fioul": 0
       },
-      "nb_batiments": 5890,
-      "nb_logements": 26393
+      "nb_batiments": 58,
+      "nb_logements": 1110
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 83,
         "individuel_gaz": 1471,
-        "collectif_fioul": 4,
-        "individuel_fioul": 87
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 1316,
         "individuel_gaz": 5691,
-        "collectif_fioul": 41,
-        "individuel_fioul": 103
+        "collectif_fioul": 41
       },
-      "nb_batiments": 11096,
-      "nb_logements": 36103
+      "nb_batiments": 87,
+      "nb_logements": 1357
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 110,
         "individuel_gaz": 2149,
-        "collectif_fioul": 7,
-        "individuel_fioul": 136
+        "collectif_fioul": 7
       },
       "logements": {
         "collectif_gaz": 1639,
         "individuel_gaz": 7403,
-        "collectif_fioul": 55,
-        "individuel_fioul": 154
+        "collectif_fioul": 55
       },
-      "nb_batiments": 16264,
-      "nb_logements": 44942
+      "nb_batiments": 117,
+      "nb_logements": 1694
     },
     "taux_enrr": 75.02,
     "nb_reseaux": 13,
@@ -3469,49 +3091,43 @@
       "batiments": {
         "collectif_gaz": 65,
         "individuel_gaz": 337,
-        "collectif_fioul": 5,
-        "individuel_fioul": 24
+        "collectif_fioul": 5
       },
       "logements": {
         "collectif_gaz": 2682,
         "individuel_gaz": 2566,
-        "collectif_fioul": 79,
-        "individuel_fioul": 35
+        "collectif_fioul": 79
       },
-      "nb_batiments": 2593,
-      "nb_logements": 19255
+      "nb_batiments": 70,
+      "nb_logements": 2761
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 92,
         "individuel_gaz": 593,
-        "collectif_fioul": 9,
-        "individuel_fioul": 44
+        "collectif_fioul": 9
       },
       "logements": {
         "collectif_gaz": 3678,
         "individuel_gaz": 4308,
-        "collectif_fioul": 131,
-        "individuel_fioul": 68
+        "collectif_fioul": 131
       },
-      "nb_batiments": 4574,
-      "nb_logements": 28884
+      "nb_batiments": 101,
+      "nb_logements": 3809
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 114,
         "individuel_gaz": 832,
-        "collectif_fioul": 10,
-        "individuel_fioul": 66
+        "collectif_fioul": 10
       },
       "logements": {
         "collectif_gaz": 4086,
         "individuel_gaz": 5295,
-        "collectif_fioul": 144,
-        "individuel_fioul": 90
+        "collectif_fioul": 144
       },
-      "nb_batiments": 6356,
-      "nb_logements": 35714
+      "nb_batiments": 124,
+      "nb_logements": 4230
     },
     "taux_enrr": 67.82,
     "nb_reseaux": 13,
@@ -3524,49 +3140,43 @@
       "batiments": {
         "collectif_gaz": 40,
         "individuel_gaz": 351,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 1960,
         "individuel_gaz": 5167,
-        "collectif_fioul": 0,
-        "individuel_fioul": 20
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1903,
-      "nb_logements": 22503
+      "nb_batiments": 40,
+      "nb_logements": 1960
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 49,
         "individuel_gaz": 711,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 2063,
         "individuel_gaz": 8744,
-        "collectif_fioul": 0,
-        "individuel_fioul": 20
+        "collectif_fioul": 0
       },
-      "nb_batiments": 3478,
-      "nb_logements": 30955
+      "nb_batiments": 49,
+      "nb_logements": 2063
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 55,
         "individuel_gaz": 1041,
-        "collectif_fioul": 0,
-        "individuel_fioul": 9
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 2131,
         "individuel_gaz": 11217,
-        "collectif_fioul": 0,
-        "individuel_fioul": 24
+        "collectif_fioul": 0
       },
-      "nb_batiments": 5114,
-      "nb_logements": 37867
+      "nb_batiments": 55,
+      "nb_logements": 2131
     },
     "taux_enrr": 82.98,
     "nb_reseaux": 3,
@@ -3579,49 +3189,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 13,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 22,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 215,
-      "nb_logements": 324
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 20,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 30,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
-      "nb_batiments": 387,
-      "nb_logements": 588
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 1,
         "individuel_gaz": 29,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 1,
         "individuel_gaz": 44,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
-      "nb_batiments": 577,
-      "nb_logements": 924
+      "nb_batiments": 1,
+      "nb_logements": 1
     },
     "taux_enrr": 75.24,
     "nb_reseaux": 1,
@@ -3634,49 +3238,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 8,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 8,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 137,
-      "nb_logements": 130
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 16,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 16,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 275,
-      "nb_logements": 280
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 32,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 33,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 496,
-      "nb_logements": 544
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "taux_enrr": 98.35,
     "nb_reseaux": 2,
@@ -3689,49 +3287,43 @@
       "batiments": {
         "collectif_gaz": 174,
         "individuel_gaz": 212,
-        "collectif_fioul": 29,
-        "individuel_fioul": 22
+        "collectif_fioul": 29
       },
       "logements": {
         "collectif_gaz": 8521,
         "individuel_gaz": 2990,
-        "collectif_fioul": 308,
-        "individuel_fioul": 83
+        "collectif_fioul": 308
       },
-      "nb_batiments": 2766,
-      "nb_logements": 55919
+      "nb_batiments": 203,
+      "nb_logements": 8829
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 307,
         "individuel_gaz": 446,
-        "collectif_fioul": 70,
-        "individuel_fioul": 58
+        "collectif_fioul": 70
       },
       "logements": {
         "collectif_gaz": 12129,
         "individuel_gaz": 4867,
-        "collectif_fioul": 585,
-        "individuel_fioul": 197
+        "collectif_fioul": 585
       },
-      "nb_batiments": 4891,
-      "nb_logements": 74266
+      "nb_batiments": 377,
+      "nb_logements": 12714
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 447,
         "individuel_gaz": 718,
-        "collectif_fioul": 115,
-        "individuel_fioul": 100
+        "collectif_fioul": 115
       },
       "logements": {
         "collectif_gaz": 15542,
         "individuel_gaz": 6548,
-        "collectif_fioul": 974,
-        "individuel_fioul": 268
+        "collectif_fioul": 974
       },
-      "nb_batiments": 7169,
-      "nb_logements": 94146
+      "nb_batiments": 562,
+      "nb_logements": 16516
     },
     "taux_enrr": 67.7,
     "nb_reseaux": 31,
@@ -3744,49 +3336,43 @@
       "batiments": {
         "collectif_gaz": 139,
         "individuel_gaz": 493,
-        "collectif_fioul": 32,
-        "individuel_fioul": 83
+        "collectif_fioul": 32
       },
       "logements": {
         "collectif_gaz": 3173,
         "individuel_gaz": 4085,
-        "collectif_fioul": 152,
-        "individuel_fioul": 130
+        "collectif_fioul": 152
       },
-      "nb_batiments": 4041,
-      "nb_logements": 29448
+      "nb_batiments": 171,
+      "nb_logements": 3325
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 192,
         "individuel_gaz": 940,
-        "collectif_fioul": 51,
-        "individuel_fioul": 156
+        "collectif_fioul": 51
       },
       "logements": {
         "collectif_gaz": 4036,
         "individuel_gaz": 6617,
-        "collectif_fioul": 219,
-        "individuel_fioul": 213
+        "collectif_fioul": 219
       },
-      "nb_batiments": 7007,
-      "nb_logements": 39506
+      "nb_batiments": 243,
+      "nb_logements": 4255
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 255,
         "individuel_gaz": 1309,
-        "collectif_fioul": 62,
-        "individuel_fioul": 220
+        "collectif_fioul": 62
       },
       "logements": {
         "collectif_gaz": 5073,
         "individuel_gaz": 8565,
-        "collectif_fioul": 263,
-        "individuel_fioul": 298
+        "collectif_fioul": 263
       },
-      "nb_batiments": 9691,
-      "nb_logements": 48322
+      "nb_batiments": 317,
+      "nb_logements": 5336
     },
     "taux_enrr": 75.55,
     "nb_reseaux": 18,
@@ -3799,49 +3385,43 @@
       "batiments": {
         "collectif_gaz": 690,
         "individuel_gaz": 1584,
-        "collectif_fioul": 42,
-        "individuel_fioul": 103
+        "collectif_fioul": 42
       },
       "logements": {
         "collectif_gaz": 35717,
         "individuel_gaz": 30162,
-        "collectif_fioul": 1105,
-        "individuel_fioul": 142
+        "collectif_fioul": 1105
       },
-      "nb_batiments": 10976,
-      "nb_logements": 220902
+      "nb_batiments": 732,
+      "nb_logements": 36822
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 969,
         "individuel_gaz": 2693,
-        "collectif_fioul": 64,
-        "individuel_fioul": 198
+        "collectif_fioul": 64
       },
       "logements": {
         "collectif_gaz": 45330,
         "individuel_gaz": 43903,
-        "collectif_fioul": 1513,
-        "individuel_fioul": 317
+        "collectif_fioul": 1513
       },
-      "nb_batiments": 17947,
-      "nb_logements": 288246
+      "nb_batiments": 1033,
+      "nb_logements": 46843
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 1161,
         "individuel_gaz": 3649,
-        "collectif_fioul": 79,
-        "individuel_fioul": 292
+        "collectif_fioul": 79
       },
       "logements": {
         "collectif_gaz": 53801,
         "individuel_gaz": 55505,
-        "collectif_fioul": 1732,
-        "individuel_fioul": 445
+        "collectif_fioul": 1732
       },
-      "nb_batiments": 24219,
-      "nb_logements": 341795
+      "nb_batiments": 1240,
+      "nb_logements": 55533
     },
     "taux_enrr": 64.87,
     "nb_reseaux": 28,
@@ -3854,49 +3434,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1,
-      "nb_logements": null
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1,
-      "nb_logements": null
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 0,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 5,
-      "nb_logements": 3
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "taux_enrr": 76.58,
     "nb_reseaux": 10,
@@ -3909,49 +3483,43 @@
       "batiments": {
         "collectif_gaz": 66,
         "individuel_gaz": 757,
-        "collectif_fioul": 5,
-        "individuel_fioul": 35
+        "collectif_fioul": 5
       },
       "logements": {
         "collectif_gaz": 1951,
         "individuel_gaz": 5091,
-        "collectif_fioul": 38,
-        "individuel_fioul": 75
+        "collectif_fioul": 38
       },
-      "nb_batiments": 4451,
-      "nb_logements": 35387
+      "nb_batiments": 71,
+      "nb_logements": 1989
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 105,
         "individuel_gaz": 1275,
-        "collectif_fioul": 6,
-        "individuel_fioul": 66
+        "collectif_fioul": 6
       },
       "logements": {
         "collectif_gaz": 2984,
         "individuel_gaz": 7606,
-        "collectif_fioul": 42,
-        "individuel_fioul": 107
+        "collectif_fioul": 42
       },
-      "nb_batiments": 7371,
-      "nb_logements": 44790
+      "nb_batiments": 111,
+      "nb_logements": 3026
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 149,
         "individuel_gaz": 1663,
-        "collectif_fioul": 11,
-        "individuel_fioul": 95
+        "collectif_fioul": 11
       },
       "logements": {
         "collectif_gaz": 3905,
         "individuel_gaz": 9704,
-        "collectif_fioul": 91,
-        "individuel_fioul": 171
+        "collectif_fioul": 91
       },
-      "nb_batiments": 9861,
-      "nb_logements": 53375
+      "nb_batiments": 160,
+      "nb_logements": 3996
     },
     "taux_enrr": 63.94,
     "nb_reseaux": 8,
@@ -3964,49 +3532,43 @@
       "batiments": {
         "collectif_gaz": 41,
         "individuel_gaz": 341,
-        "collectif_fioul": 1,
-        "individuel_fioul": 27
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 4086,
         "individuel_gaz": 1758,
-        "collectif_fioul": 20,
-        "individuel_fioul": 31
+        "collectif_fioul": 20
       },
-      "nb_batiments": 2175,
-      "nb_logements": 18929
+      "nb_batiments": 42,
+      "nb_logements": 4106
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 58,
         "individuel_gaz": 670,
-        "collectif_fioul": 1,
-        "individuel_fioul": 45
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 4518,
         "individuel_gaz": 2541,
-        "collectif_fioul": 20,
-        "individuel_fioul": 52
+        "collectif_fioul": 20
       },
-      "nb_batiments": 4278,
-      "nb_logements": 22989
+      "nb_batiments": 59,
+      "nb_logements": 4538
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 75,
         "individuel_gaz": 1073,
-        "collectif_fioul": 1,
-        "individuel_fioul": 73
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 4831,
         "individuel_gaz": 3277,
-        "collectif_fioul": 20,
-        "individuel_fioul": 82
+        "collectif_fioul": 20
       },
-      "nb_batiments": 6391,
-      "nb_logements": 27076
+      "nb_batiments": 76,
+      "nb_logements": 4851
     },
     "taux_enrr": 75.67,
     "nb_reseaux": 5,
@@ -4019,49 +3581,43 @@
       "batiments": {
         "collectif_gaz": 175,
         "individuel_gaz": 408,
-        "collectif_fioul": 14,
-        "individuel_fioul": 40
+        "collectif_fioul": 14
       },
       "logements": {
         "collectif_gaz": 5235,
         "individuel_gaz": 3371,
-        "collectif_fioul": 313,
-        "individuel_fioul": 200
+        "collectif_fioul": 313
       },
-      "nb_batiments": 3700,
-      "nb_logements": 42437
+      "nb_batiments": 189,
+      "nb_logements": 5548
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 233,
         "individuel_gaz": 675,
-        "collectif_fioul": 20,
-        "individuel_fioul": 85
+        "collectif_fioul": 20
       },
       "logements": {
         "collectif_gaz": 6080,
         "individuel_gaz": 5139,
-        "collectif_fioul": 374,
-        "individuel_fioul": 277
+        "collectif_fioul": 374
       },
-      "nb_batiments": 5758,
-      "nb_logements": 52574
+      "nb_batiments": 253,
+      "nb_logements": 6454
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 268,
         "individuel_gaz": 877,
-        "collectif_fioul": 30,
-        "individuel_fioul": 109
+        "collectif_fioul": 30
       },
       "logements": {
         "collectif_gaz": 6646,
         "individuel_gaz": 6162,
-        "collectif_fioul": 409,
-        "individuel_fioul": 314
+        "collectif_fioul": 409
       },
-      "nb_batiments": 7542,
-      "nb_logements": 59055
+      "nb_batiments": 298,
+      "nb_logements": 7055
     },
     "taux_enrr": 74.19,
     "nb_reseaux": 16,
@@ -4074,49 +3630,43 @@
       "batiments": {
         "collectif_gaz": 92,
         "individuel_gaz": 110,
-        "collectif_fioul": 32,
-        "individuel_fioul": 34
+        "collectif_fioul": 32
       },
       "logements": {
         "collectif_gaz": 2881,
         "individuel_gaz": 1050,
-        "collectif_fioul": 467,
-        "individuel_fioul": 57
+        "collectif_fioul": 467
       },
-      "nb_batiments": 2060,
-      "nb_logements": 29592
+      "nb_batiments": 124,
+      "nb_logements": 3348
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 139,
         "individuel_gaz": 242,
-        "collectif_fioul": 54,
-        "individuel_fioul": 82
+        "collectif_fioul": 54
       },
       "logements": {
         "collectif_gaz": 3826,
         "individuel_gaz": 2264,
-        "collectif_fioul": 624,
-        "individuel_fioul": 153
+        "collectif_fioul": 624
       },
-      "nb_batiments": 3639,
-      "nb_logements": 38320
+      "nb_batiments": 193,
+      "nb_logements": 4450
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 194,
         "individuel_gaz": 386,
-        "collectif_fioul": 87,
-        "individuel_fioul": 117
+        "collectif_fioul": 87
       },
       "logements": {
         "collectif_gaz": 5444,
         "individuel_gaz": 3340,
-        "collectif_fioul": 984,
-        "individuel_fioul": 214
+        "collectif_fioul": 984
       },
-      "nb_batiments": 5299,
-      "nb_logements": 48105
+      "nb_batiments": 281,
+      "nb_logements": 6428
     },
     "taux_enrr": 72.69,
     "nb_reseaux": 22,
@@ -4129,49 +3679,43 @@
       "batiments": {
         "collectif_gaz": 3086,
         "individuel_gaz": 4278,
-        "collectif_fioul": 369,
-        "individuel_fioul": 37
+        "collectif_fioul": 369
       },
       "logements": {
         "collectif_gaz": 124459,
         "individuel_gaz": 89248,
-        "collectif_fioul": 8706,
-        "individuel_fioul": 608
+        "collectif_fioul": 8706
       },
-      "nb_batiments": 32445,
-      "nb_logements": 778548
+      "nb_batiments": 3455,
+      "nb_logements": 133165
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 4315,
         "individuel_gaz": 6207,
-        "collectif_fioul": 534,
-        "individuel_fioul": 50
+        "collectif_fioul": 534
       },
       "logements": {
         "collectif_gaz": 164914,
         "individuel_gaz": 124662,
-        "collectif_fioul": 12366,
-        "individuel_fioul": 779
+        "collectif_fioul": 12366
       },
-      "nb_batiments": 45401,
-      "nb_logements": 1020682
+      "nb_batiments": 4849,
+      "nb_logements": 177280
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 5023,
         "individuel_gaz": 7415,
-        "collectif_fioul": 624,
-        "individuel_fioul": 65
+        "collectif_fioul": 624
       },
       "logements": {
         "collectif_gaz": 189531,
         "individuel_gaz": 145971,
-        "collectif_fioul": 14501,
-        "individuel_fioul": 975
+        "collectif_fioul": 14501
       },
-      "nb_batiments": 53391,
-      "nb_logements": 1173541
+      "nb_batiments": 5647,
+      "nb_logements": 204032
     },
     "taux_enrr": 48.79,
     "nb_reseaux": 3,
@@ -4184,49 +3728,43 @@
       "batiments": {
         "collectif_gaz": 87,
         "individuel_gaz": 598,
-        "collectif_fioul": 5,
-        "individuel_fioul": 87
+        "collectif_fioul": 5
       },
       "logements": {
         "collectif_gaz": 4083,
         "individuel_gaz": 3857,
-        "collectif_fioul": 138,
-        "individuel_fioul": 129
+        "collectif_fioul": 138
       },
-      "nb_batiments": 6987,
-      "nb_logements": 69166
+      "nb_batiments": 92,
+      "nb_logements": 4221
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 111,
         "individuel_gaz": 1299,
-        "collectif_fioul": 6,
-        "individuel_fioul": 183
+        "collectif_fioul": 6
       },
       "logements": {
         "collectif_gaz": 5036,
         "individuel_gaz": 6241,
-        "collectif_fioul": 169,
-        "individuel_fioul": 228
+        "collectif_fioul": 169
       },
-      "nb_batiments": 13270,
-      "nb_logements": 87449
+      "nb_batiments": 117,
+      "nb_logements": 5205
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 135,
         "individuel_gaz": 2023,
-        "collectif_fioul": 7,
-        "individuel_fioul": 267
+        "collectif_fioul": 7
       },
       "logements": {
         "collectif_gaz": 5700,
         "individuel_gaz": 9208,
-        "collectif_fioul": 170,
-        "individuel_fioul": 312
+        "collectif_fioul": 170
       },
-      "nb_batiments": 19558,
-      "nb_logements": 102318
+      "nb_batiments": 142,
+      "nb_logements": 5870
     },
     "taux_enrr": 81,
     "nb_reseaux": 19,
@@ -4239,49 +3777,43 @@
       "batiments": {
         "collectif_gaz": 125,
         "individuel_gaz": 360,
-        "collectif_fioul": 3,
-        "individuel_fioul": 20
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 9972,
         "individuel_gaz": 7142,
-        "collectif_fioul": 126,
-        "individuel_fioul": 27
+        "collectif_fioul": 126
       },
-      "nb_batiments": 4341,
-      "nb_logements": 78013
+      "nb_batiments": 128,
+      "nb_logements": 10098
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 153,
         "individuel_gaz": 713,
-        "collectif_fioul": 4,
-        "individuel_fioul": 50
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 10860,
         "individuel_gaz": 10177,
-        "collectif_fioul": 126,
-        "individuel_fioul": 61
+        "collectif_fioul": 126
       },
-      "nb_batiments": 7949,
-      "nb_logements": 92673
+      "nb_batiments": 157,
+      "nb_logements": 10986
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 184,
         "individuel_gaz": 1039,
-        "collectif_fioul": 4,
-        "individuel_fioul": 80
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 12242,
         "individuel_gaz": 11240,
-        "collectif_fioul": 126,
-        "individuel_fioul": 96
+        "collectif_fioul": 126
       },
-      "nb_batiments": 11454,
-      "nb_logements": 105035
+      "nb_batiments": 188,
+      "nb_logements": 12368
     },
     "taux_enrr": 74.47,
     "nb_reseaux": 20,
@@ -4294,49 +3826,43 @@
       "batiments": {
         "collectif_gaz": 163,
         "individuel_gaz": 513,
-        "collectif_fioul": 28,
-        "individuel_fioul": 35
+        "collectif_fioul": 28
       },
       "logements": {
         "collectif_gaz": 7661,
         "individuel_gaz": 5105,
-        "collectif_fioul": 413,
-        "individuel_fioul": 43
+        "collectif_fioul": 413
       },
-      "nb_batiments": 4964,
-      "nb_logements": 80927
+      "nb_batiments": 191,
+      "nb_logements": 8074
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 251,
         "individuel_gaz": 968,
-        "collectif_fioul": 45,
-        "individuel_fioul": 75
+        "collectif_fioul": 45
       },
       "logements": {
         "collectif_gaz": 10110,
         "individuel_gaz": 7297,
-        "collectif_fioul": 641,
-        "individuel_fioul": 164
+        "collectif_fioul": 641
       },
-      "nb_batiments": 8804,
-      "nb_logements": 102748
+      "nb_batiments": 296,
+      "nb_logements": 10751
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 321,
         "individuel_gaz": 1428,
-        "collectif_fioul": 60,
-        "individuel_fioul": 127
+        "collectif_fioul": 60
       },
       "logements": {
         "collectif_gaz": 12135,
         "individuel_gaz": 10400,
-        "collectif_fioul": 767,
-        "individuel_fioul": 229
+        "collectif_fioul": 767
       },
-      "nb_batiments": 12873,
-      "nb_logements": 121604
+      "nb_batiments": 381,
+      "nb_logements": 12902
     },
     "taux_enrr": 47.83,
     "nb_reseaux": 15,
@@ -4349,49 +3875,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 3,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 38,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 77,
-      "nb_logements": 342
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 27,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 85,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
-      "nb_batiments": 256,
-      "nb_logements": 570
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 1,
         "individuel_gaz": 49,
-        "collectif_fioul": 0,
-        "individuel_fioul": 4
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 23,
         "individuel_gaz": 121,
-        "collectif_fioul": 0,
-        "individuel_fioul": 3
+        "collectif_fioul": 0
       },
-      "nb_batiments": 458,
-      "nb_logements": 897
+      "nb_batiments": 1,
+      "nb_logements": 23
     },
     "taux_enrr": 29.08,
     "nb_reseaux": 4,
@@ -4404,49 +3924,43 @@
       "batiments": {
         "collectif_gaz": 47,
         "individuel_gaz": 406,
-        "collectif_fioul": 8,
-        "individuel_fioul": 27
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 2085,
         "individuel_gaz": 3495,
-        "collectif_fioul": 249,
-        "individuel_fioul": 103
+        "collectif_fioul": 249
       },
-      "nb_batiments": 3392,
-      "nb_logements": 28829
+      "nb_batiments": 55,
+      "nb_logements": 2334
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 66,
         "individuel_gaz": 779,
-        "collectif_fioul": 12,
-        "individuel_fioul": 59
+        "collectif_fioul": 12
       },
       "logements": {
         "collectif_gaz": 2532,
         "individuel_gaz": 5265,
-        "collectif_fioul": 279,
-        "individuel_fioul": 150
+        "collectif_fioul": 279
       },
-      "nb_batiments": 6267,
-      "nb_logements": 37863
+      "nb_batiments": 78,
+      "nb_logements": 2811
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 89,
         "individuel_gaz": 1210,
-        "collectif_fioul": 17,
-        "individuel_fioul": 106
+        "collectif_fioul": 17
       },
       "logements": {
         "collectif_gaz": 2756,
         "individuel_gaz": 6862,
-        "collectif_fioul": 320,
-        "individuel_fioul": 224
+        "collectif_fioul": 320
       },
-      "nb_batiments": 9585,
-      "nb_logements": 45574
+      "nb_batiments": 106,
+      "nb_logements": 3076
     },
     "taux_enrr": 61.86,
     "nb_reseaux": 4,
@@ -4459,49 +3973,43 @@
       "batiments": {
         "collectif_gaz": 4,
         "individuel_gaz": 85,
-        "collectif_fioul": 1,
-        "individuel_fioul": 13
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 118,
         "individuel_gaz": 174,
-        "collectif_fioul": 27,
-        "individuel_fioul": 15
+        "collectif_fioul": 27
       },
-      "nb_batiments": 674,
-      "nb_logements": 1725
+      "nb_batiments": 5,
+      "nb_logements": 145
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 5,
         "individuel_gaz": 190,
-        "collectif_fioul": 2,
-        "individuel_fioul": 33
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 133,
         "individuel_gaz": 285,
-        "collectif_fioul": 27,
-        "individuel_fioul": 34
+        "collectif_fioul": 27
       },
-      "nb_batiments": 1449,
-      "nb_logements": 2617
+      "nb_batiments": 7,
+      "nb_logements": 160
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 5,
         "individuel_gaz": 287,
-        "collectif_fioul": 2,
-        "individuel_fioul": 48
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 133,
         "individuel_gaz": 437,
-        "collectif_fioul": 27,
-        "individuel_fioul": 57
+        "collectif_fioul": 27
       },
-      "nb_batiments": 2209,
-      "nb_logements": 3476
+      "nb_batiments": 7,
+      "nb_logements": 160
     },
     "taux_enrr": 68.66,
     "nb_reseaux": 8,
@@ -4514,49 +4022,43 @@
       "batiments": {
         "collectif_gaz": 4,
         "individuel_gaz": 83,
-        "collectif_fioul": 0,
-        "individuel_fioul": 3
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 251,
         "individuel_gaz": 570,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
-      "nb_batiments": 697,
-      "nb_logements": 3355
+      "nb_batiments": 4,
+      "nb_logements": 251
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 8,
         "individuel_gaz": 173,
-        "collectif_fioul": 0,
-        "individuel_fioul": 3
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 363,
         "individuel_gaz": 883,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1354,
-      "nb_logements": 5234
+      "nb_batiments": 8,
+      "nb_logements": 363
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 9,
         "individuel_gaz": 242,
-        "collectif_fioul": 0,
-        "individuel_fioul": 9
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 381,
         "individuel_gaz": 1120,
-        "collectif_fioul": 0,
-        "individuel_fioul": 9
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1963,
-      "nb_logements": 6435
+      "nb_batiments": 9,
+      "nb_logements": 381
     },
     "taux_enrr": 91.17,
     "nb_reseaux": 3,
@@ -4569,49 +4071,43 @@
       "batiments": {
         "collectif_gaz": 1,
         "individuel_gaz": 6,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 42,
         "individuel_gaz": 44,
-        "collectif_fioul": 0,
-        "individuel_fioul": 2
+        "collectif_fioul": 0
       },
-      "nb_batiments": 245,
-      "nb_logements": 3127
+      "nb_batiments": 1,
+      "nb_logements": 42
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 1,
         "individuel_gaz": 21,
-        "collectif_fioul": 0,
-        "individuel_fioul": 5
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 42,
         "individuel_gaz": 389,
-        "collectif_fioul": 0,
-        "individuel_fioul": 11
+        "collectif_fioul": 0
       },
-      "nb_batiments": 461,
-      "nb_logements": 4500
+      "nb_batiments": 1,
+      "nb_logements": 42
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 35,
-        "collectif_fioul": 0,
-        "individuel_fioul": 9
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 89,
         "individuel_gaz": 574,
-        "collectif_fioul": 0,
-        "individuel_fioul": 15
+        "collectif_fioul": 0
       },
-      "nb_batiments": 755,
-      "nb_logements": 5956
+      "nb_batiments": 2,
+      "nb_logements": 89
     },
     "taux_enrr": 89.75,
     "nb_reseaux": 5,
@@ -4624,49 +4120,43 @@
       "batiments": {
         "collectif_gaz": 19,
         "individuel_gaz": 29,
-        "collectif_fioul": 3,
-        "individuel_fioul": 8
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 1122,
         "individuel_gaz": 329,
-        "collectif_fioul": 90,
-        "individuel_fioul": 8
+        "collectif_fioul": 90
       },
-      "nb_batiments": 329,
-      "nb_logements": 3225
+      "nb_batiments": 22,
+      "nb_logements": 1212
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 21,
         "individuel_gaz": 69,
-        "collectif_fioul": 4,
-        "individuel_fioul": 13
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 1151,
         "individuel_gaz": 466,
-        "collectif_fioul": 96,
-        "individuel_fioul": 14
+        "collectif_fioul": 96
       },
-      "nb_batiments": 650,
-      "nb_logements": 4568
+      "nb_batiments": 25,
+      "nb_logements": 1247
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 24,
         "individuel_gaz": 108,
-        "collectif_fioul": 5,
-        "individuel_fioul": 24
+        "collectif_fioul": 5
       },
       "logements": {
         "collectif_gaz": 1406,
         "individuel_gaz": 868,
-        "collectif_fioul": 102,
-        "individuel_fioul": 25
+        "collectif_fioul": 102
       },
-      "nb_batiments": 1118,
-      "nb_logements": 5948
+      "nb_batiments": 29,
+      "nb_logements": 1508
     },
     "taux_enrr": 79.65,
     "nb_reseaux": 3,
@@ -4679,49 +4169,43 @@
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 8,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 27,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 112,
-      "nb_logements": 151
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 13,
-        "collectif_fioul": 0,
-        "individuel_fioul": 7
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 31,
-        "collectif_fioul": 0,
-        "individuel_fioul": 7
+        "collectif_fioul": 0
       },
-      "nb_batiments": 219,
-      "nb_logements": 276
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 0,
         "individuel_gaz": 20,
-        "collectif_fioul": 0,
-        "individuel_fioul": 15
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 0,
         "individuel_gaz": 40,
-        "collectif_fioul": 0,
-        "individuel_fioul": 19
+        "collectif_fioul": 0
       },
-      "nb_batiments": 357,
-      "nb_logements": 423
+      "nb_batiments": 0,
+      "nb_logements": 0
     },
     "taux_enrr": 41.1,
     "nb_reseaux": 3,
@@ -4734,49 +4218,43 @@
       "batiments": {
         "collectif_gaz": 9,
         "individuel_gaz": 91,
-        "collectif_fioul": 0,
-        "individuel_fioul": 18
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 266,
         "individuel_gaz": 965,
-        "collectif_fioul": 0,
-        "individuel_fioul": 37
+        "collectif_fioul": 0
       },
-      "nb_batiments": 1427,
-      "nb_logements": 14418
+      "nb_batiments": 9,
+      "nb_logements": 266
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 10,
         "individuel_gaz": 184,
-        "collectif_fioul": 0,
-        "individuel_fioul": 28
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 268,
         "individuel_gaz": 1385,
-        "collectif_fioul": 0,
-        "individuel_fioul": 48
+        "collectif_fioul": 0
       },
-      "nb_batiments": 2749,
-      "nb_logements": 17791
+      "nb_batiments": 10,
+      "nb_logements": 268
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 12,
         "individuel_gaz": 269,
-        "collectif_fioul": 0,
-        "individuel_fioul": 41
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 274,
         "individuel_gaz": 1563,
-        "collectif_fioul": 0,
-        "individuel_fioul": 65
+        "collectif_fioul": 0
       },
-      "nb_batiments": 4174,
-      "nb_logements": 20211
+      "nb_batiments": 12,
+      "nb_logements": 274
     },
     "taux_enrr": 56.52,
     "nb_reseaux": 7,
@@ -4789,49 +4267,43 @@
       "batiments": {
         "collectif_gaz": 35,
         "individuel_gaz": 181,
-        "collectif_fioul": 5,
-        "individuel_fioul": 44
+        "collectif_fioul": 5
       },
       "logements": {
         "collectif_gaz": 1687,
         "individuel_gaz": 1634,
-        "collectif_fioul": 38,
-        "individuel_fioul": 49
+        "collectif_fioul": 38
       },
-      "nb_batiments": 1613,
-      "nb_logements": 19019
+      "nb_batiments": 40,
+      "nb_logements": 1725
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 56,
         "individuel_gaz": 410,
-        "collectif_fioul": 6,
-        "individuel_fioul": 98
+        "collectif_fioul": 6
       },
       "logements": {
         "collectif_gaz": 1934,
         "individuel_gaz": 2740,
-        "collectif_fioul": 41,
-        "individuel_fioul": 121
+        "collectif_fioul": 41
       },
-      "nb_batiments": 3281,
-      "nb_logements": 24131
+      "nb_batiments": 62,
+      "nb_logements": 1975
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 88,
         "individuel_gaz": 658,
-        "collectif_fioul": 6,
-        "individuel_fioul": 141
+        "collectif_fioul": 6
       },
       "logements": {
         "collectif_gaz": 2490,
         "individuel_gaz": 3811,
-        "collectif_fioul": 41,
-        "individuel_fioul": 167
+        "collectif_fioul": 41
       },
-      "nb_batiments": 5015,
-      "nb_logements": 28646
+      "nb_batiments": 94,
+      "nb_logements": 2531
     },
     "taux_enrr": 78.32,
     "nb_reseaux": 6,
@@ -4844,49 +4316,43 @@
       "batiments": {
         "collectif_gaz": 25,
         "individuel_gaz": 339,
-        "collectif_fioul": 2,
-        "individuel_fioul": 26
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 417,
         "individuel_gaz": 1559,
-        "collectif_fioul": 5,
-        "individuel_fioul": 45
+        "collectif_fioul": 5
       },
-      "nb_batiments": 2693,
-      "nb_logements": 10768
+      "nb_batiments": 27,
+      "nb_logements": 422
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 36,
         "individuel_gaz": 581,
-        "collectif_fioul": 2,
-        "individuel_fioul": 38
+        "collectif_fioul": 2
       },
       "logements": {
         "collectif_gaz": 486,
         "individuel_gaz": 2486,
-        "collectif_fioul": 5,
-        "individuel_fioul": 63
+        "collectif_fioul": 5
       },
-      "nb_batiments": 4459,
-      "nb_logements": 14999
+      "nb_batiments": 38,
+      "nb_logements": 491
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 47,
         "individuel_gaz": 744,
-        "collectif_fioul": 3,
-        "individuel_fioul": 60
+        "collectif_fioul": 3
       },
       "logements": {
         "collectif_gaz": 558,
         "individuel_gaz": 2962,
-        "collectif_fioul": 9,
-        "individuel_fioul": 86
+        "collectif_fioul": 9
       },
-      "nb_batiments": 5837,
-      "nb_logements": 17575
+      "nb_batiments": 50,
+      "nb_logements": 567
     },
     "taux_enrr": 81.08,
     "nb_reseaux": 17,
@@ -4899,49 +4365,43 @@
       "batiments": {
         "collectif_gaz": 4,
         "individuel_gaz": 68,
-        "collectif_fioul": 0,
-        "individuel_fioul": 9
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 205,
         "individuel_gaz": 975,
-        "collectif_fioul": 0,
-        "individuel_fioul": 11
+        "collectif_fioul": 0
       },
-      "nb_batiments": 766,
-      "nb_logements": 6995
+      "nb_batiments": 4,
+      "nb_logements": 205
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 7,
         "individuel_gaz": 157,
-        "collectif_fioul": 1,
-        "individuel_fioul": 16
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 295,
         "individuel_gaz": 1281,
-        "collectif_fioul": 5,
-        "individuel_fioul": 18
+        "collectif_fioul": 5
       },
-      "nb_batiments": 1511,
-      "nb_logements": 8664
+      "nb_batiments": 8,
+      "nb_logements": 300
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 11,
         "individuel_gaz": 248,
-        "collectif_fioul": 1,
-        "individuel_fioul": 23
+        "collectif_fioul": 1
       },
       "logements": {
         "collectif_gaz": 445,
         "individuel_gaz": 1650,
-        "collectif_fioul": 5,
-        "individuel_fioul": 25
+        "collectif_fioul": 5
       },
-      "nb_batiments": 2269,
-      "nb_logements": 9973
+      "nb_batiments": 12,
+      "nb_logements": 450
     },
     "taux_enrr": 84.42,
     "nb_reseaux": 3,
@@ -4954,49 +4414,43 @@
       "batiments": {
         "collectif_gaz": 1,
         "individuel_gaz": 1,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 72,
         "individuel_gaz": 1,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 73,
-      "nb_logements": 743
+      "nb_batiments": 1,
+      "nb_logements": 72
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 4,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 74,
         "individuel_gaz": 19,
-        "collectif_fioul": 0,
-        "individuel_fioul": 0
+        "collectif_fioul": 0
       },
-      "nb_batiments": 106,
-      "nb_logements": 840
+      "nb_batiments": 2,
+      "nb_logements": 74
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 2,
         "individuel_gaz": 12,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
       "logements": {
         "collectif_gaz": 74,
         "individuel_gaz": 34,
-        "collectif_fioul": 0,
-        "individuel_fioul": 1
+        "collectif_fioul": 0
       },
-      "nb_batiments": 175,
-      "nb_logements": 916
+      "nb_batiments": 2,
+      "nb_logements": 74
     },
     "taux_enrr": 26.02,
     "nb_reseaux": 1,
@@ -5009,49 +4463,43 @@
       "batiments": {
         "collectif_gaz": 113,
         "individuel_gaz": 211,
-        "collectif_fioul": 4,
-        "individuel_fioul": 18
+        "collectif_fioul": 4
       },
       "logements": {
         "collectif_gaz": 9811,
         "individuel_gaz": 4396,
-        "collectif_fioul": 355,
-        "individuel_fioul": 19
+        "collectif_fioul": 355
       },
-      "nb_batiments": 3512,
-      "nb_logements": 120356
+      "nb_batiments": 117,
+      "nb_logements": 10166
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 150,
         "individuel_gaz": 463,
-        "collectif_fioul": 6,
-        "individuel_fioul": 36
+        "collectif_fioul": 6
       },
       "logements": {
         "collectif_gaz": 11936,
         "individuel_gaz": 5550,
-        "collectif_fioul": 376,
-        "individuel_fioul": 36
+        "collectif_fioul": 376
       },
-      "nb_batiments": 5924,
-      "nb_logements": 133693
+      "nb_batiments": 156,
+      "nb_logements": 12312
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 175,
         "individuel_gaz": 790,
-        "collectif_fioul": 8,
-        "individuel_fioul": 66
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 12930,
         "individuel_gaz": 6602,
-        "collectif_fioul": 395,
-        "individuel_fioul": 72
+        "collectif_fioul": 395
       },
-      "nb_batiments": 8807,
-      "nb_logements": 148099
+      "nb_batiments": 183,
+      "nb_logements": 13325
     },
     "taux_enrr": 67.18,
     "nb_reseaux": 18,
@@ -5064,49 +4512,43 @@
       "batiments": {
         "collectif_gaz": 619,
         "individuel_gaz": 697,
-        "collectif_fioul": 74,
-        "individuel_fioul": 30
+        "collectif_fioul": 74
       },
       "logements": {
         "collectif_gaz": 37651,
         "individuel_gaz": 13415,
-        "collectif_fioul": 2014,
-        "individuel_fioul": 234
+        "collectif_fioul": 2014
       },
-      "nb_batiments": 8149,
-      "nb_logements": 225064
+      "nb_batiments": 693,
+      "nb_logements": 39665
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 832,
         "individuel_gaz": 1158,
-        "collectif_fioul": 98,
-        "individuel_fioul": 53
+        "collectif_fioul": 98
       },
       "logements": {
         "collectif_gaz": 46923,
         "individuel_gaz": 18399,
-        "collectif_fioul": 2544,
-        "individuel_fioul": 282
+        "collectif_fioul": 2544
       },
-      "nb_batiments": 12736,
-      "nb_logements": 278726
+      "nb_batiments": 930,
+      "nb_logements": 49467
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 1005,
         "individuel_gaz": 1578,
-        "collectif_fioul": 126,
-        "individuel_fioul": 85
+        "collectif_fioul": 126
       },
       "logements": {
         "collectif_gaz": 54490,
         "individuel_gaz": 23629,
-        "collectif_fioul": 3059,
-        "individuel_fioul": 327
+        "collectif_fioul": 3059
       },
-      "nb_batiments": 16980,
-      "nb_logements": 327711
+      "nb_batiments": 1131,
+      "nb_logements": 57549
     },
     "taux_enrr": 44.31,
     "nb_reseaux": 21,
@@ -5119,49 +4561,43 @@
       "batiments": {
         "collectif_gaz": 286,
         "individuel_gaz": 825,
-        "collectif_fioul": 13,
-        "individuel_fioul": 53
+        "collectif_fioul": 13
       },
       "logements": {
         "collectif_gaz": 20426,
         "individuel_gaz": 13120,
-        "collectif_fioul": 673,
-        "individuel_fioul": 424
+        "collectif_fioul": 673
       },
-      "nb_batiments": 9338,
-      "nb_logements": 176976
+      "nb_batiments": 299,
+      "nb_logements": 21099
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 422,
         "individuel_gaz": 1632,
-        "collectif_fioul": 26,
-        "individuel_fioul": 129
+        "collectif_fioul": 26
       },
       "logements": {
         "collectif_gaz": 27180,
         "individuel_gaz": 19435,
-        "collectif_fioul": 1109,
-        "individuel_fioul": 527
+        "collectif_fioul": 1109
       },
-      "nb_batiments": 17176,
-      "nb_logements": 225245
+      "nb_batiments": 448,
+      "nb_logements": 28289
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 535,
         "individuel_gaz": 2380,
-        "collectif_fioul": 37,
-        "individuel_fioul": 227
+        "collectif_fioul": 37
       },
       "logements": {
         "collectif_gaz": 31317,
         "individuel_gaz": 23703,
-        "collectif_fioul": 1327,
-        "individuel_fioul": 650
+        "collectif_fioul": 1327
       },
-      "nb_batiments": 24999,
-      "nb_logements": 259018
+      "nb_batiments": 572,
+      "nb_logements": 32644
     },
     "taux_enrr": 56.23,
     "nb_reseaux": 21,
@@ -5174,49 +4610,43 @@
       "batiments": {
         "collectif_gaz": 323,
         "individuel_gaz": 908,
-        "collectif_fioul": 50,
-        "individuel_fioul": 92
+        "collectif_fioul": 50
       },
       "logements": {
         "collectif_gaz": 23787,
         "individuel_gaz": 12796,
-        "collectif_fioul": 1698,
-        "individuel_fioul": 281
+        "collectif_fioul": 1698
       },
-      "nb_batiments": 11913,
-      "nb_logements": 215548
+      "nb_batiments": 373,
+      "nb_logements": 25485
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 487,
         "individuel_gaz": 1671,
-        "collectif_fioul": 79,
-        "individuel_fioul": 208
+        "collectif_fioul": 79
       },
       "logements": {
         "collectif_gaz": 29916,
         "individuel_gaz": 17035,
-        "collectif_fioul": 2311,
-        "individuel_fioul": 445
+        "collectif_fioul": 2311
       },
-      "nb_batiments": 20972,
-      "nb_logements": 263556
+      "nb_batiments": 566,
+      "nb_logements": 32227
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 626,
         "individuel_gaz": 2400,
-        "collectif_fioul": 107,
-        "individuel_fioul": 303
+        "collectif_fioul": 107
       },
       "logements": {
         "collectif_gaz": 35874,
         "individuel_gaz": 20982,
-        "collectif_fioul": 2799,
-        "individuel_fioul": 564
+        "collectif_fioul": 2799
       },
-      "nb_batiments": 29093,
-      "nb_logements": 297702
+      "nb_batiments": 733,
+      "nb_logements": 38673
     },
     "taux_enrr": 75.59,
     "nb_reseaux": 22,
@@ -5229,49 +4659,43 @@
       "batiments": {
         "collectif_gaz": 142,
         "individuel_gaz": 271,
-        "collectif_fioul": 5,
-        "individuel_fioul": 41
+        "collectif_fioul": 5
       },
       "logements": {
         "collectif_gaz": 13864,
         "individuel_gaz": 4536,
-        "collectif_fioul": 104,
-        "individuel_fioul": 51
+        "collectif_fioul": 104
       },
-      "nb_batiments": 3800,
-      "nb_logements": 92019
+      "nb_batiments": 147,
+      "nb_logements": 13968
     },
     "100m": {
       "batiments": {
         "collectif_gaz": 164,
         "individuel_gaz": 614,
-        "collectif_fioul": 8,
-        "individuel_fioul": 80
+        "collectif_fioul": 8
       },
       "logements": {
         "collectif_gaz": 15352,
         "individuel_gaz": 7441,
-        "collectif_fioul": 130,
-        "individuel_fioul": 100
+        "collectif_fioul": 130
       },
-      "nb_batiments": 7164,
-      "nb_logements": 110652
+      "nb_batiments": 172,
+      "nb_logements": 15482
     },
     "150m": {
       "batiments": {
         "collectif_gaz": 196,
         "individuel_gaz": 940,
-        "collectif_fioul": 11,
-        "individuel_fioul": 134
+        "collectif_fioul": 11
       },
       "logements": {
         "collectif_gaz": 16738,
         "individuel_gaz": 8881,
-        "collectif_fioul": 178,
-        "individuel_fioul": 159
+        "collectif_fioul": 178
       },
-      "nb_batiments": 10660,
-      "nb_logements": 124439
+      "nb_batiments": 207,
+      "nb_logements": 16916
     },
     "taux_enrr": 50.52,
     "nb_reseaux": 15,
