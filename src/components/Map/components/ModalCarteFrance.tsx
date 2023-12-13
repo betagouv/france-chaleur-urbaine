@@ -4,7 +4,7 @@ import {
   ModalClose,
   ModalContent,
 } from '@dataesr/react-dsfr';
-import CarteFrance, { DonneeParDepartement, Mode } from './CarteFrance';
+import CarteFrance, { DonneeParTerritoire, ModeCarte } from './CarteFrance';
 import { useEffect, useMemo, useState } from 'react';
 import {
   BigBlueNumber,
@@ -29,8 +29,6 @@ import {
   SpinnerWrapper,
   StyledModal,
 } from './ModalCarteFrance.style';
-import departements from '@etalab/decoupage-administratif/data/departements.json';
-import regions from '@etalab/decoupage-administratif/data/regions.json';
 import { Oval } from 'react-loader-spinner';
 import { prettyFormatNumber } from '@utils/strings';
 
@@ -40,72 +38,101 @@ const nbBins = 5;
 
 export type DistanceReseau = '50m' | '100m' | '150m';
 export type BatimentLogement = 'batiments' | 'logements';
+export type Territoire = 'national' | 'regional' | 'departemental';
 
 type Props = {
   isOpen: boolean;
   onClose: (...args: any[]) => any;
 };
 function ModalCarteFrance(props: Props) {
-  const [modeCarte, setModeCarte] = useState<Mode>('departemental');
+  const [territoire, setTerritoire] = useState<Territoire>('departemental');
   const [distanceReseau, setDistanceReseau] = useState<DistanceReseau>('100m');
   const [modeBatimentLogement, setModeBatimentLogement] =
     useState<BatimentLogement>('logements');
-  const [statsData, setStatsData] = useState<BDNBStatsParDepartement[] | null>(
-    null
-  );
-  const [selectedData, setSelectedData] =
-    useState<BDNBStatsParDepartement | null>(null);
+  const [statsData, setStatsData] = useState<BDNBStats | null>(null);
+  const [selectedData, setSelectedData] = useState<
+    BDNBStatsNational | BDNBStatsParRegion | BDNBStatsParDepartement | null
+  >(null);
+
+  useEffect(() => {
+    if (statsData !== null && territoire === 'national') {
+      setSelectedData(statsData.national);
+    }
+  }, [statsData, territoire]);
 
   useEffect(() => {
     async function fetchStats() {
-      const res = await fetch('/data/stats-bdnb-2022.json');
-      setStatsData((await res.json()) as BDNBStatsParDepartement[]);
+      const [statsNational, statsParRegion, statsParDepartement] =
+        await Promise.all([
+          (async () => {
+            const res = await fetch('/data/stats-bdnb-2022-national.json');
+            return (await res.json()) as BDNBStatsNational;
+          })(),
+          (async () => {
+            const res = await fetch('/data/stats-bdnb-2022-regions.json');
+            return (await res.json()) as BDNBStatsParRegion[];
+          })(),
+          (async () => {
+            const res = await fetch('/data/stats-bdnb-2022-departements.json');
+            return (await res.json()) as BDNBStatsParDepartement[];
+          })(),
+        ]);
+      setStatsData({
+        national: statsNational,
+        regional: statsParRegion,
+        departemental: statsParDepartement,
+      });
     }
     if (props.isOpen && !statsData) {
       fetchStats();
     }
   }, [props.isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { dataBins, donneesParDepartement } = useMemo(() => {
+  const { modeCarte, territoireId } = getTerritoireToMapConfig(territoire);
+
+  const { dataBins, donneesParTerritoire } = useMemo(() => {
     if (!statsData) {
       return {};
     }
+    const source = statsData[modeCarte];
+
     const dataBins = calculateBins(
-      statsData.map(
-        (starsParDepartement) =>
-          starsParDepartement?.[distanceReseau]?.[
-            `nb_${modeBatimentLogement}`
-          ] as number
+      source.map(
+        (statsParTerritoire) =>
+          statsParTerritoire?.[distanceReseau]?.[`nb_${modeBatimentLogement}`]
       ),
       nbBins,
       minFillColor,
       maxFillColor
     ).reverse();
 
-    const donneesParDepartement = statsData.reduce(
-      (acc, dataParDepartement) => {
-        const value =
-          dataParDepartement?.[distanceReseau]?.[`nb_${modeBatimentLogement}`];
-        return {
-          ...acc,
-          [dataParDepartement.departement]: {
-            value,
-            color: (
-              dataBins.find(
-                (bin) => bin.minValue <= value && value <= bin.maxValue
-              ) as Bin
-            )?.color,
-          },
-        };
-      },
-      {} as DonneeParDepartement
-    );
+    const donneesParTerritoire = source.reduce((acc, donneesParTerritoire) => {
+      const value =
+        donneesParTerritoire?.[distanceReseau]?.[`nb_${modeBatimentLogement}`];
+      return {
+        ...acc,
+        [donneesParTerritoire[territoireId]]: {
+          value,
+          color: (
+            dataBins.find(
+              (bin) => bin.minValue <= value && value <= bin.maxValue
+            ) as Bin
+          )?.color,
+        },
+      };
+    }, {} as DonneeParTerritoire);
 
     return {
       dataBins,
-      donneesParDepartement,
+      donneesParTerritoire,
     };
-  }, [statsData, distanceReseau, modeBatimentLogement]);
+  }, [
+    statsData,
+    modeCarte,
+    territoireId,
+    distanceReseau,
+    modeBatimentLogement,
+  ]);
 
   return (
     <StyledModal
@@ -116,28 +143,55 @@ function ModalCarteFrance(props: Props) {
     >
       <ModalClose>Fermer</ModalClose>
       <ModalContent>
-        {!statsData || !donneesParDepartement ? (
+        {!statsData || !donneesParTerritoire ? (
           <SpinnerWrapper>
-            <Oval height={40} width={40} />
+            <Oval height={60} width={60} />
           </SpinnerWrapper>
         ) : (
           <ModalContentWrapper>
             <ButtonGroup size="sm" isInlineFrom="xs">
               <Button
-                secondary={modeCarte !== 'national'}
-                onClick={() => setModeCarte('national')}
+                secondary={territoire !== 'national'}
+                onClick={() => {
+                  setTerritoire('national');
+                  setSelectedData(statsData.national);
+                }}
               >
                 National
               </Button>
               <Button
-                secondary={modeCarte !== 'regional'}
-                onClick={() => setModeCarte('regional')}
+                secondary={territoire !== 'regional'}
+                onClick={() => {
+                  setTerritoire('regional');
+
+                  // sélectionne la région si on vient d'un département
+                  if (territoire === 'departemental' && selectedData) {
+                    setSelectedData(
+                      statsData.regional.find(
+                        (r) =>
+                          r.region_code ===
+                          (selectedData as BDNBStatsParDepartement).region_code
+                      )!
+                    );
+                  }
+                  // réinitialise la sélection si on vient de national
+                  if (territoire === 'national') {
+                    setSelectedData(null);
+                  }
+                }}
               >
                 Régional
               </Button>
               <Button
-                secondary={modeCarte !== 'departemental'}
-                onClick={() => setModeCarte('departemental')}
+                secondary={territoire !== 'departemental'}
+                onClick={() => {
+                  setTerritoire('departemental');
+
+                  // réinitialise la sélection si on vient de national ou régional
+                  if (territoire !== 'departemental') {
+                    setSelectedData(null);
+                  }
+                }}
               >
                 Départemental
               </Button>
@@ -146,14 +200,11 @@ function ModalCarteFrance(props: Props) {
             <LayoutTwoColumns>
               <FirstColumn>
                 <BigBlueText>
-                  {(modeCarte === 'departemental'
-                    ? departements.find(
-                        (d) => d.code === selectedData?.departement
-                      )?.nom
-                    : modeCarte === 'regional'
-                    ? regions.find((d) => d.code === selectedData?.departement) // FIXME récupérer les données par région également
-                        ?.nom
-                    : 'France') ?? `Cliquer sur la carte`}
+                  {(territoire === 'departemental'
+                    ? selectedData?.departement_nom
+                    : territoire === 'regional'
+                    ? selectedData?.region_nom
+                    : 'France') ?? 'Cliquer sur la carte'}
                 </BigBlueText>
                 <BlackNumbersLine>
                   <div>
@@ -271,14 +322,19 @@ function ModalCarteFrance(props: Props) {
               <SecondColumn>
                 <CarteFrance
                   mode={modeCarte}
-                  donneesParDepartement={donneesParDepartement}
-                  onTerritoireSelect={(departementOuRegion) =>
+                  donneesParTerritoire={donneesParTerritoire}
+                  onTerritoireSelect={(selectedTerritoireId) => {
+                    // passe automatiquement en régional quand on sélectionne une région
+                    if (territoire === 'national') {
+                      setTerritoire('regional');
+                    }
                     setSelectedData(
-                      statsData.find(
-                        (r) => r.departement === departementOuRegion
+                      statsData[modeCarte].find(
+                        (territoire) =>
+                          territoire[territoireId] === selectedTerritoireId
                       )!
-                    )
-                  }
+                    );
+                  }}
                 />
                 <LegendSourceLine>
                   <div>
@@ -315,8 +371,27 @@ function ModalCarteFrance(props: Props) {
 
 export default ModalCarteFrance;
 
-type BDNBStatsParDepartement = {
-  departement: string;
+type BDNBStats = {
+  national: BDNBStatsNational;
+  regional: BDNBStatsParRegion[];
+  departemental: BDNBStatsParDepartement[];
+};
+
+type BDNBStatsNational = BDNBStatsParTerritoire;
+
+type BDNBStatsParRegion = BDNBStatsParTerritoire & {
+  region_code: string;
+  region_nom: string;
+};
+
+type BDNBStatsParDepartement = BDNBStatsParTerritoire & {
+  departement_code: string;
+  departement_nom: string;
+  region_code: string;
+  region_nom: string;
+};
+
+type BDNBStatsParTerritoire = {
   nb_reseaux: number;
   taux_enrr: number | null;
   '50m': BDNBStatsParDistanceRDC;
@@ -349,7 +424,9 @@ export function calculateBins(
   minColor: string,
   maxColor: string
 ): Bin[] {
-  const sortedData = [...data].filter((v) => !!v).sort((a, b) => a - b);
+  const sortedData = [...data]
+    .filter((v) => v !== undefined && v !== null)
+    .sort((a, b) => a - b);
   const binSize = Math.ceil(sortedData.length / numberOfBins);
 
   const bins = Array.from({ length: numberOfBins }, (_, i) => {
@@ -404,5 +481,24 @@ function getBatimentLogementLabel(type: BatimentLogement): string {
       return 'bâtiments';
     case 'logements':
       return 'logements';
+  }
+}
+
+function getTerritoireToMapConfig(territoire: Territoire): {
+  territoireId: string;
+  modeCarte: ModeCarte;
+} {
+  switch (territoire) {
+    case 'national':
+    case 'regional':
+      return {
+        modeCarte: 'regional',
+        territoireId: 'region_code',
+      };
+    case 'departemental':
+      return {
+        modeCarte: 'departemental',
+        territoireId: 'departement_code',
+      };
   }
 }

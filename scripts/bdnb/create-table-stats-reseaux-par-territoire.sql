@@ -100,3 +100,24 @@ INSERT INTO stats_reseaux_par_departement(code_departement, nb_reseaux, taux_enr
 ('93', 21, 56.23),
 ('94', 22, 75.59),
 ('95', 15, 50.52);
+
+
+create table stats_reseaux_par_region (code_region varchar not null, nb_reseaux int not null, taux_enrr float);
+
+create unique index stats_reseaux_par_region_code_region_idx on stats_reseaux_par_region(code_region);
+
+-- issu du fichier nb_reseaux_region.ods envoyé par Florence (données open data du SDES)
+INSERT INTO stats_reseaux_par_region(code_region, nb_reseaux, taux_enrr) VALUES
+('84', 199, 74.7),
+('27', 77, 72),
+('53', 40, 71.3),
+('24', 36, 76.5),
+('44', 135, 69.9),
+('32', 51, 63.5),
+('11', 135, 58),
+('28', 49, 76.1),
+('75', 84, 76.4),
+('76', 64, 80.3),
+('52', 35, 76),
+('93', 40, 69.8),
+('94', 1, 99.8);

@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { Mode } from './CarteFrance';
 
 type TooltipProps = {
   visible: boolean;
@@ -28,7 +27,7 @@ export const Tooltip = styled.div.attrs<TooltipProps>(({ visible, x, y }) => ({
   z-index: 2000;
 `;
 
-export const WrapperDiv = styled.div<{ mode: Mode }>`
+export const WrapperDiv = styled.div`
   width: 100%;
   position: relative;
   pointer-events: none;
@@ -46,25 +45,7 @@ export const WrapperDiv = styled.div<{ mode: Mode }>`
     cursor: pointer;
   }
 
-  ${({ mode }) => {
-    switch (mode) {
-      case 'departemental':
-        return `
-        g path:hover {
-          fill: #86eee0;
-        }
-
-        `;
-      case 'regional':
-        return `
-        g:hover path {
-          fill: #86cce0;
-        }
-        `;
-      case 'national':
-        return `
-        // FIXME
-      `;
-    }
-  }}
+  path:hover {
+    fill: #86eee0;
+  }
 `;

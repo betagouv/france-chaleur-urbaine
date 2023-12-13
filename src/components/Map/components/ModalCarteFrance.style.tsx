@@ -17,14 +17,11 @@ export const StyledModal = styled(Modal)`
     max-width: 100% !important;
     width: 100% !important;
   }
-
-  & .fr-modal__content {
-    margin-bottom: 16px !important; // 64px par défaut
-  }
 `;
 
 export const ModalContentWrapper = styled.div`
   margin-top: -2em;
+  margin-bottom: -48px; // diminue le padding de la modale
 `;
 
 export const LayoutTwoColumns = styled.div`
