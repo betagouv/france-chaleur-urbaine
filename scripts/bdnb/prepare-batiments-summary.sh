@@ -215,3 +215,93 @@ SELECT
 FROM \"Donnees_de_conso_et_pdl_gaz_nat_2022\" as batiment
 LEFT JOIN departements ON departements.code = substring(result_citycode, 0, 3)
 "
+
+# 4. Test d'existance qu'un batiment du parc immobilier de l'état est à proximité des réseaux de chaleur
+split_table_query parc_immobilier_etat_20211231_summary fid 1000 30000 "
+SELECT
+  fid,
+  LPAD(dept, 2, ''0'') as code_departement_insee,
+  departements.nom as departement,
+  departements.region,
+  type_de_chauffage,
+
+  EXISTS (
+    SELECT *
+    FROM reseaux_de_chaleur reseau
+    WHERE ST_DWithin(
+      batiment.geom,
+      reseau.geom,
+      50)
+    LIMIT 1
+  ) as is_close_rdc_50,
+
+  EXISTS (
+    SELECT *
+    FROM reseaux_de_chaleur reseau
+    WHERE ST_DWithin(
+      batiment.geom,
+      reseau.geom,
+      100)
+    LIMIT 1
+  ) as is_close_rdc_100,
+
+  EXISTS (
+    SELECT *
+    FROM reseaux_de_chaleur reseau
+    WHERE ST_DWithin(
+      batiment.geom,
+      reseau.geom,
+      150)
+    LIMIT 1
+  ) as is_close_rdc_150,
+
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_DWithin(
+        batiment.geom,
+        reseau.geom,
+        50
+      )
+      AND is_zone is false
+    LIMIT 1
+  ) as is_close_reseau_construction_50,
+
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_DWithin(
+        batiment.geom,
+        reseau.geom,
+        100
+      )
+      AND is_zone is false
+    LIMIT 1
+  ) as is_close_reseau_construction_100,
+
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_DWithin(
+        batiment.geom,
+        reseau.geom,
+        150
+      )
+      AND is_zone is false
+    LIMIT 1
+  ) as is_close_reseau_construction_150,
+
+  EXISTS (
+    SELECT *
+    FROM zones_et_reseaux_en_construction reseau
+    WHERE ST_Intersects(
+        batiment.geom,
+        reseau.geom
+      )
+      AND is_zone is true
+    LIMIT 1
+  ) as is_in_zone_construction
+
+FROM parc_immobilier_etat_20211231 as batiment
+LEFT JOIN departements ON departements.code = LPAD(batiment.dept, 2, ''0'')
+"
