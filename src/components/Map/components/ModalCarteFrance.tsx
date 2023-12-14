@@ -100,7 +100,7 @@ function ModalCarteFrance(props: Props) {
       maxFillColor
     ).reverse();
 
-    const donneesParTerritoire = mapSourceData.reduce(
+    const donneesParTerritoire = (mapSourceData as any[]).reduce(
       (acc, statsParTerritoire) => {
         const value =
           statsParTerritoire?.[distanceReseau]?.[`nb_${modeBatimentLogement}`];
