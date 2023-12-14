@@ -46,7 +46,7 @@ type Props = {
   onClose: (...args: any[]) => any;
 };
 function ModalCarteFrance(props: Props) {
-  const [territoire, setTerritoire] = useState<Territoire>('departemental');
+  const [territoire, setTerritoire] = useState<Territoire>('national');
   const [distanceReseau, setDistanceReseau] = useState<DistanceReseau>('100m');
   const [modeBatimentLogement, setModeBatimentLogement] =
     useState<BatimentLogement>('logements');
