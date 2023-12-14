@@ -29,7 +29,7 @@ Pour l'instant tout fonctionne par région. Une table par région.
 
 5. Lancer les calculs des tiles 
     - Pour les adresses : `export NODE_PATH=./ && npx ts-node --transpile-only scripts/fillTiles.ts energy 0 17 1`
-    - Pour les bâtiments : `export NODE_PATH=./ && npx ts-node --transpile-only scripts/fillTiles.ts buildings 0 17 1`
+    - Pour les bâtiments : `export NODE_OPTIONS="--max-old-space-size=8192" && NODE_PATH=./ && npx ts-node --transpile-only scripts/fillTiles.ts buildings 0 17 1`
 <br/><br/>
 
 ## Deuxième étape - en dev
