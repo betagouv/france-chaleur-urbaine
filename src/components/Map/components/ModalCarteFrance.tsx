@@ -214,7 +214,7 @@ function ModalCarteFrance(props: Props) {
                   <div>
                     <BlackNumber>
                       {selectedData?.taux_enrr
-                        ? `${prettyFormatNumber(selectedData?.taux_enrr)}%`
+                        ? `${prettyFormatNumber(selectedData?.taux_enrr, 1)}%`
                         : '--'}
                     </BlackNumber>
                     <BlackText>d'EnR&R en moyenne</BlackText>
