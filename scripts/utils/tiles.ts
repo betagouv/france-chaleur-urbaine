@@ -55,6 +55,7 @@ const dbTable = (
   return db(table);
 };
 
+const maxIndex = 23465952;
 const globalX13Min = 3900;
 const globalX13Max = 4400;
 const globalY13Min = 2700;
@@ -129,7 +130,7 @@ export const fillTiles = async (
         const region = regions[r].bnb_nom;
         console.log('Region', region);
         console.time(region);
-        for (let i = 1; i <= 23465952; i += 250000) {
+        for (let i = 1; i <= maxIndex; i += 250000) {
           console.info('Part', i);
           const tempGeoJSON = await tileInfo
             .extraWhere(
