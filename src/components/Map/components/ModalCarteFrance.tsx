@@ -4,7 +4,7 @@ import {
   ModalClose,
   ModalContent,
 } from '@dataesr/react-dsfr';
-import CarteFrance, { DonneeParTerritoire, ModeCarte } from './CarteFrance';
+import CarteFrance, { DonneeParTerritoire } from './CarteFrance';
 import { useEffect, useMemo, useState } from 'react';
 import {
   BigBlueNumber,
@@ -31,6 +31,7 @@ import {
 } from './ModalCarteFrance.style';
 import { Oval } from 'react-loader-spinner';
 import { prettyFormatNumber } from '@utils/strings';
+import { fetchJSON } from '@utils/network';
 
 const minFillColor = '#E2E3EE';
 const maxFillColor = '#4550E5';
@@ -64,18 +65,11 @@ function ModalCarteFrance(props: Props) {
     async function fetchStats() {
       const [statsNational, statsParRegion, statsParDepartement] =
         await Promise.all([
-          (async () => {
-            const res = await fetch('/data/stats-bdnb-2022-national.json');
-            return (await res.json()) as BDNBStatsNational;
-          })(),
-          (async () => {
-            const res = await fetch('/data/stats-bdnb-2022-regions.json');
-            return (await res.json()) as BDNBStatsParRegion[];
-          })(),
-          (async () => {
-            const res = await fetch('/data/stats-bdnb-2022-departements.json');
-            return (await res.json()) as BDNBStatsParDepartement[];
-          })(),
+          fetchJSON<BDNBStatsNational>('/data/stats-bdnb-2022-national.json'),
+          fetchJSON<BDNBStatsParRegion[]>('/data/stats-bdnb-2022-regions.json'),
+          fetchJSON<BDNBStatsParDepartement[]>(
+            '/data/stats-bdnb-2022-departements.json'
+          ),
         ]);
       setStatsData({
         national: statsNational,
@@ -88,16 +82,16 @@ function ModalCarteFrance(props: Props) {
     }
   }, [props.isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { modeCarte, territoireId } = getTerritoireToMapConfig(territoire);
+  const { modeCarte, territoireIdPropertyName, mapSourceData } =
+    getTerritoireToMapConfig(territoire, statsData);
 
   const { dataBins, donneesParTerritoire } = useMemo(() => {
-    if (!statsData) {
+    if (!mapSourceData) {
       return {};
     }
-    const source = statsData[modeCarte];
 
     const dataBins = calculateBins(
-      source.map(
+      mapSourceData.map(
         (statsParTerritoire) =>
           statsParTerritoire?.[distanceReseau]?.[`nb_${modeBatimentLogement}`]
       ),
@@ -106,30 +100,32 @@ function ModalCarteFrance(props: Props) {
       maxFillColor
     ).reverse();
 
-    const donneesParTerritoire = source.reduce((acc, donneesParTerritoire) => {
-      const value =
-        donneesParTerritoire?.[distanceReseau]?.[`nb_${modeBatimentLogement}`];
-      return {
-        ...acc,
-        [donneesParTerritoire[territoireId]]: {
-          value,
-          color: (
-            dataBins.find(
-              (bin) => bin.minValue <= value && value <= bin.maxValue
-            ) as Bin
-          )?.color,
-        },
-      };
-    }, {} as DonneeParTerritoire);
+    const donneesParTerritoire = mapSourceData.reduce(
+      (acc, statsParTerritoire) => {
+        const value =
+          statsParTerritoire?.[distanceReseau]?.[`nb_${modeBatimentLogement}`];
+        return {
+          ...acc,
+          [(statsParTerritoire as any)[territoireIdPropertyName]]: {
+            value,
+            color: (
+              dataBins.find(
+                (bin) => bin.minValue <= value && value <= bin.maxValue
+              ) as Bin
+            )?.color,
+          },
+        };
+      },
+      {} as DonneeParTerritoire
+    );
 
     return {
       dataBins,
       donneesParTerritoire,
     };
   }, [
-    statsData,
-    modeCarte,
-    territoireId,
+    mapSourceData,
+    territoireIdPropertyName,
     distanceReseau,
     modeBatimentLogement,
   ]);
@@ -143,7 +139,7 @@ function ModalCarteFrance(props: Props) {
     >
       <ModalClose>Fermer</ModalClose>
       <ModalContent>
-        {!statsData || !donneesParTerritoire ? (
+        {!statsData || !mapSourceData || !donneesParTerritoire ? (
           <SpinnerWrapper>
             <Oval height={60} width={60} />
           </SpinnerWrapper>
@@ -196,14 +192,16 @@ function ModalCarteFrance(props: Props) {
                 Départemental
               </Button>
             </ButtonGroup>
+
             <HorizontalSeparator />
+
             <LayoutTwoColumns>
               <FirstColumn>
                 <BigBlueText>
                   {(territoire === 'departemental'
-                    ? selectedData?.departement_nom
+                    ? (selectedData as any)?.departement_nom
                     : territoire === 'regional'
-                    ? selectedData?.region_nom
+                    ? (selectedData as any)?.region_nom
                     : 'France') ?? 'Cliquer sur la carte'}
                 </BigBlueText>
                 <BlackNumbersLine>
@@ -226,6 +224,7 @@ function ModalCarteFrance(props: Props) {
                 <DistanceLineText>
                   Distance au réseau le plus proche&nbsp;:
                 </DistanceLineText>
+
                 <ButtonGroup size="sm" isInlineFrom="xs">
                   <Button
                     secondary={distanceReseau !== '50m'}
@@ -246,6 +245,7 @@ function ModalCarteFrance(props: Props) {
                     &lt;150 m
                   </Button>
                 </ButtonGroup>
+
                 <ButtonGroup size="sm" isInlineFrom="xs">
                   <Button
                     secondary={modeBatimentLogement !== 'batiments'}
@@ -260,6 +260,7 @@ function ModalCarteFrance(props: Props) {
                     Logements
                   </Button>
                 </ButtonGroup>
+
                 <BigBlueNumber className="fr-mt-2w">
                   {prettyFormatNumber(
                     selectedData?.[distanceReseau]?.[
@@ -319,6 +320,7 @@ function ModalCarteFrance(props: Props) {
                   gaz individuel
                 </GreyText>
               </FirstColumn>
+
               <SecondColumn>
                 <CarteFrance
                   mode={modeCarte}
@@ -329,13 +331,21 @@ function ModalCarteFrance(props: Props) {
                       setTerritoire('regional');
                     }
                     setSelectedData(
-                      statsData[modeCarte].find(
-                        (territoire) =>
-                          territoire[territoireId] === selectedTerritoireId
-                      )!
+                      modeCarte === 'regional'
+                        ? mapSourceData.find(
+                            (territoire) =>
+                              territoire[territoireIdPropertyName] ===
+                              selectedTerritoireId
+                          )!
+                        : mapSourceData.find(
+                            (territoire) =>
+                              territoire[territoireIdPropertyName] ===
+                              selectedTerritoireId
+                          )!
                     );
                   }}
                 />
+
                 <LegendSourceLine>
                   <div>
                     <LegendTitle>
@@ -418,6 +428,10 @@ type Bin = {
   color: string;
 };
 
+/**
+ * Calcule des intervalles (bins) et affecte des couleurs en vue d'être affichés sur la carte.
+ * Permet de s'assurer que la coloration ne sera pas monotone.
+ */
 export function calculateBins(
   data: number[],
   numberOfBins: number,
@@ -484,21 +498,26 @@ function getBatimentLogementLabel(type: BatimentLogement): string {
   }
 }
 
-function getTerritoireToMapConfig(territoire: Territoire): {
-  territoireId: string;
-  modeCarte: ModeCarte;
-} {
+function getTerritoireToMapConfig(
+  territoire: Territoire,
+  stats: BDNBStats | null
+) {
+  if (!stats) {
+    return {} as const;
+  }
   switch (territoire) {
     case 'national':
     case 'regional':
       return {
         modeCarte: 'regional',
-        territoireId: 'region_code',
-      };
+        territoireIdPropertyName: 'region_code',
+        mapSourceData: stats.regional,
+      } as const;
     case 'departemental':
       return {
         modeCarte: 'departemental',
-        territoireId: 'departement_code',
-      };
+        territoireIdPropertyName: 'departement_code',
+        mapSourceData: stats.departemental,
+      } as const;
   }
 }

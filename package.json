@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@dataesr/react-dsfr": "^3.9.1",
-    "@etalab/decoupage-administratif": "^3.1.1",
     "@faker-js/faker": "^8.0.2",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@next/bundle-analyzer": "13.3.4",

@@ -9,7 +9,7 @@ const defaultFillColor = '#ffffff';
 export type ModeCarte = 'regional' | 'departemental';
 
 export type DonneeParTerritoire = {
-  [departement: string]: { value: number; color: string };
+  [territoireId: string]: { value: number; color: string };
 };
 
 interface Props {
@@ -56,11 +56,8 @@ function CarteFrance(props: Props) {
 
   function onClick(event: SyntheticEvent<SVGPathElement>) {
     event.stopPropagation(); // fix a bug with @dataesr/react-dsfr
-    const eventTarget = event.target as SVGPathElement;
     props.onTerritoireSelect(
-      props.mode === 'departemental'
-        ? (eventTarget.dataset.numerodepartement as string)
-        : (eventTarget.dataset.code_insee as string)
+      (event.target as SVGPathElement).dataset.code_insee as string
     );
   }
 
@@ -201,7 +198,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Paris"
-              data-numerodepartement="75"
+              data-code_insee="75"
               fill={props.donneesParTerritoire['75']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-11 departement departement-75 departement-paris"
@@ -209,7 +206,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Seine-et-Marne"
-              data-numerodepartement="77"
+              data-code_insee="77"
               fill={props.donneesParTerritoire['77']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-11 departement departement-77 departement-seine-et-marne"
@@ -217,7 +214,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Yvelines"
-              data-numerodepartement="78"
+              data-code_insee="78"
               fill={props.donneesParTerritoire['78']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-11 departement departement-78 departement-yvelines"
@@ -225,7 +222,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Essonne"
-              data-numerodepartement="91"
+              data-code_insee="91"
               fill={props.donneesParTerritoire['91']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-11 departement departement-91 departement-essonne"
@@ -233,7 +230,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Hauts-de-Seine"
-              data-numerodepartement="92"
+              data-code_insee="92"
               fill={props.donneesParTerritoire['92']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-11 departement departement-92 departement-hauts-de-seine"
@@ -241,7 +238,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Seine-Saint-Denis"
-              data-numerodepartement="93"
+              data-code_insee="93"
               fill={props.donneesParTerritoire['93']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-11 departement departement-93 departement-seine-saint-denis"
@@ -249,7 +246,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Val-de-Marne"
-              data-numerodepartement="94"
+              data-code_insee="94"
               fill={props.donneesParTerritoire['94']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-11 departement departement-94 departement-val-de-marne"
@@ -257,7 +254,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Val-d’Oise"
-              data-numerodepartement="95"
+              data-code_insee="95"
               fill={props.donneesParTerritoire['95']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-11 departement departement-95 departement-val-doise"
@@ -271,7 +268,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Cher"
-              data-numerodepartement="18"
+              data-code_insee="18"
               fill={props.donneesParTerritoire['18']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-24 departement departement-18 departement-cher"
@@ -279,7 +276,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Eure-et-Loir"
-              data-numerodepartement="28"
+              data-code_insee="28"
               fill={props.donneesParTerritoire['28']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-24 departement departement-28 departement-eure-et-loir"
@@ -287,7 +284,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Indre"
-              data-numerodepartement="36"
+              data-code_insee="36"
               fill={props.donneesParTerritoire['36']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-24 departement departement-36 departement-indre"
@@ -295,7 +292,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Indre-et-Loire"
-              data-numerodepartement="37"
+              data-code_insee="37"
               fill={props.donneesParTerritoire['37']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-24 departement departement-37 departement-indre-et-loire"
@@ -303,7 +300,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Loir-et-Cher"
-              data-numerodepartement="41"
+              data-code_insee="41"
               fill={props.donneesParTerritoire['41']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-24 departement departement-41 departement-loir-et-cher"
@@ -311,7 +308,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Loiret"
-              data-numerodepartement="45"
+              data-code_insee="45"
               fill={props.donneesParTerritoire['45']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-24 departement departement-45 departement-loiret"
@@ -325,7 +322,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Côte-d’Or"
-              data-numerodepartement="21"
+              data-code_insee="21"
               fill={props.donneesParTerritoire['21']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-27 departement departement-21 departement-cote-dor"
@@ -333,7 +330,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Doubs"
-              data-numerodepartement="25"
+              data-code_insee="25"
               fill={props.donneesParTerritoire['25']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-27 departement departement-25 departement-doubs"
@@ -341,7 +338,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Jura"
-              data-numerodepartement="39"
+              data-code_insee="39"
               fill={props.donneesParTerritoire['39']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-27 departement departement-39 departement-jura"
@@ -349,7 +346,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Nièvre"
-              data-numerodepartement="58"
+              data-code_insee="58"
               fill={props.donneesParTerritoire['58']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-27 departement departement-58 departement-nievre"
@@ -357,7 +354,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Haute-Saône"
-              data-numerodepartement="70"
+              data-code_insee="70"
               fill={props.donneesParTerritoire['70']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-27 departement departement-70 departement-haute-saone"
@@ -365,7 +362,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Saône-et-Loire"
-              data-numerodepartement="71"
+              data-code_insee="71"
               fill={props.donneesParTerritoire['71']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-27 departement departement-71 departement-saone-et-loire"
@@ -373,7 +370,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Yonne"
-              data-numerodepartement="89"
+              data-code_insee="89"
               fill={props.donneesParTerritoire['89']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-27 departement departement-89 departement-yonne"
@@ -381,7 +378,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Territoire de Belfort"
-              data-numerodepartement="90"
+              data-code_insee="90"
               fill={props.donneesParTerritoire['90']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-27 departement departement-90 departement-territoire-de-belfort"
@@ -395,7 +392,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Calvados"
-              data-numerodepartement="14"
+              data-code_insee="14"
               fill={props.donneesParTerritoire['14']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-28 departement departement-14 departement-calvados"
@@ -403,7 +400,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Eure"
-              data-numerodepartement="27"
+              data-code_insee="27"
               fill={props.donneesParTerritoire['27']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-28 departement departement-27 departement-eure"
@@ -411,7 +408,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Manche"
-              data-numerodepartement="50"
+              data-code_insee="50"
               fill={props.donneesParTerritoire['50']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-28 departement departement-50 departement-manche"
@@ -419,7 +416,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Orne"
-              data-numerodepartement="61"
+              data-code_insee="61"
               fill={props.donneesParTerritoire['61']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-28 departement departement-61 departement-orne"
@@ -427,7 +424,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Seine-Maritime"
-              data-numerodepartement="76"
+              data-code_insee="76"
               fill={props.donneesParTerritoire['76']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-28 departement departement-76 departement-seine-maritime"
@@ -441,7 +438,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Aisne"
-              data-numerodepartement="02"
+              data-code_insee="02"
               fill={props.donneesParTerritoire['02']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-32 departement departement-02 departement-aisne"
@@ -449,7 +446,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Nord"
-              data-numerodepartement="59"
+              data-code_insee="59"
               fill={props.donneesParTerritoire['59']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-32 departement departement-59 departement-nord"
@@ -457,7 +454,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Oise"
-              data-numerodepartement="60"
+              data-code_insee="60"
               fill={props.donneesParTerritoire['60']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-32 departement departement-60 departement-oise"
@@ -465,7 +462,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Pas-de-Calais"
-              data-numerodepartement="62"
+              data-code_insee="62"
               fill={props.donneesParTerritoire['62']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-32 departement departement-62 departement-pas-de-calais"
@@ -473,7 +470,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Somme"
-              data-numerodepartement="80"
+              data-code_insee="80"
               fill={props.donneesParTerritoire['80']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-32 departement departement-80 departement-somme"
@@ -487,7 +484,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Ardennes"
-              data-numerodepartement="08"
+              data-code_insee="08"
               fill={props.donneesParTerritoire['08']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-08 departement-ardennes"
@@ -495,7 +492,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Aube"
-              data-numerodepartement="10"
+              data-code_insee="10"
               fill={props.donneesParTerritoire['10']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-10 departement-aube"
@@ -503,7 +500,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Marne"
-              data-numerodepartement="51"
+              data-code_insee="51"
               fill={props.donneesParTerritoire['51']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-51 departement-marne"
@@ -511,7 +508,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Haute-Marne"
-              data-numerodepartement="52"
+              data-code_insee="52"
               fill={props.donneesParTerritoire['52']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-52 departement-haute-marne"
@@ -519,7 +516,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Meurthe-et-Moselle"
-              data-numerodepartement="54"
+              data-code_insee="54"
               fill={props.donneesParTerritoire['54']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-54 departement-meurthe-et-moselle"
@@ -527,7 +524,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Meuse"
-              data-numerodepartement="55"
+              data-code_insee="55"
               fill={props.donneesParTerritoire['55']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-55 departement-meuse"
@@ -535,7 +532,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Moselle"
-              data-numerodepartement="57"
+              data-code_insee="57"
               fill={props.donneesParTerritoire['57']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-57 departement-moselle"
@@ -543,7 +540,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Bas-Rhin"
-              data-numerodepartement="67"
+              data-code_insee="67"
               fill={props.donneesParTerritoire['67']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-67 departement-bas-rhin"
@@ -551,7 +548,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Haut-Rhin"
-              data-numerodepartement="68"
+              data-code_insee="68"
               fill={props.donneesParTerritoire['68']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-68 departement-haut-rhin"
@@ -559,7 +556,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Vosges"
-              data-numerodepartement="88"
+              data-code_insee="88"
               fill={props.donneesParTerritoire['88']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-44 departement departement-88 departement-vosges"
@@ -573,7 +570,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Loire-Atlantique"
-              data-numerodepartement="44"
+              data-code_insee="44"
               fill={props.donneesParTerritoire['44']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-52 departement departement-44 departement-loire-atlantique"
@@ -581,7 +578,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Maine-et-Loire"
-              data-numerodepartement="49"
+              data-code_insee="49"
               fill={props.donneesParTerritoire['49']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-52 departement departement-49 departement-maine-et-loire"
@@ -589,7 +586,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Mayenne"
-              data-numerodepartement="53"
+              data-code_insee="53"
               fill={props.donneesParTerritoire['53']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-52 departement departement-53 departement-mayenne"
@@ -597,7 +594,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Sarthe"
-              data-numerodepartement="72"
+              data-code_insee="72"
               fill={props.donneesParTerritoire['72']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-52 departement departement-72 departement-sarthe"
@@ -605,7 +602,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Vendée"
-              data-numerodepartement="85"
+              data-code_insee="85"
               fill={props.donneesParTerritoire['85']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-52 departement departement-85 departement-vendee"
@@ -619,7 +616,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Côtes-d’Armor"
-              data-numerodepartement="22"
+              data-code_insee="22"
               fill={props.donneesParTerritoire['22']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-53 departement departement-22 departement-cotes-darmor"
@@ -627,7 +624,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Finistère"
-              data-numerodepartement="29"
+              data-code_insee="29"
               fill={props.donneesParTerritoire['29']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-53 departement departement-29 departement-finistere"
@@ -635,7 +632,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Ille-et-Vilaine"
-              data-numerodepartement="35"
+              data-code_insee="35"
               fill={props.donneesParTerritoire['35']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-53 departement departement-35 departement-ille-et-vilaine"
@@ -643,7 +640,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Morbihan"
-              data-numerodepartement="56"
+              data-code_insee="56"
               fill={props.donneesParTerritoire['56']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-53 departement departement-56 departement-morbihan"
@@ -657,7 +654,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Charente"
-              data-numerodepartement="16"
+              data-code_insee="16"
               fill={props.donneesParTerritoire['16']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-16 departement-charente"
@@ -665,7 +662,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Charente-Maritime"
-              data-numerodepartement="17"
+              data-code_insee="17"
               fill={props.donneesParTerritoire['17']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-17 departement-charente-maritime"
@@ -673,7 +670,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Corrèze"
-              data-numerodepartement="19"
+              data-code_insee="19"
               fill={props.donneesParTerritoire['19']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-19 departement-correze"
@@ -681,7 +678,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Creuse"
-              data-numerodepartement="23"
+              data-code_insee="23"
               fill={props.donneesParTerritoire['23']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-23 departement-creuse"
@@ -689,7 +686,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Dordogne"
-              data-numerodepartement="24"
+              data-code_insee="24"
               fill={props.donneesParTerritoire['24']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-24 departement-dordogne"
@@ -697,7 +694,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Gironde"
-              data-numerodepartement="33"
+              data-code_insee="33"
               fill={props.donneesParTerritoire['33']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-33 departement-gironde"
@@ -705,7 +702,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Landes"
-              data-numerodepartement="40"
+              data-code_insee="40"
               fill={props.donneesParTerritoire['40']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-40 departement-landes"
@@ -713,7 +710,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Lot-et-Garonne"
-              data-numerodepartement="47"
+              data-code_insee="47"
               fill={props.donneesParTerritoire['47']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-47 departement-lot-et-garonne"
@@ -721,7 +718,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Pyrénées-Atlantiques"
-              data-numerodepartement="64"
+              data-code_insee="64"
               fill={props.donneesParTerritoire['64']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-64 departement-pyrenees-atlantiques"
@@ -729,7 +726,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Deux-Sèvres"
-              data-numerodepartement="79"
+              data-code_insee="79"
               fill={props.donneesParTerritoire['79']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-79 departement-deux-sevres"
@@ -737,7 +734,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Vienne"
-              data-numerodepartement="86"
+              data-code_insee="86"
               fill={props.donneesParTerritoire['86']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-86 departement-vienne"
@@ -745,7 +742,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Haute-Vienne"
-              data-numerodepartement="87"
+              data-code_insee="87"
               fill={props.donneesParTerritoire['87']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-75 departement departement-87 departement-haute-vienne"
@@ -759,7 +756,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Ariège"
-              data-numerodepartement="09"
+              data-code_insee="09"
               fill={props.donneesParTerritoire['09']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-09 departement-ariege"
@@ -767,7 +764,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Aude"
-              data-numerodepartement="11"
+              data-code_insee="11"
               fill={props.donneesParTerritoire['11']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-11 departement-aude"
@@ -775,7 +772,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Aveyron"
-              data-numerodepartement="12"
+              data-code_insee="12"
               fill={props.donneesParTerritoire['12']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-12 departement-aveyron"
@@ -783,7 +780,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Gard"
-              data-numerodepartement="30"
+              data-code_insee="30"
               fill={props.donneesParTerritoire['30']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-30 departement-gard"
@@ -791,7 +788,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Haute-Garonne"
-              data-numerodepartement="31"
+              data-code_insee="31"
               fill={props.donneesParTerritoire['31']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-31 departement-haute-garonne"
@@ -799,7 +796,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Gers"
-              data-numerodepartement="32"
+              data-code_insee="32"
               fill={props.donneesParTerritoire['32']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-32 departement-gers"
@@ -807,7 +804,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Hérault"
-              data-numerodepartement="34"
+              data-code_insee="34"
               fill={props.donneesParTerritoire['34']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-34 departement-herault"
@@ -815,7 +812,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Lot"
-              data-numerodepartement="46"
+              data-code_insee="46"
               fill={props.donneesParTerritoire['46']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-46 departement-lot"
@@ -823,7 +820,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Lozère"
-              data-numerodepartement="48"
+              data-code_insee="48"
               fill={props.donneesParTerritoire['48']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-48 departement-lozere"
@@ -831,7 +828,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Hautes-Pyrénées"
-              data-numerodepartement="65"
+              data-code_insee="65"
               fill={props.donneesParTerritoire['65']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-65 departement-hautes-pyrenees"
@@ -839,7 +836,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Pyrénées-Orientales"
-              data-numerodepartement="66"
+              data-code_insee="66"
               fill={props.donneesParTerritoire['66']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-66 departement-pyrenees-orientales"
@@ -847,7 +844,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Tarn"
-              data-numerodepartement="81"
+              data-code_insee="81"
               fill={props.donneesParTerritoire['81']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-81 departement-tarn"
@@ -855,7 +852,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Tarn-et-Garonne"
-              data-numerodepartement="82"
+              data-code_insee="82"
               fill={props.donneesParTerritoire['82']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-76 departement departement-82 departement-tarn-et-garonne"
@@ -869,7 +866,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Ain"
-              data-numerodepartement="01"
+              data-code_insee="01"
               fill={props.donneesParTerritoire['01']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-01 departement-ain"
@@ -877,7 +874,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Allier"
-              data-numerodepartement="03"
+              data-code_insee="03"
               fill={props.donneesParTerritoire['03']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-03 departement-allier"
@@ -885,7 +882,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Ardèche"
-              data-numerodepartement="07"
+              data-code_insee="07"
               fill={props.donneesParTerritoire['07']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-07 departement-ardeche"
@@ -893,7 +890,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Cantal"
-              data-numerodepartement="15"
+              data-code_insee="15"
               fill={props.donneesParTerritoire['15']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-15 departement-cantal"
@@ -901,7 +898,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Drôme"
-              data-numerodepartement="26"
+              data-code_insee="26"
               fill={props.donneesParTerritoire['26']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-26 departement-drome"
@@ -909,7 +906,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Isère"
-              data-numerodepartement="38"
+              data-code_insee="38"
               fill={props.donneesParTerritoire['38']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-38 departement-isere"
@@ -917,7 +914,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Loire"
-              data-numerodepartement="42"
+              data-code_insee="42"
               fill={props.donneesParTerritoire['42']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-42 departement-loire"
@@ -925,7 +922,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Haute-Loire"
-              data-numerodepartement="43"
+              data-code_insee="43"
               fill={props.donneesParTerritoire['43']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-43 departement-haute-loire"
@@ -933,7 +930,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Puy-de-Dôme"
-              data-numerodepartement="63"
+              data-code_insee="63"
               fill={props.donneesParTerritoire['63']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-63 departement-puy-de-dome"
@@ -941,7 +938,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Rhône"
-              data-numerodepartement="69"
+              data-code_insee="69"
               fill={props.donneesParTerritoire['69']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-69 departement-rhone"
@@ -949,7 +946,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Savoie"
-              data-numerodepartement="73"
+              data-code_insee="73"
               fill={props.donneesParTerritoire['73']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-73 departement-savoie"
@@ -957,7 +954,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Haute-Savoie"
-              data-numerodepartement="74"
+              data-code_insee="74"
               fill={props.donneesParTerritoire['74']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-84 departement departement-74 departement-haute-savoie"
@@ -971,7 +968,7 @@ function CarteFrance(props: Props) {
           >
             <path
               data-nom="Alpes-de-Haute-Provence"
-              data-numerodepartement="04"
+              data-code_insee="04"
               fill={props.donneesParTerritoire['04']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-93 departement departement-04 departement-alpes-de-haute-provence"
@@ -979,7 +976,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Hautes-Alpes"
-              data-numerodepartement="05"
+              data-code_insee="05"
               fill={props.donneesParTerritoire['05']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-93 departement departement-05 departement-hautes-alpes"
@@ -987,7 +984,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Alpes-Maritimes"
-              data-numerodepartement="06"
+              data-code_insee="06"
               fill={props.donneesParTerritoire['06']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-93 departement departement-06 departement-alpes-maritimes"
@@ -995,7 +992,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Bouches-du-Rhône"
-              data-numerodepartement="13"
+              data-code_insee="13"
               fill={props.donneesParTerritoire['13']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-93 departement departement-13 departement-bouches-du-rhone"
@@ -1003,7 +1000,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Var"
-              data-numerodepartement="83"
+              data-code_insee="83"
               fill={props.donneesParTerritoire['83']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-93 departement departement-83 departement-var"
@@ -1011,7 +1008,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Vaucluse"
-              data-numerodepartement="84"
+              data-code_insee="84"
               fill={props.donneesParTerritoire['84']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-93 departement departement-84 departement-vaucluse"
@@ -1021,7 +1018,7 @@ function CarteFrance(props: Props) {
           <g className="region region-94" data-nom="Corse" data-code_insee="94">
             <path
               data-nom="Corse-du-Sud"
-              data-numerodepartement="2A"
+              data-code_insee="2A"
               fill={props.donneesParTerritoire['2A']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-94 departement departement-2A departement-corse-du-sud"
@@ -1029,7 +1026,7 @@ function CarteFrance(props: Props) {
             />
             <path
               data-nom="Haute-Corse"
-              data-numerodepartement="2B"
+              data-code_insee="2B"
               fill={props.donneesParTerritoire['2B']?.color ?? defaultFillColor}
               onClick={onClick}
               className="region-94 departement departement-2B departement-haute-corse"
