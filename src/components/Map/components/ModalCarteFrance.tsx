@@ -325,6 +325,9 @@ function ModalCarteFrance(props: Props) {
                 <CarteFrance
                   mode={modeCarte}
                   donneesParTerritoire={donneesParTerritoire}
+                  selectedTerritoireId={
+                    (selectedData as any)?.[territoireIdPropertyName]
+                  }
                   onTerritoireSelect={(selectedTerritoireId) => {
                     // passe automatiquement en régional quand on sélectionne une région
                     if (territoire === 'national') {
