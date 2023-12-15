@@ -8,18 +8,18 @@ Pour l'instant tout fonctionne par région. Une table par région.
     - `psql postgres://postgres:postgres_fcu@localhost:5432 -f nom_table.sql`
 
 2. Mettre à jour le code
-    - Les appels aux colonnes des tables : 
-        - Uniquement l'ID : 
+    - Les appels aux colonnes des tables :
+        - Uniquement l'ID :
             - scripts/updateDemands.ts
             - utils/tiles.ts
             - pages/api/airtable/records/index.ts
-        - Toutes :    
+        - Toutes :
             - src/core/infrastructure/repository/
                 - addresseInformation.ts
                 - dataSummary.ts
             - pages/api/dpe/index.ts
             - services/tile.config.ts
-    - Mettre à jour l'index max dans le script de calculs des tiles : 
+    - Mettre à jour l'index max dans le script de calculs des tiles :
         - utils/tiles.ts : const maxIndex
 
 
@@ -27,9 +27,9 @@ Pour l'instant tout fonctionne par région. Une table par région.
 
 4. Vider les tables *bnb - adresse_tiles* et *bnb - batiment_tiles*
 
-5. Lancer les calculs des tiles 
-    - Pour les adresses : `export NODE_PATH=./ && npx ts-node --transpile-only scripts/fillTiles.ts energy 0 17 1`
-    - Pour les bâtiments : `export NODE_OPTIONS="--max-old-space-size=8192" && NODE_PATH=./ && npx ts-node --transpile-only scripts/fillTiles.ts buildings 0 17 1`
+5. Lancer les calculs des tiles
+    - Pour les adresses : `NODE_PATH=./ npx ts-node --transpile-only scripts/fillTiles.ts energy 0 17 1`
+    - Pour les bâtiments : `NODE_OPTIONS=--max-old-space-size=8192 NODE_PATH=./ npx ts-node --transpile-only scripts/fillTiles.ts buildings 0 17 1`
 <br/><br/>
 
 ## Deuxième étape - en dev
