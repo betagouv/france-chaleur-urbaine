@@ -9,6 +9,7 @@ import {
   PartnerLink,
   Wrapper,
 } from './Partners.style';
+import Link from 'next/link';
 
 const Partners = () => {
   const [firstLogo, setFirstLogo] = useState(0);
@@ -73,9 +74,9 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
         </Arrow>
       </Wrapper>
       <ButtonGroup isInlineFrom="xs" align="center">
-        <a className="fr-btn" href="/contact">
+        <Link className="fr-btn" href="/contact">
           Rejoindre notre réseau
-        </a>
+        </Link>
         <a
           className="fr-btn fr-btn--secondary"
           href="/documentation/dossier-presse.pdf"
