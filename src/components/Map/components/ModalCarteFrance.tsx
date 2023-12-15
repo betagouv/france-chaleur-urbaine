@@ -392,7 +392,7 @@ function ModalCarteFrance(props: Props) {
                     ))}
                   </div>
                   <SourceLink
-                    href="/documentation/FCU_sources_donnees_agregees.pdf"
+                    href="/data/potentiel_identifie_FCU.xlsx"
                     target="_blank"
                   >
                     Sources
