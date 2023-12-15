@@ -25,7 +25,7 @@ import {
   LegendTitle,
   ModalContentWrapper,
   SecondColumn,
-  SourceLink,
+  DonneesLink,
   SpinnerWrapper,
   StyledModal,
   BigBlueText,
@@ -391,12 +391,12 @@ function ModalCarteFrance(props: Props) {
                       </Bin>
                     ))}
                   </div>
-                  <SourceLink
+                  <DonneesLink
                     href="/data/potentiel_identifie_FCU.xlsx"
                     target="_blank"
                   >
-                    Sources
-                  </SourceLink>
+                    Données
+                  </DonneesLink>
                 </LegendSourceLine>
               </SecondColumn>
             </LayoutTwoColumns>
