@@ -298,10 +298,12 @@ function ModalCarteFrance(props: Props) {
                     <>
                       , soit{' '}
                       {selectedData
-                        ? getConsoAnnuelleGWhLogements(
-                            selectedData?.[distanceReseau]?.[
-                              `nb_${modeBatimentLogement}`
-                            ] ?? 0
+                        ? prettyFormatNumber(
+                            getConsoAnnuelleGWhLogements(
+                              selectedData?.[distanceReseau]?.[
+                                `nb_${modeBatimentLogement}`
+                              ] ?? 0
+                            )
                           )
                         : '--'}{' '}
                       GWh
