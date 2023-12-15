@@ -1,0 +1,42 @@
+name: CI
+
+# Controls when the action will run.
+on: [push, pull_request]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  CI:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-22.04
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout 🛎️
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node 🔧
+        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install Dependencies 💾
+        run: yarn --frozen-lockfile
+
+      - name: Audit 🛡️
+        run: yarn audit
+        continue-on-error: true
+
+      - name: Lint 🧹
+        run: yarn lint
+
+      - name: Test ✅
+        run: yarn test
+
+      - name: Build 📦
+        run: yarn build
+        env:
+          CI: true
