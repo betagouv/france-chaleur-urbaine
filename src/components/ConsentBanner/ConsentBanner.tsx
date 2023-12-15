@@ -5,6 +5,7 @@ const ConsentBanner: React.FC<{
 }> = ({ children }) => (
   <>
     <link rel="stylesheet" href="/css/dsfr-theme-tac.min.css" />
+    {/* eslint-disable-next-line @next/next/no-sync-scripts */}
     <script src="/js/tarteaucitron.js-1.9.5/tarteaucitron.js"></script>
     <script
       dangerouslySetInnerHTML={{
