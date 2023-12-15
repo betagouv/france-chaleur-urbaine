@@ -8,7 +8,7 @@ import CarteFrance, { DonneeParTerritoire } from './CarteFrance';
 import { useEffect, useMemo, useState } from 'react';
 import {
   BigBlueNumber,
-  BigBlueText,
+  ExtraBigBlueText,
   Bin,
   BlackNumber,
   BlackNumbersLine,
@@ -28,10 +28,13 @@ import {
   SourceLink,
   SpinnerWrapper,
   StyledModal,
+  BigBlueText,
+  StyledIcon,
 } from './ModalCarteFrance.style';
 import { Oval } from 'react-loader-spinner';
 import { prettyFormatNumber } from '@utils/strings';
 import { fetchJSON } from '@utils/network';
+import Tooltip from '@components/ui/Tooltip';
 
 const minFillColor = '#E2E3EE';
 const maxFillColor = '#4550E5';
@@ -197,13 +200,13 @@ function ModalCarteFrance(props: Props) {
 
             <LayoutTwoColumns>
               <FirstColumn>
-                <BigBlueText>
+                <ExtraBigBlueText>
                   {(territoire === 'departemental'
                     ? (selectedData as any)?.departement_nom
                     : territoire === 'regional'
                     ? (selectedData as any)?.region_nom
                     : 'France') ?? 'Cliquer sur la carte'}
-                </BigBlueText>
+                </ExtraBigBlueText>
                 <BlackNumbersLine>
                   <div>
                     <BlackNumber>
@@ -221,6 +224,26 @@ function ModalCarteFrance(props: Props) {
                   </div>
                 </BlackNumbersLine>
                 <HorizontalSeparator className="fr-mt-1w" />
+                <BigBlueText>
+                  Potentiel identifié
+                  <Tooltip
+                    icon={
+                      <StyledIcon
+                        size="1x"
+                        name="ri-information-fill"
+                        color="#959DB0"
+                        marginLeft=".2em"
+                        marginTop="-.5em"
+                      />
+                    }
+                  >
+                    Sur la base des réseaux de chaleur recensés sur la carte
+                    France Chaleur Urbaine et des données bâtimentaires issues
+                    de la Base de données nationale des bâtiments du CSTB et du
+                    Registre national d'immatriculation des copropriétés de
+                    l'ANAH.
+                  </Tooltip>
+                </BigBlueText>
                 <DistanceLineText>
                   Distance au réseau le plus proche&nbsp;:
                 </DistanceLineText>

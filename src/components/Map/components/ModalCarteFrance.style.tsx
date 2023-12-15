@@ -1,4 +1,4 @@
-import { Link, Modal } from '@dataesr/react-dsfr';
+import { Icon, Link, Modal } from '@dataesr/react-dsfr';
 import styled from 'styled-components';
 
 export const SpinnerWrapper = styled.div`
@@ -54,23 +54,29 @@ export const HorizontalSeparator = styled.div`
   border: 1px solid #e1e1e1;
 `;
 
+export const BigBlueText = styled.div`
+  color: #4550e5;
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 32px;
+`;
+
 export const DistanceLineText = styled.div`
   font-size: 13px;
-  margin-top: 16px;
   margin-bottom: 8px;
+  margin-top: 8px;
 `;
 
 export const BlackText = styled.div`
   font-size: 14px;
 `;
 
-export const BigBlueText = styled.div`
+export const ExtraBigBlueText = styled.div`
   color: #4550e5;
   font-size: 26px;
   font-weight: bold;
   margin-top: 24px;
 `;
-
 export const BlueText = styled.div`
   color: #4550e5;
   font-size: 14px;
@@ -136,4 +142,13 @@ export const LegendSourceLine = styled.div`
 
 export const SourceLink = styled(Link)`
   color: #999;
+`;
+
+export const StyledIcon = styled(Icon)<{
+  marginLeft?: string;
+  marginTop?: string;
+}>`
+  position: absolute;
+  margin-left: ${({ marginLeft }) => marginLeft ?? '0'};
+  margin-top: ${({ marginTop }) => marginTop ?? '0'};
 `;
