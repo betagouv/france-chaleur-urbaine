@@ -14,7 +14,7 @@ import {
   Sources,
 } from './MapLegend.style';
 import { ButtonLink } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ModalCarteFrance from './ModalCarteFrance';
 import Image from 'next/image';
 
@@ -40,6 +40,12 @@ function MapLegend({
 }) {
   const router = useRouter();
   const [showStatsModal, setShowStatsModal] = useState(false);
+
+  useEffect(() => {
+    if (router.query['potentiels-de-raccordement'] !== undefined) {
+      setShowStatsModal(true);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
