@@ -1,11 +1,11 @@
-# Black Friday, Green Friday
+# La carte France Chaleur Urbaine sur l'application Rezomee d'ENGIE Solutions
 
-💸 Black Friday, Green Friday, et si on conciliait les deux ? Avec les réseaux de chaleur, le chauffage est moins cher et plus vert !\
+🗺 Depuis quelques jours, la cartogfraphie France Chaleur Urbaine est intégrée dans l'application Rezomee d'ENGIE Solutions.\
 \
-Se chauffer avec un réseau de chaleur, c'est moins 50% d'émissions de CO2 par rapport à un chauffage au gaz et moins 65% par rapport au fioul. Et sur la facture, c'est jusqu'à 30% d'économies.\
+Rezomee, c'est la plateforme qui centralise toute l'information sur l'ensemble des réseaux de chaleur et de froid d'ENGIE Solutions, accessible sur application et sites web, avec 300 000 visites par an. Un outil utile aux citoyens, usagers, abonnés, délégants... Après cette intégration sur l'application, la carte France Chaleur Urbaine pourra également être intégrée progressivement sur les sites Rezomee des différents réseaux.\
 \
-📢 Une offre à saisir sans plus attendre !\
+👍 Nous sommes très heureux de cette réutilisation de notre cartographie et de l'ensemble des actions actuellement développées avec ENGIE Solutions ainsi qu'avec les autres opérateurs des réseaux de chaleur. Mutualisons nos forces et outils pour mieux informer sur les réseaux de chaleur !\
 \
-👉 Pour vérifier si vous êtes raccordable, testez votre adresse sur [France Chaleur Urbaine](https://france-chaleur-urbaine.beta.gouv.fr/).
-
-![](/contents/blackfriday.jpg)
+👉 Si comme [ENGIE Solutions](https://www.engie-solutions.com/fr), [ViaSeva](https://viaseva.org/comment-se-raccorder/), l'[Association Amorce](https://amorce.asso.fr/Boite-A-Outils-Reseaux-de-Chaleur-et-de-Froid), [Énergies Métropole Rouen Normandie](https://energies.metropole-rouen-normandie.fr/les-reseaux-de-chaleur-urbains/), l'[Agence Locale de l'Energie et du Climat de la Métropole Marseillaise](https://www.alecmetropolemarseillaise.fr/cat\_faq/chauffage-eau-chaude/) et bien d'autres, vous souhaitez vous aussi intégrer la carte France Chaleur Urbaine sur votre site, n'hésitez pas à utiliser notre iframe ou à nous contacter.\
+\
+La carte France Chaleur Urbaine, un outil ergonomique et librement réutilisable pour faire connaître les réseaux de chaleur !
