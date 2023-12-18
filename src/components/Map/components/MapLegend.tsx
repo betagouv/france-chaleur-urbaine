@@ -17,6 +17,7 @@ import { ButtonLink } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { useEffect, useState } from 'react';
 import ModalCarteFrance from './ModalCarteFrance';
 import Image from 'next/image';
+import { matomoEvent } from '@components/Markup';
 
 function MapLegend({
   data,
@@ -93,7 +94,13 @@ function MapLegend({
             <PotentielsRaccordementButton
               secondary
               key="statsByArea"
-              onClick={() => setShowStatsModal(true)}
+              onClick={() => {
+                matomoEvent([
+                  'Carto',
+                  'ouverture popup potentiels de raccordement',
+                ]);
+                setShowStatsModal(true);
+              }}
               size="sm"
             >
               <Image src="/img/icon-france.png" alt="" width="19" height="19" />
