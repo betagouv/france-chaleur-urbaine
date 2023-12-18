@@ -11,9 +11,12 @@ export const upsertUsersFromApi = async (
   account: ApiAccount,
   networks: ApiNetwork[]
 ) => {
+  //Users from tab "GESTIONNAIRES_API" where the new users from outside API are saved
   const airtableUsersAPI = await base(Airtable.GESTIONNAIRES_API)
     .select()
     .all();
+  //Users from tab "GESTIONNAIRES" - all the users of the website
+  const airtableUsers = await base(Airtable.GESTIONNAIRES).select().all();
 
   const warnings: string[] = [];
   const emails = networks.flatMap((user) => user.contacts);
@@ -88,9 +91,16 @@ export const upsertUsersFromApi = async (
         const airtableUserAPI = airtableUsersAPI.find(
           (airtableUserAPI) => airtableUserAPI.get('Email') === user
         );
+        const airtableUser = airtableUsers.find(
+          (airtableUser) => airtableUser.get('Email') === user
+        );
         const fcuTags = airtableUserAPI
           ? (airtableUserAPI.get('Tags FCU') as string[])
           : [];
+        let allGestionnaires = gestionnaires;
+        if (airtableUserAPI && fcuTags && fcuTags.length > 0) {
+          allGestionnaires = allGestionnaires.concat(fcuTags);
+        }
         const promises: Promise<any>[] = [
           db('users')
             .insert({
@@ -99,10 +109,7 @@ export const upsertUsersFromApi = async (
                 Math.random().toString(36).slice(2, 10),
                 salt
               ),
-              gestionnaires:
-                airtableUserAPI && fcuTags && fcuTags.length > 0
-                  ? gestionnaires.concat(fcuTags)
-                  : gestionnaires,
+              gestionnaires: allGestionnaires,
               from_api: account.key,
               receive_new_demands: true,
               receive_old_demands: true,
@@ -128,6 +135,30 @@ export const upsertUsersFromApi = async (
                       Email: user,
                       Réseaux: gestionnaires,
                       Nom: account.name,
+                    },
+                  },
+                ],
+                {
+                  typecast: true,
+                }
+              ),
+          airtableUser
+            ? base(Airtable.GESTIONNAIRES).update(
+                airtableUser.id,
+                {
+                  Email: user,
+                  Gestionnaires: allGestionnaires,
+                },
+                {
+                  typecast: true,
+                }
+              )
+            : base(Airtable.GESTIONNAIRES).create(
+                [
+                  {
+                    fields: {
+                      Email: user,
+                      Gestionnaires: allGestionnaires,
                     },
                   },
                 ],
