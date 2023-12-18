@@ -140,7 +140,7 @@ export const LegendSourceLine = styled.div`
   margin-top: -32px;
 `;
 
-export const DonneesLink = styled(Link)`
+export const DataLink = styled(Link)`
   color: #999;
 `;
 
