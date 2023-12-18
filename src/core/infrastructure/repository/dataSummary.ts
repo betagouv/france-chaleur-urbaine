@@ -129,8 +129,8 @@ const getEnergySummary = async (
       ) as is_close
       `)
     )
-    .andWhere('dpe_mix_arrete_type_energie_chauffage', ['gaz', 'fioul'])
     .whereNotNull('libelle_adr_principale_ban')
+    .whereIn('dpe_mix_arrete_type_energie_chauffage', ['gaz', 'fioul'])
     .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
     .andWhere(db.raw(getWithinQuery(coordinates, 'geom')));
 
