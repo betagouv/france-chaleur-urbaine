@@ -7,10 +7,16 @@ import { Title } from './DPELegend.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import { LabelLegendHead } from './LegendEntry.styled';
 import LegendGroupLabel from './LegendGroupLabel';
-import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
+import {
+  LegendButton,
+  LegendGlobalStyle,
+  PotentielsRaccordementButton,
+  Sources,
+} from './MapLegend.style';
 import { ButtonLink } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { useState } from 'react';
 import ModalCarteFrance from './ModalCarteFrance';
+import Image from 'next/image';
 
 function MapLegend({
   data,
@@ -78,14 +84,15 @@ function MapLegend({
 
         if (group === 'statsByArea') {
           return (
-            <Button
-              tertiary
+            <PotentielsRaccordementButton
+              secondary
               key="statsByArea"
               onClick={() => setShowStatsModal(true)}
               size="sm"
             >
-              Potentiel de raccordement par territoire
-            </Button>
+              <Image src="/img/icon-france.png" alt="" width="19" height="19" />
+              Voir les potentiels de raccordement
+            </PotentielsRaccordementButton>
           );
         }
 
