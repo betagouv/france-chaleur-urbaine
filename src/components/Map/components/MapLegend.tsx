@@ -7,8 +7,17 @@ import { Title } from './DPELegend.style';
 import LegendEntry, { TypeLegendEntry } from './LegendEntry';
 import { LabelLegendHead } from './LegendEntry.styled';
 import LegendGroupLabel from './LegendGroupLabel';
-import { LegendButton, LegendGlobalStyle, Sources } from './MapLegend.style';
+import {
+  LegendButton,
+  LegendGlobalStyle,
+  PotentielsRaccordementButton,
+  Sources,
+} from './MapLegend.style';
 import { ButtonLink } from '@components/MarkdownWrapper/MarkdownWrapper.style';
+import { useEffect, useState } from 'react';
+import ModalCarteFrance from './ModalCarteFrance';
+import Image from 'next/image';
+import { matomoEvent } from '@components/Markup';
 
 function MapLegend({
   data,
@@ -31,6 +40,14 @@ function MapLegend({
   ) => void;
 }) {
   const router = useRouter();
+  const [showStatsModal, setShowStatsModal] = useState(false);
+
+  useEffect(() => {
+    if (router.query['potentiels-de-raccordement'] !== undefined) {
+      setShowStatsModal(true);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <>
       <LegendGlobalStyle />
@@ -69,6 +86,26 @@ function MapLegend({
                 </ButtonLink>
               </LegendButton>
             </div>
+          );
+        }
+
+        if (group === 'statsByArea') {
+          return (
+            <PotentielsRaccordementButton
+              secondary
+              key="statsByArea"
+              onClick={() => {
+                matomoEvent([
+                  'Carto',
+                  'ouverture popup potentiels de raccordement',
+                ]);
+                setShowStatsModal(true);
+              }}
+              size="sm"
+            >
+              <Image src="/img/icon-france.png" alt="" width="19" height="19" />
+              Voir les potentiels de raccordement
+            </PotentielsRaccordementButton>
           );
         }
 
@@ -131,6 +168,10 @@ function MapLegend({
         }
         return null;
       })}
+      <ModalCarteFrance
+        isOpen={showStatsModal}
+        onClose={() => setShowStatsModal(false)}
+      />
     </>
   );
 }

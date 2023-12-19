@@ -4,6 +4,7 @@ import {
   themeDefHeatNetwork,
   themeDefZoneDP,
 } from '../../../services/Map/businessRules';
+import { Button } from '@dataesr/react-dsfr';
 
 export const MapGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .leaflet-container .leaflet-control-attribution {
@@ -160,7 +161,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       border-top: 8px solid ${themeDefHeatNetwork.futur.color};
     }
   }
-  
+
   .legend-futur-heat-network-zone-marker {
     margin-top: 0;
     ::before {
@@ -178,7 +179,7 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       border-top: 8px solid ${themeDefHeatNetwork.cold.color};
     }
   }
-  
+
   .legend-zoneDP-marker {
     ::before {
       margin: 0 7px 0 7px;
@@ -243,4 +244,10 @@ export const Sources = styled.div`
     position: absolute;
     top: -16px;
   }
+`;
+
+export const PotentielsRaccordementButton = styled(Button)`
+  display: flex;
+  text-wrap: nowrap;
+  gap: 8px;
 `;

@@ -1,0 +1,46 @@
+{
+  "50m": {
+    "batiments": {
+      "collectif_gaz": 8900,
+      "individuel_gaz": 29610,
+      "collectif_fioul": 939
+    },
+    "logements": {
+      "collectif_gaz": 419339,
+      "individuel_gaz": 338015,
+      "collectif_fioul": 19894
+    },
+    "nb_batiments": 9839,
+    "nb_logements": 439233
+  },
+  "100m": {
+    "batiments": {
+      "collectif_gaz": 12671,
+      "individuel_gaz": 54119,
+      "collectif_fioul": 1447
+    },
+    "logements": {
+      "collectif_gaz": 534994,
+      "individuel_gaz": 495855,
+      "collectif_fioul": 27607
+    },
+    "nb_batiments": 14118,
+    "nb_logements": 562601
+  },
+  "150m": {
+    "batiments": {
+      "collectif_gaz": 15549,
+      "individuel_gaz": 76688,
+      "collectif_fioul": 1886
+    },
+    "logements": {
+      "collectif_gaz": 620100,
+      "individuel_gaz": 621953,
+      "collectif_fioul": 33242
+    },
+    "nb_batiments": 17435,
+    "nb_logements": 653342
+  },
+  "taux_enrr": 66.5,
+  "nb_reseaux": 946
+}
