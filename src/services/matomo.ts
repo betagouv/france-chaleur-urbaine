@@ -11,11 +11,10 @@ const matomoRequestDefaultConfig = {
 
 type ConfigType = Record<string, unknown>;
 
-const configToRequest = (config: ConfigType) =>
-  Object.entries(config).reduce(
-    (acc, [key, value], i) => `${acc}${i === 0 ? '?' : '&'}${key}=${value}`,
-    ''
-  );
+const configToURI = (config: ConfigType) =>
+  Object.entries(config)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
 
 const getMatomoRequest = (
   config: ConfigType = {},
@@ -27,7 +26,7 @@ const getMatomoRequest = (
           (acc, configEntry: ConfigType, i: number) => ({
             ...acc,
             [`urls[${i}]`]: encodeURIComponent(
-              configToRequest({ ...config, ...configEntry })
+              configToURI({ ...config, ...configEntry })
             ),
           }),
           { method: 'API.getBulkRequest' }
@@ -39,8 +38,7 @@ const getMatomoRequest = (
     ...config,
     ...computedBulkConfig,
   };
-  const strConfig = configToRequest(computedConfig);
-  return `${MATOMO_URL}${strConfig}`;
+  return `${MATOMO_URL}?${configToURI(computedConfig)}`;
 };
 
 const requestOptions: RequestInit = {
