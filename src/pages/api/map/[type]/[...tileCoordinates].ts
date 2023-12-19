@@ -3,6 +3,13 @@ import getTiles from 'src/services/tiles';
 import { zDataType } from 'src/services/tiles.config';
 import zod from 'zod';
 
+// disable the warning for this route as many tiles are bigger than the default 4MB threshold
+export const config = {
+  api: {
+    responseLimit: false,
+  },
+};
+
 export default async function handleRequest(
   req: NextApiRequest,
   res: NextApiResponse
