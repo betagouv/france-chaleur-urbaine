@@ -97,10 +97,10 @@ export const upsertUsersFromApi = async (
         const fcuTags = airtableUserAPI
           ? (airtableUserAPI.get('Tags FCU') as string[])
           : [];
-        let allGestionnaires = gestionnaires;
-        if (airtableUserAPI && fcuTags && fcuTags.length > 0) {
-          allGestionnaires = allGestionnaires.concat(fcuTags);
-        }
+        const allGestionnaires =
+          airtableUserAPI && fcuTags && fcuTags.length > 0
+            ? gestionnaires.concat(fcuTags)
+            : gestionnaires;
         const promises: Promise<any>[] = [
           db('users')
             .insert({
