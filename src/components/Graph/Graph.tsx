@@ -3,7 +3,7 @@ import { Container, GraphWrapper } from './Graph.style';
 
 const Graph = ({
   title,
-  errors,
+  error,
   data,
   formatedData,
   large,
@@ -16,7 +16,7 @@ const Graph = ({
   colors,
 }: {
   title: string;
-  errors: any;
+  error?: any;
   data: any;
   formatedData: any[];
   date?: boolean;
@@ -35,7 +35,7 @@ const Graph = ({
   return (
     <Container large={large}>
       <GraphWrapper>
-        {errors ? (
+        {error ? (
           <div>
             Erreur lors du chargement des données statistiques, veuillez nous
             excuser et réessayer plus tard.

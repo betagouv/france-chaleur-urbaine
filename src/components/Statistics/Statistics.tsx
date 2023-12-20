@@ -19,6 +19,7 @@ import {
 import statistics from '@data/statistics';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Link from 'next/link';
+import { fetchJSON } from '@utils/network';
 
 type ReturnApiStatAirtable = {
   date: string;
@@ -63,8 +64,6 @@ const graphOptions = {
   vAxisTextStyle: { color: '7C8DB5' },
   colors: ['#83B0F3', '#64B847', '#1f8d49', '#009099'],
 };
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const getEntryValue = (entry: any, value: string, data: string) => {
   if (entry && entry[value]) {
@@ -129,13 +128,16 @@ const getFormattedData = (
 
 const Statistics = () => {
   const { data: rawDataEligibilityTest, error: errorDataEligibilityTest } =
-    useSWR('/api/statistiques/actions', fetcher, {
+    useSWR<any>('/api/statistiques/actions', fetchJSON, {
       onError: (err) => console.warn('errorDataEligibilityTest >>', err),
     });
 
   const dataEligibilityTest = useMemo(() => {
-    if (rawDataEligibilityTest?.result.values.result === 'error') {
-      return [];
+    if (
+      !rawDataEligibilityTest ||
+      rawDataEligibilityTest?.result.values.result === 'error'
+    ) {
+      return null;
     }
     return (
       rawDataEligibilityTest?.result.values
@@ -152,7 +154,7 @@ const Statistics = () => {
         )
         .reverse() ?? []
     );
-  }, [rawDataEligibilityTest?.result]);
+  }, [rawDataEligibilityTest]);
 
   const formatedDataEligibilityTest = getFormattedData(
     dataEligibilityTest,
@@ -184,17 +186,17 @@ const Statistics = () => {
     }
   );
 
-  const { data: rawDataVisits, error: errorVisits } = useSWR(
+  const { data: rawDataVisits, error: errorVisits } = useSWR<any>(
     '/api/statistiques/visits',
-    fetcher,
+    fetchJSON,
     {
       onError: (err) => console.warn('errorVisits >>', err),
     }
   );
 
   const dataVisits = useMemo(() => {
-    if (rawDataVisits?.result.values.result === 'error') {
-      return [];
+    if (!rawDataVisits || rawDataVisits?.result.values.result === 'error') {
+      return null;
     }
 
     return (
@@ -205,7 +207,7 @@ const Statistics = () => {
         }))
         .reverse() ?? []
     );
-  }, [rawDataVisits?.result]);
+  }, [rawDataVisits]);
 
   const formatedDataVisits = getFormattedData(
     dataVisits,
@@ -220,9 +222,9 @@ const Statistics = () => {
     }
   );
 
-  const { data: rawDataCountContact, error: errorCountContact } = useSWR(
+  const { data: rawDataCountContact, error: errorCountContact } = useSWR<any>(
     '/api/statistiques/contacts?group=monthly',
-    fetcher,
+    fetchJSON,
     {
       onError: (err) => console.warn('errorCountContact >>', err),
     }
@@ -258,7 +260,7 @@ const Statistics = () => {
   );
 
   const { data: rawDataCountBulkContact, error: errorCountBulkContact } =
-    useSWR('/api/statistiques/bulk', fetcher, {
+    useSWR<any>('/api/statistiques/bulk', fetchJSON, {
       onError: (err) => console.warn('errorCountContact >>', err),
     });
 
@@ -297,17 +299,20 @@ const Statistics = () => {
     }
   );
 
-  const { data: rawDataVisitsMap, error: errorVisitsMap } = useSWR(
+  const { data: rawDataVisitsMap, error: errorVisitsMap } = useSWR<any>(
     '/api/statistiques/visitsMap',
-    fetcher,
+    fetchJSON,
     {
       onError: (err) => console.warn('errorVisitsMap >>', err),
     }
   );
 
   const dataVisitsMap = useMemo(() => {
-    if (rawDataVisitsMap?.result.values.result === 'error') {
-      return [];
+    if (
+      !rawDataVisitsMap ||
+      rawDataVisitsMap?.result.values.result === 'error'
+    ) {
+      return null;
     }
 
     return (
@@ -318,7 +323,7 @@ const Statistics = () => {
         }))
         .reverse() ?? []
     );
-  }, [rawDataVisitsMap?.result]);
+  }, [rawDataVisitsMap]);
 
   const formatedDataVisitsMap = getFormattedData(
     dataVisitsMap,
@@ -479,7 +484,7 @@ const Statistics = () => {
               <GraphsWrapper>
                 <Graph
                   title="Nombre de demandes de mise en contact avec un gestionnaire"
-                  errors={errorCountContact}
+                  error={errorCountContact}
                   data={dataCountContact}
                   formatedData={formatedDataCountContact}
                   {...graphOptions}
@@ -535,7 +540,7 @@ const Statistics = () => {
               <GraphsWrapper>
                 <Graph
                   title="Nombre d’adresses testées"
-                  errors={errorDataEligibilityTest}
+                  error={errorDataEligibilityTest}
                   data={dataEligibilityTest}
                   formatedData={formatedDataEligibilityTest}
                   {...graphOptions}
@@ -581,7 +586,7 @@ const Statistics = () => {
               <GraphsWrapper>
                 <Graph
                   title="Nombre de visiteurs"
-                  errors={errorVisits}
+                  error={errorVisits}
                   data={dataVisits}
                   formatedData={formatedDataVisits}
                   {...graphOptions}
@@ -610,7 +615,7 @@ const Statistics = () => {
               <GraphsWrapper>
                 <Graph
                   title="Nombre de visiteurs sur la cartographie"
-                  errors={errorVisitsMap}
+                  error={errorVisitsMap}
                   data={dataVisitsMap}
                   formatedData={formatedDataVisitsMap}
                   {...graphOptions}
@@ -647,7 +652,7 @@ const Statistics = () => {
               <GraphsWrapper>
                 <Graph
                   title="Nombre d’adresses testées par liste"
-                  errors={errorCountBulkContact}
+                  error={errorCountBulkContact}
                   data={dataCountBulkContact}
                   formatedData={formatedDataCountBulkContact}
                   {...graphOptions}
