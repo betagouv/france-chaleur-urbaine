@@ -335,8 +335,8 @@ function ModalCarteFrance(props: Props) {
                   ) ?? '--'}
                 </GreyNumber>
                 <GreyText>
-                  {getBatimentLogementLabel(modeBatimentLogement)} chauffés
-                  augaz individuel
+                  {getBatimentLogementLabel(modeBatimentLogement)} chauffés au
+                  gaz individuel
                 </GreyText>
               </FirstColumn>
 
