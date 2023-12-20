@@ -1,6 +1,7 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import { ZodRawShape, z } from 'zod';
 import { logger } from './logger';
+import { HttpStatusCode } from 'axios';
 
 /**
  * Valide un objet selon un schéma zod.
@@ -20,7 +21,10 @@ export async function validateObjectSchema<Shape extends ZodRawShape>(
 export function handleRouteErrors(handler: NextApiHandler): NextApiHandler {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      await handler(req, res);
+      const handlerResult = await handler(req, res);
+      if (!res.headersSent) {
+        res.status(HttpStatusCode.Ok).json(handlerResult);
+      }
     } catch (error) {
       let errorMessage = error;
       if (error instanceof Error) {

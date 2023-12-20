@@ -1,4 +1,5 @@
 import { getAllDemands } from '@core/infrastructure/repository/manager';
+import { handleRouteErrors } from '@helpers/server';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Demand } from 'src/types/Summary/Demand';
 
@@ -86,23 +87,9 @@ const get = async (res: NextApiResponse, group: keyof typeof reducer) => {
   return res.status(200).json(demands);
 };
 
-export default async function demands(
+export default handleRouteErrors(async function demands(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { group } = req.query;
-
-  try {
-    if (req.method === 'GET') {
-      return get(res, group as keyof typeof reducer);
-    }
-    return res.status(501);
-  } catch (error) {
-    console.error(error);
-    res.statusCode = 500;
-    return res.json({
-      message: 'internal server error',
-      code: 'Internal Server Error',
-    });
-  }
-}
+  return get(res, req.query.group as keyof typeof reducer);
+});
