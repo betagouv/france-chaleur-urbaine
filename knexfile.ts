@@ -13,8 +13,12 @@ export default {
   },
 };
 
-function addApplicationName(connectionString: string): string {
-  return `${connectionString}${
-    connectionString.includes('?') ? '&' : '?'
-  }application_name=FCU-API`;
+function addApplicationName(
+  connectionString: string | undefined
+): string | undefined {
+  return connectionString === undefined
+    ? undefined
+    : `${connectionString}${
+        connectionString.includes('?') ? '&' : '?'
+      }application_name=FCU-API`;
 }
