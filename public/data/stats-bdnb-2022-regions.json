@@ -1,0 +1,626 @@
+[
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 4857,
+        "individuel_gaz": 8063,
+        "collectif_fioul": 546
+      },
+      "logements": {
+        "collectif_gaz": 247631,
+        "individuel_gaz": 149758,
+        "collectif_fioul": 14089
+      },
+      "nb_batiments": 5403,
+      "nb_logements": 261720
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 6774,
+        "individuel_gaz": 13426,
+        "collectif_fioul": 800
+      },
+      "logements": {
+        "collectif_gaz": 317191,
+        "individuel_gaz": 209996,
+        "collectif_fioul": 19603
+      },
+      "nb_batiments": 7574,
+      "nb_logements": 336794
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 8065,
+        "individuel_gaz": 17970,
+        "collectif_fioul": 977
+      },
+      "logements": {
+        "collectif_gaz": 365257,
+        "individuel_gaz": 251408,
+        "collectif_fioul": 23152
+      },
+      "nb_batiments": 9042,
+      "nb_logements": 388409
+    },
+    "taux_enrr": 58,
+    "nb_reseaux": 135,
+    "region_nom": "Ile-de-France",
+    "region_code": "11"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 253,
+        "individuel_gaz": 1175,
+        "collectif_fioul": 10
+      },
+      "logements": {
+        "collectif_gaz": 8078,
+        "individuel_gaz": 8722,
+        "collectif_fioul": 46
+      },
+      "nb_batiments": 263,
+      "nb_logements": 8124
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 339,
+        "individuel_gaz": 2362,
+        "collectif_fioul": 22
+      },
+      "logements": {
+        "collectif_gaz": 9730,
+        "individuel_gaz": 13146,
+        "collectif_fioul": 146
+      },
+      "nb_batiments": 361,
+      "nb_logements": 9876
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 409,
+        "individuel_gaz": 3674,
+        "collectif_fioul": 34
+      },
+      "logements": {
+        "collectif_gaz": 11029,
+        "individuel_gaz": 17515,
+        "collectif_fioul": 219
+      },
+      "nb_batiments": 443,
+      "nb_logements": 11248
+    },
+    "taux_enrr": 76.5,
+    "nb_reseaux": 36,
+    "region_nom": "Centre-Val de Loire",
+    "region_code": "24"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 314,
+        "individuel_gaz": 2209,
+        "collectif_fioul": 29
+      },
+      "logements": {
+        "collectif_gaz": 9586,
+        "individuel_gaz": 17128,
+        "collectif_fioul": 225
+      },
+      "nb_batiments": 343,
+      "nb_logements": 9811
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 463,
+        "individuel_gaz": 4086,
+        "collectif_fioul": 50
+      },
+      "logements": {
+        "collectif_gaz": 12717,
+        "individuel_gaz": 25553,
+        "collectif_fioul": 427
+      },
+      "nb_batiments": 513,
+      "nb_logements": 13144
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 616,
+        "individuel_gaz": 5623,
+        "collectif_fioul": 74
+      },
+      "logements": {
+        "collectif_gaz": 15968,
+        "individuel_gaz": 32385,
+        "collectif_fioul": 599
+      },
+      "nb_batiments": 690,
+      "nb_logements": 16567
+    },
+    "taux_enrr": 72,
+    "nb_reseaux": 77,
+    "region_nom": "Bourgogne-Franche-Comté",
+    "region_code": "27"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 172,
+        "individuel_gaz": 1298,
+        "collectif_fioul": 15
+      },
+      "logements": {
+        "collectif_gaz": 5790,
+        "individuel_gaz": 6968,
+        "collectif_fioul": 324
+      },
+      "nb_batiments": 187,
+      "nb_logements": 6114
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 228,
+        "individuel_gaz": 2642,
+        "collectif_fioul": 25
+      },
+      "logements": {
+        "collectif_gaz": 7105,
+        "individuel_gaz": 11199,
+        "collectif_fioul": 403
+      },
+      "nb_batiments": 253,
+      "nb_logements": 7508
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 285,
+        "individuel_gaz": 3971,
+        "collectif_fioul": 32
+      },
+      "logements": {
+        "collectif_gaz": 8175,
+        "individuel_gaz": 15954,
+        "collectif_fioul": 437
+      },
+      "nb_batiments": 317,
+      "nb_logements": 8612
+    },
+    "taux_enrr": 76.1,
+    "nb_reseaux": 49,
+    "region_nom": "Normandie",
+    "region_code": "28"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 443,
+        "individuel_gaz": 3153,
+        "collectif_fioul": 29
+      },
+      "logements": {
+        "collectif_gaz": 15612,
+        "individuel_gaz": 19529,
+        "collectif_fioul": 622
+      },
+      "nb_batiments": 472,
+      "nb_logements": 16234
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 619,
+        "individuel_gaz": 5942,
+        "collectif_fioul": 49
+      },
+      "logements": {
+        "collectif_gaz": 17877,
+        "individuel_gaz": 28424,
+        "collectif_fioul": 771
+      },
+      "nb_batiments": 668,
+      "nb_logements": 18648
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 788,
+        "individuel_gaz": 8613,
+        "collectif_fioul": 69
+      },
+      "logements": {
+        "collectif_gaz": 20295,
+        "individuel_gaz": 35870,
+        "collectif_fioul": 900
+      },
+      "nb_batiments": 857,
+      "nb_logements": 21195
+    },
+    "taux_enrr": 63.5,
+    "nb_reseaux": 51,
+    "region_nom": "Hauts-de-France",
+    "region_code": "32"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 654,
+        "individuel_gaz": 3859,
+        "collectif_fioul": 86
+      },
+      "logements": {
+        "collectif_gaz": 20138,
+        "individuel_gaz": 28375,
+        "collectif_fioul": 677
+      },
+      "nb_batiments": 740,
+      "nb_logements": 20815
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 1050,
+        "individuel_gaz": 7056,
+        "collectif_fioul": 154
+      },
+      "logements": {
+        "collectif_gaz": 27639,
+        "individuel_gaz": 43671,
+        "collectif_fioul": 1063
+      },
+      "nb_batiments": 1204,
+      "nb_logements": 28702
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 1423,
+        "individuel_gaz": 10001,
+        "collectif_fioul": 232
+      },
+      "logements": {
+        "collectif_gaz": 33943,
+        "individuel_gaz": 56863,
+        "collectif_fioul": 1608
+      },
+      "nb_batiments": 1655,
+      "nb_logements": 35551
+    },
+    "taux_enrr": 69.9,
+    "nb_reseaux": 135,
+    "region_nom": "Grand Est",
+    "region_code": "44"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 291,
+        "individuel_gaz": 2278,
+        "collectif_fioul": 7
+      },
+      "logements": {
+        "collectif_gaz": 20472,
+        "individuel_gaz": 16373,
+        "collectif_fioul": 84
+      },
+      "nb_batiments": 298,
+      "nb_logements": 20556
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 465,
+        "individuel_gaz": 4310,
+        "collectif_fioul": 13
+      },
+      "logements": {
+        "collectif_gaz": 25586,
+        "individuel_gaz": 23183,
+        "collectif_fioul": 127
+      },
+      "nb_batiments": 478,
+      "nb_logements": 25713
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 584,
+        "individuel_gaz": 6343,
+        "collectif_fioul": 18
+      },
+      "logements": {
+        "collectif_gaz": 28529,
+        "individuel_gaz": 30085,
+        "collectif_fioul": 209
+      },
+      "nb_batiments": 602,
+      "nb_logements": 28738
+    },
+    "taux_enrr": 76,
+    "nb_reseaux": 35,
+    "region_nom": "Pays de la Loire",
+    "region_code": "52"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 142,
+        "individuel_gaz": 1016,
+        "collectif_fioul": 2
+      },
+      "logements": {
+        "collectif_gaz": 7909,
+        "individuel_gaz": 9736,
+        "collectif_fioul": 4
+      },
+      "nb_batiments": 144,
+      "nb_logements": 7913
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 191,
+        "individuel_gaz": 2052,
+        "collectif_fioul": 5
+      },
+      "logements": {
+        "collectif_gaz": 10242,
+        "individuel_gaz": 16823,
+        "collectif_fioul": 39
+      },
+      "nb_batiments": 196,
+      "nb_logements": 10281
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 245,
+        "individuel_gaz": 3075,
+        "collectif_fioul": 10
+      },
+      "logements": {
+        "collectif_gaz": 12035,
+        "individuel_gaz": 24107,
+        "collectif_fioul": 69
+      },
+      "nb_batiments": 255,
+      "nb_logements": 12104
+    },
+    "taux_enrr": 71.3,
+    "nb_reseaux": 40,
+    "region_nom": "Bretagne",
+    "region_code": "53"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 205,
+        "individuel_gaz": 1575,
+        "collectif_fioul": 9
+      },
+      "logements": {
+        "collectif_gaz": 12231,
+        "individuel_gaz": 14985,
+        "collectif_fioul": 52
+      },
+      "nb_batiments": 214,
+      "nb_logements": 12283
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 278,
+        "individuel_gaz": 3219,
+        "collectif_fioul": 10
+      },
+      "logements": {
+        "collectif_gaz": 13092,
+        "individuel_gaz": 23875,
+        "collectif_fioul": 55
+      },
+      "nb_batiments": 288,
+      "nb_logements": 13147
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 348,
+        "individuel_gaz": 4745,
+        "collectif_fioul": 12
+      },
+      "logements": {
+        "collectif_gaz": 14351,
+        "individuel_gaz": 30850,
+        "collectif_fioul": 75
+      },
+      "nb_batiments": 360,
+      "nb_logements": 14426
+    },
+    "taux_enrr": 76.4,
+    "nb_reseaux": 84,
+    "region_nom": "Nouvelle-Aquitaine",
+    "region_code": "75"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 56,
+        "individuel_gaz": 560,
+        "collectif_fioul": 9
+      },
+      "logements": {
+        "collectif_gaz": 3296,
+        "individuel_gaz": 6542,
+        "collectif_fioul": 467
+      },
+      "nb_batiments": 65,
+      "nb_logements": 3763
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 83,
+        "individuel_gaz": 1159,
+        "collectif_fioul": 18
+      },
+      "logements": {
+        "collectif_gaz": 4340,
+        "individuel_gaz": 9738,
+        "collectif_fioul": 499
+      },
+      "nb_batiments": 101,
+      "nb_logements": 4839
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 98,
+        "individuel_gaz": 1805,
+        "collectif_fioul": 19
+      },
+      "logements": {
+        "collectif_gaz": 4700,
+        "individuel_gaz": 12621,
+        "collectif_fioul": 505
+      },
+      "nb_batiments": 117,
+      "nb_logements": 5205
+    },
+    "taux_enrr": 80.3,
+    "nb_reseaux": 64,
+    "region_nom": "Occitanie",
+    "region_code": "76"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 1406,
+        "individuel_gaz": 4309,
+        "collectif_fioul": 158
+      },
+      "logements": {
+        "collectif_gaz": 61274,
+        "individuel_gaz": 57620,
+        "collectif_fioul": 2416
+      },
+      "nb_batiments": 1564,
+      "nb_logements": 63690
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 2022,
+        "individuel_gaz": 7626,
+        "collectif_fioul": 244
+      },
+      "logements": {
+        "collectif_gaz": 79631,
+        "individuel_gaz": 86513,
+        "collectif_fioul": 3327
+      },
+      "nb_batiments": 2266,
+      "nb_logements": 82958
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 2485,
+        "individuel_gaz": 10461,
+        "collectif_fioul": 339
+      },
+      "logements": {
+        "collectif_gaz": 94031,
+        "individuel_gaz": 109075,
+        "collectif_fioul": 4163
+      },
+      "nb_batiments": 2824,
+      "nb_logements": 98194
+    },
+    "taux_enrr": 74.7,
+    "nb_reseaux": 199,
+    "region_nom": "Auvergne-Rhône-Alpes",
+    "region_code": "84"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 107,
+        "individuel_gaz": 115,
+        "collectif_fioul": 39
+      },
+      "logements": {
+        "collectif_gaz": 7322,
+        "individuel_gaz": 2279,
+        "collectif_fioul": 888
+      },
+      "nb_batiments": 146,
+      "nb_logements": 8210
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 159,
+        "individuel_gaz": 238,
+        "collectif_fioul": 57
+      },
+      "logements": {
+        "collectif_gaz": 9844,
+        "individuel_gaz": 3714,
+        "collectif_fioul": 1147
+      },
+      "nb_batiments": 216,
+      "nb_logements": 10991
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 203,
+        "individuel_gaz": 406,
+        "collectif_fioul": 70
+      },
+      "logements": {
+        "collectif_gaz": 11787,
+        "individuel_gaz": 5200,
+        "collectif_fioul": 1306
+      },
+      "nb_batiments": 273,
+      "nb_logements": 13093
+    },
+    "taux_enrr": 69.8,
+    "nb_reseaux": 40,
+    "region_nom": "Provence-Alpes-Côte d'Azur",
+    "region_code": "93"
+  },
+  {
+    "50m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 0,
+        "collectif_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "100m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 1,
+        "collectif_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 20,
+        "collectif_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "150m": {
+      "batiments": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 1,
+        "collectif_fioul": 0
+      },
+      "logements": {
+        "collectif_gaz": 0,
+        "individuel_gaz": 20,
+        "collectif_fioul": 0
+      },
+      "nb_batiments": 0,
+      "nb_logements": 0
+    },
+    "taux_enrr": 99.8,
+    "nb_reseaux": 1,
+    "region_nom": "Corse",
+    "region_code": "94"
+  }
+]

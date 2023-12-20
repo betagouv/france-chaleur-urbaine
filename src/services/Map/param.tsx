@@ -147,6 +147,8 @@ const legendData: (string | TypeGroupLegend)[] = [
     type: 'list',
   },
   'separator',
+  'statsByArea',
+  'separator',
   {
     id: LegendGroupId.gasUsageGroup,
     entries: [

@@ -101,6 +101,7 @@
     "@types/mapbox__mapbox-gl-draw": "^1.4.0",
     "@types/node": "^20.5.0",
     "@types/react": "18.2.45",
+    "@types/react-dom": "^18.2.17",
     "@types/sinon": "^10.0.16",
     "@types/styled-components": "^5.1.26",
     "@types/uuid": "^9.0.2",
