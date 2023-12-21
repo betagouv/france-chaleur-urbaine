@@ -42,6 +42,7 @@ const csp = {
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://cdn.linkedin.oribi.io',
+    'https://px.ads.linkedin.com',
     'https://wxs.ign.fr',
     'https://api.mapbox.com/',
   ],
