@@ -42,6 +42,36 @@ pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname
   - L'interface maildev pour les emails : http://localhost:1080/
   - La base de données PostgreSQL : localhost:5432
 
+
+## Lint
+
+- [Prettier](https://prettier.io/) est utilisé comme formatteur de code.
+- [ESLint](https://eslint.org/) est utilisé pour détecter les erreurs de programmation.
+
+```sh
+yarn lint
+```
+
+
+## Tests
+
+[Vitest](https://vitest.dev/) est le framework utilisé pour les tests unitaires.
+
+```sh
+yarn test
+```
+
+
+## Build
+
+```sh
+yarn build
+```
+
+Note : Il se peut qu'un problème de permissions survienne sur le dossier .next qui est monté dans le conteneur Docker.
+Dans ce cas, la commande `sudo chown -R $USER: .next` corrige le problème.
+
+
 # Licence
 
 Le code de ce logiciel est soumis à la licence [Etalab 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/).
