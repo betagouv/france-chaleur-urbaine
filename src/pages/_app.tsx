@@ -3,7 +3,6 @@ import {
   FacebookMarkup,
   GoogleAdsMarkup,
   LinkedInMarkup,
-  MatomoMarkup,
 } from '@components/Markup';
 import { LayoutProvider, MainLayout } from '@components/shared/layout';
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
@@ -28,6 +27,7 @@ import { iframedPaths } from 'src/services/iframe';
 import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
 import { clientConfig } from 'src/client-config';
+import { useAnalytics } from 'src/services/analytics';
 
 const og = {
   // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
@@ -66,11 +66,11 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
     width: 13px;
     height: 13px;
   }
-  
+
   input[type="checkbox"] {
     appearance: checkbox;
   }
-  
+
   input[type="radio"] {
     appearance: radio;
   }
@@ -82,7 +82,7 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   .fr-footer {
     margin-top: 2px;
   }
-  
+
   .fr-footer__partners-logos {
     a[target=_blank] {
       &::after {
@@ -94,7 +94,7 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   .fr-footer__logo {
     max-height: 60px !important;
     height: 60px !important;
-    
+
     @media (min-width: 400px) {
       max-height: 80px !important;
       height: 80px !important;
@@ -124,6 +124,7 @@ function MyApp({
   session: Session;
 }>) {
   const router = useRouter();
+  useAnalytics();
 
   return (
     <>
@@ -140,10 +141,6 @@ function MyApp({
       >
         <Head>
           {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
-          <MatomoMarkup
-            matomoUrl={clientConfig.tracking.matomoServerURL}
-            siteId={clientConfig.tracking.matomoSiteId}
-          />
           {!iframedPaths.some((path) => router.pathname.match(path)) && (
             <ConsentBanner>
               <GoogleAdsMarkup googleId={clientConfig.tracking.googleTagId} />

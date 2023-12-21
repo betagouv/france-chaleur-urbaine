@@ -39,6 +39,7 @@
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@next/bundle-analyzer": "13.3.4",
     "@reach/combobox": "^0.18.0",
+    "@socialgouv/matomo-next": "^1.8.0",
     "@turf/area": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/length": "^6.5.0",
