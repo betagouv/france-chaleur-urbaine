@@ -1,70 +1,8 @@
-import markupData, {
-  facebookEvent,
-  googleAdsEvent,
-  linkedInEvent,
-  matomoEvent,
-} from '@components/Markup';
 import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
 import { useCallback, useRef, useState } from 'react';
+import { trackEvent } from 'src/services/analytics';
 import { AddressDataType } from 'src/types/AddressData';
 import { Airtable } from 'src/types/enum/Airtable';
-
-const callMarkup__handleOnFetchAddress = (
-  address: string,
-  fromMap?: boolean
-) => {
-  matomoEvent(
-    markupData.eligibilityTest.matomoEvent[fromMap ? 'map' : 'form'],
-    [address]
-  );
-  linkedInEvent(markupData.eligibilityTest.linkedInEvent);
-  facebookEvent(markupData.eligibilityTest.facebookEvent);
-  googleAdsEvent('10986886666', markupData.eligibilityTest.googleAdsEvent);
-};
-
-const callMarkup__handleOnSuccessAddress = ({
-  eligibility,
-  address,
-  fromMap,
-}: {
-  eligibility: boolean;
-  address?: string;
-  fromMap?: boolean;
-}) => {
-  if (eligibility) {
-    matomoEvent(
-      markupData.eligibilityTestOK.matomoEvent[fromMap ? 'map' : 'form'],
-      [address || 'Adresse indefini']
-    );
-    linkedInEvent(markupData.eligibilityTestOK.linkedInEvent);
-    googleAdsEvent('10986886666', markupData.eligibilityTestOK.googleAdsEvent);
-  } else {
-    matomoEvent(
-      markupData.eligibilityTestKO.matomoEvent[fromMap ? 'map' : 'form'],
-      [address || 'Adresse indefini']
-    );
-    linkedInEvent(markupData.eligibilityTestKO.linkedInEvent);
-    googleAdsEvent('10986886666', markupData.eligibilityTestKO.googleAdsEvent);
-  }
-};
-const callMarkup__handleOnSubmitContact = (
-  data: AddressDataType,
-  fromMap?: boolean
-) => {
-  const { eligibility, address = '' } = data;
-  const markupEligibilityKey = eligibility
-    ? 'contactFormEligible'
-    : 'contactFormIneligible';
-  matomoEvent(
-    markupData[markupEligibilityKey].matomoEvent[fromMap ? 'map' : 'form'],
-    [address]
-  );
-  googleAdsEvent(
-    '10986886666',
-    markupData[markupEligibilityKey].googleAdsEvent
-  );
-  facebookEvent(markupData[markupEligibilityKey].facebookEvent);
-};
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
@@ -104,18 +42,22 @@ const useContactFormFCU = () => {
     setLoadingStatus('loading');
     setMessageSent(false);
     setMessageReceived(false);
-    callMarkup__handleOnFetchAddress(address, fromMap);
+    trackEvent(
+      `Eligibilité|Formulaire de test${fromMap ? ' - Carte' : ''} - Envoi`,
+      address
+    );
   };
 
   const handleOnSuccessAddress = useCallback(
     (data: AddressDataType, fromMap?: boolean, dontNotify?: boolean) => {
       const { address, heatingType, eligibility } = data;
       if (!dontNotify) {
-        callMarkup__handleOnSuccessAddress({
-          eligibility: eligibility ? eligibility.isEligible : false,
-          address,
-          fromMap,
-        });
+        trackEvent(
+          `Eligibilité|Formulaire de test${
+            fromMap ? ' - Carte' : ''
+          } - Adresse ${eligibility ? 'É' : 'Iné'}ligible`,
+          address || 'Adresse indefini'
+        );
       }
       setAddressData(data);
       if (address && heatingType) {
@@ -135,9 +77,12 @@ const useContactFormFCU = () => {
         data.company = '';
       }
       setMessageSent(true);
-      callMarkup__handleOnSubmitContact(
-        (data as AddressDataType) || {},
-        fromMap
+      const { eligibility, address = '' } = (data as AddressDataType) || {};
+      trackEvent(
+        `Eligibilité|Formulaire de contact ${eligibility ? 'é' : 'iné'}ligible${
+          fromMap ? ' - Carte' : ''
+        } - Envoi`,
+        address
       );
       const response = await submitToAirtable(
         formatDataToAirtable(data),

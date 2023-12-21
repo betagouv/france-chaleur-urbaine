@@ -17,7 +17,7 @@ import { ButtonLink } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { useEffect, useState } from 'react';
 import ModalCarteFrance from './ModalCarteFrance';
 import Image from 'next/image';
-import { matomoEvent } from '@components/Markup';
+import { trackEvent } from 'src/services/analytics';
 
 function MapLegend({
   data,
@@ -77,8 +77,7 @@ function MapLegend({
               <LegendButton>
                 <ButtonLink
                   href="./201223_Opendata_FCU.zip"
-                  tagName="downloadLink"
-                  trackEvent="Tracés, carte"
+                  eventKey="Téléchargement|Tracés|carte"
                   download
                   className="fr-btn--sm"
                 >
@@ -95,10 +94,7 @@ function MapLegend({
               secondary
               key="statsByArea"
               onClick={() => {
-                matomoEvent([
-                  'Carto',
-                  'ouverture popup potentiels de raccordement',
-                ]);
+                trackEvent('Carto|ouverture popup potentiels de raccordement');
                 setShowStatsModal(true);
               }}
               size="sm"

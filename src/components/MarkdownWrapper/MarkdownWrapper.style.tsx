@@ -1,5 +1,5 @@
-import markupData, { matomoEvent } from '@components/Markup';
 import Link from 'next/link';
+import { TrackingEvent, trackEvent } from 'src/services/analytics';
 import styled, { css } from 'styled-components';
 
 export const isExternalLink = (href: string) =>
@@ -64,32 +64,26 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
   }
 `;
 
-type TagName = keyof typeof markupData;
 type ExtraEventType = {
   children: React.ReactNode;
   className?: string;
-  tagName?: TagName;
-  trackEvent?: string;
+  eventKey?: TrackingEvent;
+  eventPayload?: string;
 };
 
 export const ButtonLink = styled(Link).attrs<ExtraEventType>((props) => {
-  const { className, tagName, trackEvent } = props;
-  const getMatomoEventKey = (tagName?: TagName) =>
-    (tagName && markupData?.[tagName]?.matomoEvent.form) || [];
-  const trackEventProps = trackEvent
+  const { className, eventKey, eventPayload, ...rest } = props;
+  const trackEventProps = eventKey
     ? {
         onClick: () => {
-          matomoEvent(
-            getMatomoEventKey(tagName),
-            trackEvent.split(',').map((v) => v.trim())
-          );
+          trackEvent(eventKey, eventPayload?.split(',').map((v) => v.trim()));
         },
       }
     : {};
   return {
-    ...props,
+    ...rest,
     ...trackEventProps,
-    className: `fr-btn ${className || ''}`,
+    className: `fr-btn ${className ?? ''}`,
   };
 })<ExtraEventType>``;
 

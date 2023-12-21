@@ -4,6 +4,7 @@ import { clientConfig } from 'src/client-config';
 
 /**
  * Register analytics (Matomo only for now).
+ * The rest still uses tarteaucitron.
  */
 export const useAnalytics = () => {
   useEffect(() => {
@@ -31,6 +32,9 @@ Workflow du formulaire de test d'adresse :
   - Formulaire de contact éligible - Envoi
 */
 
+/**
+ * List of all events tracked by analytics tools.
+ */
 const trackingEvents = {
   'Carto|Ajouter un segment': {
     matomo: ['Carto', 'Ajouter un segment'],
@@ -67,38 +71,55 @@ const trackingEvents = {
   },
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
+    google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
+    facebook: ['Contact'],
   },
   'Eligibilité|Formulaire de contact inéligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Carte - Envoi'],
+    google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
+    facebook: ['Contact'],
   },
   'Eligibilité|Formulaire de contact éligible - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Envoi'],
     google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
+    facebook: ['Contact'],
   },
   'Eligibilité|Formulaire de contact inéligible - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Envoi'],
     google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
+    facebook: ['Contact'],
   },
   'Eligibilité|Formulaire de test - Adresse Inéligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Inéligible'],
     google: 'Pm33CK6ms_oYEJDB_MIq', // Formulaire envoyé - Non Eligible
+    linkedin: 5492666,
   },
   'Eligibilité|Formulaire de test - Adresse Éligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Éligible'],
     google: 'boNMCKums_oYEJDB_MIq', // Formulaire envoyé - Eligible
+    linkedin: 5392842,
   },
   'Eligibilité|Formulaire de test - Carte - Adresse Inéligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Adresse Inéligible'],
+    google: 'Pm33CK6ms_oYEJDB_MIq', // Formulaire envoyé - Non Eligible
+    linkedin: 5492666,
   },
   'Eligibilité|Formulaire de test - Carte - Adresse Éligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Adresse Éligible'],
+    google: 'boNMCKums_oYEJDB_MIq', // Formulaire envoyé - Eligible
+    linkedin: 5392842,
   },
   'Eligibilité|Formulaire de test - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Envoi'],
+    google: 'z18zCKKms_oYEJDB_MIq', // Test éligibilité
+    facebook: ['FindLocation'],
+    linkedin: 5492674,
   },
   'Eligibilité|Formulaire de test - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de test - Envoi'],
     google: 'z18zCKKms_oYEJDB_MIq', // Test éligibilité
+    facebook: ['FindLocation'],
+    linkedin: 5492674,
   },
   'Téléchargement|Guide FCU|coproprietaire': {
     matomo: ['Téléchargement', 'Guide FCU', 'coproprietaire'],
@@ -116,26 +137,30 @@ const trackingEvents = {
     matomo: ['Téléchargement', 'Tracés', 'professionnels'],
   },
   Vidéo: {
-    matomo: ['Vidéo' /* TODO dynamique ici */],
+    matomo: ['Vidéo'],
   },
 } as const satisfies Record<string, TrackingConfiguration>;
 
-type TrackingEvent = keyof typeof trackingEvents;
+export type TrackingEvent = keyof typeof trackingEvents;
 
 /**
  * Track an custom event.
+ *
+ * eventPayload is only use for Matomo at the moment.
  */
-export const trackEvent = (eventKey: TrackingEvent) => {
-  console.log('track event', eventKey, trackingEvents[eventKey]);
+export const trackEvent = (eventKey: TrackingEvent, ...eventPayload: any[]) => {
+  if ((window as any).devMode) {
+    // eslint-disable-next-line no-console
+    console.log('trackEvent', eventKey, eventPayload, trackingEvents[eventKey]);
+  }
   const configuration = trackingEvents[eventKey];
   if (!configuration) {
     console.error('invalid tracking key', eventKey);
     return;
   }
-  console.log('performTracking', configuration);
   // debug disable
   if (!window) {
-    performTracking(configuration);
+    performTracking(configuration, eventPayload);
   }
 };
 
@@ -147,10 +172,14 @@ declare let window: Window & {
   _paq: [any]; // matomo
 };
 
-// TODO handle dynamic events / variables with matomo
-const performTracking = (trackingConfig: TrackingConfiguration) => {
+const performTracking = (
+  trackingConfig: TrackingConfiguration,
+  eventPayload?: any[]
+) => {
   if (trackingConfig.facebook && typeof window?.fbq === 'function') {
-    window.fbq(['trackCustom', ...trackingConfig.facebook]);
+    // we may need to use custom events trackCustom when we want more information
+    // see https://developers.facebook.com/docs/meta-pixel/reference
+    window.fbq(['track', ...trackingConfig.facebook]);
   }
   if (trackingConfig.google && typeof window?.gtag === 'function') {
     window.gtag('event', 'conversion', {
@@ -165,6 +194,6 @@ const performTracking = (trackingConfig: TrackingConfiguration) => {
   //   window._paq.push(['trackEvent', trackingConfig.matomo]);
   // }
   if (trackingConfig.matomo) {
-    push(['trackEvent', ...trackingConfig.matomo]);
+    push(['trackEvent', ...trackingConfig.matomo, ...(eventPayload ?? [])]);
   }
 };
