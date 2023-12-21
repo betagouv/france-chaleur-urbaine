@@ -71,42 +71,42 @@ const trackingEvents = {
   },
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
-    google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
+    google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible
     facebook: ['Contact'],
   },
   'Eligibilité|Formulaire de contact inéligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Carte - Envoi'],
-    google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
+    google: 'Pm33CK6ms_oYEJDB_MIq', // Contact > Formulaire envoyé - Non Eligible
     facebook: ['Contact'],
   },
   'Eligibilité|Formulaire de contact éligible - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Envoi'],
-    google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
+    google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible
     facebook: ['Contact'],
   },
   'Eligibilité|Formulaire de contact inéligible - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Envoi'],
-    google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
+    google: 'Pm33CK6ms_oYEJDB_MIq', // Contact > Formulaire envoyé - Non Eligible
     facebook: ['Contact'],
   },
   'Eligibilité|Formulaire de test - Adresse Inéligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Inéligible'],
-    google: 'Pm33CK6ms_oYEJDB_MIq', // Formulaire envoyé - Non Eligible
+    google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
     linkedin: 5492666,
   },
   'Eligibilité|Formulaire de test - Adresse Éligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Éligible'],
-    google: 'boNMCKums_oYEJDB_MIq', // Formulaire envoyé - Eligible
+    google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
     linkedin: 5392842,
   },
   'Eligibilité|Formulaire de test - Carte - Adresse Inéligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Adresse Inéligible'],
-    google: 'Pm33CK6ms_oYEJDB_MIq', // Formulaire envoyé - Non Eligible
+    google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
     linkedin: 5492666,
   },
   'Eligibilité|Formulaire de test - Carte - Adresse Éligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Adresse Éligible'],
-    google: 'boNMCKums_oYEJDB_MIq', // Formulaire envoyé - Eligible
+    google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
     linkedin: 5392842,
   },
   'Eligibilité|Formulaire de test - Carte - Envoi': {
