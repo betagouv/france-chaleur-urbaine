@@ -1,9 +1,3 @@
-interface WindowTrackingExtended extends Window {
-  dataLayer: any[];
-  gtag: (...args: any[]) => void;
-}
-declare let window: WindowTrackingExtended;
-
 const GoogleAdsMarkup = ({ googleId }: { googleId: string }) => {
   return (
     <script
@@ -20,9 +14,3 @@ const GoogleAdsMarkup = ({ googleId }: { googleId: string }) => {
 };
 
 export default GoogleAdsMarkup;
-
-export const googleAdsEvent = (googleId: string, [adsId]: string[]) =>
-  typeof window?.gtag === 'function' &&
-  window.gtag('event', 'conversion', {
-    send_to: `AW-${googleId}/${adsId}`,
-  });

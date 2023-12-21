@@ -20,6 +20,7 @@ const csp = {
     "'sha256-ksltjYbI6Uoozfn80t6ROvA1rBbTP9X8qGPGwHmWBpA='",
     "'sha256-6SC04Y6nNQLzwzyqa3SfGlAJoGLEAasou2bnNnkusvM='",
     "'sha256-H2mRU+3M13HkAJfH6/b74hVw3UOtytXrVI3MuPwDTj0='", // matomo https://stats.beta.gouv.fr/ 83
+    "'sha256-344ePyJp7yxx64WKWpbs/ZvEDHA6mve7lS3i90cEPT4='", // ContentBanner > tarteaucitron.init
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://static.axept.io',

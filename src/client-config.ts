@@ -1,9 +1,9 @@
 export const clientConfig = {
   tracking: {
-    matomoServerURL: 'https://stats.beta.gouv.fr',
-    matomoSiteId: '83',
-    googleTagId: '11414741136',
-    facebookPixelId: '3064783047067401',
-    linkInPartnerId: '3494650',
+    matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_SERVER_URL,
+    matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
+    googleTagId: process.env.NEXT_PUBLIC_GOOGLE_TAG_ID,
+    facebookPixelId: process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID,
+    linkInPartnerId: process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID,
   },
 };

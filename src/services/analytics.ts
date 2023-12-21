@@ -1,4 +1,4 @@
-import { init, push } from '@socialgouv/matomo-next';
+import { init } from '@socialgouv/matomo-next';
 import { useEffect } from 'react';
 import { clientConfig } from 'src/client-config';
 
@@ -8,11 +8,16 @@ import { clientConfig } from 'src/client-config';
  */
 export const useAnalytics = () => {
   useEffect(() => {
-    init({
-      url: clientConfig.tracking.matomoServerURL,
-      siteId: clientConfig.tracking.matomoSiteId,
-      disableCookies: true,
-    });
+    if (
+      clientConfig.tracking.matomoServerURL &&
+      clientConfig.tracking.matomoSiteId
+    ) {
+      init({
+        url: clientConfig.tracking.matomoServerURL,
+        siteId: clientConfig.tracking.matomoSiteId,
+        disableCookies: true,
+      });
+    }
   }, []);
 };
 
@@ -158,10 +163,7 @@ export const trackEvent = (eventKey: TrackingEvent, ...eventPayload: any[]) => {
     console.error('invalid tracking key', eventKey);
     return;
   }
-  // debug disable
-  if (!window) {
-    performTracking(configuration, eventPayload);
-  }
+  performTracking(configuration, eventPayload);
 };
 
 // augment window type with tracking helpers
@@ -189,11 +191,11 @@ const performTracking = (
   if (trackingConfig.linkedin && typeof window?.lintrk === 'function') {
     window.lintrk('track', { conversion_id: trackingConfig.linkedin });
   }
-  // peut-être pas nécessaire si fonction direct push
-  // if (trackingConfig.matomo && typeof window?._paq?.push === 'function') {
-  //   window._paq.push(['trackEvent', trackingConfig.matomo]);
-  // }
-  if (trackingConfig.matomo) {
-    push(['trackEvent', ...trackingConfig.matomo, ...(eventPayload ?? [])]);
+  if (trackingConfig.matomo && typeof window?._paq?.push === 'function') {
+    window._paq.push([
+      'trackEvent',
+      ...trackingConfig.matomo,
+      ...(eventPayload ?? []),
+    ]);
   }
 };

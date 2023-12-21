@@ -1,10 +1,3 @@
-interface WindowTrackingExtended extends Window {
-  _linkedin_data_partner_ids: string[];
-  _paq: [any];
-  tarteaucitron: any;
-}
-declare let window: WindowTrackingExtended;
-
 const MatomoMarkup = ({
   matomoUrl,
   siteId,
@@ -44,20 +37,3 @@ const MatomoMarkup = ({
 };
 
 export default MatomoMarkup;
-
-export const matomoEvent = (
-  matomoEventValues: string[] = [],
-  userEventValues: (string | number)[] = []
-) => {
-  const eventParam = [...matomoEventValues, ...userEventValues];
-  if (eventParam.length === 0) {
-    console.warn(
-      'matomoEvent > Event Params is required - Event is not send to Matomo'
-    );
-    return;
-  }
-  return (
-    typeof window?._paq?.push === 'function' &&
-    window._paq.push(['trackEvent', ...eventParam])
-  );
-};

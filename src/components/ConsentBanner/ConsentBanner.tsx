@@ -47,6 +47,8 @@ const ConsentBanner: React.FC<{
         `,
       }}
     ></script>
+    {/* empty div is a hack to prevent bad layout when no children are present */}
+    <div></div>
     {children}
   </>
 );
