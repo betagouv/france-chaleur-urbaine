@@ -27,6 +27,7 @@ import { axiosHttpClient } from 'src/services/http';
 import { iframedPaths } from 'src/services/iframe';
 import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
+import { clientConfig } from 'src/client-config';
 
 const og = {
   // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
@@ -140,14 +141,16 @@ function MyApp({
         <Head>
           {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
           <MatomoMarkup
-            matomoUrl={`${process.env.NEXT_PUBLIC_MATOMO_URL}`}
-            siteId={`${process.env.NEXT_PUBLIC_MATOMO_SITE_ID}`}
+            matomoUrl={clientConfig.tracking.matomoServerURL}
+            siteId={clientConfig.tracking.matomoSiteId}
           />
           {!iframedPaths.some((path) => router.pathname.match(path)) && (
             <ConsentBanner>
-              <GoogleAdsMarkup googleId="10794036298" />
-              <FacebookMarkup facebookId="3064783047067401" />
-              <LinkedInMarkup tagId="3494650" />
+              <GoogleAdsMarkup googleId={clientConfig.tracking.googleTagId} />
+              <FacebookMarkup
+                facebookId={clientConfig.tracking.facebookPixelId}
+              />
+              <LinkedInMarkup tagId={clientConfig.tracking.linkInPartnerId} />
             </ConsentBanner>
           )}
           {favicons.map(
