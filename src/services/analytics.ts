@@ -22,6 +22,15 @@ type TrackingConfiguration = {
   linkedin?: number; // ex: 5492674 (conversion id)
 };
 
+/*
+Workflow du formulaire de test d'adresse :
+- quand on soumet le formulaire :
+  - Formulaire de test - Envoi
+  - Formulaire de test - Adresse Inéligible
+- quand on soumet le second formulaire de contact :
+  - Formulaire de contact éligible - Envoi
+*/
+
 const trackingEvents = {
   'Carto|Ajouter un segment': {
     matomo: ['Carto', 'Ajouter un segment'],
@@ -59,11 +68,24 @@ const trackingEvents = {
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
   },
+  'Eligibilité|Formulaire de contact inéligible - Carte - Envoi': {
+    matomo: ['Eligibilité', 'Formulaire de contact inéligible - Carte - Envoi'],
+  },
+  'Eligibilité|Formulaire de contact éligible - Envoi': {
+    matomo: ['Eligibilité', 'Formulaire de contact éligible - Envoi'],
+    google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
+  },
+  'Eligibilité|Formulaire de contact inéligible - Envoi': {
+    matomo: ['Eligibilité', 'Formulaire de contact inéligible - Envoi'],
+    google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
+  },
   'Eligibilité|Formulaire de test - Adresse Inéligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Inéligible'],
+    google: 'Pm33CK6ms_oYEJDB_MIq', // Formulaire envoyé - Non Eligible
   },
   'Eligibilité|Formulaire de test - Adresse Éligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Éligible'],
+    google: 'boNMCKums_oYEJDB_MIq', // Formulaire envoyé - Eligible
   },
   'Eligibilité|Formulaire de test - Carte - Adresse Inéligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Adresse Inéligible'],
@@ -76,6 +98,7 @@ const trackingEvents = {
   },
   'Eligibilité|Formulaire de test - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de test - Envoi'],
+    google: 'z18zCKKms_oYEJDB_MIq', // Test éligibilité
   },
   'Téléchargement|Guide FCU|coproprietaire': {
     matomo: ['Téléchargement', 'Guide FCU', 'coproprietaire'],
