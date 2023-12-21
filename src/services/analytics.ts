@@ -22,8 +22,8 @@ export const useAnalytics = () => {
 };
 
 type TrackingConfiguration = {
-  matomo?: string[]; // ex: ['Carto', 'Ajouter un segment']
-  facebook?: [string, ...any[]]; // ex: ['FindLocation']
+  matomo?: readonly string[]; // ex: ['Carto', 'Ajouter un segment']
+  facebook?: readonly [string, ...any[]]; // ex: ['FindLocation']
   google?: string; // ex: 6QaoCJfrtN8DEIqs-vYo (ads id)
   linkedin?: number; // ex: 5492674 (conversion id)
 };
