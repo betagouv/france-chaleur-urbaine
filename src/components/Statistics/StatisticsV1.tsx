@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 import Band from './Band';
 import { Container, GraphsWrapper } from './StatisticsV1.style';
+import { fetchJSON } from '@utils/network';
 
 type ReturnApiStatAirtable = {
   date: string;
@@ -31,8 +32,6 @@ const monthToString = [
 
 const today = new Date();
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 const getEntryValue = (entry: any, value: string, data: string) => {
   if (entry && entry[value]) {
     return entry[value][data];
@@ -42,13 +41,16 @@ const getEntryValue = (entry: any, value: string, data: string) => {
 
 const Statistics = () => {
   const { data: rawDataEligibilityTest, error: errorDataEligibilityTest } =
-    useSWR('/api/statistiques/actions', fetcher, {
+    useSWR<any>('/api/statistiques/actions', fetchJSON, {
       onError: (err) => console.warn('errorDataEligibilityTest >>', err),
     });
 
   const dataEligibilityTest = useMemo(() => {
-    if (rawDataEligibilityTest?.result.values.result === 'error') {
-      return [];
+    if (
+      !rawDataEligibilityTest ||
+      rawDataEligibilityTest?.result.values.result === 'error'
+    ) {
+      return null;
     }
     return (
       rawDataEligibilityTest?.result.values
@@ -65,11 +67,11 @@ const Statistics = () => {
         )
         .reverse() ?? []
     );
-  }, [rawDataEligibilityTest?.result]);
+  }, [rawDataEligibilityTest]);
 
   const formatedDataEligibilityTest = [
     ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
-    ...dataEligibilityTest.map((entry: any) => {
+    ...(dataEligibilityTest ?? []).map((entry: any) => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
       const label = `${
         !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
@@ -109,17 +111,17 @@ const Statistics = () => {
     }),
   ];
 
-  const { data: rawDataVisits, error: errorVisits } = useSWR(
+  const { data: rawDataVisits, error: errorVisits } = useSWR<any>(
     '/api/statistiques/visits',
-    fetcher,
+    fetchJSON,
     {
       onError: (err) => console.warn('errorVisits >>', err),
     }
   );
 
   const dataVisits = useMemo(() => {
-    if (rawDataVisits?.result.values.result === 'error') {
-      return [];
+    if (!rawDataVisits || rawDataVisits?.result.values.result === 'error') {
+      return null;
     }
 
     return (
@@ -130,11 +132,11 @@ const Statistics = () => {
         }))
         .reverse() ?? []
     );
-  }, [rawDataVisits?.result]);
+  }, [rawDataVisits]);
 
   const formatedDataVisits = [
     ['x', 'Visiteurs'],
-    ...dataVisits.map((entry: any) => {
+    ...(dataVisits ?? []).map((entry: any) => {
       const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
       const label = `${
         !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
@@ -143,9 +145,9 @@ const Statistics = () => {
     }),
   ];
 
-  const { data: rawDataMonthContact, error: errorMonthContact } = useSWR(
+  const { data: rawDataMonthContact, error: errorMonthContact } = useSWR<any>(
     '/api/statistiques/contacts?group=monthly',
-    fetcher,
+    fetchJSON,
     {
       onError: (err) => console.warn('errorMonthContact >>', err),
     }
@@ -194,9 +196,9 @@ const Statistics = () => {
       : []),
   ];
 
-  const { data: rawDataCountContact, error: errorCountContact } = useSWR(
+  const { data: rawDataCountContact, error: errorCountContact } = useSWR<any>(
     '/api/statistiques/contacts?group=all',
-    fetcher,
+    fetchJSON,
     {
       onError: (err) => console.warn('errorCountContact >>', err),
     }
@@ -233,7 +235,7 @@ const Statistics = () => {
   ];
 
   const { data: rawDataCountBulkContact, error: errorCountBulkContact } =
-    useSWR('/api/statistiques/bulk', fetcher, {
+    useSWR<any>('/api/statistiques/bulk', fetchJSON, {
       onError: (err) => console.warn('errorCountContact >>', err),
     });
 
@@ -327,7 +329,7 @@ const Statistics = () => {
           {formatedDataVisits.length > 1 && (
             <Graph
               title="Nombre de visiteurs / mois"
-              errors={errorVisits}
+              error={errorVisits}
               data={dataVisits}
               formatedData={formatedDataVisits}
               large
@@ -337,7 +339,7 @@ const Statistics = () => {
           {formatedDataEligibilityTest.length > 1 && (
             <Graph
               title="Nombre d'adresses testées / mois"
-              errors={errorDataEligibilityTest}
+              error={errorDataEligibilityTest}
               data={dataEligibilityTest}
               formatedData={formatedDataEligibilityTest}
               withSum
@@ -345,20 +347,20 @@ const Statistics = () => {
           )}
           <Graph
             title="Adresses testées par liste / mois"
-            errors={errorCountBulkContact}
+            error={errorCountBulkContact}
             data={dataCountBulkContact}
             formatedData={formatedDataCountBulkContact}
             withSum
           />
           <Graph
             title="Demandes de contacts / mois"
-            errors={errorMonthContact}
+            error={errorMonthContact}
             data={dataMonthContact}
             formatedData={formatedDataMonthContact}
           />
           <Graph
             title="Demandes de contacts cumulées"
-            errors={errorCountContact}
+            error={errorCountContact}
             data={dataCountContact}
             formatedData={formatedDataCountContact}
           />

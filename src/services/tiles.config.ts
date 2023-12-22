@@ -1,5 +1,6 @@
 import { Knex } from 'knex';
 import { Airtable } from 'src/types/enum/Airtable';
+import { z } from 'zod';
 
 type BasicTileInfo = {
   table: string;
@@ -21,16 +22,20 @@ export type DatabaseTileInfo = BasicTileInfo & {
 
 export type TileInfo = AirtableTileInfo | DatabaseTileInfo;
 
-export type DataType =
-  | 'network'
-  | 'gas'
-  | 'energy'
-  | 'zoneDP'
-  | 'raccordements'
-  | 'demands'
-  | 'buildings'
-  | 'futurNetwork'
-  | 'coldNetwork';
+export const dataTypes = [
+  'network',
+  'gas',
+  'energy',
+  'zoneDP',
+  'raccordements',
+  'demands',
+  'buildings',
+  'futurNetwork',
+  'coldNetwork',
+] as const;
+
+export const zDataType = z.enum(dataTypes);
+export type DataType = z.infer<typeof zDataType>;
 
 const bnbFields = `
   id as id,

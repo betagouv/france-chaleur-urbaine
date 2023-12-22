@@ -48,10 +48,11 @@ const Carte = () => {
                 ? param.legendData.filter((x) => x !== 'proModeLegend')
                 : param.legendData
                     .filter(
-                      (x) =>
-                        x !== 'contributeButton' &&
-                        (typeof x === 'string' ||
-                          defaultLegendIds.includes(x.id))
+                      (legend) =>
+                        legend !== 'contributeButton' &&
+                        legend !== 'statsByArea' &&
+                        (typeof legend === 'string' ||
+                          defaultLegendIds.includes(legend.id))
                     )
                     .filter(
                       (legend, i, legends) =>
