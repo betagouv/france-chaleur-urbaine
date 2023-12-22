@@ -43,12 +43,17 @@ const csp = {
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://cdn.linkedin.oribi.io',
+    'https://google.com/',
     'https://px.ads.linkedin.com',
     'https://wxs.ign.fr',
     'https://api.mapbox.com/',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
-  'frame-src': ['https://www.youtube.com/'],
+  'frame-src': [
+    'https://td.doubleclick.net',
+    'https://www.facebook.com/',
+    'https://www.youtube.com/',
+  ],
   'worker-src': ["'self'", 'blob:'],
 };
 

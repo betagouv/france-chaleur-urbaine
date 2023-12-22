@@ -139,23 +139,23 @@ function MyApp({
           adminService: new AdminService(axiosHttpClient),
         }}
       >
+        {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
+        {!iframedPaths.some((path) => router.pathname.match(path)) && (
+          <ConsentBanner>
+            {clientConfig.tracking.googleTagId && (
+              <GoogleAdsMarkup googleId={clientConfig.tracking.googleTagId} />
+            )}
+            {clientConfig.tracking.facebookPixelId && (
+              <FacebookMarkup
+                facebookId={clientConfig.tracking.facebookPixelId}
+              />
+            )}
+            {clientConfig.tracking.linkInPartnerId && (
+              <LinkedInMarkup tagId={clientConfig.tracking.linkInPartnerId} />
+            )}
+          </ConsentBanner>
+        )}
         <Head>
-          {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
-          {!iframedPaths.some((path) => router.pathname.match(path)) && (
-            <ConsentBanner>
-              {clientConfig.tracking.googleTagId && (
-                <GoogleAdsMarkup googleId={clientConfig.tracking.googleTagId} />
-              )}
-              {clientConfig.tracking.facebookPixelId && (
-                <FacebookMarkup
-                  facebookId={clientConfig.tracking.facebookPixelId}
-                />
-              )}
-              {clientConfig.tracking.linkInPartnerId && (
-                <LinkedInMarkup tagId={clientConfig.tracking.linkInPartnerId} />
-              )}
-            </ConsentBanner>
-          )}
           {favicons.map(
             (
               faviconProps: { rel: string; href: string; type?: string },

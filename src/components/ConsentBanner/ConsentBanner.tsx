@@ -1,9 +1,8 @@
-import React from 'react';
+import Head from 'next/head';
+import { ReactNode } from 'react';
 
-const ConsentBanner: React.FC<{
-  children?: React.ReactNode;
-}> = ({ children }) => (
-  <>
+const ConsentBanner = ({ children }: { children?: ReactNode }) => (
+  <Head>
     <link rel="stylesheet" href="/css/dsfr-theme-tac.min.css" />
     {/* eslint-disable-next-line @next/next/no-sync-scripts */}
     <script src="/js/tarteaucitron.js-1.9.5/tarteaucitron.js"></script>
@@ -47,10 +46,8 @@ const ConsentBanner: React.FC<{
         `,
       }}
     ></script>
-    {/* empty div is a hack to prevent bad layout when no children are present */}
-    <div></div>
     {children}
-  </>
+  </Head>
 );
 
 export default ConsentBanner;
