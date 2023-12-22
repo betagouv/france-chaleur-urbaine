@@ -104,6 +104,9 @@ module.exports = withBundleAnalyzer({
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,
   basePath: isGithubCI ? '/france-chaleur-urbaine' : undefined,
   // swcMinify: true, // Need Fix on the Rust Compiler SWC: Incompatibility with MapLibre
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   async redirects() {
     return [
       {
