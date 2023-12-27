@@ -123,7 +123,7 @@ const getEnergySummary = async (
         FROM reseaux_de_chaleur rdc
         WHERE ST_Distance(
           ST_Transform(rdc.geom, 2154),
-          ST_Transform(energy.geom, 2154)
+          ST_Transform(energy.geom_adresse, 2154)
           ) < 50
         LIMIT 1
       ) as is_close
@@ -132,7 +132,7 @@ const getEnergySummary = async (
     .whereNotNull('libelle_adr_principale_ban')
     .whereIn('dpe_mix_arrete_type_energie_chauffage', ['gaz', 'fioul'])
     .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
-    .andWhere(db.raw(getWithinQuery(coordinates, 'geom')));
+    .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 const exportGasSummary = async (
   coordinates: number[][]
@@ -171,7 +171,7 @@ const exportEnergyGasSummary = async (
           FROM reseaux_de_chaleur rdc
           WHERE ST_Distance(
             ST_Transform(rdc.geom, 2154),
-            ST_Transform(energy.geom, 2154)
+            ST_Transform(energy.geom_adresse, 2154)
             ) < 50
           LIMIT 1
         ) as is_close
@@ -180,7 +180,7 @@ const exportEnergyGasSummary = async (
     .whereNotNull('libelle_adr_principale_ban')
     .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
     .andWhere('dpe_mix_arrete_type_energie_chauffage', 'gaz')
-    .andWhere(db.raw(getWithinQuery(coordinates, 'geom')));
+    .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 const exportEnergyFioulSummary = async (
   coordinates: number[][],
@@ -195,7 +195,7 @@ const exportEnergyFioulSummary = async (
           FROM reseaux_de_chaleur rdc
           WHERE ST_Distance(
             ST_Transform(rdc.geom, 2154),
-            ST_Transform(energy.geom, 2154)
+            ST_Transform(energy.geom_adresse, 2154)
             ) < 50
           LIMIT 1
         ) as is_close
@@ -204,7 +204,7 @@ const exportEnergyFioulSummary = async (
     .whereNotNull('libelle_adr_principale_ban')
     .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
     .andWhere('dpe_mix_arrete_type_energie_chauffage', 'fioul')
-    .andWhere(db.raw(getWithinQuery(coordinates, 'geom')));
+    .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 export const getPolygonSummary = async (
   coordinates: number[][]

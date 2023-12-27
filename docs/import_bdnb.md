@@ -7,6 +7,10 @@ Pour l'instant tout fonctionne par région. Une table par région.
 1. Importer les nouvelles tables par région.
     - `psql postgres://postgres:postgres_fcu@localhost:5432 -f nom_table.sql`
 
+2. Si non existante, pour chaque table, créer la colonne *geom_adresse* et créer la géométrie du point de l'adresse :
+    - `ALTER TABLE "bdnb_registre2022_aura" ADD geom_adresse geometry;`
+    - `UPDATE "bdnb_registre2022_aura" SET geom_adresse = ST_SetSRID(ST_MakePoint(x,y),4326);`
+
 2. Mettre à jour le code
     - Les appels aux colonnes des tables :
         - Uniquement l'ID :

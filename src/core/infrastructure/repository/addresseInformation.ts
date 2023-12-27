@@ -152,7 +152,7 @@ export const getNbLogement = async (
       db.raw(`
         ST_INTERSECTS(
           ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-          ST_BUFFER(ST_Transform(geom, 2154), 3.5)
+          ST_BUFFER(ST_Transform(geom_adresse, 2154), 3.5)
         )
       `)
     )

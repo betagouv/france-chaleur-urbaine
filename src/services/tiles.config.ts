@@ -53,7 +53,7 @@ export const preTable: (region: string) => Record<string, string> = (
   region
 ) => ({
   'pre-table-energy': `
-    SELECT ${bnbFields}, geom
+    SELECT ${bnbFields}, geom_adresse as geom
     FROM "${region}"
     WHERE libelle_adr_principale_ban is not null
       AND dpe_mix_arrete_type_installation_chauffage = 'collectif'
