@@ -136,10 +136,10 @@ export const tilesInfo: Record<DataType, TileInfo> = {
     table: 'reseaux_de_froid',
     tiles: 'reseaux_de_froid_tiles',
     airtable: Airtable.COLD_NETWORKS,
-    id: 'id',
+    id: 'id_fcu',
     extraWhere: (query) => query,
     properties: [
-      'id',
+      'id_fcu',
       'Taux EnR&R',
       'Gestionnaire',
       'Identifiant reseau',
