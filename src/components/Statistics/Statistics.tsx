@@ -7,6 +7,7 @@ import {
   ColumnContainer,
   Container,
   GraphsWrapper,
+  HorizontalSeparator,
   LastActuDate,
   LoadingTextHighlight,
   NumberBlock,
@@ -637,7 +638,8 @@ const Statistics = () => {
                     iframes
                   </Link>
                 </NumberBlock>
-                <NumberBlock className="fr-mt-2w">
+                <HorizontalSeparator />
+                <NumberBlock>
                   <NumberHighlight>{totalDownload}</NumberHighlight>
                   Téléchargements des tracés sur le site
                 </NumberBlock>
