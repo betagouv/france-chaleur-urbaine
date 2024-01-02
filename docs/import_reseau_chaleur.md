@@ -13,12 +13,12 @@
         - Il faudra peut-être modifier le fichier pour changer le nom de la table par *reseaux_de_chaleur* et supprimer sa création ainsi que celle des index
 
 3. Mise à jour des données sur les réseaux depuis Airtable
-    - Lancer le script downloadNetworks.ts : `export NODE_PATH=./ && npx tsx scripts/downloadNetworks.ts network`
+    - Lancer le script downloadNetworks.ts : `npx tsx scripts/downloadNetworks.ts network`
     - Normalement ce script complète la table *zones_et_reseaux_en_construction* et regénère la table *zones_et_reseaux_en_construction_tiles*
 
 4. Si mauvaise mise à jour des tiles : mise à jour de la table *reseaux_de_chaleur_tiles*
     - Vider la table (sans la supprimer)
-    - Lancer le script fillTiles.ts : `export NODE_PATH=./ && npx tsx scripts/fillTiles.ts network 0 17`
+    - Lancer le script fillTiles.ts : `npx tsx scripts/fillTiles.ts network 0 17`
 <br/><br/>
 
 ## Deuxième étape - en dev

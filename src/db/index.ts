@@ -4,6 +4,5 @@ import { logger } from '@helpers/logger';
 
 const serverName = (config.connection?.match(/@([^/]+)/) ?? [])[1];
 logger.warn('connecting to database', serverName);
-// console.log('connecting to database : ' + serverName);
 
 export default knex(config);
