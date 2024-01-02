@@ -30,8 +30,10 @@ type ReturnApiStatAirtable = {
 
 const getYearsList = () => {
   const years = [];
-  const currentYear = new Date().getFullYear();
-  for (let year = 2022; year <= currentYear; year++) {
+  const date = new Date();
+  date.setMonth(date.getMonth() - 1);
+  const currentYearPreviousMonth = date.getFullYear();
+  for (let year = 2022; year <= currentYearPreviousMonth; year++) {
     years.push(year.toString());
   }
   return years;
@@ -103,11 +105,10 @@ const getFormattedData = (
   if (!data) {
     return [];
   }
-  const returnData = Array.from({ length: 12 }, (n, i) =>
-    new Array(yearsList.length + 1)
-      .fill(monthToString[i], 0, 1)
-      .fill(null, 1, 3)
-  );
+  const returnData = Array.from({ length: 12 }, (n, i) => [
+    monthToString[i],
+    ...new Array(yearsList.length).fill(null),
+  ]);
   let notEmpty = false;
   yearsList.forEach((year: string, i) => {
     monthToString.forEach((month: string, j) => {
