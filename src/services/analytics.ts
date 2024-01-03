@@ -1,10 +1,22 @@
 import { init } from '@socialgouv/matomo-next';
-import { useEffect } from 'react';
+import { Router } from 'next/router';
+import { useEffect, useState } from 'react';
 import { clientConfig } from 'src/client-config';
+
+const onRouteChange = (url: string) => {
+  // see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag&hl=fr#manually_send_page_view_events
+  if (clientConfig.tracking.googleTagId && typeof window?.gtag === 'function') {
+    window.gtag('event', 'page_view', {
+      page_title: document.title,
+      page_location: url,
+    });
+  }
+};
 
 /**
  * Register analytics (Matomo only for now).
- * The rest still uses tarteaucitron.
+ * Matomo and Google Analytics page views both have to be triggered manually.
+ * Facebook and Linkedin track page views automatically when loaded.
  */
 export const useAnalytics = () => {
   useEffect(() => {
@@ -19,6 +31,29 @@ export const useAnalytics = () => {
       });
     }
   }, []);
+
+  const [gtagLoaded, setGtagLoaded] = useState(false);
+  useEffect(() => {
+    if (!gtagLoaded) {
+      return;
+    }
+    Router.events.on('routeChangeComplete', onRouteChange);
+    return () => {
+      Router.events.off('routeChangeComplete', onRouteChange);
+    };
+  }, [gtagLoaded]);
+
+  if (typeof window === 'object') {
+    document.addEventListener(
+      'gtag_loaded',
+      () => {
+        setGtagLoaded(true);
+      },
+      {
+        once: true,
+      }
+    );
+  }
 };
 
 type TrackingConfiguration = {
