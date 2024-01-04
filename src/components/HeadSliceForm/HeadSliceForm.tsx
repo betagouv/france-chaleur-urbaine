@@ -241,11 +241,13 @@ const HeadSlice = ({
             contactReady && !messageReceived ? 'active' : ''
           }`}
         >
-          <EligibilityFormContact
-            addressData={addressData}
-            isSent={messageSent}
-            onSubmit={handleOnSubmitContact}
-          />
+          {address && (
+            <EligibilityFormContact
+              addressData={addressData}
+              isSent={messageSent}
+              onSubmit={handleOnSubmitContact}
+            />
+          )}
         </Slice>
 
         <Slice
