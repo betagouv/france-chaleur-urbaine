@@ -8,7 +8,7 @@ import turfArea from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import turfLength from '@turf/length';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { SUMMARY_AREA_SIZE_LIMIT } from 'src/config';
+import { clientConfig } from 'src/client-config';
 import { withCors } from 'src/services/api/cors';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { z } from 'zod';
@@ -19,11 +19,11 @@ const polygonSummary = async (
   res: NextApiResponse
 ) => {
   const size = turfArea(polygon([coordinates])) / 1_000_000;
-  if (size > SUMMARY_AREA_SIZE_LIMIT) {
+  if (size > clientConfig.summaryAreaSizeLimit) {
     return res
       .status(400)
       .send(
-        `Cannot compute stats on area bigger than ${SUMMARY_AREA_SIZE_LIMIT} km²`
+        `Cannot compute stats on area bigger than ${clientConfig.summaryAreaSizeLimit} km²`
       );
   }
   if (req.method === 'GET') {
