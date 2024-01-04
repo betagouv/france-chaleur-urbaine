@@ -263,6 +263,9 @@ const Map = ({
 
   const onMapClick = (e: any, key: string) => {
     const properties = e.features[0].properties;
+    if ((window as any).devMode) {
+      console.log('map-click', e.features[0]); // eslint-disable-line no-console
+    }
     const { lat, lng } = e.lngLat;
     setPopupInfos({
       latitude: lat,

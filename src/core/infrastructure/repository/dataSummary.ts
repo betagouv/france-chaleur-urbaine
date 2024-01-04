@@ -116,7 +116,7 @@ const getEnergySummary = async (
 ): Promise<EnergySummary[]> =>
   db(`${region} as energy`)
     .select(
-      'adedpe202006_logtype_ch_type_ener_corr as energie_utilisee',
+      'dpe_mix_arrete_type_energie_chauffage as energie_utilisee',
       db.raw(`
       EXISTS (
         SELECT *
@@ -129,9 +129,9 @@ const getEnergySummary = async (
       ) as is_close
       `)
     )
-    .whereIn('adedpe202006_logtype_ch_type_ener_corr', ['gaz', 'fioul'])
-    .andWhereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
-    .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
+    .whereNotNull('libelle_adr_principale_ban')
+    .whereIn('dpe_mix_arrete_type_energie_chauffage', ['gaz', 'fioul'])
+    .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
     .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 const exportGasSummary = async (
@@ -164,7 +164,8 @@ const exportEnergyGasSummary = async (
 ): Promise<EnergySummary[]> =>
   db(`${region} as energy`)
     .select(
-      'etaban202111_label as addr_label',
+      'libelle_adr_principale_ban as addr_label',
+      'ffo_bat_nb_log as nb_logements',
       db.raw(`
         EXISTS (
           SELECT *
@@ -175,20 +176,11 @@ const exportEnergyGasSummary = async (
             ) < 50
           LIMIT 1
         ) as is_close
-      `),
-      db.raw(`
-        CASE
-          WHEN cerffo2020_nb_log ISNULL 
-            THEN anarnc202012_nb_log
-          WHEN cerffo2020_nb_log < 1 
-            THEN anarnc202012_nb_log
-          ELSE cerffo2020_nb_log
-        END as nb_logements
       `)
     )
-    .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
-    .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
-    .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'gaz')
+    .whereNotNull('libelle_adr_principale_ban')
+    .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
+    .andWhere('dpe_mix_arrete_type_energie_chauffage', 'gaz')
     .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 const exportEnergyFioulSummary = async (
@@ -197,7 +189,8 @@ const exportEnergyFioulSummary = async (
 ): Promise<EnergySummary[]> =>
   db(`${region} as energy`)
     .select(
-      'etaban202111_label as addr_label',
+      'libelle_adr_principale_ban as addr_label',
+      'ffo_bat_nb_log as nb_logements',
       db.raw(`
         EXISTS (
           SELECT *
@@ -208,20 +201,11 @@ const exportEnergyFioulSummary = async (
             ) < 50
           LIMIT 1
         ) as is_close
-      `),
-      db.raw(`
-        CASE
-          WHEN cerffo2020_nb_log ISNULL 
-            THEN anarnc202012_nb_log
-          WHEN cerffo2020_nb_log < 1 
-            THEN anarnc202012_nb_log
-          ELSE cerffo2020_nb_log
-        END as nb_logements
       `)
     )
-    .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
-    .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
-    .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'fioul')
+    .whereNotNull('libelle_adr_principale_ban')
+    .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
+    .andWhere('dpe_mix_arrete_type_energie_chauffage', 'fioul')
     .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 export const getPolygonSummary = async (

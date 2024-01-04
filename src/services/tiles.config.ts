@@ -38,25 +38,15 @@ export const zDataType = z.enum(dataTypes);
 export type DataType = z.infer<typeof zDataType>;
 
 const bnbFields = `
-  fid as id,
-  etaban202111_label AS addr_label,
-  cerffo2020_annee_construction AS annee_construction,
-  cerffo2020_usage_niveau_1_txt AS type_usage,
-  CASE
-    WHEN cerffo2020_nb_log ISNULL 
-      THEN anarnc202012_nb_log
-    WHEN cerffo2020_nb_log < 1 
-      THEN anarnc202012_nb_log
-    ELSE cerffo2020_nb_log
-  END nb_logements,
-  adedpe202006_logtype_ch_type_inst AS type_chauffage,
-  CASE
-    WHEN adedpe202006_logtype_ch_type_ener_corr <> '' 
-      THEN adedpe202006_logtype_ch_type_ener_corr
-    ELSE adedpe202006_logtype_ch_gen_lib_princ
-  END energie_utilisee,
-  adedpe202006_mean_class_conso_ener AS dpe_energie,
-  adedpe202006_mean_class_estim_ges AS dpe_ges
+  id as id,
+  libelle_adr_principale_ban AS addr_label,
+  ffo_bat_annee_construction AS annee_construction,
+  ffo_bat_usage_niveau_1_txt AS type_usage,
+  ffo_bat_nb_log AS nb_logements,
+  dpe_mix_arrete_type_installation_chauffage AS type_chauffage,
+  dpe_mix_arrete_type_energie_chauffage AS energie_utilisee,
+  dpe_mix_arrete_classe_bilan_dpe AS dpe_energie,
+  dpe_mix_arrete_classe_emission_ges AS dpe_ges
 `;
 
 export const preTable: (region: string) => Record<string, string> = (
@@ -65,16 +55,16 @@ export const preTable: (region: string) => Record<string, string> = (
   'pre-table-energy': `
     SELECT ${bnbFields}, geom_adresse as geom
     FROM "${region}"
-    WHERE bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
-      AND adedpe202006_logtype_ch_type_inst = 'collectif'
+    WHERE libelle_adr_principale_ban is not null
+      AND dpe_mix_arrete_type_installation_chauffage = 'collectif'
       AND (
-        adedpe202006_logtype_ch_type_ener_corr = 'gaz'
-        OR adedpe202006_logtype_ch_type_ener_corr = 'fioul'
+        dpe_mix_arrete_type_energie_chauffage = 'gaz'
+        OR dpe_mix_arrete_type_energie_chauffage = 'fioul'
       )`,
   'pre-table-buildings': `
     SELECT ${bnbFields}, geom
     FROM "${region}"
-    WHERE bnb_adr_fiabilite_niv_1 <> 'problème de géocodage'
+    WHERE libelle_adr_principale_ban is not null
     `,
 });
 
