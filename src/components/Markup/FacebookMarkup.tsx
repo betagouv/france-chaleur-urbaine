@@ -1,9 +1,3 @@
-interface WindowTrackingExtended extends Window {
-  _linkedin_data_partner_ids: string[];
-  fbq: (param: any) => void;
-}
-declare let window: WindowTrackingExtended;
-
 const FacebookMarkup = ({ facebookId }: { facebookId: string }) => {
   return (
     <script
@@ -19,10 +13,3 @@ const FacebookMarkup = ({ facebookId }: { facebookId: string }) => {
 };
 
 export default FacebookMarkup;
-
-export const facebookEvent = (
-  facebookEventValues: string[],
-  userEventValues: (string | number)[] = []
-) =>
-  typeof window?.fbq === 'function' &&
-  window.fbq(['track', ...facebookEventValues, ...userEventValues]);

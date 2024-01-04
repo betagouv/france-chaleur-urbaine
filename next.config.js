@@ -20,6 +20,7 @@ const csp = {
     "'sha256-ksltjYbI6Uoozfn80t6ROvA1rBbTP9X8qGPGwHmWBpA='",
     "'sha256-6SC04Y6nNQLzwzyqa3SfGlAJoGLEAasou2bnNnkusvM='",
     "'sha256-H2mRU+3M13HkAJfH6/b74hVw3UOtytXrVI3MuPwDTj0='", // matomo https://stats.beta.gouv.fr/ 83
+    "'sha256-344ePyJp7yxx64WKWpbs/ZvEDHA6mve7lS3i90cEPT4='", // ConsentBanner > tarteaucitron.init
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://static.axept.io',
@@ -42,11 +43,17 @@ const csp = {
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://cdn.linkedin.oribi.io',
+    'https://google.com/',
+    'https://px.ads.linkedin.com',
     'https://wxs.ign.fr',
     'https://api.mapbox.com/',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
-  'frame-src': ['https://www.youtube.com/'],
+  'frame-src': [
+    'https://td.doubleclick.net',
+    'https://www.facebook.com/',
+    'https://www.youtube.com/',
+  ],
   'worker-src': ["'self'", 'blob:'],
 };
 
@@ -97,6 +104,9 @@ module.exports = withBundleAnalyzer({
   assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,
   basePath: isGithubCI ? '/france-chaleur-urbaine' : undefined,
   // swcMinify: true, // Need Fix on the Rust Compiler SWC: Incompatibility with MapLibre
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   async redirects() {
     return [
       {

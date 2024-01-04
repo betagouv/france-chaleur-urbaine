@@ -1,5 +1,4 @@
 import Hoverable from '@components/Hoverable';
-import { matomoEvent } from '@components/Markup';
 import { Button, Icon, Tab, Tabs } from '@dataesr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
@@ -23,6 +22,7 @@ import {
   ZoneInfosWrapper,
 } from './SummaryBoxes.style';
 import ZoneInfo from './ZoneInfo';
+import { trackEvent } from 'src/services/analytics';
 
 const getConso = (consos: GasSummary[]) => {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
@@ -75,11 +75,11 @@ const SummaryBoxes = ({
   useEffect(() => {
     setSummary(undefined);
     if (bounds && size && size < 5) {
-      matomoEvent(['Carto', 'Zone définie']);
+      trackEvent('Carto|Zone définie');
       zoneIndex.current += 1;
       const currentZoneIndex = zoneIndex.current;
       heatNetworkService.summary(bounds).then((result) => {
-        matomoEvent(['Carto', 'Donées recues']);
+        trackEvent('Carto|Donées recues');
         if (currentZoneIndex === zoneIndex.current) {
           setSummary(result);
         }
@@ -90,11 +90,11 @@ const SummaryBoxes = ({
   useEffect(() => {
     setDensite(undefined);
     if (lines) {
-      matomoEvent(['Carto', 'Tracé défini']);
+      trackEvent('Carto|Tracé défini');
       lineIndex.current += 1;
       const currentLineIndex = lineIndex.current;
       heatNetworkService.densite(lines).then((result) => {
-        matomoEvent(['Carto', 'Densité recu']);
+        trackEvent('Carto|Densité recu');
         if (currentLineIndex === lineIndex.current) {
           setDensite(result);
         }
@@ -133,12 +133,12 @@ const SummaryBoxes = ({
       map.on('draw.update', () => {
         const data = draw.getAll();
         if (data.features[0].geometry.type === 'Polygon') {
-          matomoEvent(['Carto', 'Zone mise à jour']);
+          trackEvent('Carto|Zone mise à jour');
           const geometry = data.features[0].geometry as Polygon;
           setBounds(geometry.coordinates[0]);
           setSize(turfArea(data) / 1000_000);
         } else if (data.features[0].geometry.type === 'LineString') {
-          matomoEvent(['Carto', 'Tracé mis à jour']);
+          trackEvent('Carto|Tracé mis à jour');
           setLines(
             data.features.map((feature) => {
               return (feature.geometry as LineString).coordinates;
@@ -402,7 +402,7 @@ const SummaryBoxes = ({
                   draw.deleteAll();
                   setBounds(undefined);
                   setLines(undefined);
-                  matomoEvent(['Carto', 'Définir une zone']);
+                  trackEvent('Carto|Définir une zone');
                   setDrawing(true);
                   draw.changeMode('draw_polygon');
                 }}
@@ -419,7 +419,7 @@ const SummaryBoxes = ({
                     draw.deleteAll();
                     setBounds(undefined);
                     setLines(undefined);
-                    matomoEvent(['Carto', 'Définir un tracé']);
+                    trackEvent('Carto|Définir un tracé');
                     setDrawing(true);
                     draw.changeMode('draw_line_string');
                   }}
@@ -432,7 +432,7 @@ const SummaryBoxes = ({
                   icon="ri-add-line"
                   onClick={() => {
                     setDrawing(true);
-                    matomoEvent(['Carto', 'Ajouter un segment']);
+                    trackEvent('Carto|Ajouter un segment');
                     draw.changeMode('draw_line_string');
                   }}
                 >
@@ -445,7 +445,7 @@ const SummaryBoxes = ({
                   onClick={() => {
                     const selected = draw.getSelectedIds();
                     if (selected.length > 0) {
-                      matomoEvent(['Carto', 'Supprimer un segment']);
+                      trackEvent('Carto|Supprimer un segment');
                       const all = draw.getAll();
                       draw.delete(selected);
                       setLines(
@@ -473,7 +473,7 @@ const SummaryBoxes = ({
                   draw.deleteAll();
                   setBounds(undefined);
                   setLines(undefined);
-                  matomoEvent(['Carto', 'Définir un tracé']);
+                  trackEvent('Carto|Définir un tracé');
                   setDrawing(true);
                   draw.changeMode('draw_line_string');
                 }}

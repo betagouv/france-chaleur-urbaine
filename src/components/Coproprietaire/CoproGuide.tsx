@@ -1,6 +1,6 @@
-import { matomoEvent } from '@components/Markup';
 import { Guide } from './CoproGuide.styles';
 import Link from 'next/link';
+import { trackEvent } from 'src/services/analytics';
 
 const CoproGuide = ({ guideClassName }: { guideClassName?: string }) => {
   return (
@@ -13,7 +13,7 @@ const CoproGuide = ({ guideClassName }: { guideClassName?: string }) => {
             target="_blank"
             rel="noreferrer noopener"
             onClick={() => {
-              matomoEvent(['Téléchargement', 'Guide FCU', 'coproprietaire']);
+              trackEvent('Téléchargement|Guide FCU|coproprietaire');
             }}
           >
             Télécharger notre guide

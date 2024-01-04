@@ -20,7 +20,6 @@ import WrappedText from '@components/WrappedText';
 import { comparatifRcu } from '@data/tertiaire';
 import Head from 'next/head';
 
-const currentPage = 'professionnels';
 const conseillerCards = {
   'energies-vertes': issues['energies-vertes'],
   avantages: understandings.avantages,
@@ -42,7 +41,7 @@ const Professionnels = () => {
         </title>
       </Head>
 
-      <MainContainer currentMenu={`/${currentPage}`}>
+      <MainContainer currentMenu={`/professionnels`}>
         <GlobalStyle />
 
         <HeadSliceForm
@@ -92,7 +91,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
 
 :button-link[Voir la cartographie]{href="./carte"}
 
-:button-link[Télécharger les tracés]{href="./201223_Opendata_FCU.zip" tagName="downloadLink" trackEvent="Tracés, ${currentPage}" download}
+:button-link[Télécharger les tracés]{href="./201223_Opendata_FCU.zip" eventKey="Téléchargement|Tracés|professionnels" download}
 `}
             imgSrc="/img/rcu-carto.jpg"
             reverse
@@ -131,7 +130,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
             <MarkdownWrapper
               value={`
 :::puce-icon{icon="./icons/picto-warning.svg"}
-**À partir du 1er juillet 2022,** de nouvelles normes environnementales, qui visent à limiter les émissions de gaz à effet de serre, entreront en vigueur et **excluent l'installation de nouvelles chaudières au fioul.**  
+**À partir du 1er juillet 2022,** de nouvelles normes environnementales, qui visent à limiter les émissions de gaz à effet de serre, entreront en vigueur et **excluent l'installation de nouvelles chaudières au fioul.**
 **[Des aides](/ressources/aides#contenu) accompagnent cette transition.**
 :::
               `}
@@ -144,10 +143,10 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
           <WrappedText
             center
             body={`
-::counter-item[01.] 
+::counter-item[01.]
 *Le 100 rue du Paradis est un immeuble chauffé par une chaudière collective au gaz ayant 20 ans.*
 
-Un conseiller en rénovation ou le gestionnaire de l’immeuble cherche un chauffage *[plus performant et responsable](/ressources/avantages#contenu)* et vérifie sur *France Chaleur Urbaine* si le bâtiment est raccordable. 
+Un conseiller en rénovation ou le gestionnaire de l’immeuble cherche un chauffage *[plus performant et responsable](/ressources/avantages#contenu)* et vérifie sur *France Chaleur Urbaine* si le bâtiment est raccordable.
 
 *Un [réseau de chaleur](/reseaux-chaleur#contenu) passe à 15 mètres !*
 
@@ -160,7 +159,7 @@ Le conseiller en rénovation ou le gestionnaire de l’immeuble demande via Fran
           <WrappedText
             center
             body={`
-::counter-item[02.] 
+::counter-item[02.]
 *Les frais de raccordement s’élèvent à 105 000 €.*
 *Le « [Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires](/ressources/aides#contenu) » permet de réduire ce coût à 29 000 €, soit 230 € par lot.*
 
@@ -175,7 +174,7 @@ Depuis, l’immeuble bénéficie d’une bonne température de chauffe, d’une 
           />
           <Slice>
             <MarkdownWrapper
-              value={`:button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" tagName="downloadLink" trackEvent="Guide FCU, ${currentPage}" target="_blank"}`}
+              value={`:button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" eventKey="Téléchargement|Guide FCU|professionnels" target="_blank"}`}
               className="fcuSolutionForFuturFooter"
             />
           </Slice>
