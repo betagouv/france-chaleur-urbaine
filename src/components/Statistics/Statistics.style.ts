@@ -83,3 +83,8 @@ export const LastActuDate = styled.div`
   margin-bottom: 24px;
   font-size: 0.9rem;
 `;
+
+export const HorizontalSeparator = styled.div`
+  width: 100%;
+  border: 1px solid #e1e1e1;
+`;

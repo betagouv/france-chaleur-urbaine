@@ -19,6 +19,7 @@ const csp = {
     "'sha256-3I33qFPfa/PLrN/3rrrC4vJBjmKYiuXWQ+ZfnHiEWmo='",
     "'sha256-ksltjYbI6Uoozfn80t6ROvA1rBbTP9X8qGPGwHmWBpA='",
     "'sha256-6SC04Y6nNQLzwzyqa3SfGlAJoGLEAasou2bnNnkusvM='",
+    "'sha256-H2mRU+3M13HkAJfH6/b74hVw3UOtytXrVI3MuPwDTj0='", // matomo https://stats.beta.gouv.fr/ 83
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://static.axept.io',
