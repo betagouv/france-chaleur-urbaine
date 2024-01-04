@@ -1,6 +1,6 @@
 export const clientConfig = {
   tracking: {
-    matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_SERVER_URL,
+    matomoServerURL: process.env.NEXT_PUBLIC_MATOMO_URL,
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
     googleTagId: process.env.NEXT_PUBLIC_GOOGLE_TAG_ID,
     facebookPixelId: process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID,
