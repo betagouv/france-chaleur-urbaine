@@ -164,7 +164,8 @@ const exportEnergyGasSummary = async (
 ): Promise<EnergySummary[]> =>
   db(`${region} as energy`)
     .select(
-      'libelle_adr_principale_ban as addr_label, ffo_bat_nb_log as nb_logements',
+      'libelle_adr_principale_ban as addr_label',
+      'ffo_bat_nb_log as nb_logements',
       db.raw(`
         EXISTS (
           SELECT *
@@ -188,7 +189,8 @@ const exportEnergyFioulSummary = async (
 ): Promise<EnergySummary[]> =>
   db(`${region} as energy`)
     .select(
-      'libelle_adr_principale_ban as addr_label, ffo_bat_nb_log as nb_logements',
+      'libelle_adr_principale_ban as addr_label',
+      'ffo_bat_nb_log as nb_logements',
       db.raw(`
         EXISTS (
           SELECT *
