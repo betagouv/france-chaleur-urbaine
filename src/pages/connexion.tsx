@@ -1,9 +1,14 @@
 import { LoginForm, LoginFormProps } from '@components/connexion/LoginForm';
+import SimplePage from '@components/shared/page/SimplePage';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
 export default function ConnectionPage(props: LoginFormProps): JSX.Element {
-  return <LoginForm {...props} />;
+  return (
+    <SimplePage title="Connexion - France Chaleur Urbaine">
+      <LoginForm {...props} />
+    </SimplePage>
+  );
 }
 
 export const getServerSideProps: GetServerSideProps<LoginFormProps> = async (

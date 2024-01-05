@@ -1,22 +1,16 @@
 import BulkEligibility from '@components/Admin/BulkEligibility';
 import Users from '@components/Admin/Users';
-import MainContainer from '@components/shared/layout';
+import SimplePage from '@components/shared/page/SimplePage';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
-import Head from 'next/head';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 
 export default function Admin(): JSX.Element {
   return (
-    <>
-      <Head>
-        <title>France Chaleur Urbaine - Admin</title>
-      </Head>
-      <MainContainer currentMenu="/admin" fullscreen>
-        <Users />
-        <BulkEligibility />
-      </MainContainer>
-    </>
+    <SimplePage title="France Chaleur Urbaine - Admin" mode="authenticated">
+      <Users />
+      <BulkEligibility />
+    </SimplePage>
   );
 }
 

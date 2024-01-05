@@ -13,6 +13,7 @@ import { issues, understandings } from '@components/Ressources/config';
 import Understanding from '@components/Ressources/Understanding';
 import MainContainer from '@components/shared/layout';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
+import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
@@ -28,16 +29,12 @@ const coproprietaireCards = {
 
 export default function Home() {
   return (
-    <>
+    <SimplePage title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique">
       <Head>
         <meta
           name="description"
           content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
         />
-        <title>
-          France Chaleur Urbaine : Une solution numérique qui facilite le
-          raccordement à un chauffage économique et écologique
-        </title>
       </Head>
 
       <MainContainer currentMenu={'/'}>
@@ -145,6 +142,6 @@ Cette [obligation](/ressources/prioritaire#contenu) s’applique dans une certai
           </Slice>
         </div>
       </MainContainer>
-    </>
+    </SimplePage>
   );
 }

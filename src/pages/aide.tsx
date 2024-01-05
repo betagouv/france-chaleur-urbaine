@@ -1,6 +1,7 @@
-import MainContainer from '@components/shared/layout/MainContainer';
+import SimplePage from '@components/shared/page/SimplePage';
 import { Accordion, AccordionItem } from '@dataesr/react-dsfr';
-import Head from 'next/head';
+import { GetServerSideProps } from 'next';
+import { getSession } from 'next-auth/react';
 
 type FaqItem = {
   title: string;
@@ -266,42 +267,50 @@ const faqItems: FaqItem[] = [
 
 const Aide = () => {
   return (
-    <>
-      <Head>
-        <title>Aide : France Chaleur Urbaine</title>
-      </Head>
-      <MainContainer fullscreen>
-        <div className="fr-container fr-mt-4w fr-mb-8w">
-          <h1>
-            Bienvenue sur l’espace gestionnaire de France Chaleur Urbaine !
-          </h1>
-          <p>
-            Vous trouverez ci-dessous les réponses aux questions qui nous sont
-            les plus fréquemment posées.
-          </p>
-          <p>
-            Vous ne trouvez pas la réponse à vos interrogations, ou souhaitez
-            nous faire part de suggestions pour améliorer cet espace
-            gestionnaire ? Nous sommes à votre écoute !
-          </p>
-          <p>
-            Contactez-nous&nbsp;:{' '}
-            <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">
-              france-chaleur-urbaine@developpement-durable.gouv.fr
-            </a>
-          </p>
+    <SimplePage title="Aide : France Chaleur Urbaine" mode="authenticated">
+      <div className="fr-container fr-mt-4w fr-mb-8w">
+        <h1>Bienvenue sur l’espace gestionnaire de France Chaleur Urbaine !</h1>
+        <p>
+          Vous trouverez ci-dessous les réponses aux questions qui nous sont les
+          plus fréquemment posées.
+        </p>
+        <p>
+          Vous ne trouvez pas la réponse à vos interrogations, ou souhaitez nous
+          faire part de suggestions pour améliorer cet espace gestionnaire ?
+          Nous sommes à votre écoute !
+        </p>
+        <p>
+          Contactez-nous&nbsp;:{' '}
+          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">
+            france-chaleur-urbaine@developpement-durable.gouv.fr
+          </a>
+        </p>
 
-          <Accordion color="#000091" className="fr-mt-8w">
-            {faqItems.map((item, index) => (
-              <AccordionItem key={index} title={item.title}>
-                {item.content}
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </MainContainer>
-    </>
+        <Accordion color="#000091" className="fr-mt-8w">
+          {faqItems.map((item, index) => (
+            <AccordionItem key={index} title={item.title}>
+              {item.content}
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+    </SimplePage>
   );
 };
 
 export default Aide;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const userSession = await getSession(context);
+
+  if (!userSession) {
+    return {
+      redirect: {
+        destination: '/connexion',
+        permanent: false,
+      },
+    };
+  }
+
+  return { props: {} };
+};
