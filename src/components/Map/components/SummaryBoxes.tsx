@@ -22,6 +22,7 @@ import {
   ZoneInfosWrapper,
 } from './SummaryBoxes.style';
 import ZoneInfo from './ZoneInfo';
+import { clientConfig } from 'src/client-config';
 import { trackEvent } from 'src/services/analytics';
 
 const getConso = (consos: GasSummary[]) => {
@@ -74,7 +75,7 @@ const SummaryBoxes = ({
 
   useEffect(() => {
     setSummary(undefined);
-    if (bounds && size && size < 5) {
+    if (bounds && size && size < clientConfig.summaryAreaSizeLimit) {
       trackEvent('Carto|Zone définie');
       zoneIndex.current += 1;
       const currentZoneIndex = zoneIndex.current;
@@ -136,7 +137,7 @@ const SummaryBoxes = ({
           trackEvent('Carto|Zone mise à jour');
           const geometry = data.features[0].geometry as Polygon;
           setBounds(geometry.coordinates[0]);
-          setSize(turfArea(data) / 1000_000);
+          setSize(turfArea(data) / 1_000_000);
         } else if (data.features[0].geometry.type === 'LineString') {
           trackEvent('Carto|Tracé mis à jour');
           setLines(
@@ -181,7 +182,7 @@ const SummaryBoxes = ({
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 @ts-ignore: to fix in react-dsfr */}
               <Tab label="Extraire des données sur les bâtiments">
-                {size && size > 5 ? (
+                {size && size > clientConfig.summaryAreaSizeLimit ? (
                   <Explanation>
                     <span>
                       La zone définie est trop grande ({size.toFixed(2)} km²),

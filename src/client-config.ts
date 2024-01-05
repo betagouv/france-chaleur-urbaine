@@ -6,4 +6,5 @@ export const clientConfig = {
     facebookPixelId: process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID,
     linkInPartnerId: process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID,
   },
+  summaryAreaSizeLimit: 5, // km²
 };
