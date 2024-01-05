@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { useContext } from 'react';
 import LayoutContext from './LayoutContext';
 import { GithubLogo } from './MainLayout.style';
+import Image from 'next/image';
 
 const fcuFooterDesc = `France Chaleur Urbaine est un projet d'innovation pour accélérer
   le raccordement des bâtiments aux réseaux de chaleur en vue de
@@ -35,8 +36,9 @@ const Footer = () => {
           République Française
         </Logo>
         <FooterOperator>
-          <img
+          <Image
             height={136}
+            width={242}
             src="/logo-fcu-with-typo.jpg"
             alt="logo france chaleur urbaine"
           />
