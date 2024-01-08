@@ -172,7 +172,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
             Nom: faker.person.lastName(),
             Prénom: faker.person.firstName(),
             Mail: faker.internet.email(),
-            Téléphone: faker.phone.number('0#########'),
+            Téléphone: `0${faker.string.numeric(9)}`,
           }) as Demand
       )
     : filteredRecords.map(
