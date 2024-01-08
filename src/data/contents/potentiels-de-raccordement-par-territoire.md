@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/vignettepotentiel.jpg
+coverY: 0
+---
+
 # Potentiels de raccordement par territoire
 
 📢 Découvrez nos nouvelles données chiffrées sur les potentiels de raccordement dans votre territoire !\
@@ -8,4 +13,8 @@ Ces données sont issues d’un croisement entre les tracés des réseaux recens
 \
 🏢 A l’échelle nationale, plus de 650 000 logements actuellement chauffés au gaz collectif ou fioul collectif sont identifiés à moins de 150 m d’un réseau !\
 \
-👉 Pour découvrir les chiffres : [https://france-chaleur-urbaine.beta.gouv.fr/carte?potentiels-de-raccordement](https://france-chaleur-urbaine.beta.gouv.fr/carte?potentiels-de-raccordement) ou cliquez sur le bouton "Voir les potentiel de raccordement" de notre cartographie.\
+👉 Pour découvrir les chiffres : [https://france-chaleur-urbaine.beta.gouv.fr/carte?potentiels-de-raccordement](https://france-chaleur-urbaine.beta.gouv.fr/carte?potentiels-de-raccordement) ou cliquez sur le bouton "Voir les potentiel de raccordement" de notre cartographie.
+
+![](.gitbook/assets/potentiel.jpeg)
+
+\
