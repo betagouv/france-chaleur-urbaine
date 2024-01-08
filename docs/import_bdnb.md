@@ -32,8 +32,8 @@ Pour l'instant tout fonctionne par région. Une table par région.
 4. Vider les tables *bnb - adresse_tiles* et *bnb - batiment_tiles*
 
 5. Lancer les calculs des tiles
-    - Pour les adresses : `NODE_PATH=./ npx ts-node --transpile-only scripts/fillTiles.ts energy 0 17 1`
-    - Pour les bâtiments : `NODE_OPTIONS=--max-old-space-size=8192 NODE_PATH=./ npx ts-node --transpile-only scripts/fillTiles.ts buildings 0 17 1`
+    - Pour les adresses : `npx tsx scripts/fillTiles.ts energy 0 17 1`
+    - Pour les bâtiments : `NODE_OPTIONS=--max-old-space-size=8192 npx tsx scripts/fillTiles.ts buildings 0 17 1`
 <br/><br/>
 
 ## Deuxième étape - en dev
