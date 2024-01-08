@@ -20,7 +20,7 @@ const getBooleanValue = (network: Record<FieldSet>, key: string) => {
 };
 
 const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {
-  if (table === 'network' || table === 'coldNetwork') {
+  if (table === 'network') {
     return {
       commentaires: getValue(network, 'commentaires'),
       'Taux EnR&R': getValue(network, 'Taux EnR&R'),
@@ -113,7 +113,44 @@ const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {
       website_gestionnaire: getValue(network, 'website_gestionnaire'),
       CP_MO: getValue(network, 'CP_MO'),
       CP_gestionnaire: getValue(network, 'CP_gestionnaire'),
-      has_trace: getBooleanValue(network, 'has_trace'),
+      //has_trace: getBooleanValue(network, 'has_trace'),
+    };
+  } else if (table === 'coldNetwork') {
+    return {
+      'Taux EnR&R': getValue(network, 'Taux EnR&R'),
+      'Identifiant reseau': getValue(network, 'Identifiant reseau'),
+      Gestionnaire: getValue(network, 'Gestionnaire'),
+      communes: getValue(network, 'communes'),
+      'contenu CO2': getValue(network, 'contenu CO2'),
+      'contenu CO2 ACV': getValue(network, 'contenu CO2 ACV'),
+      nom_reseau: getValue(network, 'nom_reseau'),
+      departement: getValue(network, 'departement'),
+      region: getValue(network, 'region'),
+      MO: getValue(network, 'MO'),
+      adresse_mo: getValue(network, 'adresse_mo'),
+      annee_creation: getValue(network, 'annee_creation'),
+      ville_mo: getValue(network, 'ville_mo'),
+      adresse_gestionnaire: getValue(network, 'adresse_gestionnaire'),
+      ville_gestionnaire: getValue(network, 'ville_gestionnaire'),
+      longueur_reseau: getValue(network, 'longueur_reseau'),
+      nb_pdl: getValue(network, 'nb_pdl'),
+      livraisons_tertiaire_MWh: getValue(network, 'livraisons_tertiaire_MWh'),
+      livraisons_industrie_MWh: getValue(network, 'livraisons_industrie_MWh'),
+      livraisons_agriculture_MWh: getValue(
+        network,
+        'livraisons_agriculture_MWh'
+      ),
+      livraisons_autre_MWh: getValue(network, 'livraisons_autre_MWh'),
+      production_totale_MWh: getValue(network, 'production_totale_MWh'),
+      livraisons_totale_MWh: getValue(network, 'livraisons_totale_MWh'),
+      livraisons_residentiel_MWh: getValue(
+        network,
+        'livraisons_residentiel_MWh'
+      ),
+      'reseaux classes': getBooleanValue(network, 'reseaux classes'),
+      website_gestionnaire: getValue(network, 'website_gestionnaire'),
+      CP_MO: getValue(network, 'CP_MO'),
+      CP_gestionnaire: getValue(network, 'CP_gestionnaire'),
     };
   }
 
