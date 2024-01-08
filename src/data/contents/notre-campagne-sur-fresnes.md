@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/vignetteFresnes.jpg
+coverY: 0
+---
+
 # Notre campagne sur Fresnes
 
 Pour conclure cette année riche en actions de communication autour des réseaux de chaleur direction Fresnes dans le département du Val-de-Marne pour découvrir la campagne débutée il y a quelques jours, réalisée en étroite collaboration avec la [ville de Fresnes](https://www.fresnes94.fr/vos-services/environnement-et-developpement-durable/geothermie/) et son délégataire, le [Groupe Coriance](https://sofrege.fr/).\
@@ -7,3 +12,5 @@ Pour conclure cette année riche en actions de communication autour des réseaux
 😃 Nous sommes heureux d'accompagner la collectivité dans la valorisation de ce choix d'avenir ! Après une première diffusion dans le journal communal paru début décembre, différents visuels de promotion sont actuellement sur les espaces d'affichage de la ville.\
 \
 👉 Si vous aussi vous souhaitez bénéficier de notre accompagnement pour communiquer sur votre réseau, n'hésitez pas à nous contacter !
+
+![](<.gitbook/assets/1 (1).jpg>)![](<.gitbook/assets/2 (1).jpg>)
