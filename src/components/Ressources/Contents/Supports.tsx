@@ -116,6 +116,12 @@ const Supports = () => {
             <p>Unité de valorisation énergétique d'Issy-les-Moulineaux</p>
           </Link>
         </div>
+        <div>
+          <Link href="/documentation/FCU_Alsace_Charras.pdf" target="_blank">
+            <img src="/img/FCU_Alsace_Charras.jpg" alt="" width={150} />
+            <p>Centrale Alsace et chaufferie Charras à Courbevoie</p>
+          </Link>
+        </div>
       </SupportImages>
       <Subtitle>Dossier de presse</Subtitle>
       <SupportImages>
