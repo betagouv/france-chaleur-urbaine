@@ -2,7 +2,7 @@ import Map from '@components/Map';
 import {
   fullscreenHeaderHeight,
   tabHeaderHeight,
-} from '@components/shared/layout';
+} from '@components/shared/layout/MainLayout.data';
 import SimplePage from '@components/shared/page/SimplePage';
 import { usePersistedState } from '@hooks';
 import param from 'src/services/Map/param';

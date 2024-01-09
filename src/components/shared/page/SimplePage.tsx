@@ -74,7 +74,7 @@ type NavigationItem = {
 
 const publicNavigationMenu: NavigationItem[] = [
   {
-    title: 'Copropriétaire, conseil syndical',
+    title: 'Copropriétaires',
     href: '/',
   },
   {
@@ -82,7 +82,7 @@ const publicNavigationMenu: NavigationItem[] = [
     href: '/professionnels',
   },
   {
-    title: 'Collectivité, exploitant',
+    title: 'Collectivités, exploitants',
     href: '/collectivites-et-exploitants',
   },
   {
@@ -94,7 +94,7 @@ const publicNavigationMenu: NavigationItem[] = [
     href: '/ressources',
   },
   {
-    title: 'Question ?',
+    title: 'Notre service',
     children: [
       {
         title: 'Qui sommes-nous ?',

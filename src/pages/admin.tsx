@@ -5,7 +5,7 @@ import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 
-export default function Admin(): JSX.Element {
+export default function AdminPage(): JSX.Element {
   return (
     <SimplePage title="France Chaleur Urbaine - Admin" mode="authenticated">
       <Users />

@@ -110,14 +110,30 @@ module.exports = withBundleAnalyzer({
   async redirects() {
     return [
       {
+        source: '/guide-france-chaleur-urbaine',
+        destination: '/documentation/guide-france-chaleur-urbaine.pdf',
+        permanent: false,
+      },
+      // redirections for pages that were removed
+      {
         source: '/statistiques',
         destination: '/stats',
         permanent: true,
       },
       {
-        source: '/guide-france-chaleur-urbaine',
-        destination: '/documentation/guide-france-chaleur-urbaine.pdf',
-        permanent: false,
+        source: '/accueil',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/coproprietaire',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/conseiller',
+        destination: '/professionnels',
+        permanent: true,
       },
     ];
   },

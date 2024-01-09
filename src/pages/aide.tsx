@@ -265,7 +265,7 @@ const faqItems: FaqItem[] = [
   },
 ];
 
-const Aide = () => {
+const AidePage = () => {
   return (
     <SimplePage title="Aide : France Chaleur Urbaine" mode="authenticated">
       <div className="fr-container fr-mt-4w fr-mb-8w">
@@ -298,7 +298,7 @@ const Aide = () => {
   );
 };
 
-export default Aide;
+export default AidePage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const userSession = await getSession(context);
