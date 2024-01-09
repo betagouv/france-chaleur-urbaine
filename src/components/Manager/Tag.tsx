@@ -1,7 +1,7 @@
 import { Container } from './Tag.styles';
 
 const colors: Record<string, { color: string; backgroundColor: string }> = {
-  ZDP: { color: '#454B58', backgroundColor: '#FFDA8F' },
+  PDP: { color: '#454B58', backgroundColor: '#FFDA8F' },
   Tertiaire: { color: '#DAE6FF', backgroundColor: '#406ED2' },
   'Maison individuelle': { color: '#264653', backgroundColor: '#2a9d8f' },
   'Bailleur social': { color: '#006d77', backgroundColor: '#83c5be' },

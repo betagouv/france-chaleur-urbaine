@@ -12,7 +12,9 @@ const faqItems: FaqItem[] = [
     title: 'À qui est ouvert l’espace gestionnaire ?',
     content: (
       <>
-        <p>L’espace gestionnaire est ouvert aux collectivités et exploitants</p>
+        <p className="fr-mb-0">
+          L’espace gestionnaire est ouvert aux collectivités et exploitants
+        </p>
         <ul>
           <li>
             La <b>collectivité</b> a accès aux demandes situées sur l’ensemble
@@ -80,7 +82,7 @@ const faqItems: FaqItem[] = [
     title: 'Pourquoi compléter la colonne statut ?',
     content: (
       <>
-        <p>
+        <p className="fr-mb-0">
           Il est important de renseigner le statut des demandes pour permettre à
           France Chaleur Urbaine :
         </p>
@@ -141,7 +143,7 @@ const faqItems: FaqItem[] = [
       'D’où proviennent les données qui figurent dans mon espace gestionnaire ? / À quoi correspondent les différents champs du tableau ?',
     content: (
       <>
-        <p>
+        <p className="fr-mb-0">
           Informations renseignées par le demandeur lors du dépôt de
           formulaire :
         </p>
@@ -151,7 +153,9 @@ const faqItems: FaqItem[] = [
             <b>Mode de chauffage</b>
           </li>
         </ul>
-        <p>Informations complétées par France Chaleur Urbaine : </p>
+        <p className="fr-mb-0">
+          Informations complétées par France Chaleur Urbaine :{' '}
+        </p>
         <ul>
           <li>
             Une étiquette “PDP” est ajoutée lorsque le bâtiment est situé dans
@@ -168,18 +172,26 @@ const faqItems: FaqItem[] = [
             proche identifié par France Chaleur Urbaine.
           </li>
           <li>
-            <b>Nb logements (lots) :</b> information extraite de la{' '}
+            <b>Nb logements (lots) :</b> information provenant de la{' '}
             <a
               href="https://www.data.gouv.fr/fr/datasets/base-de-donnees-nationale-des-batiments/"
               target="_blank"
             >
               Base Nationale Des Bâtiments
             </a>{' '}
-            du CSTB (lorsque disponible pour l’adresse concernée).
+            du CSTB ou du{' '}
+            <a
+              href="https://www.registre-coproprietes.gouv.fr/"
+              target="_blank"
+            >
+              Registre National d'Immatriculation des Copropriétés
+            </a>{' '}
+            de l'ANAH (lorsque disponible pour l’adresse concernée).
           </li>
           <li>
             <b>Conso gaz (MWh) :</b> information extraite des données locales de
-            l’énergie (lorsque disponible pour l’adresse concernée).
+            l’énergie pour l'année 2022 (lorsque disponible pour l’adresse
+            concernée).
           </li>
           <li>
             <b>Affecté à :</b> exploitant à qui France Chaleur Urbaine a affecté
@@ -209,15 +221,15 @@ const faqItems: FaqItem[] = [
           Chaleur Urbaine).
         </p>
         <p>
-          Enfin, la colonne « Affectée à » peut également être modifiée lorsque
+          Enfin, la colonne « Affecté à » peut également être modifiée lorsque
           l’affectation réalisée par France Chaleur Urbaine n’est pas jugée
-          pertinente. Par exemple, une demande située loin du réseau peuvent
-          être visible par la collectivité mais non transmise à l’exploitant
-          (« Non affectée »). S’il s’avère que cette demande est malgré tout
-          dans le périmètre de concession du réseau, la collectivité peut
-          l’attribuer à son exploitant en corrigeant l’information dans la
-          colonne « Affectée à ». Cette correction sera effective lorsque France
-          Chaleur Urbaine l’aura validée manuellement.
+          pertinente. Par exemple, une demande située loin du réseau peut être
+          visible par la collectivité mais non transmise à l’exploitant (« Non
+          affectée »). S’il s’avère que cette demande est malgré tout dans le
+          périmètre de concession du réseau, la collectivité peut l’attribuer à
+          son exploitant en corrigeant l’information dans la colonne « Affecté
+          à ». Cette correction sera effective lorsque France Chaleur Urbaine
+          l’aura validée manuellement.
         </p>
       </>
     ),
