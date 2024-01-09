@@ -81,7 +81,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
                 Conso: conso ? conso.conso_nb : undefined,
                 'ID Conso': conso ? conso.rownum : undefined,
                 Logement: nbLogement ? nbLogement.nb_logements : undefined,
-                'ID BNB': nbLogement ? nbLogement.id : undefined,
+                'ID BNB': nbLogement ? `${nbLogement.id}` : undefined,
                 'Identifiant réseau': network
                   ? network['Identifiant reseau']
                   : undefined,
