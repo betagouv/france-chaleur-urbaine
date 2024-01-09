@@ -55,7 +55,7 @@ const useContactFormFCU = () => {
         trackEvent(
           `Eligibilité|Formulaire de test${
             fromMap ? ' - Carte' : ''
-          } - Adresse ${eligibility ? 'É' : 'Iné'}ligible`,
+          } - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
           address || 'Adresse indefini'
         );
       }
@@ -79,9 +79,9 @@ const useContactFormFCU = () => {
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
       trackEvent(
-        `Eligibilité|Formulaire de contact ${eligibility ? 'é' : 'iné'}ligible${
-          fromMap ? ' - Carte' : ''
-        } - Envoi`,
+        `Eligibilité|Formulaire de contact ${
+          eligibility?.isEligible ? 'é' : 'iné'
+        }ligible${fromMap ? ' - Carte' : ''} - Envoi`,
         address
       );
       const response = await submitToAirtable(
