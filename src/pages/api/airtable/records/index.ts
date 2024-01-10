@@ -7,6 +7,7 @@ import {
   getGestionnaires,
   getToRelanceDemand,
 } from '@core/infrastructure/repository/manager';
+import { logger } from '@helpers/logger';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import base from 'src/db/airtable';
 import { Airtable } from 'src/types/enum/Airtable';
@@ -25,14 +26,20 @@ const creationCallBack =
     res.status(200).json(jsonResponse);
   };
 
-export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
+export default async function PostRecords(
+  req: NextApiRequest,
+  res: NextApiResponse<any>
+) {
   if (req.method !== 'POST') {
     return res.status(405).send({ message: 'Only POST requests allowed' });
   }
 
   const { type, ...values } = req.body;
   if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
-    console.log('Sending to', type, values);
+    logger.info('create demand', {
+      type,
+      values,
+    });
     return res.status(200).json({
       type: type,
       values: values,
@@ -73,6 +80,14 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
               network &&
               network.distance < 200 &&
               values['Type de chauffage'] === 'Collectif';
+
+            logger.info('create eligibility demand', {
+              id: records[0].getId(),
+              nbLogement,
+              conso,
+              network,
+              gestionnaires,
+            });
 
             await base(Airtable.UTILISATEURS).update(
               records[0].getId(),
@@ -118,4 +133,4 @@ export default async (req: NextApiRequest, res: NextApiResponse<any>) => {
       res.status(400).send({ message: 'Type not recognized' });
       break;
   }
-};
+}
