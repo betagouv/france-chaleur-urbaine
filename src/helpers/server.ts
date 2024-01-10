@@ -1,8 +1,10 @@
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import { ZodRawShape, z } from 'zod';
-import { logger } from './logger';
+import { parentLogger } from './logger';
 import { HttpStatusCode } from 'axios';
+import { errors as formidableErrors } from 'formidable';
 
+const FormidableError = (formidableErrors as any).default;
 /**
  * Valide un objet selon un schéma zod.
  */
@@ -25,8 +27,26 @@ export function handleRouteErrors(handler: NextApiHandler): NextApiHandler {
       if (!res.headersSent) {
         res.status(HttpStatusCode.Ok).json(handlerResult);
       }
-    } catch (error) {
+    } catch (error: any) {
+      const logger = parentLogger.child({ url: req.url });
+      if (error instanceof FormidableError) {
+        logger.error('formidable error', {
+          error: error.message,
+          code: error.code,
+          httpCode: error.httpCode,
+        });
+        return res.status(error.httpCode ?? 400).json({
+          message: 'Paramètres incorrects',
+          error: error.message,
+        });
+      }
       let errorMessage = error;
+      if (error === invalidRouteError) {
+        logger.error('invalid route error');
+        return res.status(404).json({
+          message: 'URL inconnue',
+        });
+      }
       if (error instanceof Error) {
         if (error.name === 'ZodError') {
           logger.error('validation error', {
@@ -60,4 +80,12 @@ export function handleRouteErrors(handler: NextApiHandler): NextApiHandler {
       });
     }
   };
+}
+
+const invalidRouteError = new Error('invalid route'); // 404
+
+export function requirePostMethod(req: NextApiRequest) {
+  if (req.method !== 'POST') {
+    throw invalidRouteError;
+  }
 }
