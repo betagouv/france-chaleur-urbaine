@@ -870,6 +870,10 @@ const Map = ({
   }, [jumpTo, center, router, geolocDisabled]);
 
   useEffect(() => {
+    if (pinsList && pinsList?.length > 0) {
+      //The pin to display are only those on the pinsList
+      return;
+    }
     let shouldUpdate = false;
     const newMarkersList: MapMarkerInfos[] = markersList;
     const newSoughtAddresses = soughtAddresses.map(
