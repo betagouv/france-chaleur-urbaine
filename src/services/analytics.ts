@@ -1,3 +1,4 @@
+import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
 import { init } from '@socialgouv/matomo-next';
 import { Router } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -58,7 +59,7 @@ export const useAnalytics = () => {
 
 type TrackingConfiguration = {
   matomo?: readonly string[]; // ex: ['Carto', 'Ajouter un segment']
-  facebook?: readonly [string, ...any[]]; // ex: ['FindLocation']
+  facebook?: string; // ex: Formulaire de contact éligible - Envoi
   google?: string; // ex: 6QaoCJfrtN8DEIqs-vYo (ads id)
   linkedin?: number; // ex: 5492674 (conversion id)
 };
@@ -112,53 +113,57 @@ const trackingEvents = {
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
     google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible
-    facebook: ['Contact'],
+    facebook: 'Formulaire de contact éligible - Carte - Envoi',
   },
   'Eligibilité|Formulaire de contact inéligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Carte - Envoi'],
     google: 'Pm33CK6ms_oYEJDB_MIq', // Contact > Formulaire envoyé - Non Eligible
-    facebook: ['Contact'],
+    facebook: 'Formulaire de contact inéligible - Carte - Envoi',
   },
   'Eligibilité|Formulaire de contact éligible - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Envoi'],
     google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible
-    facebook: ['Contact'],
+    facebook: 'Formulaire de contact éligible - Envoi',
   },
   'Eligibilité|Formulaire de contact inéligible - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact inéligible - Envoi'],
     google: 'Pm33CK6ms_oYEJDB_MIq', // Contact > Formulaire envoyé - Non Eligible
-    facebook: ['Contact'],
+    facebook: 'Formulaire de contact inéligible - Envoi',
   },
   'Eligibilité|Formulaire de test - Adresse Inéligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Inéligible'],
     google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
+    facebook: 'Formulaire de test - Adresse Inéligible',
     linkedin: 5492666,
   },
   'Eligibilité|Formulaire de test - Adresse Éligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Adresse Éligible'],
     google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
+    facebook: 'Formulaire de test - Adresse Éligible',
     linkedin: 5392842,
   },
   'Eligibilité|Formulaire de test - Carte - Adresse Inéligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Adresse Inéligible'],
     google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
+    facebook: 'Formulaire de test - Carte - Adresse Inéligible',
     linkedin: 5492666,
   },
   'Eligibilité|Formulaire de test - Carte - Adresse Éligible': {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Adresse Éligible'],
     google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
+    facebook: 'Formulaire de test - Carte - Adresse Éligible',
     linkedin: 5392842,
   },
   'Eligibilité|Formulaire de test - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Envoi'],
     google: 'z18zCKKms_oYEJDB_MIq', // Test éligibilité
-    facebook: ['FindLocation'],
+    facebook: 'Formulaire de test - Carte - Envoi',
     linkedin: 5492674,
   },
   'Eligibilité|Formulaire de test - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de test - Envoi'],
     google: 'z18zCKKms_oYEJDB_MIq', // Test éligibilité
-    facebook: ['FindLocation'],
+    facebook: 'Formulaire de test - Envoi',
     linkedin: 5492674,
   },
   'Téléchargement|Guide FCU|coproprietaire': {
@@ -216,7 +221,13 @@ const performTracking = (
   if (trackingConfig.facebook && typeof window?.fbq === 'function') {
     // we may need to use custom events trackCustom when we want more information
     // see https://developers.facebook.com/docs/meta-pixel/reference
-    window.fbq(['track', ...trackingConfig.facebook]);
+    // window.fbq(['track', ...trackingConfig.facebook]);
+    // use standard pixel and conversion api
+    // see https://github.com/RivercodeAB/facebook-conversion-api-nextjs/blob/7279e607b0f07a841d695406f47c7782b623973a/src/conversion-api.ts#L28
+    fbEvent({
+      eventName: trackingConfig.facebook,
+      enableStandardPixel: true,
+    });
   }
   if (trackingConfig.google && typeof window?.gtag === 'function') {
     window.gtag('event', 'conversion', {
