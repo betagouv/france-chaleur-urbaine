@@ -79,7 +79,8 @@ export const upsertUsersFromApi = async (
       )}`
     );
   }
-  warnings.forEach((warning) => console.log(warning));
+  //Not send any warning messages for now
+  //warnings.forEach((warning) => console.log(warning));
   const salt = await bcrypt.genSalt(10);
   await Promise.all(
     Object.keys(users)
