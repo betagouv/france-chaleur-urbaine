@@ -221,7 +221,6 @@ const Manager = () => {
     (demands: Demand[]) => {
       const sortedDemands = getSortBy(demands)(sort);
       setFilteredDemands(sortedDemands);
-      setPage(1);
     },
     [sort]
   );
