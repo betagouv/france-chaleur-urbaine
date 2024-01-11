@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Meilleurs vœux !](README.md)
+* [La géothermie expliquée aux enfants](README.md)
+* [Meilleurs vœux !](<README (16).md>)
 * [Notre campagne sur Fresnes](notre-campagne-sur-fresnes.md)
 * [Potentiels de raccordement par territoire](potentiels-de-raccordement-par-territoire.md)
 * [Notre campagne sur Charleville-Mézières](notre-campagne-sur-charleville-mezieres.md)
