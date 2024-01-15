@@ -72,15 +72,15 @@ export const upsertUsersFromApi = async (
       .whereIn('email', emails)
   ).map((result) => result.email);
 
-  if (otherUsers.length > 0) {
-    warnings.push(
-      `Some emails are already managed by FCU, please contact us: ${otherUsers.join(
-        ', '
-      )}`
-    );
-  }
-  //Not send any warning messages for now
-  //warnings.forEach((warning) => console.log(warning));
+  //Don't send this warning message for now
+  // if (otherUsers.length > 0) {
+  //   warnings.push(
+  //     `Some emails are already managed by FCU, please contact us: ${otherUsers.join(
+  //       ', '
+  //     )}`
+  //   );
+  // }
+  warnings.forEach((warning) => console.log(warning));
   const salt = await bcrypt.genSalt(10);
   await Promise.all(
     Object.keys(users)
