@@ -1,17 +1,11 @@
-import MainContainer from '@components/shared/layout';
+import SimplePage from '@components/shared/page/SimplePage';
 import Statistics from '@components/Statistics/StatisticsV1';
-import Head from 'next/head';
 
 function Statistiques() {
   return (
-    <>
-      <Head>
-        <title>Statistiques - France Chaleur Urbaine</title>
-      </Head>
-      <MainContainer currentMenu="/stats">
-        <Statistics />
-      </MainContainer>
-    </>
+    <SimplePage title="Statistiques - France Chaleur Urbaine">
+      <Statistics />
+    </SimplePage>
   );
 }
 

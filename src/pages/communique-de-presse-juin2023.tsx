@@ -1,12 +1,12 @@
 import PressJune23 from '@components/Press/June23';
-import MainContainer from '@components/shared/layout/MainContainer';
+import SimplePage from '@components/shared/page/SimplePage';
 
-const QuiSommesNous = () => {
+const CommuniqueDePresseJune23Page = () => {
   return (
-    <MainContainer currentMenu={'/communique-de-presse-juin2023'}>
+    <SimplePage>
       <PressJune23 />
-    </MainContainer>
+    </SimplePage>
   );
 };
 
-export default QuiSommesNous;
+export default CommuniqueDePresseJune23Page;

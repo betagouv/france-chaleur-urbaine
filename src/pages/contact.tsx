@@ -1,20 +1,14 @@
 import ContactForm from '@components/ContactForm';
-import MainContainer from '@components/shared/layout';
+import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
-import Head from 'next/head';
 
 function contact() {
   return (
-    <>
-      <Head>
-        <title>Contact : France Chaleur Urbaine</title>
-      </Head>
-      <MainContainer currentMenu="/contact">
-        <Slice padding={4}>
-          <ContactForm />
-        </Slice>
-      </MainContainer>
-    </>
+    <SimplePage title="Contact : France Chaleur Urbaine">
+      <Slice padding={4}>
+        <ContactForm />
+      </Slice>
+    </SimplePage>
   );
 }
 

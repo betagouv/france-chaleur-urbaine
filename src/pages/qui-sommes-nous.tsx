@@ -1,11 +1,11 @@
-import MainContainer from '@components/shared/layout/MainContainer';
+import SimplePage from '@components/shared/page/SimplePage';
 import Us from '@components/Us';
 
 const QuiSommesNous = () => {
   return (
-    <MainContainer currentMenu={'/qui-sommes-nous'}>
+    <SimplePage>
       <Us />
-    </MainContainer>
+    </SimplePage>
   );
 };
 

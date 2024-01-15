@@ -8,6 +8,7 @@ import { Button } from '@dataesr/react-dsfr';
 import { useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { Container, Form, Header } from './Eligibility.styles';
+import Image from 'next/image';
 
 const Eligibility = () => {
   const [heatingType, setHeatingType] = useState('');
@@ -16,8 +17,9 @@ const Eligibility = () => {
     <Container>
       <Header>
         <b>Votre immeuble pourrait-il être raccordé à un réseau de chaleur ?</b>
-        <img
+        <Image
           height={136}
+          width={242}
           src="/logo-fcu-with-typo.jpg"
           alt="logo france chaleur urbaine"
         />

@@ -1,9 +1,8 @@
 import ContributionForm from '@components/ContributionForm/ContributionForm';
-import MainContainer from '@components/shared/layout';
+import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
 import { Alert } from '@dataesr/react-dsfr';
 import { submitToAirtable } from '@helpers/airtable';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ReactNode, useState } from 'react';
 import { Airtable } from 'src/types/enum/Airtable';
@@ -54,27 +53,22 @@ function Contribution() {
   };
 
   return (
-    <>
-      <Head>
-        <title>Contribuer : France Chaleur Urbaine</title>
-      </Head>
-      <MainContainer currentMenu="/contribution">
-        <Slice
-          padding={4}
-          header={`## Vous souhaitez contribuer à notre carte en ajoutant des données ou en nous signalant une erreur ? C'est possible ! Complétez le formulaire ci-dessous :`}
-        >
-          {result ? (
-            <Alert
-              type={result.type}
-              title={result.title}
-              description={result.description as string}
-            />
-          ) : (
-            <ContributionForm submit={submit} />
-          )}
-        </Slice>
-      </MainContainer>
-    </>
+    <SimplePage title="Contribuer : France Chaleur Urbaine">
+      <Slice
+        padding={4}
+        header={`## Vous souhaitez contribuer à notre carte en ajoutant des données ou en nous signalant une erreur ? C'est possible ! Complétez le formulaire ci-dessous :`}
+      >
+        {result ? (
+          <Alert
+            type={result.type}
+            title={result.title}
+            description={result.description as string}
+          />
+        ) : (
+          <ContributionForm submit={submit} />
+        )}
+      </Slice>
+    </SimplePage>
   );
 }
 
