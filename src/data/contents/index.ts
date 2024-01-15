@@ -1,6 +1,5 @@
 import { Article } from 'src/types/Article';
-import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
-import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
+import readme from './README.md';
 import readme_1_1_1_1 from './README (1) (1) (1) (1).md';
 import readme_1_1_1 from './README (1) (1) (1).md';
 import readme_1_1 from './README (1) (1).md';
@@ -25,8 +24,12 @@ import readme_10 from './README (10).md';
 import readme_11 from './README (11).md';
 import readme_12 from './README (12).md';
 import readme_13 from './README (13).md';
-import readme from './README.md';
+import readme_14 from './README (14).md';
+import readme_15 from './README (15).md';
+import readme_16 from './README (16).md';
+import readme_17 from './README (17).md';
 import demandes from './2000-demandes.md';
+import desReseauxVertueux from './des-reseaux-vertueux.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
 import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urbaine-se-construit-avec-ses-usagers.md';
@@ -35,18 +38,23 @@ import leChauffageLePlusEconomiquePourLhabitatCollectif from './le-chauffage-le-
 import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.md';
 import leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorable from './le-chauffage-urbain-pour-les-batiments-tertiaires-un-contexte-on-ne-peut-plus-favorable.md';
 import lesReseauxDeChaleurDesEnergiesVertes from './les-reseaux-de-chaleur-des-energies-vertes.md';
+import lesReseauxDeChaleurEnMoinsDe15Secondes from './les-reseaux-de-chaleur-en-moins-de-15-secondes.md';
+import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
+import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
+import notreCampagneCharlevilleMezieres from './notre-campagne-sur-charleville-mezieres.md';
+import notreCampagneFresnes from './notre-campagne-sur-fresnes.md';
 import page_2 from './page-2.md';
+import potentielsRaccordementTerritoire from './potentiels-de-raccordement-par-territoire.md';
+import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
+import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import unGuidePourLesExploitants from './un-guide-pour-les-exploitants.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
 import uneEnqueteIfopPourFranceChaleurUrbaine from './une-enquete-ifop-pour-france-chaleur-urbaine.md';
+import visiteCentraleFroidAlsaceChaufferieCharras from './visite-de-la-centrale-de-froid-alsace-et-de-la-chaufferie-charras.md';
 import visiteDunDatacenter from './visite-dun-datacenter.md';
 import visiteDuneChaufferieBiomasse from './visite-dune-chaufferie-biomasse.md';
-import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
-import desReseauxVertueux from './des-reseaux-vertueux.md';
-import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
-import lesReseauxDeChaleurEnMoinsDe15Secondes from './les-reseaux-de-chaleur-en-moins-de-15-secondes.md';
 
 const importFile = (file: string) => {
   return file.replaceAll('.gitbook/assets/', '/contents/');
@@ -54,10 +62,67 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/vignett592.jpg',
+    title: '592 réseaux classéss',
+    slug: '592-reseaux-classes',
+    content: importFile(readme),
+    publishedDate: new Date('2024-01-15'),
+  },
+  {
+    image: '/contents/vignetteochod.jpg',
+    title: 'La géothermie expliquée aux enfants',
+    slug: 'la-geothermie-expliquee-aux-enfants',
+    content: importFile(readme_17),
+    publishedDate: new Date('2024-01-09'),
+  },
+  {
+    image: '/contents/vignette2024.jpg',
+    title: 'Meilleurs vœux !',
+    slug: 'meilleurs-voeux',
+    content: importFile(readme_16),
+    publishedDate: new Date('2024-01-02'),
+  },
+  {
+    image: '/contents/vignetteFresnes.jpg',
+    title: 'Notre campagne sur Fresnes',
+    slug: 'notre-campagne-sur-fresnes',
+    content: importFile(notreCampagneFresnes),
+    publishedDate: new Date('2023-12-28'),
+  },
+  {
+    image: '/contents/vignettepotentiel.jpg',
+    title: 'Potentiels de raccordement par territoire',
+    slug: 'potentiels-de-raccordement-par-territoire',
+    content: importFile(potentielsRaccordementTerritoire),
+    publishedDate: new Date('2023-12-21'),
+  },
+  {
+    image: '/contents/vignetteCharleville.jpg',
+    title: 'Notre campagne sur Charleville-Mézières',
+    slug: 'notre-campagne-sur-charleville-mezieres',
+    content: importFile(notreCampagneCharlevilleMezieres),
+    publishedDate: new Date('2023-12-19'),
+  },
+  {
+    image: '/contents/vignetterezomee.jpg',
+    title:
+      "La carte France Chaleur Urbaine sur l'application Rezomee d'ENGIE Solutions",
+    slug: 'la-carte-france-chaleur-urbaine-sur-lapplication-rezomee-d-engie-solutions',
+    content: importFile(readme_15),
+    publishedDate: new Date('2023-12-15'),
+  },
+  {
+    image: '/contents/vignetteCharras.jpg',
+    title: 'Visite de la centrale de froid Alsace et de la chaufferie Charras',
+    slug: 'visite-de-la-centrale-de-froid-alsace-et-de-la-chaufferie-charras',
+    content: importFile(visiteCentraleFroidAlsaceChaufferieCharras),
+    publishedDate: new Date('2023-12-13'),
+  },
+  {
     image: '/contents/friday.jpg',
     title: 'Black Friday, Green Friday',
     slug: 'black-friday-green-friday',
-    content: importFile(readme),
+    content: importFile(readme_14),
     publishedDate: new Date('2023-11-24'),
   },
   {

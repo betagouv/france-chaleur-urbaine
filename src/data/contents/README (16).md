@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignette2024.jpg
-coverY: 0
----
-
 # Meilleurs vœux !
 
 🎉 Toute l'équipe de France Chaleur Urbaine vous adresse ses meilleurs vœux pour cette nouvelle année.\

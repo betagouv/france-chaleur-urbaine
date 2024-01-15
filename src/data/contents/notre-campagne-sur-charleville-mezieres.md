@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteCharleville.jpg
-coverY: 0
----
-
 # Notre campagne sur Charleville-Mézières
 
 Découvrez la campagne de communication lancée par [Charleville-Mézières](https://www.charleville-mezieres.fr/extension-du-chauffage-urbain), [Dalkia](https://www.dalkia.fr/) et France Chaleur Urbaine

@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetterezomee.jpg
-coverY: 0
----
-
 # La carte France Chaleur Urbaine sur l'application Rezomee d'ENGIE Solutions
 
 🗺 Depuis quelques jours, la cartogfraphie France Chaleur Urbaine est intégrée dans l'application Rezomee d'ENGIE Solutions.\

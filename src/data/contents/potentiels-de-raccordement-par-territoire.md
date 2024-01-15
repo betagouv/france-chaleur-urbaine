@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignettepotentiel.jpg
-coverY: 0
----
-
 # Potentiels de raccordement par territoire
 
 📢 Découvrez nos nouvelles données chiffrées sur les potentiels de raccordement dans votre territoire !\
