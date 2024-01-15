@@ -1,6 +1,6 @@
 import Network from '@components/Network/Network';
 import Slice from '@components/Slice/Slice';
-import MainContainer from '@components/shared/layout/MainContainer';
+import SimplePage from '@components/shared/page/SimplePage';
 import {
   getColdNetwork,
   getNetwork,
@@ -15,7 +15,7 @@ const PageReseau = ({ network }: { network: Network }) => {
   }
 
   return (
-    <MainContainer currentMenu={'/carte'} fullscreen>
+    <SimplePage currentPage="/carte" mode="public-fullscreen">
       <Slice>
         <Breadcrumb>
           <BreadcrumbItem asLink={<Link href="/" />}>Accueil</BreadcrumbItem>
@@ -28,7 +28,7 @@ const PageReseau = ({ network }: { network: Network }) => {
       <Slice className="fr-mb-4w">
         <Network network={network} />
       </Slice>
-    </MainContainer>
+    </SimplePage>
   );
 };
 

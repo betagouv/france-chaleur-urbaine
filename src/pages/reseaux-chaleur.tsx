@@ -8,6 +8,7 @@ import {
 import StickyForm from '@components/StickyForm/StickyForm';
 import Slice from '@components/Slice';
 import { useRef } from 'react';
+import SimplePage from '@components/shared/page/SimplePage';
 
 const ChauffageUrbain = () => {
   const reseauDeChaleurRef = useRef<null | HTMLHeadingElement>(null);
@@ -24,7 +25,7 @@ const ChauffageUrbain = () => {
   const aidesRef = useRef<null | HTMLHeadingElement>(null);
   const subventionRef = useRef<null | HTMLHeadingElement>(null);
   return (
-    <>
+    <SimplePage>
       <Header
         title="Découvrez les réseaux de chaleur"
         description="Changez pour un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !"
@@ -191,7 +192,7 @@ const ChauffageUrbain = () => {
           />
         </Slice>
       </StickyWrapper>
-    </>
+    </SimplePage>
   );
 };
 

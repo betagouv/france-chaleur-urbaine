@@ -33,6 +33,7 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
         placeholder="Saisir votre email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        autoComplete="email"
       />
       <PasswordInput>
         <TextInput
@@ -41,6 +42,7 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
           placeholder="Saisir votre mot de passe"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          autoComplete="password"
         />
         <PasswordIcon onClick={() => setSeePassword(!seePassword)}>
           <Icon

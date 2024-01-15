@@ -1,10 +1,10 @@
 import Map from '@components/Map';
-import MainContainer, {
+import {
   fullscreenHeaderHeight,
   tabHeaderHeight,
-} from '@components/shared/layout';
+} from '@components/shared/layout/MainLayout.data';
+import SimplePage from '@components/shared/page/SimplePage';
 import { usePersistedState } from '@hooks';
-import Head from 'next/head';
 import param from 'src/services/Map/param';
 import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 import styled from 'styled-components';
@@ -30,39 +30,37 @@ const Carte = () => {
   });
 
   return (
-    <>
-      <Head>
-        <title>Carte des réseaux : France Chaleur Urbaine</title>
-      </Head>
-      <MainContainer currentMenu="/carte" fullscreen>
-        <MapWrapper>
-          <Map
-            withoutLogo
-            withDrawing={proMode}
-            withLegend
-            initialLayerDisplay={param.defaultLayerDisplay}
-            proMode={proMode}
-            setProMode={setProMode}
-            legendData={
-              proMode
-                ? param.legendData.filter((x) => x !== 'proModeLegend')
-                : param.legendData
-                    .filter(
-                      (legend) =>
-                        legend !== 'contributeButton' &&
-                        legend !== 'statsByArea' &&
-                        (typeof legend === 'string' ||
-                          defaultLegendIds.includes(legend.id))
-                    )
-                    .filter(
-                      (legend, i, legends) =>
-                        legend !== 'separator' || legends[i - 1] !== 'separator'
-                    )
-            }
-          />
-        </MapWrapper>
-      </MainContainer>
-    </>
+    <SimplePage
+      title="Carte des réseaux : France Chaleur Urbaine"
+      mode="public-fullscreen"
+    >
+      <MapWrapper>
+        <Map
+          withoutLogo
+          withDrawing={proMode}
+          withLegend
+          initialLayerDisplay={param.defaultLayerDisplay}
+          proMode={proMode}
+          setProMode={setProMode}
+          legendData={
+            proMode
+              ? param.legendData.filter((x) => x !== 'proModeLegend')
+              : param.legendData
+                  .filter(
+                    (legend) =>
+                      legend !== 'contributeButton' &&
+                      legend !== 'statsByArea' &&
+                      (typeof legend === 'string' ||
+                        defaultLegendIds.includes(legend.id))
+                  )
+                  .filter(
+                    (legend, i, legends) =>
+                      legend !== 'separator' || legends[i - 1] !== 'separator'
+                  )
+          }
+        />
+      </MapWrapper>
+    </SimplePage>
   );
 };
 

@@ -2,7 +2,7 @@ import { mapControlZindex } from '@components/Map/Map.style';
 import {
   fullscreenHeaderHeight,
   tabHeaderHeight,
-} from '@components/shared/layout';
+} from '@components/shared/layout/MainLayout.data';
 import styled, { css } from 'styled-components';
 
 export const Container = styled.div`

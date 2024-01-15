@@ -4,7 +4,6 @@ import {
   GoogleAdsMarkup,
   LinkedInMarkup,
 } from '@components/Markup';
-import { LayoutProvider, MainLayout } from '@components/shared/layout';
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 import '@gouvfr/dsfr/dist/utility/icons/icons-editor/icons-editor.min.css';
 import '@gouvfr/dsfr/dist/utility/icons/icons-document/icons-document.min.css';
@@ -203,11 +202,7 @@ function MyApp({
         </Head>
 
         <SessionProvider session={pageProps.session}>
-          <LayoutProvider>
-            <MainLayout>
-              <Component {...pageProps} />
-            </MainLayout>
-          </LayoutProvider>
+          <Component {...pageProps} />
         </SessionProvider>
       </ServicesContext.Provider>
     </>

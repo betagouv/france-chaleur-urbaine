@@ -1,5 +1,5 @@
 import Ressources from '@components/Ressources/Ressources';
-import MainContainer from '@components/shared/layout';
+import SimplePage from '@components/shared/page/SimplePage';
 import { createGlobalStyle } from 'styled-components';
 const Style = createGlobalStyle`
 .issue-img {
@@ -12,10 +12,10 @@ const Style = createGlobalStyle`
 
 const RessourcesPage = () => {
   return (
-    <MainContainer currentMenu={'/ressources'}>
+    <SimplePage>
       <Style />
       <Ressources />
-    </MainContainer>
+    </SimplePage>
   );
 };
 

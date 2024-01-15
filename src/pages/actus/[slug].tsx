@@ -1,5 +1,5 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import MainContainer from '@components/shared/layout/MainContainer';
+import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
 import { getArticle } from '@data/contents';
 import { useRouter } from 'next/router';
@@ -13,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
     }
   }
   a {
-    word-break: break-word; 
+    word-break: break-word;
   }
 `;
 
@@ -35,12 +35,12 @@ const Article = () => {
   }, [router]);
 
   return (
-    <MainContainer currentMenu="/actus">
+    <SimplePage currentPage="/ressources">
       <GlobalStyle />
       <Slice padding={8}>
         <MarkdownWrapper value={content} className="markdown-actu" />
       </Slice>
-    </MainContainer>
+    </SimplePage>
   );
 };
 

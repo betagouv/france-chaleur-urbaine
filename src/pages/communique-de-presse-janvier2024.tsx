@@ -2,11 +2,11 @@ import { StyledIFrameLink } from '@components/IFrame/Map/IFrameMapIntegrationFor
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { Container, Image } from '@components/Press/index.styles';
 import Slice from '@components/Slice';
-import MainContainer from '@components/shared/layout/MainContainer';
+import SimplePage from '@components/shared/page/SimplePage';
 
 const PressJanuary24 = () => {
   return (
-    <MainContainer currentMenu="/communique-de-presse-janvier2024">
+    <SimplePage>
       <Container>
         <Slice padding={4}>
           <MarkdownWrapper
@@ -61,7 +61,7 @@ Alors que l’exercice de planification écologique mené à l’échelle nation
           />
         </Slice>
       </Container>
-    </MainContainer>
+    </SimplePage>
   );
 };
 
