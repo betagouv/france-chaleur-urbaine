@@ -63,7 +63,7 @@ const importFile = (file: string) => {
 export const articles: Article[] = [
   {
     image: '/contents/vignett592.jpg',
-    title: '592 réseaux classéss',
+    title: '592 réseaux classés',
     slug: '592-reseaux-classes',
     content: importFile(readme),
     publishedDate: new Date('2024-01-15'),
