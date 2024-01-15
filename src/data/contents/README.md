@@ -1,10 +1,7 @@
-# La géothermie expliquée aux enfants
+# 592 réseaux classés
 
-📽 Pour accompagner la ville de Fresnes dans son souhait de faire découvrir la géothermie aux plus jeunes, nous avons réalisé une petite vidéo à destination des 7-10 ans. L'objectif ? Leur faire comprendre en 1min30 le principe et les atouts de cette énergie propre.\
+📃 La liste des réseaux de chaleur qui satisfont aux critères du classement a été mise à jour par un arrêté en date du 22 décembre 2023, entré en vigueur au 1er janvier 2024. Pour ces réseaux, le classement intervient de plein droit, sauf si la collectivité s'y oppose par délibération motivée.\
 \
-👦 👧 Sensibiliser dès le plus jeune âge les adultes de demain aux enjeux de la transition énergétique est primordial. C'est aussi, indirectement, un moyen de sensibiliser leurs parents, sur des sujets encore trop peu connus.\
+❓ Concrètement, qu'est-ce qu'un réseau classé? C'est un réseau sur lequel une obligation de raccordement s'applique pour tout bâtiment neuf ou renouvelant son installation de chauffage au-dessus d'une certaine puissance, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire. Une mesure destinée à booster la dynamique de raccordement !\
 \
-👉 N'hésitez pas à partager cette vidéo et à la faire découvrir aux enfants qui vous entourent !
-
-[https://youtu.be/ebUNfVsXBIQ?feature=shared](https://youtu.be/ebUNfVsXBIQ?feature=shared)
-
+👉 Pour informer sur ces obligations, France Chaleur Urbaine recense les périmètres de développement prioritaire sur sa carte. Le périmètre de votre réseau n'y est pas encore visible ? N'hésitez pas à nous le transmettre pour ajout !
