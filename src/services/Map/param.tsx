@@ -87,8 +87,8 @@ const legendData: (string | TypeGroupLegend)[] = [
             puissance est obligatoire dès lors qu'ils sont situés dans le
             périmètre de développement prioritaire (sauf dérogation).
             <br />
-            Les réseaux affichés comme classés sont ceux listés par arrêté du 23
-            décembre 2022. Collectivités : pour signaler un dé-classement,
+            Les réseaux affichés comme classés sont ceux listés par arrêté du 22
+            décembre 2023. Collectivités : pour signaler un dé-classement,
             cliquez sur Contribuer.
           </>
         ),

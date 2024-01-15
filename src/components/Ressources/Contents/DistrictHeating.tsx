@@ -351,8 +351,8 @@ const DistrictHeating = ({
             </ul>
           </ul>
           <br />
-          <b>636 réseaux de chaleur sont concernés</b> (arrêté du 23 décembre
-          2022 relatif au classement des réseaux de chaleur et de froid). À
+          <b>592 réseaux de chaleur sont concernés</b> (arrêté du 22 décembre
+          2023 relatif au classement des réseaux de chaleur et de froid). À
           noter que la collectivité a toutefois la possibilité de délibérer sur
           le non-classement du réseau si elle souhaite s’y opposer, en
           justifiant les motifs.

@@ -26,7 +26,7 @@ const ClassedNetwork = () => {
           <b>un équilibre financier assuré.</b>
         </li>
       </List>
-      636 réseaux sont concernés, listés dans l’arrêté du 23 décembre 2022
+      592 réseaux sont concernés, listés dans l’arrêté du 22 décembre 2023
       relatif au classement des réseaux de chaleur et de froid. À noter que la
       collectivité peut toutefois faire le choix de s’opposer au classement, par
       une délibération motivée.
