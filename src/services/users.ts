@@ -86,7 +86,8 @@ export const upsertUsersFromApi = async (
     Object.keys(users)
       .filter((user) => user && !otherUsers.includes(user))
       .flatMap((user) => {
-        const gestionnaires = users[user].map(
+        //Tag gestionnaire for the "new" user - future column "Réseaux"
+        const userGestionnaires = users[user].map(
           (network) => `${account.name}_${network}`
         );
         const airtableUserAPI = airtableUsersAPI.find(
@@ -95,13 +96,15 @@ export const upsertUsersFromApi = async (
         const airtableUser = airtableUsers.find(
           (airtableUser) => airtableUser.get('Email') === user
         );
+        //Tags FCU
         const fcuTags = airtableUserAPI
           ? (airtableUserAPI.get('Tags FCU') as string[])
           : [];
+        //Concat tags from API (future column "Réseaux") and column "Tags FCU" if existed
         const allGestionnaires =
           airtableUserAPI && fcuTags && fcuTags.length > 0
-            ? gestionnaires.concat(fcuTags)
-            : gestionnaires;
+            ? userGestionnaires.concat(fcuTags)
+            : userGestionnaires;
         const promises: Promise<any>[] = [
           db('users')
             .insert({
@@ -116,13 +119,13 @@ export const upsertUsersFromApi = async (
               receive_old_demands: true,
             })
             .onConflict('email')
-            .merge({ gestionnaires, active: true }),
+            .merge({ gestionnaires: allGestionnaires, active: true }),
           airtableUserAPI && fcuTags && fcuTags.length > 0
             ? base(Airtable.GESTIONNAIRES_API).update(
                 airtableUserAPI.id,
                 {
                   Email: user,
-                  Réseaux: gestionnaires,
+                  Réseaux: userGestionnaires,
                   Nom: account.name,
                 },
                 {
@@ -134,7 +137,7 @@ export const upsertUsersFromApi = async (
                   {
                     fields: {
                       Email: user,
-                      Réseaux: gestionnaires,
+                      Réseaux: userGestionnaires,
                       Nom: account.name,
                     },
                   },
