@@ -377,7 +377,7 @@ const Map = ({
     [layerDisplay]
   );
 
-  const toogleEnergyVisibility = useCallback(
+  const toggleEnergyVisibility = useCallback(
     (energyName: EnergyNameOption) => {
       const availableEnergy = new Set(layerDisplay.energy);
       if (availableEnergy.has(energyName)) {
@@ -393,7 +393,7 @@ const Map = ({
     [layerDisplay]
   );
 
-  const toogleGasUsageVisibility = useCallback(
+  const toggleGasUsageVisibility = useCallback(
     (gasUsageName: gasUsageNameOption) => {
       const availableGasUsage = new Set(layerDisplay.gasUsage);
       if (availableGasUsage.has(gasUsageName)) {
@@ -409,7 +409,7 @@ const Map = ({
     [layerDisplay]
   );
 
-  const toogleGasUsageGroupeVisibility = useCallback(() => {
+  const toggleGasUsageGroupeVisibility = useCallback(() => {
     setLayerDisplay({
       ...layerDisplay,
       gasUsageGroup: !layerDisplay.gasUsageGroup,
@@ -1016,19 +1016,19 @@ const Map = ({
                 <MapLegend
                   legendTitle={legendTitle}
                   data={legendData || mapParam.legendData}
-                  onToogleFeature={toggleLayer}
-                  onToogleInGroup={(groupeName: string, idEntry?: any) => {
+                  onToggleFeature={toggleLayer}
+                  onToggleInGroup={(groupeName: string, idEntry?: any) => {
                     switch (groupeName) {
                       case 'energy': {
-                        toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
+                        toggleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
                         break;
                       }
                       case 'gasUsage': {
-                        toogleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
+                        toggleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
                         break;
                       }
                       case 'gasUsageGroup': {
-                        toogleGasUsageGroupeVisibility();
+                        toggleGasUsageGroupeVisibility();
                         break;
                       }
                     }

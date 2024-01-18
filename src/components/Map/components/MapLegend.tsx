@@ -23,16 +23,16 @@ function MapLegend({
   data,
   layerDisplay,
   legendTitle,
-  onToogleFeature,
-  onToogleInGroup,
+  onToggleFeature,
+  onToggleInGroup,
   onValuesChange,
 }: {
   data: (string | TypeGroupLegend)[];
   hasResults?: boolean;
   layerDisplay: TypeLayerDisplay;
   legendTitle?: string;
-  onToogleFeature: (idEntry: any) => void;
-  onToogleInGroup: (groupeName: string, idEntry: string) => void;
+  onToggleFeature: (idEntry: any) => void;
+  onToggleInGroup: (groupeName: string, idEntry: string) => void;
   onValuesChange?: (
     groupeName: string,
     idEntry: string,
@@ -143,7 +143,7 @@ function MapLegend({
                 subGroup={subGroup}
                 entries={entries}
                 linkto={linkto}
-                onChangeEntry={onToogleInGroup}
+                onChangeEntry={onToggleInGroup}
                 onValuesChange={onValuesChange}
               />
             );
@@ -154,7 +154,7 @@ function MapLegend({
               <div className="fr-mt-1w" key={entry.id}>
                 <LegendEntry
                   checked={!!layerDisplay[entry.id]}
-                  onChange={onToogleFeature}
+                  onChange={onToggleFeature}
                   subLegend={subLegend}
                   {...entry}
                 />
