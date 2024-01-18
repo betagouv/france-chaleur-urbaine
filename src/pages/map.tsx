@@ -93,7 +93,7 @@ const MapPage = () => {
                 energyGasValues: [50, Number.MAX_VALUE],
                 energyFuelValues: [50, Number.MAX_VALUE],
               }
-            : param.simpleLayerDisplay
+            : param.iframeSimpleLayerDisplay
         }
         withFCUAttribution
       />
