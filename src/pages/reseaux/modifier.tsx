@@ -12,45 +12,42 @@ import {
   TextInput,
 } from '@dataesr/react-dsfr';
 import { ModificationReseau } from '@pages/api/modification-reseau';
+import { NetworkSearchResult } from '@pages/api/networks/search';
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxList,
+  ComboboxOption,
+  ComboboxPopover,
+} from '@reach/combobox';
+import debounce from '@utils/debounce';
+import { postFetchJSON } from '@utils/network';
+import { getUuid } from '@utils/random';
 import { sleep } from '@utils/time';
-import { ChangeEvent, FormEvent, useRef, useState } from 'react';
+import Link from 'next/link';
+import { ChangeEvent, FormEvent, useMemo, useRef, useState } from 'react';
+import { clientConfig } from 'src/client-config';
+import styled from 'styled-components';
 
 type FormState = Omit<ModificationReseau, 'fichiers'> & {
   fichiers: File[];
 };
 
-// const initialFormState: FormState = {
-//   idReseau: '',
-//   type: undefined as any,
-
-//   nom: '',
-//   prenom: '',
-//   structure: '',
-//   fonction: '',
-//   email: '',
-
-//   reseauClasse: undefined as any,
-//   maitreOuvrage: '',
-//   gestionnaire: '',
-//   siteInternet: '',
-//   informationsFiche: '',
-//   fichiers: [],
-// };
 const initialFormState: FormState = {
-  idReseau: 'idReseau',
-  type: 'collectivite',
+  idReseau: '',
+  type: undefined as any,
 
-  nom: 'nom',
-  prenom: 'prenom',
-  structure: 'structure',
-  fonction: 'fonction',
-  email: 'email@test.local',
+  nom: '',
+  prenom: '',
+  structure: '',
+  fonction: '',
+  email: '',
 
-  reseauClasse: true,
-  maitreOuvrage: 'maitreOuvrage',
-  gestionnaire: 'gestionnaire',
-  siteInternet: 'https://test.local',
-  informationsFiche: 'informationsFiche',
+  reseauClasse: undefined as any,
+  maitreOuvrage: '',
+  gestionnaire: '',
+  siteInternet: '',
+  informationsComplementaires: '',
   fichiers: [],
 };
 
@@ -59,16 +56,17 @@ function ModifierReseauxPage() {
   const [formSent, setFormSent] = useState(false);
   const [apiError, setAPIError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedIdReseau, setSelectedIdReseau] = useState<string | null>(null);
   const [formState, setFormState] = useState<FormState>(initialFormState);
 
   async function setFormValue<Key extends keyof FormState>(
     key: Key,
     value: FormState[Key]
   ) {
-    setFormState({
+    setFormState((formState) => ({
       ...formState,
       [key]: value,
-    });
+    }));
   }
 
   async function submitForm(e: FormEvent<HTMLFormElement>) {
@@ -103,6 +101,28 @@ function ModifierReseauxPage() {
       await sleep(300); // improve UX by not showing an instant loading
       setIsSubmitting(false);
     }
+  }
+
+  async function onNetworkSelect(network: NetworkSearchResult) {
+    setSelectedIdReseau(network['Identifiant reseau']);
+    setFormValue(
+      'idReseau',
+      `${network['Identifiant reseau']} - ${network.nom_reseau}`
+    );
+    setFormValue('reseauClasse', network['reseaux classes']);
+    setFormValue(
+      'maitreOuvrage',
+      `${network.MO ?? ''} ${network.adresse_mo ?? ''} ${network.CP_MO ?? ''} ${
+        network.ville_mo ?? ''
+      }`
+    );
+    setFormValue(
+      'gestionnaire',
+      `${network.Gestionnaire ?? ''} ${network.adresse_gestionnaire ?? ''} ${
+        network.CP_gestionnaire ?? ''
+      } ${network.ville_gestionnaire ?? ''}`
+    );
+    setFormValue('siteInternet', network.website_gestionnaire);
   }
 
   async function handleFileUpload(event: ChangeEvent<HTMLInputElement>) {
@@ -150,21 +170,29 @@ function ModifierReseauxPage() {
         {formSent ? (
           <Alert
             type="success"
-            title="Merci pour votre demande"
-            description="Nous allons prendre en compte ces informations dans les meilleurs délais."
+            title="Merci pour votre contribution"
+            description="Nous reviendrons rapidement vers vous pour vous confirmer la bonne prise en compte des éléments transmis."
           />
         ) : (
           <form onSubmit={submitForm} className="fr-col-6">
-            <TextInput
-              required
-              label="Identifiant SNCU et nom du réseau"
+            <NetworkSearchInput
               value={formState.idReseau}
-              onChange={(e) => setFormValue('idReseau', e.target.value)}
+              onChange={(value) => {
+                setFormValue('idReseau', value);
+                setSelectedIdReseau(null); // hide the link
+              }}
+              onNetworkSelect={onNetworkSelect}
             />
+            {selectedIdReseau && (
+              <Link href={`/reseaux/${selectedIdReseau}`} target="_blank">
+                Voir la fiche actuelle du réseau
+              </Link>
+            )}
             <RadioGroup
               required
               legend=""
               isInline
+              className="fr-mt-4w"
               value={formState.type}
               onChange={(value) => setFormValue('type', value)}
             >
@@ -239,16 +267,18 @@ function ModifierReseauxPage() {
 
             <Text mt="4w" mb="1w" fontWeight="bold">
               Renseigner des informations complémentaires à faire apparaître sur
-              la fiche du réseau (Y caractères maximum)
+              la fiche du réseau ({clientConfig.networkInfoFieldMaxCharacters}{' '}
+              caractères maximum)
             </Text>
             <TextInput
               required
               textarea
               placeholder="Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)"
-              value={formState.informationsFiche}
+              value={formState.informationsComplementaires}
               onChange={(e) =>
-                setFormValue('informationsFiche', e.target.value)
+                setFormValue('informationsComplementaires', e.target.value)
               }
+              maxLength={clientConfig.networkInfoFieldMaxCharacters}
               rows={5}
               style={{ cursor: 'text' }} // defined to pointer by the dsfr lib
             />
@@ -301,3 +331,107 @@ function ModifierReseauxPage() {
 }
 
 export default ModifierReseauxPage;
+
+interface NetworkSearchInputProps {
+  onNetworkSelect: (network: NetworkSearchResult) => void;
+  value: string;
+  onChange: (searchTerm: string) => void;
+}
+
+function NetworkSearchInput(props: NetworkSearchInputProps) {
+  const [results, setResults] = useState<NetworkSearchResult[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const inputId = useRef(getUuid());
+
+  const debouncedSearchNetworks: (search: string) => void = useMemo(() => {
+    return debounce(async (search: string) => {
+      const networks = await postFetchJSON<NetworkSearchResult[]>(
+        '/api/networks/search',
+        {
+          search,
+        }
+      );
+      setIsFetching(false);
+      setResults(networks);
+    }, 300);
+  }, []);
+
+  function onInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const newSearchTerm = event.target.value;
+    props.onChange(newSearchTerm);
+
+    if (
+      newSearchTerm.length >=
+      clientConfig.networkSearchMinimumCharactersThreshold
+    ) {
+      setIsFetching(true);
+      debouncedSearchNetworks(newSearchTerm);
+    } else {
+      setResults([]);
+    }
+  }
+
+  return (
+    <Box className="fr-input-group">
+      <label className="fr-label" htmlFor={inputId.current}>
+        Identifiant SNCU et nom du réseau<span className="error"> *</span>
+      </label>
+
+      <Combobox
+        className="fr-input-wrap fr-fi-search-line"
+        onSelect={(selectedNetworkOption) => {
+          const selectedNetworkIdFCU = selectedNetworkOption.split(' - ')[0];
+          const selectedNetwork = results.find(
+            (network) => network['Identifiant reseau'] === selectedNetworkIdFCU
+          );
+          props.onChange(selectedNetworkOption);
+          if (selectedNetwork) {
+            props.onNetworkSelect(selectedNetwork);
+            setResults([selectedNetwork]);
+          }
+        }}
+      >
+        <ComboboxInput
+          className="fr-input"
+          required
+          placeholder="recherche par identifiant ou nom de réseau"
+          id={inputId.current}
+          value={props.value}
+          onChange={onInputChange}
+          autoComplete="off"
+        />
+
+        {(results.length > 0 ||
+          (props.value.length >=
+            clientConfig.networkSearchMinimumCharactersThreshold &&
+            !isFetching)) && (
+          <ComboboxPopover>
+            <ComboboxList>
+              {results.map((network) => (
+                <StyledComboxOption
+                  key={network.id_fcu}
+                  value={`${network['Identifiant reseau']} - ${network.nom_reseau}`}
+                />
+              ))}
+              {results.length === 0 && <Box>Aucun réseau trouvé</Box>}
+            </ComboboxList>
+          </ComboboxPopover>
+        )}
+      </Combobox>
+    </Box>
+  );
+}
+
+// change the default highlight from displaying non-matching part (= suggested values) in bold
+// to displaying the matching part (= user values) in bold and blue
+const StyledComboxOption = styled(ComboboxOption)`
+  // defaults to bold
+  [data-suggested-value] {
+    font-weight: inherit;
+  }
+
+  [data-user-value] {
+    color: var(--blue-france-113);
+    font-weight: bold;
+  }
+`;

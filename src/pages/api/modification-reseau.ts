@@ -10,6 +10,7 @@ import {
 import { AirtableDB } from 'src/db/airtable';
 import { logger } from '@helpers/logger';
 import { fileIOClient } from '@helpers/fileio';
+import { clientConfig } from 'src/client-config';
 
 export const config = {
   api: {
@@ -33,7 +34,10 @@ const zModificationReseau = {
   maitreOuvrage: z.preprocess((val: any) => val[0], z.string()),
   gestionnaire: z.preprocess((val: any) => val[0], z.string()),
   siteInternet: z.preprocess((val: any) => val[0], z.string().url()),
-  informationsFiche: z.preprocess((val: any) => val[0], z.string()),
+  informationsComplementaires: z.preprocess(
+    (val: any) => val[0],
+    z.string().max(clientConfig.networkInfoFieldMaxCharacters)
+  ),
   fichiers: z.optional(
     z.array(
       z.object({

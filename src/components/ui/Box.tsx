@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import { HTMLAttributes, PropsWithChildren } from 'react';
 import { SpacingProperties, spacingsToClasses } from './helpers';
 import styled, { IntrinsicElementsKeys } from 'styled-components';
 
@@ -6,7 +6,7 @@ const StyledBox = styled.div<{ display: string }>`
   display: ${({ display }) => display};
 `;
 
-interface BoxProps extends SpacingProperties {
+interface BoxProps extends SpacingProperties, HTMLAttributes<HTMLDivElement> {
   as?: IntrinsicElementsKeys;
   display?: 'grid';
 }
@@ -22,6 +22,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       as={props.as ?? 'div'}
       display={props.display ?? 'block'}
       className={`${spacingsToClasses(props)}`}
+      {...props}
     >
       {props.children}
     </StyledBox>

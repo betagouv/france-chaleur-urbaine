@@ -74,7 +74,7 @@ export async function createModificationsReseau(base: KnownAirtableBase) {
       type: 'url',
     },
     {
-      name: 'informationsFiche',
+      name: 'informationsComplementaires',
       type: 'multilineText',
     },
     {

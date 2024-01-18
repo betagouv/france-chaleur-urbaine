@@ -1,4 +1,5 @@
 export interface Network {
+  id_fcu: string;
   'Taux EnR&R': number;
   Gestionnaire: string;
   'Identifiant reseau': string;
@@ -51,6 +52,7 @@ export interface Network {
   lat: number;
   website_gestionnaire: string;
   'reseaux classes': boolean;
+  informations_complementaires: string;
 }
 
 export interface NetworkSummary {
