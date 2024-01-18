@@ -25,7 +25,15 @@ import { postFetchJSON } from '@utils/network';
 import { getUuid } from '@utils/random';
 import { sleep } from '@utils/time';
 import Link from 'next/link';
-import { ChangeEvent, FormEvent, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { clientConfig } from 'src/client-config';
 import styled from 'styled-components';
 
@@ -52,6 +60,7 @@ const initialFormState: FormState = {
 };
 
 function ModifierReseauxPage() {
+  const router = useRouter();
   const fileUploadInputRef = useRef<HTMLInputElement>(null);
   const [formSent, setFormSent] = useState(false);
   const [apiError, setAPIError] = useState('');
@@ -68,6 +77,25 @@ function ModifierReseauxPage() {
       [key]: value,
     }));
   }
+
+  // automatically fill the network when coming from another link
+  useEffect(() => {
+    const reseau = router.query.reseau;
+    if (router.isReady && typeof reseau === 'string') {
+      setFormValue('idReseau', reseau);
+      (async () => {
+        const [network] = await postFetchJSON<NetworkSearchResult[]>(
+          '/api/networks/search',
+          {
+            search: reseau,
+          }
+        );
+        if (network) {
+          onNetworkSelect(network);
+        }
+      })();
+    }
+  }, [router.isReady, router.query.reseau]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function submitForm(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

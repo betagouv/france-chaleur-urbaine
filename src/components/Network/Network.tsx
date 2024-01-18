@@ -15,6 +15,8 @@ import {
   Title,
 } from './Network.styles';
 import EnergiesChart from './EnergiesChart';
+import Text from '@components/ui/Text';
+import Link from 'next/link';
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://')
@@ -50,7 +52,8 @@ const Network = ({
   externalLinks?: boolean;
 }) => {
   const isCold = network['Identifiant reseau'].includes('F');
-
+  network.informations_complementaires = `Notre réseau sera amené à être développé dans le futur. Blabla.
+  Nouvelle ligne.`;
   return (
     <>
       {(!displayBlocks || displayBlocks.includes('titre')) && (
@@ -68,6 +71,16 @@ const Network = ({
               <ColdNetwork />
             </div>
           )}
+          <Text mt="1w">
+            Vous êtes la collectivité ou l’exploitant de ce réseau et vous
+            souhaitez ajouter ou modifier des informations ?
+            <Link
+              href={`/reseaux/modifier?reseau=${network['Identifiant reseau']}`}
+              className="fr-ml-1w"
+            >
+              Cliquez ici
+            </Link>
+          </Text>
         </div>
       )}
       <div className="fr-grid-row fr-grid-row--gutters">
