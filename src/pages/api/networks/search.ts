@@ -52,7 +52,7 @@ export default handleRouteErrors(async (req) => {
       .limit(10),
   ]);
   return [...hotNetworks, ...coldNetworks]
-    .toSorted((a, b) =>
+    .sort((a, b) =>
       a['Identifiant reseau'] < b['Identifiant reseau'] ? -1 : 1
     )
     .slice(0, 10);
