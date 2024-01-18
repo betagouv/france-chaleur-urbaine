@@ -261,6 +261,7 @@ function ModifierReseauxPage() {
               required
               type={'url' as any} // unsupported type by the dsfr lib
               label="Site internet du réseau"
+              placeholder="https://www.monreseau.fr"
               value={formState.siteInternet}
               onChange={(e) => setFormValue('siteInternet', e.target.value)}
             />
