@@ -43,7 +43,7 @@ export type TypeLayerDisplay = {
 
 export const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
-  futurOutline: false,
+  futurOutline: true,
   coldOutline: false,
   zoneDP: false,
   demands: false,
