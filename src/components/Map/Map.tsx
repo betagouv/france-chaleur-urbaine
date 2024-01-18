@@ -235,7 +235,7 @@ const Map = ({
   }, [proMode, setProMode]);
 
   useEffect(() => {
-    setLegendCollapsed(window.innerWidth < 1251);
+    setLegendCollapsed(window.innerWidth < 992);
   }, []);
 
   useEffect(() => {
