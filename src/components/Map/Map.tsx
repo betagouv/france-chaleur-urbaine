@@ -227,14 +227,6 @@ const Map = ({
   }, [router]);
 
   useEffect(() => {
-    if (setProMode) {
-      setLayerDisplay(
-        proMode ? mapParam.defaultLayerDisplay : mapParam.simpleLayerDisplay
-      );
-    }
-  }, [proMode, setProMode]);
-
-  useEffect(() => {
     setLegendCollapsed(window.innerWidth < 992);
   }, []);
 
@@ -247,6 +239,52 @@ const Map = ({
   const [mapState, setMapState] = useState('pending');
   const [layerDisplay, setLayerDisplay] =
     useState<TypeLayerDisplay>(initialLayerDisplay);
+  const [savedLayer, setSavedLayer] = useState<TypeLayerDisplay>(
+    mapParam.defaultLayerDisplay
+  );
+
+  const toggleLayerDisplay = useCallback(
+    (newLayerDisplay: TypeLayerDisplay) => {
+      if (proMode) {
+        setSavedLayer(newLayerDisplay);
+      } else {
+        //If not proMode keep old proMode values
+        const newSavedLayer = savedLayer;
+        newSavedLayer.outline = newLayerDisplay.outline;
+        newSavedLayer.futurOutline = newLayerDisplay.futurOutline;
+        newSavedLayer.coldOutline = newLayerDisplay.coldOutline;
+        newSavedLayer.zoneDP = newLayerDisplay.zoneDP;
+        setSavedLayer(newSavedLayer);
+      }
+      setLayerDisplay(newLayerDisplay);
+    },
+    [proMode, savedLayer]
+  );
+
+  const updateLayerDisplay = useCallback(
+    (newLayerDisplay: TypeLayerDisplay) => {
+      //Display previous values
+      if (proMode) {
+        setLayerDisplay(savedLayer);
+      } else {
+        const newLayer = newLayerDisplay;
+        newLayer.outline = savedLayer.outline;
+        newLayer.futurOutline = savedLayer.futurOutline;
+        newLayer.coldOutline = savedLayer.coldOutline;
+        newLayer.zoneDP = savedLayer.zoneDP;
+        setLayerDisplay(newLayerDisplay);
+      }
+    },
+    [proMode, savedLayer]
+  );
+
+  useEffect(() => {
+    if (setProMode) {
+      updateLayerDisplay(
+        proMode ? mapParam.defaultLayerDisplay : mapParam.simpleLayerDisplay
+      );
+    }
+  }, [proMode, setProMode, updateLayerDisplay]);
 
   const [soughtAddresses, setSoughtAddresses] = usePersistedState(
     'mapSoughtAddresses',
@@ -369,12 +407,12 @@ const Map = ({
 
   const toggleLayer = useCallback(
     (layerName: LayerNameOption) => {
-      setLayerDisplay({
+      toggleLayerDisplay({
         ...layerDisplay,
         [layerName]: !layerDisplay?.[layerName] ?? false,
       });
     },
-    [layerDisplay]
+    [layerDisplay, toggleLayerDisplay]
   );
 
   const toggleEnergyVisibility = useCallback(
@@ -385,12 +423,12 @@ const Map = ({
       } else {
         availableEnergy.add(energyName);
       }
-      setLayerDisplay({
+      toggleLayerDisplay({
         ...layerDisplay,
         energy: Array.from(availableEnergy),
       });
     },
-    [layerDisplay]
+    [layerDisplay, toggleLayerDisplay]
   );
 
   const toggleGasUsageVisibility = useCallback(
@@ -401,20 +439,20 @@ const Map = ({
       } else {
         availableGasUsage.add(gasUsageName);
       }
-      setLayerDisplay({
+      toggleLayerDisplay({
         ...layerDisplay,
         gasUsage: Array.from(availableGasUsage),
       });
     },
-    [layerDisplay]
+    [layerDisplay, toggleLayerDisplay]
   );
 
   const toggleGasUsageGroupeVisibility = useCallback(() => {
-    setLayerDisplay({
+    toggleLayerDisplay({
       ...layerDisplay,
       gasUsageGroup: !layerDisplay.gasUsageGroup,
     });
-  }, [layerDisplay]);
+  }, [layerDisplay, toggleLayerDisplay]);
 
   const loadFilters = useCallback(() => {
     if (!mapRef.current) {
@@ -1041,18 +1079,18 @@ const Map = ({
                     switch (groupName) {
                       case 'energy': {
                         idEntry === 'gas'
-                          ? setLayerDisplay({
+                          ? updateLayerDisplay({
                               ...layerDisplay,
                               energyGasValues: values,
                             })
-                          : setLayerDisplay({
+                          : updateLayerDisplay({
                               ...layerDisplay,
                               energyFuelValues: values,
                             });
                         break;
                       }
                       case 'gasUsage': {
-                        setLayerDisplay({
+                        updateLayerDisplay({
                           ...layerDisplay,
                           gasUsageValues: values,
                         });
