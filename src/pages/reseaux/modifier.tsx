@@ -7,6 +7,7 @@ import Text from '@components/ui/Text';
 import {
   Alert,
   Button,
+  Icon,
   Radio,
   RadioGroup,
   TextInput,
@@ -135,10 +136,15 @@ function ModifierReseauxPage() {
       'idReseau',
       `${network['Identifiant reseau']} - ${network.nom_reseau}`
     );
-    setFormValue('reseauClasse', network['reseaux classes']);
+    setFormValue('reseauClasse', network['reseaux classes'] ?? false);
     setFormValue(
       'maitreOuvrage',
-      [network.MO, network.adresse_mo, network.CP_MO, network.ville_mo]
+      [
+        network.MO,
+        stripBadAirtableValues(network.adresse_mo),
+        stripBadAirtableValues(network.CP_MO),
+        stripBadAirtableValues(network.ville_mo),
+      ]
         .filter((v) => !!v)
         .join(' - ')
     );
@@ -153,12 +159,15 @@ function ModifierReseauxPage() {
         .filter((v) => !!v)
         .join(' - ')
     );
-    setFormValue('siteInternet', network.website_gestionnaire);
+    setFormValue('siteInternet', network.website_gestionnaire ?? '');
   }
 
   async function handleFileUpload(event: ChangeEvent<HTMLInputElement>) {
     const files = event.target.files;
-    setFormValue('fichiers', files && files.length > 0 ? [...files] : []);
+    if (!files || files.length === 0) {
+      return;
+    }
+    setFormValue('fichiers', [...formState.fichiers, ...files]);
   }
 
   return (
@@ -269,13 +278,28 @@ function ModifierReseauxPage() {
               required
               legend=""
               isInline
-              value={formState.reseauClasse ? 'classe' : 'nonClasse'}
+              value={
+                formState.reseauClasse !== undefined
+                  ? formState.reseauClasse
+                    ? 'classe'
+                    : 'nonClasse'
+                  : undefined
+              }
               onChange={(value) =>
                 setFormValue('reseauClasse', value === 'classe')
               }
             >
-              <Radio label="Réseau classé" value="classe" />
-              <Radio label="Réseau non classé" value="nonClasse" />
+              {/* hack: the lib dataesr can't control this radio input so we force a rerender with the keys */}
+              <Radio
+                label="Réseau classé"
+                value="classe"
+                key={`${formState.reseauClasse}-classe`}
+              />
+              <Radio
+                label="Réseau non classé"
+                value="nonClasse"
+                key={`${formState.reseauClasse}-nonClasse`}
+              />
             </RadioGroup>
             <TextInput
               required
@@ -331,13 +355,32 @@ function ModifierReseauxPage() {
               aria-hidden
             />
             <div className="fr-grid-row fr-grid-row--top">
-              <Button onClick={() => fileUploadInputRef.current!.click()}>
+              <Button
+                onClick={() => fileUploadInputRef.current!.click()}
+                secondary
+              >
                 Choisir un fichier
               </Button>
               <Box ml="2w">
                 {formState.fichiers?.map((fichier, index) => (
                   <Text key={index} mr="1w">
-                    - {fichier.name} - {Math.round(fichier.size / 1024)} ko
+                    - {fichier.name} - {Math.round(fichier.size / 1024)} ko{' '}
+                    <Button
+                      size="sm"
+                      className="fr-btn--tertiary-no-outline"
+                      title="Supprimer le fichier"
+                      onClick={() => {
+                        formState.fichiers.splice(index, 1);
+                        setFormValue('fichiers', formState.fichiers);
+                      }}
+                    >
+                      <Icon
+                        name="ri-delete-bin-2-line"
+                        color="var(--text-default-error)"
+                        size="lg"
+                        iconPosition="center"
+                      />
+                    </Button>
                   </Text>
                 ))}
               </Box>
@@ -477,3 +520,7 @@ const StyledComboxOption = styled(ComboboxOption)`
     font-weight: bold;
   }
 `;
+
+function stripBadAirtableValues(value: string): string {
+  return value && value !== '0' && value != '00000' ? value : '';
+}
