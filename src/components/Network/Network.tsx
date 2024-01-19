@@ -11,6 +11,7 @@ import {
   BoxContent,
   BoxIcon,
   Colmun,
+  InformationsComplementairesBox,
   MapContainer,
   Title,
 } from './Network.styles';
@@ -52,8 +53,28 @@ const Network = ({
   externalLinks?: boolean;
 }) => {
   const isCold = network['Identifiant reseau'].includes('F');
-  network.informations_complementaires = `Notre réseau sera amené à être développé dans le futur. Blabla.
-  Nouvelle ligne.`;
+
+  // FIXME à supprimer après test
+  network.informations_complementaires = `Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)
+  Autre projet
+  Sur plusieurs lignes
+
+  Double saut de ligne.`;
+  network.fichiers = [
+    {
+      filename: 'exemple-1.pdf',
+      url: 'https://test.local/exemple-1.pdf',
+    },
+    {
+      filename: 'exemple-2.pdf',
+      url: 'https://test.local/exemple-2.pdf',
+    },
+    {
+      filename: 'exemple-3.pdf',
+      url: 'https://test.local/exemple-3.pdf',
+    },
+  ];
+
   return (
     <>
       {(!displayBlocks || displayBlocks.includes('titre')) && (
@@ -421,6 +442,43 @@ const Network = ({
                 : 'fr-col-12'
             }
           >
+            {network.informations_complementaires && (
+              <InformationsComplementairesBox>
+                <h3>Informations complémentaires</h3>
+                {network.informations_complementaires
+                  .split('\n')
+                  .map((line, index) =>
+                    line === '' ? (
+                      <br key={index} />
+                    ) : (
+                      <Text key={index}>{line}</Text>
+                    )
+                  )}
+                {network.fichiers.length > 0 && (
+                  <div className="fr-mt-2w">
+                    {network.fichiers.map((fichier, index) => (
+                      <Link
+                        key={index}
+                        href={fichier.url}
+                        className="fr-mr-1w"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {fichier.filename}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                <Text
+                  size="sm"
+                  legacyColor="lightgrey"
+                  fontStyle="italic"
+                  mt="4w"
+                >
+                  Informations fournies par la collectivité ou l’exploitant
+                </Text>
+              </InformationsComplementairesBox>
+            )}
             {!isCold &&
               (!displayBlocks || displayBlocks.includes('energies')) && (
                 <Box>

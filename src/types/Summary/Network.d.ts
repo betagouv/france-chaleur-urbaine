@@ -53,6 +53,7 @@ export interface Network {
   website_gestionnaire: string;
   'reseaux classes': boolean;
   informations_complementaires: string;
+  fichiers: any[]; // FIXME décider où mettre les fichiers
 }
 
 export interface NetworkSummary {
