@@ -63,7 +63,7 @@ function ModifierReseauxPage() {
   const router = useRouter();
   const fileUploadInputRef = useRef<HTMLInputElement>(null);
   const [formSent, setFormSent] = useState(false);
-  const [apiError, setAPIError] = useState('');
+  const [apiError, setAPIError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedIdReseau, setSelectedIdReseau] = useState<string | null>(null);
   const [formState, setFormState] = useState<FormState>(initialFormState);
@@ -118,13 +118,11 @@ function ModifierReseauxPage() {
         body: formData,
       });
       if (res.status !== 200) {
-        throw new Error(
-          `Une erreur est survenue. Veuillez renouveler votre demande ou bien contacter le support.`
-        );
+        throw new Error(`invalid status ${res.status}`);
       }
       setFormSent(true);
     } catch (err: any) {
-      setAPIError(err.message);
+      setAPIError(true);
     } finally {
       await sleep(300); // improve UX by not showing an instant loading
       setIsSubmitting(false);
@@ -140,15 +138,20 @@ function ModifierReseauxPage() {
     setFormValue('reseauClasse', network['reseaux classes']);
     setFormValue(
       'maitreOuvrage',
-      `${network.MO ?? ''} ${network.adresse_mo ?? ''} ${network.CP_MO ?? ''} ${
-        network.ville_mo ?? ''
-      }`
+      [network.MO, network.adresse_mo, network.CP_MO, network.ville_mo]
+        .filter((v) => !!v)
+        .join(' - ')
     );
     setFormValue(
       'gestionnaire',
-      `${network.Gestionnaire ?? ''} ${network.adresse_gestionnaire ?? ''} ${
-        network.CP_gestionnaire ?? ''
-      } ${network.ville_gestionnaire ?? ''}`
+      [
+        network.Gestionnaire,
+        network.adresse_gestionnaire,
+        network.CP_gestionnaire,
+        network.ville_gestionnaire,
+      ]
+        .filter((v) => !!v)
+        .join(' - ')
     );
     setFormValue('siteInternet', network.website_gestionnaire);
   }
@@ -174,8 +177,8 @@ function ModifierReseauxPage() {
         </Text>
         <ul>
           <li>
-            les données issues de la dernière enquête réalisée par le syndicat
-            national du chauffage urbain pour le compte du ministère de la
+            les données issues de la dernière enquête réalisée par la FEDENE
+            Réseaux de chaleur & froid pour le compte du ministère de la
             transition énergétique&nbsp;;
           </li>
           <li>les données réglementaires de l'arrêté "DPE".</li>
@@ -253,6 +256,7 @@ function ModifierReseauxPage() {
             />
             <TextInput
               required
+              type="email"
               label="Votre email"
               value={formState.email}
               onChange={(e) => setFormValue('email', e.target.value)}
@@ -349,7 +353,16 @@ function ModifierReseauxPage() {
 
             {apiError && (
               <Text color="error" mt="2w">
-                {apiError}
+                Une erreur est survenue. Veuillez renouveler votre demande ou
+                bien{' '}
+                <a
+                  href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  contactez-nous
+                </a>
+                .
               </Text>
             )}
           </form>

@@ -71,7 +71,7 @@ const Network = ({
               <ColdNetwork />
             </div>
           )}
-          <Text mt="1w">
+          <Text mt="1w" legacyColor="lightblue">
             Vous êtes la collectivité ou l’exploitant de ce réseau et vous
             souhaitez ajouter ou modifier des informations ?
             <Link

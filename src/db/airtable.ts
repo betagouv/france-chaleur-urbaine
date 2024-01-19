@@ -91,7 +91,6 @@ export const createTable = async (
   name: string,
   fields: AirtableField[]
 ) => {
-  console.log('base', baseId, process.env.AIRTABLE_KEY_API);
   const res = await fetch(
     `https://api.airtable.com/v0/meta/bases/${baseId}/tables`,
     {
