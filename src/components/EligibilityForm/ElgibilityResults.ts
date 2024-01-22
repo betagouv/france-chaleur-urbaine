@@ -61,6 +61,7 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 
 // 1 rue du berry 78370 Plaisir
 const intermediateCollectif = {
+  eligibility: true,
   body: (
     distance: number,
     inZDP: boolean,
@@ -198,6 +199,7 @@ ${
 
 // rue des hirondelles 76610 le havre
 const intermediateFuturCollectif = {
+  eligibility: true,
   body: (
     distance: number,
     inZDP: boolean,
