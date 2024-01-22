@@ -66,7 +66,8 @@ function ModifierReseauxPage() {
   const [formSent, setFormSent] = useState(false);
   const [apiError, setAPIError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedIdReseau, setSelectedIdReseau] = useState<string | null>(null);
+  const [selectedNetwork, setSelectedNetwork] =
+    useState<NetworkSearchResult | null>(null);
   const [formState, setFormState] = useState<FormState>(initialFormState);
 
   async function setFormValue<Key extends keyof FormState>(
@@ -130,8 +131,12 @@ function ModifierReseauxPage() {
     }
   }
 
-  async function onNetworkSelect(network: NetworkSearchResult) {
-    setSelectedIdReseau(network['Identifiant reseau']);
+  async function onNetworkSelect(network: NetworkSearchResult | null) {
+    setSelectedNetwork(network);
+    if (!network) {
+      return;
+    }
+
     setFormValue(
       'idReseau',
       `${network['Identifiant reseau']} - ${network.nom_reseau}`
@@ -219,12 +224,16 @@ function ModifierReseauxPage() {
               value={formState.idReseau}
               onChange={(value) => {
                 setFormValue('idReseau', value);
-                setSelectedIdReseau(null); // hide the link
+                setSelectedNetwork(null); // hide the link
               }}
+              selectedNetwork={selectedNetwork}
               onNetworkSelect={onNetworkSelect}
             />
-            {selectedIdReseau && (
-              <Link href={`/reseaux/${selectedIdReseau}`} target="_blank">
+            {selectedNetwork && (
+              <Link
+                href={`/reseaux/${selectedNetwork['Identifiant reseau']}`}
+                target="_blank"
+              >
                 Voir la fiche actuelle du réseau
               </Link>
             )}
@@ -417,9 +426,10 @@ function ModifierReseauxPage() {
 export default ModifierReseauxPage;
 
 interface NetworkSearchInputProps {
-  onNetworkSelect: (network: NetworkSearchResult) => void;
+  onNetworkSelect: (network: NetworkSearchResult | null) => void;
   value: string;
   onChange: (searchTerm: string) => void;
+  selectedNetwork: NetworkSearchResult | null;
 }
 
 function NetworkSearchInput(props: NetworkSearchInputProps) {
@@ -461,47 +471,63 @@ function NetworkSearchInput(props: NetworkSearchInputProps) {
         Identifiant SNCU - nom du réseau<span className="error"> *</span>
       </label>
 
-      <Combobox
-        className="fr-input-wrap fr-fi-search-line"
-        onSelect={(selectedNetworkOption) => {
-          const selectedNetworkIdFCU = selectedNetworkOption.split(' - ')[0];
-          const selectedNetwork = results.find(
-            (network) => network['Identifiant reseau'] === selectedNetworkIdFCU
-          );
-          props.onChange(selectedNetworkOption);
-          if (selectedNetwork) {
-            props.onNetworkSelect(selectedNetwork);
-            setResults([selectedNetwork]);
-          }
-        }}
-      >
-        <ComboboxInput
-          className="fr-input"
-          required
-          placeholder="recherche par identifiant ou nom de réseau"
-          id={inputId.current}
-          value={props.value}
-          onChange={onInputChange}
-          autoComplete="off"
-        />
+      {props.selectedNetwork ? (
+        <button
+          className="fr-tag fr-tag--sm fr-tag--dismiss fr-mt-2w"
+          title="Supprimer la sélection du réseau"
+          onClick={() => {
+            props.onNetworkSelect(null);
+            props.onChange('');
+          }}
+        >
+          {props.selectedNetwork['Identifiant reseau']} -{' '}
+          {props.selectedNetwork.nom_reseau}
+          <Icon name="ri-close-line" size="lg" iconPosition="right" />
+        </button>
+      ) : (
+        <Combobox
+          className="fr-input-wrap fr-fi-search-line"
+          onSelect={(selectedNetworkOption) => {
+            const selectedNetworkIdFCU = selectedNetworkOption.split(' - ')[0];
+            const selectedNetwork = results.find(
+              (network) =>
+                network['Identifiant reseau'] === selectedNetworkIdFCU
+            );
+            props.onChange(selectedNetworkOption);
+            if (selectedNetwork) {
+              props.onNetworkSelect(selectedNetwork);
+              setResults([selectedNetwork]);
+            }
+          }}
+        >
+          <ComboboxInput
+            className="fr-input"
+            required
+            placeholder="recherche par identifiant ou nom de réseau"
+            id={inputId.current}
+            value={props.value}
+            onChange={onInputChange}
+            autoComplete="off"
+          />
 
-        {(results.length > 0 ||
-          (props.value.length >=
-            clientConfig.networkSearchMinimumCharactersThreshold &&
-            !isFetching)) && (
-          <ComboboxPopover>
-            <ComboboxList>
-              {results.map((network) => (
-                <StyledComboxOption
-                  key={network.id_fcu}
-                  value={`${network['Identifiant reseau']} - ${network.nom_reseau}`}
-                />
-              ))}
-              {results.length === 0 && <Box>Aucun réseau trouvé</Box>}
-            </ComboboxList>
-          </ComboboxPopover>
-        )}
-      </Combobox>
+          {(results.length > 0 ||
+            (props.value.length >=
+              clientConfig.networkSearchMinimumCharactersThreshold &&
+              !isFetching)) && (
+            <ComboboxPopover>
+              <ComboboxList>
+                {results.map((network) => (
+                  <StyledComboxOption
+                    key={network.id_fcu}
+                    value={`${network['Identifiant reseau']} - ${network.nom_reseau}`}
+                  />
+                ))}
+                {results.length === 0 && <Box>Aucun réseau trouvé</Box>}
+              </ComboboxList>
+            </ComboboxPopover>
+          )}
+        </Combobox>
+      )}
     </Box>
   );
 }
