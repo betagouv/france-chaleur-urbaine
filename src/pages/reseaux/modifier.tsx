@@ -396,14 +396,13 @@ function ModifierReseauxPage() {
 
             {apiError && (
               <Text color="error" mt="2w">
-                Une erreur est survenue. Veuillez renouveler votre demande ou
-                bien{' '}
+                Une erreur est survenue. Veuillez{' '}
                 <a
                   href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  contactez-nous
+                  nous contacter
                 </a>
                 .
               </Text>
@@ -459,7 +458,7 @@ function NetworkSearchInput(props: NetworkSearchInputProps) {
   return (
     <Box className="fr-input-group">
       <label className="fr-label" htmlFor={inputId.current}>
-        Identifiant SNCU et nom du réseau<span className="error"> *</span>
+        Identifiant SNCU - nom du réseau<span className="error"> *</span>
       </label>
 
       <Combobox
