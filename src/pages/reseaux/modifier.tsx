@@ -60,6 +60,8 @@ const initialFormState: FormState = {
   fichiers: [],
 };
 
+type FichiersError = 'file_size_exceeded' | 'files_count_exceeded';
+
 function ModifierReseauxPage() {
   const router = useRouter();
   const fileUploadInputRef = useRef<HTMLInputElement>(null);
@@ -69,6 +71,14 @@ function ModifierReseauxPage() {
   const [selectedNetwork, setSelectedNetwork] =
     useState<NetworkSearchResult | null>(null);
   const [formState, setFormState] = useState<FormState>(initialFormState);
+
+  const fichiersError = useMemo<FichiersError | null>(() => {
+    return formState.fichiers.length > 3
+      ? 'files_count_exceeded'
+      : formState.fichiers.some((fichier) => fichier.size > 5 * 1024 * 1024)
+      ? 'file_size_exceeded'
+      : null;
+  }, [formState.fichiers]);
 
   async function setFormValue<Key extends keyof FormState>(
     key: Key,
@@ -380,7 +390,7 @@ function ModifierReseauxPage() {
                       title="Supprimer le fichier"
                       onClick={() => {
                         formState.fichiers.splice(index, 1);
-                        setFormValue('fichiers', formState.fichiers);
+                        setFormValue('fichiers', [...formState.fichiers]);
                       }}
                     >
                       <Icon
@@ -390,16 +400,31 @@ function ModifierReseauxPage() {
                         iconPosition="center"
                       />
                     </Button>
+                    {fichier.size > 5 * 1024 * 1024 && (
+                      <Text as="div" color="error">
+                        Ce fichier excède la taille maximale autorisée (5 Mo).
+                      </Text>
+                    )}
                   </Text>
                 ))}
               </Box>
             </div>
+            {fichiersError === 'files_count_exceeded' && (
+              <Text color="error" mt="1w">
+                Vous ne pouvez déposer que 3 fichiers maximum.
+              </Text>
+            )}
             <Text mt="6w">
               Les informations transmises seront validées manuellement par
               France Chaleur Urbaine avant mise en ligne.
             </Text>
 
-            <LoadingButton className="fr-mt-2w" submit isLoading={isSubmitting}>
+            <LoadingButton
+              className="fr-mt-2w"
+              submit
+              isLoading={isSubmitting}
+              disabled={fichiersError !== null}
+            >
               Soumettre la demande de modification
             </LoadingButton>
 
