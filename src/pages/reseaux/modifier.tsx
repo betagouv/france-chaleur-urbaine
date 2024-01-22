@@ -220,7 +220,10 @@ function ModifierReseauxPage() {
             description="Nous reviendrons rapidement vers vous pour vous confirmer la bonne prise en compte des éléments transmis."
           />
         ) : (
-          <form onSubmit={submitForm} className="fr-col-6">
+          <form
+            onSubmit={submitForm}
+            className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6"
+          >
             <NetworkSearchInput
               label={
                 <>

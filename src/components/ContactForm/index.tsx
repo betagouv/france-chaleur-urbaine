@@ -46,7 +46,10 @@ const ContactForm = () => {
           description="Nous reviendrons rapidement vers vous."
         />
       ) : (
-        <form onSubmit={submit} className="fr-col-6">
+        <form
+          onSubmit={submit}
+          className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6"
+        >
           <TextInput
             required
             label="Votre nom :"
