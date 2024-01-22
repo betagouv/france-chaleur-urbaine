@@ -43,6 +43,7 @@ const MapPage = () => {
         .filter(
           (legend) =>
             legend !== 'contributeButton' &&
+            legend !== 'statsByArea' &&
             legend !== 'proModeLegend' &&
             (typeof legend === 'string' ||
               displayLegendArray.includes(legendMapping[legend.id]))
