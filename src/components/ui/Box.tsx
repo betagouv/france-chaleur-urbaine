@@ -8,7 +8,7 @@ const StyledBox = styled.div<{ display: string }>`
 
 interface BoxProps extends SpacingProperties, HTMLAttributes<HTMLDivElement> {
   as?: IntrinsicElementsKeys;
-  display?: 'grid';
+  display?: 'grid' | 'flex';
 }
 
 /**
