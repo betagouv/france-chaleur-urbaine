@@ -52,8 +52,16 @@ export interface Network {
   lat: number;
   website_gestionnaire: string;
   'reseaux classes': boolean;
-  informations_complementaires: string;
-  fichiers: any[]; // FIXME décider où mettre les fichiers
+  informationsComplementaires: string;
+  fichiers: NetworkAttachment[];
+}
+
+export interface NetworkAttachment {
+  id: string;
+  filename: string;
+  size: number;
+  type: string;
+  url: string;
 }
 
 export interface NetworkSummary {

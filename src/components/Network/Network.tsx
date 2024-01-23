@@ -53,28 +53,6 @@ const Network = ({
   externalLinks?: boolean;
 }) => {
   const isCold = network['Identifiant reseau'].includes('F');
-
-  // FIXME à supprimer après test
-  network.informations_complementaires = `Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)
-  Autre projet
-  Sur plusieurs lignes
-
-  Double saut de ligne.`;
-  network.fichiers = [
-    {
-      filename: 'exemple-1.pdf',
-      url: 'https://test.local/exemple-1.pdf',
-    },
-    {
-      filename: 'exemple-2.pdf',
-      url: 'https://test.local/exemple-2.pdf',
-    },
-    {
-      filename: 'exemple-3.pdf',
-      url: 'https://test.local/exemple-3.pdf',
-    },
-  ];
-
   return (
     <>
       {(!displayBlocks || displayBlocks.includes('titre')) && (
@@ -442,10 +420,10 @@ const Network = ({
                 : 'fr-col-12'
             }
           >
-            {network.informations_complementaires && (
+            {network.informationsComplementaires && (
               <InformationsComplementairesBox>
                 <h3>Informations complémentaires</h3>
-                {network.informations_complementaires
+                {network.informationsComplementaires
                   .split('\n')
                   .map((line, index) =>
                     line === '' ? (

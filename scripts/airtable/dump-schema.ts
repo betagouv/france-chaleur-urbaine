@@ -51,6 +51,7 @@ function airtableTypeToTypeScriptType(airtableType: string): string {
     case 'phoneNumber':
       return 'string';
     case 'checkbox':
+      return 'boolean';
     case 'multipleSelects':
       return 'string[]';
     case 'createdTime':

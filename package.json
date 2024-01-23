@@ -27,6 +27,7 @@
     "lint:fix": "prettier --write src && eslint src/ -c .eslintrc.json --ext js,jsx,ts,tsx,json --fix",
     "test": "vitest run",
     "test:watch": "vitest dev",
+    "cli": "tsx scripts/cli.ts",
     "db:migrate": "knex migrate:latest",
     "db:new": "knex migrate:make",
     "db:revert": "knex migrate:rollback",
@@ -34,6 +35,7 @@
     "scalingo-postbuild": "yarn build && next-sitemap"
   },
   "dependencies": {
+    "@commander-js/extra-typings": "^11.1.0",
     "@dataesr/react-dsfr": "^3.9.1",
     "@faker-js/faker": "^8.0.2",
     "@mapbox/mapbox-gl-draw": "^1.4.3",

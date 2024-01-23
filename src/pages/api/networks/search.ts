@@ -22,6 +22,8 @@ const selectedNetworkFields = [
   'ville_gestionnaire',
   'website_gestionnaire',
   'reseaux classes',
+  'informationsComplementaires',
+  'fichiers',
 ] satisfies (keyof Network)[];
 
 export type NetworkSearchResult = Pick<

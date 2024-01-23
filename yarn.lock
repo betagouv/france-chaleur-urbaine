@@ -248,6 +248,11 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.6.0.tgz#ec6cd237440700bc23ca23087f513c75508958b0"
   integrity sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==
 
+"@commander-js/extra-typings@^11.1.0":
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/@commander-js/extra-typings/-/extra-typings-11.1.0.tgz#dd19fcb8cc6e33ede237fc1b7af96c70833d8f93"
+  integrity sha512-GuvZ38d23H+7Tz2C9DhzCepivsOsky03s5NI+KCy7ke1FNUvsJ2oO47scQ9YaGGhgjgNW5OYYNSADmbjcSoIhw==
+
 "@corex/deepmerge@^4.0.43":
   version "4.0.43"
   resolved "https://registry.yarnpkg.com/@corex/deepmerge/-/deepmerge-4.0.43.tgz#9bd42559ebb41cc5a7fb7cfeea5f231c20977dca"
@@ -2428,11 +2433,6 @@ css-tree@^2.3.1:
     mdn-data "2.0.30"
     source-map-js "^1.0.1"
 
-css.escape@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/css.escape/-/css.escape-1.5.1.tgz#42e27d4fa04ae32f931a4b4d4191fa9cddee97cb"
-  integrity sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==
-
 csscolorparser@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/csscolorparser/-/csscolorparser-1.0.3.tgz#b34f391eea4da8f3e98231e2ccd8df9c041f171b"
@@ -2728,7 +2728,7 @@ enhanced-resolve@^5.12.0:
     graceful-fs "^4.2.4"
     tapable "^2.2.0"
 
-entities@^4.4.0, entities@^4.5.0:
+entities@^4.4.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-4.5.0.tgz#5d268ea5e7113ec74c4d033b79ea5a35a488fb48"
   integrity sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==
@@ -3685,18 +3685,6 @@ gzip-size@^6.0.0:
   dependencies:
     duplexer "^0.1.2"
 
-happy-dom@^12.10.3:
-  version "12.10.3"
-  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-12.10.3.tgz#e61985eff163b822c110458be7f81aa4f94ad588"
-  integrity sha512-JzUXOh0wdNGY54oKng5hliuBkq/+aT1V3YpTM+lrN/GoLQTANZsMaIvmHiHe612rauHvPJnDZkZ+5GZR++1Abg==
-  dependencies:
-    css.escape "^1.5.1"
-    entities "^4.5.0"
-    iconv-lite "^0.6.3"
-    webidl-conversions "^7.0.0"
-    whatwg-encoding "^2.0.0"
-    whatwg-mimetype "^3.0.0"
-
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/has-bigints/-/has-bigints-1.0.2.tgz#0871bd3e3d51626f6ca0966668ba35d5602d6eaa"
@@ -3914,7 +3902,7 @@ husky@^8.0.3:
   resolved "https://registry.yarnpkg.com/husky/-/husky-8.0.3.tgz#4936d7212e46d1dea28fef29bb3a108872cd9184"
   integrity sha512-+dQSyqPh4x1hlO1swXBiNb2HzTDN1I2IGLQx1GrBuiqFJfoMrnZWwVmatvSiO+Iz8fBUnf+lekwNo4c2LlXItg==
 
-iconv-lite@0.6.3, iconv-lite@^0.6.3:
+iconv-lite@0.6.3:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.6.3.tgz#a52f80bf38da1952eb5c681790719871a1a72501"
   integrity sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==
@@ -7584,24 +7572,12 @@ wgs84@0.0.0:
   resolved "https://registry.yarnpkg.com/wgs84/-/wgs84-0.0.0.tgz#34fdc555917b6e57cf2a282ed043710c049cdc76"
   integrity sha512-ANHlY4Rb5kHw40D0NJ6moaVfOCMrp9Gpd1R/AIQYg2ko4/jzcJ+TVXYYF6kXJqQwITvEZP4yEthjM7U6rYlljQ==
 
-whatwg-encoding@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/whatwg-encoding/-/whatwg-encoding-2.0.0.tgz#e7635f597fd87020858626805a2729fa7698ac53"
-  integrity sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==
-  dependencies:
-    iconv-lite "0.6.3"
-
 whatwg-encoding@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/whatwg-encoding/-/whatwg-encoding-3.1.1.tgz#d0f4ef769905d426e1688f3e34381a99b60b76e5"
   integrity sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==
   dependencies:
     iconv-lite "0.6.3"
-
-whatwg-mimetype@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/whatwg-mimetype/-/whatwg-mimetype-3.0.0.tgz#5fa1a7623867ff1af6ca3dc72ad6b8a4208beba7"
-  integrity sha512-nt+N2dzIutVRxARx1nghPKGv1xHikU7HKdfafKkLNLindmPU/ch3U31NOCGGA/dmPcmb1VlofO0vnKAcsm0o/Q==
 
 whatwg-mimetype@^4.0.0:
   version "4.0.0"
