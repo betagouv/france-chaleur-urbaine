@@ -38,7 +38,6 @@ program
   .argument('<network-id>', 'Network id', validateNetworkId)
   .action(async (table) => {
     await downloadNetwork(table);
-    console.log('the end');
   });
 
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
