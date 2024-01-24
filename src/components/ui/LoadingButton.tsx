@@ -31,11 +31,17 @@ interface AsyncButtonProps extends ButtonProps {
  */
 function LoadingButton({
   children,
+  disabled,
   isLoading = false,
   ...props
 }: PropsWithChildren<AsyncButtonProps>) {
   return (
-    <Button className="fr-mt-2w" submit disabled={isLoading} {...props}>
+    <Button
+      className="fr-mt-2w"
+      submit
+      disabled={disabled || isLoading}
+      {...props}
+    >
       <Box display="grid">
         <LoadingWrapper show={isLoading}>
           <Oval
