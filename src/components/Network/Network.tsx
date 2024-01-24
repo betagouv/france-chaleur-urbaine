@@ -437,7 +437,7 @@ const Network = ({
                     {network.fichiers.map((fichier, index) => (
                       <Link
                         key={index}
-                        href={fichier.url}
+                        href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
                         className="fr-mr-1w"
                         target="_blank"
                         rel="noopener noreferrer"

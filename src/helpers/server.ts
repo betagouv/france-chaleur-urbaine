@@ -84,6 +84,12 @@ export function handleRouteErrors(handler: NextApiHandler): NextApiHandler {
 
 const invalidRouteError = new Error('invalid route'); // 404
 
+export function requireGetMethod(req: NextApiRequest) {
+  if (req.method !== 'GET') {
+    throw invalidRouteError;
+  }
+}
+
 export function requirePostMethod(req: NextApiRequest) {
   if (req.method !== 'POST') {
     throw invalidRouteError;

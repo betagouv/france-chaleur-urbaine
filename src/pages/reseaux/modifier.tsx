@@ -95,6 +95,22 @@ function ModifierReseauxPage() {
         );
         if (network) {
           onNetworkSelect(network);
+          // download existing files as if they were uploaded by the user
+          if (network.fichiers instanceof Array) {
+            const existingFiles = (
+              await Promise.all(
+                network.fichiers.map(
+                  async (fichier) =>
+                    await createFileFromURL(
+                      `/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`,
+                      fichier.filename
+                    )
+                )
+              )
+            ).filter((v): v is File => v !== null);
+
+            setFormValue('fichiers', existingFiles);
+          }
         }
       })();
     }
@@ -166,6 +182,10 @@ function ModifierReseauxPage() {
         .join(' - ')
     );
     setFormValue('siteInternet', network.website_gestionnaire ?? '');
+    setFormValue(
+      'informationsComplementaires',
+      network.informationsComplementaires ?? ''
+    );
   }
 
   async function handleFileUpload(event: ChangeEvent<HTMLInputElement>) {
@@ -452,4 +472,30 @@ export default ModifierReseauxPage;
 
 function stripBadAirtableValues(value: string): string {
   return value && value !== '0' && value != '00000' ? value : '';
+}
+
+/**
+ * Helper used to create a File object (as used by the input[type=file] component)
+ * to display already existing files as if they had been uploaded manually.
+ */
+async function createFileFromURL(
+  url: string,
+  filename: string
+): Promise<File | null> {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`invalid status: ${res.status}`);
+    }
+
+    const buffer = await res.arrayBuffer();
+    const file = new File([new Blob([buffer])], filename, {
+      type: res.headers.get('content-type') ?? '',
+    });
+
+    return file;
+  } catch (err) {
+    console.error('could not create file from url', err);
+    return null;
+  }
 }

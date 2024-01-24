@@ -61,6 +61,8 @@ export interface NetworkAttachment {
   filename: string;
   size: number;
   type: string;
+  // fetched from airtable and expires 2h later
+  // do not use inside the UI, use the proxy /api/networks/:id/files/:id
   url: string;
 }
 
