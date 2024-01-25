@@ -385,7 +385,7 @@ const PageFooter = () => {
           href="https://github.com/betagouv/france-chaleur-urbaine"
         >
           <Image
-            src="./icons/github-brands.svg"
+            src="/icons/github-brands.svg"
             width={12}
             height={12}
             alt=""
