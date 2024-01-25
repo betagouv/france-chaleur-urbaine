@@ -51,7 +51,10 @@ const initialFormState: FormState = {
   fichiers: [],
 };
 
-type FichiersError = 'file_size_exceeded' | 'files_count_exceeded';
+type FichiersError =
+  | 'file_size_exceeded'
+  | 'files_count_exceeded'
+  | 'invalid_file_type';
 
 function ModifierReseauxPage() {
   const router = useRouter();
@@ -68,6 +71,8 @@ function ModifierReseauxPage() {
       ? 'files_count_exceeded'
       : formState.fichiers.some((fichier) => fichier.size > 5 * 1024 * 1024)
       ? 'file_size_exceeded'
+      : formState.fichiers.some((fichier) => fichier.type !== 'application/pdf')
+      ? 'invalid_file_type'
       : null;
   }, [formState.fichiers]);
 
@@ -423,6 +428,11 @@ function ModifierReseauxPage() {
                     {fichier.size > 5 * 1024 * 1024 && (
                       <Text as="div" color="error">
                         Ce fichier excède la taille maximale autorisée (5 Mo).
+                      </Text>
+                    )}
+                    {fichier.type !== 'application/pdf' && (
+                      <Text as="div" color="error">
+                        Seuls les fichiers PDF sont autorisés.
                       </Text>
                     )}
                   </Text>
