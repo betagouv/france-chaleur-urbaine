@@ -55,7 +55,9 @@ export const getNetwork = (id: string): Promise<Network> =>
       db.raw('ST_X(ST_Transform(ST_Centroid(geom), 4326)) as lon'),
       db.raw('ST_Y(ST_Transform(ST_Centroid(geom), 4326)) as lat'),
       'website_gestionnaire',
-      'reseaux classes'
+      'reseaux classes',
+      'informationsComplementaires',
+      'fichiers'
     )
     .where('Identifiant reseau', id)
     .first();
@@ -83,7 +85,9 @@ export const getColdNetwork = (id: string): Promise<Network> =>
       'ville_gestionnaire',
       db.raw('ST_X(ST_Transform(ST_Centroid(geom), 4326)) as lon'),
       db.raw('ST_Y(ST_Transform(ST_Centroid(geom), 4326)) as lat'),
-      'website_gestionnaire'
+      'website_gestionnaire',
+      'informationsComplementaires',
+      'fichiers'
     )
     .where('Identifiant reseau', id)
     .first();

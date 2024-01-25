@@ -1,4 +1,6 @@
 import geojsonvt from 'geojson-vt';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: no types
 import vtpbf from 'vt-pbf';
 import db from '../../src/db';
 import {

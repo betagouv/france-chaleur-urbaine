@@ -1,4 +1,5 @@
 export interface Network {
+  id_fcu: string;
   'Taux EnR&R': number;
   Gestionnaire: string;
   'Identifiant reseau': string;
@@ -51,6 +52,18 @@ export interface Network {
   lat: number;
   website_gestionnaire: string;
   'reseaux classes': boolean;
+  informationsComplementaires: string;
+  fichiers: NetworkAttachment[];
+}
+
+export interface NetworkAttachment {
+  id: string;
+  filename: string;
+  size: number;
+  type: string;
+  // fetched from airtable and expires 2h later
+  // do not use inside the UI, use the proxy /api/networks/:id/files/:id
+  url: string;
 }
 
 export interface NetworkSummary {

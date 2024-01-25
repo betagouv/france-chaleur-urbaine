@@ -1,4 +1,7 @@
-const debounce = (handler: (...arg: any) => any, timer: number) => {
+const debounce = (
+  handler: (...arg: any) => void,
+  timer: number
+): { (...arg: any): void; cancel: () => void } => {
   let timeOut: NodeJS.Timeout;
 
   const debouncedFunc = (...arg: any) => {

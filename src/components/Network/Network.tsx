@@ -11,10 +11,13 @@ import {
   BoxContent,
   BoxIcon,
   Colmun,
+  InformationsComplementairesBox,
   MapContainer,
   Title,
 } from './Network.styles';
 import EnergiesChart from './EnergiesChart';
+import Text from '@components/ui/Text';
+import Link from 'next/link';
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://')
@@ -50,7 +53,6 @@ const Network = ({
   externalLinks?: boolean;
 }) => {
   const isCold = network['Identifiant reseau'].includes('F');
-
   return (
     <>
       {(!displayBlocks || displayBlocks.includes('titre')) && (
@@ -68,6 +70,16 @@ const Network = ({
               <ColdNetwork />
             </div>
           )}
+          <Text mt="1w" legacyColor="lightblue" size="sm">
+            Vous êtes la collectivité ou l’exploitant de ce réseau et vous
+            souhaitez ajouter ou modifier des informations ?
+            <Link
+              href={`/reseaux/modifier?reseau=${network['Identifiant reseau']}`}
+              className="fr-ml-1w"
+            >
+              Cliquez ici
+            </Link>
+          </Text>
         </div>
       )}
       <div className="fr-grid-row fr-grid-row--gutters">
@@ -408,6 +420,43 @@ const Network = ({
                 : 'fr-col-12'
             }
           >
+            {network.informationsComplementaires && (
+              <InformationsComplementairesBox>
+                <h3>Informations complémentaires</h3>
+                {network.informationsComplementaires
+                  .split('\n')
+                  .map((line, index) =>
+                    line === '' ? (
+                      <br key={index} />
+                    ) : (
+                      <Text key={index}>{line}</Text>
+                    )
+                  )}
+                {network.fichiers.length > 0 && (
+                  <div className="fr-mt-2w">
+                    {network.fichiers.map((fichier, index) => (
+                      <Link
+                        key={index}
+                        href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
+                        className="fr-mr-1w"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {fichier.filename}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                <Text
+                  size="sm"
+                  legacyColor="lightgrey"
+                  fontStyle="italic"
+                  mt="4w"
+                >
+                  Informations fournies par la collectivité ou l’exploitant
+                </Text>
+              </InformationsComplementairesBox>
+            )}
             {!isCold &&
               (!displayBlocks || displayBlocks.includes('energies')) && (
                 <Box>
