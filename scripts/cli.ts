@@ -7,8 +7,9 @@ import {
   InvalidArgumentError,
 } from '@commander-js/extra-typings';
 import { logger } from '@helpers/logger';
-import { DataType, tilesInfo } from 'src/services/tiles.config';
+import { DataType, tilesInfo, zDataType } from 'src/services/tiles.config';
 import db from 'src/db';
+import { fillTiles } from './utils/tiles';
 
 const program = createCommand();
 
@@ -38,6 +39,16 @@ program
   .argument('<network-id>', 'Network id', validateNetworkId)
   .action(async (table) => {
     await downloadNetwork(table);
+  });
+
+program
+  .command('fill-tiles')
+  .argument('<network-id>', 'Network id', (v) => zDataType.parse(v))
+  .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
+  .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
+  .argument('[withIndex]', 'With index', (v) => !!v, false)
+  .action(async (table, zoomMin, zoomMax, withIndex) => {
+    await fillTiles(table, zoomMin, zoomMax, withIndex);
   });
 
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
