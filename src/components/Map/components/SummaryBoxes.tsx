@@ -24,6 +24,8 @@ import {
 import ZoneInfo from './ZoneInfo';
 import { clientConfig } from 'src/client-config';
 import { trackEvent } from 'src/services/analytics';
+import { downloadObject } from '@utils/browser';
+import { formatAsISODate } from '@utils/date';
 
 const getConso = (consos: GasSummary[]) => {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
@@ -390,6 +392,30 @@ const SummaryBoxes = ({
                         },
                       ]}
                     />
+
+                    <Export>
+                      {exporting ? (
+                        <Oval height={40} width={40} />
+                      ) : (
+                        <Button
+                          size="sm"
+                          icon={'ri-download-2-line'}
+                          onClick={() => {
+                            lines &&
+                              downloadObject(
+                                draw.getAll(),
+                                `FCU_export_tracé_${formatAsISODate(
+                                  new Date()
+                                )}.geojson`,
+                                'application/geo+json'
+                              );
+                          }}
+                          disabled={!densite}
+                        >
+                          Exporter
+                        </Button>
+                      )}
+                    </Export>
                   </ZoneInfos>
                 )}
               </Tab>
