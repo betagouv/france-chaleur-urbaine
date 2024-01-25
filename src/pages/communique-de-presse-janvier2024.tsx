@@ -47,7 +47,7 @@ Alors que l’exercice de planification écologique mené à l’échelle nation
           <MarkdownWrapper
             value={`
 <br />
-<div id="source-1">(1) Source : enquête annuelle des réseaux de chaleur et de froid réalisée par la FEDENE Réseaux de chaleur & froid avec le concours d’AMORCE,  sous la tutelle du Service des données et études statistiques (SDES) du ministère de la Transition énergétique (édition 2023)</div>
+<div id="source-1">(1) Source : enquête annuelle des réseaux de chaleur et de froid réalisée par la FEDENE Réseaux de chaleur & froid avec le concours d’AMORCE,  sous la tutelle du Service des données et études statistiques (SDES) du ministère de la Transition écologique (édition 2023)</div>
 
 <br />
 

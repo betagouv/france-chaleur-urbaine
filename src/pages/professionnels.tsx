@@ -61,7 +61,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
           <Cartridge style={{ maxWidth: '500px' }} theme="blue">
             <WrappedText
               body={`
-### France Chaleur Urbaine est un service gratuit du Ministère de la transition énergétique qui accompagne et outille les professionnels :
+### France Chaleur Urbaine est un service gratuit du Ministère de la transition écologique qui accompagne et outille les professionnels :
 ::white-arrow-item[**[Cartographie](/carte)**  (réseaux actuels et en construction, bâtiments et leur mode de chauffage, extraction de données,...)]
 ::white-arrow-item[**[Test](#test-liste)** de liste d’adresses]
 ::white-arrow-item[Simulateur **[d’aide](#simulateur-aide)** et **[d’émissions de C02](#simulateur-co2)**]
