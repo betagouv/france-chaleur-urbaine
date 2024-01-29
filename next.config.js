@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const helmet = require('helmet');
+const { withSentryConfig } = require('@sentry/nextjs');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -47,6 +48,7 @@ const csp = {
     'https://px.ads.linkedin.com',
     'https://wxs.ign.fr',
     'https://api.mapbox.com/',
+    'https://sentry.incubateur.net',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
   'frame-src': [
@@ -97,74 +99,110 @@ const securityHeadersIFramable = [
   },
 ];
 
-module.exports = withBundleAnalyzer({
-  compiler: {
-    styledComponents: true,
-  },
-  assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,
-  basePath: isGithubCI ? '/france-chaleur-urbaine' : undefined,
-  // swcMinify: true, // Need Fix on the Rust Compiler SWC: Incompatibility with MapLibre
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  async redirects() {
-    return [
-      {
-        source: '/guide-france-chaleur-urbaine',
-        destination: '/documentation/guide-france-chaleur-urbaine.pdf',
-        permanent: false,
+module.exports = withBundleAnalyzer(
+  withSentryConfig(
+    {
+      compiler: {
+        styledComponents: true,
       },
-      // redirections for pages that were removed
-      {
-        source: '/statistiques',
-        destination: '/stats',
-        permanent: true,
+      assetPrefix: isGithubCI ? '/france-chaleur-urbaine/' : undefined,
+      basePath: isGithubCI ? '/france-chaleur-urbaine' : undefined,
+      // swcMinify: true, // Need Fix on the Rust Compiler SWC: Incompatibility with MapLibre
+      eslint: {
+        ignoreDuringBuilds: true,
       },
-      {
-        source: '/accueil',
-        destination: '/',
-        permanent: true,
+      async redirects() {
+        return [
+          {
+            source: '/guide-france-chaleur-urbaine',
+            destination: '/documentation/guide-france-chaleur-urbaine.pdf',
+            permanent: false,
+          },
+          // redirections for pages that were removed
+          {
+            source: '/statistiques',
+            destination: '/stats',
+            permanent: true,
+          },
+          {
+            source: '/accueil',
+            destination: '/',
+            permanent: true,
+          },
+          {
+            source: '/coproprietaire',
+            destination: '/',
+            permanent: true,
+          },
+          {
+            source: '/conseiller',
+            destination: '/professionnels',
+            permanent: true,
+          },
+        ];
       },
-      {
-        source: '/coproprietaire',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/conseiller',
-        destination: '/professionnels',
-        permanent: true,
-      },
-    ];
-  },
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: securityHeaders,
-      },
+      async headers() {
+        return [
+          {
+            source: '/:path*',
+            headers: securityHeaders,
+          },
 
-      // Attention: keep in sync with src/services/iframe.ts
-      ...[
-        '/carte-collectivite',
-        '/charleville-mezieres',
-        '/dalkia',
-        '/engie',
-        '/form',
-        '/map',
-        '/page-reseaux/:network',
-        '/viaseva',
-      ].map((source) => ({
-        source,
-        headers: securityHeadersIFramable,
-      })),
-    ];
-  },
-  webpack: function (config) {
-    config.module.rules.push({
-      test: /\.md$/,
-      use: 'raw-loader',
-    });
-    return config;
-  },
-});
+          // Attention: keep in sync with src/services/iframe.ts
+          ...[
+            '/carte-collectivite',
+            '/charleville-mezieres',
+            '/dalkia',
+            '/engie',
+            '/form',
+            '/map',
+            '/page-reseaux/:network',
+            '/viaseva',
+          ].map((source) => ({
+            source,
+            headers: securityHeadersIFramable,
+          })),
+        ];
+      },
+      webpack: function (config) {
+        config.module.rules.push({
+          test: /\.md$/,
+          use: 'raw-loader',
+        });
+        return config;
+      },
+    },
+    {
+      // For all available options, see:
+      // https://github.com/getsentry/sentry-webpack-plugin#options
+      dryRun: !process.env.NEXT_PUBLIC_SENTRY_DSN,
+      // Suppresses source map uploading logs during build
+      silent: true,
+      org: 'betagouv',
+      project: 'fcu-prod',
+      url: 'https://sentry.incubateur.net/',
+    },
+    {
+      // For all available options, see:
+      // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+
+      // Upload a larger set of source maps for prettier stack traces (increases build time)
+      widenClientFileUpload: false,
+
+      // Transpiles SDK to be compatible with IE11 (increases bundle size)
+      transpileClientSDK: false,
+
+      // Hides source maps from generated client bundles
+      hideSourceMaps: true,
+
+      // Automatically tree-shake Sentry logger statements to reduce bundle size
+      disableLogger: true,
+
+      // Enables automatic instrumentation of Vercel Cron Monitors.
+      // See the following for more information:
+      // https://docs.sentry.io/product/crons/
+      // https://vercel.com/docs/cron-jobs
+      automaticVercelMonitors: true,
+    }
+  )
+);
