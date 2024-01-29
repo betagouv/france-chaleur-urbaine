@@ -202,20 +202,15 @@ const SummaryBoxes = ({
                   </Explanation>
                 ) : bounds && !summary ? (
                   <Explanation>
-                    <span>
-                      Extraction des données correspondant à la zone définie en
-                      cours...
-                    </span>
+                    Extraction des données correspondant à la zone définie en
+                    cours...
                   </Explanation>
                 ) : !summary ? (
                   <Explanation>
-                    <span>
-                      Pour afficher et exporter des données sur une zone
-                      (consommation de gaz, adresse des bâtiments chauffés au
-                      gaz ou fioul collectif,...), cliquez sur au moins trois
-                      points puis validez cette zone en rejoignant le premier
-                      point.
-                    </span>
+                    Pour afficher et exporter des données sur une zone
+                    (consommation de gaz, adresse des bâtiments chauffés au gaz
+                    ou fioul collectif,...), cliquez sur au moins trois points
+                    puis validez cette zone en rejoignant le premier point.
                   </Explanation>
                 ) : (
                   <ZoneInfos>
@@ -321,27 +316,23 @@ const SummaryBoxes = ({
                 @ts-ignore: to fix in react-dsfr */}
               <Tab label="Calculer une densité thermique linéaire">
                 {lines && !densite ? (
-                  <Explanation>
-                    <span>
-                      Extraction des données correspondant au tracé défini en
-                      cours...
-                    </span>
-                  </Explanation>
+                  <>
+                    Extraction des données correspondant au tracé défini en
+                    cours...
+                  </>
                 ) : !densite ? (
-                  <Explanation>
-                    <span>
-                      Pour calculer une distance et la densité thermique
-                      linéaire associée, définissez un tracé en cliquant sur
-                      deux points ou plus, puis validez en cliquant sur entrée.
-                      Vous pouvez alors ajouter des segments à votre tracé, ou
-                      en retirez. Vous pouvez aussi cliquer sur les points pour
-                      les déplacer.
-                    </span>
-                  </Explanation>
+                  <>
+                    Pour calculer une distance et la densité thermique linéaire
+                    associée, définissez un tracé en cliquant sur deux points ou
+                    plus, puis validez en cliquant sur entrée. Vous pouvez alors
+                    ajouter des segments à votre tracé, ou en retirez. Vous
+                    pouvez aussi cliquer sur les points pour les déplacer.
+                  </>
                 ) : (
                   <ZoneInfos>
                     <ZoneInfo
                       color="green"
+                      alignTop
                       title="Distance"
                       values={[
                         {
@@ -397,17 +388,16 @@ const SummaryBoxes = ({
                       size="sm"
                       icon={'ri-download-2-line'}
                       onClick={() => {
-                        lines &&
-                          downloadObject(
-                            draw.getAll(),
-                            `FCU_export_tracé_${formatAsISODate(
-                              new Date()
-                            )}.geojson`,
-                            'application/geo+json'
-                          );
+                        downloadObject(
+                          draw.getAll(),
+                          `FCU_export_tracé_${formatAsISODate(
+                            new Date()
+                          )}.geojson`,
+                          'application/geo+json'
+                        );
                       }}
                       disabled={!densite}
-                      className="fr-my-2w"
+                      className="fr-col--middle"
                     >
                       Exporter le tracé
                     </Button>
