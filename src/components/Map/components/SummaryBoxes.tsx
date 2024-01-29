@@ -393,29 +393,24 @@ const SummaryBoxes = ({
                       ]}
                     />
 
-                    <Export>
-                      {exporting ? (
-                        <Oval height={40} width={40} />
-                      ) : (
-                        <Button
-                          size="sm"
-                          icon={'ri-download-2-line'}
-                          onClick={() => {
-                            lines &&
-                              downloadObject(
-                                draw.getAll(),
-                                `FCU_export_tracé_${formatAsISODate(
-                                  new Date()
-                                )}.geojson`,
-                                'application/geo+json'
-                              );
-                          }}
-                          disabled={!densite}
-                        >
-                          Exporter
-                        </Button>
-                      )}
-                    </Export>
+                    <Button
+                      size="sm"
+                      icon={'ri-download-2-line'}
+                      onClick={() => {
+                        lines &&
+                          downloadObject(
+                            draw.getAll(),
+                            `FCU_export_tracé_${formatAsISODate(
+                              new Date()
+                            )}.geojson`,
+                            'application/geo+json'
+                          );
+                      }}
+                      disabled={!densite}
+                      className="fr-my-2w"
+                    >
+                      Exporter le tracé
+                    </Button>
                   </ZoneInfos>
                 )}
               </Tab>
