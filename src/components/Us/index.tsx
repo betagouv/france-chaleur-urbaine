@@ -84,8 +84,8 @@ const Us = () => {
         <p>
           France Chaleur Urbaine est financé par France Relance (au titre d’un
           guichet porté par la DINUM), par la Direction générale de l’énergie et
-          du climat du Ministère de la transition énergétique, par l’ADEME et
-          par la DRIEAT.
+          du climat du Ministère de la transition écologique, par l’ADEME et par
+          la DRIEAT.
         </p>
         <Logos>
           <FooterPartnersLogo

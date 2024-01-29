@@ -9,7 +9,7 @@ const Informations = () => {
         <Information className="fr-col-md-12 fr-col-lg-3">
           <div>
             <b>France Chaleur Urbaine</b> est un service gratuit du Ministère de
-            la transition énergétique qui vous permet de :
+            la transition écologique qui vous permet de :
           </div>
         </Information>
         <Information className="fr-col-md-12 fr-col-lg-3">
