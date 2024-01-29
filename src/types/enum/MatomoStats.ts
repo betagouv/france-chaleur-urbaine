@@ -8,7 +8,7 @@ export enum STAT_METHOD {
   ACTIONS = 'Events.getAction',
 }
 
-export enum STAT_DATA {
+export enum STAT_KEY {
   NB_UNIQ_VISITORS = 'nb_uniq_visitors',
   NB_VISITS = 'nb_visits',
   NB_EVENTS = 'nb_events',

@@ -2,10 +2,10 @@ import db from 'src/db';
 import { fetchFromMatomo } from '../../../services/matomo';
 import { handleRouteErrors } from '@helpers/server';
 import {
-  STAT_DATA,
+  STAT_KEY,
+  STAT_METHOD,
   STAT_PARAMS,
   STAT_PERIOD,
-  STAT_METHOD,
 } from 'src/types/enum/MatomoStats';
 
 export default handleRouteErrors(async () => {
@@ -68,7 +68,7 @@ export default handleRouteErrors(async () => {
     )
     .where('method', STAT_METHOD.MAP_VISIT_SUMMARY)
     .andWhere('method_params', STAT_PARAMS.URL)
-    .andWhere('stat_data', STAT_DATA.NB_VISITS)
+    .andWhere('stat_key', STAT_KEY.NB_VISITS)
     .andWhere('period', STAT_PERIOD.MONTHLY)
     .orderBy('date', 'ASC');
 

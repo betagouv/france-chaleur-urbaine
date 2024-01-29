@@ -1,11 +1,7 @@
 import db from 'src/db';
 import { fetchFromMatomo } from '../../../services/matomo';
 import { handleRouteErrors } from '@helpers/server';
-import {
-  STAT_DATA,
-  STAT_METHOD,
-  STAT_PERIOD,
-} from 'src/types/enum/MatomoStats';
+import { STAT_KEY, STAT_METHOD, STAT_PERIOD } from 'src/types/enum/MatomoStats';
 
 export default handleRouteErrors(async () => {
   const currentDate = new Date();
@@ -95,7 +91,7 @@ export default handleRouteErrors(async () => {
       )
     )
     .where('s.method', STAT_METHOD.ACTIONS)
-    .andWhere('s.stat_data', STAT_DATA.NB_EVENTS)
+    .andWhere('s.stat_key', STAT_KEY.NB_EVENTS)
     .andWhere('s.period', STAT_PERIOD.MONTHLY)
     .orderBy('s.date', 'ASC')
     .groupBy('s.date');
