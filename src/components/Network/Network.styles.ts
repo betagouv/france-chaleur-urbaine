@@ -24,6 +24,16 @@ export const Box = styled.div`
   }
 `;
 
+export const InformationsComplementairesBox = styled.div`
+  padding: 32px;
+  padding-bottom: 8px;
+  border: 1px solid #e7e7e7;
+  color: #4550e5;
+  h3 {
+    color: #000074;
+  }
+`;
+
 export const Colmun = styled.div`
   display: flex;
   flex-direction: column;

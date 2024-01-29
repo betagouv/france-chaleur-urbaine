@@ -7,4 +7,6 @@ export const clientConfig = {
     linkInPartnerId: process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID,
   },
   summaryAreaSizeLimit: 5, // km²
+  networkInfoFieldMaxCharacters: 700,
+  networkSearchMinimumCharactersThreshold: 3,
 };
