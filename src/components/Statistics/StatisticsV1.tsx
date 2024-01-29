@@ -32,81 +32,51 @@ const monthToString = [
 
 const today = new Date();
 
-const getEntryValue = (entry: any, value: string, data: string) => {
-  if (entry && entry[value]) {
-    return entry[value][data];
-  }
-  return 0;
-};
-
 const Statistics = () => {
-  const { data: rawDataEligibilityTest, error: errorDataEligibilityTest } =
-    useSWR<any>('/api/statistiques/actions', fetchJSON, {
-      onError: (err) => console.warn('errorDataEligibilityTest >>', err),
-    });
+  const { data: rawDataActions, error: errorDataActions } = useSWR<any>(
+    '/api/statistiques/actions',
+    fetchJSON,
+    {
+      onError: (err) => console.warn('errorDataActions >>', err),
+    }
+  );
 
-  const dataEligibilityTest = useMemo(() => {
+  const dataActions = useMemo(() => {
     if (
-      !rawDataEligibilityTest ||
-      rawDataEligibilityTest?.result.values.result === 'error'
+      !rawDataActions ||
+      rawDataActions?.results?.error ||
+      rawDataActions?.result === 'error'
     ) {
       return null;
     }
-    return (
-      rawDataEligibilityTest?.result.values
-        .map((arr: any[], i: number) =>
-          arr.reduce(
-            (acc, entry) => {
-              return {
-                ...acc,
-                [entry.label]: entry,
-              };
-            },
-            { filters: rawDataEligibilityTest?.result.filters[i] }
-          )
-        )
-        .reverse() ?? []
-    );
-  }, [rawDataEligibilityTest]);
+    return rawDataActions.results;
+  }, [rawDataActions]);
 
   const formatedDataEligibilityTest = [
     ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
-    ...(dataEligibilityTest ?? []).map((entry: any) => {
-      const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
+    ...(dataActions ?? []).map((entry: any) => {
+      const [year, month] = entry?.date?.split('-') || ['YYYY', 'MM'];
       const label = `${
         !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
       } ${year}`;
-      // Bug en mai et juin qui fait que le nombre d'evenements est faux
-      const data =
-        label === 'mai 2022' || label === 'juin 2022'
-          ? 'nb_visits'
-          : 'nb_events';
       return [
         label,
-        getEntryValue(entry, 'Formulaire de test - Adresse Inéligible', data) +
-          getEntryValue(
-            entry,
-            'Formulaire de test - Carte - Adresse Inéligible',
-            data
-          ) +
-          getEntryValue(entry, 'Formulaire de test - Adresse Éligible', data) +
-          getEntryValue(
-            entry,
-            'Formulaire de test - Carte - Adresse Éligible',
-            data
-          ),
-        getEntryValue(entry, 'Formulaire de test - Adresse Inéligible', data) +
-          getEntryValue(
-            entry,
-            'Formulaire de test - Carte - Adresse Inéligible',
-            data
-          ),
-        getEntryValue(entry, 'Formulaire de test - Adresse Éligible', data) +
-          getEntryValue(
-            entry,
-            'Formulaire de test - Carte - Adresse Éligible',
-            data
-          ),
+        entry['Formulaire de test - Adresse Inéligible'] +
+          (entry['Formulaire de test - Carte - Adresse Inéligible']
+            ? entry['Formulaire de test - Carte - Adresse Inéligible']
+            : 0) +
+          entry['Formulaire de test - Adresse Éligible'] +
+          (entry['Formulaire de test - Carte - Adresse Éligible']
+            ? entry['Formulaire de test - Carte - Adresse Éligible']
+            : 0),
+        entry['Formulaire de test - Adresse Inéligible'] +
+          (entry['Formulaire de test - Carte - Adresse Inéligible']
+            ? entry['Formulaire de test - Carte - Adresse Inéligible']
+            : 0),
+        entry['Formulaire de test - Adresse Éligible'] +
+          (entry['Formulaire de test - Carte - Adresse Éligible']
+            ? entry['Formulaire de test - Carte - Adresse Éligible']
+            : 0),
       ];
     }),
   ];
@@ -120,31 +90,31 @@ const Statistics = () => {
   );
 
   const dataVisits = useMemo(() => {
-    if (!rawDataVisits || rawDataVisits?.result.values.result === 'error') {
+    if (
+      !rawDataVisits ||
+      rawDataVisits?.results?.error ||
+      rawDataVisits?.result === 'error'
+    ) {
       return null;
     }
 
-    return (
-      rawDataVisits?.result.values
-        .map((data: any, i: number) => ({
-          filters: rawDataVisits.result.filters[i],
-          ...data,
-        }))
-        .reverse() ?? []
-    );
+    return rawDataVisits.results;
   }, [rawDataVisits]);
 
   const formatedDataVisits = [
     ['x', 'Visiteurs'],
     ...(dataVisits ?? []).map((entry: any) => {
-      const [year, month] = entry?.filters?.date?.split('-') || ['YYYY', 'MM'];
-      const label = `${
-        !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
-      } ${year}`;
-      return [label, entry.nb_uniq_visitors || 0];
+      if (entry) {
+        const [year, month] = entry?.date?.split('-') || ['YYYY', 'MM'];
+        const label = `${
+          !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
+        } ${year}`;
+        return [label, entry.value || 0];
+      }
     }),
   ];
 
+  //From Airtable
   const { data: rawDataMonthContact, error: errorMonthContact } = useSWR<any>(
     '/api/statistiques/contacts?group=monthly',
     fetchJSON,
@@ -196,6 +166,7 @@ const Statistics = () => {
       : []),
   ];
 
+  //From Airtable
   const { data: rawDataCountContact, error: errorCountContact } = useSWR<any>(
     '/api/statistiques/contacts?group=all',
     fetchJSON,
@@ -339,8 +310,8 @@ const Statistics = () => {
           {formatedDataEligibilityTest.length > 1 && (
             <Graph
               title="Nombre d'adresses testées / mois"
-              error={errorDataEligibilityTest}
-              data={dataEligibilityTest}
+              error={errorDataActions}
+              data={dataActions}
               formatedData={formatedDataEligibilityTest}
               withSum
             />
