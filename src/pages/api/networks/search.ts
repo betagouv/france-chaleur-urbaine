@@ -57,5 +57,9 @@ export default handleRouteErrors(async (req) => {
     .sort((a, b) =>
       a['Identifiant reseau'] < b['Identifiant reseau'] ? -1 : 1
     )
-    .slice(0, 10);
+    .slice(0, 10)
+    .map((network) => {
+      network.website_gestionnaire = network.website_gestionnaire.trim(); // type postgresql character... should be varying character
+      return network;
+    });
 });
