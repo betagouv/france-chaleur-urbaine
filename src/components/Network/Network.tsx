@@ -58,7 +58,7 @@ const Network = ({
       {(!displayBlocks || displayBlocks.includes('titre')) && (
         <div className="fr-mb-4w">
           <Title>
-            {network.nom_reseau ?? 'Réseau inconnu'} (
+            {network.nom_reseau ?? 'Nom inconnu'} (
             {network['Identifiant reseau']})
           </Title>
           {network['reseaux classes'] && (

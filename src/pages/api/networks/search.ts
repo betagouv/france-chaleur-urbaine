@@ -61,7 +61,7 @@ export default handleRouteErrors(async (req) => {
     .map((network) => {
       network.website_gestionnaire = network.website_gestionnaire?.trim(); // type postgresql character... should be varying character
       if (!network.nom_reseau) {
-        network.nom_reseau = 'Réseau inconnu';
+        network.nom_reseau = 'Nom inconnu';
       }
       return network;
     });
