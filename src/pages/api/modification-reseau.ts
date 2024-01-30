@@ -30,10 +30,22 @@ const zModificationReseau = {
   structure: z.preprocess((val: any) => val[0], z.string()),
   fonction: z.preprocess((val: any) => val[0], z.string()),
   email: z.preprocess((val: any) => val[0], z.string().email()),
-  reseauClasse: z.preprocess((val: any) => val[0], z.coerce.boolean()),
+  reseauClasse: z.preprocess((val: any) => {
+    switch (val[0]) {
+      case 'false':
+        return false;
+      case 'true':
+        return true;
+      default:
+        return val[0];
+    }
+  }, z.boolean()),
   maitreOuvrage: z.preprocess((val: any) => val[0], z.string()),
   gestionnaire: z.preprocess((val: any) => val[0], z.string()),
-  siteInternet: z.preprocess((val: any) => val[0], z.string().url()),
+  siteInternet: z.preprocess(
+    (val: any) => (val[0] === '' ? undefined : val[0]), // empty string or a valid URL
+    z.string().url().optional()
+  ),
   informationsComplementaires: z.preprocess(
     (val: any) => val[0],
     z.string().max(clientConfig.networkInfoFieldMaxCharacters)
