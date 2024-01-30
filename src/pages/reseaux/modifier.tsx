@@ -358,7 +358,6 @@ function ModifierReseauxPage() {
               onChange={(e) => setFormValue('gestionnaire', e.target.value)}
             />
             <TextInput
-              required
               type={'url' as any} // unsupported type by the dsfr lib
               label="Site internet du réseau"
               placeholder="https://www.monreseau.fr"
@@ -372,7 +371,6 @@ function ModifierReseauxPage() {
               caractères maximum)
             </Text>
             <TextInput
-              required
               textarea
               placeholder="Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)"
               value={formState.informationsComplementaires}

@@ -33,7 +33,10 @@ const zModificationReseau = {
   reseauClasse: z.preprocess((val: any) => val[0], z.coerce.boolean()),
   maitreOuvrage: z.preprocess((val: any) => val[0], z.string()),
   gestionnaire: z.preprocess((val: any) => val[0], z.string()),
-  siteInternet: z.preprocess((val: any) => val[0], z.string().url()),
+  siteInternet: z.preprocess(
+    (val: any) => (val[0] === '' ? undefined : val[0]), // empty string or a valid URL
+    z.string().url().optional()
+  ),
   informationsComplementaires: z.preprocess(
     (val: any) => val[0],
     z.string().max(clientConfig.networkInfoFieldMaxCharacters)
