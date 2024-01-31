@@ -28,11 +28,9 @@ const conversionConfigReseauxDeChaleur = {
   // id_fcu: TypeNumber,
   // id: TypeNumber,
   'Identifiant reseau': TypeString,
-  commentaires: TypeString, // à supprimer en prod car non utilisé
   'Taux EnR&R': TypeNumber,
   Gestionnaire: TypeString,
   communes: TypeString,
-  // date: TypeString, // à supprimer en prod car non utilisé
   'contenu CO2': TypeNumber,
   'contenu CO2 ACV': TypeNumber,
   PM: TypeNumber,
