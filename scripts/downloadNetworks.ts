@@ -22,12 +22,10 @@ const getBooleanValue = (network: Record<FieldSet>, key: string) => {
 const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {
   if (table === 'network' || table === 'coldNetwork') {
     return {
-      commentaires: getValue(network, 'commentaires'),
       'Taux EnR&R': getValue(network, 'Taux EnR&R'),
       'Identifiant reseau': getValue(network, 'Identifiant reseau'),
       Gestionnaire: getValue(network, 'Gestionnaire'),
       communes: getValue(network, 'communes'),
-      date: getValue(network, 'date'),
       'contenu CO2': getValue(network, 'contenu CO2'),
       'contenu CO2 ACV': getValue(network, 'contenu CO2 ACV'),
       PM: getValue(network, 'PM'),
