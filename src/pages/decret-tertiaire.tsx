@@ -1,20 +1,13 @@
-import MainContainer from '@components/shared/layout';
+import SimplePage from '@components/shared/page/SimplePage';
 import Tertiaire from '@components/Tertiaire';
-import Head from 'next/head';
 
-export default function Home() {
+export default function DecretTertiairePage() {
   return (
-    <>
-      <Head>
-        <title>
-          Décret tertiaire : atteignez vos objectifs de perfomance énergétique
-          en raccordant votre bâtiment au chauffage urbain
-        </title>
-      </Head>
-
-      <MainContainer currentMenu="/tertiaire">
-        <Tertiaire alt />
-      </MainContainer>
-    </>
+    <SimplePage
+      title="Décret tertiaire : atteignez vos objectifs de perfomance énergétique en raccordant votre bâtiment au chauffage urbain"
+      currentPage="/professionnels"
+    >
+      <Tertiaire alt />
+    </SimplePage>
   );
 }

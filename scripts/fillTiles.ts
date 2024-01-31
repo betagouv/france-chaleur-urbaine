@@ -3,7 +3,7 @@ import { fillTiles } from './utils/tiles';
 
 if (process.argv.length !== 5 && process.argv.length !== 6) {
   console.info(
-    'Usage: export NODE_PATH=./ && npx ts-node scripts/fillTiles.ts table zoomMin zoomMax [index]'
+    'Usage: npx tsx scripts/fillTiles.ts table zoomMin zoomMax [index]'
   );
   process.exit(1);
 }

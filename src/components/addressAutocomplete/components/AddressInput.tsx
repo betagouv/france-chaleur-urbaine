@@ -19,6 +19,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
     placeholder={placeholder}
     onChange={onChange}
     value={value}
+    autoComplete="off"
   />
 );
 

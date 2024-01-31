@@ -43,7 +43,7 @@ export type TypeLayerDisplay = {
 
 export const defaultLayerDisplay: TypeLayerDisplay = {
   outline: true,
-  futurOutline: false,
+  futurOutline: true,
   coldOutline: false,
   zoneDP: false,
   demands: false,
@@ -58,6 +58,22 @@ export const defaultLayerDisplay: TypeLayerDisplay = {
 };
 
 export const simpleLayerDisplay: TypeLayerDisplay = {
+  outline: true,
+  futurOutline: true,
+  coldOutline: false,
+  zoneDP: false,
+  demands: false,
+  raccordements: false,
+  gasUsageGroup: false,
+  buildings: false,
+  gasUsage: [],
+  energy: [],
+  gasUsageValues: [1000, Number.MAX_VALUE],
+  energyGasValues: [50, Number.MAX_VALUE],
+  energyFuelValues: [50, Number.MAX_VALUE],
+};
+
+export const iframeSimpleLayerDisplay: TypeLayerDisplay = {
   outline: true,
   futurOutline: false,
   coldOutline: false,
@@ -87,8 +103,8 @@ const legendData: (string | TypeGroupLegend)[] = [
             puissance est obligatoire dès lors qu'ils sont situés dans le
             périmètre de développement prioritaire (sauf dérogation).
             <br />
-            Les réseaux affichés comme classés sont ceux listés par arrêté du 23
-            décembre 2022. Collectivités : pour signaler un dé-classement,
+            Les réseaux affichés comme classés sont ceux listés par arrêté du 22
+            décembre 2023. Collectivités : pour signaler un dé-classement,
             cliquez sur Contribuer.
           </>
         ),
@@ -237,6 +253,7 @@ const param = {
   lat: 47,
   defaultLayerDisplay,
   simpleLayerDisplay,
+  iframeSimpleLayerDisplay,
   legendData,
 };
 

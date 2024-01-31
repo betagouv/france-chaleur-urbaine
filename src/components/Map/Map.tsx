@@ -227,15 +227,7 @@ const Map = ({
   }, [router]);
 
   useEffect(() => {
-    if (setProMode) {
-      setLayerDisplay(
-        proMode ? mapParam.defaultLayerDisplay : mapParam.simpleLayerDisplay
-      );
-    }
-  }, [proMode, setProMode]);
-
-  useEffect(() => {
-    setLegendCollapsed(window.innerWidth < 1251);
+    setLegendCollapsed(window.innerWidth < 992);
   }, []);
 
   useEffect(() => {
@@ -247,6 +239,52 @@ const Map = ({
   const [mapState, setMapState] = useState('pending');
   const [layerDisplay, setLayerDisplay] =
     useState<TypeLayerDisplay>(initialLayerDisplay);
+  const [savedLayer, setSavedLayer] = useState<TypeLayerDisplay>(
+    mapParam.defaultLayerDisplay
+  );
+
+  const toggleLayerDisplay = useCallback(
+    (newLayerDisplay: TypeLayerDisplay) => {
+      if (proMode) {
+        setSavedLayer(newLayerDisplay);
+      } else {
+        //If not proMode keep old proMode values
+        const newSavedLayer = savedLayer;
+        newSavedLayer.outline = newLayerDisplay.outline;
+        newSavedLayer.futurOutline = newLayerDisplay.futurOutline;
+        newSavedLayer.coldOutline = newLayerDisplay.coldOutline;
+        newSavedLayer.zoneDP = newLayerDisplay.zoneDP;
+        setSavedLayer(newSavedLayer);
+      }
+      setLayerDisplay(newLayerDisplay);
+    },
+    [proMode, savedLayer]
+  );
+
+  const updateLayerDisplay = useCallback(
+    (newLayerDisplay: TypeLayerDisplay) => {
+      //Display previous values
+      if (proMode) {
+        setLayerDisplay(savedLayer);
+      } else {
+        const newLayer = newLayerDisplay;
+        newLayer.outline = savedLayer.outline;
+        newLayer.futurOutline = savedLayer.futurOutline;
+        newLayer.coldOutline = savedLayer.coldOutline;
+        newLayer.zoneDP = savedLayer.zoneDP;
+        setLayerDisplay(newLayerDisplay);
+      }
+    },
+    [proMode, savedLayer]
+  );
+
+  useEffect(() => {
+    if (setProMode) {
+      updateLayerDisplay(
+        proMode ? mapParam.defaultLayerDisplay : mapParam.simpleLayerDisplay
+      );
+    }
+  }, [proMode, setProMode, updateLayerDisplay]);
 
   const [soughtAddresses, setSoughtAddresses] = usePersistedState(
     'mapSoughtAddresses',
@@ -263,6 +301,9 @@ const Map = ({
 
   const onMapClick = (e: any, key: string) => {
     const properties = e.features[0].properties;
+    if ((window as any).devMode) {
+      console.log('map-click', e.features[0]); // eslint-disable-line no-console
+    }
     const { lat, lng } = e.lngLat;
     setPopupInfos({
       latitude: lat,
@@ -366,15 +407,15 @@ const Map = ({
 
   const toggleLayer = useCallback(
     (layerName: LayerNameOption) => {
-      setLayerDisplay({
+      toggleLayerDisplay({
         ...layerDisplay,
         [layerName]: !layerDisplay?.[layerName] ?? false,
       });
     },
-    [layerDisplay]
+    [layerDisplay, toggleLayerDisplay]
   );
 
-  const toogleEnergyVisibility = useCallback(
+  const toggleEnergyVisibility = useCallback(
     (energyName: EnergyNameOption) => {
       const availableEnergy = new Set(layerDisplay.energy);
       if (availableEnergy.has(energyName)) {
@@ -382,15 +423,15 @@ const Map = ({
       } else {
         availableEnergy.add(energyName);
       }
-      setLayerDisplay({
+      toggleLayerDisplay({
         ...layerDisplay,
         energy: Array.from(availableEnergy),
       });
     },
-    [layerDisplay]
+    [layerDisplay, toggleLayerDisplay]
   );
 
-  const toogleGasUsageVisibility = useCallback(
+  const toggleGasUsageVisibility = useCallback(
     (gasUsageName: gasUsageNameOption) => {
       const availableGasUsage = new Set(layerDisplay.gasUsage);
       if (availableGasUsage.has(gasUsageName)) {
@@ -398,20 +439,20 @@ const Map = ({
       } else {
         availableGasUsage.add(gasUsageName);
       }
-      setLayerDisplay({
+      toggleLayerDisplay({
         ...layerDisplay,
         gasUsage: Array.from(availableGasUsage),
       });
     },
-    [layerDisplay]
+    [layerDisplay, toggleLayerDisplay]
   );
 
-  const toogleGasUsageGroupeVisibility = useCallback(() => {
-    setLayerDisplay({
+  const toggleGasUsageGroupeVisibility = useCallback(() => {
+    toggleLayerDisplay({
       ...layerDisplay,
       gasUsageGroup: !layerDisplay.gasUsageGroup,
     });
-  }, [layerDisplay]);
+  }, [layerDisplay, toggleLayerDisplay]);
 
   const loadFilters = useCallback(() => {
     if (!mapRef.current) {
@@ -867,6 +908,10 @@ const Map = ({
   }, [jumpTo, center, router, geolocDisabled]);
 
   useEffect(() => {
+    if (pinsList && pinsList?.length > 0) {
+      //The pin to display are only those on the pinsList
+      return;
+    }
     let shouldUpdate = false;
     const newMarkersList: MapMarkerInfos[] = markersList;
     const newSoughtAddresses = soughtAddresses.map(
@@ -1009,19 +1054,19 @@ const Map = ({
                 <MapLegend
                   legendTitle={legendTitle}
                   data={legendData || mapParam.legendData}
-                  onToogleFeature={toggleLayer}
-                  onToogleInGroup={(groupeName: string, idEntry?: any) => {
+                  onToggleFeature={toggleLayer}
+                  onToggleInGroup={(groupeName: string, idEntry?: any) => {
                     switch (groupeName) {
                       case 'energy': {
-                        toogleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
+                        toggleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
                         break;
                       }
                       case 'gasUsage': {
-                        toogleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
+                        toggleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
                         break;
                       }
                       case 'gasUsageGroup': {
-                        toogleGasUsageGroupeVisibility();
+                        toggleGasUsageGroupeVisibility();
                         break;
                       }
                     }
@@ -1034,18 +1079,18 @@ const Map = ({
                     switch (groupName) {
                       case 'energy': {
                         idEntry === 'gas'
-                          ? setLayerDisplay({
+                          ? updateLayerDisplay({
                               ...layerDisplay,
                               energyGasValues: values,
                             })
-                          : setLayerDisplay({
+                          : updateLayerDisplay({
                               ...layerDisplay,
                               energyFuelValues: values,
                             });
                         break;
                       }
                       case 'gasUsage': {
-                        setLayerDisplay({
+                        updateLayerDisplay({
                           ...layerDisplay,
                           gasUsageValues: values,
                         });

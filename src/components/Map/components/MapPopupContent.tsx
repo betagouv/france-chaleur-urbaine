@@ -7,6 +7,7 @@ import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
 import { objTypeEnergy, PopupTitle } from '../Map.style';
+import { isDefined } from '@utils/core';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {
@@ -116,7 +117,7 @@ const MapPopupContent = ({
             <br />
           </>
         )}
-        {nb_logements && (
+        {isDefined(nb_logements) && (
           <>
             <strong>Nombre de logements&nbsp;:</strong>&nbsp;{nb_logements}
             <br />

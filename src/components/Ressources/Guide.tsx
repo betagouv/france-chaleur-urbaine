@@ -1,6 +1,6 @@
-import { matomoEvent } from '@components/Markup';
 import { Button } from '@dataesr/react-dsfr';
 import { Container, Content, GuideImage, TopLeft } from './Guide.styles';
+import { trackEvent } from 'src/services/analytics';
 
 const Guide = () => {
   return (
@@ -13,7 +13,7 @@ const Guide = () => {
         <br />
         <Button
           onClick={() => {
-            matomoEvent(['Téléchargement', 'Guide FCU', 'Ressources']);
+            trackEvent('Téléchargement|Guide FCU|Ressources');
             window.open(
               '/documentation/guide-france-chaleur-urbaine.pdf',
               '_blank'

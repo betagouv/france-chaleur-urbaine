@@ -1,11 +1,9 @@
-# Black Friday, Green Friday
+# 592 réseaux classés
 
-💸 Black Friday, Green Friday, et si on conciliait les deux ? Avec les réseaux de chaleur, le chauffage est moins cher et plus vert !\
+📃 La liste des réseaux de chaleur qui satisfont aux critères du classement a été mise à jour par un arrêté en date du 22 décembre 2023, entré en vigueur au 1er janvier 2024. Pour ces réseaux, le classement intervient de plein droit, sauf si la collectivité s'y oppose par délibération motivée.\
 \
-Se chauffer avec un réseau de chaleur, c'est moins 50% d'émissions de CO2 par rapport à un chauffage au gaz et moins 65% par rapport au fioul. Et sur la facture, c'est jusqu'à 30% d'économies.\
+❓ Concrètement, qu'est-ce qu'un réseau classé? C'est un réseau sur lequel une obligation de raccordement s'applique pour tout bâtiment neuf ou renouvelant son installation de chauffage au-dessus d'une certaine puissance, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire. Une mesure destinée à booster la dynamique de raccordement !\
 \
-📢 Une offre à saisir sans plus attendre !\
-\
-👉 Pour vérifier si vous êtes raccordable, testez votre adresse sur [France Chaleur Urbaine](https://france-chaleur-urbaine.beta.gouv.fr/).
+👉 Pour informer sur ces obligations, France Chaleur Urbaine recense les périmètres de développement prioritaire sur sa carte. Le périmètre de votre réseau n'y est pas encore visible ? N'hésitez pas à nous le transmettre pour ajout !
 
-![](/contents/blackfriday.jpg)
+![](.gitbook/assets/592.jpg)

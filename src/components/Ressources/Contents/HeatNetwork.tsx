@@ -624,16 +624,16 @@ const HeatNetwork = ({
           </ul>
           <br />
           L’
-          <a
-            href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000046821204"
+          <Link
+            href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048730127"
             target="_blank"
             rel="noreferrer"
           >
-            arrêté du 23 décembre 2022
-          </a>{' '}
+            arrêté du 22 décembre 2023
+          </Link>{' '}
           relatif au classement des réseaux de chaleur et de froid recense{' '}
           <b>
-            636 réseaux répondant à ces critères. La cartographie France Chaleur
+            592 réseaux répondant à ces critères. La cartographie France Chaleur
             Urbaine permet de visualiser les réseaux de chaleur concernés. Leur
             périmètre de développement prioritaire, zone dans laquelle
             s’applique l’obligation de raccordement, figure également sur la

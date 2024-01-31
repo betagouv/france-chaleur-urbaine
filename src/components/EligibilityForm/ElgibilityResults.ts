@@ -38,7 +38,7 @@ ${
 }
 `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
 **Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
 `,
 };
@@ -54,13 +54,14 @@ const closeIndividual = {
 ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
   `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
 Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
   `,
 };
 
 // 1 rue du berry 78370 Plaisir
 const intermediateCollectif = {
+  eligibility: true,
   body: (
     distance: number,
     inZDP: boolean,
@@ -93,7 +94,7 @@ ${
 }
   `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
 **Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
   `,
 };
@@ -109,7 +110,7 @@ const farIndividual = {
 ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
     `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
 Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
     `,
 };
@@ -122,7 +123,7 @@ const farCollectifOutZdp = {
 ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
 `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
 **Contribuez au développement des réseaux de chaleur en faisant connaître votre souhait de vous raccorder !** Laissez-nous vos coordonnées pour être tenu informé par le gestionnaire du réseau le plus proche ou par votre collectivité des projets d’extension de réseau ou de création de réseau dans votre quartier.
 `,
 };
@@ -165,7 +166,7 @@ ${
 }
 `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
 **Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
 `,
 };
@@ -191,13 +192,14 @@ ${
 }
   `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin d’en savoir plus et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin d’en savoir plus et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
 **Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
 `,
 };
 
 // rue des hirondelles 76610 le havre
 const intermediateFuturCollectif = {
+  eligibility: true,
   body: (
     distance: number,
     inZDP: boolean,
@@ -230,7 +232,7 @@ ${
 }
   `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
 **Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
   `,
 };
@@ -262,7 +264,7 @@ ${
 }
 `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
 **Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
 `,
 };
@@ -278,7 +280,7 @@ const closeFuturIndividual = {
 ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
   `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
 Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
   `,
 };
@@ -292,7 +294,7 @@ const irisIndividual = {
 ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
 `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition énergétique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
 Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
 `,
 };

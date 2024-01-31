@@ -13,9 +13,7 @@ const runJob = async (job: string): Promise<void> => {
 
 if (process.argv.length < 3) {
   console.log('Please verify your command. Expected format:');
-  console.log(
-    'export NODE_PATH=./ && ts-node src/cron_jobs/manual-job.ts job_name'
-  );
+  console.log('npx tsx src/cron_jobs/manual-job.ts job_name');
   process.exit(1);
 }
 

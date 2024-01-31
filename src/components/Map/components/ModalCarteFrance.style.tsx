@@ -106,8 +106,8 @@ export const BlueNumber = styled.div`
   font-weight: bold;
 `;
 
-export const GreyNumber = styled.div`
-  font-size: 18px;
+export const BigGreyNumber = styled.div`
+  font-size: 30px;
   color: #858585;
   font-weight: bold;
 `;

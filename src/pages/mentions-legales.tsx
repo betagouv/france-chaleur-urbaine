@@ -1,7 +1,6 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import MainContainer from '@components/shared/layout';
+import SimplePage from '@components/shared/page/SimplePage';
 import { termOfUse } from '@data';
-import Head from 'next/head';
 import styled from 'styled-components';
 
 const StyledMarkdown = styled(MarkdownWrapper)`
@@ -42,22 +41,17 @@ const StyledMarkdown = styled(MarkdownWrapper)`
 
 function LegalMentions() {
   return (
-    <>
-      <Head>
-        <title>Mentions légales : France Chaleur Urbaine</title>
-      </Head>
-      <MainContainer>
-        <div className="fr-container fr-mt-2w">
-          <div className="fr-grid-row">
+    <SimplePage title="Mentions légales : France Chaleur Urbaine">
+      <div className="fr-container fr-mt-2w">
+        <div className="fr-grid-row">
+          <div className="fr-col-12">
             <div className="fr-col-12">
-              <div className="fr-col-12">
-                <StyledMarkdown value={termOfUse} />
-              </div>
+              <StyledMarkdown value={termOfUse} />
             </div>
           </div>
         </div>
-      </MainContainer>
-    </>
+      </div>
+    </SimplePage>
   );
 }
 

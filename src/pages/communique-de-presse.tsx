@@ -1,12 +1,12 @@
 import Press from '@components/Press';
-import MainContainer from '@components/shared/layout/MainContainer';
+import SimplePage from '@components/shared/page/SimplePage';
 
-const QuiSommesNous = () => {
+const CommuniqueDePressePage = () => {
   return (
-    <MainContainer currentMenu={'/communique-de-presse'}>
+    <SimplePage>
       <Press />
-    </MainContainer>
+    </SimplePage>
   );
 };
 
-export default QuiSommesNous;
+export default CommuniqueDePressePage;

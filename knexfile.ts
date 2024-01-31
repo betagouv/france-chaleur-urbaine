@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { Knex } from 'knex';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();
@@ -11,7 +12,12 @@ export default {
     tableName: 'knex_migrations',
     directory: './src/db/migrations',
   },
-};
+  pool: {
+    idleTimeoutMillis: 10000,
+    min: 0,
+    max: 20,
+  },
+} satisfies Knex.Config;
 
 function addApplicationName(
   connectionString: string | undefined

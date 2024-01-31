@@ -1,4 +1,6 @@
 import geojsonvt from 'geojson-vt';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: no types
 import vtpbf from 'vt-pbf';
 import db from '../../src/db';
 import {
@@ -41,7 +43,7 @@ const dbTable = (
       db.raw(
         `${preTable(region)[table]}${
           limitRowIDMin
-            ? `AND fid BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}
+            ? `AND id BETWEEN ${limitRowIDMin} AND ${limitRowIDMax}
                AND ST_INTERSECTS(
                 ST_Transform(geom, 3857),
                 ST_MakeEnvelope(${xmin}, ${ymin}, ${xmax}, ${ymax}, 3857)
@@ -55,6 +57,7 @@ const dbTable = (
   return db(table);
 };
 
+const maxIndex = 23465952;
 const globalX13Min = 3900;
 const globalX13Max = 4400;
 const globalY13Min = 2700;
@@ -129,7 +132,7 @@ export const fillTiles = async (
         const region = regions[r].bnb_nom;
         console.log('Region', region);
         console.time(region);
-        for (let i = 1; i <= 2692791; i += 250000) {
+        for (let i = 1; i <= maxIndex; i += 250000) {
           console.info('Part', i);
           const tempGeoJSON = await tileInfo
             .extraWhere(

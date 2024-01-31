@@ -191,9 +191,7 @@ const downloadNetworks = async (table: DataType) => {
 };
 
 if (process.argv.length !== 3) {
-  console.info(
-    'Usage: export NODE_PATH=./ && npx ts-node scripts/downloadNetworks.ts table'
-  );
+  console.info('Usage: npx tsx scripts/downloadNetworks.ts table');
   process.exit(1);
 }
 

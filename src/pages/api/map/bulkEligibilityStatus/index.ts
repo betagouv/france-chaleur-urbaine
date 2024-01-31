@@ -2,6 +2,7 @@ import {
   getEligilityStatus,
   getExport,
 } from '@core/infrastructure/repository/addresseInformation';
+import { logger } from '@helpers/logger';
 import axios from 'axios';
 import crypto from 'crypto';
 import FormData from 'form-data';
@@ -140,26 +141,38 @@ const bulkEligibilitygibilityStatus = async (
 
   const hash = crypto.createHash('sha1').update(addressesCSV).digest('hex');
 
-  let existingValue = await db('eligibility_tests')
+  const jobLogger = logger.child({ hash });
+  const start = Date.now();
+
+  let existingEligibilityTest = await db('eligibility_tests')
     .where('hash', hash)
     .andWhere('version', version)
     .first();
 
-  if (existingValue) {
+  if (existingEligibilityTest) {
     res.status(200).send('File already exists, send email');
-    while (!existingValue.result && !existingValue.in_error) {
-      existingValue = await db('eligibility_tests')
-        .where('id', existingValue.id)
+    while (
+      !existingEligibilityTest.result &&
+      !existingEligibilityTest.in_error
+    ) {
+      existingEligibilityTest = await db('eligibility_tests')
+        .where('id', existingEligibilityTest.id)
         .first();
     }
 
-    if (!existingValue.in_error) {
-      await sendMail(existingValue.id, email, JSON.parse(existingValue.result));
-    } else {
+    if (existingEligibilityTest.in_error) {
+      jobLogger.info('existing file with errors, send');
       await db('eligibility_demands').insert({
-        eligibility_test_id: existingValue.id,
+        eligibility_test_id: existingEligibilityTest.id,
         email,
       });
+    } else {
+      jobLogger.info('existing file, send results by email');
+      await sendMail(
+        existingEligibilityTest.id,
+        email,
+        JSON.parse(existingEligibilityTest.result)
+      );
     }
 
     return;
@@ -167,7 +180,9 @@ const bulkEligibilitygibilityStatus = async (
 
   const id = uuidv4();
   try {
-    console.log(`${hash} : Launch bulk eligibility computation`);
+    jobLogger.info('launch bulk eligibility computation', {
+      addresses_count: formattedAddresses.length,
+    });
     res
       .status(200)
       .send('File do not exists, computing result then send email');
@@ -242,16 +257,21 @@ const bulkEligibilitygibilityStatus = async (
       .where('id', id);
 
     await sendMail(id, email, results);
-    console.log(`${hash} : Computed bulk eligibility computation`);
-  } catch (e) {
-    console.error(`${hash} : Crashed bulk eligibility computation`);
-    console.error(e);
-    await sendErrorMail(email, addresses);
+    jobLogger.info('computed bulk eligibility computation', {
+      duration: (Date.now() - start) / 1000,
+    });
+  } catch (err: any) {
+    jobLogger.error('crashed bulk eligibility computation', {
+      error: err.message,
+      stack: err.stack,
+      duration: (Date.now() - start) / 1000,
+    });
     await db('eligibility_tests').update({ in_error: true }).where('id', id);
     await db('eligibility_demands').insert({
       eligibility_test_id: id,
       email,
     });
+    await sendErrorMail(email, addresses);
   }
 };
 

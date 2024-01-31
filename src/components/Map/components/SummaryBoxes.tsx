@@ -1,5 +1,4 @@
 import Hoverable from '@components/Hoverable';
-import { matomoEvent } from '@components/Markup';
 import { Button, Icon, Tab, Tabs } from '@dataesr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
@@ -23,6 +22,10 @@ import {
   ZoneInfosWrapper,
 } from './SummaryBoxes.style';
 import ZoneInfo from './ZoneInfo';
+import { clientConfig } from 'src/client-config';
+import { trackEvent } from 'src/services/analytics';
+import { downloadObject } from '@utils/browser';
+import { formatAsISODate } from '@utils/date';
 
 const getConso = (consos: GasSummary[]) => {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
@@ -74,12 +77,12 @@ const SummaryBoxes = ({
 
   useEffect(() => {
     setSummary(undefined);
-    if (bounds && size && size < 5) {
-      matomoEvent(['Carto', 'Zone définie']);
+    if (bounds && size && size < clientConfig.summaryAreaSizeLimit) {
+      trackEvent('Carto|Zone définie');
       zoneIndex.current += 1;
       const currentZoneIndex = zoneIndex.current;
       heatNetworkService.summary(bounds).then((result) => {
-        matomoEvent(['Carto', 'Donées recues']);
+        trackEvent('Carto|Donées recues');
         if (currentZoneIndex === zoneIndex.current) {
           setSummary(result);
         }
@@ -90,11 +93,11 @@ const SummaryBoxes = ({
   useEffect(() => {
     setDensite(undefined);
     if (lines) {
-      matomoEvent(['Carto', 'Tracé défini']);
+      trackEvent('Carto|Tracé défini');
       lineIndex.current += 1;
       const currentLineIndex = lineIndex.current;
       heatNetworkService.densite(lines).then((result) => {
-        matomoEvent(['Carto', 'Densité recu']);
+        trackEvent('Carto|Densité recu');
         if (currentLineIndex === lineIndex.current) {
           setDensite(result);
         }
@@ -133,12 +136,12 @@ const SummaryBoxes = ({
       map.on('draw.update', () => {
         const data = draw.getAll();
         if (data.features[0].geometry.type === 'Polygon') {
-          matomoEvent(['Carto', 'Zone mise à jour']);
+          trackEvent('Carto|Zone mise à jour');
           const geometry = data.features[0].geometry as Polygon;
           setBounds(geometry.coordinates[0]);
-          setSize(turfArea(data) / 1000_000);
+          setSize(turfArea(data) / 1_000_000);
         } else if (data.features[0].geometry.type === 'LineString') {
-          matomoEvent(['Carto', 'Tracé mis à jour']);
+          trackEvent('Carto|Tracé mis à jour');
           setLines(
             data.features.map((feature) => {
               return (feature.geometry as LineString).coordinates;
@@ -181,7 +184,7 @@ const SummaryBoxes = ({
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 @ts-ignore: to fix in react-dsfr */}
               <Tab label="Extraire des données sur les bâtiments">
-                {size && size > 5 ? (
+                {size && size > clientConfig.summaryAreaSizeLimit ? (
                   <Explanation>
                     <span>
                       La zone définie est trop grande ({size.toFixed(2)} km²),
@@ -199,20 +202,15 @@ const SummaryBoxes = ({
                   </Explanation>
                 ) : bounds && !summary ? (
                   <Explanation>
-                    <span>
-                      Extraction des données correspondant à la zone définie en
-                      cours...
-                    </span>
+                    Extraction des données correspondant à la zone définie en
+                    cours...
                   </Explanation>
                 ) : !summary ? (
                   <Explanation>
-                    <span>
-                      Pour afficher et exporter des données sur une zone
-                      (consommation de gaz, adresse des bâtiments chauffés au
-                      gaz ou fioul collectif,...), cliquez sur au moins trois
-                      points puis validez cette zone en rejoignant le premier
-                      point.
-                    </span>
+                    Pour afficher et exporter des données sur une zone
+                    (consommation de gaz, adresse des bâtiments chauffés au gaz
+                    ou fioul collectif,...), cliquez sur au moins trois points
+                    puis validez cette zone en rejoignant le premier point.
                   </Explanation>
                 ) : (
                   <ZoneInfos>
@@ -318,27 +316,23 @@ const SummaryBoxes = ({
                 @ts-ignore: to fix in react-dsfr */}
               <Tab label="Calculer une densité thermique linéaire">
                 {lines && !densite ? (
-                  <Explanation>
-                    <span>
-                      Extraction des données correspondant au tracé défini en
-                      cours...
-                    </span>
-                  </Explanation>
+                  <>
+                    Extraction des données correspondant au tracé défini en
+                    cours...
+                  </>
                 ) : !densite ? (
-                  <Explanation>
-                    <span>
-                      Pour calculer une distance et la densité thermique
-                      linéaire associée, définissez un tracé en cliquant sur
-                      deux points ou plus, puis validez en cliquant sur entrée.
-                      Vous pouvez alors ajouter des segments à votre tracé, ou
-                      en retirez. Vous pouvez aussi cliquer sur les points pour
-                      les déplacer.
-                    </span>
-                  </Explanation>
+                  <>
+                    Pour calculer une distance et la densité thermique linéaire
+                    associée, définissez un tracé en cliquant sur deux points ou
+                    plus, puis validez en cliquant sur entrée. Vous pouvez alors
+                    ajouter des segments à votre tracé, ou en retirez. Vous
+                    pouvez aussi cliquer sur les points pour les déplacer.
+                  </>
                 ) : (
                   <ZoneInfos>
                     <ZoneInfo
                       color="green"
+                      alignTop
                       title="Distance"
                       values={[
                         {
@@ -389,6 +383,24 @@ const SummaryBoxes = ({
                         },
                       ]}
                     />
+
+                    <Button
+                      size="sm"
+                      icon={'ri-download-2-line'}
+                      onClick={() => {
+                        downloadObject(
+                          draw.getAll(),
+                          `FCU_export_tracé_${formatAsISODate(
+                            new Date()
+                          )}.geojson`,
+                          'application/geo+json'
+                        );
+                      }}
+                      disabled={!densite}
+                      className="fr-col--middle"
+                    >
+                      Exporter le tracé
+                    </Button>
                   </ZoneInfos>
                 )}
               </Tab>
@@ -402,7 +414,7 @@ const SummaryBoxes = ({
                   draw.deleteAll();
                   setBounds(undefined);
                   setLines(undefined);
-                  matomoEvent(['Carto', 'Définir une zone']);
+                  trackEvent('Carto|Définir une zone');
                   setDrawing(true);
                   draw.changeMode('draw_polygon');
                 }}
@@ -419,7 +431,7 @@ const SummaryBoxes = ({
                     draw.deleteAll();
                     setBounds(undefined);
                     setLines(undefined);
-                    matomoEvent(['Carto', 'Définir un tracé']);
+                    trackEvent('Carto|Définir un tracé');
                     setDrawing(true);
                     draw.changeMode('draw_line_string');
                   }}
@@ -432,7 +444,7 @@ const SummaryBoxes = ({
                   icon="ri-add-line"
                   onClick={() => {
                     setDrawing(true);
-                    matomoEvent(['Carto', 'Ajouter un segment']);
+                    trackEvent('Carto|Ajouter un segment');
                     draw.changeMode('draw_line_string');
                   }}
                 >
@@ -445,7 +457,7 @@ const SummaryBoxes = ({
                   onClick={() => {
                     const selected = draw.getSelectedIds();
                     if (selected.length > 0) {
-                      matomoEvent(['Carto', 'Supprimer un segment']);
+                      trackEvent('Carto|Supprimer un segment');
                       const all = draw.getAll();
                       draw.delete(selected);
                       setLines(
@@ -473,7 +485,7 @@ const SummaryBoxes = ({
                   draw.deleteAll();
                   setBounds(undefined);
                   setLines(undefined);
-                  matomoEvent(['Carto', 'Définir un tracé']);
+                  trackEvent('Carto|Définir un tracé');
                   setDrawing(true);
                   draw.changeMode('draw_line_string');
                 }}

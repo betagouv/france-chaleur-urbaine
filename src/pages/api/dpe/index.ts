@@ -62,15 +62,15 @@ export default async function users(req: NextApiRequest, res: NextApiResponse) {
           .select(
             db.raw(
               `
-              adedpe202006_mean_class_conso_ener,
-              adedpe202006_mean_class_estim_ges
+              dpe_mix_arrete_classe_bilan_dpe,
+              dpe_mix_arrete_classe_emission_ges
             `
             )
           )
           .where(
             db.raw(`
-            adedpe202006_mean_class_conso_ener is not null
-            and adedpe202006_mean_class_estim_ges is not null
+            dpe_mix_arrete_classe_bilan_dpe is not null
+            and dpe_mix_arrete_classe_emission_ges is not null
             and ST_Intersects(
               ST_Transform(geom, 2154),
               ST_BUFFER(ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154), ${distanceInMeters})
@@ -79,8 +79,8 @@ export default async function users(req: NextApiRequest, res: NextApiResponse) {
           );
         dpeRegion.forEach((dpe) => {
           dpes.count++;
-          dpes.dpeEnergie[dpe.adedpe202006_mean_class_conso_ener as DPE] += 1;
-          dpes.dpeGES[dpe.adedpe202006_mean_class_estim_ges as DPE] += 1;
+          dpes.dpeEnergie[dpe.dpe_mix_arrete_classe_bilan_dpe as DPE] += 1;
+          dpes.dpeGES[dpe.dpe_mix_arrete_classe_emission_ges as DPE] += 1;
         });
       }
 

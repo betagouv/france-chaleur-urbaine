@@ -1,8 +1,7 @@
 import Manager from '@components/Manager/Manager';
-import MainContainer from '@components/shared/layout';
+import SimplePage from '@components/shared/page/SimplePage';
 import { GetServerSideProps } from 'next';
 import { getSession, signOut, useSession } from 'next-auth/react';
-import Head from 'next/head';
 import { useEffect } from 'react';
 
 export default function Gestionnaire(): JSX.Element {
@@ -14,14 +13,12 @@ export default function Gestionnaire(): JSX.Element {
   }, [session]);
 
   return (
-    <>
-      <Head>
-        <title>France Chaleur Urbaine - Espace gestionnaire</title>
-      </Head>
-      <MainContainer currentMenu="/gestionnaire" fullscreen>
-        <Manager />
-      </MainContainer>
-    </>
+    <SimplePage
+      title="France Chaleur Urbaine - Espace gestionnaire"
+      mode="authenticated"
+    >
+      <Manager />
+    </SimplePage>
   );
 }
 

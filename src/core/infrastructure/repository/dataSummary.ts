@@ -38,21 +38,19 @@ ST_WITHIN(
 )
 `;
 
-const getCloseQuery = (
-  coordinates: number[][],
-  geom: string,
-  distance: number
-) => `
-ST_DISTANCE(
-  ST_Transform(${geom}, 2154),
+const getConsoCloseLineQuery = (coordinates: number[][], distance: number) => `
+ST_DWithin(
+  geom,
   ST_Transform(
     ST_MakeLine(
       Array[${coordinates.map(
         (coords) => `ST_SetSRID(ST_MakePoint(${coords}), 4326)`
       )}]
-    )
-  , 2154) 
-) < ${distance}
+    ),
+    2154
+  ),
+  ${distance}
+)
 `;
 
 const getNetworkSummary = async (
@@ -100,10 +98,10 @@ const getGasSummary = async (coordinates: number[][]): Promise<GasSummary[]> =>
       EXISTS (
         SELECT *
         FROM reseaux_de_chaleur rdc
-        WHERE ST_Distance(
-          ST_Transform(rdc.geom, 2154),
-          ST_Transform(gas.geom, 2154)
-          ) < 50
+        WHERE ST_DWithin(
+          rdc.geom,
+          gas.geom,
+          50)
         LIMIT 1
       ) as is_close
       `)
@@ -116,22 +114,22 @@ const getEnergySummary = async (
 ): Promise<EnergySummary[]> =>
   db(`${region} as energy`)
     .select(
-      'adedpe202006_logtype_ch_type_ener_corr as energie_utilisee',
+      'dpe_mix_arrete_type_energie_chauffage as energie_utilisee',
       db.raw(`
       EXISTS (
         SELECT *
         FROM reseaux_de_chaleur rdc
-        WHERE ST_Distance(
-          ST_Transform(rdc.geom, 2154),
-          ST_Transform(energy.geom_adresse, 2154)
-          ) < 50
+        WHERE ST_DWithin(
+          rdc.geom,
+          ST_Transform(energy.geom_adresse, 2154), -- projection 4326
+          50)
         LIMIT 1
       ) as is_close
       `)
     )
-    .whereIn('adedpe202006_logtype_ch_type_ener_corr', ['gaz', 'fioul'])
-    .andWhereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
-    .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
+    .whereNotNull('libelle_adr_principale_ban')
+    .whereIn('dpe_mix_arrete_type_energie_chauffage', ['gaz', 'fioul'])
+    .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
     .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 const exportGasSummary = async (
@@ -148,10 +146,10 @@ const exportGasSummary = async (
         EXISTS (
           SELECT *
           FROM reseaux_de_chaleur rdc
-          WHERE ST_Distance(
-            ST_Transform(rdc.geom, 2154),
-            ST_Transform(gas.geom, 2154)
-            ) < 50
+          WHERE ST_DWithin(
+            rdc.geom,
+            gas.geom,
+            50)
           LIMIT 1
         ) as is_close
       `)
@@ -164,31 +162,23 @@ const exportEnergyGasSummary = async (
 ): Promise<EnergySummary[]> =>
   db(`${region} as energy`)
     .select(
-      'etaban202111_label as addr_label',
+      'libelle_adr_principale_ban as addr_label',
+      'ffo_bat_nb_log as nb_logements',
       db.raw(`
         EXISTS (
           SELECT *
           FROM reseaux_de_chaleur rdc
-          WHERE ST_Distance(
-            ST_Transform(rdc.geom, 2154),
-            ST_Transform(energy.geom_adresse, 2154)
-            ) < 50
+          WHERE ST_DWithin(
+            rdc.geom,
+            ST_Transform(energy.geom_adresse, 2154),
+            50)
           LIMIT 1
         ) as is_close
-      `),
-      db.raw(`
-        CASE
-          WHEN cerffo2020_nb_log ISNULL 
-            THEN anarnc202012_nb_log
-          WHEN cerffo2020_nb_log < 1 
-            THEN anarnc202012_nb_log
-          ELSE cerffo2020_nb_log
-        END as nb_logements
       `)
     )
-    .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
-    .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
-    .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'gaz')
+    .whereNotNull('libelle_adr_principale_ban')
+    .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
+    .andWhere('dpe_mix_arrete_type_energie_chauffage', 'gaz')
     .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 const exportEnergyFioulSummary = async (
@@ -197,31 +187,23 @@ const exportEnergyFioulSummary = async (
 ): Promise<EnergySummary[]> =>
   db(`${region} as energy`)
     .select(
-      'etaban202111_label as addr_label',
+      'libelle_adr_principale_ban as addr_label',
+      'ffo_bat_nb_log as nb_logements',
       db.raw(`
         EXISTS (
           SELECT *
           FROM reseaux_de_chaleur rdc
-          WHERE ST_Distance(
-            ST_Transform(rdc.geom, 2154),
-            ST_Transform(energy.geom_adresse, 2154)
-            ) < 50
+          WHERE ST_DWithin(
+            rdc.geom,
+            ST_Transform(energy.geom_adresse, 2154),
+            50)
           LIMIT 1
         ) as is_close
-      `),
-      db.raw(`
-        CASE
-          WHEN cerffo2020_nb_log ISNULL 
-            THEN anarnc202012_nb_log
-          WHEN cerffo2020_nb_log < 1 
-            THEN anarnc202012_nb_log
-          ELSE cerffo2020_nb_log
-        END as nb_logements
       `)
     )
-    .whereNot('bnb_adr_fiabilite_niv_1', 'problème de géocodage')
-    .andWhere('adedpe202006_logtype_ch_type_inst', 'collectif')
-    .andWhere('adedpe202006_logtype_ch_type_ener_corr', 'fioul')
+    .whereNotNull('libelle_adr_principale_ban')
+    .andWhere('dpe_mix_arrete_type_installation_chauffage', 'collectif')
+    .andWhere('dpe_mix_arrete_type_energie_chauffage', 'fioul')
     .andWhere(db.raw(getWithinQuery(coordinates, 'geom_adresse')));
 
 export const getPolygonSummary = async (
@@ -281,10 +263,10 @@ export const getLineSummary = async (coordinates: number[][]) => {
   const [result10, result50] = await Promise.all([
     db('donnees_de_consos as gas')
       .select('conso_nb', 'pdl_nb', 'rownum')
-      .where(db.raw(getCloseQuery(coordinates, 'geom', 10))),
+      .where(db.raw(getConsoCloseLineQuery(coordinates, 10))),
     db('donnees_de_consos as gas')
       .select('conso_nb', 'pdl_nb', 'rownum')
-      .where(db.raw(getCloseQuery(coordinates, 'geom', 50))),
+      .where(db.raw(getConsoCloseLineQuery(coordinates, 50))),
   ]);
   return { 10: result10, 50: result50 };
 };

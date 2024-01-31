@@ -1,11 +1,14 @@
 import Article from '@components/Articles/Article';
-import MainContainer from '@components/shared/layout/MainContainer';
+import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
 import { articles } from '@data/contents';
 
 const Articles = () => {
   return (
-    <MainContainer currentMenu="/actus">
+    <SimplePage
+      title="Nos actus - France Chaleur Urbaine"
+      currentPage="/ressources"
+    >
       <Slice padding={8}>
         <h1>Nos actus</h1>
         {articles.map((article) => (
@@ -14,7 +17,7 @@ const Articles = () => {
           </div>
         ))}
       </Slice>
-    </MainContainer>
+    </SimplePage>
   );
 };
 

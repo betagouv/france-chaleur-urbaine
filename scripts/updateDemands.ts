@@ -62,7 +62,7 @@ const updateDemands = async () => {
 
         if (nbLogement) {
           newValue.Logement = nbLogement.nb_logements;
-          newValue['ID BNB'] = nbLogement.fid;
+          newValue['ID BNB'] = nbLogement.id;
           shouldUpdate = true;
         }
       }

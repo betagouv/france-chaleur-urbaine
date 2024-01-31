@@ -3,23 +3,28 @@ import {
   getLineSummary,
   getPolygonSummary,
 } from '@core/infrastructure/repository/dataSummary';
+import { handleRouteErrors } from '@helpers/server';
 import turfArea from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import turfLength from '@turf/length';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { clientConfig } from 'src/client-config';
 import { withCors } from 'src/services/api/cors';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
+import { z } from 'zod';
 
 const polygonSummary = async (
   coordinates: number[][],
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  const size = turfArea(polygon([coordinates]));
-  if (size > 5_000_000) {
+  const size = turfArea(polygon([coordinates])) / 1_000_000;
+  if (size > clientConfig.summaryAreaSizeLimit) {
     return res
       .status(400)
-      .send('Cannot compute stats on area bigger than 5 km²');
+      .send(
+        `Cannot compute stats on area bigger than ${clientConfig.summaryAreaSizeLimit} km²`
+      );
   }
   if (req.method === 'GET') {
     const data = await getPolygonSummary(coordinates);
@@ -85,37 +90,30 @@ const lineSummary = async (
 };
 
 const summary = async (req: NextApiRequest, res: NextApiResponse) => {
-  try {
-    const coordinates = JSON.parse(
-      decodeURIComponent((req.query as Record<string, string>).coordinates)
-    );
+  const { type, coordinates } = await z
+    .discriminatedUnion('type', [
+      z.object({
+        type: z.literal('line'),
+        coordinates: z.preprocess(
+          (v) => JSON.parse(decodeURIComponent(v as string)),
+          z.array(z.array(z.array(z.number())))
+        ),
+      }),
+      z.object({
+        type: z.literal('polygon'),
+        coordinates: z.preprocess(
+          (v) => JSON.parse(decodeURIComponent(v as string)),
+          z.array(z.array(z.number()))
+        ),
+      }),
+    ])
+    .parseAsync(req.query);
 
-    const type = req.query.type as string;
-
-    if (!coordinates || !type) {
-      return res.status(400).json({
-        message: 'Parameters coordinates and type are required',
-        code: 'Bad Arguments',
-      });
-    }
-    if (type === 'polygon') {
-      await polygonSummary(coordinates, req, res);
-    } else if (type === 'line') {
-      await lineSummary(coordinates, req, res);
-    } else {
-      return res.status(400).json({
-        message: 'Invalid type, should be line or polygon',
-        code: 'Bad Arguments',
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    res.statusCode = 500;
-    return res.json({
-      message: 'internal server error',
-      code: 'Internal Server Error',
-    });
+  if (type === 'polygon') {
+    await polygonSummary(coordinates, req, res);
+  } else if (type === 'line') {
+    await lineSummary(coordinates, req, res);
   }
 };
 
-export default withCors(summary);
+export default withCors(handleRouteErrors(summary));

@@ -43,6 +43,7 @@ const MapPage = () => {
         .filter(
           (legend) =>
             legend !== 'contributeButton' &&
+            legend !== 'statsByArea' &&
             legend !== 'proModeLegend' &&
             (typeof legend === 'string' ||
               displayLegendArray.includes(legendMapping[legend.id]))
@@ -93,7 +94,7 @@ const MapPage = () => {
                 energyGasValues: [50, Number.MAX_VALUE],
                 energyFuelValues: [50, Number.MAX_VALUE],
               }
-            : param.simpleLayerDisplay
+            : param.iframeSimpleLayerDisplay
         }
         withFCUAttribution
       />

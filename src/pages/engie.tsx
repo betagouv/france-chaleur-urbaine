@@ -15,7 +15,7 @@ const EngieMap = () => {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <Map
-        initialLayerDisplay={param.simpleLayerDisplay}
+        initialLayerDisplay={param.iframeSimpleLayerDisplay}
         withLegend
         withBorder
         withHideLegendSwitch

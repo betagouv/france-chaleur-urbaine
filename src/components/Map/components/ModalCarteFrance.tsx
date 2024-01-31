@@ -17,7 +17,7 @@ import {
   BlueText,
   DistanceLineText,
   FirstColumn,
-  GreyNumber,
+  BigGreyNumber,
   GreyText,
   HorizontalSeparator,
   LayoutTwoColumns,
@@ -327,16 +327,22 @@ function ModalCarteFrance(props: Props) {
                   {getBatimentLogementLabel(modeBatimentLogement)} chauffés au
                   fioul collectif
                 </BlueText>
-                <GreyText className="fr-mt-2w">et&nbsp;:</GreyText>
-                <GreyNumber>
-                  {prettyFormatNumber(
-                    selectedData?.[distanceReseau]?.[modeBatimentLogement]
-                      ?.individuel_gaz
-                  ) ?? '--'}
-                </GreyNumber>
+                <BigGreyNumber className="fr-mt-3w">
+                  {/* hack: nb_(batiments|logements) contient le total des collectifs gaz et fioul,
+                      et on veut inclure individuel gas en plus */}
+                  {selectedData
+                    ? prettyFormatNumber(
+                        selectedData[distanceReseau][
+                          `nb_${modeBatimentLogement}`
+                        ] +
+                          selectedData[distanceReseau][modeBatimentLogement]
+                            .individuel_gaz
+                      )
+                    : '--'}
+                </BigGreyNumber>
                 <GreyText>
-                  {getBatimentLogementLabel(modeBatimentLogement)} chauffés au
-                  gaz individuel
+                  {getBatimentLogementLabel(modeBatimentLogement)} raccordables
+                  en intégrant les logements à chauffage au gaz individuel
                 </GreyText>
               </FirstColumn>
 

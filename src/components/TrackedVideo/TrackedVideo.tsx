@@ -1,7 +1,7 @@
-import { matomoEvent } from '@components/Markup';
 import { MediaVideo } from '@dataesr/react-dsfr';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { trackEvent } from 'src/services/analytics';
 
 const TrackedVideo = ({
   height,
@@ -22,7 +22,7 @@ const TrackedVideo = ({
   const onPlay = () => {
     if (!notified) {
       setNotified(true);
-      matomoEvent(['Vidéo', src], [router.asPath]);
+      trackEvent('Vidéo', [src, router.asPath]);
     }
   };
 

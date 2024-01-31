@@ -134,7 +134,7 @@ export const getConsoById = async (
 export const getNbLogement = async (
   lat: number,
   lon: number
-): Promise<{ nb_logements: number; fid: string } | null> => {
+): Promise<{ nb_logements: number; id: string } | null> => {
   const region = await db('regions')
     .select('bnb_nom')
     .where(
@@ -147,18 +147,7 @@ export const getNbLogement = async (
     )
     .first();
   const result = await db(region.bnb_nom)
-    .select(
-      'fid',
-      db.raw(`
-        CASE
-          WHEN cerffo2020_nb_log ISNULL 
-            THEN anarnc202012_nb_log
-          WHEN cerffo2020_nb_log < 1 
-            THEN anarnc202012_nb_log
-          ELSE cerffo2020_nb_log
-        END as nb_logements
-      `)
-    )
+    .select('id', 'ffo_bat_nb_log as nb_logements')
     .where(
       db.raw(`
         ST_INTERSECTS(
@@ -175,7 +164,7 @@ export const getNbLogementById = async (
   id: string,
   lat: number,
   lon: number
-): Promise<{ nb_logements: number; fid: string } | null> => {
+): Promise<{ nb_logements: number; id: string } | null> => {
   const region = await db('regions')
     .select('bnb_nom')
     .where(
@@ -189,19 +178,8 @@ export const getNbLogementById = async (
     .first();
 
   const result = await db(region.bnb_nom)
-    .select(
-      'fid',
-      db.raw(`
-        CASE
-          WHEN cerffo2020_nb_log ISNULL 
-            THEN anarnc202012_nb_log
-          WHEN cerffo2020_nb_log < 1 
-            THEN anarnc202012_nb_log
-          ELSE cerffo2020_nb_log
-        END as nb_logements
-      `)
-    )
-    .where('fid', id)
+    .select('id', 'ffo_bat_nb_log as nb_logements')
+    .where('id', id)
     .first();
   return result;
 };

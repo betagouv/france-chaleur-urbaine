@@ -37,7 +37,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "knexfile.ts",
-    "scripts/addUser.ts"
+    "scripts/**/*.ts"
   ],
   "exclude": ["node_modules", "__tests__", "*.backUp", "**/*.backUp/*"]
 }
