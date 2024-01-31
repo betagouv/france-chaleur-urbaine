@@ -13,6 +13,7 @@ const TypeArray: unique symbol = Symbol('array');
 const TypeBool: unique symbol = Symbol('bool');
 const TypeJSONArray: unique symbol = Symbol('json');
 const TypeNumber: unique symbol = Symbol('number');
+const TypePercentage: unique symbol = Symbol('percentage');
 const TypeString: unique symbol = Symbol('string');
 
 type Type =
@@ -20,6 +21,7 @@ type Type =
   | typeof TypeBool
   | typeof TypeJSONArray
   | typeof TypeNumber
+  | typeof TypePercentage
   | typeof TypeString;
 
 const conversionConfigReseauxDeChaleur = {
@@ -199,6 +201,10 @@ function convertAirtableValue(value: any, type: Type) {
     case TypeNumber:
       return value !== undefined && value !== null && value !== 'NULL'
         ? value
+        : null;
+    case TypePercentage:
+      return value !== undefined && value !== null && value !== 'NULL'
+        ? value * 100 // be compatible with number and text
         : null;
     case TypeString:
       return value !== undefined && value !== null && value !== 'NULL'
