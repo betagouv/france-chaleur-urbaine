@@ -3,6 +3,7 @@ import { ZodRawShape, z } from 'zod';
 import { parentLogger } from './logger';
 import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
+import { captureException } from '@sentry/nextjs';
 
 const FormidableError = (formidableErrors as any).default;
 /**
@@ -28,6 +29,7 @@ export function handleRouteErrors(handler: NextApiHandler): NextApiHandler {
         res.status(HttpStatusCode.Ok).json(handlerResult);
       }
     } catch (error: any) {
+      captureException(error);
       const logger = parentLogger.child({ url: req.url });
       if (error instanceof FormidableError) {
         logger.error('formidable error', {
