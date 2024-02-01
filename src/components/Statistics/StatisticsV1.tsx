@@ -61,22 +61,14 @@ const Statistics = () => {
       } ${year}`;
       return [
         label,
-        entry['Formulaire de test - Adresse Inéligible'] +
-          (entry['Formulaire de test - Carte - Adresse Inéligible']
-            ? entry['Formulaire de test - Carte - Adresse Inéligible']
-            : 0) +
-          entry['Formulaire de test - Adresse Éligible'] +
-          (entry['Formulaire de test - Carte - Adresse Éligible']
-            ? entry['Formulaire de test - Carte - Adresse Éligible']
-            : 0),
-        entry['Formulaire de test - Adresse Inéligible'] +
-          (entry['Formulaire de test - Carte - Adresse Inéligible']
-            ? entry['Formulaire de test - Carte - Adresse Inéligible']
-            : 0),
-        entry['Formulaire de test - Adresse Éligible'] +
-          (entry['Formulaire de test - Carte - Adresse Éligible']
-            ? entry['Formulaire de test - Carte - Adresse Éligible']
-            : 0),
+        (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
+          (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
+          (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0),
+        (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
+          (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0),
+        (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0),
       ];
     }),
   ];

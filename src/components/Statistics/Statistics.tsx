@@ -147,14 +147,10 @@ const Statistics = () => {
       const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
         return (
-          entry['Formulaire de test - Adresse Inéligible'] +
-          entry['Formulaire de test - Adresse Éligible'] +
-          (entry['Formulaire de test - Carte - Adresse Inéligible']
-            ? entry['Formulaire de test - Carte - Adresse Inéligible']
-            : 0) +
-          (entry['Formulaire de test - Carte - Adresse Éligible']
-            ? entry['Formulaire de test - Carte - Adresse Éligible']
-            : 0)
+          (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
+          (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+          (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
+          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0)
         );
       }
     }
@@ -300,7 +296,7 @@ const Statistics = () => {
     //Not using formatted data because we want all data and not only since 2022
     let nbTotal = 0;
     if (dataCountContact) {
-      dataCountContact.map((row: any) => {
+      dataCountContact.forEach((row: any) => {
         nbTotal += row.nbTotal;
       });
     }
@@ -338,22 +334,16 @@ const Statistics = () => {
     let nbTotal = 0;
     let nbTotalEligible = 0;
     dataActions &&
-      dataActions.map((entry: any) => {
+      dataActions.forEach((entry: any) => {
         if (entry) {
           nbTotal +=
-            entry['Formulaire de test - Adresse Inéligible'] +
-            entry['Formulaire de test - Adresse Éligible'] +
-            (entry['Formulaire de test - Carte - Adresse Inéligible']
-              ? entry['Formulaire de test - Carte - Adresse Inéligible']
-              : 0) +
-            (entry['Formulaire de test - Carte - Adresse Éligible']
-              ? entry['Formulaire de test - Carte - Adresse Éligible']
-              : 0);
+            (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
+            (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+            (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
+            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0);
           nbTotalEligible +=
-            entry['Formulaire de test - Adresse Éligible'] +
-            (entry['Formulaire de test - Carte - Adresse Éligible']
-              ? entry['Formulaire de test - Carte - Adresse Éligible']
-              : 0);
+            (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0);
         }
       });
     if (nbTotalEligible && nbTotal) {
@@ -365,7 +355,7 @@ const Statistics = () => {
   const totalDownload = useMemo(() => {
     let nbTotal = 0;
     dataActions &&
-      dataActions.map((entry: any) => {
+      dataActions.forEach((entry: any) => {
         if (entry) {
           nbTotal += entry['Tracés'] ? entry['Tracés'] : 0;
         }
