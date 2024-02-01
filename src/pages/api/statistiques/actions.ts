@@ -38,17 +38,19 @@ export default handleRouteErrors(async () => {
     if (actionsFromMatomo.error) {
       return { results: actionsFromMatomo };
     }
-    results = actionsFromMatomo?.values.map((arr: any[], i: number) =>
-      arr.reduce(
-        (acc, entry) => {
-          return {
-            ...acc,
-            [entry.label]: entry.nb_events,
-          };
-        },
-        { date: actionsFromMatomo?.filters[i].date }
-      )
-    );
+    if (actionsFromMatomo?.values) {
+      results = actionsFromMatomo?.values.map((arr: any[], i: number) =>
+        arr.reduce(
+          (acc, entry) => {
+            return {
+              ...acc,
+              [entry.label]: entry.nb_events,
+            };
+          },
+          { date: actionsFromMatomo?.filters[i].date }
+        )
+      );
+    }
   }
 
   // Saved from previous Matomo

@@ -40,16 +40,18 @@ export default handleRouteErrors(async () => {
       return { results: visitsFromMatomo };
     }
 
-    results =
-      visitsFromMatomo?.values
-        .map(
-          (data: any, i: number) =>
-            data.result !== 'error' && {
-              date: visitsFromMatomo.filters[i].date,
-              ...data,
-            }
-        )
-        .reverse() ?? [];
+    if (visitsFromMatomo?.values) {
+      results =
+        visitsFromMatomo?.values
+          .map(
+            (data: any, i: number) =>
+              data.result !== 'error' && {
+                date: visitsFromMatomo.filters[i].date,
+                ...data,
+              }
+          )
+          .reverse() ?? [];
+    }
   }
 
   const visitsFromDB = await db('matomo_stats')
