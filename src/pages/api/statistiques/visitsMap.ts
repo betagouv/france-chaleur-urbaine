@@ -44,20 +44,17 @@ export default handleRouteErrors(async () => {
     if (visitsFromMatomo.error) {
       return { results: visitsFromMatomo };
     }
-    results =
-      visitsFromMatomo?.values
-        .map((arr: any[], i: number) =>
-          arr.reduce(
-            (acc, entry) => {
-              return {
-                ...acc,
-                ['value']: entry.nb_visits,
-              };
-            },
-            { date: visitsFromMatomo?.filters[i].date }
-          )
-        )
-        .reverse() ?? [];
+    results = visitsFromMatomo?.values.map((arr: any[], i: number) =>
+      arr.reduce(
+        (acc, entry) => {
+          return {
+            ...acc,
+            value: entry.nb_visits,
+          };
+        },
+        { date: visitsFromMatomo?.filters[i].date }
+      )
+    );
   }
 
   //Saved from previous Matomo
