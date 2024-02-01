@@ -1,6 +1,6 @@
-const MATOMO_URL = process.env.MATOMO_URL;
+const MATOMO_URL = process.env.NEXT_PUBLIC_MATOMO_URL;
 const MATOMO_TOKEN = process.env.MATOMO_TOKEN;
-const MATOMO_ID_SITE = process.env.MATOMO_ID_SITE;
+const MATOMO_ID_SITE = process.env.NEXT_PUBLIC_MATOMO_SITE_ID;
 
 const matomoRequestDefaultConfig = {
   token_auth: MATOMO_TOKEN,
