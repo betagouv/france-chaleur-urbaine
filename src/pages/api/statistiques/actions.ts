@@ -38,17 +38,21 @@ export default handleRouteErrors(async () => {
     if (actionsFromMatomo.error) {
       return { results: actionsFromMatomo };
     }
-    results = actionsFromMatomo?.values.map((arr: any[], i: number) =>
-      arr.reduce(
-        (acc, entry) => {
-          return {
-            ...acc,
-            [entry.label]: entry.nb_events,
-          };
-        },
-        { date: actionsFromMatomo?.filters[i].date }
-      )
-    );
+    console.log('actionsFromMatomo');
+    console.log(actionsFromMatomo);
+    if (actionsFromMatomo?.values) {
+      results = actionsFromMatomo?.values.map((arr: any[], i: number) =>
+        arr.reduce(
+          (acc, entry) => {
+            return {
+              ...acc,
+              [entry.label]: entry.nb_events,
+            };
+          },
+          { date: actionsFromMatomo?.filters[i].date }
+        )
+      );
+    }
   }
 
   // Saved from previous Matomo
@@ -96,9 +100,13 @@ export default handleRouteErrors(async () => {
     .orderBy('s.date', 'ASC')
     .groupBy('s.date');
 
+  console.log('actionsFromDB');
+  console.log(actionsFromDB);
   if (actionsFromDB) {
     results = results ? actionsFromDB.concat(results) : actionsFromDB;
   }
+  console.log('results');
+  console.log(results);
 
   return { results };
 });
