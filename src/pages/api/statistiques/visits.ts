@@ -39,8 +39,6 @@ export default handleRouteErrors(async () => {
     if (visitsFromMatomo.error) {
       return { results: visitsFromMatomo };
     }
-    console.log('visitsFromMatomo');
-    console.log(visitsFromMatomo);
 
     results =
       visitsFromMatomo?.values

@@ -38,8 +38,6 @@ export default handleRouteErrors(async () => {
     if (actionsFromMatomo.error) {
       return { results: actionsFromMatomo };
     }
-    console.log('actionsFromMatomo');
-    console.log(actionsFromMatomo);
     results = actionsFromMatomo?.values.map((arr: any[], i: number) =>
       arr.reduce(
         (acc, entry) => {
