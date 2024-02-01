@@ -44,7 +44,7 @@ export default handleRouteErrors(async () => {
     if (visitsFromMatomo.error) {
       return { results: visitsFromMatomo };
     }
-    results = visitsFromMatomo?.values.map((arr: any[], i: number) =>
+    results = visitsFromMatomo?.values?.map((arr: any[], i: number) =>
       arr.reduce(
         (acc, entry) => {
           return {
