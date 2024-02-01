@@ -13,6 +13,7 @@ const TypeArray: unique symbol = Symbol('array');
 const TypeBool: unique symbol = Symbol('bool');
 const TypeJSONArray: unique symbol = Symbol('json');
 const TypeNumber: unique symbol = Symbol('number');
+const TypePercentage: unique symbol = Symbol('percentage');
 const TypeString: unique symbol = Symbol('string');
 
 type Type =
@@ -20,17 +21,16 @@ type Type =
   | typeof TypeBool
   | typeof TypeJSONArray
   | typeof TypeNumber
+  | typeof TypePercentage
   | typeof TypeString;
 
 const conversionConfigReseauxDeChaleur = {
   // id_fcu: TypeNumber,
   // id: TypeNumber,
   'Identifiant reseau': TypeString,
-  commentaires: TypeString, // à supprimer en prod car non utilisé
   'Taux EnR&R': TypeNumber,
   Gestionnaire: TypeString,
   communes: TypeString,
-  // date: TypeString, // à supprimer en prod car non utilisé
   'contenu CO2': TypeNumber,
   'contenu CO2 ACV': TypeNumber,
   PM: TypeNumber,
@@ -199,6 +199,10 @@ function convertAirtableValue(value: any, type: Type) {
     case TypeNumber:
       return value !== undefined && value !== null && value !== 'NULL'
         ? value
+        : null;
+    case TypePercentage:
+      return value !== undefined && value !== null && value !== 'NULL'
+        ? value * 100 // be compatible with number and text
         : null;
     case TypeString:
       return value !== undefined && value !== null && value !== 'NULL'

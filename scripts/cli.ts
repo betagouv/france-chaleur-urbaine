@@ -7,7 +7,12 @@ import {
   InvalidArgumentError,
 } from '@commander-js/extra-typings';
 import { logger } from '@helpers/logger';
-import { DataType, tilesInfo, zDataType } from 'src/services/tiles.config';
+import {
+  DataType,
+  DatabaseTileInfo,
+  tilesInfo,
+  zDataType,
+} from 'src/services/tiles.config';
 import db from 'src/db';
 import { fillTiles } from './utils/tiles';
 
@@ -48,6 +53,7 @@ program
   .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
   .argument('[withIndex]', 'With index', (v) => !!v, false)
   .action(async (table, zoomMin, zoomMax, withIndex) => {
+    await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
     await fillTiles(table, zoomMin, zoomMax, withIndex);
   });
 
