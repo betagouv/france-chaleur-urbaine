@@ -46,12 +46,16 @@ export default handleRouteErrors(async () => {
     }
     results =
       visitsFromMatomo?.values
-        .map(
-          (data: any, i: number) =>
-            data.result !== 'error' && {
-              date: visitsFromMatomo.filters[i].date,
-              ...data,
-            }
+        .map((arr: any[], i: number) =>
+          arr.reduce(
+            (acc, entry) => {
+              return {
+                ...acc,
+                ['value']: entry.nb_visits,
+              };
+            },
+            { date: visitsFromMatomo?.filters[i].date }
+          )
         )
         .reverse() ?? [];
   }

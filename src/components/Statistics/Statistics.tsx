@@ -209,16 +209,14 @@ const Statistics = () => {
   const formatedDataCountContact = getFormattedData(
     dataCountContact,
     (year: string, monthIndex: number, entry: any) => {
+      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (
-        entry.date !== `${today.getFullYear()}-${String(today.getMonth() + 1)}`
+        parseInt(entryMonth) - 1 === monthIndex &&
+        entryYear === year &&
+        (entryYear !== today.getFullYear().toString() ||
+          parseInt(entryMonth) - 1 !== today.getMonth())
       ) {
-        const [entryYear, entryMonth] = entry?.date?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-          return entry.nbTotal;
-        }
+        return entry.nbTotal;
       }
     }
   );
@@ -248,17 +246,17 @@ const Statistics = () => {
   const formatedDataCountBulkContact = getFormattedData(
     dataCountBulkContact,
     (year: string, monthIndex: number, entry: any) => {
+      const [entryYear, entryMonth] = entry?.period?.split('-') || [
+        'YYYY',
+        'MM',
+      ];
       if (
-        entry.period !==
-        `${today.getFullYear()}-${String(today.getMonth() + 1)}`
+        parseInt(entryMonth) - 1 === monthIndex &&
+        entryYear === year &&
+        (entryYear !== today.getFullYear().toString() ||
+          parseInt(entryMonth) - 1 !== today.getMonth())
       ) {
-        const [entryYear, entryMonth] = entry?.period?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-          return entry.nbTotal;
-        }
+        return entry.nbTotal;
       }
     }
   );
