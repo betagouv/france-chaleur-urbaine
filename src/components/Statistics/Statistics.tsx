@@ -21,6 +21,7 @@ import statistics from '@data/statistics';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Link from 'next/link';
 import { fetchJSON } from '@utils/network';
+import { MatomoMonthStat } from 'src/services/matomo_types';
 
 type ReturnApiStatAirtable = {
   date: string;
@@ -69,7 +70,7 @@ const graphOptions = {
 };
 
 const getFormattedDataSum = (
-  formatedData: any[][],
+  formatedData: number[][],
   startYear?: number,
   startMonth?: number
 ) => {
@@ -92,10 +93,14 @@ const getFormattedDataSum = (
   return nbTotal;
 };
 
-const getFormattedData = (
-  data: any,
-  getValueFonction: (year: string, monthIndex: number, entry: any) => any
-) => {
+const getFormattedData = <Data,>(
+  data: Data[] | undefined,
+  getValueFonction: (
+    year: string,
+    monthIndex: number,
+    entry: Data
+  ) => number | undefined | null
+): number[][] => {
   if (!data) {
     return [];
   }
@@ -106,7 +111,7 @@ const getFormattedData = (
   let notEmpty = false;
   yearsList.forEach((year: string, i) => {
     monthToString.forEach((month: string, j) => {
-      data.find((entry: any) => {
+      data.find((entry) => {
         const value = getValueFonction(year, j, entry);
         if (value) {
           notEmpty = true;
@@ -122,17 +127,15 @@ const getFormattedData = (
 };
 
 const Statistics = () => {
-  const { data: dataActions, error: errorDataActions } = useSWR<any>(
-    '/api/statistiques/actions',
-    fetchJSON,
-    {
-      onError: (err) => console.warn('errorDataActions >>', err),
-    }
-  );
+  const { data: dataActions, error: errorDataActions } = useSWR<
+    MatomoMonthStat[]
+  >('/api/statistiques/actions', fetchJSON, {
+    onError: (err) => console.warn('errorDataActions >>', err),
+  });
 
   const formatedDataEligibilityTest = getFormattedData(
     dataActions,
-    (year: string, monthIndex: number, entry: any) => {
+    (year: string, monthIndex: number, entry) => {
       const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
         return (
@@ -145,7 +148,7 @@ const Statistics = () => {
     }
   );
 
-  const { data: dataVisits, error: errorVisits } = useSWR<any>(
+  const { data: dataVisits, error: errorVisits } = useSWR<MatomoMonthStat[]>(
     '/api/statistiques/visits',
     fetchJSON,
     {
@@ -155,7 +158,7 @@ const Statistics = () => {
 
   const formatedDataVisits = getFormattedData(
     dataVisits,
-    (year: string, monthIndex: number, entry: any) => {
+    (year: string, monthIndex: number, entry) => {
       const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
         return entry.value;
@@ -186,7 +189,7 @@ const Statistics = () => {
   );
   const formatedDataCountContact = getFormattedData(
     dataCountContact,
-    (year: string, monthIndex: number, entry: any) => {
+    (year: string, monthIndex: number, entry) => {
       const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (
         parseInt(entryMonth) - 1 === monthIndex &&
@@ -223,7 +226,7 @@ const Statistics = () => {
   );
   const formatedDataCountBulkContact = getFormattedData(
     dataCountBulkContact,
-    (year: string, monthIndex: number, entry: any) => {
+    (year: string, monthIndex: number, entry) => {
       const [entryYear, entryMonth] = entry?.period?.split('-') || [
         'YYYY',
         'MM',
@@ -239,17 +242,15 @@ const Statistics = () => {
     }
   );
 
-  const { data: dataVisitsMap, error: errorVisitsMap } = useSWR<any>(
-    '/api/statistiques/visitsMap',
-    fetchJSON,
-    {
-      onError: (err) => console.warn('errorVisitsMap >>', err),
-    }
-  );
+  const { data: dataVisitsMap, error: errorVisitsMap } = useSWR<
+    MatomoMonthStat[]
+  >('/api/statistiques/visitsMap', fetchJSON, {
+    onError: (err) => console.warn('errorVisitsMap >>', err),
+  });
 
   const formatedDataVisitsMap = getFormattedData(
     dataVisitsMap,
-    (year: string, monthIndex: number, entry: any) => {
+    (year: string, monthIndex: number, entry) => {
       const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
         return entry.value;
@@ -299,7 +300,7 @@ const Statistics = () => {
     let nbTotal = 0;
     let nbTotalEligible = 0;
     dataActions &&
-      dataActions.forEach((entry: any) => {
+      dataActions.forEach((entry) => {
         if (entry) {
           nbTotal +=
             (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
@@ -320,7 +321,7 @@ const Statistics = () => {
   const totalDownload = useMemo(() => {
     let nbTotal = 0;
     dataActions &&
-      dataActions.forEach((entry: any) => {
+      dataActions.forEach((entry) => {
         if (entry) {
           nbTotal += entry['Tracés'] ? entry['Tracés'] : 0;
         }

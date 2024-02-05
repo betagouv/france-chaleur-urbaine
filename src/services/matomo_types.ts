@@ -42,3 +42,7 @@ export interface MatomoErrorResult {
   result: 'error';
   message: string;
 }
+
+export type MatomoMonthStat = Record<string, number | null> & {
+  date: string;
+};
