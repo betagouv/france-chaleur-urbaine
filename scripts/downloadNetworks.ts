@@ -167,11 +167,51 @@ const downloadNetworks = async (table: DataType) => {
       console.log(`${table} not managed`);
       return;
     }
+    const networksAirtable = await base(tileInfo.airtable).select().all();
+    console.log(`Update ${networksAirtable.length} networks`);
 
-    const networks = await base(tileInfo.airtable).select().all();
-    console.log(`Update ${networks.length} networks`);
+    if (table === 'network') {
+      const networksDB = await db(tileInfo.table).select('id_fcu', 'has_trace');
+      await Promise.all(
+        networksDB.map(async (network) => {
+          const networkAirtable = networksAirtable.find(
+            (row) => row.get('id_fcu') === network['id_fcu']
+          );
+          if (networkAirtable) {
+            const airtableHasTrace = getBooleanValue(
+              networkAirtable,
+              'has_trace_bool'
+            );
+            if (network['has_trace'] !== airtableHasTrace) {
+              await base(tileInfo.airtable as string).update(
+                networkAirtable.id,
+                {
+                  has_trace: network['has_trace'],
+                }
+              );
+            }
+          } else {
+            base(tileInfo.airtable as string).create(
+              [
+                {
+                  fields: {
+                    id_fcu: network['id_fcu'],
+                    communes: network['id_fcu'],
+                    has_trace: network['has_trace'],
+                  },
+                },
+              ],
+              {
+                typecast: true,
+              }
+            );
+          }
+        })
+      );
+    }
+
     await Promise.all(
-      networks.map((network) =>
+      networksAirtable.map((network) =>
         db(tileInfo.table)
           .update(valuesToUdpate(table, network))
           .where('id_fcu', getValue(network, 'id_fcu'))
