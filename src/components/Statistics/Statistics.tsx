@@ -122,24 +122,13 @@ const getFormattedData = (
 };
 
 const Statistics = () => {
-  const { data: rawDataActions, error: errorDataActions } = useSWR<any>(
+  const { data: dataActions, error: errorDataActions } = useSWR<any>(
     '/api/statistiques/actions',
     fetchJSON,
     {
       onError: (err) => console.warn('errorDataActions >>', err),
     }
   );
-
-  const dataActions = useMemo(() => {
-    if (
-      !rawDataActions ||
-      rawDataActions?.results?.error ||
-      rawDataActions?.result === 'error'
-    ) {
-      return null;
-    }
-    return rawDataActions.results;
-  }, [rawDataActions]);
 
   const formatedDataEligibilityTest = getFormattedData(
     dataActions,
@@ -156,24 +145,13 @@ const Statistics = () => {
     }
   );
 
-  const { data: rawDataVisits, error: errorVisits } = useSWR<any>(
+  const { data: dataVisits, error: errorVisits } = useSWR<any>(
     '/api/statistiques/visits',
     fetchJSON,
     {
       onError: (err) => console.warn('errorVisits >>', err),
     }
   );
-  const dataVisits = useMemo(() => {
-    if (
-      !rawDataVisits ||
-      rawDataVisits?.results?.error ||
-      rawDataVisits?.result === 'error'
-    ) {
-      return null;
-    }
-
-    return rawDataVisits.results;
-  }, [rawDataVisits]);
 
   const formatedDataVisits = getFormattedData(
     dataVisits,
@@ -261,24 +239,13 @@ const Statistics = () => {
     }
   );
 
-  const { data: rawDataVisitsMap, error: errorVisitsMap } = useSWR<any>(
+  const { data: dataVisitsMap, error: errorVisitsMap } = useSWR<any>(
     '/api/statistiques/visitsMap',
     fetchJSON,
     {
       onError: (err) => console.warn('errorVisitsMap >>', err),
     }
   );
-
-  const dataVisitsMap = useMemo(() => {
-    if (
-      !rawDataVisitsMap ||
-      rawDataVisitsMap?.results?.error ||
-      rawDataVisitsMap?.result === 'error'
-    ) {
-      return null;
-    }
-    return rawDataVisitsMap.results;
-  }, [rawDataVisitsMap]);
 
   const formatedDataVisitsMap = getFormattedData(
     dataVisitsMap,

@@ -28,5 +28,5 @@ export default handleRouteErrors(async () => {
   if (visitsFromDB) {
     results = results ? visitsFromDB.concat(results) : visitsFromDB;
   }
-  return { results };
+  return results;
 });
