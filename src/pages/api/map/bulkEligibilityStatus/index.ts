@@ -139,7 +139,11 @@ const bulkEligibilitygibilityStatus = async (
     .map((x) => `"${x.replaceAll('"', '')}"`);
   const addressesCSV = [''].concat(formattedAddresses).join('\n');
 
-  const hash = crypto.createHash('sha1').update(addressesCSV).digest('hex');
+  const currentDate = new Date();
+  const hash = crypto
+    .createHash('sha1')
+    .update(currentDate.toString() + addressesCSV)
+    .digest('hex');
 
   const jobLogger = logger.child({ hash });
   const start = Date.now();
