@@ -184,12 +184,6 @@ const MapPopupContent = ({
             {network.nom_reseau && (
               <PopupTitle>{network.nom_reseau}</PopupTitle>
             )}
-            {network.commentaires && (
-              <>
-                <strong>{network.commentaires}</strong>
-                <br />
-              </>
-            )}
             <strong>Identifiant&nbsp;:</strong>&nbsp;
             {network['Identifiant reseau']
               ? network['Identifiant reseau']

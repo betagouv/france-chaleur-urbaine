@@ -100,7 +100,6 @@ export const tilesInfo: Record<DataType, TileInfo> = {
       'id_fcu',
       'Taux EnR&R',
       'Gestionnaire',
-      'commentaires',
       'Identifiant reseau',
       'reseaux classes',
       'contenu CO2 ACV',

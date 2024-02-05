@@ -68,13 +68,6 @@ const graphOptions = {
   colors: ['#83B0F3', '#64B847', '#1f8d49', '#009099'],
 };
 
-const getEntryValue = (entry: any, value: string, data: string) => {
-  if (entry && entry[value]) {
-    return entry[value][data];
-  }
-  return 0;
-};
-
 const getFormattedDataSum = (
   formatedData: any[][],
   startYear?: number,
@@ -129,60 +122,35 @@ const getFormattedData = (
 };
 
 const Statistics = () => {
-  const { data: rawDataEligibilityTest, error: errorDataEligibilityTest } =
-    useSWR<any>('/api/statistiques/actions', fetchJSON, {
-      onError: (err) => console.warn('errorDataEligibilityTest >>', err),
-    });
+  const { data: rawDataActions, error: errorDataActions } = useSWR<any>(
+    '/api/statistiques/actions',
+    fetchJSON,
+    {
+      onError: (err) => console.warn('errorDataActions >>', err),
+    }
+  );
 
-  const dataEligibilityTest = useMemo(() => {
+  const dataActions = useMemo(() => {
     if (
-      !rawDataEligibilityTest ||
-      rawDataEligibilityTest?.result.values.result === 'error'
+      !rawDataActions ||
+      rawDataActions?.results?.error ||
+      rawDataActions?.result === 'error'
     ) {
       return null;
     }
-    return (
-      rawDataEligibilityTest?.result.values
-        .map((arr: any[], i: number) =>
-          arr.reduce(
-            (acc, entry) => {
-              return {
-                ...acc,
-                [entry.label]: entry,
-              };
-            },
-            { filters: rawDataEligibilityTest?.result.filters[i] }
-          )
-        )
-        .reverse() ?? []
-    );
-  }, [rawDataEligibilityTest]);
+    return rawDataActions.results;
+  }, [rawDataActions]);
 
   const formatedDataEligibilityTest = getFormattedData(
-    dataEligibilityTest,
+    dataActions,
     (year: string, monthIndex: number, entry: any) => {
-      const [entryYear, entryMonth] = entry?.filters?.date?.split('-') || [
-        'YYYY',
-        'MM',
-      ];
+      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-        const key =
-          year === '2022' && (monthIndex === 4 || monthIndex === 5)
-            ? 'nb_visits'
-            : 'nb_events'; //Mai et juin
         return (
-          getEntryValue(entry, 'Formulaire de test - Adresse Inéligible', key) +
-          getEntryValue(
-            entry,
-            'Formulaire de test - Carte - Adresse Inéligible',
-            key
-          ) +
-          getEntryValue(entry, 'Formulaire de test - Adresse Éligible', key) +
-          getEntryValue(
-            entry,
-            'Formulaire de test - Carte - Adresse Éligible',
-            key
-          )
+          (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
+          (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+          (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
+          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0)
         );
       }
     }
@@ -195,35 +163,29 @@ const Statistics = () => {
       onError: (err) => console.warn('errorVisits >>', err),
     }
   );
-
   const dataVisits = useMemo(() => {
-    if (!rawDataVisits || rawDataVisits?.result.values.result === 'error') {
+    if (
+      !rawDataVisits ||
+      rawDataVisits?.results?.error ||
+      rawDataVisits?.result === 'error'
+    ) {
       return null;
     }
 
-    return (
-      rawDataVisits?.result.values
-        .map((data: any, i: number) => ({
-          filters: rawDataVisits.result.filters[i],
-          ...data,
-        }))
-        .reverse() ?? []
-    );
+    return rawDataVisits.results;
   }, [rawDataVisits]);
 
   const formatedDataVisits = getFormattedData(
     dataVisits,
     (year: string, monthIndex: number, entry: any) => {
-      const [entryYear, entryMonth] = entry?.filters?.date?.split('-') || [
-        'YYYY',
-        'MM',
-      ];
+      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-        return entry.nb_uniq_visitors;
+        return entry.value;
       }
     }
   );
 
+  //From Airtable
   const { data: rawDataCountContact, error: errorCountContact } = useSWR<any>(
     '/api/statistiques/contacts?group=monthly',
     fetchJSON,
@@ -247,16 +209,14 @@ const Statistics = () => {
   const formatedDataCountContact = getFormattedData(
     dataCountContact,
     (year: string, monthIndex: number, entry: any) => {
+      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (
-        entry.date !== `${today.getFullYear()}-${String(today.getMonth() + 1)}`
+        parseInt(entryMonth) - 1 === monthIndex &&
+        entryYear === year &&
+        (entryYear !== today.getFullYear().toString() ||
+          parseInt(entryMonth) - 1 !== today.getMonth())
       ) {
-        const [entryYear, entryMonth] = entry?.date?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-          return entry.nbTotal;
-        }
+        return entry.nbTotal;
       }
     }
   );
@@ -286,17 +246,17 @@ const Statistics = () => {
   const formatedDataCountBulkContact = getFormattedData(
     dataCountBulkContact,
     (year: string, monthIndex: number, entry: any) => {
+      const [entryYear, entryMonth] = entry?.period?.split('-') || [
+        'YYYY',
+        'MM',
+      ];
       if (
-        entry.period !==
-        `${today.getFullYear()}-${String(today.getMonth() + 1)}`
+        parseInt(entryMonth) - 1 === monthIndex &&
+        entryYear === year &&
+        (entryYear !== today.getFullYear().toString() ||
+          parseInt(entryMonth) - 1 !== today.getMonth())
       ) {
-        const [entryYear, entryMonth] = entry?.period?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-          return entry.nbTotal;
-        }
+        return entry.nbTotal;
       }
     }
   );
@@ -312,19 +272,12 @@ const Statistics = () => {
   const dataVisitsMap = useMemo(() => {
     if (
       !rawDataVisitsMap ||
-      rawDataVisitsMap?.result.values.result === 'error'
+      rawDataVisitsMap?.results?.error ||
+      rawDataVisitsMap?.result === 'error'
     ) {
       return null;
     }
-
-    return (
-      rawDataVisitsMap?.result.values
-        .map((data: any, i: number) => ({
-          date: rawDataVisitsMap.result.filters[i].date,
-          ...data[0],
-        }))
-        .reverse() ?? []
-    );
+    return rawDataVisitsMap.results;
   }, [rawDataVisitsMap]);
 
   const formatedDataVisitsMap = getFormattedData(
@@ -332,7 +285,7 @@ const Statistics = () => {
     (year: string, monthIndex: number, entry: any) => {
       const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
       if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-        return entry.nb_visits;
+        return entry.value;
       }
     }
   );
@@ -341,7 +294,7 @@ const Statistics = () => {
     //Not using formatted data because we want all data and not only since 2022
     let nbTotal = 0;
     if (dataCountContact) {
-      dataCountContact.map((row: any) => {
+      dataCountContact.forEach((row: any) => {
         nbTotal += row.nbTotal;
       });
     }
@@ -378,51 +331,35 @@ const Statistics = () => {
   const percentAddressPossible = useMemo(() => {
     let nbTotal = 0;
     let nbTotalEligible = 0;
-    dataEligibilityTest &&
-      dataEligibilityTest.map((entry: any) => {
-        const [entryYear, entryMonth] = entry?.filters?.date?.split('-') || [
-          'YYYY',
-          'MM',
-        ];
-        const key =
-          entryYear === '2022' && (entryMonth - 1 === 5 || entryMonth - 1 === 6) //Mai et juin
-            ? 'nb_visits'
-            : 'nb_events';
-        nbTotal +=
-          getEntryValue(entry, 'Formulaire de test - Adresse Inéligible', key) +
-          getEntryValue(
-            entry,
-            'Formulaire de test - Carte - Adresse Inéligible',
-            key
-          ) +
-          getEntryValue(entry, 'Formulaire de test - Adresse Éligible', key) +
-          getEntryValue(
-            entry,
-            'Formulaire de test - Carte - Adresse Éligible',
-            key
-          );
-        nbTotalEligible +=
-          getEntryValue(entry, 'Formulaire de test - Adresse Éligible', key) +
-          getEntryValue(
-            entry,
-            'Formulaire de test - Carte - Adresse Éligible',
-            key
-          );
+    dataActions &&
+      dataActions.forEach((entry: any) => {
+        if (entry) {
+          nbTotal +=
+            (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
+            (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+            (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
+            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0);
+          nbTotalEligible +=
+            (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0);
+        }
       });
     if (nbTotalEligible && nbTotal) {
       return (nbTotalEligible / nbTotal) * 100;
     }
     return 0;
-  }, [dataEligibilityTest]);
+  }, [dataActions]);
 
   const totalDownload = useMemo(() => {
     let nbTotal = 0;
-    dataEligibilityTest &&
-      dataEligibilityTest.map((entry: any) => {
-        nbTotal += getEntryValue(entry, 'Tracés', 'nb_events');
+    dataActions &&
+      dataActions.forEach((entry: any) => {
+        if (entry) {
+          nbTotal += entry['Tracés'] ? entry['Tracés'] : 0;
+        }
       });
     return nbTotal;
-  }, [dataEligibilityTest]);
+  }, [dataActions]);
 
   return (
     <Container>
@@ -542,8 +479,8 @@ const Statistics = () => {
               <GraphsWrapper>
                 <Graph
                   title="Nombre d’adresses testées"
-                  error={errorDataEligibilityTest}
-                  data={dataEligibilityTest}
+                  error={errorDataActions}
+                  data={dataActions}
                   formatedData={formatedDataEligibilityTest}
                   {...graphOptions}
                 />
