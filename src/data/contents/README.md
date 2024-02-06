@@ -1,14 +1,9 @@
----
-cover: .gitbook/assets/vignett592.jpg
-coverY: 0
----
+# Compléter la fiche de votre réseau
 
-# 592 réseaux classés
-
-📃 La liste des réseaux de chaleur qui satisfont aux critères du classement a été mise à jour par un arrêté en date du 22 décembre 2023, entré en vigueur au 1er janvier 2024. Pour ces réseaux, le classement intervient de plein droit, sauf si la collectivité s'y oppose par délibération motivée.\
+📢 Collectivités, exploitants : vous pouvez désormais compléter la fiche de votre réseau de chaleur en ligne sur France Chaleur Urbaine ! Il s'agissait du besoin n°1 exprimé lors de notre dernier atelier de co-construction.\
 \
-❓ Concrètement, qu'est-ce qu'un réseau classé? C'est un réseau sur lequel une obligation de raccordement s'applique pour tout bâtiment neuf ou renouvelant son installation de chauffage au-dessus d'une certaine puissance, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire. Une mesure destinée à booster la dynamique de raccordement !\
+Dans un souci d'homogénéité, les fiches accessibles depuis notre cartographie sont alimentées par les données de l'enquête annuelle réalisée par la FEDENE pour le compte du SDES : l'année de référence est ainsi la même pour tous les réseaux.\
 \
-👉 Pour informer sur ces obligations, France Chaleur Urbaine recense les périmètres de développement prioritaire sur sa carte. Le périmètre de votre réseau n'y est pas encore visible ? N'hésitez pas à nous le transmettre pour ajout !
-
-![](.gitbook/assets/592.jpg)
+📝 Votre réseau vient d'être verdi ou va l'être prochainement ? Faites le savoir ! Il vous est également possible d'utiliser cette fiche pour informer sur les futurs développements du réseaux, les critères de raccordement ou toute autre information utile. Vous souhaitez partager un document via cette fiche ? C'est aussi possible ! Nous vous encourageons notamment à partager vos schémas directeurs, qui nous sont souvent demandés par les usagers professionnels de France Chaleur Urbaine (bailleurs sociaux, gestionnaires de parcs tertiaires...).\
+\
+👉 Concrètement, comment ça marche ? Un [formulaire](https://france-chaleur-urbaine.beta.gouv.fr/reseaux/modifier) vous permet de corriger ou compléter les informations de votre fiche. Après une validation manuelle par notre équipe, vos ajouts apparaîtront dans une rubrique dédiée de la fiche.
