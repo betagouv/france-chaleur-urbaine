@@ -1,6 +1,9 @@
 # Table of contents
 
-* [592 réseaux classés](README.md)
+* [Compléter la fiche de votre réseau](README.md)
+* [Notre campagne sur Strasbourg](notre-campagne-sur-strasbourg.md)
+* [30% de l'objectif de raccordement 2035 atteignable sur les réseaux existants](30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md)
+* [592 réseaux classés](<README (18).md>)
 * [La géothermie expliquée aux enfants](<README (17).md>)
 * [Meilleurs vœux !](<README (16).md>)
 * [Notre campagne sur Fresnes](notre-campagne-sur-fresnes.md)
