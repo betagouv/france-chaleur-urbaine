@@ -171,32 +171,36 @@ const downloadNetworks = async (table: DataType) => {
     console.log(`Update ${networksAirtable.length} networks`);
 
     if (table === 'network') {
-      const networksDB = await db(tileInfo.table).select('id_fcu', 'has_trace');
+      const networksDB = await db(tileInfo.table).select(
+        'id_fcu',
+        'communes',
+        'has_trace'
+      );
       await Promise.all(
         networksDB.map(async (network) => {
           const networkAirtable = networksAirtable.find(
             (row) => row.get('id_fcu') === network['id_fcu']
           );
           if (networkAirtable) {
-            const airtableHasTrace = getBooleanValue(
-              networkAirtable,
-              'has_trace_bool'
-            );
-            if (network['has_trace'] !== airtableHasTrace) {
+            if (
+              network['has_trace'] !==
+              getBooleanValue(networkAirtable, 'has_trace')
+            ) {
               await base(tileInfo.airtable as string).update(
                 networkAirtable.id,
                 {
                   has_trace: network['has_trace'],
+                  communes: network['communes'],
                 }
               );
             }
           } else {
-            base(tileInfo.airtable as string).create(
+            await base(tileInfo.airtable as string).create(
               [
                 {
                   fields: {
                     id_fcu: network['id_fcu'],
-                    communes: network['id_fcu'],
+                    communes: network['communes'],
                     has_trace: network['has_trace'],
                   },
                 },
