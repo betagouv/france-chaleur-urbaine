@@ -287,6 +287,14 @@ export const outlineLayerStyle = {
   },
 };
 
+export const coldOutlineCenterLayerStyle = {
+  ...outlineCenterLayerStyle,
+  paint: {
+    ...outlineCenterLayerStyle.paint,
+    'circle-stroke-color': themeDefHeatNetwork.cold.color,
+  },
+};
+
 export const coldOutlineLayerStyle = {
   ...outlineLayerStyle,
   paint: {

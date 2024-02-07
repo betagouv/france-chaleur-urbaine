@@ -137,6 +137,7 @@ export const tilesInfo: Record<DataType, TileInfo> = {
       'nom_reseau',
       'livraisons_totale_MWh',
       'nb_pdl',
+      'has_trace',
     ],
     sourceLayer: 'coldOutline',
   },
