@@ -1,0 +1,127 @@
+openapi: 3.1.0
+info:
+  title: API France Chaleur Urbaine
+  version: 1.0.0
+  description: |-
+    L'API France Chaleur Urbaine permet de télécharger les données et tracés des réseaux de chaleur, et tester
+  termsOfService: https://france-chaleur-urbaine.beta.gouv.fr/mentions-legales
+  contact:
+    name: Equipe France Chaleur Urbaine
+    email: france-chaleur-urbaine@developpement-durable.gouv.fr
+    url: https://france-chaleur-urbaine.beta.gouv.fr
+  license:
+    name: Licence Ouverte / Open Licence version 2.0
+    url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+# Bientôt
+# externalDocs:
+#   description: Documentation de l'API
+#   url: https://france-chaleur-urbaine.beta.gouv.fr/ressources/api
+servers:
+  - url: https://france-chaleur-urbaine.beta.gouv.fr/api
+tags:
+  - name: Informations générales
+paths:
+  /v1/networks:
+    get:
+      summary: Lister les réseaux de chaleur et les réseaux de froid
+      tags:
+        - Informations générales
+      responses:
+        '200':
+          description: Opération réussie
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_fcu:
+                      type: number
+                    'Identifiant reseau':
+                      type: string
+                      example: 7501C
+                    nom_reseau:
+                      type: string
+                      example: Paris et communes limitrophes
+                    Gestionnaire:
+                      type: string
+                      example: CPCU (ENGIE SOLUTIONS)
+                    'Taux EnR&R':
+                      type: number
+                      example: 50.1
+                    'contenu CO2':
+                      type: number
+                      example: 0.154
+                    'contenu CO2 ACV':
+                      type: number
+                      example: 0.188
+                    geom:
+                      type: object
+                      properties:
+                        type:
+                          title: Chiffre d'affaires en euros
+                          type: string
+                          example: MultiLineString
+                        coordinates:
+                          type: array
+                          items:
+                            type: array
+                            items:
+                              type: array
+                              items:
+                                type: number
+        '400':
+          description: Erreur de paramètres
+        '500':
+          description: Erreur technique
+  /v1/eligibility:
+    get:
+      summary: Tester l'éligibilité d'un point géographique
+      tags:
+        - Informations générales
+      parameters:
+        - name: lat
+          in: query
+          description: Latitude (EPSG:4326)
+          required: true
+          schema:
+            type: number
+        - name: lon
+          in: query
+          description: Longitude (EPSG:4326)
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Opération réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isEligible:
+                    type: boolean
+                  distance:
+                    type: number
+                  veryEligibleDistance:
+                    type: number
+                  inZDP:
+                    type: boolean
+                  isBasedOnIris:
+                    type: boolean
+                  futurNetwork:
+                    type: boolean
+                  id:
+                    type: string
+                  tauxENRR:
+                    type: number
+                  gestionnaire:
+                    type: string
+                  co2:
+                    type: number
+        '400':
+          description: Erreur de paramètres
+        '500':
+          description: Erreur technique
