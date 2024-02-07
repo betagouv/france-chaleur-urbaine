@@ -48,9 +48,27 @@ export default handleRouteErrors(async (req, res) => {
     });
   }
 
-  const reseaux = await db<Network>('reseaux_de_chaleur').select([
-    '*',
-    db.raw('st_asgeojson(st_transform(geom, 4326))::jsonb as geom'),
+  const reseaux = await Promise.all([
+    db<Network>('reseaux_de_chaleur').select([
+      'id_fcu',
+      'Identifiant reseau',
+      'nom_reseau',
+      'Gestionnaire',
+      'Taux EnR&R',
+      'contenu CO2',
+      'contenu CO2 ACV',
+      db.raw('st_asgeojson(st_transform(geom, 4326))::jsonb as geom'),
+    ]),
+    db<Network>('reseaux_de_froid').select([
+      'id_fcu',
+      'Identifiant reseau',
+      'nom_reseau',
+      'Gestionnaire',
+      'Taux EnR&R',
+      'contenu CO2',
+      'contenu CO2 ACV',
+      db.raw('st_asgeojson(st_transform(geom, 4326))::jsonb as geom'),
+    ]),
   ]);
-  return reseaux;
+  return reseaux.flat();
 });
