@@ -8,12 +8,14 @@ import crypto from 'crypto';
 import FormData from 'form-data';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import db from 'src/db';
+import base from 'src/db/airtable';
 import { withCors } from 'src/services/api/cors';
 import {
   sendBulkEligibilityError,
   sendBulkEligibilityErrorAdmin,
   sendBulkEligibilityResult,
 } from 'src/services/email';
+import { Airtable } from 'src/types/enum/Airtable';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
@@ -139,7 +141,11 @@ const bulkEligibilitygibilityStatus = async (
     .map((x) => `"${x.replaceAll('"', '')}"`);
   const addressesCSV = [''].concat(formattedAddresses).join('\n');
 
-  const hash = crypto.createHash('sha1').update(addressesCSV).digest('hex');
+  const currentDate = new Date();
+  const hash = crypto
+    .createHash('sha1')
+    .update(currentDate.toString() + addressesCSV)
+    .digest('hex');
 
   const jobLogger = logger.child({ hash });
   const start = Date.now();
@@ -255,6 +261,23 @@ const bulkEligibilitygibilityStatus = async (
         eligibile_count: eligibileCount,
       })
       .where('id', id);
+    base(Airtable.DEMANDES_ELIGIBILITES).create(
+      [
+        {
+          fields: {
+            id: id,
+            Emails: email,
+            "Nombre d'adresses": formattedAddresses.length,
+            "Nombre d'erreurs": errorCount,
+            "Nombre d'adresses éligibles": eligibileCount,
+            'En erreur': 'Non',
+          },
+        },
+      ],
+      {
+        typecast: true,
+      }
+    );
 
     await sendMail(id, email, results);
     jobLogger.info('computed bulk eligibility computation', {
@@ -271,6 +294,21 @@ const bulkEligibilitygibilityStatus = async (
       eligibility_test_id: id,
       email,
     });
+    base(Airtable.DEMANDES_ELIGIBILITES).create(
+      [
+        {
+          fields: {
+            id: id,
+            Emails: email,
+            "Nombre d'adresses": formattedAddresses.length,
+            'En erreur': 'Oui',
+          },
+        },
+      ],
+      {
+        typecast: true,
+      }
+    );
     await sendErrorMail(email, addresses);
   }
 };
