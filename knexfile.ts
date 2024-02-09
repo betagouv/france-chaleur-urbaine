@@ -15,7 +15,7 @@ export default {
   pool: {
     idleTimeoutMillis: 10000,
     min: 0,
-    max: 20,
+    max: 60,
   },
 } satisfies Knex.Config;
 
