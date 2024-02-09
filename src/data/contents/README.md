@@ -1,5 +1,12 @@
-# 80% d'énergies renouvelables et de récupération
+# Une concertation nationale sur le chauffage urbain
 
-🌿 80% d'énergies renouvelables et de récupération dans les réseaux de chaleur en 2035, vous y croyez ? Nous, oui !\
+Parce qu'il nous apparaît essentiel d'être au contact des citoyens, des prospects et des usagers du chauffage urbain, nous sommes très heureux d'avoir été associés à la réalisation de la concertation nationale lancée par [ENGIE Solutions France](https://www.engie-solutions.com/fr) intitulée "Un chauffage écologique et local ? Une solution existe, aidez-nous à la développer !"\
 \
-🎯 En 10 ans, ce taux est passé de 34% à plus de 66%. Le projet de Stratégie française pour l'énergie et le climat fixe pour objectif d'atteindre 75% d'ENR\&R dans les réseaux en 2030, et 80% en 2035. Non seulement, ce taux devra significativement augmenter, mais les livraisons de chaleur totales devront être multipliées par un facteur 3, pour atteindre 90 TWh en 2035. Des objectifs ambitieux... à la hauteur du potentiel que représentent les réseaux de chaleur pour la décarbonation du bâtiment !
+🎯 Les objectifs de cette concertation sont triples :\
+✔ informer le grand public sur ce mode de chauffage encore trop peu connu\
+✔ comprendre comment les réseaux de chaleur sont aujourd'hui perçus\
+✔ recueillir des idées pour les développer, notamment pour les faire mieux connaître et adopter.\
+\
+Les retombées de cette concertation pourront être utiles à l'ensemble de la filière.\
+\
+👉 Nous vous encourageons donc à partager largement le lien permettant d'y répondre ! [https://bit.ly/48aTPzf](https://bit.ly/48aTPzf)
