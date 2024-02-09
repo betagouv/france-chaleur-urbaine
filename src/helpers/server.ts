@@ -16,21 +16,37 @@ export async function validateObjectSchema<Shape extends ZodRawShape>(
   return z.strictObject(shape).parseAsync(object);
 }
 
+type RouteOptions = {
+  logRequest?: boolean;
+};
+
+const defaultRouteOptions = {
+  logRequest: true,
+} satisfies RouteOptions;
+
 /**
  * Encapsule une route API pour logger et gérer automatiquement les erreurs :
  *  - validation Zod => retourne un statut 400
  *  - postgres => retourne un statut 500
  */
-export function handleRouteErrors(handler: NextApiHandler): NextApiHandler {
+export function handleRouteErrors(
+  handler: NextApiHandler,
+  options?: RouteOptions
+): NextApiHandler {
+  const routeOptions = Object.assign({}, defaultRouteOptions, options);
   return async (req: NextApiRequest, res: NextApiResponse) => {
+    const startTime = Date.now();
+    const logger = parentLogger.child({ url: req.url });
     try {
       const handlerResult = await handler(req, res);
       if (!res.headersSent) {
         res.status(HttpStatusCode.Ok).json(handlerResult);
       }
+      if (routeOptions.logRequest) {
+        logger.info('request completed', { duration: Date.now() - startTime });
+      }
     } catch (error: any) {
       captureException(error);
-      const logger = parentLogger.child({ url: req.url });
       if (error instanceof FormidableError) {
         logger.error('formidable error', {
           error: error.message,
