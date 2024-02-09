@@ -479,6 +479,15 @@ const Map = ({
               layerDisplay[layerId] ? 'visible' : 'none'
             );
         }
+        if (layerId === 'coldOutline') {
+          mapRef.current
+            .getMap()
+            .setLayoutProperty(
+              'coldOutlineCenter',
+              'visibility',
+              layerDisplay[layerId] ? 'visible' : 'none'
+            );
+        }
         mapRef.current
           .getMap()
           .setLayoutProperty(
