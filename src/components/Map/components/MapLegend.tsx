@@ -1,4 +1,5 @@
-import { Button, Link } from '@dataesr/react-dsfr';
+import { Button } from '@dataesr/react-dsfr';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import { TypeLayerDisplay } from '../../../services/Map/param';
@@ -108,7 +109,14 @@ function MapLegend({
         if (group === 'sources') {
           return (
             <Sources key={'sources'}>
-              <Link href="/documentation/carto_sources.pdf" target="_blank">
+              <Link
+                href="/documentation/carto_sources.pdf"
+                target="_blank"
+                rel="noreferrer noopener"
+                onClick={() => {
+                  trackEvent('Téléchargement|Carto sources');
+                }}
+              >
                 Sources
               </Link>
             </Sources>

@@ -175,11 +175,116 @@ const trackingEvents = {
   'Téléchargement|Guide FCU|Ressources': {
     matomo: ['Téléchargement', 'Guide FCU', 'Ressources'],
   },
+  'Téléchargement|Guide FCU|Supports': {
+    matomo: ['Téléchargement', 'Guide FCU', 'Supports'],
+  },
+  'Téléchargement|Guide Collectivités|Collectivités et exploitants': {
+    matomo: [
+      'Téléchargement',
+      'Guide Collectivités',
+      'Collectivités et exploitants',
+    ],
+  },
+  'Téléchargement|Guide Exploitants|Collectivités et exploitants': {
+    matomo: [
+      'Téléchargement',
+      'Guide Exploitants',
+      'Collectivités et exploitants',
+    ],
+  },
   'Téléchargement|Tracés|carte': {
     matomo: ['Téléchargement', 'Tracés', 'carte'],
   },
   'Téléchargement|Tracés|professionnels': {
     matomo: ['Téléchargement', 'Tracés', 'professionnels'],
+  },
+  'Téléchargement|Carto sources': {
+    matomo: ['Téléchargement', 'Carto sources'],
+  },
+  'Téléchargement|Dossier Presse|Partenaires': {
+    matomo: ['Téléchargement', 'Dossier Presse', 'Partenaires'],
+  },
+  'Téléchargement|Dossier Presse|Supports': {
+    matomo: ['Téléchargement', 'Dossier Presse', 'Supports'],
+  },
+  'Téléchargement|Supports|Reportage géothermie Champigny': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage géothermie Champigny'],
+  },
+  'Téléchargement|Supports|Reportage chaufferie Surville': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage chaufferie Surville'],
+  },
+  'Téléchargement|Supports|Reportage datacenter Equinix': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage datacenter Equinix'],
+  },
+  'Téléchargement|Supports|Reportage réseau froid Annecy': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage réseau froid Annecy'],
+  },
+  'Téléchargement|Supports|Reportage Isseane': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage Isseane'],
+  },
+  'Téléchargement|Supports|Reportage Alsace Charras': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage Alsace Charras'],
+  },
+  'Téléchargement|Supports|Vidéo Evry-Courcouronnes': {
+    matomo: ['Téléchargement', 'Supports', 'Vidéo Evry-Courcouronnes'],
+  },
+  'Téléchargement|Supports|Vidéo comment ça marche': {
+    matomo: ['Téléchargement', 'Supports', 'Vidéo comment ça marche'],
+  },
+  'Téléchargement|Supports|Campagne pub affiche abribus': {
+    matomo: ['Téléchargement', 'Supports', 'Campagne pub affiche abribus'],
+  },
+  'Téléchargement|Supports|Campagne pub facebook 1': {
+    matomo: ['Téléchargement', 'Supports', 'Campagne pub facebook 1'],
+  },
+  'Téléchargement|Supports|Campagne pub facebook 2': {
+    matomo: ['Téléchargement', 'Supports', 'Campagne pub facebook 2'],
+  },
+  'Téléchargement|Supports|Visuel promotion affiche information': {
+    matomo: [
+      'Téléchargement',
+      'Supports',
+      'Visuel promotion affiche information',
+    ],
+  },
+  'Téléchargement|Supports|Visuel promotion post LI ou FB 1': {
+    matomo: ['Téléchargement', 'Supports', 'Visuel promotion post LI ou FB 1'],
+  },
+  'Téléchargement|Supports|Visuel promotion post LI ou FB 2': {
+    matomo: ['Téléchargement', 'Supports', 'Visuel promotion post LI ou FB 2'],
+  },
+  'Téléchargement|Supports|Infographie Avenir': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Avenir'],
+  },
+  'Téléchargement|Supports|Infographie Classement': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Classement'],
+  },
+  'Téléchargement|Supports|Infographie Ménages': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Ménages'],
+  },
+  'Téléchargement|Supports|Infographie Cout': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Cout'],
+  },
+  'Téléchargement|Supports|Infographie ENRR': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie ENRR'],
+  },
+  'Téléchargement|Supports|Infographie Géothermie': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Géothermie'],
+  },
+  'Téléchargement|Supports|Infographie Biomasse': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Biomasse'],
+  },
+  'Téléchargement|Supports|Infographie Chaleur Fatale': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Chaleur Fatale'],
+  },
+  'Téléchargement|Supports|Infographie Solaire': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Solaire'],
+  },
+  'Téléchargement|Supports|Infographie Froid': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Froid'],
+  },
+  'Téléchargement|Supports|Infographie Optimisation': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Optimisation'],
   },
   Vidéo: {
     matomo: ['Vidéo'],
