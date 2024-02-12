@@ -99,3 +99,4 @@ Script :
     - Tables : *zone_de_developpement_prioritaire* et *zone_de_developpement_prioritaire_tiles*
     - Dans les scripts *network* devient *zoneDP*
     - Les données ne sont pas présentes dans le AirTable donc il faut sauter cette étape et utiliser le script fillTiles directement
+        - `export NODE_PATH=./ && npx ts-node --transpile-only scripts/fillTiles.ts zoneDP 0 17`

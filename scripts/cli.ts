@@ -57,6 +57,18 @@ program
     await fillTiles(table, zoomMin, zoomMax, withIndex);
   });
 
+program
+  .command('update-networks')
+  .argument('<network-id>', 'Network id', (v) => zDataType.parse(v))
+  .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
+  .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
+  .argument('[withIndex]', 'With index', (v) => !!v, false)
+  .action(async (table, zoomMin, zoomMax, withIndex) => {
+    await downloadNetwork(table);
+    await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
+    await fillTiles(table, zoomMin, zoomMax, withIndex);
+  });
+
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
   process.on(signal, async () => {
     logger.warn('Received stop signal');

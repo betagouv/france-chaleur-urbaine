@@ -15,6 +15,7 @@ const TypeJSONArray: unique symbol = Symbol('json');
 const TypeNumber: unique symbol = Symbol('number');
 const TypePercentage: unique symbol = Symbol('percentage');
 const TypeString: unique symbol = Symbol('string');
+const TypeStringToArray: unique symbol = Symbol('array');
 
 type Type =
   | typeof TypeArray
@@ -22,7 +23,8 @@ type Type =
   | typeof TypeJSONArray
   | typeof TypeNumber
   | typeof TypePercentage
-  | typeof TypeString;
+  | typeof TypeString
+  | typeof TypeStringToArray;
 
 const conversionConfigReseauxDeChaleur = {
   // id_fcu: TypeNumber,
@@ -30,7 +32,7 @@ const conversionConfigReseauxDeChaleur = {
   'Identifiant reseau': TypeString,
   'Taux EnR&R': TypeNumber,
   Gestionnaire: TypeString,
-  communes: TypeString,
+  communes: TypeStringToArray,
   'contenu CO2': TypeNumber,
   'contenu CO2 ACV': TypeNumber,
   PM: TypeNumber,
@@ -86,9 +88,9 @@ const conversionConfigReseauxDeChaleur = {
   livraisons_residentiel_MWh: TypeNumber,
   'reseaux classes': TypeBool,
   website_gestionnaire: TypeString,
-  has_trace: TypeBool,
   informationsComplementaires: TypeString,
   fichiers: TypeJSONArray,
+  //has_trace: TypeBool,
 } as const;
 
 const conversionConfigReseauxDeFroid = {
@@ -97,10 +99,11 @@ const conversionConfigReseauxDeFroid = {
   // id: TypeNumber,
   'Taux EnR&R': TypeNumber,
   Gestionnaire: TypeString,
-  communes: TypeString,
+  communes: TypeStringToArray,
   'contenu CO2': TypeNumber,
   'contenu CO2 ACV': TypeNumber,
   nom_reseau: TypeString,
+  //has_trace: TypeBool,
   departement: TypeNumber,
   region: TypeString,
   MO: TypeString,
@@ -141,21 +144,76 @@ export const downloadNetwork = async (table: DataType) => {
   if (!tileInfo || !tileInfo.airtable) {
     throw new Error(`${table} not managed`);
   }
-
-  const networks = await base(tileInfo.airtable).select().all();
+  const networksAirtable = await base(tileInfo.airtable).select().all();
 
   const logger = parentLogger.child({
     table: table,
-    count: networks.length,
+    count: networksAirtable.length,
   });
   const startTime = Date.now();
   logger.info('start network update');
+
+  if (table === 'network' || table === 'coldNetwork') {
+    const addIds: number[] = [];
+    let updateCount = 0;
+
+    const networksDB = await db(tileInfo.table).select(
+      'id_fcu',
+      'communes',
+      'Identifiant reseau',
+      'has_trace'
+    );
+    await Promise.all(
+      networksDB.map(async (network) => {
+        const networkAirtable = networksAirtable.find(
+          (row) => row.get('id_fcu') === network['id_fcu']
+        );
+        if (networkAirtable) {
+          if (
+            network['has_trace'] !==
+            convertAirtableValue(networkAirtable.get('has_trace'), TypeBool)
+          ) {
+            updateCount++;
+            await base(tileInfo.airtable as string).update(networkAirtable.id, {
+              has_trace: network['has_trace'],
+            });
+          }
+        } else {
+          addIds.push(network['id_fcu']);
+          await base(tileInfo.airtable as string).create(
+            [
+              {
+                fields: {
+                  id_fcu: network['id_fcu'],
+                  'Identifiant reseau': network['Identifiant reseau'],
+                  communes:
+                    network['communes'] && network['communes'].toString(),
+                  has_trace: network['has_trace'],
+                },
+              },
+            ],
+            {
+              typecast: true,
+            }
+          );
+        }
+      })
+    );
+    logger.info('', {
+      add: addIds.length,
+      addIds: addIds.length > 0 ? addIds.toString() : '0',
+      update: updateCount,
+    });
+  }
+
   await Promise.all(
-    networks.map((network) =>
-      db(tileInfo.table)
-        .update(convertEntityFromAirtableToPostgres(table, network))
-        .where('id_fcu', network.get('id_fcu'))
-    )
+    networksAirtable.map(async (network) => {
+      if (network.get('id_fcu')) {
+        await db(tileInfo.table)
+          .update(convertEntityFromAirtableToPostgres(table, network))
+          .where('id_fcu', network.get('id_fcu'));
+      }
+    })
   );
   logger.info('end network update', {
     duration: Date.now() - startTime,
@@ -207,6 +265,11 @@ function convertAirtableValue(value: any, type: Type) {
     case TypeString:
       return value !== undefined && value !== null && value !== 'NULL'
         ? value
-        : '';
+        : null;
+    case TypeStringToArray: {
+      return value !== undefined && value !== null && value !== 'NULL'
+        ? value.split()
+        : [];
+    }
   }
 }

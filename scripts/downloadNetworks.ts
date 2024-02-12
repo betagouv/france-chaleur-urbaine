@@ -20,7 +20,7 @@ const getBooleanValue = (network: Record<FieldSet>, key: string) => {
 };
 
 const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {
-  if (table === 'network' || table === 'coldNetwork') {
+  if (table === 'network') {
     return {
       'Taux EnR&R': getValue(network, 'Taux EnR&R'),
       'Identifiant reseau': getValue(network, 'Identifiant reseau'),
@@ -111,7 +111,44 @@ const valuesToUdpate = (table: DataType, network: Record<FieldSet>) => {
       website_gestionnaire: getValue(network, 'website_gestionnaire'),
       CP_MO: getValue(network, 'CP_MO'),
       CP_gestionnaire: getValue(network, 'CP_gestionnaire'),
-      has_trace: getBooleanValue(network, 'has_trace'),
+      //has_trace: getBooleanValue(network, 'has_trace'),
+    };
+  } else if (table === 'coldNetwork') {
+    return {
+      'Taux EnR&R': getValue(network, 'Taux EnR&R'),
+      'Identifiant reseau': getValue(network, 'Identifiant reseau'),
+      Gestionnaire: getValue(network, 'Gestionnaire'),
+      communes: getValue(network, 'communes'),
+      'contenu CO2': getValue(network, 'contenu CO2'),
+      'contenu CO2 ACV': getValue(network, 'contenu CO2 ACV'),
+      nom_reseau: getValue(network, 'nom_reseau'),
+      departement: getValue(network, 'departement'),
+      region: getValue(network, 'region'),
+      MO: getValue(network, 'MO'),
+      adresse_mo: getValue(network, 'adresse_mo'),
+      annee_creation: getValue(network, 'annee_creation'),
+      ville_mo: getValue(network, 'ville_mo'),
+      adresse_gestionnaire: getValue(network, 'adresse_gestionnaire'),
+      ville_gestionnaire: getValue(network, 'ville_gestionnaire'),
+      longueur_reseau: getValue(network, 'longueur_reseau'),
+      nb_pdl: getValue(network, 'nb_pdl'),
+      livraisons_tertiaire_MWh: getValue(network, 'livraisons_tertiaire_MWh'),
+      livraisons_industrie_MWh: getValue(network, 'livraisons_industrie_MWh'),
+      livraisons_agriculture_MWh: getValue(
+        network,
+        'livraisons_agriculture_MWh'
+      ),
+      livraisons_autre_MWh: getValue(network, 'livraisons_autre_MWh'),
+      production_totale_MWh: getValue(network, 'production_totale_MWh'),
+      livraisons_totale_MWh: getValue(network, 'livraisons_totale_MWh'),
+      livraisons_residentiel_MWh: getValue(
+        network,
+        'livraisons_residentiel_MWh'
+      ),
+      'reseaux classes': getBooleanValue(network, 'reseaux classes'),
+      website_gestionnaire: getValue(network, 'website_gestionnaire'),
+      CP_MO: getValue(network, 'CP_MO'),
+      CP_gestionnaire: getValue(network, 'CP_gestionnaire'),
     };
   }
 
@@ -130,11 +167,55 @@ const downloadNetworks = async (table: DataType) => {
       console.log(`${table} not managed`);
       return;
     }
+    const networksAirtable = await base(tileInfo.airtable).select().all();
+    console.log(`Update ${networksAirtable.length} networks`);
 
-    const networks = await base(tileInfo.airtable).select().all();
-    console.log(`Update ${networks.length} networks`);
+    if (table === 'network') {
+      const networksDB = await db(tileInfo.table).select(
+        'id_fcu',
+        'communes',
+        'has_trace'
+      );
+      await Promise.all(
+        networksDB.map(async (network) => {
+          const networkAirtable = networksAirtable.find(
+            (row) => row.get('id_fcu') === network['id_fcu']
+          );
+          if (networkAirtable) {
+            if (
+              network['has_trace'] !==
+              getBooleanValue(networkAirtable, 'has_trace')
+            ) {
+              await base(tileInfo.airtable as string).update(
+                networkAirtable.id,
+                {
+                  has_trace: network['has_trace'],
+                  communes: network['communes'],
+                }
+              );
+            }
+          } else {
+            await base(tileInfo.airtable as string).create(
+              [
+                {
+                  fields: {
+                    id_fcu: network['id_fcu'],
+                    communes: network['communes'],
+                    has_trace: network['has_trace'],
+                  },
+                },
+              ],
+              {
+                typecast: true,
+              }
+            );
+          }
+        })
+      );
+    }
+
     await Promise.all(
-      networks.map((network) =>
+      networksAirtable.map((network) =>
         db(tileInfo.table)
           .update(valuesToUdpate(table, network))
           .where('id_fcu', getValue(network, 'id_fcu'))

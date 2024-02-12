@@ -5,6 +5,7 @@ import DPELegend from './DPELegend';
 import FuturRDCLegend from './FuturRDCLegend';
 import RDCLegend from './RDCLegend';
 import ScaleLegend from './ScaleLegend';
+import RDColdLegend from './RDColdLegend';
 
 export const minIconSize = 12;
 export const maxIconSize = 30;
@@ -55,6 +56,7 @@ const LegendDesc: Record<
   DPE: () => <DPELegend />,
   RDC: () => <RDCLegend />,
   FuturRDC: () => <FuturRDCLegend />,
+  RDCold: () => <RDColdLegend />,
 };
 
 export default LegendDesc;

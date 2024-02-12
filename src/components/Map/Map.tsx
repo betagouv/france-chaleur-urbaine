@@ -52,6 +52,7 @@ import ZoneInfos from './components/SummaryBoxes';
 import {
   buildingsLayerStyle,
   coldOutlineLayerStyle,
+  coldOutlineCenterLayerStyle,
   CollapseLegend,
   demandsLayerStyle,
   energyLayerStyle,
@@ -478,6 +479,15 @@ const Map = ({
               layerDisplay[layerId] ? 'visible' : 'none'
             );
         }
+        if (layerId === 'coldOutline') {
+          mapRef.current
+            .getMap()
+            .setLayoutProperty(
+              'coldOutlineCenter',
+              'visibility',
+              layerDisplay[layerId] ? 'visible' : 'none'
+            );
+        }
         mapRef.current
           .getMap()
           .setLayoutProperty(
@@ -561,6 +571,7 @@ const Map = ({
       { name: 'outline', key: 'network' },
       { name: 'outlineCenter', key: 'network' },
       { name: 'coldOutline', key: 'coldNetwork' },
+      { name: 'coldOutlineCenter', key: 'coldNetwork' },
       { name: 'futurOutline', key: 'futurNetwork' },
       { name: 'futurZone', key: 'futurNetwork' },
       {
@@ -659,7 +670,22 @@ const Map = ({
             source: 'coldNetwork',
             'source-layer': 'coldOutline',
             ...coldOutlineLayerStyle,
-            ...getNetworkFilter(network, filter),
+            ...getNetworkFilter(network, filter, [
+              '==',
+              ['get', 'has_trace'],
+              true,
+            ]),
+          },
+          {
+            id: 'coldOutlineCenter',
+            source: 'coldNetwork',
+            'source-layer': 'coldOutline',
+            ...coldOutlineCenterLayerStyle,
+            ...getNetworkFilter(network, filter, [
+              '==',
+              ['get', 'has_trace'],
+              false,
+            ]),
           },
         ]
       );

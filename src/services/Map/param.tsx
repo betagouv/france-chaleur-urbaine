@@ -143,7 +143,7 @@ const legendData: (string | TypeGroupLegend)[] = [
     entries: [
       {
         id: 'coldOutline',
-        label: 'Réseaux de froid',
+        subLegend: 'RDCold',
         className: 'legend-cold-network',
       },
     ],
