@@ -1,12 +1,7 @@
-# Une concertation nationale sur le chauffage urbain
+# Comparaison du coût de la chaleur pour un logement en copropriété
 
-Parce qu'il nous apparaît essentiel d'être au contact des citoyens, des prospects et des usagers du chauffage urbain, nous sommes très heureux d'avoir été associés à la réalisation de la concertation nationale lancée par [ENGIE Solutions France](https://www.engie-solutions.com/fr) intitulée "Un chauffage écologique et local ? Une solution existe, aidez-nous à la développer !"\
+💸 Le chauffage urbain constitue en moyenne la solution de chauffage la plus compétitive pour les logements collectifs !\
 \
-🎯 Les objectifs de cette concertation sont triples :\
-✔ informer le grand public sur ce mode de chauffage encore trop peu connu\
-✔ comprendre comment les réseaux de chaleur sont aujourd'hui perçus\
-✔ recueillir des idées pour les développer, notamment pour les faire mieux connaître et adopter.\
+👉 C'est ce que conclut la nouvelle enquête annuelle Amorce / ADEME sur le prix de vente de la chaleur et du froid, portant sur l'année 2022. Et la différence est significative : par rapport à une chaudière collective au fioul, la facture globale annuelle est réduite de 40 %.\
 \
-Les retombées de cette concertation pourront être utiles à l'ensemble de la filière.\
-\
-👉 Nous vous encourageons donc à partager largement le lien permettant d'y répondre ! [https://bit.ly/48aTPzf](https://bit.ly/48aTPzf)
+🔎 La figure ci-dessous illustre le coût global annuel chauffage + eau chaude sanitaire pour un logement de 70 m² dans un immeuble construit entre 2005 et 2012 (RT2005). Les aides à l'investissement et à l'achat d'énergie (chèque énergie, gel du tarif réglementé, bouclier tarifaire...) ont été déduites : c'est donc le prix le plus proche de celui payé par l'usager qui est représenté.
