@@ -24,7 +24,7 @@ export default withCors(
       inPDP: result.inZDP,
       isBasedOnIris: result.isBasedOnIris,
       futurNetwork: result.futurNetwork,
-      id: result.futurNetwork,
+      id: result.id,
       gestionnaire: result.gestionnaire,
       rateENRR: result.tauxENRR,
       rateCO2: result.co2,
