@@ -27,6 +27,7 @@ import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
 import { clientConfig } from 'src/client-config';
 import { useAnalytics } from 'src/services/analytics';
+import { SWRConfig, SWRConfiguration } from 'swr';
 
 const og = {
   // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
@@ -116,6 +117,10 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   }
 `;
 
+const swrConfig: SWRConfiguration = {
+  revalidateOnFocus: false,
+};
+
 function MyApp({
   Component,
   pageProps,
@@ -201,9 +206,11 @@ function MyApp({
           {/* <!-- Meta Tags Generated via https://www.opengraph.xyz --> */}
         </Head>
 
-        <SessionProvider session={pageProps.session}>
-          <Component {...pageProps} />
-        </SessionProvider>
+        <SWRConfig value={swrConfig}>
+          <SessionProvider session={pageProps.session}>
+            <Component {...pageProps} />
+          </SessionProvider>
+        </SWRConfig>
       </ServicesContext.Provider>
     </>
   );
