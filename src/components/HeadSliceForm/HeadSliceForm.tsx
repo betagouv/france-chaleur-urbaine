@@ -152,7 +152,7 @@ const HeadSlice = ({
       checkEligibility ? (
         <>
           {child}
-          <FormLabel>{formLabel}</FormLabel>
+          {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
           <CheckEligibilityFormLabel>
             <SelectEnergy
               name="heatingType"

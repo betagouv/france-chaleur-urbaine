@@ -77,7 +77,7 @@ export const Result = styled.div<{
   cartridge?: boolean;
 }>`
   width: fit-content;
-  background-color: #efc73f;
+  background-color: #27a658;
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -93,7 +93,7 @@ export const Result = styled.div<{
   ${({ cartridge }) =>
     cartridge &&
     `
-    color: #4550e5;
+    color: #fff;
   `}
 `;
 

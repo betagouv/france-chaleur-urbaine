@@ -75,7 +75,32 @@ type NavigationItem = {
 const publicNavigationMenu: NavigationItem[] = [
   {
     title: 'Copropriétaires',
-    href: '/',
+    children: [
+      {
+        title: 'Tester votre adresse',
+        href: '/',
+      },
+      {
+        title: 'Comprendre le chauffage urbain',
+        href: '/#comprendre-le-chauffage-urbain',
+      },
+      {
+        title: 'Les avantages du chauffage urbain',
+        href: '/#avantages-du-chauffage-urbain',
+      },
+      {
+        title: 'Comment se raccorder ?',
+        href: '/#comment-se-raccorder',
+      },
+      {
+        title: 'Les coûts du chauffage urbain',
+        href: '/#couts-du-chauffage-urbain',
+      },
+      {
+        title: 'Les obligations de raccordement',
+        href: '/#obligations-de-raccordement',
+      },
+    ],
   },
   {
     title: 'Professionnels',

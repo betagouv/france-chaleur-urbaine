@@ -1,12 +1,5 @@
 import styled, { css } from 'styled-components';
 
-export const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 64px;
-`;
-
 export const Arrow = styled.div`
   cursor: pointer;
 `;

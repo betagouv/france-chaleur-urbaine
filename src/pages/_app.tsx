@@ -56,11 +56,15 @@ const favicons = [
   },
 ];
 
-const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+export const AppGlobalStyle = createGlobalStyle`
   html {
     scroll-behavior: smooth;
   }
+  .img-object-contain {
+    object-fit: contain;
+  }
 `;
+
 const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   input[type="checkbox"], input[type="radio"] {
     width: 13px;
@@ -132,7 +136,7 @@ function MyApp({
 
   return (
     <>
-      <GlobalStyle />
+      <AppGlobalStyle />
       <DsfrFixUp />
       <ServicesContext.Provider
         value={{

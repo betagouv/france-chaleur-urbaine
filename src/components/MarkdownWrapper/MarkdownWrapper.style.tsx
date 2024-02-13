@@ -310,7 +310,7 @@ const ArrowPuce = styled.div`
   }
 `;
 
-const WhiteArrowPuce = styled(ArrowPuce)`
+export const WhiteArrowPuce = styled(ArrowPuce)`
   color: white;
   em {
     font-size: 16px;

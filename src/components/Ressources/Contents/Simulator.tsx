@@ -95,13 +95,13 @@ const Simulator = ({
             </ResultValue>
             {structure === 'Résidentiel' && (
               <span>
-                Soit{' '}
+                soit{' '}
                 {(intValue ? help / intValue : 0).toLocaleString('fr-FR', {
                   style: 'currency',
                   currency: 'EUR',
                   maximumFractionDigits: 0,
-                })}
-                /logement
+                })}{' '}
+                d’aide/logement
               </span>
             )}
           </Result>
