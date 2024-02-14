@@ -1,5 +1,5 @@
 import { CSSProperties, PropsWithChildren } from 'react';
-import { SpacingProperties, spacingsToClasses } from './helpers';
+import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 import { LegacyColor, legacyColors } from './helpers/colors';
 
 type TextType = 'p' | 'div' | 'span' | 'strong' | 'blockquote';

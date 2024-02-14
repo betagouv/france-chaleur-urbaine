@@ -1,5 +1,5 @@
 import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
-import { SpacingProperties, spacingsToClasses } from './helpers';
+import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 import styled, { IntrinsicElementsKeys } from 'styled-components';
 
 type StyleProps = {

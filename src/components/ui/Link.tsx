@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import NextLink from 'next/link';
 import { TrackingEvent, trackEvent } from 'src/services/analytics';
-import { SpacingProperties, spacingsToClasses } from './helpers';
+import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 const linkVariantToClass = {
   primary: 'fr-btn',
