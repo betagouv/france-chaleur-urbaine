@@ -110,6 +110,69 @@ const trackingEvents = {
   'Carto|ouverture popup potentiels de raccordement': {
     matomo: ['Carto', 'ouverture popup potentiels de raccordement'],
   },
+  'Carto|Réseaux chaleur|Active': {
+    matomo: ['Carto', 'Réseaux chaleur', 'Active'],
+  },
+  'Carto|Réseaux chaleur|Désactive': {
+    matomo: ['Carto', 'Réseaux chaleur', 'Désactive'],
+  },
+  'Carto|Périmètres de développement prioritaire|Active': {
+    matomo: ['Carto', 'Périmètres de développement prioritaire', 'Active'],
+  },
+  'Carto|Périmètres de développement prioritaire|Désactive': {
+    matomo: ['Carto', 'Périmètres de développement prioritaire', 'Désactive'],
+  },
+  'Carto|Réseaux en construction|Active': {
+    matomo: ['Carto', 'Réseaux en construction', 'Active'],
+  },
+  'Carto|Réseaux en construction|Désactive': {
+    matomo: ['Carto', 'Réseaux en construction', 'Désactive'],
+  },
+  'Carto|Réseaux de froid|Active': {
+    matomo: ['Carto', 'Réseaux de froid', 'Active'],
+  },
+  'Carto|Réseaux de froid|Désactive': {
+    matomo: ['Carto', 'Réseaux de froid', 'Désactive'],
+  },
+  'Carto|Active Pro Mode': {
+    matomo: ['Carto', 'Active Pro Mode'],
+  },
+  'Carto|Demandes de raccordement|Active': {
+    matomo: ['Carto', 'Demandes de raccordement', 'Active'],
+  },
+  'Carto|Demandes de raccordement|Désactive': {
+    matomo: ['Carto', 'Demandes de raccordement', 'Désactive'],
+  },
+  'Carto|Consommations globales de gaz|Active': {
+    matomo: ['Carto', 'Consommations globales de gaz', 'Active'],
+  },
+  'Carto|Consommations globales de gaz|Désactive': {
+    matomo: ['Carto', 'Consommations globales de gaz', 'Désactive'],
+  },
+  'Carto|Bâtiments au gaz collectif|Active': {
+    matomo: ['Carto', 'Bâtiments au gaz collectif', 'Active'],
+  },
+  'Carto|Bâtiments au gaz collectif|Désactive': {
+    matomo: ['Carto', 'Bâtiments au gaz collectif', 'Désactive'],
+  },
+  'Carto|Bâtiments au fioul collectif|Active': {
+    matomo: ['Carto', 'Bâtiments au fioul collectif', 'Active'],
+  },
+  'Carto|Bâtiments au fioul collectif|Désactive': {
+    matomo: ['Carto', 'Bâtiments au fioul collectif', 'Désactive'],
+  },
+  'Carto|Bâtiments raccordés|Active': {
+    matomo: ['Carto', 'Bâtiments raccordés', 'Active'],
+  },
+  'Carto|Bâtiments raccordés|Désactive': {
+    matomo: ['Carto', 'Bâtiments raccordés', 'Désactive'],
+  },
+  'Carto|DPE|Active': {
+    matomo: ['Carto', 'DPE', 'Active'],
+  },
+  'Carto|DPE|Désactive': {
+    matomo: ['Carto', 'DPE', 'Désactive'],
+  },
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
     google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible

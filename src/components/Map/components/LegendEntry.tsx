@@ -11,10 +11,12 @@ import {
   LabelLegendMarker,
   LabelLegendWrapper,
 } from './LegendEntry.styled';
+import { TrackingEvent, trackEvent } from 'src/services/analytics';
 
 export type TypeLegendEntry = {
   id: LayerNameOption;
   label: string;
+  trackingEvent?: TrackingEvent;
   info?: ReactNode;
   infoPosition?: 'top' | 'right' | 'top-centered' | 'bottom';
   className?: string;
@@ -35,6 +37,7 @@ function LegendEntry({
   readOnly,
   onChange,
   subLegend,
+  trackingEvent,
 }: TypeLegendEntry & {
   checked: boolean;
   readOnly?: boolean;
@@ -47,6 +50,11 @@ function LegendEntry({
         checked={checked}
         onChange={() => {
           !readOnly && onChange(id);
+          trackingEvent &&
+            trackEvent(
+              (trackingEvent +
+                (checked ? '|Active' : '|Désactive')) as TrackingEvent
+            );
         }}
       />
 
