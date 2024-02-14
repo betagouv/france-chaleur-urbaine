@@ -266,10 +266,9 @@ function convertAirtableValue(value: any, type: Type) {
       return value !== undefined && value !== null && value !== 'NULL'
         ? value
         : null;
-    case TypeStringToArray: {
+    case TypeStringToArray:
       return value !== undefined && value !== null && value !== 'NULL'
-        ? value.split()
+        ? value.split(',')
         : [];
-    }
   }
 }

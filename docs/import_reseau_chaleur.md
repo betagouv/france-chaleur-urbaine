@@ -3,17 +3,20 @@
 
 ## Première étape - en local
 
-1. Mise à jour de la table *reseaux_de_chaleur*
+1. Si de nouveaux tracés ou des mises à jour de tracés : Mise à jour de la table *reseaux_de_chaleur*
     - Vider la table *reseaux_de_chaleur* : `psql postgres://postgres:postgres_fcu@localhost:5432 -c "truncate reseaux_de_chaleur"`
         - Si des colonnes ont été ajoutées il faudra peut-être supprimer et recréer la table
     - Lancer : `psql postgres://postgres:postgres_fcu@localhost:5432 -f reseaux_de_chaleur.sql`
         - Il faudra peut-être modifier le fichier pour supprimer la création de la table et des index
 
-2. Faire la même chose pour les réseaux de chaleur sans tracé
+2. Si de nouveaux tracés ou des mises à jour de tracés : Faire la même chose pour les réseaux de chaleur sans tracé
         - Il faudra peut-être modifier le fichier pour changer le nom de la table par *reseaux_de_chaleur* et supprimer sa création ainsi que celle des index
 
 3. Mise à jour des données sur les réseaux depuis Airtable
-    - Lancer le script downloadNetworks.ts : `npx tsx scripts/downloadNetworks.ts network`
+    - Aller dans le dossier *scripts*
+    - Si la table des réseaux a été mise à jour lors de l'étape précédente : `yarn cli update-networks network`
+    - Sinon 
+        - `yarn cli download-network network`
     - Normalement ce script complète la table *zones_et_reseaux_en_construction* et regénère la table *zones_et_reseaux_en_construction_tiles*
 
 4. Si mauvaise mise à jour des tiles : mise à jour de la table *reseaux_de_chaleur_tiles*
