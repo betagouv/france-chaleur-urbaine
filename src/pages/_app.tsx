@@ -28,6 +28,7 @@ import { createGlobalStyle } from 'styled-components';
 import { clientConfig } from 'src/client-config';
 import { useAnalytics } from 'src/services/analytics';
 import { SWRConfig, SWRConfiguration } from 'swr';
+import { usePreserveScroll } from '@hooks/usePreserveScroll';
 
 const og = {
   // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
@@ -135,6 +136,7 @@ function MyApp({
   session: Session;
 }>) {
   const router = useRouter();
+  usePreserveScroll();
   useAnalytics();
 
   return (
