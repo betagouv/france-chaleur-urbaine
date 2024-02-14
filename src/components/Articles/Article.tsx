@@ -5,6 +5,7 @@ import {
   CardImage,
   CardTitle,
 } from '@dataesr/react-dsfr';
+import { ComponentProps } from 'react';
 import { Article as ArticleType } from 'src/types/Article';
 
 const Article = ({
@@ -23,7 +24,7 @@ const Article = ({
         size="sm"
       >
         <CardHeader>
-          <CardImage src={article.image}></CardImage>
+          <LazyCardImage src={article.image} alt="" />
         </CardHeader>
         <CardTitle>{article.title}</CardTitle>
         <CardDescription>
@@ -35,3 +36,22 @@ const Article = ({
 };
 
 export default Article;
+
+/**
+ * Version de l'image de Card qui active le lazy loading.
+ */
+const LazyCardImage = (props: ComponentProps<typeof CardImage>) => (
+  <div className="fr-card__img">
+    <img
+      src={props.src}
+      alt={props.alt}
+      className="fr-responsive-img"
+      loading="lazy"
+    />
+  </div>
+);
+
+// Permet au composant CardHeader de retrouver l'image
+LazyCardImage.defaultProps = {
+  __TYPE: 'CardImage',
+};

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Icon } from '@dataesr/react-dsfr';
-import Box from '@components/ui/Box';
 
 const videos = [
   'https://www.youtube.com/embed/zsOgW8sIByc',
@@ -42,7 +41,7 @@ const InterviewsVideos = () => {
               Précédent
             </a>
           </li>
-          <Box className="fr-col" />
+          <li className="fr-col" aria-hidden />
           <li>
             <a
               className="fr-pagination__link"

@@ -69,7 +69,7 @@ const Partners = () => {
                 rel="noreferrer noopener"
                 key={key}
               >
-                <PartnerImage src={image} alt={title} />
+                <PartnerImage src={image} alt={title} loading="lazy" />
               </PartnerLink>
             ))}
           </PartnerImages>

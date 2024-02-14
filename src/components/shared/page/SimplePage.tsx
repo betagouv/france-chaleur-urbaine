@@ -14,7 +14,7 @@ import {
 } from '@dataesr/react-dsfr';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import { ComponentProps, Fragment } from 'react';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import Image from 'next/image';
 import {
@@ -338,26 +338,26 @@ const PageFooter = () => {
         <FooterPartnersSecondaryTitle>
           Nos financeurs
         </FooterPartnersSecondaryTitle>
-        <FooterPartnersLogo
+        <LazyFooterPartnersLogo
           isMain
           href="http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
           imageSrc="/logo-DRIEAT.png"
           target="_blank"
           imageAlt="DRIEAT"
         />
-        <FooterPartnersLogo
+        <LazyFooterPartnersLogo
           href="https://www.gouvernement.fr/"
           imageSrc="/logo-government.svg"
           target="_blank"
           imageAlt="Gouvernement"
         />
-        <FooterPartnersLogo
+        <LazyFooterPartnersLogo
           href="https://www.ademe.fr"
           imageSrc="/logo-ADEME.svg"
           target="_blank"
-          imageAlt="Gouvernement"
+          imageAlt="ADEME"
         />
-        <FooterPartnersLogo
+        <LazyFooterPartnersLogo
           href="https://www.economie.gouv.fr/plan-de-relance"
           imageSrc="/logo-relance.png"
           target="_blank"
@@ -432,4 +432,25 @@ const PageFooter = () => {
       </FooterBottom>
     </FooterDS>
   );
+};
+
+/**
+ * Version des logo partenaires qui active le lazy loading.
+ */
+const LazyFooterPartnersLogo = (
+  props: ComponentProps<typeof FooterPartnersLogo> & { href: string }
+) => (
+  <Link className="fr-footer__partners-link" href={props.href} target="_blank">
+    <img
+      className="fr-footer__logo"
+      src={props.imageSrc}
+      alt={props.imageAlt}
+      loading="lazy"
+    />
+  </Link>
+);
+
+// Permet au composant FooterPartners de retrouver le logo
+LazyFooterPartnersLogo.defaultProps = {
+  __TYPE: 'FooterPartnersLogo',
 };

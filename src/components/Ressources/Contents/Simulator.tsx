@@ -65,6 +65,7 @@ const Simulator = ({
       <Form cartridge={cartridge}>
         <Inputs cartridge={cartridge}>
           <Select
+            aria-label="Type de bâtiment"
             options={[
               { label: 'Résidentiel', value: 'Résidentiel' },
               { label: 'Tertiaire', value: 'Tertiaire' },
