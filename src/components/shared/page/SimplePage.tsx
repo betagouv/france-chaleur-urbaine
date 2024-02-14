@@ -357,12 +357,6 @@ const PageFooter = () => {
           target="_blank"
           imageAlt="ADEME"
         />
-        <LazyFooterPartnersLogo
-          href="https://www.economie.gouv.fr/plan-de-relance"
-          imageSrc="/logo-relance.png"
-          target="_blank"
-          imageAlt="France relance"
-        />
       </FooterPartners>
       <FooterBottom>
         <FooterLink

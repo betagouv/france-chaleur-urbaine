@@ -63,7 +63,7 @@ export default function Home() {
                   Le chauffage urbain&nbsp;: une solution écologique à prix
                   maîtrisé&nbsp;!
                 </Heading>
-                <Text>Testez votre éligibilité en 2 clics</Text>
+                <Text mb="2w">Testez votre éligibilité en 2 clics</Text>
                 {form}
               </Box>
             </Box>
@@ -278,7 +278,7 @@ export default function Home() {
         </Box>
       </Box>
 
-      <Box py="10w" id="comprendre-le-chauffage-urbain">
+      <Box py="10w" id="couts-du-chauffage-urbain">
         <Box className="fr-container">
           <Heading as="h2" center>
             Les coûts du chauffage urbain
@@ -452,9 +452,7 @@ export default function Home() {
                 Plus de 500 réseaux de chaleur sont désormais{' '}
                 <Link href="/ressources/reseau-classe#contenu">“classés”</Link>,
                 ce qui signifie que certains bâtiments ont l'obligation de se
-                raccorder. permet d’obtenir des aides financières conséquentes
-                pour se raccorder.Le coût du raccordement peut ainsi être réduit
-                à quelques centaines d’euros par logement.
+                raccorder.
               </Text>
               <Text size="lg" mt="3w">
                 Cette obligation s’applique dans une certaine zone autour du
@@ -519,7 +517,7 @@ export default function Home() {
       <Box py="10w" id="actus">
         <Box className="fr-container">
           <Heading as="h2" center>
-            Nos actus
+            Nos actualités
           </Heading>
           <Box className="fr-grid-row" mt="10w">
             <LastArticles />
