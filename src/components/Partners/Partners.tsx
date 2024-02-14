@@ -45,7 +45,7 @@ const Partners = () => {
   }, [setNextLogo]);
 
   return (
-    <Box p="10w" id="partenaires">
+    <Box py="10w" id="partenaires">
       <Box className="fr-container">
         <Heading as="h2" center>
           Notre réseau de partenaires
