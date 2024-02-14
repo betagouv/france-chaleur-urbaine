@@ -232,6 +232,9 @@ const trackingEvents = {
   'Téléchargement|Guide FCU|coproprietaire': {
     matomo: ['Téléchargement', 'Guide FCU', 'coproprietaire'],
   },
+  'Téléchargement|Dossier Présentation|coproprietaire': {
+    matomo: ['Téléchargement', 'Dossier Présentation', 'coproprietaire'],
+  },
   'Téléchargement|Guide FCU|professionnels': {
     matomo: ['Téléchargement', 'Guide FCU', 'professionnels'],
   },

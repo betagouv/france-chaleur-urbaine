@@ -9,11 +9,11 @@ import Understanding from '@components/Ressources/Understanding';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { Icon } from '@dataesr/react-dsfr';
 import Head from 'next/head';
 import Image from 'next/image';
-import Link from 'next/link';
 
 const coproprietaireCards = {
   reseau: issues.reseau,
@@ -133,10 +133,7 @@ export default function Home() {
                 className="fr-responsive-img"
               />
 
-              <Link
-                href="https://france-chaleur-urbaine.beta.gouv.fr/reseaux-chaleur#contenu"
-                className="fr-btn"
-              >
+              <Link variant="primary" href="reseaux-chaleur#contenu">
                 En savoir plus
               </Link>
             </Box>
@@ -279,8 +276,10 @@ export default function Home() {
               />
 
               <Link
-                href="https://france-chaleur-urbaine.beta.gouv.fr/documentation/guide-france-chaleur-urbaine.pdf"
-                className="fr-btn"
+                href="/documentation/guide-france-chaleur-urbaine.pdf"
+                variant="primary"
+                isExternal
+                eventKey="Téléchargement|Guide FCU|coproprietaire"
               >
                 Télécharger le guide de raccordement
               </Link>
@@ -357,7 +356,7 @@ export default function Home() {
 
       <Box p="10w" backgroundColor="blue-france-975-75">
         <Box className="fr-container">
-          <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
+          <Box className="fr-grid-row fr-grid-row--gutters">
             <Box className="fr-col-md-12 fr-col-lg-6">
               <Heading as="h4" color="blue-france">
                 Un exemple de cas concret
@@ -502,11 +501,11 @@ export default function Home() {
                 Tout bâtiment renouvelant son installation de chauffage
                 au-dessus de 30kW*
               </Text>
-              <Text size="xs">
+              <Text size="sm">
                 * Ce seuil de puissance peut être relevé par la collectivité
               </Text>
 
-              <Link href="/carte" className="fr-btn fr-mt-6w">
+              <Link variant="primary" href="/carte" mt="6w">
                 Voir les réseaux classés sur la carte
               </Link>
             </Box>

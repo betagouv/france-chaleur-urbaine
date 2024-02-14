@@ -260,6 +260,7 @@ const PageHeader = (props: PageHeaderProps) => {
             }
             asLink={href ? <Link href={href}>{title}</Link> : undefined}
           >
+            {/* ici warning Prop `aria-controls` did not match lié à @dataesr/react-dsfr */}
             {children?.map((subNav) => (
               <NavSubItem
                 key={subNav.title}

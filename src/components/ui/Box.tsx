@@ -3,7 +3,7 @@ import { SpacingProperties, spacingsToClasses } from './helpers';
 import styled, { IntrinsicElementsKeys } from 'styled-components';
 
 type StyleProps = {
-  display?: 'block' | 'grid' | 'flex';
+  display?: CSSProperties['display'];
   flexDirection?: CSSProperties['flexDirection'];
   alignItems?: CSSProperties['alignItems'];
   gap?: CSSProperties['gap'];

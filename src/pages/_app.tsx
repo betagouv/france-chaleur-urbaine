@@ -63,6 +63,9 @@ export const AppGlobalStyle = createGlobalStyle`
   .img-object-contain {
     object-fit: contain;
   }
+  .d-inline-block {
+    display: inline-block !important;
+  }
 `;
 
 const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738

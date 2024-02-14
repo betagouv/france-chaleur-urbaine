@@ -11,6 +11,7 @@ import {
   ResultValue,
   Title,
 } from './Simulator.styles';
+import Text from '@components/ui/Text';
 
 const prixSpotCEE = 8.42; // €/MWh cumac
 
@@ -106,7 +107,9 @@ const Simulator = ({
             )}
           </Result>
           <Disclaimer cartridge={cartridge}>
-            *Montants donnés à titre indicatif.
+            <Text size="sm" legacyColor="black">
+              *Montants donnés à titre indicatif.
+            </Text>
           </Disclaimer>
         </div>
       </Form>

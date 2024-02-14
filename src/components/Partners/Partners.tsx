@@ -7,11 +7,10 @@ import {
   PartnerImages,
   PartnerLink,
 } from './Partners.style';
-import Link from 'next/link';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
-import { trackEvent } from 'src/services/analytics';
+import Link from '@components/ui/Link';
 
 const Partners = () => {
   const [firstLogo, setFirstLogo] = useState(0);
@@ -86,11 +85,8 @@ const Partners = () => {
           <Link
             className="fr-btn fr-btn--secondary"
             href="/documentation/dossier-presse.pdf"
-            target="_blank"
-            rel="noreferrer noopener"
-            onClick={() => {
-              trackEvent('Téléchargement|Dossier Presse|Partenaires');
-            }}
+            isExternal
+            eventKey="Téléchargement|Dossier Presse|Partenaires"
           >
             Notre dossier de présentation
           </Link>
