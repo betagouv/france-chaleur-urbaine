@@ -7,6 +7,7 @@ type StyleProps = {
   flexDirection?: CSSProperties['flexDirection'];
   alignItems?: CSSProperties['alignItems'];
   gap?: CSSProperties['gap'];
+  flex?: boolean;
   backgroundColor?: CSSProperties['backgroundColor'];
   textColor?: CSSProperties['color'];
   fontWeight?: 'light' | 'regular' | 'bold' | 'heavy';
@@ -18,12 +19,19 @@ const StyledBox = styled.div<StyleProps>`
   flex-direction: ${({ flexDirection: direction }) => direction};
   align-items: ${({ alignItems }) => alignItems};
   gap: ${({ gap }) => gap};
+  flex: ${({ flex }) => (flex !== undefined ? (flex ? 1 : 0) : undefined)};
   background-color: ${({ backgroundColor }) =>
-    backgroundColor?.startsWith('#')
-      ? backgroundColor
-      : `var(--${backgroundColor})`};
+    backgroundColor
+      ? backgroundColor?.startsWith('#')
+        ? backgroundColor
+        : `var(--${backgroundColor})`
+      : undefined}};
   color: ${({ textColor }) =>
-    textColor?.startsWith('#') ? textColor : `var(--${textColor})`};
+    textColor
+      ? textColor.startsWith('#')
+        ? textColor
+        : `var(--${textColor})`
+      : undefined};
   border-radius: ${({ borderRadius }) => borderRadius};
 `;
 
@@ -45,12 +53,13 @@ function Box(props: PropsWithChildren<BoxProps>) {
     <StyledBox
       as={props.as ?? 'div'}
       display={props.display ?? 'block'}
-      flexDirection={props.flexDirection ?? 'row'}
-      alignItems={props.alignItems ?? 'initial'}
-      gap={props.gap ?? 'initial'}
-      backgroundColor={props.backgroundColor ?? 'initial'}
-      textColor={props.textColor ?? 'initial'}
-      borderRadius={props.borderRadius ?? 'initial'}
+      flexDirection={props.flexDirection}
+      alignItems={props.alignItems}
+      gap={props.gap}
+      flex={props.flex}
+      backgroundColor={props.backgroundColor}
+      textColor={props.textColor}
+      borderRadius={props.borderRadius}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
       } ${spacingsToClasses(props)}`}
@@ -61,3 +70,29 @@ function Box(props: PropsWithChildren<BoxProps>) {
   );
 }
 export default Box;
+
+const gridBreakpoints = {
+  xs: '320',
+  sm: '576',
+  md: '768',
+  lg: '992',
+  xl: '1440',
+};
+type GridBreakpoint = keyof typeof gridBreakpoints;
+
+/**
+ * Renders a container that displays as row after the breakpoint and as a column before.
+ */
+export const ResponsiveRow = styled(Box)<{
+  breakpoint?: GridBreakpoint;
+}>`
+  display: flex;
+  gap: 64px;
+
+  @media (max-width: ${({ breakpoint }) =>
+      gridBreakpoints[breakpoint ?? 'lg']}px) {
+    flex-direction: column;
+
+    gap: 24px;
+  }
+`;

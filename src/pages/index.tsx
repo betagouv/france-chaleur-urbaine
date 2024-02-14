@@ -7,7 +7,7 @@ import { issues, understandings } from '@components/Ressources/config';
 import Simulator from '@components/Ressources/Contents/Simulator';
 import Understanding from '@components/Ressources/Understanding';
 import SimplePage from '@components/shared/page/SimplePage';
-import Box from '@components/ui/Box';
+import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
@@ -34,60 +34,50 @@ export default function Home() {
 
       <HeadSliceForm
         bg="/img/copro_head_test_adresse.avif"
-        pageBody=" " // désactive le body, mais autorise les enfants du composant
         checkEligibility
         needGradient
-      >
-        <Text fontSize="24px" fontWeight="bold" legacyColor="black">
-          Vous êtes copropriétaire ?
-        </Text>
-        <Heading as="h1" size="h2" color="blue-france" mt="1w">
-          Le chauffage urbain : une solution écologique à prix maîtrisé !
-        </Heading>
-        <Text size="md" color="grey" fontWeight="regular" mt="3w">
-          Testez votre éligibilité en 2 clics
-        </Text>
-      </HeadSliceForm>
+        withWrapper={(form) => (
+          <Box backgroundColor="blue-cumulus-950-100">
+            <Box
+              className="fr-container"
+              display="flex"
+              alignItems="center"
+              gap="16px"
+            >
+              <Box flex>
+                <Image
+                  src="/img/copro_test_adresse.avif"
+                  alt=""
+                  width={584}
+                  height={393}
+                  priority
+                  className="fr-responsive-img"
+                />
+              </Box>
 
-      {/* temporaire */}
-      <Box backgroundColor="blue-cumulus-950-100">
-        <Box className="fr-container" display="flex" alignItems="center">
-          <Box className="fr-col">
-            <Image
-              src="/img/copro_test_adresse.avif"
-              alt=""
-              width={584}
-              height={393}
-              priority
-              className="fr-responsive-img"
-            />
+              <Box flex py="3w">
+                <Text fontSize="24px" fontWeight="bold" legacyColor="black">
+                  Vous êtes copropriétaire ?
+                </Text>
+                <Heading as="h1" size="h2" color="blue-france" mt="1w">
+                  Le chauffage urbain&nbsp;: une solution écologique à prix
+                  maîtrisé&nbsp;!
+                </Heading>
+                <Text>Testez votre éligibilité en 2 clics</Text>
+                {form}
+              </Box>
+            </Box>
           </Box>
+        )}
+      />
 
-          <Box className="fr-col">
-            <Text fontSize="24px" fontWeight="bold" legacyColor="black">
-              Vous êtes copropriétaire ?
-            </Text>
-            <Heading as="h1" size="h2" color="blue-france" mt="1w">
-              Le chauffage urbain&nbsp;: une solution écologique à prix maîtrisé
-              !
-            </Heading>
-            <Text>Testez votre éligibilité en 2 clics</Text>
-          </Box>
-        </Box>
-      </Box>
-
-      <Box p="10w" id="comprendre-le-chauffage-urbain">
+      <Box py="10w" id="comprendre-le-chauffage-urbain">
         <Box className="fr-container">
           <Heading as="h2" center>
             Comprendre le chauffage urbain
           </Heading>
-          <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              className="fr-col-md-12 fr-col-lg-6"
-            >
+          <ResponsiveRow mt="10w">
+            <Box display="flex" flexDirection="column" alignItems="center" flex>
               <Heading as="h3" color="blue-france" mb="4w">
                 Un chauffage écologique à prix compétitif déjà adopté par 6
                 millions de Français
@@ -123,7 +113,7 @@ export default function Home() {
               </Text>
             </Box>
 
-            <Box className="fr-col-md-12 fr-col-lg-6">
+            <Box flex>
               <Image
                 src="/img/copro_comprendre.avif"
                 alt="Schéma du chauffage urbain"
@@ -137,13 +127,13 @@ export default function Home() {
                 En savoir plus
               </Link>
             </Box>
-          </Box>
+          </ResponsiveRow>
         </Box>
       </Box>
 
       <Box
+        py="10w"
         backgroundColor="blue-france-975-75"
-        p="10w"
         id="avantages-du-chauffage-urbain"
       >
         <Box className="fr-container">
@@ -227,16 +217,16 @@ export default function Home() {
       </Box>
 
       <Box
+        py="10w"
         backgroundColor="blue-france-main-525"
-        p="10w"
         id="comment-se-raccorder"
       >
         <Box className="fr-container">
           <Heading as="h2" legacyColor="white" center>
             Comment se raccorder
           </Heading>
-          <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
-            <Box className="fr-col-md-12 fr-col-lg-6">
+          <ResponsiveRow mt="10w">
+            <Box flex>
               <Heading as="h4" legacyColor="white" mb="4w">
                 France Chaleur Urbaine est un service public qui vous met en
                 lien avec le gestionnaire du réseau de chaleur
@@ -266,7 +256,7 @@ export default function Home() {
               </WhiteArrowPuce>
             </Box>
 
-            <Box className="fr-col-md-12 fr-col-lg-6">
+            <Box flex>
               <Image
                 src="/img/copro_guide_raccordement.avif"
                 alt="Guide de raccordement à un réseau de chaleur"
@@ -284,17 +274,17 @@ export default function Home() {
                 Télécharger le guide de raccordement
               </Link>
             </Box>
-          </Box>
+          </ResponsiveRow>
         </Box>
       </Box>
 
-      <Box p="10w" id="comprendre-le-chauffage-urbain">
+      <Box py="10w" id="comprendre-le-chauffage-urbain">
         <Box className="fr-container">
           <Heading as="h2" center>
             Les coûts du chauffage urbain
           </Heading>
-          <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
-            <Box className="fr-col-md-12 fr-col-lg-6">
+          <ResponsiveRow mt="10w">
+            <Box flex>
               <Heading as="h4" color="blue-france">
                 Le coût du raccordement
               </Heading>
@@ -322,7 +312,7 @@ export default function Home() {
               <Simulator cartridge />
             </Box>
 
-            <Box className="fr-col-md-12 fr-col-lg-6">
+            <Box flex>
               <Heading as="h4" color="blue-france">
                 Le coût de la chaleur
               </Heading>
@@ -350,14 +340,14 @@ export default function Home() {
                 la chaleur et du froid 2022 (Amorce 2023)
               </Text>
             </Box>
-          </Box>
+          </ResponsiveRow>
         </Box>
       </Box>
 
-      <Box p="10w" backgroundColor="blue-france-975-75">
+      <Box py="10w" backgroundColor="blue-france-975-75">
         <Box className="fr-container">
-          <Box className="fr-grid-row fr-grid-row--gutters">
-            <Box className="fr-col-md-12 fr-col-lg-6">
+          <ResponsiveRow>
+            <Box flex>
               <Heading as="h4" color="blue-france">
                 Un exemple de cas concret
               </Heading>
@@ -421,7 +411,7 @@ export default function Home() {
               </Box>
             </Box>
 
-            <Box className="fr-col-md-12 fr-col-lg-6">
+            <Box flex>
               <Heading as="h4" color="blue-france">
                 Les témoignages
               </Heading>
@@ -432,27 +422,29 @@ export default function Home() {
 
               <Icon name="fr-icon-quote-line" color="#6A6AF4" />
 
-              <Text as="blockquote" ml="1w" my="2w" fontStyle="italic">
-                « Je conseille vivement le raccordement à un réseau de chaleur
-                pour des raisons économiques et écologiques. »
+              <Text as="blockquote" ml="0" mt="1w" fontStyle="italic">
+                Je conseille vivement le raccordement à un réseau de chaleur
+                pour des raisons économiques et écologiques.
               </Text>
-              <Text size="sm">Henry Hostein Président du conseil syndical</Text>
+              <Text size="sm" mt="2w">
+                Henry Hostein Président du conseil syndical
+              </Text>
 
               <Box mt="3w">
                 <InterviewsVideos />
               </Box>
             </Box>
-          </Box>
+          </ResponsiveRow>
         </Box>
       </Box>
 
-      <Box p="10w" id="obligations-de-raccordement">
+      <Box py="10w" id="obligations-de-raccordement">
         <Box className="fr-container">
           <Heading as="h2" center>
             Les obligations de raccordement
           </Heading>
-          <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
-            <Box className="fr-col-md-12 fr-col-lg-6">
+          <ResponsiveRow mt="10w">
+            <Box flex>
               <Heading as="h4" color="blue-france">
                 Les réseaux classés
               </Heading>
@@ -489,7 +481,7 @@ export default function Home() {
               </Box>
             </Box>
 
-            <Box className="fr-col-md-12 fr-col-lg-6">
+            <Box flex>
               <Text size="lg" mt="8w">
                 Sont concernés :
               </Text>
@@ -509,11 +501,11 @@ export default function Home() {
                 Voir les réseaux classés sur la carte
               </Link>
             </Box>
-          </Box>
+          </ResponsiveRow>
         </Box>
       </Box>
 
-      <Box p="10w" backgroundColor="blue-france-975-75" id="articles">
+      <Box py="10w" backgroundColor="blue-france-975-75" id="articles">
         <Box className="fr-container">
           <Heading as="h2" center>
             Nos articles sur le chauffage urbain
@@ -524,7 +516,7 @@ export default function Home() {
         </Box>
       </Box>
 
-      <Box p="10w" id="actus">
+      <Box py="10w" id="actus">
         <Box className="fr-container">
           <Heading as="h2" center>
             Nos actus
@@ -537,7 +529,7 @@ export default function Home() {
 
       <Partners />
 
-      <Box p="10w" backgroundColor="blue-france-main-525" textColor="#fff">
+      <Box py="10w" backgroundColor="blue-france-main-525" textColor="#fff">
         <Box className="fr-container">
           <Heading as="h5" legacyColor="white">
             Réduire l'impact écologique et économique de son chauffage
