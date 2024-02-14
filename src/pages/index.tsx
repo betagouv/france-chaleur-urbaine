@@ -44,7 +44,7 @@ export default function Home() {
               alignItems="center"
               gap="16px"
             >
-              <Box flex>
+              <Box flex className="fr-hidden fr-unhidden-lg">
                 <Image
                   src="/img/copro_test_adresse.avif"
                   alt=""
