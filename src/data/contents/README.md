@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteCout.jpg
-coverY: 0
----
-
 # Comparaison du coût de la chaleur pour un logement en copropriété
 
 💸 Le chauffage urbain constitue en moyenne la solution de chauffage la plus compétitive pour les logements collectifs !\

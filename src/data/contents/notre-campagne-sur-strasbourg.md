@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteEvos.jpg
-coverY: 0
----
-
 # Notre campagne sur Strasbourg
 
 🍃 Pour décarboner les réseaux de chaleur, les solutions ne manquent pas ! A Strasbourg, c'est la récupération de la chaleur issue des équipements de production de froid du Centre hospitalier de Hautepierre qui a été choisie pour verdir le réseau [EVOS](<README (1).md>). Le premier client du réseau deviendra ainsi également son principal producteur d'énergie, permettant d'assurer 40% des besoins en chaleur du réseau. En complément, deux chaudières biomasse seront mises en place, pour atteindre dès 2025 un taux d'énergies renouvelables et de récupération de plus de 80%.\

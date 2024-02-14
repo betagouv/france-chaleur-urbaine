@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignette30%.jpg
-coverY: 0
----
-
 # 30% de l'objectif de raccordement 2035 atteignable sur les réseaux existants
 
 🎯 Plus de 4,5 millions de logements à raccorder aux réseaux de chaleur d'ici 2035 : c'est l'objectif ambitieux fixé par le projet de Stratégie française pour l'énergie et le climat.\

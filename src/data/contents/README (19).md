@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignettefiche.jpg
-coverY: 0
----
-
 # Compléter la fiche de votre réseau
 
 📢 Collectivités, exploitants : vous pouvez désormais compléter la fiche de votre réseau de chaleur en ligne sur France Chaleur Urbaine ! Il s'agissait du besoin n°1 exprimé lors de notre dernier atelier de co-construction.\
