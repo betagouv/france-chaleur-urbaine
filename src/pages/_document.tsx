@@ -37,12 +37,7 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="fr" prefix="og: http://ogp.me/ns#">
-        <Head>
-          <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"
-          />
-        </Head>
+        <Head />
         <body>
           <Main />
           <NextScript />

@@ -7,6 +7,7 @@ import {
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 import '@gouvfr/dsfr/dist/utility/icons/icons-editor/icons-editor.min.css';
 import '@gouvfr/dsfr/dist/utility/icons/icons-document/icons-document.min.css';
+import 'remixicon/fonts/remixicon.css';
 import '@reach/combobox/styles.css';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
