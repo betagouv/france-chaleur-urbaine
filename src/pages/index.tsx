@@ -337,9 +337,9 @@ export default function Home() {
               />
               <Text size="sm">
                 Coût global annuel chauffage + eau chaude sanitaire pour un
-                logement moyen (70 m2) construit entre 2005 et 2012
-                (consommation : 96 kWhu/m2/an). Enquête sur le prix de vente de
-                la chaleur et du froid 2022 (Amorce 2023)
+                logement moyen (70&nbsp;m²) construit entre 2005 et 2012
+                (consommation : 96&nbsp;kWhu/m²/an). Enquête sur le prix de
+                vente de la chaleur et du froid 2022 (Amorce 2023)
               </Text>
             </Box>
           </ResponsiveRow>
