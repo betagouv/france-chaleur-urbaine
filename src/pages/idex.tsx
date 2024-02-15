@@ -27,6 +27,7 @@ const IdexMap = () => {
           alt: 'logo Idex',
         }}
         popupType={MapPopupType.IDEX}
+        //Filter : gestionnaire for futurNetwork and Gestionnaire for coldNetwork and network
         filter={[
           'any',
           [
