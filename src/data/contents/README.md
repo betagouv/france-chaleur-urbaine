@@ -1,9 +1,9 @@
-# 592 réseaux classés
+# Comparaison du coût de la chaleur pour un logement en copropriété
 
-📃 La liste des réseaux de chaleur qui satisfont aux critères du classement a été mise à jour par un arrêté en date du 22 décembre 2023, entré en vigueur au 1er janvier 2024. Pour ces réseaux, le classement intervient de plein droit, sauf si la collectivité s'y oppose par délibération motivée.\
+💸 Le chauffage urbain constitue en moyenne la solution de chauffage la plus compétitive pour les logements collectifs !\
 \
-❓ Concrètement, qu'est-ce qu'un réseau classé? C'est un réseau sur lequel une obligation de raccordement s'applique pour tout bâtiment neuf ou renouvelant son installation de chauffage au-dessus d'une certaine puissance, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire. Une mesure destinée à booster la dynamique de raccordement !\
+👉 C'est ce que conclut la nouvelle enquête annuelle Amorce / ADEME sur le prix de vente de la chaleur et du froid, portant sur l'année 2022. Et la différence est significative : par rapport à une chaudière collective au fioul, la facture globale annuelle est réduite de 40 %.\
 \
-👉 Pour informer sur ces obligations, France Chaleur Urbaine recense les périmètres de développement prioritaire sur sa carte. Le périmètre de votre réseau n'y est pas encore visible ? N'hésitez pas à nous le transmettre pour ajout !
+🔎 La figure ci-dessous illustre le coût global annuel chauffage + eau chaude sanitaire pour un logement de 70 m² dans un immeuble construit entre 2005 et 2012 (RT2005). Les aides à l'investissement et à l'achat d'énergie (chèque énergie, gel du tarif réglementé, bouclier tarifaire...) ont été déduites : c'est donc le prix le plus proche de celui payé par l'usager qui est représenté.
 
-![](.gitbook/assets/592.jpg)
+![](.gitbook/assets/cout22.jpg)

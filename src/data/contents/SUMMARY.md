@@ -1,6 +1,12 @@
 # Table of contents
 
-* [592 réseaux classés](README.md)
+* [Comparaison du coût de la chaleur pour un logement en copropriété](README.md)
+* [Une concertation nationale sur le chauffage urbain](<README (21).md>)
+* [80% d'énergies renouvelables et de récupération](<README (20).md>)
+* [Compléter la fiche de votre réseau](<README (19).md>)
+* [Notre campagne sur Strasbourg](notre-campagne-sur-strasbourg.md)
+* [30% de l'objectif de raccordement 2035 atteignable sur les réseaux existants](30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md)
+* [592 réseaux classés](<README (18).md>)
 * [La géothermie expliquée aux enfants](<README (17).md>)
 * [Meilleurs vœux !](<README (16).md>)
 * [Notre campagne sur Fresnes](notre-campagne-sur-fresnes.md)
