@@ -28,6 +28,11 @@ import readme_14 from './README (14).md';
 import readme_15 from './README (15).md';
 import readme_16 from './README (16).md';
 import readme_17 from './README (17).md';
+import readme_18 from './README (18).md';
+import readme_19 from './README (19).md';
+import readme_20 from './README (20).md';
+import readme_21 from './README (21).md';
+import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md';
 import demandes from './2000-demandes.md';
 import desReseauxVertueux from './des-reseaux-vertueux.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
@@ -44,6 +49,7 @@ import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-le
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
 import notreCampagneCharlevilleMezieres from './notre-campagne-sur-charleville-mezieres.md';
 import notreCampagneFresnes from './notre-campagne-sur-fresnes.md';
+import notreCampagneStrasbourg from './notre-campagne-sur-strasbourg.md';
 import page_2 from './page-2.md';
 import potentielsRaccordementTerritoire from './potentiels-de-raccordement-par-territoire.md';
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
@@ -62,10 +68,53 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/vignetteCout.jpg',
+    title: 'Comparaison du coût de la chaleur pour un logement en copropriété',
+    slug: 'comparaison-du-cout-de-la-chaleur-pour-un-logement-en-copropriete',
+    content: importFile(readme),
+    publishedDate: new Date('2024-02-12'),
+  },
+  {
+    image: '/contents/vignetteconcertation.jpg',
+    title: 'Une concertation nationale sur le chauffage urbain',
+    slug: 'une-concertation-nationale-sur-le-chauffage-urbain',
+    content: importFile(readme_21),
+    publishedDate: new Date('2024-02-08'),
+  },
+  {
+    image: '/contents/vignetteObjectif.jpg',
+    title: "80% d'énergies renouvelables et de récupération",
+    slug: '80-denergies-renouvelables-et-de-recuperation',
+    content: importFile(readme_20),
+    publishedDate: new Date('2024-02-02'),
+  },
+  {
+    image: '/contents/vignettefiche.jpg',
+    title: 'Compléter la fiche de votre réseau',
+    slug: 'completer-la-fiche-de-votre-reseau',
+    content: importFile(readme_19),
+    publishedDate: new Date('2024-01-31'),
+  },
+  {
+    image: '/contents/vignetteEvos.jpg',
+    title: 'Notre campagne sur Strasbourg',
+    slug: 'notre-campagne-sur-strasbourg',
+    content: importFile(notreCampagneStrasbourg),
+    publishedDate: new Date('2024-01-24'),
+  },
+  {
+    image: '/contents/vignette30.jpg',
+    title:
+      "30% de l'objectif de raccordement 2035 atteignable sur les réseaux existants",
+    slug: '30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants',
+    content: importFile(objectifRaccordementAtteignableReseauxExistants),
+    publishedDate: new Date('2024-01-19'),
+  },
+  {
     image: '/contents/vignett592.jpg',
     title: '592 réseaux classés',
     slug: '592-reseaux-classes',
-    content: importFile(readme),
+    content: importFile(readme_18),
     publishedDate: new Date('2024-01-15'),
   },
   {
