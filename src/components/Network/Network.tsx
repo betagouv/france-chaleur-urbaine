@@ -148,13 +148,17 @@ const Network = ({
                   <div>
                     <b>Points de livraison</b>
                   </div>
-                  <div>{network.nb_pdl}</div>
+                  <div>{network.nb_pdl ? network.nb_pdl : 'Non connu'}</div>
                 </BoxContent>
                 <BoxContent>
                   <div>
                     <b>Longueur réseau</b>
                   </div>
-                  <div>{network.longueur_reseau} km</div>
+                  <div>
+                    {network.longueur_reseau
+                      ? `${network.longueur_reseau} km`
+                      : 'Non connu'}
+                  </div>
                 </BoxContent>
                 {!isCold && (
                   <BoxContent>
@@ -184,7 +188,11 @@ const Network = ({
                   <div>
                     <b>Année de création du réseau</b>
                   </div>
-                  <div>{network.annee_creation}</div>
+                  <div>
+                    {network.annee_creation
+                      ? network.annee_creation
+                      : 'Non connu'}
+                  </div>
                 </BoxContent>
                 {!isCold && (
                   <>
@@ -194,11 +202,10 @@ const Network = ({
                       </div>
                       <div>
                         {network['%_fluide_caloporteur_eau_chaude']
-                          ? Math.round(
+                          ? `${Math.round(
                               network['%_fluide_caloporteur_eau_chaude']
-                            )
-                          : '0'}
-                         %
+                            )} %`
+                          : 'Non connu'}
                       </div>
                     </BoxContent>
                     <BoxContent>
@@ -207,11 +214,10 @@ const Network = ({
                       </div>
                       <div>
                         {network['%_fluide_caloporteur_eau_surchauffee']
-                          ? Math.round(
+                          ? `${Math.round(
                               network['%_fluide_caloporteur_eau_surchauffee']
-                            )
-                          : '0'}
-                         %
+                            )} %`
+                          : 'Non connu'}
                       </div>
                     </BoxContent>
                     <BoxContent>
@@ -220,9 +226,10 @@ const Network = ({
                       </div>
                       <div>
                         {network['%_fluide_caloporteur_vapeur']
-                          ? Math.round(network['%_fluide_caloporteur_vapeur'])
-                          : '0'}
-                         %
+                          ? `${Math.round(
+                              network['%_fluide_caloporteur_vapeur']
+                            )} %`
+                          : 'Non connu'}
                       </div>
                     </BoxContent>
                   </>
