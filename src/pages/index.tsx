@@ -33,9 +33,7 @@ export default function Home() {
       </Head>
 
       <HeadSliceForm
-        bg="/img/copro_head_test_adresse.avif"
         checkEligibility
-        needGradient
         withWrapper={(form) => (
           <Box backgroundColor="blue-cumulus-950-100">
             <Box
@@ -145,7 +143,7 @@ export default function Home() {
               display="flex"
               flexDirection="column"
               alignItems="center"
-              className="fr-col-md-12 fr-col-lg-6 fr-col-xl-3"
+              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
             >
               <Image
                 src="/img/copro_avantages_1.webp"
@@ -164,7 +162,7 @@ export default function Home() {
               display="flex"
               flexDirection="column"
               alignItems="center"
-              className="fr-col-md-12 fr-col-lg-6 fr-col-xl-3"
+              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
             >
               <Image
                 src="/img/copro_avantages_2.webp"
@@ -183,7 +181,7 @@ export default function Home() {
               display="flex"
               flexDirection="column"
               alignItems="center"
-              className="fr-col-md-12 fr-col-lg-6 fr-col-xl-3"
+              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
             >
               <Image
                 src="/img/copro_avantages_3.webp"
@@ -202,7 +200,7 @@ export default function Home() {
               display="flex"
               flexDirection="column"
               alignItems="center"
-              className="fr-col-md-12 fr-col-lg-6 fr-col-xl-3"
+              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
             >
               <Image
                 src="/img/copro_avantages_4.webp"
