@@ -16,6 +16,7 @@ import {
   CheckItem,
   CountItem,
   CounterItem,
+  ExtraLink,
   KnowMoreLink,
   MarkdownWrapperStyled,
   PuceIcon,
@@ -104,6 +105,7 @@ const MarkdownWrapper: React.FC<{
           'puce-icon': PuceIcon,
           highlight: Highlight,
           'button-link': ButtonLink,
+          'extra-link': ExtraLink,
           'know-more-link': KnowMoreLink,
           small: SmallText,
         }).processSync(md).result

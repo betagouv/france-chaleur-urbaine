@@ -87,6 +87,22 @@ export const ButtonLink = styled(Link).attrs<ExtraEventType>((props) => {
   };
 })<ExtraEventType>``;
 
+export const ExtraLink = styled(Link).attrs<ExtraEventType>((props) => {
+  const { className, eventKey, eventPayload, ...rest } = props;
+  const trackEventProps = eventKey
+    ? {
+        onClick: () => {
+          trackEvent(eventKey, eventPayload?.split(',').map((v) => v.trim()));
+        },
+      }
+    : {};
+  return {
+    ...rest,
+    ...trackEventProps,
+    className: className,
+  };
+})<ExtraEventType>``;
+
 export const CounterItem = styled.div`
   display: flex;
   justify-content: center;

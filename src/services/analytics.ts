@@ -110,6 +110,69 @@ const trackingEvents = {
   'Carto|ouverture popup potentiels de raccordement': {
     matomo: ['Carto', 'ouverture popup potentiels de raccordement'],
   },
+  'Carto|Réseaux chaleur|Active': {
+    matomo: ['Carto', 'Réseaux chaleur', 'Active'],
+  },
+  'Carto|Réseaux chaleur|Désactive': {
+    matomo: ['Carto', 'Réseaux chaleur', 'Désactive'],
+  },
+  'Carto|Périmètres de développement prioritaire|Active': {
+    matomo: ['Carto', 'Périmètres de développement prioritaire', 'Active'],
+  },
+  'Carto|Périmètres de développement prioritaire|Désactive': {
+    matomo: ['Carto', 'Périmètres de développement prioritaire', 'Désactive'],
+  },
+  'Carto|Réseaux en construction|Active': {
+    matomo: ['Carto', 'Réseaux en construction', 'Active'],
+  },
+  'Carto|Réseaux en construction|Désactive': {
+    matomo: ['Carto', 'Réseaux en construction', 'Désactive'],
+  },
+  'Carto|Réseaux de froid|Active': {
+    matomo: ['Carto', 'Réseaux de froid', 'Active'],
+  },
+  'Carto|Réseaux de froid|Désactive': {
+    matomo: ['Carto', 'Réseaux de froid', 'Désactive'],
+  },
+  'Carto|Active Pro Mode': {
+    matomo: ['Carto', 'Active Pro Mode'],
+  },
+  'Carto|Demandes de raccordement|Active': {
+    matomo: ['Carto', 'Demandes de raccordement', 'Active'],
+  },
+  'Carto|Demandes de raccordement|Désactive': {
+    matomo: ['Carto', 'Demandes de raccordement', 'Désactive'],
+  },
+  'Carto|Consommations globales de gaz|Active': {
+    matomo: ['Carto', 'Consommations globales de gaz', 'Active'],
+  },
+  'Carto|Consommations globales de gaz|Désactive': {
+    matomo: ['Carto', 'Consommations globales de gaz', 'Désactive'],
+  },
+  'Carto|Bâtiments au gaz collectif|Active': {
+    matomo: ['Carto', 'Bâtiments au gaz collectif', 'Active'],
+  },
+  'Carto|Bâtiments au gaz collectif|Désactive': {
+    matomo: ['Carto', 'Bâtiments au gaz collectif', 'Désactive'],
+  },
+  'Carto|Bâtiments au fioul collectif|Active': {
+    matomo: ['Carto', 'Bâtiments au fioul collectif', 'Active'],
+  },
+  'Carto|Bâtiments au fioul collectif|Désactive': {
+    matomo: ['Carto', 'Bâtiments au fioul collectif', 'Désactive'],
+  },
+  'Carto|Bâtiments raccordés|Active': {
+    matomo: ['Carto', 'Bâtiments raccordés', 'Active'],
+  },
+  'Carto|Bâtiments raccordés|Désactive': {
+    matomo: ['Carto', 'Bâtiments raccordés', 'Désactive'],
+  },
+  'Carto|DPE|Active': {
+    matomo: ['Carto', 'DPE', 'Active'],
+  },
+  'Carto|DPE|Désactive': {
+    matomo: ['Carto', 'DPE', 'Désactive'],
+  },
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
     google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible
@@ -175,11 +238,119 @@ const trackingEvents = {
   'Téléchargement|Guide FCU|Ressources': {
     matomo: ['Téléchargement', 'Guide FCU', 'Ressources'],
   },
+  'Téléchargement|Guide FCU|Supports': {
+    matomo: ['Téléchargement', 'Guide FCU', 'Supports'],
+  },
+  'Téléchargement|Guide FCU|Confirmation éligibilité': {
+    matomo: ['Téléchargement', 'Guide FCU', 'Confirmation éligibilité'],
+  },
+  'Téléchargement|Guide Collectivités|Collectivités et exploitants': {
+    matomo: [
+      'Téléchargement',
+      'Guide Collectivités',
+      'Collectivités et exploitants',
+    ],
+  },
+  'Téléchargement|Guide Exploitants|Collectivités et exploitants': {
+    matomo: [
+      'Téléchargement',
+      'Guide Exploitants',
+      'Collectivités et exploitants',
+    ],
+  },
   'Téléchargement|Tracés|carte': {
     matomo: ['Téléchargement', 'Tracés', 'carte'],
   },
   'Téléchargement|Tracés|professionnels': {
     matomo: ['Téléchargement', 'Tracés', 'professionnels'],
+  },
+  'Téléchargement|Carto sources': {
+    matomo: ['Téléchargement', 'Carto sources'],
+  },
+  'Téléchargement|Dossier Presse|Partenaires': {
+    matomo: ['Téléchargement', 'Dossier Presse', 'Partenaires'],
+  },
+  'Téléchargement|Dossier Presse|Supports': {
+    matomo: ['Téléchargement', 'Dossier Presse', 'Supports'],
+  },
+  'Téléchargement|Supports|Reportage géothermie Champigny': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage géothermie Champigny'],
+  },
+  'Téléchargement|Supports|Reportage chaufferie Surville': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage chaufferie Surville'],
+  },
+  'Téléchargement|Supports|Reportage datacenter Equinix': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage datacenter Equinix'],
+  },
+  'Téléchargement|Supports|Reportage réseau froid Annecy': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage réseau froid Annecy'],
+  },
+  'Téléchargement|Supports|Reportage Isseane': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage Isseane'],
+  },
+  'Téléchargement|Supports|Reportage Alsace Charras': {
+    matomo: ['Téléchargement', 'Supports', 'Reportage Alsace Charras'],
+  },
+  'Téléchargement|Supports|Vidéo Evry-Courcouronnes': {
+    matomo: ['Téléchargement', 'Supports', 'Vidéo Evry-Courcouronnes'],
+  },
+  'Téléchargement|Supports|Vidéo comment ça marche': {
+    matomo: ['Téléchargement', 'Supports', 'Vidéo comment ça marche'],
+  },
+  'Téléchargement|Supports|Campagne pub affiche abribus': {
+    matomo: ['Téléchargement', 'Supports', 'Campagne pub affiche abribus'],
+  },
+  'Téléchargement|Supports|Campagne pub facebook 1': {
+    matomo: ['Téléchargement', 'Supports', 'Campagne pub facebook 1'],
+  },
+  'Téléchargement|Supports|Campagne pub facebook 2': {
+    matomo: ['Téléchargement', 'Supports', 'Campagne pub facebook 2'],
+  },
+  'Téléchargement|Supports|Visuel promotion affiche information': {
+    matomo: [
+      'Téléchargement',
+      'Supports',
+      'Visuel promotion affiche information',
+    ],
+  },
+  'Téléchargement|Supports|Visuel promotion post LI ou FB 1': {
+    matomo: ['Téléchargement', 'Supports', 'Visuel promotion post LI ou FB 1'],
+  },
+  'Téléchargement|Supports|Visuel promotion post LI ou FB 2': {
+    matomo: ['Téléchargement', 'Supports', 'Visuel promotion post LI ou FB 2'],
+  },
+  'Téléchargement|Supports|Infographie Avenir': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Avenir'],
+  },
+  'Téléchargement|Supports|Infographie Classement': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Classement'],
+  },
+  'Téléchargement|Supports|Infographie Ménages': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Ménages'],
+  },
+  'Téléchargement|Supports|Infographie Cout': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Cout'],
+  },
+  'Téléchargement|Supports|Infographie ENRR': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie ENRR'],
+  },
+  'Téléchargement|Supports|Infographie Géothermie': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Géothermie'],
+  },
+  'Téléchargement|Supports|Infographie Biomasse': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Biomasse'],
+  },
+  'Téléchargement|Supports|Infographie Chaleur Fatale': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Chaleur Fatale'],
+  },
+  'Téléchargement|Supports|Infographie Solaire': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Solaire'],
+  },
+  'Téléchargement|Supports|Infographie Froid': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Froid'],
+  },
+  'Téléchargement|Supports|Infographie Optimisation': {
+    matomo: ['Téléchargement', 'Supports', 'Infographie Optimisation'],
   },
   Vidéo: {
     matomo: ['Vidéo'],

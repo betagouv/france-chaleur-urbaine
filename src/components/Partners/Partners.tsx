@@ -10,6 +10,7 @@ import {
   Wrapper,
 } from './Partners.style';
 import Link from 'next/link';
+import { trackEvent } from 'src/services/analytics';
 
 const Partners = () => {
   const [firstLogo, setFirstLogo] = useState(0);
@@ -77,14 +78,17 @@ Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au dével
         <Link className="fr-btn" href="/contact">
           Rejoindre notre réseau
         </Link>
-        <a
+        <Link
           className="fr-btn fr-btn--secondary"
           href="/documentation/dossier-presse.pdf"
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noreferrer noopener"
+          onClick={() => {
+            trackEvent('Téléchargement|Dossier Presse|Partenaires');
+          }}
         >
           Notre dossier de présentation
-        </a>
+        </Link>
       </ButtonGroup>
     </Slice>
   );

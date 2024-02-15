@@ -81,6 +81,7 @@ import {
   MapboxStyleSwitcherControl,
 } from './StyleSwitcher';
 import { ExpressionSpecification, MapLibreEvent } from 'maplibre-gl';
+import { trackEvent } from 'src/services/analytics';
 
 let hoveredStateId: any;
 const setHoveringState = (
@@ -1172,6 +1173,7 @@ const Map = ({
                     id="mode-pro-toggle"
                     onChange={(e) => {
                       setProMode(e.target.checked);
+                      e.target.checked && trackEvent('Carto|Active Pro Mode');
                     }}
                     className="fr-toggle__input"
                   />
