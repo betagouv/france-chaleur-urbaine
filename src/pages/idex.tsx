@@ -42,12 +42,12 @@ const IdexMap = () => {
           ],
           [
             'in',
-            'mixener',
+            'mixéner',
             ['downcase', ['coalesce', ['get', 'gestionnaire'], '']],
           ],
           [
             'in',
-            'mixener',
+            'mixéner',
             ['downcase', ['coalesce', ['get', 'Gestionnaire'], '']],
           ],
         ]}
