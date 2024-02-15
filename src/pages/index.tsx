@@ -46,10 +46,10 @@ export default function Home() {
             >
               <Box flex className="fr-hidden fr-unhidden-lg">
                 <Image
-                  src="/img/copro_test_adresse.avif"
+                  src="/img/copro_head_test_adresse.webp"
                   alt=""
-                  width={584}
-                  height={393}
+                  width={592}
+                  height={398}
                   priority
                   className="fr-responsive-img"
                 />
@@ -115,10 +115,10 @@ export default function Home() {
 
             <Box flex>
               <Image
-                src="/img/copro_comprendre.avif"
+                src="/img/copro_comprendre.webp"
                 alt="Schéma du chauffage urbain"
-                width={589}
-                height={555}
+                width={944}
+                height={890}
                 priority
                 className="fr-responsive-img"
               />
@@ -148,11 +148,12 @@ export default function Home() {
               className="fr-col-md-12 fr-col-lg-6 fr-col-xl-3"
             >
               <Image
-                src="/img/copro_avantages_1.avif"
+                src="/img/copro_avantages_1.webp"
                 alt=""
                 width={160}
                 height={125}
                 priority
+                className="img-object-contain"
               />
               <Text size="lg" textAlign="center" mt="2w">
                 Bénéficiez de tarifs plus stables grâce à des énergies locales
@@ -166,11 +167,12 @@ export default function Home() {
               className="fr-col-md-12 fr-col-lg-6 fr-col-xl-3"
             >
               <Image
-                src="/img/copro_avantages_2.avif"
+                src="/img/copro_avantages_2.webp"
                 alt=""
                 width={160}
                 height={125}
                 priority
+                className="img-object-contain"
               />
               <Text size="lg" textAlign="center" mt="2w">
                 Profitez de subventions pour le raccordement et d’une TVA à 5,5%
@@ -184,11 +186,12 @@ export default function Home() {
               className="fr-col-md-12 fr-col-lg-6 fr-col-xl-3"
             >
               <Image
-                src="/img/copro_avantages_3.avif"
+                src="/img/copro_avantages_3.webp"
                 alt=""
                 width={160}
                 height={125}
                 priority
+                className="img-object-contain"
               />
               <Text size="lg" textAlign="center" mt="2w">
                 Diminuez vos émissions de gaz à effet de serre d’en moyenne 50%
@@ -202,11 +205,12 @@ export default function Home() {
               className="fr-col-md-12 fr-col-lg-6 fr-col-xl-3"
             >
               <Image
-                src="/img/copro_avantages_4.avif"
+                src="/img/copro_avantages_4.webp"
                 alt=""
                 width={160}
                 height={125}
                 priority
+                className="img-object-contain"
               />
               <Text size="lg" textAlign="center" mt="2w">
                 Améliorez l'étiquette DPE de votre copropriété
@@ -267,10 +271,10 @@ export default function Home() {
 
             <Box flex>
               <Image
-                src="/img/copro_guide_raccordement.avif"
+                src="/img/copro_guide_raccordement.webp"
                 alt="Guide de raccordement à un réseau de chaleur"
-                width={409}
-                height={313}
+                width={944}
+                height={725}
                 className="fr-responsive-img"
               />
             </Box>
@@ -327,10 +331,10 @@ export default function Home() {
               </Text>
 
               <Image
-                src="/img/copro_cout_chaleur.avif"
+                src="/img/copro_cout_chaleur.webp"
                 alt="Graphique comparatif du coût des méthodes de chauffage"
-                width={502}
-                height={266}
+                width={944}
+                height={499}
                 className="fr-responsive-img"
               />
               <Text size="sm">
@@ -359,7 +363,7 @@ export default function Home() {
 
               <Box display="flex" alignItems="center" mt="4w">
                 <Image
-                  src="/img/copro_cout_1.avif"
+                  src="/img/copro_cout_1.webp"
                   alt=""
                   width={160}
                   height={140}
@@ -375,7 +379,7 @@ export default function Home() {
 
               <Box display="flex" alignItems="center" mt="1w">
                 <Image
-                  src="/img/copro_cout_2.avif"
+                  src="/img/copro_cout_2.webp"
                   alt=""
                   width={160}
                   height={140}
@@ -392,7 +396,7 @@ export default function Home() {
 
               <Box display="flex" alignItems="center" mt="1w">
                 <Image
-                  src="/img/copro_cout_3.avif"
+                  src="/img/copro_cout_3.webp"
                   alt=""
                   width={160}
                   height={140}
