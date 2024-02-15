@@ -241,6 +241,9 @@ const trackingEvents = {
   'Téléchargement|Guide FCU|Supports': {
     matomo: ['Téléchargement', 'Guide FCU', 'Supports'],
   },
+  'Téléchargement|Guide FCU|Confirmation éligibilité': {
+    matomo: ['Téléchargement', 'Guide FCU', 'Confirmation éligibilité'],
+  },
   'Téléchargement|Guide Collectivités|Collectivités et exploitants': {
     matomo: [
       'Téléchargement',
