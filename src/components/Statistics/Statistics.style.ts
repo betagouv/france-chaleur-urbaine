@@ -79,6 +79,15 @@ export const NumberItalicText = styled.span`
   font-size: 0.8rem;
 `;
 
+export const NumberText = styled.span`
+  font-size: 0.9rem;
+`;
+
+export const NumberSubText = styled.div`
+  font-size: 0.8rem;
+  line-height: 1.2rem;
+`;
+
 export const LastActuDate = styled.div`
   margin-bottom: 24px;
   font-size: 0.9rem;

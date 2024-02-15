@@ -15,6 +15,8 @@ import {
   NumberHighlight,
   NumberHoverableIcon,
   NumberItalicText,
+  NumberSubText,
+  NumberText,
   StatisticsSliceContainer,
 } from './Statistics.style';
 import statistics from '@data/statistics';
@@ -340,7 +342,7 @@ const Statistics = () => {
             <ColumnContainer>
               <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
               <NumberContainer>
-                <NumberBlock className="fr-col-md-5 fr-col-12">
+                <NumberBlock className="fr-col-md-6 fr-col-12">
                   <NumberHighlight>{statistics.connection}</NumberHighlight>
                   Raccordements à l'étude
                   <HoverableIcon
@@ -355,8 +357,15 @@ const Statistics = () => {
                     proposition du gestionnaire de réseau devra ensuite être
                     votée en AG avant que les travaux ne puissent démarrer.
                   </HoverableIcon>
+                  <br />
+                  <NumberText>(~17 700 logements)</NumberText>
+                  <br />
+                  <NumberSubText className="fr-mt-1w">
+                    A titre de comparaison, le nombre total de bâtiments
+                    raccordés en France en 2022 s'élève à 2435
+                  </NumberSubText>
                 </NumberBlock>
-                <NumberBlock className="fr-col-md-7 fr-col-12">
+                <NumberBlock className="fr-col-md-6 fr-col-12">
                   <NumberHighlight>~ {statistics.CO2Tons}</NumberHighlight>
                   Tonnes de CO2 potentiellement économisées par an
                   <br />
