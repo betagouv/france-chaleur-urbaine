@@ -13,7 +13,6 @@
         - Il faudra peut-être modifier le fichier pour changer le nom de la table par *reseaux_de_chaleur* et supprimer sa création ainsi que celle des index
 
 3. Mise à jour des données sur les réseaux depuis Airtable
-    - Aller dans le dossier *scripts*
     - Si la table des réseaux a été mise à jour lors de l'étape précédente : `yarn cli update-networks network`
     - Sinon 
         - `yarn cli download-network network`
