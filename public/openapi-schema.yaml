@@ -1,0 +1,137 @@
+openapi: 3.1.0
+info:
+  title: API France Chaleur Urbaine
+  version: 1.0.0
+  description: |-
+    L'API France Chaleur Urbaine permet de télécharger les données et tracés des réseaux de chaleur, et tester la proximité avec les réseaux de chaleur.
+  termsOfService: https://france-chaleur-urbaine.beta.gouv.fr/mentions-legales
+  contact:
+    name: Equipe France Chaleur Urbaine
+    email: france-chaleur-urbaine@developpement-durable.gouv.fr
+    url: https://france-chaleur-urbaine.beta.gouv.fr
+  license:
+    name: Licence Ouverte / Open Licence version 2.0
+    url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+# Bientôt
+# externalDocs:
+#   description: Documentation de l'API
+#   url: https://france-chaleur-urbaine.beta.gouv.fr/ressources/api
+servers:
+  - url: https://france-chaleur-urbaine.beta.gouv.fr/api
+tags:
+  - name: Informations générales
+paths:
+  /v1/networks:
+    get:
+      summary: Lister les réseaux de chaleur et les réseaux de froid
+      tags:
+        - Informations générales
+      responses:
+        '200':
+          description: Opération réussie
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_fcu:
+                      type: number
+                      description: identifiant interne à France Chaleur Urbaine
+                    'Identifiant reseau':
+                      type: string
+                      example: 7501C
+                      description: identifiant SNCU
+                    nom_reseau:
+                      type: string
+                      example: Paris et communes limitrophes
+                    Gestionnaire:
+                      type: string
+                      example: CPCU (ENGIE SOLUTIONS)
+                    'Taux EnR&R':
+                      type: number
+                      example: 50.1
+                    'contenu CO2':
+                      type: number
+                      example: 0.154
+                    'contenu CO2 ACV':
+                      type: number
+                      example: 0.188
+                    geom:
+                      type: object
+                      description: Géométrie au format GeoJSON
+                      properties:
+                        type:
+                          title: Chiffre d'affaires en euros
+                          type: string
+                          example: MultiLineString
+                        coordinates:
+                          type: array
+                          items:
+                            type: array
+                            items:
+                              type: array
+                              items:
+                                type: number
+        '400':
+          description: Erreur de paramètres
+        '500':
+          description: Erreur technique
+  /v1/eligibility:
+    get:
+      summary: Tester l'éligibilité d'un point géographique avec les réseaux de chaleur.
+      tags:
+        - Informations générales
+      parameters:
+        - name: lat
+          in: query
+          description: Latitude (EPSG:4326)
+          required: true
+          schema:
+            type: number
+        - name: lon
+          in: query
+          description: Longitude (EPSG:4326)
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Opération réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isEligible:
+                    type: boolean
+                    description: "true si la distance entre l'adresse testée et le réseau de chaleur le plus proche est inférieure à un certain seuil de distance* ou si nous avons connaissance d'un réseau de chaleur dans le quartier dont nous n'avons pas le tracé. * Le seuil de distance est fixé à 100 m sur Paris, 200 m ailleurs. En pratique ce seuil dépendra des besoins en chaleur du bâtiment à raccorder. Les valeurs prises ici sont volontairement élevées : le gestionnaire du réseau sera le seul à même d'évaluer la faisabilité du raccordement"
+                  distance:
+                    type: number
+                    description: distance à vol d'oiseau entre l'adresse testée et le réseau de chaleur le plus proche
+                  inPDP:
+                    type: boolean
+                    description: true si l'adresse testée se situe dans le périmètre de développement prioritaire d'un réseau classé (zone où s'applique une obligation de raccordement pour certains bâtiments)
+                  isBasedOnIris:
+                    type: boolean
+                    description: s'il n'y a pas de réseau à moins de 1 km de l'adresse testée, nous vérifions s'il existe une consommation de chaleur sur un réseau dans le quartier (iris), sur la base des données locales de l'énergie. Le cas échéant, c'est qu'il existe un réseau dans le quartier, dont nous n'avons pas le tracé.
+                  futurNetwork:
+                    type: boolean
+                    description: true si le réseau le plus proche, sur lequel est établi le résultat isEligible, est un réseau actuellement en construction
+                  id:
+                    type: string
+                    description: identifiant national du réseau de chaleur le plus proche
+                  rateENRR:
+                    type: number
+                    description: taux d'énergies renouvelables et de récupération du réseau de chaleur le plus proche, en %, sur la base du dernier arrêté "DPE"
+                  gestionnaire:
+                    type: string
+                    description: nom du gestionnaire du réseau le plus proche
+                  rateCO2:
+                    type: number
+                    description: contenu CO2 en analyse du cycle de vie (émissions directes et indirectes) du réseau de chaleur le plus proche, en kg/kWh, sur la base du dernier arrêté "DPE"
+        '400':
+          description: Erreur de paramètres
+        '500':
+          description: Erreur technique
