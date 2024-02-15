@@ -3489,6 +3489,11 @@ expand-template@^2.0.3:
   resolved "https://registry.yarnpkg.com/expand-template/-/expand-template-2.0.3.tgz#6e14b3fcee0f3a6340ecb57d2e8918692052a47c"
   integrity sha512-XYfuKMvj4O35f/pOXLObndIRvyQ+/+6AhODh+OKWj9S9498pHHn/IMszH+gt0fBCRWMNfk1ZSp5x3AifmnI2vg==
 
+express-rate-limit@^7.1.5:
+  version "7.1.5"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-7.1.5.tgz#af4c81143a945ea97f2599d13957440a0ddbfcfe"
+  integrity sha512-/iVogxu7ueadrepw1bS0X0kaRC/U0afwiYRSLg68Ts+p4Dc85Q5QKsOnPS/QUjPMHvOJQtBDrZgvkOzf8ejUYw==
+
 extend-shallow@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/extend-shallow/-/extend-shallow-2.0.1.tgz#51af7d614ad9a9f610ea1bafbb989d6b1c56890f"
@@ -5630,10 +5635,10 @@ node-releases@^2.0.14:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.14.tgz#2ffb053bceb8b2be8495ece1ab6ce600c4461b0b"
   integrity sha512-y10wOWt8yZpqXmOgRo77WaHEmhYQYGNA6y421PKsKYWEK8aW+cqAphborZDhqfyKrbZEN92CN1X2KbafY2s7Yw==
 
-nodemailer@^6.9.4:
-  version "6.9.7"
-  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.9.7.tgz#ec2f488f62ba1558e7b19239b62778df4a5c4397"
-  integrity sha512-rUtR77ksqex/eZRLmQ21LKVH5nAAsVicAtAYudK7JgwenEDZ0UIQ1adUGqErz7sMkWYxWTTU1aeP2Jga6WQyJw==
+nodemailer@^6.9.9:
+  version "6.9.9"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.9.9.tgz#4549bfbf710cc6addec5064dd0f19874d24248d9"
+  integrity sha512-dexTll8zqQoVJEZPwQAKzxxtFn0qTnjdQTchoU6Re9BUUGBJiOy3YMn/0ShTW6J5M0dfQ1NeDeRTTl4oIWgQMA==
 
 normalize-path@^3.0.0:
   version "3.0.0"

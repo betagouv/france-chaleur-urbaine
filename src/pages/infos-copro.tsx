@@ -27,8 +27,7 @@ export default function InfosCoproPage() {
       <HeadSliceForm
         bg="/img/banner_infos-copro.png"
         pageBody={`
-Copropriétaires, faites des économies
-# Avec le chauffage urbain, réduisez vos factures de chauffage jusqu’à 40%`}
+# Copropriétaires, raccordez-vous aux réseaux de chaleur et maîtrisez vos factures !`}
         formLabel="Vérifiez immédiatement si votre immeuble pourrait être raccordé !"
         checkEligibility
         needGradient
