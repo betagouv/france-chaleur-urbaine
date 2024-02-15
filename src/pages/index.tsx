@@ -254,6 +254,15 @@ export default function Home() {
                   projet de raccordement
                 </Text>
               </WhiteArrowPuce>
+              <Link
+                href="/documentation/guide-france-chaleur-urbaine.pdf"
+                variant="primary"
+                isExternal
+                eventKey="Téléchargement|Guide FCU|coproprietaire"
+                mt="2w"
+              >
+                Télécharger le guide de raccordement
+              </Link>
             </Box>
 
             <Box flex>
@@ -264,15 +273,6 @@ export default function Home() {
                 height={313}
                 className="fr-responsive-img"
               />
-
-              <Link
-                href="/documentation/guide-france-chaleur-urbaine.pdf"
-                variant="primary"
-                isExternal
-                eventKey="Téléchargement|Guide FCU|coproprietaire"
-              >
-                Télécharger le guide de raccordement
-              </Link>
             </Box>
           </ResponsiveRow>
         </Box>
