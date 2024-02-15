@@ -11,6 +11,7 @@ interface HeadingProps extends SpacingProperties {
   color?: 'grey' | 'blue-france' | 'red-marianne';
   legacyColor?: LegacyColor;
   center?: boolean;
+  id?: string;
 }
 
 /**
@@ -42,6 +43,7 @@ function Heading(props: PropsWithChildren<HeadingProps>) {
       }
       ${spacingsToClasses(props)}`}
       style={style}
+      id={props.id}
     >
       {props.children}
     </Type>

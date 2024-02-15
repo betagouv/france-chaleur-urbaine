@@ -6,6 +6,7 @@ type StyleProps = {
   display?: CSSProperties['display'];
   flexDirection?: CSSProperties['flexDirection'];
   alignItems?: CSSProperties['alignItems'];
+  justifyContent?: CSSProperties['justifyContent'];
   gap?: CSSProperties['gap'];
   flex?: boolean;
   backgroundColor?: CSSProperties['backgroundColor'];
@@ -18,6 +19,7 @@ const StyledBox = styled.div<StyleProps>`
   display: ${({ display }) => display};
   flex-direction: ${({ flexDirection: direction }) => direction};
   align-items: ${({ alignItems }) => alignItems};
+  justify-content: ${({ justifyContent }) => justifyContent};
   gap: ${({ gap }) => gap};
   flex: ${({ flex }) => (flex !== undefined ? (flex ? 1 : 0) : undefined)};
   background-color: ${({ backgroundColor }) =>
@@ -55,6 +57,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       display={props.display ?? 'block'}
       flexDirection={props.flexDirection}
       alignItems={props.alignItems}
+      justifyContent={props.justifyContent}
       gap={props.gap}
       flex={props.flex}
       backgroundColor={props.backgroundColor}
@@ -85,9 +88,10 @@ type GridBreakpoint = keyof typeof gridBreakpoints;
  */
 export const ResponsiveRow = styled(Box)<{
   breakpoint?: GridBreakpoint;
+  gap?: CSSProperties['gap'];
 }>`
   display: flex;
-  gap: 64px;
+  gap: ${({ gap }) => gap ?? '64px'};
 
   @media (max-width: ${({ breakpoint }) =>
       gridBreakpoints[breakpoint ?? 'lg']}px) {

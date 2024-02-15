@@ -65,8 +65,14 @@ export const AppGlobalStyle = createGlobalStyle`
   .img-object-contain {
     object-fit: contain;
   }
+  .d-block {
+    display: block !important;
+  }
   .d-inline-block {
     display: inline-block !important;
+  }
+  :root {
+    --white: #fff;
   }
 `;
 
