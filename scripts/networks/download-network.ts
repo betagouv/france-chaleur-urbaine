@@ -132,7 +132,7 @@ const conversionConfigReseauxDeFroid = {
 const conversionConfigAutres = {
   mise_en_service: TypeString,
   gestionnaire: TypeString,
-  communes: TypeString,
+  communes: TypeStringToArray,
   is_zone: TypeBool,
 } as const;
 
@@ -204,6 +204,36 @@ export const downloadNetwork = async (table: DataType) => {
       addIds: addIds.length > 0 ? addIds.toString() : '0',
       update: updateCount,
     });
+  } else if (table === 'futurNetwork') {
+    const addIds: number[] = [];
+    const networksDB = await db(tileInfo.table).select('id_fcu');
+    await Promise.all(
+      networksDB.map(async (network) => {
+        const networkAirtable = networksAirtable.find(
+          (row) => row.get('id_fcu') === network['id_fcu']
+        );
+        if (!networkAirtable) {
+          addIds.push(network['id_fcu']);
+          await base(tileInfo.airtable as string).create(
+            [
+              {
+                fields: {
+                  id_fcu: network['id_fcu'],
+                  communes: network['communes'],
+                },
+              },
+            ],
+            {
+              typecast: true,
+            }
+          );
+        }
+      })
+    );
+    logger.info('', {
+      add: addIds.length,
+      addIds: addIds.length > 0 ? addIds.toString() : '0',
+    });
   }
 
   await Promise.all(
@@ -266,10 +296,9 @@ function convertAirtableValue(value: any, type: Type) {
       return value !== undefined && value !== null && value !== 'NULL'
         ? value
         : null;
-    case TypeStringToArray: {
+    case TypeStringToArray:
       return value !== undefined && value !== null && value !== 'NULL'
-        ? value.split()
+        ? value.split(',')
         : [];
-    }
   }
 }
