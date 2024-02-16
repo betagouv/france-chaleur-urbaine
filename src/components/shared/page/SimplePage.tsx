@@ -77,7 +77,7 @@ const publicNavigationMenu: NavigationItem[] = [
     title: 'Copropriétaires',
     children: [
       {
-        title: 'Tester votre adresse',
+        title: 'Testez votre adresse',
         href: '/',
       },
       {
@@ -114,16 +114,16 @@ const publicNavigationMenu: NavigationItem[] = [
         href: '/collectivites-et-exploitants',
       },
       {
-        title: 'Vous souhaitez communiquer',
+        title: 'Communiquez sur votre réseau',
         href: '/collectivites-et-exploitants#communiquer',
       },
       {
-        title: 'Vous avez besoin de développer votre réseau ',
-        href: '/collectivites-et-exploitants#developper',
+        title: 'Trouvez des prospects',
+        href: '/collectivites-et-exploitants#prospecter',
       },
       {
-        title: 'Vous cherchez à prospecter',
-        href: '/collectivites-et-exploitants#prospecter',
+        title: 'Développez votre réseau grâce aux données',
+        href: '/collectivites-et-exploitants#developper',
       },
     ],
   },
