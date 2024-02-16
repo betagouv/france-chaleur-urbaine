@@ -44,7 +44,7 @@ export default function Home() {
             >
               <Box flex className="fr-hidden fr-unhidden-lg">
                 <Image
-                  src="/img/copro_head_test_adresse.webp"
+                  src="/img/copro_header.webp"
                   alt=""
                   width={592}
                   height={398}

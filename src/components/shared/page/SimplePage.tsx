@@ -108,7 +108,24 @@ const publicNavigationMenu: NavigationItem[] = [
   },
   {
     title: 'Collectivités, exploitants',
-    href: '/collectivites-et-exploitants',
+    children: [
+      {
+        title: 'France Chaleur Urbaine à votre service',
+        href: '/collectivites-et-exploitants',
+      },
+      {
+        title: 'Vous souhaitez communiquer',
+        href: '/collectivites-et-exploitants#communiquer',
+      },
+      {
+        title: 'Vous avez besoin de développer votre réseau ',
+        href: '/collectivites-et-exploitants#developper',
+      },
+      {
+        title: 'Vous cherchez à prospecter',
+        href: '/collectivites-et-exploitants#prospecter',
+      },
+    ],
   },
   {
     title: 'Cartographie',

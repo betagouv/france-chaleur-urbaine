@@ -10,7 +10,7 @@ export const Container = styled.div<{
     cartridge
       ? `
           background-color:  ${
-            withRedirection ? '#4550e5' : 'rgba(205, 227, 240, 0.2)'
+            withRedirection ? '#4550e5' : 'var(--blue-france-975-75)'
           };
           max-width: 450px;
           border-radius: 0.7em;
