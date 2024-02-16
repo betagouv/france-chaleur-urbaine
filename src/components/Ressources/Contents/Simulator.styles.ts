@@ -10,7 +10,7 @@ export const Container = styled.div<{
     cartridge
       ? `
           background-color:  ${
-            withRedirection ? '#4550e5' : 'rgba(205, 227, 240, 0.2)'
+            withRedirection ? '#4550e5' : 'var(--blue-france-975-75)'
           };
           max-width: 450px;
           border-radius: 0.7em;
@@ -77,7 +77,7 @@ export const Result = styled.div<{
   cartridge?: boolean;
 }>`
   width: fit-content;
-  background-color: #efc73f;
+  background-color: #27a658;
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -93,7 +93,7 @@ export const Result = styled.div<{
   ${({ cartridge }) =>
     cartridge &&
     `
-    color: #4550e5;
+    color: #fff;
   `}
 `;
 

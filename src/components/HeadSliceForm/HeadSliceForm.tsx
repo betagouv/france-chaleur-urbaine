@@ -45,6 +45,9 @@ type HeadBannerType = {
   needGradient?: boolean;
   externBulkForm?: boolean;
   withBulkEligibility?: boolean;
+
+  // allows to override the default slice wrapper
+  withWrapper?: (form: React.ReactElement) => React.ReactElement;
 };
 
 const HeadSlice = ({
@@ -58,6 +61,7 @@ const HeadSlice = ({
   needGradient,
   externBulkForm,
   withBulkEligibility,
+  withWrapper,
 }: HeadBannerType) => {
   const {
     EligibilityFormContactRef,
@@ -152,7 +156,7 @@ const HeadSlice = ({
       checkEligibility ? (
         <>
           {child}
-          <FormLabel>{formLabel}</FormLabel>
+          {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
           <CheckEligibilityFormLabel>
             <SelectEnergy
               name="heatingType"
@@ -225,11 +229,15 @@ const HeadSlice = ({
 
   return (
     <>
-      <Slice theme="grey" bg={bg} bgPos={bgPos} bgColor="#CDE3F0" padding={8}>
-        <HeadSliceContainer needGradient={needGradient}>
-          <Container>{WrappedChild}</Container>
-        </HeadSliceContainer>
-      </Slice>
+      {withWrapper ? (
+        withWrapper(WrappedChild)
+      ) : (
+        <Slice theme="grey" bg={bg} bgPos={bgPos} bgColor="#CDE3F0" padding={8}>
+          <HeadSliceContainer needGradient={needGradient}>
+            <Container>{WrappedChild}</Container>
+          </HeadSliceContainer>
+        </Slice>
+      )}
 
       <SliceContactFormStyle />
 

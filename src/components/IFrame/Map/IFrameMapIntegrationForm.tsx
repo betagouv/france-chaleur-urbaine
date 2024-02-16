@@ -1,6 +1,6 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { Checkbox, CheckboxGroup } from '@dataesr/react-dsfr';
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { AddressContainer } from './IFrameParametrization.styles';
 import { Coords } from 'src/types/Coords';
@@ -30,7 +30,7 @@ const selectableLayers = [
 
 type LayerKey = (typeof selectableLayers)[number]['key'];
 
-const IFrameMapIntegrationForm = () => {
+const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
   const [coords, setCoords] = useState<Coords | null>(null);
   const [selectedLayers, setSelectedLayers] = useState<LayerKey[]>([
     'pdp',
@@ -83,9 +83,13 @@ const IFrameMapIntegrationForm = () => {
           />
         ))}
       </CheckboxGroup>
-      <DivQuestionCenterMap>
-        Vous souhaitez centrer la carte sur un endroit en particulier ?
-      </DivQuestionCenterMap>
+      {label ? (
+        label
+      ) : (
+        <DivQuestionCenterMap>
+          Vous souhaitez centrer la carte sur un endroit en particulier ?
+        </DivQuestionCenterMap>
+      )}
       <AddressContainer>
         <AddressAutocomplete
           onAddressSelected={onAddressSelected}

@@ -14,7 +14,7 @@ import {
 } from '@dataesr/react-dsfr';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Fragment } from 'react';
+import { ComponentProps, Fragment } from 'react';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import Image from 'next/image';
 import {
@@ -75,7 +75,32 @@ type NavigationItem = {
 const publicNavigationMenu: NavigationItem[] = [
   {
     title: 'Copropriétaires',
-    href: '/',
+    children: [
+      {
+        title: 'Tester votre adresse',
+        href: '/',
+      },
+      {
+        title: 'Comprendre le chauffage urbain',
+        href: '/#comprendre-le-chauffage-urbain',
+      },
+      {
+        title: 'Les avantages du chauffage urbain',
+        href: '/#avantages-du-chauffage-urbain',
+      },
+      {
+        title: 'Comment se raccorder ?',
+        href: '/#comment-se-raccorder',
+      },
+      {
+        title: 'Les coûts du chauffage urbain',
+        href: '/#couts-du-chauffage-urbain',
+      },
+      {
+        title: 'Les obligations de raccordement',
+        href: '/#obligations-de-raccordement',
+      },
+    ],
   },
   {
     title: 'Professionnels',
@@ -83,7 +108,24 @@ const publicNavigationMenu: NavigationItem[] = [
   },
   {
     title: 'Collectivités, exploitants',
-    href: '/collectivites-et-exploitants',
+    children: [
+      {
+        title: 'France Chaleur Urbaine à votre service',
+        href: '/collectivites-et-exploitants',
+      },
+      {
+        title: 'Vous souhaitez communiquer',
+        href: '/collectivites-et-exploitants#communiquer',
+      },
+      {
+        title: 'Vous avez besoin de développer votre réseau ',
+        href: '/collectivites-et-exploitants#developper',
+      },
+      {
+        title: 'Vous cherchez à prospecter',
+        href: '/collectivites-et-exploitants#prospecter',
+      },
+    ],
   },
   {
     title: 'Cartographie',
@@ -235,6 +277,7 @@ const PageHeader = (props: PageHeaderProps) => {
             }
             asLink={href ? <Link href={href}>{title}</Link> : undefined}
           >
+            {/* ici warning Prop `aria-controls` did not match lié à @dataesr/react-dsfr */}
             {children?.map((subNav) => (
               <NavSubItem
                 key={subNav.title}
@@ -312,30 +355,24 @@ const PageFooter = () => {
         <FooterPartnersSecondaryTitle>
           Nos financeurs
         </FooterPartnersSecondaryTitle>
-        <FooterPartnersLogo
+        <LazyFooterPartnersLogo
           isMain
           href="http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
           imageSrc="/logo-DRIEAT.png"
           target="_blank"
           imageAlt="DRIEAT"
         />
-        <FooterPartnersLogo
+        <LazyFooterPartnersLogo
           href="https://www.gouvernement.fr/"
           imageSrc="/logo-government.svg"
           target="_blank"
           imageAlt="Gouvernement"
         />
-        <FooterPartnersLogo
+        <LazyFooterPartnersLogo
           href="https://www.ademe.fr"
           imageSrc="/logo-ADEME.svg"
           target="_blank"
-          imageAlt="Gouvernement"
-        />
-        <FooterPartnersLogo
-          href="https://www.economie.gouv.fr/plan-de-relance"
-          imageSrc="/logo-relance.png"
-          target="_blank"
-          imageAlt="France relance"
+          imageAlt="ADEME"
         />
       </FooterPartners>
       <FooterBottom>
@@ -406,4 +443,25 @@ const PageFooter = () => {
       </FooterBottom>
     </FooterDS>
   );
+};
+
+/**
+ * Version des logo partenaires qui active le lazy loading.
+ */
+const LazyFooterPartnersLogo = (
+  props: ComponentProps<typeof FooterPartnersLogo> & { href: string }
+) => (
+  <Link className="fr-footer__partners-link" href={props.href} target="_blank">
+    <img
+      className="fr-footer__logo"
+      src={props.imageSrc}
+      alt={props.imageAlt}
+      loading="lazy"
+    />
+  </Link>
+);
+
+// Permet au composant FooterPartners de retrouver le logo
+LazyFooterPartnersLogo.defaultProps = {
+  __TYPE: 'FooterPartnersLogo',
 };

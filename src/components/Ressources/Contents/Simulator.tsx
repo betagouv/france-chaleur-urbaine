@@ -11,6 +11,7 @@ import {
   ResultValue,
   Title,
 } from './Simulator.styles';
+import Text from '@components/ui/Text';
 
 const prixSpotCEE = 8.42; // €/MWh cumac
 
@@ -64,6 +65,7 @@ const Simulator = ({
       <Form cartridge={cartridge}>
         <Inputs cartridge={cartridge}>
           <Select
+            aria-label="Type de bâtiment"
             options={[
               { label: 'Résidentiel', value: 'Résidentiel' },
               { label: 'Tertiaire', value: 'Tertiaire' },
@@ -95,18 +97,20 @@ const Simulator = ({
             </ResultValue>
             {structure === 'Résidentiel' && (
               <span>
-                Soit{' '}
+                soit{' '}
                 {(intValue ? help / intValue : 0).toLocaleString('fr-FR', {
                   style: 'currency',
                   currency: 'EUR',
                   maximumFractionDigits: 0,
-                })}
-                /logement
+                })}{' '}
+                d’aide/logement
               </span>
             )}
           </Result>
           <Disclaimer cartridge={cartridge}>
-            *Montants donnés à titre indicatif.
+            <Text size="sm" legacyColor="black">
+              *Montants donnés à titre indicatif.
+            </Text>
           </Disclaimer>
         </div>
       </Form>

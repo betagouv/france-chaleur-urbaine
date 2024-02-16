@@ -159,6 +159,7 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
             src="https://voxusagers.numerique.gouv.fr/static/bouton-bleu.svg"
             alt="Je donne mon avis"
             title="Je donne mon avis sur cette démarche"
+            loading="lazy"
           />
         </UnderlinedLink>
       </div>

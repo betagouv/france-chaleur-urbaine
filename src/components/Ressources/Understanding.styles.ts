@@ -7,6 +7,7 @@ export const UnderstandingCards = styled.div`
   padding: 8px;
   gap: 32px;
   justify-content: center;
+  width: 100%;
 `;
 
 export const UnderstandingCard = styled(Card)`

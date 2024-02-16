@@ -293,7 +293,7 @@ export const CountItem = ({
   </div>
 );
 
-const ArrowPuce = styled.div`
+export const ArrowPuce = styled.div`
   ${CheckItemFCU}
   align-items: flex-start;
   strong {
@@ -310,7 +310,7 @@ const ArrowPuce = styled.div`
   }
 `;
 
-const WhiteArrowPuce = styled(ArrowPuce)`
+export const WhiteArrowPuce = styled(ArrowPuce)`
   color: white;
   em {
     font-size: 16px;

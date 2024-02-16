@@ -7,6 +7,7 @@ import {
 import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 import '@gouvfr/dsfr/dist/utility/icons/icons-editor/icons-editor.min.css';
 import '@gouvfr/dsfr/dist/utility/icons/icons-document/icons-document.min.css';
+import 'remixicon/fonts/remixicon.css';
 import '@reach/combobox/styles.css';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
@@ -28,6 +29,7 @@ import { createGlobalStyle } from 'styled-components';
 import { clientConfig } from 'src/client-config';
 import { useAnalytics } from 'src/services/analytics';
 import { SWRConfig, SWRConfiguration } from 'swr';
+import { usePreserveScroll } from '@hooks/usePreserveScroll';
 
 const og = {
   // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
@@ -56,11 +58,24 @@ const favicons = [
   },
 ];
 
-const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+export const AppGlobalStyle = createGlobalStyle`
   html {
     scroll-behavior: smooth;
   }
+  .img-object-contain {
+    object-fit: contain;
+  }
+  .d-block {
+    display: block !important;
+  }
+  .d-inline-block {
+    display: inline-block !important;
+  }
+  :root {
+    --white: #fff;
+  }
 `;
+
 const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   input[type="checkbox"], input[type="radio"] {
     width: 13px;
@@ -128,11 +143,12 @@ function MyApp({
   session: Session;
 }>) {
   const router = useRouter();
+  usePreserveScroll();
   useAnalytics();
 
   return (
     <>
-      <GlobalStyle />
+      <AppGlobalStyle />
       <DsfrFixUp />
       <ServicesContext.Provider
         value={{

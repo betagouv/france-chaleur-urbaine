@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VideoIndex, VideoIndexes } from './Interviews.styles';
+import { Icon } from '@dataesr/react-dsfr';
 
 const videos = [
   'https://www.youtube.com/embed/zsOgW8sIByc',
@@ -16,21 +16,48 @@ const InterviewsVideos = () => {
   return (
     <>
       <iframe
+        className="fr-ratio-16x9"
         width="100%"
         src={videos[videoIndex]}
         title="YouTube video player"
-        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
-      ></iframe>
-      <VideoIndexes>
-        {Array.from({ length: 6 }, (value, index) => (
-          <VideoIndex
-            key={index}
-            active={index === videoIndex}
-            onClick={() => setVideoIndex(index)}
-          />
-        ))}
-      </VideoIndexes>
+        loading="lazy"
+      />
+
+      <nav role="navigation" className="fr-pagination" aria-label="Pagination">
+        <ul className="fr-pagination__list">
+          <li>
+            <a
+              className="fr-pagination__link"
+              role="link"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setVideoIndex((videoIndex - 1 + videos.length) % videos.length);
+              }}
+            >
+              <Icon name="ri-arrow-left-s-line" />
+              Précédent
+            </a>
+          </li>
+          <li className="fr-col" aria-hidden />
+          <li>
+            <a
+              className="fr-pagination__link"
+              role="link"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setVideoIndex((videoIndex + 1) % videos.length);
+              }}
+            >
+              Suivant
+              <Icon name="ri-arrow-right-s-line" />
+            </a>
+          </li>
+        </ul>
+      </nav>
     </>
   );
 };

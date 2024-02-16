@@ -43,6 +43,7 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
         isInline={!cardMode}
         required
         value={value}
+        className="fr-mb-2w"
       >
         {options}
       </RadioGroup>

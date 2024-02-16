@@ -22,7 +22,7 @@ type SpacingProperty = (typeof spacingProperties)[number];
 export type SpacingProperties = {
   [key in SpacingProperty]?: Spacing;
 };
-type Spacing = `${number}w`;
+type Spacing = '0' | 'auto' | `${number}w`;
 
 export function spacingsToClasses<Props extends SpacingProperties>(
   componentProperties: Props
