@@ -46,10 +46,9 @@ export default function Home() {
                 <Image
                   src="/img/copro_header.webp"
                   alt=""
-                  width={592}
-                  height={398}
+                  width={624}
+                  height={420}
                   priority
-                  className="fr-responsive-img"
                 />
               </Box>
 

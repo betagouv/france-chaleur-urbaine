@@ -13,6 +13,7 @@ type StyleProps = {
   textColor?: CSSProperties['color'];
   fontWeight?: 'light' | 'regular' | 'bold' | 'heavy';
   borderRadius?: CSSProperties['borderRadius'];
+  minHeight?: CSSProperties['minHeight'];
 };
 
 const StyledBox = styled.div<StyleProps>`
@@ -35,6 +36,7 @@ const StyledBox = styled.div<StyleProps>`
         : `var(--${textColor})`
       : undefined};
   border-radius: ${({ borderRadius }) => borderRadius};
+  min-height: ${({ minHeight }) => minHeight};
 `;
 
 interface BoxProps
@@ -63,6 +65,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       backgroundColor={props.backgroundColor}
       textColor={props.textColor}
       borderRadius={props.borderRadius}
+      minHeight={props.minHeight}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
       } ${spacingsToClasses(props)}`}
