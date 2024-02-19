@@ -267,6 +267,7 @@ const bulkEligibilitygibilityStatus = async (
           fields: {
             id: id,
             Emails: email,
+            Date: new Date().toISOString(),
             "Nombre d'adresses": formattedAddresses.length,
             "Nombre d'erreurs": errorCount,
             "Nombre d'adresses éligibles": eligibileCount,
@@ -300,6 +301,7 @@ const bulkEligibilitygibilityStatus = async (
           fields: {
             id: id,
             Emails: email,
+            Date: new Date().toISOString(),
             "Nombre d'adresses": formattedAddresses.length,
             'En erreur': 'Oui',
           },
