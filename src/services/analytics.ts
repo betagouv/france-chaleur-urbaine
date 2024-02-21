@@ -173,6 +173,18 @@ const trackingEvents = {
   'Carto|DPE|Désactive': {
     matomo: ['Carto', 'DPE', 'Désactive'],
   },
+  'Carto|Zones à potentiel chaud|Active': {
+    matomo: ['Carto', 'Zones à potentiel chaud', 'Active'],
+  },
+  'Carto|Zones à potentiel chaud|Désactive': {
+    matomo: ['Carto', 'Zones à potentiel chaud', 'Désactive'],
+  },
+  'Carto|Zones à potentiel fort chaud|Active': {
+    matomo: ['Carto', 'Zones à potentiel fort chaud', 'Active'],
+  },
+  'Carto|Zones à potentiel fort chaud|Désactive': {
+    matomo: ['Carto', 'Zones à potentiel fort chaud', 'Désactive'],
+  },
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
     google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible

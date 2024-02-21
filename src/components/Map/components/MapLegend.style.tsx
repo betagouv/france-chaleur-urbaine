@@ -228,6 +228,28 @@ export const LegendGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from 
       border-radius: 50%;
     }
   }
+
+  .legend-zonesPotentielChaud-marker {
+    width: 20px !important;
+    margin-top: 0;
+
+    ::before {
+      width: 16px;
+      height: 16px;
+      background: url('/img/polygon-zonesPotentielChaud.svg');
+    }
+  }
+
+  .legend-zonesPotentielFortChaud-marker {
+    width: 20px !important;
+    margin-top: 0;
+
+    ::before {
+      width: 16px;
+      height: 16px;
+      background: url('/img/polygon-zonesPotentielFortChaud.svg');
+    }
+  }
 `;
 
 export const LegendButton = styled.div`

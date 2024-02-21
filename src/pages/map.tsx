@@ -16,6 +16,8 @@ const legendMapping: Record<LegendGroupId, string> = {
   [LegendGroupId.futurheatNetwork]: 'futur_reseau',
   [LegendGroupId.coldNetwork]: 'reseau_froid',
   [LegendGroupId.gasUsage]: 'conso_gaz',
+  [LegendGroupId.zonesPotentielChaud]: 'zonesPotentielChaud',
+  [LegendGroupId.zonesPotentielFortChaud]: 'zonesPotentielFortChaud',
 };
 const MapPage = () => {
   const router = useRouter();
@@ -84,6 +86,12 @@ const MapPage = () => {
                 ),
                 gasUsageGroup: displayArray.includes(legendMapping.gasUsage),
                 buildings: displayArray.includes(legendMapping.buildings),
+                zonesPotentielChaud: displayArray.includes(
+                  legendMapping.zonesPotentielChaud
+                ),
+                zonesPotentielFortChaud: displayArray.includes(
+                  legendMapping.zonesPotentielFortChaud
+                ),
                 gasUsage: displayArray.includes(legendMapping.gasUsage)
                   ? ['R', 'T', 'I']
                   : [],

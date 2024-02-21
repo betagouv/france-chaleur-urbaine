@@ -80,8 +80,18 @@ import {
   MapboxStyleDefinition,
   MapboxStyleSwitcherControl,
 } from './StyleSwitcher';
-import { ExpressionSpecification, MapLibreEvent } from 'maplibre-gl';
+import {
+  ExpressionSpecification,
+  LayerSpecification,
+  MapLibreEvent,
+  SourceSpecification,
+} from 'maplibre-gl';
 import { trackEvent } from 'src/services/analytics';
+import {
+  themeDefZonePotentielChaud,
+  themeDefZonePotentielFortChaud,
+} from 'src/services/Map/businessRules/zonePotentielChaud';
+import { MapLayerMouseEvent } from 'react-map-gl';
 
 let hoveredStateId: any;
 const setHoveringState = (
@@ -136,7 +146,12 @@ const styles: MapboxStyleDefinition[] = [
   },
 ];
 
-const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
+const addSource = (
+  map: any,
+  sourceId: string,
+  data: SourceSpecification,
+  layers: any[]
+) => {
   if (map.getSource(sourceId)) {
     return;
   }
@@ -302,16 +317,27 @@ const Map = ({
     }
   );
 
-  const onMapClick = (e: any, key: string) => {
-    const properties = e.features[0].properties;
-    if ((window as any).devMode) {
-      console.log('map-click', e.features[0]); // eslint-disable-line no-console
+  const onMapClick = (e: MapLayerMouseEvent, key: string) => {
+    const selectedFeature = e.features?.[0];
+    if (!selectedFeature) {
+      return;
     }
-    const { lat, lng } = e.lngLat;
+    if ((window as any).devMode) {
+      console.log('map-click', selectedFeature); // eslint-disable-line no-console
+    }
+
+    // depending on the feature type, we force the popup type to help building the popup content more easily
     setPopupInfos({
-      latitude: lat,
-      longitude: lng,
-      content: { [key]: properties },
+      latitude: e.lngLat.lat,
+      longitude: e.lngLat.lng,
+      content: ['zonesPotentielChaud', 'zonesPotentielFortChaud'].includes(
+        selectedFeature.source
+      )
+        ? {
+            type: selectedFeature.source,
+            properties: selectedFeature.properties,
+          }
+        : { [key]: selectedFeature.properties },
     });
   };
 
@@ -490,6 +516,24 @@ const Map = ({
               layerDisplay[layerId] ? 'visible' : 'none'
             );
         }
+        if (layerId === 'zonesPotentielChaud') {
+          mapRef.current
+            .getMap()
+            .setLayoutProperty(
+              'zonesPotentielChaud-outline',
+              'visibility',
+              layerDisplay[layerId] ? 'visible' : 'none'
+            );
+        }
+        if (layerId === 'zonesPotentielFortChaud') {
+          mapRef.current
+            .getMap()
+            .setLayoutProperty(
+              'zonesPotentielFortChaud-outline',
+              'visibility',
+              layerDisplay[layerId] ? 'visible' : 'none'
+            );
+        }
         mapRef.current
           .getMap()
           .setLayoutProperty(
@@ -584,6 +628,8 @@ const Map = ({
       { name: 'gasUsage', key: 'consommation' },
       { name: 'energy', key: 'energy' },
       { name: 'raccordements', key: 'raccordement' },
+      { name: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
+      { name: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
     ];
 
     e.target.loadImage('/icons/rect.png', (error, image) => {
@@ -865,6 +911,83 @@ const Map = ({
           },
         ]
       );
+
+      // ---------------------------
+      // --- zonesPotentielChaud ---
+      // ---------------------------
+      addSource(
+        e.target,
+        'zonesPotentielChaud',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
+          maxzoom: 17,
+          promoteId: 'ID_ZONE',
+          attribution:
+            '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        },
+        [
+          {
+            id: 'zonesPotentielChaud',
+            source: 'zonesPotentielChaud',
+            'source-layer': 'layer',
+            type: 'fill',
+            paint: {
+              'fill-color': themeDefZonePotentielChaud.fill.color,
+              'fill-opacity': themeDefZonePotentielChaud.fill.opacity,
+            },
+          },
+          {
+            id: 'zonesPotentielChaud-outline',
+            source: 'zonesPotentielChaud',
+            'source-layer': 'layer',
+            type: 'line',
+            paint: {
+              'line-color': themeDefZonePotentielChaud.fill.color,
+              'line-width': 2,
+            },
+          },
+        ] satisfies LayerSpecification[]
+      );
+
+      // -------------------------------
+      // --- zonesPotentielFortChaud ---
+      // -------------------------------
+      addSource(
+        e.target,
+        'zonesPotentielFortChaud',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`],
+          maxzoom: 17,
+          promoteId: 'ID_ZONE',
+          attribution:
+            '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        },
+        [
+          {
+            id: 'zonesPotentielFortChaud',
+            source: 'zonesPotentielFortChaud',
+            'source-layer': 'layer',
+            type: 'fill',
+            paint: {
+              'fill-color': themeDefZonePotentielFortChaud.fill.color,
+              'fill-opacity': themeDefZonePotentielFortChaud.fill.opacity,
+            },
+          },
+          {
+            id: 'zonesPotentielFortChaud-outline',
+            source: 'zonesPotentielFortChaud',
+            'source-layer': 'layer',
+            type: 'line',
+            paint: {
+              'line-color': themeDefZonePotentielFortChaud.fill.color,
+              'line-width': 2,
+            },
+          },
+        ] satisfies LayerSpecification[]
+      );
+
       setMapState('loaded');
     }
   };

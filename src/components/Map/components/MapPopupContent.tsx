@@ -8,6 +8,7 @@ import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
 import { objTypeEnergy, PopupTitle } from '../Map.style';
 import { isDefined } from '@utils/core';
+import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielFortChaud';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {
@@ -310,3 +311,75 @@ export const ViasevaPopupContent = ({
     </>
   );
 };
+
+// use union types to get good typing
+export type DynamicPopupContent = {
+  type: 'zonesPotentielChaud' | 'zonesPotentielFortChaud';
+  properties: ZonePotentielChaud;
+};
+
+/**
+ * Return the corresponding popup content depending on the content type
+ */
+export const DynamicPopupContent = ({
+  content,
+}: {
+  content: DynamicPopupContent;
+}) => {
+  switch (content.type) {
+    case 'zonesPotentielChaud':
+      return (
+        <ZonePotentielChaudPopupContent
+          zonePotentielChaud={content.properties}
+        />
+      );
+    case 'zonesPotentielFortChaud':
+      return (
+        <ZonePotentielChaudPopupContent
+          zonePotentielChaud={content.properties}
+          fortChaud
+        />
+      );
+    default:
+      throw new Error('not implemented');
+  }
+};
+
+/**
+ * Contenu de la popup pour les zones à potentiel chaud et fort chaud.
+ */
+const ZonePotentielChaudPopupContent = ({
+  zonePotentielChaud,
+  fortChaud,
+}: {
+  zonePotentielChaud: ZonePotentielChaud;
+  fortChaud?: boolean;
+}) => {
+  return (
+    <section>
+      {zonePotentielChaud.ID_ZONE && (
+        <PopupTitle className="fr-mr-3w">
+          Zone à potentiel{fortChaud ? ' fort' : ''} chaud
+        </PopupTitle>
+      )}
+      <strong>CHAUF_MWH&nbsp;:</strong>&nbsp;
+      {getValueOrUnknown(zonePotentielChaud.CHAUF_MWH)}
+      <br />
+      <strong>ECS_MWH&nbsp;:</strong>&nbsp;
+      {getValueOrUnknown(zonePotentielChaud.ECS_MWH)}
+      <br />
+      <strong>ID_ZONE&nbsp;:</strong>&nbsp;
+      {getValueOrUnknown(zonePotentielChaud.ID_ZONE)}
+      <br />
+      <strong>NBRE_BAT&nbsp;:</strong>&nbsp;
+      {getValueOrUnknown(zonePotentielChaud.NBRE_BAT)}
+      <br />
+      <strong>PART_TER&nbsp;:</strong>&nbsp;
+      {getValueOrUnknown(zonePotentielChaud.PART_TER)}
+    </section>
+  );
+};
+
+function getValueOrUnknown(value: any): string {
+  return isDefined(value) ? value : 'Non connu';
+}

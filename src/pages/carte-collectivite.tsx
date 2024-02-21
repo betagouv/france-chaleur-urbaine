@@ -15,6 +15,8 @@ const CollectivityMap = () => {
           raccordements: false,
           gasUsageGroup: false,
           buildings: false,
+          zonesPotentielChaud: false,
+          zonesPotentielFortChaud: false,
           gasUsage: [],
           energy: [],
           gasUsageValues: [1000, Number.MAX_VALUE],

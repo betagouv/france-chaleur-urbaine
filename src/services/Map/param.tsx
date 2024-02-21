@@ -15,6 +15,8 @@ enum Layer {
   zoneDP = 'zoneDP',
   buildings = 'buildings',
   raccordements = 'raccordements',
+  zonesPotentielChaud = 'zonesPotentielChaud',
+  zonesPotentielFortChaud = 'zonesPotentielFortChaud',
 }
 
 export const layerNameOptions = Object.values(Layer);
@@ -34,6 +36,8 @@ export type TypeLayerDisplay = {
   raccordements: boolean;
   gasUsageGroup: boolean;
   buildings: boolean;
+  zonesPotentielChaud: boolean;
+  zonesPotentielFortChaud: boolean;
   gasUsage: string[];
   energy: ('gas' | 'fuelOil')[];
   gasUsageValues: [number, number];
@@ -50,6 +54,8 @@ export const defaultLayerDisplay: TypeLayerDisplay = {
   raccordements: false,
   gasUsageGroup: true,
   buildings: false,
+  zonesPotentielChaud: false,
+  zonesPotentielFortChaud: false,
   gasUsage: gasUsageNameOptions,
   energy: energyNameOptions,
   gasUsageValues: [1000, Number.MAX_VALUE],
@@ -66,6 +72,8 @@ export const simpleLayerDisplay: TypeLayerDisplay = {
   raccordements: false,
   gasUsageGroup: false,
   buildings: false,
+  zonesPotentielChaud: false,
+  zonesPotentielFortChaud: false,
   gasUsage: [],
   energy: [],
   gasUsageValues: [1000, Number.MAX_VALUE],
@@ -82,6 +90,8 @@ export const iframeSimpleLayerDisplay: TypeLayerDisplay = {
   raccordements: false,
   gasUsageGroup: false,
   buildings: false,
+  zonesPotentielChaud: false,
+  zonesPotentielFortChaud: false,
   gasUsage: [],
   energy: [],
   gasUsageValues: [1000, Number.MAX_VALUE],
@@ -231,6 +241,31 @@ const legendData: (string | TypeGroupLegend)[] = [
         label: 'Bâtiments raccordés à un réseau de chaleur',
         className: 'legend-raccordements',
         trackingEvent: 'Carto|Bâtiments raccordés',
+      },
+    ],
+    type: 'list',
+  },
+  'separator',
+  {
+    id: LegendGroupId.zonesPotentielChaud,
+    entries: [
+      {
+        id: 'zonesPotentielChaud',
+        label: "Zones d'opportunité à potentiel chaud",
+        className: 'legend-zonesPotentielChaud',
+        trackingEvent: 'Carto|Zones à potentiel chaud',
+      },
+    ],
+    type: 'list',
+  },
+  {
+    id: LegendGroupId.zonesPotentielFortChaud,
+    entries: [
+      {
+        id: 'zonesPotentielFortChaud',
+        label: "Zones d'opportunité à potentiel fort chaud",
+        className: 'legend-zonesPotentielFortChaud',
+        trackingEvent: 'Carto|Zones à potentiel fort chaud',
       },
     ],
     type: 'list',
