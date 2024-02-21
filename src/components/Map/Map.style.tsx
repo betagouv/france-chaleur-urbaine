@@ -70,7 +70,6 @@ export const MapStyle: any = createGlobalStyle<{
     .popup-map-layer {
       z-index: ${mapControlZindex + 1};
       font-size: 14px;
-      max-width: 300px !important;
 
       &.maplibregl-popup-anchor-left  .maplibregl-popup-tip {
         border-right-color: #4550e5;
@@ -126,6 +125,12 @@ export const MapStyle: any = createGlobalStyle<{
           }
         }
       }
+    }
+    .popup-map-layer--standard {
+      max-width: 300px !important;
+    }
+    .popup-map-layer--fluid {
+      max-width: 500px !important;
     }
     /*HACK : keep the attributions links visible even when the scale legend is zoom at the max*/
     .maplibregl-control-container {

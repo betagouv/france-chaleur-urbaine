@@ -8,6 +8,8 @@ import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
 import { objTypeEnergy, PopupTitle } from '../Map.style';
 import { isDefined } from '@utils/core';
+import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielFortChaud';
+import { prettyFormatNumber } from '@utils/strings';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {
@@ -308,5 +310,84 @@ export const ViasevaPopupContent = ({
         )
       )}
     </>
+  );
+};
+
+// use union types to get good typing
+export type DynamicPopupContent = {
+  type: 'zonesPotentielChaud' | 'zonesPotentielFortChaud';
+  properties: ZonePotentielChaud;
+};
+
+/**
+ * Return the corresponding popup content depending on the content type
+ */
+export const DynamicPopupContent = ({
+  content,
+}: {
+  content: DynamicPopupContent;
+}) => {
+  switch (content.type) {
+    case 'zonesPotentielChaud':
+      return (
+        <ZonePotentielChaudPopupContent
+          zonePotentielChaud={content.properties}
+        />
+      );
+    case 'zonesPotentielFortChaud':
+      return (
+        <ZonePotentielChaudPopupContent
+          zonePotentielChaud={content.properties}
+          fortChaud
+        />
+      );
+    default:
+      throw new Error('not implemented');
+  }
+};
+
+/**
+ * Contenu de la popup pour les zones à potentiel chaud et fort chaud.
+ */
+const ZonePotentielChaudPopupContent = ({
+  zonePotentielChaud,
+  fortChaud,
+}: {
+  zonePotentielChaud: ZonePotentielChaud;
+  fortChaud?: boolean;
+}) => {
+  return (
+    <section>
+      {zonePotentielChaud.ID_ZONE && (
+        <PopupTitle className="fr-mr-3w">
+          Zone à potentiel{fortChaud ? ' fort' : ''} chaud
+        </PopupTitle>
+      )}
+      <strong>Nombre de bâtiments “intéressants”&nbsp;:</strong>&nbsp;
+      {isDefined(zonePotentielChaud.NBRE_BAT)
+        ? zonePotentielChaud.NBRE_BAT
+        : 'Non connu'}
+      <br />
+      <strong>Besoins en chauffage&nbsp;:</strong>&nbsp;
+      {isDefined(zonePotentielChaud.CHAUF_MWH) ? (
+        <>{zonePotentielChaud.CHAUF_MWH}&nbsp;MWh/an</>
+      ) : (
+        'Non connu'
+      )}
+      <br />
+      <strong>Besoins en eau chaude sanitaire&nbsp;:</strong>&nbsp;
+      {isDefined(zonePotentielChaud.ECS_MWH) ? (
+        <>{zonePotentielChaud.ECS_MWH}&nbsp;MWh/an</>
+      ) : (
+        'Non connu'
+      )}
+      <br />
+      <strong>Part du secteur tertiaire&nbsp;:</strong>&nbsp;
+      {isDefined(zonePotentielChaud.PART_TER) ? (
+        <>{prettyFormatNumber(zonePotentielChaud.PART_TER * 100, 2)}&nbsp;%</>
+      ) : (
+        'Non connu'
+      )}
+    </section>
   );
 };

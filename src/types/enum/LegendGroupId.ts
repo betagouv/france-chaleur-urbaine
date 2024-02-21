@@ -8,5 +8,7 @@ export enum LegendGroupId {
   gasUsage = 'gasUsage',
   energy = 'energy',
   raccordements = 'raccordements',
+  zonesPotentielChaud = 'zonesPotentielChaud',
+  zonesPotentielFortChaud = 'zonesPotentielFortChaud',
   buildings = 'buildings',
 }
