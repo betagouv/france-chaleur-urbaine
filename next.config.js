@@ -22,6 +22,7 @@ const csp = {
     "'sha256-6SC04Y6nNQLzwzyqa3SfGlAJoGLEAasou2bnNnkusvM='",
     "'sha256-H2mRU+3M13HkAJfH6/b74hVw3UOtytXrVI3MuPwDTj0='", // matomo https://stats.beta.gouv.fr/ 83
     "'sha256-344ePyJp7yxx64WKWpbs/ZvEDHA6mve7lS3i90cEPT4='", // ConsentBanner > tarteaucitron.init
+    "'sha256-d7dsOzUkIPxujyMIFvd9lnMMqh0LRXgYPmFvbRYsL7Q='", // hotjar 3874965 6
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://static.axept.io',
@@ -33,6 +34,7 @@ const csp = {
     'https://connect.facebook.net',
     'https://snap.licdn.com',
     'https://api.mapbox.com/',
+    'https://*.hotjar.com',
   ],
   'connect-src': [
     "'self'",
@@ -49,13 +51,16 @@ const csp = {
     'https://wxs.ign.fr',
     'https://api.mapbox.com/',
     'https://sentry.incubateur.net',
+    'https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
+  'font-src': ["'self'", 'https:', 'data:', 'https://*.hotjar.com'],
   'frame-src': [
     'https://td.doubleclick.net',
     'https://www.facebook.com/',
     'https://www.youtube.com/',
   ],
+  'style-src': ["'self'", 'https:', "'unsafe-inline'", 'https://*.hotjar.com'],
   'worker-src': ["'self'", 'blob:'],
 };
 
