@@ -8,7 +8,7 @@ import { AddressDataType } from 'src/types/AddressData';
 import {
   bordeauxMetropoleCityCodes,
   getEligibilityResult,
-} from './ElgibilityResults';
+} from './EligibilityResults';
 import {
   ContactForm,
   ContactFormContentWrapper,
@@ -187,7 +187,7 @@ const EligibilityFormContact = ({
                   width={50}
                   height={45}
                 />
-                <MarkdownWrapper value={text} />
+                <MarkdownWrapper value={text} className="h4-dark-blue" />
               </>
             )}
             <ContactForm
