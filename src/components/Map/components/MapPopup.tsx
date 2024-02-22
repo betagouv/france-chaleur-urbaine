@@ -39,9 +39,8 @@ const MapPopup = ({
           {type == MapPopupType.DEFAULT && <MapPopupContent {...content} />}
           {(type == MapPopupType.VIASEVA ||
             type == MapPopupType.ENGIE ||
-            type === MapPopupType.DALKIA) && (
-            <ViasevaPopupContent {...content} />
-          )}
+            type === MapPopupType.DALKIA ||
+            type === MapPopupType.IDEX) && <ViasevaPopupContent {...content} />}
         </Popup>
       ) : (
         ''

@@ -9,6 +9,7 @@ export enum MapPopupType {
   ENGIE = 'engie',
   DALKIA = 'dalkia',
   VIASEVA = 'viaseva',
+  IDEX = 'idex',
 }
 
 export type MapMarkerInfos = {
