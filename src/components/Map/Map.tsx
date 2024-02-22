@@ -232,11 +232,12 @@ const Map = ({
     setLegendCollapsed(window.innerWidth < 992);
   }, []);
 
+  // resize the map when the container renders
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.getMap().resize();
     }
-  }, [mapRef, legendCollapsed]);
+  }, [mapRef.current, legendCollapsed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [mapState, setMapState] = useState('pending');
   const [layerDisplay, setLayerDisplay] =
