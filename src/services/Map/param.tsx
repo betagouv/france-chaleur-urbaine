@@ -15,6 +15,8 @@ enum Layer {
   zoneDP = 'zoneDP',
   buildings = 'buildings',
   raccordements = 'raccordements',
+  gasUsage = 'gasUsage',
+  energy = 'energy',
 }
 
 export const layerNameOptions = Object.values(Layer);

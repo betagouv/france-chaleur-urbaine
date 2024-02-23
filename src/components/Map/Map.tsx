@@ -142,7 +142,14 @@ const addSource = (map: any, sourceId: string, data: any, layers: any[]) => {
   }
 
   map.addSource(sourceId, data);
-  layers.forEach((layer) => map.addLayer(layer));
+  layers.forEach((layer) => {
+    if (!layer.layout) {
+      layer.layout = {};
+    }
+    // hide all layers by default to prevent loading them
+    layer.layout.visibility = 'none';
+    map.addLayer(layer);
+  });
 };
 
 const getNetworkFilter = (
@@ -469,7 +476,7 @@ const Map = ({
             .setLayoutProperty(
               'futurZone',
               'visibility',
-              layerDisplay[layerId] ? 'visible' : 'none'
+              isLayerEnabled(layerDisplay[layerId]) ? 'visible' : 'none'
             );
         }
         if (layerId === 'outline') {
@@ -478,7 +485,7 @@ const Map = ({
             .setLayoutProperty(
               'outlineCenter',
               'visibility',
-              layerDisplay[layerId] ? 'visible' : 'none'
+              isLayerEnabled(layerDisplay[layerId]) ? 'visible' : 'none'
             );
         }
         if (layerId === 'coldOutline') {
@@ -487,7 +494,7 @@ const Map = ({
             .setLayoutProperty(
               'coldOutlineCenter',
               'visibility',
-              layerDisplay[layerId] ? 'visible' : 'none'
+              isLayerEnabled(layerDisplay[layerId]) ? 'visible' : 'none'
             );
         }
         mapRef.current
@@ -495,7 +502,7 @@ const Map = ({
           .setLayoutProperty(
             layerId,
             'visibility',
-            layerDisplay[layerId] ? 'visible' : 'none'
+            isLayerEnabled(layerDisplay[layerId]) ? 'visible' : 'none'
           );
       } else {
         console.warn(`Layer '${layerId}' is not set on map`);
@@ -1274,3 +1281,13 @@ const Map = ({
 };
 
 export default Map;
+
+function isLayerEnabled(
+  value: TypeLayerDisplay[keyof TypeLayerDisplay]
+): boolean {
+  return typeof value === 'boolean'
+    ? value
+    : value instanceof Array
+    ? value.length > 0
+    : value;
+}
