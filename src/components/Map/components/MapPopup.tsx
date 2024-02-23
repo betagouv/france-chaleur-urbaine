@@ -36,7 +36,11 @@ const MapPopup = ({
           latitude={latitude}
           offset={[0, -10] as Point}
           closeButton
-          className="popup-map-layer"
+          className={`popup-map-layer ${
+            isDynamicPopupContent(content)
+              ? 'popup-map-layer--fluid'
+              : 'popup-map-layer--standard'
+          }`}
           onClose={() => setShow(false)}
         >
           {isDynamicPopupContent(content) ? (
