@@ -9,6 +9,7 @@ import { RaccordementSummary } from 'src/types/Summary/Raccordement';
 import { objTypeEnergy, PopupTitle } from '../Map.style';
 import { isDefined } from '@utils/core';
 import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielFortChaud';
+import { prettyFormatNumber } from '@utils/strings';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {
@@ -362,24 +363,31 @@ const ZonePotentielChaudPopupContent = ({
           Zone à potentiel{fortChaud ? ' fort' : ''} chaud
         </PopupTitle>
       )}
-      <strong>CHAUF_MWH&nbsp;:</strong>&nbsp;
-      {getValueOrUnknown(zonePotentielChaud.CHAUF_MWH)}
+      <strong>Nombre de bâtiments “intéressants”&nbsp;:</strong>&nbsp;
+      {isDefined(zonePotentielChaud.NBRE_BAT)
+        ? zonePotentielChaud.NBRE_BAT
+        : 'Non connu'}
       <br />
-      <strong>ECS_MWH&nbsp;:</strong>&nbsp;
-      {getValueOrUnknown(zonePotentielChaud.ECS_MWH)}
+      <strong>Besoins en chauffage&nbsp;:</strong>&nbsp;
+      {isDefined(zonePotentielChaud.CHAUF_MWH) ? (
+        <>{zonePotentielChaud.CHAUF_MWH}&nbsp;MWh/an</>
+      ) : (
+        'Non connu'
+      )}
       <br />
-      <strong>ID_ZONE&nbsp;:</strong>&nbsp;
-      {getValueOrUnknown(zonePotentielChaud.ID_ZONE)}
+      <strong>Besoins en eau chaude sanitaire&nbsp;:</strong>&nbsp;
+      {isDefined(zonePotentielChaud.ECS_MWH) ? (
+        <>{zonePotentielChaud.ECS_MWH}&nbsp;MWh/an</>
+      ) : (
+        'Non connu'
+      )}
       <br />
-      <strong>NBRE_BAT&nbsp;:</strong>&nbsp;
-      {getValueOrUnknown(zonePotentielChaud.NBRE_BAT)}
-      <br />
-      <strong>PART_TER&nbsp;:</strong>&nbsp;
-      {getValueOrUnknown(zonePotentielChaud.PART_TER)}
+      <strong>Part du secteur tertiaire&nbsp;:</strong>&nbsp;
+      {isDefined(zonePotentielChaud.PART_TER) ? (
+        <>{prettyFormatNumber(zonePotentielChaud.PART_TER * 100, 2)}&nbsp;%</>
+      ) : (
+        'Non connu'
+      )}
     </section>
   );
 };
-
-function getValueOrUnknown(value: any): string {
-  return isDefined(value) ? value : 'Non connu';
-}
