@@ -20,6 +20,7 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -30,36 +31,18 @@ import {
 } from 'src/types/HeatNetworksResponse';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
-import { TypeGroupLegend } from 'src/types/TypeGroupLegend';
 import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
-import mapParam, {
-  EnergyNameOption,
-  gasUsageNameOption,
-  LayerNameOption,
-  layerNameOptions,
-  TypeLayerDisplay,
-} from '../../services/Map/param';
-
 import {
   MapMarkerInfos,
   MapPopupInfos,
   MapPopupType,
 } from 'src/types/MapComponentsInfos';
-import { CardSearchDetails, MapLegend, MapSearchForm } from './components';
 import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import ZoneInfos from './components/SummaryBoxes';
 import {
-  buildingsLayerStyle,
-  coldOutlineLayerStyle,
-  coldOutlineCenterLayerStyle,
   CollapseLegend,
-  demandsLayerStyle,
-  energyLayerStyle,
-  futurOutlineLayerStyle,
-  futurZoneLayerStyle,
-  gasUsageLayerStyle,
-  Legend,
+  LegendSideBar,
   LegendContainer,
   LegendLogo,
   LegendLogoLink,
@@ -67,11 +50,6 @@ import {
   LegendSeparator,
   MapControlWrapper,
   MapStyle,
-  objTypeEnergy,
-  outlineLayerStyle,
-  outlineCenterLayerStyle,
-  raccordementsLayerStyle,
-  zoneDPLayerStyle,
   TopLegend,
   TopLegendSwitch,
 } from './Map.style';
@@ -82,22 +60,47 @@ import {
 } from './StyleSwitcher';
 import {
   ExpressionSpecification,
-  LayerSpecification,
+  MapGeoJSONFeature,
   MapLibreEvent,
-  SourceSpecification,
 } from 'maplibre-gl';
 import { trackEvent } from 'src/services/analytics';
-import {
-  themeDefZonePotentielChaud,
-  themeDefZonePotentielFortChaud,
-} from 'src/services/Map/businessRules/zonePotentielChaud';
+import debounce from '@utils/debounce';
+import SimpleMapLegend, {
+  MapLegendFeature,
+} from './components/SimpleMapLegend';
 import { MapLayerMouseEvent } from 'react-map-gl';
+import {
+  MapConfiguration,
+  defaultMapConfiguration,
+} from 'src/services/Map/map-configuration';
+import {
+  LayerId,
+  SourceId,
+  applyMapConfigurationToLayers,
+  buildMapLayers,
+} from './map-layers';
+import Box from '@components/ui/Box';
+import useRouterReady from '@hooks/useRouterReady';
+import MapSearchForm from './components/MapSearchForm';
+import CardSearchDetails from './components/CardSearchDetails';
 
-let hoveredStateId: any;
-const setHoveringState = (
-  map: any,
+const mapSettings = {
+  defaultLongitude: 2.3,
+  defaultLatitude: 47,
+  defaultZoom: 5,
+  minZoom: 5,
+  maxZoom: 20,
+};
+
+let hoveredStateId: MapGeoJSONFeature['id'] | null = null;
+
+/**
+ * The hover state is used in the layers to change the style of the feature using ['feature-state', 'hover']
+ */
+const setFeatureHoveringState = (
+  map: MapRef,
   hover: boolean,
-  source: string,
+  source: SourceId,
   sourceLayer: string
 ) => {
   if (hoveredStateId) {
@@ -115,21 +118,25 @@ const setHoveringState = (
   }
 };
 
-const addHover = (map: any, source: string, sourceLayer: string) => {
-  map.current.on('mouseenter', sourceLayer, function (e: any) {
-    if (e.features.length > 0) {
-      setHoveringState(map.current, false, source, sourceLayer);
+type HoverConfig = {
+  source: SourceId;
+  sourceLayer: string;
+  layer: LayerId;
+};
+
+const addLayerHoverListeners = (map: MapRef, config: HoverConfig) => {
+  map.on('mouseenter', config.layer, function (e) {
+    if (e.features && e.features.length > 0) {
+      setFeatureHoveringState(map, false, config.source, config.sourceLayer);
       hoveredStateId = e.features[0].id;
-      setHoveringState(map.current, true, source, sourceLayer);
+      setFeatureHoveringState(map, true, config.source, config.sourceLayer);
     }
   });
 
-  map.current.on('mouseleave', sourceLayer, function () {
-    setHoveringState(map.current, false, source, sourceLayer);
+  map.on('mouseleave', config.layer, function () {
+    setFeatureHoveringState(map, false, config.source, config.sourceLayer);
   });
 };
-
-const { defaultZoom, maxZoom, minZoom, minZoomData } = mapParam;
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
@@ -146,43 +153,10 @@ const styles: MapboxStyleDefinition[] = [
   },
 ];
 
-const addSource = (
-  map: any,
-  sourceId: string,
-  data: SourceSpecification,
-  layers: any[]
-) => {
-  if (map.getSource(sourceId)) {
-    return;
-  }
-
-  map.addSource(sourceId, data);
-  layers.forEach((layer) => {
-    if (!layer.layout) {
-      layer.layout = {};
-    }
-    // hide all layers by default to prevent loading them
-    layer.layout.visibility = 'none';
-    map.addLayer(layer);
-  });
-};
-
-const getNetworkFilter = (
-  network?: string,
-  filter?: any[],
-  initialFilter?: any[]
-) => {
-  const networkFilter = network
-    ? ['==', ['get', 'Identifiant reseau'], network]
-    : ['literal', true];
-  return {
-    filter: [
-      'all',
-      filter || ['literal', true],
-      initialFilter || ['literal', true],
-      networkFilter,
-    ],
-  };
+type ViewState = {
+  longitude: number;
+  latitude: number;
+  zoom: number;
 };
 
 const Map = ({
@@ -192,9 +166,8 @@ const Map = ({
   withDrawing,
   withBorder,
   legendTitle,
-  initialLayerDisplay,
-  legendData,
-  center,
+  initialMapConfiguration,
+  enabledLegendFeatures,
   withCenterPin,
   noPopup,
   legendLogoOpt,
@@ -203,18 +176,19 @@ const Map = ({
   popupType = MapPopupType.DEFAULT,
   filter,
   pinsList,
+  initialCenter,
   initialZoom,
   geolocDisabled,
   withFCUAttribution,
+  persistViewStateInURL,
 }: {
   withoutLogo?: boolean;
-  initialLayerDisplay: TypeLayerDisplay;
-  legendData?: (string | TypeGroupLegend)[];
+  initialMapConfiguration?: MapConfiguration;
+  enabledLegendFeatures?: MapLegendFeature[];
   withLegend?: boolean;
   withHideLegendSwitch?: boolean;
   withDrawing?: boolean;
   withBorder?: boolean;
-  center?: [number, number];
   legendTitle?: string;
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
@@ -222,16 +196,22 @@ const Map = ({
   proMode?: boolean;
   setProMode?: Dispatch<SetStateAction<boolean>>;
   popupType?: MapPopupType;
-  filter?: any[];
+  filter?: ExpressionSpecification; // layer filter used to filter networks of a company
   pinsList?: MapMarkerInfos[];
+  initialCenter?: [number, number];
   initialZoom?: number;
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
+  persistViewStateInURL?: boolean;
 }) => {
   const router = useRouter();
 
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
+
+  const [mapConfiguration, setMapConfiguration] = useState<MapConfiguration>(
+    initialMapConfiguration ?? defaultMapConfiguration
+  );
 
   const [draw, setDraw] = useState<any>();
   const [drawing, setDrawing] = useState(false);
@@ -241,15 +221,6 @@ const Map = ({
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
-
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    if (router.isReady) {
-      setIsReady(true);
-    }
-  }, [router]);
-
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 992);
   }, []);
@@ -259,57 +230,18 @@ const Map = ({
     if (mapRef.current) {
       mapRef.current.getMap().resize();
     }
-  }, [mapRef.current, legendCollapsed]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mapRef.current, legendCollapsed]);
 
-  const [mapState, setMapState] = useState('pending');
-  const [layerDisplay, setLayerDisplay] =
-    useState<TypeLayerDisplay>(initialLayerDisplay);
-  const [savedLayer, setSavedLayer] = useState<TypeLayerDisplay>(
-    mapParam.defaultLayerDisplay
-  );
-
-  const toggleLayerDisplay = useCallback(
-    (newLayerDisplay: TypeLayerDisplay) => {
-      if (proMode) {
-        setSavedLayer(newLayerDisplay);
-      } else {
-        //If not proMode keep old proMode values
-        const newSavedLayer = savedLayer;
-        newSavedLayer.outline = newLayerDisplay.outline;
-        newSavedLayer.futurOutline = newLayerDisplay.futurOutline;
-        newSavedLayer.coldOutline = newLayerDisplay.coldOutline;
-        newSavedLayer.zoneDP = newLayerDisplay.zoneDP;
-        setSavedLayer(newSavedLayer);
-      }
-      setLayerDisplay(newLayerDisplay);
-    },
-    [proMode, savedLayer]
-  );
-
-  const updateLayerDisplay = useCallback(
-    (newLayerDisplay: TypeLayerDisplay) => {
-      //Display previous values
-      if (proMode) {
-        setLayerDisplay(savedLayer);
-      } else {
-        const newLayer = newLayerDisplay;
-        newLayer.outline = savedLayer.outline;
-        newLayer.futurOutline = savedLayer.futurOutline;
-        newLayer.coldOutline = savedLayer.coldOutline;
-        newLayer.zoneDP = savedLayer.zoneDP;
-        setLayerDisplay(newLayerDisplay);
-      }
-    },
-    [proMode, savedLayer]
-  );
+  const [mapState, setMapState] = useState<'pending' | 'loaded'>('pending');
 
   useEffect(() => {
     if (setProMode) {
-      updateLayerDisplay(
-        proMode ? mapParam.defaultLayerDisplay : mapParam.simpleLayerDisplay
-      );
+      setMapConfiguration({
+        ...mapConfiguration,
+        proMode: !!proMode,
+      });
     }
-  }, [proMode, setProMode, updateLayerDisplay]);
+  }, [proMode, setMapConfiguration]);
 
   const [soughtAddresses, setSoughtAddresses] = usePersistedState(
     'mapSoughtAddresses',
@@ -441,167 +373,7 @@ const Map = ({
     [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
   );
 
-  const toggleLayer = useCallback(
-    (layerName: LayerNameOption) => {
-      toggleLayerDisplay({
-        ...layerDisplay,
-        [layerName]: !layerDisplay?.[layerName] ?? false,
-      });
-    },
-    [layerDisplay, toggleLayerDisplay]
-  );
-
-  const toggleEnergyVisibility = useCallback(
-    (energyName: EnergyNameOption) => {
-      const availableEnergy = new Set(layerDisplay.energy);
-      if (availableEnergy.has(energyName)) {
-        availableEnergy.delete(energyName);
-      } else {
-        availableEnergy.add(energyName);
-      }
-      toggleLayerDisplay({
-        ...layerDisplay,
-        energy: Array.from(availableEnergy),
-      });
-    },
-    [layerDisplay, toggleLayerDisplay]
-  );
-
-  const toggleGasUsageVisibility = useCallback(
-    (gasUsageName: gasUsageNameOption) => {
-      const availableGasUsage = new Set(layerDisplay.gasUsage);
-      if (availableGasUsage.has(gasUsageName)) {
-        availableGasUsage.delete(gasUsageName);
-      } else {
-        availableGasUsage.add(gasUsageName);
-      }
-      toggleLayerDisplay({
-        ...layerDisplay,
-        gasUsage: Array.from(availableGasUsage),
-      });
-    },
-    [layerDisplay, toggleLayerDisplay]
-  );
-
-  const toggleGasUsageGroupeVisibility = useCallback(() => {
-    toggleLayerDisplay({
-      ...layerDisplay,
-      gasUsageGroup: !layerDisplay.gasUsageGroup,
-    });
-  }, [layerDisplay, toggleLayerDisplay]);
-
-  const loadFilters = useCallback(() => {
-    if (!mapRef.current) {
-      return;
-    }
-    layerNameOptions.forEach((layerId) => {
-      if (mapRef.current?.getMap().getLayer(layerId)) {
-        if (layerId === 'futurOutline') {
-          mapRef.current
-            .getMap()
-            .setLayoutProperty(
-              'futurZone',
-              'visibility',
-              isLayerEnabled(layerDisplay[layerId]) ? 'visible' : 'none'
-            );
-        }
-        if (layerId === 'outline') {
-          mapRef.current
-            .getMap()
-            .setLayoutProperty(
-              'outlineCenter',
-              'visibility',
-              isLayerEnabled(layerDisplay[layerId]) ? 'visible' : 'none'
-            );
-        }
-        if (layerId === 'coldOutline') {
-          mapRef.current
-            .getMap()
-            .setLayoutProperty(
-              'coldOutlineCenter',
-              'visibility',
-              isLayerEnabled(layerDisplay[layerId]) ? 'visible' : 'none'
-            );
-        }
-        if (layerId === 'zonesPotentielChaud') {
-          mapRef.current
-            .getMap()
-            .setLayoutProperty(
-              'zonesPotentielChaud-outline',
-              'visibility',
-              layerDisplay[layerId] ? 'visible' : 'none'
-            );
-        }
-        if (layerId === 'zonesPotentielFortChaud') {
-          mapRef.current
-            .getMap()
-            .setLayoutProperty(
-              'zonesPotentielFortChaud-outline',
-              'visibility',
-              layerDisplay[layerId] ? 'visible' : 'none'
-            );
-        }
-        mapRef.current
-          .getMap()
-          .setLayoutProperty(
-            layerId,
-            'visibility',
-            isLayerEnabled(layerDisplay[layerId]) ? 'visible' : 'none'
-          );
-      } else {
-        console.warn(`Layer '${layerId}' is not set on map`);
-      }
-    });
-
-    // Energy
-    const TYPE_ENERGY = 'energie_utilisee';
-    const energyFilter = layerDisplay.energy.flatMap<ExpressionSpecification>(
-      (energyName: 'gas' | 'fuelOil') =>
-        objTypeEnergy[energyName].map((energyLabel: string) => {
-          const values =
-            energyName === 'gas'
-              ? layerDisplay.energyGasValues
-              : layerDisplay.energyFuelValues;
-
-          return [
-            'all',
-            values
-              ? [
-                  'all',
-                  ['>=', ['get', 'nb_logements'], values[0]],
-                  ['<=', ['get', 'nb_logements'], values[1]],
-                ]
-              : true,
-            ['==', ['get', TYPE_ENERGY], energyLabel],
-          ];
-        })
-    );
-    mapRef.current.getMap().setFilter('energy', ['any', ...energyFilter]);
-
-    // GasUsage
-    const TYPE_GAS = 'code_grand';
-    const gasUsageFilter = layerDisplay.gasUsage.map<ExpressionSpecification>(
-      (gasUsageName) => ['==', ['get', TYPE_GAS], gasUsageName]
-    );
-    mapRef.current
-      .getMap()
-      .setFilter(
-        'gasUsage',
-        layerDisplay.gasUsageGroup && [
-          'all',
-          layerDisplay.gasUsageValues
-            ? [
-                'all',
-                ['>=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[0]],
-                ['<=', ['get', 'conso_nb'], layerDisplay.gasUsageValues[1]],
-              ]
-            : true,
-          ['any', ...gasUsageFilter],
-        ]
-      );
-  }, [mapRef, layerDisplay]);
-
-  const onLoadMap = (e: MapLibreEvent) => {
+  const onMapLoad = (e: MapLibreEvent) => {
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
     });
@@ -620,23 +392,26 @@ const Map = ({
       })
     );
 
-    const clickEvents = [
+    const clickEvents: {
+      name: LayerId;
+      key: string;
+    }[] = [
       { name: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
       { name: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
-      { name: 'outline', key: 'network' },
-      { name: 'outlineCenter', key: 'network' },
-      { name: 'coldOutline', key: 'coldNetwork' },
-      { name: 'coldOutlineCenter', key: 'coldNetwork' },
-      { name: 'futurOutline', key: 'futurNetwork' },
-      { name: 'futurZone', key: 'futurNetwork' },
+      { name: 'reseauxDeChaleur-avec-trace', key: 'network' },
+      { name: 'reseauxDeChaleur-sans-trace', key: 'network' },
+      { name: 'reseauxDeFroid-avec-trace', key: 'coldNetwork' },
+      { name: 'reseauxDeFroid-sans-trace', key: 'coldNetwork' },
+      { name: 'reseauxEnConstruction-trace', key: 'futurNetwork' },
+      { name: 'reseauxEnConstruction-zone', key: 'futurNetwork' },
       {
-        name: 'demands',
+        name: 'demandesEligibilite',
         key: 'demands',
       },
-      { name: 'buildings', key: 'buildings' },
-      { name: 'gasUsage', key: 'consommation' },
+      { name: 'caracteristiquesBatiments', key: 'buildings' },
+      { name: 'consommationsGaz', key: 'consommation' },
       { name: 'energy', key: 'energy' },
-      { name: 'raccordements', key: 'raccordement' },
+      { name: 'batimentsRaccordes', key: 'raccordement' },
     ];
 
     e.target.loadImage('/icons/rect.png', (error, image) => {
@@ -669,16 +444,47 @@ const Map = ({
         });
       }
 
-      if (mapRef) {
-        addHover(mapRef, 'heatNetwork', 'outline');
-        addHover(mapRef, 'heatFuturNetwork', 'futurOutline');
-        addHover(mapRef, 'coldNetwork', 'coldOutline');
+      const map = mapRef.current;
+      if (map) {
+        if (persistViewStateInURL) {
+          map.on('move', () => {
+            const newViewState = {
+              longitude: map.getMap().getCenter().lng,
+              latitude: map.getMap().getCenter().lat,
+              zoom: map.getMap().getZoom(),
+            };
+            if (
+              viewState?.longitude !== newViewState.longitude ||
+              viewState?.latitude !== newViewState.latitude ||
+              viewState?.zoom !== newViewState.zoom
+            ) {
+              setViewState(newViewState);
+            }
+          });
+        }
+
+        addLayerHoverListeners(map, {
+          layer: 'reseauxDeChaleur-avec-trace',
+          source: 'network',
+          sourceLayer: 'outline',
+        });
+        addLayerHoverListeners(map, {
+          layer: 'reseauxEnConstruction-trace',
+          source: 'futurNetwork',
+          sourceLayer: 'futurOutline',
+        });
+        addLayerHoverListeners(map, {
+          layer: 'reseauxDeFroid-avec-trace',
+          source: 'coldNetwork',
+          sourceLayer: 'coldOutline',
+        });
       }
     });
   };
 
-  const onSourceDataMap = (e: MapSourceDataEvent) => {
-    if (mapState === 'loaded' || !mapRef.current) {
+  const onMapSourceData = (e: MapSourceDataEvent) => {
+    const map = mapRef.current?.getMap();
+    if (mapState === 'loaded' || !map) {
       return;
     }
 
@@ -689,311 +495,21 @@ const Map = ({
     ) {
       const network = router.query.network as string;
 
-      // ---------------------------
-      // --- zonesPotentielChaud ---
-      // ---------------------------
-      addSource(
-        e.target,
-        'zonesPotentielChaud',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
-          maxzoom: 17,
-          promoteId: 'ID_ZONE',
-          attribution:
-            '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
-        },
-        [
-          {
-            id: 'zonesPotentielChaud',
-            source: 'zonesPotentielChaud',
-            'source-layer': 'layer',
-            type: 'fill',
-            paint: {
-              'fill-color': themeDefZonePotentielChaud.fill.color,
-              'fill-opacity': themeDefZonePotentielChaud.fill.opacity,
-            },
-          },
-          {
-            id: 'zonesPotentielChaud-outline',
-            source: 'zonesPotentielChaud',
-            'source-layer': 'layer',
-            type: 'line',
-            paint: {
-              'line-color': themeDefZonePotentielChaud.fill.color,
-              'line-width': 2,
-            },
-          },
-        ] satisfies LayerSpecification[]
-      );
+      buildMapLayers(network, filter).forEach((spec) => {
+        if (map.getSource(spec.sourceId)) {
+          return;
+        }
 
-      // -------------------------------
-      // --- zonesPotentielFortChaud ---
-      // -------------------------------
-      addSource(
-        e.target,
-        'zonesPotentielFortChaud',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`],
-          maxzoom: 17,
-          promoteId: 'ID_ZONE',
-          attribution:
-            '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
-        },
-        [
-          {
-            id: 'zonesPotentielFortChaud',
-            source: 'zonesPotentielFortChaud',
-            'source-layer': 'layer',
-            type: 'fill',
-            paint: {
-              'fill-color': themeDefZonePotentielFortChaud.fill.color,
-              'fill-opacity': themeDefZonePotentielFortChaud.fill.opacity,
-            },
-          },
-          {
-            id: 'zonesPotentielFortChaud-outline',
-            source: 'zonesPotentielFortChaud',
-            'source-layer': 'layer',
-            type: 'line',
-            paint: {
-              'line-color': themeDefZonePotentielFortChaud.fill.color,
-              'line-width': 2,
-            },
-          },
-        ] satisfies LayerSpecification[]
-      );
-
-      // ---------------
-      // --- Zone DP ---
-      // ---------------
-      addSource(
-        e.target,
-        'zoneDP',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/zoneDP/{z}/{x}/{y}`],
-        },
-        [
-          {
-            id: 'zoneDP',
-            source: 'zoneDP',
-            'source-layer': 'zoneDP',
-            ...zoneDPLayerStyle,
-          },
-        ]
-      );
-
-      addSource(
-        e.target,
-        'heatFuturNetwork',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/futurNetwork/{z}/{x}/{y}`],
-        },
-        [
-          {
-            id: 'futurZone',
-            source: 'heatFuturNetwork',
-            'source-layer': 'futurOutline',
-            ...getNetworkFilter(undefined, filter, [
-              '==',
-              ['get', 'is_zone'],
-              true,
-            ]),
-            ...futurZoneLayerStyle,
-          },
-          {
-            id: 'futurOutline',
-            source: 'heatFuturNetwork',
-            'source-layer': 'futurOutline',
-            ...getNetworkFilter(undefined, filter, [
-              '==',
-              ['get', 'is_zone'],
-              false,
-            ]),
-
-            ...futurOutlineLayerStyle,
-          },
-        ]
-      );
-      addSource(
-        e.target,
-        'heatNetwork',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/network/{z}/{x}/{y}`],
-        },
-        [
-          {
-            id: 'outline',
-            source: 'heatNetwork',
-            'source-layer': 'outline',
-            ...outlineLayerStyle,
-            ...getNetworkFilter(network, filter, [
-              '==',
-              ['get', 'has_trace'],
-              true,
-            ]),
-          },
-          {
-            id: 'outlineCenter',
-            source: 'heatNetwork',
-            'source-layer': 'outline',
-            ...outlineCenterLayerStyle,
-            ...getNetworkFilter(network, filter, [
-              '==',
-              ['get', 'has_trace'],
-              false,
-            ]),
-          },
-        ]
-      );
-
-      // --------------------
-      // --- Heat Network ---
-      // --------------------
-      addSource(
-        e.target,
-        'coldNetwork',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/coldNetwork/{z}/{x}/{y}`],
-        },
-        [
-          {
-            id: 'coldOutline',
-            source: 'coldNetwork',
-            'source-layer': 'coldOutline',
-            ...coldOutlineLayerStyle,
-            ...getNetworkFilter(network, filter, [
-              '==',
-              ['get', 'has_trace'],
-              true,
-            ]),
-          },
-          {
-            id: 'coldOutlineCenter',
-            source: 'coldNetwork',
-            'source-layer': 'coldOutline',
-            ...coldOutlineCenterLayerStyle,
-            ...getNetworkFilter(network, filter, [
-              '==',
-              ['get', 'has_trace'],
-              false,
-            ]),
-          },
-        ]
-      );
-
-      // -----------------
-      // --- Buildings ---
-      // -----------------
-      addSource(
-        e.target,
-        'buildings',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/buildings/{z}/{x}/{y}`],
-          maxzoom: maxZoom,
-          minzoom: minZoomData,
-        },
-        [
-          {
-            id: 'buildings',
-            source: 'buildings',
-            'source-layer': 'buildings',
-            ...buildingsLayerStyle,
-          },
-        ]
-      );
-
-      // -----------------
-      // --- Gas Usage ---
-      // -----------------
-      addSource(
-        e.target,
-        'gasUsage',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/gas/{z}/{x}/{y}`],
-          maxzoom: maxZoom,
-          minzoom: minZoomData,
-        },
-        [
-          {
-            id: 'gasUsage',
-            source: 'gasUsage',
-            'source-layer': 'gasUsage',
-            ...gasUsageLayerStyle,
-          },
-        ]
-      );
-
-      // --------------
-      // --- Energy ---
-      // --------------
-      addSource(
-        e.target,
-        'energy',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/energy/{z}/{x}/{y}`],
-          maxzoom: maxZoom,
-          minzoom: minZoomData,
-        },
-        [
-          {
-            id: 'energy',
-            source: 'energy',
-            'source-layer': 'energy',
-            ...energyLayerStyle,
-          },
-        ]
-      );
-
-      // -----------------
-      // --- Demands ---
-      // -----------------
-      addSource(
-        e.target,
-        'demands',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/demands/{z}/{x}/{y}`],
-        },
-        [
-          {
-            id: 'demands',
-            source: 'demands',
-            'source-layer': 'demands',
-            ...demandsLayerStyle,
-          },
-        ]
-      );
-
-      // -----------------
-      // --- Raccordements ---
-      // -----------------
-      addSource(
-        e.target,
-        'raccordements',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/raccordements/{z}/{x}/{y}`],
-          maxzoom: maxZoom,
-          minzoom: minZoomData,
-        },
-        [
-          {
-            id: 'raccordements',
-            source: 'raccordements',
-            'source-layer': 'raccordements',
-            ...raccordementsLayerStyle,
-          },
-        ]
-      );
+        map.addSource(spec.sourceId, spec.source);
+        spec.layers.forEach((layer) => {
+          if (!layer.layout) {
+            layer.layout = {};
+          }
+          // hide all layers by default to prevent loading them
+          layer.layout.visibility = 'none';
+          map.addLayer(layer);
+        });
+      });
 
       setMapState('loaded');
     }
@@ -1025,18 +541,18 @@ const Map = ({
   }, [router.query, heatNetworkService]);
 
   useEffect(() => {
-    if (mapRef.current && center) {
+    if (mapRef.current && initialCenter) {
       if (withCenterPin) {
         const newMarker = {
-          id: getAddressId(center),
-          latitude: center[1],
-          longitude: center[0],
+          id: getAddressId(initialCenter),
+          latitude: initialCenter[1],
+          longitude: initialCenter[0],
         };
         setMarkersList([newMarker]);
       }
-      jumpTo({ coordinates: center });
+      jumpTo({ coordinates: initialCenter });
     }
-  }, [center, jumpTo, withCenterPin]);
+  }, [initialCenter, jumpTo, withCenterPin]);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -1044,7 +560,13 @@ const Map = ({
     }
 
     const { coord, id } = router.query;
-    if (!geolocDisabled && !coord && !center && !id && navigator.geolocation) {
+    if (
+      !geolocDisabled &&
+      !coord &&
+      !initialCenter &&
+      !id &&
+      navigator.geolocation
+    ) {
       if (navigator.permissions) {
         navigator.permissions
           .query({ name: 'geolocation' })
@@ -1063,7 +585,7 @@ const Map = ({
         });
       }
     }
-  }, [jumpTo, center, router, geolocDisabled]);
+  }, [jumpTo, initialCenter, router, geolocDisabled]);
 
   useEffect(() => {
     if (pinsList && pinsList?.length > 0) {
@@ -1101,8 +623,11 @@ const Map = ({
       return;
     }
 
-    loadFilters();
-  }, [loadFilters, mapState]);
+    const map = mapRef.current?.getMap();
+    if (map) {
+      applyMapConfigurationToLayers(map, mapConfiguration);
+    }
+  }, [mapState, mapRef, mapConfiguration]);
 
   useEffect(() => {
     if (pinsList) {
@@ -1117,27 +642,68 @@ const Map = ({
     }
   }, [jumpTo, pinsList]);
 
-  if (!isReady) {
+  const [viewState, setViewState] = useState<ViewState | null>(null);
+  useEffect(() => {
+    if (persistViewStateInURL && router.query.coord) {
+      const [lng, lat] = (router.query.coord as string).split(',');
+      setViewState({
+        longitude: parseFloat(lng) || mapSettings.defaultLongitude,
+        latitude: parseFloat(lat) || mapSettings.defaultLatitude,
+        zoom:
+          parseFloat(router.query.zoom as string) || mapSettings.defaultZoom,
+      });
+    }
+  }, []);
+
+  // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
+  const updateLocationURL = useMemo(
+    () =>
+      debounce((viewState: ViewState) => {
+        router.replace(
+          {
+            search: `coord=${viewState.longitude.toFixed(
+              7
+            )},${viewState.latitude.toFixed(7)}&zoom=${viewState.zoom.toFixed(
+              2
+            )}`,
+          },
+          undefined,
+          {
+            shallow: true,
+          }
+        );
+      }, 500),
+    []
+  );
+
+  useEffect(() => {
+    if (viewState) {
+      updateLocationURL(viewState);
+    }
+  }, [updateLocationURL, viewState]);
+
+  const isRouterReady = useRouterReady();
+  if (!isRouterReady) {
     return null;
   }
 
-  const initialViewState = {
-    latitude: center ? center[1] : mapParam.lat,
-    longitude: center ? center[0] : mapParam.lng,
-    zoom: initialZoom || defaultZoom,
+  const initialViewState: ViewState = {
+    longitude: initialCenter ? initialCenter[0] : mapSettings.defaultLongitude,
+    latitude: initialCenter ? initialCenter[1] : mapSettings.defaultLatitude,
+    zoom: initialZoom || mapSettings.defaultZoom,
   };
 
   if (router.query.coord) {
-    const coordinates = (router.query.coord as string)
-      .split(',')
-      .map((point: string) => parseFloat(point)) as [number, number];
-    initialViewState.longitude = coordinates[0];
-    initialViewState.latitude = coordinates[1];
+    const [lng, lat] = (router.query.coord as string).split(',');
+    initialViewState.longitude =
+      parseFloat(lng) || mapSettings.defaultLongitude;
+    initialViewState.latitude = parseFloat(lat) || mapSettings.defaultLatitude;
     initialViewState.zoom = initialZoom || 13;
   }
 
   if (router.query.zoom) {
-    initialViewState.zoom = parseInt(router.query.zoom as string, 10);
+    initialViewState.zoom =
+      parseFloat(router.query.zoom as string) ?? mapSettings.defaultZoom;
   }
 
   return (
@@ -1173,93 +739,55 @@ const Map = ({
                 />
               </CollapseLegend>
             )}
-            <Legend
+            <LegendSideBar
               legendCollapsed={legendCollapsed}
               withHideLegendSwitch={withHideLegendSwitch}
             >
               <LegendContainer withoutLogo={withoutLogo}>
-                <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+                <Box m="2w">
+                  <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+                </Box>
                 <LegendSeparator />
                 {soughtAddresses.length > 0 && (
                   <>
                     {soughtAddresses
                       .map((soughtAddress, index) => (
-                        <CardSearchDetails
-                          key={soughtAddress.id}
-                          address={soughtAddress}
-                          onClick={jumpTo}
-                          onClickClose={removeSoughtAddresses}
-                          onContacted={markAddressAsContacted}
-                          collapsed={
-                            collapsedCardIndex !==
-                            soughtAddresses.length - 1 - index
-                          }
-                          setCollapsed={(collapsed) => {
-                            if (collapsed) {
-                              setCollapsedCardIndex(-1);
-                            } else {
-                              setCollapsedCardIndex(
-                                soughtAddresses.length - 1 - index
-                              );
+                        <Box mx="2w" key={soughtAddress.id}>
+                          <CardSearchDetails
+                            address={soughtAddress}
+                            onClick={jumpTo}
+                            onClickClose={removeSoughtAddresses}
+                            onContacted={markAddressAsContacted}
+                            collapsed={
+                              collapsedCardIndex !==
+                              soughtAddresses.length - 1 - index
                             }
-                          }}
-                        />
+                            setCollapsed={(collapsed) => {
+                              if (collapsed) {
+                                setCollapsedCardIndex(-1);
+                              } else {
+                                setCollapsedCardIndex(
+                                  soughtAddresses.length - 1 - index
+                                );
+                              }
+                            }}
+                          />
+                        </Box>
                       ))
                       .reverse()}
                     <LegendSeparator />
                   </>
                 )}
-                <MapLegend
+                <SimpleMapLegend
+                  mapConfiguration={mapConfiguration}
                   legendTitle={legendTitle}
-                  data={legendData || mapParam.legendData}
-                  onToggleFeature={toggleLayer}
-                  onToggleInGroup={(groupeName: string, idEntry?: any) => {
-                    switch (groupeName) {
-                      case 'energy': {
-                        toggleEnergyVisibility(idEntry as 'gas' | 'fuelOil');
-                        break;
-                      }
-                      case 'gasUsage': {
-                        toggleGasUsageVisibility(idEntry as 'R' | 'T' | 'I');
-                        break;
-                      }
-                      case 'gasUsageGroup': {
-                        toggleGasUsageGroupeVisibility();
-                        break;
-                      }
-                    }
-                  }}
-                  onValuesChange={(
-                    groupName: string,
-                    idEntry: string,
-                    values: [number, number]
-                  ) => {
-                    switch (groupName) {
-                      case 'energy': {
-                        idEntry === 'gas'
-                          ? updateLayerDisplay({
-                              ...layerDisplay,
-                              energyGasValues: values,
-                            })
-                          : updateLayerDisplay({
-                              ...layerDisplay,
-                              energyFuelValues: values,
-                            });
-                        break;
-                      }
-                      case 'gasUsage': {
-                        updateLayerDisplay({
-                          ...layerDisplay,
-                          gasUsageValues: values,
-                        });
-                        break;
-                      }
-                    }
-                  }}
-                  layerDisplay={layerDisplay}
+                  enabledFeatures={enabledLegendFeatures}
+                  onMapConfigurationChange={(config) =>
+                    setMapConfiguration(config)
+                  }
                 />
               </LegendContainer>
-            </Legend>
+            </LegendSideBar>
             {!withoutLogo && (
               <LegendLogoList legendCollapsed={legendCollapsed}>
                 <LegendLogoLink
@@ -1351,10 +879,10 @@ const Map = ({
             initialViewState={initialViewState}
             mapStyle={carteConfig}
             attributionControl={false}
-            maxZoom={maxZoom}
-            minZoom={minZoom}
-            onLoad={onLoadMap}
-            onSourceData={onSourceDataMap}
+            maxZoom={mapSettings.maxZoom}
+            minZoom={mapSettings.minZoom}
+            onLoad={onMapLoad}
+            onSourceData={onMapSourceData}
             ref={mapRef}
           >
             {!geolocDisabled && (
@@ -1404,13 +932,3 @@ const Map = ({
 };
 
 export default Map;
-
-function isLayerEnabled(
-  value: TypeLayerDisplay[keyof TypeLayerDisplay]
-): boolean {
-  return typeof value === 'boolean'
-    ? value
-    : value instanceof Array
-    ? value.length > 0
-    : value;
-}

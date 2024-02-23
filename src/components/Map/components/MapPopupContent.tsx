@@ -6,10 +6,12 @@ import { FuturNetworkSummary } from 'src/types/Summary/FuturNetwork';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
-import { objTypeEnergy, PopupTitle } from '../Map.style';
+import { PopupTitle } from '../Map.style';
 import { isDefined } from '@utils/core';
-import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielFortChaud';
+import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
 import { prettyFormatNumber } from '@utils/strings';
+import { objTypeEnergy } from '../map-layers';
+import { ReactElement } from 'react';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {
@@ -360,7 +362,7 @@ const ZonePotentielChaudPopupContent = ({
     <section>
       {zonePotentielChaud.ID_ZONE && (
         <PopupTitle className="fr-mr-3w">
-          Zone à potentiel{fortChaud ? ' fort' : ''} chaud
+          Zone à {fortChaud ? ' fort' : ''} potentiel
         </PopupTitle>
       )}
       <strong>Nombre de bâtiments “intéressants”&nbsp;:</strong>&nbsp;
@@ -370,14 +372,14 @@ const ZonePotentielChaudPopupContent = ({
       <br />
       <strong>Besoins en chauffage&nbsp;:</strong>&nbsp;
       {isDefined(zonePotentielChaud.CHAUF_MWH) ? (
-        <>{zonePotentielChaud.CHAUF_MWH}&nbsp;MWh/an</>
+        <>{formatMWh(zonePotentielChaud.CHAUF_MWH)}</>
       ) : (
         'Non connu'
       )}
       <br />
       <strong>Besoins en eau chaude sanitaire&nbsp;:</strong>&nbsp;
       {isDefined(zonePotentielChaud.ECS_MWH) ? (
-        <>{zonePotentielChaud.ECS_MWH}&nbsp;MWh/an</>
+        <>{formatMWh(zonePotentielChaud.ECS_MWH)}</>
       ) : (
         'Non connu'
       )}
@@ -391,3 +393,23 @@ const ZonePotentielChaudPopupContent = ({
     </section>
   );
 };
+
+function formatMWh(value: number): ReactElement {
+  let unit: string;
+
+  if (value >= 1e6) {
+    value /= 1e6;
+    unit = 'TWh/an';
+  } else if (value >= 1e3) {
+    value /= 1e3;
+    unit = 'GWh/an';
+  } else {
+    unit = 'MWh/an';
+  }
+
+  return (
+    <>
+      {value.toPrecision(3)}&nbsp;{unit}
+    </>
+  );
+}

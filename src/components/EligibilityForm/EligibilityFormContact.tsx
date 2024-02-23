@@ -16,6 +16,7 @@ import {
   ContactFormWrapper,
   ContactMapResult,
 } from './components';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
@@ -116,24 +117,12 @@ const EligibilityFormContact = ({
               <Map
                 withCenterPin
                 withoutLogo
-                center={addressData.geoAddress?.geometry.coordinates}
-                initialLayerDisplay={{
-                  outline: true,
-                  futurOutline: true,
-                  coldOutline: false,
-                  zoneDP: true,
-                  demands: false,
-                  raccordements: false,
-                  gasUsageGroup: false,
-                  buildings: false,
-                  zonesPotentielChaud: false,
-                  zonesPotentielFortChaud: false,
-                  gasUsage: [],
-                  energy: [],
-                  gasUsageValues: [1000, Number.MAX_VALUE],
-                  energyGasValues: [50, Number.MAX_VALUE],
-                  energyFuelValues: [50, Number.MAX_VALUE],
-                }}
+                initialCenter={addressData.geoAddress?.geometry.coordinates}
+                initialMapConfiguration={createMapConfiguration({
+                  reseauxDeChaleur: true,
+                  reseauxEnConstruction: true,
+                  zonesDeDeveloppementPrioritaire: true,
+                })}
               />
             </ContactMapResult>
           </ContactFormContentWrapper>
@@ -150,24 +139,12 @@ const EligibilityFormContact = ({
                   <Map
                     withCenterPin
                     withoutLogo
-                    center={addressData.geoAddress?.geometry.coordinates}
-                    initialLayerDisplay={{
-                      outline: true,
-                      futurOutline: true,
-                      coldOutline: false,
-                      zoneDP: true,
-                      demands: false,
-                      raccordements: false,
-                      gasUsageGroup: false,
-                      buildings: false,
-                      zonesPotentielChaud: false,
-                      zonesPotentielFortChaud: false,
-                      gasUsage: [],
-                      energy: [],
-                      gasUsageValues: [1000, Number.MAX_VALUE],
-                      energyGasValues: [50, Number.MAX_VALUE],
-                      energyFuelValues: [50, Number.MAX_VALUE],
-                    }}
+                    initialCenter={addressData.geoAddress?.geometry.coordinates}
+                    initialMapConfiguration={createMapConfiguration({
+                      reseauxDeChaleur: true,
+                      reseauxEnConstruction: true,
+                      zonesDeDeveloppementPrioritaire: true,
+                    })}
                   />
                 </ContactMapResult>
               </>

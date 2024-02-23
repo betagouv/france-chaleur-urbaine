@@ -186,6 +186,12 @@ const trackingEvents = {
   'Carto|DPE|Désactive': {
     matomo: ['Carto', 'DPE', 'Désactive'],
   },
+  "Carto|Zones d'opportunité|Active": {
+    matomo: ['Carto', "Zones d'opportunité", 'Active'],
+  },
+  "Carto|Zones d'opportunité|Désactive": {
+    matomo: ['Carto', "Zones d'opportunité", 'Désactive'],
+  },
   'Carto|Zones à potentiel chaud|Active': {
     matomo: ['Carto', 'Zones à potentiel chaud', 'Active'],
   },

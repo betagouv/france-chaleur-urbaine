@@ -119,7 +119,7 @@ function ModifierReseauxPage() {
         }
       })();
     }
-  }, [router.isReady, router.query.reseau]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [router.isReady, router.query.reseau]);
 
   async function submitForm(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

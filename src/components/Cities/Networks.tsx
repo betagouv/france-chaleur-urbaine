@@ -6,6 +6,7 @@ import EnergiesChart from '@components/Network/EnergiesChart';
 import { Network } from 'src/types/Summary/Network';
 import { NetworkContainer, NetworkColumn } from './Networks.styles';
 import Slice from '@components/Slice';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 type NetworskData = {
   isClassed: boolean;
@@ -84,25 +85,11 @@ const Networks = ({
         <Map
           noPopup
           withCenterPin
-          center={cityCoord}
+          initialCenter={cityCoord}
           initialZoom={11}
-          initialLayerDisplay={{
-            outline: true,
-            futurOutline: false,
-            coldOutline: false,
-            zoneDP: false,
-            demands: false,
-            raccordements: false,
-            gasUsageGroup: false,
-            buildings: false,
-            zonesPotentielChaud: false,
-            zonesPotentielFortChaud: false,
-            gasUsage: [],
-            energy: [],
-            gasUsageValues: [1000, Number.MAX_VALUE],
-            energyGasValues: [50, Number.MAX_VALUE],
-            energyFuelValues: [50, Number.MAX_VALUE],
-          }}
+          initialMapConfiguration={createMapConfiguration({
+            reseauxDeChaleur: true,
+          })}
           filter={
             network
               ? [

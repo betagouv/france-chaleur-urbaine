@@ -25,6 +25,7 @@ import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
 import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 const rowPerPage: number = 10;
 
@@ -457,25 +458,13 @@ const Manager = () => {
                 <Map
                   noPopup
                   withoutLogo
-                  center={centerPin ? centerPin : firstCenterPin}
+                  initialCenter={centerPin ? centerPin : firstCenterPin}
                   initialZoom={initialZoom}
-                  initialLayerDisplay={{
-                    outline: true,
-                    futurOutline: true,
-                    coldOutline: false,
-                    zoneDP: true,
-                    demands: false,
-                    raccordements: false,
-                    gasUsageGroup: false,
-                    buildings: false,
-                    zonesPotentielChaud: false,
-                    zonesPotentielFortChaud: false,
-                    gasUsage: [],
-                    energy: [],
-                    gasUsageValues: [1000, Number.MAX_VALUE],
-                    energyGasValues: [50, Number.MAX_VALUE],
-                    energyFuelValues: [50, Number.MAX_VALUE],
-                  }}
+                  initialMapConfiguration={createMapConfiguration({
+                    reseauxDeChaleur: true,
+                    reseauxEnConstruction: true,
+                    zonesDeDeveloppementPrioritaire: true,
+                  })}
                   pinsList={mapPins}
                   geolocDisabled
                 />

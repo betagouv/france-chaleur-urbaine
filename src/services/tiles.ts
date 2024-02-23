@@ -1,11 +1,9 @@
 import geojsonvt from 'geojson-vt';
 import db from 'src/db';
 import base from 'src/db/airtable';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: no types
 import vtpbf from 'vt-pbf';
-import mapParam from './Map/param';
 import { AirtableTileInfo, DataType, tilesInfo } from './tiles.config';
+import { tileSourcesMaxZoom } from '@components/Map/map-layers';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
@@ -49,7 +47,7 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
           features: features,
         },
         {
-          maxZoom: mapParam.maxZoom,
+          maxZoom: tileSourcesMaxZoom,
         }
       );
     });

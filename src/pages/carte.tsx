@@ -1,28 +1,22 @@
 import Map from '@components/Map';
+import { mapLegendFeatures } from '@components/Map/components/SimpleMapLegend';
 import {
   fullscreenHeaderHeight,
   tabHeaderHeight,
 } from '@components/shared/layout/MainLayout.data';
 import SimplePage from '@components/shared/page/SimplePage';
 import { usePersistedState } from '@hooks';
-import param from 'src/services/Map/param';
-import { LegendGroupId } from 'src/types/enum/LegendGroupId';
 import styled from 'styled-components';
 
 const MapWrapper = styled.div`
   height: calc(100vh - ${tabHeaderHeight});
+  height: calc(100dvh - ${tabHeaderHeight});
 
   @media (min-width: 992px) {
     height: calc(100vh - ${fullscreenHeaderHeight});
+    height: calc(100dvh - ${fullscreenHeaderHeight});
   }
 `;
-
-const defaultLegendIds = [
-  LegendGroupId.heatNetwork,
-  LegendGroupId.coldNetwork,
-  LegendGroupId.zoneDP,
-  LegendGroupId.futurheatNetwork,
-];
 
 const Carte = () => {
   const [proMode, setProMode] = usePersistedState('mapProMode', false, {
@@ -39,25 +33,20 @@ const Carte = () => {
           withoutLogo
           withDrawing={proMode}
           withLegend
-          initialLayerDisplay={param.defaultLayerDisplay}
           proMode={proMode}
           setProMode={setProMode}
-          legendData={
+          enabledLegendFeatures={
             proMode
-              ? param.legendData.filter((x) => x !== 'proModeLegend')
-              : param.legendData
-                  .filter(
-                    (legend) =>
-                      legend !== 'contributeButton' &&
-                      legend !== 'statsByArea' &&
-                      (typeof legend === 'string' ||
-                        defaultLegendIds.includes(legend.id))
-                  )
-                  .filter(
-                    (legend, i, legends) =>
-                      legend !== 'separator' || legends[i - 1] !== 'separator'
-                  )
+              ? mapLegendFeatures.filter((f) => f !== 'proModeLegend')
+              : [
+                  'reseauxDeChaleur',
+                  'reseauxDeFroid',
+                  'reseauxEnConstruction',
+                  'zonesDeDeveloppementPrioritaire',
+                  'proModeLegend',
+                ]
           }
+          persistViewStateInURL
         />
       </MapWrapper>
     </SimplePage>
