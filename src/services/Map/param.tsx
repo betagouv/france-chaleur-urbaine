@@ -6,6 +6,7 @@ import {
   themeDefEnergy,
   themeDefTypeGas,
 } from './businessRules';
+import Link from '@components/ui/Link';
 
 enum Layer {
   outline = 'outline',
@@ -254,6 +255,18 @@ const legendData: (string | TypeGroupLegend)[] = [
         label: "Zones d'opportunité à potentiel chaud",
         className: 'legend-zonesPotentielChaud',
         trackingEvent: 'Carto|Zones à potentiel chaud',
+        info: (
+          <>
+            Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+            <br />
+            <Link
+              href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/01/Methodologie_zones_opportunite_VF.pdf"
+              isExternal
+            >
+              Accéder à la méthodologie
+            </Link>
+          </>
+        ),
       },
     ],
     type: 'list',
@@ -266,6 +279,18 @@ const legendData: (string | TypeGroupLegend)[] = [
         label: "Zones d'opportunité à potentiel fort chaud",
         className: 'legend-zonesPotentielFortChaud',
         trackingEvent: 'Carto|Zones à potentiel fort chaud',
+        info: (
+          <>
+            Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+            <br />
+            <Link
+              href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/01/Methodologie_zones_opportunite_VF.pdf"
+              isExternal
+            >
+              Accéder à la méthodologie
+            </Link>
+          </>
+        ),
       },
     ],
     type: 'list',
