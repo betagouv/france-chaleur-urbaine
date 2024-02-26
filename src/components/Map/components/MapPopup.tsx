@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Popup } from 'react-map-gl';
+import { Popup } from 'react-map-gl/maplibre';
 import { MapPopupType } from 'src/types/MapComponentsInfos';
 import MapPopupContent, { ViasevaPopupContent } from './MapPopupContent';
 import { Point } from 'src/types/Point';

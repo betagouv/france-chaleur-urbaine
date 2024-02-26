@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Marker, Popup } from 'react-map-gl';
+import { Marker, Popup } from 'react-map-gl/maplibre';
 import { Point } from 'src/types/Point';
 
 const MapMarker = ({
