@@ -614,6 +614,8 @@ const Map = ({
     );
 
     const clickEvents = [
+      { name: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
+      { name: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
       { name: 'outline', key: 'network' },
       { name: 'outlineCenter', key: 'network' },
       { name: 'coldOutline', key: 'coldNetwork' },
@@ -628,8 +630,6 @@ const Map = ({
       { name: 'gasUsage', key: 'consommation' },
       { name: 'energy', key: 'energy' },
       { name: 'raccordements', key: 'raccordement' },
-      { name: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
-      { name: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
     ];
 
     e.target.loadImage('/icons/rect.png', (error, image) => {
@@ -682,6 +682,82 @@ const Map = ({
     ) {
       const network = router.query.network as string;
 
+      // ---------------------------
+      // --- zonesPotentielChaud ---
+      // ---------------------------
+      addSource(
+        e.target,
+        'zonesPotentielChaud',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
+          maxzoom: 17,
+          promoteId: 'ID_ZONE',
+          attribution:
+            '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        },
+        [
+          {
+            id: 'zonesPotentielChaud',
+            source: 'zonesPotentielChaud',
+            'source-layer': 'layer',
+            type: 'fill',
+            paint: {
+              'fill-color': themeDefZonePotentielChaud.fill.color,
+              'fill-opacity': themeDefZonePotentielChaud.fill.opacity,
+            },
+          },
+          {
+            id: 'zonesPotentielChaud-outline',
+            source: 'zonesPotentielChaud',
+            'source-layer': 'layer',
+            type: 'line',
+            paint: {
+              'line-color': themeDefZonePotentielChaud.fill.color,
+              'line-width': 2,
+            },
+          },
+        ] satisfies LayerSpecification[]
+      );
+
+      // -------------------------------
+      // --- zonesPotentielFortChaud ---
+      // -------------------------------
+      addSource(
+        e.target,
+        'zonesPotentielFortChaud',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`],
+          maxzoom: 17,
+          promoteId: 'ID_ZONE',
+          attribution:
+            '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        },
+        [
+          {
+            id: 'zonesPotentielFortChaud',
+            source: 'zonesPotentielFortChaud',
+            'source-layer': 'layer',
+            type: 'fill',
+            paint: {
+              'fill-color': themeDefZonePotentielFortChaud.fill.color,
+              'fill-opacity': themeDefZonePotentielFortChaud.fill.opacity,
+            },
+          },
+          {
+            id: 'zonesPotentielFortChaud-outline',
+            source: 'zonesPotentielFortChaud',
+            'source-layer': 'layer',
+            type: 'line',
+            paint: {
+              'line-color': themeDefZonePotentielFortChaud.fill.color,
+              'line-width': 2,
+            },
+          },
+        ] satisfies LayerSpecification[]
+      );
+
       // ---------------
       // --- Zone DP ---
       // ---------------
@@ -698,42 +774,6 @@ const Map = ({
             source: 'zoneDP',
             'source-layer': 'zoneDP',
             ...zoneDPLayerStyle,
-          },
-        ]
-      );
-
-      // --------------------
-      // --- Heat Network ---
-      // --------------------
-      addSource(
-        e.target,
-        'coldNetwork',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/coldNetwork/{z}/{x}/{y}`],
-        },
-        [
-          {
-            id: 'coldOutline',
-            source: 'coldNetwork',
-            'source-layer': 'coldOutline',
-            ...coldOutlineLayerStyle,
-            ...getNetworkFilter(network, filter, [
-              '==',
-              ['get', 'has_trace'],
-              true,
-            ]),
-          },
-          {
-            id: 'coldOutlineCenter',
-            source: 'coldNetwork',
-            'source-layer': 'coldOutline',
-            ...coldOutlineCenterLayerStyle,
-            ...getNetworkFilter(network, filter, [
-              '==',
-              ['get', 'has_trace'],
-              false,
-            ]),
           },
         ]
       );
@@ -795,6 +835,42 @@ const Map = ({
             source: 'heatNetwork',
             'source-layer': 'outline',
             ...outlineCenterLayerStyle,
+            ...getNetworkFilter(network, filter, [
+              '==',
+              ['get', 'has_trace'],
+              false,
+            ]),
+          },
+        ]
+      );
+
+      // --------------------
+      // --- Heat Network ---
+      // --------------------
+      addSource(
+        e.target,
+        'coldNetwork',
+        {
+          type: 'vector',
+          tiles: [`${origin}/api/map/coldNetwork/{z}/{x}/{y}`],
+        },
+        [
+          {
+            id: 'coldOutline',
+            source: 'coldNetwork',
+            'source-layer': 'coldOutline',
+            ...coldOutlineLayerStyle,
+            ...getNetworkFilter(network, filter, [
+              '==',
+              ['get', 'has_trace'],
+              true,
+            ]),
+          },
+          {
+            id: 'coldOutlineCenter',
+            source: 'coldNetwork',
+            'source-layer': 'coldOutline',
+            ...coldOutlineCenterLayerStyle,
             ...getNetworkFilter(network, filter, [
               '==',
               ['get', 'has_trace'],
@@ -910,82 +986,6 @@ const Map = ({
             ...raccordementsLayerStyle,
           },
         ]
-      );
-
-      // ---------------------------
-      // --- zonesPotentielChaud ---
-      // ---------------------------
-      addSource(
-        e.target,
-        'zonesPotentielChaud',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
-          maxzoom: 17,
-          promoteId: 'ID_ZONE',
-          attribution:
-            '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
-        },
-        [
-          {
-            id: 'zonesPotentielChaud',
-            source: 'zonesPotentielChaud',
-            'source-layer': 'layer',
-            type: 'fill',
-            paint: {
-              'fill-color': themeDefZonePotentielChaud.fill.color,
-              'fill-opacity': themeDefZonePotentielChaud.fill.opacity,
-            },
-          },
-          {
-            id: 'zonesPotentielChaud-outline',
-            source: 'zonesPotentielChaud',
-            'source-layer': 'layer',
-            type: 'line',
-            paint: {
-              'line-color': themeDefZonePotentielChaud.fill.color,
-              'line-width': 2,
-            },
-          },
-        ] satisfies LayerSpecification[]
-      );
-
-      // -------------------------------
-      // --- zonesPotentielFortChaud ---
-      // -------------------------------
-      addSource(
-        e.target,
-        'zonesPotentielFortChaud',
-        {
-          type: 'vector',
-          tiles: [`${origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`],
-          maxzoom: 17,
-          promoteId: 'ID_ZONE',
-          attribution:
-            '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
-        },
-        [
-          {
-            id: 'zonesPotentielFortChaud',
-            source: 'zonesPotentielFortChaud',
-            'source-layer': 'layer',
-            type: 'fill',
-            paint: {
-              'fill-color': themeDefZonePotentielFortChaud.fill.color,
-              'fill-opacity': themeDefZonePotentielFortChaud.fill.opacity,
-            },
-          },
-          {
-            id: 'zonesPotentielFortChaud-outline',
-            source: 'zonesPotentielFortChaud',
-            'source-layer': 'layer',
-            type: 'line',
-            paint: {
-              'line-color': themeDefZonePotentielFortChaud.fill.color,
-              'line-width': 2,
-            },
-          },
-        ] satisfies LayerSpecification[]
       );
 
       setMapState('loaded');
