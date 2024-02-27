@@ -38,8 +38,8 @@ ${
 }
 `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
-**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+**France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
+#### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
 `,
 };
 
@@ -166,8 +166,8 @@ ${
 }
 `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
-**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+**France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
+#### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
 `,
 };
 
@@ -264,8 +264,8 @@ ${
 }
 `,
   text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche de chez vous **afin de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
-**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+**France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
+#### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
 `,
 };
 

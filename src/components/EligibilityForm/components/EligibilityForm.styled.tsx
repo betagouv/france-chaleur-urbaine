@@ -42,6 +42,9 @@ export const ContactFormContentWrapper = styled.div<{
     line-height: 32px;
     margin-bottom: 48px;
   }
+  .h4-dark-blue h4 {
+    color: var(--text-title-blue-france);
+  }
 
   ul {
     font-size: 18px;
