@@ -12,4 +12,5 @@ export enum Airtable {
   FUTUR_NETWORKS = 'FCU - Futur réseaux de chaleur',
   MODIFICATIONS_RESEAU = 'FCU - Modifications réseau',
   DEMANDES_ELIGIBILITES = 'FCU - test en masse',
+  UTILISATEURS_EMAILS = 'FCU - Utilisateurs emails',
 }

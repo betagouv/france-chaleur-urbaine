@@ -37,4 +37,5 @@ export type Demand = DemandSummary &
     'Gestionnaire Affecté à': string;
     'Identifiant réseau'?: string;
     'Nom réseau'?: string;
+    'Emails envoyés'?: string;
   };

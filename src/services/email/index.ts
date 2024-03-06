@@ -31,16 +31,17 @@ const send = (
   toEmail: string[],
   subject: string,
   html: string,
-  ccEmail = [],
+  ccEmail?: string[],
   bccEmail = [],
-  attachments: Attachment[] = []
+  attachments: Attachment[] = [],
+  replyTo?: string
 ): Promise<void> => {
   const mail = {
     to: toEmail.join(','),
-    cc: ccEmail.join(','),
+    cc: ccEmail && ccEmail.join(','),
     bcc: bccEmail.join(','),
     from: `FCU <${process.env.SENDING_EMAIL}>`,
-    replyTo: process.env.SENDING_EMAIL,
+    replyTo: replyTo || process.env.SENDING_EMAIL,
     subject,
     html,
     attachments,
@@ -192,4 +193,23 @@ export const sendRelanceMail = async (
   });
 
   return send([demand.Mail], 'Votre demande sur France Chaleur Urbaine', html);
+};
+
+export const sendManagerEmail = async (
+  subject: string,
+  recipient: string,
+  body: string,
+  signature: string,
+  cc: string[],
+  replyTo: string
+): Promise<void> => {
+  const html = await ejs.renderFile(
+    './src/services/email/views/manager-email.ejs',
+    {
+      content: body,
+      signature: signature,
+    }
+  );
+
+  return send([recipient], subject, html, cc, [], [], replyTo);
 };
