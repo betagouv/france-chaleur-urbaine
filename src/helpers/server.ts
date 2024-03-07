@@ -4,8 +4,12 @@ import { parentLogger } from './logger';
 import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
 import { captureException } from '@sentry/nextjs';
+import { USER_ROLE } from 'src/types/enum/UserRole';
+import { getServerSession } from 'next-auth';
+import { nextAuthOptions } from '@pages/api/auth/[...nextauth]';
 
 const FormidableError = (formidableErrors as any).default;
+
 /**
  * Valide un objet selon un schéma zod.
  */
@@ -18,26 +22,51 @@ export async function validateObjectSchema<Shape extends ZodRawShape>(
 
 type RouteOptions = {
   logRequest?: boolean;
+  requireAuthentication?: boolean | `${USER_ROLE}`[];
 };
 
 const defaultRouteOptions = {
   logRequest: true,
+  requireAuthentication: false,
 } satisfies RouteOptions;
 
 /**
  * Encapsule une route API pour logger et gérer automatiquement les erreurs :
+ *  - authentification requise => retourne un statut 401
+ *  - permissions invalides => retourne un statut 403
  *  - validation Zod => retourne un statut 400
+ *  - erreur de route (invalidRouteError) => retourne un statut 404
  *  - postgres => retourne un statut 500
  */
 export function handleRouteErrors(
   handler: NextApiHandler,
   options?: RouteOptions
 ): NextApiHandler {
-  const routeOptions = Object.assign({}, defaultRouteOptions, options);
+  const routeOptions: RouteOptions = Object.assign(
+    {},
+    defaultRouteOptions,
+    options
+  );
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const startTime = Date.now();
     const logger = parentLogger.child({ url: req.url });
     try {
+      if (routeOptions?.requireAuthentication) {
+        const session = await getServerSession(req, res, nextAuthOptions);
+        if (!session || !session.user) {
+          throw requiredAuthenticationError;
+        }
+        req.user = session.user;
+        if (!req.user.active) {
+          throw invalidPermissionsError;
+        }
+        if (
+          routeOptions.requireAuthentication instanceof Array &&
+          !routeOptions.requireAuthentication.includes(req.user.role)
+        ) {
+          throw invalidPermissionsError;
+        }
+      }
       const handlerResult = await handler(req, res);
       if (!res.headersSent) {
         res.status(HttpStatusCode.Ok).json(handlerResult);
@@ -59,6 +88,18 @@ export function handleRouteErrors(
         });
       }
       let errorMessage = error;
+      if (error === requiredAuthenticationError) {
+        logger.error('required authentication error');
+        return res.status(401).json({
+          message: 'Authentification requise',
+        });
+      }
+      if (error === invalidPermissionsError) {
+        logger.error('invalid permissions error');
+        return res.status(403).json({
+          message: 'Permissions invalides',
+        });
+      }
       if (error === invalidRouteError) {
         logger.error('invalid route error');
         return res.status(404).json({
@@ -100,7 +141,11 @@ export function handleRouteErrors(
   };
 }
 
-const invalidRouteError = new Error('invalid route'); // 404
+export const requiredAuthenticationError = new Error(
+  'Authentification requise'
+); // 401
+export const invalidPermissionsError = new Error('Permissions invalides'); // 403
+export const invalidRouteError = new Error('invalid route'); // 404
 
 export function requireGetMethod(req: NextApiRequest) {
   if (req.method !== 'GET') {
@@ -110,6 +155,12 @@ export function requireGetMethod(req: NextApiRequest) {
 
 export function requirePostMethod(req: NextApiRequest) {
   if (req.method !== 'POST') {
+    throw invalidRouteError;
+  }
+}
+
+export function requirePutMethod(req: NextApiRequest) {
+  if (req.method !== 'PUT') {
     throw invalidRouteError;
   }
 }
