@@ -1,13 +1,12 @@
 import { getSpreadSheet } from '@core/infrastructure/repository/export';
 import { getDemands } from '@core/infrastructure/repository/manager';
+import { handleRouteErrors, invalidPermissionsError } from '@helpers/server';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { User } from 'next-auth';
-import { authenticatedUser } from 'src/services/api/authentication';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ExportColumn } from 'src/types/ExportColumn';
 import { Demand } from 'src/types/Summary/Demand';
 
-const exportColumn: ExportColumn<Demand>[] = [
+const demandsExportColumns: ExportColumn<Demand>[] = [
   {
     header: 'Statut',
     value: 'Status',
@@ -68,52 +67,35 @@ const exportColumn: ExportColumn<Demand>[] = [
   },
 ];
 
-const get = async (res: NextApiResponse, user: User) => {
-  const demands = await getDemands(user);
-  return res.status(200).json(demands);
-};
-
-const post = async (res: NextApiResponse, user: User) => {
-  const demands = await getDemands(user);
-  if (!demands) {
-    return res.status(204).send(null);
-  }
-
-  const csv = getSpreadSheet(exportColumn, demands, EXPORT_FORMAT.XLSX);
-
-  res.setHeader(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  );
-  res.setHeader('Content-Disposition', `attachment; filename=demands_fcu.xlsx`);
-
-  return res.status(200).send(csv);
-};
-
-export default async function demands(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  try {
-    const user = await authenticatedUser(req, res);
-    if (!user) {
-      return res.status(204).json([]);
-    }
-
+export default handleRouteErrors(
+  async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET') {
-      return get(res, user);
+      return await getDemands(req.user);
     }
 
     if (req.method === 'POST') {
-      return post(res, user);
+      const demands = await getDemands(req.user);
+      const csv = getSpreadSheet(
+        demandsExportColumns,
+        demands,
+        EXPORT_FORMAT.XLSX
+      );
+
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=demands_fcu.xlsx`
+      );
+
+      return res.status(200).send(csv);
     }
-    return res.status(501);
-  } catch (error) {
-    console.error(error);
-    res.statusCode = 500;
-    return res.json({
-      message: 'internal server error',
-      code: 'Internal Server Error',
-    });
+
+    throw invalidPermissionsError;
+  },
+  {
+    requireAuthentication: true,
   }
-}
+);

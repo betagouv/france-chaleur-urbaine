@@ -1,21 +1,4 @@
-import {
-  themeDefBuildings,
-  themeDefDemands,
-  themeDefEnergy,
-  themeDefHeatNetwork,
-  themeDefTypeGas,
-  themeDefZoneDP,
-} from 'src/services/Map/businessRules';
-import param from 'src/services/Map/param';
-import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import styled, { createGlobalStyle, css } from 'styled-components';
-import {
-  LegendDeskData,
-  maxIconSize,
-  minIconSize,
-} from './components/LegendDesc';
-
-const { minZoomData } = param;
 
 export const mapControlZindex = 110;
 
@@ -70,7 +53,6 @@ export const MapStyle: any = createGlobalStyle<{
     .popup-map-layer {
       z-index: ${mapControlZindex + 1};
       font-size: 14px;
-      max-width: 300px !important;
 
       &.maplibregl-popup-anchor-left  .maplibregl-popup-tip {
         border-right-color: #4550e5;
@@ -127,6 +109,12 @@ export const MapStyle: any = createGlobalStyle<{
         }
       }
     }
+    .popup-map-layer--standard {
+      max-width: 300px !important;
+    }
+    .popup-map-layer--fluid {
+      max-width: 500px !important;
+    }
     /*HACK : keep the attributions links visible even when the scale legend is zoom at the max*/
     .maplibregl-control-container {
       .maplibregl-ctrl-bottom-right {
@@ -157,7 +145,7 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   }
 `;
 
-export const Legend = styled.div<{
+export const LegendSideBar = styled.div<{
   legendCollapsed: boolean;
   withHideLegendSwitch?: boolean;
 }>`
@@ -166,11 +154,12 @@ export const Legend = styled.div<{
   ${({ legendCollapsed }) =>
     legendCollapsed &&
     css`
-      display: none;
+      // not visible so that collapsiblebox can be rendered and compute their height
+      position: absolute;
+      left: -100%;
     `}
   width: 333px;
   min-width: 333px;
-  padding: 16px;
   background: #ffffff;
   border: 1px solid #dddddd;
   box-shadow:
@@ -194,9 +183,8 @@ export const LegendContainer = styled.div<{
 `;
 
 export const LegendSeparator = styled.div`
-  width: 100%;
   border: 1px solid #e1e1e1;
-  margin: 16px 0;
+  margin: 16px;
 `;
 
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
@@ -219,308 +207,6 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
       }
     }
   }
-`;
-
-// --------------------
-// --- Heat Network ---
-// --------------------
-
-export const outlineCenterLayerStyle = {
-  type: 'circle',
-  paint: {
-    'circle-stroke-color': [
-      'case',
-      ['boolean', ['get', 'reseaux classes']],
-      themeDefHeatNetwork.classed.color,
-      themeDefHeatNetwork.outline.color,
-    ],
-    'circle-stroke-width': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      5,
-      2,
-      8,
-      2,
-      9,
-      3,
-      15,
-      4,
-    ],
-    'circle-color': '#fff',
-    'circle-radius': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      5,
-      0,
-      8,
-      0,
-      9,
-      4,
-      15,
-      10,
-    ],
-  },
-};
-
-export const outlineLayerStyle = {
-  type: 'line',
-  layout: {
-    'line-join': 'round',
-    'line-cap': 'round',
-  },
-  paint: {
-    'line-color': [
-      'case',
-      ['boolean', ['get', 'reseaux classes']],
-      themeDefHeatNetwork.classed.color,
-      themeDefHeatNetwork.outline.color,
-    ],
-    'line-width': [
-      'case',
-      ['boolean', ['feature-state', 'hover'], false],
-      3,
-      2,
-    ],
-    'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
-  },
-};
-
-export const coldOutlineCenterLayerStyle = {
-  ...outlineCenterLayerStyle,
-  paint: {
-    ...outlineCenterLayerStyle.paint,
-    'circle-stroke-color': themeDefHeatNetwork.cold.color,
-  },
-};
-
-export const coldOutlineLayerStyle = {
-  ...outlineLayerStyle,
-  paint: {
-    ...outlineLayerStyle.paint,
-    'line-color': themeDefHeatNetwork.cold.color,
-  },
-};
-
-export const futurOutlineLayerStyle = {
-  ...outlineLayerStyle,
-  paint: {
-    ...outlineLayerStyle.paint,
-    'line-color': themeDefHeatNetwork.futur.color,
-  },
-};
-
-export const futurZoneLayerStyle = {
-  type: 'fill',
-  paint: {
-    'fill-color': themeDefHeatNetwork.futur.color,
-    'fill-opacity': 0.47,
-  },
-};
-
-// --------------
-// --- Energy ---
-// --------------
-
-const NB_LOT = 'nb_logements';
-const TYPE_ENERGY = 'energie_utilisee';
-export const typeEnergy: Record<ENERGY_USED, ENERGY_TYPE> = {
-  [ENERGY_USED.Fioul]: ENERGY_TYPE.Fuel,
-  [ENERGY_USED.FioulDomestique]: ENERGY_TYPE.Fuel,
-  [ENERGY_USED.Gaz]: ENERGY_TYPE.Gas,
-  [ENERGY_USED.GazNaturel]: ENERGY_TYPE.Gas,
-  [ENERGY_USED.GazCollectif]: ENERGY_TYPE.Gas,
-  [ENERGY_USED.GazPropaneButane]: ENERGY_TYPE.Gas,
-  [ENERGY_USED.Charbon]: ENERGY_TYPE.Wood,
-  [ENERGY_USED.BoisDeChauffage]: ENERGY_TYPE.Wood,
-  [ENERGY_USED.Electricite]: ENERGY_TYPE.Electric,
-  [ENERGY_USED.EnergieAutre]: ENERGY_TYPE.Unknown,
-  [ENERGY_USED.SansObjet]: ENERGY_TYPE.Unknown,
-  [ENERGY_USED.Default]: ENERGY_TYPE.Unknown,
-};
-export const objTypeEnergy = Object.entries(typeEnergy).reduce(
-  (acc: any, [key, value]: [string, string]) => {
-    return {
-      ...acc,
-      [value]: [...(acc[value] || []), key],
-    };
-  },
-  {}
-);
-const arrColorFromDefEnergy = [
-  ...Object.entries(themeDefEnergy).flatMap(
-    ([energyName, styleObject]: [string, any]) => [
-      objTypeEnergy[energyName],
-      styleObject.color,
-    ]
-  ),
-  themeDefEnergy.unknow.color,
-];
-
-const iconSize = 31;
-const maxDisplaySize = 29;
-const iconRatio = 1 / (iconSize / maxDisplaySize);
-const getSymbolRatio: (size: number) => number = (size) =>
-  iconRatio * (size / maxDisplaySize);
-export const energyLayerStyle = {
-  type: 'symbol',
-  layout: {
-    'icon-image': 'energy-picto',
-    'icon-overlap': 'always',
-    'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
-    'icon-size': [
-      'case',
-      ['<', ['get', NB_LOT], LegendDeskData.energy.min],
-      getSymbolRatio(minIconSize),
-      ['<', ['get', NB_LOT], LegendDeskData.energy.max],
-      [
-        'interpolate',
-        ['linear'],
-        ['get', NB_LOT],
-        LegendDeskData.energy.min,
-        getSymbolRatio(minIconSize),
-        LegendDeskData.energy.max,
-        getSymbolRatio(maxIconSize),
-      ],
-      getSymbolRatio(maxIconSize),
-    ],
-  },
-  paint: {
-    'icon-color': ['match', ['get', TYPE_ENERGY], ...arrColorFromDefEnergy],
-    'icon-opacity': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.2,
-      0,
-      minZoomData + 0.5 + 1,
-      0.65,
-    ],
-  },
-};
-
-// -----------------
-// --- Gas Usage ---
-// -----------------
-const CONSO = 'conso_nb';
-const TYPE_GAS = 'code_grand';
-const arrColorFromDefTypeGas = [
-  ...Object.entries(themeDefTypeGas).flatMap(
-    ([TypeGasName, styleObject]: [string, any]) => [
-      TypeGasName,
-      styleObject.color,
-    ]
-  ),
-  themeDefTypeGas.unknow.color,
-];
-
-export const gasUsageLayerStyle = {
-  type: 'circle',
-  layout: {
-    'circle-sort-key': ['-', ['coalesce', ['get', CONSO], 0]],
-  },
-  paint: {
-    'circle-color': ['match', ['get', TYPE_GAS], ...arrColorFromDefTypeGas],
-    'circle-radius': [
-      'case',
-      ['<', ['get', CONSO], LegendDeskData.gasUsage.min],
-      minIconSize / 2,
-      ['<', ['get', CONSO], LegendDeskData.gasUsage.max],
-      [
-        'interpolate',
-        ['linear'],
-        ['get', CONSO],
-        LegendDeskData.gasUsage.min,
-        minIconSize / 2,
-        LegendDeskData.gasUsage.max,
-        maxIconSize / 2,
-      ],
-      maxIconSize / 2,
-    ],
-    'circle-opacity': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.2,
-      0,
-      minZoomData + 0.2 + 1,
-      0.55,
-    ],
-    'circle-stroke-opacity': 0,
-  },
-};
-
-export const demandsLayerStyle = {
-  type: 'circle',
-  paint: {
-    'circle-color': themeDefDemands.fill.color,
-    'circle-stroke-color': themeDefDemands.stroke.color,
-    'circle-radius': themeDefDemands.fill.size,
-    'circle-stroke-width': themeDefDemands.stroke.size,
-  },
-};
-
-export const raccordementsLayerStyle = {
-  type: 'symbol',
-  layout: {
-    'icon-image': 'energy-picto',
-    'icon-overlap': 'always',
-    'icon-size': 0.5,
-  },
-  paint: {
-    'icon-color': themeDefHeatNetwork.classed.color,
-    'icon-opacity': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.2,
-      0,
-      minZoomData + 0.5 + 1,
-      0.65,
-    ],
-  },
-};
-
-export const zoneDPLayerStyle = {
-  type: 'fill',
-  paint: {
-    'fill-color': themeDefZoneDP.fill.color,
-    'fill-opacity': themeDefZoneDP.fill.opacity,
-  },
-};
-
-const DPE_ENERGY = 'dpe_energie';
-const arrColorFromDefBuildingsDpeEnergy = [
-  ...Object.entries(themeDefBuildings.colors).flatMap(
-    ([dpeCode, dpeStyleDef]: [string, any]) => [dpeCode, dpeStyleDef.color]
-  ),
-  themeDefBuildings.colors.unknow.color,
-];
-
-export const buildingsLayerStyle = {
-  type: 'fill',
-  paint: {
-    'fill-color': [
-      'match',
-      ['downcase', ['coalesce', ['get', DPE_ENERGY], 'N']],
-      ...arrColorFromDefBuildingsDpeEnergy,
-    ],
-    'fill-opacity': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      minZoomData + 0.2,
-      0,
-      minZoomData + 0.2 + 1,
-      themeDefBuildings.opacity,
-    ],
-  },
-};
-
-export const Buttons = styled.div`
-  display: flex;
-  justify-content: space-evenly;
 `;
 
 export const LegendLogoList = styled.div<{

@@ -32,6 +32,8 @@ export const dataTypes = [
   'buildings',
   'futurNetwork',
   'coldNetwork',
+  'zonesPotentielChaud',
+  'zonesPotentielFortChaud',
 ] as const;
 
 export const zDataType = z.enum(dataTypes);
@@ -203,5 +205,23 @@ export const tilesInfo: Record<DataType, TileInfo> = {
       'pdl_nb',
     ],
     sourceLayer: 'gasUsage',
+  },
+  zonesPotentielChaud: {
+    source: 'database',
+    tiles: 'zone_a_potentiel_chaud_tiles',
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  zonesPotentielFortChaud: {
+    source: 'database',
+    tiles: 'zone_a_potentiel_fort_chaud_tiles',
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
   },
 };

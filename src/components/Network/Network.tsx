@@ -18,6 +18,7 @@ import {
 import EnergiesChart from './EnergiesChart';
 import Text from '@components/ui/Text';
 import Link from 'next/link';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://')
@@ -476,23 +477,12 @@ const Network = ({
               <MapContainer>
                 <Map
                   noPopup
-                  center={[network.lon, network.lat]}
+                  initialCenter={[network.lon, network.lat]}
                   initialZoom={13}
-                  initialLayerDisplay={{
-                    outline: true,
-                    futurOutline: false,
-                    coldOutline: true,
-                    zoneDP: false,
-                    demands: false,
-                    raccordements: false,
-                    gasUsageGroup: false,
-                    buildings: false,
-                    gasUsage: [],
-                    energy: [],
-                    gasUsageValues: [1000, Number.MAX_VALUE],
-                    energyGasValues: [50, Number.MAX_VALUE],
-                    energyFuelValues: [50, Number.MAX_VALUE],
-                  }}
+                  initialMapConfiguration={createMapConfiguration({
+                    reseauxDeChaleur: true,
+                    reseauxDeFroid: true,
+                  })}
                 />
               </MapContainer>
             )}

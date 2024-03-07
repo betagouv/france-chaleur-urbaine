@@ -24,7 +24,6 @@ const login = async (email: string, password: string) => {
     gestionnaires: user.gestionnaires,
     role: user.role,
     email: user.email,
-    signature: user.signature,
   };
 };
 
@@ -43,21 +42,30 @@ export const nextAuthOptions: AuthOptions = {
           role: user.role,
           email: user.email,
           gestionnaires: user.gestionnaires,
-          signature: user.signature,
         };
       }
       return token;
     },
     async session({ session, token }) {
+      // update the last_connection date and return the latest user data
+      const [user] = await db('users')
+        .where({ email: session.user.email })
+        .update({ last_connection: new Date() })
+        .returning([
+          'id',
+          'email',
+          'role',
+          'gestionnaires',
+          'receive_new_demands',
+          'receive_old_demands',
+          'active',
+          'created_at',
+        ]);
+
       if (token) {
         return {
           ...session,
-          user: {
-            role: token.role,
-            email: token.email,
-            gestionnaires: token.gestionnaires,
-            signature: token.signature,
-          },
+          user,
         } as Session;
       }
       return session;

@@ -30,6 +30,7 @@ import { clientConfig } from 'src/client-config';
 import { useAnalytics } from 'src/services/analytics';
 import { SWRConfig, SWRConfiguration } from 'swr';
 import { usePreserveScroll } from '@hooks/usePreserveScroll';
+import HotjarMarkup from '@components/Markup/HotjarMarkup';
 
 const og = {
   // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
@@ -70,6 +71,10 @@ export const AppGlobalStyle = createGlobalStyle`
   }
   .d-inline-block {
     display: inline-block !important;
+  }
+  // custom: not DSFR
+  .fr-text--lightbold {
+    font-weight: 500 !important;
   }
   :root {
     --white: #fff;
@@ -173,6 +178,13 @@ function MyApp({
             {clientConfig.tracking.linkInPartnerId && (
               <LinkedInMarkup tagId={clientConfig.tracking.linkInPartnerId} />
             )}
+            {clientConfig.tracking.hotjarId &&
+              clientConfig.tracking.hotjarSv && (
+                <HotjarMarkup
+                  hotjarId={clientConfig.tracking.hotjarId}
+                  hotjarSv={clientConfig.tracking.hotjarSv}
+                />
+              )}
           </ConsentBanner>
         )}
         <Head>

@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Popup } from 'react-map-gl';
+import { Popup } from 'react-map-gl/maplibre';
 import { MapPopupType } from 'src/types/MapComponentsInfos';
-import MapPopupContent, { ViasevaPopupContent } from './MapPopupContent';
+import MapPopupContent, {
+  ViasevaPopupContent,
+  DynamicPopupContent,
+} from './MapPopupContent';
 import { Point } from 'src/types/Point';
 
 const MapPopup = ({
@@ -33,14 +36,26 @@ const MapPopup = ({
           latitude={latitude}
           offset={[0, -10] as Point}
           closeButton
-          className="popup-map-layer"
+          className={`popup-map-layer ${
+            isDynamicPopupContent(content)
+              ? 'popup-map-layer--fluid'
+              : 'popup-map-layer--standard'
+          }`}
           onClose={() => setShow(false)}
         >
-          {type == MapPopupType.DEFAULT && <MapPopupContent {...content} />}
-          {(type == MapPopupType.VIASEVA ||
-            type == MapPopupType.ENGIE ||
-            type === MapPopupType.DALKIA ||
-            type === MapPopupType.IDEX) && <ViasevaPopupContent {...content} />}
+          {isDynamicPopupContent(content) ? (
+            <DynamicPopupContent content={content} />
+          ) : (
+            <>
+              {type == MapPopupType.DEFAULT && <MapPopupContent {...content} />}
+              {(type == MapPopupType.VIASEVA ||
+                type == MapPopupType.ENGIE ||
+                type === MapPopupType.DALKIA ||
+                type === MapPopupType.IDEX) && (
+                <ViasevaPopupContent {...content} />
+              )}
+            </>
+          )}
         </Popup>
       ) : (
         ''
@@ -50,4 +65,12 @@ const MapPopup = ({
   );
 };
 
+const layersWithDynamicContentPopup = [
+  'zonesPotentielChaud',
+  'zonesPotentielFortChaud',
+] as const;
+
+function isDynamicPopupContent(content: any): content is DynamicPopupContent {
+  return layersWithDynamicContentPopup.includes(content.type);
+}
 export default MapPopup;

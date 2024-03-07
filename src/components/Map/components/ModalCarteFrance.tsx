@@ -83,7 +83,7 @@ function ModalCarteFrance(props: Props) {
     if (props.isOpen && !statsData) {
       fetchStats();
     }
-  }, [props.isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [props.isOpen]);
 
   const { areaMode, areaIdPropertyName, mapSourceData } = getAreaToMapConfig(
     area,

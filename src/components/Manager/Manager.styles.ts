@@ -9,9 +9,11 @@ export const Container = styled.div`
   margin: auto;
   padding: 16px;
   height: calc(100vh - ${tabHeaderHeight});
+  height: calc(100dvh - ${tabHeaderHeight});
 
   @media (min-width: 992px) {
     height: calc(100vh - ${fullscreenHeaderHeight});
+    height: calc(100dvh - ${fullscreenHeaderHeight});
   }
   overflow: auto;
   display: flex;

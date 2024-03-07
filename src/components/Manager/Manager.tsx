@@ -25,7 +25,7 @@ import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
 import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
-import { useSession } from 'next-auth/react';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 const rowPerPage: number = 10;
 
@@ -71,8 +71,6 @@ const getSortBy = (arr: Demand[]) => (sort: SortParamType) => {
 const defaultSort: SortParamType = { key: 'Date demandes', order: 'desc' };
 
 const Manager = () => {
-  const { data: session } = useSession();
-
   const { demandsService } = useServices();
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -282,13 +280,7 @@ const Manager = () => {
     {
       name: 'Contact',
       label: 'Contact',
-      render: (demand) => (
-        <Contact
-          demand={demand}
-          updateDemand={updateDemand}
-          currentUser={session?.user}
-        />
-      ),
+      render: (demand) => <Contact demand={demand} />,
     },
     {
       name: 'Adresse',
@@ -466,23 +458,13 @@ const Manager = () => {
                 <Map
                   noPopup
                   withoutLogo
-                  center={centerPin ? centerPin : firstCenterPin}
+                  initialCenter={centerPin ? centerPin : firstCenterPin}
                   initialZoom={initialZoom}
-                  initialLayerDisplay={{
-                    outline: true,
-                    futurOutline: true,
-                    coldOutline: false,
-                    zoneDP: true,
-                    demands: false,
-                    raccordements: false,
-                    gasUsageGroup: false,
-                    buildings: false,
-                    gasUsage: [],
-                    energy: [],
-                    gasUsageValues: [1000, Number.MAX_VALUE],
-                    energyGasValues: [50, Number.MAX_VALUE],
-                    energyFuelValues: [50, Number.MAX_VALUE],
-                  }}
+                  initialMapConfiguration={createMapConfiguration({
+                    reseauxDeChaleur: true,
+                    reseauxEnConstruction: true,
+                    zonesDeDeveloppementPrioritaire: true,
+                  })}
                   pinsList={mapPins}
                   geolocDisabled
                 />

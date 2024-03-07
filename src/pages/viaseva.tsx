@@ -1,27 +1,22 @@
+import IframeWrapper from '@components/IframeWrapper';
 import Map from '@components/Map/Map';
-import param from 'src/services/Map/param';
-import mapParam from 'src/services/Map/param';
+import { iframeSimpleMapConfiguration } from 'src/services/Map/map-configuration';
 import { MapPopupType } from 'src/types/MapComponentsInfos';
-import { LegendGroupId } from 'src/types/enum/LegendGroupId';
-
-const visibleId = [
-  LegendGroupId.heatNetwork,
-  LegendGroupId.coldNetwork,
-  LegendGroupId.zoneDP,
-  LegendGroupId.futurheatNetwork,
-];
 
 const ViasevaMap = () => {
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <IframeWrapper>
       <Map
-        initialLayerDisplay={param.iframeSimpleLayerDisplay}
+        initialMapConfiguration={iframeSimpleMapConfiguration}
+        enabledLegendFeatures={[
+          'reseauxDeChaleur',
+          'reseauxDeFroid',
+          'reseauxEnConstruction',
+          'zonesDeDeveloppementPrioritaire',
+        ]}
         withLegend
         withBorder
         withHideLegendSwitch
-        legendData={mapParam.legendData.filter(
-          (x) => typeof x !== 'string' && visibleId.includes(x.id)
-        )}
         legendLogoOpt={{
           src: '/logo-viaseva.svg',
           alt: 'logo viaseva',
@@ -29,7 +24,7 @@ const ViasevaMap = () => {
         popupType={MapPopupType.VIASEVA}
         withFCUAttribution
       />
-    </div>
+    </IframeWrapper>
   );
 };
 

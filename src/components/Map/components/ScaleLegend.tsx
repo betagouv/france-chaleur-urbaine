@@ -11,7 +11,7 @@ import {
 
 import { Handle, SliderRail, Track } from '../../Slider/Components';
 import { ScaleMaxLabel, ScaleMinLabel } from '../../Slider/Components.styles';
-import { maxIconSize, minIconSize } from './LegendDesc';
+import { maxIconSize, minIconSize } from '../map-layers';
 
 const ScaleLegend: React.FC<{
   label: string;
@@ -21,6 +21,7 @@ const ScaleLegend: React.FC<{
   domain: [number, number];
   defaultValues?: [number, number];
   onChange: (values: [number, number]) => void;
+  className?: string;
 }> = ({
   label,
   framed,
@@ -29,6 +30,7 @@ const ScaleLegend: React.FC<{
   domain,
   onChange,
   defaultValues,
+  className,
 }) => {
   const [values, setValues] = useState(defaultValues || domain);
   const minLabel = `${values[0] === domain[0] && domain[0] !== 0 ? '< ' : ''}${
@@ -37,7 +39,7 @@ const ScaleLegend: React.FC<{
   const maxLabel = `${values[1] === domain[1] ? '> ' : ''}${values[1]}`;
 
   return (
-    <ScaleLegendWrapper framed={framed}>
+    <ScaleLegendWrapper framed={framed} className={className ?? ''}>
       <ScaleLegendHeader>{label}</ScaleLegendHeader>
 
       <ScaleLegendBody>
@@ -94,12 +96,10 @@ const ScaleLegend: React.FC<{
             </Tracks>
           </Slider>
           <ScaleMinLabel>
-            min : 
-            <b>{minLabel}</b>
+            min : <b>{minLabel}</b>
           </ScaleMinLabel>
           <ScaleMaxLabel>
-            max : 
-            <b>{maxLabel}</b>
+            max : <b>{maxLabel}</b>
           </ScaleMaxLabel>
         </ScaleSlider>
         <ScaleLabelLegend

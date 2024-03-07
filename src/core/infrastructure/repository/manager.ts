@@ -9,6 +9,7 @@ import {
   gestionnairesPerNetwork,
 } from './gestionnaires.config';
 import db from 'src/db';
+import { invalidPermissionsError } from '@helpers/server';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
   const records = await base(Airtable.UTILISATEURS)
@@ -180,28 +181,18 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
       );
 };
 
-const getDemand = async (
-  user: User,
-  demandId: string
-): Promise<Demand | null> => {
-  if (
-    !user ||
-    (user.role !== USER_ROLE.ADMIN && user.role !== USER_ROLE.GESTIONNAIRE)
-  ) {
-    return null;
-  }
-
+const getDemand = async (user: User, demandId: string): Promise<Demand> => {
   const record = await base(Airtable.UTILISATEURS).find(demandId);
   const gestionnaires = record.get('Gestionnaires') as string[];
   if (
-    user.role === USER_ROLE.ADMIN ||
-    gestionnaires.some((gestionnaire) =>
+    user.role !== USER_ROLE.ADMIN &&
+    !gestionnaires.some((gestionnaire) =>
       user.gestionnaires.includes(gestionnaire)
     )
   ) {
-    return { id: record.id, ...record.fields } as Demand;
+    throw invalidPermissionsError;
   }
-  return null;
+  return { id: record.id, ...record.fields } as Demand;
 };
 
 export const updateDemand = async (
@@ -209,13 +200,17 @@ export const updateDemand = async (
   demandId: string,
   update: Partial<Demand>
 ): Promise<Demand | null> => {
-  const demand = await getDemand(user, demandId);
-  if (!demand) {
-    return null;
-  }
+  // check permissions
+  await getDemand(user, demandId);
 
-  const record = await base(Airtable.UTILISATEURS)
-    .update([{ id: demandId, fields: update }])
-    .then((records) => records[0]);
+  const [record] = await base(Airtable.UTILISATEURS).update([
+    { id: demandId, fields: update },
+  ]);
+
+  // legacy check, may be obsolete as errors seem to be thrown by the Airtable API
+  const error = (record as any)?.error;
+  if (error) {
+    throw new Error(error);
+  }
   return { id: record.id, ...record.fields } as Demand;
 };

@@ -14,7 +14,9 @@ import {
   zDataType,
 } from 'src/services/tiles.config';
 import db from 'src/db';
+import { readFile } from 'fs/promises';
 import { fillTiles } from './utils/tiles';
+import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 
 const program = createCommand();
 
@@ -55,6 +57,38 @@ program
   .action(async (table, zoomMin, zoomMax, withIndex) => {
     await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
     await fillTiles(table, zoomMin, zoomMax, withIndex);
+  });
+
+program
+  .command('generate-tiles-from-file')
+  .argument('<fileName>', 'input file (format GeoJSON)')
+  .argument('<destinationTable>', 'Destination table')
+  .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
+  .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
+  .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
+    const geojson = JSON.parse(await readFile(fileName, 'utf8'));
+
+    logger.info('start importing geojson features', {
+      count: geojson.features?.length,
+    });
+
+    if (!(await db.schema.hasTable(destinationTable))) {
+      logger.info('destination table does not exist, creating it', {
+        table: destinationTable,
+      });
+      await db.schema.createTable(destinationTable, (table) => {
+        table.bigInteger('x').notNullable();
+        table.bigInteger('y').notNullable();
+        table.bigInteger('z').notNullable();
+        table.specificType('tile', 'bytea').notNullable();
+        table.primary(['x', 'y', 'z']);
+      });
+    }
+
+    logger.info('flushing table', { table: destinationTable });
+    await db(destinationTable).delete();
+
+    await generateTilesFromGeoJSON(geojson, destinationTable, zoomMin, zoomMax);
   });
 
 program

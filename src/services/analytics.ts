@@ -1,5 +1,5 @@
 import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
-import { init } from '@socialgouv/matomo-next';
+import { init as initMatomo } from '@socialgouv/matomo-next';
 import { Router } from 'next/router';
 import { useEffect, useState } from 'react';
 import { clientConfig } from 'src/client-config';
@@ -11,6 +11,10 @@ const onRouteChange = (url: string) => {
       page_title: document.title,
       page_location: url,
     });
+  }
+  // see https://help.hotjar.com/hc/en-us/articles/115011805428-Hotjar-on-Single-Page-Apps
+  if (clientConfig.tracking.hotjarId && typeof window?.hj === 'function') {
+    window.hj('stateChange', url);
   }
 };
 
@@ -25,7 +29,7 @@ export const useAnalytics = () => {
       clientConfig.tracking.matomoServerURL &&
       clientConfig.tracking.matomoSiteId
     ) {
-      init({
+      initMatomo({
         url: clientConfig.tracking.matomoServerURL,
         siteId: clientConfig.tracking.matomoSiteId,
         disableCookies: true,
@@ -33,22 +37,31 @@ export const useAnalytics = () => {
     }
   }, []);
 
-  const [gtagLoaded, setGtagLoaded] = useState(false);
+  const [analyticsLoaded, setAnalyticsLoaded] = useState(false);
   useEffect(() => {
-    if (!gtagLoaded) {
+    if (!analyticsLoaded) {
       return;
     }
     Router.events.on('routeChangeComplete', onRouteChange);
     return () => {
       Router.events.off('routeChangeComplete', onRouteChange);
     };
-  }, [gtagLoaded]);
+  }, [analyticsLoaded]);
 
   if (typeof window === 'object') {
     document.addEventListener(
       'gtag_loaded',
       () => {
-        setGtagLoaded(true);
+        setAnalyticsLoaded(true);
+      },
+      {
+        once: true,
+      }
+    );
+    document.addEventListener(
+      'hotjar_loaded',
+      () => {
+        setAnalyticsLoaded(true);
       },
       {
         once: true,
@@ -172,6 +185,24 @@ const trackingEvents = {
   },
   'Carto|DPE|Désactive': {
     matomo: ['Carto', 'DPE', 'Désactive'],
+  },
+  "Carto|Zones d'opportunité|Active": {
+    matomo: ['Carto', "Zones d'opportunité", 'Active'],
+  },
+  "Carto|Zones d'opportunité|Désactive": {
+    matomo: ['Carto', "Zones d'opportunité", 'Désactive'],
+  },
+  'Carto|Zones à potentiel chaud|Active': {
+    matomo: ['Carto', 'Zones à potentiel chaud', 'Active'],
+  },
+  'Carto|Zones à potentiel chaud|Désactive': {
+    matomo: ['Carto', 'Zones à potentiel chaud', 'Désactive'],
+  },
+  'Carto|Zones à potentiel fort chaud|Active': {
+    matomo: ['Carto', 'Zones à potentiel fort chaud', 'Active'],
+  },
+  'Carto|Zones à potentiel fort chaud|Désactive': {
+    matomo: ['Carto', 'Zones à potentiel fort chaud', 'Désactive'],
   },
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
@@ -386,6 +417,7 @@ declare let window: Window & {
   gtag: (...args: any[]) => void; // google
   lintrk: (action: string, param: any) => void; // linkedin
   _paq: [any]; // matomo
+  hj: (...args: any[]) => void; // hotjar
 };
 
 const performTracking = (
