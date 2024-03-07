@@ -24,6 +24,7 @@ const login = async (email: string, password: string) => {
     gestionnaires: user.gestionnaires,
     role: user.role,
     email: user.email,
+    signature: user.signature,
   };
 };
 
@@ -42,6 +43,7 @@ export const nextAuthOptions: AuthOptions = {
           role: user.role,
           email: user.email,
           gestionnaires: user.gestionnaires,
+          signature: user.signature,
         };
       }
       return token;
