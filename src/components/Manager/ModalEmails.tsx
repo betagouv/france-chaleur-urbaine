@@ -144,6 +144,7 @@ function ModalEmails(props: Props) {
           <Heading as="h2" center>
             Envoi d'un courriel à {emailContent?.to}
           </Heading>
+          <span>{history}</span>
           {!sent && !sentError ? (
             <>
               <HorizontalSeparator />
@@ -191,7 +192,6 @@ function ModalEmails(props: Props) {
                 <TextInput
                   required
                   label="Répondre à"
-                  hint="Petite explication"
                   type="email"
                   value={emailContent.replyTo}
                   onChange={(e) =>

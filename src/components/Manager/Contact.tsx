@@ -30,7 +30,7 @@ const Contact = ({
             }}
           >
             <Icon size="lg" name="ri-mail-line" />
-            {demand.Mail}
+            <u>{demand.Mail}</u>
           </EmailInfo>
         )}
         {demand.Téléphone && <OtherInfo>{demand.Téléphone}</OtherInfo>}
