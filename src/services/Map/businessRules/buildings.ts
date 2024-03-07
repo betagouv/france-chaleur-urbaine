@@ -1,3 +1,5 @@
+import { ExpressionInputType } from 'maplibre-gl';
+
 export const themeDefBuildings = {
   colors: {
     a: { color: '#0D8A61' },
@@ -12,3 +14,10 @@ export const themeDefBuildings = {
   },
   opacity: 0.65,
 };
+
+export const arrColorFromDefBuildingsDpeEnergy = Object.entries(
+  themeDefBuildings.colors
+).flatMap(([dpeCode, dpeStyleDef]: [string, any]) => [
+  dpeCode,
+  dpeStyleDef.color,
+]) as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];

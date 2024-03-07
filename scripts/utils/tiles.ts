@@ -1,14 +1,12 @@
 import geojsonvt from 'geojson-vt';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: no types
 import vtpbf from 'vt-pbf';
-import db from '../../src/db';
+import db from 'src/db';
 import {
   DatabaseTileInfo,
   DataType,
   preTable,
   tilesInfo,
-} from '../../src/services/tiles.config';
+} from 'src/services/tiles.config';
 
 const geoJSONQuery = (properties: string[], id: string) =>
   db.raw(

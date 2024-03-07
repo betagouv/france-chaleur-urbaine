@@ -5,41 +5,61 @@ import styled, { IntrinsicElementsKeys } from 'styled-components';
 type StyleProps = {
   display?: CSSProperties['display'];
   flexDirection?: CSSProperties['flexDirection'];
+  flexWrap?: CSSProperties['flexWrap'];
   alignItems?: CSSProperties['alignItems'];
   justifyContent?: CSSProperties['justifyContent'];
+  placeContent?: CSSProperties['placeContent'];
   gap?: CSSProperties['gap'];
   flex?: boolean;
+  border?: CSSProperties['border'];
   backgroundColor?: CSSProperties['backgroundColor'];
+  fontSize?: CSSProperties['fontSize'];
   textColor?: CSSProperties['color'];
   fontWeight?: 'light' | 'regular' | 'bold' | 'heavy';
+  textAlign?: CSSProperties['textAlign'];
+  position?: CSSProperties['position'];
   borderRadius?: CSSProperties['borderRadius'];
+  width?: CSSProperties['width'];
+  minWidth?: CSSProperties['minWidth'];
+  height?: CSSProperties['height'];
   minHeight?: CSSProperties['minHeight'];
+  opacity?: CSSProperties['opacity'];
 };
 
 const StyledBox = styled.div<StyleProps>`
   display: ${({ display }) => display};
-  flex-direction: ${({ flexDirection: direction }) => direction};
+  flex-direction: ${({ flexDirection }) => flexDirection};
+  flex-wrap: ${({ flexWrap }) => flexWrap};
   align-items: ${({ alignItems }) => alignItems};
   justify-content: ${({ justifyContent }) => justifyContent};
+  place-content: ${({ placeContent }) => placeContent};
   gap: ${({ gap }) => gap};
   flex: ${({ flex }) => (flex !== undefined ? (flex ? 1 : 0) : undefined)};
+  border: ${({ border }) => border};
   background-color: ${({ backgroundColor }) =>
     backgroundColor
       ? backgroundColor?.startsWith('#')
         ? backgroundColor
         : `var(--${backgroundColor})`
       : undefined}};
+  font-size: ${({ fontSize }) => fontSize};
   color: ${({ textColor }) =>
     textColor
       ? textColor.startsWith('#')
         ? textColor
         : `var(--${textColor})`
       : undefined};
+  text-align: ${({ textAlign }) => textAlign};
+  position: ${({ position }) => position};
   border-radius: ${({ borderRadius }) => borderRadius};
+  width: ${({ width }) => width};
+  min-width: ${({ minWidth }) => minWidth};
+  height: ${({ height }) => height};
   min-height: ${({ minHeight }) => minHeight};
+  opacity: ${({ opacity }) => opacity};
 `;
 
-interface BoxProps
+export interface BoxProps
   extends StyleProps,
     SpacingProperties,
     HTMLAttributes<HTMLDivElement> {
@@ -58,14 +78,24 @@ function Box(props: PropsWithChildren<BoxProps>) {
       as={props.as ?? 'div'}
       display={props.display ?? 'block'}
       flexDirection={props.flexDirection}
+      flexWrap={props.flexWrap}
       alignItems={props.alignItems}
       justifyContent={props.justifyContent}
+      placeContent={props.placeContent}
       gap={props.gap}
       flex={props.flex}
+      border={props.border}
       backgroundColor={props.backgroundColor}
+      fontSize={props.fontSize}
       textColor={props.textColor}
+      textAlign={props.textAlign}
+      position={props.position}
       borderRadius={props.borderRadius}
+      width={props.width}
+      minWidth={props.minWidth}
+      height={props.height}
       minHeight={props.minHeight}
+      opacity={props.opacity}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
       } ${spacingsToClasses(props)}`}

@@ -1,7 +1,6 @@
 import styled, { css } from 'styled-components';
 
 export const ScaleLegendWrapper = styled.div<{ framed?: boolean }>`
-  margin-left: 1.5rem;
   margin-bottom: 4px;
 `;
 

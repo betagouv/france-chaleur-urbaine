@@ -8,16 +8,14 @@ import {
   IFrame,
 } from './IFrameParametrization.styles';
 import IFrameLink from '../Form/IFrameLink';
+import { LegendURLKey, legendURLKeys } from '@pages/map';
 
 const IFrameParametrization = () => {
   const [coords, setCoords] = useState<{ lon: number; lat: number } | null>(
     null
   );
-  const [selectedInfo, setSelectedInfo] = useState<string[]>([
-    'pdp',
-    'futur_reseau',
-    'reseau_froid',
-    'reseau_chaleur',
+  const [selectedInfo, setSelectedInfo] = useState<LegendURLKey[]>([
+    ...legendURLKeys,
   ]);
 
   const url = useMemo(() => {
@@ -48,7 +46,7 @@ const IFrameParametrization = () => {
 
   const onCheckBoxClick = (
     event: ChangeEvent<HTMLInputElement>,
-    name: string
+    name: LegendURLKey
   ) => {
     if (event.target.checked) {
       setSelectedInfo([...selectedInfo, name]);
@@ -69,30 +67,22 @@ const IFrameParametrization = () => {
         <Checkbox
           label="Les réseaux de chaleur existants"
           defaultChecked={true}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore: Create proper type
-          onClick={(e) => onCheckBoxClick(e, 'reseau_chaleur')}
+          onClick={(e) => onCheckBoxClick(e as any, 'reseau_chaleur')}
         />
         <Checkbox
           label="Les réseaux de chaleur en construction"
           defaultChecked={true}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore: Create proper type
-          onClick={(e) => onCheckBoxClick(e, 'futur_reseau')}
+          onClick={(e) => onCheckBoxClick(e as any, 'futur_reseau')}
         />
         <Checkbox
           label="Les périmètres de developpement prioritaire"
           defaultChecked={true}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore: Create proper type
-          onClick={(e) => onCheckBoxClick(e, 'pdp')}
+          onClick={(e) => onCheckBoxClick(e as any, 'pdp')}
         />
         <Checkbox
           label="Les réseaux de froid"
           defaultChecked={true}
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore: Create proper type
-          onClick={(e) => onCheckBoxClick(e, 'reseau_froid')}
+          onClick={(e) => onCheckBoxClick(e as any, 'reseau_froid')}
         />
       </CheckboxGroup>
       <div>Vous souhaitez centrer la carte sur un endroit en particulier ?</div>

@@ -72,6 +72,10 @@ export const AppGlobalStyle = createGlobalStyle`
   .d-inline-block {
     display: inline-block !important;
   }
+  // custom: not DSFR
+  .fr-text--lightbold {
+    font-weight: 500 !important;
+  }
   :root {
     --white: #fff;
   }
