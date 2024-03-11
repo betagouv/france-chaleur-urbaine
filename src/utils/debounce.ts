@@ -1,10 +1,15 @@
-const debounce = (
-  handler: (...arg: any) => void,
+type DebouncedFunction<T extends (...args: any[]) => any> = {
+  (...args: Parameters<T>): void;
+  cancel: () => void;
+};
+
+const debounce = <Handler extends (...args: any[]) => any>(
+  handler: Handler,
   timer: number
-): { (...arg: any): void; cancel: () => void } => {
+): DebouncedFunction<Handler> => {
   let timeOut: NodeJS.Timeout;
 
-  const debouncedFunc = (...arg: any) => {
+  const debouncedFunc = (...arg: Parameters<Handler>) => {
     clearTimeout(timeOut);
     timeOut = setTimeout(() => {
       handler(...arg);
