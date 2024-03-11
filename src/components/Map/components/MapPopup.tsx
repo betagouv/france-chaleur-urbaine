@@ -4,6 +4,7 @@ import { MapPopupType } from 'src/types/MapComponentsInfos';
 import MapPopupContent, {
   ViasevaPopupContent,
   DynamicPopupContent,
+  DynamicPopupContentType,
 } from './MapPopupContent';
 import { Point } from 'src/types/Point';
 
@@ -68,9 +69,12 @@ const MapPopup = ({
 const layersWithDynamicContentPopup = [
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
+  'enrrMobilisables',
 ] as const;
 
-function isDynamicPopupContent(content: any): content is DynamicPopupContent {
+function isDynamicPopupContent(
+  content: any
+): content is DynamicPopupContentType {
   return layersWithDynamicContentPopup.includes(content.type);
 }
 export default MapPopup;
