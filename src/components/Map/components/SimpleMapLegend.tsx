@@ -51,6 +51,7 @@ export const mapLegendFeatures = [
   'batimentsGazCollectif',
   'batimentsFioulCollectif',
   'batimentsRaccordes',
+  'enrrMobilisables',
   'zonesOpportunite',
   'caracteristiquesBatiments',
   'proModeLegend', // texte incitant à activer le mode pro
@@ -72,6 +73,7 @@ const expansions = [
   'consommationsGaz',
   'batimentsGazCollectif',
   'batimentsFioulCollectif',
+  'enrrMobilisables',
   'zonesOpportunite',
   'caracteristiquesBatiments',
 ] as const;
@@ -828,6 +830,246 @@ function SimpleMapLegend({
               Bâtiments raccordés à un réseau de chaleur
             </Text>
           </Box>
+        </>
+      )}
+
+      {enabledFeatures.includes('enrrMobilisables') && (
+        <>
+          <LegendSeparator />
+
+          <Box display="flex">
+            <SingleCheckbox
+              id="enrrMobilisables"
+              checked={mapConfiguration.enrrMobilisables.show}
+              onChange={(checked) => {
+                toggleLayer('enrrMobilisables.show');
+                if (checked) {
+                  setSectionExpansion('enrrMobilisables', true);
+                }
+              }}
+              trackingEvent="Carto|Zones d'opportunité" // FIXME
+            />
+
+            <Text
+              as="label"
+              htmlFor="enrrMobilisables"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              fontWeight="bold"
+              cursor="pointer"
+              pt="1v"
+              px="1v"
+            >
+              ENR&R mobilisables
+            </Text>
+
+            <InfoIcon>
+              <Icon size="1x" name="ri-information-fill" cursor="help" />
+
+              <Hoverable position="bottom">
+                Données du projet{' '}
+                <Link
+                  href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo"
+                  isExternal
+                >
+                  EnRezo
+                </Link>
+                .
+              </Hoverable>
+            </InfoIcon>
+
+            <Button
+              className="fr-px-1w"
+              hasBorder={false}
+              size="sm"
+              onClick={() => toggleSectionExpansion('enrrMobilisables')}
+              title="Afficher/Masquer le détail"
+            >
+              <Icon
+                size="lg"
+                name="ri-arrow-down-s-line"
+                className="fr-mr-0"
+                rotate={!!sectionsExpansions['enrrMobilisables']}
+              />
+            </Button>
+          </Box>
+
+          <CollapsibleBox expand={!!sectionsExpansions['enrrMobilisables']}>
+            <DeactivatableBox
+              disabled={!mapConfiguration.enrrMobilisables.show}
+              ml="3w"
+              mr="1w"
+            >
+              <Box display="flex">
+                <SingleCheckbox
+                  id="showUnitesDIncineration"
+                  checked={
+                    mapConfiguration.enrrMobilisables.showUnitesDIncineration
+                  }
+                  onChange={() =>
+                    toggleLayer('enrrMobilisables.showUnitesDIncineration')
+                  }
+                  trackingEvent="Carto|Unités d'incinération"
+                />
+
+                <Image
+                  src="/icons/enrr_mobilisables_unite_incineration.png"
+                  alt=""
+                  height="16"
+                  width="16"
+                  className="fr-mt-1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="showUnitesDIncineration"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Unités d’incinération
+                </Text>
+              </Box>
+              <Box display="flex">
+                <SingleCheckbox
+                  id="showIndustrie"
+                  checked={mapConfiguration.enrrMobilisables.showIndustrie}
+                  onChange={() => toggleLayer('enrrMobilisables.showIndustrie')}
+                  trackingEvent="Carto|Industrie"
+                />
+
+                <Image
+                  src="/icons/enrr_mobilisables_industrie.png"
+                  alt=""
+                  height="16"
+                  width="16"
+                  className="fr-mt-1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="showIndustrie"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Industrie
+                </Text>
+              </Box>
+              <Box display="flex">
+                <SingleCheckbox
+                  id="showStationsDEpuration"
+                  checked={
+                    mapConfiguration.enrrMobilisables.showStationsDEpuration
+                  }
+                  onChange={() =>
+                    toggleLayer('enrrMobilisables.showStationsDEpuration')
+                  }
+                  trackingEvent="Carto|Stations d'épuration"
+                />
+
+                <Image
+                  src="/icons/enrr_mobilisables_stations_epuration.png"
+                  alt=""
+                  height="16"
+                  width="16"
+                  className="fr-mt-1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="showStationsDEpuration"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Stations d'épuration
+                </Text>
+              </Box>
+              <Box display="flex">
+                <SingleCheckbox
+                  id="showDatacenters"
+                  checked={mapConfiguration.enrrMobilisables.showDatacenters}
+                  onChange={() =>
+                    toggleLayer('enrrMobilisables.showDatacenters')
+                  }
+                  trackingEvent="Carto|Datacenters"
+                />
+
+                <Image
+                  src="/icons/enrr_mobilisables_datacenter.png"
+                  alt=""
+                  height="16"
+                  width="16"
+                  className="fr-mt-1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="showDatacenters"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Datacenters
+                </Text>
+              </Box>
+              <Box display="flex">
+                <SingleCheckbox
+                  id="showInstallationsElectrogenes"
+                  checked={
+                    mapConfiguration.enrrMobilisables
+                      .showInstallationsElectrogenes
+                  }
+                  onChange={() =>
+                    toggleLayer(
+                      'enrrMobilisables.showInstallationsElectrogenes'
+                    )
+                  }
+                  trackingEvent="Carto|Installations électrogènes"
+                />
+
+                <Image
+                  src="/icons/enrr_mobilisables_installations_electrogenes.png"
+                  alt=""
+                  height="16"
+                  width="16"
+                  className="fr-mt-1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="showInstallationsElectrogenes"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Installations électrogènes
+                </Text>
+              </Box>
+            </DeactivatableBox>
+          </CollapsibleBox>
         </>
       )}
 

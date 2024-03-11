@@ -12,6 +12,13 @@ import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
 import { prettyFormatNumber } from '@utils/strings';
 import { objTypeEnergy } from '../map-layers';
 import { ReactElement } from 'react';
+import {
+  Datacenter,
+  Industrie,
+  InstallationsElectrogenes,
+  StationsDEpuration,
+  UniteDIncineration,
+} from 'src/types/layers/enrr_mobilisables';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {
@@ -316,9 +323,21 @@ export const ViasevaPopupContent = ({
 };
 
 // use union types to get good typing
-export type DynamicPopupContent = {
-  type: 'zonesPotentielChaud' | 'zonesPotentielFortChaud';
-  properties: ZonePotentielChaud;
+export type DynamicPopupContentType =
+  | {
+      type: 'zonesPotentielChaud' | 'zonesPotentielFortChaud';
+      properties: ZonePotentielChaud;
+    }
+  | ENRRMobilisable;
+
+type ENRRMobilisable = {
+  type: 'enrrMobilisables';
+  properties:
+    | Datacenter
+    | Industrie
+    | InstallationsElectrogenes
+    | StationsDEpuration
+    | UniteDIncineration;
 };
 
 /**
@@ -327,7 +346,7 @@ export type DynamicPopupContent = {
 export const DynamicPopupContent = ({
   content,
 }: {
-  content: DynamicPopupContent;
+  content: DynamicPopupContentType;
 }) => {
   switch (content.type) {
     case 'zonesPotentielChaud':
@@ -342,6 +361,10 @@ export const DynamicPopupContent = ({
           zonePotentielChaud={content.properties}
           fortChaud
         />
+      );
+    case 'enrrMobilisables':
+      return (
+        <ENRRMobilisablePopupContent enrrMobilisable={content.properties} />
       );
     default:
       throw new Error('not implemented');
@@ -413,3 +436,26 @@ function formatMWh(value: number): ReactElement {
     </>
   );
 }
+
+/**
+ * Contenu de la popup pour les ENR&R mobilisables.
+ */
+const ENRRMobilisablePopupContent = ({
+  enrrMobilisable,
+}: {
+  enrrMobilisable: ENRRMobilisable['properties'];
+}) => {
+  return (
+    <section>
+      {enrrMobilisable.GmlID && (
+        <PopupTitle className="fr-mr-3w">
+          TODO type {enrrMobilisable.GmlID}
+        </PopupTitle>
+      )}
+      <strong>Commune&nbsp;:</strong>&nbsp;
+      {isDefined(enrrMobilisable.com_nom)
+        ? enrrMobilisable.com_nom
+        : 'Non connu'}
+    </section>
+  );
+};

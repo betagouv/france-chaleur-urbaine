@@ -78,6 +78,7 @@ import {
   SourceId,
   applyMapConfigurationToLayers,
   buildMapLayers,
+  layerSymbolsImagesURLs,
 } from './map-layers';
 import Box from '@components/ui/Box';
 import useRouterReady from '@hooks/useRouterReady';
@@ -373,7 +374,7 @@ const Map = ({
     [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
   );
 
-  const onMapLoad = (e: MapLibreEvent) => {
+  const onMapLoad = async (e: MapLibreEvent) => {
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
     });
@@ -391,6 +392,28 @@ const Map = ({
         },
       })
     );
+
+    const map = e.target;
+    // load layers symbols
+    await Promise.all(
+      layerSymbolsImagesURLs.map(
+        (spec) =>
+          new Promise<void>((resolve, reject) => {
+            map.loadImage(spec.url, (error, image) => {
+              if (error) {
+                reject(error);
+              }
+              if (image) {
+                map.addImage(spec.key, image, {
+                  sdf: 'sdf' in spec && spec.sdf,
+                });
+              }
+              resolve();
+            });
+          })
+      )
+    );
+    setMapState('loaded');
 
     const clickEvents: {
       name: LayerId;
@@ -414,36 +437,29 @@ const Map = ({
       { name: 'batimentsRaccordes', key: 'raccordement' },
     ];
 
-    e.target.loadImage('/icons/rect.png', (error, image) => {
-      if (error) {
-        throw error;
-      }
-
-      setMapState('loaded');
-      if (image) {
-        e.target.addImage('energy-picto', image, { sdf: true });
-      }
-
-      if (!noPopup) {
-        clickEvents.map(({ name, key }) => {
-          e.target.on('click', name, (e: any) => {
-            onMapClick(e, key);
-          });
-
-          e.target.on('touchend', name, (e: any) => {
-            onMapClick(e, key);
-          });
-
-          e.target.on('mouseenter', name, function () {
-            e.target.getCanvas().style.cursor = 'pointer';
-          });
-
-          e.target.on('mouseleave', name, function () {
-            e.target.getCanvas().style.cursor = '';
-          });
+    // register click event handlers
+    if (!noPopup) {
+      clickEvents.map(({ name, key }) => {
+        e.target.on('click', name, (e: any) => {
+          onMapClick(e, key);
         });
-      }
 
+        e.target.on('touchend', name, (e: any) => {
+          onMapClick(e, key);
+        });
+
+        e.target.on('mouseenter', name, function () {
+          e.target.getCanvas().style.cursor = 'pointer';
+        });
+
+        e.target.on('mouseleave', name, function () {
+          e.target.getCanvas().style.cursor = '';
+        });
+      });
+    }
+
+    // register move and hover event handlers
+    {
       const map = mapRef.current;
       if (map) {
         if (persistViewStateInURL) {
@@ -479,7 +495,7 @@ const Map = ({
           sourceLayer: 'coldOutline',
         });
       }
-    });
+    }
   };
 
   const onMapSourceData = (e: MapSourceDataEvent) => {
