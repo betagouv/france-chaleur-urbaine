@@ -914,7 +914,7 @@ function SimpleMapLegend({
                 />
 
                 <Image
-                  src="/icons/enrr_mobilisables_unite_incineration.png"
+                  src="/icons/enrr_mobilisables_unites_incineration.png"
                   alt=""
                   height="16"
                   width="16"
