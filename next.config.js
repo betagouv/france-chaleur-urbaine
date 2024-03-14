@@ -152,6 +152,19 @@ module.exports = withBundleAnalyzer(
             source: '/:path*',
             headers: securityHeaders,
           },
+          {
+            source: '/openapi-schema.yaml',
+            headers: [
+              {
+                key: 'Access-Control-Allow-Methods',
+                value: 'GET, OPTIONS',
+              },
+              {
+                key: 'Access-Control-Allow-Origin',
+                value: '*',
+              },
+            ],
+          },
 
           // Attention: keep in sync with src/services/iframe.ts
           ...[
