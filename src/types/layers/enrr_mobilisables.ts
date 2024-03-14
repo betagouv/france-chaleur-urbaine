@@ -23,7 +23,7 @@ export interface Industrie {
   qualite_xy: string;
 }
 
-export interface InstallationsElectrogenes {
+export interface InstallationElectrogene {
   GmlID: string;
   'db_gd5kj.hsu_pnjyu.installations_electrogenes_installations_electrogene.fid': number;
   id: string;
@@ -33,7 +33,7 @@ export interface InstallationsElectrogenes {
   qualite_xy: string;
 }
 
-export interface StationsDEpuration {
+export interface StationDEpuration {
   GmlID: string;
   'db_gd5kj.hsu_pnjyu.stations_d_epuration_stations_d_epuration.fid': number;
   id_unique: string;

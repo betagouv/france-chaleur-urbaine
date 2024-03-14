@@ -7,6 +7,7 @@ import MapPopupContent, {
   DynamicPopupContentType,
 } from './MapPopupContent';
 import { Point } from 'src/types/Point';
+import { LayerId } from '../map-layers';
 
 const MapPopup = ({
   longitude,
@@ -66,11 +67,15 @@ const MapPopup = ({
   );
 };
 
-const layersWithDynamicContentPopup = [
+export const layersWithDynamicContentPopup = [
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
-  'enrrMobilisables',
-] as const;
+  'enrrMobilisables-datacenter',
+  'enrrMobilisables-industrie',
+  'enrrMobilisables-installations-electrogenes',
+  'enrrMobilisables-stations-d-epuration',
+  'enrrMobilisables-unites-d-incineration',
+] as const satisfies ReadonlyArray<LayerId>;
 
 function isDynamicPopupContent(
   content: any

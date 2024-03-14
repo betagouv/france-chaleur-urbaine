@@ -833,6 +833,159 @@ function SimpleMapLegend({
         </>
       )}
 
+      {enabledFeatures.includes('zonesOpportunite') && (
+        <>
+          <LegendSeparator />
+
+          <Box display="flex">
+            <SingleCheckbox
+              id="zonesOpportunite"
+              checked={mapConfiguration.zonesOpportunite.show}
+              onChange={(checked) => {
+                toggleLayer('zonesOpportunite.show');
+                if (checked) {
+                  setSectionExpansion('zonesOpportunite', true);
+                }
+              }}
+              trackingEvent="Carto|Zones d'opportunité"
+            />
+
+            <Image
+              src="/img/polygon-zonesPotentielFortChaud.svg"
+              alt=""
+              height="16"
+              width="16"
+              className="fr-mt-1v"
+            />
+
+            <Text
+              as="label"
+              htmlFor="zonesOpportunite"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              fontWeight="bold"
+              cursor="pointer"
+              pt="1v"
+              px="1v"
+            >
+              Zones d'opportunité pour la création de réseaux de chaleur
+            </Text>
+
+            <InfoIcon>
+              <Icon size="1x" name="ri-information-fill" cursor="help" />
+
+              <Hoverable position="bottom">
+                Modélisation réalisée par le Cerema dans le cadre du projet
+                EnRezo.
+                <br />
+                <Link
+                  href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/01/Methodologie_zones_opportunite_VF.pdf"
+                  isExternal
+                >
+                  Accéder à la méthodologie
+                </Link>
+              </Hoverable>
+            </InfoIcon>
+
+            <Button
+              className="fr-px-1w"
+              hasBorder={false}
+              size="sm"
+              onClick={() => toggleSectionExpansion('zonesOpportunite')}
+              title="Afficher/Masquer le détail"
+            >
+              <Icon
+                size="lg"
+                name="ri-arrow-down-s-line"
+                className="fr-mr-0"
+                rotate={!!sectionsExpansions['zonesOpportunite']}
+              />
+            </Button>
+          </Box>
+
+          <CollapsibleBox expand={!!sectionsExpansions['zonesOpportunite']}>
+            <DeactivatableBox
+              disabled={!mapConfiguration.zonesOpportunite.show}
+              display="flex"
+              flexWrap="wrap"
+              ml="3w"
+              mr="1w"
+            >
+              <Box display="flex">
+                <SingleCheckbox
+                  id="zonesPotentielChaud"
+                  checked={
+                    mapConfiguration.zonesOpportunite.zonesPotentielChaud
+                  }
+                  onChange={() =>
+                    toggleLayer('zonesOpportunite.zonesPotentielChaud')
+                  }
+                  trackingEvent="Carto|Zones à potentiel chaud"
+                />
+
+                <Image
+                  src="/img/polygon-zonesPotentielChaud.svg"
+                  alt=""
+                  height="16"
+                  width="16"
+                  className="fr-mt-1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="zonesPotentielChaud"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Zones à potentiel
+                </Text>
+              </Box>
+
+              <Box display="flex">
+                <SingleCheckbox
+                  id="zonesPotentielFortChaud"
+                  checked={
+                    mapConfiguration.zonesOpportunite.zonesPotentielFortChaud
+                  }
+                  onChange={() =>
+                    toggleLayer('zonesOpportunite.zonesPotentielFortChaud')
+                  }
+                  trackingEvent="Carto|Zones à potentiel fort chaud"
+                />
+
+                <Image
+                  src="/img/polygon-zonesPotentielFortChaud.svg"
+                  alt=""
+                  height="16"
+                  width="16"
+                  className="fr-mt-1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="zonesPotentielFortChaud"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Zones à fort potentiel
+                </Text>
+              </Box>
+            </DeactivatableBox>
+          </CollapsibleBox>
+        </>
+      )}
+
       {enabledFeatures.includes('enrrMobilisables') && (
         <>
           <LegendSeparator />
@@ -1066,159 +1219,6 @@ function SimpleMapLegend({
                   px="1v"
                 >
                   Installations électrogènes
-                </Text>
-              </Box>
-            </DeactivatableBox>
-          </CollapsibleBox>
-        </>
-      )}
-
-      {enabledFeatures.includes('zonesOpportunite') && (
-        <>
-          <LegendSeparator />
-
-          <Box display="flex">
-            <SingleCheckbox
-              id="zonesOpportunite"
-              checked={mapConfiguration.zonesOpportunite.show}
-              onChange={(checked) => {
-                toggleLayer('zonesOpportunite.show');
-                if (checked) {
-                  setSectionExpansion('zonesOpportunite', true);
-                }
-              }}
-              trackingEvent="Carto|Zones d'opportunité"
-            />
-
-            <Image
-              src="/img/polygon-zonesPotentielFortChaud.svg"
-              alt=""
-              height="16"
-              width="16"
-              className="fr-mt-1v"
-            />
-
-            <Text
-              as="label"
-              htmlFor="zonesOpportunite"
-              fontSize="14px"
-              lineHeight="18px"
-              className="fr-col"
-              fontWeight="bold"
-              cursor="pointer"
-              pt="1v"
-              px="1v"
-            >
-              Zones d'opportunité pour la création de réseaux de chaleur
-            </Text>
-
-            <InfoIcon>
-              <Icon size="1x" name="ri-information-fill" cursor="help" />
-
-              <Hoverable position="bottom">
-                Modélisation réalisée par le Cerema dans le cadre du projet
-                EnRezo.
-                <br />
-                <Link
-                  href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/01/Methodologie_zones_opportunite_VF.pdf"
-                  isExternal
-                >
-                  Accéder à la méthodologie
-                </Link>
-              </Hoverable>
-            </InfoIcon>
-
-            <Button
-              className="fr-px-1w"
-              hasBorder={false}
-              size="sm"
-              onClick={() => toggleSectionExpansion('zonesOpportunite')}
-              title="Afficher/Masquer le détail"
-            >
-              <Icon
-                size="lg"
-                name="ri-arrow-down-s-line"
-                className="fr-mr-0"
-                rotate={!!sectionsExpansions['zonesOpportunite']}
-              />
-            </Button>
-          </Box>
-
-          <CollapsibleBox expand={!!sectionsExpansions['zonesOpportunite']}>
-            <DeactivatableBox
-              disabled={!mapConfiguration.zonesOpportunite.show}
-              display="flex"
-              flexWrap="wrap"
-              ml="3w"
-              mr="1w"
-            >
-              <Box display="flex">
-                <SingleCheckbox
-                  id="zonesPotentielChaud"
-                  checked={
-                    mapConfiguration.zonesOpportunite.zonesPotentielChaud
-                  }
-                  onChange={() =>
-                    toggleLayer('zonesOpportunite.zonesPotentielChaud')
-                  }
-                  trackingEvent="Carto|Zones à potentiel chaud"
-                />
-
-                <Image
-                  src="/img/polygon-zonesPotentielChaud.svg"
-                  alt=""
-                  height="16"
-                  width="16"
-                  className="fr-mt-1v"
-                />
-
-                <Text
-                  as="label"
-                  htmlFor="zonesPotentielChaud"
-                  fontSize="14px"
-                  lineHeight="18px"
-                  className="fr-col"
-                  fontWeight="bold"
-                  cursor="pointer"
-                  pt="1v"
-                  px="1v"
-                >
-                  Zones à potentiel
-                </Text>
-              </Box>
-
-              <Box display="flex">
-                <SingleCheckbox
-                  id="zonesPotentielFortChaud"
-                  checked={
-                    mapConfiguration.zonesOpportunite.zonesPotentielFortChaud
-                  }
-                  onChange={() =>
-                    toggleLayer('zonesOpportunite.zonesPotentielFortChaud')
-                  }
-                  trackingEvent="Carto|Zones à potentiel fort chaud"
-                />
-
-                <Image
-                  src="/img/polygon-zonesPotentielFortChaud.svg"
-                  alt=""
-                  height="16"
-                  width="16"
-                  className="fr-mt-1v"
-                />
-
-                <Text
-                  as="label"
-                  htmlFor="zonesPotentielFortChaud"
-                  fontSize="14px"
-                  lineHeight="18px"
-                  className="fr-col"
-                  fontWeight="bold"
-                  cursor="pointer"
-                  pt="1v"
-                  px="1v"
-                >
-                  Zones à fort potentiel
                 </Text>
               </Box>
             </DeactivatableBox>

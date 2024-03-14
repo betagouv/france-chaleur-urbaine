@@ -15,8 +15,8 @@ import { ReactElement } from 'react';
 import {
   Datacenter,
   Industrie,
-  InstallationsElectrogenes,
-  StationsDEpuration,
+  InstallationElectrogene,
+  StationDEpuration,
   UniteDIncineration,
 } from 'src/types/layers/enrr_mobilisables';
 
@@ -323,21 +323,42 @@ export const ViasevaPopupContent = ({
 };
 
 // use union types to get good typing
+// be careful to use the LayerId in the 'type' property
 export type DynamicPopupContentType =
-  | {
-      type: 'zonesPotentielChaud' | 'zonesPotentielFortChaud';
-      properties: ZonePotentielChaud;
-    }
-  | ENRRMobilisable;
+  | ZonePotentielChaudPopupContentType
+  | ENRRMobilisablePopupContentType;
 
-type ENRRMobilisable = {
-  type: 'enrrMobilisables';
-  properties:
-    | Datacenter
-    | Industrie
-    | InstallationsElectrogenes
-    | StationsDEpuration
-    | UniteDIncineration;
+type ZonePotentielChaudPopupContentType = {
+  type: 'zonesPotentielChaud' | 'zonesPotentielFortChaud';
+  properties: ZonePotentielChaud;
+};
+
+type ENRRMobilisablePopupContentType =
+  | ENRRMobilisableDatacenterPopupContentType
+  | ENRRMobilisableIndustriePopupContentType
+  | ENRRMobilisableInstallationsElectrogenesPopupContentType
+  | ENRRMobilisableStationsDEpurationPopupContentType
+  | ENRRMobilisableUniteDIncinerationPopupContentType;
+
+type ENRRMobilisableDatacenterPopupContentType = {
+  type: 'enrrMobilisables-datacenter';
+  properties: Datacenter;
+};
+type ENRRMobilisableIndustriePopupContentType = {
+  type: 'enrrMobilisables-industrie';
+  properties: Industrie;
+};
+type ENRRMobilisableInstallationsElectrogenesPopupContentType = {
+  type: 'enrrMobilisables-installations-electrogenes';
+  properties: InstallationElectrogene;
+};
+type ENRRMobilisableStationsDEpurationPopupContentType = {
+  type: 'enrrMobilisables-stations-d-epuration';
+  properties: StationDEpuration;
+};
+type ENRRMobilisableUniteDIncinerationPopupContentType = {
+  type: 'enrrMobilisables-unites-d-incineration';
+  properties: UniteDIncineration;
 };
 
 /**
@@ -362,9 +383,33 @@ export const DynamicPopupContent = ({
           fortChaud
         />
       );
-    case 'enrrMobilisables':
+    case 'enrrMobilisables-datacenter':
       return (
-        <ENRRMobilisablePopupContent enrrMobilisable={content.properties} />
+        <ENRRMobilisableDatacenterPopupContent
+          datacenter={content.properties}
+        />
+      );
+    case 'enrrMobilisables-industrie':
+      return (
+        <ENRRMobilisableIndustriePopupContent industrie={content.properties} />
+      );
+    case 'enrrMobilisables-installations-electrogenes':
+      return (
+        <ENRRMobilisableInstallationElectrogenePopupContent
+          installationElectrogene={content.properties}
+        />
+      );
+    case 'enrrMobilisables-stations-d-epuration':
+      return (
+        <ENRRMobilisableStationsDEpurationPopupContent
+          stationDEpuration={content.properties}
+        />
+      );
+    case 'enrrMobilisables-unites-d-incineration':
+      return (
+        <ENRRMobilisableUniteDIncinerationPopupContent
+          uniteDIncineration={content.properties}
+        />
       );
     default:
       throw new Error('not implemented');
@@ -437,25 +482,116 @@ function formatMWh(value: number): ReactElement {
   );
 }
 
-/**
- * Contenu de la popup pour les ENR&R mobilisables.
- */
-const ENRRMobilisablePopupContent = ({
-  enrrMobilisable,
+const ENRRMobilisableDatacenterPopupContent = ({
+  datacenter,
 }: {
-  enrrMobilisable: ENRRMobilisable['properties'];
+  datacenter: Datacenter;
 }) => {
   return (
     <section>
-      {enrrMobilisable.GmlID && (
-        <PopupTitle className="fr-mr-3w">
-          TODO type {enrrMobilisable.GmlID}
-        </PopupTitle>
-      )}
-      <strong>Commune&nbsp;:</strong>&nbsp;
-      {isDefined(enrrMobilisable.com_nom)
-        ? enrrMobilisable.com_nom
-        : 'Non connu'}
+      <PopupTitle className="fr-mr-3w">Datacenter {datacenter.nom}</PopupTitle>
+      <PopupProperty label="Catégorie" value={datacenter.categorie} />
+      <PopupProperty label="Commune" value={datacenter.com_nom} />
+      <PopupProperty label="Identifiant" value={datacenter.id} />
+      <PopupProperty label="Source" value={datacenter.source} />
     </section>
   );
 };
+
+const ENRRMobilisableIndustriePopupContent = ({
+  industrie,
+}: {
+  industrie: Industrie;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">
+        Industrie {industrie.nom_site}
+      </PopupTitle>
+      <PopupProperty label="Activité" value={industrie.activite} />
+      <PopupProperty label="Exploitant" value={industrie.exploitant} />
+      <PopupProperty label="Consommation" value={industrie.conso} />
+      <PopupProperty label="Commune" value={industrie.com_nom} />
+      <PopupProperty label="Identifiant" value={industrie.id_unique} />
+    </section>
+  );
+};
+
+const ENRRMobilisableInstallationElectrogenePopupContent = ({
+  installationElectrogene,
+}: {
+  installationElectrogene: InstallationElectrogene;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">
+        Installation électrogène {installationElectrogene.nom_inst}
+      </PopupTitle>
+      <PopupProperty label="Type" value={installationElectrogene.type_inst} />
+      <PopupProperty label="Commune" value={installationElectrogene.com_nom} />
+      <PopupProperty label="Identifiant" value={installationElectrogene.id} />
+    </section>
+  );
+};
+
+const ENRRMobilisableStationsDEpurationPopupContent = ({
+  stationDEpuration,
+}: {
+  stationDEpuration: StationDEpuration;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">
+        Station d'épuration {stationDEpuration.step_nom}
+      </PopupTitle>
+      <PopupProperty
+        label="Débit"
+        value={stationDEpuration.debit_m3j}
+        unit="m³/j"
+      />
+      <PopupProperty
+        label="Energie"
+        value={stationDEpuration.en_mwh_an}
+        unit="MWh/an"
+      />
+      <PopupProperty
+        label="Capacité"
+        value={stationDEpuration.capa_eh}
+        unit="eh"
+      />
+      <PopupProperty label="Exploitant" value={stationDEpuration.exploitant} />
+      <PopupProperty label="Commune" value={stationDEpuration.com_nom} />
+      <PopupProperty label="Identifiant" value={stationDEpuration.id_unique} />
+    </section>
+  );
+};
+
+const ENRRMobilisableUniteDIncinerationPopupContent = ({
+  uniteDIncineration,
+}: {
+  uniteDIncineration: UniteDIncineration;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">
+        Unité d'incinération {uniteDIncineration.nom_inst}
+      </PopupTitle>
+      <PopupProperty label="Type" value={uniteDIncineration.type_inst} />
+      <PopupProperty label="Commune" value={uniteDIncineration.com_nom} />
+      <PopupProperty label="Identifiant" value={uniteDIncineration.id} />
+    </section>
+  );
+};
+
+interface PopupPropertyProps {
+  label: string;
+  value: any;
+  unit?: string;
+}
+const PopupProperty = ({ label, value, unit }: PopupPropertyProps) => (
+  <>
+    <strong>{label}&nbsp;:</strong>&nbsp;
+    {isDefined(value) ? `${value} ${unit ?? ''}` : 'Non connu'}
+    <br />
+  </>
+);
