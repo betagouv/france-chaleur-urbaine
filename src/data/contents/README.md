@@ -1,14 +1,9 @@
----
-cover: .gitbook/assets/vignetteCout.jpg
-coverY: 0
----
+# Les réseaux de chaleur : plus si urbains que ça !
 
-# Comparaison du coût de la chaleur pour un logement en copropriété
-
-💸 Le chauffage urbain constitue en moyenne la solution de chauffage la plus compétitive pour les logements collectifs !\
+🤔 Démêler le vrai du faux : pourquoi il est essentiel de lutter contre les idées reçues sur les réseaux de chaleur.\
 \
-👉 C'est ce que conclut la nouvelle enquête annuelle Amorce / ADEME sur le prix de vente de la chaleur et du froid, portant sur l'année 2022. Et la différence est significative : par rapport à une chaudière collective au fioul, la facture globale annuelle est réduite de 40 %.\
+🌿 Sur les énergies renouvelables en général, et les réseaux de chaleur en particulier, de nombreuses idées reçues circulent. Ces préjugés peuvent freiner le développement de ces solutions écologiques en décourageant les particuliers, collectivités et entreprises de les adopter. Il est donc crucial de faire la lumière sur ces sujets de manière claire et précise !\
 \
-🔎 La figure ci-dessous illustre le coût global annuel chauffage + eau chaude sanitaire pour un logement de 70 m² dans un immeuble construit entre 2005 et 2012 (RT2005). Les aides à l'investissement et à l'achat d'énergie (chèque énergie, gel du tarif réglementé, bouclier tarifaire...) ont été déduites : c'est donc le prix le plus proche de celui payé par l'usager qui est représenté.
-
-![](.gitbook/assets/cout22.jpg)
+👉 C'est tout l'objet de notre nouvelle série d'infographies : répondre aux idées reçues les plus fréquentes de manière simple et attractive, sur la base de données factuelles.\
+\
+Rejoignez-nous dans cette démarche en partageant ces infographies autour de vous ! 🌍
