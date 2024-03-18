@@ -6,7 +6,7 @@ import { FuturNetworkSummary } from 'src/types/Summary/FuturNetwork';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
-import { PopupTitle } from '../Map.style';
+import { PopupTitle, PopupType } from '../Map.style';
 import { isDefined } from '@utils/core';
 import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
 import { prettyFormatNumber } from '@utils/strings';
@@ -19,6 +19,7 @@ import {
   StationDEpuration,
   UniteDIncineration,
 } from 'src/types/layers/enrr_mobilisables';
+import Text from '@components/ui/Text';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {
@@ -482,6 +483,32 @@ function formatMWh(value: number): ReactElement {
   );
 }
 
+/**
+ * Intervals:
+ * - < 25 GWh
+ * - [100;250 GWh[
+ * - >= 2000 GWh
+ */
+function formatConsommation(value: string): string {
+  switch (value[0]) {
+    case '<': {
+      const match = /< (\d+) GWh/.exec(value);
+      return match ? `inférieure à ${match[1]} GWh/an` : value;
+    }
+    case '>': {
+      const match = />= (\d+) GWh/.exec(value);
+      return match ? `supérieure à ${match[1]} GWh/an` : value;
+    }
+    case '[': {
+      const match = /\[(\d+);(\d+) GWh\[/.exec(value);
+      return match ? `entre ${match[1]} et ${match[2]} GWh/an` : value;
+    }
+    default:
+      // unknown
+      return value;
+  }
+}
+
 const ENRRMobilisableDatacenterPopupContent = ({
   datacenter,
 }: {
@@ -489,11 +516,12 @@ const ENRRMobilisableDatacenterPopupContent = ({
 }) => {
   return (
     <section>
-      <PopupTitle className="fr-mr-3w">Datacenter {datacenter.nom}</PopupTitle>
+      <PopupType className="fr-mr-3w">Datacenter</PopupType>
+      <PopupTitle className="fr-mr-3w">{datacenter.nom}</PopupTitle>
       <PopupProperty label="Catégorie" value={datacenter.categorie} />
       <PopupProperty label="Commune" value={datacenter.com_nom} />
-      <PopupProperty label="Identifiant" value={datacenter.id} />
-      <PopupProperty label="Source" value={datacenter.source} />
+      <PopupProperty label="Identifiant national" value={datacenter.id} />
+      <QualiteLabel value={datacenter.qualite_xy} />
     </section>
   );
 };
@@ -505,14 +533,25 @@ const ENRRMobilisableIndustriePopupContent = ({
 }) => {
   return (
     <section>
-      <PopupTitle className="fr-mr-3w">
-        Industrie {industrie.nom_site}
-      </PopupTitle>
+      <PopupType className="fr-mr-3w">Industrie</PopupType>
+      <PopupTitle className="fr-mr-3w">{industrie.nom_site}</PopupTitle>
       <PopupProperty label="Activité" value={industrie.activite} />
       <PopupProperty label="Exploitant" value={industrie.exploitant} />
-      <PopupProperty label="Consommation" value={industrie.conso} />
+      <PopupProperty
+        label="Consommation"
+        value={industrie.conso}
+        formatter={formatConsommation}
+      />
+      <PopupProperty
+        label="Température des effluents majoritaires"
+        value={industrie.t_major}
+      />
+      <PopupProperty
+        label="Température des effluents minoritaires"
+        value={industrie.t_minor}
+      />
       <PopupProperty label="Commune" value={industrie.com_nom} />
-      <PopupProperty label="Identifiant" value={industrie.id_unique} />
+      <QualiteLabel value={industrie.qualite_xy} />
     </section>
   );
 };
@@ -524,12 +563,13 @@ const ENRRMobilisableInstallationElectrogenePopupContent = ({
 }) => {
   return (
     <section>
+      <PopupType className="fr-mr-3w">Installation électrogène</PopupType>
       <PopupTitle className="fr-mr-3w">
-        Installation électrogène {installationElectrogene.nom_inst}
+        {installationElectrogene.nom_inst}
       </PopupTitle>
       <PopupProperty label="Type" value={installationElectrogene.type_inst} />
       <PopupProperty label="Commune" value={installationElectrogene.com_nom} />
-      <PopupProperty label="Identifiant" value={installationElectrogene.id} />
+      <QualiteLabel value={installationElectrogene.qualite_xy} />
     </section>
   );
 };
@@ -541,27 +581,20 @@ const ENRRMobilisableStationsDEpurationPopupContent = ({
 }) => {
   return (
     <section>
-      <PopupTitle className="fr-mr-3w">
-        Station d'épuration {stationDEpuration.step_nom}
-      </PopupTitle>
+      <PopupType className="fr-mr-3w">Station d'épuration</PopupType>
+      <PopupTitle className="fr-mr-3w">{stationDEpuration.step_nom}</PopupTitle>
       <PopupProperty
-        label="Débit"
+        label="Débit entrant"
         value={stationDEpuration.debit_m3j}
         unit="m³/j"
       />
       <PopupProperty
-        label="Energie"
-        value={stationDEpuration.en_mwh_an}
-        unit="MWh/an"
-      />
-      <PopupProperty
         label="Capacité"
         value={stationDEpuration.capa_eh}
-        unit="eh"
+        unit="équivalent-habitants"
       />
       <PopupProperty label="Exploitant" value={stationDEpuration.exploitant} />
       <PopupProperty label="Commune" value={stationDEpuration.com_nom} />
-      <PopupProperty label="Identifiant" value={stationDEpuration.id_unique} />
     </section>
   );
 };
@@ -573,25 +606,51 @@ const ENRRMobilisableUniteDIncinerationPopupContent = ({
 }) => {
   return (
     <section>
+      <PopupType className="fr-mr-3w">Unité d'incinération</PopupType>
       <PopupTitle className="fr-mr-3w">
-        Unité d'incinération {uniteDIncineration.nom_inst}
+        {uniteDIncineration.nom_inst}
       </PopupTitle>
       <PopupProperty label="Type" value={uniteDIncineration.type_inst} />
       <PopupProperty label="Commune" value={uniteDIncineration.com_nom} />
-      <PopupProperty label="Identifiant" value={uniteDIncineration.id} />
+      <QualiteLabel value={uniteDIncineration.qualite_xy} />
     </section>
   );
 };
 
-interface PopupPropertyProps {
+interface PopupPropertyProps<T> {
   label: string;
-  value: any;
-  unit?: string;
+  value: T;
+  unit?: string; // overridden by the formatter if present
+  formatter?: (value: T) => string | ReactElement;
 }
-const PopupProperty = ({ label, value, unit }: PopupPropertyProps) => (
+const PopupProperty = <T,>({
+  label,
+  value,
+  unit,
+  formatter,
+}: PopupPropertyProps<T>) => (
   <>
     <strong>{label}&nbsp;:</strong>&nbsp;
-    {isDefined(value) ? `${value} ${unit ?? ''}` : 'Non connu'}
+    {isDefined(value)
+      ? isDefined(formatter)
+        ? formatter(value)
+        : `${value} ${unit ?? ''}`
+      : 'Non connu'}
     <br />
   </>
+);
+
+const qualiteToLabel = {
+  1: '', // exact
+  2: 'Localisation à la parcelle',
+  3: 'Localisation au quartier',
+  4: "Localisation à l'IRIS",
+  5: 'Localisation à la commune',
+} as const;
+
+const QualiteLabel = ({ value }: { value: string | number }) => (
+  <Text fontStyle="italic">
+    {qualiteToLabel[`${value}`[0] as unknown as keyof typeof qualiteToLabel] ??
+      ''}
+  </Text>
 );
