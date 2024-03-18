@@ -16,6 +16,7 @@ const zDemandUpdate = {
   'Gestionnaire Conso': z.number().optional(),
   Commentaire: z.string().optional(),
   'Gestionnaire Affecté à': z.string().optional(),
+  'Emails envoyés': z.string().optional(),
 };
 
 export type DemandUpdate = z.infer<z.ZodObject<typeof zDemandUpdate>>;
