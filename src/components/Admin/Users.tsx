@@ -1,8 +1,10 @@
 import { Table, TextInput } from '@dataesr/react-dsfr';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { UserResponse } from 'src/types/UserResponse';
 import { TableContainer } from './Users.styles';
+import Box from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
 
 const columns = [
   {
@@ -24,39 +26,44 @@ const Users = () => {
   const { adminService } = useServices();
 
   const [users, setUsers] = useState<UserResponse[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<UserResponse[]>([]);
   const [filter, setFilter] = useState('');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     adminService.getUsers().then(setUsers);
   }, [adminService]);
 
-  useEffect(() => {
-    if (filter) {
-      setFilteredUsers(
-        users.filter((user) => user.email.includes(filter.toLowerCase()))
-      );
-    } else {
-      setFilteredUsers(users);
-    }
+  const filteredUsers = useMemo(() => {
+    setPage(1);
+    return filter
+      ? users.filter((user) => user.email.includes(filter.toLowerCase()))
+      : users;
   }, [users, filter]);
 
   return (
     <TableContainer small>
+      <Box display="flex">
+        <Heading as="h3" mx="2w">
+          Connexions
+        </Heading>
+
+        <TextInput
+          placeholder="Email"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+      </Box>
+
       <Table
-        caption="Connexion"
         columns={columns}
         data={filteredUsers}
         rowKey="email"
         pagination
         paginationPosition="center"
+        page={page}
+        setPage={setPage}
       />
       {filteredUsers.length === 0 && <p>Pas de résultat</p>}
-      <TextInput
-        placeholder="Email"
-        value={filter}
-        onChange={(e) => setFilter(e.target.value)}
-      />
     </TableContainer>
   );
 };
