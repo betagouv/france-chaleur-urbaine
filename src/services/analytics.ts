@@ -33,6 +33,7 @@ export const useAnalytics = () => {
         url: clientConfig.tracking.matomoServerURL,
         siteId: clientConfig.tracking.matomoSiteId,
         disableCookies: true,
+        excludeUrlsPatterns: [/\/carte\?.+/], // do not track query params for this URL
       });
     }
   }, []);
