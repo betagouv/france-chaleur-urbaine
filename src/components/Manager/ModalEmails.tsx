@@ -48,11 +48,35 @@ function ModalEmails(props: Props) {
     useState<EmailContent>(defaultEmailContent);
   const [sent, setSent] = useState(false);
   const [sentError, setSentError] = useState(false);
+  const [sentHistory, setSentHistory] = useState<[]>();
 
   const resetModal = () => {
+    setAlreadySent([]);
+    setEmailKey('');
+    setEmailContent(defaultEmailContent);
     setSent(false);
     setSentError(false);
+    setSentHistory(undefined);
   };
+
+  useEffect(() => {
+    const getEmailsHistory = async () => {
+      const res = await fetch(
+        `./api/managerEmail?demand_id=${props.currentDemand.id}`,
+        {
+          method: 'GET',
+        }
+      );
+      if (res.status !== 200) {
+        throw new Error(`invalid response status ${res.status}`);
+      }
+      const list = await res.json();
+      setSentHistory(list);
+    };
+    if (props.isOpen && !sentHistory) {
+      getEmailsHistory();
+    }
+  }, [props.isOpen]);
 
   useEffect(() => {
     if (props.currentDemand['Emails envoyés']) {
@@ -80,13 +104,13 @@ function ModalEmails(props: Props) {
     setEmailContentValue('body', body);
   };
 
-  const getAirtableLabel = () => {
+  const getLabel = (key: string) => {
     const email = emailsList.find((email) => {
-      if (email.value === emailKey) {
+      if (email.value === key) {
         return email;
       }
     });
-    return email ? email.airtableLabel : '';
+    return email ? email.label : '';
   };
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
@@ -107,7 +131,7 @@ function ModalEmails(props: Props) {
         throw new Error(`invalid status ${res.status}`);
       }
       //Add email in Airtable demands list
-      alreadySent.push(getAirtableLabel());
+      alreadySent.push(getLabel(emailKey));
       const updatedFields: any = {
         'Emails envoyés': alreadySent.join('\n'),
         'Prise de contact': true, //Prospect recontacté
@@ -144,7 +168,6 @@ function ModalEmails(props: Props) {
           <Heading as="h2" center>
             Envoi d'un courriel à {emailContent?.to}
           </Heading>
-          <span>{history}</span>
           {!sent && !sentError ? (
             <>
               <HorizontalSeparator />
@@ -152,9 +175,11 @@ function ModalEmails(props: Props) {
                 <b>Historique</b>
                 <br />
                 <ul className="fr-ml-3w">
-                  {alreadySent.length > 0 ? (
-                    alreadySent.map((item, index) => (
-                      <li key={index}>{item}</li>
+                  {sentHistory && sentHistory.length > 0 ? (
+                    sentHistory.map((item: any, index) => (
+                      <li key={index}>
+                        {getLabel(item.email_key)} envoyé le {item.date}
+                      </li>
                     ))
                   ) : (
                     <li>Aucun courriel envoyé</li>
@@ -177,7 +202,12 @@ function ModalEmails(props: Props) {
                       value: option.value,
                       label: option.label,
                       disabled:
-                        alreadySent.includes(option.airtableLabel) && true,
+                        sentHistory &&
+                        sentHistory.find((email: any) => {
+                          if (email.email_key === option.value) return email;
+                        })
+                          ? true
+                          : false,
                     };
                   }),
                 ]}
@@ -240,7 +270,7 @@ function ModalEmails(props: Props) {
                 <span>
                   Il y a eu une erreur au cours de votre envoi.
                   <br />
-                  Veuillez ré-essayer
+                  Veuillez ré-essayer.
                 </span>
               ) : (
                 <span>Votre courriel a bien été envoyé !</span>
