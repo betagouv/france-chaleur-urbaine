@@ -1027,8 +1027,8 @@ function SimpleMapLegend({
                   isExternal
                 >
                   EnRezo
-                </Link>
-                .
+                </Link>{' '}
+                du Cerema.
               </Hoverable>
             </InfoIcon>
 
