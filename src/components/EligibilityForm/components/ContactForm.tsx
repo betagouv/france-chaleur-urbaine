@@ -13,6 +13,7 @@ import ContactInformation, {
   validationSchemasContactInformation,
 } from './ContactInformation';
 import { ContactFormFooter } from './EligibilityForm.styled';
+import { AnalyticsFormId } from 'src/services/analytics';
 
 type ContactFormProps = {
   onSubmit: (values: FormikValues) => void;
@@ -59,7 +60,7 @@ export const ContactForm = ({
       onSubmit={handleSubmit}
     >
       {(formik) => (
-        <Form ref={formRef}>
+        <Form id={AnalyticsFormId.form_contact} ref={formRef}>
           <ContactInformation cardMode={cardMode} city={city} />
           <ContactConsent />
           <ContactFormFooter>

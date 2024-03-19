@@ -32,6 +32,7 @@ import {
   Separator,
   SliceContactFormStyle,
 } from './HeadSliceForm.style';
+import { AnalyticsFormId } from 'src/services/analytics';
 
 type HeadBannerType = {
   bg?: string;
@@ -156,58 +157,62 @@ const HeadSlice = ({
       checkEligibility ? (
         <>
           {child}
-          {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
-          <CheckEligibilityFormLabel>
-            <SelectEnergy
-              name="heatingType"
-              selectOptions={energyInputsDefaultLabels}
-              onChange={(e) => setHeatingType(e.target.value)}
-              value={heatingType || ''}
+          <form id={AnalyticsFormId.form_test_adresse}>
+            {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
+            <CheckEligibilityFormLabel>
+              <SelectEnergy
+                name="heatingType"
+                selectOptions={energyInputsDefaultLabels}
+                onChange={(e) => setHeatingType(e.target.value)}
+                value={heatingType || ''}
+              />
+            </CheckEligibilityFormLabel>
+            <AddressAutocomplete
+              placeholder="Tapez ici votre adresse"
+              onAddressSelected={(address, suggestionItem) => {
+                setAddress(address);
+                setGeoAddress(suggestionItem);
+                return Promise.resolve();
+              }}
+              popoverClassName={'popover-search-form'}
             />
-          </CheckEligibilityFormLabel>
-          <AddressAutocomplete
-            placeholder="Tapez ici votre adresse"
-            onAddressSelected={(address, suggestionItem) => {
-              setAddress(address);
-              setGeoAddress(suggestionItem);
-              return Promise.resolve();
-            }}
-            popoverClassName={'popover-search-form'}
-          />
 
-          <FormWarningMessage show={!!(address && geoAddress && !heatingType)}>
-            {warningMessage}
-          </FormWarningMessage>
-
-          <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
-            <Loader color="#fff" />
-          </LoaderWrapper>
-
-          <Buttons>
-            <Button
-              size="lg"
-              disabled={!address || !geoAddress || !heatingType}
-              onClick={testAddress}
+            <FormWarningMessage
+              show={!!(address && geoAddress && !heatingType)}
             >
-              Tester cette adresse
-            </Button>
+              {warningMessage}
+            </FormWarningMessage>
 
-            {withBulkEligibility && (
-              <>
-                <Separator />
-                <Button
-                  size="lg"
-                  secondary
-                  onClick={() => {
-                    setDisplayBulkEligibility(true);
-                    router.push('#test-liste');
-                  }}
-                >
-                  Ou tester une liste d’adresses
-                </Button>
-              </>
-            )}
-          </Buttons>
+            <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
+              <Loader color="#fff" />
+            </LoaderWrapper>
+
+            <Buttons>
+              <Button
+                size="lg"
+                disabled={!address || !geoAddress || !heatingType}
+                onClick={testAddress}
+              >
+                Tester cette adresse
+              </Button>
+
+              {withBulkEligibility && (
+                <>
+                  <Separator />
+                  <Button
+                    size="lg"
+                    secondary
+                    onClick={() => {
+                      setDisplayBulkEligibility(true);
+                      router.push('#test-liste');
+                    }}
+                  >
+                    Ou tester une liste d’adresses
+                  </Button>
+                </>
+              )}
+            </Buttons>
+          </form>
         </>
       ) : (
         <>{child}</>
