@@ -186,6 +186,12 @@ const trackingEvents = {
   'Carto|DPE|Désactive': {
     matomo: ['Carto', 'DPE', 'Désactive'],
   },
+  'Carto|ENR&R Mobilisables|Active': {
+    matomo: ['Carto', 'ENR&R Mobilisables', 'Active'],
+  },
+  'Carto|ENR&R Mobilisables|Désactive': {
+    matomo: ['Carto', 'ENR&R Mobilisables', 'Désactive'],
+  },
   'Carto|Datacenters|Active': {
     matomo: ['Carto', 'Datacenters', 'Active'],
   },

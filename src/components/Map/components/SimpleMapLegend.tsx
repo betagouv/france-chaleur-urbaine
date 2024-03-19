@@ -1000,7 +1000,7 @@ function SimpleMapLegend({
                   setSectionExpansion('enrrMobilisables', true);
                 }
               }}
-              trackingEvent="Carto|Zones d'opportunité" // FIXME
+              trackingEvent="Carto|ENR&R Mobilisables"
             />
 
             <Text
