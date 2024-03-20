@@ -32,6 +32,7 @@ export const dataTypes = [
   'buildings',
   'futurNetwork',
   'coldNetwork',
+  'enrrMobilisables',
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
 ] as const;
@@ -205,6 +206,15 @@ export const tilesInfo: Record<DataType, TileInfo> = {
       'pdl_nb',
     ],
     sourceLayer: 'gasUsage',
+  },
+  enrrMobilisables: {
+    source: 'database',
+    tiles: 'enrr_mobilisables_tiles',
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
   },
   zonesPotentielChaud: {
     source: 'database',

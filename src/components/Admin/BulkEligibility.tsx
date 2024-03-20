@@ -1,10 +1,12 @@
 import { Icon, Table, TextInput } from '@dataesr/react-dsfr';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { EligibilityDemand } from 'src/types/EligibilityDemand';
 import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';
+import Heading from '@components/ui/Heading';
+import Box from '@components/ui/Box';
 
 const columns = [
   { name: 'id', label: 'Id' },
@@ -52,56 +54,59 @@ const BulkEligibility = () => {
   const { adminService } = useServices();
 
   const [filter, setFilter] = useState('');
-  const [filteredEligibilityDemands, setFilteredEligibilityDemands] = useState<
-    EligibilityDemand[]
-  >([]);
   const [eligibilityDemands, setEligibilityDemands] = useState<
     EligibilityDemand[]
   >([]);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     adminService.getEligibilityDemand().then(setEligibilityDemands);
   }, [adminService]);
 
-  useEffect(() => {
-    if (filter) {
-      setFilteredEligibilityDemands(
-        eligibilityDemands.filter((demand) =>
+  const filteredEligibilityDemands = useMemo(() => {
+    setPage(1);
+    return filter
+      ? eligibilityDemands.filter((demand) =>
           demand.emails.some((email) => email.includes(filter.toLowerCase()))
         )
-      );
-    } else {
-      setFilteredEligibilityDemands(eligibilityDemands);
-    }
+      : eligibilityDemands;
   }, [eligibilityDemands, filter]);
 
   return (
-    <TableContainer>
-      <Table
-        caption={`Demandes d'éligibilités - ${filteredEligibilityDemands
-          .filter((demand) => !demand.in_error)
-          .reduce(
-            (acc, value) => acc + value.addresses_count - value.error_count,
-            0
-          )} adresses testées - ${filteredEligibilityDemands
-          .filter((demand) => !demand.in_error)
-          .reduce(
-            (acc, value) => acc + value.eligibile_count,
-            0
-          )} adresses éligibles`}
-        columns={columns}
-        data={filteredEligibilityDemands}
-        rowKey="id"
-        pagination
-        paginationPosition="center"
-      />
-      {filteredEligibilityDemands.length === 0 && <p>Pas de résultat</p>}
-      <TextInput
-        placeholder="Email"
-        value={filter}
-        onChange={(e) => setFilter(e.target.value)}
-      />
-    </TableContainer>
+    <>
+      <TableContainer>
+        <Box display="flex">
+          <Heading as="h3" mx="2w">
+            {`Demandes d'éligibilités - ${filteredEligibilityDemands
+              .filter((demand) => !demand.in_error)
+              .reduce(
+                (acc, value) => acc + value.addresses_count - value.error_count,
+                0
+              )} adresses testées - ${filteredEligibilityDemands
+              .filter((demand) => !demand.in_error)
+              .reduce(
+                (acc, value) => acc + value.eligibile_count,
+                0
+              )} adresses éligibles`}
+          </Heading>
+          <TextInput
+            placeholder="Email"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
+        </Box>
+        <Table
+          columns={columns}
+          data={filteredEligibilityDemands}
+          rowKey="id"
+          pagination
+          paginationPosition="center"
+          page={page}
+          setPage={setPage}
+        />
+        {filteredEligibilityDemands.length === 0 && <p>Pas de résultat</p>}
+      </TableContainer>
+    </>
   );
 };
 

@@ -39,6 +39,45 @@ export const consommationsGazLayerMaxOpacity = 0.55;
 export const energyLayerMaxOpacity = 0.65;
 export const batimentsRaccordesLayerMaxOpacity = 0.65;
 
+type LayerSymbolSpecification = {
+  key: string;
+  url: string;
+  sdf?: boolean; // Whether the image should be interpreted as an SDF image (= image we want to color)
+};
+
+/**
+ * Symbols used by layers and that must be loaded at map initialization.
+ */
+export const layerSymbolsImagesURLs = [
+  {
+    key: 'energy-picto',
+    url: '/icons/rect.png',
+    sdf: true,
+  },
+  {
+    key: 'enrr_mobilisables_datacenter',
+    url: '/icons/enrr_mobilisables_datacenter.png',
+  },
+  {
+    key: 'enrr_mobilisables_industrie',
+    url: '/icons/enrr_mobilisables_industrie.png',
+  },
+  {
+    key: 'enrr_mobilisables_installations_electrogenes',
+    url: '/icons/enrr_mobilisables_installations_electrogenes.png',
+  },
+  {
+    key: 'enrr_mobilisables_stations_epuration',
+    url: '/icons/enrr_mobilisables_stations_epuration.png',
+  },
+  {
+    key: 'enrr_mobilisables_unites_incineration',
+    url: '/icons/enrr_mobilisables_unites_incineration.png',
+  },
+] as const satisfies ReadonlyArray<LayerSymbolSpecification>;
+
+type LayerSymbolImage = (typeof layerSymbolsImagesURLs)[number]['key'];
+
 export const LegendDeskData = {
   energy: {
     min: 10,
@@ -186,6 +225,9 @@ export type MapSourceLayersSpecification = {
 type CustomLayerSpecification = LayerSpecification & {
   id: LayerId;
   source: SourceId;
+  layout?: LayerSpecification['layout'] & {
+    'icon-image'?: LayerSymbolImage;
+  };
 };
 
 // = id passé en URL de l'API
@@ -198,6 +240,7 @@ export type SourceId =
   | 'gas' // consommations de gaz
   | 'energy' // batiments collectifs chauffés au fioul / gas
   | 'raccordements' // bâtiments raccordés
+  | 'enrrMobilisables'
   | 'zonesPotentielChaud'
   | 'zonesPotentielFortChaud'
   | 'buildings'; // caractéristiques des bâtiments
@@ -214,6 +257,11 @@ export type LayerId =
   | 'energy'
   | 'consommationsGaz'
   | 'batimentsRaccordes'
+  | 'enrrMobilisables-datacenter'
+  | 'enrrMobilisables-industrie'
+  | 'enrrMobilisables-installations-electrogenes'
+  | 'enrrMobilisables-stations-d-epuration'
+  | 'enrrMobilisables-unites-d-incineration'
   | 'zonesPotentielChaud'
   | 'zonesPotentielChaud-contour'
   | 'zonesPotentielFortChaud'
@@ -332,6 +380,52 @@ export function buildMapLayers(
       ],
     },
 
+    // ---------------------------
+    // --- Future Heat Network ---
+    // ---------------------------
+    {
+      sourceId: 'futurNetwork',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/futurNetwork/{z}/{x}/{y}`],
+        maxzoom: tileSourcesMaxZoom,
+      },
+      layers: [
+        {
+          id: 'reseauxEnConstruction-zone',
+          source: 'futurNetwork',
+          'source-layer': 'futurOutline',
+          minzoom: tileLayersMinZoom,
+          filter: getNetworkFilter(undefined, filter, [
+            '==',
+            ['get', 'is_zone'],
+            true,
+          ]),
+          type: 'fill',
+          paint: {
+            'fill-color': themeDefHeatNetwork.futur.color,
+            'fill-opacity': themeDefHeatNetwork.futur.opacity,
+          },
+        },
+        {
+          id: 'reseauxEnConstruction-trace',
+          source: 'futurNetwork',
+          'source-layer': 'futurOutline',
+          minzoom: tileLayersMinZoom,
+          filter: getNetworkFilter(undefined, filter, [
+            '==',
+            ['get', 'is_zone'],
+            false,
+          ]),
+          ...outlineLayerStyle,
+          paint: {
+            ...outlineLayerStyle.paint,
+            'line-color': themeDefHeatNetwork.futur.color,
+          },
+        },
+      ],
+    },
+
     // --------------------------------------------
     // --- Caractéristiques des bâtiments (DPE) ---
     // --------------------------------------------
@@ -364,6 +458,44 @@ export function buildMapLayers(
               0,
               intermediateTileLayersMinZoom + 0.2 + 1,
               themeDefBuildings.opacity,
+            ],
+          },
+        },
+      ],
+    },
+
+    // ---------------------
+    // --- Raccordements ---
+    // ---------------------
+    {
+      sourceId: 'raccordements',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/raccordements/{z}/{x}/{y}`],
+        maxzoom: tileSourcesMaxZoom,
+      },
+      layers: [
+        {
+          id: 'batimentsRaccordes',
+          source: 'raccordements',
+          'source-layer': 'raccordements',
+          minzoom: intermediateTileLayersMinZoom,
+          type: 'symbol',
+          layout: {
+            'icon-image': 'energy-picto',
+            'icon-overlap': 'always',
+            'icon-size': 0.5,
+          },
+          paint: {
+            'icon-color': themeDefHeatNetwork.classed.color,
+            'icon-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              intermediateTileLayersMinZoom + 0.2,
+              0,
+              intermediateTileLayersMinZoom + 0.5 + 1,
+              batimentsRaccordesLayerMaxOpacity,
             ],
           },
         },
@@ -514,90 +646,6 @@ export function buildMapLayers(
       ],
     },
 
-    // ---------------------
-    // --- Raccordements ---
-    // ---------------------
-    {
-      sourceId: 'raccordements',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/raccordements/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
-      },
-      layers: [
-        {
-          id: 'batimentsRaccordes',
-          source: 'raccordements',
-          'source-layer': 'raccordements',
-          minzoom: intermediateTileLayersMinZoom,
-          type: 'symbol',
-          layout: {
-            'icon-image': 'energy-picto',
-            'icon-overlap': 'always',
-            'icon-size': 0.5,
-          },
-          paint: {
-            'icon-color': themeDefHeatNetwork.classed.color,
-            'icon-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              intermediateTileLayersMinZoom + 0.2,
-              0,
-              intermediateTileLayersMinZoom + 0.5 + 1,
-              batimentsRaccordesLayerMaxOpacity,
-            ],
-          },
-        },
-      ],
-    },
-
-    // ---------------------------
-    // --- Future Heat Network ---
-    // ---------------------------
-    {
-      sourceId: 'futurNetwork',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/futurNetwork/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
-      },
-      layers: [
-        {
-          id: 'reseauxEnConstruction-zone',
-          source: 'futurNetwork',
-          'source-layer': 'futurOutline',
-          minzoom: tileLayersMinZoom,
-          filter: getNetworkFilter(undefined, filter, [
-            '==',
-            ['get', 'is_zone'],
-            true,
-          ]),
-          type: 'fill',
-          paint: {
-            'fill-color': themeDefHeatNetwork.futur.color,
-            'fill-opacity': themeDefHeatNetwork.futur.opacity,
-          },
-        },
-        {
-          id: 'reseauxEnConstruction-trace',
-          source: 'futurNetwork',
-          'source-layer': 'futurOutline',
-          minzoom: tileLayersMinZoom,
-          filter: getNetworkFilter(undefined, filter, [
-            '==',
-            ['get', 'is_zone'],
-            false,
-          ]),
-          ...outlineLayerStyle,
-          paint: {
-            ...outlineLayerStyle.paint,
-            'line-color': themeDefHeatNetwork.futur.color,
-          },
-        },
-      ],
-    },
-
     // --------------------
     // --- Heat Network ---
     // --------------------
@@ -678,6 +726,94 @@ export function buildMapLayers(
             ['get', 'has_trace'],
             false,
           ]),
+        },
+      ],
+    },
+
+    {
+      sourceId: 'enrrMobilisables',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/enrrMobilisables/{z}/{x}/{y}`],
+        maxzoom: tileSourcesMaxZoom,
+        promoteId: 'GmlID',
+        attribution:
+          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+      },
+
+      // the source contains one layer that contains all features
+      // we know the kind of one feature using the GmlID (e.g. datacenter.1)
+      // we have 5 layers, one for each kind of features to simplify show/hide code
+      layers: [
+        {
+          id: 'enrrMobilisables-stations-d-epuration',
+          source: 'enrrMobilisables',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'symbol',
+          layout: {
+            'icon-image': 'enrr_mobilisables_stations_epuration',
+            'icon-overlap': 'always',
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+          },
+
+          filter: ['in', 'stations_d_epuration', ['get', 'GmlID']],
+        },
+        {
+          id: 'enrrMobilisables-datacenter',
+          source: 'enrrMobilisables',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'symbol',
+          layout: {
+            'icon-image': 'enrr_mobilisables_datacenter',
+            'icon-overlap': 'always',
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+          },
+
+          filter: ['in', 'datacenter', ['get', 'GmlID']],
+        },
+        {
+          id: 'enrrMobilisables-industrie',
+          source: 'enrrMobilisables',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'symbol',
+          layout: {
+            'icon-image': 'enrr_mobilisables_industrie',
+            'icon-overlap': 'always',
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+          },
+
+          filter: ['in', 'industrie', ['get', 'GmlID']],
+        },
+        {
+          id: 'enrrMobilisables-installations-electrogenes',
+          source: 'enrrMobilisables',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'symbol',
+          layout: {
+            'icon-image': 'enrr_mobilisables_installations_electrogenes',
+            'icon-overlap': 'always',
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+          },
+
+          filter: ['in', 'installations_electrogenes', ['get', 'GmlID']],
+        },
+        {
+          id: 'enrrMobilisables-unites-d-incineration',
+          source: 'enrrMobilisables',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'symbol',
+          layout: {
+            'icon-image': 'enrr_mobilisables_unites_incineration',
+            'icon-overlap': 'always',
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 10, 1],
+          },
+
+          filter: ['in', 'unites_d_incineration', ['get', 'GmlID']],
         },
       ],
     },
@@ -768,6 +904,36 @@ export function applyMapConfigurationToLayers(
   setLayerVisibility(
     'zonesDeDeveloppementPrioritaire',
     config.zonesDeDeveloppementPrioritaire
+  );
+  setLayerVisibility(
+    'enrrMobilisables-datacenter',
+    config.proMode &&
+      config.enrrMobilisables.show &&
+      config.enrrMobilisables.showDatacenters
+  );
+  setLayerVisibility(
+    'enrrMobilisables-industrie',
+    config.proMode &&
+      config.enrrMobilisables.show &&
+      config.enrrMobilisables.showIndustrie
+  );
+  setLayerVisibility(
+    'enrrMobilisables-installations-electrogenes',
+    config.proMode &&
+      config.enrrMobilisables.show &&
+      config.enrrMobilisables.showInstallationsElectrogenes
+  );
+  setLayerVisibility(
+    'enrrMobilisables-stations-d-epuration',
+    config.proMode &&
+      config.enrrMobilisables.show &&
+      config.enrrMobilisables.showStationsDEpuration
+  );
+  setLayerVisibility(
+    'enrrMobilisables-unites-d-incineration',
+    config.proMode &&
+      config.enrrMobilisables.show &&
+      config.enrrMobilisables.showUnitesDIncineration
   );
   setLayerVisibility(
     'zonesPotentielChaud',

@@ -33,6 +33,7 @@ export const useAnalytics = () => {
         url: clientConfig.tracking.matomoServerURL,
         siteId: clientConfig.tracking.matomoSiteId,
         disableCookies: true,
+        excludeUrlsPatterns: [/\/carte\?.+/], // do not track query params for this URL
       });
     }
   }, []);
@@ -85,6 +86,14 @@ Workflow du formulaire de test d'adresse :
 - quand on soumet le second formulaire de contact :
   - Formulaire de contact éligible - Envoi
 */
+
+/**
+ * These ids are used in Matomo to track Forms interactions.
+ */
+export enum AnalyticsFormId {
+  form_test_adresse = 'form_test_adresse',
+  form_contact = 'form_contact',
+}
 
 /**
  * List of all events tracked by analytics tools.
@@ -185,6 +194,42 @@ const trackingEvents = {
   },
   'Carto|DPE|Désactive': {
     matomo: ['Carto', 'DPE', 'Désactive'],
+  },
+  'Carto|ENR&R Mobilisables|Active': {
+    matomo: ['Carto', 'ENR&R Mobilisables', 'Active'],
+  },
+  'Carto|ENR&R Mobilisables|Désactive': {
+    matomo: ['Carto', 'ENR&R Mobilisables', 'Désactive'],
+  },
+  'Carto|Datacenters|Active': {
+    matomo: ['Carto', 'Datacenters', 'Active'],
+  },
+  'Carto|Datacenters|Désactive': {
+    matomo: ['Carto', 'Datacenters', 'Désactive'],
+  },
+  'Carto|Industrie|Active': {
+    matomo: ['Carto', 'Industrie', 'Active'],
+  },
+  'Carto|Industrie|Désactive': {
+    matomo: ['Carto', 'Industrie', 'Désactive'],
+  },
+  'Carto|Installations électrogènes|Active': {
+    matomo: ['Carto', 'Installations électrogènes', 'Active'],
+  },
+  'Carto|Installations électrogènes|Désactive': {
+    matomo: ['Carto', 'Installations électrogènes', 'Désactive'],
+  },
+  "Carto|Stations d'épuration|Active": {
+    matomo: ['Carto', "Stations d'épuration", 'Active'],
+  },
+  "Carto|Stations d'épuration|Désactive": {
+    matomo: ['Carto', "Stations d'épuration", 'Désactive'],
+  },
+  "Carto|Unités d'incinération|Active": {
+    matomo: ['Carto', "Unités d'incinération", 'Active'],
+  },
+  "Carto|Unités d'incinération|Désactive": {
+    matomo: ['Carto', "Unités d'incinération", 'Désactive'],
   },
   "Carto|Zones d'opportunité|Active": {
     matomo: ['Carto', "Zones d'opportunité", 'Active'],

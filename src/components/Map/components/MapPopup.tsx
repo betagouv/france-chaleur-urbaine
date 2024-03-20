@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Popup } from 'react-map-gl/maplibre';
 import { MapPopupType } from 'src/types/MapComponentsInfos';
-import MapPopupContent, {
-  ViasevaPopupContent,
-  DynamicPopupContent,
-} from './MapPopupContent';
+import MapPopupContent, { ViasevaPopupContent } from './MapPopupContent';
 import { Point } from 'src/types/Point';
+import DynamicPopupContent, {
+  isDynamicPopupContent,
+} from './DynamicMapPopupContent';
 
 const MapPopup = ({
   longitude,
@@ -65,12 +65,4 @@ const MapPopup = ({
   );
 };
 
-const layersWithDynamicContentPopup = [
-  'zonesPotentielChaud',
-  'zonesPotentielFortChaud',
-] as const;
-
-function isDynamicPopupContent(content: any): content is DynamicPopupContent {
-  return layersWithDynamicContentPopup.includes(content.type);
-}
 export default MapPopup;

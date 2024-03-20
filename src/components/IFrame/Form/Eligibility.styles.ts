@@ -25,7 +25,7 @@ export const Header = styled.div`
   }
 `;
 
-export const Form = styled.div`
+export const Form = styled.form`
   display: flex;
   flex-wrap: wrap;
   align-items: center;

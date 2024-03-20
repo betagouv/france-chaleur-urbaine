@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { Container, Form, Header } from './Eligibility.styles';
 import Image from 'next/image';
+import { AnalyticsFormId } from 'src/services/analytics';
 
 const Eligibility = () => {
   const [heatingType, setHeatingType] = useState('');
@@ -24,7 +25,7 @@ const Eligibility = () => {
           alt="logo france chaleur urbaine"
         />
       </Header>
-      <Form>
+      <Form id={AnalyticsFormId.form_test_adresse}>
         <CheckEligibilityFormLabel>
           <SelectEnergy
             name="heatingType"

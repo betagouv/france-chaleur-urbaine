@@ -20,7 +20,6 @@ const csp = {
     "'sha256-3I33qFPfa/PLrN/3rrrC4vJBjmKYiuXWQ+ZfnHiEWmo='",
     "'sha256-ksltjYbI6Uoozfn80t6ROvA1rBbTP9X8qGPGwHmWBpA='",
     "'sha256-6SC04Y6nNQLzwzyqa3SfGlAJoGLEAasou2bnNnkusvM='",
-    "'sha256-H2mRU+3M13HkAJfH6/b74hVw3UOtytXrVI3MuPwDTj0='", // matomo https://stats.beta.gouv.fr/ 83
     "'sha256-344ePyJp7yxx64WKWpbs/ZvEDHA6mve7lS3i90cEPT4='", // ConsentBanner > tarteaucitron.init
     "'sha256-d7dsOzUkIPxujyMIFvd9lnMMqh0LRXgYPmFvbRYsL7Q='", // hotjar 3874965 6
     'https://stats.data.gouv.fr',
@@ -151,6 +150,19 @@ module.exports = withBundleAnalyzer(
           {
             source: '/:path*',
             headers: securityHeaders,
+          },
+          {
+            source: '/openapi-schema.yaml',
+            headers: [
+              {
+                key: 'Access-Control-Allow-Methods',
+                value: 'GET, OPTIONS',
+              },
+              {
+                key: 'Access-Control-Allow-Origin',
+                value: '*',
+              },
+            ],
           },
 
           // Attention: keep in sync with src/services/iframe.ts
