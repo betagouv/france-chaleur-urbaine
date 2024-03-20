@@ -23,10 +23,12 @@ interface TextProps
   fontWeight?: 'light' | 'regular' | 'lightbold' | 'bold' | 'heavy';
   fontStyle?: 'normal' | 'italic';
   textAlign?: 'center';
+  textTransform?: CSSProperties['textTransform'];
   cursor?: CSSProperties['cursor'];
   underline?: boolean;
   className?: string;
   maxWidth?: `${number}w`;
+  style?: any;
 }
 
 /**
@@ -42,6 +44,7 @@ function Text({
   fontStyle,
   legacyColor,
   textAlign,
+  textTransform,
   cursor,
   display,
   underline,
@@ -49,6 +52,7 @@ function Text({
   className,
   size,
   fontWeight,
+  style,
   children,
   ...props
 }: PropsWithChildren<TextProps>) {
@@ -56,7 +60,7 @@ function Text({
   if (color && legacyColor) {
     throw new Error('cannot use color and legacyColor at the same time');
   }
-  const style: CSSProperties = {
+  const computedStyle: CSSProperties = {
     fontSize: fontSize ?? 'inherit',
     lineHeight: lineHeight ?? 'inherit',
     fontStyle: fontStyle ?? 'normal',
@@ -70,6 +74,8 @@ function Text({
     display: display,
     textDecoration: underline ? 'underline' : undefined,
     maxWidth: maxWidth ? `${parseInt(maxWidth.slice(0, -1)) * 8}px` : undefined,
+    textTransform: textTransform,
+    ...style,
   };
 
   return (
@@ -80,7 +86,7 @@ function Text({
       ${fontWeight ? `fr-text--${fontWeight}` : ''}
       fr-mb-0
       ${spacingsToClasses(props)}`}
-      style={style}
+      style={computedStyle}
       {...props}
     >
       {children}

@@ -1,7 +1,9 @@
+import { DynamicPopupContentType } from '@components/Map/components/DynamicMapPopupContent';
+
 export type MapPopupInfos = {
   latitude: number;
   longitude: number;
-  content: { [x: string]: any };
+  content: DynamicPopupContentType | { [x: string]: any };
 };
 
 export enum MapPopupType {

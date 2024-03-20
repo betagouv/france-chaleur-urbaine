@@ -70,11 +70,13 @@ import {
   SourceId,
   applyMapConfigurationToLayers,
   buildMapLayers,
+  layerSymbolsImagesURLs,
 } from './map-layers';
 import Box from '@components/ui/Box';
 import useRouterReady from '@hooks/useRouterReady';
 import MapSearchForm from './components/MapSearchForm';
 import CardSearchDetails from './components/CardSearchDetails';
+import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
 
 const mapSettings = {
   defaultLongitude: 2.3,
@@ -261,11 +263,11 @@ const Map = ({
     setPopupInfos({
       latitude: e.lngLat.lat,
       longitude: e.lngLat.lng,
-      content: ['zonesPotentielChaud', 'zonesPotentielFortChaud'].includes(
-        selectedFeature.source
+      content: layersWithDynamicContentPopup.includes(
+        selectedFeature.layer.id as any
       )
         ? {
-            type: selectedFeature.source,
+            type: selectedFeature.layer.id,
             properties: selectedFeature.properties,
           }
         : { [key]: selectedFeature.properties },
@@ -365,7 +367,7 @@ const Map = ({
     [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
   );
 
-  const onMapLoad = (e: MapLibreEvent) => {
+  const onMapLoad = async (e: MapLibreEvent) => {
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
     });
@@ -384,58 +386,93 @@ const Map = ({
       })
     );
 
+    const map = e.target;
+    // load layers symbols
+    await Promise.all(
+      layerSymbolsImagesURLs.map(
+        (spec) =>
+          new Promise<void>((resolve, reject) => {
+            map.loadImage(spec.url, (error, image) => {
+              if (error) {
+                reject(error);
+              }
+              if (image) {
+                map.addImage(spec.key, image, {
+                  sdf: 'sdf' in spec && spec.sdf,
+                });
+              }
+              resolve();
+            });
+          })
+      )
+    );
+    setMapState('loaded');
+
     const clickEvents: {
-      name: LayerId;
+      layer: LayerId;
       key: string;
     }[] = [
-      { name: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
-      { name: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
-      { name: 'reseauxDeChaleur-avec-trace', key: 'network' },
-      { name: 'reseauxDeChaleur-sans-trace', key: 'network' },
-      { name: 'reseauxDeFroid-avec-trace', key: 'coldNetwork' },
-      { name: 'reseauxDeFroid-sans-trace', key: 'coldNetwork' },
-      { name: 'reseauxEnConstruction-trace', key: 'futurNetwork' },
-      { name: 'reseauxEnConstruction-zone', key: 'futurNetwork' },
+      { layer: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
+      { layer: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
+      { layer: 'reseauxDeChaleur-avec-trace', key: 'network' },
+      { layer: 'reseauxDeChaleur-sans-trace', key: 'network' },
+      { layer: 'reseauxDeFroid-avec-trace', key: 'coldNetwork' },
+      { layer: 'reseauxDeFroid-sans-trace', key: 'coldNetwork' },
+      { layer: 'reseauxEnConstruction-trace', key: 'futurNetwork' },
+      { layer: 'reseauxEnConstruction-zone', key: 'futurNetwork' },
       {
-        name: 'demandesEligibilite',
+        layer: 'demandesEligibilite',
         key: 'demands',
       },
-      { name: 'caracteristiquesBatiments', key: 'buildings' },
-      { name: 'consommationsGaz', key: 'consommation' },
-      { name: 'energy', key: 'energy' },
-      { name: 'batimentsRaccordes', key: 'raccordement' },
+      { layer: 'caracteristiquesBatiments', key: 'buildings' },
+      { layer: 'consommationsGaz', key: 'consommation' },
+      { layer: 'energy', key: 'energy' },
+      { layer: 'batimentsRaccordes', key: 'raccordement' },
+      {
+        layer: 'enrrMobilisables-datacenter',
+        key: 'enrrMobilisables-datacenter',
+      },
+      {
+        layer: 'enrrMobilisables-industrie',
+        key: 'enrrMobilisables-industrie',
+      },
+      {
+        layer: 'enrrMobilisables-installations-electrogenes',
+        key: 'enrrMobilisables-installations-electrogenes',
+      },
+      {
+        layer: 'enrrMobilisables-stations-d-epuration',
+        key: 'enrrMobilisables-stations-d-epuration',
+      },
+      {
+        layer: 'enrrMobilisables-unites-d-incineration',
+        key: 'enrrMobilisables-unites-d-incineration',
+      },
     ];
 
-    e.target.loadImage('/icons/rect.png', (error, image) => {
-      if (error) {
-        throw error;
-      }
-
-      setMapState('loaded');
-      if (image) {
-        e.target.addImage('energy-picto', image, { sdf: true });
-      }
-
-      if (!noPopup) {
-        clickEvents.map(({ name, key }) => {
-          e.target.on('click', name, (e: any) => {
-            onMapClick(e, key);
-          });
-
-          e.target.on('touchend', name, (e: any) => {
-            onMapClick(e, key);
-          });
-
-          e.target.on('mouseenter', name, function () {
-            e.target.getCanvas().style.cursor = 'pointer';
-          });
-
-          e.target.on('mouseleave', name, function () {
-            e.target.getCanvas().style.cursor = '';
-          });
+    // register click event handlers
+    if (!noPopup) {
+      clickEvents.map(({ layer, key }) => {
+        map.on('click', layer, (e: any) => {
+          onMapClick(e, key);
         });
-      }
 
+        map.on('touchend', layer, (e: any) => {
+          onMapClick(e, key);
+        });
+
+        map.on('mouseenter', layer, function () {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', layer, function () {
+          map.getCanvas().style.cursor = '';
+        });
+      });
+    }
+
+    // register move and hover event handlers
+    {
       const map = mapRef.current;
       if (map) {
         if (persistViewStateInURL) {
@@ -471,7 +508,7 @@ const Map = ({
           sourceLayer: 'coldOutline',
         });
       }
-    });
+    }
   };
 
   const onMapSourceData = (e: MapSourceDataEvent) => {
