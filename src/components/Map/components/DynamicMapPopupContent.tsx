@@ -319,7 +319,8 @@ const ENRRMobilisableUniteDIncinerationPopupContent = ({
         {uniteDIncineration.nom_inst}
       </PopupTitle>
       <PopupProperty label="Type" value={uniteDIncineration.type_inst} />
-      <PopupProperty label="Commune" value={uniteDIncineration.com_nom} />
+      {/* Désactivé car non fiable dans les données pour le moment */}
+      {/* <PopupProperty label="Commune" value={uniteDIncineration.com_nom} /> */}
       <QualiteLabel value={uniteDIncineration.qualite_xy} />
     </section>
   );
