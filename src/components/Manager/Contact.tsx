@@ -3,16 +3,13 @@ import { EmailInfo, Name, OtherInfo } from './Contact.styles';
 import { Icon } from '@dataesr/react-dsfr';
 import ModalEmails from './ModalEmails';
 import { useState } from 'react';
-import { User } from 'next-auth';
 
 const Contact = ({
   demand,
   updateDemand,
-  currentUser,
 }: {
   demand: Demand;
   updateDemand: (demandId: string, demand: Partial<Demand>) => void;
-  currentUser?: User;
 }) => {
   const [showEmailsModal, setShowEmailsModal] = useState(false);
 
@@ -35,10 +32,9 @@ const Contact = ({
         )}
         {demand.Téléphone && <OtherInfo>{demand.Téléphone}</OtherInfo>}
       </>
-      {demand.Mail && currentUser && (
+      {demand.Mail && (
         <ModalEmails
           isOpen={showEmailsModal}
-          currentUser={currentUser}
           currentDemand={demand}
           updateDemand={updateDemand}
           onClose={() => setShowEmailsModal(false)}

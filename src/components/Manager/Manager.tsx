@@ -25,7 +25,6 @@ import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
 import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
-import { useSession } from 'next-auth/react';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 const rowPerPage: number = 10;
@@ -72,8 +71,6 @@ const getSortBy = (arr: Demand[]) => (sort: SortParamType) => {
 const defaultSort: SortParamType = { key: 'Date demandes', order: 'desc' };
 
 const Manager = () => {
-  const { data: session } = useSession();
-
   const { demandsService } = useServices();
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -284,11 +281,7 @@ const Manager = () => {
       name: 'Contact',
       label: 'Contact',
       render: (demand) => (
-        <Contact
-          demand={demand}
-          updateDemand={updateDemand}
-          currentUser={session?.user}
-        />
+        <Contact demand={demand} updateDemand={updateDemand} />
       ),
     },
     {

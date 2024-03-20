@@ -6,6 +6,7 @@ import {
   TextInput,
 } from '@dataesr/react-dsfr';
 import { FormEvent, useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import {
   HorizontalSeparator,
   ModalContentWrapper,
@@ -14,12 +15,10 @@ import {
 import Heading from '@components/ui/Heading';
 import emailsList from '@data/manager/manager-emails-list';
 import emailsContentList from '@data/manager/manager-emails-content';
-import { User } from 'next-auth';
 import { Demand } from 'src/types/Summary/Demand';
 
 type Props = {
   isOpen: boolean;
-  currentUser: User;
   currentDemand: Demand;
   updateDemand: (demandId: string, demand: Partial<Demand>) => void;
   onClose: (...args: any[]) => any;
@@ -33,27 +32,33 @@ type EmailContent = {
   replyTo: string;
 };
 function ModalEmails(props: Props) {
-  const defaultEmailContent: EmailContent = {
-    object: '',
-    to: props.currentDemand.Mail,
-    body: '',
-    signature: props.currentUser.signature,
-    cc: props.currentUser.email,
-    replyTo: props.currentUser.email,
+  const getDefaultEmailContent = () => {
+    return {
+      object: '',
+      to: props.currentDemand.Mail,
+      body: '',
+      signature: session?.user.signature || '',
+      cc: session?.user.email || '',
+      replyTo: session?.user.email || '',
+    };
   };
+
+  const { data: session, update } = useSession();
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const [alreadySent, setAlreadySent] = useState<string[]>([]);
   const [emailKey, setEmailKey] = useState('');
-  const [emailContent, setEmailContent] =
-    useState<EmailContent>(defaultEmailContent);
+  const [emailContent, setEmailContent] = useState<EmailContent>(
+    getDefaultEmailContent()
+  );
   const [sent, setSent] = useState(false);
   const [sentError, setSentError] = useState(false);
   const [sentHistory, setSentHistory] = useState<[]>();
 
-  const resetModal = () => {
+  const loadModal = () => {
     setAlreadySent([]);
     setEmailKey('');
-    setEmailContent(defaultEmailContent);
+    setEmailContent(getDefaultEmailContent);
     setSent(false);
     setSentError(false);
     setSentHistory(undefined);
@@ -67,14 +72,17 @@ function ModalEmails(props: Props) {
           method: 'GET',
         }
       );
-      if (res.status !== 200) {
-        throw new Error(`invalid response status ${res.status}`);
-      }
       const list = await res.json();
       setSentHistory(list);
     };
-    if (props.isOpen && !sentHistory) {
-      getEmailsHistory();
+    if (props.isOpen) {
+      if (!isLoaded) {
+        loadModal();
+        setIsLoaded(true);
+      }
+      if (!sentHistory) {
+        getEmailsHistory();
+      }
     }
   }, [props.isOpen]);
 
@@ -115,8 +123,6 @@ function ModalEmails(props: Props) {
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //TODO vérifier format ?
-
     //Save content in DB
     try {
       const res = await fetch(`./api/managerEmail`, {
@@ -130,6 +136,7 @@ function ModalEmails(props: Props) {
       if (res.status !== 200) {
         throw new Error(`invalid status ${res.status}`);
       }
+
       //Add email in Airtable demands list
       alreadySent.push(getLabel(emailKey));
       const updatedFields: any = {
@@ -147,9 +154,13 @@ function ModalEmails(props: Props) {
       }
       await props.updateDemand(props.currentDemand.id, updatedFields);
 
+      //Update the current user signature
+      if (session && session.user.signature !== emailContent.signature) {
+        update({ signature: emailContent.signature });
+      }
+
       setSent(true);
     } catch (err: any) {
-      //TODO remonter l'erreur quelque part ?
       setSentError(true);
     }
   };
@@ -158,8 +169,9 @@ function ModalEmails(props: Props) {
     <StyledModal
       isOpen={props.isOpen}
       hide={() => {
-        resetModal();
+        //resetModal();
         props.onClose();
+        setIsLoaded(false);
       }}
     >
       <ModalClose>Fermer</ModalClose>

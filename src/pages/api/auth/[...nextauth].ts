@@ -62,6 +62,7 @@ export const nextAuthOptions: AuthOptions = {
           'receive_old_demands',
           'active',
           'created_at',
+          'signature',
         ]);
 
       if (token) {
