@@ -15,15 +15,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import {
   AddressDetail,
@@ -194,7 +186,7 @@ const Map = ({
   withCenterPin?: boolean;
   noPopup?: boolean;
   proMode?: boolean;
-  setProMode?: Dispatch<SetStateAction<boolean>>;
+  setProMode?: (proMode: boolean) => void;
   popupType?: MapPopupType;
   filter?: ExpressionSpecification; // layer filter used to filter networks of a company
   pinsList?: MapMarkerInfos[];
@@ -656,16 +648,17 @@ const Map = ({
   }, []);
 
   // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
+  // also store the proMode
   const updateLocationURL = useMemo(
     () =>
-      debounce((viewState: ViewState) => {
+      debounce((viewState: ViewState, proMode: boolean) => {
         router.replace(
           {
             search: `coord=${viewState.longitude.toFixed(
               7
             )},${viewState.latitude.toFixed(7)}&zoom=${viewState.zoom.toFixed(
               2
-            )}`,
+            )}&proMode=${proMode}`,
           },
           undefined,
           {
@@ -678,9 +671,9 @@ const Map = ({
 
   useEffect(() => {
     if (viewState) {
-      updateLocationURL(viewState);
+      updateLocationURL(viewState, !!proMode);
     }
-  }, [updateLocationURL, viewState]);
+  }, [updateLocationURL, viewState, proMode]);
 
   const isRouterReady = useRouterReady();
   if (!isRouterReady) {

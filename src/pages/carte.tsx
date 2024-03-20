@@ -5,7 +5,9 @@ import {
   tabHeaderHeight,
 } from '@components/shared/layout/MainLayout.data';
 import SimplePage from '@components/shared/page/SimplePage';
-import { usePersistedState } from '@hooks';
+import useURLParamOrLocalStorage, {
+  parseAsBoolean,
+} from '@hooks/useURLParamOrLocalStorage'; // parseAsBoolean,
 import styled from 'styled-components';
 
 const MapWrapper = styled.div`
@@ -19,9 +21,13 @@ const MapWrapper = styled.div`
 `;
 
 const Carte = () => {
-  const [proMode, setProMode] = usePersistedState('mapProMode', false, {
-    beforeStorage: (value) => value || false,
-  });
+  // read the pro mode from the URL or get the local storage value
+  const [proMode, setProMode] = useURLParamOrLocalStorage(
+    'proMode',
+    'mapProMode',
+    false,
+    parseAsBoolean
+  );
 
   return (
     <SimplePage
@@ -29,25 +35,27 @@ const Carte = () => {
       mode="public-fullscreen"
     >
       <MapWrapper>
-        <Map
-          withoutLogo
-          withDrawing={proMode}
-          withLegend
-          proMode={proMode}
-          setProMode={setProMode}
-          enabledLegendFeatures={
-            proMode
-              ? mapLegendFeatures.filter((f) => f !== 'proModeLegend')
-              : [
-                  'reseauxDeChaleur',
-                  'reseauxDeFroid',
-                  'reseauxEnConstruction',
-                  'zonesDeDeveloppementPrioritaire',
-                  'proModeLegend',
-                ]
-          }
-          persistViewStateInURL
-        />
+        {proMode !== null && (
+          <Map
+            withoutLogo
+            withDrawing={proMode}
+            withLegend
+            proMode={proMode}
+            setProMode={setProMode}
+            enabledLegendFeatures={
+              proMode
+                ? mapLegendFeatures.filter((f) => f !== 'proModeLegend')
+                : [
+                    'reseauxDeChaleur',
+                    'reseauxDeFroid',
+                    'reseauxEnConstruction',
+                    'zonesDeDeveloppementPrioritaire',
+                    'proModeLegend',
+                  ]
+            }
+            persistViewStateInURL
+          />
+        )}
       </MapWrapper>
     </SimplePage>
   );
