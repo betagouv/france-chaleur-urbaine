@@ -88,6 +88,14 @@ Workflow du formulaire de test d'adresse :
 */
 
 /**
+ * These ids are used in Matomo to track Forms interactions.
+ */
+export enum AnalyticsFormId {
+  form_test_adresse = 'form_test_adresse',
+  form_contact = 'form_contact',
+}
+
+/**
  * List of all events tracked by analytics tools.
  */
 const trackingEvents = {
