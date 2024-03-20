@@ -38,7 +38,7 @@ import {
   MapPopupType,
 } from 'src/types/MapComponentsInfos';
 import MapMarker from './components/MapMarker';
-import MapPopup, { layersWithDynamicContentPopup } from './components/MapPopup';
+import MapPopup from './components/MapPopup';
 import ZoneInfos from './components/SummaryBoxes';
 import {
   CollapseLegend,
@@ -84,6 +84,7 @@ import Box from '@components/ui/Box';
 import useRouterReady from '@hooks/useRouterReady';
 import MapSearchForm from './components/MapSearchForm';
 import CardSearchDetails from './components/CardSearchDetails';
+import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
 
 const mapSettings = {
   defaultLongitude: 2.3,

@@ -1,4 +1,4 @@
-import { DynamicPopupContentType } from '@components/Map/components/MapPopupContent';
+import { DynamicPopupContentType } from '@components/Map/components/DynamicMapPopupContent';
 
 export type MapPopupInfos = {
   latitude: number;
