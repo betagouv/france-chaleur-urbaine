@@ -72,6 +72,14 @@ const Network = ({
               <ColdNetwork />
             </div>
           )}
+          {!isCold && (
+            <Text mt="1w" legacyColor="black" size="sm">
+              Données portant sur l'année 2022, excepté pour les Performances
+              environnementales (en attente de l'actualisation de l'arrêté DPE,
+              celles-ci sont basées sur les données 2021 ou la moyenne 2019 à
+              2021).
+            </Text>
+          )}
           <Text mt="1w" legacyColor="lightblue" size="sm">
             Vous êtes la collectivité ou l’exploitant de ce réseau et vous
             souhaitez ajouter ou modifier des informations ?
@@ -153,36 +161,50 @@ const Network = ({
                 </BoxContent>
                 <BoxContent>
                   <div>
-                    <b>Longueur réseau</b>
+                    <b>Longueur réseau (aller)</b>
                   </div>
                   <div>
                     {network.longueur_reseau
-                      ? `${network.longueur_reseau} km`
+                      ? network.longueur_reseau === 0
+                        ? '< 1 km'
+                        : `${network.longueur_reseau} km`
                       : 'Non connu'}
                   </div>
                 </BoxContent>
                 {!isCold && (
-                  <BoxContent>
-                    <div>
-                      <BoxIcon>
-                        <span>
-                          <b>Rendement</b>
-                        </span>
-                        <HoverableIcon
-                          iconName="ri-information-fill"
-                          position="bottom-centered"
-                        >
-                          Rapport entre l'énergie thermique livrée aux abonnés
-                          et l'énergie thermique injectée dans le réseau.
-                        </HoverableIcon>
-                      </BoxIcon>
-                    </div>
-                    <div>
-                      {network['Rend%'] === null
-                        ? 'Non connu'
-                        : `${network['Rend%']} %`}
-                    </div>
-                  </BoxContent>
+                  <>
+                    <BoxContent>
+                      <div>
+                        <BoxIcon>
+                          <span>
+                            <b>Rendement</b>
+                          </span>
+                          <HoverableIcon
+                            iconName="ri-information-fill"
+                            position="bottom-centered"
+                          >
+                            Rapport entre l'énergie thermique livrée aux abonnés
+                            et l'énergie thermique injectée dans le réseau.
+                          </HoverableIcon>
+                        </BoxIcon>
+                      </div>
+                      <div>
+                        {network['Rend%'] === null
+                          ? 'Non connu'
+                          : `${network['Rend%']} %`}
+                      </div>
+                    </BoxContent>
+                    <BoxContent>
+                      <div>
+                        <b>Développement du réseau</b>
+                      </div>
+                      <div>
+                        {network['Dev_reseau%'] === null
+                          ? 'Non connu'
+                          : `${network['Dev_reseau%']} %`}
+                      </div>
+                    </BoxContent>
+                  </>
                 )}
                 <br />
                 <BoxContent>
@@ -199,38 +221,16 @@ const Network = ({
                   <>
                     <BoxContent>
                       <div>
-                        <b>Fluide caloporteur - eau chaude</b>
+                        <b>Fluides caloporteurs</b>
                       </div>
                       <div>
-                        {network['%_fluide_caloporteur_eau_chaude']
-                          ? `${Math.round(
-                              network['%_fluide_caloporteur_eau_chaude']
-                            )} %`
-                          : 'Non connu'}
-                      </div>
-                    </BoxContent>
-                    <BoxContent>
-                      <div>
-                        <b>Fluide caloporteur - eau surchauffée</b>
-                      </div>
-                      <div>
-                        {network['%_fluide_caloporteur_eau_surchauffee']
-                          ? `${Math.round(
-                              network['%_fluide_caloporteur_eau_surchauffee']
-                            )} %`
-                          : 'Non connu'}
-                      </div>
-                    </BoxContent>
-                    <BoxContent>
-                      <div>
-                        <b>Fluide caloporteur - vapeur</b>
-                      </div>
-                      <div>
-                        {network['%_fluide_caloporteur_vapeur']
-                          ? `${Math.round(
-                              network['%_fluide_caloporteur_vapeur']
-                            )} %`
-                          : 'Non connu'}
+                        {network['eau_chaude'] && 'eau chaude'}
+                        {network['eau_surchauffee'] &&
+                          (network['eau_chaude'] && ', ') + 'eau surchauffée'}
+                        {network['vapeur'] &&
+                          ((network['eau_chaude'] ||
+                            network['eau_surchauffee']) &&
+                            ', ') + 'vapeur'}
                       </div>
                     </BoxContent>
                   </>
@@ -379,27 +379,6 @@ const Network = ({
                   </div>
                   <div>{network.Gestionnaire}</div>
                 </BoxContent>
-                <BoxContent>
-                  <div>
-                    <b>Adresse</b>
-                  </div>
-                  <AddressContent>
-                    {network.adresse_gestionnaire &&
-                      network.adresse_gestionnaire !== '0' && (
-                        <>
-                          {network.adresse_gestionnaire}
-                          <br />
-                        </>
-                      )}
-                    {network.CP_gestionnaire &&
-                      network.CP_gestionnaire !== '0' &&
-                      network.CP_gestionnaire !== '00000' &&
-                      network.CP_gestionnaire}{' '}
-                    {network.ville_gestionnaire &&
-                      network.ville_gestionnaire !== '0' &&
-                      network.ville_gestionnaire}
-                  </AddressContent>
-                </BoxContent>
                 {network.website_gestionnaire &&
                   network.website_gestionnaire.trim() !== 'NON' && (
                     <BoxContent>
@@ -491,25 +470,9 @@ const Network = ({
       </div>
       {(!displayBlocks || displayBlocks.includes('sources')) && (
         <p className="fr-mt-4w fr-hint-text">
-          {network.Gestionnaire &&
-          network.Gestionnaire.toLowerCase().includes('engie') ? (
-            'Sources : ENGIE Solutions / Enquête annuelle des réseaux de chaleur et de froid, édition 2022 pour l’année 2021, SNCU'
-          ) : (
-            <>
-              Sources : Annuaire Via Sèva /{' '}
-              <a
-                href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Arrêté du 16 mars 2023 (DPE)
-              </a>{' '}
-              / Enquête annuelle des réseaux de chaleur et de froid, édition
-              2022 pour l’année 2021, SNCU / Données locales de l’énergie pour
-              l’année 2021, SDES <br />
-              <img src="/logo-viaseva.svg" alt="logo viaseva" height="75px" />
-            </>
-          )}
+          <>
+            <img src="/logo-fedene.svg" alt="logo fedene" height="50px" />
+          </>
         </p>
       )}
     </>
