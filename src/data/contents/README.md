@@ -1,9 +1,5 @@
-# Les réseaux de chaleur : plus si urbains que ça !
+# Les chaudières biomasse ne contribuent pas à la déforestation
 
-🤔 Démêler le vrai du faux : pourquoi il est essentiel de lutter contre les idées reçues sur les réseaux de chaleur.\
+🌿 La biomasse fait souvent l'objet de débats... enflammés ! Peut-on vraiment la considérer comme une énergie renouvelable ? Y en aura-t-il assez pour tous les usages dans les prochaines années ? Est-elle vraiment locale ? Son utilisation en chaufferie ne contribue-t-elle pas au phénomène de déforestation ? C'est à cette dernière question que nous nous attaquons aujourd'hui, avec la seconde infographie de notre série sur les idées reçues.\
 \
-🌿 Sur les énergies renouvelables en général, et les réseaux de chaleur en particulier, de nombreuses idées reçues circulent. Ces préjugés peuvent freiner le développement de ces solutions écologiques en décourageant les particuliers, collectivités et entreprises de les adopter. Il est donc crucial de faire la lumière sur ces sujets de manière claire et précise !\
-\
-👉 C'est tout l'objet de notre nouvelle série d'infographies : répondre aux idées reçues les plus fréquentes de manière simple et attractive, sur la base de données factuelles.\
-\
-Rejoignez-nous dans cette démarche en partageant ces infographies autour de vous ! 🌍
+🌳 Et la réponse est non ! L'usage de la biomasse par les réseaux de chaleur ne participe pas à la destruction de la forêt française, dont la surface s'étend chaque année. La forêt est en revanche affectée par d'autres phénomènes, conséquences du changement climatique : canicules, sécheresses, incendies... Pour limiter l'importance de ceux-ci, il est urgent de réduire nos émissions de gaz à effet de serre, ce à quoi les réseaux de chaleur contribuent.
