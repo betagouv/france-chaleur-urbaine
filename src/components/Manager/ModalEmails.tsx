@@ -215,6 +215,7 @@ function ModalEmails(props: Props) {
                       label: option.label,
                       disabled:
                         sentHistory &&
+                        option.value !== 'other' &&
                         sentHistory.find((email: any) => {
                           if (email.email_key === option.value) return email;
                         })
