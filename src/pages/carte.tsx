@@ -38,6 +38,7 @@ export const layerURLKeysToMapConfigPath = {
   batimentsFioulCollectif: 'batimentsFioulCollectif.show',
   batimentsRaccordes: 'batimentsRaccordes',
   zonesOpportunite: 'zonesOpportunite.show',
+  enrrMobilisables: 'enrrMobilisables.show',
   caracteristiquesBatiments: 'caracteristiquesBatiments',
 } as const satisfies { [key: string]: MapConfigurationProperty };
 
