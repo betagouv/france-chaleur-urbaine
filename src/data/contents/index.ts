@@ -32,8 +32,11 @@ import readme_18 from './README (18).md';
 import readme_19 from './README (19).md';
 import readme_20 from './README (20).md';
 import readme_21 from './README (21).md';
+import readme_22 from './README (22).md';
+import readme_23 from './README (23).md';
 import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md';
 import demandes from './2000-demandes.md';
+import desObligationsDePartageDeDonnees from './des-obligations-de-partage-de-donnees-a-fcu-au-titre-du-fonds-chaleur.md';
 import desReseauxVertueux from './des-reseaux-vertueux.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
@@ -42,6 +45,7 @@ import lappelAProjets1Ville1ReseauDeLademeEstRelance from './lappel-a-projets-1-
 import leChauffageLePlusEconomiquePourLhabitatCollectif from './le-chauffage-le-plus-economique-pour-lhabitat-collectif.md';
 import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.md';
 import leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorable from './le-chauffage-urbain-pour-les-batiments-tertiaires-un-contexte-on-ne-peut-plus-favorable.md';
+import leClassementDesReseauxBilan from './le-classement-des-reseaux-quel-bilan.md';
 import lesReseauxDeChaleurDesEnergiesVertes from './les-reseaux-de-chaleur-des-energies-vertes.md';
 import lesReseauxDeChaleurEnMoinsDe15Secondes from './les-reseaux-de-chaleur-en-moins-de-15-secondes.md';
 import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
@@ -50,7 +54,9 @@ import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-ur
 import notreCampagneCharlevilleMezieres from './notre-campagne-sur-charleville-mezieres.md';
 import notreCampagneFresnes from './notre-campagne-sur-fresnes.md';
 import notreCampagneStrasbourg from './notre-campagne-sur-strasbourg.md';
+import ouCreerReseauChaleurSurMonTerritoire from './ou-creer-un-reseau-de-chaleur-sur-mon-territoire.md';
 import page_2 from './page-2.md';
+import partENRDansConsommationsChaleur from './part-des-enr-and-r-dans-nos-consommations-de-chaleur.md';
 import potentielsRaccordementTerritoire from './potentiels-de-raccordement-par-territoire.md';
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
@@ -68,10 +74,53 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/vignetteBiomasse.jpg',
+    title: 'Les chaudières biomasse ne contribuent pas à la déforestation',
+    slug: 'les-chaudieres-biomasse-ne-contribuent-pas-a-la-deforestation',
+    content: importFile(readme),
+    publishedDate: new Date('2024-03-20'),
+  },
+  {
+    image: '/contents/vignetteVille.jpg',
+    title: 'Les réseaux de chaleur : plus si urbains que ça !',
+    slug: 'les-reseaux-de-chaleur-plus-si-urbains-que-ca',
+    content: importFile(readme_23),
+    publishedDate: new Date('2024-03-13'),
+  },
+  {
+    image: '/contents/vignettewebinaire.jpg',
+    title: 'Où créer un réseau de chaleur sur mon territoire ?',
+    slug: 'ou-creer-un-reseau-de-chaleur-sur-mon-territoire',
+    content: importFile(ouCreerReseauChaleurSurMonTerritoire),
+    publishedDate: new Date('2024-03-08'),
+  },
+  {
+    image: '/contents/vignettePDP.jpg',
+    title: 'Le classement des réseaux : quel bilan ?',
+    slug: 'le-classement-des-reseaux-quel-bilan',
+    content: importFile(leClassementDesReseauxBilan),
+    publishedDate: new Date('2024-02-28'),
+  },
+  {
+    image: '/contents/vignetteFoncChaleur.jpg',
+    title:
+      'Des obligations de partage de données à FCU au titre du Fonds Chaleur',
+    slug: 'des-obligations-de-partage-de-donnees-a-fcu-au-titre-du-fonds-chaleur',
+    content: importFile(desObligationsDePartageDeDonnees),
+    publishedDate: new Date('2024-02-20'),
+  },
+  {
+    image: '/contents/vignettePartenr.jpg',
+    title: 'Part des ENR&R dans nos consommations de chaleur',
+    slug: 'part-des-enr-r-dans-nos-consommations-de-chaleur',
+    content: importFile(partENRDansConsommationsChaleur),
+    publishedDate: new Date('2024-02-16'),
+  },
+  {
     image: '/contents/vignetteCout.jpg',
     title: 'Comparaison du coût de la chaleur pour un logement en copropriété',
     slug: 'comparaison-du-cout-de-la-chaleur-pour-un-logement-en-copropriete',
-    content: importFile(readme),
+    content: importFile(readme_22),
     publishedDate: new Date('2024-02-12'),
   },
   {

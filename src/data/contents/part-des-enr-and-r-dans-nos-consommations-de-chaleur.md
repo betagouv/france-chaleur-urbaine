@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignettePartenr.jpg
-coverY: 0
----
-
 # Part des ENR\&R dans nos consommations de chaleur
 
 ❓ Quelle part représentent les énergies renouvelables et de récupération dont notre consommation de chaleur ?\

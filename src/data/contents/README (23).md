@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteVille.jpg
-coverY: 0
----
-
 # Les réseaux de chaleur : plus si urbains que ça !
 
 🤔 Démêler le vrai du faux : pourquoi il est essentiel de lutter contre les idées reçues sur les réseaux de chaleur.\

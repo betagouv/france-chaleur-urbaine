@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteFoncChaleur.jpg
-coverY: 0
----
-
 # Des obligations de partage de données à FCU au titre du Fonds Chaleur
 
 🤓 Le saviez-vous ? Depuis le 1er janvier 2024, la transmission d'un certain nombre d'éléments à France Chaleur Urbaine est obligatoire pour pouvoir bénéficier d'une subvention au titre du [Fonds Chaleur](https://fondschaleur.ademe.fr/), principal dispositif de soutien financier aux projets de chaleur renouvelable.\
