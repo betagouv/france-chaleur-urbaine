@@ -24,6 +24,14 @@ export type MapConfiguration = {
     interval: [number, number];
   };
   batimentsRaccordes: boolean;
+  enrrMobilisables: {
+    show: boolean;
+    showDatacenters: boolean;
+    showIndustrie: boolean;
+    showInstallationsElectrogenes: boolean;
+    showStationsDEpuration: boolean;
+    showUnitesDIncineration: boolean;
+  };
   zonesOpportunite: {
     show: boolean;
     zonesPotentielChaud: boolean;
@@ -56,6 +64,14 @@ const emptyMapConfiguration: MapConfiguration = {
     interval: [50, Number.MAX_VALUE],
   },
   batimentsRaccordes: false,
+  enrrMobilisables: {
+    show: false,
+    showDatacenters: true,
+    showIndustrie: true,
+    showInstallationsElectrogenes: true,
+    showStationsDEpuration: true,
+    showUnitesDIncineration: true,
+  },
   zonesOpportunite: {
     show: false,
     zonesPotentielChaud: true,
