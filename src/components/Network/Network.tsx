@@ -72,14 +72,6 @@ const Network = ({
               <ColdNetwork />
             </div>
           )}
-          {!isCold && (
-            <Text mt="1w" legacyColor="black" size="sm">
-              Données portant sur l'année 2022, excepté pour les Performances
-              environnementales (en attente de l'actualisation de l'arrêté DPE,
-              celles-ci sont basées sur les données 2021 ou la moyenne 2019 à
-              2021).
-            </Text>
-          )}
           <Text mt="1w" legacyColor="lightblue" size="sm">
             Vous êtes la collectivité ou l’exploitant de ce réseau et vous
             souhaitez ajouter ou modifier des informations ?
@@ -134,6 +126,14 @@ const Network = ({
                       : 'Non connu'}
                   </div>
                 </BoxContent>
+                <BoxContent>
+                  <div>
+                    <i>
+                      Les performances environnementales seront actualisées dès
+                      parution du nouvel arrêté DPE
+                    </i>
+                  </div>
+                </BoxContent>
               </BlueBox>
             )}
             {(!displayBlocks || displayBlocks.includes('techniques')) && (
@@ -165,9 +165,7 @@ const Network = ({
                   </div>
                   <div>
                     {network.longueur_reseau
-                      ? network.longueur_reseau === 0
-                        ? '< 1 km'
-                        : `${network.longueur_reseau} km`
+                      ? `${network.longueur_reseau} km`
                       : 'Non connu'}
                   </div>
                 </BoxContent>
@@ -196,7 +194,18 @@ const Network = ({
                     </BoxContent>
                     <BoxContent>
                       <div>
-                        <b>Développement du réseau</b>
+                        <BoxIcon>
+                          <span>
+                            <b>Développement du réseau</b>
+                          </span>
+                          <HoverableIcon
+                            iconName="ri-information-fill"
+                            position="bottom-centered"
+                          >
+                            Ratio entre le nombre de nouveaux abonnés en 2022 et
+                            le nombre total d'abonnés en 2021
+                          </HoverableIcon>
+                        </BoxIcon>
                       </div>
                       <div>
                         {network['Dev_reseau%'] === null
@@ -221,17 +230,21 @@ const Network = ({
                   <>
                     <BoxContent>
                       <div>
-                        <b>Fluides caloporteurs</b>
+                        <b>Fluide caloporteur - eau chaude</b>
                       </div>
+                      <div>{network['eau_chaude'] ? 'Oui' : 'Non'}</div>
+                    </BoxContent>
+                    <BoxContent>
                       <div>
-                        {network['eau_chaude'] && 'eau chaude'}
-                        {network['eau_surchauffee'] &&
-                          (network['eau_chaude'] && ', ') + 'eau surchauffée'}
-                        {network['vapeur'] &&
-                          ((network['eau_chaude'] ||
-                            network['eau_surchauffee']) &&
-                            ', ') + 'vapeur'}
+                        <b>Fluide caloporteur - eau surchauffée</b>
                       </div>
+                      <div>{network['eau_surchauffee'] ? 'Oui' : 'Non'}</div>
+                    </BoxContent>
+                    <BoxContent>
+                      <div>
+                        <b>Fluide caloporteur - vapeur</b>
+                      </div>
+                      <div>{network['eau_surchauffee'] ? 'Oui' : 'Non'}</div>
                     </BoxContent>
                   </>
                 )}
@@ -265,7 +278,7 @@ const Network = ({
                         <>
                           <BoxContent>
                             <div>
-                              <b>Prix moyen de la chaleur (2021)</b>
+                              <b>Prix moyen de la chaleur</b>
                             </div>
                             <div>{Math.round(network.PM)} €TTC/MWh</div>
                           </BoxContent>
@@ -275,7 +288,7 @@ const Network = ({
                       {(network.PM_L || network.PM_T) && (
                         <>
                           <div>
-                            <b>Prix moyen par catégorie d'abonnés (2021)</b>
+                            <b>Prix moyen par catégorie d'abonnés</b>
                           </div>
                           {network.PM_L && (
                             <BoxContent>
@@ -471,7 +484,39 @@ const Network = ({
       {(!displayBlocks || displayBlocks.includes('sources')) && (
         <p className="fr-mt-4w fr-hint-text">
           <>
-            <img src="/logo-fedene.svg" alt="logo fedene" height="50px" />
+            Sources : Enquête annuelle des réseaux de chaleur et de froid
+            (EARCF), édition 2023 portant sur l’année 2022, réalisée par la
+            Fedene Réseaux de chaleur et de froid avec le concours de
+            l’association AMORCE, sous tutelle du service des données et études
+            statistiques (SDES) du ministère de la transition écologique. <br />
+            Excepté pour les éléments suivants :
+            <ul>
+              <li>
+                "Performances environnementales" : la source est l'
+                <a
+                  href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Arrêté du 16 mars 2023
+                </a>{' '}
+                (DPE) réalisé sur la base des données portant sur l'année 2021
+                ou sur une moyenne 2019-2020-2021 (en attente de parution du
+                nouvel arrêté)
+              </li>
+              <li>
+                la longueur des réseaux et le fluide caloporteur : la source est
+                l'EARCF portant sur l'année 2021, ces données n'ayant pas été
+                diffusées sur l'année 2022.
+              </li>
+            </ul>
+            <img
+              src="/logo-fedene.svg"
+              alt="logo fedene"
+              height="50px"
+              className="fr-mr-2w"
+            />
+            <img src="/logo-amorce.svg" alt="logo amorce" height="50px" />
           </>
         </p>
       )}

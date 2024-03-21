@@ -32,11 +32,11 @@ const getGraphOptions = (network: Network) => [
   [
     'Autres chaleur récupérée',
     network.prod_MWh_autre_chaleur_recuperee,
-    '#747474',
+    '#d6c2e6',
   ],
-  ['PAC', network.prod_MWh_PAC, '#747474'], //KO color
-  ['Biogaz', network.prod_MWh_biogaz, '#747474'], //KO color
-  ['Solaire thermique', network.prod_MWh_solaire_thermique, '#747474'], //KO color
+  ['PAC', network.prod_MWh_PAC, '#ec9ba4'],
+  ['Biogaz', network.prod_MWh_biogaz, '#e6e905'],
+  ['Solaire thermique', network.prod_MWh_solaire_thermique, '#ffff00'],
 ];
 
 const EnergiesChart = ({
