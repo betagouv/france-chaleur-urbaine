@@ -73,7 +73,7 @@ const UserImpersonation = () => {
         </Heading>
 
         <Text mb="2w">
-          Cette section permet de vous faire passer pour un profile gestionnaire
+          Cette section permet de vous faire passer pour un profil gestionnaire
           avec des tags particuliers à des fins de test.
         </Text>
 
