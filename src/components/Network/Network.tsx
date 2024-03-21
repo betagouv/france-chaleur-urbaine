@@ -126,14 +126,6 @@ const Network = ({
                       : 'Non connu'}
                   </div>
                 </BoxContent>
-                <BoxContent>
-                  <div>
-                    <i>
-                      Les performances environnementales seront actualisées dès
-                      parution du nouvel arrêté DPE
-                    </i>
-                  </div>
-                </BoxContent>
               </BlueBox>
             )}
             {(!displayBlocks || displayBlocks.includes('techniques')) && (
@@ -161,7 +153,10 @@ const Network = ({
                 </BoxContent>
                 <BoxContent>
                   <div>
-                    <b>Longueur réseau (aller)</b>
+                    <b>
+                      Longueur réseau
+                      {!isCold && ' (aller)'}
+                    </b>
                   </div>
                   <div>
                     {network.longueur_reseau
@@ -169,51 +164,49 @@ const Network = ({
                       : 'Non connu'}
                   </div>
                 </BoxContent>
+                <BoxContent>
+                  <div>
+                    <BoxIcon>
+                      <span>
+                        <b>Rendement</b>
+                      </span>
+                      <HoverableIcon
+                        iconName="ri-information-fill"
+                        position="bottom-centered"
+                      >
+                        Rapport entre l'énergie thermique livrée aux abonnés
+                        l'énergie thermique injectée dans le réseau.
+                      </HoverableIcon>
+                    </BoxIcon>
+                  </div>
+                  <div>
+                    {network['Rend%'] === null
+                      ? 'Non connu'
+                      : `${Math.round(Number(network['Rend%']))} %`}
+                  </div>
+                </BoxContent>
                 {!isCold && (
-                  <>
-                    <BoxContent>
-                      <div>
-                        <BoxIcon>
-                          <span>
-                            <b>Rendement</b>
-                          </span>
-                          <HoverableIcon
-                            iconName="ri-information-fill"
-                            position="bottom-centered"
-                          >
-                            Rapport entre l'énergie thermique livrée aux abonnés
-                            et l'énergie thermique injectée dans le réseau.
-                          </HoverableIcon>
-                        </BoxIcon>
-                      </div>
-                      <div>
-                        {network['Rend%'] === null
-                          ? 'Non connu'
-                          : `${network['Rend%']} %`}
-                      </div>
-                    </BoxContent>
-                    <BoxContent>
-                      <div>
-                        <BoxIcon>
-                          <span>
-                            <b>Développement du réseau</b>
-                          </span>
-                          <HoverableIcon
-                            iconName="ri-information-fill"
-                            position="bottom-centered"
-                          >
-                            Ratio entre le nombre de nouveaux abonnés en 2022 et
-                            le nombre total d'abonnés en 2021
-                          </HoverableIcon>
-                        </BoxIcon>
-                      </div>
-                      <div>
-                        {network['Dev_reseau%'] === null
-                          ? 'Non connu'
-                          : `${network['Dev_reseau%']} %`}
-                      </div>
-                    </BoxContent>
-                  </>
+                  <BoxContent>
+                    <div>
+                      <BoxIcon>
+                        <span>
+                          <b>Développement du réseau</b>
+                        </span>
+                        <HoverableIcon
+                          iconName="ri-information-fill"
+                          position="bottom-centered"
+                        >
+                          Ratio entre le nombre de nouveaux abonnés en 2022 et
+                          le nombre total d'abonnés en 2021
+                        </HoverableIcon>
+                      </BoxIcon>
+                    </div>
+                    <div>
+                      {network['Dev_reseau%'] === null
+                        ? 'Non connu'
+                        : `${network['Dev_reseau%']} %`}
+                    </div>
+                  </BoxContent>
                 )}
                 <br />
                 <BoxContent>
@@ -515,28 +508,45 @@ const Network = ({
             (EARCF), édition 2023 portant sur l’année 2022, réalisée par la
             Fedene Réseaux de chaleur et de froid avec le concours de
             l’association AMORCE, sous tutelle du service des données et études
-            statistiques (SDES) du ministère de la transition écologique. <br />
-            Excepté pour les éléments suivants :
-            <ul>
-              <li>
-                "Performances environnementales" : la source est l'
-                <a
-                  href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  Arrêté du 16 mars 2023
-                </a>{' '}
-                (DPE) réalisé sur la base des données portant sur l'année 2021
-                ou sur une moyenne 2019-2020-2021 (en attente de parution du
-                nouvel arrêté)
-              </li>
-              <li>
-                la longueur des réseaux et le fluide caloporteur : la source est
-                l'EARCF portant sur l'année 2021, ces données n'ayant pas été
-                diffusées sur l'année 2022.
-              </li>
-            </ul>
+            statistiques (SDES) du ministère de la transition écologique.
+            {!isCold ? (
+              <>
+                <br />
+                Excepté pour les éléments suivants :
+                <ul>
+                  <li>
+                    "Performances environnementales" : la source est l'
+                    <a
+                      href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      Arrêté du 16 mars 2023
+                    </a>{' '}
+                    (DPE) réalisé sur la base des données portant sur l'année
+                    2021 ou sur une moyenne 2019-2020-2021 (en attente de
+                    parution du nouvel arrêté)
+                  </li>
+                  <li>
+                    le fluide caloporteur pour les réseaux utilisant différents
+                    types de fluides, et la longueur des réseaux : la source est
+                    l'EARCF portant sur l'année 2021 (France Chaleur Urbaine ne
+                    disposant pas de données du même niveau de précision sur
+                    2022)
+                  </li>
+                </ul>
+              </>
+            ) : (
+              <>
+                {' '}
+                Excepté pour les “Performances environnementales" : la source
+                est l'Arrêté du 16 mars 2023 (DPE) réalisé sur la base des
+                données données portant sur l'année 2021 ou sur une moyenne
+                2019-2020-2021 (en attente de parution du nouvel arrêté).
+                <br />
+                <br />
+              </>
+            )}
             <img
               src="/logo-fedene.svg"
               alt="logo fedene"

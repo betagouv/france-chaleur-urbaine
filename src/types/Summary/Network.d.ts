@@ -25,9 +25,6 @@ export interface Network {
   adresse_mo: string;
   CP_MO: string;
   ville_mo: string;
-  adresse_gestionnaire: string;
-  CP_gestionnaire: string;
-  ville_gestionnaire: string;
   prod_MWh_gaz_naturel: number;
   prod_MWh_charbon: number;
   prod_MWh_fioul_domestique: number;

@@ -175,17 +175,7 @@ function ModifierReseauxPage() {
         .filter((v) => !!v)
         .join(' - ')
     );
-    setFormValue(
-      'gestionnaire',
-      [
-        network.Gestionnaire,
-        network.adresse_gestionnaire,
-        network.CP_gestionnaire,
-        network.ville_gestionnaire,
-      ]
-        .filter((v) => !!v)
-        .join(' - ')
-    );
+    setFormValue('gestionnaire', network.Gestionnaire ?? '');
     setFormValue('siteInternet', network.website_gestionnaire ?? '');
     setFormValue(
       'informationsComplementaires',
