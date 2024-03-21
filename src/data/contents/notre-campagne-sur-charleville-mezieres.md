@@ -14,4 +14,4 @@ La collectivité et son délégataire se sont appuyés sur nos outils et service
 \
 Vous souhaitez trouver de nouveaux abonnés, faire connaître un projet de verdissement ou tout simplement valoriser votre réseau ? France Chaleur Urbaine vous accompagne dans la définition d’une campagne de communication et conçoit gratuitement des visuels qui répondent à vos besoins.
 
-![](<.gitbook/assets/1 (2).jpg>)![](<.gitbook/assets/2 (2).jpg>)![](<.gitbook/assets/3 (1).jpg>)
+![](<.gitbook/assets/1 (2).jpg>)![](<.gitbook/assets/2 (2).jpg>)![](<.gitbook/assets/3 (1) (1).jpg>)

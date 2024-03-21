@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/vignetteVille.jpg
+coverY: 0
+---
+
 # Les réseaux de chaleur : plus si urbains que ça !
 
 🤔 Démêler le vrai du faux : pourquoi il est essentiel de lutter contre les idées reçues sur les réseaux de chaleur.\
@@ -7,3 +12,5 @@
 👉 C'est tout l'objet de notre nouvelle série d'infographies : répondre aux idées reçues les plus fréquentes de manière simple et attractive, sur la base de données factuelles.\
 \
 Rejoignez-nous dans cette démarche en partageant ces infographies autour de vous ! 🌍
+
+<figure><img src=".gitbook/assets/1.jpg" alt=""><figcaption></figcaption></figure>
