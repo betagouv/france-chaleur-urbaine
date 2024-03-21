@@ -13,4 +13,4 @@ Pour conclure cette année riche en actions de communication autour des réseaux
 \
 👉 Si vous aussi vous souhaitez bénéficier de notre accompagnement pour communiquer sur votre réseau, n'hésitez pas à nous contacter !
 
-![](<.gitbook/assets/1 (1).jpg>)![](<.gitbook/assets/2 (1).jpg>)
+![](<.gitbook/assets/1 (1) (1).jpg>)![](<.gitbook/assets/2 (1) (1).jpg>)
