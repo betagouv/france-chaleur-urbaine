@@ -35,7 +35,9 @@ import {
   FullScreenItems,
   FullScreenModeFirstLine,
   FullScreenModeNavLogo,
+  StopImpersonationButton,
 } from './SimplePage.styles';
+import { deleteFetchJSON } from '@utils/network';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
 
@@ -293,25 +295,49 @@ const PageHeader = (props: PageHeaderProps) => {
             ))}
           </NavItem>
         ))}
-        {/* potentiellement utiliser un préfixe et asPath */}
 
         {isFullScreenMode && (
           <FullScreenItems>
-            <Tool>
-              <ToolItemGroup>
-                {props.mode === 'authenticated' ? (
-                  <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
-                    Se déconnecter
-                  </ToolItem>
-                ) : (
+            {/* beware: do not try to simplify these blocs as @dataesr/react-dsfr won't let you use fragments! */}
+            {props.mode === 'authenticated' ? (
+              session?.impersonating ? (
+                <Tool>
+                  <ToolItemGroup>
+                    <StopImpersonationButton
+                      icon="ri-logout-box-r-line"
+                      onClick={async () => {
+                        await deleteFetchJSON('/api/admin/impersonate');
+                        location.reload();
+                      }}
+                    >
+                      Imposture en cours
+                    </StopImpersonationButton>
+
+                    <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
+                      Se déconnecter
+                    </ToolItem>
+                  </ToolItemGroup>
+                </Tool>
+              ) : (
+                <Tool>
+                  <ToolItemGroup>
+                    <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
+                      Se déconnecter
+                    </ToolItem>
+                  </ToolItemGroup>
+                </Tool>
+              )
+            ) : (
+              <Tool>
+                <ToolItemGroup>
                   <ToolItem
                     asLink={<Link href="/connexion" className="fr-link" />}
                   >
                     Espace gestionnaire
                   </ToolItem>
-                )}
-              </ToolItemGroup>
-            </Tool>
+                </ToolItemGroup>
+              </Tool>
+            )}
           </FullScreenItems>
         )}
       </HeaderNav>

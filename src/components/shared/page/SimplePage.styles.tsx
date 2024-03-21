@@ -1,3 +1,4 @@
+import { ToolItem } from '@dataesr/react-dsfr';
 import styled from 'styled-components';
 
 /**
@@ -32,3 +33,14 @@ export const FullScreenItems = styled.div`
     display: none;
   }
 `;
+
+export const StopImpersonationButton = styled(ToolItem)`
+  background-color: var(--background-flat-error) !important;
+  color: white !important;
+  border-radius: 6px;
+`;
+
+// Permet au composant ToolItemGroup de retrouver ce ToolItem
+StopImpersonationButton.defaultProps = {
+  __TYPE: 'ToolItem',
+};

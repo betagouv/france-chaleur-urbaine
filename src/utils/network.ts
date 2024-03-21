@@ -24,3 +24,19 @@ export const postFetchJSON = async <Data = any>(
   }
   return await res.json();
 };
+
+export const deleteFetchJSON = async <Data = any>(
+  url: string
+): Promise<Data> => {
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (res.status !== 200) {
+    // improvement idea: retrieve the message if status 400 or defaults to unknown message
+    throw new Error('failed to load data');
+  }
+  return await res.json();
+};
