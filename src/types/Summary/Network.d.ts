@@ -18,9 +18,9 @@ export interface Network {
   longueur_reseau: number;
   nb_pdl: number;
   annee_creation: number;
-  eau_chaude: number;
-  eau_surchauffee: number;
-  vapeur: number;
+  eau_chaude: string;
+  eau_surchauffee: string;
+  vapeur: string;
   MO: string;
   adresse_mo: string;
   CP_MO: string;

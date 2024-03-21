@@ -232,19 +232,46 @@ const Network = ({
                       <div>
                         <b>Fluide caloporteur - eau chaude</b>
                       </div>
-                      <div>{network['eau_chaude'] ? 'Oui' : 'Non'}</div>
+                      <div>
+                        {network['eau_chaude']
+                          ? network['eau_chaude'].toUpperCase() !== 'oui'
+                            ? typeof Number(network['eau_chaude']) === 'number'
+                              ? `${Math.round(Number(network['eau_chaude']))} %`
+                              : 'Non'
+                            : 'Oui'
+                          : 'Non'}
+                      </div>
                     </BoxContent>
                     <BoxContent>
                       <div>
                         <b>Fluide caloporteur - eau surchauffée</b>
                       </div>
-                      <div>{network['eau_surchauffee'] ? 'Oui' : 'Non'}</div>
+                      <div>
+                        {network['eau_surchauffee']
+                          ? network['eau_surchauffee'].toUpperCase() !== 'oui'
+                            ? typeof Number(network['eau_surchauffee']) ===
+                              'number'
+                              ? `${Math.round(
+                                  Number(network['eau_surchauffee'])
+                                )} %`
+                              : 'Non'
+                            : 'Oui'
+                          : 'Non'}
+                      </div>
                     </BoxContent>
                     <BoxContent>
                       <div>
                         <b>Fluide caloporteur - vapeur</b>
                       </div>
-                      <div>{network['eau_surchauffee'] ? 'Oui' : 'Non'}</div>
+                      <div>
+                        {network['vapeur']
+                          ? network['vapeur'].toUpperCase() !== 'oui'
+                            ? typeof Number(network['vapeur']) === 'number'
+                              ? `${Math.round(Number(network['vapeur']))} %`
+                              : 'Non'
+                            : 'Oui'
+                          : 'Non'}
+                      </div>
                     </BoxContent>
                   </>
                 )}
