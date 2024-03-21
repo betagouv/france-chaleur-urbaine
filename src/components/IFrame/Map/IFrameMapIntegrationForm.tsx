@@ -19,7 +19,7 @@ const selectableLayers = [
     key: 'futur_reseau',
   },
   {
-    label: 'Les périmètres de developpement prioritaire',
+    label: 'Les périmètres de développement prioritaire',
     key: 'pdp',
   },
   {
