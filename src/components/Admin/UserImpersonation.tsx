@@ -1,11 +1,4 @@
-import {
-  Button,
-  Container,
-  Icon,
-  Select,
-  Tag,
-  TagGroup,
-} from '@dataesr/react-dsfr';
+import { Button, Container, Icon, Select } from '@dataesr/react-dsfr';
 import Heading from '@components/ui/Heading';
 import { fetchJSON, postFetchJSON } from '@utils/network';
 import { useEffect, useMemo, useState } from 'react';
@@ -77,22 +70,20 @@ const UserImpersonation = () => {
           avec des tags particuliers à des fins de test.
         </Text>
 
-        <TagGroup>
-          {selectedTagsGestionnaires.map((tag, index) => (
-            <Tag
-              closable
-              small
-              key={index}
-              /* @ts-expect-error problème avec la lib @dataesr/react-dsfr */
-              onClick={() => {
-                selectedTagsGestionnaires.splice(index, 1);
-                setSelectedTagsGestionnaires([...selectedTagsGestionnaires]);
-              }}
-            >
-              {tag}
-            </Tag>
-          ))}
-        </TagGroup>
+        {selectedTagsGestionnaires.map((tag, index) => (
+          <button
+            key={index}
+            title="Retirer ce tag"
+            className="fr-tag fr-tag--sm fr-tag--dismiss fr-mr-1v"
+            onClick={() => {
+              selectedTagsGestionnaires.splice(index, 1);
+              setSelectedTagsGestionnaires([...selectedTagsGestionnaires]);
+            }}
+          >
+            {tag}
+            <Icon iconPosition="right" name="ri-close-line" size="lg" />
+          </button>
+        ))}
 
         <Box className="fr-col-xl-4 fr-col-md-6">
           <Select
