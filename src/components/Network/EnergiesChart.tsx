@@ -30,7 +30,7 @@ const getGraphOptions = (network: Network) => [
   ['GPL', network.prod_MWh_GPL, '#0009b7'],
   ['Autres', network.prod_MWh_autres, '#747474'],
   [
-    'Autres chaleur récupérée',
+    'Autre chaleur récupérée',
     network.prod_MWh_autre_chaleur_recuperee,
     '#d6c2e6',
   ],
