@@ -51,7 +51,8 @@ export default handleRouteErrors(
  * Retrieve the Next Auth JWT.
  */
 async function getSessionJWT(req: NextApiRequest): Promise<JWT> {
-  const currentJWT = req.cookies['next-auth.session-token'];
+  const isSecureCookie = (process.env.NEXTAUTH_URL ?? '').startsWith('https');
+  const currentJWT = req.cookies[getCookieName(isSecureCookie)];
   const decodedJWT = await decode({
     secret: process.env.NEXTAUTH_SECRET as string,
     token: currentJWT,
@@ -76,8 +77,17 @@ async function generateSessionJWT(
     token: newJWT,
   });
   const cookieExpirationDate = new Date((decodedNewJWT as any).exp * 1000);
+  const isSecureCookie = (process.env.NEXTAUTH_URL ?? '').startsWith('https');
   res.setHeader(
     'Set-Cookie',
-    `next-auth.session-token=${newJWT}; Path=/; Expires=${cookieExpirationDate.toUTCString()}; HttpOnly; SameSite=Lax`
+    `${getCookieName(
+      isSecureCookie
+    )}=${newJWT}; Path=/; Expires=${cookieExpirationDate.toUTCString()}; HttpOnly; ${
+      isSecureCookie ? 'Secure; ' : ''
+    }SameSite=Lax`
   );
+}
+
+function getCookieName(isSecureCookie: boolean): string {
+  return `${isSecureCookie ? '__Secure-' : ''}next-auth.session-token`;
 }
