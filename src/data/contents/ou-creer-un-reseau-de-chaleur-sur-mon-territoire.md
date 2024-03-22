@@ -1,5 +1,5 @@
 ---
-cover: .gitbook/assets/vignettewebinaire.jpg
+cover: .gitbook/assets/vignetteZone.jpg
 coverY: 0
 ---
 
@@ -11,5 +11,5 @@ coverY: 0
 \
 📍 Les zones d'opportunité seront actualisées au gré des améliorations apportées par le Cerema, et les gisements d'énergies renouvelables prochainement intégrés. L'ensemble des résultats du projet EnRezo est également accessible sur un portail dédié.
 
-![](.gitbook/assets/Webinaire.jpg)\
+![](<.gitbook/assets/8 (2).jpg>)\
 \
