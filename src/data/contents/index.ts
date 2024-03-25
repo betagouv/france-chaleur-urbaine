@@ -88,7 +88,7 @@ export const articles: Article[] = [
     publishedDate: new Date('2024-03-13'),
   },
   {
-    image: '/contents/vignettewebinaire.jpg',
+    image: '/contents/vignetteZone.jpg',
     title: 'Où créer un réseau de chaleur sur mon territoire ?',
     slug: 'ou-creer-un-reseau-de-chaleur-sur-mon-territoire',
     content: importFile(ouCreerReseauChaleurSurMonTerritoire),
