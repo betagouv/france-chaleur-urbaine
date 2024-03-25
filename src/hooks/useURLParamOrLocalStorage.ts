@@ -1,5 +1,5 @@
-import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
+import useInitialSearchParam from './useInitialSearchParam';
 
 const LOCAL_STORAGE_KEY_PREFIX = '__FCU:App__-';
 
@@ -13,14 +13,7 @@ export default function useURLParamOrLocalStorage<T>(
   defaultValue: T,
   parseValue: (value: string) => T
 ): [T | null, (value: T) => void] {
-  // Not reactive, but available on the server and on page load
-  const initialSearchParams = useSearchParams();
-  const initialURLValue =
-    (typeof location !== 'object'
-      ? // SSR
-        initialSearchParams.get(urlKey)
-      : // Components mounted after page load must use the current URL value
-        new URLSearchParams(location.search).get(urlKey)) ?? null;
+  const initialURLValue = useInitialSearchParam(urlKey);
 
   const [paramValue, internalSetParamValue] = useState<T | null>(
     initialURLValue ? parseValue(initialURLValue) : null

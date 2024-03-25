@@ -153,7 +153,10 @@ const Network = ({
                 </BoxContent>
                 <BoxContent>
                   <div>
-                    <b>Longueur réseau</b>
+                    <b>
+                      Longueur réseau
+                      {!isCold && ' (aller)'}
+                    </b>
                   </div>
                   <div>
                     {network.longueur_reseau
@@ -161,26 +164,47 @@ const Network = ({
                       : 'Non connu'}
                   </div>
                 </BoxContent>
+                <BoxContent>
+                  <div>
+                    <BoxIcon>
+                      <span>
+                        <b>Rendement</b>
+                      </span>
+                      <HoverableIcon
+                        iconName="ri-information-fill"
+                        position="bottom-centered"
+                      >
+                        Rapport entre l'énergie thermique livrée aux abonnés
+                        l'énergie thermique injectée dans le réseau.
+                      </HoverableIcon>
+                    </BoxIcon>
+                  </div>
+                  <div>
+                    {network['Rend%'] === null
+                      ? 'Non connu'
+                      : `${Math.round(Number(network['Rend%']))} %`}
+                  </div>
+                </BoxContent>
                 {!isCold && (
                   <BoxContent>
                     <div>
                       <BoxIcon>
                         <span>
-                          <b>Rendement</b>
+                          <b>Développement du réseau</b>
                         </span>
                         <HoverableIcon
                           iconName="ri-information-fill"
                           position="bottom-centered"
                         >
-                          Rapport entre l'énergie thermique livrée aux abonnés
-                          et l'énergie thermique injectée dans le réseau.
+                          Ratio entre le nombre de nouveaux abonnés en 2022 et
+                          le nombre total d'abonnés en 2021
                         </HoverableIcon>
                       </BoxIcon>
                     </div>
                     <div>
-                      {network['Rend%'] === null
+                      {network['Dev_reseau%'] === null
                         ? 'Non connu'
-                        : `${network['Rend%']} %`}
+                        : `${network['Dev_reseau%']} %`}
                     </div>
                   </BoxContent>
                 )}
@@ -202,11 +226,13 @@ const Network = ({
                         <b>Fluide caloporteur - eau chaude</b>
                       </div>
                       <div>
-                        {network['%_fluide_caloporteur_eau_chaude']
-                          ? `${Math.round(
-                              network['%_fluide_caloporteur_eau_chaude']
-                            )} %`
-                          : 'Non connu'}
+                        {network['eau_chaude']
+                          ? network['eau_chaude'].toUpperCase() !== 'oui'
+                            ? typeof Number(network['eau_chaude']) === 'number'
+                              ? `${Math.round(Number(network['eau_chaude']))} %`
+                              : 'Non'
+                            : 'Oui'
+                          : 'Non'}
                       </div>
                     </BoxContent>
                     <BoxContent>
@@ -214,11 +240,16 @@ const Network = ({
                         <b>Fluide caloporteur - eau surchauffée</b>
                       </div>
                       <div>
-                        {network['%_fluide_caloporteur_eau_surchauffee']
-                          ? `${Math.round(
-                              network['%_fluide_caloporteur_eau_surchauffee']
-                            )} %`
-                          : 'Non connu'}
+                        {network['eau_surchauffee']
+                          ? network['eau_surchauffee'].toUpperCase() !== 'oui'
+                            ? typeof Number(network['eau_surchauffee']) ===
+                              'number'
+                              ? `${Math.round(
+                                  Number(network['eau_surchauffee'])
+                                )} %`
+                              : 'Non'
+                            : 'Oui'
+                          : 'Non'}
                       </div>
                     </BoxContent>
                     <BoxContent>
@@ -226,11 +257,13 @@ const Network = ({
                         <b>Fluide caloporteur - vapeur</b>
                       </div>
                       <div>
-                        {network['%_fluide_caloporteur_vapeur']
-                          ? `${Math.round(
-                              network['%_fluide_caloporteur_vapeur']
-                            )} %`
-                          : 'Non connu'}
+                        {network['vapeur']
+                          ? network['vapeur'].toUpperCase() !== 'oui'
+                            ? typeof Number(network['vapeur']) === 'number'
+                              ? `${Math.round(Number(network['vapeur']))} %`
+                              : 'Non'
+                            : 'Oui'
+                          : 'Non'}
                       </div>
                     </BoxContent>
                   </>
@@ -265,7 +298,7 @@ const Network = ({
                         <>
                           <BoxContent>
                             <div>
-                              <b>Prix moyen de la chaleur (2021)</b>
+                              <b>Prix moyen de la chaleur</b>
                             </div>
                             <div>{Math.round(network.PM)} €TTC/MWh</div>
                           </BoxContent>
@@ -275,7 +308,7 @@ const Network = ({
                       {(network.PM_L || network.PM_T) && (
                         <>
                           <div>
-                            <b>Prix moyen par catégorie d'abonnés (2021)</b>
+                            <b>Prix moyen par catégorie d'abonnés</b>
                           </div>
                           {network.PM_L && (
                             <BoxContent>
@@ -379,27 +412,6 @@ const Network = ({
                   </div>
                   <div>{network.Gestionnaire}</div>
                 </BoxContent>
-                <BoxContent>
-                  <div>
-                    <b>Adresse</b>
-                  </div>
-                  <AddressContent>
-                    {network.adresse_gestionnaire &&
-                      network.adresse_gestionnaire !== '0' && (
-                        <>
-                          {network.adresse_gestionnaire}
-                          <br />
-                        </>
-                      )}
-                    {network.CP_gestionnaire &&
-                      network.CP_gestionnaire !== '0' &&
-                      network.CP_gestionnaire !== '00000' &&
-                      network.CP_gestionnaire}{' '}
-                    {network.ville_gestionnaire &&
-                      network.ville_gestionnaire !== '0' &&
-                      network.ville_gestionnaire}
-                  </AddressContent>
-                </BoxContent>
                 {network.website_gestionnaire &&
                   network.website_gestionnaire.trim() !== 'NON' && (
                     <BoxContent>
@@ -491,25 +503,58 @@ const Network = ({
       </div>
       {(!displayBlocks || displayBlocks.includes('sources')) && (
         <p className="fr-mt-4w fr-hint-text">
-          {network.Gestionnaire &&
-          network.Gestionnaire.toLowerCase().includes('engie') ? (
-            'Sources : ENGIE Solutions / Enquête annuelle des réseaux de chaleur et de froid, édition 2022 pour l’année 2021, SNCU'
-          ) : (
-            <>
-              Sources : Annuaire Via Sèva /{' '}
-              <a
-                href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Arrêté du 16 mars 2023 (DPE)
-              </a>{' '}
-              / Enquête annuelle des réseaux de chaleur et de froid, édition
-              2022 pour l’année 2021, SNCU / Données locales de l’énergie pour
-              l’année 2021, SDES <br />
-              <img src="/logo-viaseva.svg" alt="logo viaseva" height="75px" />
-            </>
-          )}
+          <>
+            Sources : Enquête annuelle des réseaux de chaleur et de froid
+            (EARCF), édition 2023 portant sur l’année 2022, réalisée par la
+            Fedene Réseaux de chaleur et de froid avec le concours de
+            l’association AMORCE, sous tutelle du service des données et études
+            statistiques (SDES) du ministère de la transition écologique.
+            {!isCold ? (
+              <>
+                <br />
+                Excepté pour les éléments suivants :
+                <ul>
+                  <li>
+                    "Performances environnementales" : la source est l'
+                    <a
+                      href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      Arrêté du 16 mars 2023
+                    </a>{' '}
+                    (DPE) réalisé sur la base des données portant sur l'année
+                    2021 ou sur une moyenne 2019-2020-2021 (en attente de
+                    parution du nouvel arrêté)
+                  </li>
+                  <li>
+                    le fluide caloporteur pour les réseaux utilisant différents
+                    types de fluides, et la longueur des réseaux : la source est
+                    l'EARCF portant sur l'année 2021 (France Chaleur Urbaine ne
+                    disposant pas de données du même niveau de précision sur
+                    2022)
+                  </li>
+                </ul>
+              </>
+            ) : (
+              <>
+                {' '}
+                Excepté pour les “Performances environnementales" : la source
+                est l'Arrêté du 16 mars 2023 (DPE) réalisé sur la base des
+                données données portant sur l'année 2021 ou sur une moyenne
+                2019-2020-2021 (en attente de parution du nouvel arrêté).
+                <br />
+                <br />
+              </>
+            )}
+            <img
+              src="/logo-fedene.svg"
+              alt="logo fedene"
+              height="50px"
+              className="fr-mr-2w"
+            />
+            <img src="/logo-amorce.svg" alt="logo amorce" height="50px" />
+          </>
         </p>
       )}
     </>

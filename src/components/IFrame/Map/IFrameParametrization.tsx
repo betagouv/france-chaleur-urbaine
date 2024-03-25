@@ -75,7 +75,7 @@ const IFrameParametrization = () => {
           onClick={(e) => onCheckBoxClick(e as any, 'futur_reseau')}
         />
         <Checkbox
-          label="Les périmètres de developpement prioritaire"
+          label="Les périmètres de développement prioritaire"
           defaultChecked={true}
           onClick={(e) => onCheckBoxClick(e as any, 'pdp')}
         />

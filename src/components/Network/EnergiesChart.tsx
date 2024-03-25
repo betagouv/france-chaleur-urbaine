@@ -14,16 +14,7 @@ const getGraphOptions = (network: Network) => [
   ['Chaleur industrielle', network.prod_MWh_chaleur_industiel, '#652a96'],
   ['Biomasse', network.prod_MWh_biomasse_solide, '#87ca46'],
   ['Géothermie', network.prod_MWh_geothermie, '#c4218e'],
-  [
-    'Autres ENR&R',
-    network.prod_MWh_solaire_thermique +
-      network.prod_MWh_biogaz +
-      network.prod_MWh_PAC_ENR +
-      network.prod_MWh_autres_ENR +
-      network.prod_MWh_autre_RCU_ENR +
-      network.prod_MWh_autre_chaleur_recuperee_ENR,
-    '#bcd090',
-  ],
+  ['Autres ENR&R', network.prod_MWh_autres_ENR, '#bcd090'],
   [
     'Chaufferies électriques',
     network.prod_MWh_chaudieres_electriques,
@@ -37,14 +28,15 @@ const getGraphOptions = (network: Network) => [
     '#0065b8',
   ],
   ['GPL', network.prod_MWh_GPL, '#0009b7'],
+  ['Autres', network.prod_MWh_autres, '#747474'],
   [
-    'Autres énergies fossiles',
-    network.prod_MWh_autres_nonENR +
-      network.prod_MWh_autre_RCU_nonENR +
-      network.prod_MWh_PAC_nonENR +
-      network.prod_MWh_autre_chaleur_recuperee_nonENR,
-    '#747474',
+    'Autre chaleur récupérée',
+    network.prod_MWh_autre_chaleur_recuperee,
+    '#d6c2e6',
   ],
+  ['PAC', network.prod_MWh_PAC, '#ec9ba4'],
+  ['Biogaz', network.prod_MWh_biogaz, '#e6e905'],
+  ['Solaire thermique', network.prod_MWh_solaire_thermique, '#ffff00'],
 ];
 
 const EnergiesChart = ({

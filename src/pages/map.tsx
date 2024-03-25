@@ -3,7 +3,7 @@ import Map from '@components/Map/Map';
 import { MapLegendFeature } from '@components/Map/components/SimpleMapLegend';
 import useRouterReady from '@hooks/useRouterReady';
 import { useRouter } from 'next/router';
-import { iframeSimpleMapConfiguration } from 'src/services/Map/map-configuration';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 export const legendURLKeys = [
   'reseau_chaleur',
@@ -47,6 +47,12 @@ const MapPage = () => {
         .filter((v) => !!v)
     : undefined;
 
+  // uniquement pour ces 2 couches, on les affiche directement si affichées dans la légende
+  const initialMapConfiguration = createMapConfiguration({
+    reseauxDeChaleur: legendFeatures?.includes('reseauxDeChaleur'),
+    reseauxEnConstruction: legendFeatures?.includes('reseauxEnConstruction'),
+  });
+
   return (
     <IframeWrapper>
       <Map
@@ -55,7 +61,7 @@ const MapPage = () => {
         withDrawing={drawing === 'true'}
         withBorder
         enabledLegendFeatures={legendFeatures}
-        initialMapConfiguration={iframeSimpleMapConfiguration}
+        initialMapConfiguration={initialMapConfiguration}
         withFCUAttribution
       />
     </IframeWrapper>
