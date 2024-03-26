@@ -41,7 +41,7 @@ function Heading(props: PropsWithChildren<HeadingProps>) {
       className={`fr-${props.size ?? Type} ${
         props.center ? 'fr-text-center' : ''
       }
-      ${spacingsToClasses(props)}`}
+      ${spacingsToClasses(props)} ${props.className ?? ''}`}
       style={style}
       id={props.id}
     >

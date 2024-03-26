@@ -45,9 +45,9 @@ const Articles = () => {
 
       <Box p="10w" className="fr-container">
         <Box className="fr-grid-row fr-grid-row--gutters">
-          {articles.slice(10).map((article, index) => (
+          {articles.map((article, index) => (
             <div
-              className="fr-col  fr-col-12 fr-col-sm-6 fr-col-md-4"
+              className="fr-col fr-col-12 fr-col-sm-6 fr-col-md-4"
               key={index}
             >
               <div className="fr-card fr-enlarge-link">
