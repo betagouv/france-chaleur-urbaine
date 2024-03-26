@@ -1,6 +1,7 @@
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { articles } from '@data/contents';
 import Image from 'next/image';
@@ -54,7 +55,11 @@ const Articles = () => {
                 <div className="fr-card__body">
                   <div className="fr-card__content">
                     <h3 className="fr-card__title">
-                      <a href={`/actus/${article.slug}`}>{article.title}</a>
+                      <Box textColor="text-title-blue-france">
+                        <Link href={`/actus/${article.slug}`}>
+                          {article.title}
+                        </Link>
+                      </Box>
                     </h3>
                     <p className="fr-card__desc">
                       {getArticleAbstract(article.content)}
