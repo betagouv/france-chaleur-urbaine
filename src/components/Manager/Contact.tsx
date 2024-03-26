@@ -17,7 +17,7 @@ const Contact = ({
     <>
       <>
         <Name>
-          {demand.Prénom && demand.Prénom} {demand.Nom}
+          {demand.Prénom ?? ''} {demand.Nom}
         </Name>
         {demand.Établissement && <div>{demand.Établissement}</div>}
         {demand.Mail && (

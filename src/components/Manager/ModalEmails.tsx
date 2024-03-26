@@ -67,7 +67,7 @@ function ModalEmails(props: Props) {
   useEffect(() => {
     const getEmailsHistory = async () => {
       const res = await fetch(
-        `./api/managerEmail?demand_id=${props.currentDemand.id}`,
+        `/api/managerEmail?demand_id=${props.currentDemand.id}`,
         {
           method: 'GET',
         }
@@ -125,7 +125,7 @@ function ModalEmails(props: Props) {
     e.preventDefault();
     //Save content in DB
     try {
-      const res = await fetch(`./api/managerEmail`, {
+      const res = await fetch(`/api/managerEmail`, {
         method: 'POST',
         body: JSON.stringify({
           emailContent,
