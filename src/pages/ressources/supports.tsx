@@ -76,13 +76,6 @@ const infographies: InfographieItemProps[] = [
   },
 ];
 
-// {
-//   label: '',
-//   imgUrl: '',
-//   linkUrl: '',
-//   eventKey: '',
-// },
-
 const reportages: InfographieItemProps[] = [
   {
     label: 'Forage géothermique de Champigny-sur-Marne',

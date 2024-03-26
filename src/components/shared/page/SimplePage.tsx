@@ -156,7 +156,7 @@ const publicNavigationMenu: NavigationItem[] = [
       },
       {
         title: 'Nos outils',
-        href: '/outils',
+        href: '/ressources/outils',
       },
     ],
   },
