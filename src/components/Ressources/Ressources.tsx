@@ -13,7 +13,7 @@ const Ressources = () => {
   return (
     <>
       <Header
-        title="Pour aller plus loin..."
+        title="Pour aller plus loin... (PAGE A SUPPRIMER)" // FIXME
         description="Retrouvez toute notre documentation pour approfondir votre connaissance des réseaux de chaleur."
       />
       <StickyForm />

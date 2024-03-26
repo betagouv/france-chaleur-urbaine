@@ -8,10 +8,7 @@ import styled from 'styled-components';
 
 const OutilsPage = () => {
   return (
-    <SimplePage
-      title="Nos outils - France Chaleur Urbaine"
-      currentPage="/ressources"
-    >
+    <SimplePage title="Nos outils - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
           className="fr-container"

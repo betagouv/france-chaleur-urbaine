@@ -40,12 +40,9 @@ const articlesReseauxDeFroid: ArticleItemProps[] = Object.entries(
   slug: key,
 }));
 
-const OutilsPage = () => {
+const ArticlesPage = () => {
   return (
-    <SimplePage
-      title="Nos Articles - France Chaleur Urbaine"
-      currentPage="/ressources"
-    >
+    <SimplePage title="Nos Articles - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
           className="fr-container"
@@ -129,7 +126,7 @@ const OutilsPage = () => {
   );
 };
 
-export default OutilsPage;
+export default ArticlesPage;
 
 interface ArticleItemProps {
   title: string;

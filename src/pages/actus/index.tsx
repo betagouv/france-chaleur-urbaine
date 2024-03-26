@@ -8,10 +8,7 @@ import Image from 'next/image';
 
 const Articles = () => {
   return (
-    <SimplePage
-      title="Nos actus - France Chaleur Urbaine"
-      currentPage="/ressources"
-    >
+    <SimplePage title="Nos actus - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
           className="fr-container"

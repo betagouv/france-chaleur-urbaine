@@ -197,10 +197,7 @@ const guides: InfographieItemProps[] = [
 
 const SupportsPage = () => {
   return (
-    <SimplePage
-      title="Nos supports - France Chaleur Urbaine"
-      currentPage="/ressources"
-    >
+    <SimplePage title="Nos supports - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
           className="fr-container"

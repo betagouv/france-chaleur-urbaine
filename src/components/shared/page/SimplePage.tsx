@@ -132,11 +132,12 @@ const publicNavigationMenu: NavigationItem[] = [
     href: '/carte',
   },
   {
-    title: 'Aller plus loin (OLD)',
+    title: 'Aller plus loin (à supprimer)',
     href: '/ressources',
   },
   {
     title: 'Ressources',
+    href: '/ressources',
     children: [
       {
         title: 'Nos actualités',
