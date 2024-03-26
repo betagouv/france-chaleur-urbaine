@@ -5,7 +5,202 @@ import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import Image from 'next/image';
-import { PropsWithChildren } from 'react';
+import { TrackingEvent } from 'src/services/analytics';
+
+const infographies: InfographieItemProps[] = [
+  {
+    label: 'Les réseaux de chaleur : une solution d’avenir',
+    imgUrl: '/img/support_FCU_Infographie.png',
+    linkUrl: '/img/FCU_Infographie_Avenir.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Avenir',
+  },
+  {
+    label: 'Le classement automatique des réseaux de chaleur',
+    imgUrl: '/img/support_FCU_Infographie5.png',
+    linkUrl: '/img/FCU_Infographie_Classement.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Classement',
+  },
+  {
+    label: 'Les ménages français et le chauffage',
+    imgUrl: '/img/support_FCU_Infographie4.png',
+    linkUrl: '/img/FCU_Infographie_Menage.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Ménages',
+  },
+  {
+    label: 'Combien coûte la chaleur ?',
+    imgUrl: '/img/support_FCU_Infographie3.png',
+    linkUrl: '/img/FCU_Infographie_Cout.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Cout',
+  },
+  {
+    label: 'Les énergies renouvelables et de récupération',
+    imgUrl: '/img/support_FCU_Infographie2.png',
+    linkUrl: '/img/FCU_Infographie_Enrr.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie ENRR',
+  },
+  {
+    label: 'La géothermie',
+    imgUrl: '/img/support_geothermie.png',
+    linkUrl: '/img/FCU_Infographie_Geo.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Géothermie',
+  },
+  {
+    label: 'La biomasse',
+    imgUrl: '/img/support_biomasse.png',
+    linkUrl: '/img/FCU_Infographie_Biomasse.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Biomasse',
+  },
+  {
+    label: 'La chaleur fatale',
+    imgUrl: '/img/FCU_Infographie_fatale.jpg',
+    linkUrl: '/img/FCU_Infographie_fatale.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Chaleur Fatale',
+  },
+  {
+    label: 'Solaire thermique',
+    imgUrl: '/contents/FCU_Infographie-Solaire.jpg',
+    linkUrl: '/contents/FCU_Infographie-Solaire.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Solaire',
+  },
+  {
+    label: 'Les réseaux de froid',
+    imgUrl: '/img/FCU_Infographie_Froid.jpg',
+    linkUrl: '/img/FCU_Infographie_Froid.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Froid',
+  },
+  {
+    label: 'Optimiser son réseau de chaleur',
+    imgUrl: '/img/FCU_optimisation_reseaux-chaleur.jpg',
+    linkUrl: '/img/FCU_optimisation_reseaux-chaleur.jpg',
+    eventKey: 'Téléchargement|Supports|Infographie Optimisation',
+  },
+];
+
+// {
+//   label: '',
+//   imgUrl: '',
+//   linkUrl: '',
+//   eventKey: '',
+// },
+
+const reportages: InfographieItemProps[] = [
+  {
+    label: 'Forage géothermique de Champigny-sur-Marne',
+    imgUrl: '/img/geothermie_champigny.jpeg',
+    linkUrl: '/documentation/geothermie_champigny.pdf',
+    eventKey: 'Téléchargement|Supports|Reportage géothermie Champigny',
+  },
+  {
+    label: 'Chaufferie biomasse de Surville',
+    imgUrl: '/img/chaufferie_surville.jpeg',
+    linkUrl: '/documentation/chaufferie_surville.pdf',
+    eventKey: 'Téléchargement|Supports|Reportage chaufferie Surville',
+  },
+  {
+    label: 'Datacenter Equinix à Saint-Denis',
+    imgUrl: '/img/datacenter_equinix.jpeg',
+    linkUrl: '/documentation/datacenter_equinix.pdf',
+    eventKey: 'Téléchargement|Supports|Reportage datacenter Equinix',
+  },
+  {
+    label: 'Réseau de froid d’Annecy',
+    imgUrl: '/img/reseau_froid_annecy.jpeg',
+    linkUrl: '/documentation/reseau_froid_annecy.pdf',
+    eventKey: 'Téléchargement|Supports|Reportage réseau froid Annecy',
+  },
+  {
+    label: "Unité de valorisation énergétique d'Issy-les-Moulineaux",
+    imgUrl: '/img/FCU_Isseane.jpg',
+    linkUrl: '/documentation/FCU_Isseane.pdf',
+    eventKey: 'Téléchargement|Supports|Reportage Isseane',
+  },
+  {
+    label: 'Centrale Alsace et chaufferie Charras à Courbevoie',
+    imgUrl: '/img/FCU_Alsace_Charras.jpg',
+    linkUrl: '/documentation/FCU_Alsace_Charras.pdf',
+    eventKey: 'Téléchargement|Supports|Reportage Alsace Charras',
+  },
+];
+
+const videos: InfographieItemProps[] = [
+  {
+    label: 'Les réseaux de chaleur : une solution d’avenir',
+    imgUrl:
+      'https://i.ytimg.com/vi/sZR-vaKBhBM/hqdefault.jpg?sqp=-oaymwEcCNACELwBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLBwdqz2ywUKna-tNwQNlmRmlu8ebA',
+    linkUrl: 'https://www.youtube.com/watch?v=sZR-vaKBhBM',
+    eventKey: 'Vidéo',
+  },
+  {
+    label: 'Les avantages des réseaux de chaleur',
+    imgUrl:
+      'https://i.ytimg.com/vi/r1jTVZ3-VnU/hqdefault.jpg?sqp=-oaymwEcCNACELwBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDR4RPMiAEwmTgt1I425XnQH6cqxA',
+    linkUrl: 'https://www.youtube.com/watch?v=r1jTVZ3-VnU',
+    eventKey: 'Vidéo',
+  },
+  {
+    label: '"Les ambassadeurs du chauffage urbain" 1',
+    imgUrl:
+      'https://i.ytimg.com/vi/iv0gb71XOj4/hqdefault.jpg?sqp=-oaymwE2CNACELwBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARglIGAocjAP&rs=AOn4CLDKnhLEfQ5nuC4gAtHEyQEsUjr7aA',
+    linkUrl: 'https://www.youtube.com/watch?v=iv0gb71XOj4',
+    eventKey: 'Vidéo',
+  },
+  {
+    label: '"Les ambassadeurs du chauffage urbain" 2',
+    imgUrl:
+      'https://i.ytimg.com/vi/wtNmhwa5_DA/hqdefault.jpg?sqp=-oaymwE2CNACELwBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARgpIGUoYTAP&rs=AOn4CLAmpPmyzn4-PqH-Rwlh90Vcr0E6Lw',
+    linkUrl: 'https://www.youtube.com/watch?v=wtNmhwa5_DA',
+    eventKey: 'Vidéo',
+  },
+  {
+    label: '"Les ambassadeurs du chauffage urbain" 3',
+    imgUrl:
+      'https://i.ytimg.com/vi/2mO97aF1T4c/hqdefault.jpg?sqp=-oaymwE2CNACELwBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARggIFkocjAP&rs=AOn4CLDFZlsDFEbwti9vsFLdvElSvrRQjw',
+    linkUrl: 'https://www.youtube.com/watch?v=2mO97aF1T4c',
+    eventKey: 'Vidéo',
+  },
+  {
+    label: '"Les ambassadeurs du chauffage urbain" 4',
+    imgUrl:
+      'https://i.ytimg.com/vi/wieL5MpMtnE/hqdefault.jpg?sqp=-oaymwE2CNACELwBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARgqIGUoYTAP&rs=AOn4CLAMR8N6VE6PxlIeOMAO_wEU9d0JMA',
+    linkUrl: 'https://www.youtube.com/watch?v=wieL5MpMtnE',
+    eventKey: 'Vidéo',
+  },
+  {
+    label: '"Les ambassadeurs du chauffage urbain" 5',
+    imgUrl:
+      'https://i.ytimg.com/vi/eDnhC9l5pWI/hqdefault.jpg?sqp=-oaymwE2CNACELwBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARgjIF0ocjAP&rs=AOn4CLD799UTnieTrHU91zGPBKL-CUZRLw',
+    linkUrl: 'https://www.youtube.com/watch?v=eDnhC9l5pWI',
+    eventKey: 'Vidéo',
+  },
+  {
+    label: 'Ochôde explique la géothermie',
+    imgUrl:
+      'https://i.ytimg.com/vi/ebUNfVsXBIQ/hqdefault.jpg?sqp=-oaymwE2CNACELwBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARgaIGUoWjAP&rs=AOn4CLC52Akpiu6WOi8r1kNZf8OQyyg3lQ',
+    linkUrl: 'https://www.youtube.com/watch?v=ebUNfVsXBIQ',
+    eventKey: 'Vidéo',
+  },
+];
+
+const guides: InfographieItemProps[] = [
+  {
+    label: 'Guide Exploitants',
+    imgUrl: '/img/supports_guide_exploitants.webp',
+    linkUrl: '/documentation/FCU_guide_exploitants.pdf',
+    eventKey: 'Téléchargement|Guide Exploitants|Collectivités et exploitants', // FIXME changer contexte
+  },
+  {
+    label: 'Guide Collectivités',
+    imgUrl: '/img/supports_guide_collectivites.webp',
+    linkUrl: '/documentation/FCU_guide_collectivites.pdf',
+    eventKey: 'Téléchargement|Guide Collectivités|Collectivités et exploitants', // FIXME changer contexte
+  },
+  {
+    label: 'Guide Copropriétés',
+    imgUrl: '/img/supports_guide_coproprietes.webp',
+    linkUrl: '/documentation/guide-france-chaleur-urbaine.pdf',
+    eventKey: 'Téléchargement|Guide FCU|coproprietaire', // FIXME changer contexte
+  },
+];
 
 const SupportsPage = () => {
   return (
@@ -45,420 +240,52 @@ const SupportsPage = () => {
         </Box>
       </Box>
 
-      <Box p="10w" className="fr-container">
+      <Box p="10w" className="fr-container" id="infographies">
         <Heading size="h2" color="blue-france" center mb="8w">
           Infographies
         </Heading>
         <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
-          <InfographieItem>
-            <Link
-              href="/img/FCU_Infographie_Avenir.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Avenir"
-            >
-              <img
-                src="/img/support_FCU_Infographie.png"
-                alt=""
-                loading="lazy"
-              />
-              <Box p="1v">Les réseaux de chaleur : une solution d’avenir</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/img/FCU_Infographie_Classement.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Classement"
-            >
-              <img
-                src="/img/support_FCU_Infographie5.png"
-                alt=""
-                loading="lazy"
-              />
-              <Box p="1v">Le classement automatique des réseaux de chaleur</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/img/FCU_Infographie_Menage.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Ménages"
-            >
-              <img
-                src="/img/support_FCU_Infographie4.png"
-                alt=""
-                loading="lazy"
-              />
-              <Box p="1v">Les ménages français et le chauffage</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/img/FCU_Infographie_Cout.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Cout"
-            >
-              <img
-                src="/img/support_FCU_Infographie3.png"
-                alt=""
-                loading="lazy"
-              />
-              <Box p="1v">Combien coûte la chaleur ?</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/img/FCU_Infographie_Enrr.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie ENRR"
-            >
-              <img
-                src="/img/support_FCU_Infographie2.png"
-                alt=""
-                loading="lazy"
-              />
-              <Box p="1v">Les énergies renouvelables et de récupération</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/img/FCU_Infographie_Geo.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Géothermie"
-            >
-              <img src="/img/support_geothermie.png" alt="" loading="lazy" />
-              <Box p="1v">La géothermie</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/img/FCU_Infographie_Biomasse.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Biomasse"
-            >
-              <img src="/img/support_biomasse.png" alt="" loading="lazy" />
-              <Box p="1v">La biomasse</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/img/FCU_Infographie_fatale.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Chaleur Fatale"
-            >
-              <img
-                src="/img/FCU_Infographie_fatale.jpg"
-                alt=""
-                loading="lazy"
-                width={150}
-              />
-              <Box p="1v">La chaleur fatale</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/contents/FCU_Infographie-Solaire.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Solaire"
-            >
-              <img
-                src="/contents/FCU_Infographie-Solaire.jpg"
-                alt=""
-                loading="lazy"
-                width={150}
-              />
-              <Box p="1v">Solaire thermique</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/img/FCU_Infographie_Froid.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Froid"
-            >
-              <img
-                src="/img/FCU_Infographie_Froid.jpg"
-                alt=""
-                width={150}
-                loading="lazy"
-              />
-              <Box p="1v">Les réseaux de froid</Box>
-            </Link>
-          </InfographieItem>
-          <InfographieItem>
-            <Link
-              href="/img/FCU_optimisation_reseaux-chaleur.jpg"
-              isExternal
-              eventKey="Téléchargement|Supports|Infographie Optimisation"
-            >
-              <img
-                src="/img/FCU_optimisation_reseaux-chaleur.jpg"
-                alt=""
-                width={150}
-                loading="lazy"
-              />
-              <Box p="1v">Optimiser son réseau de chaleur</Box>
-            </Link>
-          </InfographieItem>
+          {infographies.map((item, index) => (
+            <InfographieItem {...item} key={index} />
+          ))}
         </Box>
+      </Box>
 
-        <Heading size="h2" color="blue-france" center mb="8w">
-          Reportages
-        </Heading>
+      <Box backgroundColor="blue-france-975-75" id="reportages">
+        <Box p="10w" className="fr-container">
+          <Heading size="h2" color="blue-france" center mb="8w">
+            Reportages
+          </Heading>
+          <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
+            {reportages.map((item, index) => (
+              <InfographieItem {...item} key={index} />
+            ))}
+          </Box>
+        </Box>
+      </Box>
 
-        {/*
-        <SupportImages>
-          <div>
-            <Link
-              href="/documentation/geothermie_champigny.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent(
-                  'Téléchargement|Supports|Reportage géothermie Champigny'
-                );
-            >
-              <img src="/img/geothermie_champigny.jpeg" alt="" />
-              <p>Forage géothermique de Champigny-sur-Marne</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/documentation/chaufferie_surville.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent(
-                  'Téléchargement|Supports|Reportage chaufferie Surville'
-                );
-            >
-              <img src="/img/chaufferie_surville.jpeg" alt="" />
-              <p>Chaufferie biomasse de Surville</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/documentation/datacenter_equinix.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent(
-                  'Téléchargement|Supports|Reportage datacenter Equinix'
-                );
-            >
-              <img src="/img/datacenter_equinix.jpeg" alt="" />
-              <p>Datacenter Equinix à Saint-Denis</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/documentation/reseau_froid_annecy.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent(
-                  'Téléchargement|Supports|Reportage réseau froid Annecy'
-                );
-            >
-              <img src="/img/reseau_froid_annecy.jpeg" alt="" />
-              <p>Réseau de froid d’Annecy</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/documentation/FCU_Isseane.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent('Téléchargement|Supports|Reportage Isseane');
-            >
-              <img src="/img/FCU_Isseane.jpg" alt="" width={150} />
-              <p>Unité de valorisation énergétique d'Issy-les-Moulineaux</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/documentation/FCU_Alsace_Charras.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent('Téléchargement|Supports|Reportage Alsace Charras');
-            >
-              <img src="/img/FCU_Alsace_Charras.jpg" alt="" width={150} />
-              <p>Centrale Alsace et chaufferie Charras à Courbevoie</p>
-            </Link>
-          </div>
-        </SupportImages>
-        <Heading size="h2" color="blue-france" center mb="8w">
-          Dossier de presse
-        </Heading>
-        <SupportImages>
-          <div className="fr-mb-4w">
-            <Link
-              href="/documentation/dossier-presse.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent('Téléchargement|Dossier Presse|Supports');
-            >
-              <img src="/img/support_dossier_presse.png" alt="" />
-            </Link>
-          </div>
-        </SupportImages>
+      <Box p="10w" className="fr-container" id="videos">
         <Heading size="h2" color="blue-france" center mb="8w">
           Vidéos
         </Heading>
-        <SupportImages>
-          <div>
-            <Link
-              href="/videos/FCU-accueil.mp4"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent('Téléchargement|Supports|Vidéo Evry-Courcouronnes');
-            >
-              <img src="/img/support_video1.png" alt="" />
-              <p>Reportage à Evry-Courcouronnes (91)</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/videos/FCU-RC.mp4"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent('Téléchargement|Supports|Vidéo comment ça marche');
-            >
-              <img src="/img/support_video2.jpeg" alt="" />
-              <p>Les réseaux de chaleur : comment ça fonctionne ?</p>
-            </Link>
-          </div>
-        </SupportImages>
-        <Heading
-          size="h2"
-          color="blue-france"
-          center
-          mb="8w"
-          id="campagnes-de-pub"
-        >
-          Campagne de pub
-        </Heading>
-        <SupportImages>
-          <div>
-            <Link
-              href="/img/PUB-PANNEAU.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent(
-                  'Téléchargement|Supports|Campagne pub affiche abribus'
-                );
-            >
-              <img src="/img/support_pub1.png" alt="" />
-              <p>Affiche abribus</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/img/support_pub1_big.jpg"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent('Téléchargement|Supports|Campagne pub facebook 1');
-            >
-              <img src="/img/support_pub2.png" alt="" />
-              <p>Pub Facebook</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/img/support_pub3_big.jpg"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent('Téléchargement|Supports|Campagne pub facebook 2');
-            >
-              <img src="/img/support_pub3.png" alt="" />
-              <p>Pub Facebook</p>
-            </Link>
-          </div>
-        </SupportImages>
-        <Heading
-          size="h2"
-          color="blue-france"
-          center
-          mb="8w"
-          id="campagnes-de-pub"
-        >
-          Visuels de promotion
-        </Heading>
-        <SupportImages>
-          <div>
-            <Link
-              href="/img/FCU-Affiche.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent(
-                  'Téléchargement|Supports|Visuel promotion affiche information'
-                );
-            >
-              <img src="/img/support_affiche1.png" alt="" />
-              <p>Affiche d’information</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/img/LINKED.jpg"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent(
-                  'Téléchargement|Supports|Visuel promotion post LI ou FB 1'
-                );
-            >
-              <img src="/img/support_video2.jpeg" alt="" />
-              <p>Post LinkedIn ou Facebook</p>
-            </Link>
-          </div>
-          <div>
-            <Link
-              href="/img/support_affiche3_big.jpg"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent(
-                  'Téléchargement|Supports|Visuel promotion post LI ou FB 2'
-                );
-            >
-              <img src="/img/support_video3.png" alt="" />
-              <p>Post LinkedIn ou Facebook</p>
-            </Link>
-          </div>
-        </SupportImages>
+        <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
+          {videos.map((item, index) => (
+            <InfographieItem width={230} {...item} key={index} />
+          ))}
+        </Box>
+      </Box>
 
-        <Heading
-          size="h2"
-          color="blue-france"
-          center
-          mb="8w"
-          id="campagnes-de-pub"
-        >
-          Guides
-        </Heading>
-        <SupportImages>
-          <div>
-            <Link
-              href="/documentation/guide-france-chaleur-urbaine.pdf"
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={() => {
-                trackEvent('Téléchargement|Guide FCU|Supports');
-            >
-              <img src="/img/support_guide.png" alt="" />
-            </Link>
-          </div>
-        </SupportImages> */}
+      <Box backgroundColor="blue-france-975-75" id="guides">
+        <Box p="10w" className="fr-container">
+          <Heading size="h2" color="blue-france" center mb="8w">
+            Guides
+          </Heading>
+          <Box display="flex" alignItems="baseline" gap="16px" flexWrap="wrap">
+            {guides.map((item, index) => (
+              <InfographieItem {...item} key={index} />
+            ))}
+          </Box>
+        </Box>
       </Box>
     </SimplePage>
   );
@@ -466,8 +293,22 @@ const SupportsPage = () => {
 
 export default SupportsPage;
 
-export const InfographieItem = ({ children }: PropsWithChildren) => (
-  <StyledInfographieItem className="fr-card fr-card--no-border fr-enlarge-link">
-    {children}
+interface InfographieItemProps {
+  label: string;
+  imgUrl: string;
+  linkUrl: string;
+  eventKey?: TrackingEvent;
+  width?: number;
+}
+
+const InfographieItem = ({ width = 150, ...props }: InfographieItemProps) => (
+  <StyledInfographieItem
+    className="fr-card fr-card--no-border fr-card--no-background fr-enlarge-link"
+    width={width}
+  >
+    <Link href={props.linkUrl} isExternal eventKey={props.eventKey}>
+      <img src={props.imgUrl} alt="" loading="lazy" width={width} />
+      <Box p="1v">{props.label}</Box>
+    </Link>
   </StyledInfographieItem>
 );

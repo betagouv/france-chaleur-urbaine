@@ -92,8 +92,8 @@ export const SupportImages = styled.div`
   }
 `;
 
-export const StyledInfographieItem = styled.div`
-  max-width: 150px;
+export const StyledInfographieItem = styled.div<{ width: number }>`
+  max-width: ${({ width }) => `${width}px;`};
 
   a {
     background-image: none;
