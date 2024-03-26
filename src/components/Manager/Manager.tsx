@@ -280,7 +280,9 @@ const Manager = () => {
     {
       name: 'Contact',
       label: 'Contact',
-      render: (demand) => <Contact demand={demand} />,
+      render: (demand) => (
+        <Contact demand={demand} updateDemand={updateDemand} />
+      ),
     },
     {
       name: 'Adresse',

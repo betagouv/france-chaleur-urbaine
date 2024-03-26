@@ -10,6 +10,7 @@ declare module 'next-auth' {
     role: USER_ROLE;
     gestionnaires: string[];
     email: string;
+    signature: string;
   }
 }
 
