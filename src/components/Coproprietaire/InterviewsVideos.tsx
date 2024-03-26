@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@codegouvfr/react-dsfr';
 
 const videos = [
   'https://www.youtube.com/embed/zsOgW8sIByc',

@@ -5,7 +5,7 @@ import {
   getColdNetwork,
   getNetwork,
 } from '@core/infrastructure/repository/network';
-import { Breadcrumb, BreadcrumbItem } from '@dataesr/react-dsfr';
+import { Breadcrumb, BreadcrumbItem } from '@codegouvfr/react-dsfr';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
 import { Network } from 'src/types/Summary/Network';

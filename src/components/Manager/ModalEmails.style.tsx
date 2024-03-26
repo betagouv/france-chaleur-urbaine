@@ -1,4 +1,4 @@
-import { Modal } from '@dataesr/react-dsfr';
+import { Modal } from '@codegouvfr/react-dsfr';
 import styled from 'styled-components';
 
 export const StyledModal = styled(Modal)`

@@ -1,6 +1,6 @@
 import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
-import { Alert, Button, TextInput } from '@dataesr/react-dsfr';
+import { Alert, Button, TextInput } from '@codegouvfr/react-dsfr';
 import { submitToAirtable } from '@helpers/airtable';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';

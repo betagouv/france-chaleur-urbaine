@@ -3,7 +3,7 @@ import {
   ButtonGroup,
   ModalClose,
   ModalContent,
-} from '@dataesr/react-dsfr';
+} from '@codegouvfr/react-dsfr';
 import CarteFrance, { DataByArea } from './CarteFrance';
 import { useEffect, useMemo, useState } from 'react';
 import {

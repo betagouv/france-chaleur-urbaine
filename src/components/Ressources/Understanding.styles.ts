@@ -1,4 +1,4 @@
-import { Card } from '@dataesr/react-dsfr';
+import { Card } from '@codegouvfr/react-dsfr';
 import styled from 'styled-components';
 
 export const UnderstandingCards = styled.div`

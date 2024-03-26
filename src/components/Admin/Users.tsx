@@ -1,4 +1,4 @@
-import { Button, Table, TextInput } from '@dataesr/react-dsfr';
+import { Button, Table, TextInput } from '@codegouvfr/react-dsfr';
 import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { UserResponse } from 'src/types/UserResponse';

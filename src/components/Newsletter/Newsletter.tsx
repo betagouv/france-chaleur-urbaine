@@ -1,4 +1,4 @@
-import { Alert, Button } from '@dataesr/react-dsfr';
+import { Alert, Button } from '@codegouvfr/react-dsfr';
 import { submitToAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { Oval } from 'react-loader-spinner';

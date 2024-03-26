@@ -1,4 +1,4 @@
-import { Icon, Link, Modal } from '@dataesr/react-dsfr';
+import { Icon, Link, Modal } from '@codegouvfr/react-dsfr';
 import styled from 'styled-components';
 
 export const SpinnerWrapper = styled.div`

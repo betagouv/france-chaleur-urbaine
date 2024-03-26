@@ -4,7 +4,7 @@ import {
   Row,
   SideMenuItem,
   SideMenuLink,
-} from '@dataesr/react-dsfr';
+} from '@codegouvfr/react-dsfr';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';

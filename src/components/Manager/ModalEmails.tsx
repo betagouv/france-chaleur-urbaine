@@ -4,7 +4,7 @@ import {
   ModalContent,
   Select,
   TextInput,
-} from '@dataesr/react-dsfr';
+} from '@codegouvfr/react-dsfr';
 import { FormEvent, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import {

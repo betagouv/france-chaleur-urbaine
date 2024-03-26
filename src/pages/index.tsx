@@ -14,7 +14,7 @@ import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@codegouvfr/react-dsfr';
 import Head from 'next/head';
 import Image from 'next/image';
 

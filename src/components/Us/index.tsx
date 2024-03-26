@@ -2,7 +2,7 @@ import { List } from '@components/Ressources/Contents/Contents.styles';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import { dataNumberFcu } from '@data';
-import { FooterPartnersLogo, Logo } from '@dataesr/react-dsfr';
+import { FooterPartnersLogo, Logo } from '@codegouvfr/react-dsfr';
 import Link from 'next/link';
 import { Description, Logos, Row, Title } from './index.styles';
 import Heading from '@components/ui/Heading';

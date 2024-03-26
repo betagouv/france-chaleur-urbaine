@@ -1,4 +1,4 @@
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr';
 import styled, { css } from 'styled-components';
 
 export const ZoneInfosWrapper = styled.div`

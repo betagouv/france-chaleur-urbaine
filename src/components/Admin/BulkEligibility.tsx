@@ -1,4 +1,4 @@
-import { Icon, Table, TextInput } from '@dataesr/react-dsfr';
+import { Icon, Table, TextInput } from '@codegouvfr/react-dsfr';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import SimplePage from '@components/shared/page/SimplePage';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
-import { Container } from '@dataesr/react-dsfr';
+import { Container } from '@codegouvfr/react-dsfr';
 
 export default function Custom404() {
   return (

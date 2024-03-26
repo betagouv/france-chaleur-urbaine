@@ -9,7 +9,7 @@ import MapReactGL, {
 } from 'react-map-gl/maplibre';
 
 import Hoverable from '@components/Hoverable';
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@codegouvfr/react-dsfr';
 import { useContactFormFCU, usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';

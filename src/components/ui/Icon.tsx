@@ -1,4 +1,4 @@
-import { Icon as DSFRIcon } from '@dataesr/react-dsfr';
+import { Icon as DSFRIcon } from '@codegouvfr/react-dsfr';
 import { CSSProperties, ComponentProps, HTMLAttributes } from 'react';
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 import styled from 'styled-components';

@@ -11,13 +11,6 @@ import {
   ToolItem,
   ToolItemGroup,
   NavSubItem,
-} from '@dataesr/react-dsfr';
-import { signOut, useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { ComponentProps, Fragment } from 'react';
-import { USER_ROLE } from 'src/types/enum/UserRole';
-import Image from 'next/image';
-import {
   FooterBody,
   FooterBodyItem,
   FooterBottom,
@@ -29,7 +22,12 @@ import {
   FooterPartnersLogo,
   FooterPartnersSecondaryTitle,
   FooterPartnersTitle,
-} from '@dataesr/react-dsfr';
+} from '@codegouvfr/react-dsfr';
+import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { ComponentProps, Fragment } from 'react';
+import { USER_ROLE } from 'src/types/enum/UserRole';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import {
   FullScreenItems,
@@ -330,7 +328,7 @@ const PageHeader = (props: PageHeaderProps) => {
             }
             asLink={href ? <Link href={href}>{title}</Link> : undefined}
           >
-            {/* ici warning Prop `aria-controls` did not match lié à @dataesr/react-dsfr */}
+            {/* ici warning Prop `aria-controls` did not match lié à @codegouvfr/react-dsfr */}
             {children?.map((subNav) => (
               <NavSubItem
                 key={subNav.title}
@@ -349,7 +347,7 @@ const PageHeader = (props: PageHeaderProps) => {
 
         {isFullScreenMode && (
           <FullScreenItems>
-            {/* beware: do not try to simplify these blocs as @dataesr/react-dsfr won't let you use fragments! */}
+            {/* beware: do not try to simplify these blocs as @codegouvfr/react-dsfr won't let you use fragments! */}
             {props.mode === 'authenticated' ? (
               session?.impersonating ? (
                 <Tool>

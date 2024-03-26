@@ -1,4 +1,4 @@
-import { TextInput } from '@dataesr/react-dsfr';
+import { TextInput } from '@codegouvfr/react-dsfr';
 import debounce from '@utils/debounce';
 import { useEffect, useMemo, useState } from 'react';
 import { Demand } from 'src/types/Summary/Demand';

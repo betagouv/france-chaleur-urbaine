@@ -5,7 +5,7 @@ import {
   Checkbox,
   CheckboxGroup,
   TextInput,
-} from '@dataesr/react-dsfr';
+} from '@codegouvfr/react-dsfr';
 import { updateAirtable } from '@helpers/airtable';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { AddressDataType } from 'src/types/AddressData';

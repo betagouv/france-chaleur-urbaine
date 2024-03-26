@@ -1,4 +1,4 @@
-import { Button, Container, Icon, Select } from '@dataesr/react-dsfr';
+import { Button, Container, Icon, Select } from '@codegouvfr/react-dsfr';
 import Heading from '@components/ui/Heading';
 import { fetchJSON, postFetchJSON } from '@utils/network';
 import { useEffect, useMemo, useState } from 'react';

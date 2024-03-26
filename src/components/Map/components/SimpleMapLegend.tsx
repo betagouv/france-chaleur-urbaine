@@ -4,7 +4,7 @@ import ModalCarteFrance from './ModalCarteFrance';
 import Text from '@components/ui/Text';
 import { trackEvent } from 'src/services/analytics';
 import Image from 'next/image';
-import { Button, Select } from '@dataesr/react-dsfr';
+import { Button, Select } from '@codegouvfr/react-dsfr';
 import Link from '@components/ui/Link';
 import Icon from '@components/ui/Icon';
 import { LegendSeparator } from '../Map.style';

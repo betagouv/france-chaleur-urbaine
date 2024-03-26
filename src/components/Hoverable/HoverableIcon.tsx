@@ -1,4 +1,4 @@
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@codegouvfr/react-dsfr';
 import { ReactNode } from 'react';
 import Hoverable from '.';
 import { Container } from './HoverableIcon.styles';

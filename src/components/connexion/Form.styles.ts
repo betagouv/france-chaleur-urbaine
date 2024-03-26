@@ -1,4 +1,4 @@
-import { Alert } from '@dataesr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr';
 import styled from 'styled-components';
 
 export const Container = styled.form<{ fullWidth?: boolean }>`

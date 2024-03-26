@@ -1,6 +1,6 @@
 import { Demand } from 'src/types/Summary/Demand';
 import { EmailInfo, Name, OtherInfo } from './Contact.styles';
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@codegouvfr/react-dsfr';
 import ModalEmails from './ModalEmails';
 import { useState } from 'react';
 

@@ -1,5 +1,5 @@
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import { Select, TextInput } from '@dataesr/react-dsfr';
+import { Select, TextInput } from '@codegouvfr/react-dsfr';
 import styled, { css } from 'styled-components';
 
 export const BoxSimulator = styled(Cartridge)`

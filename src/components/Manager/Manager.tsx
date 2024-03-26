@@ -1,7 +1,7 @@
 import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
-import { Icon, Table } from '@dataesr/react-dsfr';
+import { Icon, Table } from '@codegouvfr/react-dsfr';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';

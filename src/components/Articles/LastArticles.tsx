@@ -1,5 +1,5 @@
 import { articles } from '@data/contents';
-import { Icon, Link } from '@dataesr/react-dsfr';
+import { Icon, Link } from '@codegouvfr/react-dsfr';
 import Article from './Article';
 import { Articles, RemainingArticles } from './LastArticles.styles';
 

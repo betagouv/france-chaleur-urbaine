@@ -1,4 +1,4 @@
-import { TextInput } from '@dataesr/react-dsfr';
+import { TextInput } from '@codegouvfr/react-dsfr';
 import { _hasError } from '@utils/form-utils';
 
 const Input = ({
