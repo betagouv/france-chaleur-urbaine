@@ -8,6 +8,10 @@ export const StyledModal = styled(Modal)`
     max-width: 100% !important;
     width: 100% !important;
   }
+
+  textarea {
+    cursor: text;
+  }
 `;
 
 export const ModalContentWrapper = styled.div`
