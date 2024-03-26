@@ -68,7 +68,13 @@ export const nextAuthOptions: AuthOptions = {
       if (token) {
         return {
           ...session,
-          user,
+          user: {
+            ...user,
+
+            // if an impersonated profile exists, override the current profile data (role, gestionnaire)
+            ...(token.impersonatedProfile ?? {}),
+          },
+          ...(token.impersonatedProfile ? { impersonating: true } : {}),
         } as Session;
       }
       return session;

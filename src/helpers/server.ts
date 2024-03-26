@@ -5,7 +5,7 @@ import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
 import { captureException } from '@sentry/nextjs';
 import { USER_ROLE } from 'src/types/enum/UserRole';
-import { getServerSession } from 'next-auth';
+import { Session, getServerSession } from 'next-auth';
 import { nextAuthOptions } from '@pages/api/auth/[...nextauth]';
 
 const FormidableError = (formidableErrors as any).default;
@@ -52,24 +52,19 @@ export function handleRouteErrors(
     const logger = parentLogger.child({ url: req.url });
     try {
       if (routeOptions?.requireAuthentication) {
-        const session = await getServerSession(req, res, nextAuthOptions);
-        if (!session || !session.user) {
-          throw requiredAuthenticationError;
-        }
-        req.user = session.user;
-        if (!req.user.active) {
-          throw invalidPermissionsError;
-        }
-        if (
-          routeOptions.requireAuthentication instanceof Array &&
-          !routeOptions.requireAuthentication.includes(req.user.role)
-        ) {
-          throw invalidPermissionsError;
-        }
+        await requireAuthentication(
+          req,
+          res,
+          routeOptions.requireAuthentication
+        );
       }
       const handlerResult = await handler(req, res);
       if (!res.headersSent) {
-        res.status(HttpStatusCode.Ok).json(handlerResult);
+        res.status(HttpStatusCode.Ok).json(
+          handlerResult ?? {
+            message: 'success',
+          }
+        );
       }
       if (routeOptions.logRequest) {
         logger.info('request completed', { duration: Date.now() - startTime });
@@ -163,4 +158,32 @@ export function requirePutMethod(req: NextApiRequest) {
   if (req.method !== 'PUT') {
     throw invalidRouteError;
   }
+}
+
+export function requireDeleteMethod(req: NextApiRequest) {
+  if (req.method !== 'DELETE') {
+    throw invalidRouteError;
+  }
+}
+
+export async function requireAuthentication(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  configOrRoles: boolean | `${USER_ROLE}`[]
+): Promise<Session> {
+  const session = await getServerSession(req, res, nextAuthOptions);
+  if (!session || !session.user) {
+    throw requiredAuthenticationError;
+  }
+  req.user = session.user;
+  if (!req.user.active) {
+    throw invalidPermissionsError;
+  }
+  if (
+    configOrRoles instanceof Array &&
+    !configOrRoles.includes(req.user.role)
+  ) {
+    throw invalidPermissionsError;
+  }
+  return session;
 }

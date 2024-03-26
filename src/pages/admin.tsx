@@ -1,4 +1,5 @@
 import BulkEligibility from '@components/Admin/BulkEligibility';
+import UserImpersonation from '@components/Admin/UserImpersonation';
 import Users from '@components/Admin/Users';
 import SimplePage from '@components/shared/page/SimplePage';
 import { GetServerSideProps } from 'next';
@@ -8,6 +9,7 @@ import { USER_ROLE } from 'src/types/enum/UserRole';
 export default function AdminPage(): JSX.Element {
   return (
     <SimplePage title="France Chaleur Urbaine - Admin" mode="authenticated">
+      <UserImpersonation />
       <Users />
       <BulkEligibility />
     </SimplePage>
