@@ -216,11 +216,9 @@ function ModalEmails(props: Props) {
                       disabled:
                         sentHistory &&
                         option.value !== 'other' &&
-                        sentHistory.find((email: any) => {
-                          if (email.email_key === option.value) return email;
-                        })
-                          ? true
-                          : false,
+                        sentHistory.some(
+                          (email: any) => email.email_key === option.value
+                        ),
                     };
                   }),
                 ]}
