@@ -1,14 +1,15 @@
-import { Icon as DSFRIcon } from '@codegouvfr/react-dsfr';
-import { CSSProperties, ComponentProps, HTMLAttributes } from 'react';
+// import { Icon as DSFRIcon } from '@codegouvfr/react-dsfr';
+import { CSSProperties, HTMLAttributes } from 'react';
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 import styled from 'styled-components';
 
-type IconProps = ComponentProps<typeof DSFRIcon> & {
+// type IconProps = ComponentProps<typeof DSFRIcon> & {
+type IconProps = {
   cursor?: CSSProperties['cursor'];
   rotate?: boolean;
 };
 
-const StyledIcon = styled(DSFRIcon)<IconProps>`
+const StyledIcon = styled.span<IconProps>`
   transform: ${({ rotate }) => (rotate ? 'rotate(-180deg)' : undefined)};
   transition: 0.3s;
   cursor: ${({ cursor }) => cursor};
@@ -24,7 +25,7 @@ function Icon({
   return (
     <StyledIcon
       className={`${className ?? ''} ${spacingsToClasses(props)}`}
-      iconPosition="center"
+      // iconPosition="center" // FIXME
       {...props}
     />
   );

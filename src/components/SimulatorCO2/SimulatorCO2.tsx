@@ -1,5 +1,5 @@
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import { Select } from '@dataesr/react-dsfr';
+import { Select } from '@codegouvfr/react-dsfr';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
   TypeEnergy,

@@ -1,4 +1,6 @@
-import { Button, Icon, TextInput } from '@codegouvfr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Input } from '@codegouvfr/react-dsfr/Input';
+// import { Button, Icon, TextInput } from '@codegouvfr/react-dsfr';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
@@ -28,33 +30,34 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
 
   return (
     <Container onSubmit={connect}>
-      <TextInput
+      <Input
         label="Email"
-        placeholder="Saisir votre email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        autoComplete="email"
+        nativeInputProps={{
+          placeholder: 'Saisir votre email',
+          autoComplete: 'email',
+          value: email,
+          onChange: (e) => setEmail(e.target.value),
+        }}
       />
       <PasswordInput>
-        <TextInput
-          type={seePassword ? 'text' : 'password'}
+        <Input
           label="Mot de passe"
-          placeholder="Saisir votre mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="password"
+          nativeInputProps={{
+            type: seePassword ? 'text' : 'password',
+            placeholder: 'Saisir votre mot de passe',
+            autoComplete: 'password',
+            value: password,
+            onChange: (e) => setPassword(e.target.value),
+          }}
         />
         <PasswordIcon onClick={() => setSeePassword(!seePassword)}>
-          <Icon
-            name={seePassword ? 'ri-eye-line' : 'ri-eye-off-line'}
-            size="lg"
-          />
+          <span className={seePassword ? 'ri-eye-line' : 'ri-eye-off-line'} />
         </PasswordIcon>
       </PasswordInput>
       <Password>
         <Link href="/reset-password">Mot de passe oublié ?</Link>
       </Password>
-      <Button submit>Me connecter</Button>
+      <Button type="submit">Me connecter</Button>
     </Container>
   );
 };
