@@ -1,6 +1,6 @@
 # La carte France Chaleur Urbaine sur l'application Rezomee d'ENGIE Solutions
 
-🗺 Depuis quelques jours, la cartogfraphie France Chaleur Urbaine est intégrée dans l'application Rezomee d'ENGIE Solutions.\
+🗺 Depuis quelques jours, la cartographie France Chaleur Urbaine est intégrée dans l'application Rezomee d'ENGIE Solutions.\
 \
 Rezomee, c'est la plateforme qui centralise toute l'information sur l'ensemble des réseaux de chaleur et de froid d'ENGIE Solutions, accessible sur application et sites web, avec 300 000 visites par an. Un outil utile aux citoyens, usagers, abonnés, délégants... Après cette intégration sur l'application, la carte France Chaleur Urbaine pourra également être intégrée progressivement sur les sites Rezomee des différents réseaux.\
 \

@@ -6,4 +6,4 @@
 \
 📍 Les zones d'opportunité seront actualisées au gré des améliorations apportées par le Cerema, et les gisements d'énergies renouvelables prochainement intégrés. L'ensemble des résultats du projet EnRezo est également accessible sur un portail dédié.
 
-![](<.gitbook/assets/8 (2).jpg>)\
+![](<.gitbook/assets/8 (2).jpg>)
