@@ -1,4 +1,4 @@
-import { Checkbox as DSFRCheckbox } from '@dataesr/react-dsfr';
+import { Checkbox as DSFRCheckbox } from '@codegouvfr/react-dsfr';
 import styled from 'styled-components';
 
 export const Checkbox = styled(DSFRCheckbox)`

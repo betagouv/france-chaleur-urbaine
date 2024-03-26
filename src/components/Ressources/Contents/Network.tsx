@@ -1,5 +1,5 @@
 import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
-import { Col, Row } from '@dataesr/react-dsfr';
+import { Col, Row } from '@codegouvfr/react-dsfr';
 import { List, Source, Subtitle } from './Contents.styles';
 
 const Network = () => {

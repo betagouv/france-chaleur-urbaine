@@ -1,5 +1,5 @@
 import Hoverable from '@components/Hoverable';
-import { Button, Icon, Tab, Tabs } from '@dataesr/react-dsfr';
+import { Button, Icon, Tab, Tabs } from '@codegouvfr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
 import { LineString, Polygon } from 'geojson';

@@ -1,4 +1,4 @@
-import { ToolItem } from '@dataesr/react-dsfr';
+import { ToolItem } from '@codegouvfr/react-dsfr';
 import styled from 'styled-components';
 
 /**

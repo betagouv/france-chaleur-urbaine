@@ -1,4 +1,4 @@
-import { Alert, Button, Select, TextInput } from '@dataesr/react-dsfr';
+import { Alert, Button, Select, TextInput } from '@codegouvfr/react-dsfr';
 import { submitToAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { Airtable } from 'src/types/enum/Airtable';

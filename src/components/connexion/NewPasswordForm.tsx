@@ -1,4 +1,4 @@
-import { Button, TextInput } from '@dataesr/react-dsfr';
+import { Button, TextInput } from '@codegouvfr/react-dsfr';
 import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useState } from 'react';
 import { useServices } from 'src/services';

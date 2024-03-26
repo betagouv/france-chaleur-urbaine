@@ -6,7 +6,7 @@ import {
   Radio,
   RadioGroup,
   TextInput,
-} from '@dataesr/react-dsfr';
+} from '@codegouvfr/react-dsfr';
 import { ChangeEvent, FormEvent, useState } from 'react';
 
 const additionWishValuesWithFormat = [

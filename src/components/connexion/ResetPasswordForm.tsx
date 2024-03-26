@@ -1,4 +1,4 @@
-import { Alert, Button, TextInput } from '@dataesr/react-dsfr';
+import { Alert, Button, TextInput } from '@codegouvfr/react-dsfr';
 import { FormEvent, useState } from 'react';
 import { useServices } from 'src/services';
 import { Container } from './Form.styles';

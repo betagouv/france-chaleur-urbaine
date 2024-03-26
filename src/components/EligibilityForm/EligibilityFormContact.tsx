@@ -1,6 +1,6 @@
 import Map from '@components/Map/Map';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import { Alert } from '@dataesr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr';
 import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
 import { getReadableDistance } from 'src/services/Map/distance';

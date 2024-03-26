@@ -1,4 +1,4 @@
-import { Alert, Button, File, TextInput } from '@dataesr/react-dsfr';
+import { Alert, Button, File, TextInput } from '@codegouvfr/react-dsfr';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useServices } from 'src/services';
 import { Container } from './BulkEligibilityForm.styles';

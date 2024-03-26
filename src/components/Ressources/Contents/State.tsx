@@ -1,4 +1,4 @@
-import { Highlight } from '@dataesr/react-dsfr';
+import { Highlight } from '@codegouvfr/react-dsfr';
 import { List, Subtitle } from './Contents.styles';
 
 const State = () => {

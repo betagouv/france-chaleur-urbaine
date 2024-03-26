@@ -10,7 +10,7 @@ import {
   SliceContactFormStyle,
 } from '@components/HeadSliceForm/HeadSliceForm.style';
 import Slice from '@components/Slice';
-import { Col, Icon } from '@dataesr/react-dsfr';
+import { Col, Icon } from '@codegouvfr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
 import { Close, Container, Form, Title } from './StickyForm.styles';
 

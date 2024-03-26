@@ -1,4 +1,4 @@
-import { Col, Row } from '@dataesr/react-dsfr';
+import { Col, Row } from '@codegouvfr/react-dsfr';
 import { List, Subtitle } from './Contents.styles';
 
 const contents = [

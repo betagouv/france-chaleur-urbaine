@@ -1,4 +1,4 @@
-import { Select, TextInput } from '@dataesr/react-dsfr';
+import { Select, TextInput } from '@codegouvfr/react-dsfr';
 import Link from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
 import {

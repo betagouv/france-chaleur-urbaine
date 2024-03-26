@@ -1,4 +1,4 @@
-import { CardDescription, CardTitle } from '@dataesr/react-dsfr';
+import { CardDescription, CardTitle } from '@codegouvfr/react-dsfr';
 import Link from 'next/link';
 import {
   BottomLink,

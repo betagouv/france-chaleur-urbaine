@@ -1,5 +1,5 @@
 import SimplePage from '@components/shared/page/SimplePage';
-import { Accordion, AccordionItem } from '@dataesr/react-dsfr';
+import { Accordion, AccordionItem } from '@codegouvfr/react-dsfr';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 

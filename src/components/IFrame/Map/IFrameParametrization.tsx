@@ -1,5 +1,5 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
-import { Checkbox, CheckboxGroup } from '@dataesr/react-dsfr';
+import { Checkbox, CheckboxGroup } from '@codegouvfr/react-dsfr';
 import React, { ChangeEvent, useMemo, useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
 import {

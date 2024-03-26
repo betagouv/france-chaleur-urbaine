@@ -1,4 +1,4 @@
-import { Button, Icon } from '@dataesr/react-dsfr';
+import { Button, Icon } from '@codegouvfr/react-dsfr';
 import { useCallback, useMemo, useState } from 'react';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { Point } from 'src/types/Point';
