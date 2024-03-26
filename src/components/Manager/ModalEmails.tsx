@@ -16,6 +16,7 @@ import Heading from '@components/ui/Heading';
 import emailsList from '@data/manager/manager-emails-list';
 import emailsContentList from '@data/manager/manager-emails-content';
 import { Demand } from 'src/types/Summary/Demand';
+import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 
 type Props = {
   isOpen: boolean;
@@ -146,9 +147,9 @@ function ModalEmails(props: Props) {
         emailKey === 'koIndividualHeat' ||
         emailKey === 'koOther'
       ) {
-        updatedFields.Status = 'Non réalisable';
+        updatedFields.Status = DEMANDE_STATUS.UNREALISABLE;
       } else if (emailKey === 'askForPieces') {
-        updatedFields.Status = 'En attente d’éléments du prospect';
+        updatedFields.Status = DEMANDE_STATUS.WAITING;
       }
       await props.updateDemand(props.currentDemand.id, updatedFields);
 
