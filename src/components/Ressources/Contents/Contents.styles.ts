@@ -91,3 +91,20 @@ export const SupportImages = styled.div`
     }
   }
 `;
+
+export const StyledInfographieItem = styled.div`
+  max-width: 150px;
+
+  a {
+    background-image: none;
+    outline-width: 0;
+
+    &:hover {
+      background-color: grey;
+    }
+
+    &::after {
+      content: '' !important;
+    }
+  }
+`;
