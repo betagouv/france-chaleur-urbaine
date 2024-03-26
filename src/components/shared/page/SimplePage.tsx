@@ -1,28 +1,30 @@
 import Head from 'next/head';
-import {
-  HeaderBody,
-  Header,
-  HeaderNav,
-  HeaderOperator,
-  Logo,
-  NavItem,
-  Service,
-  Tool,
-  ToolItem,
-  ToolItemGroup,
-  NavSubItem,
-  FooterBody,
-  FooterBodyItem,
-  FooterBottom,
-  FooterCopy,
-  Footer as FooterDS,
-  FooterLink,
-  FooterOperator,
-  FooterPartners,
-  FooterPartnersLogo,
-  FooterPartnersSecondaryTitle,
-  FooterPartnersTitle,
-} from '@codegouvfr/react-dsfr';
+// import {
+//   // HeaderBody,
+//   // Header,
+//   // HeaderNav,
+//   // HeaderOperator,
+//   // Logo,
+//   // NavItem,
+//   // Service,
+//   // Tool,
+//   // ToolItem,
+//   // ToolItemGroup,
+//   // NavSubItem,
+//   // FooterBody,
+//   // FooterBodyItem,
+//   // FooterBottom,
+//   // FooterCopy,
+//   // Footer as FooterDS,
+//   // FooterLink,
+//   // FooterOperator,
+//   // FooterPartners,
+//   // FooterPartnersLogo,
+//   // FooterPartnersSecondaryTitle,
+//   // FooterPartnersTitle,
+// } from '@codegouvfr/react-dsfr/Header';
+import { Header } from '@codegouvfr/react-dsfr/Header';
+import { Footer } from '@codegouvfr/react-dsfr/Footer';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ComponentProps, Fragment } from 'react';
@@ -36,6 +38,7 @@ import {
   StopImpersonationButton,
 } from './SimplePage.styles';
 import { deleteFetchJSON } from '@utils/network';
+import { MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
 
@@ -72,33 +75,45 @@ type NavigationItem = {
   children?: NavigationItem[];
 };
 
-const publicNavigationMenu: NavigationItem[] = [
+const publicNavigationMenu: MainNavigationProps.Item[] = [
   {
-    title: 'Copropriétaires',
-    children: [
+    text: 'Copropriétaires',
+    menuLinks: [
       {
-        title: 'Testez votre adresse',
-        href: '/',
+        text: 'Testez votre adresse',
+        linkProps: {
+          href: '/',
+        },
       },
       {
-        title: 'Comprendre le chauffage urbain',
-        href: '/#comprendre-le-chauffage-urbain',
+        text: 'Comprendre le chauffage urbain',
+        linkProps: {
+          href: '/#comprendre-le-chauffage-urbain',
+        },
       },
       {
-        title: 'Les avantages du chauffage urbain',
-        href: '/#avantages-du-chauffage-urbain',
+        text: 'Les avantages du chauffage urbain',
+        linkProps: {
+          href: '/#avantages-du-chauffage-urbain',
+        },
       },
       {
-        title: 'Comment se raccorder ?',
-        href: '/#comment-se-raccorder',
+        text: 'Comment se raccorder ?',
+        linkProps: {
+          href: '/#comment-se-raccorder',
+        },
       },
       {
-        title: 'Les coûts du chauffage urbain',
-        href: '/#couts-du-chauffage-urbain',
+        text: 'Les coûts du chauffage urbain',
+        linkProps: {
+          href: '/#couts-du-chauffage-urbain',
+        },
       },
       {
-        title: 'Les obligations de raccordement',
-        href: '/#obligations-de-raccordement',
+        text: 'Les obligations de raccordement',
+        linkProps: {
+          href: '/#obligations-de-raccordement',
+        },
       },
     ],
   },
@@ -136,29 +151,39 @@ const publicNavigationMenu: NavigationItem[] = [
     ],
   },
   {
-    title: 'Collectivités, exploitants',
-    children: [
+    text: 'Collectivités, exploitants',
+    menuLinks: [
       {
-        title: 'France Chaleur Urbaine à votre service',
-        href: '/collectivites-et-exploitants',
+        text: 'France Chaleur Urbaine à votre service',
+        linkProps: {
+          href: '/collectivites-et-exploitants',
+        },
       },
       {
-        title: 'Communiquez sur votre réseau',
-        href: '/collectivites-et-exploitants#communiquer',
+        text: 'Communiquez sur votre réseau',
+        linkProps: {
+          href: '/collectivites-et-exploitants#communiquer',
+        },
       },
       {
-        title: 'Trouvez des prospects',
-        href: '/collectivites-et-exploitants#prospecter',
+        text: 'Trouvez des prospects',
+        linkProps: {
+          href: '/collectivites-et-exploitants#prospecter',
+        },
       },
       {
-        title: 'Développez votre réseau grâce aux données',
-        href: '/collectivites-et-exploitants#developper',
+        text: 'Développez votre réseau grâce aux données',
+        linkProps: {
+          href: '/collectivites-et-exploitants#developper',
+        },
       },
     ],
   },
   {
-    title: 'Cartographie',
-    href: '/carte',
+    text: 'Cartographie',
+    linkProps: {
+      href: '/carte',
+    },
   },
   {
     title: 'Ressources',
@@ -187,39 +212,51 @@ const publicNavigationMenu: NavigationItem[] = [
     ],
   },
   {
-    title: 'Notre service',
-    children: [
+    text: 'Notre service',
+    menuLinks: [
       {
-        title: 'Qui sommes-nous ?',
-        href: '/qui-sommes-nous',
+        text: 'Qui sommes-nous ?',
+        linkProps: {
+          href: '/qui-sommes-nous',
+        },
       },
       {
-        title: 'Nous contacter',
-        href: '/contact',
+        text: 'Nous contacter',
+        linkProps: {
+          href: '/contact',
+        },
       },
     ],
   },
 ];
 
-const authenticatedNavigationMenu: NavigationItem[] = [
+const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
   {
-    title: 'Retour au site',
-    href: '/',
+    text: 'Retour au site',
+    linkProps: {
+      href: '/',
+    },
   },
   {
-    title: 'Tableau de bord',
-    href: '/gestionnaire',
+    text: 'Tableau de bord',
+    linkProps: {
+      href: '/gestionnaire',
+    },
   },
   {
-    title: 'Aide',
-    href: '/aide',
+    text: 'Aide',
+    linkProps: {
+      href: '/aide',
+    },
   },
 ];
 
-const adminNavigationMenu: NavigationItem[] = [
+const adminNavigationMenu: MainNavigationProps.Item[] = [
   {
-    title: 'Administration',
-    href: '/admin',
+    text: 'Administration',
+    linkProps: {
+      href: '/admin',
+    },
   },
 ];
 
@@ -264,7 +301,39 @@ const PageHeader = (props: PageHeaderProps) => {
   const currentPath = props.currentPage ?? router.pathname;
 
   return (
-    <Header>
+    <>
+      <Header
+        brandTop={
+          <>
+            République
+            <br />
+            Française
+          </>
+        }
+        homeLinkProps={{
+          href: '/',
+          title: "Revenir à l'accueil",
+        }}
+        operatorLogo={{
+          imgUrl: '/logo-fcu.png',
+          orientation: 'horizontal',
+          alt: '',
+        }}
+        serviceTagline="Faciliter les raccordements aux réseaux de chaleur"
+        serviceTitle="France Chaleur Urbaine"
+        quickAccessItems={[
+          {
+            iconId: 'ri-account-box-line',
+            linkProps: {
+              href: '/connexion',
+            },
+            text: 'Espace gestionnaire',
+          },
+        ]}
+        navigation={navigationMenuItems}
+      />
+
+      {/* <Header>
       <FirstLineContainer>
         <HeaderBody>
           <Logo splitCharacter={10}>République Française</Logo>
@@ -278,7 +347,6 @@ const PageHeader = (props: PageHeaderProps) => {
             />
           </HeaderOperator>
 
-          {/* beware: do not try to merge these two blocs! */}
           {!isFullScreenMode && (
             <Service
               title="France Chaleur Urbaine"
@@ -328,7 +396,6 @@ const PageHeader = (props: PageHeaderProps) => {
             }
             asLink={href ? <Link href={href}>{title}</Link> : undefined}
           >
-            {/* ici warning Prop `aria-controls` did not match lié à @codegouvfr/react-dsfr */}
             {children?.map((subNav) => (
               <NavSubItem
                 key={subNav.title}
@@ -347,7 +414,6 @@ const PageHeader = (props: PageHeaderProps) => {
 
         {isFullScreenMode && (
           <FullScreenItems>
-            {/* beware: do not try to simplify these blocs as @codegouvfr/react-dsfr won't let you use fragments! */}
             {props.mode === 'authenticated' ? (
               session?.impersonating ? (
                 <Tool>
@@ -390,7 +456,8 @@ const PageHeader = (props: PageHeaderProps) => {
           </FullScreenItems>
         )}
       </HeaderNav>
-    </Header>
+    </Header> */}
+    </>
   );
 };
 
@@ -399,144 +466,183 @@ const footerDescription = `France Chaleur Urbaine est un projet d'innovation pou
   l'atteinte des objectifs de développement de la chaleur
   d'origine renouvelable.`;
 
-const PageFooter = () => {
-  return (
-    <FooterDS>
-      <FooterBody description={footerDescription}>
-        <Logo
-          splitCharacter={10}
-          asLink={<Link href="/" title="Revenir à l'accueil" />}
-        >
-          République Française
-        </Logo>
-        <FooterOperator>
-          <Image
-            height={136}
-            width={242}
-            src="/logo-fcu-with-typo.jpg"
-            alt="logo france chaleur urbaine"
-          />
-        </FooterOperator>
-        <FooterBodyItem>
-          Faites nous part de vos propositions pour améliorer ce service :
-          <br />
-          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">
-            france-chaleur-urbaine@developpement-durable.gouv.fr
-          </a>
-        </FooterBodyItem>
-      </FooterBody>
-      <FooterPartners>
-        <FooterPartnersTitle>A l'origine du projet</FooterPartnersTitle>
-        <FooterPartnersSecondaryTitle>
-          Nos financeurs
-        </FooterPartnersSecondaryTitle>
-        <LazyFooterPartnersLogo
-          isMain
-          href="http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
-          imageSrc="/logo-DRIEAT.png"
-          target="_blank"
-          imageAlt="DRIEAT"
-        />
-        <LazyFooterPartnersLogo
-          href="https://www.gouvernement.fr/"
-          imageSrc="/logo-government.svg"
-          target="_blank"
-          imageAlt="Gouvernement"
-        />
-        <LazyFooterPartnersLogo
-          href="https://www.ademe.fr"
-          imageSrc="/logo-ADEME.svg"
-          target="_blank"
-          imageAlt="ADEME"
-        />
-      </FooterPartners>
-      <FooterBottom>
-        <FooterLink
-          asLink={
-            <Link href="/accessibilite" className="fr-footer__bottom-link">
-              Accessibilité: non conforme
-            </Link>
-          }
-        />
-        <FooterLink
-          asLink={
-            <Link href="/mentions-legales" className="fr-footer__bottom-link">
-              Mentions légales & CGU
-            </Link>
-          }
-        />
-        <FooterLink href="/#consentement">
-          Cookies &amp; Consentements
-        </FooterLink>
-        <FooterLink
-          asLink={
-            <Link
-              href="/politique-de-confidentialite"
-              className="fr-footer__bottom-link"
-            >
-              Données personnelles
-            </Link>
-          }
-        />
-        <FooterLink
-          asLink={
-            <Link href="/stats" className="fr-footer__bottom-link">
-              Statistiques
-            </Link>
-          }
-        />
-        <FooterLink
-          asLink={
-            <Link href="/contact" className="fr-footer__bottom-link">
-              Contact
-            </Link>
-          }
-        />
-        <FooterLink
-          target="_blank"
-          href="https://github.com/betagouv/france-chaleur-urbaine"
-        >
-          <Image
-            src="/icons/github-brands.svg"
-            width={12}
-            height={12}
-            alt=""
-            aria-hidden
-          />{' '}
-          Github
-        </FooterLink>
-        <FooterCopy>
-          Sauf mention contraire, tous les contenus de ce site sont sous{' '}
-          <a
-            href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
-            target="_blank"
-            rel="noreferrer"
-          >
-            licence etalab-2.0
-          </a>
-        </FooterCopy>
-      </FooterBottom>
-    </FooterDS>
-  );
-};
-
-/**
- * Version des logo partenaires qui active le lazy loading.
- */
-const LazyFooterPartnersLogo = (
-  props: ComponentProps<typeof FooterPartnersLogo> & { href: string }
-) => (
-  <Link className="fr-footer__partners-link" href={props.href} target="_blank">
-    <img
-      className="fr-footer__logo"
-      src={props.imageSrc}
-      alt={props.imageAlt}
-      loading="lazy"
-    />
-  </Link>
+const PageFooter = () => (
+  <Footer
+    accessibility="non compliant"
+    contentDescription={footerDescription}
+    operatorLogo={{
+      imgUrl: '/logo-fcu-with-typo.jpg',
+      orientation: 'horizontal',
+      alt: '',
+    }}
+    partnersLogos={{
+      main: {
+        alt: 'DRIEAT',
+        imgUrl: '/logo-DRIEAT.png',
+        linkProps: {
+          href: 'http://www.driee.ile-de-france.developpement-durable.gouv.fr/',
+          title: 'Lien vers le site du partenaire',
+        },
+      },
+      sub: [
+        {
+          alt: 'Gouvernement',
+          imgUrl: '/logo-government.svg',
+          linkProps: {
+            href: 'https://www.gouvernement.fr/',
+            title: 'Lien vers le site du partenaire',
+          },
+        },
+        {
+          alt: 'ADEME',
+          imgUrl: '/logo-ADEME.svg',
+          linkProps: {
+            href: 'https://www.ademe.fr/',
+            title: 'Lien vers le site du partenaire',
+          },
+        },
+      ],
+    }}
+  />
 );
+// const PageFooter = () => {
+//   return (
+//     <FooterDS>
+//       <FooterBody description={footerDescription}>
+//         <Logo
+//           splitCharacter={10}
+//           asLink={<Link href="/" title="Revenir à l'accueil" />}
+//         >
+//           République Française
+//         </Logo>
+//         <FooterOperator>
+//           <Image
+//             height={136}
+//             width={242}
+//             src="/logo-fcu-with-typo.jpg"
+//             alt="logo france chaleur urbaine"
+//           />
+//         </FooterOperator>
+//         <FooterBodyItem>
+//           Faites nous part de vos propositions pour améliorer ce service :
+//           <br />
+//           <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">
+//             france-chaleur-urbaine@developpement-durable.gouv.fr
+//           </a>
+//         </FooterBodyItem>
+//       </FooterBody>
+//       <FooterPartners>
+//         <FooterPartnersTitle>A l'origine du projet</FooterPartnersTitle>
+//         <FooterPartnersSecondaryTitle>
+//           Nos financeurs
+//         </FooterPartnersSecondaryTitle>
+//         <LazyFooterPartnersLogo
+//           isMain
+//           href="http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
+//           imageSrc="/logo-DRIEAT.png"
+//           target="_blank"
+//           imageAlt="DRIEAT"
+//         />
+//         <LazyFooterPartnersLogo
+//           href="https://www.gouvernement.fr/"
+//           imageSrc="/logo-government.svg"
+//           target="_blank"
+//           imageAlt="Gouvernement"
+//         />
+//         <LazyFooterPartnersLogo
+//           href="https://www.ademe.fr"
+//           imageSrc="/logo-ADEME.svg"
+//           target="_blank"
+//           imageAlt="ADEME"
+//         />
+//       </FooterPartners>
+//       <FooterBottom>
+//         <FooterLink
+//           asLink={
+//             <Link href="/accessibilite" className="fr-footer__bottom-link">
+//               Accessibilité: non conforme
+//             </Link>
+//           }
+//         />
+//         <FooterLink
+//           asLink={
+//             <Link href="/mentions-legales" className="fr-footer__bottom-link">
+//               Mentions légales & CGU
+//             </Link>
+//           }
+//         />
+//         <FooterLink href="/#consentement">
+//           Cookies &amp; Consentements
+//         </FooterLink>
+//         <FooterLink
+//           asLink={
+//             <Link
+//               href="/politique-de-confidentialite"
+//               className="fr-footer__bottom-link"
+//             >
+//               Données personnelles
+//             </Link>
+//           }
+//         />
+//         <FooterLink
+//           asLink={
+//             <Link href="/stats" className="fr-footer__bottom-link">
+//               Statistiques
+//             </Link>
+//           }
+//         />
+//         <FooterLink
+//           asLink={
+//             <Link href="/contact" className="fr-footer__bottom-link">
+//               Contact
+//             </Link>
+//           }
+//         />
+//         <FooterLink
+//           target="_blank"
+//           href="https://github.com/betagouv/france-chaleur-urbaine"
+//         >
+//           <Image
+//             src="/icons/github-brands.svg"
+//             width={12}
+//             height={12}
+//             alt=""
+//             aria-hidden
+//           />{' '}
+//           Github
+//         </FooterLink>
+//         <FooterCopy>
+//           Sauf mention contraire, tous les contenus de ce site sont sous{' '}
+//           <a
+//             href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
+//             target="_blank"
+//             rel="noreferrer"
+//           >
+//             licence etalab-2.0
+//           </a>
+//         </FooterCopy>
+//       </FooterBottom>
+//     </FooterDS>
+//   );
+// };
 
-// Permet au composant FooterPartners de retrouver le logo
-LazyFooterPartnersLogo.defaultProps = {
-  __TYPE: 'FooterPartnersLogo',
-};
+// /**
+//  * Version des logo partenaires qui active le lazy loading.
+//  */
+// const LazyFooterPartnersLogo = (
+//   props: ComponentProps<typeof FooterPartnersLogo> & { href: string }
+// ) => (
+//   <Link className="fr-footer__partners-link" href={props.href} target="_blank">
+//     <img
+//       className="fr-footer__logo"
+//       src={props.imageSrc}
+//       alt={props.imageAlt}
+//       loading="lazy"
+//     />
+//   </Link>
+// );
+
+// // Permet au composant FooterPartners de retrouver le logo
+// LazyFooterPartnersLogo.defaultProps = {
+//   __TYPE: 'FooterPartnersLogo',
+// };

@@ -1,4 +1,4 @@
-import { ToolItem } from '@codegouvfr/react-dsfr';
+// import { ToolItem } from '@codegouvfr/react-dsfr';
 import styled from 'styled-components';
 
 /**
@@ -34,13 +34,14 @@ export const FullScreenItems = styled.div`
   }
 `;
 
-export const StopImpersonationButton = styled(ToolItem)`
+// export const StopImpersonationButton = styled(ToolItem)`
+export const StopImpersonationButton = styled.div`
   background-color: var(--background-flat-error) !important;
   color: white !important;
   border-radius: 6px;
 `;
 
 // Permet au composant ToolItemGroup de retrouver ce ToolItem
-StopImpersonationButton.defaultProps = {
-  __TYPE: 'ToolItem',
-};
+// StopImpersonationButton.defaultProps = {
+//   __TYPE: 'ToolItem',
+// };
