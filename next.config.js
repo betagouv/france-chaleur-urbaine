@@ -115,6 +115,8 @@ module.exports = withBundleAnalyzer(
       eslint: {
         ignoreDuringBuilds: true,
       },
+      reactStrictMode: true,
+      swcMinify: true,
       async redirects() {
         return [
           {
@@ -187,13 +189,18 @@ module.exports = withBundleAnalyzer(
           })),
         ];
       },
-      webpack: function (config) {
+      webpack: (config) => {
         config.module.rules.push({
           test: /\.md$/,
           use: 'raw-loader',
         });
+        config.module.rules.push({
+          test: /\.woff2$/,
+          type: 'asset/resource',
+        });
         return config;
       },
+      transpilePackages: ['@codegouvfr/react-dsfr'],
     },
     {
       // For all available options, see:

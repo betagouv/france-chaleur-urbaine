@@ -4,10 +4,11 @@ import {
   GoogleAdsMarkup,
   LinkedInMarkup,
 } from '@components/Markup';
-import '@gouvfr/dsfr/dist/dsfr.min.css';
-import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
-import '@gouvfr/dsfr/dist/utility/icons/icons-editor/icons-editor.min.css';
-import '@gouvfr/dsfr/dist/utility/icons/icons-document/icons-document.min.css';
+
+// FIXME vérifier le flicker au chargement
+// import '@gouvfr/dsfr/dist/dsfr.min.css';
+import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
+
 import 'remixicon/fonts/remixicon.css';
 import '@reach/combobox/styles.css';
 import { Session } from 'next-auth';
@@ -32,6 +33,32 @@ import { useAnalytics } from 'src/services/analytics';
 import { SWRConfig, SWRConfiguration } from 'swr';
 import { usePreserveScroll } from '@hooks/usePreserveScroll';
 import HotjarMarkup from '@components/Markup/HotjarMarkup';
+import Link from 'next/link';
+
+declare module '@codegouvfr/react-dsfr/next-pagesdir' {
+  interface RegisterLink {
+    Link: typeof Link;
+  }
+}
+
+const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
+  defaultColorScheme: 'system',
+  Link,
+  preloadFonts: [
+    //"Marianne-Light",
+    //"Marianne-Light_Italic",
+    'Marianne-Regular',
+    //"Marianne-Regular_Italic",
+    'Marianne-Medium',
+    //"Marianne-Medium_Italic",
+    'Marianne-Bold',
+    //"Marianne-Bold_Italic",
+    //"Spectral-Regular",
+    //"Spectral-ExtraBold"
+  ],
+});
+
+export { dsfrDocumentApi };
 
 const og = {
   // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
@@ -145,7 +172,7 @@ const swrConfig: SWRConfiguration = {
   revalidateOnFocus: false,
 };
 
-function MyApp({
+function App({
   Component,
   pageProps,
 }: AppProps<{
@@ -247,4 +274,4 @@ function MyApp({
     </>
   );
 }
-export default MyApp;
+export default withDsfr(App);

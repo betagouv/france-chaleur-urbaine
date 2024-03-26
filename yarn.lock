@@ -202,7 +202,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.22.5"
 
-"@babel/runtime@^7.12.5", "@babel/runtime@^7.19.4", "@babel/runtime@^7.20.13", "@babel/runtime@^7.23.2":
+"@babel/runtime@^7.12.5", "@babel/runtime@^7.20.13", "@babel/runtime@^7.23.2":
   version "7.23.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.23.6.tgz#c05e610dc228855dc92ef1b53d07389ed8ab521d"
   integrity sha512-zHd0eUrf5GZoOWVCXp6koAKQTfZV07eit6bGPmJgnZdnSAvvZee6zniW2XMF7Cmc4ISOOnPy3QaSiIJGJkVEDQ==
@@ -243,6 +243,14 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
+"@codegouvfr/react-dsfr@^1.9.2":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.9.2.tgz#db4925f52459d10ef4399cd5331acdab5f9ca55e"
+  integrity sha512-dZkcq+qmB5SuBHmht++ImV+PA0fwqiyaNxSqslQ5xrHCqkzISBcY5HOt9K+xXCZniFnHfovfvu3bR4JdG2gW1w==
+  dependencies:
+    tsafe "^1.6.3"
+    yargs-parser "^21.1.1"
+
 "@colors/colors@1.6.0", "@colors/colors@^1.6.0":
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.6.0.tgz#ec6cd237440700bc23ca23087f513c75508958b0"
@@ -273,17 +281,6 @@
     colorspace "1.1.x"
     enabled "2.0.x"
     kuler "^2.0.0"
-
-"@dataesr/react-dsfr@^3.9.1":
-  version "3.10.0"
-  resolved "https://registry.yarnpkg.com/@dataesr/react-dsfr/-/react-dsfr-3.10.0.tgz#3fc03f9be72551cd7ff399126a9d873aba1409d6"
-  integrity sha512-fnHaKniptSHDJkRLnFRx6gpOgaLPGY1hIXTSDfaZnMwz/vXjSUL2VkwIetW3O1Wpo5LGyDSW4KRHcdWWzq6qbQ==
-  dependencies:
-    "@babel/runtime" "^7.19.4"
-    "@gouvfr/dsfr" "1.7.2"
-    classnames "^2.3.2"
-    prop-types "^15.8.1"
-    uuid "^9.0.0"
 
 "@emotion/is-prop-valid@^1.1.0":
   version "1.2.1"
@@ -573,11 +570,6 @@
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-8.3.1.tgz#7753df0cb88d7649becf984a96dd1bd0a26f43e3"
   integrity sha512-FdgpFxY6V6rLZE9mmIBb9hM0xpfvQOSNOLnzolzKwsE1DH+gC7lEKV1p1IbR0lAYyvYd5a4u3qWJzowUkw1bIw==
-
-"@gouvfr/dsfr@1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@gouvfr/dsfr/-/dsfr-1.7.2.tgz#c522fce21a14989a10e30583160118c39c9c05d1"
-  integrity sha512-hPNtz+gHcc8m7ZPANxSOFMz4Ap+M9FHOudqoMR/+Kjl5FCOqwA6u/aoYnMJ8KqedS1k5XThFMp7jiktr53qXYw==
 
 "@humanwhocodes/config-array@^0.11.13":
   version "0.11.13"
@@ -2376,11 +2368,6 @@ chownr@^1.1.1:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.1.4.tgz#6fc9d7b42d32a583596337666e7d08084da2cc6b"
   integrity sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==
-
-classnames@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.2.tgz#351d813bf0137fcc6a76a16b88208d2560a0d924"
-  integrity sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==
 
 cli-cursor@^4.0.0:
   version "4.0.0"
@@ -7294,6 +7281,11 @@ ts-node@^10.9.2:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
+tsafe@^1.6.3:
+  version "1.6.6"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.6.6.tgz#fd93e64d6eb13ef83ed1650669cc24bad4f5df9f"
+  integrity sha512-gzkapsdbMNwBnTIjgO758GujLCj031IgHK/PKr2mrmkCSJMhSOR5FeOuSxKLMUoYc0vAA4RGEYYbjt/v6afD3g==
+
 tsconfig-paths@^3.15.0:
   version "3.15.0"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.15.0.tgz#5299ec605e55b1abb23ec939ef15edaf483070d4"
@@ -7980,6 +7972,11 @@ yaml@2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.3.1.tgz#02fe0975d23cd441242aa7204e09fc28ac2ac33b"
   integrity sha512-2eHWfjaoXgTBC2jNM1LRef62VQa0umtvRiDSk6HSzW7RvS5YtkabJrwYLLEKWBc8a5U2PTSCs+dJjUTJdlHsWQ==
+
+yargs-parser@^21.1.1:
+  version "21.1.1"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-21.1.1.tgz#9096bceebf990d21bb31fa9516e0ede294a77d35"
+  integrity sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==
 
 yn@3.1.1:
   version "3.1.1"
