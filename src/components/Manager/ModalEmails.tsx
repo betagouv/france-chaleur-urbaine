@@ -79,8 +79,6 @@ function ModalEmails(props: Props) {
       if (!isLoaded) {
         loadModal();
         setIsLoaded(true);
-      }
-      if (!sentHistory) {
         getEmailsHistory();
       }
     }
