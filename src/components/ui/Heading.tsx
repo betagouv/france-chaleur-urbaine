@@ -12,6 +12,7 @@ interface HeadingProps extends SpacingProperties {
   legacyColor?: LegacyColor;
   center?: boolean;
   id?: string;
+  className?: string;
 }
 
 /**

@@ -24,6 +24,7 @@ type StyleProps = {
   maxWidth?: CSSProperties['maxWidth'];
   height?: CSSProperties['height'];
   minHeight?: CSSProperties['minHeight'];
+  maxHeight?: CSSProperties['maxHeight'];
   opacity?: CSSProperties['opacity'];
 };
 
@@ -58,6 +59,7 @@ const StyledBox = styled.div<StyleProps>`
   max-width: ${({ maxWidth }) => maxWidth};
   height: ${({ height }) => height};
   min-height: ${({ minHeight }) => minHeight};
+  max-height: ${({ maxHeight }) => maxHeight};
   opacity: ${({ opacity }) => opacity};
 `;
 
@@ -98,6 +100,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       maxWidth={props.maxWidth}
       height={props.height}
       minHeight={props.minHeight}
+      maxHeight={props.maxHeight}
       opacity={props.opacity}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
