@@ -9,3 +9,15 @@ export function prettyFormatNumber(
       ).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
     : null;
 }
+
+/**
+ * Normalize a string (lower case and remove accents).
+ */
+export function normalize(string: string | undefined | null): string {
+  return string === null || string === undefined
+    ? ''
+    : string
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+}

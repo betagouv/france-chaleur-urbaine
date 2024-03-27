@@ -6,14 +6,14 @@ Pour découvrir les installations qui alimentent les réseaux de chaleur, direct
 \
 Mise en service en 2007, Isséane est la plus récente de ces trois UVE. La suite en images ci-dessous ! 👇
 
-![](.gitbook/assets/1.jpg)\
-![](.gitbook/assets/2.jpg)
+![](<.gitbook/assets/1 (1).jpg>)\
+![](<.gitbook/assets/2 (1).jpg>)
 
-![](.gitbook/assets/3.jpg)
+![](<.gitbook/assets/3 (1).jpg>)
 
-![](.gitbook/assets/4.jpg)
+![](<.gitbook/assets/4 (1).jpg>)
 
-![](.gitbook/assets/5.jpg)
+![](<.gitbook/assets/5 (1).jpg>)
 
 ![](.gitbook/assets/6.jpg)
 

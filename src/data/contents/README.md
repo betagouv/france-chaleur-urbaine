@@ -1,9 +1,7 @@
-# Comparaison du coût de la chaleur pour un logement en copropriété
+# Les chaudières biomasse ne contribuent pas à la déforestation
 
-💸 Le chauffage urbain constitue en moyenne la solution de chauffage la plus compétitive pour les logements collectifs !\
+🌿 La biomasse fait souvent l'objet de débats... enflammés ! Peut-on vraiment la considérer comme une énergie renouvelable ? Y en aura-t-il assez pour tous les usages dans les prochaines années ? Est-elle vraiment locale ? Son utilisation en chaufferie ne contribue-t-elle pas au phénomène de déforestation ? C'est à cette dernière question que nous nous attaquons aujourd'hui, avec la seconde infographie de notre série sur les idées reçues.\
 \
-👉 C'est ce que conclut la nouvelle enquête annuelle Amorce / ADEME sur le prix de vente de la chaleur et du froid, portant sur l'année 2022. Et la différence est significative : par rapport à une chaudière collective au fioul, la facture globale annuelle est réduite de 40 %.\
-\
-🔎 La figure ci-dessous illustre le coût global annuel chauffage + eau chaude sanitaire pour un logement de 70 m² dans un immeuble construit entre 2005 et 2012 (RT2005). Les aides à l'investissement et à l'achat d'énergie (chèque énergie, gel du tarif réglementé, bouclier tarifaire...) ont été déduites : c'est donc le prix le plus proche de celui payé par l'usager qui est représenté.
+🌳 Et la réponse est non ! L'usage de la biomasse par les réseaux de chaleur ne participe pas à la destruction de la forêt française, dont la surface s'étend chaque année. La forêt est en revanche affectée par d'autres phénomènes, conséquences du changement climatique : canicules, sécheresses, incendies... Pour limiter l'importance de ceux-ci, il est urgent de réduire nos émissions de gaz à effet de serre, ce à quoi les réseaux de chaleur contribuent.
 
-![](.gitbook/assets/cout22.jpg)
+<figure><img src=".gitbook/assets/2.jpg" alt=""><figcaption></figcaption></figure>
