@@ -278,7 +278,7 @@ const Manager = () => {
       ),
     },
     {
-      name: 'Contact',
+      name: 'Contact / Envoi de mails',
       label: 'Contact',
       render: (demand) => (
         <Contact demand={demand} updateDemand={updateDemand} />
