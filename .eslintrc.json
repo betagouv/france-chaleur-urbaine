@@ -63,6 +63,7 @@
     "react-hooks/exhaustive-deps": "off",
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
-    "no-irregular-whitespace": "off"
+    "no-irregular-whitespace": "off",
+    "@next/next/no-img-element": "off"
   }
 }

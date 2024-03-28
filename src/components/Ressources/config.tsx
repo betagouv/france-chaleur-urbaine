@@ -15,7 +15,7 @@ import Priority from './Contents/Priority';
 import Role from './Contents/Role';
 import State from './Contents/State';
 import Strengths from './Contents/Strengths';
-import Supports from './Contents/Supports';
+// import Supports from './Contents/Supports';
 
 export type Document = {
   title: string;
@@ -30,7 +30,8 @@ export const supports = {
   title: 'Nos supports de communication',
   description:
     'Retrouvez ici tous nos supports de communication, à partager autour de vous !',
-  content: <Supports />,
+  // content: <Supports />,
+  content: <></>,
 };
 
 export const issues: Record<string, Document> = {

@@ -431,6 +431,15 @@ const trackingEvents = {
   'Téléchargement|Supports|Infographie Optimisation': {
     matomo: ['Téléchargement', 'Supports', 'Infographie Optimisation'],
   },
+  'Téléchargement|Supports|Idées reçues 1': {
+    matomo: ['Téléchargement', 'Supports', 'Idées reçues 1'],
+  },
+  'Téléchargement|Supports|Idées reçues 2': {
+    matomo: ['Téléchargement', 'Supports', 'Idées reçues 2'],
+  },
+  'Téléchargement|Supports|Idées reçues 3': {
+    matomo: ['Téléchargement', 'Supports', 'Idées reçues 3'],
+  },
   Vidéo: {
     matomo: ['Vidéo'],
   },

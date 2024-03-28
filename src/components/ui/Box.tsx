@@ -21,8 +21,10 @@ type StyleProps = {
   borderRadius?: CSSProperties['borderRadius'];
   width?: CSSProperties['width'];
   minWidth?: CSSProperties['minWidth'];
+  maxWidth?: CSSProperties['maxWidth'];
   height?: CSSProperties['height'];
   minHeight?: CSSProperties['minHeight'];
+  maxHeight?: CSSProperties['maxHeight'];
   opacity?: CSSProperties['opacity'];
 };
 
@@ -54,8 +56,10 @@ const StyledBox = styled.div<StyleProps>`
   border-radius: ${({ borderRadius }) => borderRadius};
   width: ${({ width }) => width};
   min-width: ${({ minWidth }) => minWidth};
+  max-width: ${({ maxWidth }) => maxWidth};
   height: ${({ height }) => height};
   min-height: ${({ minHeight }) => minHeight};
+  max-height: ${({ maxHeight }) => maxHeight};
   opacity: ${({ opacity }) => opacity};
 `;
 
@@ -93,8 +97,10 @@ function Box(props: PropsWithChildren<BoxProps>) {
       borderRadius={props.borderRadius}
       width={props.width}
       minWidth={props.minWidth}
+      maxWidth={props.maxWidth}
       height={props.height}
       minHeight={props.minHeight}
+      maxHeight={props.maxHeight}
       opacity={props.opacity}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
