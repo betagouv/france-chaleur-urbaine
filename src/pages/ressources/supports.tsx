@@ -194,22 +194,22 @@ const videos: InfographieItemProps[] = [
 
 const guides: InfographieItemProps[] = [
   {
+    label: 'Guide Copropriétés',
+    imgUrl: '/img/supports_guide_coproprietes.webp',
+    linkUrl: '/documentation/guide-france-chaleur-urbaine.pdf',
+    eventKey: 'Téléchargement|Guide FCU|coproprietaire',
+  },
+  {
     label: 'Guide Exploitants',
     imgUrl: '/img/supports_guide_exploitants.webp',
     linkUrl: '/documentation/FCU_guide_exploitants.pdf',
-    eventKey: 'Téléchargement|Guide Exploitants|Collectivités et exploitants', // FIXME changer contexte
+    eventKey: 'Téléchargement|Guide Exploitants|Collectivités et exploitants',
   },
   {
     label: 'Guide Collectivités',
     imgUrl: '/img/supports_guide_collectivites.webp',
     linkUrl: '/documentation/FCU_guide_collectivites.pdf',
-    eventKey: 'Téléchargement|Guide Collectivités|Collectivités et exploitants', // FIXME changer contexte
-  },
-  {
-    label: 'Guide Copropriétés',
-    imgUrl: '/img/supports_guide_coproprietes.webp',
-    linkUrl: '/documentation/guide-france-chaleur-urbaine.pdf',
-    eventKey: 'Téléchargement|Guide FCU|coproprietaire', // FIXME changer contexte
+    eventKey: 'Téléchargement|Guide Collectivités|Collectivités et exploitants',
   },
 ];
 
