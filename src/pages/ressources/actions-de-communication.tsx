@@ -53,55 +53,65 @@ const ActionsDeCommunicationPage = () => {
           <Heading size="h5" color="blue-france" mb="6w" center>
             Comment organiser une campagne avec France Chaleur Urbaine
           </Heading>
-          <Box display="flex">
+          <Box display="flex" gap="48px">
             <Image
               src="/img/campagnes_organisation.webp"
               alt=""
               width={240}
               height={201}
               priority
+              className="fr-hidden fr-unhidden-md"
             />
 
-            <Box display="flex" flexDirection="column" flexWrap="wrap">
-              <Box display="flex">
+            <Box className="fr-grid-row fr-grid-row--gutters">
+              <Box display="flex" className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
                 <BulleNombre>1</BulleNombre>
                 <Text size="xs">
-                  Je définis mon projet de communication avec France Chaleur
-                  Urbaine&nbsp;: messages à passer, supports mobilisables …
+                  <strong>Je définis mon projet</strong> de communication avec
+                  France Chaleur Urbaine&nbsp;: messages à passer, supports
+                  mobilisables …
                 </Text>
               </Box>
-              <Box display="flex">
+              <Box display="flex" className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
                 <BulleNombre>2</BulleNombre>
                 <Text size="xs">
-                  Je m’assure que les informations sont complètes sur la carte
+                  <strong>
+                    Je m’assure que les informations sont complètes sur la carte
+                  </strong>{' '}
                   France Chaleur Urbaine (tracé du réseau existant et à venir,
                   périmètre de développement prioritaire, …)
                 </Text>
               </Box>
-              <Box display="flex">
+              <Box display="flex" className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
                 <BulleNombre>3</BulleNombre>
                 <Text size="xs">
-                  J’intègre sur le site de la collectivité le test d’adresse
+                  <strong>
+                    J’intègre sur le site de la collectivité le test d’adresse
+                  </strong>{' '}
                   France Chaleur Urbaine et / ou la carte, par le simple
                   copier-coller d’un lien dans le code source de mon site
                   (iframe)
                 </Text>
               </Box>
-              <Box display="flex">
+              <Box display="flex" className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
                 <BulleNombre>4</BulleNombre>
                 <Text size="xs">
-                  France Chaleur Urbaine me propose des visuels personnalisés,
-                  adaptés à mon projet
+                  <strong>
+                    France Chaleur Urbaine me propose des visuels personnalisés
+                  </strong>
+                  , adaptés à mon projet
                 </Text>
               </Box>
-              <Box display="flex">
+              <Box display="flex" className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
                 <BulleNombre>5</BulleNombre>
                 <Text size="xs">
-                  Je me charge de l’impression des supports et de l’affichage.
+                  <strong>Je me charge de l’impression</strong> des supports et
+                  de l’affichage.
                   <br />
+                  La campagne est lancée&nbsp;!
                   <br />
-                  La campagne est lancée ! Je retrouve toutes les demandes
-                  déposées sur mon espace gestionnaire
+                  <strong>Je retrouve toutes les demandes</strong> déposées sur
+                  mon espace gestionnaire
                 </Text>
               </Box>
             </Box>
@@ -268,8 +278,9 @@ const BulleNombre = ({ children }: PropsWithChildren) => (
     display="grid"
     placeContent="center"
     fontWeight="bold"
-    fontSize="25px"
+    fontSize="24px"
     textColor="#405AB3"
+    mr="2w"
   >
     {children}
   </Box>
