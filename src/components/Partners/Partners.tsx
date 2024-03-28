@@ -1,5 +1,5 @@
 import { partnerData } from '@data/partenaires';
-import { ButtonGroup, Icon } from '@dataesr/react-dsfr';
+import { ButtonGroup, Icon } from '@codegouvfr/react-dsfr';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Arrow,

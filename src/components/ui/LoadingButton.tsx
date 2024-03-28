@@ -1,4 +1,4 @@
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr';
 import { ComponentProps, PropsWithChildren } from 'react';
 import { Oval } from 'react-loader-spinner';
 import styled from 'styled-components';

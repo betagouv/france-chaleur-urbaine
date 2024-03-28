@@ -1,5 +1,5 @@
 import Loader from '@components/Loader';
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr';
 import { Form, Formik, FormikValues } from 'formik';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';

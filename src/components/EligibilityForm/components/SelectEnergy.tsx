@@ -1,4 +1,4 @@
-import { Radio, RadioGroup } from '@dataesr/react-dsfr';
+import { Radio, RadioGroup } from '@codegouvfr/react-dsfr';
 import React, { useMemo } from 'react';
 
 type CheckEligibilityFormProps = {

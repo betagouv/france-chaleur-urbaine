@@ -1,4 +1,4 @@
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@codegouvfr/react-dsfr';
 import { Glass, ImageContainer } from './index.styles';
 
 const Infographie = ({

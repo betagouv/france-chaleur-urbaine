@@ -1,6 +1,6 @@
 import { Glass, ImageContainer } from '@components/Infographie/index.styles';
 import WrappedText from '@components/WrappedText/WrappedText';
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@codegouvfr/react-dsfr';
 import { Container, Title } from './Explanation.styles';
 import CoproGuide from './CoproGuide';
 

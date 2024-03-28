@@ -1,5 +1,5 @@
 import { TrackingEvent, trackEvent } from 'src/services/analytics';
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr';
 import Box from '@components/ui/Box';
 import styled, { css } from 'styled-components';
 

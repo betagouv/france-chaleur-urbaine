@@ -11,7 +11,7 @@ import {
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
 import AddressAutocomplete from '@components/addressAutocomplete';
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';

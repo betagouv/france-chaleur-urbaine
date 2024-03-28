@@ -1,4 +1,4 @@
-import { SideMenu as SideMenuDSFR } from '@dataesr/react-dsfr';
+import { SideMenu as SideMenuDSFR } from '@codegouvfr/react-dsfr';
 import styled from 'styled-components';
 
 export const StickyWrapper = styled.div`

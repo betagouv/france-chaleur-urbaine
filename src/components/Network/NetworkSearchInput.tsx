@@ -1,5 +1,5 @@
 import Box from '@components/ui/Box';
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@codegouvfr/react-dsfr';
 import { NetworkSearchResult } from '@pages/api/networks/search';
 import {
   Combobox,

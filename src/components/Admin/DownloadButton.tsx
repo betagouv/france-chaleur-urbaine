@@ -1,4 +1,4 @@
-import { Icon } from '@dataesr/react-dsfr';
+import { Icon } from '@codegouvfr/react-dsfr';
 import { useServices } from 'src/services';
 
 const DownloadButton = ({ id, inError }: { id: string; inError: boolean }) => {

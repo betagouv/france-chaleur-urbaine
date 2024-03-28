@@ -1,4 +1,4 @@
-import { MediaVideo } from '@dataesr/react-dsfr';
+import { MediaVideo } from '@codegouvfr/react-dsfr';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { trackEvent } from 'src/services/analytics';

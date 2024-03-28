@@ -32,11 +32,13 @@
     "db:new": "knex migrate:make",
     "db:revert": "knex migrate:rollback",
     "db:revert:one": "knex migrate:down",
-    "scalingo-postbuild": "yarn build && next-sitemap"
+    "scalingo-postbuild": "yarn build && next-sitemap",
+    "predev": "only-include-used-icons",
+    "prebuild": "only-include-used-icons"
   },
   "dependencies": {
+    "@codegouvfr/react-dsfr": "^1.9.2",
     "@commander-js/extra-typings": "^11.1.0",
-    "@dataesr/react-dsfr": "^3.9.1",
     "@faker-js/faker": "^8.0.2",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@next/bundle-analyzer": "13.5.6",

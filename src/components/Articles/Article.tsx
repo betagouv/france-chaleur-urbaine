@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardImage,
   CardTitle,
-} from '@dataesr/react-dsfr';
+} from '@codegouvfr/react-dsfr';
 import { ComponentProps } from 'react';
 import { Article as ArticleType } from 'src/types/Article';
 

@@ -1,4 +1,4 @@
-import { Select } from '@dataesr/react-dsfr';
+import { Select } from '@codegouvfr/react-dsfr';
 import styled from 'styled-components';
 
 export const StatusSelect = styled(Select)`

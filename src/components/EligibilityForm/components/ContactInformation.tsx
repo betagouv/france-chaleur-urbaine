@@ -1,6 +1,6 @@
 import Input from '@components/shared/input';
 import RadioGroup from '@components/shared/RadioGroup';
-import { Alert } from '@dataesr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr';
 import { Field, useFormikContext } from 'formik';
 import styled from 'styled-components';
 import * as Yup from 'yup';

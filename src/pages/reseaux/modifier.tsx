@@ -12,7 +12,7 @@ import {
   Radio,
   RadioGroup,
   TextInput,
-} from '@dataesr/react-dsfr';
+} from '@codegouvfr/react-dsfr';
 import { ModificationReseau } from '@pages/api/modification-reseau';
 import { NetworkSearchResult } from '@pages/api/networks/search';
 import { postFetchJSON } from '@utils/network';
