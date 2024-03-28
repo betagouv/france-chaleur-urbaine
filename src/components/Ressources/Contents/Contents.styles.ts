@@ -104,7 +104,7 @@ export const StyledInfographieItem = styled.div<{ width: number }>`
     }
 
     &::after {
-      content: '' !important;
+      content: unset !important;
     }
   }
 `;

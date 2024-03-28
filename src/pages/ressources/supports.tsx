@@ -311,7 +311,9 @@ const InfographieItem = ({ width = 150, ...props }: InfographieItemProps) => (
   >
     <Link href={props.linkUrl} isExternal eventKey={props.eventKey}>
       <img src={props.imgUrl} alt="" loading="lazy" width={width} />
-      <Box p="1v">{props.label}</Box>
+      <Text size="sm" p="1v">
+        {props.label}
+      </Text>
     </Link>
   </StyledInfographieItem>
 );
