@@ -233,7 +233,7 @@ const SupportsPage = () => {
             <Text size="lg" mb="3w">
               Retrouvez tous nos supports de communication pour comprendre
               simplement et rapidement les enjeux liés aux réseaux de chaleur ou
-              faire connaître notre service.
+              mieux connaître notre service.
             </Text>
           </Box>
 
