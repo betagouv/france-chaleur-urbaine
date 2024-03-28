@@ -172,6 +172,7 @@ module.exports = withBundleAnalyzer(
             '/dalkia',
             '/engie',
             '/form',
+            '/idex',
             '/map',
             '/page-reseaux/:network',
             '/viaseva',
