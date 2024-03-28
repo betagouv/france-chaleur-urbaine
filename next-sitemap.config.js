@@ -22,7 +22,6 @@ const ressources = [
 module.exports = {
   siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
   generateRobotsTxt: true, // (optional)
-  // FIXME arranger les chemins + redirections
   additionalPaths: () => {
     return ressources.map((key) => ({
       loc: `/ressources/${key}`,
