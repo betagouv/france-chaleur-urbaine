@@ -437,6 +437,9 @@ const trackingEvents = {
   'Téléchargement|Supports|Idées reçues 2': {
     matomo: ['Téléchargement', 'Supports', 'Idées reçues 2'],
   },
+  'Téléchargement|Supports|Idées reçues 3': {
+    matomo: ['Téléchargement', 'Supports', 'Idées reçues 3'],
+  },
   Vidéo: {
     matomo: ['Vidéo'],
   },

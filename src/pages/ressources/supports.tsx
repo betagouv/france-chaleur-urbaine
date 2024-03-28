@@ -86,6 +86,12 @@ const infographies: InfographieItemProps[] = [
     linkUrl: '/img/FCU_Infographie_idees_recues_2.webp',
     eventKey: 'Téléchargement|Supports|Idées reçues 2',
   },
+  {
+    label: 'Les idées reçues n°3',
+    imgUrl: '/img/FCU_Infographie_idees_recues_3.preview.webp',
+    linkUrl: '/img/FCU_Infographie_idees_recues_3.webp',
+    eventKey: 'Téléchargement|Supports|Idées reçues 3',
+  },
 ];
 
 const reportages: InfographieItemProps[] = [
