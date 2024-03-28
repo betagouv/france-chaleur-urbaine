@@ -11,12 +11,13 @@ const ActionsDeCommunicationPage = () => {
     <SimplePage title="Nos actions de communication - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
-          className="fr-container"
           display="flex"
           alignItems="center"
           gap="16px"
-          px="16w"
+          maxWidth="900px"
+          mx="auto"
           pt="8w"
+          px="2w"
         >
           <Box flex>
             <Heading size="h1" color="blue-france">
@@ -165,10 +166,10 @@ const ActionsDeCommunicationPage = () => {
             créer plus de 5 km d’extension de son réseau, et de réaliser une
             nouvelle installation géothermique. France Chaleur Urbaine a
             accompagné la ville et son délégataire Coriance dans une campagne de
-            communication multi-supports : publicité pour le journal communal,
-            affiches pour abribus et espaces d’affichage de la ville, ainsi
-            qu’une petite vidéo pédagogique pour expliquer la géothermie aux
-            plus jeunes.
+            communication multi-supports&nbsp;: publicité pour le journal
+            communal, affiches pour abribus et espaces d’affichage de la ville,
+            ainsi qu’une petite vidéo pédagogique pour expliquer la géothermie
+            aux plus jeunes.
           </Text>
         </Box>
         <Box className="fr-col fr-col-12 fr-col-lg-6">

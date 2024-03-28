@@ -11,12 +11,13 @@ const OutilsPage = () => {
     <SimplePage title="Nos outils - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
-          className="fr-container"
           display="flex"
           alignItems="center"
           gap="16px"
-          px="16w"
+          maxWidth="900px"
+          mx="auto"
           pt="8w"
+          px="2w"
         >
           <Box flex>
             <Heading size="h1" color="blue-france">
@@ -40,7 +41,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
 
-      <Box p="10w" className="fr-container">
+      <Box py="10w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           Test d’adresses en masse
         </Heading>
@@ -57,7 +58,7 @@ const OutilsPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75">
-        <Box p="10w" className="fr-container">
+        <Box py="10w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="0">
             Iframes
           </Heading>
@@ -77,7 +78,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
 
-      <Box p="10w" className="fr-container">
+      <Box py="10w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           API
         </Heading>
@@ -96,7 +97,7 @@ const OutilsPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75">
-        <Box p="10w" className="fr-container">
+        <Box py="10w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="0">
             Téléchargement de données
           </Heading>
@@ -115,7 +116,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
 
-      <Box p="10w" className="fr-container">
+      <Box py="10w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           Simulateur d’aides
         </Heading>
@@ -146,7 +147,7 @@ const OutilsPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75">
-        <Box p="10w" className="fr-container">
+        <Box py="10w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="0">
             Fiches par réseau
           </Heading>

@@ -200,12 +200,13 @@ const SupportsPage = () => {
     <SimplePage title="Nos supports - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
-          className="fr-container"
           display="flex"
           alignItems="center"
           gap="16px"
-          px="16w"
+          maxWidth="900px"
+          mx="auto"
           pt="8w"
+          px="2w"
         >
           <Box flex>
             <Heading size="h1" color="blue-france">
@@ -230,7 +231,7 @@ const SupportsPage = () => {
         </Box>
       </Box>
 
-      <Box p="10w" className="fr-container" id="infographies">
+      <Box py="10w" className="fr-container" id="infographies">
         <Heading size="h2" color="blue-france" center mb="8w">
           Infographies
         </Heading>
@@ -242,7 +243,7 @@ const SupportsPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75" id="reportages">
-        <Box p="10w" className="fr-container">
+        <Box py="10w" className="fr-container">
           <Heading size="h2" color="blue-france" center mb="8w">
             Reportages
           </Heading>
@@ -254,7 +255,7 @@ const SupportsPage = () => {
         </Box>
       </Box>
 
-      <Box p="10w" className="fr-container" id="videos">
+      <Box py="10w" className="fr-container" id="videos">
         <Heading size="h2" color="blue-france" center mb="8w">
           Vidéos
         </Heading>
@@ -266,7 +267,7 @@ const SupportsPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75" id="guides">
-        <Box p="10w" className="fr-container">
+        <Box py="10w" className="fr-container">
           <Heading size="h2" color="blue-france" center mb="8w">
             Guides
           </Heading>

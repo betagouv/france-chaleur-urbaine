@@ -11,12 +11,13 @@ const Articles = () => {
     <SimplePage title="Nos actus - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
-          className="fr-container"
           display="flex"
           alignItems="center"
           gap="16px"
-          px="16w"
+          maxWidth="900px"
+          mx="auto"
           pt="8w"
+          px="2w"
         >
           <Box flex>
             <Heading size="h1" color="blue-france">
@@ -24,7 +25,7 @@ const Articles = () => {
             </Heading>
             <Text size="lg" mb="3w">
               France Chaleur Urbaine est un service en évolution permanente !
-              Retrouvez ici toutes nos actualités : évolutions du site,
+              Retrouvez ici toutes nos actualités&nbsp;: évolutions du site,
               campagnes de communication, nouveaux support pédagogiques,...
             </Text>
           </Box>
@@ -41,7 +42,7 @@ const Articles = () => {
         </Box>
       </Box>
 
-      <Box p="10w" className="fr-container">
+      <Box py="10w" className="fr-container">
         <Box className="fr-grid-row fr-grid-row--gutters">
           {articles.map((article, index) => (
             <div

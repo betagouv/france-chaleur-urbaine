@@ -45,12 +45,13 @@ const ArticlesPage = () => {
     <SimplePage title="Nos Articles - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
-          className="fr-container"
           display="flex"
           alignItems="center"
           gap="16px"
-          px="16w"
+          maxWidth="900px"
+          mx="auto"
           pt="8w"
+          px="2w"
         >
           <Box flex>
             <Heading size="h1" color="blue-france">
@@ -74,7 +75,7 @@ const ArticlesPage = () => {
         </Box>
       </Box>
 
-      <Box p="10w" className="fr-container">
+      <Box py="10w" className="fr-container">
         <Heading size="h2" color="blue-france" mb="6w" center>
           Les enjeux de la transition énergétique avec les réseaux de chaleur
         </Heading>
@@ -86,9 +87,9 @@ const ArticlesPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75">
-        <Box p="10w" className="fr-container">
+        <Box py="10w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="6w" center>
-            Les réseaux de chaleur en pratique : tout comprendre pour se
+            Les réseaux de chaleur en pratique&nbsp;: tout comprendre pour se
             raccorder
           </Heading>
           <Box className="fr-grid-row fr-grid-row--gutters">
@@ -99,7 +100,7 @@ const ArticlesPage = () => {
         </Box>
       </Box>
 
-      <Box p="10w" className="fr-container">
+      <Box py="10w" className="fr-container">
         <Heading size="h2" color="blue-france" mb="6w" center>
           Une filière en pleine croissance
         </Heading>
@@ -111,7 +112,7 @@ const ArticlesPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75">
-        <Box p="10w" className="fr-container">
+        <Box py="10w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="6w" center>
             Les réseaux de froid : un enjeu pour l'avenir
           </Heading>
