@@ -74,6 +74,18 @@ const infographies: InfographieItemProps[] = [
     linkUrl: '/img/FCU_optimisation_reseaux-chaleur.jpg',
     eventKey: 'Téléchargement|Supports|Infographie Optimisation',
   },
+  {
+    label: 'Les idées reçues n°1',
+    imgUrl: '/img/FCU_Infographie_idees_recues_1.preview.webp',
+    linkUrl: '/img/FCU_Infographie_idees_recues_1.webp',
+    eventKey: 'Téléchargement|Supports|Idées reçues 1',
+  },
+  {
+    label: 'Les idées reçues n°2',
+    imgUrl: '/img/FCU_Infographie_idees_recues_2.preview.webp',
+    linkUrl: '/img/FCU_Infographie_idees_recues_2.webp',
+    eventKey: 'Téléchargement|Supports|Idées reçues 2',
+  },
 ];
 
 const reportages: InfographieItemProps[] = [
