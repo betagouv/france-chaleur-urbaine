@@ -42,7 +42,7 @@ const articlesReseauxDeFroid: ArticleItemProps[] = Object.entries(
 
 const ArticlesPage = () => {
   return (
-    <SimplePage title="Nos Articles - France Chaleur Urbaine">
+    <SimplePage title="Nos articles - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
           display="flex"
