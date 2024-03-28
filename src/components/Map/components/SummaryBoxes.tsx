@@ -2,6 +2,7 @@ import Hoverable from '@components/Hoverable';
 import { Button, Icon, Tab, Tabs } from '@dataesr/react-dsfr';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
+import turfLength from '@turf/length';
 import { LineString, Polygon } from 'geojson';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
@@ -26,6 +27,7 @@ import { clientConfig } from 'src/client-config';
 import { trackEvent } from 'src/services/analytics';
 import { downloadObject } from '@utils/browser';
 import { formatAsISODate } from '@utils/date';
+import { lineStrings } from '@turf/helpers';
 
 const getConso = (consos: GasSummary[]) => {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
@@ -94,14 +96,20 @@ const SummaryBoxes = ({
     setDensite(undefined);
     if (lines) {
       trackEvent('Carto|Tracé défini');
-      lineIndex.current += 1;
-      const currentLineIndex = lineIndex.current;
-      heatNetworkService.densite(lines).then((result) => {
-        trackEvent('Carto|Densité recu');
-        if (currentLineIndex === lineIndex.current) {
-          setDensite(result);
-        }
-      });
+      if (tabIndex === 1) {
+        // densité thermique linéaire
+        lineIndex.current += 1;
+        const currentLineIndex = lineIndex.current;
+
+        heatNetworkService.densite(lines).then((result) => {
+          trackEvent('Carto|Densité recu');
+          if (currentLineIndex === lineIndex.current) {
+            setDensite(result);
+          }
+        });
+      } else {
+        // mesure de distance
+      }
     }
   }, [heatNetworkService, lines]);
 
@@ -180,9 +188,6 @@ const SummaryBoxes = ({
                 setTabIndex(index);
               }}
             >
-              {/*
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                @ts-ignore: to fix in react-dsfr */}
               <Tab label="Extraire des données sur les bâtiments">
                 {size && size > clientConfig.summaryAreaSizeLimit ? (
                   <Explanation>
@@ -311,9 +316,6 @@ const SummaryBoxes = ({
                   </ZoneInfos>
                 )}
               </Tab>
-              {/*
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                @ts-ignore: to fix in react-dsfr */}
               <Tab label="Calculer une densité thermique linéaire">
                 {lines && !densite ? (
                   <>
@@ -404,6 +406,18 @@ const SummaryBoxes = ({
                   </ZoneInfos>
                 )}
               </Tab>
+              <Tab label="Mesurer une distance">
+                {!lines ? (
+                  <>
+                    Dessinez un tracé sur la carte afin d'obtenir sa longueur.
+                  </>
+                ) : (
+                  <>
+                    Distance totale :{' '}
+                    {Math.round(turfLength(lineStrings(lines)) * 1000)}m
+                  </>
+                )}
+              </Tab>
             </Tabs>
             {((size && size > 5) ||
               (tabIndex === 0 && (!bounds || summary))) && (
@@ -478,6 +492,23 @@ const SummaryBoxes = ({
               </DrawButtons>
             )}
             {tabIndex === 1 && !lines && (
+              <DrawButton
+                size="sm"
+                icon="ri-edit-2-line"
+                onClick={() => {
+                  draw.deleteAll();
+                  setBounds(undefined);
+                  setLines(undefined);
+                  trackEvent('Carto|Définir un tracé');
+                  setDrawing(true);
+                  draw.changeMode('draw_line_string');
+                }}
+              >
+                Définir un tracé
+              </DrawButton>
+            )}
+
+            {tabIndex === 2 && (
               <DrawButton
                 size="sm"
                 icon="ri-edit-2-line"
