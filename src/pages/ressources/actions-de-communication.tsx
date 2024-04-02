@@ -51,7 +51,7 @@ const ActionsDeCommunicationPage = () => {
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
           <Heading size="h5" color="blue-france" mb="6w" center>
-            Comment organiser une campagne avec France Chaleur Urbaine
+            Comment organiser une campagne avec France Chaleur Urbaine&nbsp;?
           </Heading>
           <Box display="flex" gap="48px">
             <Image
@@ -69,7 +69,7 @@ const ActionsDeCommunicationPage = () => {
                 <Text size="xs">
                   <strong>Je définis mon projet</strong> de communication avec
                   France Chaleur Urbaine&nbsp;: messages à passer, supports
-                  mobilisables …
+                  mobilisables…
                 </Text>
               </Box>
               <Box display="flex" className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
@@ -79,7 +79,7 @@ const ActionsDeCommunicationPage = () => {
                     Je m’assure que les informations sont complètes sur la carte
                   </strong>{' '}
                   France Chaleur Urbaine (tracé du réseau existant et à venir,
-                  périmètre de développement prioritaire, …)
+                  périmètre de développement prioritaire…).
                 </Text>
               </Box>
               <Box display="flex" className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
@@ -90,7 +90,7 @@ const ActionsDeCommunicationPage = () => {
                   </strong>{' '}
                   France Chaleur Urbaine et / ou la carte, par le simple
                   copier-coller d’un lien dans le code source de mon site
-                  (iframe)
+                  (iframe).
                 </Text>
               </Box>
               <Box display="flex" className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
@@ -99,7 +99,7 @@ const ActionsDeCommunicationPage = () => {
                   <strong>
                     France Chaleur Urbaine me propose des visuels personnalisés
                   </strong>
-                  , adaptés à mon projet
+                  , adaptés à mon projet.
                 </Text>
               </Box>
               <Box display="flex" className="fr-col-12 fr-col-sm-6 fr-col-lg-4">
@@ -111,7 +111,7 @@ const ActionsDeCommunicationPage = () => {
                   La campagne est lancée&nbsp;!
                   <br />
                   <strong>Je retrouve toutes les demandes</strong> déposées sur
-                  mon espace gestionnaire
+                  mon espace gestionnaire.
                 </Text>
               </Box>
             </Box>

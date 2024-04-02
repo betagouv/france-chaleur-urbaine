@@ -27,7 +27,7 @@ const Articles = () => {
               France Chaleur Urbaine est un service en évolution
               permanente&nbsp;!
               <br />
-              Retrouvez ici toutes nos actualités
+              Retrouvez ici toutes nos actualités.
             </Text>
           </Box>
 

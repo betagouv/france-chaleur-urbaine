@@ -128,7 +128,7 @@ const ArticlesPage = () => {
       <Box backgroundColor="blue-france-975-75">
         <Box py="10w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="6w" center>
-            Les réseaux de froid : un enjeu pour l'avenir
+            Les réseaux de froid&nbsp;: un enjeu pour l'avenir
           </Heading>
           <Box className="fr-grid-row fr-grid-row--gutters">
             {articlesReseauxDeFroid.map((article, index) => (

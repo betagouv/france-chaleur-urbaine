@@ -25,7 +25,7 @@ const OutilsPage = () => {
             </Heading>
             <Text size="lg" mb="3w">
               Accédez aux différents outils mis à disposition par France Chaleur
-              Urbaine
+              Urbaine.
             </Text>
           </Box>
 
