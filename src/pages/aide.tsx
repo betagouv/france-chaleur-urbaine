@@ -118,7 +118,7 @@ const faqItems: FaqItem[] = [
   },
   {
     title:
-      'Comment répondre aux demandes visibles sur mon espace gestionnaire ?',
+      'Qui doit répondre aux demandes visibles sur mon espace gestionnaire ?',
     content: (
       <p>
         Il appartient à l’opérateur à qui a été affectée une demande de
@@ -135,6 +135,25 @@ const faqItems: FaqItem[] = [
         n’existe pas de réseau de chaleur à proximité de son adresse, mais que
         la demande est transmise à la collectivité afin qu’il puisse être
         informé si le réseau venait à se déployer dans son quartier.{' '}
+      </p>
+    ),
+  },
+  {
+    title:
+      'Comment répondre aux demandes / envoyer un mail de réponse à une demande depuis mon espace gestionnaire ?',
+    content: (
+      <p>
+        Si vous le souhaitez, vous pouvez répondre aux demandes directement
+        depuis votre espace gestionnaire à partir de la colonne "Contact", en
+        cliquant sur l'enveloppe ou sur l'adresse mail du demandeur. Plusieurs
+        modèles de mails vous sont proposés, que vous pouvez librement modifier.
+        Les champs "Répondre à" et "Copie à" sont renseignés par défaut avec
+        l'adresse mail avec laquelle vous vous êtes connecté(e) à votre espace.
+        Votre signature est enregistrée suite à l'envoi d'un premier mail, mais
+        vous gardez la possibilité de la modifier. Enfin, la rubrique
+        "historique", qui liste les messages envoyés, est visible pour toute
+        personne ayant accès aux demandes (à noter que seul le type de message
+        est indiqué, sans accès au message complet).
       </p>
     ),
   },
