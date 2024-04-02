@@ -64,15 +64,13 @@ const Articles = () => {
                     </p>
 
                     <div className="fr-card__start">
-                      {/* not yet available */}
-                      {/* <ul className="fr-tags-group">
-                        <li>
-                          <p className="fr-tag">Reportage</p>
-                        </li>
-                        <li>
-                          <p className="fr-tag">Énergie renouvelable</p>
-                        </li>
-                      </ul> */}
+                      <ul className="fr-tags-group">
+                        {article.themes.map((theme, index) => (
+                          <li key={index} className="fr-tag fr-tag--xs">
+                            {theme}
+                          </li>
+                        ))}
+                      </ul>
 
                       <p className="fr-card__detail fr-icon-arrow-right-line">
                         Publié le{' '}
