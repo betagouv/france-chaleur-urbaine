@@ -5,8 +5,44 @@ import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { articles } from '@data/contents';
 import Image from 'next/image';
+import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
+import { useMemo } from 'react';
+
+const themes = [
+  ...articles
+    .reduce((acc, article) => {
+      article.themes.forEach((theme) => {
+        acc.add(theme);
+      });
+      return acc;
+    }, new Set<string>())
+    .keys(),
+].sort();
 
 const Articles = () => {
+  const [selectedThemes, setSelectedThemes] = useQueryState(
+    'themes',
+    parseAsArrayOf(parseAsString).withDefault([])
+  );
+
+  function toggleTheme(theme: string) {
+    setSelectedThemes(
+      selectedThemes?.includes(theme)
+        ? selectedThemes?.filter((t) => t !== theme)
+        : [...selectedThemes, theme]
+    );
+  }
+
+  const filteredActus = useMemo(() => {
+    return selectedThemes.length === 0
+      ? articles
+      : articles.filter((article) =>
+          article.themes.some((articleTheme) =>
+            selectedThemes.includes(articleTheme)
+          )
+        );
+  }, [selectedThemes]);
+
   return (
     <SimplePage title="Nos actualités - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
@@ -44,54 +80,83 @@ const Articles = () => {
 
       <Box py="10w" className="fr-container">
         <Box className="fr-grid-row fr-grid-row--gutters">
-          {articles.map((article, index) => (
-            <div
-              className="fr-col fr-col-12 fr-col-sm-6 fr-col-md-4"
-              key={index}
-            >
-              <div className="fr-card fr-enlarge-link">
-                <div className="fr-card__body">
-                  <div className="fr-card__content">
-                    <h3 className="fr-card__title">
-                      <Box textColor="text-title-blue-france">
-                        <Link href={`/actus/${article.slug}`}>
-                          {article.title}
-                        </Link>
-                      </Box>
-                    </h3>
-                    <p className="fr-card__desc">
-                      {getArticleAbstract(article.content)}
-                    </p>
+          <Box className="fr-col-12 fr-col-md-3">
+            <Heading as="h2" color="blue-france">
+              {filteredActus.length} actu{filteredActus.length > 2 && 's'}
+            </Heading>
+            <Box
+              minHeight="1px"
+              backgroundColor="blue-france-sun-113-625"
+              my="3w"
+            />
+            <Heading as="h4" color="blue-france">
+              Filtrer par catégorie
+            </Heading>
 
-                    <div className="fr-card__start">
-                      <ul className="fr-tags-group">
-                        {article.themes.map((theme, index) => (
-                          <li key={index} className="fr-tag fr-tag--xs">
-                            {theme}
-                          </li>
-                        ))}
-                      </ul>
+            <ul className="fr-tags-group">
+              {themes.map((theme, index) => (
+                <button
+                  className="fr-tag"
+                  aria-pressed={selectedThemes?.includes(theme)}
+                  onClick={() => toggleTheme(theme)}
+                  key={index}
+                >
+                  {theme}
+                </button>
+              ))}
+            </ul>
+          </Box>
 
-                      <p className="fr-card__detail fr-icon-arrow-right-line">
-                        Publié le{' '}
-                        {article.publishedDate.toLocaleDateString('fr-FR')}
+          <Box className="fr-col fr-grid-row fr-grid-row--gutters">
+            {filteredActus.map((article) => (
+              <div
+                className="fr-col-12 fr-col-sm-6 fr-col-md-6 fr-col-lg-4"
+                key={article.slug}
+              >
+                <div className="fr-card fr-enlarge-link">
+                  <div className="fr-card__body">
+                    <div className="fr-card__content">
+                      <h3 className="fr-card__title">
+                        <Box textColor="text-title-blue-france">
+                          <Link href={`/actus/${article.slug}`}>
+                            {article.title}
+                          </Link>
+                        </Box>
+                      </h3>
+                      <p className="fr-card__desc">
+                        {getArticleAbstract(article.content)}
                       </p>
+
+                      <div className="fr-card__start">
+                        <ul className="fr-tags-group">
+                          {article.themes.map((theme, index) => (
+                            <li key={index} className="fr-tag">
+                              {theme}
+                            </li>
+                          ))}
+                        </ul>
+
+                        <p className="fr-card__detail fr-icon-arrow-right-line">
+                          Publié le{' '}
+                          {article.publishedDate.toLocaleDateString('fr-FR')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="fr-card__header">
+                    <div className="fr-card__img">
+                      <img
+                        className="fr-responsive-img"
+                        src={article.image}
+                        alt=""
+                        loading="lazy"
+                      />
                     </div>
                   </div>
                 </div>
-                <div className="fr-card__header">
-                  <div className="fr-card__img">
-                    <img
-                      className="fr-responsive-img"
-                      src={article.image}
-                      alt=""
-                      loading="lazy"
-                    />
-                  </div>
-                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </Box>
         </Box>
       </Box>
     </SimplePage>
