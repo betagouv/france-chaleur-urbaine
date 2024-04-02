@@ -219,7 +219,6 @@ const SupportsPage = () => {
       <Box backgroundColor="blue-cumulus-950-100">
         <Box
           display="flex"
-          alignItems="center"
           gap="16px"
           maxWidth="1000px"
           mx="auto"
