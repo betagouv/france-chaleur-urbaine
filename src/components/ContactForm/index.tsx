@@ -30,15 +30,6 @@ const ContactForm = () => {
 
   return (
     <>
-      <h1>Nous contacter</h1>
-      <p>
-        Vous avez une question suite à votre demande sur France Chaleur
-        Urbaine ? Vous souhaitez nous faire part de suggestions pour améliorer
-        notre service ? Vous êtes intéressé par un partenariat avec France
-        Chaleur Urbaine ? Pour ces questions ou toute autre, n’hésitez pas à
-        nous contacter via le formulaire ci-dessous : nous reviendrons
-        rapidement vers vous.
-      </p>
       {sent ? (
         <Alert
           type="success"

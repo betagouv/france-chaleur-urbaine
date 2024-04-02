@@ -1,4 +1,3 @@
-import MarkdownWrapper from '@components/MarkdownWrapper';
 import { List } from '@components/Ressources/Contents/Contents.styles';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
@@ -6,12 +5,15 @@ import { dataNumberFcu } from '@data';
 import { FooterPartnersLogo, Logo } from '@dataesr/react-dsfr';
 import Link from 'next/link';
 import { Description, Logos, Row, Title } from './index.styles';
+import Heading from '@components/ui/Heading';
 
 const Us = () => {
   return (
     <>
       <Slice padding={4}>
-        <MarkdownWrapper value={`# Qui sommes-nous ?`} />
+        <Heading as="h1" color="blue-france">
+          Qui sommes-nous&nbsp;?
+        </Heading>
         <Row>
           <Logo splitCharacter={10} href="">
             République Française

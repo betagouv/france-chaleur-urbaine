@@ -1,6 +1,5 @@
 import NetworkSearchInput from '@components/Network/NetworkSearchInput';
 import SimplePage from '@components/shared/page/SimplePage';
-import Slice from '@components/Slice';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import LoadingButton from '@components/ui/LoadingButton';
@@ -194,13 +193,14 @@ function ModifierReseauxPage() {
   return (
     <SimplePage
       title="Modification de page réseau : France Chaleur Urbaine"
-      currentPage="/outils/modifier-page-reseau"
+      currentPage="/ressources/outils"
     >
-      <Slice padding={4}>
-        <Heading size="h3">
+      <Box py="4w" className="fr-container">
+        <Heading as="h1" size="h3" color="blue-france">
           Complétez les informations qui apparaissent sur la fiche de votre
           réseau
         </Heading>
+
         <Text>
           Sur les fiches par réseau, dans un souci d'homogénéité, seules sont
           diffusées par France Chaleur Urbaine&nbsp;:
@@ -461,7 +461,7 @@ function ModifierReseauxPage() {
             )}
           </form>
         )}
-      </Slice>
+      </Box>
     </SimplePage>
   );
 }
