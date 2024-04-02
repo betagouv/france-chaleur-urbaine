@@ -13,6 +13,7 @@ interface HeadingProps extends SpacingProperties {
   center?: boolean;
   id?: string;
   className?: string;
+  maxWidth?: CSSProperties['maxWidth'];
 }
 
 /**
@@ -35,6 +36,7 @@ function Heading(props: PropsWithChildren<HeadingProps>) {
       ? legacyColors[props.legacyColor]
       : undefined,
     textAlign: props.center ? 'center' : undefined,
+    maxWidth: props.maxWidth,
   };
 
   return (

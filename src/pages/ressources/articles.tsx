@@ -76,7 +76,14 @@ const ArticlesPage = () => {
       </Box>
 
       <Box py="10w" className="fr-container">
-        <Heading size="h2" color="blue-france" mb="6w" center>
+        <Heading
+          size="h2"
+          color="blue-france"
+          mb="6w"
+          center
+          maxWidth="600px"
+          mx="auto"
+        >
           Les enjeux de la transition énergétique avec les réseaux de chaleur
         </Heading>
         <Box className="fr-grid-row fr-grid-row--gutters">
@@ -88,7 +95,14 @@ const ArticlesPage = () => {
 
       <Box backgroundColor="blue-france-975-75">
         <Box py="10w" className="fr-container">
-          <Heading size="h3" color="blue-france" mb="6w" center>
+          <Heading
+            size="h2"
+            color="blue-france"
+            mb="6w"
+            center
+            maxWidth="600px"
+            mx="auto"
+          >
             Les réseaux de chaleur en pratique&nbsp;: tout comprendre pour se
             raccorder
           </Heading>
