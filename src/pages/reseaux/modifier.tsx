@@ -195,24 +195,12 @@ function ModifierReseauxPage() {
       title="Modification de page réseau : France Chaleur Urbaine"
       currentPage="/ressources/outils"
     >
-      <Box backgroundColor="blue-cumulus-950-100">
-        <Box
-          display="flex"
-          alignItems="center"
-          gap="16px"
-          maxWidth="900px"
-          mx="auto"
-          pt="8w"
-          px="2w"
-        >
-          <Heading as="h1" size="h3" color="blue-france">
-            Complétez les informations qui apparaissent sur la fiche de votre
-            réseau
-          </Heading>
-        </Box>
-      </Box>
-
       <Box py="4w" className="fr-container">
+        <Heading as="h1" size="h3" color="blue-france">
+          Complétez les informations qui apparaissent sur la fiche de votre
+          réseau
+        </Heading>
+
         <Text>
           Sur les fiches par réseau, dans un souci d'homogénéité, seules sont
           diffusées par France Chaleur Urbaine&nbsp;:
