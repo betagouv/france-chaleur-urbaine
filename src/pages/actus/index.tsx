@@ -24,9 +24,10 @@ const Articles = () => {
               Nos actualités
             </Heading>
             <Text size="lg" mb="3w">
-              France Chaleur Urbaine est un service en évolution permanente !
-              Retrouvez ici toutes nos actualités&nbsp;: évolutions du site,
-              campagnes de communication, nouveaux support pédagogiques,...
+              France Chaleur Urbaine est un service en évolution
+              permanente&nbsp;!
+              <br />
+              Retrouvez ici toutes nos actualités
             </Text>
           </Box>
 
