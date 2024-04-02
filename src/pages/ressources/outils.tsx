@@ -41,7 +41,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
 
-      <Box py="10w" className="fr-container">
+      <Box py="5w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           Test d’adresses en masse
         </Heading>
@@ -58,7 +58,7 @@ const OutilsPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75">
-        <Box py="10w" className="fr-container">
+        <Box py="5w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="0">
             Iframes
           </Heading>
@@ -78,7 +78,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
 
-      <Box py="10w" className="fr-container">
+      <Box py="5w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           API
         </Heading>
@@ -97,7 +97,7 @@ const OutilsPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75">
-        <Box py="10w" className="fr-container">
+        <Box py="5w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="0">
             Téléchargement de données
           </Heading>
@@ -116,7 +116,7 @@ const OutilsPage = () => {
         </Box>
       </Box>
 
-      <Box py="10w" className="fr-container">
+      <Box py="5w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           Simulateur d’aides
         </Heading>
@@ -147,7 +147,7 @@ const OutilsPage = () => {
       </Box>
 
       <Box backgroundColor="blue-france-975-75">
-        <Box py="10w" className="fr-container">
+        <Box py="5w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="0">
             Fiches par réseau
           </Heading>
