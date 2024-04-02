@@ -48,7 +48,7 @@ const ArticlesPage = () => {
           display="flex"
           alignItems="center"
           gap="16px"
-          maxWidth="900px"
+          maxWidth="1000px"
           mx="auto"
           pt="8w"
           px="2w"
