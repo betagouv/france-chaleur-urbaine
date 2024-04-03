@@ -79,12 +79,7 @@ export const articles: Article[] = [
     slug: 'les-chaudieres-biomasse-ne-contribuent-pas-a-la-deforestation',
     content: importFile(readme),
     publishedDate: new Date('2024-03-20'),
-    themes: [
-      'Biomasse',
-      'Energies renouvelables et de récupération',
-      'Réseaux de chaleur',
-      'Infographie',
-    ],
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/vignetteVille.jpg',
@@ -125,7 +120,7 @@ export const articles: Article[] = [
     slug: 'part-des-enr-r-dans-nos-consommations-de-chaleur',
     content: importFile(partENRDansConsommationsChaleur),
     publishedDate: new Date('2024-02-16'),
-    themes: ['Energies renouvelables et de récupération', 'Réseaux de chaleur'],
+    themes: ['ENR&R', 'Réseaux de chaleur'],
   },
   {
     image: '/contents/vignetteCout.jpg',
@@ -149,7 +144,7 @@ export const articles: Article[] = [
     slug: '80-denergies-renouvelables-et-de-recuperation',
     content: importFile(readme_20),
     publishedDate: new Date('2024-02-02'),
-    themes: ['Energies renouvelables et de récupération', 'Réseaux de chaleur'],
+    themes: ['ENR&R', 'Réseaux de chaleur'],
   },
   {
     image: '/contents/vignettefiche.jpg',
@@ -190,11 +185,7 @@ export const articles: Article[] = [
     slug: 'la-geothermie-expliquee-aux-enfants',
     content: importFile(readme_17),
     publishedDate: new Date('2024-01-09'),
-    themes: [
-      'Réseaux de chaleur',
-      'Energies renouvelables et de récupération',
-      'Communication',
-    ],
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Communication'],
   },
   {
     image: '/contents/vignette2024.jpg',
@@ -295,11 +286,7 @@ export const articles: Article[] = [
     slug: 'visite-de-l-unité-de-valorisation-énergétique-isséane',
     content: importFile(readme_11),
     publishedDate: new Date('2023-10-24'),
-    themes: [
-      'Réseaux de chaleur',
-      'Energies renouvelables et de récupération',
-      'Reportage',
-    ],
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Reportage'],
   },
   {
     image: '/contents/video.jpg',
@@ -328,11 +315,7 @@ export const articles: Article[] = [
     slug: 'le-solaire-thermique',
     content: importFile(readme_9),
     publishedDate: new Date('2023-10-02'),
-    themes: [
-      'Réseaux de chaleur',
-      'Energies renouvelables et de récupération',
-      'Infographie',
-    ],
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Infographie'],
   },
   {
     image: '/contents/guidecolt.jpg',
@@ -373,7 +356,7 @@ export const articles: Article[] = [
     slug: 'définir-des-zones-d-accélération-des-énergies-renouvelables',
     content: importFile(readme_6),
     publishedDate: new Date('2023-08-23'),
-    themes: ['Réseaux de chaleur', 'Energies renouvelables et de récupération'],
+    themes: ['Réseaux de chaleur', 'ENR&R'],
   },
   {
     image: '/contents/1,6vignette.jpg',
@@ -381,11 +364,7 @@ export const articles: Article[] = [
     slug: 'les-réseaux-les-plus-écologiques-sont-les-plus-économiques',
     content: importFile(lesReseauxLesPlusEcologiquesSontLesPlusEconomiques),
     publishedDate: new Date('2023-08-10'),
-    themes: [
-      'Réseaux de chaleur',
-      'Energies renouvelables et de récupération',
-      'Prix',
-    ],
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Prix'],
   },
   {
     image: '/contents/63vignette.jpg',
@@ -393,7 +372,7 @@ export const articles: Article[] = [
     slug: 'des-réseaux-vertueux',
     content: importFile(desReseauxVertueux),
     publishedDate: new Date('2023-08-03'),
-    themes: ['Réseaux de chaleur', 'Energies renouvelables et de récupération'],
+    themes: ['Réseaux de chaleur', 'ENR&R'],
   },
   {
     image: '/contents/vignettefroid-art.jpg',
@@ -449,11 +428,7 @@ export const articles: Article[] = [
     slug: 'visite-du-réseau-de-froid-d-annecy',
     content: importFile(readme_3),
     publishedDate: new Date('2023-06-06'),
-    themes: [
-      'Réseaux de froid',
-      'Energies renouvelables et de récupération',
-      'Reportage',
-    ],
+    themes: ['Réseaux de froid', 'ENR&R', 'Reportage'],
   },
   {
     image: '/contents/vignetteDataCenter.jpg',
@@ -461,11 +436,7 @@ export const articles: Article[] = [
     slug: 'visite-d-un-datacenter',
     content: importFile(visiteDunDatacenter),
     publishedDate: new Date('2023-06-19'),
-    themes: [
-      'Réseaux de chaleur',
-      'Energies renouvelables et de récupération',
-      'Reportage',
-    ],
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Reportage'],
   },
   {
     image: '/contents/vignettefroid.jpg',
@@ -481,11 +452,7 @@ export const articles: Article[] = [
     slug: 'la-chaleur-fatale',
     content: importFile(readme_4_1),
     publishedDate: new Date('2023-05-25'),
-    themes: [
-      'Energies renouvelables et de récupération',
-      'Réseaux de chaleur',
-      'Infographie',
-    ],
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/24.jpg',
@@ -494,7 +461,7 @@ export const articles: Article[] = [
     slug: 'part-des-énergies-renouvelables-dans-la-consommation-finale-brute-d-énergie-en-france',
     content: importFile(readme_3_1_1),
     publishedDate: new Date('2023-05-22'),
-    themes: ['Energies renouvelables et de récupération'],
+    themes: ['ENR&R'],
   },
   {
     image: '/contents/23.jpg',
@@ -510,11 +477,7 @@ export const articles: Article[] = [
     slug: 'visite-d-une-chaufferie-biomasse',
     content: importFile(visiteDuneChaufferieBiomasse),
     publishedDate: new Date('2023-05-10'),
-    themes: [
-      'Energies renouvelables et de récupération',
-      'Réseaux de chaleur',
-      'Reportage',
-    ],
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Reportage'],
   },
   {
     image: '/contents/19.jpg',
@@ -522,11 +485,7 @@ export const articles: Article[] = [
     slug: 'la-biomasse',
     content: importFile(readme_2),
     publishedDate: new Date('2023-04-27'),
-    themes: [
-      'Energies renouvelables et de récupération',
-      'Réseaux de chaleur',
-      'Infographie',
-    ],
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/champigny04.jpg',
@@ -534,11 +493,7 @@ export const articles: Article[] = [
     slug: 'visite-d-un-forage-de-géothermie',
     content: importFile(readme_2_1),
     publishedDate: new Date('2023-04-25'),
-    themes: [
-      'Energies renouvelables et de récupération',
-      'Réseaux de chaleur',
-      'Reportage',
-    ],
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Reportage'],
   },
   {
     image: '/contents/18.jpg',
@@ -546,11 +501,7 @@ export const articles: Article[] = [
     slug: 'la-géothermie-profonde',
     content: importFile(readme_1_1_1),
     publishedDate: new Date('2023-04-25'),
-    themes: [
-      'Energies renouvelables et de récupération',
-      'Réseaux de chaleur',
-      'Infographie',
-    ],
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/17.jpg',
@@ -558,7 +509,7 @@ export const articles: Article[] = [
     slug: 'les-réseaux-de-chaleur-des-énergies-vertes',
     content: importFile(lesReseauxDeChaleurDesEnergiesVertes),
     publishedDate: new Date('2023-04-20'),
-    themes: ['Energies renouvelables et de récupération', 'Réseaux de chaleur'],
+    themes: ['ENR&R', 'Réseaux de chaleur'],
   },
   {
     image: '/contents/16.jpg',
@@ -574,7 +525,7 @@ export const articles: Article[] = [
     slug: 'la-décarbonation-des-réseaux-de-chaleur-est-en-marche',
     content: importFile(readme_1_2_1),
     publishedDate: new Date('2023-04-11'),
-    themes: ['Energies renouvelables et de récupération', 'Réseaux de chaleur'],
+    themes: ['ENR&R', 'Réseaux de chaleur'],
   },
   {
     image: '/contents/08.jpg',
@@ -665,7 +616,7 @@ export const articles: Article[] = [
     slug: 'un-plan-national-d-action-pour-la-géothermie',
     content: importFile(unPlanNationalDactionPourLaGeothermie),
     publishedDate: new Date('2023-04-11'),
-    themes: ['Réseaux de chaleur', 'Energies renouvelables et de récupération'],
+    themes: ['Réseaux de chaleur', 'ENR&R'],
   },
   {
     image: '/contents/06.jpg',
