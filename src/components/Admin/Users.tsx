@@ -65,9 +65,8 @@ const Users = () => {
         page={page}
         setPage={setPage}
       />
-      {filteredUsers.length === 0 ? (
-        <p>Pas de résultat</p>
-      ) : exporting ? (
+      {filteredUsers.length === 0 && <p>Pas de résultat</p>}
+      {exporting ? (
         <Oval height={40} width={40} />
       ) : (
         <Button
