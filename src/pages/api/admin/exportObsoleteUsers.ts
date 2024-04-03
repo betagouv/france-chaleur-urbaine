@@ -30,7 +30,7 @@ export default handleRouteErrors(
     const users = await db('users')
       .select('email', 'created_at', 'active')
       .whereNull('last_connection')
-      .andWhereNotBetween('created_at', [from, today])
+      .orWhereNotBetween('created_at', [from, today])
       .orderBy('created_at');
     const csv = getSpreadSheet(usersExportColumns, users, EXPORT_FORMAT.XLSX);
 
