@@ -231,6 +231,13 @@ function ModalEmails(props: Props) {
               >
                 <TextInput
                   required
+                  label="À"
+                  type="email"
+                  value={emailContent.to}
+                  disabled
+                />
+                <TextInput
+                  required
                   label="Répondre à"
                   type="email"
                   value={emailContent.replyTo}
