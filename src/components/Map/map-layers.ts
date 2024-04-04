@@ -25,6 +25,10 @@ import {
 
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import { MapConfiguration } from 'src/services/Map/map-configuration';
+import {
+  themeDefSolaireThermiqueFriches,
+  themeDefSolaireThermiqueParkings,
+} from 'src/services/Map/businessRules/enrrMobilisables';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -241,6 +245,8 @@ export type SourceId =
   | 'energy' // batiments collectifs chauffés au fioul / gas
   | 'raccordements' // bâtiments raccordés
   | 'enrrMobilisables'
+  | 'enrrMobilisables-friches'
+  | 'enrrMobilisables-parkings'
   | 'zonesPotentielChaud'
   | 'zonesPotentielFortChaud'
   | 'buildings'; // caractéristiques des bâtiments
@@ -262,6 +268,10 @@ export type LayerId =
   | 'enrrMobilisables-installations-electrogenes'
   | 'enrrMobilisables-stations-d-epuration'
   | 'enrrMobilisables-unites-d-incineration'
+  | 'enrrMobilisables-friches'
+  | 'enrrMobilisables-friches-contour'
+  | 'enrrMobilisables-parkings'
+  | 'enrrMobilisables-parkings-contour'
   | 'zonesPotentielChaud'
   | 'zonesPotentielChaud-contour'
   | 'zonesPotentielFortChaud'
@@ -459,6 +469,88 @@ export function buildMapLayers(
               intermediateTileLayersMinZoom + 0.2 + 1,
               themeDefBuildings.opacity,
             ],
+          },
+        },
+      ],
+    },
+
+    // --------------------------------------------
+    // ---      Friches solaire thermique       ---
+    // --------------------------------------------
+    {
+      sourceId: 'enrrMobilisables-friches',
+      source: {
+        type: 'vector',
+        tiles: [
+          `${location.origin}/api/map/enrrMobilisables-friches/{z}/{x}/{y}`,
+        ],
+        promoteId: 'GmlID',
+        maxzoom: tileSourcesMaxZoom,
+        attribution:
+          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+      },
+      layers: [
+        {
+          id: 'enrrMobilisables-friches',
+          source: 'enrrMobilisables-friches',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'fill',
+          paint: {
+            'fill-color': themeDefSolaireThermiqueFriches.color,
+            'fill-opacity': themeDefSolaireThermiqueFriches.opacity,
+          },
+        },
+        {
+          id: 'enrrMobilisables-friches-contour',
+          source: 'enrrMobilisables-friches',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'line',
+          paint: {
+            'line-color': themeDefSolaireThermiqueFriches.color,
+            'line-width': 2,
+          },
+        },
+      ],
+    },
+
+    // --------------------------------------------
+    // ---      Parkings de plus de 500m²       ---
+    // --------------------------------------------
+    {
+      sourceId: 'enrrMobilisables-parkings',
+      source: {
+        type: 'vector',
+        tiles: [
+          `${location.origin}/api/map/enrrMobilisables-parkings/{z}/{x}/{y}`,
+        ],
+        promoteId: 'GmlID',
+        maxzoom: tileSourcesMaxZoom,
+        attribution:
+          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+      },
+      layers: [
+        {
+          id: 'enrrMobilisables-parkings',
+          source: 'enrrMobilisables-parkings',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'fill',
+          paint: {
+            'fill-color': themeDefSolaireThermiqueParkings.color,
+            'fill-opacity': themeDefSolaireThermiqueParkings.opacity,
+          },
+        },
+        {
+          id: 'enrrMobilisables-parkings-contour',
+          source: 'enrrMobilisables-parkings',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'line',
+          paint: {
+            'line-color': themeDefSolaireThermiqueParkings.color,
+            'line-width': 2,
           },
         },
       ],
@@ -934,6 +1026,30 @@ export function applyMapConfigurationToLayers(
     config.proMode &&
       config.enrrMobilisables.show &&
       config.enrrMobilisables.showUnitesDIncineration
+  );
+  setLayerVisibility(
+    'enrrMobilisables-friches',
+    config.proMode &&
+      config.enrrMobilisables.show &&
+      config.enrrMobilisables.showSolaireThermiqueFriches
+  );
+  setLayerVisibility(
+    'enrrMobilisables-friches-contour',
+    config.proMode &&
+      config.enrrMobilisables.show &&
+      config.enrrMobilisables.showSolaireThermiqueFriches
+  );
+  setLayerVisibility(
+    'enrrMobilisables-parkings',
+    config.proMode &&
+      config.enrrMobilisables.show &&
+      config.enrrMobilisables.showSolaireThermiqueParkings
+  );
+  setLayerVisibility(
+    'enrrMobilisables-parkings-contour',
+    config.proMode &&
+      config.enrrMobilisables.show &&
+      config.enrrMobilisables.showSolaireThermiqueParkings
   );
   setLayerVisibility(
     'zonesPotentielChaud',

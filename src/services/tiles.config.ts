@@ -22,6 +22,7 @@ export type DatabaseTileInfo = BasicTileInfo & {
 
 export type TileInfo = AirtableTileInfo | DatabaseTileInfo;
 
+// FIXME supprimer ce type et harmoniser avec SourceId
 export const dataTypes = [
   'network',
   'gas',
@@ -33,6 +34,8 @@ export const dataTypes = [
   'futurNetwork',
   'coldNetwork',
   'enrrMobilisables',
+  'enrrMobilisables-friches',
+  'enrrMobilisables-parkings',
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
 ] as const;
@@ -210,6 +213,24 @@ export const tilesInfo: Record<DataType, TileInfo> = {
   enrrMobilisables: {
     source: 'database',
     tiles: 'enrr_mobilisables_tiles',
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  'enrrMobilisables-friches': {
+    source: 'database',
+    tiles: 'enrr_mobilisables_friches_tiles',
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  'enrrMobilisables-parkings': {
+    source: 'database',
+    tiles: 'enrr_mobilisables_parkings_tiles',
     table: '', // useless
     properties: [], // useless
     sourceLayer: '', // useless

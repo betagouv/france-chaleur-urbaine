@@ -429,6 +429,14 @@ const Map = ({
       { layer: 'energy', key: 'energy' },
       { layer: 'batimentsRaccordes', key: 'raccordement' },
       {
+        layer: 'enrrMobilisables-friches',
+        key: 'enrrMobilisables-friche',
+      },
+      {
+        layer: 'enrrMobilisables-parkings',
+        key: 'enrrMobilisables-parking',
+      },
+      {
         layer: 'enrrMobilisables-datacenter',
         key: 'enrrMobilisables-datacenter',
       },

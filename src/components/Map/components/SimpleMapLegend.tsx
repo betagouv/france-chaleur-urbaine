@@ -37,6 +37,11 @@ import {
   PotentielsRaccordementButton,
   SingleCheckbox,
 } from './SimpleMapLegend.style';
+import IconPolygon from './IconPolygon';
+import {
+  themeDefSolaireThermiqueFriches,
+  themeDefSolaireThermiqueParkings,
+} from 'src/services/Map/businessRules/enrrMobilisables';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -1219,6 +1224,74 @@ function SimpleMapLegend({
                   px="1v"
                 >
                   Installations électrogènes
+                </Text>
+              </Box>
+
+              <Box display="flex">
+                <SingleCheckbox
+                  id="friches"
+                  checked={
+                    mapConfiguration.enrrMobilisables
+                      .showSolaireThermiqueFriches
+                  }
+                  onChange={() =>
+                    toggleLayer('enrrMobilisables.showSolaireThermiqueFriches')
+                  }
+                  trackingEvent="Carto|Solaire thermique - friches"
+                />
+
+                <IconPolygon
+                  stroke={themeDefSolaireThermiqueFriches.color}
+                  fillOpacity={themeDefSolaireThermiqueFriches.opacity}
+                  mt="1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="friches"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Solaire thermique - friches
+                </Text>
+              </Box>
+
+              <Box display="flex">
+                <SingleCheckbox
+                  id="parkings"
+                  checked={
+                    mapConfiguration.enrrMobilisables
+                      .showSolaireThermiqueParkings
+                  }
+                  onChange={() =>
+                    toggleLayer('enrrMobilisables.showSolaireThermiqueParkings')
+                  }
+                  trackingEvent="Carto|Solaire thermique - parkings"
+                />
+
+                <IconPolygon
+                  stroke={themeDefSolaireThermiqueParkings.color}
+                  fillOpacity={themeDefSolaireThermiqueParkings.opacity}
+                  mt="1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="parkings"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Solaire thermique - parkings
                 </Text>
               </Box>
             </DeactivatableBox>
