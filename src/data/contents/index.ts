@@ -79,6 +79,7 @@ export const articles: Article[] = [
     slug: 'les-chaudieres-biomasse-ne-contribuent-pas-a-la-deforestation',
     content: importFile(readme),
     publishedDate: new Date('2024-03-20'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/vignetteVille.jpg',
@@ -86,6 +87,7 @@ export const articles: Article[] = [
     slug: 'les-reseaux-de-chaleur-plus-si-urbains-que-ca',
     content: importFile(readme_23),
     publishedDate: new Date('2024-03-13'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/vignetteZone.jpg',
@@ -93,6 +95,7 @@ export const articles: Article[] = [
     slug: 'ou-creer-un-reseau-de-chaleur-sur-mon-territoire',
     content: importFile(ouCreerReseauChaleurSurMonTerritoire),
     publishedDate: new Date('2024-03-08'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données'],
   },
   {
     image: '/contents/vignettePDP.jpg',
@@ -100,6 +103,7 @@ export const articles: Article[] = [
     slug: 'le-classement-des-reseaux-quel-bilan',
     content: importFile(leClassementDesReseauxBilan),
     publishedDate: new Date('2024-02-28'),
+    themes: ['Réseaux de chaleur', 'Réglementation'],
   },
   {
     image: '/contents/vignetteFoncChaleur.jpg',
@@ -108,6 +112,7 @@ export const articles: Article[] = [
     slug: 'des-obligations-de-partage-de-donnees-a-fcu-au-titre-du-fonds-chaleur',
     content: importFile(desObligationsDePartageDeDonnees),
     publishedDate: new Date('2024-02-20'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données'],
   },
   {
     image: '/contents/vignettePartenr.jpg',
@@ -115,6 +120,7 @@ export const articles: Article[] = [
     slug: 'part-des-enr-r-dans-nos-consommations-de-chaleur',
     content: importFile(partENRDansConsommationsChaleur),
     publishedDate: new Date('2024-02-16'),
+    themes: ['ENR&R', 'Réseaux de chaleur'],
   },
   {
     image: '/contents/vignetteCout.jpg',
@@ -122,6 +128,7 @@ export const articles: Article[] = [
     slug: 'comparaison-du-cout-de-la-chaleur-pour-un-logement-en-copropriete',
     content: importFile(readme_22),
     publishedDate: new Date('2024-02-12'),
+    themes: ['Réseaux de chaleur', 'Prix'],
   },
   {
     image: '/contents/vignetteconcertation.jpg',
@@ -129,6 +136,7 @@ export const articles: Article[] = [
     slug: 'une-concertation-nationale-sur-le-chauffage-urbain',
     content: importFile(readme_21),
     publishedDate: new Date('2024-02-08'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/vignetteObjectif.jpg',
@@ -136,6 +144,7 @@ export const articles: Article[] = [
     slug: '80-denergies-renouvelables-et-de-recuperation',
     content: importFile(readme_20),
     publishedDate: new Date('2024-02-02'),
+    themes: ['ENR&R', 'Réseaux de chaleur'],
   },
   {
     image: '/contents/vignettefiche.jpg',
@@ -143,6 +152,7 @@ export const articles: Article[] = [
     slug: 'completer-la-fiche-de-votre-reseau',
     content: importFile(readme_19),
     publishedDate: new Date('2024-01-31'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données'],
   },
   {
     image: '/contents/vignetteEvos.jpg',
@@ -150,6 +160,7 @@ export const articles: Article[] = [
     slug: 'notre-campagne-sur-strasbourg',
     content: importFile(notreCampagneStrasbourg),
     publishedDate: new Date('2024-01-24'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/vignette30.jpg',
@@ -158,6 +169,7 @@ export const articles: Article[] = [
     slug: '30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants',
     content: importFile(objectifRaccordementAtteignableReseauxExistants),
     publishedDate: new Date('2024-01-19'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données'],
   },
   {
     image: '/contents/vignett592.jpg',
@@ -165,6 +177,7 @@ export const articles: Article[] = [
     slug: '592-reseaux-classes',
     content: importFile(readme_18),
     publishedDate: new Date('2024-01-15'),
+    themes: ['Réseaux de chaleur', 'Réglementation'],
   },
   {
     image: '/contents/vignetteochod.jpg',
@@ -172,6 +185,7 @@ export const articles: Article[] = [
     slug: 'la-geothermie-expliquee-aux-enfants',
     content: importFile(readme_17),
     publishedDate: new Date('2024-01-09'),
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Communication'],
   },
   {
     image: '/contents/vignette2024.jpg',
@@ -179,6 +193,7 @@ export const articles: Article[] = [
     slug: 'meilleurs-voeux',
     content: importFile(readme_16),
     publishedDate: new Date('2024-01-02'),
+    themes: ['Autre'],
   },
   {
     image: '/contents/vignetteFresnes.jpg',
@@ -186,6 +201,7 @@ export const articles: Article[] = [
     slug: 'notre-campagne-sur-fresnes',
     content: importFile(notreCampagneFresnes),
     publishedDate: new Date('2023-12-28'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/vignettepotentiel.jpg',
@@ -193,6 +209,7 @@ export const articles: Article[] = [
     slug: 'potentiels-de-raccordement-par-territoire',
     content: importFile(potentielsRaccordementTerritoire),
     publishedDate: new Date('2023-12-21'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données'],
   },
   {
     image: '/contents/vignetteCharleville.jpg',
@@ -200,6 +217,7 @@ export const articles: Article[] = [
     slug: 'notre-campagne-sur-charleville-mezieres',
     content: importFile(notreCampagneCharlevilleMezieres),
     publishedDate: new Date('2023-12-19'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/vignetterezomee.jpg',
@@ -208,6 +226,7 @@ export const articles: Article[] = [
     slug: 'la-carte-france-chaleur-urbaine-sur-lapplication-rezomee-d-engie-solutions',
     content: importFile(readme_15),
     publishedDate: new Date('2023-12-15'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données'],
   },
   {
     image: '/contents/vignetteCharras.jpg',
@@ -215,6 +234,7 @@ export const articles: Article[] = [
     slug: 'visite-de-la-centrale-de-froid-alsace-et-de-la-chaufferie-charras',
     content: importFile(visiteCentraleFroidAlsaceChaufferieCharras),
     publishedDate: new Date('2023-12-13'),
+    themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Reportage'],
   },
   {
     image: '/contents/friday.jpg',
@@ -222,6 +242,7 @@ export const articles: Article[] = [
     slug: 'black-friday-green-friday',
     content: importFile(readme_14),
     publishedDate: new Date('2023-11-24'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/Optimiser-vignette.jpg',
@@ -229,6 +250,7 @@ export const articles: Article[] = [
     slug: 'optimiser-son-reseau-de-chaleur',
     content: importFile(readme_13),
     publishedDate: new Date('2023-11-14'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/enquete2.jpg',
@@ -236,6 +258,11 @@ export const articles: Article[] = [
     slug: 'enquete-2023-des-reseaux-de-chaleur-et-de-froid',
     content: importFile(readme_12),
     publishedDate: new Date('2023-11-10'),
+    themes: [
+      'Réseaux de chaleur',
+      'Réseaux de froid',
+      'Cartographie et données',
+    ],
   },
   {
     image: '/contents/2000Vignette.jpg',
@@ -243,6 +270,7 @@ export const articles: Article[] = [
     slug: '2000-demandes',
     content: importFile(demandes),
     publishedDate: new Date('2023-11-08'),
+    themes: ['Autre'],
   },
   {
     image: '/contents/guideExploitantV.jpg',
@@ -250,6 +278,7 @@ export const articles: Article[] = [
     slug: 'un-guide-pour-les-exploitants',
     content: importFile(unGuidePourLesExploitants),
     publishedDate: new Date('2023-11-03'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/isseane.jpg',
@@ -257,6 +286,7 @@ export const articles: Article[] = [
     slug: 'visite-de-l-unité-de-valorisation-énergétique-isséane',
     content: importFile(readme_11),
     publishedDate: new Date('2023-10-24'),
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Reportage'],
   },
   {
     image: '/contents/video.jpg',
@@ -264,6 +294,7 @@ export const articles: Article[] = [
     slug: 'les-réseaux-de-chaleur-en-moins-de-15-secondes',
     content: importFile(lesReseauxDeChaleurEnMoinsDe15Secondes),
     publishedDate: new Date('2023-10-18'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/90.jpg',
@@ -272,6 +303,11 @@ export const articles: Article[] = [
     slug: 'la-cartographie-la-plus-exhaustive-des-réseaux-de-chaleur-et-de-froid',
     content: importFile(readme_10),
     publishedDate: new Date('2023-10-10'),
+    themes: [
+      'Réseaux de chaleur',
+      'Réseaux de froid',
+      'Cartographie et données',
+    ],
   },
   {
     image: '/contents/solaire.jpg',
@@ -279,6 +315,7 @@ export const articles: Article[] = [
     slug: 'le-solaire-thermique',
     content: importFile(readme_9),
     publishedDate: new Date('2023-10-02'),
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Infographie'],
   },
   {
     image: '/contents/guidecolt.jpg',
@@ -286,6 +323,7 @@ export const articles: Article[] = [
     slug: 'un-guide-pour-les-collectivites',
     content: importFile(readme_8),
     publishedDate: new Date('2023-09-26'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/vignetteOpen.jpg',
@@ -293,6 +331,11 @@ export const articles: Article[] = [
     slug: 'mise-en-open-data-des-tracés-des-réseaux-de-chaleur-et-de-froid',
     content: importFile(readme_1),
     publishedDate: new Date('2023-09-01'),
+    themes: [
+      'Réseaux de chaleur',
+      'Réseaux de froid',
+      'Cartographie et données',
+    ],
   },
   {
     image: '/contents/fichevignette.jpg',
@@ -300,6 +343,12 @@ export const articles: Article[] = [
     slug: 'des-informations-techniques-et-tarifaires-par-réseau',
     content: importFile(readme_7),
     publishedDate: new Date('2023-08-31'),
+    themes: [
+      'Réseaux de chaleur',
+      'Réseaux de froid',
+      'Cartographie et données',
+      'Prix',
+    ],
   },
   {
     image: '/contents/def-enr.jpg',
@@ -307,6 +356,7 @@ export const articles: Article[] = [
     slug: 'définir-des-zones-d-accélération-des-énergies-renouvelables',
     content: importFile(readme_6),
     publishedDate: new Date('2023-08-23'),
+    themes: ['Réseaux de chaleur', 'ENR&R'],
   },
   {
     image: '/contents/1,6vignette.jpg',
@@ -314,6 +364,7 @@ export const articles: Article[] = [
     slug: 'les-réseaux-les-plus-écologiques-sont-les-plus-économiques',
     content: importFile(lesReseauxLesPlusEcologiquesSontLesPlusEconomiques),
     publishedDate: new Date('2023-08-10'),
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Prix'],
   },
   {
     image: '/contents/63vignette.jpg',
@@ -321,6 +372,7 @@ export const articles: Article[] = [
     slug: 'des-réseaux-vertueux',
     content: importFile(desReseauxVertueux),
     publishedDate: new Date('2023-08-03'),
+    themes: ['Réseaux de chaleur', 'ENR&R'],
   },
   {
     image: '/contents/vignettefroid-art.jpg',
@@ -328,6 +380,7 @@ export const articles: Article[] = [
     slug: 'les-réseaux-de-froid-sur-notre-cartographie',
     content: importFile(lesReseauxDeFroidSurNotreCartographie),
     publishedDate: new Date('2023-07-25'),
+    themes: ['Réseaux de froid', 'Cartographie et données'],
   },
   {
     image: '/contents/vignette-collectivite.jpg',
@@ -335,6 +388,7 @@ export const articles: Article[] = [
     slug: 'les-chiffres-de-lenquete-ifop-3',
     content: importFile(readme_4),
     publishedDate: new Date('2023-07-18'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/effortinformation.jpg',
@@ -342,6 +396,7 @@ export const articles: Article[] = [
     slug: 'les-chiffres-de-lenquete-ifop-2',
     content: importFile(readme_5),
     publishedDate: new Date('2023-07-06'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/bonnenouvelle.jpg',
@@ -349,6 +404,7 @@ export const articles: Article[] = [
     slug: 'les-chiffres-de-lenquete-ifop-1',
     content: importFile(readme_1_1),
     publishedDate: new Date('2023-07-04'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/objectif.jpg',
@@ -356,6 +412,7 @@ export const articles: Article[] = [
     slug: 'preparation-de-la-loi-de-programmation-sur-lenergie-et-le-climat',
     content: importFile(readme_1_2),
     publishedDate: new Date('2023-06-27'),
+    themes: ['Réseaux de chaleur', 'Réglementation'],
   },
   {
     image: '/contents/vignette-enquete.jpg',
@@ -363,6 +420,7 @@ export const articles: Article[] = [
     slug: 'une-enquete-ifop-pour-france-chaleur-urbaine',
     content: importFile(uneEnqueteIfopPourFranceChaleurUrbaine),
     publishedDate: new Date('2023-06-27'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/vignetteAnnecy.jpg',
@@ -370,6 +428,7 @@ export const articles: Article[] = [
     slug: 'visite-du-réseau-de-froid-d-annecy',
     content: importFile(readme_3),
     publishedDate: new Date('2023-06-06'),
+    themes: ['Réseaux de froid', 'ENR&R', 'Reportage'],
   },
   {
     image: '/contents/vignetteDataCenter.jpg',
@@ -377,6 +436,7 @@ export const articles: Article[] = [
     slug: 'visite-d-un-datacenter',
     content: importFile(visiteDunDatacenter),
     publishedDate: new Date('2023-06-19'),
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Reportage'],
   },
   {
     image: '/contents/vignettefroid.jpg',
@@ -384,6 +444,7 @@ export const articles: Article[] = [
     slug: 'les-réseaux-de-froid',
     content: importFile(readme_3_1),
     publishedDate: new Date('2023-06-06'),
+    themes: ['Réseaux de froid', 'Infographie'],
   },
   {
     image: '/contents/fatale2.jpg',
@@ -391,6 +452,7 @@ export const articles: Article[] = [
     slug: 'la-chaleur-fatale',
     content: importFile(readme_4_1),
     publishedDate: new Date('2023-05-25'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/24.jpg',
@@ -399,6 +461,7 @@ export const articles: Article[] = [
     slug: 'part-des-énergies-renouvelables-dans-la-consommation-finale-brute-d-énergie-en-france',
     content: importFile(readme_3_1_1),
     publishedDate: new Date('2023-05-22'),
+    themes: ['ENR&R'],
   },
   {
     image: '/contents/23.jpg',
@@ -406,6 +469,7 @@ export const articles: Article[] = [
     slug: 'dispositif-éco-énergie-tertiaire',
     content: importFile(readme_3_1_1_1),
     publishedDate: new Date('2023-05-10'),
+    themes: ['Réseaux de chaleur', 'Réglementation'],
   },
   {
     image: '/contents/20.jpg',
@@ -413,6 +477,7 @@ export const articles: Article[] = [
     slug: 'visite-d-une-chaufferie-biomasse',
     content: importFile(visiteDuneChaufferieBiomasse),
     publishedDate: new Date('2023-05-10'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Reportage'],
   },
   {
     image: '/contents/19.jpg',
@@ -420,6 +485,7 @@ export const articles: Article[] = [
     slug: 'la-biomasse',
     content: importFile(readme_2),
     publishedDate: new Date('2023-04-27'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/champigny04.jpg',
@@ -427,6 +493,7 @@ export const articles: Article[] = [
     slug: 'visite-d-un-forage-de-géothermie',
     content: importFile(readme_2_1),
     publishedDate: new Date('2023-04-25'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Reportage'],
   },
   {
     image: '/contents/18.jpg',
@@ -434,6 +501,7 @@ export const articles: Article[] = [
     slug: 'la-géothermie-profonde',
     content: importFile(readme_1_1_1),
     publishedDate: new Date('2023-04-25'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/17.jpg',
@@ -441,6 +509,7 @@ export const articles: Article[] = [
     slug: 'les-réseaux-de-chaleur-des-énergies-vertes',
     content: importFile(lesReseauxDeChaleurDesEnergiesVertes),
     publishedDate: new Date('2023-04-20'),
+    themes: ['ENR&R', 'Réseaux de chaleur'],
   },
   {
     image: '/contents/16.jpg',
@@ -448,6 +517,7 @@ export const articles: Article[] = [
     slug: 'les-ménages-français-et-le-chauffage',
     content: importFile(readme_2_1_1),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur', 'Prix', 'Infographie'],
   },
   {
     image: '/contents/15.jpg',
@@ -455,6 +525,7 @@ export const articles: Article[] = [
     slug: 'la-décarbonation-des-réseaux-de-chaleur-est-en-marche',
     content: importFile(readme_1_2_1),
     publishedDate: new Date('2023-04-11'),
+    themes: ['ENR&R', 'Réseaux de chaleur'],
   },
   {
     image: '/contents/08.jpg',
@@ -462,6 +533,7 @@ export const articles: Article[] = [
     slug: 'l-appel-à-projets-1-ville-1-réseau-de-l-ademe-est-relancé',
     content: importFile(lappelAProjets1Ville1ReseauDeLademeEstRelance),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/09.jpg',
@@ -469,6 +541,7 @@ export const articles: Article[] = [
     slug: '1600-réseaux-à-créer-ou-étendre',
     content: importFile(reseauxACreerOuEtendre),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/avion.jpg',
@@ -476,6 +549,7 @@ export const articles: Article[] = [
     slug: '6-63-millions-d-allers-retours-paris-new-york-évités',
     content: importFile(readme_1_1_1_1),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/14 (1).jpg',
@@ -483,6 +557,7 @@ export const articles: Article[] = [
     slug: 'france-chaleur-urbaine-se-construit-avec-ses-usagers',
     content: importFile(franceChaleurUrbaineSeConstruitAvecSesUsagers),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Autre'],
   },
   {
     image: '/contents/02.jpg',
@@ -490,6 +565,7 @@ export const articles: Article[] = [
     slug: 'une-obligation-de-raccordement-pour-certains-bâtiments',
     content: importFile(page_2),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur', 'Réglementation'],
   },
   {
     image: '/contents/11.jpg',
@@ -500,6 +576,7 @@ export const articles: Article[] = [
       leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorable
     ),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/03.jpg',
@@ -507,6 +584,7 @@ export const articles: Article[] = [
     slug: 'le-chauffage-le-plus-économique-pour-l-habitat-collectif',
     content: importFile(leChauffageLePlusEconomiquePourLhabitatCollectif),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur', 'Prix', 'Infographie'],
   },
   {
     image: '/contents/04.jpg',
@@ -514,6 +592,7 @@ export const articles: Article[] = [
     slug: 'faisons-connaître-le-chauffage-urbain',
     content: importFile(faisonsConnaitreLeChauffageUrbain),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/10 (1).jpg',
@@ -521,6 +600,7 @@ export const articles: Article[] = [
     slug: 'se-chauffer-à-prix-stables',
     content: importFile(seChaufferAPrixStables),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur', 'Prix'],
   },
   {
     image: '/contents/12.jpg',
@@ -528,6 +608,7 @@ export const articles: Article[] = [
     slug: 'le-chauffage-urbain-dans-la-presse',
     content: importFile(leChauffageUrbainDansLaPresse),
     publishedDate: new Date('2023-04-05'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/05.jpg',
@@ -535,6 +616,7 @@ export const articles: Article[] = [
     slug: 'un-plan-national-d-action-pour-la-géothermie',
     content: importFile(unPlanNationalDactionPourLaGeothermie),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur', 'ENR&R'],
   },
   {
     image: '/contents/06.jpg',
@@ -542,6 +624,7 @@ export const articles: Article[] = [
     slug: 'dossier-spécial-sur-les-réseaux-de-chaleur',
     content: importFile(dossierSpecialSurLesReseauxDeChaleur),
     publishedDate: new Date('2023-04-05'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/07.jpg',
@@ -549,6 +632,7 @@ export const articles: Article[] = [
     slug: '636-réseaux-de-chaleur-classés',
     content: importFile(reseauxDeChaleurClasses),
     publishedDate: new Date('2023-04-11'),
+    themes: ['Réseaux de chaleur', 'Réglementation'],
   },
   {
     image: '/contents/13.jpg',
@@ -556,6 +640,7 @@ export const articles: Article[] = [
     slug: 'les-syndics-et-france-chaleur-urbaine',
     content: importFile(lesSyndicsEtFranceChaleurUrbaine),
     publishedDate: new Date('2023-03-27'),
+    themes: ['Réseaux de chaleur'],
   },
 ];
 
