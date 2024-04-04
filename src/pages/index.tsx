@@ -11,9 +11,13 @@ import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import { Icon } from '@dataesr/react-dsfr';
+import { Button, Icon } from '@dataesr/react-dsfr';
 import Head from 'next/head';
 import Image from 'next/image';
+import {
+  useMatomoAbTestingExperiment,
+  trackEvent,
+} from 'src/services/analytics';
 
 const coproprietaireCards = {
   reseau: issues.reseau,
@@ -23,6 +27,13 @@ const coproprietaireCards = {
 };
 
 export default function Home() {
+  const { ready, variation } = useMatomoAbTestingExperiment(
+    'TitreDynamiquePageCopro'
+  );
+  if (!ready) {
+    return null;
+  }
+
   return (
     <SimplePage title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique">
       <Head>
@@ -70,6 +81,14 @@ export default function Home() {
 
       <Box py="10w" id="comprendre-le-chauffage-urbain">
         <Box className="fr-container">
+          <Box display="flex" justifyContent="center" gap="32px" pb="5w">
+            <Button onClick={() => trackEvent('Debug|Event 1')}>
+              Debug event 1 {variation === 'TitreDynamique' && 'DYNAMIQUE'}
+            </Button>
+            <Button onClick={() => trackEvent('Debug|Event 2')}>
+              Debug event 2 {variation === 'TitreDynamique' && 'DYNAMIQUE'}
+            </Button>
+          </Box>
           <Heading as="h2" center>
             Comprendre le chauffage urbain
           </Heading>

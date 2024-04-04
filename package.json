@@ -61,6 +61,7 @@
     "formik": "^2.4.3",
     "geojson-vt": "^3.2.1",
     "helmet": "^7.0.0",
+    "jotai": "^2.7.2",
     "jsonwebtoken": "^9.0.1",
     "knex": "^2.5.1",
     "maplibre-gl": "^3.6.2",
