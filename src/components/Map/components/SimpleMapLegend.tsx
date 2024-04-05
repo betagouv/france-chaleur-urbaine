@@ -42,6 +42,10 @@ import {
   themeDefSolaireThermiqueFriches,
   themeDefSolaireThermiqueParkings,
 } from 'src/services/Map/businessRules/enrrMobilisables';
+import {
+  themeDefZonePotentielChaud,
+  themeDefZonePotentielFortChaud,
+} from 'src/services/Map/businessRules/zonePotentielChaud';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -855,12 +859,10 @@ function SimpleMapLegend({
               trackingEvent="Carto|Zones d'opportunité"
             />
 
-            <Image
-              src="/img/polygon-zonesPotentielFortChaud.svg"
-              alt=""
-              height="16"
-              width="16"
-              className="fr-mt-1v"
+            <IconPolygon
+              stroke={themeDefZonePotentielFortChaud.fill.color}
+              fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
+              mt="1v"
             />
 
             <Text
@@ -929,12 +931,10 @@ function SimpleMapLegend({
                   trackingEvent="Carto|Zones à potentiel chaud"
                 />
 
-                <Image
-                  src="/img/polygon-zonesPotentielChaud.svg"
-                  alt=""
-                  height="16"
-                  width="16"
-                  className="fr-mt-1v"
+                <IconPolygon
+                  stroke={themeDefZonePotentielChaud.fill.color}
+                  fillOpacity={themeDefZonePotentielChaud.fill.opacity}
+                  mt="1v"
                 />
 
                 <Text
@@ -964,12 +964,10 @@ function SimpleMapLegend({
                   trackingEvent="Carto|Zones à potentiel fort chaud"
                 />
 
-                <Image
-                  src="/img/polygon-zonesPotentielFortChaud.svg"
-                  alt=""
-                  height="16"
-                  width="16"
-                  className="fr-mt-1v"
+                <IconPolygon
+                  stroke={themeDefZonePotentielFortChaud.fill.color}
+                  fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
+                  mt="1v"
                 />
 
                 <Text
