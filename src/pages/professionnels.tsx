@@ -83,7 +83,7 @@ Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, s
 
 :button-link[Voir la cartographie]{href="./carte"}
 
-:button-link[Télécharger les tracés]{href="./160224_Opendata_FCU.zip" eventKey="Téléchargement|Tracés|professionnels" download}
+:button-link[Télécharger les tracés]{href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/" eventKey="Téléchargement|Tracés|professionnels" download}
 `}
           imgSrc="/img/rcu-carto.jpg"
           reverse

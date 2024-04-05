@@ -391,7 +391,8 @@ function SimpleMapLegend({
           </Link>
           <Link
             variant="primary"
-            href="./160224_Opendata_FCU.zip"
+            href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
+            isExternal
             eventKey="Téléchargement|Tracés|carte"
             className="fr-btn--sm d-block"
             mx="auto"
