@@ -29,6 +29,7 @@ import {
   themeDefSolaireThermiqueFriches,
   themeDefSolaireThermiqueParkings,
 } from 'src/services/Map/businessRules/enrrMobilisables';
+import { SourceId } from 'src/services/tiles.config';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -233,23 +234,6 @@ type CustomLayerSpecification = LayerSpecification & {
     'icon-image'?: LayerSymbolImage;
   };
 };
-
-// = id passé en URL de l'API
-export type SourceId =
-  | 'network' // réseaux de chaud
-  | 'zoneDP' // zones de développement prioritaire
-  | 'futurNetwork' // réseaux de chaleur en construction
-  | 'coldNetwork' // réseaux de froid
-  | 'demands' // demandes d'éligibilité
-  | 'gas' // consommations de gaz
-  | 'energy' // batiments collectifs chauffés au fioul / gas
-  | 'raccordements' // bâtiments raccordés
-  | 'enrrMobilisables'
-  | 'enrrMobilisables-friches'
-  | 'enrrMobilisables-parkings'
-  | 'zonesPotentielChaud'
-  | 'zonesPotentielFortChaud'
-  | 'buildings'; // caractéristiques des bâtiments
 
 export type LayerId =
   | 'reseauxDeChaleur-avec-trace'

@@ -1,7 +1,7 @@
 import { handleRouteErrors, validateObjectSchema } from '@helpers/server';
 import { NextApiRequest, NextApiResponse } from 'next';
 import getTiles from 'src/services/tiles';
-import { zDataType } from 'src/services/tiles.config';
+import { zSourceId } from 'src/services/tiles.config';
 import zod from 'zod';
 
 // disable the warning for this route as many tiles are bigger than the default 4MB threshold
@@ -17,7 +17,7 @@ export default handleRouteErrors(
       type,
       tileCoordinates: [z, x, y],
     } = await validateObjectSchema(req.query, {
-      type: zDataType,
+      type: zSourceId,
       tileCoordinates: zod.array(zod.coerce.number()).length(3),
     });
     const tiles = await getTiles(type, x, y, z);
