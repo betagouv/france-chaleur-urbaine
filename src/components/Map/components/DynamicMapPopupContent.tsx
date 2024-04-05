@@ -413,7 +413,7 @@ const ENRRMobilisableSolaireThermiqueParkingPopupContent = ({
 }) => {
   return (
     <section>
-      <PopupTitle className="fr-mr-3w">Parking</PopupTitle>
+      <PopupType className="fr-mr-3w">Parking</PopupType>
       <PopupProperty label="Surface" value={parking.surfm2} unit="m²" />
     </section>
   );
