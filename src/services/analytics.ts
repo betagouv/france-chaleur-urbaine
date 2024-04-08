@@ -574,6 +574,21 @@ const matomoABTestingExperiments = [
 type MatomoABTestingExperimentName =
   (typeof matomoABTestingExperiments)[number]['name'];
 
+export type MatomoABTestingExperimentVariations<
+  Name extends MatomoABTestingExperimentName,
+> = Extract<
+  (typeof matomoABTestingExperiments)[number],
+  { name: Name }
+>['variations'][number]['name'];
+
+type MatomoAbTestingExperimentOptions = {
+  enable?: boolean;
+};
+
+const defaultOptions: MatomoAbTestingExperimentOptions = {
+  enable: true,
+};
+
 /**
  * Use an AB Testing Experiment a retrieve a variation name.
  *
@@ -596,21 +611,20 @@ type MatomoABTestingExperimentName =
 export const useMatomoAbTestingExperiment = <
   Name extends MatomoABTestingExperimentName,
 >(
-  experimentName: MatomoABTestingExperimentName
+  experimentName: MatomoABTestingExperimentName,
+  options: MatomoAbTestingExperimentOptions = defaultOptions
 ):
   | {
       ready: boolean;
-      variation: Extract<
-        (typeof matomoABTestingExperiments)[number],
-        { name: Name }
-      >['variations'][number]['name'];
+      variation: MatomoABTestingExperimentVariations<Name>;
     }
   | {
       ready: boolean;
       variation: undefined;
     } => {
+  console.log('useMatomoAbTestingExperiment enable', options.enable);
   const matomoAnalyticsLoaded = useAtomValue(matomoAnalyticsLoadedAtom);
-  if (!matomoAnalyticsLoaded) {
+  if (!matomoAnalyticsLoaded || !options.enable) {
     return { ready: false, variation: undefined };
   }
 
@@ -618,5 +632,9 @@ export const useMatomoAbTestingExperiment = <
     matomoABTestingExperiments.find((e) => e.name === experimentName)
   );
 
+  console.log(
+    'useMatomoAbTestingExperiment variation',
+    experiment.getActivatedVariationName()
+  );
   return { ready: true, variation: experiment.getActivatedVariationName() };
 };
