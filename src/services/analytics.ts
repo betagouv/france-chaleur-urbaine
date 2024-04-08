@@ -546,9 +546,8 @@ const emptyActivateMethod = () => {
 
 const matomoABTestingExperiments = [
   {
-    name: 'TitreDynamiquePageCopro',
+    name: 'TestMessagesFormulaireContact', // you can also use '1' (ID of the experiment) to hide the name
     percentage: 100,
-    // useless as we call experiments where we need to
     includedTargets: [],
     excludedTargets: [],
     variations: [
@@ -557,8 +556,15 @@ const matomoABTestingExperiments = [
         activate: emptyActivateMethod,
       },
       {
-        name: 'TitreDynamique',
-        percentage: 50,
+        name: 'AmeliorationA',
+        activate: emptyActivateMethod,
+      },
+      {
+        name: 'AmeliorationB',
+        activate: emptyActivateMethod,
+      },
+      {
+        name: 'AmeliorationA+B',
         activate: emptyActivateMethod,
       },
     ],
