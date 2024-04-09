@@ -146,7 +146,7 @@ const EligibilityFormContact = ({
         </>
       ) : (
         <>
-          <ContactFormContentWrapper cardMode={cardMode}>
+          <ContactFormContentWrapper>
             {!cardMode ? (
               <>
                 <ContactFormResultMessage eligible={computedEligibility}>
@@ -176,7 +176,7 @@ const EligibilityFormContact = ({
               )
             )}
           </ContactFormContentWrapper>
-          <ContactFormContentWrapper cardMode={cardMode}>
+          <ContactFormContentWrapper>
             {!cardMode && (
               <>
                 <Image
