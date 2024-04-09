@@ -6,7 +6,10 @@ import { useEffect, useState } from 'react';
 import { clientConfig } from 'src/client-config';
 
 // globally accessible atom (state)
-const matomoAnalyticsLoadedAtom = atom(false);
+type MatomoAnalyticsLoadingState = 'pending' | 'loaded' | 'error';
+
+const matomoAnalyticsLoadingStateAtom =
+  atom<MatomoAnalyticsLoadingState>('pending');
 
 const onRouteChange = (url: string) => {
   // see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag&hl=fr#manually_send_page_view_events
@@ -28,7 +31,7 @@ const onRouteChange = (url: string) => {
  * Facebook and Linkedin track page views automatically when loaded.
  */
 export const useAnalytics = () => {
-  const setMatomoAnalyticsLoaded = useSetAtom(matomoAnalyticsLoadedAtom);
+  const setMatomoAnalyticsLoaded = useSetAtom(matomoAnalyticsLoadingStateAtom);
 
   useEffect(() => {
     if (
@@ -40,12 +43,15 @@ export const useAnalytics = () => {
         siteId: clientConfig.tracking.matomoSiteId,
         disableCookies: true,
         excludeUrlsPatterns: [/\/carte\?.+/], // do not track query params for this URL
+        onScriptLoadingError() {
+          setMatomoAnalyticsLoaded('error');
+        },
       });
 
       // track the async deferred loading of the script by matomo-next
       // matomoAsyncInit is a specific callback used by Matomo
       window.matomoAbTestingAsyncInit = () => {
-        setMatomoAnalyticsLoaded(true);
+        setMatomoAnalyticsLoaded('loaded');
       };
     }
   }, []);
@@ -623,9 +629,16 @@ export const useMatomoAbTestingExperiment = <
       variation: undefined;
     } => {
   console.log('useMatomoAbTestingExperiment enable', options.enable);
-  const matomoAnalyticsLoaded = useAtomValue(matomoAnalyticsLoadedAtom);
-  if (!matomoAnalyticsLoaded || !options.enable) {
+  const matomoAnalyticsLoadingState = useAtomValue(
+    matomoAnalyticsLoadingStateAtom
+  );
+  if (matomoAnalyticsLoadingState === 'pending' || !options.enable) {
     return { ready: false, variation: undefined };
+  }
+
+  // if the script could not be loaded, we fallback to the original variation
+  if (matomoAnalyticsLoadingState === 'error') {
+    return { ready: true, variation: 'AmeliorationB' };
   }
 
   const experiment = new window.Matomo.AbTesting.Experiment(
