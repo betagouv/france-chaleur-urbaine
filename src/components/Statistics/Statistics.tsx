@@ -483,8 +483,8 @@ const Statistics = () => {
                         iconSize="1x"
                       >
                         "Potentiellement raccordables" : tests effectués pour
-                        des bâtiments situés à moins de 100 m d'un réseau avec
-                        un chauffage préexistant collectif.
+                        des bâtiments situés à moins de 100 m d'un réseau (60 m
+                        sur Paris)
                       </HoverableIcon>
                     </NumberHoverableIcon>
                   </NumberHighlight>
