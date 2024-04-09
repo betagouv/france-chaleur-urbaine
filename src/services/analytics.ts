@@ -632,13 +632,13 @@ export const useMatomoAbTestingExperiment = <
   const matomoAnalyticsLoadingState = useAtomValue(
     matomoAnalyticsLoadingStateAtom
   );
-  if (matomoAnalyticsLoadingState === 'pending' || !options.enable) {
+  if (matomoAnalyticsLoadingState === 'pending') {
     return { ready: false, variation: undefined };
   }
 
-  // if the script could not be loaded, we fallback to the original variation
-  if (matomoAnalyticsLoadingState === 'error') {
-    return { ready: true, variation: 'AmeliorationB' };
+  // if the script could not be loaded or the experiment is disabled, we fallback to the original variation
+  if (matomoAnalyticsLoadingState === 'error' || !options.enable) {
+    return { ready: true, variation: 'original' };
   }
 
   const experiment = new window.Matomo.AbTesting.Experiment(

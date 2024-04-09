@@ -140,32 +140,32 @@ const closeCollectifAmeliorationB = {
     tauxENRR: number | null,
     city: string
   ) => `
-    ### Bonne nouvelle !
+### Bonne nouvelle !
 
-    ::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${
-      distance ? `(${distance})` : ''
-    }.]
-    ${
-      inZDP
-        ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
-        : ''
-    }
-    ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
-    ${
-      gestionnaire
-        ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-            tauxENRR
-              ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.`
-              : ''
-          }]`
-        : ''
-    }
-    ${
-      city === 'Paris'
-        ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
-        : ''
-    }
-    `,
+::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${
+    distance ? `(${distance})` : ''
+  }.]
+${
+  inZDP
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR
+          ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.`
+          : ''
+      }]`
+    : ''
+}
+${
+  city === 'Paris'
+    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
+    : ''
+}
+`,
   text: '#### Recevez des informations adaptées à votre bâtiment de la part du gestionnaire du réseau.',
 };
 
