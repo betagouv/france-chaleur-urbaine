@@ -4,4 +4,5 @@ export interface Article {
   image: string;
   content: string;
   publishedDate: Date;
+  themes: string[];
 }

@@ -37,6 +37,15 @@ import {
   PotentielsRaccordementButton,
   SingleCheckbox,
 } from './SimpleMapLegend.style';
+import IconPolygon from './IconPolygon';
+import {
+  themeDefSolaireThermiqueFriches,
+  themeDefSolaireThermiqueParkings,
+} from 'src/services/Map/businessRules/enrrMobilisables';
+import {
+  themeDefZonePotentielChaud,
+  themeDefZonePotentielFortChaud,
+} from 'src/services/Map/businessRules/zonePotentielChaud';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -391,7 +400,8 @@ function SimpleMapLegend({
           </Link>
           <Link
             variant="primary"
-            href="./160224_Opendata_FCU.zip"
+            href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
+            isExternal
             eventKey="Téléchargement|Tracés|carte"
             className="fr-btn--sm d-block"
             mx="auto"
@@ -850,12 +860,10 @@ function SimpleMapLegend({
               trackingEvent="Carto|Zones d'opportunité"
             />
 
-            <Image
-              src="/img/polygon-zonesPotentielFortChaud.svg"
-              alt=""
-              height="16"
-              width="16"
-              className="fr-mt-1v"
+            <IconPolygon
+              stroke={themeDefZonePotentielFortChaud.fill.color}
+              fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
+              mt="1v"
             />
 
             <Text
@@ -924,12 +932,10 @@ function SimpleMapLegend({
                   trackingEvent="Carto|Zones à potentiel chaud"
                 />
 
-                <Image
-                  src="/img/polygon-zonesPotentielChaud.svg"
-                  alt=""
-                  height="16"
-                  width="16"
-                  className="fr-mt-1v"
+                <IconPolygon
+                  stroke={themeDefZonePotentielChaud.fill.color}
+                  fillOpacity={themeDefZonePotentielChaud.fill.opacity}
+                  mt="1v"
                 />
 
                 <Text
@@ -959,12 +965,10 @@ function SimpleMapLegend({
                   trackingEvent="Carto|Zones à potentiel fort chaud"
                 />
 
-                <Image
-                  src="/img/polygon-zonesPotentielFortChaud.svg"
-                  alt=""
-                  height="16"
-                  width="16"
-                  className="fr-mt-1v"
+                <IconPolygon
+                  stroke={themeDefZonePotentielFortChaud.fill.color}
+                  fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
+                  mt="1v"
                 />
 
                 <Text
@@ -1219,6 +1223,74 @@ function SimpleMapLegend({
                   px="1v"
                 >
                   Installations électrogènes
+                </Text>
+              </Box>
+
+              <Box display="flex">
+                <SingleCheckbox
+                  id="friches"
+                  checked={
+                    mapConfiguration.enrrMobilisables
+                      .showSolaireThermiqueFriches
+                  }
+                  onChange={() =>
+                    toggleLayer('enrrMobilisables.showSolaireThermiqueFriches')
+                  }
+                  trackingEvent="Carto|Solaire thermique - friches"
+                />
+
+                <IconPolygon
+                  stroke={themeDefSolaireThermiqueFriches.color}
+                  fillOpacity={themeDefSolaireThermiqueFriches.opacity}
+                  mt="1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="friches"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Solaire thermique - friches
+                </Text>
+              </Box>
+
+              <Box display="flex">
+                <SingleCheckbox
+                  id="parkings"
+                  checked={
+                    mapConfiguration.enrrMobilisables
+                      .showSolaireThermiqueParkings
+                  }
+                  onChange={() =>
+                    toggleLayer('enrrMobilisables.showSolaireThermiqueParkings')
+                  }
+                  trackingEvent="Carto|Solaire thermique - parkings"
+                />
+
+                <IconPolygon
+                  stroke={themeDefSolaireThermiqueParkings.color}
+                  fillOpacity={themeDefSolaireThermiqueParkings.opacity}
+                  mt="1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="parkings"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Solaire thermique - parkings
                 </Text>
               </Box>
             </DeactivatableBox>

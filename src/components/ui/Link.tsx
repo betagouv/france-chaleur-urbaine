@@ -23,6 +23,7 @@ interface LinkProps extends SpacingProperties {
 
 /**
  * Renders a DSFR link that uses Next Link.
+ * Automatically use a 'a' element when the href contains an anchor to fix scrolling issues.
  * Can track analytics events.
  * Usage:
  *  <Link href="https://url.com" eventKey="Téléchargement|Tracés|carte">Télécharger un tracé</Link>
@@ -37,8 +38,10 @@ function Link({
   isExternal = false,
   ...props
 }: PropsWithChildren<LinkProps>) {
+  // when the href contains an anchor, use a classic link which works best with scrolling
+  const Tag = href.includes('#') ? 'a' : NextLink;
   return (
-    <NextLink
+    <Tag
       href={href}
       onClick={() => {
         if (eventKey) {
@@ -53,7 +56,7 @@ function Link({
       {...props}
     >
       {children}
-    </NextLink>
+    </Tag>
   );
 }
 export default Link;

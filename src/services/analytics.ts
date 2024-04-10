@@ -231,6 +231,18 @@ const trackingEvents = {
   "Carto|Unités d'incinération|Désactive": {
     matomo: ['Carto', "Unités d'incinération", 'Désactive'],
   },
+  'Carto|Solaire thermique - friches|Active': {
+    matomo: ['Carto', 'Solaire thermique - friches', 'Active'],
+  },
+  'Carto|Solaire thermique - friches|Désactive': {
+    matomo: ['Carto', 'Solaire thermique - friches', 'Désactive'],
+  },
+  'Carto|Solaire thermique - parkings|Active': {
+    matomo: ['Carto', 'Solaire thermique - parkings', 'Active'],
+  },
+  'Carto|Solaire thermique - parkings|Désactive': {
+    matomo: ['Carto', 'Solaire thermique - parkings', 'Désactive'],
+  },
   "Carto|Zones d'opportunité|Active": {
     matomo: ['Carto', "Zones d'opportunité", 'Active'],
   },
@@ -430,6 +442,15 @@ const trackingEvents = {
   },
   'Téléchargement|Supports|Infographie Optimisation': {
     matomo: ['Téléchargement', 'Supports', 'Infographie Optimisation'],
+  },
+  'Téléchargement|Supports|Idées reçues 1': {
+    matomo: ['Téléchargement', 'Supports', 'Idées reçues 1'],
+  },
+  'Téléchargement|Supports|Idées reçues 2': {
+    matomo: ['Téléchargement', 'Supports', 'Idées reçues 2'],
+  },
+  'Téléchargement|Supports|Idées reçues 3': {
+    matomo: ['Téléchargement', 'Supports', 'Idées reçues 3'],
   },
   Vidéo: {
     matomo: ['Vidéo'],

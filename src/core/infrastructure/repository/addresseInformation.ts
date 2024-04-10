@@ -190,7 +190,6 @@ const headers = [
   "Indice de fiabilité de l'adresse testée",
   'Bâtiment potentiellement raccordable à un réseau existant',
   'Distance au réseau (m) si < 1000 m',
-  "Tracé non disponible mais présence d'un réseau dans la zone",
   'PDP (périmètre de développement prioritaire)',
   'Bâtiment potentiellement raccordable à un réseau en construction',
   'Identifiant du réseau le plus proche',
@@ -209,10 +208,9 @@ const legend = [
     'Bâtiment potentiellement raccordable à un réseau existant',
     "Résultat compilant distance au réseau et présence d'un réseau dans la zone",
   ],
-  ['Distance au réseau (m) si < 1000 m', 'Distance au réseau le plus proche'],
   [
-    "Tracé non disponible mais présence d'un réseau dans la zone",
-    "Lorsque nous ne disposons pas de tracé d'un réseau à proximité de l'adresse testée, nous vérifions s'il existe une consommation de chaleur sur un réseau dans le quartier (données à l'iris mise à disposition par le MTE). Le cas échéant, c'est qu'il existe un réseau à proximité",
+    'Distance au réseau (m) si < 1000 m',
+    'Distance au réseau le plus proche. Lorsque le résultat du test est positif mais que la distance est "non disponible", cela signifie qu’il existe à un réseau de chaleur dans le quartier, mais que nous ne disposons pas de son tracé précis (information déduite des consommations de chaleur à l’iris sur les réseaux mise en open data par le SDES)',
   ],
   [
     'PDP (périmètre de développement prioritaire)',
@@ -242,8 +240,9 @@ export const getExport = (addresses: any[]) => {
         address.label,
         address.score,
         address.isEligible && !address.futurNetwork ? 'Oui' : 'Non',
-        address.distance,
-        address.isEligible && address.isBasedOnIris ? 'Oui' : 'Non',
+        address.isEligible && address.isBasedOnIris
+          ? 'Non disponible'
+          : address.distance,
         address.inZDP ? 'Oui' : 'Non',
         address.isEligible && address.futurNetwork ? 'Oui' : 'Non',
         address.id,

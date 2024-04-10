@@ -21,3 +21,15 @@ export function normalize(string: string | undefined | null): string {
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '');
 }
+
+/**
+ * Converts a ratio number between 0 and 1 to its hexadecimal notation.
+ */
+export function ratioToHex(ratio: number): string {
+  if (ratio < 0 || ratio > 1) {
+    throw new Error(`invalid input: ${ratio}`);
+  }
+
+  const hex = Math.floor(ratio * 255).toString(16);
+  return `${hex.length === 1 ? '0' : ''}${hex}`;
+}

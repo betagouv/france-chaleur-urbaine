@@ -3,7 +3,7 @@ import vtpbf from 'vt-pbf';
 import db from 'src/db';
 import {
   DatabaseTileInfo,
-  DataType,
+  SourceId,
   preTable,
   tilesInfo,
 } from 'src/services/tiles.config';
@@ -83,7 +83,7 @@ const tileToEnvelope = (x: number, y: number, z: number) => {
 };
 
 export const fillTiles = async (
-  table: DataType,
+  table: SourceId,
   zoomMin: number,
   zoomMax: number,
   withIndex: boolean

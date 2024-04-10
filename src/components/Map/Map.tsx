@@ -67,7 +67,6 @@ import {
 } from 'src/services/Map/map-configuration';
 import {
   LayerId,
-  SourceId,
   applyMapConfigurationToLayers,
   buildMapLayers,
   layerSymbolsImagesURLs,
@@ -77,6 +76,7 @@ import useRouterReady from '@hooks/useRouterReady';
 import MapSearchForm from './components/MapSearchForm';
 import CardSearchDetails from './components/CardSearchDetails';
 import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
+import { SourceId } from 'src/services/tiles.config';
 
 const mapSettings = {
   defaultLongitude: 2.3,
@@ -428,6 +428,14 @@ const Map = ({
       { layer: 'consommationsGaz', key: 'consommation' },
       { layer: 'energy', key: 'energy' },
       { layer: 'batimentsRaccordes', key: 'raccordement' },
+      {
+        layer: 'enrrMobilisables-friches',
+        key: 'enrrMobilisables-friche',
+      },
+      {
+        layer: 'enrrMobilisables-parkings',
+        key: 'enrrMobilisables-parking',
+      },
       {
         layer: 'enrrMobilisables-datacenter',
         key: 'enrrMobilisables-datacenter',

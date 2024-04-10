@@ -31,6 +31,8 @@ export type MapConfiguration = {
     showInstallationsElectrogenes: boolean;
     showStationsDEpuration: boolean;
     showUnitesDIncineration: boolean;
+    showSolaireThermiqueFriches: boolean;
+    showSolaireThermiqueParkings: boolean;
   };
   zonesOpportunite: {
     show: boolean;
@@ -71,6 +73,8 @@ const emptyMapConfiguration: MapConfiguration = {
     showInstallationsElectrogenes: true,
     showStationsDEpuration: true,
     showUnitesDIncineration: true,
+    showSolaireThermiqueFriches: true,
+    showSolaireThermiqueParkings: true,
   },
   zonesOpportunite: {
     show: false,

@@ -143,6 +143,11 @@ module.exports = withBundleAnalyzer(
             destination: '/professionnels',
             permanent: true,
           },
+          {
+            source: '/ressources',
+            destination: '/ressources/articles',
+            permanent: true,
+          },
         ];
       },
       async headers() {

@@ -1,11 +1,11 @@
 const statistics = {
-  connection: '590',
-  CO2Tons: '33 000',
-  networks: '710',
-  heatPercent: '90',
+  connection: '736',
+  CO2Tons: '41 000',
+  networks: '785',
+  heatPercent: '92',
   connectionPercent: '24',
-  iFrameIntegration: '16',
-  lastActu: '1er janvier 2024',
+  iFrameIntegration: '22',
+  lastActu: '1er avril 2024',
 };
 
 export default statistics;

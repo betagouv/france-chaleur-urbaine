@@ -160,8 +160,30 @@ const publicNavigationMenu: NavigationItem[] = [
     href: '/carte',
   },
   {
-    title: 'Aller plus loin',
+    title: 'Ressources',
     href: '/ressources',
+    children: [
+      {
+        title: 'Nos actualités',
+        href: '/actus',
+      },
+      {
+        title: 'Nos articles sur le chauffage urbain',
+        href: '/ressources/articles',
+      },
+      {
+        title: 'Nos supports pédagogiques',
+        href: '/ressources/supports',
+      },
+      {
+        title: 'Nos actions de communication',
+        href: '/ressources/actions-de-communication',
+      },
+      {
+        title: 'Nos outils',
+        href: '/ressources/outils',
+      },
+    ],
   },
   {
     title: 'Notre service',

@@ -308,10 +308,9 @@ export const PopupTitle = styled.h3`
   margin-bottom: 8px;
 `;
 
-export const PopupType = styled.span`
+export const PopupType = styled.div`
   color: #78818d;
   font-size: 0.75rem;
   font-weight: bold;
   text-transform: uppercase;
-  padding-bottom: 1em;
 `;

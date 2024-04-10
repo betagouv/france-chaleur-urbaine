@@ -7,6 +7,8 @@ import {
   Datacenter,
   Industrie,
   InstallationElectrogene,
+  SolaireThermiqueFriche,
+  SolaireThermiqueParking,
   StationDEpuration,
   UniteDIncineration,
 } from 'src/types/layers/enrr_mobilisables';
@@ -21,6 +23,8 @@ export const layersWithDynamicContentPopup = [
   'enrrMobilisables-installations-electrogenes',
   'enrrMobilisables-stations-d-epuration',
   'enrrMobilisables-unites-d-incineration',
+  'enrrMobilisables-friches',
+  'enrrMobilisables-parkings',
 ] as const satisfies ReadonlyArray<LayerId>;
 
 export function isDynamicPopupContent(
@@ -45,7 +49,9 @@ type ENRRMobilisablePopupContentType =
   | ENRRMobilisableIndustriePopupContentType
   | ENRRMobilisableInstallationsElectrogenesPopupContentType
   | ENRRMobilisableStationsDEpurationPopupContentType
-  | ENRRMobilisableUniteDIncinerationPopupContentType;
+  | ENRRMobilisableUniteDIncinerationPopupContentType
+  | ENRRMobilisableFrichePopupContentType
+  | ENRRMobilisableParkingPopupContentType;
 
 type ENRRMobilisableDatacenterPopupContentType = {
   type: 'enrrMobilisables-datacenter';
@@ -66,6 +72,14 @@ type ENRRMobilisableStationsDEpurationPopupContentType = {
 type ENRRMobilisableUniteDIncinerationPopupContentType = {
   type: 'enrrMobilisables-unites-d-incineration';
   properties: UniteDIncineration;
+};
+type ENRRMobilisableFrichePopupContentType = {
+  type: 'enrrMobilisables-friches';
+  properties: SolaireThermiqueFriche;
+};
+type ENRRMobilisableParkingPopupContentType = {
+  type: 'enrrMobilisables-parkings';
+  properties: SolaireThermiqueParking;
 };
 
 /**
@@ -116,6 +130,18 @@ const DynamicPopupContent = ({
       return (
         <ENRRMobilisableUniteDIncinerationPopupContent
           uniteDIncineration={content.properties}
+        />
+      );
+    case 'enrrMobilisables-friches':
+      return (
+        <ENRRMobilisableSolaireThermiqueFrichePopupContent
+          friche={content.properties}
+        />
+      );
+    case 'enrrMobilisables-parkings':
+      return (
+        <ENRRMobilisableSolaireThermiqueParkingPopupContent
+          parking={content.properties}
         />
       );
     default:
@@ -343,7 +369,9 @@ const PopupProperty = <T,>({
     {isDefined(value)
       ? isDefined(formatter)
         ? formatter(value)
-        : `${value} ${unit ?? ''}`
+        : `${typeof value === 'number' ? prettyFormatNumber(value) : value} ${
+            unit ?? ''
+          }`
       : 'Non connu'}
     <br />
   </>
@@ -363,3 +391,30 @@ const QualiteLabel = ({ value }: { value: string | number }) => (
       ''}
   </Text>
 );
+
+const ENRRMobilisableSolaireThermiqueFrichePopupContent = ({
+  friche,
+}: {
+  friche: SolaireThermiqueFriche;
+}) => {
+  return (
+    <section>
+      <PopupType className="fr-mr-3w">Friche</PopupType>
+      <PopupTitle className="fr-mr-3w">{friche.site_nom}</PopupTitle>
+      <PopupProperty label="Surface" value={friche.surf_site} unit="m²" />
+    </section>
+  );
+};
+
+const ENRRMobilisableSolaireThermiqueParkingPopupContent = ({
+  parking,
+}: {
+  parking: SolaireThermiqueParking;
+}) => {
+  return (
+    <section>
+      <PopupType className="fr-mr-3w">Parking</PopupType>
+      <PopupProperty label="Surface" value={parking.surfm2} unit="m²" />
+    </section>
+  );
+};

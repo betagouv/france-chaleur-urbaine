@@ -54,3 +54,25 @@ export interface UniteDIncineration {
   type_inst: string;
   qualite_xy: number;
 }
+
+export interface SolaireThermiqueFriche {
+  GmlID: string;
+  comm_insee: string;
+  'db_gd5kj.hsu_pnjyu.solaire_thermique_friches_solaire_thermique_friches.fid': number;
+  site_id: string;
+  site_nom: string;
+  source_nom: string;
+  st_area_shape_: number;
+  st_length_shape_: number;
+  surf_site: number;
+  urba_zone_: string;
+}
+
+export interface SolaireThermiqueParking {
+  GmlID: string;
+  TYPE: string;
+  'db_gd5kj.hsu_pnjyu.parkings_sup500m2_parkings_sup500m2.fid': number;
+  st_area_shape_: number;
+  st_length_shape_: number;
+  surfm2: number;
+}
