@@ -104,7 +104,7 @@ const Owner = () => {
               </Box>
               <Box>
                 <Text size="lg">
-                  de réduction de consommationsd’énergie comptabilisée&nbsp;!
+                  de réduction de consommations d’énergie comptabilisée&nbsp;!
                 </Text>
               </Box>
             </ResponsiveRow>
