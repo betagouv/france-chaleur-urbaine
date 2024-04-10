@@ -3,7 +3,7 @@ import { Record } from 'airtable';
 import db from 'src/db';
 import base from 'src/db/airtable';
 import {
-  DataType,
+  SourceId,
   DatabaseTileInfo,
   tilesInfo,
 } from 'src/services/tiles.config';
@@ -132,7 +132,7 @@ const conversionConfigAutres = {
 /**
  * Synchronise les données d'une table réseau dans Airtable vers la table correspondante dans Postgres.
  */
-export const downloadNetwork = async (table: DataType) => {
+export const downloadNetwork = async (table: SourceId) => {
   const tileInfo = tilesInfo[table] as DatabaseTileInfo;
   if (!tileInfo || !tileInfo.airtable) {
     throw new Error(`${table} not managed`);
@@ -248,7 +248,7 @@ export const downloadNetwork = async (table: DataType) => {
  * Les noms de colonne sont identiques, seuls les types sont corrigés et nettoyés.
  */
 function convertEntityFromAirtableToPostgres(
-  type: DataType,
+  type: SourceId,
   airtableNetwork: Record<FieldSet>
 ) {
   const conversionConfig =

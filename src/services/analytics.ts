@@ -231,6 +231,18 @@ const trackingEvents = {
   "Carto|Unités d'incinération|Désactive": {
     matomo: ['Carto', "Unités d'incinération", 'Désactive'],
   },
+  'Carto|Solaire thermique - friches|Active': {
+    matomo: ['Carto', 'Solaire thermique - friches', 'Active'],
+  },
+  'Carto|Solaire thermique - friches|Désactive': {
+    matomo: ['Carto', 'Solaire thermique - friches', 'Désactive'],
+  },
+  'Carto|Solaire thermique - parkings|Active': {
+    matomo: ['Carto', 'Solaire thermique - parkings', 'Active'],
+  },
+  'Carto|Solaire thermique - parkings|Désactive': {
+    matomo: ['Carto', 'Solaire thermique - parkings', 'Désactive'],
+  },
   "Carto|Zones d'opportunité|Active": {
     matomo: ['Carto', "Zones d'opportunité", 'Active'],
   },

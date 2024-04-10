@@ -2,13 +2,13 @@ import geojsonvt from 'geojson-vt';
 import db from 'src/db';
 import base from 'src/db/airtable';
 import vtpbf from 'vt-pbf';
-import { AirtableTileInfo, DataType, tilesInfo } from './tiles.config';
+import { AirtableTileInfo, SourceId, tilesInfo } from './tiles.config';
 import { tileSourcesMaxZoom } from '@components/Map/map-layers';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
 let airtableDayCached = 0;
-const airtableTiles: Partial<Record<DataType, any>> = {
+const airtableTiles: Partial<Record<SourceId, any>> = {
   demands: null,
 };
 
@@ -63,7 +63,7 @@ const cacheAirtableTiles = () => {
         );
       getObjectIndexFromAirtable(tileInfo)
         .then((result) => {
-          airtableTiles[type as DataType] = result;
+          airtableTiles[type as SourceId] = result;
           debug &&
             console.info(
               `Indexing tiles for ${type} from airtable ${tileInfo.table} done`
@@ -83,7 +83,7 @@ const cacheAirtableTiles = () => {
 
 cacheAirtableTiles();
 
-const getTiles = async (type: DataType, x: number, y: number, z: number) => {
+const getTiles = async (type: SourceId, x: number, y: number, z: number) => {
   const tileInfo = tilesInfo[type];
   if (tileInfo.source === 'database') {
     const result = await db(tileInfo.tiles)

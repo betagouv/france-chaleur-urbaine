@@ -1,4 +1,4 @@
-import { DataType } from '../src/services/tiles.config';
+import { SourceId } from '../src/services/tiles.config';
 import { fillTiles } from './utils/tiles';
 
 if (process.argv.length !== 5 && process.argv.length !== 6) {
@@ -14,7 +14,7 @@ const zoomMax = process.argv[4];
 const index = process.argv[5];
 
 fillTiles(
-  table as DataType,
+  table as SourceId,
   parseInt(zoomMin),
   parseInt(zoomMax),
   index !== undefined

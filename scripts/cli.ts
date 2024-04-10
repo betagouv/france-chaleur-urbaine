@@ -8,10 +8,10 @@ import {
 } from '@commander-js/extra-typings';
 import { logger } from '@helpers/logger';
 import {
-  DataType,
+  SourceId,
   DatabaseTileInfo,
   tilesInfo,
-  zDataType,
+  zSourceId,
 } from 'src/services/tiles.config';
 import db from 'src/db';
 import { readFile } from 'fs/promises';
@@ -50,7 +50,7 @@ program
 
 program
   .command('fill-tiles')
-  .argument('<network-id>', 'Network id', (v) => zDataType.parse(v))
+  .argument('<network-id>', 'Network id', (v) => zSourceId.parse(v))
   .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
   .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
   .argument('[withIndex]', 'With index', (v) => !!v, false)
@@ -93,7 +93,7 @@ program
 
 program
   .command('update-networks')
-  .argument('<network-id>', 'Network id', (v) => zDataType.parse(v))
+  .argument('<network-id>', 'Network id', (v) => zSourceId.parse(v))
   .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
   .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
   .argument('[withIndex]', 'With index', (v) => !!v, false)
@@ -123,8 +123,8 @@ function validateKnownAirtableBase(value: string): KnownAirtableBase {
   return value as KnownAirtableBase;
 }
 
-function validateNetworkId(value: string): DataType {
-  const tileInfo = tilesInfo[value as DataType];
+function validateNetworkId(value: string): SourceId {
+  const tileInfo = tilesInfo[value as SourceId];
   if (!tileInfo || !(tileInfo as any).airtable) {
     throw new InvalidArgumentError(
       `invalid network id "${value}", expected any of ${Object.keys(
@@ -132,5 +132,5 @@ function validateNetworkId(value: string): DataType {
       )}.`
     );
   }
-  return value as DataType;
+  return value as SourceId;
 }

@@ -22,23 +22,26 @@ export type DatabaseTileInfo = BasicTileInfo & {
 
 export type TileInfo = AirtableTileInfo | DatabaseTileInfo;
 
-export const dataTypes = [
-  'network',
-  'gas',
-  'energy',
-  'zoneDP',
-  'raccordements',
-  'demands',
-  'buildings',
-  'futurNetwork',
-  'coldNetwork',
+// = id passé en URL de l'API
+export const sourceIds = [
+  'network', // réseaux de chaud
+  'zoneDP', // zones de développement prioritaire
+  'futurNetwork', // réseaux de chaleur en construction
+  'coldNetwork', // réseaux de froid
+  'demands', // demandes d'éligibilité
+  'gas', // consommations de gaz
+  'energy', // batiments collectifs chauffés au fioul / gas
+  'raccordements', // bâtiments raccordés
   'enrrMobilisables',
+  'enrrMobilisables-friches',
+  'enrrMobilisables-parkings',
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
+  'buildings', // caractéristiques des bâtiments
 ] as const;
 
-export const zDataType = z.enum(dataTypes);
-export type DataType = z.infer<typeof zDataType>;
+export const zSourceId = z.enum(sourceIds);
+export type SourceId = z.infer<typeof zSourceId>;
 
 const bnbFields = `
   id as id,
@@ -71,7 +74,7 @@ export const preTable: (region: string) => Record<string, string> = (
     `,
 });
 
-export const tilesInfo: Record<DataType, TileInfo> = {
+export const tilesInfo: Record<SourceId, TileInfo> = {
   demands: {
     source: 'airtable',
     table: Airtable.UTILISATEURS,
@@ -210,6 +213,24 @@ export const tilesInfo: Record<DataType, TileInfo> = {
   enrrMobilisables: {
     source: 'database',
     tiles: 'enrr_mobilisables_tiles',
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  'enrrMobilisables-friches': {
+    source: 'database',
+    tiles: 'enrr_mobilisables_friches_tiles',
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  'enrrMobilisables-parkings': {
+    source: 'database',
+    tiles: 'enrr_mobilisables_parkings_tiles',
     table: '', // useless
     properties: [], // useless
     sourceLayer: '', // useless
