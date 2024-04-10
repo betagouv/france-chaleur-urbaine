@@ -22,6 +22,7 @@ const Simulator = ({
   children,
   defaultStructure,
   withTitle,
+  backgroundColor,
 }: {
   cartridge?: boolean;
   withMargin?: boolean;
@@ -29,6 +30,7 @@ const Simulator = ({
   children?: ReactNode;
   defaultStructure?: string;
   withTitle?: boolean;
+  backgroundColor?: string;
 }) => {
   const [structure, setStructure] = useState(defaultStructure || 'Résidentiel');
   const [value, setValue] = useState('');
@@ -54,6 +56,7 @@ const Simulator = ({
       withMargin={withMargin}
       cartridge={cartridge}
       withRedirection={withRedirection}
+      backgroundColor={backgroundColor}
     >
       {withTitle && (
         <Title>

@@ -1,3 +1,4 @@
+import { legacyColors } from '@components/ui/helpers/colors';
 import styled from 'styled-components';
 
 export const Container = styled.div`
@@ -5,10 +6,12 @@ export const Container = styled.div`
 `;
 
 export const IFrameBox = styled.button`
-  border: solid 1px var(--bf500);
+  border: solid 1px ${legacyColors.darkerblue};
   padding: 4px;
   border-radius: 8px;
   cursor: pointer;
+  text-align: left;
+  color: ${legacyColors.darkerblue};
 `;
 
 export const CopyInfo = styled.div`

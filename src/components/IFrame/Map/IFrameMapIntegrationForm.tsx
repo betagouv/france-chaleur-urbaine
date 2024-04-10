@@ -8,6 +8,7 @@ import {
   DivQuestionCenterMap,
   StyledIFrameLink,
 } from './IFrameMapIntegrationForm.styles';
+import Box from '@components/ui/Box';
 
 const selectableLayers = [
   {
@@ -30,7 +31,13 @@ const selectableLayers = [
 
 type LayerKey = (typeof selectableLayers)[number]['key'];
 
-const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
+const IFrameMapIntegrationForm = ({
+  label,
+  checkboxColor,
+}: {
+  label?: ReactNode;
+  checkboxColor?: string;
+}) => {
   const [coords, setCoords] = useState<Coords | null>(null);
   const [selectedLayers, setSelectedLayers] = useState<LayerKey[]>([
     'pdp',
@@ -68,21 +75,23 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
 
   return (
     <>
-      <CheckboxGroup>
-        {selectableLayers.map((selectableLayer) => (
-          <Checkbox
-            key={selectableLayer.key}
-            label={selectableLayer.label}
-            defaultChecked={true}
-            onClick={(e) =>
-              toggleLayerSelection(
-                selectableLayer.key,
-                (e.target as any).checked
-              )
-            }
-          />
-        ))}
-      </CheckboxGroup>
+      <Box textColor={checkboxColor}>
+        <CheckboxGroup>
+          {selectableLayers.map((selectableLayer) => (
+            <Checkbox
+              key={selectableLayer.key}
+              label={selectableLayer.label}
+              defaultChecked={true}
+              onClick={(e) =>
+                toggleLayerSelection(
+                  selectableLayer.key,
+                  (e.target as any).checked
+                )
+              }
+            />
+          ))}
+        </CheckboxGroup>
+      </Box>
       {label ? (
         label
       ) : (

@@ -2,7 +2,7 @@ import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { Select, TextInput } from '@dataesr/react-dsfr';
 import styled, { css } from 'styled-components';
 
-export const Box = styled(Cartridge)`
+export const BoxSimulator = styled(Cartridge)`
   width: 500px;
   padding: 32px;
 `;
