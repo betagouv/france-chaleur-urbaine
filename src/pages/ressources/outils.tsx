@@ -90,6 +90,7 @@ const OutilsPage = () => {
         <Link
           variant="secondary"
           href="https://api.gouv.fr/les-api/api-france-chaleur-urbaine"
+          isExternal
         >
           Accéder
         </Link>
@@ -109,6 +110,7 @@ const OutilsPage = () => {
           <Link
             variant="secondary"
             href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
+            isExternal
           >
             Accéder
           </Link>
