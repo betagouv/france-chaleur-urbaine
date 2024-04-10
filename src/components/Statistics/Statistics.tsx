@@ -358,7 +358,7 @@ const Statistics = () => {
                     votée en AG avant que les travaux ne puissent démarrer.
                   </HoverableIcon>
                   <br />
-                  <NumberText>(~17 700 logements)</NumberText>
+                  <NumberText>(~22 080 logements)</NumberText>
                   <br />
                   <NumberSubText className="fr-mt-1w">
                     A titre de comparaison, le nombre total de bâtiments
