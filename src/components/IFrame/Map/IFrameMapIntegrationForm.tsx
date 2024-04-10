@@ -31,13 +31,7 @@ const selectableLayers = [
 
 type LayerKey = (typeof selectableLayers)[number]['key'];
 
-const IFrameMapIntegrationForm = ({
-  label,
-  checkboxColor,
-}: {
-  label?: ReactNode;
-  checkboxColor?: string;
-}) => {
+const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
   const [coords, setCoords] = useState<Coords | null>(null);
   const [selectedLayers, setSelectedLayers] = useState<LayerKey[]>([
     'pdp',
@@ -75,7 +69,7 @@ const IFrameMapIntegrationForm = ({
 
   return (
     <>
-      <Box textColor={checkboxColor}>
+      <Box>
         <CheckboxGroup>
           {selectableLayers.map((selectableLayer) => (
             <Checkbox

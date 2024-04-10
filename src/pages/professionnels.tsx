@@ -408,13 +408,12 @@ const Professionnels = () => {
                   particulier ?
                 </Text>
               }
-              checkboxColor="blue-france"
             />
             <Text size="sm" mt="3w" legacyColor="darkerblue">
               Ajustez les valeurs des variables "width" et "height" pour obtenir
               un affichage optimal sur votre site.
             </Text>
-            <Text size="sm" mt="2w" legacyColor="darkerblue">
+            <Text size="sm" legacyColor="darkerblue">
               Si vous souhaitez une carte personnalisée avec seulement vos
               réseaux, votre logo ou d'autres informations, n'hésitez pas à{' '}
               <a
