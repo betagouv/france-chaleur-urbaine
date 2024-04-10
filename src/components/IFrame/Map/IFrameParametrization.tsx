@@ -5,12 +5,10 @@ import { SuggestionItem } from 'src/types/Suggestions';
 import {
   AddressContainer,
   Container,
-  IFrameBox,
+  IFrame,
 } from './IFrameParametrization.styles';
 import IFrameLink from '../Form/IFrameLink';
 import { LegendURLKey, legendURLKeys } from '@pages/map';
-import Text from '@components/ui/Text';
-import Link from '@components/ui/Link';
 
 const IFrameParametrization = () => {
   const [coords, setCoords] = useState<{ lon: number; lat: number } | null>(
@@ -59,11 +57,13 @@ const IFrameParametrization = () => {
 
   return (
     <Container>
-      <Text size="lg" mb="4w">
-        Sélectionnez les informations que vous voulez afficher puis copier les
-        lignes de code obtenues :
-      </Text>
-      <CheckboxGroup>
+      <h4>Intégrez notre cartographie à votre site</h4>
+      Il vous suffit de sélectionner les informations que vous voulez afficher
+      et de copier les lignes de code obtenues dans le code source de votre
+      site.
+      <br />
+      <br />
+      <CheckboxGroup legend="Vous voulez afficher:">
         <Checkbox
           label="Les réseaux de chaleur existants"
           defaultChecked={true}
@@ -85,9 +85,7 @@ const IFrameParametrization = () => {
           onClick={(e) => onCheckBoxClick(e as any, 'reseau_froid')}
         />
       </CheckboxGroup>
-      <Text size="lg" my="2w">
-        Vous souhaitez centrer la carte sur un endroit en particulier ?
-      </Text>
+      <div>Vous souhaitez centrer la carte sur un endroit en particulier ?</div>
       <AddressContainer>
         <AddressAutocomplete
           onAddressSelected={onAddressSelected}
@@ -95,7 +93,7 @@ const IFrameParametrization = () => {
         />
       </AddressContainer>
       <br />
-      <IFrameBox>
+      <IFrame>
         <IFrameLink
           link={`
 <iframe
@@ -105,21 +103,26 @@ src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}"
 />
 `}
         />
-      </IFrameBox>
-      <Text size="sm" mt="2w" legacyColor="darkerblue">
-        Ajustez les valeurs des variables "width" et "height" pour obtenir un
-        affichage optimal sur votre site.
-      </Text>
-      <Text size="sm" mb="2w" legacyColor="darkerblue">
-        Si vous souhaitez une carte personnalisée avec uniquement vos réseaux,
-        votre logo ou d'autres informations, n'hésitez pas à{' '}
-        <Link
-          href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
-          isExternal
-        >
-          nous contacter
-        </Link>
-      </Text>
+      </IFrame>
+      <br />
+      Pensez à ajuster les valeurs des variables "width" et "height" pour
+      obtenir un affichage optimal sur votre site. Vous pouvez par ailleurs
+      ajuster le niveau de zoom souhaité dans le lien (entre 1 et 17).
+      <br />
+      <br />
+      <div>
+        <b>
+          Si vous souhaitez une carte personnalisée avec seulement vos réseaux,
+          votre logo ou d'autres informations, n'hésitez pas à{' '}
+          <a
+            href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            nous contacter
+          </a>
+        </b>
+      </div>
     </Container>
   );
 };
