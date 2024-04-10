@@ -358,7 +358,7 @@ const Statistics = () => {
                     votée en AG avant que les travaux ne puissent démarrer.
                   </HoverableIcon>
                   <br />
-                  <NumberText>(~17 700 logements)</NumberText>
+                  <NumberText>(~22 080 logements)</NumberText>
                   <br />
                   <NumberSubText className="fr-mt-1w">
                     A titre de comparaison, le nombre total de bâtiments
@@ -483,8 +483,8 @@ const Statistics = () => {
                         iconSize="1x"
                       >
                         "Potentiellement raccordables" : tests effectués pour
-                        des bâtiments situés à moins de 100 m d'un réseau avec
-                        un chauffage préexistant collectif.
+                        des bâtiments situés à moins de 100 m d'un réseau (60 m
+                        sur Paris)
                       </HoverableIcon>
                     </NumberHoverableIcon>
                   </NumberHighlight>
