@@ -186,6 +186,7 @@ const SimulatorCO2: React.FC<{
                 flexDirection="row"
                 py="3w"
                 px="2w"
+                alignItems="center"
               >
                 <Box
                   display="flex"

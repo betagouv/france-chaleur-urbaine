@@ -55,8 +55,8 @@ const Professionnels = () => {
                 <Image
                   src="/img/head-slice-bg-professionnels.svg"
                   alt=""
-                  width={640}
-                  height={478}
+                  width={533}
+                  height={407}
                   priority
                 />
               </Box>
@@ -298,7 +298,11 @@ const Professionnels = () => {
                 bâtiment
               </Text>
               <Box py="4w">
-                <Simulator cartridge backgroundColor="#F8F5F1" />
+                <Simulator
+                  cartridge
+                  backgroundColor="#F8F5F1"
+                  defaultStructure="Tertiaire"
+                />
               </Box>
             </Box>
 
@@ -310,7 +314,7 @@ const Professionnels = () => {
                 Le{' '}
                 <Link href="/chauffage-urbain#contenu">chauffage urbain</Link>{' '}
                 est en moyenne le mode de chauffage le moins cher sur le marché
-                pour un bâtiment tertiaire performant RE2020 (28 kWhu/m2/an)
+                pour un bâtiment tertiaire performant RE2020 (28 kWhu/m²/an)
               </Text>
 
               <Image
@@ -321,8 +325,8 @@ const Professionnels = () => {
                 className="fr-responsive-img"
               />
               <Text size="sm">
-                Coût global chauffage et eau chaude sanitaire (€TTC/bât/an) pour
-                un bâtiment RE 2020. Enquête sur le prix de vente de la chaleur
+                Coût global chauffage et eau chaude sanitaire (€TTC/an) pour un
+                bâtiment de 1000 m². Enquête sur le prix de vente de la chaleur
                 et du froid 2022 (Amorce 2023)
               </Text>
             </Box>
@@ -362,10 +366,10 @@ const Professionnels = () => {
                 src="/icons/picto_warning_white.svg"
               />
               <Text size="lg" mt="2w">
-                À partir du 1er juillet 2022, de nouvelles normes
+                Depuis le 1er juillet 2022, de nouvelles normes
                 environnementales, qui visent à limiter les émissions de gaz à
-                effet de serre, entreront en vigueur et excluent l'installation
-                de nouvelles chaudières au fioul.
+                effet de serre, sont entrées en vigueur : elles excluent
+                l'installation de nouvelles chaudières au fioul.
               </Text>
               <Text size="lg" mt="2w">
                 <Link href="/ressources/aides#contenu">Des aides</Link>{' '}
@@ -381,13 +385,12 @@ const Professionnels = () => {
           <Box flex>
             <Heading as="h4" color="blue-france" id="iframe-carte">
               Intégrez notre cartographie ou notre test d’adresses à votre site
-              à l’instar de Charleville-Mézières, Strasbourg, Tours, l’ALEC de
-              Lyon...
+              internet
             </Heading>
             <Text size="lg">
               Offrez aux visiteurs de votre site la possibilité de vérifier
-              s'ils sont raccordables ou de visualiser votre réseau directement
-              depuis votre site internet.
+              s'ils sont raccordables ou de visualiser les réseaux de chaleur et
+              de froid depuis votre site
             </Text>
             <Text size="lg" mt="2w">
               Nous mettons à votre disposition deux iframes que vous pouvez

@@ -105,15 +105,15 @@ const publicNavigationMenu: NavigationItem[] = [
     ],
   },
   {
-    title: 'Professionnel, bureaux d’étude',
+    title: 'Professionnels, bureaux d’étude',
     children: [
+      {
+        title: 'Testez une liste d’adresses',
+        href: '/professionnels#test-liste',
+      },
       {
         title: 'Les avantages du chauffage urbain',
         href: '/professionnels#avantages-du-chauffage-urbain',
-      },
-      {
-        title: 'Tester une liste d’adresse',
-        href: '/professionnels#test-liste',
       },
       {
         title: 'Les coûts du chauffage urbain',
@@ -128,7 +128,7 @@ const publicNavigationMenu: NavigationItem[] = [
         href: '/professionnels#obligations-de-raccordement',
       },
       {
-        title: 'Simulateur d’émission de CO2',
+        title: 'Simulateur d’émissions de CO2',
         href: '/professionnels#simulateur-co2',
       },
     ],
