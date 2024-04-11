@@ -50,7 +50,12 @@ export function handleRouteErrors(
   );
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const startTime = Date.now();
-    const logger = parentLogger.child({ url: req.url });
+    const logger = parentLogger.child({
+      url: req.url,
+      ip: process.env.LOG_REQUEST_IP
+        ? req.headers['x-forwarded-for'] ?? req.socket.remoteAddress
+        : undefined,
+    });
     try {
       if (routeOptions?.requireAuthentication) {
         await requireAuthentication(
