@@ -1,7 +1,12 @@
 import { getAllDemands } from '@core/infrastructure/repository/manager';
-import { handleRouteErrors } from '@helpers/server';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import {
+  handleRouteErrors,
+  requireGetMethod,
+  validateObjectSchema,
+} from '@helpers/server';
+import type { NextApiRequest } from 'next';
 import { Demand } from 'src/types/Summary/Demand';
+import { z } from 'zod';
 
 type CalcResult = {
   date?: string;
@@ -80,16 +85,15 @@ const reducer = {
   },
 };
 
-const get = async (res: NextApiResponse, group: keyof typeof reducer) => {
+export default handleRouteErrors(async function demands(req: NextApiRequest) {
+  requireGetMethod(req);
+
+  const { group } = await validateObjectSchema(req.query, {
+    group: z.enum(['all', 'monthly']),
+  });
+
   const demands = (await getAllDemands())
     .reverse()
     .reduce(reducer[group](), {});
-  return res.status(200).json(demands);
-};
-
-export default handleRouteErrors(async function demands(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  return get(res, req.query.group as keyof typeof reducer);
+  return demands;
 });
