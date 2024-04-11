@@ -11,6 +11,8 @@ Prérequis :
 
 ## Étapes
 
+Note : Idéalement, les étapes sont faites avec une grosse configuration postgres.
+
 ```sh
 cd scripts/bdnb
 
@@ -37,3 +39,25 @@ psql postgres://postgres:postgres_fcu@localhost:5432 -c "create index if not exi
 # export des métriques en CSV
 ./export-batiments-summary.sh
 ```
+
+
+## Maille EPCI
+
+Le même export est demandé à la maille EPCI plutôt que département.
+
+- Maj des tables consolidées :
+```sql
+-- ajout de la colonne EPCI aux summary
+alter table batiments_summary_reseaux_de_chaleur add column code_epci_insee varchar;
+alter table batiments_summary_reseaux_en_construction add column code_epci_insee varchar;
+
+-- modification depuis la table bdnb
+update batiments_summary_reseaux_de_chaleur summary set code_epci_insee = bdnb.code_epci_insee
+from bdnb_registre_2022 bdnb
+where bdnb.id = summary.id;
+update batiments_summary_reseaux_en_construction summary set code_epci_insee = bdnb.code_epci_insee
+from bdnb_registre_2022 bdnb
+where bdnb.id = summary.id;
+```
+
+- Adaptation du script `export-batiments-summary.sh` pour ajouter l'export du champ code_epci_insee.
