@@ -8,7 +8,6 @@ import {
   DivQuestionCenterMap,
   StyledIFrameLink,
 } from './IFrameMapIntegrationForm.styles';
-import Box from '@components/ui/Box';
 
 const selectableLayers = [
   {
@@ -69,23 +68,21 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
 
   return (
     <>
-      <Box>
-        <CheckboxGroup>
-          {selectableLayers.map((selectableLayer) => (
-            <Checkbox
-              key={selectableLayer.key}
-              label={selectableLayer.label}
-              defaultChecked={true}
-              onClick={(e) =>
-                toggleLayerSelection(
-                  selectableLayer.key,
-                  (e.target as any).checked
-                )
-              }
-            />
-          ))}
-        </CheckboxGroup>
-      </Box>
+      <CheckboxGroup>
+        {selectableLayers.map((selectableLayer) => (
+          <Checkbox
+            key={selectableLayer.key}
+            label={selectableLayer.label}
+            defaultChecked={true}
+            onClick={(e) =>
+              toggleLayerSelection(
+                selectableLayer.key,
+                (e.target as any).checked
+              )
+            }
+          />
+        ))}
+      </CheckboxGroup>
       {label ? (
         label
       ) : (

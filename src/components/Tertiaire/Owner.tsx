@@ -5,7 +5,7 @@ import Link from '@components/ui/Link';
 
 const Owner = () => {
   return (
-    <Box className="fr-container">
+    <Box className="fr-container" id="decrettertiaire">
       <Heading as="h2" center>
         Vous êtes propriétaire ou exploitant d’un établissement tertiaire
       </Heading>

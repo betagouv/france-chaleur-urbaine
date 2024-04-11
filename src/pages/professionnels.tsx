@@ -326,15 +326,15 @@ const Professionnels = () => {
               />
               <Text size="sm">
                 Coût global chauffage et eau chaude sanitaire (€TTC/an) pour un
-                bâtiment de 1000 m². Enquête sur le prix de vente de la chaleur
-                et du froid 2022 (Amorce 2023)
+                bâtiment de 1000&nbsp;m². Enquête sur le prix de vente de la
+                chaleur et du froid 2022 (Amorce 2023)
               </Text>
             </Box>
           </ResponsiveRow>
         </Box>
       </Box>
 
-      <Box py="10w" id="decret-tertiaire">
+      <Box py="10w">
         <Owner />
       </Box>
 

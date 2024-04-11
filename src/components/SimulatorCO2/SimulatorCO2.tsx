@@ -173,7 +173,6 @@ const SimulatorCO2: React.FC<{
           alignItems="flex-start"
           pb="2w"
         >
-          {/* <SimulatorWrapper withPadding={!!typeSurf}> */}
           {typeSurf && <SimulatorHeader>{data.chapo}</SimulatorHeader>}
           <ResponsiveRow gap="20px">
             <Box>

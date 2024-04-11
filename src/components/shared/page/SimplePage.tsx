@@ -108,12 +108,16 @@ const publicNavigationMenu: NavigationItem[] = [
     title: 'Professionnels, bureaux d’étude',
     children: [
       {
-        title: 'Testez une liste d’adresses',
-        href: '/professionnels#test-liste',
+        title: 'Nos services pour les professionnels',
+        href: '/professionnel',
       },
       {
         title: 'Les avantages du chauffage urbain',
         href: '/professionnels#avantages-du-chauffage-urbain',
+      },
+      {
+        title: 'Testez une liste d’adresses',
+        href: '/professionnels#test-liste',
       },
       {
         title: 'Les coûts du chauffage urbain',
@@ -121,7 +125,7 @@ const publicNavigationMenu: NavigationItem[] = [
       },
       {
         title: 'Le décret tertiaire',
-        href: '/professionnels#decret-tertiaire',
+        href: '/professionnels#decrettertiaire',
       },
       {
         title: 'Les obligations de raccordement',
@@ -132,7 +136,6 @@ const publicNavigationMenu: NavigationItem[] = [
         href: '/professionnels#simulateur-co2',
       },
     ],
-    href: '/professionnels',
   },
   {
     title: 'Collectivités, exploitants',
