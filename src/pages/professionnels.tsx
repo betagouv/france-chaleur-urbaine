@@ -53,7 +53,7 @@ const Professionnels = () => {
             >
               <Box flex className="fr-hidden fr-unhidden-lg">
                 <Image
-                  src="/img/head-slice-bg-professionnels.svg"
+                  src="/img/head-slice-bg-professionnels.png"
                   alt=""
                   width={533}
                   height={407}
