@@ -10,7 +10,7 @@ import {
 import { logger } from '@helpers/logger';
 import { handleRouteErrors, requirePostMethod } from '@helpers/server';
 import type { NextApiRequest } from 'next';
-import base from 'src/db/airtable';
+import base, { AirtableDB } from 'src/db/airtable';
 import { BadRequestError } from 'src/services/errors';
 import { Airtable } from 'src/types/enum/Airtable';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,17 +37,21 @@ export default handleRouteErrors(async function PostRecords(
     case Airtable.RELANCE: {
       const demand = await getToRelanceDemand(values.id);
       if (demand) {
-        const records = await base(Airtable.UTILISATEURS).update(demand.id, {
+        await AirtableDB(Airtable.UTILISATEURS).update(demand.id, {
           'Commentaire relance': values.comment,
         });
-        return { ids: records };
       }
-      break;
+      return;
     }
+
     case Airtable.UTILISATEURS: {
-      const records = await base(Airtable.UTILISATEURS).create(values, {
-        typecast: true,
-      });
+      // bad airtable type
+      const { id: demandId }: any = await base(Airtable.UTILISATEURS).create(
+        values,
+        {
+          typecast: true,
+        }
+      );
       const [conso, nbLogement, network] = await Promise.all([
         getConso(values.Latitude, values.Longitude),
         getNbLogement(values.Latitude, values.Longitude),
@@ -65,15 +69,15 @@ export default handleRouteErrors(async function PostRecords(
         values['Type de chauffage'] === 'Collectif';
 
       logger.info('create eligibility demand', {
-        id: records[0].getId(),
+        id: demandId,
         nbLogement,
         conso,
         network,
         gestionnaires,
       });
 
-      await base(Airtable.UTILISATEURS).update(
-        records[0].getId(),
+      await AirtableDB(Airtable.UTILISATEURS).update(
+        demandId,
         {
           Gestionnaires: gestionnaires,
           Conso: conso ? conso.conso_nb : undefined,
@@ -88,23 +92,41 @@ export default handleRouteErrors(async function PostRecords(
         },
         { typecast: true }
       );
-      return { ids: records };
+      return { id: demandId };
     }
+
     case Airtable.CONTRIBUTION: {
-      const records = await base(Airtable.CONTRIBUTION).create(values);
-      return { ids: records };
+      // bad airtable type
+      const { id }: any = await AirtableDB(Airtable.CONTRIBUTION).create(
+        values
+      );
+      logger.info('create airtable record contribution', {
+        id,
+      });
+      return;
     }
+
     case Airtable.NEWSLETTER: {
-      const records = await base(Airtable.NEWSLETTER).create(values);
-      return { ids: records };
+      // bad airtable type
+      const { id }: any = await AirtableDB(Airtable.NEWSLETTER).create(values);
+      logger.info('create airtable record newsletter', {
+        id,
+      });
+      return;
     }
+
     case Airtable.CONTACT: {
-      const records = await base(Airtable.CONTACT).create({
+      // bad airtable type
+      const { id }: any = await AirtableDB(Airtable.CONTACT).create({
         ...values,
         Date: new Date(),
       });
-      return { ids: records };
+      logger.info('create airtable record contact', {
+        id,
+      });
+      return;
     }
+
     default:
       throw new BadRequestError('Type not recognized');
   }
