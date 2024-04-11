@@ -3,18 +3,17 @@ import {
   requirePutMethod,
   validateObjectSchema,
 } from '@helpers/server';
+import { zAirtableRecordId } from '@utils/validation/password';
 import type { NextApiRequest } from 'next';
 import base from 'src/db/airtable';
 import { Airtable } from 'src/types/enum/Airtable';
 import { z } from 'zod';
 
-const zAirtableId = z.string().length(17); // e.g. rec6nCFUO7Nzj6M9n
-
 export default handleRouteErrors(async (req: NextApiRequest) => {
   requirePutMethod(req);
 
   const { id } = await validateObjectSchema(req.query, {
-    id: zAirtableId,
+    id: zAirtableRecordId,
   });
   // would be best with the type in the URL
   const { type, ...values } = await validateObjectSchema(req.body, {

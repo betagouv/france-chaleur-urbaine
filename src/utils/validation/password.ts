@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export const zAirtableRecordId = z.string().regex(/^[a-zA-Z0-9]{17}$/); // e.g. rec6nCFUO7Nzj6M9n
+
 export const passwordSchema = z.string().refine(
   (password) => {
     if (password.length < 8) return false;
