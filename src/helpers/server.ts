@@ -7,6 +7,7 @@ import { captureException } from '@sentry/nextjs';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import { Session, getServerSession } from 'next-auth';
 import { nextAuthOptions } from '@pages/api/auth/[...nextauth]';
+import { BadRequestError } from 'src/services/errors';
 
 const FormidableError = (formidableErrors as any).default;
 
@@ -108,6 +109,15 @@ export function handleRouteErrors(
           });
           return res.status(400).json({
             message: 'Paramètres incorrects',
+            error: error,
+          });
+        }
+        if (error instanceof BadRequestError) {
+          logger.error('validation error', {
+            error,
+          });
+          return res.status(400).json({
+            message: error.message,
             error: error,
           });
         }
