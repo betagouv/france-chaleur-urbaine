@@ -463,7 +463,9 @@ const Manager = () => {
                   initialCenter={centerPin ? centerPin : firstCenterPin}
                   initialZoom={initialZoom}
                   initialMapConfiguration={createMapConfiguration({
-                    reseauxDeChaleur: true,
+                    reseauxDeChaleur: {
+                      show: true,
+                    },
                     reseauxEnConstruction: true,
                     zonesDeDeveloppementPrioritaire: true,
                   })}

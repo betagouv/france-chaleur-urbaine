@@ -49,7 +49,9 @@ const MapPage = () => {
 
   // uniquement pour ces 2 couches, on les affiche directement si affichées dans la légende
   const initialMapConfiguration = createMapConfiguration({
-    reseauxDeChaleur: legendFeatures?.includes('reseauxDeChaleur'),
+    reseauxDeChaleur: {
+      show: legendFeatures?.includes('reseauxDeChaleur'),
+    },
     reseauxEnConstruction: legendFeatures?.includes('reseauxEnConstruction'),
   });
 

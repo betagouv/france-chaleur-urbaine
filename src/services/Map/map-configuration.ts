@@ -1,9 +1,32 @@
 import { deepMergeObjects } from '@utils/core';
 import { DeepPartial, FlattenKeys } from '@utils/typescript';
 
+type Interval = [number, number];
+
+export const energiesMajoritaires = [
+  'Biomasse',
+  'Géothermie',
+  'UVE',
+  'Chaleur industrielle',
+  'Solaire thermique',
+  'Pompe à chaleur',
+  'Gaz',
+  'Fioul',
+] as const;
+
+type EnergieMajoritaire = (typeof energiesMajoritaires)[number];
+
 export type MapConfiguration = {
   proMode: boolean;
-  reseauxDeChaleur: boolean;
+  reseauxDeChaleur: {
+    show: boolean;
+    energieMajoritaire?: EnergieMajoritaire;
+    energiesSecondaires: Record<EnergieMajoritaire, Interval>;
+    tauxENRR: Interval;
+    emissionCO2: Interval;
+    prixMoyen: Interval;
+    periodeConstruction: Interval;
+  };
   reseauxDeFroid: boolean;
   reseauxEnConstruction: boolean;
   zonesDeDeveloppementPrioritaire: boolean;
@@ -13,15 +36,15 @@ export type MapConfiguration = {
     logements: boolean;
     tertiaire: boolean;
     industrie: boolean;
-    interval: [number, number];
+    interval: Interval;
   };
   batimentsGazCollectif: {
     show: boolean;
-    interval: [number, number];
+    interval: Interval;
   };
   batimentsFioulCollectif: {
     show: boolean;
-    interval: [number, number];
+    interval: Interval;
   };
   batimentsRaccordes: boolean;
   enrrMobilisables: {
@@ -43,9 +66,31 @@ export type MapConfiguration = {
 };
 export type MapConfigurationProperty = FlattenKeys<MapConfiguration>;
 
+export const percentageMaxInterval: Interval = [0, 100];
+export const emissionCO2MaxInterval: Interval = [0, 500];
+export const prixMoyenMaxInterval: Interval = [0, 300];
+export const periodeConstructionMaxInterval: Interval = [1900, 2024];
+
 const emptyMapConfiguration: MapConfiguration = {
   proMode: false,
-  reseauxDeChaleur: false,
+  reseauxDeChaleur: {
+    show: false,
+    energieMajoritaire: undefined,
+    energiesSecondaires: {
+      Biomasse: percentageMaxInterval,
+      Géothermie: percentageMaxInterval,
+      UVE: percentageMaxInterval,
+      'Chaleur industrielle': percentageMaxInterval,
+      'Solaire thermique': percentageMaxInterval,
+      'Pompe à chaleur': percentageMaxInterval,
+      Gaz: percentageMaxInterval,
+      Fioul: percentageMaxInterval,
+    },
+    tauxENRR: percentageMaxInterval,
+    emissionCO2: [0, 500],
+    prixMoyen: prixMoyenMaxInterval,
+    periodeConstruction: [1900, 2024],
+  },
   reseauxDeFroid: false,
   reseauxEnConstruction: false,
   zonesDeDeveloppementPrioritaire: false,
@@ -86,7 +131,10 @@ const emptyMapConfiguration: MapConfiguration = {
 
 export const defaultMapConfiguration = createMapConfiguration({
   proMode: true,
-  reseauxDeChaleur: true,
+  reseauxDeChaleur: {
+    show: true,
+    tauxENRR: [0, 100],
+  },
   reseauxEnConstruction: true,
   consommationsGaz: {
     show: true,
@@ -104,7 +152,9 @@ export const defaultMapConfiguration = createMapConfiguration({
 });
 
 export const iframeSimpleMapConfiguration = createMapConfiguration({
-  reseauxDeChaleur: true,
+  reseauxDeChaleur: {
+    show: true,
+  },
 });
 
 export function createMapConfiguration(

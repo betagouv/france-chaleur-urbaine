@@ -971,8 +971,14 @@ export function applyMapConfigurationToLayers(
     'consommationsGaz',
     config.proMode && config.consommationsGaz.show
   );
-  setLayerVisibility('reseauxDeChaleur-avec-trace', config.reseauxDeChaleur);
-  setLayerVisibility('reseauxDeChaleur-sans-trace', config.reseauxDeChaleur);
+  setLayerVisibility(
+    'reseauxDeChaleur-avec-trace',
+    config.reseauxDeChaleur.show
+  );
+  setLayerVisibility(
+    'reseauxDeChaleur-sans-trace',
+    config.reseauxDeChaleur.show
+  );
   setLayerVisibility(
     'batimentsRaccordes',
     config.proMode && config.batimentsRaccordes
@@ -1108,4 +1114,32 @@ export function applyMapConfigurationToLayers(
       ],
     ]
   );
+
+  map.setFilter('reseauxDeChaleur-avec-trace', [
+    'all',
+    ['==', ['get', 'has_trace'], true],
+    getReseauxDeChaleurFilter(config.reseauxDeChaleur),
+  ]);
+  map.setFilter('reseauxDeChaleur-sans-trace', [
+    'all',
+    ['==', ['get', 'has_trace'], false],
+    getReseauxDeChaleurFilter(config.reseauxDeChaleur),
+  ]);
+}
+
+function getReseauxDeChaleurFilter(
+  conf: MapConfiguration['reseauxDeChaleur']
+): ExpressionSpecification {
+  return [
+    'all',
+    ['>=', ['get', 'Taux EnR&R'], conf.tauxENRR[0]],
+    ['<=', ['get', 'Taux EnR&R'], conf.tauxENRR[1]],
+    ['>=', ['get', 'contenu CO2 ACV'], conf.emissionCO2[0] / 1000],
+    ['<=', ['get', 'contenu CO2 ACV'], conf.emissionCO2[1] / 1000],
+    // FIXME: pas encore dispo dans les tuiles
+    // ['>=', ['get', 'PM'], conf.prixMoyen[0]],
+    // ['<=', ['get', 'PM'], conf.prixMoyen[1]],
+    // ['>=', ['get', 'annee_construction'], conf.periodeConstruction[0]],
+    // ['<=', ['get', 'annee_construction'], conf.periodeConstruction[1]],
+  ];
 }

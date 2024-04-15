@@ -88,7 +88,10 @@ const Networks = ({
           initialCenter={cityCoord}
           initialZoom={11}
           initialMapConfiguration={createMapConfiguration({
-            reseauxDeChaleur: true,
+            reseauxDeChaleur: {
+              show: true,
+              tauxENRR: [0, 100],
+            },
           })}
           filter={
             network

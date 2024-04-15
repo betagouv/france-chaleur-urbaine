@@ -1,4 +1,4 @@
-import Network from '@components/Network/Network';
+import NetworkPanel from '@components/Network/Network';
 import {
   getColdNetwork,
   getNetwork,
@@ -6,6 +6,7 @@ import {
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { Network } from 'src/types/Summary/Network';
 
 const PageReseau = ({ network }: { network: Network }) => {
   const router = useRouter();
@@ -31,7 +32,11 @@ const PageReseau = ({ network }: { network: Network }) => {
   }
 
   return (
-    <Network network={network} displayBlocks={displayBlocks} externalLinks />
+    <NetworkPanel
+      network={network}
+      displayBlocks={displayBlocks}
+      externalLinks
+    />
   );
 };
 

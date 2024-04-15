@@ -13,25 +13,28 @@ import { Handle, SliderRail, Track } from '../../Slider/Components';
 import { ScaleMaxLabel, ScaleMinLabel } from '../../Slider/Components.styles';
 import { maxIconSize, minIconSize } from '../map-layers';
 
-const ScaleLegend: React.FC<{
+interface ScaleLegendProps {
   label: string;
   color?: string;
+  showColor?: boolean;
   circle?: boolean;
   framed?: boolean;
   domain: [number, number];
   defaultValues?: [number, number];
   onChange: (values: [number, number]) => void;
   className?: string;
-}> = ({
+}
+const ScaleLegend = ({
   label,
   framed,
   color: defaultColor,
+  showColor = true,
   circle,
   domain,
   onChange,
   defaultValues,
   className,
-}) => {
+}: ScaleLegendProps) => {
   const [values, setValues] = useState(defaultValues || domain);
   const minLabel = `${values[0] === domain[0] && domain[0] !== 0 ? '< ' : ''}${
     values[0]
@@ -43,18 +46,20 @@ const ScaleLegend: React.FC<{
       <ScaleLegendHeader>{label}</ScaleLegendHeader>
 
       <ScaleLegendBody>
-        <ScaleLabelLegend
-          bgColor={defaultColor + '88'}
-          size={minIconSize}
-          circle={circle}
-        />
+        {showColor && (
+          <ScaleLabelLegend
+            bgColor={defaultColor + '88'}
+            size={minIconSize}
+            circle={circle}
+          />
+        )}
 
         <ScaleSlider>
           <Slider
             mode={2}
             step={1}
             domain={domain}
-            values={defaultValues || domain}
+            values={values}
             onChange={(newValues) => {
               setValues(newValues as [number, number]);
               onChange([
@@ -102,11 +107,13 @@ const ScaleLegend: React.FC<{
             max : <b>{maxLabel}</b>
           </ScaleMaxLabel>
         </ScaleSlider>
-        <ScaleLabelLegend
-          bgColor={defaultColor + '88'}
-          size={maxIconSize}
-          circle={circle}
-        />
+        {showColor && (
+          <ScaleLabelLegend
+            bgColor={defaultColor + '88'}
+            size={maxIconSize}
+            circle={circle}
+          />
+        )}
       </ScaleLegendBody>
     </ScaleLegendWrapper>
   );

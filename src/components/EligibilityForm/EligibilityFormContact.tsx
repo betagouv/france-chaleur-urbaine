@@ -136,7 +136,9 @@ const EligibilityFormContact = ({
                 withoutLogo
                 initialCenter={addressData.geoAddress?.geometry.coordinates}
                 initialMapConfiguration={createMapConfiguration({
-                  reseauxDeChaleur: true,
+                  reseauxDeChaleur: {
+                    show: true,
+                  },
                   reseauxEnConstruction: true,
                   zonesDeDeveloppementPrioritaire: true,
                 })}
@@ -158,7 +160,9 @@ const EligibilityFormContact = ({
                     withoutLogo
                     initialCenter={addressData.geoAddress?.geometry.coordinates}
                     initialMapConfiguration={createMapConfiguration({
-                      reseauxDeChaleur: true,
+                      reseauxDeChaleur: {
+                        show: true,
+                      },
                       reseauxEnConstruction: true,
                       zonesDeDeveloppementPrioritaire: true,
                     })}

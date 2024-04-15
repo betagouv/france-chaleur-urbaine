@@ -23,6 +23,10 @@ import {
   MapConfiguration,
   MapConfigurationProperty,
   defaultMapConfiguration,
+  emissionCO2MaxInterval,
+  percentageMaxInterval,
+  periodeConstructionMaxInterval,
+  prixMoyenMaxInterval,
 } from 'src/services/Map/map-configuration';
 import { setProperty, toggleBoolean } from '@utils/core';
 import CollapsibleBox from '@components/ui/CollapsibleBox';
@@ -79,6 +83,7 @@ interface SimpleMapLegendProps {
 }
 
 const expansions = [
+  'reseauxDeChaleur',
   'consommationsGaz',
   'batimentsGazCollectif',
   'batimentsFioulCollectif',
@@ -138,9 +143,27 @@ function SimpleMapLegend({
 
   return (
     <>
-      <Text fontSize="14px" lineHeight="18px" fontWeight="bold" mx="2w">
-        {legendTitle || 'Réseaux de chaleur et de froid'}
-      </Text>
+      <Box display="flex" alignItems="center">
+        <Text
+          fontSize="14px"
+          lineHeight="18px"
+          fontWeight="bold"
+          ml="2w"
+          className="fr-col"
+        >
+          {legendTitle || 'Réseaux de chaleur et de froid'}
+        </Text>
+
+        <Button
+          className="fr-px-1w"
+          hasBorder={false}
+          size="sm"
+          onClick={() => toggleSectionExpansion('reseauxDeChaleur')}
+          title="Afficher/Masquer le détail"
+        >
+          <Icon size="lg" name="ri-equalizer-line" />
+        </Button>
+      </Box>
       <Text
         fontSize="13px"
         lineHeight="18px"
@@ -151,11 +174,68 @@ function SimpleMapLegend({
         Cliquez sur un réseau pour connaître ses caractéristiques
       </Text>
 
+      <CollapsibleBox expand={!!sectionsExpansions['reseauxDeChaleur']}>
+        <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
+          <LegendSeparator />
+          <Text size="xs" lineHeight="15px" fontStyle="italic" mx="2w">
+            Filtres uniquement sur les réseaux de chaleur, pour lesquels les
+            données sont disponibles.
+          </Text>
+
+          <ScaleLegend
+            className="fr-mx-3w"
+            label="Taux d’EnR&R"
+            showColor={false}
+            domain={percentageMaxInterval}
+            defaultValues={mapConfiguration.reseauxDeChaleur.tauxENRR}
+            onChange={(values) =>
+              updateScaleInterval('reseauxDeChaleur.tauxENRR', values)
+            }
+          />
+          <ScaleLegend
+            className="fr-mx-3w"
+            label="Émission de CO2"
+            showColor={false}
+            domain={emissionCO2MaxInterval}
+            defaultValues={mapConfiguration.reseauxDeChaleur.emissionCO2}
+            onChange={(values) =>
+              updateScaleInterval('reseauxDeChaleur.emissionCO2', values)
+            }
+          />
+          <ScaleLegend
+            className="fr-mx-3w"
+            label="Prix moyen"
+            showColor={false}
+            domain={prixMoyenMaxInterval}
+            defaultValues={mapConfiguration.reseauxDeChaleur.prixMoyen}
+            onChange={(values) =>
+              updateScaleInterval('reseauxDeChaleur.prixMoyen', values)
+            }
+          />
+          <ScaleLegend
+            className="fr-mx-3w"
+            label="Période de construction"
+            showColor={false}
+            domain={periodeConstructionMaxInterval}
+            defaultValues={
+              mapConfiguration.reseauxDeChaleur.periodeConstruction
+            }
+            onChange={(values) =>
+              updateScaleInterval(
+                'reseauxDeChaleur.periodeConstruction',
+                values
+              )
+            }
+          />
+        </DeactivatableBox>
+        <LegendSeparator />
+      </CollapsibleBox>
+
       {enabledFeatures.includes('reseauxDeChaleur') && (
         <Box display="flex">
           <SingleCheckbox
             id="reseauxDeChaleur"
-            checked={mapConfiguration.reseauxDeChaleur}
+            checked={mapConfiguration.reseauxDeChaleur.show}
             onChange={() => toggleLayer('reseauxDeChaleur')}
             trackingEvent="Carto|Réseaux chaleur"
           />
