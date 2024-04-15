@@ -3,7 +3,7 @@ import {
   requirePutMethod,
   validateObjectSchema,
 } from '@helpers/server';
-import { zAirtableRecordId } from '@utils/validation/password';
+import { zAirtableRecordId } from '@utils/validation';
 import type { NextApiRequest } from 'next';
 import base from 'src/db/airtable';
 import { Airtable } from 'src/types/enum/Airtable';

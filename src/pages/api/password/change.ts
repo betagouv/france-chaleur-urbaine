@@ -3,7 +3,7 @@ import {
   requirePostMethod,
   validateObjectSchema,
 } from '@helpers/server';
-import { passwordSchema } from '@utils/validation/password';
+import { zPassword } from '@utils/validation';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { NextApiRequest } from 'next';
@@ -15,7 +15,7 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);
 
   const { password, token } = await validateObjectSchema(req.body, {
-    password: passwordSchema,
+    password: zPassword,
     token: z.string().transform((token, ctx) => {
       const decodedToken = jwt.verify(
         req.body.token,

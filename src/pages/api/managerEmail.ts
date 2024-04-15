@@ -9,7 +9,7 @@ import db from 'src/db';
 import base from 'src/db/airtable';
 import { sendManagerEmail } from 'src/services/email';
 import { Airtable } from 'src/types/enum/Airtable';
-import { zAirtableRecordId } from '@utils/validation/password';
+import { zAirtableRecordId } from '@utils/validation';
 
 const zManagerEmail = {
   emailContent: z.object({
