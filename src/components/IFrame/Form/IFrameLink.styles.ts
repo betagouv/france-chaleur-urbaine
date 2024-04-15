@@ -1,10 +1,6 @@
 import { legacyColors } from '@components/ui/helpers/colors';
 import styled from 'styled-components';
 
-export const Container = styled.div`
-  position: relative;
-`;
-
 export const IFrameBox = styled.button`
   border: solid 1px ${legacyColors.darkerblue};
   padding: 4px;
