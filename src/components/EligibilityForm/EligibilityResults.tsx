@@ -568,7 +568,6 @@ export const getEligibilityResultState = (
         : 'farCollectifOutZdp'
       : 'farIndividual';
   }
-  console.log('getEligibilityResultState unknown', heatingType, eligibility);
   return 'unknown';
 };
 

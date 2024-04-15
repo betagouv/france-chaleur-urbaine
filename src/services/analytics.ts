@@ -628,7 +628,6 @@ export const useMatomoAbTestingExperiment = <
       ready: boolean;
       variation: undefined;
     } => {
-  console.log('useMatomoAbTestingExperiment enable', options.enable);
   const matomoAnalyticsLoadingState = useAtomValue(
     matomoAnalyticsLoadingStateAtom
   );
@@ -645,9 +644,5 @@ export const useMatomoAbTestingExperiment = <
     matomoABTestingExperiments.find((e) => e.name === experimentName)
   );
 
-  console.log(
-    'useMatomoAbTestingExperiment variation',
-    experiment.getActivatedVariationName()
-  );
   return { ready: true, variation: experiment.getActivatedVariationName() };
 };
