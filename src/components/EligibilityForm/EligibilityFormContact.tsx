@@ -8,6 +8,7 @@ import { AddressDataType } from 'src/types/AddressData';
 import {
   bordeauxMetropoleCityCodes,
   getEligibilityResult,
+  getEligibilityResultState,
 } from './EligibilityResults';
 import {
   ContactForm,
@@ -17,6 +18,7 @@ import {
   ContactMapResult,
 } from './components';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { useMatomoAbTestingExperiment } from 'src/services/analytics';
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
@@ -31,8 +33,19 @@ const EligibilityFormContact = ({
   cardMode,
   onSubmit,
 }: EligibilityFormContactType) => {
+  const { ready, variation } = useMatomoAbTestingExperiment(
+    'TestMessagesFormulaireContact',
+    {
+      enable:
+        getEligibilityResultState(
+          addressData.heatingType,
+          addressData.eligibility
+        ) === 'closeCollectif',
+    }
+  );
+
   const { body, computedEligibility, text } = useMemo(() => {
-    if (!addressData.eligibility) {
+    if (!addressData.eligibility || !variation) {
       return {};
     }
 
@@ -42,6 +55,7 @@ const EligibilityFormContact = ({
       eligibility: computedEligibility,
       text,
     }: any = getEligibilityResult(
+      variation,
       addressData.heatingType,
       addressData.eligibility
     );
@@ -72,7 +86,7 @@ const EligibilityFormContact = ({
       computedEligibility,
       text,
     };
-  }, [addressData]);
+  }, [addressData, variation]);
 
   const handleSubmitForm = useCallback(
     async (values: Record<string, string | number>) => {
@@ -96,6 +110,9 @@ const EligibilityFormContact = ({
     [addressData, computedEligibility, onSubmit]
   );
 
+  if (!ready) {
+    return null;
+  }
   return (
     <ContactFormWrapper cardMode={cardMode}>
       {addressData.eligibility?.basedOnCity && !cardMode ? (
@@ -129,7 +146,7 @@ const EligibilityFormContact = ({
         </>
       ) : (
         <>
-          <ContactFormContentWrapper cardMode={cardMode}>
+          <ContactFormContentWrapper>
             {!cardMode ? (
               <>
                 <ContactFormResultMessage eligible={computedEligibility}>
@@ -159,7 +176,7 @@ const EligibilityFormContact = ({
               )
             )}
           </ContactFormContentWrapper>
-          <ContactFormContentWrapper cardMode={cardMode}>
+          <ContactFormContentWrapper>
             {!cardMode && (
               <>
                 <Image

@@ -1,11 +1,14 @@
+import Box from '@components/ui/Box';
+import Text from '@components/ui/Text';
+import { MatomoABTestingExperimentVariations } from 'src/services/analytics';
 import { AvailableHeating } from 'src/types/AddressData';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 
 // 3 rue du petit bois 78370 Plaisir
-const closeCollectif = {
+const closeCollectifOriginal = {
   eligibility: true,
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -43,9 +46,214 @@ ${
 `,
 };
 
+const closeCollectifAmeliorationA = {
+  eligibility: true,
+  body: (
+    distance: string,
+    inZDP: boolean,
+    gestionnaire: string | null,
+    tauxENRR: number | null,
+    city: string
+  ) => (
+    <Box display="flex" flexDirection="column" gap="32px">
+      <Box display="flex" gap="16px">
+        <img
+          src="/img/reponses_tests_pouce_haut.webp"
+          alt=""
+          className="fr-col--top"
+        />
+        <Box backgroundColor="#C1C1C1" width="1px" />
+        <Text>
+          Un réseau de chaleur <strong>passe à proximité immédiate</strong> de
+          votre adresse{' '}
+          {distance
+            ? `
+          (${distance})`
+            : ''}
+          .
+        </Text>
+      </Box>
+
+      {inZDP && (
+        <Box display="flex" gap="16px">
+          <img
+            src="/img/reponses_tests_réseau_classé.webp"
+            alt=""
+            className="fr-col--top"
+          />
+          <Box backgroundColor="#C1C1C1" width="1px" />
+          <Text>
+            Votre bâtiment est situé à proximité d’un réseau classé&nbsp;:{' '}
+            <strong>une obligation de raccordement peut s’appliquer</strong> en
+            cas de renouvellement de votre mode de chauffage.
+          </Text>
+        </Box>
+      )}
+
+      <Box display="flex" gap="16px">
+        <img
+          src="/img/reponses_tests_pouce_haut.webp"
+          alt=""
+          className="fr-col--top"
+        />
+        <Box backgroundColor="#C1C1C1" width="1px" />
+        <Text>
+          Avec un chauffage collectif,{' '}
+          <strong>
+            votre immeuble dispose des équipements nécessaires&nbsp;!
+          </strong>
+        </Text>
+      </Box>
+
+      <Box display="flex" gap="16px">
+        <img
+          src="/img/reponses_tests_information.webp"
+          alt=""
+          className="fr-col--top"
+        />
+        <Box backgroundColor="#C1C1C1" width="1px" />
+        <Text>
+          Le gestionnaire est {gestionnaire}. Le taux d’énergies renouvelables
+          et de récupération du réseau est de <strong>{tauxENRR}%</strong>.
+        </Text>
+      </Box>
+      {city === 'Paris' && (
+        <Text size="sm">
+          A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au moins
+          100&nbsp;kW.
+        </Text>
+      )}
+    </Box>
+  ),
+  text: `
+**France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
+#### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
+`,
+};
+
+const closeCollectifAmeliorationB = {
+  eligibility: true,
+  body: (
+    distance: string,
+    inZDP: boolean,
+    gestionnaire: string | null,
+    tauxENRR: number | null,
+    city: string
+  ) => `
+### Bonne nouvelle !
+
+::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${
+    distance ? `(${distance})` : ''
+  }.]
+${
+  inZDP
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR
+          ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.`
+          : ''
+      }]`
+    : ''
+}
+${
+  city === 'Paris'
+    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
+    : ''
+}
+`,
+  text: '#### Recevez des informations adaptées à votre bâtiment de la part du gestionnaire du réseau.',
+};
+
+const closeCollectifAmeliorationAB = {
+  eligibility: true,
+  body: (
+    distance: string,
+    inZDP: boolean,
+    gestionnaire: string | null,
+    tauxENRR: number | null,
+    city: string
+  ) => (
+    <Box display="flex" flexDirection="column" gap="32px">
+      <Box display="flex" gap="16px">
+        <img
+          src="/img/reponses_tests_pouce_haut.webp"
+          alt=""
+          className="fr-col--top"
+        />
+        <Box backgroundColor="#C1C1C1" width="1px" />
+        <Text>
+          Un réseau de chaleur <strong>passe à proximité immédiate</strong> de
+          votre adresse{' '}
+          {distance
+            ? `
+          (${distance})`
+            : ''}
+          .
+        </Text>
+      </Box>
+
+      {inZDP && (
+        <Box display="flex" gap="16px">
+          <img
+            src="/img/reponses_tests_réseau_classé.webp"
+            alt=""
+            className="fr-col--top"
+          />
+          <Box backgroundColor="#C1C1C1" width="1px" />
+          <Text>
+            Votre bâtiment est situé à proximité d’un réseau classé&nbsp;:{' '}
+            <strong>une obligation de raccordement peut s’appliquer</strong> en
+            cas de renouvellement de votre mode de chauffage.
+          </Text>
+        </Box>
+      )}
+
+      <Box display="flex" gap="16px">
+        <img
+          src="/img/reponses_tests_pouce_haut.webp"
+          alt=""
+          className="fr-col--top"
+        />
+        <Box backgroundColor="#C1C1C1" width="1px" />
+        <Text>
+          Avec un chauffage collectif,{' '}
+          <strong>
+            votre immeuble dispose des équipements nécessaires&nbsp;!
+          </strong>
+        </Text>
+      </Box>
+
+      <Box display="flex" gap="16px">
+        <img
+          src="/img/reponses_tests_information.webp"
+          alt=""
+          className="fr-col--top"
+        />
+        <Box backgroundColor="#C1C1C1" width="1px" />
+        <Text>
+          Le gestionnaire est {gestionnaire}. Le taux d’énergies renouvelables
+          et de récupération du réseau est de <strong>{tauxENRR}%</strong>.
+        </Text>
+      </Box>
+      {city === 'Paris' && (
+        <Text size="sm">
+          A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au moins
+          100&nbsp;kW.
+        </Text>
+      )}
+    </Box>
+  ),
+  text: '#### Recevez des informations adaptées à votre bâtiment de la part du gestionnaire du réseau.',
+};
+
 // 3 rue du petit bois 78370 Plaisir
 const closeIndividual = {
-  body: (distance: number) => `
+  body: (distance: string) => `
 ::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur ${
     distance ? `(${distance})` : ''
   }.]
@@ -63,7 +271,7 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 const intermediateCollectif = {
   eligibility: true,
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -101,7 +309,7 @@ ${
 
 // 1 rue du berry 78370 Plaisir
 const farIndividual = {
-  body: (distance: number) => `
+  body: (distance: string) => `
 ::arrow-item[**Votre immeuble n'est pas situé à proximité** immédiate d’un réseau de chaleur ${
     distance ? `(${distance})` : ''
   }.]
@@ -132,7 +340,7 @@ const farCollectifOutZdp = {
 const closeFuturCollectif = {
   eligibility: true,
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -174,7 +382,7 @@ ${
 // 2 rue hardenberg 92220 Bagneux
 const farCollectifInZdp = {
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null
@@ -201,7 +409,7 @@ ${
 const intermediateFuturCollectif = {
   eligibility: true,
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -241,7 +449,7 @@ ${
 const irisCollectif = {
   eligibility: true,
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -271,7 +479,7 @@ ${
 
 // rue des hirondelles 76610 le havre
 const closeFuturIndividual = {
-  body: (distance: number) => `
+  body: (distance: string) => `
 ::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur en projet ou en construction ${
     distance ? `(${distance})` : ''
   }.]
@@ -299,15 +507,36 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 `,
 };
 
-export const getEligibilityResult = (
+type EligibilityResultState =
+  | 'irisCollectif'
+  | 'irisIndividual'
+
+  // très proche
+  | 'closeFuturCollectif'
+  | 'closeCollectif'
+  | 'closeFuturIndividual'
+  | 'closeIndividual'
+
+  // moyennement proche
+  | 'intermediateFuturCollectif'
+  | 'intermediateCollectif'
+  | 'farIndividual'
+
+  // pas proche
+  | 'farCollectifInZdp'
+  | 'farCollectifOutZdp'
+  | 'unknown';
+
+export const getEligibilityResultState = (
   heatingType: AvailableHeating,
   eligibility?: HeatNetworksResponse
-) => {
+): EligibilityResultState => {
   if (eligibility && heatingType) {
     const futurNetwork = eligibility.futurNetwork;
+
     if (eligibility.isEligible) {
       if (eligibility.isBasedOnIris) {
-        return heatingType === 'collectif' ? irisCollectif : irisIndividual;
+        return heatingType === 'collectif' ? 'irisCollectif' : 'irisIndividual';
       }
       if (
         eligibility.distance !== null &&
@@ -315,32 +544,87 @@ export const getEligibilityResult = (
       ) {
         if (eligibility.distance <= eligibility.veryEligibleDistance) {
           if (heatingType === 'collectif') {
-            return futurNetwork ? closeFuturCollectif : closeCollectif;
+            return futurNetwork ? 'closeFuturCollectif' : 'closeCollectif';
           }
-          return futurNetwork ? closeFuturIndividual : closeIndividual;
+          return futurNetwork ? 'closeFuturIndividual' : 'closeIndividual';
         }
         if (heatingType === 'collectif') {
           return futurNetwork
-            ? intermediateFuturCollectif
-            : intermediateCollectif;
+            ? 'intermediateFuturCollectif'
+            : 'intermediateCollectif';
         }
-        return farIndividual;
+        return 'farIndividual';
       }
       if (eligibility.distance === null && futurNetwork) {
         return heatingType === 'collectif'
-          ? closeFuturCollectif
-          : closeFuturIndividual;
+          ? 'closeFuturCollectif'
+          : 'closeFuturIndividual';
       }
     }
 
     return heatingType === 'collectif'
       ? eligibility.inZDP
-        ? farCollectifInZdp
-        : farCollectifOutZdp
-      : farIndividual;
+        ? 'farCollectifInZdp'
+        : 'farCollectifOutZdp'
+      : 'farIndividual';
   }
+  return 'unknown';
+};
 
-  return {};
+export const getEligibilityResult = (
+  variation: MatomoABTestingExperimentVariations<'TestMessagesFormulaireContact'>,
+  heatingType: AvailableHeating,
+  eligibility?: HeatNetworksResponse
+) => {
+  const state = getEligibilityResultState(heatingType, eligibility);
+  switch (state) {
+    case 'irisCollectif': {
+      return irisCollectif;
+    }
+    case 'irisIndividual': {
+      return irisIndividual;
+    }
+    case 'closeFuturCollectif': {
+      return closeFuturCollectif;
+    }
+    case 'closeCollectif': {
+      switch (variation) {
+        case 'original':
+          return closeCollectifOriginal;
+        case 'AmeliorationA':
+          return closeCollectifAmeliorationA;
+        case 'AmeliorationB':
+          return closeCollectifAmeliorationB;
+        case 'AmeliorationA+B':
+          return closeCollectifAmeliorationAB;
+      }
+    }
+    // eslint-disable-next-line no-fallthrough -- règle eslint erronée
+    case 'closeFuturIndividual': {
+      return closeFuturIndividual;
+    }
+    case 'closeIndividual': {
+      return closeIndividual;
+    }
+    case 'intermediateFuturCollectif': {
+      return intermediateFuturCollectif;
+    }
+    case 'intermediateCollectif': {
+      return intermediateCollectif;
+    }
+    case 'farIndividual': {
+      return farIndividual;
+    }
+    case 'farCollectifInZdp': {
+      return farCollectifInZdp;
+    }
+    case 'farCollectifOutZdp': {
+      return farCollectifOutZdp;
+    }
+    case 'unknown': {
+      return {};
+    }
+  }
 };
 
 export const bordeauxMetropoleCityCodes = [
