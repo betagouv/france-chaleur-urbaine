@@ -8,7 +8,7 @@ import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 const closeCollectifOriginal = {
   eligibility: true,
   body: (
-    distance: number, // WTF n'est pas un nombre mais un texte '5m à vol d'oiseau'
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -49,7 +49,7 @@ ${
 const closeCollectifAmeliorationA = {
   eligibility: true,
   body: (
-    distance: number, // WTF n'est pas un nombre mais un texte '5m à vol d'oiseau'
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -134,7 +134,7 @@ const closeCollectifAmeliorationA = {
 const closeCollectifAmeliorationB = {
   eligibility: true,
   body: (
-    distance: number, // WTF n'est pas un nombre mais un texte '5m à vol d'oiseau'
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -172,7 +172,7 @@ ${
 const closeCollectifAmeliorationAB = {
   eligibility: true,
   body: (
-    distance: number, // WTF n'est pas un nombre mais un texte '5m à vol d'oiseau'
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -253,7 +253,7 @@ const closeCollectifAmeliorationAB = {
 
 // 3 rue du petit bois 78370 Plaisir
 const closeIndividual = {
-  body: (distance: number) => `
+  body: (distance: string) => `
 ::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur ${
     distance ? `(${distance})` : ''
   }.]
@@ -271,7 +271,7 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 const intermediateCollectif = {
   eligibility: true,
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -309,7 +309,7 @@ ${
 
 // 1 rue du berry 78370 Plaisir
 const farIndividual = {
-  body: (distance: number) => `
+  body: (distance: string) => `
 ::arrow-item[**Votre immeuble n'est pas situé à proximité** immédiate d’un réseau de chaleur ${
     distance ? `(${distance})` : ''
   }.]
@@ -340,7 +340,7 @@ const farCollectifOutZdp = {
 const closeFuturCollectif = {
   eligibility: true,
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -382,7 +382,7 @@ ${
 // 2 rue hardenberg 92220 Bagneux
 const farCollectifInZdp = {
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null
@@ -409,7 +409,7 @@ ${
 const intermediateFuturCollectif = {
   eligibility: true,
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -449,7 +449,7 @@ ${
 const irisCollectif = {
   eligibility: true,
   body: (
-    distance: number,
+    distance: string,
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
@@ -479,7 +479,7 @@ ${
 
 // rue des hirondelles 76610 le havre
 const closeFuturIndividual = {
-  body: (distance: number) => `
+  body: (distance: string) => `
 ::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur en projet ou en construction ${
     distance ? `(${distance})` : ''
   }.]
