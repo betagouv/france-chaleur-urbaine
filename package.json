@@ -43,7 +43,7 @@
     "@reach/combobox": "^0.18.0",
     "@rivercode/facebook-conversion-api-nextjs": "^4.3.2",
     "@sentry/nextjs": "^7.98.0",
-    "@socialgouv/matomo-next": "^1.8.0",
+    "@totak/matomo-next": "1.8.1-patched",
     "@turf/area": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/length": "^6.5.0",

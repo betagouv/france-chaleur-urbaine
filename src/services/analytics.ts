@@ -1,5 +1,5 @@
 import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
-import { init as initMatomo } from '@socialgouv/matomo-next';
+import { init as initMatomo } from '@totak/matomo-next';
 import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { Router } from 'next/router';
 import { useEffect, useState } from 'react';
