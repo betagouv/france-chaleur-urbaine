@@ -109,7 +109,7 @@ const publicNavigationMenu: NavigationItem[] = [
     children: [
       {
         title: 'Nos services pour les professionnels',
-        href: '/professionnel',
+        href: '/professionnels',
       },
       {
         title: 'Les avantages du chauffage urbain',
