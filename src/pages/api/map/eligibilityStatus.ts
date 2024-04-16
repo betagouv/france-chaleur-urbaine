@@ -1,37 +1,22 @@
 import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import {
+  handleRouteErrors,
+  requireGetMethod,
+  validateObjectSchema,
+} from '@helpers/server';
+import type { NextApiRequest } from 'next';
 import { withCors } from 'src/services/api/cors';
-import { ErrorResponse } from 'src/types/ErrorResponse';
-import { HeatNetwork } from 'src/types/HeatNetworksResponse';
+import { z } from 'zod';
 
-const eligibilityStatus = async (
-  req: NextApiRequest,
-  res: NextApiResponse<HeatNetwork | ErrorResponse>
-) => {
-  if (req.method !== 'GET') {
-    return res.status(501);
-  }
-  try {
-    const { lat, lon, city } = req.query as Record<string, string>;
+const eligibilityStatus = handleRouteErrors(async (req: NextApiRequest) => {
+  requireGetMethod(req);
 
-    if (!lat || !lon || !city) {
-      res.status(400).json({
-        message: 'Parameters city, lat and lon are required',
-        code: 'Bad Arguments',
-      });
-      return;
-    }
-    const result = await getEligilityStatus(Number(lat), Number(lon), city);
-    return res.status(200).json(result);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log(error);
-    res.statusCode = 500;
-    return res.json({
-      message: 'internal server error',
-      code: 'Internal Server Error',
-    });
-  }
-};
+  const { lat, lon, city } = await validateObjectSchema(req.query, {
+    lat: z.coerce.number(),
+    lon: z.coerce.number(),
+    city: z.string(),
+  });
+  return await getEligilityStatus(lat, lon, city);
+});
 
 export default withCors(eligibilityStatus);

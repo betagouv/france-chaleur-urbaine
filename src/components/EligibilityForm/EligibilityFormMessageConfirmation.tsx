@@ -124,16 +124,14 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
                     key={choice}
                     label={choice}
                     id={choice}
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore: Create proper type
+                    // @ts-expect-error: Create proper type
                     onClick={answer}
                   />
                 ))}
                 <Checkbox
                   label="Autre"
                   id="Autre"
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore: Create proper type
+                  // @ts-expect-error: Create proper type
                   onClick={answer}
                 />
                 {sondage.includes('Autre') && (

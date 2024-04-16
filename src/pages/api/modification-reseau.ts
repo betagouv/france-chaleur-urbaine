@@ -105,7 +105,4 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   logger.info('create ModificationReseau', {
     id: record.id,
   });
-  return {
-    message: 'ok',
-  };
 });
