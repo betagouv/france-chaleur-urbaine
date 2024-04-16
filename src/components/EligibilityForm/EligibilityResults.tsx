@@ -166,7 +166,7 @@ ${
     : ''
 }
 `,
-  text: '#### Recevez des informations adaptées à votre bâtiment de la part du gestionnaire du réseau.',
+  text: '#### Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau',
 };
 
 const closeCollectifAmeliorationAB = {
@@ -248,7 +248,7 @@ const closeCollectifAmeliorationAB = {
       )}
     </Box>
   ),
-  text: '#### Recevez des informations adaptées à votre bâtiment de la part du gestionnaire du réseau.',
+  text: '#### Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau',
 };
 
 // 3 rue du petit bois 78370 Plaisir
