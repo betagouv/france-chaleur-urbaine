@@ -18,6 +18,59 @@ const ressources = [
   'reseau-classe',
 ];
 
+// Category pages, homepage, top landing pages
+const highPriorityPages = [
+  '/',
+  '/professionnels',
+  '/collectivites-et-exploitants',
+  '/carte',
+  '/actus',
+  '/ressources/articles',
+];
+
+// Pages that are not as important like outdated content or utility-type pages
+const lowPriorityPages = [
+  '/',
+  '/accessibilite',
+  '/connexion',
+  '/contact',
+  '/contribution',
+  '/mentions-legales',
+  '/politique-de-confidentialite',
+  '/reset-password',
+  '/stats',
+];
+
+function getPagePriority(/** @type {string} */ path) {
+  return highPriorityPages.includes(path)
+    ? 1
+    : lowPriorityPages.includes(path)
+    ? 0.3
+    : 0.7;
+}
+
+// Page that should not be indexed by Google because there is no point
+const excludedPages = [
+  // authenticated pages
+  '/admin',
+  '/aide',
+  '/gestionnaire',
+
+  // iframes
+  '/carte-collectivite',
+  '/charleville-mezieres',
+  '/dalkia',
+  '/engie',
+  '/form',
+  '/idex',
+  '/map',
+  '/viaseva',
+
+  // misc pages
+  '/stats-v1',
+  '/satisfaction',
+];
+
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
@@ -30,11 +83,12 @@ module.exports = {
       changefreq: 'daily',
     }));
   },
+  exclude: excludedPages,
   transform: (config, path) => {
     return {
       loc: path,
       changefreq: config.changefreq,
-      priority: path === '/' ? 1 : config.priority,
+      priority: getPagePriority(path),
       lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
     };
   },
