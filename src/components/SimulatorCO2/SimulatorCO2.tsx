@@ -207,8 +207,13 @@ const SimulatorCO2: React.FC<{
                     =
                   </Text>
                 </Box>
-                <Box>
-                  <Text fontSize="30px">
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  gap="5px"
+                >
+                  <Text fontSize="30px" fontWeight="bold">
                     {numberToString((economy * -1) / 5, 1)}
                   </Text>
                   <Text>allers-retours Paris/New-York</Text>

@@ -5,7 +5,7 @@ import Link from '@components/ui/Link';
 
 const Owner = () => {
   return (
-    <Box className="fr-container" id="decrettertiaire">
+    <Box className="fr-container" id="decrettertiaire" py="10w">
       <Heading as="h2" center>
         Vous êtes propriétaire ou exploitant d’un établissement tertiaire
       </Heading>
@@ -63,12 +63,6 @@ const Owner = () => {
                     <Text size="md">-60%</Text>
                     <Text size="xs">en&nbsp;2050</Text>
                   </Box>
-                  {/* <Image
-                    src="img/pro_obligation.svg"
-                    alt="Obligation de réduction par année"
-                    width={263}
-                    height={83}
-                  /> */}
                 </ResponsiveRow>
               </Box>
             </ResponsiveRow>

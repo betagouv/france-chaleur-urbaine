@@ -312,7 +312,8 @@ const Professionnels = () => {
                 Le{' '}
                 <Link href="/chauffage-urbain#contenu">chauffage urbain</Link>{' '}
                 est en moyenne le mode de chauffage le moins cher sur le marché
-                pour un bâtiment tertiaire performant RE2020 (28 kWhu/m²/an)
+                pour un bâtiment tertiaire performant RE2020
+                (28&nbsp;kWhu/m²/an)
               </Text>
 
               <Image
@@ -332,7 +333,7 @@ const Professionnels = () => {
         </Box>
       </Box>
 
-      <Box py="10w">
+      <Box>
         <Owner />
       </Box>
 

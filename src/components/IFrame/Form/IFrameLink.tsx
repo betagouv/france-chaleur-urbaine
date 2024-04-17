@@ -14,7 +14,7 @@ const IFrameLink = ({
   };
 
   return (
-    <Box {...props} position="relative">
+    <Box position="relative" {...props}>
       {copied && <CopyInfo>Copié</CopyInfo>}
       <IFrameBox
         onClick={onCopy}
