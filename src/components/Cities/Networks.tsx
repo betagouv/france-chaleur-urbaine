@@ -8,7 +8,7 @@ import { NetworkContainer, NetworkColumn } from './Networks.styles';
 import Slice from '@components/Slice';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
-type NetworskData = {
+type NetworksData = {
   isClassed: boolean;
   identifiant?: string;
   heatedPlaces?: string;
@@ -20,7 +20,7 @@ const Networks = ({
   network,
   cityCoord,
 }: {
-  networksData: NetworskData;
+  networksData: NetworksData;
   network?: Network;
   cityCoord: [number, number];
 }) => {
@@ -90,18 +90,11 @@ const Networks = ({
           initialMapConfiguration={createMapConfiguration({
             reseauxDeChaleur: {
               show: true,
-              tauxENRR: [0, 100],
             },
+            filtreIdentifiantReseau: network
+              ? [network['Identifiant reseau']] // FIXME peut-être prendre networksData.identifiant aussi ?
+              : [],
           })}
-          filter={
-            network
-              ? [
-                  '==',
-                  ['get', 'Identifiant reseau'],
-                  network?.['Identifiant reseau'],
-                ]
-              : ['literal', true]
-          }
         />
       </NetworkColumn>
     </NetworkContainer>

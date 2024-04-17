@@ -1,32 +1,63 @@
 import { deepMergeObjects } from '@utils/core';
+import { Interval } from '@utils/interval';
 import { DeepPartial, FlattenKeys } from '@utils/typescript';
 
-type Interval = [number, number];
+type FiltreEnergie = {
+  label: string;
+  confKey: string;
+};
 
-export const energiesMajoritaires = [
-  'Biomasse',
-  'Géothermie',
-  'UVE',
-  'Chaleur industrielle',
-  'Solaire thermique',
-  'Pompe à chaleur',
-  'Gaz',
-  'Fioul',
-] as const;
+export const filtresEnergies = [
+  {
+    label: 'Biomasse',
+    confKey: 'biomasse',
+  },
+  {
+    label: 'Géothermie',
+    confKey: 'geothermie',
+  },
+  {
+    label: 'UVE',
+    confKey: 'uve',
+  },
+  {
+    label: 'Chaleur industrielle',
+    confKey: 'chaleurIndustrielle',
+  },
+  {
+    label: 'Solaire thermique',
+    confKey: 'solaireThermique',
+  },
+  {
+    label: 'Pompe à chaleur',
+    confKey: 'pompeAChaleur',
+  },
+  {
+    label: 'Gaz',
+    confKey: 'gaz',
+  },
+  {
+    label: 'Fioul',
+    confKey: 'fioul',
+  },
+] as const satisfies ReadonlyArray<FiltreEnergie>;
 
-type EnergieMajoritaire = (typeof energiesMajoritaires)[number];
+type FiltreEnergieConfKey = (typeof filtresEnergies)[number]['confKey'];
+
+type EnergieRatioConfKey = `energie_ratio_${FiltreEnergieConfKey}`;
 
 export type MapConfiguration = {
   proMode: boolean;
+  filtreIdentifiantReseau: string[];
+  filtreGestionnaire: string[];
   reseauxDeChaleur: {
     show: boolean;
-    energieMajoritaire?: EnergieMajoritaire;
-    energiesSecondaires: Record<EnergieMajoritaire, Interval>;
+    energieMajoritaire?: FiltreEnergieConfKey;
     tauxENRR: Interval;
     emissionCO2: Interval;
     prixMoyen: Interval;
     periodeConstruction: Interval;
-  };
+  } & Record<EnergieRatioConfKey, Interval>;
   reseauxDeFroid: boolean;
   reseauxEnConstruction: boolean;
   zonesDeDeveloppementPrioritaire: boolean;
@@ -73,19 +104,19 @@ export const periodeConstructionMaxInterval: Interval = [1900, 2024];
 
 const emptyMapConfiguration: MapConfiguration = {
   proMode: false,
+  filtreIdentifiantReseau: [],
+  filtreGestionnaire: [],
   reseauxDeChaleur: {
     show: false,
     energieMajoritaire: undefined,
-    energiesSecondaires: {
-      Biomasse: percentageMaxInterval,
-      Géothermie: percentageMaxInterval,
-      UVE: percentageMaxInterval,
-      'Chaleur industrielle': percentageMaxInterval,
-      'Solaire thermique': percentageMaxInterval,
-      'Pompe à chaleur': percentageMaxInterval,
-      Gaz: percentageMaxInterval,
-      Fioul: percentageMaxInterval,
-    },
+    energie_ratio_biomasse: percentageMaxInterval,
+    energie_ratio_geothermie: percentageMaxInterval,
+    energie_ratio_uve: percentageMaxInterval,
+    energie_ratio_chaleurIndustrielle: percentageMaxInterval,
+    energie_ratio_solaireThermique: percentageMaxInterval,
+    energie_ratio_pompeAChaleur: percentageMaxInterval,
+    energie_ratio_gaz: percentageMaxInterval,
+    energie_ratio_fioul: percentageMaxInterval,
     tauxENRR: percentageMaxInterval,
     emissionCO2: [0, 500],
     prixMoyen: prixMoyenMaxInterval,
@@ -133,15 +164,10 @@ export const defaultMapConfiguration = createMapConfiguration({
   proMode: true,
   reseauxDeChaleur: {
     show: true,
-    tauxENRR: [0, 100],
   },
   reseauxEnConstruction: true,
   consommationsGaz: {
     show: true,
-    logements: true,
-    tertiaire: true,
-    industrie: true,
-    interval: [1000, Number.MAX_VALUE],
   },
   batimentsGazCollectif: {
     show: true,

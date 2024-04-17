@@ -4,7 +4,7 @@ import ModalCarteFrance from './ModalCarteFrance';
 import Text from '@components/ui/Text';
 import { trackEvent } from 'src/services/analytics';
 import Image from 'next/image';
-import { Button } from '@dataesr/react-dsfr';
+import { Button, Select } from '@dataesr/react-dsfr';
 import Link from '@components/ui/Link';
 import Icon from '@components/ui/Icon';
 import { LegendSeparator } from '../Map.style';
@@ -24,6 +24,7 @@ import {
   MapConfigurationProperty,
   defaultMapConfiguration,
   emissionCO2MaxInterval,
+  filtresEnergies,
   percentageMaxInterval,
   periodeConstructionMaxInterval,
   prixMoyenMaxInterval,
@@ -51,6 +52,7 @@ import {
   themeDefZonePotentielFortChaud,
 } from 'src/services/Map/businessRules/zonePotentielChaud';
 import DevModeIcon from './DevModeIcon';
+import RangeFilter from './RangeFilter';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -85,6 +87,7 @@ interface SimpleMapLegendProps {
 
 const expansions = [
   'reseauxDeChaleur',
+  'reseauxDeChaleurEnergies',
   'consommationsGaz',
   'batimentsGazCollectif',
   'batimentsFioulCollectif',
@@ -183,44 +186,124 @@ function SimpleMapLegend({
             données sont disponibles.
           </Text>
 
-          <ScaleLegend
-            className="fr-mx-3w"
+          <Box mx="1w">
+            <Text lineHeight="18px" fontWeight="bold" my="1w">
+              Énergies majoritaires
+            </Text>
+            <Select
+              selected={mapConfiguration.reseauxDeChaleur.energieMajoritaire}
+              options={[
+                {
+                  label: "Type d'énergie",
+                  value: undefined as any,
+                },
+                ...filtresEnergies.map(({ label, confKey }) => ({
+                  label,
+                  value: confKey,
+                })),
+              ]}
+              onChange={(e) => {
+                mapConfiguration.reseauxDeChaleur.energieMajoritaire =
+                  e.target.value;
+                onMapConfigurationChange({ ...mapConfiguration });
+              }}
+            />
+          </Box>
+
+          {!sectionsExpansions['reseauxDeChaleurEnergies'] && (
+            <Button
+              className="d-block fr-ml-auto fr-mr-1w fr-px-1w"
+              hasBorder={false}
+              size="sm"
+              onClick={() => toggleSectionExpansion('reseauxDeChaleurEnergies')}
+              title="Afficher plus de détail"
+            >
+              Plus d'options
+            </Button>
+          )}
+
+          <CollapsibleBox
+            expand={!!sectionsExpansions['reseauxDeChaleurEnergies']}
+          >
+            <Box
+              backgroundColor="grey-975-75"
+              borderRadius="10px"
+              mt="1w"
+              mx="1w"
+              pt="1w"
+            >
+              <Button
+                className="d-block fr-ml-auto"
+                hasBorder={false}
+                size="sm"
+                onClick={() =>
+                  toggleSectionExpansion('reseauxDeChaleurEnergies')
+                }
+                title="Masquer le détail"
+              >
+                <Icon size="lg" name="ri-close-line" />
+              </Button>
+              <DeactivatableBox
+                disabled={!mapConfiguration.reseauxDeChaleur.show}
+              >
+                {filtresEnergies.map((filtreEnergie) => (
+                  <RangeFilter
+                    key={filtreEnergie.confKey}
+                    label={filtreEnergie.label}
+                    domain={percentageMaxInterval}
+                    value={
+                      mapConfiguration.reseauxDeChaleur[
+                        `energie_ratio_${filtreEnergie.confKey}`
+                      ]
+                    }
+                    onChange={(values) =>
+                      updateScaleInterval(
+                        `reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`,
+                        values
+                      )
+                    }
+                    unit="%"
+                  />
+                ))}
+              </DeactivatableBox>
+            </Box>
+          </CollapsibleBox>
+
+          <LegendSeparator />
+          <RangeFilter
             label="Taux d’EnR&R"
-            showColor={false}
             domain={percentageMaxInterval}
-            defaultValues={mapConfiguration.reseauxDeChaleur.tauxENRR}
+            value={mapConfiguration.reseauxDeChaleur.tauxENRR}
             onChange={(values) =>
               updateScaleInterval('reseauxDeChaleur.tauxENRR', values)
             }
+            unit="%"
           />
-          <ScaleLegend
-            className="fr-mx-3w"
+          <LegendSeparator />
+          <RangeFilter
             label="Émission de CO2"
-            showColor={false}
             domain={emissionCO2MaxInterval}
-            defaultValues={mapConfiguration.reseauxDeChaleur.emissionCO2}
+            value={mapConfiguration.reseauxDeChaleur.emissionCO2}
             onChange={(values) =>
               updateScaleInterval('reseauxDeChaleur.emissionCO2', values)
             }
+            unit="g.CO2/kWh"
           />
-          <ScaleLegend
-            className="fr-mx-3w"
+          <LegendSeparator />
+          <RangeFilter
             label="Prix moyen"
-            showColor={false}
             domain={prixMoyenMaxInterval}
-            defaultValues={mapConfiguration.reseauxDeChaleur.prixMoyen}
+            value={mapConfiguration.reseauxDeChaleur.prixMoyen}
             onChange={(values) =>
               updateScaleInterval('reseauxDeChaleur.prixMoyen', values)
             }
+            unit="€TTC/MWh"
           />
-          <ScaleLegend
-            className="fr-mx-3w"
+          <LegendSeparator />
+          <RangeFilter
             label="Période de construction"
-            showColor={false}
             domain={periodeConstructionMaxInterval}
-            defaultValues={
-              mapConfiguration.reseauxDeChaleur.periodeConstruction
-            }
+            value={mapConfiguration.reseauxDeChaleur.periodeConstruction}
             onChange={(values) =>
               updateScaleInterval(
                 'reseauxDeChaleur.periodeConstruction',

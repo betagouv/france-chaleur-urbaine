@@ -50,11 +50,7 @@ import {
   MapboxStyleDefinition,
   MapboxStyleSwitcherControl,
 } from './StyleSwitcher';
-import {
-  ExpressionSpecification,
-  MapGeoJSONFeature,
-  MapLibreEvent,
-} from 'maplibre-gl';
+import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import { trackEvent } from 'src/services/analytics';
 import debounce from '@utils/debounce';
 import SimpleMapLegend, {
@@ -169,7 +165,6 @@ const Map = ({
   proMode,
   setProMode,
   popupType = MapPopupType.DEFAULT,
-  filter,
   pinsList,
   initialCenter,
   initialZoom,
@@ -191,7 +186,6 @@ const Map = ({
   proMode?: boolean;
   setProMode?: (proMode: boolean) => void;
   popupType?: MapPopupType;
-  filter?: ExpressionSpecification; // layer filter used to filter networks of a company
   pinsList?: MapMarkerInfos[];
   initialCenter?: [number, number];
   initialZoom?: number;
@@ -531,9 +525,7 @@ const Map = ({
       e.isSourceLoaded &&
       e.tile
     ) {
-      const network = router.query.network as string;
-
-      buildMapLayers(network, filter).forEach((spec) => {
+      buildMapLayers(mapConfiguration).forEach((spec) => {
         if (map.getSource(spec.sourceId)) {
           return;
         }

@@ -495,6 +495,7 @@ const NetworkPanel = ({
                     reseauxDeChaleur: {
                       show: true,
                     },
+                    filtreIdentifiantReseau: [network['Identifiant reseau']],
                     reseauxDeFroid: true,
                   })}
                 />

@@ -1,13 +1,18 @@
 import IframeWrapper from '@components/IframeWrapper';
 import Map from '@components/Map/Map';
-import { iframeSimpleMapConfiguration } from 'src/services/Map/map-configuration';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { MapPopupType } from 'src/types/MapComponentsInfos';
 
 const DalkiaMap = () => {
   return (
     <IframeWrapper>
       <Map
-        initialMapConfiguration={iframeSimpleMapConfiguration}
+        initialMapConfiguration={createMapConfiguration({
+          reseauxDeChaleur: {
+            show: true,
+          },
+          filtreGestionnaire: ['dalkia'],
+        })}
         enabledLegendFeatures={[
           'reseauxDeChaleur',
           'reseauxDeFroid',
@@ -22,19 +27,6 @@ const DalkiaMap = () => {
           alt: 'logo Dalkia',
         }}
         popupType={MapPopupType.DALKIA}
-        filter={[
-          'any',
-          [
-            'in',
-            'dalkia',
-            ['downcase', ['coalesce', ['get', 'gestionnaire'], '']],
-          ],
-          [
-            'in',
-            'dalkia',
-            ['downcase', ['coalesce', ['get', 'Gestionnaire'], '']],
-          ],
-        ]}
         withFCUAttribution
       />
     </IframeWrapper>
