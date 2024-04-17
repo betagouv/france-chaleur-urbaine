@@ -1,88 +1,111 @@
-import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import Slice from '@components/Slice/Slice';
-import WrappedBlock from '@components/WrappedBlock';
-import WrappedText from '@components/WrappedText/WrappedText';
-import Link from 'next/link';
+import Box, { ResponsiveRow } from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
+import Text from '@components/ui/Text';
+import Link from '@components/ui/Link';
 
 const Owner = () => {
   return (
-    <Slice
-      padding={8}
-      id="decrettertiaire"
-      header={`##### VOUS ÊTES PROPRIÉTAIRE OU EXPLOITANT  
-##### D'UN ÉTABLISSEMENT TERTIAIRE`}
-      direction="row"
-      className="presentation-rcu-tertiaire"
-    >
-      <WrappedBlock
-        direction="column"
-        className="presentation-rcu-tertiaire-cartridge"
-      >
-        <WrappedText
-          body={`
-Vos bâtiments présentent une surface d’activités tertiaires (ou un cumul de surfaces) égale ou supérieure à 1 000 m²&nbsp;?  
+    <Box className="fr-container" id="decrettertiaire" py="10w">
+      <Heading as="h2" center>
+        Vous êtes propriétaire ou exploitant d’un établissement tertiaire
+      </Heading>
+      <ResponsiveRow mt="10w">
+        <Box flex>
+          <Box>
+            <Text size="lg">
+              Si vos bâtiments présentent une surface d’activités tertiaires (ou
+              un cumul de surfaces) égale ou supérieure à 1 000 m²
+            </Text>
+            <Text size="lg" mt="3w">
+              &rarr;&nbsp;vous êtes assujettis au dispositif éco-énergie
+              tertiaire&nbsp;!
+            </Text>
+            <Text size="lg" mt="3w">
+              Pour atteindre les objectifs du dispositif, vous pouvez optimiser
+              l'exploitation de vos bâtiments, moderniser vos équipements, ou
+              encore engager des travaux de rénovation énergétique.
+            </Text>
+            <Text size="lg" mt="3w">
+              C’est aussi le moment de changer votre mode de chauffage pour une
+              solution moins émettrice de gaz à effet de serre&nbsp;!
+            </Text>
+          </Box>
+          <Box backgroundColor="blue-france-925" mt="3w" py="4w" px="2w">
+            <ResponsiveRow alignItems="center" gap="20px">
+              <Box textColor="#4550E5">
+                <Text size="lead" fontWeight="bold">
+                  Obligation
+                </Text>
+                <Text size="md" fontWeight="bold">
+                  de réduction des consommations d’énergie finale de l’ensemble
+                  parc tertaire d’au moins* :
+                </Text>
+                <Text size="xs">
+                  <Link
+                    href="https://www.ecologie.gouv.fr/sites/default/files/20064_EcoEnergieTertiaire-4pages-web.pdf"
+                    isExternal
+                  >
+                    * En savoir plus
+                  </Link>
+                </Text>
+              </Box>
+              <Box fontWeight="bold" textColor="#ffffff">
+                <ResponsiveRow alignItems="center" gap="20px">
+                  <Box backgroundColor="#27a658" py="1w" px="2w">
+                    <Text size="md">-40%</Text>
+                    <Text size="xs">en&nbsp;2030</Text>
+                  </Box>
+                  <Box backgroundColor="#27a658" py="1w" px="2w">
+                    <Text size="md">-50%</Text>
+                    <Text size="xs">en&nbsp;2040</Text>
+                  </Box>
+                  <Box backgroundColor="#27a658" py="1w" px="2w">
+                    <Text size="md">-60%</Text>
+                    <Text size="xs">en&nbsp;2050</Text>
+                  </Box>
+                </ResponsiveRow>
+              </Box>
+            </ResponsiveRow>
+          </Box>
+        </Box>
 
-**-> vous êtes assujettis au dispositif éco-énergie tertiaire&nbsp;!**  
-
-Pour atteindre les objectifs du dispositif, vous pouvez optimiser l'exploitation de vos bâtiments, moderniser vos équipements, ou encore engager des travaux de rénovation énergétique.  
-
-**C’est aussi le moment de changer votre mode de chauffage pour [une solution moins émettrice de gaz à effet de serre](/ressources/role#contenu)&nbsp;!**
-    `}
-        >
-          <Cartridge theme="grey">
-            <h4>Obligation</h4>
-            <p>
-              <b>
-                de réduction des consommations d’énergie finale de l’ensemble du
-                parc tertaire d’au moins :
-              </b>
-            </p>
-            <div className="presentation-rcu-tertiaire-cartridges">
-              <Cartridge theme="yellow">
-                <b>-40%</b> en 2030
-              </Cartridge>
-              <Cartridge theme="yellow">
-                <b>-50%</b> en 2040
-              </Cartridge>
-              <Cartridge theme="yellow">
-                <b>-60%</b> en 2050
-              </Cartridge>
-            </div>
-            <Link
-              href="https://www.ecologie.gouv.fr/sites/default/files/20064_EcoEnergieTertiaire-4pages-web.pdf"
-              target="_blank"
-            >
-              En savoir plus
-            </Link>
-          </Cartridge>
-        </WrappedText>
-      </WrappedBlock>
-
-      <WrappedBlock
-        direction="column"
-        className="presentation-rcu-tertiaire-body"
-      >
-        <WrappedText
-          body={`
-![Attention](./icons/picto-warning.svg)  
-Le 13 avril 2022, un arrêté modifiant celui du 10 avril 2020 relatif aux obligations d’actions de réduction des consommations d’énergie finale dans des bâtiments à usage tertiaire a été publié.  
-
-Il spécifie qu’**un coefficient de 0,77 sera appliqué aux consommations d’énergie des bâtiments raccordés aux réseaux de chaleur.** 
-`}
-        >
-          <Cartridge theme="color">
-            <p>Se raccorder à un réseau de chaleur, c’est jusqu'à :</p>
-            <div className="presentation-rcu-tertiaire-cartridge-conso fr-mb-3w">
-              <strong>23%</strong>
-              <span>
-                de réduction de consommations d’énergie comptabilisée !
-              </span>
-            </div>
-            (en fonction du mode de chauffage initial)
-          </Cartridge>
-        </WrappedText>
-      </WrappedBlock>
-    </Slice>
+        <Box flex>
+          <Box>
+            <Text size="lg">
+              Le 13 avril 2022, un arrêté modifiant celui du 10 avril 2020
+              relatif aux obligations d’actions de réduction des consommations
+              d’énergie finale dans des bâtiments à usage tertiaire a été
+              publié.
+            </Text>
+            <Text size="lg">
+              Il spécifie qu’un coefficient de 0,77 sera appliqué aux
+              consommations d’énergie des bâtiments raccordés aux réseaux de
+              chaleur.
+            </Text>
+          </Box>
+          <Box
+            backgroundColor="blue-france-main-525"
+            mt="3w"
+            px="4w"
+            py="2w"
+            textColor="#ffffff"
+            fontWeight="bold"
+          >
+            <Text size="lg">Se raccorder à un réseau de chaleur, c’est :</Text>
+            <ResponsiveRow alignItems="center" mt="2w">
+              <Box textColor="#F8D86E">
+                <Text fontSize="45px">23&nbsp;%</Text>
+              </Box>
+              <Box>
+                <Text size="lg">
+                  de réduction de consommations d’énergie comptabilisée&nbsp;!
+                </Text>
+              </Box>
+            </ResponsiveRow>
+          </Box>
+        </Box>
+      </ResponsiveRow>
+    </Box>
   );
 };
 

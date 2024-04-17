@@ -1,5 +1,6 @@
 import React, { HTMLAttributes, useState } from 'react';
-import { Container, CopyInfo, IFrameBox } from './IFrameLink.styles';
+import { CopyInfo, IFrameBox } from './IFrameLink.styles';
+import Box from '@components/ui/Box';
 
 const IFrameLink = ({
   link,
@@ -13,7 +14,7 @@ const IFrameLink = ({
   };
 
   return (
-    <Container {...props}>
+    <Box position="relative" {...props}>
       {copied && <CopyInfo>Copié</CopyInfo>}
       <IFrameBox
         onClick={onCopy}
@@ -21,7 +22,7 @@ const IFrameLink = ({
       >
         {link}
       </IFrameBox>
-    </Container>
+    </Box>
   );
 };
 

@@ -1,10 +1,10 @@
 import LastArticles from '@components/Articles/LastArticles';
-import Infographies from '@components/Coproprietaire/Infographies';
+import BulkEligibilityForm from '@components/EligibilityForm/BulkEligibilityForm';
+import IframeIntegration from '@components/GenericContent/IframeIntegration';
+import ObligationRaccordement from '@components/GenericContent/ObligationRaccordement';
+import ReduireImpact from '@components/GenericContent/ReduireImpact';
 import HeadSliceForm from '@components/HeadSliceForm';
-import BulkEligibilitySlice from '@components/HeadSliceForm/BulkEligibilitySlice';
-import IFrame from '@components/IFrame/Form/IFrame';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
+import { ArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@components/Partners/Partners';
 import { issues, understandings } from '@components/Ressources/config';
 import Simulator from '@components/Ressources/Contents/Simulator';
@@ -12,12 +12,13 @@ import Understanding from '@components/Ressources/Understanding';
 import SimplePage from '@components/shared/page/SimplePage';
 import SimulatorCO2 from '@components/SimulatorCO2';
 import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
-import Slice from '@components/Slice';
 import Owner from '@components/Tertiaire/Owner';
-import WrappedBlock from '@components/WrappedBlock';
-import WrappedText from '@components/WrappedText';
-import { comparatifRcu } from '@data/tertiaire';
+import Box, { ResponsiveRow } from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
+import Link from '@components/ui/Link';
+import Text from '@components/ui/Text';
 import Head from 'next/head';
+import Image from 'next/image';
 
 const conseillerCards = {
   'energies-vertes': issues['energies-vertes'],
@@ -37,163 +38,378 @@ const Professionnels = () => {
       </Head>
 
       <HeadSliceForm
-        bg="/img/head-slice-bg-professionnels.png"
-        pageBody={`
-Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, syndics, ...
-# Faites un choix d’avenir, écologique et économique`}
-        formLabel="Le bâtiment pourrait-il être raccordé à un réseau de chaleur&nbsp;?"
         checkEligibility
-        needGradient
-        externBulkForm
         withBulkEligibility
+        externBulkForm
+        withWrapper={(form) => (
+          <Box backgroundColor="blue-cumulus-950-100">
+            <Box
+              className="fr-container"
+              display="flex"
+              alignItems="center"
+              gap="16px"
+            >
+              <Box flex className="fr-hidden fr-unhidden-lg">
+                <Image
+                  src="/img/head-slice-bg-professionnels.png"
+                  alt=""
+                  width={533}
+                  height={407}
+                  priority
+                />
+              </Box>
+
+              <Box flex py="3w">
+                <Text fontSize="24px" fontWeight="bold" legacyColor="black">
+                  Gestionnaires de bâtiments tertiaires, bailleurs sociaux,
+                  bureaux d’étude, syndics, ...
+                </Text>
+                <Heading as="h1" size="h2" color="blue-france" mt="1w">
+                  Faites un choix d’avenir, écologique et compétitif
+                </Heading>
+                <Text mb="2w">Le bâtiment peut-il être raccordé ?</Text>
+                {form}
+              </Box>
+            </Box>
+          </Box>
+        )}
       />
-      <Slice padding={8}>
-        <WrappedBlock>
-          <WrappedText
-            body={`
-### Le chauffage urbain, [de nombreux avantages](/ressources/atouts#contenu) pour tous types de bâtiments de logements ou tertaires :
-::arrow-item[Réduction des factures de chauffage jusqu’à 40%]
-::arrow-item[Subventions mises en place par l’État et TVA à 5,5%]
-::arrow-item[Garantie d’un service public]
-::arrow-item[Diminution des émissions de CO2  jusqu’à 50%]
-      `}
-          />
-          <Cartridge style={{ maxWidth: '500px' }} theme="blue">
-            <WrappedText
-              body={`
-### France Chaleur Urbaine est un service gratuit du Ministère de la transition écologique qui accompagne et outille les professionnels :
-::white-arrow-item[**[Cartographie](/carte)**  (réseaux actuels et en construction, bâtiments et leur mode de chauffage, extraction de données,...)]
-::white-arrow-item[**[Test](#test-liste)** de liste d’adresses]
-::white-arrow-item[Simulateur **[d’aide](#simulateur-aide)** et **[d’émissions de C02](#simulateur-co2)**]
-::white-arrow-item[Informations **légales**]
-      `}
-            />
-          </Cartridge>
-        </WrappedBlock>
-      </Slice>
-      <BulkEligibilitySlice displayBulkEligibility />
-      <Slice padding={8} id="cartographie">
-        <WrappedText
-          textClassName="slice-carto-text"
-          body={`
-::arrow-item[Localisez les réseaux de chaleur et accédez à leurs caractéristiques principales (taux ENR et contenu CO2 réglementaires,...)]
-::arrow-item[Identifiez les réseaux classés et découvrez leur périmètre de développement prioritaire (zone où s'applique une obligation de raccordement pour certains bâtiments)]
-::arrow-item[Visualisez et exportez des données sur les bâtiments (consommation énergétique, mode de chauffage...)]
-::arrow-item[Téléchargez les tracés et données des réseaux]
 
-:button-link[Voir la cartographie]{href="./carte"}
+      <Box py="10w" id="avantages-du-chauffage-urbain">
+        <Box className="fr-container">
+          <Heading as="h2" center>
+            Les avantages du chauffage urbain
+          </Heading>
+          <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
+            >
+              <Image
+                src="/img/copro_avantages_1.webp"
+                alt=""
+                width={160}
+                height={125}
+                priority
+                className="img-object-contain"
+              />
+              <Text size="lg" textAlign="center" mt="2w">
+                Bénéficie d’une TVA à 5,5% et de tarifs plus stables grâce à des
+                énergies locales
+              </Text>
+            </Box>
 
-:button-link[Télécharger les tracés]{href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/" eventKey="Téléchargement|Tracés|professionnels" download}
-`}
-          imgSrc="/img/rcu-carto.jpg"
-          reverse
-        />
-      </Slice>
-      <Slice
-        padding={8}
-        theme="grey"
-        className="slice-comparatif-rcu"
-        header={`### La solution de chauffage la plus compétitive pour les bâtiments tertiaires !`}
-        id="simulateur-aide"
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
+            >
+              <Image
+                src="/img/copro_avantages_3.webp"
+                alt=""
+                width={160}
+                height={125}
+                priority
+                className="img-object-contain"
+              />
+              <Text size="lg" textAlign="center" mt="2w">
+                Diminue les émissions de gaz à effet de serre d’en moyenne 50%
+              </Text>
+            </Box>
+
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
+            >
+              <Image
+                src="/img/pro_avantages_3.svg"
+                alt=""
+                width={160}
+                height={125}
+                priority
+                className="img-object-contain"
+              />
+              <Text size="lg" textAlign="center" mt="2w">
+                Améliore l'étiquette DPE des bâtiments
+              </Text>
+            </Box>
+
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
+            >
+              <Image
+                src="/img/pro_avantages_4.svg"
+                alt=""
+                width={160}
+                height={125}
+                priority
+                className="img-object-contain"
+              />
+              <Text size="lg" textAlign="center" mt="2w">
+                Contribue aux objectifs éco-énergie tertiaire (-23% de réduction
+                de consommation comptabilisés)
+              </Text>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+
+      <Box py="10w" backgroundColor="blue-france-975-75">
+        <Box className="fr-container">
+          <Heading as="h2" center>
+            France Chaleur Urbaine outille les professionnels
+          </Heading>
+          <ResponsiveRow mt="8w">
+            <Box flex>
+              <Image
+                src="/img/pro_picto_1.svg"
+                alt=""
+                width="270"
+                height="232"
+                priority
+                className="img-object-contain"
+              />
+              <Heading as="h4" color="blue-france">
+                Découvrez notre cartographie
+              </Heading>
+              <Text size="lg">
+                <Link href="/carte">Localisez les réseaux de chaleur</Link>{' '}
+                existants et en construction, accédez à leurs caractéristiques
+                détaillées
+              </Text>
+            </Box>
+
+            <Box flex>
+              <Image
+                src="/img/pro_picto_2.svg"
+                alt=""
+                width="270"
+                height="232"
+                priority
+                className="img-object-contain"
+              />
+              <Heading as="h4" color="blue-france">
+                Testez un grand nombre d’adresses
+              </Heading>
+              <Text size="lg">
+                <Link href="#test-liste">Identifiez instantanément</Link> les
+                bâtiments raccordables de votre parc
+              </Text>
+            </Box>
+
+            <Box flex>
+              <Image
+                src="/img/pro_picto_3.svg"
+                alt=""
+                width="270"
+                height="232"
+                priority
+                className="img-object-contain"
+              />
+              <Heading as="h4" color="blue-france">
+                Estimez le montant des aides
+              </Heading>
+              <Text size="lg">
+                <Link href="#simulateur-aide">
+                  Découvrez le montant du coup de pouce chauffage
+                </Link>{' '}
+                des bâtiments résidentiels collectifs et tertiaires
+              </Text>
+            </Box>
+          </ResponsiveRow>
+        </Box>
+      </Box>
+
+      <Box py="10w" id="test-liste">
+        <Box className="fr-container">
+          <Heading as="h2" center>
+            Testez un grand nombre d’adresses en 2 clics
+          </Heading>
+          <ResponsiveRow mt="10w">
+            <Box flex>
+              <Heading as="h4" color="blue-france">
+                Identifiez facilement les bâtiments proches des réseaux de
+                chaleur !
+              </Heading>
+              <ArrowPuce>
+                <Text size="lg" color="grey">
+                  Téléchargez votre fichier (une ligne par adresse) et
+                  renseignez votre email
+                </Text>
+              </ArrowPuce>
+              <ArrowPuce>
+                <Text size="lg" color="grey">
+                  Recevez par mail le résultat de votre test
+                </Text>
+              </ArrowPuce>
+              <ArrowPuce>
+                <Text size="lg" color="grey">
+                  Visualisez les adresses testées sur notre cartographie
+                </Text>
+              </ArrowPuce>
+              <ArrowPuce>
+                <Text size="lg" color="grey">
+                  Vous pourrez ensuite sélectionner dans la liste les adresses
+                  pour lesquelles vous souhaitez être mis en relation par France
+                  Chaleur Urbaine avec le(s) gestionnaire(s) des réseaux de
+                  chaleur.
+                </Text>
+              </ArrowPuce>
+            </Box>
+
+            <Box flex>
+              <BulkEligibilityForm />
+              <Image
+                width={405}
+                height={250}
+                alt=""
+                src="/img/carto-addresses.png"
+              />
+            </Box>
+          </ResponsiveRow>
+        </Box>
+      </Box>
+
+      <Box py="10w" backgroundColor="blue-france-975-75" id="simulateur-aide">
+        <Box className="fr-container">
+          <Heading as="h2" center>
+            La solution de chauffage la plus compétitive
+            <br />
+            pour les bâtiments tertiaires performants
+          </Heading>
+          <ResponsiveRow mt="10w">
+            <Box flex>
+              <Heading as="h4" color="blue-france">
+                Le coût du raccordement
+              </Heading>
+              <Text size="lg">
+                Estimez le montant du Coup de pouce "Chauffage des bâtiments
+                résidentiels collectifs et tertiaires” pour le raccordement d’un
+                bâtiment
+              </Text>
+              <Box py="4w">
+                <Simulator
+                  cartridge
+                  backgroundColor="#F8F5F1"
+                  defaultStructure="Tertiaire"
+                />
+              </Box>
+            </Box>
+
+            <Box flex>
+              <Heading as="h4" color="blue-france">
+                Le coût de la chaleur
+              </Heading>
+              <Text size="lg">
+                Le{' '}
+                <Link href="/chauffage-urbain#contenu">chauffage urbain</Link>{' '}
+                est en moyenne le mode de chauffage le moins cher sur le marché
+                pour un bâtiment tertiaire performant RE2020
+                (28&nbsp;kWhu/m²/an)
+              </Text>
+
+              <Image
+                src="/img/pro_cout_chaleur.svg"
+                alt="Graphique comparatif du coût des méthodes de chauffage"
+                width={944}
+                height={499}
+                className="fr-responsive-img"
+              />
+              <Text size="sm">
+                Coût global chauffage et eau chaude sanitaire (€TTC/an) pour un
+                bâtiment de 1000&nbsp;m². Enquête sur le prix de vente de la
+                chaleur et du froid 2022 (Amorce 2023)
+              </Text>
+            </Box>
+          </ResponsiveRow>
+        </Box>
+      </Box>
+
+      <Box>
+        <Owner />
+      </Box>
+
+      <Box
+        py="10w"
+        backgroundColor="blue-france-975-75"
+        id="obligations-de-raccordement"
       >
-        <WrappedBlock data={comparatifRcu} reverse>
-          <Simulator
-            cartridge
-            withRedirection
-            defaultStructure="Tertiaire"
-            withTitle
-          />
-        </WrappedBlock>
-      </Slice>
-      <Owner />
-      <Slice padding={8} theme="grey">
-        <Infographies />
-      </Slice>
+        <ObligationRaccordement />
+      </Box>
 
-      <IFrame />
+      <Box py="10w" backgroundColor="blue-france-main-525" id="simulateur-co2">
+        <Box className="fr-container">
+          <Heading as="h2" center legacyColor="white">
+            Un moyen de lutter contre le changement climatique
+          </Heading>
+          <ResponsiveRow pt="4w">
+            <Box className="fr-col-12 fr-col-lg-6 fr-col-xl-6">
+              <SimulatorCO2 typeSurf={TypeSurf.tertiaire} textColor="#ffffff" />
+            </Box>
+            <Box
+              textColor="#ffffff"
+              className="fr-col-12 fr-col-lg-6 fr-col-xl-6"
+            >
+              <Image
+                width={75}
+                height={62}
+                alt=""
+                src="/icons/picto_warning_white.svg"
+              />
+              <Text size="lg" mt="2w">
+                Depuis le 1er juillet 2022, de nouvelles normes
+                environnementales, qui visent à limiter les émissions de gaz à
+                effet de serre, sont entrées en vigueur : elles excluent
+                l'installation de nouvelles chaudières au fioul.
+              </Text>
+              <Text size="lg" mt="2w">
+                <Link href="/ressources/aides#contenu">Des aides</Link>{' '}
+                accompagnent cette transition.
+              </Text>
+            </Box>
+          </ResponsiveRow>
+        </Box>
+      </Box>
 
-      <Slice
-        theme="color"
-        id="simulateur-co2"
-        padding={8}
-        header={'## Un moyen de lutter contre le changement climatique'}
-      >
-        <SimulatorCO2 typeSurf={TypeSurf.tertiaire}>
-          <MarkdownWrapper
-            value={`
-:::puce-icon{icon="./icons/picto-warning.svg"}
-**À partir du 1er juillet 2022,** de nouvelles normes environnementales, qui visent à limiter les émissions de gaz à effet de serre, entreront en vigueur et **excluent l'installation de nouvelles chaudières au fioul.**
-**[Des aides](/ressources/aides#contenu) accompagnent cette transition.**
-:::
-            `}
-          />
-        </SimulatorCO2>
-      </Slice>
+      <Box py="10w">
+        <IframeIntegration pageFrom="pro" />
+      </Box>
 
-      <Slice theme="grey" padding={8}>
-        <Slice header={`## Comment se passe un raccordement&nbsp;?`} />
-        <WrappedText
-          center
-          body={`
-::counter-item[01.]
-*Le 100 rue du Paradis est un immeuble chauffé par une chaudière collective au gaz ayant 20 ans.*
+      <Box py="10w" backgroundColor="blue-france-975-75" id="articles">
+        <Box className="fr-container">
+          <Heading as="h2" center>
+            Nos articles sur le chauffage urbain
+          </Heading>
+          <Box className="fr-grid-row" mt="10w">
+            <Understanding cards={conseillerCards} />
+          </Box>
+        </Box>
+      </Box>
 
-Un conseiller en rénovation ou le gestionnaire de l’immeuble cherche un chauffage *[plus performant et responsable](/ressources/avantages#contenu)* et vérifie sur *France Chaleur Urbaine* si le bâtiment est raccordable.
+      <Box py="10w" id="actus">
+        <Box className="fr-container">
+          <Heading as="h2" center>
+            Nos actualités
+          </Heading>
+          <Box className="fr-grid-row" mt="10w">
+            <LastArticles />
+          </Box>
+        </Box>
+      </Box>
 
-*Un [réseau de chaleur](/reseaux-chaleur#contenu) passe à 15 mètres !*
+      <Partners />
 
-Le conseiller en rénovation ou le gestionnaire de l’immeuble demande via France Chaleur Urbaine à être *mis en relation avec le gestionnaire du réseau de chaleur*, qui le recontacte pour l’informer sur les conditions de raccordement.
-`}
-          imgSrc="/img/user-experience-simple-1.svg"
-          reverse
-          textClassName="user-experience-description"
-        />
-        <WrappedText
-          center
-          body={`
-::counter-item[02.]
-*Les frais de raccordement s’élèvent à 105 000 €.*
-*Le « [Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires](/ressources/aides#contenu) » permet de réduire ce coût à 29 000 €, soit 230 € par lot.*
-
-Les travaux durent 2 mois en tout, sans nuisance !
-
-Depuis, l’immeuble bénéficie d’une bonne température de chauffe, d’une distribution d'eau chaude sans aucune panne, avec un budget maîtrisé sans plus se soucier de l’entretien d’une chaudière.
-
-*Une démarche écologique et économique.*
-`}
-          imgSrc="/img/user-experience-simple-2.png"
-          textClassName="user-experience-description"
-        />
-        <Slice>
-          <MarkdownWrapper
-            value={`:button-link[Télécharger notre guide]{href="./guide-france-chaleur-urbaine" eventKey="Téléchargement|Guide FCU|professionnels" target="_blank"}`}
-            className="fcuSolutionForFuturFooter"
-          />
-        </Slice>
-      </Slice>
-      <Slice>
-        <Understanding cards={conseillerCards} />
-      </Slice>
-      <Slice padding={8} theme="grey">
-        <h2>Nos actus</h2>
-        <LastArticles />
-      </Slice>
-      <Slice>
-        <Partners />
-      </Slice>
-      <Slice theme="color-light" padding={8}>
-        <WrappedText
-          center
-          body={`#### Raccordement des bâtiments tertiaires au chauffage urbain
-
-:small[Un contexte favorable]
-
-:small[Au niveau européen, la France ne se place qu’en 20ème position en termes de recours aux réseaux de chaleur, avec environ 5 % des besoins en chaleur du pays couverts par le chauffage urbain. Le secteur tertiaire représente près de 36 % des livraisons annuelles de chaleur par les réseaux.]
-
-:small[Aujourd’hui, de nombreux établissements tertiaires sont amenés à réaliser des travaux de rénovation thermique pour réduire leurs consommations d’énergie et satisfaire les obligations du dispositif éco-énergie tertiaire. C’est le moment opportun pour changer de mode de chauffage et opter pour un raccordement au réseau de chaleur dès lors que celui-ci est possible. Le [coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaire](/ressources/aides#contenu) permet de réduire significativement les frais de raccordement.]
-`}
-        />
-      </Slice>
+      <Box py="10w" backgroundColor="blue-france-main-525" textColor="#fff">
+        <ReduireImpact />
+      </Box>
     </SimplePage>
   );
 };

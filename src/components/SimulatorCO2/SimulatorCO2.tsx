@@ -1,4 +1,3 @@
-import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { Select } from '@dataesr/react-dsfr';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
@@ -10,10 +9,10 @@ import {
   getEmissionCO2,
   getPercentGasReduct,
 } from './SimulatorCO2.businessRule';
-import { dataSimulator } from './SimulatorCO2.data';
+import { dataSimulator, dataSimulatorTertiaire } from './SimulatorCO2.data';
 import {
   BigResult,
-  Box,
+  BoxSimulator,
   CartridgeSimulatorFooter,
   CartridgeSimulatorForm,
   Container,
@@ -22,14 +21,13 @@ import {
   Separator,
   SimulatorFooter,
   SimulatorForm,
-  SimulatorFormResult,
-  SimulatorFormWrapper,
   SimulatorHeader,
   SimulatorResult,
-  SimulatorWrapper,
   SmallResult,
   SurfSelect,
 } from './SimulatorCO2.style';
+import Box, { ResponsiveRow } from '@components/ui/Box';
+import Text from '@components/ui/Text';
 
 const numberToString = (num: number, precision = 0) =>
   `${parseFloat(num.toFixed(precision))}`.replace('.', ',');
@@ -49,7 +47,8 @@ const buildingTypeSelectOptions = [
 const SimulatorCO2: React.FC<{
   typeSurf?: TypeSurf;
   children?: ReactNode;
-}> = ({ typeSurf, children }) => {
+  textColor?: string;
+}> = ({ typeSurf, children, textColor }) => {
   const [conso, setConso] = useState(0);
   const [surf, setSurf] = useState(0);
   const [log, setLog] = useState(0);
@@ -86,12 +85,14 @@ const SimulatorCO2: React.FC<{
     []
   );
 
+  const data =
+    typeSurf === TypeSurf.copropriete ? dataSimulator : dataSimulatorTertiaire;
   const form = (
     <>
       <fieldset>
         <Input
           type="number"
-          placeholder={dataSimulator.label.conso}
+          placeholder={data.label.conso}
           onChange={(e: any) => setConso(parseFloat(e.target.value))}
         />
       </fieldset>
@@ -99,7 +100,7 @@ const SimulatorCO2: React.FC<{
         ou
         <Input
           type="number"
-          placeholder={dataSimulator.label.surf}
+          placeholder={data.label.surf}
           onChange={(e: any) => setSurf(parseFloat(e.target.value))}
         />
       </fieldset>
@@ -107,7 +108,7 @@ const SimulatorCO2: React.FC<{
         ou
         <Input
           type="number"
-          placeholder={dataSimulator.label.log}
+          placeholder={data.label.log}
           onChange={(e: any) => setLog(parseInt(e.target.value))}
         />
       </fieldset>
@@ -117,7 +118,7 @@ const SimulatorCO2: React.FC<{
           selected={energy}
           options={[
             {
-              label: dataSimulator.label.chauffage,
+              label: data.label.chauffage,
               value: '',
             },
           ].concat(
@@ -158,62 +159,107 @@ const SimulatorCO2: React.FC<{
             1 t de CO2 = 190 allers-retours Paris-Bordeaux en train
             <br />
             <br />
-            {dataSimulator.annotation.map((note: string, i: number) => (
+            {data.annotation.map((note: string, i: number) => (
               <div key={i}>{note}</div>
             ))}
           </CartridgeSimulatorFooter>
         </>
       ) : (
-        <>
-          <SimulatorWrapper withPadding={!!typeSurf}>
-            {typeSurf && (
-              <SimulatorHeader>{dataSimulator.chapo}</SimulatorHeader>
-            )}
-            <SimulatorFormWrapper>
+        <Box
+          display="flex"
+          position="relative"
+          flexDirection="column"
+          justifyContent="space-between"
+          alignItems="flex-start"
+          pb="2w"
+        >
+          {typeSurf && <SimulatorHeader>{data.chapo}</SimulatorHeader>}
+          <ResponsiveRow gap="20px">
+            <Box>
               <SimulatorForm>{form}</SimulatorForm>
-              <SimulatorFormResult inline>
-                <Cartridge
-                  theme="yellow"
-                  className="cartridge simulator-result-economy"
+            </Box>
+            <Box display="flex" flexDirection="column" gap="10px">
+              <Box
+                backgroundColor="#27a658"
+                display="flex"
+                flexDirection="row"
+                py="3w"
+                px="2w"
+                alignItems="center"
+              >
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  gap="5px"
+                  alignItems="center"
                 >
-                  <div className="simulator-result-economy__result">
-                    <strong>{numberToString(economy * -1, 1)}</strong> tonnes de
-                    CO2 évitées par an
-                  </div>
-                  <div className="simulator-result-economy__tips">
-                    <strong className="tonne">
-                      <em>1</em> tonne CO2
-                    </strong>
-                    <strong className="equal"> = </strong>
-                    <span>190 allers-retours Paris-Bordeaux en train</span>
-                  </div>
-                </Cartridge>
+                  <Text fontSize="50px" fontWeight="bold">
+                    {numberToString(economy * -1, 1)}
+                  </Text>
+                  <Text size="sm">
+                    tCO2/an
+                    <br />
+                    évitées
+                  </Text>
+                </Box>
+                <Box>
+                  <Text size="lg" fontWeight="bold" px="2w">
+                    =
+                  </Text>
+                </Box>
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  gap="5px"
+                >
+                  <Text fontSize="30px" fontWeight="bold">
+                    {numberToString((economy * -1) / 5, 1)}
+                  </Text>
+                  <Text>allers-retours Paris/New-York</Text>
+                </Box>
+              </Box>
 
-                <Cartridge
-                  theme={typeSurf ? 'grey' : 'color'}
-                  className="cartridge simulator-result-reduction"
-                >
-                  <strong>{Math.round(percentGasReduct * -1)}%</strong> de
-                  réduction des émissions de gaz à effet de serre
-                </Cartridge>
-              </SimulatorFormResult>
-            </SimulatorFormWrapper>
-            <SimulatorFooter>
-              {dataSimulator.annotation.map((note: string, i: number) => (
-                <div key={i}>{note}</div>
-              ))}
-            </SimulatorFooter>
-          </SimulatorWrapper>
-        </>
+              <Box
+                backgroundColor="#27a658"
+                display="flex"
+                flexDirection="row"
+                p="2w"
+                gap="10px"
+                alignItems="center"
+              >
+                <Box>
+                  <Text fontSize="30px" fontWeight="bold">
+                    {Math.round(percentGasReduct * -1)}%
+                  </Text>
+                </Box>
+                <Box>
+                  <Text size="sm">
+                    de réduction des émissions
+                    <br />
+                    de gaz à effet de serre
+                  </Text>
+                </Box>
+              </Box>
+            </Box>
+          </ResponsiveRow>
+          <SimulatorFooter>
+            {data.annotation.map((note: string, i: number) => (
+              <div key={i}>{note}</div>
+            ))}
+          </SimulatorFooter>
+        </Box>
       )}
       {children && <ContainerBody>{children}</ContainerBody>}
     </>
   );
 
   return typeSurf === TypeSurf.copropriete ? (
-    <Box theme="white">{content}</Box>
+    <BoxSimulator theme="white">{content}</BoxSimulator>
   ) : (
-    <Container custom={!typeSurf}>{content}</Container>
+    <Box textColor={textColor}>
+      <Container custom={!typeSurf}>{content}</Container>
+    </Box>
   );
 };
 

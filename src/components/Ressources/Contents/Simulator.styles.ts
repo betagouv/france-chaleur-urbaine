@@ -5,12 +5,17 @@ export const Container = styled.div<{
   withMargin?: boolean;
   cartridge?: boolean;
   withRedirection?: boolean;
+  backgroundColor?: string;
 }>`
-  ${({ cartridge, withRedirection }) =>
+  ${({ cartridge, withRedirection, backgroundColor }) =>
     cartridge
       ? `
           background-color:  ${
-            withRedirection ? '#4550e5' : 'var(--blue-france-975-75)'
+            backgroundColor
+              ? backgroundColor
+              : withRedirection
+              ? '#4550e5'
+              : 'var(--blue-france-975-75)'
           };
           max-width: 450px;
           border-radius: 0.7em;
@@ -20,7 +25,7 @@ export const Container = styled.div<{
   h4 {
     color: white;
   }
-  padding: 32px;
+  padding: 16px;
   ${({ withMargin }) =>
     withMargin &&
     `
@@ -76,15 +81,14 @@ export const Inputs = styled.div<{
 export const Result = styled.div<{
   cartridge?: boolean;
 }>`
-  width: fit-content;
+  width: 100%;
   background-color: #27a658;
   border-radius: 12px;
   padding: 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 20px;
   margin: auto;
   @media (min-width: 450px) {
     min-width: 300px;
@@ -113,6 +117,7 @@ export const Disclaimer = styled.div<{
 
 export const ResultValue = styled.div`
   font-size: 44px;
+  font-weight: 700;
 `;
 
 export const RedirectionButton = styled(Button)`

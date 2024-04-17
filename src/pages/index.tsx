@@ -1,5 +1,7 @@
 import LastArticles from '@components/Articles/LastArticles';
 import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
+import ObligationRaccordement from '@components/GenericContent/ObligationRaccordement';
+import ReduireImpact from '@components/GenericContent/ReduireImpact';
 import HeadSliceForm from '@components/HeadSliceForm';
 import { WhiteArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@components/Partners/Partners';
@@ -440,68 +442,7 @@ export default function Home() {
       </Box>
 
       <Box py="10w" id="obligations-de-raccordement">
-        <Box className="fr-container">
-          <Heading as="h2" center>
-            Les obligations de raccordement
-          </Heading>
-          <ResponsiveRow mt="10w">
-            <Box flex>
-              <Heading as="h4" color="blue-france">
-                Les réseaux classés
-              </Heading>
-              <Text size="lg">
-                Plus de 500 réseaux de chaleur sont désormais{' '}
-                <Link href="/ressources/reseau-classe#contenu">“classés”</Link>,
-                ce qui signifie que certains bâtiments ont l'obligation de se
-                raccorder.
-              </Text>
-              <Text size="lg" mt="3w">
-                Cette obligation s’applique dans une certaine zone autour du
-                réseau, définie par la collectivité, qualifiée de périmètre de
-                développement prioritaire.
-              </Text>
-
-              <Box
-                backgroundColor="yellow-moutarde-main-679"
-                borderRadius="12px"
-                p="3w"
-                pt="4w"
-                mt="3w"
-                textColor="#fff"
-                fontWeight="bold"
-              >
-                <Text>
-                  <Text as="span" fontSize="32px">
-                    300 000€
-                  </Text>{' '}
-                  d’amende
-                </Text>
-                <Text>en cas de non-raccordement sans dérogation</Text>
-              </Box>
-            </Box>
-
-            <Box flex>
-              <Text size="lg" mt="8w">
-                Sont concernés :
-              </Text>
-              <Text size="lg" mt="2w">
-                Tout bâtiment neuf dont les besoins de chauffage sont supérieurs
-                à 30kW*
-              </Text>
-              <Text size="lg" mt="2w">
-                Tout bâtiment renouvelant son installation de chauffage
-                au-dessus de 30kW*
-              </Text>
-              <Text size="sm">
-                * Ce seuil de puissance peut être relevé par la collectivité
-              </Text>
-
-              <Link variant="primary" href="/carte" mt="6w">
-                Voir les réseaux classés sur la carte
-              </Link>
-            </Box>
-          </ResponsiveRow>
-        </Box>
+        <ObligationRaccordement />
       </Box>
 
       <Box py="10w" backgroundColor="blue-france-975-75" id="articles">
@@ -529,46 +470,7 @@ export default function Home() {
       <Partners />
 
       <Box py="10w" backgroundColor="blue-france-main-525" textColor="#fff">
-        <Box className="fr-container">
-          <Heading as="h5" legacyColor="white">
-            Réduire l'impact écologique et économique de son chauffage
-          </Heading>
-          <Text mt="3w">
-            Le chauffage urbain, une solution pour les copropriétés
-          </Text>
-          <Text mt="3w">
-            Le chauffage représente 67 % de la consommation d’énergie des foyers
-            français et près de 20 % des émissions de gaz à effet de serre
-            nationales. L’augmentation des prix de l’énergie pèse sur le budget
-            des ménages : 40 % des logements sont encore chauffés au gaz, dont
-            les prix ont augmenté de 41 % en 10 ans.
-          </Text>
-          <Text mt="3w">
-            Pour réduire l’impact écologique d’une copropriété et ses factures
-            d’énergie, la rénovation thermique est le premier réflexe à avoir.
-            Le{' '}
-            <Link href="/ressources/avantages#contenu">
-              remplacement d’un chauffage collectif au gaz ou fioul
-            </Link>
-            , par un raccordement à un réseau de chaleur permet également d’y
-            contribuer. Alimentés majoritairement par des énergies renouvelables
-            et de récupération locales, les réseaux de chaleur émettent deux
-            fois moins de gaz à effet de serre qu’un chauffage gaz ou fioul et
-            offrent des prix stables et compétitifs.
-          </Text>
-          <Text mt="6w">
-            Des réseaux de chaleur existent dans la plupart des grandes villes,
-            par exemple <Link href="/villes/paris">Paris</Link>,{' '}
-            <Link href="/villes/rennes">Rennes</Link>,{' '}
-            <Link href="/villes/nantes">Nantes</Link>,{' '}
-            <Link href="/villes/bordeaux">Bordeaux</Link>,{' '}
-            <Link href="/villes/strasbourg">Strasbourg</Link>,{' '}
-            <Link href="/villes/metz">Metz</Link>,{' '}
-            <Link href="/villes/grenoble">Grenoble</Link>,{' '}
-            <Link href="/villes/lyon">Lyon</Link>,{' '}
-            <Link href="/villes/aix-en-provence">Aix-en-Provence</Link>,...
-          </Text>
-        </Box>
+        <ReduireImpact />
       </Box>
     </SimplePage>
   );
