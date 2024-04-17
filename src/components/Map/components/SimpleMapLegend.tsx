@@ -50,6 +50,7 @@ import {
   themeDefZonePotentielChaud,
   themeDefZonePotentielFortChaud,
 } from 'src/services/Map/businessRules/zonePotentielChaud';
+import DevModeIcon from './DevModeIcon';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -1492,7 +1493,14 @@ function SimpleMapLegend({
       {enabledFeatures.includes('sources') && (
         <>
           <LegendSeparator />
-          <Box mt="n2w" mx="2w" mb="2w">
+          <Box
+            mt="n2w"
+            mx="2w"
+            mb="2w"
+            display="flex"
+            alignItems="center"
+            gap="16px"
+          >
             <Link
               href="/documentation/carto_sources.pdf"
               isExternal
@@ -1502,6 +1510,7 @@ function SimpleMapLegend({
                 Sources
               </Text>
             </Link>
+            <DevModeIcon />
           </Box>
         </>
       )}

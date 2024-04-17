@@ -77,6 +77,7 @@ import MapSearchForm from './components/MapSearchForm';
 import CardSearchDetails from './components/CardSearchDetails';
 import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
 import { SourceId } from 'src/services/tiles.config';
+import { isDevModeEnabled } from './components/DevModeIcon';
 
 const mapSettings = {
   defaultLongitude: 2.3,
@@ -255,7 +256,7 @@ const Map = ({
     if (!selectedFeature) {
       return;
     }
-    if ((window as any).devMode) {
+    if (isDevModeEnabled()) {
       console.log('map-click', selectedFeature); // eslint-disable-line no-console
     }
 

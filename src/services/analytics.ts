@@ -1,3 +1,4 @@
+import { isDevModeEnabled } from '@components/Map/components/DevModeIcon';
 import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
 import { init as initMatomo } from '@totak/matomo-next';
 import { atom, useAtom, useAtomValue } from 'jotai';
@@ -501,7 +502,7 @@ export type TrackingEvent = keyof typeof trackingEvents;
  * eventPayload is only use for Matomo at the moment.
  */
 export const trackEvent = (eventKey: TrackingEvent, ...eventPayload: any[]) => {
-  if ((window as any).devMode) {
+  if (isDevModeEnabled()) {
     // eslint-disable-next-line no-console
     console.log('trackEvent', eventKey, eventPayload, trackingEvents[eventKey]);
   }
