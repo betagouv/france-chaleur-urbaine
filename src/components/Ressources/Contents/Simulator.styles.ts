@@ -61,6 +61,7 @@ export const Form = styled.div<{
 
 export const Inputs = styled.div<{
   cartridge?: boolean;
+  backgroundColor?: string;
 }>`
   padding-top: 11px;
   height: 125px;
@@ -72,6 +73,13 @@ export const Inputs = styled.div<{
         margin-bottom: 16px !important;
       }
   `}
+
+  .fr-select, .fr-input {
+    ${({ backgroundColor }) =>
+      backgroundColor &&
+      `background-color:  ${backgroundColor};
+    `}
+  }
 
   input {
     min-width: 225px;

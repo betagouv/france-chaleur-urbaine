@@ -67,6 +67,9 @@ export const AppGlobalStyle = createGlobalStyle`
   .img-object-contain {
     object-fit: contain;
   }
+  .img-object-cover {
+    object-fit: cover;
+  }
   .d-block {
     display: block !important;
   }

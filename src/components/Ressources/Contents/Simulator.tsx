@@ -12,6 +12,7 @@ import {
   Title,
 } from './Simulator.styles';
 import Text from '@components/ui/Text';
+import { LegacyColor } from '@components/ui/helpers/colors';
 
 const prixSpotCEE = 8.42; // €/MWh cumac
 
@@ -23,6 +24,8 @@ const Simulator = ({
   defaultStructure,
   withTitle,
   backgroundColor,
+  formBackgroundColor,
+  disclaimerLegacyColor,
 }: {
   cartridge?: boolean;
   withMargin?: boolean;
@@ -31,6 +34,8 @@ const Simulator = ({
   defaultStructure?: string;
   withTitle?: boolean;
   backgroundColor?: string;
+  formBackgroundColor?: string;
+  disclaimerLegacyColor?: LegacyColor;
 }) => {
   const [structure, setStructure] = useState(defaultStructure || 'Résidentiel');
   const [value, setValue] = useState('');
@@ -66,7 +71,7 @@ const Simulator = ({
         </Title>
       )}
       <Form cartridge={cartridge}>
-        <Inputs cartridge={cartridge}>
+        <Inputs cartridge={cartridge} backgroundColor={formBackgroundColor}>
           <Select
             aria-label="Type de bâtiment"
             options={[
@@ -111,7 +116,7 @@ const Simulator = ({
             )}
           </Result>
           <Disclaimer cartridge={cartridge}>
-            <Text size="sm" legacyColor="black">
+            <Text size="sm" legacyColor={disclaimerLegacyColor || 'black'}>
               *Montants donnés à titre indicatif.
             </Text>
           </Disclaimer>
