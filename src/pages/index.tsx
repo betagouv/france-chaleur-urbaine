@@ -1,12 +1,13 @@
 import LastArticles from '@components/Articles/LastArticles';
 import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
+import AvantagesChauffageUrbain from '@components/GenericContent/AvantagesChauffageUrbain';
+import CoutsChauffageUrbain from '@components/GenericContent/CoutsChauffageUrbain';
+import HowToRaccordement from '@components/GenericContent/HowToRaccordement';
 import ObligationRaccordement from '@components/GenericContent/ObligationRaccordement';
 import ReduireImpact from '@components/GenericContent/ReduireImpact';
 import HeadSliceForm from '@components/HeadSliceForm';
-import { WhiteArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@components/Partners/Partners';
 import { issues, understandings } from '@components/Ressources/config';
-import Simulator from '@components/Ressources/Contents/Simulator';
 import Understanding from '@components/Ressources/Understanding';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box, { ResponsiveRow } from '@components/ui/Box';
@@ -135,88 +136,7 @@ export default function Home() {
         backgroundColor="blue-france-975-75"
         id="avantages-du-chauffage-urbain"
       >
-        <Box className="fr-container">
-          <Heading as="h2" center>
-            Les avantages du chauffage urbain
-          </Heading>
-          <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
-            >
-              <Image
-                src="/img/copro_avantages_1.webp"
-                alt=""
-                width={160}
-                height={125}
-                priority
-                className="img-object-contain"
-              />
-              <Text size="lg" textAlign="center" mt="2w">
-                Bénéficiez de tarifs plus stables grâce à des énergies locales
-              </Text>
-            </Box>
-
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
-            >
-              <Image
-                src="/img/copro_avantages_2.webp"
-                alt=""
-                width={160}
-                height={125}
-                priority
-                className="img-object-contain"
-              />
-              <Text size="lg" textAlign="center" mt="2w">
-                Profitez de subventions pour le raccordement et d’une TVA à 5,5%
-              </Text>
-            </Box>
-
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
-            >
-              <Image
-                src="/img/copro_avantages_3.webp"
-                alt=""
-                width={160}
-                height={125}
-                priority
-                className="img-object-contain"
-              />
-              <Text size="lg" textAlign="center" mt="2w">
-                Diminuez vos émissions de gaz à effet de serre d’en moyenne 50%
-              </Text>
-            </Box>
-
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              className="fr-col-12 fr-col-lg-6 fr-col-xl-3"
-            >
-              <Image
-                src="/img/copro_avantages_4.webp"
-                alt=""
-                width={160}
-                height={125}
-                priority
-                className="img-object-contain"
-              />
-              <Text size="lg" textAlign="center" mt="2w">
-                Améliorez l'étiquette DPE de votre copropriété
-              </Text>
-            </Box>
-          </Box>
-        </Box>
+        <AvantagesChauffageUrbain />
       </Box>
 
       <Box
@@ -224,127 +144,11 @@ export default function Home() {
         backgroundColor="blue-france-main-525"
         id="comment-se-raccorder"
       >
-        <Box className="fr-container">
-          <Heading as="h2" legacyColor="white" center>
-            Comment se raccorder
-          </Heading>
-          <ResponsiveRow mt="10w">
-            <Box flex>
-              <Heading as="h4" legacyColor="white" mb="4w">
-                France Chaleur Urbaine est un service public qui vous met en
-                lien avec le gestionnaire du réseau de chaleur
-              </Heading>
-
-              <WhiteArrowPuce>
-                <Text size="lg">
-                  Vérifiez que votre adresse est raccordable
-                </Text>
-              </WhiteArrowPuce>
-              <WhiteArrowPuce>
-                <Text size="lg">
-                  Déposez une demande sur France Chaleur Urbaine
-                </Text>
-              </WhiteArrowPuce>
-              <WhiteArrowPuce>
-                <Text size="lg">
-                  France Chaleur Urbaine transmet votre demande au gestionnaire
-                  du réseau le plus proche de chez vous
-                </Text>
-              </WhiteArrowPuce>
-              <WhiteArrowPuce>
-                <Text size="lg">
-                  Le gestionnaire vous recontacte pour étudier avec vous votre
-                  projet de raccordement
-                </Text>
-              </WhiteArrowPuce>
-              <Link
-                href="/documentation/guide-france-chaleur-urbaine.pdf"
-                variant="primary"
-                isExternal
-                eventKey="Téléchargement|Guide FCU|coproprietaire"
-                mt="2w"
-              >
-                Télécharger le guide de raccordement
-              </Link>
-            </Box>
-
-            <Box flex>
-              <Image
-                src="/img/copro_guide_raccordement.webp"
-                alt="Guide de raccordement à un réseau de chaleur"
-                width={944}
-                height={725}
-                className="fr-responsive-img"
-              />
-            </Box>
-          </ResponsiveRow>
-        </Box>
+        <HowToRaccordement />
       </Box>
 
       <Box py="10w" id="couts-du-chauffage-urbain">
-        <Box className="fr-container">
-          <Heading as="h2" center>
-            Les coûts du chauffage urbain
-          </Heading>
-          <ResponsiveRow mt="10w">
-            <Box flex>
-              <Heading as="h4" color="blue-france">
-                Le coût du raccordement
-              </Heading>
-              <Text size="lg">
-                Le coup de pouce{' '}
-                <Link href="/ressources/aides#contenu">
-                  "Chauffage des bâtiments résidentiels collectifs et
-                  tertiaires”
-                </Link>{' '}
-                permet d’obtenir des aides financières conséquentes pour se
-                raccorder. Le coût du raccordement peut ainsi être réduit à
-                quelques centaines d’euros par logement.
-              </Text>
-              <Text size="sm" my="3w">
-                Différentes entreprises signataires de la charte "Chauffage des
-                bâtiments résidentiels collectifs et tertiaires” offrent cette
-                prime.{' '}
-                <strong>
-                  Le montant de la prime peut significativement varier d’une
-                  entreprise à l’autre, il est donc important de comparer les
-                  offres proposées.
-                </strong>
-              </Text>
-
-              <Simulator cartridge />
-            </Box>
-
-            <Box flex>
-              <Heading as="h4" color="blue-france">
-                Le coût de la chaleur
-              </Heading>
-              <Text size="lg">
-                Le{' '}
-                <Link href="/chauffage-urbain#contenu">chauffage urbain</Link>{' '}
-                est en moyenne le mode de chauffage le moins cher sur le marché
-                pour les logements en habitat collectif (copropriété, logement
-                social...), devant le gaz, l’électricité et le fioul. L’usage
-                d’énergies locales assure également une certaine stabilité des
-                prix.
-              </Text>
-
-              <Image
-                src="/img/copro_cout_chaleur.webp"
-                alt="Graphique comparatif du coût des méthodes de chauffage"
-                width={944}
-                height={499}
-                className="fr-responsive-img"
-              />
-              <Text size="sm">
-                Coût global annuel chauffage + eau chaude sanitaire pour un
-                logement moyen (70&nbsp;m²) construit entre 2005 et 2012
-                (consommation : 96&nbsp;kWhu/m²/an). Enquête sur le prix de
-                vente de la chaleur et du froid 2022 (Amorce 2023)
-              </Text>
-            </Box>
-          </ResponsiveRow>
-        </Box>
+        <CoutsChauffageUrbain />
       </Box>
 
       <Box py="10w" backgroundColor="blue-france-975-75">
