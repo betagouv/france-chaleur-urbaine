@@ -111,7 +111,10 @@ export default function Home() {
           </Box>
         </Box>
       </Box>
-      <StickyForm title="Testez en deux clics l'éligibilité de votre adresse" />
+      <StickyForm
+        title="Testez en deux clics l'éligibilité de votre adresse"
+        titleLine
+      />
 
       <Box py="10w" id="comprendre-le-chauffage-urbain">
         <Box className="fr-container">
