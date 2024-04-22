@@ -156,7 +156,7 @@ export const LegendSideBar = styled.div<{
     css`
       // not visible so that collapsiblebox can be rendered and compute their height
       position: absolute;
-      left: -100%;
+      left: -150%;
     `}
   width: 333px;
   min-width: 333px;
