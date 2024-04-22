@@ -1,32 +1,29 @@
+import {
+  handleRouteErrors,
+  requirePostMethod,
+  validateObjectSchema,
+} from '@helpers/server';
 import jwt from 'jsonwebtoken';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest } from 'next';
 import db from 'src/db';
-import base from 'src/db/airtable';
+import { AirtableDB } from 'src/db/airtable';
 import { sendResetPasswordEmail } from 'src/services/email';
 import { Airtable } from 'src/types/enum/Airtable';
-import * as yup from 'yup';
+import { z } from 'zod';
 
-const resetPasswordSchema = yup.object().shape({
-  email: yup.string().email().required(),
-});
+const reset = handleRouteErrors(async (req: NextApiRequest) => {
+  requirePostMethod(req);
 
-const reset = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== 'POST') {
-    return res.status(501);
-  }
-
-  if (!(await resetPasswordSchema.isValid(req.body))) {
-    return res.status(400).send('Error');
-  }
-
-  const email = (req.body.email as string).toLowerCase().trim();
+  const { email } = await validateObjectSchema(req.body, {
+    email: z.string().email().toLowerCase().trim(),
+  });
 
   const user = await db('users')
     .where('email', email)
     .andWhere('active', true)
     .first();
   if (!user) {
-    await base(Airtable.CONNEXION).create([
+    await AirtableDB(Airtable.CONNEXION).create([
       {
         fields: {
           Email: email,
@@ -34,7 +31,7 @@ const reset = async (req: NextApiRequest, res: NextApiResponse) => {
         },
       },
     ]);
-    return res.status(200).send('Success');
+    return;
   }
 
   const resetToken = Math.random().toString(36);
@@ -46,8 +43,7 @@ const reset = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);
   await db('users').update({ reset_token: resetToken }).where('id', user.id);
-  await sendResetPasswordEmail(email as string, token);
-  return res.status(200).send('Success');
-};
+  await sendResetPasswordEmail(email, token);
+});
 
 export default reset;

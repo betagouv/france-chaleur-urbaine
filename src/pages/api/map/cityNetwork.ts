@@ -1,37 +1,20 @@
 import { getCityEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import {
+  handleRouteErrors,
+  requireGetMethod,
+  validateObjectSchema,
+} from '@helpers/server';
+import type { NextApiRequest } from 'next';
 import { withCors } from 'src/services/api/cors';
-import { ErrorResponse } from 'src/types/ErrorResponse';
-import { CityNetwork } from 'src/types/HeatNetworksResponse';
+import { z } from 'zod';
 
-const cityNetwork = async (
-  req: NextApiRequest,
-  res: NextApiResponse<CityNetwork | ErrorResponse>
-) => {
-  if (req.method !== 'GET') {
-    return res.status(501);
-  }
-  try {
-    const { city } = req.query as Record<string, string>;
+const cityNetwork = handleRouteErrors(async (req: NextApiRequest) => {
+  requireGetMethod(req);
 
-    if (!city) {
-      res.status(400).json({
-        message: 'Parameter city is required',
-        code: 'Bad Arguments',
-      });
-      return;
-    }
-    const result = await getCityEligilityStatus(city);
-    return res.status(200).json(result);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log(error);
-    res.statusCode = 500;
-    return res.json({
-      message: 'internal server error',
-      code: 'Internal Server Error',
-    });
-  }
-};
+  const { city } = await validateObjectSchema(req.query, {
+    city: z.string(),
+  });
+  return await getCityEligilityStatus(city);
+});
 
 export default withCors(cityNetwork);

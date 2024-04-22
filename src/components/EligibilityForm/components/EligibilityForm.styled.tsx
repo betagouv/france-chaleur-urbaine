@@ -31,9 +31,7 @@ export const ContactFormWrapper = styled.div<{ cardMode?: boolean }>`
   `}
 `;
 
-export const ContactFormContentWrapper = styled.div<{
-  cardMode?: boolean;
-}>`
+export const ContactFormContentWrapper = styled.div`
   flex: 1;
 
   h4 {

@@ -111,6 +111,17 @@ const ContactInformation = ({
             description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
           />
         )}
+      <fieldset className="fr-fieldset fr-my-1w">
+        <InputWraper>
+          <RadioGroup
+            label={fieldLabelInformation.heatingEnergy.label}
+            name="heatingEnergy"
+            inputs={fieldLabelInformation.heatingEnergy.inputs}
+            required
+            isInline={!cardMode}
+          />
+        </InputWraper>
+      </fieldset>
       <fieldset className="fr-fieldset">
         <InputWraper className="fr-my-1w">
           <Field
@@ -153,17 +164,6 @@ const ContactInformation = ({
             placeholder="0605040302"
             label={fieldLabelInformation.phone}
             component={Input}
-          />
-        </InputWraper>
-      </fieldset>
-      <fieldset className="fr-fieldset fr-my-1w">
-        <InputWraper>
-          <RadioGroup
-            label={fieldLabelInformation.heatingEnergy.label}
-            name="heatingEnergy"
-            inputs={fieldLabelInformation.heatingEnergy.inputs}
-            required
-            isInline={!cardMode}
           />
         </InputWraper>
       </fieldset>

@@ -3,12 +3,13 @@ import {
   invalidRouteError,
   validateObjectSchema,
 } from '@helpers/server';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest } from 'next';
 import z from 'zod';
 import db from 'src/db';
 import base from 'src/db/airtable';
 import { sendManagerEmail } from 'src/services/email';
 import { Airtable } from 'src/types/enum/Airtable';
+import { zAirtableRecordId } from '@utils/validation';
 
 const zManagerEmail = {
   emailContent: z.object({
@@ -28,9 +29,12 @@ const zManagerEmail = {
 };
 
 export default handleRouteErrors(
-  async (req: NextApiRequest, res: NextApiResponse) => {
+  async (req: NextApiRequest) => {
     if (req.method === 'GET') {
-      const { demand_id } = req.query;
+      const { demand_id } = await validateObjectSchema(req.query, {
+        demand_id: zAirtableRecordId,
+      });
+
       const rawEmailsList = await base(Airtable.UTILISATEURS_EMAILS)
         .select({
           filterByFormula: `{demand_id} = "${demand_id}"`,
@@ -44,7 +48,7 @@ export default handleRouteErrors(
             )
           : '',
       }));
-      return res.json(emailsList);
+      return emailsList;
     } else if (req.method === 'POST') {
       const parseReqBody = await JSON.parse(req.body);
       const { emailContent, demand_id, key } = await validateObjectSchema(
@@ -92,11 +96,9 @@ export default handleRouteErrors(
         emailContent.cc,
         emailContent.replyTo
       );
-
-      return res.status(200).send('Success');
-    } else {
-      throw invalidRouteError;
+      return;
     }
+    throw invalidRouteError;
   },
   {
     requireAuthentication: ['gestionnaire', 'admin'],

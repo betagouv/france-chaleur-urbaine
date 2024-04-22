@@ -1,8 +1,15 @@
 import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
-import { init as initMatomo } from '@socialgouv/matomo-next';
+import { init as initMatomo } from '@totak/matomo-next';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { Router } from 'next/router';
 import { useEffect, useState } from 'react';
 import { clientConfig } from 'src/client-config';
+
+// globally accessible atom (state)
+type MatomoAnalyticsLoadingState = 'pending' | 'loaded' | 'error';
+
+const matomoAnalyticsLoadingStateAtom =
+  atom<MatomoAnalyticsLoadingState>('pending');
 
 const onRouteChange = (url: string) => {
   // see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag&hl=fr#manually_send_page_view_events
@@ -24,6 +31,8 @@ const onRouteChange = (url: string) => {
  * Facebook and Linkedin track page views automatically when loaded.
  */
 export const useAnalytics = () => {
+  const setMatomoAnalyticsLoaded = useSetAtom(matomoAnalyticsLoadingStateAtom);
+
   useEffect(() => {
     if (
       clientConfig.tracking.matomoServerURL &&
@@ -34,7 +43,16 @@ export const useAnalytics = () => {
         siteId: clientConfig.tracking.matomoSiteId,
         disableCookies: true,
         excludeUrlsPatterns: [/\/carte\?.+/], // do not track query params for this URL
+        onScriptLoadingError() {
+          setMatomoAnalyticsLoaded('error');
+        },
       });
+
+      // track the async deferred loading of the script by matomo-next
+      // matomoAsyncInit is a specific callback used by Matomo
+      window.matomoAbTestingAsyncInit = () => {
+        setMatomoAnalyticsLoaded('loaded');
+      };
     }
   }, []);
 
@@ -455,6 +473,14 @@ const trackingEvents = {
   Vidéo: {
     matomo: ['Vidéo'],
   },
+
+  // used to test Matomo configuration
+  'Debug|Event 1': {
+    matomo: ['Debug', 'Debug Event 1'],
+  },
+  'Debug|Event 2': {
+    matomo: ['Debug', 'Debug Event 2'],
+  },
 } as const satisfies Record<string, TrackingConfiguration>;
 
 export type TrackingEvent = keyof typeof trackingEvents;
@@ -483,6 +509,8 @@ declare let window: Window & {
   gtag: (...args: any[]) => void; // google
   lintrk: (action: string, param: any) => void; // linkedin
   _paq: [any]; // matomo
+  Matomo: any; // matomo
+  matomoAbTestingAsyncInit: any; // matomo
   hj: (...args: any[]) => void; // hotjar
 };
 
@@ -516,4 +544,117 @@ const performTracking = (
       ...(eventPayload ?? []),
     ]);
   }
+};
+
+type MatomoABTestingExperiment = {
+  name: string;
+  percentage: number;
+  includedTargets: ReadonlyArray<any>;
+  excludedTargets: ReadonlyArray<any>;
+  variations: ReadonlyArray<{
+    name: string;
+    percentage?: number;
+    activate: () => void;
+  }>;
+};
+
+const emptyActivateMethod = () => {
+  // code changes are executed using the variation name, not this callback method
+};
+
+const matomoABTestingExperiments = [
+  {
+    name: 'TestMessagesFormulaireContact', // you can also use '1' (ID of the experiment) to hide the name
+    percentage: 100,
+    includedTargets: [],
+    excludedTargets: [],
+    variations: [
+      {
+        name: 'original',
+        activate: emptyActivateMethod,
+      },
+      {
+        name: 'AmeliorationA',
+        activate: emptyActivateMethod,
+      },
+      {
+        name: 'AmeliorationB',
+        activate: emptyActivateMethod,
+      },
+      {
+        name: 'AmeliorationA+B',
+        activate: emptyActivateMethod,
+      },
+    ],
+  },
+] as const satisfies ReadonlyArray<MatomoABTestingExperiment>;
+
+type MatomoABTestingExperimentName =
+  (typeof matomoABTestingExperiments)[number]['name'];
+
+export type MatomoABTestingExperimentVariations<
+  Name extends MatomoABTestingExperimentName,
+> = Extract<
+  (typeof matomoABTestingExperiments)[number],
+  { name: Name }
+>['variations'][number]['name'];
+
+type MatomoAbTestingExperimentOptions = {
+  enable?: boolean;
+};
+
+const defaultOptions: MatomoAbTestingExperimentOptions = {
+  enable: true,
+};
+
+/**
+ * Use an AB Testing Experiment a retrieve a variation name.
+ *
+ * Usage:
+ *
+ *   ```tsx
+ *   ...
+ *   const { ready, variation } = useMatomoAbTestingExperiment(
+ *     'TitreDynamiquePageCopro'
+ *   );
+ *   if (!ready) {
+ *     return null;
+ *   }
+ *
+ *   return (
+ *     <Button>{variation === 'NouveauLabel' ? 'nouveau label' : 'label original'}</Button>
+ *   )
+ *   ```
+ */
+export const useMatomoAbTestingExperiment = <
+  Name extends MatomoABTestingExperimentName,
+>(
+  experimentName: MatomoABTestingExperimentName,
+  options: MatomoAbTestingExperimentOptions = defaultOptions
+):
+  | {
+      ready: boolean;
+      variation: MatomoABTestingExperimentVariations<Name>;
+    }
+  | {
+      ready: boolean;
+      variation: undefined;
+    } => {
+  const matomoAnalyticsLoadingState = useAtomValue(
+    matomoAnalyticsLoadingStateAtom
+  );
+  if (matomoAnalyticsLoadingState === 'pending') {
+    return { ready: false, variation: undefined };
+  }
+
+  // if the script could not be loaded or the experiment is disabled, we fallback to the original variation
+  if (matomoAnalyticsLoadingState === 'error' || !options.enable) {
+    return { ready: true, variation: 'original' };
+  }
+
+  const experiment = new window.Matomo.AbTesting.Experiment(
+    matomoABTestingExperiments.find((e) => e.name === experimentName)
+  );
+
+  return { ready: true, variation: experiment.getActivatedVariationName() };
 };

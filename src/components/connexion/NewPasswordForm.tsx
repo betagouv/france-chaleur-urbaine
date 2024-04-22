@@ -37,7 +37,7 @@ const NewPasswordForm = ({ token }: { token: string }) => {
       passwordService
         .changePassword(token, password)
         .then(() => router.push('/connexion'))
-        .catch((e) => setFail(e.response.data));
+        .catch((e) => setFail(e.response.data.message));
     }
   };
   return (

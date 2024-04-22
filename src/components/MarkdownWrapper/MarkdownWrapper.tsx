@@ -69,7 +69,7 @@ const processor = (extender: Record<string, unknown> = {}) =>
 
 const MarkdownWrapper: React.FC<{
   children?: React.ReactNode;
-  value?: string;
+  value?: string | React.ReactNode;
   id?: JSX.IntrinsicAttributes;
   className?: string;
   style?: React.CSSProperties;
@@ -85,7 +85,9 @@ const MarkdownWrapper: React.FC<{
     getContent();
   }, [children, value]);
 
-  return (
+  return typeof value === 'object' ? (
+    value
+  ) : (
     <MarkdownWrapperStyled
       className={className}
       id={id && String(id)}

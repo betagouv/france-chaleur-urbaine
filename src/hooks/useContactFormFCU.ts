@@ -88,12 +88,12 @@ const useContactFormFCU = () => {
         formatDataToAirtable(data),
         Airtable.UTILISATEURS
       );
-      const responseData = await response.json();
+      const { id } = await response.json();
       const scrollTimer = timeoutScroller(500);
       setAddressData({
         ...addressData,
         ...data,
-        airtableId: responseData.ids[0]?.id,
+        airtableId: id,
       });
       setMessageReceived(true);
       return () => window.clearTimeout(scrollTimer);

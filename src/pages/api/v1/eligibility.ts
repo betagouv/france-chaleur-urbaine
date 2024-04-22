@@ -2,19 +2,19 @@ import z from 'zod';
 import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import type { NextApiRequest } from 'next';
 import { withCors } from 'src/services/api/cors';
-import { handleRouteErrors, requireGetMethod } from '@helpers/server';
-
-const EligibilityValidation = z.object({
-  lat: z.number(),
-  lon: z.number(),
-});
+import {
+  handleRouteErrors,
+  requireGetMethod,
+  validateObjectSchema,
+} from '@helpers/server';
 
 export default withCors(
   handleRouteErrors(async (req: NextApiRequest) => {
     requireGetMethod(req);
-    const { lat, lon } = EligibilityValidation.parse({
-      lat: Number(req.query.lat as string),
-      lon: Number(req.query.lon as string),
+
+    const { lat, lon } = await validateObjectSchema(req.query, {
+      lat: z.coerce.number(),
+      lon: z.coerce.number(),
     });
 
     const result = await getEligilityStatus(lat, lon);

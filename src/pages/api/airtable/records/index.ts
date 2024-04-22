@@ -8,31 +8,17 @@ import {
   getToRelanceDemand,
 } from '@core/infrastructure/repository/manager';
 import { logger } from '@helpers/logger';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import base from 'src/db/airtable';
+import { handleRouteErrors, requirePostMethod } from '@helpers/server';
+import type { NextApiRequest } from 'next';
+import base, { AirtableDB } from 'src/db/airtable';
+import { BadRequestError } from 'src/services/errors';
 import { Airtable } from 'src/types/enum/Airtable';
 import { v4 as uuidv4 } from 'uuid';
 
-const creationCallBack =
-  (res: NextApiResponse<any>) => (err: any, records: any) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ error: err });
-      return;
-    }
-    const jsonResponse = {
-      ids: records,
-    };
-    res.status(200).json(jsonResponse);
-  };
-
-export default async function PostRecords(
-  req: NextApiRequest,
-  res: NextApiResponse<any>
+export default handleRouteErrors(async function PostRecords(
+  req: NextApiRequest
 ) {
-  if (req.method !== 'POST') {
-    return res.status(405).send({ message: 'Only POST requests allowed' });
-  }
+  requirePostMethod(req);
 
   const { type, ...values } = req.body;
   if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
@@ -40,97 +26,108 @@ export default async function PostRecords(
       type,
       values,
     });
-    return res.status(200).json({
+    return {
       type: type,
       values: values,
       ids: [{ id: uuidv4() }],
-    });
+    };
   }
 
   switch (type) {
     case Airtable.RELANCE: {
       const demand = await getToRelanceDemand(values.id);
       if (demand) {
-        base(Airtable.UTILISATEURS).update(demand.id, {
+        await AirtableDB(Airtable.UTILISATEURS).update(demand.id, {
           'Commentaire relance': values.comment,
         });
       }
-      break;
+      return;
     }
+
     case Airtable.UTILISATEURS: {
-      base(Airtable.UTILISATEURS).create(
-        [{ fields: values }],
-        { typecast: true },
-        async (error, records) => {
-          creationCallBack(res)(error, records);
-
-          if (!error && records && records[0]) {
-            const [conso, nbLogement, network] = await Promise.all([
-              getConso(values.Latitude, values.Longitude),
-              getNbLogement(values.Latitude, values.Longitude),
-              closestNetwork(values.Latitude, values.Longitude),
-            ]);
-
-            const gestionnaires = await getGestionnaires(
-              values,
-              network ? network['Identifiant reseau'] : ''
-            );
-
-            const toRelance =
-              network &&
-              network.distance < 200 &&
-              values['Type de chauffage'] === 'Collectif';
-
-            logger.info('create eligibility demand', {
-              id: records[0].getId(),
-              nbLogement,
-              conso,
-              network,
-              gestionnaires,
-            });
-
-            await base(Airtable.UTILISATEURS).update(
-              records[0].getId(),
-              {
-                Gestionnaires: gestionnaires,
-                Conso: conso ? conso.conso_nb : undefined,
-                'ID Conso': conso ? conso.rownum : undefined,
-                Logement: nbLogement ? nbLogement.nb_logements : undefined,
-                'ID BNB': nbLogement ? `${nbLogement.id}` : undefined,
-                'Identifiant réseau': network
-                  ? network['Identifiant reseau']
-                  : undefined,
-                'Nom réseau': network ? network.nom_reseau : undefined,
-                'Relance à activer': toRelance,
-              },
-              { typecast: true }
-            );
-          }
+      // bad airtable type
+      const { id: demandId }: any = await base(Airtable.UTILISATEURS).create(
+        values,
+        {
+          typecast: true,
         }
       );
-      break;
+      const [conso, nbLogement, network] = await Promise.all([
+        getConso(values.Latitude, values.Longitude),
+        getNbLogement(values.Latitude, values.Longitude),
+        closestNetwork(values.Latitude, values.Longitude),
+      ]);
+
+      const gestionnaires = await getGestionnaires(
+        values,
+        network ? network['Identifiant reseau'] : ''
+      );
+
+      const toRelance =
+        network &&
+        network.distance < 200 &&
+        values['Type de chauffage'] === 'Collectif';
+
+      logger.info('create eligibility demand', {
+        id: demandId,
+        nbLogement,
+        conso,
+        network,
+        gestionnaires,
+      });
+
+      await AirtableDB(Airtable.UTILISATEURS).update(
+        demandId,
+        {
+          Gestionnaires: gestionnaires,
+          Conso: conso ? conso.conso_nb : undefined,
+          'ID Conso': conso ? conso.rownum : undefined,
+          Logement: nbLogement ? nbLogement.nb_logements : undefined,
+          'ID BNB': nbLogement ? `${nbLogement.id}` : undefined,
+          'Identifiant réseau': network
+            ? network['Identifiant reseau']
+            : undefined,
+          'Nom réseau': network ? network.nom_reseau : undefined,
+          'Relance à activer': toRelance,
+        },
+        { typecast: true }
+      );
+      return { id: demandId };
     }
-    case Airtable.CONTRIBUTION:
-      base(Airtable.CONTRIBUTION).create(
-        [{ fields: values }],
-        creationCallBack(res)
+
+    case Airtable.CONTRIBUTION: {
+      // bad airtable type
+      const { id }: any = await AirtableDB(Airtable.CONTRIBUTION).create(
+        values
       );
-      break;
-    case Airtable.NEWSLETTER:
-      base(Airtable.NEWSLETTER).create(
-        [{ fields: values }],
-        creationCallBack(res)
-      );
-      break;
-    case Airtable.CONTACT:
-      base(Airtable.CONTACT).create(
-        [{ fields: { ...values, Date: new Date() } }],
-        creationCallBack(res)
-      );
-      break;
+      logger.info('create airtable record contribution', {
+        id,
+      });
+      return;
+    }
+
+    case Airtable.NEWSLETTER: {
+      // bad airtable type
+      const { id }: any = await AirtableDB(Airtable.NEWSLETTER).create(values);
+      logger.info('create airtable record newsletter', {
+        id,
+      });
+      return;
+    }
+
+    case Airtable.CONTACT: {
+      // bad airtable type
+      const { id }: any = await AirtableDB(Airtable.CONTACT).create({
+        ...values,
+        Date: new Date(),
+      });
+      logger.info('create airtable record contact', {
+        id,
+      });
+      return;
+    }
 
     default:
-      res.status(400).send({ message: 'Type not recognized' });
-      break;
+      throw new BadRequestError('Type not recognized');
   }
-}
+});
