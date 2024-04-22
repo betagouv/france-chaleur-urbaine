@@ -13,16 +13,8 @@ import Slice from '@components/Slice';
 import { Col, Icon } from '@dataesr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
 import { Close, Container, Form, Title } from './StickyForm.styles';
-import Text from '@components/ui/Text';
-import Box from '@components/ui/Box';
 
-const StickyForm = ({
-  title,
-  titleLine,
-}: {
-  title?: string;
-  titleLine?: boolean;
-}) => {
+const StickyForm = ({ title }: { title?: string }) => {
   const {
     EligibilityFormContactRef,
     addressData,
@@ -41,19 +33,9 @@ const StickyForm = ({
 
   return (
     <Container>
-      {!titleLine ? (
-        <Title className="sticky-form-title">
-          {title ||
-            'Votre bâtiment est-il raccordable à un réseau de chaleur ?'}
-        </Title>
-      ) : (
-        <Box width="100%">
-          <Text size="xl" pb="1w">
-            {title ||
-              'Votre bâtiment est-il raccordable à un réseau de chaleur ?'}
-          </Text>
-        </Box>
-      )}
+      <Title className="sticky-form-title">
+        {title || 'Votre bâtiment est-il raccordable à un réseau de chaleur ?'}
+      </Title>
       <EligibilityFormAddress
         onChange={handleOnChangeAddress}
         onFetch={handleOnFetchAddress}

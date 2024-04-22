@@ -15,7 +15,7 @@ export const Container = styled.div`
   gap: 8px 32px;
   border: 1px solid #b4b4b4;
   box-shadow: 0px 4px 4px 0px #00000040;
-  z-index: 1;
+  z-index: 10;
 
   .fr-form-group {
     margin-bottom: 0;

@@ -21,7 +21,7 @@ export default function Home() {
         />
       </Head>
 
-      <Box py="10w" backgroundColor="blue-france-975-75">
+      <Box pt="4w" pb="8w" backgroundColor="blue-france-975-75">
         <Box className="fr-container">
           <Heading as="h1" center color="blue-france">
             Changez votre chaudière gaz pour
@@ -31,7 +31,7 @@ export default function Home() {
           <Text size="lg" textAlign="center">
             Découvrez les nombreux avantages des réseaux de chaleur&nbsp;!
           </Text>
-          <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
+          <Box className="fr-grid-row fr-grid-row--gutters" mt="4w">
             <Box
               display="flex"
               flexDirection="column"
@@ -110,10 +110,7 @@ export default function Home() {
           </Box>
         </Box>
       </Box>
-      <StickyForm
-        title="Testez en deux clics l'éligibilité de votre adresse"
-        titleLine
-      />
+      <StickyForm title="Testez en deux clics l'éligibilité de votre adresse" />
 
       <Box py="10w" id="comprendre-le-chauffage-urbain">
         <Box className="fr-container">
