@@ -47,7 +47,7 @@ export default function Home() {
                   Changez votre chaudière gaz pour le chauffage urbain et
                   maîtrisez vos factures
                 </Heading>
-                <Text mb="2w">Testez votre éligibilité en 2 clics&nbs;!</Text>
+                <Text mb="2w">Testez votre éligibilité en 2 clics&nbsp;!</Text>
                 {form}
               </Box>
             </Box>
