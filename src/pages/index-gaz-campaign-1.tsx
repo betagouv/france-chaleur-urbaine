@@ -21,18 +21,6 @@ export default function Home() {
           content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
         />
       </Head>
-      {/* <HeadSliceForm
-        bg="/img/banner_chauffage_gaz-2.png"
-        pageBody={`**Vous êtes copropriétaire en ville ?**
-Améliorez votre confort et baissez vos factures !
-# Le chauffage urbain, une solution écologique et économique pour votre copropriété`}
-        formLabel="Vérifiez immédiatement si votre immeuble pourrait être raccordé !"
-        energyInputsLabels={{
-          collectif: 'Chauffage collectif',
-          individuel: 'Chauffage individuel',
-        }}
-        checkEligibility
-      /> */}
 
       <HeadSliceForm
         checkEligibility
@@ -59,7 +47,7 @@ Améliorez votre confort et baissez vos factures !
                   Changez votre chaudière gaz pour le chauffage urbain et
                   maîtrisez vos factures
                 </Heading>
-                <Text mb="2w">Testez votre éligibilité en 2 clics</Text>
+                <Text mb="2w">Testez votre éligibilité en 2 clics&nbs;!</Text>
                 {form}
               </Box>
             </Box>
