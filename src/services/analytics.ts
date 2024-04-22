@@ -1,6 +1,6 @@
 import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
 import { init as initMatomo } from '@totak/matomo-next';
-import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { atom, useAtom, useAtomValue } from 'jotai';
 import { Router } from 'next/router';
 import { useEffect, useState } from 'react';
 import { clientConfig } from 'src/client-config';
@@ -31,7 +31,9 @@ const onRouteChange = (url: string) => {
  * Facebook and Linkedin track page views automatically when loaded.
  */
 export const useAnalytics = () => {
-  const setMatomoAnalyticsLoaded = useSetAtom(matomoAnalyticsLoadingStateAtom);
+  const [matomoAnalyticsLoadingState, setMatomoAnalyticsLoadedState] = useAtom(
+    matomoAnalyticsLoadingStateAtom
+  );
 
   useEffect(() => {
     if (
@@ -44,15 +46,23 @@ export const useAnalytics = () => {
         disableCookies: true,
         excludeUrlsPatterns: [/\/carte\?.+/], // do not track query params for this URL
         onScriptLoadingError() {
-          setMatomoAnalyticsLoaded('error');
+          setMatomoAnalyticsLoadedState('error');
         },
       });
 
       // track the async deferred loading of the script by matomo-next
       // matomoAsyncInit is a specific callback used by Matomo
+      // matomoAbTestingAsyncInit is a specific callback used by Matomo AB Testing framework
       window.matomoAbTestingAsyncInit = () => {
-        setMatomoAnalyticsLoaded('loaded');
+        setMatomoAnalyticsLoadedState('loaded');
       };
+
+      // handle the case where matomo does not respond
+      setTimeout(() => {
+        if (matomoAnalyticsLoadingState === 'pending') {
+          setMatomoAnalyticsLoadedState('error');
+        }
+      }, 2000);
     }
   }, []);
 
