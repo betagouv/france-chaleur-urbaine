@@ -137,7 +137,7 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   }
 
   .popover-search-form {
-    z-index: 2;
+    z-index: 3;
   }
 `;
 
