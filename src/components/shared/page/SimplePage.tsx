@@ -105,7 +105,7 @@ const publicNavigationMenu: NavigationItem[] = [
     ],
   },
   {
-    title: 'Professionnels, bureaux d’étude',
+    title: 'Professionnels',
     children: [
       {
         title: 'Nos services pour les professionnels',
