@@ -1,4 +1,4 @@
-import React from 'react';
+import { ReactNode } from 'react';
 
 import { Handles, Rail, Slider, Tracks } from 'react-compound-slider';
 
@@ -6,6 +6,8 @@ import { Handle, SliderRail, Track } from '@components/Slider/Components';
 import { Interval } from '@utils/interval';
 import Box from '@components/ui/Box';
 import Text from '@components/ui/Text';
+import { SimpleTooltip } from '@components/ui/Tooltip';
+import Icon from '@components/ui/Icon';
 
 interface RangeFilterProps {
   label: string;
@@ -13,6 +15,7 @@ interface RangeFilterProps {
   domain: Interval;
   onChange: (values: Interval) => void;
   unit?: string;
+  tooltip?: string | ReactNode;
 }
 
 const RangeFilter = ({
@@ -21,13 +24,24 @@ const RangeFilter = ({
   domain,
   onChange,
   unit = '',
+  tooltip,
   ...props
 }: RangeFilterProps) => {
   return (
-    <Box mx="1w" {...props}>
-      <Text lineHeight="18px" fontWeight="bold" mt="1w">
-        {label}
-      </Text>
+    <Box mx="1w" position="relative" {...props}>
+      <Box display="flex" alignItems="center" mt="1w">
+        <Text lineHeight="18px" fontWeight="bold" mr="1w">
+          {label}
+        </Text>
+
+        {tooltip && (
+          <SimpleTooltip
+            icon={<Icon size="1x" name="ri-information-fill" cursor="help" />}
+          >
+            {tooltip}
+          </SimpleTooltip>
+        )}
+      </Box>
 
       <Box position="relative" mt="2w" mx="1w" {...props}>
         {/* Space needed for margins to work */}

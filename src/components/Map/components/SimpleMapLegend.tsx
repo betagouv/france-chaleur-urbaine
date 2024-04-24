@@ -23,10 +23,10 @@ import {
   MapConfiguration,
   MapConfigurationProperty,
   defaultMapConfiguration,
-  emissionCO2MaxInterval,
+  emissionsCO2MaxInterval,
   filtresEnergies,
   percentageMaxInterval,
-  periodeConstructionMaxInterval,
+  anneeConstructionMaxInterval,
   prixMoyenMaxInterval,
 } from 'src/services/Map/map-configuration';
 import { setProperty, toggleBoolean } from '@utils/core';
@@ -152,7 +152,7 @@ function SimpleMapLegend({
           fontSize="14px"
           lineHeight="18px"
           fontWeight="bold"
-          ml="2w"
+          ml="1w"
           className="fr-col"
         >
           {legendTitle || 'Réseaux de chaleur et de froid'}
@@ -173,7 +173,7 @@ function SimpleMapLegend({
         lineHeight="18px"
         fontWeight="lightbold"
         fontStyle="italic"
-        mx="2w"
+        mx="1w"
       >
         Cliquez sur un réseau pour connaître ses caractéristiques
       </Text>
@@ -181,21 +181,21 @@ function SimpleMapLegend({
       <CollapsibleBox expand={!!sectionsExpansions['reseauxDeChaleur']}>
         <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
           <LegendSeparator />
-          <Text size="xs" lineHeight="15px" fontStyle="italic" mx="2w">
-            Filtres uniquement sur les réseaux de chaleur, pour lesquels les
-            données sont disponibles.
+          <Text size="xs" lineHeight="15px" fontStyle="italic" mx="1w">
+            Filtres uniquement sur les réseaux de chaleur existants, pour
+            lesquels les données sont disponibles.
           </Text>
 
           <Box mx="1w">
             <Text lineHeight="18px" fontWeight="bold" my="1w">
-              Énergies majoritaires
+              Énergie majoritaire
             </Text>
             <Select
               selected={mapConfiguration.reseauxDeChaleur.energieMajoritaire}
               options={[
                 {
                   label: "Type d'énergie",
-                  value: undefined as any,
+                  value: '',
                 },
                 ...filtresEnergies.map(({ label, confKey }) => ({
                   label,
@@ -204,7 +204,7 @@ function SimpleMapLegend({
               ]}
               onChange={(e) => {
                 mapConfiguration.reseauxDeChaleur.energieMajoritaire =
-                  e.target.value;
+                  e.target.value === '' ? undefined : e.target.value;
                 onMapConfigurationChange({ ...mapConfiguration });
               }}
             />
@@ -281,34 +281,33 @@ function SimpleMapLegend({
           />
           <LegendSeparator />
           <RangeFilter
-            label="Émission de CO2"
-            domain={emissionCO2MaxInterval}
-            value={mapConfiguration.reseauxDeChaleur.emissionCO2}
+            label="Émissions de CO2"
+            domain={emissionsCO2MaxInterval}
+            value={mapConfiguration.reseauxDeChaleur.emissionsCO2}
             onChange={(values) =>
-              updateScaleInterval('reseauxDeChaleur.emissionCO2', values)
+              updateScaleInterval('reseauxDeChaleur.emissionsCO2', values)
             }
-            unit="g.CO2/kWh"
+            unit="gCO2/kWh"
+            tooltip="Émissions en analyse du cycle de vie (directes et indirectes)"
           />
           <LegendSeparator />
           <RangeFilter
-            label="Prix moyen"
+            label="Prix moyen de la chaleur"
             domain={prixMoyenMaxInterval}
             value={mapConfiguration.reseauxDeChaleur.prixMoyen}
             onChange={(values) =>
               updateScaleInterval('reseauxDeChaleur.prixMoyen', values)
             }
             unit="€TTC/MWh"
+            tooltip="La comparaison avec le prix d'autres modes de chauffage n’est pertinente qu’en coût global annuel, en intégrant les coûts d’exploitation, de maintenance et d’investissement, amortis sur la durée de vie des installations."
           />
           <LegendSeparator />
           <RangeFilter
-            label="Période de construction"
-            domain={periodeConstructionMaxInterval}
-            value={mapConfiguration.reseauxDeChaleur.periodeConstruction}
+            label="Année de construction"
+            domain={anneeConstructionMaxInterval}
+            value={mapConfiguration.reseauxDeChaleur.anneeConstruction}
             onChange={(values) =>
-              updateScaleInterval(
-                'reseauxDeChaleur.periodeConstruction',
-                values
-              )
+              updateScaleInterval('reseauxDeChaleur.anneeConstruction', values)
             }
           />
         </DeactivatableBox>

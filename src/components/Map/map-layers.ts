@@ -26,10 +26,10 @@ import {
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import {
   MapConfiguration,
-  emissionCO2MaxInterval,
+  emissionsCO2MaxInterval,
   filtresEnergies,
   percentageMaxInterval,
-  periodeConstructionMaxInterval,
+  anneeConstructionMaxInterval,
   prixMoyenMaxInterval,
 } from 'src/services/Map/map-configuration';
 import {
@@ -401,7 +401,6 @@ export function buildMapLayers(
           filter: [
             'all',
             ['==', ['get', 'is_zone'], true],
-            ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
             ...buildFiltreGestionnaire(config.filtreGestionnaire),
           ],
           type: 'fill',
@@ -418,7 +417,6 @@ export function buildMapLayers(
           filter: [
             'all',
             ['==', ['get', 'is_zone'], false],
-            ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
             ...buildFiltreGestionnaire(config.filtreGestionnaire),
           ],
           ...outlineLayerStyle,
@@ -798,7 +796,6 @@ export function buildMapLayers(
           filter: [
             'all',
             ['==', ['get', 'has_trace'], true],
-            ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
             ...buildFiltreGestionnaire(config.filtreGestionnaire),
             ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
           ],
@@ -816,7 +813,6 @@ export function buildMapLayers(
           filter: [
             'all',
             ['==', ['get', 'has_trace'], false],
-            ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
             ...buildFiltreGestionnaire(config.filtreGestionnaire),
             ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
           ],
@@ -1134,33 +1130,28 @@ export function applyMapConfigurationToLayers(
   map.setFilter('reseauxDeFroid-avec-trace', [
     'all',
     ['==', ['get', 'has_trace'], true],
-    ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
     ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
   ]);
   map.setFilter('reseauxDeFroid-sans-trace', [
     'all',
     ['==', ['get', 'has_trace'], false],
-    ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
     ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
   ]);
   map.setFilter('reseauxEnConstruction-zone', [
     'all',
     ['==', ['get', 'is_zone'], true],
-    ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
   ]);
   map.setFilter('reseauxEnConstruction-trace', [
     'all',
     ['==', ['get', 'is_zone'], false],
-    ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
   ]);
 }
 
 type ReseauxDeChaleurFilter = {
-  label: string;
   valueKey: keyof Network;
   confKey: Exclude<keyof MapConfiguration['reseauxDeChaleur'], 'show'>;
   defaultInterval: Interval;
@@ -1169,29 +1160,25 @@ type ReseauxDeChaleurFilter = {
 
 const reseauxDeChaleurFilters = [
   {
-    label: 'Taux d’EnR&R',
     confKey: 'tauxENRR',
     valueKey: 'Taux EnR&R',
     defaultInterval: percentageMaxInterval,
   },
   {
-    label: 'Émission de CO2',
-    confKey: 'emissionCO2',
+    confKey: 'emissionsCO2',
     valueKey: 'contenu CO2 ACV',
-    defaultInterval: emissionCO2MaxInterval,
+    defaultInterval: emissionsCO2MaxInterval,
     filterPreprocess: (v: number) => v / 1000,
   },
   {
-    label: 'Prix moyen',
     confKey: 'prixMoyen',
     valueKey: 'PM',
     defaultInterval: prixMoyenMaxInterval,
   },
   {
-    label: 'Période de construction',
-    confKey: 'periodeConstruction',
+    confKey: 'anneeConstruction',
     valueKey: 'annee_creation',
-    defaultInterval: periodeConstructionMaxInterval,
+    defaultInterval: anneeConstructionMaxInterval,
   },
 ] satisfies ReseauxDeChaleurFilter[];
 

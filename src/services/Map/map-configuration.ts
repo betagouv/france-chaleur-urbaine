@@ -54,9 +54,9 @@ export type MapConfiguration = {
     show: boolean;
     energieMajoritaire?: FiltreEnergieConfKey;
     tauxENRR: Interval;
-    emissionCO2: Interval;
+    emissionsCO2: Interval;
     prixMoyen: Interval;
-    periodeConstruction: Interval;
+    anneeConstruction: Interval;
   } & Record<EnergieRatioConfKey, Interval>;
   reseauxDeFroid: boolean;
   reseauxEnConstruction: boolean;
@@ -98,9 +98,9 @@ export type MapConfiguration = {
 export type MapConfigurationProperty = FlattenKeys<MapConfiguration>;
 
 export const percentageMaxInterval: Interval = [0, 100];
-export const emissionCO2MaxInterval: Interval = [0, 500];
+export const emissionsCO2MaxInterval: Interval = [0, 400];
 export const prixMoyenMaxInterval: Interval = [0, 300];
-export const periodeConstructionMaxInterval: Interval = [1900, 2024];
+export const anneeConstructionMaxInterval: Interval = [1900, 2024];
 
 const emptyMapConfiguration: MapConfiguration = {
   proMode: false,
@@ -118,9 +118,9 @@ const emptyMapConfiguration: MapConfiguration = {
     energie_ratio_gaz: percentageMaxInterval,
     energie_ratio_fioul: percentageMaxInterval,
     tauxENRR: percentageMaxInterval,
-    emissionCO2: [0, 500],
+    emissionsCO2: [0, 500],
     prixMoyen: prixMoyenMaxInterval,
-    periodeConstruction: [1900, 2024],
+    anneeConstruction: [1900, 2024],
   },
   reseauxDeFroid: false,
   reseauxEnConstruction: false,
