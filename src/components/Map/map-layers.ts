@@ -26,11 +26,8 @@ import {
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import {
   MapConfiguration,
-  emissionsCO2MaxInterval,
   filtresEnergies,
   percentageMaxInterval,
-  anneeConstructionMaxInterval,
-  prixMoyenMaxInterval,
 } from 'src/services/Map/map-configuration';
 import {
   themeDefSolaireThermiqueFriches,
@@ -38,7 +35,7 @@ import {
 } from 'src/services/Map/businessRules/enrrMobilisables';
 import { SourceId } from 'src/services/tiles.config';
 import { Network } from 'src/types/Summary/Network';
-import { Interval, intervalsEqual } from '@utils/interval';
+import { intervalsEqual } from '@utils/interval';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -1154,7 +1151,6 @@ export function applyMapConfigurationToLayers(
 type ReseauxDeChaleurFilter = {
   valueKey: keyof Network;
   confKey: Exclude<keyof MapConfiguration['reseauxDeChaleur'], 'show'>;
-  defaultInterval: Interval;
   filterPreprocess?: (v: number) => number;
 };
 
@@ -1162,25 +1158,26 @@ const reseauxDeChaleurFilters = [
   {
     confKey: 'tauxENRR',
     valueKey: 'Taux EnR&R',
-    defaultInterval: percentageMaxInterval,
   },
   {
     confKey: 'emissionsCO2',
     valueKey: 'contenu CO2 ACV',
-    defaultInterval: emissionsCO2MaxInterval,
     filterPreprocess: (v: number) => v / 1000,
   },
   {
     confKey: 'prixMoyen',
     valueKey: 'PM',
-    defaultInterval: prixMoyenMaxInterval,
   },
   {
     confKey: 'anneeConstruction',
     valueKey: 'annee_creation',
-    defaultInterval: anneeConstructionMaxInterval,
   },
 ] satisfies ReseauxDeChaleurFilter[];
+
+export type ReseauxDeChaleurLimits = Record<
+  (typeof reseauxDeChaleurFilters)[number]['confKey'],
+  [min: number, max: number]
+>;
 
 /**
  * Applique chaque filtre de réseau de chaleur si l'intervalle est compris
@@ -1203,7 +1200,7 @@ function buildReseauxDeChaleurFilters(
         ? filtre.filterPreprocess(conf[filtre.confKey][1])
         : conf[filtre.confKey][1];
 
-      return intervalsEqual(conf[filtre.confKey], filtre.defaultInterval)
+      return intervalsEqual(conf[filtre.confKey], conf.limits![filtre.confKey])
         ? []
         : ([
             [

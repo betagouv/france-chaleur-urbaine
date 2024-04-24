@@ -59,10 +59,13 @@ import SimpleMapLegend, {
 import { MapLayerMouseEvent } from 'react-map-gl';
 import {
   MapConfiguration,
+  MaybeEmptyMapConfiguration,
   defaultMapConfiguration,
+  isMapConfigurationInitialized,
 } from 'src/services/Map/map-configuration';
 import {
   LayerId,
+  ReseauxDeChaleurLimits,
   applyMapConfigurationToLayers,
   buildMapLayers,
   layerSymbolsImagesURLs,
@@ -74,6 +77,7 @@ import CardSearchDetails from './components/CardSearchDetails';
 import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
 import { SourceId } from 'src/services/tiles.config';
 import { isDevModeEnabled } from './components/DevModeIcon';
+import { fetchJSON } from '@utils/network';
 
 const mapSettings = {
   defaultLongitude: 2.3,
@@ -198,9 +202,10 @@ const Map = ({
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
-  const [mapConfiguration, setMapConfiguration] = useState<MapConfiguration>(
-    initialMapConfiguration ?? defaultMapConfiguration
-  );
+  const [mapConfiguration, setMapConfiguration] =
+    useState<MaybeEmptyMapConfiguration>(
+      initialMapConfiguration ?? defaultMapConfiguration
+    );
 
   const [draw, setDraw] = useState<any>();
   const [drawing, setDrawing] = useState(false);
@@ -212,6 +217,16 @@ const Map = ({
   const [legendCollapsed, setLegendCollapsed] = useState(true);
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 992);
+
+    // amend the configuration with metadata limits of networks
+    fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then(
+      (limits) => {
+        mapConfiguration.reseauxDeChaleur.limits = limits;
+        setMapConfiguration({
+          ...mapConfiguration,
+        });
+      }
+    );
   }, []);
 
   // resize the map when the container renders
@@ -516,7 +531,11 @@ const Map = ({
 
   const onMapSourceData = (e: MapSourceDataEvent) => {
     const map = mapRef.current?.getMap();
-    if (mapState === 'loaded' || !map) {
+    if (
+      mapState === 'loaded' ||
+      !map ||
+      !isMapConfigurationInitialized(mapConfiguration)
+    ) {
       return;
     }
 
@@ -654,7 +673,7 @@ const Map = ({
     }
 
     const map = mapRef.current?.getMap();
-    if (map) {
+    if (map && isMapConfigurationInitialized(mapConfiguration)) {
       applyMapConfigurationToLayers(map, mapConfiguration);
     }
   }, [mapState, mapRef, mapConfiguration]);
@@ -714,7 +733,7 @@ const Map = ({
   }, [updateLocationURL, viewState, proMode]);
 
   const isRouterReady = useRouterReady();
-  if (!isRouterReady) {
+  if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {
     return null;
   }
 

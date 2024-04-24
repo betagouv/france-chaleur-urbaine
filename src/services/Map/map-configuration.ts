@@ -57,6 +57,12 @@ export type MapConfiguration = {
     emissionsCO2: Interval;
     prixMoyen: Interval;
     anneeConstruction: Interval;
+    limits: {
+      tauxENRR: Interval;
+      emissionsCO2: Interval;
+      prixMoyen: Interval;
+      anneeConstruction: Interval;
+    };
   } & Record<EnergieRatioConfKey, Interval>;
   reseauxDeFroid: boolean;
   reseauxEnConstruction: boolean;
@@ -95,14 +101,39 @@ export type MapConfiguration = {
   };
   caracteristiquesBatiments: boolean;
 };
+
+/**
+ * Map configuration qui doit être complétée dynamiquement avec les limites
+ * des réseaux de chaleur, afin de construire les limites pour les filtres.
+ */
+export type EmptyMapConfiguration = Omit<
+  MapConfiguration,
+  'reseauxDeChaleur'
+> & {
+  reseauxDeChaleur: Omit<MapConfiguration['reseauxDeChaleur'], 'limits'> & {
+    limits: null;
+  };
+};
+
+export type MaybeEmptyMapConfiguration =
+  | MapConfiguration
+  | EmptyMapConfiguration;
+
 export type MapConfigurationProperty = FlattenKeys<MapConfiguration>;
 
-export const percentageMaxInterval: Interval = [0, 100];
-export const emissionsCO2MaxInterval: Interval = [0, 400];
-export const prixMoyenMaxInterval: Interval = [0, 300];
-export const anneeConstructionMaxInterval: Interval = [1900, 2024];
+export function isMapConfigurationInitialized(
+  conf: MaybeEmptyMapConfiguration
+): conf is MapConfiguration {
+  return !!conf.reseauxDeChaleur.limits;
+}
 
-const emptyMapConfiguration: MapConfiguration = {
+export const percentageMaxInterval: Interval = [0, 100];
+export const defaultInterval: Interval = [
+  Number.MIN_SAFE_INTEGER,
+  Number.MAX_SAFE_INTEGER,
+];
+
+const emptyMapConfiguration: EmptyMapConfiguration = {
   proMode: false,
   filtreIdentifiantReseau: [],
   filtreGestionnaire: [],
@@ -118,9 +149,10 @@ const emptyMapConfiguration: MapConfiguration = {
     energie_ratio_gaz: percentageMaxInterval,
     energie_ratio_fioul: percentageMaxInterval,
     tauxENRR: percentageMaxInterval,
-    emissionsCO2: [0, 500],
-    prixMoyen: prixMoyenMaxInterval,
-    anneeConstruction: [1900, 2024],
+    emissionsCO2: defaultInterval,
+    prixMoyen: defaultInterval,
+    anneeConstruction: defaultInterval,
+    limits: null, // fetched dynamically from the API
   },
   reseauxDeFroid: false,
   reseauxEnConstruction: false,

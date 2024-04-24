@@ -23,11 +23,8 @@ import {
   MapConfiguration,
   MapConfigurationProperty,
   defaultMapConfiguration,
-  emissionsCO2MaxInterval,
   filtresEnergies,
   percentageMaxInterval,
-  anneeConstructionMaxInterval,
-  prixMoyenMaxInterval,
 } from 'src/services/Map/map-configuration';
 import { setProperty, toggleBoolean } from '@utils/core';
 import CollapsibleBox from '@components/ui/CollapsibleBox';
@@ -282,7 +279,7 @@ function SimpleMapLegend({
           <LegendSeparator />
           <RangeFilter
             label="Émissions de CO2"
-            domain={emissionsCO2MaxInterval}
+            domain={mapConfiguration.reseauxDeChaleur.limits.emissionsCO2}
             value={mapConfiguration.reseauxDeChaleur.emissionsCO2}
             onChange={(values) =>
               updateScaleInterval('reseauxDeChaleur.emissionsCO2', values)
@@ -293,7 +290,7 @@ function SimpleMapLegend({
           <LegendSeparator />
           <RangeFilter
             label="Prix moyen de la chaleur"
-            domain={prixMoyenMaxInterval}
+            domain={mapConfiguration.reseauxDeChaleur.limits.prixMoyen}
             value={mapConfiguration.reseauxDeChaleur.prixMoyen}
             onChange={(values) =>
               updateScaleInterval('reseauxDeChaleur.prixMoyen', values)
@@ -304,7 +301,7 @@ function SimpleMapLegend({
           <LegendSeparator />
           <RangeFilter
             label="Année de construction"
-            domain={anneeConstructionMaxInterval}
+            domain={mapConfiguration.reseauxDeChaleur.limits.anneeConstruction}
             value={mapConfiguration.reseauxDeChaleur.anneeConstruction}
             onChange={(values) =>
               updateScaleInterval('reseauxDeChaleur.anneeConstruction', values)
