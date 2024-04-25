@@ -274,8 +274,9 @@ export const updateUsers = async () => {
   );
 
   if (toDelete.length > 0) {
+    //Keep the user but inactive it
     const result = await db('users')
-      .update('active', true)
+      .update('active', false)
       .whereIn('email', toDelete)
       .whereNull('from_api');
     console.log(`${result} email(s) deleted`);
