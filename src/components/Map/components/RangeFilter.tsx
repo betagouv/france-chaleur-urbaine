@@ -30,7 +30,7 @@ const RangeFilter = ({
   return (
     <Box mx="1w" position="relative" {...props}>
       <Box display="flex" alignItems="center" mt="1w">
-        <Text lineHeight="18px" fontWeight="bold" mr="1w">
+        <Text size="sm" lineHeight="18px" fontWeight="bold" mr="1w">
           {label}
         </Text>
 

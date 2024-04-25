@@ -184,7 +184,7 @@ function SimpleMapLegend({
           </Text>
 
           <Box mx="1w">
-            <Text lineHeight="18px" fontWeight="bold" my="1w">
+            <Text size="sm" lineHeight="18px" fontWeight="bold" my="1w">
               Énergie majoritaire
             </Text>
             <Select
