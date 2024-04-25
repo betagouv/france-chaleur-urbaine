@@ -286,7 +286,20 @@ const Manager = () => {
     },
     {
       name: 'Adresse',
-      label: 'Adresse',
+      label: (
+        <>
+          Adresse
+          <HoverableIcon
+            iconName="ri-information-fill"
+            position="bottom"
+            iconSize="lg"
+          >
+            La mention “PDP" est indiquée pour les adresses situées dans le
+            périmètre de développement prioritaire d’un réseau classé (connu par
+            France Chaleur Urbaine).
+          </HoverableIcon>
+        </>
+      ),
       render: (demand) => <Addresse demand={demand} />,
     },
     {
