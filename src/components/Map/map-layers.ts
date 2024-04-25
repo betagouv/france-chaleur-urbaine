@@ -741,7 +741,7 @@ export function buildMapLayers(
         {
           id: 'reseauxDeChaleur-avec-trace',
           source: 'network',
-          'source-layer': 'layer', // FIXME voir si on conserve la layer 'outline' d'origine
+          'source-layer': 'layer',
           minzoom: tileLayersMinZoom,
           ...outlineLayerStyle,
           filter: [
@@ -755,7 +755,7 @@ export function buildMapLayers(
         {
           id: 'reseauxDeChaleur-sans-trace',
           source: 'network',
-          'source-layer': 'layer', // FIXME voir si on conserve la layer 'outline' d'origine
+          'source-layer': 'layer',
           minzoom: tileLayersMinZoom,
           ...outlineCenterLayerStyle,
           filter: [

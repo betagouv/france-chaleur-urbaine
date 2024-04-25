@@ -98,8 +98,7 @@ export const tilesInfo: Record<SourceId, TileInfo> = {
   network: {
     source: 'database',
     table: 'reseaux_de_chaleur',
-    // tiles: 'reseaux_de_chaleur_tiles',
-    tiles: 'reseaux_de_chaleur_tiles_pr_filtres', // DEBUG
+    tiles: 'reseaux_de_chaleur_tiles',
     airtable: Airtable.NETWORKS,
     id: 'id_fcu',
     extraWhere: (query) => query,
