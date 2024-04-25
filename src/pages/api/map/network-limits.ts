@@ -13,7 +13,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       ),
       db.raw(`array[floor(min("PM")), ceil(max("PM"))] as "prixMoyen"`),
       db.raw(
-        `array[min("annee_creation"), max("annee_creation")] as "anneeConstruction"`
+        `array[min("annee_creation"), extract(year from now())] as "anneeConstruction"` // max = année courante pour indiquer qu'on a des données récentes
       )
     )
     .first();
