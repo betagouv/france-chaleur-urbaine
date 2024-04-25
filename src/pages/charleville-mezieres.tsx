@@ -7,7 +7,9 @@ const CharlevilleMezieresMap = () => {
     <IframeWrapper>
       <Map
         initialMapConfiguration={createMapConfiguration({
-          reseauxDeChaleur: true,
+          reseauxDeChaleur: {
+            show: true,
+          },
           reseauxEnConstruction: true,
         })}
         enabledLegendFeatures={['reseauxDeChaleur', 'reseauxEnConstruction']}

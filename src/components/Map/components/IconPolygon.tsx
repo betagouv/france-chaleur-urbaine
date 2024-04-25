@@ -25,7 +25,7 @@ const IconPolygon = ({
       <path
         fill={`${stroke}${ratioToHex(fillOpacity)}`}
         stroke={stroke}
-        stroke-width="3"
+        strokeWidth="3"
         d="m2 2 22 10v11H2V2Z"
       />
     </svg>

@@ -8,7 +8,7 @@ import { NetworkContainer, NetworkColumn } from './Networks.styles';
 import Slice from '@components/Slice';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
-type NetworskData = {
+type NetworksData = {
   isClassed: boolean;
   identifiant?: string;
   heatedPlaces?: string;
@@ -20,7 +20,7 @@ const Networks = ({
   network,
   cityCoord,
 }: {
-  networksData: NetworskData;
+  networksData: NetworksData;
   network?: Network;
   cityCoord: [number, number];
 }) => {
@@ -88,17 +88,13 @@ const Networks = ({
           initialCenter={cityCoord}
           initialZoom={11}
           initialMapConfiguration={createMapConfiguration({
-            reseauxDeChaleur: true,
+            reseauxDeChaleur: {
+              show: true,
+            },
+            filtreIdentifiantReseau: networksData.identifiant
+              ? [networksData.identifiant]
+              : [],
           })}
-          filter={
-            network
-              ? [
-                  '==',
-                  ['get', 'Identifiant reseau'],
-                  network?.['Identifiant reseau'],
-                ]
-              : ['literal', true]
-          }
         />
       </NetworkColumn>
     </NetworkContainer>

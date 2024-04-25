@@ -5,14 +5,6 @@ import { Fragment } from 'react';
 // *******************************************************
 // RAIL
 // *******************************************************
-const railOuterStyle = {
-  position: 'absolute',
-  width: '100%',
-  height: 21,
-  transform: 'translate(0%, -50%)',
-  borderRadius: 7,
-  cursor: 'pointer',
-};
 
 const railInnerStyle = {
   position: 'absolute',
@@ -25,12 +17,7 @@ const railInnerStyle = {
 };
 
 export function SliderRail({ getRailProps }) {
-  return (
-    <Fragment>
-      <div style={railOuterStyle} {...getRailProps()} />
-      <div style={railInnerStyle} />
-    </Fragment>
-  );
+  return <div style={railInnerStyle} {...getRailProps()} />;
 }
 
 SliderRail.propTypes = {

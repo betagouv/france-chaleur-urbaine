@@ -113,6 +113,8 @@ export const tilesInfo: Record<SourceId, TileInfo> = {
       'livraisons_totale_MWh',
       'nb_pdl',
       'has_trace',
+      'PM',
+      'annee_creation',
     ],
     sourceLayer: 'outline',
   },

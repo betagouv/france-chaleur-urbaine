@@ -45,12 +45,14 @@ const MapPage = () => {
         .split(',')
         .map((f) => legendURLKeyToLegendFeature[f])
         .filter((v) => !!v)
-    : undefined;
+    : [];
 
   // uniquement pour ces 2 couches, on les affiche directement si affichées dans la légende
   const initialMapConfiguration = createMapConfiguration({
-    reseauxDeChaleur: legendFeatures?.includes('reseauxDeChaleur'),
-    reseauxEnConstruction: legendFeatures?.includes('reseauxEnConstruction'),
+    reseauxDeChaleur: {
+      show: legendFeatures.includes('reseauxDeChaleur'),
+    },
+    reseauxEnConstruction: legendFeatures.includes('reseauxEnConstruction'),
   });
 
   return (

@@ -1,4 +1,4 @@
-import Network from '@components/Network/Network';
+import NetworkPanel from '@components/Network/Network';
 import Slice from '@components/Slice/Slice';
 import SimplePage from '@components/shared/page/SimplePage';
 import {
@@ -8,6 +8,7 @@ import {
 import { Breadcrumb, BreadcrumbItem } from '@dataesr/react-dsfr';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
+import { Network } from 'src/types/Summary/Network';
 
 const PageReseau = ({ network }: { network: Network }) => {
   if (!network) {
@@ -26,7 +27,7 @@ const PageReseau = ({ network }: { network: Network }) => {
         </Breadcrumb>
       </Slice>
       <Slice className="fr-mb-4w">
-        <Network network={network} />
+        <NetworkPanel network={network} />
       </Slice>
     </SimplePage>
   );

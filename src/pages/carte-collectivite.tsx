@@ -7,7 +7,9 @@ const CollectivityMap = () => {
     <IframeWrapper>
       <Map
         initialMapConfiguration={createMapConfiguration({
-          reseauxDeChaleur: true,
+          reseauxDeChaleur: {
+            show: true,
+          },
           zonesDeDeveloppementPrioritaire: true,
         })}
         enabledLegendFeatures={[

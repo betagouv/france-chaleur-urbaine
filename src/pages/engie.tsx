@@ -1,13 +1,18 @@
 import IframeWrapper from '@components/IframeWrapper';
 import Map from '@components/Map/Map';
-import { iframeSimpleMapConfiguration } from 'src/services/Map/map-configuration';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { MapPopupType } from 'src/types/MapComponentsInfos';
 
 const EngieMap = () => {
   return (
     <IframeWrapper>
       <Map
-        initialMapConfiguration={iframeSimpleMapConfiguration}
+        initialMapConfiguration={createMapConfiguration({
+          reseauxDeChaleur: {
+            show: true,
+          },
+          filtreGestionnaire: ['engie'],
+        })}
         enabledLegendFeatures={[
           'reseauxDeChaleur',
           'reseauxDeFroid',
@@ -22,19 +27,6 @@ const EngieMap = () => {
           alt: 'logo ENGIE',
         }}
         popupType={MapPopupType.ENGIE}
-        filter={[
-          'any',
-          [
-            'in',
-            'engie',
-            ['downcase', ['coalesce', ['get', 'gestionnaire'], '']],
-          ],
-          [
-            'in',
-            'engie',
-            ['downcase', ['coalesce', ['get', 'Gestionnaire'], '']],
-          ],
-        ]}
         withFCUAttribution
       />
     </IframeWrapper>

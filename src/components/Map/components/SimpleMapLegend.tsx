@@ -4,7 +4,7 @@ import ModalCarteFrance from './ModalCarteFrance';
 import Text from '@components/ui/Text';
 import { trackEvent } from 'src/services/analytics';
 import Image from 'next/image';
-import { Button } from '@dataesr/react-dsfr';
+import { Button, Select } from '@dataesr/react-dsfr';
 import Link from '@components/ui/Link';
 import Icon from '@components/ui/Icon';
 import { LegendSeparator } from '../Map.style';
@@ -23,6 +23,8 @@ import {
   MapConfiguration,
   MapConfigurationProperty,
   defaultMapConfiguration,
+  filtresEnergies,
+  percentageMaxInterval,
 } from 'src/services/Map/map-configuration';
 import { setProperty, toggleBoolean } from '@utils/core';
 import CollapsibleBox from '@components/ui/CollapsibleBox';
@@ -46,6 +48,8 @@ import {
   themeDefZonePotentielChaud,
   themeDefZonePotentielFortChaud,
 } from 'src/services/Map/businessRules/zonePotentielChaud';
+import DevModeIcon from './DevModeIcon';
+import RangeFilter from './RangeFilter';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -79,6 +83,8 @@ interface SimpleMapLegendProps {
 }
 
 const expansions = [
+  'reseauxDeChaleur',
+  'reseauxDeChaleurEnergies',
   'consommationsGaz',
   'batimentsGazCollectif',
   'batimentsFioulCollectif',
@@ -138,24 +144,178 @@ function SimpleMapLegend({
 
   return (
     <>
-      <Text fontSize="14px" lineHeight="18px" fontWeight="bold" mx="2w">
-        {legendTitle || 'Réseaux de chaleur et de froid'}
-      </Text>
+      <Box display="flex" alignItems="center">
+        <Text
+          fontSize="14px"
+          lineHeight="18px"
+          fontWeight="bold"
+          ml="1w"
+          className="fr-col"
+        >
+          {legendTitle || 'Réseaux de chaleur et de froid'}
+        </Text>
+
+        <Button
+          className="fr-px-1w"
+          hasBorder={false}
+          size="sm"
+          onClick={() => toggleSectionExpansion('reseauxDeChaleur')}
+          title="Afficher/Masquer le détail"
+        >
+          <Icon size="lg" name="ri-equalizer-line" />
+        </Button>
+      </Box>
       <Text
         fontSize="13px"
         lineHeight="18px"
         fontWeight="lightbold"
         fontStyle="italic"
-        mx="2w"
+        mx="1w"
       >
         Cliquez sur un réseau pour connaître ses caractéristiques
       </Text>
+
+      <CollapsibleBox expand={!!sectionsExpansions['reseauxDeChaleur']}>
+        <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
+          <LegendSeparator />
+          <Text size="xs" lineHeight="15px" fontStyle="italic" mx="1w">
+            Filtres uniquement sur les réseaux de chaleur existants, pour
+            lesquels les données sont disponibles.
+          </Text>
+
+          <Box mx="1w">
+            <Text size="sm" lineHeight="18px" fontWeight="bold" my="1w">
+              Énergie majoritaire
+            </Text>
+            <Select
+              selected={mapConfiguration.reseauxDeChaleur.energieMajoritaire}
+              options={[
+                {
+                  label: "Type d'énergie",
+                  value: '',
+                },
+                ...filtresEnergies.map(({ label, confKey }) => ({
+                  label,
+                  value: confKey,
+                })),
+              ]}
+              onChange={(e) => {
+                mapConfiguration.reseauxDeChaleur.energieMajoritaire =
+                  e.target.value === '' ? undefined : e.target.value;
+                onMapConfigurationChange({ ...mapConfiguration });
+              }}
+            />
+          </Box>
+
+          {!sectionsExpansions['reseauxDeChaleurEnergies'] && (
+            <Button
+              className="d-block fr-ml-auto fr-mr-1w fr-px-1w"
+              hasBorder={false}
+              size="sm"
+              onClick={() => toggleSectionExpansion('reseauxDeChaleurEnergies')}
+              title="Afficher plus de détail"
+            >
+              Plus d'options
+            </Button>
+          )}
+
+          <CollapsibleBox
+            expand={!!sectionsExpansions['reseauxDeChaleurEnergies']}
+          >
+            <Box
+              backgroundColor="grey-975-75"
+              borderRadius="10px"
+              mt="1w"
+              mx="1w"
+              pt="1w"
+            >
+              <Button
+                className="d-block fr-ml-auto"
+                hasBorder={false}
+                size="sm"
+                onClick={() =>
+                  toggleSectionExpansion('reseauxDeChaleurEnergies')
+                }
+                title="Masquer le détail"
+              >
+                <Icon size="lg" name="ri-close-line" />
+              </Button>
+              <DeactivatableBox
+                disabled={!mapConfiguration.reseauxDeChaleur.show}
+              >
+                {filtresEnergies.map((filtreEnergie) => (
+                  <RangeFilter
+                    key={filtreEnergie.confKey}
+                    label={filtreEnergie.label}
+                    domain={percentageMaxInterval}
+                    value={
+                      mapConfiguration.reseauxDeChaleur[
+                        `energie_ratio_${filtreEnergie.confKey}`
+                      ]
+                    }
+                    onChange={(values) =>
+                      updateScaleInterval(
+                        `reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`,
+                        values
+                      )
+                    }
+                    unit="%"
+                  />
+                ))}
+              </DeactivatableBox>
+            </Box>
+          </CollapsibleBox>
+
+          <LegendSeparator />
+          <RangeFilter
+            label="Taux d’EnR&R"
+            domain={percentageMaxInterval}
+            value={mapConfiguration.reseauxDeChaleur.tauxENRR}
+            onChange={(values) =>
+              updateScaleInterval('reseauxDeChaleur.tauxENRR', values)
+            }
+            unit="%"
+          />
+          <LegendSeparator />
+          <RangeFilter
+            label="Émissions de CO2"
+            domain={mapConfiguration.reseauxDeChaleur.limits.emissionsCO2}
+            value={mapConfiguration.reseauxDeChaleur.emissionsCO2}
+            onChange={(values) =>
+              updateScaleInterval('reseauxDeChaleur.emissionsCO2', values)
+            }
+            unit="gCO2/kWh"
+            tooltip="Émissions en analyse du cycle de vie (directes et indirectes)"
+          />
+          <LegendSeparator />
+          <RangeFilter
+            label="Prix moyen de la chaleur"
+            domain={mapConfiguration.reseauxDeChaleur.limits.prixMoyen}
+            value={mapConfiguration.reseauxDeChaleur.prixMoyen}
+            onChange={(values) =>
+              updateScaleInterval('reseauxDeChaleur.prixMoyen', values)
+            }
+            unit="€TTC/MWh"
+            tooltip="La comparaison avec le prix d'autres modes de chauffage n’est pertinente qu’en coût global annuel, en intégrant les coûts d’exploitation, de maintenance et d’investissement, amortis sur la durée de vie des installations."
+          />
+          <LegendSeparator />
+          <RangeFilter
+            label="Année de construction"
+            domain={mapConfiguration.reseauxDeChaleur.limits.anneeConstruction}
+            value={mapConfiguration.reseauxDeChaleur.anneeConstruction}
+            onChange={(values) =>
+              updateScaleInterval('reseauxDeChaleur.anneeConstruction', values)
+            }
+          />
+        </DeactivatableBox>
+        <LegendSeparator />
+      </CollapsibleBox>
 
       {enabledFeatures.includes('reseauxDeChaleur') && (
         <Box display="flex">
           <SingleCheckbox
             id="reseauxDeChaleur"
-            checked={mapConfiguration.reseauxDeChaleur}
+            checked={mapConfiguration.reseauxDeChaleur.show}
             onChange={() => toggleLayer('reseauxDeChaleur')}
             trackingEvent="Carto|Réseaux chaleur"
           />
@@ -1412,7 +1572,14 @@ function SimpleMapLegend({
       {enabledFeatures.includes('sources') && (
         <>
           <LegendSeparator />
-          <Box mt="n2w" mx="2w" mb="2w">
+          <Box
+            mt="n2w"
+            mx="2w"
+            mb="2w"
+            display="flex"
+            alignItems="center"
+            gap="16px"
+          >
             <Link
               href="/documentation/carto_sources.pdf"
               isExternal
@@ -1422,6 +1589,7 @@ function SimpleMapLegend({
                 Sources
               </Text>
             </Link>
+            <DevModeIcon />
           </Box>
         </>
       )}

@@ -1,7 +1,6 @@
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
 import { getConso } from 'src/services/Map/conso';
-import { Network } from 'src/types/Summary/Network';
 import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
 import {
@@ -19,6 +18,7 @@ import EnergiesChart from './EnergiesChart';
 import Text from '@components/ui/Text';
 import Link from 'next/link';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { Network } from 'src/types/Summary/Network';
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://')
@@ -44,7 +44,7 @@ const hasSecondColumn = (isCold: boolean, displayBlocks?: string[]) => {
   );
 };
 
-const Network = ({
+const NetworkPanel = ({
   network,
   displayBlocks,
   externalLinks,
@@ -492,7 +492,10 @@ const Network = ({
                   initialCenter={[network.lon, network.lat]}
                   initialZoom={13}
                   initialMapConfiguration={createMapConfiguration({
-                    reseauxDeChaleur: true,
+                    reseauxDeChaleur: {
+                      show: true,
+                    },
+                    filtreIdentifiantReseau: [network['Identifiant reseau']],
                     reseauxDeFroid: true,
                   })}
                 />
@@ -561,4 +564,4 @@ const Network = ({
   );
 };
 
-export default Network;
+export default NetworkPanel;
