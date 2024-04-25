@@ -22,6 +22,15 @@ export default function CollapsibleBox({
     }
   }, [boxRef]);
 
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    if (loaded && !expand) {
+      // recalculate the container height in case it had changed before collapsing it
+      setHeight(`-${boxRef.current?.getBoundingClientRect().height}px`);
+    }
+    setLoaded(true);
+  }, [expand]);
+
   // hack to try to hide the initial expanded state
   const [classes, setClasses] = useState('initial-collapsed-state');
   useEffect(() => {
