@@ -91,8 +91,8 @@ const Networks = ({
             reseauxDeChaleur: {
               show: true,
             },
-            filtreIdentifiantReseau: network
-              ? [network['Identifiant reseau']] // FIXME peut-être prendre networksData.identifiant aussi ?
+            filtreIdentifiantReseau: networksData.identifiant
+              ? [networksData.identifiant]
               : [],
           })}
         />
