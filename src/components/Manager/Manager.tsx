@@ -293,6 +293,7 @@ const Manager = () => {
             iconName="ri-information-fill"
             position="bottom"
             iconSize="lg"
+            top="0px"
           >
             La mention “PDP" est indiquée pour les adresses situées dans le
             périmètre de développement prioritaire d’un réseau classé (connu par
