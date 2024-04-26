@@ -274,7 +274,7 @@ export const updateUsers = async () => {
   );
 
   if (toDelete.length > 0) {
-    //Keep the user but inactive it
+    //Keep the user but deactivate it
     const result = await db('users')
       .update('active', false)
       .whereIn('email', toDelete)
