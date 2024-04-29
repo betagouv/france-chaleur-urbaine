@@ -347,6 +347,7 @@ const Manager = () => {
             iconName="ri-information-fill"
             position="bottom-centered"
             iconSize="lg"
+            top="0px"
           >
             Distance à vol d'oiseau
           </HoverableIcon>
@@ -403,6 +404,7 @@ const Manager = () => {
             iconName="ri-information-fill"
             position="bottom"
             iconSize="lg"
+            top="0px"
           >
             "Non affecté" : demande éloignée du réseau non transmise aux
             opérateurs
