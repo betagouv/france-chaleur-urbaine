@@ -615,8 +615,8 @@ function SimpleMapLegend({
           <LegendSeparator />
           <Box textAlign="center">
             <PotentielsRaccordementButton
-              secondary
-              size="sm"
+              priority="secondary"
+              size="small"
               className="fr-mx-auto"
               onClick={() => {
                 trackEvent('Carto|ouverture popup potentiels de raccordement');

@@ -37,7 +37,7 @@
     "prebuild": "only-include-used-icons"
   },
   "dependencies": {
-    "@codegouvfr/react-dsfr": "^1.9.2",
+    "@codegouvfr/react-dsfr": "^1.9.9",
     "@commander-js/extra-typings": "^11.1.0",
     "@faker-js/faker": "^8.0.2",
     "@mapbox/mapbox-gl-draw": "^1.4.3",

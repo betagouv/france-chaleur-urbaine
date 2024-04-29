@@ -4,14 +4,9 @@ import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import LoadingButton from '@components/ui/LoadingButton';
 import Text from '@components/ui/Text';
-import {
-  Alert,
-  Button,
-  Icon,
-  Radio,
-  RadioGroup,
-  TextInput,
-} from '@codegouvfr/react-dsfr';
+import { Icon, Radio, RadioGroup, TextInput } from '@codegouvfr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { ModificationReseau } from '@pages/api/modification-reseau';
 import { NetworkSearchResult } from '@pages/api/networks/search';
 import { postFetchJSON } from '@utils/network';
@@ -230,7 +225,7 @@ function ModifierReseauxPage() {
 
         {formSent ? (
           <Alert
-            type="success"
+            severity="success"
             title="Merci pour votre contribution"
             description="Nous reviendrons rapidement vers vous pour vous confirmer la bonne prise en compte des éléments transmis."
           />
@@ -389,7 +384,7 @@ function ModifierReseauxPage() {
             <div className="fr-grid-row fr-grid-row--top">
               <Button
                 onClick={() => fileUploadInputRef.current!.click()}
-                secondary
+                priority="secondary"
               >
                 Choisir un fichier
               </Button>
