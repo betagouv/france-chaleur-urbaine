@@ -1,4 +1,4 @@
-import { Highlight } from '@codegouvfr/react-dsfr';
+import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import { Source, Subtitle } from './Contents.styles';
 
 const Actors = () => {
