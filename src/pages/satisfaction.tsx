@@ -1,6 +1,7 @@
 import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
-import { Alert, Button, TextInput } from '@codegouvfr/react-dsfr';
+import { Button, TextInput } from '@codegouvfr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { submitToAirtable } from '@helpers/airtable';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
@@ -57,7 +58,7 @@ function Satisfaction() {
           </>
         )}
         {sent ? (
-          <Alert type="success" title="Merci pour votre retour." />
+          <Alert severity="success" title="Merci pour votre retour." />
         ) : (
           <form onSubmit={send}>
             <TextInput

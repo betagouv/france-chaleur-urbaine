@@ -1,4 +1,5 @@
-import { Alert, Button, File, TextInput } from '@codegouvfr/react-dsfr';
+import { Button, File, TextInput } from '@codegouvfr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useServices } from 'src/services';
 import { Container } from './BulkEligibilityForm.styles';
@@ -50,7 +51,7 @@ const BulkEligibilityForm = () => {
     <Container>
       {sent ? (
         <Alert
-          type="success"
+          severity="success"
           title="Fichier bien reçu"
           description="Le résultat vous sera envoyé par mail (pensez à vérifier vos spams)."
         />

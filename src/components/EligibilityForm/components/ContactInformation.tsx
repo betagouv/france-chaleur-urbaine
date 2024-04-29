@@ -1,6 +1,6 @@
 import Input from '@components/shared/input';
 import RadioGroup from '@components/shared/RadioGroup';
-import { Alert } from '@codegouvfr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Field, useFormikContext } from 'formik';
 import styled from 'styled-components';
 import * as Yup from 'yup';
@@ -106,7 +106,7 @@ const ContactInformation = ({
         city !== 'Charleville-Mézières' && (
           <Alert
             className="fr-mt-2w"
-            type="warning"
+            severity="warning"
             small
             description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
           />

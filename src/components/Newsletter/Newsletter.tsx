@@ -1,4 +1,5 @@
-import { Alert, Button } from '@codegouvfr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { submitToAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
@@ -21,7 +22,7 @@ const Newsletter = () => {
     <Container onSubmit={addToNewsletter}>
       {sent ? (
         <Alert
-          type="success"
+          severity="success"
           title="Vous recevrez désormais notre newsletter. Pensez à vérifier vos spams."
         />
       ) : (

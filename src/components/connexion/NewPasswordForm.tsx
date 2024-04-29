@@ -56,8 +56,8 @@ const NewPasswordForm = ({ token }: { token: string }) => {
         value={confirmation}
         onChange={(e) => setConfirmation(e.target.value)}
       />
-      {error && <PasswordAlert type="error" title={error} />}
-      {fail && <PasswordAlert type="error" title={fail} />}
+      {error && <PasswordAlert severity="error" title={error} />}
+      {fail && <PasswordAlert severity="error" title={fail} />}
       <Button submit>Changer mon mot de passe</Button>
     </Container>
   );

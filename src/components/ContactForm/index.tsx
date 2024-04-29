@@ -1,4 +1,5 @@
-import { Alert, Button, Select, TextInput } from '@codegouvfr/react-dsfr';
+import { Button, Select, TextInput } from '@codegouvfr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { submitToAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { Airtable } from 'src/types/enum/Airtable';
@@ -32,7 +33,7 @@ const ContactForm = () => {
     <>
       {sent ? (
         <Alert
-          type="success"
+          severity="success"
           title="Merci pour votre message"
           description="Nous reviendrons rapidement vers vous."
         />
