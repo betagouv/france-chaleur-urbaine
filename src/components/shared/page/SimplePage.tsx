@@ -69,12 +69,6 @@ const SimplePage = (props: SimplePageProps) => {
 
 export default SimplePage;
 
-type NavigationItem = {
-  title: string;
-  href?: string;
-  children?: NavigationItem[];
-};
-
 const publicNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Copropriétaires',
@@ -118,35 +112,49 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
     ],
   },
   {
-    title: 'Professionnels',
-    children: [
+    text: 'Professionnels',
+    menuLinks: [
       {
-        title: 'Nos services pour les professionnels',
-        href: '/professionnels',
+        text: 'Nos services pour les professionnels',
+        linkProps: {
+          href: '/professionnels',
+        },
       },
       {
-        title: 'Les avantages du chauffage urbain',
-        href: '/professionnels#avantages-du-chauffage-urbain',
+        text: 'Les avantages du chauffage urbain',
+        linkProps: {
+          href: '/professionnels#avantages-du-chauffage-urbain',
+        },
       },
       {
-        title: 'Testez une liste d’adresses',
-        href: '/professionnels#test-liste',
+        text: 'Testez une liste d’adresses',
+        linkProps: {
+          href: '/professionnels#test-liste',
+        },
       },
       {
-        title: 'Les coûts du chauffage urbain',
-        href: '/professionnels#simulateur-aide',
+        text: 'Les coûts du chauffage urbain',
+        linkProps: {
+          href: '/professionnels#simulateur-aide',
+        },
       },
       {
-        title: 'Le décret tertiaire',
-        href: '/professionnels#decrettertiaire',
+        text: 'Le décret tertiaire',
+        linkProps: {
+          href: '/professionnels#decrettertiaire',
+        },
       },
       {
-        title: 'Les obligations de raccordement',
-        href: '/professionnels#obligations-de-raccordement',
+        text: 'Les obligations de raccordement',
+        linkProps: {
+          href: '/professionnels#obligations-de-raccordement',
+        },
       },
       {
-        title: 'Simulateur d’émissions de CO2',
-        href: '/professionnels#simulateur-co2',
+        text: 'Simulateur d’émissions de CO2',
+        linkProps: {
+          href: '/professionnels#simulateur-co2',
+        },
       },
     ],
   },
@@ -186,28 +194,37 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
     },
   },
   {
-    title: 'Ressources',
-    href: '/ressources',
-    children: [
+    text: 'Ressources',
+    menuLinks: [
       {
-        title: 'Nos actualités',
-        href: '/actus',
+        text: 'Nos actualités',
+        linkProps: {
+          href: '/actus',
+        },
       },
       {
-        title: 'Nos articles sur le chauffage urbain',
-        href: '/ressources/articles',
+        text: 'Nos articles sur le chauffage urbain',
+        linkProps: {
+          href: '/ressources/articles',
+        },
       },
       {
-        title: 'Nos supports pédagogiques',
-        href: '/ressources/supports',
+        text: 'Nos supports pédagogiques',
+        linkProps: {
+          href: '/ressources/supports',
+        },
       },
       {
-        title: 'Nos actions de communication',
-        href: '/ressources/actions-de-communication',
+        text: 'Nos actions de communication',
+        linkProps: {
+          href: '/ressources/actions-de-communication',
+        },
       },
       {
-        title: 'Nos outils',
-        href: '/ressources/outils',
+        text: 'Nos outils',
+        linkProps: {
+          href: '/ressources/outils',
+        },
       },
     ],
   },
