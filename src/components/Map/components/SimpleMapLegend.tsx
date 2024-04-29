@@ -316,7 +316,7 @@ function SimpleMapLegend({
           <SingleCheckbox
             id="reseauxDeChaleur"
             checked={mapConfiguration.reseauxDeChaleur.show}
-            onChange={() => toggleLayer('reseauxDeChaleur')}
+            onChange={() => toggleLayer('reseauxDeChaleur.show')}
             trackingEvent="Carto|Réseaux chaleur"
           />
 
