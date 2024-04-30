@@ -1,9 +1,13 @@
-# Identifier les gisements de chaleur fatale
+# Des données à jour et facilement accessibles
 
-❓ Où se situent les gisements de chaleur fatale mobilisables pour les réseaux de chaleur ? Si la récupération de la chaleur fatale constitue un enjeu majeur pour verdir les réseaux, encore faut-il pouvoir identifier où elle est disponible.\
+📊 Il est primordial de simplifier l'accès aux données pour accompagner le développement des réseaux de chaleur, et France Chaleur Urbaine met tout en œuvre en ce sens depuis son lancement !\
 \
-🗺 Dans le cadre du projet [EnRezo](https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo), le Cerema propose une première cartographie d'installations : unités d'incinération des ordures ménagères, sites industriels, stations d'épuration, datacenters, installations électrogènes...\
+📢 Nos actualités sur ce sujet ?\
 \
-👉 Vous pouvez désormais également retrouver ces informations sur la [cartographie France Chaleur Urbaine](https://france-chaleur-urbaine.beta.gouv.fr/carte) ! Elles seront progressivement enrichies grâce aux travaux que poursuit le Cerema, en lien avec ses différents partenaires.\
+✅ les fiches par réseau accessibles depuis notre [cartographie](https://france-chaleur-urbaine.beta.gouv.fr/carte) ont été mises à jour avec les données portant sur l'année 2022 : elles permettent un accès facile aux caractéristiques techniques des réseaux, mais aussi à des informations tarifaires pour les réseaux classés. Merci à la FEDENE et à l'Association Amorce pour le partage de ces données, collectées dans le cadre de l'[enquête annuelle](https://fedene.fr/lenquete-2023-sur-les-reseaux-de-chaleur-froid-en-france/) réalisée sous tutelle du SDES. A noter que la rubrique "Performances environnementales" sera actualisée dès publication du nouvel arrêté DPE.\
 \
-Accompagner le développement des réseaux de chaleur en simplifiant l'accès à la donnée est l'une des missions de France Chaleur Urbaine, et cette nouvelle intégration y contribue !
+✅ les tracés des réseaux et notre test d'adresse sont désormais accessibles via une api, en ligne sur le site [api.gouv.fr](http://api.gouv.fr/). Une nouvelle avancée pour faciliter leur réutilisation !\
+
+
+Lien vers l'api :\
+[https://api.gouv.fr/les-api/api-france-chaleur-urbaine](https://api.gouv.fr/les-api/api-france-chaleur-urbaine)
