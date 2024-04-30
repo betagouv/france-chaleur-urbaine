@@ -1,6 +1,8 @@
 # Table of contents
 
-* [Des données à jour et facilement accessibles](README.md)
+* [Des données en open data enrichies](README.md)
+* [Deux idées reçues sur l'énergie solaire](deux-idees-recues-sur-lenergie-solaire.md)
+* [Des données à jour et facilement accessibles](<README (26).md>)
 * [Deux idées reçues sur la géothermie](deux-idees-recues-sur-la-geothermie.md)
 * [Identifier les gisements de chaleur fatale](<README (25).md>)
 * [Les chaudières biomasse ne contribuent pas à la déforestation](<README (24).md>)
