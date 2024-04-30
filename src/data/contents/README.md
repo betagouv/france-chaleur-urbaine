@@ -1,7 +1,9 @@
-# Les chaudières biomasse ne contribuent pas à la déforestation
+# Identifier les gisements de chaleur fatale
 
-🌿 La biomasse fait souvent l'objet de débats... enflammés ! Peut-on vraiment la considérer comme une énergie renouvelable ? Y en aura-t-il assez pour tous les usages dans les prochaines années ? Est-elle vraiment locale ? Son utilisation en chaufferie ne contribue-t-elle pas au phénomène de déforestation ? C'est à cette dernière question que nous nous attaquons aujourd'hui, avec la seconde infographie de notre série sur les idées reçues.\
+❓ Où se situent les gisements de chaleur fatale mobilisables pour les réseaux de chaleur ? Si la récupération de la chaleur fatale constitue un enjeu majeur pour verdir les réseaux, encore faut-il pouvoir identifier où elle est disponible.\
 \
-🌳 Et la réponse est non ! L'usage de la biomasse par les réseaux de chaleur ne participe pas à la destruction de la forêt française, dont la surface s'étend chaque année. La forêt est en revanche affectée par d'autres phénomènes, conséquences du changement climatique : canicules, sécheresses, incendies... Pour limiter l'importance de ceux-ci, il est urgent de réduire nos émissions de gaz à effet de serre, ce à quoi les réseaux de chaleur contribuent.
-
-<figure><img src=".gitbook/assets/2.jpg" alt=""><figcaption></figcaption></figure>
+🗺 Dans le cadre du projet [EnRezo](https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo), le Cerema propose une première cartographie d'installations : unités d'incinération des ordures ménagères, sites industriels, stations d'épuration, datacenters, installations électrogènes...\
+\
+👉 Vous pouvez désormais également retrouver ces informations sur la [cartographie France Chaleur Urbaine](https://france-chaleur-urbaine.beta.gouv.fr/carte) ! Elles seront progressivement enrichies grâce aux travaux que poursuit le Cerema, en lien avec ses différents partenaires.\
+\
+Accompagner le développement des réseaux de chaleur en simplifiant l'accès à la donnée est l'une des missions de France Chaleur Urbaine, et cette nouvelle intégration y contribue !
