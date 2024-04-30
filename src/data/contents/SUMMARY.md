@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Page](README.md)
+* [Des filtres pour comparer les réseaux de chaleur](README.md)
+* [Un accès simplifié aux schémas directeurs des réseaux de chaleur](un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md)
 * [Identifier des zones d'implantation pour le solaire thermique](identifier-des-zones-dimplantation-pour-le-solaire-thermique.md)
 * [Un chauffage écologique et économique ? C'est possible !](un-chauffage-ecologique-et-economique-cest-possible.md)
 * [Des données en open data enrichies](des-donnees-en-open-data-enrichies.md)
