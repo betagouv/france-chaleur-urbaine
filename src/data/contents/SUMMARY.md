@@ -1,6 +1,9 @@
 # Table of contents
 
-* [Des données en open data enrichies](README.md)
+* [Page](README.md)
+* [Identifier des zones d'implantation pour le solaire thermique](identifier-des-zones-dimplantation-pour-le-solaire-thermique.md)
+* [Un chauffage écologique et économique ? C'est possible !](un-chauffage-ecologique-et-economique-cest-possible.md)
+* [Des données en open data enrichies](des-donnees-en-open-data-enrichies.md)
 * [Deux idées reçues sur l'énergie solaire](deux-idees-recues-sur-lenergie-solaire.md)
 * [Des données à jour et facilement accessibles](<README (26).md>)
 * [Deux idées reçues sur la géothermie](deux-idees-recues-sur-la-geothermie.md)
