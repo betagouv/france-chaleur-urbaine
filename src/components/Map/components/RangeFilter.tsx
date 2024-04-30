@@ -36,7 +36,7 @@ const RangeFilter = ({
 
         {tooltip && (
           <SimpleTooltip
-            icon={<Icon size="1x" name="ri-information-fill" cursor="help" />}
+            icon={<Icon size="1x" iconId="ri-information-fill" cursor="help" />}
           >
             {tooltip}
           </SimpleTooltip>

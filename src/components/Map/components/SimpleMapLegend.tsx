@@ -4,7 +4,8 @@ import ModalCarteFrance from './ModalCarteFrance';
 import Text from '@components/ui/Text';
 import { trackEvent } from 'src/services/analytics';
 import Image from 'next/image';
-import { Button, Select } from '@codegouvfr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Link from '@components/ui/Link';
 import Icon from '@components/ui/Icon';
 import { LegendSeparator } from '../Map.style';
@@ -25,6 +26,7 @@ import {
   defaultMapConfiguration,
   filtresEnergies,
   percentageMaxInterval,
+  FiltreEnergieConfKey,
 } from 'src/services/Map/map-configuration';
 import { setProperty, toggleBoolean } from '@utils/core';
 import CollapsibleBox from '@components/ui/CollapsibleBox';
@@ -157,8 +159,8 @@ function SimpleMapLegend({
 
         <Button
           className="fr-px-1w"
-          hasBorder={false}
-          size="sm"
+          priority="tertiary no outline"
+          size="small"
           onClick={() => toggleSectionExpansion('reseauxDeChaleur')}
           title="Afficher/Masquer le détail"
         >
@@ -187,8 +189,20 @@ function SimpleMapLegend({
             <Text size="sm" lineHeight="18px" fontWeight="bold" my="1w">
               Énergie majoritaire
             </Text>
+
             <Select
-              selected={mapConfiguration.reseauxDeChaleur.energieMajoritaire}
+              label=""
+              // placeholder="Select an options"
+              nativeSelectProps={{
+                value: mapConfiguration.reseauxDeChaleur.energieMajoritaire,
+                onChange: (e) => {
+                  mapConfiguration.reseauxDeChaleur.energieMajoritaire =
+                    e.target.value === ''
+                      ? undefined
+                      : (e.target.value as FiltreEnergieConfKey);
+                  onMapConfigurationChange({ ...mapConfiguration });
+                },
+              }}
               options={[
                 {
                   label: "Type d'énergie",
@@ -199,19 +213,14 @@ function SimpleMapLegend({
                   value: confKey,
                 })),
               ]}
-              onChange={(e) => {
-                mapConfiguration.reseauxDeChaleur.energieMajoritaire =
-                  e.target.value === '' ? undefined : e.target.value;
-                onMapConfigurationChange({ ...mapConfiguration });
-              }}
             />
           </Box>
 
           {!sectionsExpansions['reseauxDeChaleurEnergies'] && (
             <Button
               className="d-block fr-ml-auto fr-mr-1w fr-px-1w"
-              hasBorder={false}
-              size="sm"
+              priority="tertiary no outline"
+              size="small"
               onClick={() => toggleSectionExpansion('reseauxDeChaleurEnergies')}
               title="Afficher plus de détail"
             >
@@ -231,8 +240,8 @@ function SimpleMapLegend({
             >
               <Button
                 className="d-block fr-ml-auto"
-                hasBorder={false}
-                size="sm"
+                priority="tertiary no outline"
+                size="small"
                 onClick={() =>
                   toggleSectionExpansion('reseauxDeChaleurEnergies')
                 }
@@ -555,7 +564,7 @@ function SimpleMapLegend({
             mx="auto"
             mt="1w"
           >
-            <Icon name="ri-upload-2-line" size="lg" className="fr-mr-1w" />
+            <Icon name="ri-upload-2-line" size="lg" mr="1w" />
             Contribuer
           </Link>
           <Link
@@ -676,8 +685,8 @@ function SimpleMapLegend({
 
             <Button
               className="fr-px-1w"
-              hasBorder={false}
-              size="sm"
+              priority="tertiary no outline"
+              size="small"
               onClick={() => toggleSectionExpansion('consommationsGaz')}
               title="Afficher/Masquer le détail"
             >
@@ -848,8 +857,8 @@ function SimpleMapLegend({
 
             <Button
               className="fr-px-1w"
-              hasBorder={false}
-              size="sm"
+              priority="tertiary no outline"
+              size="small"
               onClick={() => toggleSectionExpansion('batimentsGazCollectif')}
               title="Afficher/Masquer le détail"
             >
@@ -926,8 +935,8 @@ function SimpleMapLegend({
 
             <Button
               className="fr-px-1w"
-              hasBorder={false}
-              size="sm"
+              priority="tertiary no outline"
+              size="small"
               onClick={() => toggleSectionExpansion('batimentsFioulCollectif')}
               title="Afficher/Masquer le détail"
             >
@@ -1058,8 +1067,8 @@ function SimpleMapLegend({
 
             <Button
               className="fr-px-1w"
-              hasBorder={false}
-              size="sm"
+              priority="tertiary no outline"
+              size="small"
               onClick={() => toggleSectionExpansion('zonesOpportunite')}
               title="Afficher/Masquer le détail"
             >
@@ -1198,8 +1207,8 @@ function SimpleMapLegend({
 
             <Button
               className="fr-px-1w"
-              hasBorder={false}
-              size="sm"
+              priority="tertiary no outline"
+              size="small"
               onClick={() => toggleSectionExpansion('enrrMobilisables')}
               title="Afficher/Masquer le détail"
             >
@@ -1514,8 +1523,8 @@ function SimpleMapLegend({
 
             <Button
               className="fr-px-1w"
-              hasBorder={false}
-              size="sm"
+              priority="tertiary no outline"
+              size="small"
               onClick={() =>
                 toggleSectionExpansion('caracteristiquesBatiments')
               }

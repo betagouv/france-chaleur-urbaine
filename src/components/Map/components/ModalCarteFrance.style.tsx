@@ -1,4 +1,7 @@
-import { Icon, Link, Modal } from '@codegouvfr/react-dsfr';
+// import { Icon, Link, Modal } from '@codegouvfr/react-dsfr';
+// import { Modal } from '@codegouvfr/react-dsfr/Modal';
+import Icon from '@components/ui/Icon';
+import Link from '@components/ui/Link';
 import styled from 'styled-components';
 
 export const SpinnerWrapper = styled.div`
@@ -6,7 +9,9 @@ export const SpinnerWrapper = styled.div`
   justify-content: center;
 `;
 
-export const StyledModal = styled(Modal)`
+// FIXME remettre une modale
+// export const StyledModal = styled(Modal)`
+export const StyledModal = styled.div`
   // Surcharge la disposition par défaut qui est prédéfinie et statique
   // afin d'avoir plus de contrôle sur la largeur de la modal
   // cf https://github.com/dataesr/react-dsfr/blob/666f089b2209a9c2d7ef73fe0f79f129923c2b7b/src/components/interface/Modal/Modal.js#L32-L33

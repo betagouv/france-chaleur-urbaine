@@ -2,10 +2,11 @@ import { List } from '@components/Ressources/Contents/Contents.styles';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import { dataNumberFcu } from '@data';
-import { FooterPartnersLogo, Logo } from '@codegouvfr/react-dsfr';
-import Link from 'next/link';
+// import { FooterPartnersLogo, Logo } from '@codegouvfr/react-dsfr/Footer';
+// import Link from 'next/link';
 import { Description, Logos, Row, Title } from './index.styles';
 import Heading from '@components/ui/Heading';
+import Link from '@components/ui/Link';
 
 const Us = () => {
   return (
@@ -15,9 +16,11 @@ const Us = () => {
           Qui sommes-nous&nbsp;?
         </Heading>
         <Row>
-          <Logo splitCharacter={10} href="">
+          <div className="fr-logo">République Française</div>
+          {/* FIXME logo ! */}
+          {/* <Logo splitCharacter={10} href="">
             République Française
-          </Logo>
+          </Logo> */}
           <Description>
             France Chaleur Urbaine est un{' '}
             <b>service gratuit proposé par l’État</b> qui promeut le chauffage
@@ -61,7 +64,7 @@ const Us = () => {
             En savoir plus :{' '}
             <Link
               href="https://www.drieat.ile-de-france.developpement-durable.gouv.fr/"
-              target="_blank"
+              isExternal
             >
               https://www.drieat.ile-de-france.developpement-durable.gouv.fr/
             </Link>
@@ -75,7 +78,7 @@ const Us = () => {
             de déploiement, developpeurs...) accompagne le projet.
             <br />
             En savoir plus :{' '}
-            <Link href="https://beta.gouv.fr" target="_blank">
+            <Link href="https://beta.gouv.fr" isExternal>
               beta.gouv.fr
             </Link>
           </li>
@@ -90,7 +93,16 @@ const Us = () => {
           la DRIEAT.
         </p>
         <Logos>
-          <FooterPartnersLogo
+          <Link href="https://www.gouvernement.fr/" isExternal>
+            <img src="/logo-government.svg" alt="Gouvernement" height="80px" />
+          </Link>
+          <Link href="https://www.ademe.fr" isExternal>
+            <img src="/logo-ADEME.svg" alt="Gouvernement" height="80px" />
+          </Link>
+          <Link href="https://www.economie.gouv.fr/plan-de-relance" isExternal>
+            <img src="/logo-relance.png" alt="France relance" height="80px" />
+          </Link>
+          {/* <FooterPartnersLogo
             href="https://www.gouvernement.fr/"
             imageSrc="/logo-government.svg"
             target="_blank"
@@ -107,7 +119,7 @@ const Us = () => {
             imageSrc="/logo-relance.png"
             target="_blank"
             imageAlt="France relance"
-          />
+          /> */}
         </Logos>
       </Slice>
       <Slice padding={4} theme="color">

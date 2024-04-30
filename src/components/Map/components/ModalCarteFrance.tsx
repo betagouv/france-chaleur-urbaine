@@ -1,9 +1,5 @@
-import {
-  Button,
-  ButtonGroup,
-  ModalClose,
-  ModalContent,
-} from '@codegouvfr/react-dsfr';
+// import { ModalClose, ModalContent } from '@codegouvfr/react-dsfr';
+import { ButtonsGroup } from '@codegouvfr/react-dsfr/ButtonsGroup';
 import CarteFrance, { DataByArea } from './CarteFrance';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -129,22 +125,73 @@ function ModalCarteFrance(props: Props) {
 
   return (
     <StyledModal
-      isOpen={props.isOpen}
-      hide={() => {
-        props.onClose();
-      }}
+    // FIXME rebrancher la modale
+    // isOpen={props.isOpen}
+    // hide={() => {
+    //   props.onClose();
+    // }}
     >
-      <ModalClose>Fermer</ModalClose>
-      <ModalContent>
+      {/* <ModalClose>Fermer</ModalClose>
+      <ModalContent> */}
+      {/* FIXME: rebrancher le contenu de la modal */}
+      <div>
         {!statsData || !mapSourceData || !dataByArea ? (
           <SpinnerWrapper>
             <Oval height={60} width={60} />
           </SpinnerWrapper>
         ) : (
           <ModalContentWrapper>
-            <ButtonGroup size="sm" isInlineFrom="xs">
-              <Button
-                secondary={area !== 'national'}
+            <ButtonsGroup
+              buttonsSize="small"
+              inlineLayoutWhen="sm and up"
+              buttons={[
+                {
+                  children: 'National',
+                  priority: area !== 'national' ? 'secondary' : 'primary',
+                  onClick: () => {
+                    setArea('national');
+                    setSelectedData(statsData.national);
+                  },
+                },
+                {
+                  children: 'Régional',
+                  priority: area !== 'regional' ? 'secondary' : 'primary',
+                  onClick: () => {
+                    setArea('regional');
+
+                    // sélectionne la région si on vient d'un département
+                    if (area === 'departemental' && selectedData) {
+                      setSelectedData(
+                        statsData.regional.find(
+                          (r) =>
+                            r.region_code ===
+                            (selectedData as BDNBStatsParDepartement)
+                              .region_code
+                        )!
+                      );
+                    }
+                    // réinitialise la sélection si on vient de national
+                    if (area === 'national') {
+                      setSelectedData(null);
+                    }
+                  },
+                },
+                {
+                  children: 'Départemental',
+                  priority: area !== 'departemental' ? 'secondary' : 'primary',
+                  onClick: () => {
+                    setArea('departemental');
+
+                    // réinitialise la sélection si on vient de national ou régional
+                    if (area !== 'departemental') {
+                      setSelectedData(null);
+                    }
+                  },
+                },
+              ]}
+            />
+            {/* <Button
+                priority={area !== 'national' ? 'secondary' : 'primary'}
                 onClick={() => {
                   setArea('national');
                   setSelectedData(statsData.national);
@@ -153,7 +200,7 @@ function ModalCarteFrance(props: Props) {
                 National
               </Button>
               <Button
-                secondary={area !== 'regional'}
+                priority={area !== 'regional' ? 'secondary' : 'primary'}
                 onClick={() => {
                   setArea('regional');
 
@@ -176,7 +223,7 @@ function ModalCarteFrance(props: Props) {
                 Régional
               </Button>
               <Button
-                secondary={area !== 'departemental'}
+                priority={area !== 'departemental' ? 'secondary' : 'primary'}
                 onClick={() => {
                   setArea('departemental');
 
@@ -187,8 +234,7 @@ function ModalCarteFrance(props: Props) {
                 }}
               >
                 Départemental
-              </Button>
-            </ButtonGroup>
+              </Button> */}
 
             <HorizontalSeparator />
 
@@ -223,7 +269,7 @@ function ModalCarteFrance(props: Props) {
                   <Tooltip
                     icon={
                       <StyledIcon
-                        size="1x"
+                        className="ri-1x"
                         name="ri-information-fill"
                         color="#959DB0"
                         marginLeft=".2em"
@@ -242,41 +288,53 @@ function ModalCarteFrance(props: Props) {
                   Distance au réseau le plus proche&nbsp;:
                 </DistanceLineText>
 
-                <ButtonGroup size="sm" isInlineFrom="xs">
-                  <Button
-                    secondary={distanceReseau !== '50m'}
-                    onClick={() => setDistanceReseau('50m')}
-                  >
-                    &lt;50 m
-                  </Button>
-                  <Button
-                    secondary={distanceReseau !== '100m'}
-                    onClick={() => setDistanceReseau('100m')}
-                  >
-                    &lt;100 m
-                  </Button>
-                  <Button
-                    secondary={distanceReseau !== '150m'}
-                    onClick={() => setDistanceReseau('150m')}
-                  >
-                    &lt;150 m
-                  </Button>
-                </ButtonGroup>
+                <ButtonsGroup
+                  buttonsSize="small"
+                  inlineLayoutWhen="sm and up"
+                  buttons={[
+                    {
+                      children: '&lt;50 m',
+                      priority:
+                        distanceReseau !== '50m' ? 'secondary' : 'primary',
+                      onClick: () => setDistanceReseau('50m'),
+                    },
+                    {
+                      children: '&lt;100 m',
+                      priority:
+                        distanceReseau !== '100m' ? 'secondary' : 'primary',
+                      onClick: () => setDistanceReseau('100m'),
+                    },
+                    {
+                      children: '&lt;150 m',
+                      priority:
+                        distanceReseau !== '150m' ? 'secondary' : 'primary',
+                      onClick: () => setDistanceReseau('150m'),
+                    },
+                  ]}
+                />
 
-                <ButtonGroup size="sm" isInlineFrom="xs">
-                  <Button
-                    secondary={modeBatimentLogement !== 'batiments'}
-                    onClick={() => setModeBatimentLogement('batiments')}
-                  >
-                    Bâtiments
-                  </Button>
-                  <Button
-                    secondary={modeBatimentLogement !== 'logements'}
-                    onClick={() => setModeBatimentLogement('logements')}
-                  >
-                    Logements
-                  </Button>
-                </ButtonGroup>
+                <ButtonsGroup
+                  buttonsSize="small"
+                  inlineLayoutWhen="sm and up"
+                  buttons={[
+                    {
+                      children: 'Bâtiments',
+                      priority:
+                        modeBatimentLogement !== 'batiments'
+                          ? 'secondary'
+                          : 'primary',
+                      onClick: () => setModeBatimentLogement('batiments'),
+                    },
+                    {
+                      children: 'Logements',
+                      priority:
+                        modeBatimentLogement !== 'logements'
+                          ? 'secondary'
+                          : 'primary',
+                      onClick: () => setModeBatimentLogement('logements'),
+                    },
+                  ]}
+                />
 
                 <BigBlueNumber className="fr-mt-2w">
                   {prettyFormatNumber(
@@ -389,7 +447,7 @@ function ModalCarteFrance(props: Props) {
                   </div>
                   <DataLink
                     href="/data/potentiel_identifie_FCU.xlsx"
-                    target="_blank"
+                    isExternal
                   >
                     Données
                   </DataLink>
@@ -398,7 +456,8 @@ function ModalCarteFrance(props: Props) {
             </LayoutTwoColumns>
           </ModalContentWrapper>
         )}
-      </ModalContent>
+      </div>
+      {/* </ModalContent> */}
     </StyledModal>
   );
 }

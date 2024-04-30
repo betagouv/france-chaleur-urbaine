@@ -1,19 +1,21 @@
-import { Button, Table, TextInput } from '@codegouvfr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Input } from '@codegouvfr/react-dsfr/Input';
 import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
-import { UserResponse } from 'src/types/UserResponse';
+import { type UserResponse } from 'src/types/UserResponse';
 import { TableContainer } from './Users.styles';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import { Oval } from 'react-loader-spinner';
+import Table, { type TableColumnDef } from '@components/ui/Table';
 
-const columns = [
+const columns: TableColumnDef<UserResponse>[] = [
   {
-    name: 'email',
+    key: 'email',
     label: 'Email',
   },
   {
-    name: 'last_connection',
+    key: 'last_connection',
     label: 'Dernière connexion',
     render: ({ last_connection }: UserResponse) => (
       <>
@@ -49,21 +51,24 @@ const Users = () => {
           Connexions
         </Heading>
 
-        <TextInput
-          placeholder="Email"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+        <Input
+          label="Email"
+          nativeInputProps={{
+            placeholder: 'Email',
+            value: filter,
+            onChange: (e) => setFilter(e.target.value),
+          }}
         />
       </Box>
 
       <Table
         columns={columns}
         data={filteredUsers}
-        rowKey="email"
-        pagination
-        paginationPosition="center"
-        page={page}
-        setPage={setPage}
+        // rowKey="email"
+        // pagination
+        // paginationPosition="center"
+        // page={page}
+        // setPage={setPage}
       />
       {filteredUsers.length === 0 && <p>Pas de résultat</p>}
       {exporting ? (

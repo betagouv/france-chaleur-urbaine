@@ -1,4 +1,4 @@
-import { Radio, RadioGroup } from '@codegouvfr/react-dsfr';
+import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 import React, { useMemo } from 'react';
 
 type CheckEligibilityFormProps = {
@@ -20,24 +20,23 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
   value,
   onChange,
 }) => {
-  const options = useMemo(() => {
-    return Object.entries(selectOptions).map(([value, label]) => (
-      <Radio
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore: to fix in react-dsfr
-        name={name}
-        key={value}
-        label={label}
-        value={value}
-        onChange={onChange}
-      />
-    ));
-  }, [onChange, name, selectOptions]);
+  // const options = useMemo(() => {
+  //   return Object.entries(selectOptions).map(([value, label]) => (
+  //     <Radio
+  //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //       // @ts-ignore: to fix in react-dsfr
+  //       name={name}
+  //       key={value}
+  //       label={label}
+  //       value={value}
+  //       onChange={onChange}
+  //     />
+  //   ));
+  // }, [onChange, name, selectOptions]);
 
   return (
     <>
-      {children}
-      <RadioGroup
+      {/* <div>
         legend={(label as string) || 'Chauffage actuel :'}
         name={name}
         isInline={!cardMode}
@@ -46,7 +45,31 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
         className="fr-mb-2w"
       >
         {options}
-      </RadioGroup>
+      </div> */}
+
+      {children}
+      <RadioButtons
+        legend={label ?? 'Chauffage actuel :'}
+        name={name}
+        small
+        options={
+          Object.entries(selectOptions).map(([value, label]) => ({
+            label: label,
+            nativeInputProps: {
+              value: value,
+              // FIXME vérifier
+              // checked: value === optionValue,
+              onChange: onChange,
+            },
+          }))
+
+          // name={name}
+          // key={value}
+          // label={label}
+          // value={value}
+          // onChange={onChange}
+        }
+      />
     </>
   );
 };
