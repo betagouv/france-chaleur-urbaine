@@ -119,7 +119,10 @@ export type MaybeEmptyMapConfiguration =
   | MapConfiguration
   | EmptyMapConfiguration;
 
-export type MapConfigurationProperty = FlattenKeys<MapConfiguration>;
+export type MapConfigurationProperty<ValueType = any> = FlattenKeys<
+  MapConfiguration,
+  ValueType
+>;
 
 export function isMapConfigurationInitialized(
   conf: MaybeEmptyMapConfiguration
