@@ -485,7 +485,6 @@ const footerDescription = `France Chaleur Urbaine est un projet d'innovation pou
 
 const PageFooter = () => (
   <Footer
-    accessibility="non compliant"
     contentDescription={footerDescription}
     operatorLogo={{
       imgUrl: '/logo-fcu-with-typo.jpg',
@@ -520,146 +519,45 @@ const PageFooter = () => (
         },
       ],
     }}
+    accessibility="non compliant"
+    accessibilityLinkProps={{
+      href: '/accessibilite',
+    }}
+    termsLinkProps={{
+      href: '/mentions-legales',
+    }}
+    bottomItems={[
+      {
+        text: 'Cookies & Consentements',
+        linkProps: {
+          href: '/#consentement',
+        },
+      },
+      {
+        text: 'Données personnelles',
+        linkProps: {
+          href: '/politique-de-confidentialite',
+        },
+      },
+      {
+        text: 'Statistiques',
+        linkProps: {
+          href: '/stats',
+        },
+      },
+      {
+        text: 'Contact',
+        linkProps: {
+          href: '/contact',
+        },
+      },
+      {
+        text: 'Code source',
+        // iconId: 'ri-github-line', // FIXME l'icone crée un souligné moche au survol
+        linkProps: {
+          href: 'https://github.com/betagouv/france-chaleur-urbaine',
+        },
+      },
+    ]}
   />
 );
-// const PageFooter = () => {
-//   return (
-//     <FooterDS>
-//       <FooterBody description={footerDescription}>
-//         <Logo
-//           splitCharacter={10}
-//           asLink={<Link href="/" title="Revenir à l'accueil" />}
-//         >
-//           République Française
-//         </Logo>
-//         <FooterOperator>
-//           <Image
-//             height={136}
-//             width={242}
-//             src="/logo-fcu-with-typo.jpg"
-//             alt="logo france chaleur urbaine"
-//           />
-//         </FooterOperator>
-//         <FooterBodyItem>
-//           Faites nous part de vos propositions pour améliorer ce service :
-//           <br />
-//           <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">
-//             france-chaleur-urbaine@developpement-durable.gouv.fr
-//           </a>
-//         </FooterBodyItem>
-//       </FooterBody>
-//       <FooterPartners>
-//         <FooterPartnersTitle>A l'origine du projet</FooterPartnersTitle>
-//         <FooterPartnersSecondaryTitle>
-//           Nos financeurs
-//         </FooterPartnersSecondaryTitle>
-//         <LazyFooterPartnersLogo
-//           isMain
-//           href="http://www.driee.ile-de-france.developpement-durable.gouv.fr/"
-//           imageSrc="/logo-DRIEAT.png"
-//           target="_blank"
-//           imageAlt="DRIEAT"
-//         />
-//         <LazyFooterPartnersLogo
-//           href="https://www.gouvernement.fr/"
-//           imageSrc="/logo-government.svg"
-//           target="_blank"
-//           imageAlt="Gouvernement"
-//         />
-//         <LazyFooterPartnersLogo
-//           href="https://www.ademe.fr"
-//           imageSrc="/logo-ADEME.svg"
-//           target="_blank"
-//           imageAlt="ADEME"
-//         />
-//       </FooterPartners>
-//       <FooterBottom>
-//         <FooterLink
-//           asLink={
-//             <Link href="/accessibilite" className="fr-footer__bottom-link">
-//               Accessibilité: non conforme
-//             </Link>
-//           }
-//         />
-//         <FooterLink
-//           asLink={
-//             <Link href="/mentions-legales" className="fr-footer__bottom-link">
-//               Mentions légales & CGU
-//             </Link>
-//           }
-//         />
-//         <FooterLink href="/#consentement">
-//           Cookies &amp; Consentements
-//         </FooterLink>
-//         <FooterLink
-//           asLink={
-//             <Link
-//               href="/politique-de-confidentialite"
-//               className="fr-footer__bottom-link"
-//             >
-//               Données personnelles
-//             </Link>
-//           }
-//         />
-//         <FooterLink
-//           asLink={
-//             <Link href="/stats" className="fr-footer__bottom-link">
-//               Statistiques
-//             </Link>
-//           }
-//         />
-//         <FooterLink
-//           asLink={
-//             <Link href="/contact" className="fr-footer__bottom-link">
-//               Contact
-//             </Link>
-//           }
-//         />
-//         <FooterLink
-//           target="_blank"
-//           href="https://github.com/betagouv/france-chaleur-urbaine"
-//         >
-//           <Image
-//             src="/icons/github-brands.svg"
-//             width={12}
-//             height={12}
-//             alt=""
-//             aria-hidden
-//           />{' '}
-//           Github
-//         </FooterLink>
-//         <FooterCopy>
-//           Sauf mention contraire, tous les contenus de ce site sont sous{' '}
-//           <a
-//             href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
-//             target="_blank"
-//             rel="noreferrer"
-//           >
-//             licence etalab-2.0
-//           </a>
-//         </FooterCopy>
-//       </FooterBottom>
-//     </FooterDS>
-//   );
-// };
-
-// /**
-//  * Version des logo partenaires qui active le lazy loading.
-//  */
-// const LazyFooterPartnersLogo = (
-//   props: ComponentProps<typeof FooterPartnersLogo> & { href: string }
-// ) => (
-//   <Link className="fr-footer__partners-link" href={props.href} target="_blank">
-//     <img
-//       className="fr-footer__logo"
-//       src={props.imageSrc}
-//       alt={props.imageAlt}
-//       loading="lazy"
-//     />
-//   </Link>
-// );
-
-// // Permet au composant FooterPartners de retrouver le logo
-// LazyFooterPartnersLogo.defaultProps = {
-//   __TYPE: 'FooterPartnersLogo',
-// };
