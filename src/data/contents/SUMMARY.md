@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Les chaudières biomasse ne contribuent pas à la déforestation](README.md)
+* [Identifier les gisements de chaleur fatale](README.md)
+* [Les chaudières biomasse ne contribuent pas à la déforestation](<README (24).md>)
 * [Les réseaux de chaleur : plus si urbains que ça !](<README (23).md>)
 * [Où créer un réseau de chaleur sur mon territoire ?](ou-creer-un-reseau-de-chaleur-sur-mon-territoire.md)
 * [Le classement des réseaux : quel bilan ?](le-classement-des-reseaux-quel-bilan.md)
