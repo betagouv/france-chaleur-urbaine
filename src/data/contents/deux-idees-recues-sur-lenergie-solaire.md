@@ -4,4 +4,4 @@
 \
 🌞 C'est notamment vrai pour l'énergie solaire, et c'est l'objet de l'infographie de notre série sur les idées reçues cette semaine. Au passage, on en profite pour tordre le cou à une autre idée reçue qui a la vie dure : non, le solaire ne fonctionne pas que dans le sud de la France !\
 \
-👋N'hésitez pas à partager largement dans vos réseaux... Et si vous avez en tête d'autres préjugés qui circulent sur les réseaux de chaleur et les énergies renouvelables thermiques, faites-en nous part en commentaire !
+👋N'hésitez pas à partager largement dans vos réseaux !
