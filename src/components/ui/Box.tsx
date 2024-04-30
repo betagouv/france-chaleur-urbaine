@@ -1,6 +1,7 @@
 import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 import styled, { IntrinsicElementsKeys } from 'styled-components';
+import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 
 type StyleProps = {
   display?: CSSProperties['display'];
@@ -25,6 +26,7 @@ type StyleProps = {
   height?: CSSProperties['height'];
   minHeight?: CSSProperties['minHeight'];
   maxHeight?: CSSProperties['maxHeight'];
+  lineHeight?: CSSProperties['lineHeight'];
   opacity?: CSSProperties['opacity'];
 };
 
@@ -60,6 +62,7 @@ const StyledBox = styled.div<StyleProps>`
   height: ${({ height }) => height};
   min-height: ${({ minHeight }) => minHeight};
   max-height: ${({ maxHeight }) => maxHeight};
+  line-height: ${({ lineHeight }) => lineHeight};
   opacity: ${({ opacity }) => opacity};
 `;
 
@@ -68,6 +71,7 @@ export interface BoxProps
     SpacingProperties,
     HTMLAttributes<HTMLDivElement> {
   as?: IntrinsicElementsKeys;
+  iconLeft?: FrIconClassName | RiIconClassName;
 }
 
 /**
@@ -80,7 +84,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
   return (
     <StyledBox
       as={props.as ?? 'div'}
-      display={props.display ?? 'block'}
+      display={props.display}
       flexDirection={props.flexDirection}
       flexWrap={props.flexWrap}
       alignItems={props.alignItems}
@@ -101,10 +105,11 @@ function Box(props: PropsWithChildren<BoxProps>) {
       height={props.height}
       minHeight={props.minHeight}
       maxHeight={props.maxHeight}
+      lineHeight={props.lineHeight}
       opacity={props.opacity}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
-      } ${spacingsToClasses(props)}`}
+      } ${props.iconLeft ?? ''} ${spacingsToClasses(props)}`}
       {...rest}
     >
       {props.children}

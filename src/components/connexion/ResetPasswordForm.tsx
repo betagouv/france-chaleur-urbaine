@@ -1,4 +1,5 @@
-import { Button, TextInput } from '@codegouvfr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Input } from '@codegouvfr/react-dsfr/Input';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { FormEvent, useState } from 'react';
 import { useServices } from 'src/services';
@@ -39,14 +40,16 @@ const ResetPasswordForm = () => {
         />
       ) : (
         <>
-          <TextInput
-            required
-            label="Votre email:"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+          <Input
+            label="Votre email :"
+            nativeInputProps={{
+              required: true,
+              type: 'email',
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+            }}
           />
-          <Button submit>Réinitialiser</Button>
+          <Button type="submit">Réinitialiser</Button>
         </>
       )}
     </Container>

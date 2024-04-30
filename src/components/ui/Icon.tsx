@@ -17,7 +17,8 @@ const StyledIcon = styled.span<StyledIconProps>`
 
 type IconProps = StyledIconProps & {
   name: FrIconClassName | RiIconClassName;
-  size: '1x' | '2x' | 'lg'; // FIXME se caler sur framework dsfr
+  // dsfr size
+  size?: 'xs' | 'sm' | 'md' | 'lg';
 };
 
 /**
@@ -31,10 +32,11 @@ function Icon({
 }: IconProps & SpacingProperties & HTMLAttributes<HTMLDivElement>) {
   return (
     <StyledIcon
-      className={`${name ?? ''} ${size ? `ri-${size}` : ''} ${
+      className={`${name ?? ''} ${size ? `fr-icon--${size}` : ''} ${
         className ?? ''
       } ${spacingsToClasses(props)}`}
       // iconPosition="center" // FIXME
+      aria-hidden
       {...props}
     />
   );
