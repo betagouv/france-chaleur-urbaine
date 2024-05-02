@@ -13,6 +13,9 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       ),
       db.raw(`array[floor(min("PM")), ceil(max("PM"))] as "prixMoyen"`),
       db.raw(
+        `array[floor(min("livraisons_totale_MWh") / 1000), ceil(max("livraisons_totale_MWh") / 1000)] as "livraisonsAnnuelles"`
+      ),
+      db.raw(
         `array[min("annee_creation"), extract(year from now())] as "anneeConstruction"` // max = année courante pour indiquer qu'on a des données récentes
       )
     )

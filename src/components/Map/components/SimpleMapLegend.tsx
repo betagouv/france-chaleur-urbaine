@@ -300,6 +300,21 @@ function SimpleMapLegend({
           />
           <LegendSeparator />
           <RangeFilter
+            label="Livraisons annuelles de chaleur"
+            domain={
+              mapConfiguration.reseauxDeChaleur.limits.livraisonsAnnuelles
+            }
+            value={mapConfiguration.reseauxDeChaleur.livraisonsAnnuelles}
+            onChange={(values) =>
+              updateScaleInterval(
+                'reseauxDeChaleur.livraisonsAnnuelles',
+                values
+              )
+            }
+            unit="GWh"
+          />
+          <LegendSeparator />
+          <RangeFilter
             label="Année de construction"
             domain={mapConfiguration.reseauxDeChaleur.limits.anneeConstruction}
             value={mapConfiguration.reseauxDeChaleur.anneeConstruction}
