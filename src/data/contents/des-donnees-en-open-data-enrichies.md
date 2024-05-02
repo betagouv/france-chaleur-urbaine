@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/3 (4).jpg
+coverY: 0
+---
+
 # Des données en open data enrichies
 
 📢 L'open data France Chaleur Urbaine s'enrichit !\
@@ -11,6 +16,8 @@ Sont désormais diffusés dans l'[open data](https://www.data.gouv.fr/fr/dataset
 \
 Le nombre de tracés de réseaux existants a par ailleurs fortement augmenté grâce à notre travail continu de collecte auprès des collectivités et exploitants, que nous remercions pour leur collaboration. Aujourd'hui, sont ainsi visibles sur la [carte](https://france-chaleur-urbaine.beta.gouv.fr/carte) et disponibles dans l'open data les tracés de :\
 ✔ 758 réseaux de chaleur représentant 92% des livraisons de chaleur annuelles par les réseaux en France\
-✔ 31 réseaux de froid représentant 82% des livraisons de froid annuelles par les réseaux en France\
+✔ 31 réseaux de froid représentant 82% des livraisons de froid annuelles par les réseaux en France
+
+![](<.gitbook/assets/12 (1).jpg>)\
 
 

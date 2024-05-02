@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/1 (4).jpg
+coverY: 0
+---
+
 # Identifier les gisements de chaleur fatale
 
 ❓ Où se situent les gisements de chaleur fatale mobilisables pour les réseaux de chaleur ? Si la récupération de la chaleur fatale constitue un enjeu majeur pour verdir les réseaux, encore faut-il pouvoir identifier où elle est disponible.\
@@ -7,3 +12,6 @@
 👉 Vous pouvez désormais également retrouver ces informations sur la [cartographie France Chaleur Urbaine](https://france-chaleur-urbaine.beta.gouv.fr/carte) ! Elles seront progressivement enrichies grâce aux travaux que poursuit le Cerema, en lien avec ses différents partenaires.\
 \
 Accompagner le développement des réseaux de chaleur en simplifiant l'accès à la donnée est l'une des missions de France Chaleur Urbaine, et cette nouvelle intégration y contribue !
+
+<figure><img src=".gitbook/assets/9 (2).jpg" alt=""><figcaption></figcaption></figure>
+

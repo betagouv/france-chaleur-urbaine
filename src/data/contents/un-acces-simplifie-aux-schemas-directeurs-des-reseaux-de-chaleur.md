@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/5 (3).jpg
+coverY: 0
+---
+
 # Un accès simplifié aux schémas directeurs des réseaux de chaleur
 
 Comment avoir de la visibilité sur les développements futurs d'un réseau de chaleur ?\
@@ -16,6 +21,8 @@ N'hésitez pas à [contribuer](https://france-chaleur-urbaine.beta.gouv.fr/resea
 _Les schémas directeurs sont diffusés sur les fiches par réseau, accessibles depuis la_ [_cartographie_](https://france-chaleur-urbaine.beta.gouv.fr/carte) _en cliquant sur un réseau puis sur "Voir plus d'informations"._\
 \
 _Lien d'accès direct vers les fiches :_ [_https://france-chaleur-urbaine.beta.gouv.fr/reseaux/9106C_](https://france-chaleur-urbaine.beta.gouv.fr/reseaux/9106C)\
-_(en remplaçant l'identifiant SNCU indiqué dans le lien par celui du réseau souhaité)_\
+_(en remplaçant l'identifiant SNCU indiqué dans le lien par celui du réseau souhaité)_
+
+![](<.gitbook/assets/15 (1).jpg>)\
 
 
