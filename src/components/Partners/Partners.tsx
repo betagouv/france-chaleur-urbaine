@@ -1,5 +1,4 @@
 import { partnerData } from '@data/partenaires';
-import { ButtonGroup, Icon } from '@codegouvfr/react-dsfr';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Arrow,
@@ -10,7 +9,8 @@ import {
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
-import Link from '@components/ui/Link';
+import Icon from '@components/ui/Icon';
+import ButtonsGroup from '@codegouvfr/react-dsfr/ButtonsGroup';
 
 const Partners = () => {
   const [firstLogo, setFirstLogo] = useState(0);
@@ -58,7 +58,7 @@ const Partners = () => {
 
         <Box display="flex" alignItems="center" gap="16px" mt="8w">
           <Arrow onClick={() => setNextLogo(-1)}>
-            <Icon name="ri-arrow-left-circle-line" size="xl" />
+            <Icon name="ri-arrow-left-circle-line" size="lg" />
           </Arrow>
           <PartnerImages>
             {logos.map(({ key, image, title, link }, index) => (
@@ -74,23 +74,31 @@ const Partners = () => {
             ))}
           </PartnerImages>
           <Arrow onClick={() => setNextLogo(1)}>
-            <Icon name="ri-arrow-right-circle-line" size="xl" />
+            <Icon name="ri-arrow-right-circle-line" size="lg" />
           </Arrow>
         </Box>
 
-        <ButtonGroup isInlineFrom="xs" align="center" className="fr-mt-8w">
-          <Link className="fr-btn" href="/contact">
-            Rejoindre notre réseau
-          </Link>
-          <Link
-            className="fr-btn fr-btn--secondary"
-            href="/documentation/dossier-presse.pdf"
-            isExternal
-            eventKey="Téléchargement|Dossier Presse|Partenaires"
-          >
-            Notre dossier de présentation
-          </Link>
-        </ButtonGroup>
+        <ButtonsGroup
+          className="fr-mt-8w"
+          inlineLayoutWhen="sm and up"
+          alignment="center"
+          buttons={[
+            {
+              children: 'Rejoindre notre réseau',
+              linkProps: {
+                href: '/contact',
+              },
+            },
+            {
+              children: 'Notre dossier de présentation',
+              priority: 'secondary',
+              linkProps: {
+                href: '/documentation/dossier-presse.pdf',
+                target: '_blank',
+              },
+            },
+          ]}
+        />
       </Box>
     </Box>
   );

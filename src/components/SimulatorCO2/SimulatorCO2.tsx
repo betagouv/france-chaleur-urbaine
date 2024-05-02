@@ -1,4 +1,4 @@
-import { Select } from '@codegouvfr/react-dsfr';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
   TypeEnergy,
@@ -91,41 +91,53 @@ const SimulatorCO2: React.FC<{
     <>
       <fieldset>
         <Input
-          type="number"
-          placeholder={data.label.conso}
-          onChange={(e: any) => setConso(parseFloat(e.target.value))}
+          label=""
+          nativeInputProps={{
+            type: 'number',
+            placeholder: data.label.conso,
+            onChange: (e) => setConso(parseFloat(e.target.value)),
+          }}
         />
       </fieldset>
       <fieldset>
         ou
         <Input
-          type="number"
-          placeholder={data.label.surf}
-          onChange={(e: any) => setSurf(parseFloat(e.target.value))}
+          label=""
+          nativeInputProps={{
+            type: 'number',
+            placeholder: data.label.surf,
+            onChange: (e) => setSurf(parseFloat(e.target.value)),
+          }}
         />
       </fieldset>
       <fieldset>
         ou
         <Input
-          type="number"
-          placeholder={data.label.log}
-          onChange={(e: any) => setLog(parseInt(e.target.value))}
+          label=""
+          nativeInputProps={{
+            type: 'number',
+            placeholder: data.label.log,
+            onChange: (e) => setLog(parseFloat(e.target.value)),
+          }}
         />
       </fieldset>
       <fieldset>
         <Select
-          onChange={selectHandleChange}
-          selected={energy}
+          label=""
           options={[
             {
               label: data.label.chauffage,
               value: '',
             },
-          ].concat(
-            Object.entries(dataEnergy)
+            ...Object.entries(dataEnergy)
               .filter(([key]) => key !== 'rdc')
-              .map(([key, { label }]) => ({ label, value: key }))
-          )}
+              .map(([key, { label }]) => ({ label, value: key })),
+          ]}
+          nativeSelectProps={{
+            required: true,
+            value: energy,
+            onChange: selectHandleChange,
+          }}
         />
       </fieldset>
     </>
@@ -135,9 +147,13 @@ const SimulatorCO2: React.FC<{
     <>
       {!typeSurf && (
         <SurfSelect
-          selected={simulatorType}
+          label=""
           options={buildingTypeSelectOptions}
-          onChange={(e: any) => setSimulatorType(e.target.value)}
+          nativeSelectProps={{
+            required: true,
+            value: simulatorType,
+            onChange: (e: any) => setSimulatorType(e.target.value),
+          }}
         />
       )}
       {typeSurf === TypeSurf.copropriete ? (

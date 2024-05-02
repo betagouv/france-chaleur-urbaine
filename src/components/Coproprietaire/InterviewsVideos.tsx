@@ -1,5 +1,5 @@
+import Icon from '@components/ui/Icon';
 import React, { useState } from 'react';
-import { Icon } from '@codegouvfr/react-dsfr';
 
 const videos = [
   'https://www.youtube.com/embed/zsOgW8sIByc',
@@ -37,7 +37,7 @@ const InterviewsVideos = () => {
                 setVideoIndex((videoIndex - 1 + videos.length) % videos.length);
               }}
             >
-              <Icon name="ri-arrow-left-s-line" />
+              <Icon name="ri-arrow-left-s-line" size="sm" />
               Précédent
             </a>
           </li>
@@ -53,7 +53,7 @@ const InterviewsVideos = () => {
               }}
             >
               Suivant
-              <Icon name="ri-arrow-right-s-line" />
+              <Icon name="ri-arrow-right-s-line" size="sm" />
             </a>
           </li>
         </ul>

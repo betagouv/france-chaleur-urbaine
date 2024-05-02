@@ -1,5 +1,6 @@
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import { Select, TextInput } from '@codegouvfr/react-dsfr';
+import { Input as DSFRInput } from '@codegouvfr/react-dsfr/Input';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import styled, { css } from 'styled-components';
 
 export const BoxSimulator = styled(Cartridge)`
@@ -39,7 +40,7 @@ export const SurfSelect = styled(Select)`
   max-width: 300px;
 `;
 
-export const Input = styled(TextInput)`
+export const Input = styled(DSFRInput)`
   display: inline-block;
   width: calc(100% - 30px);
   &:not(first-child) {

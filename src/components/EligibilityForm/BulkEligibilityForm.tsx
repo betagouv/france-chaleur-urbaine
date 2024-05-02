@@ -1,5 +1,7 @@
-import { Button, File, TextInput } from '@codegouvfr/react-dsfr';
+import { Input } from '@codegouvfr/react-dsfr/Input';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Upload } from '@codegouvfr/react-dsfr/Upload';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { useServices } from 'src/services';
 import { Container } from './BulkEligibilityForm.styles';
@@ -57,23 +59,30 @@ const BulkEligibilityForm = () => {
         />
       ) : (
         <form onSubmit={checkEligibility}>
-          <File
+          <Upload
             label="Choisissez un fichier .txt ou .csv (une adresse par ligne) :"
-            onChange={readFile}
-            accept=".txt, .csv"
-            errorMessage={error}
+            hint=""
+            state={error ? 'error' : 'default'}
+            stateRelatedMessage={error}
+            nativeInputProps={{
+              accept: '.txt, .csv',
+              onChange: readFile,
+            }}
           />
 
-          <TextInput
-            type="email"
-            placeholder="Tapez ici votre email *"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-            required
+          <Input
+            label=""
+            nativeInputProps={{
+              type: 'email',
+              placeholder: 'Tapez ici votre email *',
+              required: true,
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+            }}
           />
           <Button
             disabled={isSubmitting || !email || !addresses || !!error}
-            submit
+            type="submit"
           >
             Tester le fichier d’adresses
           </Button>

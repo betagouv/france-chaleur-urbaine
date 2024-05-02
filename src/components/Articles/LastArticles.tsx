@@ -1,7 +1,10 @@
 import { articles } from '@data/contents';
-import { Icon, Link } from '@codegouvfr/react-dsfr';
+// import { Icon, Link } from '@codegouvfr/react-dsfr';
 import Article from './Article';
 import { Articles, RemainingArticles } from './LastArticles.styles';
+import Link from 'next/link';
+import Box from '@components/ui/Box';
+import Icon from '@components/ui/Icon';
 
 const LastArticles = () => {
   return (
@@ -15,29 +18,18 @@ const LastArticles = () => {
       <RemainingArticles className="fr-col-12 fr-col-lg-4 fr-py-3w">
         <div className="fr-mb-3w">
           {articles.slice(2, 6).map((article) => (
-            <div className="fr-mb-1w" key={article.title}>
-              <Link
-                isSimple
-                as={
-                  <div>
-                    <Link href={`/actus/${article.slug}`}>{article.title}</Link>
-                  </div>
-                }
-              />
-            </div>
+            <Box mb="1w" key={article.title}>
+              <Link href={`/actus/${article.slug}`} className="fr-link">
+                {article.title}
+              </Link>
+            </Box>
           ))}
         </div>
         <div>
-          <Link
-            isSimple
-            as={
-              <Link href="/actus">
-                <>
-                  Voir toutes les actus <Icon name="ri-arrow-right-line" />
-                </>
-              </Link>
-            }
-          />
+          <Link href="/actus" className="fr-link">
+            Voir toutes les actus
+            <Icon name="ri-arrow-right-line" />
+          </Link>
         </div>
       </RemainingArticles>
     </Articles>

@@ -1,6 +1,6 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
-import { Checkbox, CheckboxGroup } from '@codegouvfr/react-dsfr';
-import React, { ChangeEvent, useMemo, useState } from 'react';
+import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
+import { useMemo, useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
 import {
   AddressContainer,
@@ -8,14 +8,14 @@ import {
   IFrame,
 } from './IFrameParametrization.styles';
 import IFrameLink from '../Form/IFrameLink';
-import { LegendURLKey, legendURLKeys } from '@pages/map';
+import { LegendURLKey, selectableLayers } from '@pages/map';
 
 const IFrameParametrization = () => {
   const [coords, setCoords] = useState<{ lon: number; lat: number } | null>(
     null
   );
   const [selectedInfo, setSelectedInfo] = useState<LegendURLKey[]>([
-    ...legendURLKeys,
+    ...selectableLayers.map((l) => l.key),
   ]);
 
   const url = useMemo(() => {
@@ -44,11 +44,8 @@ const IFrameParametrization = () => {
     });
   };
 
-  const onCheckBoxClick = (
-    event: ChangeEvent<HTMLInputElement>,
-    name: LegendURLKey
-  ) => {
-    if (event.target.checked) {
+  const setCheckBoxState = (name: LegendURLKey, checked: boolean) => {
+    if (checked) {
       setSelectedInfo([...selectedInfo, name]);
     } else {
       setSelectedInfo(selectedInfo.filter((info) => info !== name));
@@ -63,28 +60,17 @@ const IFrameParametrization = () => {
       site.
       <br />
       <br />
-      <CheckboxGroup legend="Vous voulez afficher:">
-        <Checkbox
-          label="Les réseaux de chaleur existants"
-          defaultChecked={true}
-          onClick={(e) => onCheckBoxClick(e as any, 'reseau_chaleur')}
-        />
-        <Checkbox
-          label="Les réseaux de chaleur en construction"
-          defaultChecked={true}
-          onClick={(e) => onCheckBoxClick(e as any, 'futur_reseau')}
-        />
-        <Checkbox
-          label="Les périmètres de développement prioritaire"
-          defaultChecked={true}
-          onClick={(e) => onCheckBoxClick(e as any, 'pdp')}
-        />
-        <Checkbox
-          label="Les réseaux de froid"
-          defaultChecked={true}
-          onClick={(e) => onCheckBoxClick(e as any, 'reseau_froid')}
-        />
-      </CheckboxGroup>
+      <Checkbox
+        legend="Vous voulez afficher:"
+        options={selectableLayers.map((selectableLayer) => ({
+          label: selectableLayer.label,
+          nativeInputProps: {
+            checked: true,
+            onClick: (e) =>
+              setCheckBoxState(selectableLayer.key, (e.target as any).checked),
+          },
+        }))}
+      />
       <div>Vous souhaitez centrer la carte sur un endroit en particulier ?</div>
       <AddressContainer>
         <AddressAutocomplete

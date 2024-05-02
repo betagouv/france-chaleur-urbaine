@@ -1,4 +1,4 @@
-import { Select, TextInput } from '@codegouvfr/react-dsfr';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Link from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
 import {
@@ -13,6 +13,7 @@ import {
 } from './Simulator.styles';
 import Text from '@components/ui/Text';
 import { LegacyColor } from '@components/ui/helpers/colors';
+import Input from '@codegouvfr/react-dsfr/Input';
 
 const prixSpotCEE = 8.42; // €/MWh cumac
 
@@ -73,24 +74,30 @@ const Simulator = ({
       <Form cartridge={cartridge}>
         <Inputs cartridge={cartridge} backgroundColor={formBackgroundColor}>
           <Select
-            aria-label="Type de bâtiment"
+            label=""
             options={[
               { label: 'Résidentiel', value: 'Résidentiel' },
               { label: 'Tertiaire', value: 'Tertiaire' },
             ]}
-            selected={structure}
-            onChange={(e) => setStructure(e.target.value)}
+            nativeSelectProps={{
+              required: true,
+              value: structure,
+              onChange: (e) => setStructure(e.target.value),
+            }}
           />
-          <TextInput
-            type="number"
-            min={1}
-            placeholder={
-              structure === 'Résidentiel'
-                ? 'Nombre de logements'
-                : 'Surface (m²)'
-            }
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
+          <Input
+            label=""
+            nativeInputProps={{
+              type: 'number',
+              min: 1,
+              placeholder:
+                structure === 'Résidentiel'
+                  ? 'Nombre de logements'
+                  : 'Surface (m²)',
+              pattern: '[0-9]*',
+              value,
+              onChange: (e) => setValue(e.target.value),
+            }}
           />
         </Inputs>
         <div>

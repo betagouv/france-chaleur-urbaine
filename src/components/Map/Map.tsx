@@ -9,7 +9,6 @@ import MapReactGL, {
 } from 'react-map-gl/maplibre';
 
 import Hoverable from '@components/Hoverable';
-import { Icon } from '@codegouvfr/react-dsfr';
 import { useContactFormFCU, usePersistedState } from '@hooks';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -78,6 +77,7 @@ import { layersWithDynamicContentPopup } from './components/DynamicMapPopupConte
 import { SourceId } from 'src/services/tiles.config';
 import { isDevModeEnabled } from './components/DevModeIcon';
 import { fetchJSON } from '@utils/network';
+import Icon from '@components/ui/Icon';
 
 const mapSettings = {
   defaultLongitude: 2.3,
@@ -780,7 +780,7 @@ const Map = ({
                     : 'Masquer la légende'}
                 </Hoverable>
                 <Icon
-                  size="2x"
+                  size="lg"
                   name={
                     legendCollapsed
                       ? 'ri-arrow-right-s-fill'

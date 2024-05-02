@@ -1,13 +1,10 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import {
-  Alert,
-  Button,
-  Checkbox,
-  CheckboxGroup,
-  TextInput,
-} from '@codegouvfr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
+import { Input } from '@codegouvfr/react-dsfr/Input';
 import { updateAirtable } from '@helpers/airtable';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { AddressDataType } from 'src/types/AddressData';
 import { Airtable } from 'src/types/enum/Airtable';
 import styled from 'styled-components';
@@ -28,7 +25,10 @@ const choices = [
   'Bouche à oreille',
   'Services municipaux',
   'Webinaire',
-];
+  'Autre',
+] as const;
+
+type Choice = (typeof choices)[number];
 
 const EligibilityFormMessageConfirmation = ({
   addressData = {},
@@ -40,11 +40,11 @@ const EligibilityFormMessageConfirmation = ({
   const [other, setOther] = useState('');
   const [sondage, setSondage] = useState<string[]>([]);
   const [sondageAnswered, setSondageAnswered] = useState(false);
-  const answer = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.checked) {
-      setSondage(sondage.filter((value) => value !== e.target.name));
+  const answer = (choice: Choice, checked: boolean) => {
+    if (!checked) {
+      setSondage(sondage.filter((value) => value !== choice));
     } else {
-      setSondage(Array.from(new Set([...sondage, e.target.name])));
+      setSondage(Array.from(new Set([...sondage, choice])));
     }
   };
 
@@ -110,40 +110,38 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
       </ContactFormEligibilityResult>
       {addressData.airtableId &&
         (sondageAnswered ? (
-          <Alert type="success" title="Merci pour votre contribution"></Alert>
+          <Alert
+            severity="success"
+            title="Merci pour votre contribution"
+          ></Alert>
         ) : (
           <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
             <form onSubmit={sendSondage}>
               <h4>Aidez-nous à améliorer notre service :</h4>
-              <CheckboxGroup
+
+              <Checkbox
                 legend="Comment avez-vous connu France Chaleur Urbaine ?"
-                required
-              >
-                {choices.map((choice) => (
-                  <Checkbox
-                    key={choice}
-                    label={choice}
-                    id={choice}
-                    // @ts-expect-error: Create proper type
-                    onClick={answer}
-                  />
-                ))}
-                <Checkbox
-                  label="Autre"
-                  id="Autre"
-                  // @ts-expect-error: Create proper type
-                  onClick={answer}
+                options={choices.map((choice) => ({
+                  label: choice,
+                  nativeInputProps: {
+                    required: true, // FIXME vérifier que chaque checkbox n'est pas obligatoire..
+                    checked: true,
+                    onClick: (e) => answer(choice, (e.target as any).value),
+                  },
+                }))}
+              />
+              {sondage.includes('Autre') && (
+                <Input
+                  label=""
+                  nativeInputProps={{
+                    required: true,
+                    value: other,
+                    placeholder: 'Veuillez préciser',
+                    onChange: (e) => setOther(e.target.value),
+                  }}
                 />
-                {sondage.includes('Autre') && (
-                  <TextInput
-                    required
-                    value={other}
-                    placeholder="Veuillez préciser"
-                    onChange={(e) => setOther(e.target.value)}
-                  />
-                )}
-              </CheckboxGroup>
-              <Button submit>Valider</Button>
+              )}
+              <Button type="submit">Valider</Button>
             </form>
           </div>
         ))}

@@ -22,8 +22,7 @@ const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {
             }}
             border
             enlargeLink
-            background={false}
-            size="medium"
+            size="small"
             titleAs="h4"
           ></UnderstandingCard>
         </CardContainer>
