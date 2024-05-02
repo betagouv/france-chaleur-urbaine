@@ -286,7 +286,21 @@ const Manager = () => {
     },
     {
       name: 'Adresse',
-      label: 'Adresse',
+      label: (
+        <>
+          Adresse
+          <HoverableIcon
+            iconName="ri-information-fill"
+            position="bottom"
+            iconSize="lg"
+            top="0px"
+          >
+            La mention “PDP" est indiquée pour les adresses situées dans le
+            périmètre de développement prioritaire d’un réseau classé (connu par
+            France Chaleur Urbaine).
+          </HoverableIcon>
+        </>
+      ),
       render: (demand) => <Addresse demand={demand} />,
     },
     {
@@ -333,6 +347,7 @@ const Manager = () => {
             iconName="ri-information-fill"
             position="bottom-centered"
             iconSize="lg"
+            top="0px"
           >
             Distance à vol d'oiseau
           </HoverableIcon>
@@ -389,6 +404,7 @@ const Manager = () => {
             iconName="ri-information-fill"
             position="bottom"
             iconSize="lg"
+            top="0px"
           >
             "Non affecté" : demande éloignée du réseau non transmise aux
             opérateurs
