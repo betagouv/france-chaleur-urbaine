@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/1 (4).jpg
-coverY: 0
----
-
 # Identifier les gisements de chaleur fatale
 
 ❓ Où se situent les gisements de chaleur fatale mobilisables pour les réseaux de chaleur ? Si la récupération de la chaleur fatale constitue un enjeu majeur pour verdir les réseaux, encore faut-il pouvoir identifier où elle est disponible.\

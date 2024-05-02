@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/5 (3).jpg
-coverY: 0
----
-
 # Un accès simplifié aux schémas directeurs des réseaux de chaleur
 
 Comment avoir de la visibilité sur les développements futurs d'un réseau de chaleur ?\
@@ -15,7 +10,7 @@ Simplifier l'accès aux schémas directeurs est une demande forte qui nous est r
 \
 📢 Pour répondre à ce besoin, nous avons le plaisir de vous annoncer la mise en ligne des schémas directeurs de 44 réseaux franciliens. Une diffusion rendue possible grâce à la transmission des documents par l'[ADEME Ile-de-France](https://www.ademe.fr/direction-regionale/ile-de-france/), qui accompagne financièrement et techniquement la réalisation des schémas directeurs.... Et que nous espérons généraliser rapidement à l'échelle nationale !\
 \
-N'hésitez pas à [contribuer](https://france-chaleur-urbaine.beta.gouv.fr/reseaux/modifier) à cette diffusion en ajoutant les schémas directeurs dont vous disposez.\
+N'hésitez pas à [contribuer](https://france-chaleur-urbaine.beta.gouv.fr/reseaux/modifier) à cette diffusion en ajoutant les schémas directeurs dont vous disposez.
 
 
 _Les schémas directeurs sont diffusés sur les fiches par réseau, accessibles depuis la_ [_cartographie_](https://france-chaleur-urbaine.beta.gouv.fr/carte) _en cliquant sur un réseau puis sur "Voir plus d'informations"._\

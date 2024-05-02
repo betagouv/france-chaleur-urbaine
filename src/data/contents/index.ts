@@ -83,15 +83,15 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
-    image: '/contents/vignetteBiomasse.jpg', //KO
+    image: '/contents/6 (3).jpg',
     title: 'Des filtres pour comparer les réseaux de chaleur',
     slug: 'des-filtres-pour-comparer-les-reseaux-de-chaleur',
     content: importFile(readme),
-    publishedDate: new Date('2024-04-30'), //
-    themes: ['ENR&R', 'Prix'],
+    publishedDate: new Date('2024-04-30'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données', 'ENR&R', 'Prix'],
   },
   {
-    image: '/contents/vignetteBiomasse.jpg', //KO
+    image: '/contents/5 (3).jpg',
     title: 'Un accès simplifié aux schémas directeurs des réseaux de chaleur',
     slug: 'un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur',
     content: importFile(accesSimplifieSchemasDirecteursReseauxChaleur),
@@ -99,7 +99,7 @@ export const articles: Article[] = [
     themes: ['Réseaux de chaleur', 'Cartographie et données'],
   },
   {
-    image: '/contents/vignetteBiomasse.jpg', //KO
+    image: '/contents/4 (3).jpg',
     title: "Identifier des zones d'implantation pour le solaire thermique",
     slug: 'identifier-des-zones-dimplantation-pour-le-solaire-thermique',
     content: importFile(identifierZonesImplantationsSolaireThermique),
@@ -107,7 +107,7 @@ export const articles: Article[] = [
     themes: ['ENR&R', 'Réseaux de chaleur', 'Cartographie et données'],
   },
   {
-    image: '/contents/vignetteBiomasse.jpg', //KO
+    image: '/contents/7 (2).jpg',
     title: "Un chauffage écologique et économique ? C'est possible !",
     slug: 'un-chauffage-ecologique-et-economique-cest-possible',
     content: importFile(chauffageEcologiqueEconomiquePossible),
@@ -115,7 +115,7 @@ export const articles: Article[] = [
     themes: ['Réseaux de chaleur', 'Prix', 'Infographie'],
   },
   {
-    image: '/contents/vignetteBiomasse.jpg', //KO
+    image: '/contents/3 (4).jpg',
     title: 'Des données en open data enrichies',
     slug: 'des-donnees-en-open-data-enrichies',
     content: importFile(donneesOpenDataEnrichies),
@@ -127,7 +127,7 @@ export const articles: Article[] = [
     ],
   },
   {
-    image: '/contents/vignetteBiomasse.jpg', //KO
+    image: '/contents/8 (3).jpg',
     title: "Deux idées reçues sur l'énergie solaire",
     slug: 'l-deux-idees-recues-sur-lenergie-solaire',
     content: importFile(deuxIdeesRecuesEnergieSolaire),
@@ -147,7 +147,7 @@ export const articles: Article[] = [
     ],
   },
   {
-    image: '/contents/vignetteBiomasse.jpg', //KO
+    image: '/contents/9 (3).jpg',
     title: 'Deux idées reçues sur la géothermie',
     slug: 'deux-idees-recues-sur-la-geothermie',
     content: importFile(deuxIdeesRecuesGeothermie),
@@ -155,7 +155,7 @@ export const articles: Article[] = [
     themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
-    image: '/contents/vignetteBiomasse.jpg', //KO
+    image: '/contents/1 (4).jpg',
     title: 'Identifier les gisements de chaleur fatale',
     slug: 'identifier-les-gisements-de-chaleur-fatale',
     content: importFile(readme_25),
