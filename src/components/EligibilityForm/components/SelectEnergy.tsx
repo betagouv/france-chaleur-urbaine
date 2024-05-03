@@ -51,24 +51,16 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
       <RadioButtons
         legend={label ?? 'Chauffage actuel :'}
         name={name}
-        small
-        options={
-          Object.entries(selectOptions).map(([value, label]) => ({
-            label: label,
-            nativeInputProps: {
-              value: value,
-              // FIXME vérifier
-              // checked: value === optionValue,
-              onChange: onChange,
-            },
-          }))
-
-          // name={name}
-          // key={value}
-          // label={label}
-          // value={value}
-          // onChange={onChange}
-        }
+        orientation={cardMode ? 'vertical' : 'horizontal'}
+        options={Object.entries(selectOptions).map(([value, label]) => ({
+          label: label,
+          nativeInputProps: {
+            value: value,
+            // FIXME vérifier
+            // checked: value === optionValue,
+            onChange: onChange,
+          },
+        }))}
       />
     </>
   );

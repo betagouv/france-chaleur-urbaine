@@ -26,6 +26,9 @@ const onRouteChange = (url: string) => {
   }
 };
 
+// prevent the double init effect due to strict mode
+let hookInitialized = false;
+
 /**
  * Register analytics (Matomo only for now).
  * Matomo and Google Analytics page views both have to be triggered manually.
@@ -38,9 +41,12 @@ export const useAnalytics = () => {
 
   useEffect(() => {
     if (
+      !hookInitialized &&
       clientConfig.tracking.matomoServerURL &&
       clientConfig.tracking.matomoSiteId
     ) {
+      hookInitialized = true;
+
       initMatomo({
         url: clientConfig.tracking.matomoServerURL,
         siteId: clientConfig.tracking.matomoSiteId,

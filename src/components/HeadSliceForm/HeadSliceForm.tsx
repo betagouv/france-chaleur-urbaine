@@ -172,7 +172,6 @@ const HeadSlice = ({
               onAddressSelected={(address, suggestionItem) => {
                 setAddress(address);
                 setGeoAddress(suggestionItem);
-                return Promise.resolve();
               }}
               popoverClassName={'popover-search-form'}
             />

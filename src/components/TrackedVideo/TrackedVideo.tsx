@@ -1,4 +1,4 @@
-import { MediaVideo } from '@codegouvfr/react-dsfr';
+import Box from '@components/ui/Box';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { trackEvent } from 'src/services/analytics';
@@ -8,7 +8,6 @@ const TrackedVideo = ({
   width,
   poster,
   src,
-  className,
 }: {
   height?: string;
   width?: string;
@@ -27,19 +26,18 @@ const TrackedVideo = ({
   };
 
   return (
-    <MediaVideo className={className || undefined}>
-      <video
-        onPlay={onPlay}
-        height={height || undefined}
-        width={width || undefined}
-        controls
-        poster={poster}
-        src={src}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore: needed by DSFR
-        href={src}
-      />
-    </MediaVideo>
+    <Box className="fr-content-media">
+      <Box className="fr-responsive-vid">
+        <video
+          onPlay={onPlay}
+          height={height}
+          width={width}
+          controls
+          poster={poster}
+          src={src}
+        />
+      </Box>
+    </Box>
   );
 };
 

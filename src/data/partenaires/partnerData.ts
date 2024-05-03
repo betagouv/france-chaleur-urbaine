@@ -1,4 +1,4 @@
-export default [
+export const partenaires = [
   {
     image: '/logo-SMIREC.jpg',
     title: 'SMIREC',

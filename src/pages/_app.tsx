@@ -1,4 +1,4 @@
-import ConsentBanner from '@components/ConsentBanner';
+// import ConsentBanner from '@components/ConsentBanner';
 import {
   FacebookMarkup,
   GoogleAdsMarkup,
@@ -196,7 +196,7 @@ function App({
         }}
       >
         {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
-        {!iframedPaths.some((path) => router.pathname.match(path)) && (
+        {/* {!iframedPaths.some((path) => router.pathname.match(path)) && (
           <ConsentBanner>
             {clientConfig.tracking.googleTagId && (
               <GoogleAdsMarkup googleId={clientConfig.tracking.googleTagId} />
@@ -217,7 +217,7 @@ function App({
                 />
               )}
           </ConsentBanner>
-        )}
+        )} */}
         <Head>
           {favicons.map(
             (

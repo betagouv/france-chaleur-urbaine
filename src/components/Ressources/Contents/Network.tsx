@@ -1,6 +1,6 @@
 import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
-import { Col, Row } from '@codegouvfr/react-dsfr';
 import { List, Source, Subtitle } from './Contents.styles';
+import Box from '@components/ui/Box';
 
 const Network = () => {
   return (
@@ -8,8 +8,8 @@ const Network = () => {
       <Subtitle>
         Tout réseau de chaleur comporte les principaux éléments suivants :
       </Subtitle>
-      <Row>
-        <Col n="md-12 lg-6" className="fr-pr-1w">
+      <Box className="fr-grid-row">
+        <Box className="fr-col-md-12 fr-col-lg-6 fr-pr-1w">
           <List>
             <li>
               L’<b>unité de production de chaleur</b> : il peut s’agir d’une
@@ -32,15 +32,15 @@ const Network = () => {
               circuit.
             </li>
           </List>
-        </Col>
-        <Col n="md-0 lg-6" className="fr-pl-1w fr-hidden fr-unhidden-lg">
+        </Box>
+        <Box className="fr-col-md fr-col-lg-6 fr-pl-1w fr-hidden fr-unhidden-lg">
           <img
             width="100%"
             src="/img/rcu-illustation.svg"
             alt="Un reseau de chaleur urbain"
           />
-        </Col>
-      </Row>
+        </Box>
+      </Box>
       <List withoutMargin>
         <li>
           Les <b>sous-stations d’échange</b> : situées en pied d’immeuble, elles

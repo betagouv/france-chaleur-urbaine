@@ -10,9 +10,10 @@ import {
   SliceContactFormStyle,
 } from '@components/HeadSliceForm/HeadSliceForm.style';
 import Slice from '@components/Slice';
-import { Col, Icon } from '@codegouvfr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
 import { Close, Container, Form, Title } from './StickyForm.styles';
+import Box from '@components/ui/Box';
+import Icon from '@components/ui/Icon';
 
 const StickyForm = ({ title }: { title?: string }) => {
   const {
@@ -46,11 +47,11 @@ const StickyForm = ({ title }: { title?: string }) => {
       )}
 
       {!showWarning && loadingStatus === 'loading' && (
-        <Col n="12">
+        <Box className="fr-col-12">
           <LoaderWrapper show>
             <Loader color="balck" />
           </LoaderWrapper>
-        </Col>
+        </Box>
       )}
 
       <SliceContactFormStyle />

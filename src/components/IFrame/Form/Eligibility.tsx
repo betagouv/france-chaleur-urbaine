@@ -38,7 +38,6 @@ const Eligibility = () => {
           placeholder="Tapez ici votre adresse"
           onAddressSelected={(address, suggestionItem) => {
             setAddress(suggestionItem);
-            return Promise.resolve();
           }}
           popoverClassName={'popover-search-form'}
         />

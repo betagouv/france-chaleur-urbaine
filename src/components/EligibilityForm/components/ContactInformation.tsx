@@ -1,9 +1,10 @@
 import Input from '@components/shared/input';
-import RadioGroup from '@components/shared/RadioGroup';
+// import RadioGroup from '@components/shared/RadioGroup';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Field, useFormikContext } from 'formik';
 import styled from 'styled-components';
 import * as Yup from 'yup';
+import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 
 const InputWraper = styled.div`
   opacity: 1;
@@ -93,12 +94,30 @@ const ContactInformation = ({
     <>
       <fieldset className={`fr-fieldset fr-mt-${cardMode ? '1' : '3'}w`}>
         <InputWraper>
-          <RadioGroup
+          {/* <RadioGroup
             required
             isInline={!cardMode}
             label={fieldLabelInformation.structure.label}
             name="structure"
             inputs={fieldLabelInformation.structure.inputs}
+          /> */}
+          {/* FIXME intégrer les erreurs formik */}
+          <RadioButtons
+            legend={fieldLabelInformation.structure.label}
+            name="structure"
+            orientation={cardMode ? 'vertical' : 'horizontal'}
+            options={fieldLabelInformation.structure.inputs.map(
+              ({ value, label, id }) => ({
+                label: label,
+                nativeInputProps: {
+                  id: id,
+                  value: value,
+                  // FIXME vérifier
+                  // checked: value === optionValue,
+                  //  onChange: onChange,
+                },
+              })
+            )}
           />
         </InputWraper>
       </fieldset>
@@ -113,12 +132,29 @@ const ContactInformation = ({
         )}
       <fieldset className="fr-fieldset fr-my-1w">
         <InputWraper>
-          <RadioGroup
+          {/* <RadioGroup
             label={fieldLabelInformation.heatingEnergy.label}
             name="heatingEnergy"
             inputs={fieldLabelInformation.heatingEnergy.inputs}
             required
             isInline={!cardMode}
+          /> */}
+          <RadioButtons
+            legend={fieldLabelInformation.heatingEnergy.label}
+            name="heatingEnergy"
+            orientation={cardMode ? 'vertical' : 'horizontal'}
+            options={fieldLabelInformation.heatingEnergy.inputs.map(
+              ({ value, label, id }) => ({
+                label: label,
+                nativeInputProps: {
+                  id: id,
+                  value: value,
+                  // FIXME vérifier
+                  // checked: value === optionValue,
+                  //  onChange: onChange,
+                },
+              })
+            )}
           />
         </InputWraper>
       </fieldset>

@@ -1,11 +1,3 @@
-import {
-  Col,
-  Container,
-  Row,
-  SideMenuItem,
-  SideMenuLink,
-} from '@codegouvfr/react-dsfr';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import Guide from './Guide';
@@ -13,19 +5,10 @@ import Header from './Header';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
 import StickyForm from '../StickyForm/StickyForm';
-import {
-  coldNetworks,
-  growths,
-  issues,
-  supports,
-  understandings,
-} from './config';
+import { coldNetworks, growths, issues, understandings } from './config';
+import Box from '@components/ui/Box';
 
 const getContent = (ressourceKey: string) => {
-  if (ressourceKey === 'supports') {
-    return supports;
-  }
-
   return (
     issues[ressourceKey] ||
     understandings[ressourceKey] ||
@@ -65,169 +48,74 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
       <div id="contenu" />
       <StickyForm />
       <StickyWrapper>
-        <Container className="fr-my-4w" as="main">
-          <Row>
-            <Col n="md-3 12">
-              <SideMenu title="Aller plus loin :" buttonLabel="Sommaire">
-                <SideMenuItem
-                  title="Les enjeux de la transition énergétique avec les réseaux de chaleur"
-                  expandedDefault
-                  current={Object.keys(issues).includes(ressourceKey)}
-                >
-                  {Object.entries(issues).map(([key, issue]) => (
-                    <SideMenuLink
-                      key={key}
-                      asLink={
-                        <Link
-                          href={`/ressources/${key}#contenu`}
-                          scroll={false}
-                          legacyBehavior
-                        >
-                          <a
-                            className="fr-sidemenu__link fr-link--md"
-                            aria-current={
-                              ressourceKey === key ? 'page' : undefined
-                            }
-                          >
-                            {issue.title}
-                          </a>
-                        </Link>
-                      }
-                      current={ressourceKey === key}
-                    >
-                      {issue.title}
-                    </SideMenuLink>
-                  ))}
-                </SideMenuItem>
-                <SideMenuItem
-                  title="Les réseaux de chaleur en pratique : tout comprendre pour se raccorder"
-                  expandedDefault
-                  current={Object.keys(understandings).includes(ressourceKey)}
-                >
-                  {Object.entries(understandings).map(
-                    ([key, understanding]) => (
-                      <SideMenuLink
-                        key={key}
-                        asLink={
-                          <Link
-                            href={`/ressources/${key}#contenu`}
-                            scroll={false}
-                            legacyBehavior
-                          >
-                            <a
-                              className="fr-sidemenu__link fr-link--md"
-                              aria-current={
-                                ressourceKey === key ? 'page' : undefined
-                              }
-                            >
-                              {understanding.title}
-                            </a>
-                          </Link>
-                        }
-                        current={ressourceKey === key}
-                      >
-                        {understanding.title}
-                      </SideMenuLink>
-                    )
-                  )}
-                </SideMenuItem>
-                <SideMenuItem
-                  title="Une filière en pleine croissance"
-                  expandedDefault
-                  current={Object.keys(growths).includes(ressourceKey)}
-                >
-                  {Object.entries(growths).map(([key, growth]) => (
-                    <SideMenuLink
-                      key={key}
-                      asLink={
-                        <Link
-                          href={`/ressources/${key}#contenu`}
-                          scroll={false}
-                          legacyBehavior
-                        >
-                          <a
-                            className="fr-sidemenu__link fr-link--md"
-                            aria-current={
-                              ressourceKey === key ? 'page' : undefined
-                            }
-                          >
-                            {growth.title}
-                          </a>
-                        </Link>
-                      }
-                      current={ressourceKey === key}
-                    >
-                      {growth.title}
-                    </SideMenuLink>
-                  ))}
-                </SideMenuItem>
-                <SideMenuItem
-                  title="Les réseaux de froid, un enjeu pour l'avenir"
-                  expandedDefault
-                  current={Object.keys(coldNetworks).includes(ressourceKey)}
-                >
-                  {Object.entries(coldNetworks).map(([key, resource]) => (
-                    <SideMenuLink
-                      key={key}
-                      asLink={
-                        <Link
-                          href={`/ressources/${key}#contenu`}
-                          scroll={false}
-                          legacyBehavior
-                        >
-                          <a
-                            className="fr-sidemenu__link fr-link--md"
-                            aria-current={
-                              ressourceKey === key ? 'page' : undefined
-                            }
-                          >
-                            {resource.title}
-                          </a>
-                        </Link>
-                      }
-                      current={ressourceKey === key}
-                    >
-                      {resource.title}
-                    </SideMenuLink>
-                  ))}
-                </SideMenuItem>
-                <SideMenuItem
-                  title="Nos supports de communication"
-                  expandedDefault
-                  current={ressourceKey === 'supports'}
-                >
-                  <SideMenuLink
-                    asLink={
-                      <Link
-                        href={`/ressources/supports#contenu`}
-                        scroll={false}
-                        legacyBehavior
-                      >
-                        <a
-                          className="fr-sidemenu__link fr-link--md"
-                          aria-current={
-                            ressourceKey === 'supports' ? 'page' : undefined
-                          }
-                        >
-                          Retrouvez ici tous nos supports de communication à
-                          partager autour de vous !
-                        </a>
-                      </Link>
-                    }
-                    current={ressourceKey === 'supports'}
-                  >
-                    Retrouvez ici tous nos supports de communication à partager
-                    autour de vous !
-                  </SideMenuLink>
-                </SideMenuItem>
-              </SideMenu>
-            </Col>
-            <Col n="md-9 12">
-              <RessourceContent content={getContent(ressourceKey)} />
-              {ressourceKey !== 'supports' && <Guide />}
-            </Col>
-          </Row>
-        </Container>
+        <Box as="main" className="fr-container fr-grid-row" my="4w">
+          <Box className="fr-col-12 fr-col-md-3">
+            <SideMenu
+              burgerMenuButtonText="Dans cette rubrique"
+              title="Aller plus loin :"
+              items={[
+                {
+                  text: 'Les enjeux de la transition énergétique avec les réseaux de chaleur',
+                  isActive: Object.keys(issues).includes(ressourceKey),
+                  items: Object.entries(issues).map(([key, issue]) => ({
+                    text: issue.title,
+                    isActive: ressourceKey === key,
+                    linkProps: {
+                      href: `/ressources/${key}#contenu`,
+                      scroll: false,
+                    },
+                  })),
+                },
+                {
+                  text: 'Les réseaux de chaleur en pratique : tout comprendre pour se raccorder',
+                  isActive: Object.keys(understandings).includes(ressourceKey),
+                  items: Object.entries(understandings).map(([key, issue]) => ({
+                    text: issue.title,
+                    isActive: ressourceKey === key,
+                    linkProps: {
+                      href: `/ressources/${key}#contenu`,
+                      scroll: false,
+                    },
+                  })),
+                },
+                {
+                  text: 'Une filière en pleine croissance',
+                  isActive: Object.keys(growths).includes(ressourceKey),
+                  items: Object.entries(growths).map(([key, issue]) => ({
+                    text: issue.title,
+                    isActive: ressourceKey === key,
+                    linkProps: {
+                      href: `/ressources/${key}#contenu`,
+                      scroll: false,
+                    },
+                  })),
+                },
+                {
+                  text: "Les réseaux de froid, un enjeu pour l'avenir",
+                  isActive: Object.keys(coldNetworks).includes(ressourceKey),
+                  items: Object.entries(coldNetworks).map(([key, issue]) => ({
+                    text: issue.title,
+                    isActive: ressourceKey === key,
+                    linkProps: {
+                      href: `/ressources/${key}#contenu`,
+                      scroll: false,
+                    },
+                  })),
+                },
+                {
+                  text: 'Nos supports de communication',
+                  linkProps: {
+                    href: `/ressources/supports`,
+                  },
+                },
+              ]}
+            />
+          </Box>
+          <Box className="fr-col-12 fr-col-md-9">
+            <RessourceContent content={getContent(ressourceKey)} />
+            <Guide />
+          </Box>
+        </Box>
       </StickyWrapper>
     </>
   );

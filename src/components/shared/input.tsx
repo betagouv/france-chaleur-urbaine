@@ -1,4 +1,4 @@
-import { TextInput } from '@codegouvfr/react-dsfr';
+import { Input as DSFRInput } from '@codegouvfr/react-dsfr/Input';
 import { _hasError } from '@utils/form-utils';
 
 const Input = ({
@@ -12,14 +12,17 @@ const Input = ({
 }: any) => {
   const hasError = _hasError(field.name, form);
   return (
-    <TextInput
+    <DSFRInput
       label={label}
-      required={required}
-      type={type}
-      {...field}
-      {...otherProps}
-      message={form.errors[field.name]}
-      messageType={hasError ? 'error' : null}
+      nativeInputProps={{
+        type,
+        required,
+        id,
+        ...field,
+        ...otherProps,
+      }}
+      state={hasError ? 'error' : 'default'}
+      stateRelatedMessage={form.errors[field.name]}
     />
   );
 };

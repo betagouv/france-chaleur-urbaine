@@ -1,5 +1,5 @@
 import Loader from '@components/Loader';
-import { Button } from '@codegouvfr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Form, Formik, FormikValues } from 'formik';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
@@ -67,7 +67,7 @@ export const ContactForm = ({
             {isLoading ? (
               <Loader color="#4550e5" show />
             ) : (
-              <Button submit disabled={isLoading}>
+              <Button type="submit" disabled={isLoading}>
                 Envoyer
               </Button>
             )}

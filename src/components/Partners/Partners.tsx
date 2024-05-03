@@ -1,4 +1,4 @@
-import { partnerData } from '@data/partenaires';
+import { partenaires } from '@data/partenaires/partnerData';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Arrow,
@@ -15,7 +15,7 @@ import ButtonsGroup from '@codegouvfr/react-dsfr/ButtonsGroup';
 const Partners = () => {
   const [firstLogo, setFirstLogo] = useState(0);
   const logos = useMemo(() => {
-    const shuffledLogos = partnerData
+    const shuffledLogos = partenaires
       .map(({ image, title, link }) => ({
         key: title,
         image,
@@ -33,7 +33,7 @@ const Partners = () => {
   const setNextLogo = useCallback(
     (value: number) => {
       setFirstLogo(
-        (firstLogo + value + partnerData.length) % partnerData.length
+        (firstLogo + value + partenaires.length) % partenaires.length
       );
     },
     [firstLogo]
