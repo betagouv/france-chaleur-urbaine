@@ -311,6 +311,12 @@ function SimpleMapLegend({
                 values
               )
             }
+            domainTransform={{
+              percentToValue: (value) =>
+                value * 10 + Math.max(value - 70, 0) * 100,
+              valueToPercent: (value) =>
+                value / 10 - Math.max(value - 700, 0) / 11,
+            }}
             unit="GWh"
           />
           <LegendSeparator />
