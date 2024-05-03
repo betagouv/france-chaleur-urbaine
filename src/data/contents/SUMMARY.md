@@ -1,6 +1,15 @@
 # Table of contents
 
-* [Les chaudières biomasse ne contribuent pas à la déforestation](README.md)
+* [Des filtres pour comparer les réseaux de chaleur](README.md)
+* [Un accès simplifié aux schémas directeurs des réseaux de chaleur](un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md)
+* [Identifier des zones d'implantation pour le solaire thermique](identifier-des-zones-dimplantation-pour-le-solaire-thermique.md)
+* [Un chauffage écologique et économique ? C'est possible !](un-chauffage-ecologique-et-economique-cest-possible.md)
+* [Des données en open data enrichies](des-donnees-en-open-data-enrichies.md)
+* [Deux idées reçues sur l'énergie solaire](deux-idees-recues-sur-lenergie-solaire.md)
+* [Des données à jour et facilement accessibles](<README (26).md>)
+* [Deux idées reçues sur la géothermie](deux-idees-recues-sur-la-geothermie.md)
+* [Identifier les gisements de chaleur fatale](<README (25).md>)
+* [Les chaudières biomasse ne contribuent pas à la déforestation](<README (24).md>)
 * [Les réseaux de chaleur : plus si urbains que ça !](<README (23).md>)
 * [Où créer un réseau de chaleur sur mon territoire ?](ou-creer-un-reseau-de-chaleur-sur-mon-territoire.md)
 * [Le classement des réseaux : quel bilan ?](le-classement-des-reseaux-quel-bilan.md)

@@ -17,6 +17,10 @@ const ArticleContentWrapper = styled(Box)`
   a {
     word-break: break-word;
   }
+  em {
+    color: inherit;
+    font-style: italic;
+  }
 `;
 
 const ThemeTagItem = styled.li`
@@ -25,7 +29,7 @@ const ThemeTagItem = styled.li`
   line-height: 1.8em !important;
 `;
 
-const Article = () => {
+const ArticleContent = () => {
   const router = useRouter();
   const [article, setArticle] = useState<Article | null>(null);
 
@@ -101,4 +105,4 @@ const Article = () => {
   );
 };
 
-export default Article;
+export default ArticleContent;

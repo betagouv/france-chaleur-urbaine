@@ -1,7 +1,10 @@
-# Les chaudières biomasse ne contribuent pas à la déforestation
+# Des filtres pour comparer les réseaux de chaleur
 
-🌿 La biomasse fait souvent l'objet de débats... enflammés ! Peut-on vraiment la considérer comme une énergie renouvelable ? Y en aura-t-il assez pour tous les usages dans les prochaines années ? Est-elle vraiment locale ? Son utilisation en chaufferie ne contribue-t-elle pas au phénomène de déforestation ? C'est à cette dernière question que nous nous attaquons aujourd'hui, avec la seconde infographie de notre série sur les idées reçues.\
+🔎 Filtrer les réseaux de chaleur selon leurs caractéristiques techniques et économiques, et faire ressortir des réseaux comparables : c'est désormais possible sur la [cartographie](https://france-chaleur-urbaine.beta.gouv.fr/carte) France Chaleur Urbaine !\
 \
-🌳 Et la réponse est non ! L'usage de la biomasse par les réseaux de chaleur ne participe pas à la destruction de la forêt française, dont la surface s'étend chaque année. La forêt est en revanche affectée par d'autres phénomènes, conséquences du changement climatique : canicules, sécheresses, incendies... Pour limiter l'importance de ceux-ci, il est urgent de réduire nos émissions de gaz à effet de serre, ce à quoi les réseaux de chaleur contribuent.
+🤓 Une nouvelle fois, cette fonctionnalité répond à une demande formulée par des usagers du service, en particulier des bureaux d'études, mais aussi des copropriétés soucieuses de disposer d'éléments de comparaison sur les performances environnementales et la compétitivité du réseau le plus proche.\
+\
+🔧 Cette fonctionnalité permet de filtrer les réseaux à afficher en fonction de leur énergie majoritaire, taux EnR\&R, contenu CO2, prix moyen de la chaleur et année de construction. Il est également possible de définir des conditions sur le mix énergétique des réseaux à visualiser (cliquer sur "Plus d'options"). Il s'agit de la première étape d'un outil plus avancé de comparaison des réseaux, qui verra le jour dans les prochaines semaines.
 
-<figure><img src=".gitbook/assets/2.jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/16 (1).jpg" alt=""><figcaption></figcaption></figure>
+
