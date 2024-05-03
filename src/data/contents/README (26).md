@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/2 (4).jpg
-coverY: 0
----
-
 # Des données à jour et facilement accessibles
 
 📊 Il est primordial de simplifier l'accès aux données pour accompagner le développement des réseaux de chaleur, et France Chaleur Urbaine met tout en œuvre en ce sens depuis son lancement !\

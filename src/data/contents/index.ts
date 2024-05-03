@@ -135,7 +135,7 @@ export const articles: Article[] = [
     themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },
   {
-    image: '/contents/vignetteBiomasse.jpg', //KO
+    image: '/contents/2 (4).jpg',
     title: 'Des données à jour et facilement accessibles',
     slug: 'l-des-donnees-a-jour-et-facilement-accessibles',
     content: importFile(readme_26),
