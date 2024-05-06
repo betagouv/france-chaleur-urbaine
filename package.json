@@ -55,7 +55,7 @@
     "cors": "^2.8.5",
     "cron": "^2.4.1",
     "dotenv": "^16.3.1",
-    "ejs": "^3.1.9",
+    "ejs": "^3.1.10",
     "express-rate-limit": "^7.1.5",
     "formidable": "^3.5.1",
     "formik": "^2.4.3",
