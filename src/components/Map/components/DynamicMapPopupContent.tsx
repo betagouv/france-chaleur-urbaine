@@ -217,32 +217,6 @@ function formatMWh(value: number): ReactElement {
   );
 }
 
-/**
- * Intervals:
- * - < 25 GWh
- * - [100;250 GWh[
- * - >= 2000 GWh
- */
-function formatConsommation(value: string): string {
-  switch (value[0]) {
-    case '<': {
-      const match = /< (\d+) GWh/.exec(value);
-      return match ? `inférieure à ${match[1]} GWh/an` : value;
-    }
-    case '>': {
-      const match = />= (\d+) GWh/.exec(value);
-      return match ? `supérieure à ${match[1]} GWh/an` : value;
-    }
-    case '[': {
-      const match = /\[(\d+);(\d+) GWh\[/.exec(value);
-      return match ? `entre ${match[1]} et ${match[2]} GWh/an` : value;
-    }
-    default:
-      // unknown
-      return value;
-  }
-}
-
 const ENRRMobilisableDatacenterPopupContent = ({
   datacenter,
 }: {
@@ -268,24 +242,30 @@ const ENRRMobilisableIndustriePopupContent = ({
   return (
     <section>
       <PopupType className="fr-mr-3w">Industrie</PopupType>
-      <PopupTitle className="fr-mr-3w">{industrie.nom_site}</PopupTitle>
-      <PopupProperty label="Activité" value={industrie.activite} />
-      <PopupProperty label="Exploitant" value={industrie.exploitant} />
+      <PopupTitle className="fr-mr-3w">{industrie.nom_etabli}</PopupTitle>
+      <PopupProperty label="Activité" value={industrie.type_act} />
+      <PopupProperty label="Exploitant" value={industrie.nom_commun} />
       <PopupProperty
-        label="Consommation"
-        value={industrie.conso}
-        formatter={formatConsommation}
+        label="Potentiel minimal de chaleur valorisable (BT)"
+        value={industrie.potbas_bt}
+        unit="MWh/an"
       />
       <PopupProperty
-        label="Température des effluents majoritaires"
-        value={industrie.t_major}
+        label="Potentiel maximale de chaleur valorisable (BT)"
+        value={industrie.pothaut_bt}
+        unit="MWh/an"
       />
       <PopupProperty
-        label="Température des effluents minoritaires"
-        value={industrie.t_minor}
+        label="Potentiel minimal de chaleur valorisable (HT)"
+        value={industrie.potbas_ht}
+        unit="MWh/an"
       />
-      <PopupProperty label="Commune" value={industrie.com_nom} />
-      <QualiteLabel value={industrie.qualite_xy} />
+      <PopupProperty
+        label="Potentiel maximale de chaleur valorisable (HT)"
+        value={industrie.pothaut_ht}
+        unit="MWh/an"
+      />
+      <QualiteLabel value={industrie.quali_xy} />
     </section>
   );
 };
@@ -345,9 +325,17 @@ const ENRRMobilisableUniteDIncinerationPopupContent = ({
         {uniteDIncineration.nom_inst}
       </PopupTitle>
       <PopupProperty label="Type" value={uniteDIncineration.type_inst} />
-      {/* Désactivé car non fiable dans les données pour le moment */}
-      {/* <PopupProperty label="Commune" value={uniteDIncineration.com_nom} /> */}
-      <QualiteLabel value={uniteDIncineration.qualite_xy} />
+      <PopupProperty
+        label="Potentiel minimal de chaleur valorisable"
+        value={uniteDIncineration.min_prd_cr}
+        unit="MWh/an"
+      />
+      <PopupProperty
+        label="Potentiel maximal de chaleur valorisable"
+        value={uniteDIncineration.max_prd_cr}
+        unit="MWh/an"
+      />
+      <PopupProperty label="Commune" value={uniteDIncineration.nom_comm} />
     </section>
   );
 };

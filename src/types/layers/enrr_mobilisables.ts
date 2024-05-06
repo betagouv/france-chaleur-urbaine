@@ -10,17 +10,20 @@ export interface Datacenter {
 }
 
 export interface Industrie {
-  GmlID: string;
-  'db_gd5kj.hsu_pnjyu.industrie_industrie.fid': number;
-  id_unique: string;
-  com_nom: string;
-  nom_site: string;
-  activite: string;
-  exploitant: string;
-  conso: string;
-  t_major: string;
-  t_minor: string;
-  qualite_xy: string;
+  GmlID: string; // computed with a script
+  fid: number;
+  comm_bt: string;
+  quali_xy: number;
+  potbas_ht: number;
+  source: string;
+  pothaut_bt: number;
+  nom_commun: string;
+  nom_etabli: string;
+  pothaut_ht: number;
+  type_act: string;
+  comm_ht: string;
+  commentair: string;
+  potbas_bt: number;
 }
 
 export interface InstallationElectrogene {
@@ -46,13 +49,20 @@ export interface StationDEpuration {
 }
 
 export interface UniteDIncineration {
-  GmlID: string;
-  'db_gd5kj.hsu_pnjyu.unites_d_incineration_unites_d_incineration.fid': number;
-  id: string;
-  com_nom: string;
+  GmlID: string; // computed with a script
+  fid: number;
+  nom_comm: string;
+  max_prd_cr: number;
+  insee_com: number;
+  min_prd_cr: number;
+  dep: string;
+  max_prd: number;
+  code_dep: number;
   nom_inst: string;
+  min_prd: number;
   type_inst: string;
-  qualite_xy: number;
+  comt: string;
+  info: string;
 }
 
 export interface SolaireThermiqueFriche {
