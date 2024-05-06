@@ -2,8 +2,6 @@ import { List } from '@components/Ressources/Contents/Contents.styles';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import { dataNumberFcu } from '@data';
-// import { FooterPartnersLogo, Logo } from '@codegouvfr/react-dsfr/Footer';
-// import Link from 'next/link';
 import { Description, Logos, Row, Title } from './index.styles';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
@@ -17,10 +15,6 @@ const Us = () => {
         </Heading>
         <Row>
           <div className="fr-logo">République Française</div>
-          {/* FIXME logo ! */}
-          {/* <Logo splitCharacter={10} href="">
-            République Française
-          </Logo> */}
           <Description>
             France Chaleur Urbaine est un{' '}
             <b>service gratuit proposé par l’État</b> qui promeut le chauffage
@@ -75,7 +69,7 @@ const Us = () => {
             numérique (DINUM), qui aide les administrations publiques à
             construire des services numériques utiles, simples et faciles à
             utiliser. À ce titre, une équipe de 6 freelances (designer, chargés
-            de déploiement, developpeurs...) accompagne le projet.
+            de déploiement, développeurs...) accompagne le projet.
             <br />
             En savoir plus :{' '}
             <Link href="https://beta.gouv.fr" isExternal>

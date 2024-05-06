@@ -1,8 +1,8 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import SimplePage from '@components/shared/page/SimplePage';
+import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { getArticle } from '@data/contents';
 import { useRouter } from 'next/router';
@@ -25,7 +25,7 @@ const ThemeTagItem = styled.li`
   line-height: 1.8em !important;
 `;
 
-const Article = () => {
+const ActualitePage = () => {
   const router = useRouter();
   const [article, setArticle] = useState<Article | null>(null);
 
@@ -49,29 +49,20 @@ const Article = () => {
   return (
     <SimplePage currentPage="/ressources" title={title}>
       <Box className="fr-container fr-mb-n2w fr-mb-md-n4w">
-        <nav
-          role="navigation"
-          className="fr-breadcrumb"
-          aria-label="Vous êtes ici"
-        >
-          <ol className="fr-breadcrumb__list">
-            <li>
-              <Link className="fr-breadcrumb__link" href="/">
-                Accueil
-              </Link>
-            </li>
-            <li>
-              <Link className="fr-breadcrumb__link" href="/actus">
-                Nos actualités
-              </Link>
-            </li>
-            <li>
-              <a className="fr-breadcrumb__link" aria-current="page">
-                {title}
-              </a>
-            </li>
-          </ol>
-        </nav>
+        <Breadcrumb
+          currentPageLabel={title}
+          homeLinkProps={{
+            href: '/',
+          }}
+          segments={[
+            {
+              label: 'Nos actualités',
+              linkProps: {
+                href: '/actus',
+              },
+            },
+          ]}
+        />
       </Box>
 
       <Box backgroundColor="blue-cumulus-950-100">
@@ -101,4 +92,4 @@ const Article = () => {
   );
 };
 
-export default Article;
+export default ActualitePage;

@@ -21,7 +21,7 @@ const themes = [
     .keys(),
 ].sort();
 
-const Articles = () => {
+const ActualitesPage = () => {
   const [selectedThemes, setSelectedThemes] = useQueryState(
     'themes',
     parseAsArrayOf(parseAsString).withDefault([])
@@ -153,7 +153,7 @@ const Articles = () => {
   );
 };
 
-export default Articles;
+export default ActualitesPage;
 
 const markdownLinksRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
 
