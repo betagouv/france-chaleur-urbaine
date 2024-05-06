@@ -164,7 +164,7 @@ function SimpleMapLegend({
           onClick={() => toggleSectionExpansion('reseauxDeChaleur')}
           title="Afficher/Masquer le détail"
         >
-          <Icon size="lg" name="ri-equalizer-line" />
+          <Icon riSize="1x" name="ri-equalizer-line" />
         </Button>
       </Box>
       <Text
@@ -192,7 +192,6 @@ function SimpleMapLegend({
 
             <Select
               label=""
-              // placeholder="Select an options"
               nativeSelectProps={{
                 value: mapConfiguration.reseauxDeChaleur.energieMajoritaire,
                 onChange: (e) => {
@@ -383,7 +382,12 @@ function SimpleMapLegend({
           </Box>
 
           <InfoIcon>
-            <Icon size="md" name="ri-information-fill" cursor="help" mr="1w" />
+            <Icon
+              riSize="1x"
+              name="ri-information-fill"
+              cursor="help"
+              mr="1w"
+            />
 
             <Hoverable position="bottom">
               Pour les réseaux classés, le raccordement des bâtiments neufs ou
@@ -431,7 +435,12 @@ function SimpleMapLegend({
           </Text>
 
           <InfoIcon>
-            <Icon size="md" name="ri-information-fill" cursor="help" mr="1w" />
+            <Icon
+              riSize="1x"
+              name="ri-information-fill"
+              cursor="help"
+              mr="1w"
+            />
 
             <Hoverable position="bottom">
               Dans cette zone, le raccordement des nouvelles constructions ou
@@ -493,7 +502,12 @@ function SimpleMapLegend({
           </Box>
 
           <InfoIcon>
-            <Icon size="md" name="ri-information-fill" cursor="help" mr="1w" />
+            <Icon
+              riSize="1x"
+              name="ri-information-fill"
+              cursor="help"
+              mr="1w"
+            />
 
             <Hoverable position="bottom">
               Projets financés par l'ADEME ou signalés par les collectivités et
@@ -564,7 +578,7 @@ function SimpleMapLegend({
             mx="auto"
             mt="1w"
           >
-            <Icon name="ri-upload-2-line" size="lg" mr="1w" />
+            <Icon name="ri-upload-2-line" size="sm" mr="1w" />
             Contribuer
           </Link>
           <Link
@@ -691,9 +705,8 @@ function SimpleMapLegend({
               title="Afficher/Masquer le détail"
             >
               <Icon
-                size="lg"
+                riSize="1x"
                 name="ri-arrow-down-s-line"
-                className="fr-mr-0"
                 rotate={!!sectionsExpansions['consommationsGaz']}
               />
             </Button>
@@ -863,9 +876,8 @@ function SimpleMapLegend({
               title="Afficher/Masquer le détail"
             >
               <Icon
-                size="lg"
+                riSize="1x"
                 name="ri-arrow-down-s-line"
-                className="fr-mr-0"
                 rotate={!!sectionsExpansions['batimentsGazCollectif']}
               />
             </Button>
@@ -941,9 +953,8 @@ function SimpleMapLegend({
               title="Afficher/Masquer le détail"
             >
               <Icon
-                size="lg"
+                riSize="1x"
                 name="ri-arrow-down-s-line"
-                className="fr-mr-0"
                 rotate={!!sectionsExpansions['batimentsFioulCollectif']}
               />
             </Button>
@@ -1050,7 +1061,7 @@ function SimpleMapLegend({
             </Text>
 
             <InfoIcon>
-              <Icon size="md" name="ri-information-fill" cursor="help" />
+              <Icon riSize="1x" name="ri-information-fill" cursor="help" />
 
               <Hoverable position="bottom">
                 Modélisation réalisée par le Cerema dans le cadre du projet
@@ -1073,9 +1084,8 @@ function SimpleMapLegend({
               title="Afficher/Masquer le détail"
             >
               <Icon
-                size="lg"
+                riSize="1x"
                 name="ri-arrow-down-s-line"
-                className="fr-mr-0"
                 rotate={!!sectionsExpansions['zonesOpportunite']}
               />
             </Button>
@@ -1191,7 +1201,7 @@ function SimpleMapLegend({
             </Text>
 
             <InfoIcon>
-              <Icon size="md" name="ri-information-fill" cursor="help" />
+              <Icon riSize="1x" name="ri-information-fill" cursor="help" />
 
               <Hoverable position="bottom">
                 Données du projet{' '}
@@ -1213,9 +1223,8 @@ function SimpleMapLegend({
               title="Afficher/Masquer le détail"
             >
               <Icon
-                size="lg"
+                riSize="1x"
                 name="ri-arrow-down-s-line"
-                className="fr-mr-0"
                 rotate={!!sectionsExpansions['enrrMobilisables']}
               />
             </Button>
@@ -1512,7 +1521,7 @@ function SimpleMapLegend({
             </Text>
 
             <InfoIcon>
-              <Icon size="md" name="ri-information-fill" cursor="help" />
+              <Icon riSize="1x" name="ri-information-fill" cursor="help" />
 
               <Hoverable position="bottom">
                 Les DPE affichés par bâtiment résultent d'un extrapolation des
@@ -1531,9 +1540,8 @@ function SimpleMapLegend({
               title="Afficher/Masquer le détail"
             >
               <Icon
-                size="lg"
+                riSize="1x"
                 name="ri-arrow-down-s-line"
-                className="fr-mr-0"
                 rotate={!!sectionsExpansions['caracteristiquesBatiments']}
               />
             </Button>

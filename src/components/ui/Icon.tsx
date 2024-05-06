@@ -13,12 +13,33 @@ const StyledIcon = styled.span<StyledIconProps>`
   transform: ${({ rotate }) => (rotate ? 'rotate(-180deg)' : undefined)};
   transition: 0.3s;
   cursor: ${({ cursor }) => cursor};
+
+  &:before {
+    vertical-align: middle;
+  }
 `;
 
 type IconProps = StyledIconProps & {
   name: FrIconClassName | RiIconClassName;
   // dsfr size
   size?: 'xs' | 'sm' | 'md' | 'lg';
+  // remix icons size
+  riSize?:
+    | 'xs'
+    | 'sm'
+    | 'lg'
+    | 'xl'
+    | 'xxs'
+    | '1x'
+    | '2x'
+    | '3x'
+    | '4x'
+    | '5x'
+    | '6x'
+    | '7x'
+    | '8x'
+    | '9x'
+    | '10x';
 };
 
 /**
@@ -27,15 +48,15 @@ type IconProps = StyledIconProps & {
 function Icon({
   name,
   size,
+  riSize,
   className,
   ...props
 }: IconProps & SpacingProperties & HTMLAttributes<HTMLDivElement>) {
   return (
     <StyledIcon
       className={`${name ?? ''} ${size ? `fr-icon--${size}` : ''} ${
-        className ?? ''
-      } ${spacingsToClasses(props)}`}
-      // iconPosition="center" // FIXME
+        riSize ? `ri-${riSize}` : ''
+      } ${className ?? ''} ${spacingsToClasses(props)}`}
       aria-hidden
       {...props}
     />

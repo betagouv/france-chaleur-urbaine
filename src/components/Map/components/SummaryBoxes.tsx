@@ -1,5 +1,6 @@
 import Hoverable from '@components/Hoverable';
-import { Button, Icon, Tab, Tabs } from '@codegouvfr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
 import { LineString, Polygon } from 'geojson';
@@ -26,6 +27,7 @@ import { clientConfig } from 'src/client-config';
 import { trackEvent } from 'src/services/analytics';
 import { downloadObject } from '@utils/browser';
 import { formatAsISODate } from '@utils/date';
+import Icon from '@components/ui/Icon';
 
 const getConso = (consos: GasSummary[]) => {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
@@ -168,7 +170,7 @@ const SummaryBoxes = ({
           {zoneCollapsed ? 'Afficher le panneau' : 'Masquer le panneau'}
         </Hoverable>
         <Icon
-          size="2x"
+          riSize="2x"
           name={zoneCollapsed ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'}
         />
       </CollapseZone>
@@ -176,240 +178,244 @@ const SummaryBoxes = ({
         <>
           <ZoneInfosWrapper>
             <Tabs
-              onChange={(index) => {
-                setTabIndex(index);
+              onTabChange={({ tabIndex }) => {
+                setTabIndex(tabIndex);
               }}
-            >
-              {/*
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                @ts-ignore: to fix in react-dsfr */}
-              <Tab label="Extraire des données sur les bâtiments">
-                {size && size > clientConfig.summaryAreaSizeLimit ? (
-                  <Explanation>
-                    <span>
-                      La zone définie est trop grande ({size.toFixed(2)} km²),
-                      veuillez réduire la taille de recherche (maximum 5 km²).
-                      Si vous avez besoin de statistiques sur une zone élargie
-                      ou plus précise, n'hésitez pas à{' '}
-                      <a
-                        href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        nous contacter
-                      </a>
-                    </span>
-                  </Explanation>
-                ) : bounds && !summary ? (
-                  <Explanation>
-                    Extraction des données correspondant à la zone définie en
-                    cours...
-                  </Explanation>
-                ) : !summary ? (
-                  <Explanation>
-                    Pour afficher et exporter des données sur une zone
-                    (consommation de gaz, adresse des bâtiments chauffés au gaz
-                    ou fioul collectif,...), cliquez sur au moins trois points
-                    puis validez cette zone en rejoignant le premier point.
-                  </Explanation>
-                ) : (
-                  <ZoneInfos>
-                    <ZoneInfo
-                      color="blue"
-                      title="Bâtiments à chauffage collectif fioul"
-                      icon="fioul"
-                      withBackground
-                      values={[
-                        {
-                          label: 'Total',
-                          value: summary.energy.filter(
-                            ({ energie_utilisee }) =>
-                              energie_utilisee === 'fioul'
-                          ).length,
-                        },
-                        {
-                          label: 'Proche réseau (<50 m)',
-                          value: summary.energy
-                            .filter((energy) => energy.is_close)
-                            .filter(
-                              ({ energie_utilisee }) =>
-                                energie_utilisee === 'fioul'
-                            ).length,
-                        },
-                      ]}
-                    />
-                    <ZoneInfo
-                      color="blue"
-                      title="Bâtiments à chauffage collectif gaz"
-                      icon="gaz"
-                      withBackground
-                      values={[
-                        {
-                          label: 'Total',
-                          value: summary.energy.filter(
-                            ({ energie_utilisee }) => energie_utilisee === 'gaz'
-                          ).length,
-                        },
-                        {
-                          label: 'Proche réseau (<50 m)',
-                          value: summary.energy
-                            .filter((energy) => energy.is_close)
-                            .filter(
-                              ({ energie_utilisee }) =>
-                                energie_utilisee === 'gaz'
-                            ).length,
-                        },
-                      ]}
-                    />
-                    <ZoneInfo
-                      color="blue"
-                      title="Consommations de gaz"
-                      values={[
-                        {
-                          label: 'Total',
-                          value: getConso(summary.gas),
-                        },
-                        {
-                          label: 'Proche réseau (<50 m)',
-                          value: getConso(
-                            summary.gas.filter((gas) => gas.is_close)
-                          ),
-                        },
-                      ]}
-                    />
-                    <ZoneInfo
-                      color="green"
-                      alignTop
-                      title="Réseaux de chaleur"
-                      icon="traces"
-                      values={[
-                        {
-                          label: 'Km',
-                          value: (
-                            summary.network.reduce(
-                              (acc, current) => acc + current.length,
-                              0
-                            ) / 1000
-                          ).toFixed(2),
-                        },
-                      ]}
-                    />
-                    <Export>
-                      {exporting ? (
-                        <Oval height={40} width={40} />
-                      ) : (
-                        <Button
-                          size="sm"
-                          icon={'ri-download-2-line'}
-                          onClick={() => bounds && exportData(bounds)}
-                          disabled={!summary}
-                        >
-                          Exporter
-                        </Button>
-                      )}
-                    </Export>
-                  </ZoneInfos>
-                )}
-              </Tab>
-              {/*
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                @ts-ignore: to fix in react-dsfr */}
-              <Tab label="Calculer une densité thermique linéaire">
-                {lines && !densite ? (
-                  <>
-                    Extraction des données correspondant au tracé défini en
-                    cours...
-                  </>
-                ) : !densite ? (
-                  <>
-                    Pour calculer une distance et la densité thermique linéaire
-                    associée, définissez un tracé en cliquant sur deux points ou
-                    plus, puis validez en cliquant sur entrée. Vous pouvez alors
-                    ajouter des segments à votre tracé, ou en retirez. Vous
-                    pouvez aussi cliquer sur les points pour les déplacer.
-                  </>
-                ) : (
-                  <ZoneInfos>
-                    <ZoneInfo
-                      color="green"
-                      alignTop
-                      title="Distance"
-                      values={[
-                        {
-                          label: 'm',
-                          value: Math.round(densite.size * 1000),
-                        },
-                      ]}
-                    />
-                    <ZoneInfo
-                      color="blue"
-                      alignTop
-                      title="Consommations de gaz"
-                      values={[
-                        {
-                          label: 'à 10m',
-                          value: getConso(densite.data[10]),
-                        },
-                        {
-                          label: 'à 50m',
-                          value: getConso(densite.data[50]),
-                        },
-                      ]}
-                    />
-                    <ZoneInfo
-                      color="blue"
-                      alignTop
-                      title={
-                        <>
-                          Densité thermique linéaire
-                          <InfoIcon>
-                            <Icon size="lg" name="ri-information-fill" />
-                            <Hoverable>
-                              Densité thermique calculée sur la base des
-                              consommations de gaz à l'adresse situées à une
-                              distance de 10 ou 50 m du tracé défini
-                            </Hoverable>
-                          </InfoIcon>
-                        </>
-                      }
-                      values={[
-                        {
-                          label: 'à 10m',
-                          value: getDensite(densite.size, densite.data[10]),
-                        },
-                        {
-                          label: 'à 50m',
-                          value: getDensite(densite.size, densite.data[50]),
-                        },
-                      ]}
-                    />
+              tabs={[
+                {
+                  label: 'Extraire des données sur les bâtiments',
+                  isDefault: true,
+                  content:
+                    size && size > clientConfig.summaryAreaSizeLimit ? (
+                      <Explanation>
+                        <span>
+                          La zone définie est trop grande ({size.toFixed(2)}{' '}
+                          km²), veuillez réduire la taille de recherche (maximum
+                          5 km²). Si vous avez besoin de statistiques sur une
+                          zone élargie ou plus précise, n'hésitez pas à{' '}
+                          <a
+                            href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            nous contacter
+                          </a>
+                        </span>
+                      </Explanation>
+                    ) : bounds && !summary ? (
+                      <Explanation>
+                        Extraction des données correspondant à la zone définie
+                        en cours...
+                      </Explanation>
+                    ) : !summary ? (
+                      <Explanation>
+                        Pour afficher et exporter des données sur une zone
+                        (consommation de gaz, adresse des bâtiments chauffés au
+                        gaz ou fioul collectif,...), cliquez sur au moins trois
+                        points puis validez cette zone en rejoignant le premier
+                        point.
+                      </Explanation>
+                    ) : (
+                      <ZoneInfos>
+                        <ZoneInfo
+                          color="blue"
+                          title="Bâtiments à chauffage collectif fioul"
+                          icon="fioul"
+                          withBackground
+                          values={[
+                            {
+                              label: 'Total',
+                              value: summary.energy.filter(
+                                ({ energie_utilisee }) =>
+                                  energie_utilisee === 'fioul'
+                              ).length,
+                            },
+                            {
+                              label: 'Proche réseau (<50 m)',
+                              value: summary.energy
+                                .filter((energy) => energy.is_close)
+                                .filter(
+                                  ({ energie_utilisee }) =>
+                                    energie_utilisee === 'fioul'
+                                ).length,
+                            },
+                          ]}
+                        />
+                        <ZoneInfo
+                          color="blue"
+                          title="Bâtiments à chauffage collectif gaz"
+                          icon="gaz"
+                          withBackground
+                          values={[
+                            {
+                              label: 'Total',
+                              value: summary.energy.filter(
+                                ({ energie_utilisee }) =>
+                                  energie_utilisee === 'gaz'
+                              ).length,
+                            },
+                            {
+                              label: 'Proche réseau (<50 m)',
+                              value: summary.energy
+                                .filter((energy) => energy.is_close)
+                                .filter(
+                                  ({ energie_utilisee }) =>
+                                    energie_utilisee === 'gaz'
+                                ).length,
+                            },
+                          ]}
+                        />
+                        <ZoneInfo
+                          color="blue"
+                          title="Consommations de gaz"
+                          values={[
+                            {
+                              label: 'Total',
+                              value: getConso(summary.gas),
+                            },
+                            {
+                              label: 'Proche réseau (<50 m)',
+                              value: getConso(
+                                summary.gas.filter((gas) => gas.is_close)
+                              ),
+                            },
+                          ]}
+                        />
+                        <ZoneInfo
+                          color="green"
+                          alignTop
+                          title="Réseaux de chaleur"
+                          icon="traces"
+                          values={[
+                            {
+                              label: 'Km',
+                              value: (
+                                summary.network.reduce(
+                                  (acc, current) => acc + current.length,
+                                  0
+                                ) / 1000
+                              ).toFixed(2),
+                            },
+                          ]}
+                        />
+                        <Export>
+                          {exporting ? (
+                            <Oval height={40} width={40} />
+                          ) : (
+                            <Button
+                              size="small"
+                              iconId="ri-download-2-line"
+                              onClick={() => bounds && exportData(bounds)}
+                              disabled={!summary}
+                            >
+                              Exporter
+                            </Button>
+                          )}
+                        </Export>
+                      </ZoneInfos>
+                    ),
+                },
+                {
+                  label: 'Calculer une densité thermique linéaire',
+                  content:
+                    lines && !densite ? (
+                      <>
+                        Extraction des données correspondant au tracé défini en
+                        cours...
+                      </>
+                    ) : !densite ? (
+                      <>
+                        Pour calculer une distance et la densité thermique
+                        linéaire associée, définissez un tracé en cliquant sur
+                        deux points ou plus, puis validez en cliquant sur
+                        entrée. Vous pouvez alors ajouter des segments à votre
+                        tracé, ou en retirez. Vous pouvez aussi cliquer sur les
+                        points pour les déplacer.
+                      </>
+                    ) : (
+                      <ZoneInfos>
+                        <ZoneInfo
+                          color="green"
+                          alignTop
+                          title="Distance"
+                          values={[
+                            {
+                              label: 'm',
+                              value: Math.round(densite.size * 1000),
+                            },
+                          ]}
+                        />
+                        <ZoneInfo
+                          color="blue"
+                          alignTop
+                          title="Consommations de gaz"
+                          values={[
+                            {
+                              label: 'à 10m',
+                              value: getConso(densite.data[10]),
+                            },
+                            {
+                              label: 'à 50m',
+                              value: getConso(densite.data[50]),
+                            },
+                          ]}
+                        />
+                        <ZoneInfo
+                          color="blue"
+                          alignTop
+                          title={
+                            <>
+                              Densité thermique linéaire
+                              <InfoIcon>
+                                <Icon size="sm" name="ri-information-fill" />
+                                <Hoverable>
+                                  Densité thermique calculée sur la base des
+                                  consommations de gaz à l'adresse situées à une
+                                  distance de 10 ou 50 m du tracé défini
+                                </Hoverable>
+                              </InfoIcon>
+                            </>
+                          }
+                          values={[
+                            {
+                              label: 'à 10m',
+                              value: getDensite(densite.size, densite.data[10]),
+                            },
+                            {
+                              label: 'à 50m',
+                              value: getDensite(densite.size, densite.data[50]),
+                            },
+                          ]}
+                        />
 
-                    <Button
-                      size="sm"
-                      icon={'ri-download-2-line'}
-                      onClick={() => {
-                        downloadObject(
-                          draw.getAll(),
-                          `FCU_export_tracé_${formatAsISODate(
-                            new Date()
-                          )}.geojson`,
-                          'application/geo+json'
-                        );
-                      }}
-                      disabled={!densite}
-                      className="fr-col--middle"
-                    >
-                      Exporter le tracé
-                    </Button>
-                  </ZoneInfos>
-                )}
-              </Tab>
-            </Tabs>
+                        <Button
+                          size="small"
+                          iconId="ri-download-2-line"
+                          onClick={() => {
+                            downloadObject(
+                              draw.getAll(),
+                              `FCU_export_tracé_${formatAsISODate(
+                                new Date()
+                              )}.geojson`,
+                              'application/geo+json'
+                            );
+                          }}
+                          disabled={!densite}
+                          className="fr-col--middle"
+                        >
+                          Exporter le tracé
+                        </Button>
+                      </ZoneInfos>
+                    ),
+                },
+              ]}
+            />
+
             {((size && size > 5) ||
               (tabIndex === 0 && (!bounds || summary))) && (
               <DrawButton
-                size="sm"
-                icon="ri-edit-2-line"
+                size="small"
+                iconId="ri-edit-2-line"
                 onClick={() => {
                   draw.deleteAll();
                   setBounds(undefined);
@@ -425,8 +431,8 @@ const SummaryBoxes = ({
             {tabIndex === 1 && densite && (
               <DrawButtons>
                 <Button
-                  size="sm"
-                  icon="ri-edit-2-line"
+                  size="small"
+                  iconId="ri-edit-2-line"
                   onClick={() => {
                     draw.deleteAll();
                     setBounds(undefined);
@@ -440,8 +446,8 @@ const SummaryBoxes = ({
                 </Button>
                 <Button
                   className="hideable"
-                  size="sm"
-                  icon="ri-add-line"
+                  size="small"
+                  iconId="ri-add-line"
                   onClick={() => {
                     setDrawing(true);
                     trackEvent('Carto|Ajouter un segment');
@@ -452,8 +458,8 @@ const SummaryBoxes = ({
                 </Button>
                 <Button
                   className="hideable"
-                  size="sm"
-                  icon="ri-close-line"
+                  size="small"
+                  iconId="ri-close-line"
                   onClick={() => {
                     const selected = draw.getSelectedIds();
                     if (selected.length > 0) {
@@ -479,8 +485,8 @@ const SummaryBoxes = ({
             )}
             {tabIndex === 1 && !lines && (
               <DrawButton
-                size="sm"
-                icon="ri-edit-2-line"
+                size="small"
+                iconId="ri-edit-2-line"
                 onClick={() => {
                   draw.deleteAll();
                   setBounds(undefined);
