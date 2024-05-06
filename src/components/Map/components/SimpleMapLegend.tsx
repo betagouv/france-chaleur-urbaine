@@ -50,6 +50,7 @@ import {
 } from 'src/services/Map/businessRules/zonePotentielChaud';
 import DevModeIcon from './DevModeIcon';
 import RangeFilter from './RangeFilter';
+import { Interval } from '@utils/interval';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -121,14 +122,14 @@ function SimpleMapLegend({
     });
   }
 
-  function toggleLayer(property: MapConfigurationProperty) {
+  function toggleLayer(property: MapConfigurationProperty<boolean>) {
     toggleBoolean(mapConfiguration, property);
     onMapConfigurationChange({ ...mapConfiguration });
   }
 
   function updateScaleInterval(
-    property: MapConfigurationProperty,
-    interval: [number, number]
+    property: MapConfigurationProperty<Interval>,
+    interval: Interval
   ) {
     setProperty(mapConfiguration, property, interval);
     onMapConfigurationChange({ ...mapConfiguration });

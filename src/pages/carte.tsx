@@ -28,7 +28,7 @@ const MapWrapper = styled.div`
 `;
 
 export const layerURLKeysToMapConfigPath = {
-  reseauxDeChaleur: 'reseauxDeChaleur',
+  reseauxDeChaleur: 'reseauxDeChaleur.show',
   reseauxDeFroid: 'reseauxDeFroid',
   reseauxEnConstruction: 'reseauxEnConstruction',
   zonesDeDeveloppementPrioritaire: 'zonesDeDeveloppementPrioritaire',
@@ -40,7 +40,7 @@ export const layerURLKeysToMapConfigPath = {
   zonesOpportunite: 'zonesOpportunite.show',
   enrrMobilisables: 'enrrMobilisables.show',
   caracteristiquesBatiments: 'caracteristiquesBatiments',
-} as const satisfies { [key: string]: MapConfigurationProperty };
+} as const satisfies { [key: string]: MapConfigurationProperty<boolean> };
 
 export type LayerURLKey = keyof typeof layerURLKeysToMapConfigPath;
 
