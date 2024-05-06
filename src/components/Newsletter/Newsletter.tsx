@@ -28,15 +28,20 @@ const Newsletter = () => {
       ) : (
         <>
           <Email
-            type="email"
-            placeholder="Paris@villedeparis.fr"
-            value={email}
-            onChange={(e: any) => setEmail(e.target.value)}
+            label="Email"
+            hideLabel
+            nativeInputProps={{
+              type: 'email',
+              required: true,
+              placeholder: 'Paris@villedeparis.fr',
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+            }}
           />
           {sending ? (
             <Oval height={40} width={40} />
           ) : (
-            <Button secondary submit>
+            <Button type="submit" priority="secondary">
               S'inscrire
             </Button>
           )}

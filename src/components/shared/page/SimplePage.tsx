@@ -277,6 +277,32 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
   },
 ];
 
+function markCurrentPageActive(
+  menuItems: MainNavigationProps.Item[],
+  currentUrl: string
+): MainNavigationProps.Item[] {
+  return menuItems.map((item) => {
+    const subMenu = markCurrentPageActive(
+      item.menuLinks ?? [],
+      currentUrl
+    ) as MainNavigationProps.Item.Link[];
+
+    const subMenuItemActive = subMenu.some((child) => child.isActive);
+
+    if (item.menuLinks) {
+      return {
+        ...item,
+        menuLinks: subMenu,
+        isActive: subMenuItemActive,
+      };
+    }
+    return {
+      ...item,
+      isActive: item.linkProps?.href === currentUrl || subMenuItemActive,
+    };
+  });
+}
+
 interface PageHeaderProps {
   mode: PageMode;
   currentPage?: string;
@@ -347,7 +373,7 @@ const PageHeader = (props: PageHeaderProps) => {
             text: 'Espace gestionnaire',
           },
         ]}
-        navigation={navigationMenuItems}
+        navigation={markCurrentPageActive(navigationMenuItems, currentPath)}
       />
 
       {/* <Header>
