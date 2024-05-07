@@ -304,6 +304,7 @@ const ENRRMobilisableStationsDEpurationPopupContent = ({
       />
       <PopupProperty label="Exploitant" value={stationDEpuration.exploitant} />
       <PopupProperty label="Commune" value={stationDEpuration.com_nom} />
+      <PopupProperty label="Source" value="Cerema" />
     </section>
   );
 };
