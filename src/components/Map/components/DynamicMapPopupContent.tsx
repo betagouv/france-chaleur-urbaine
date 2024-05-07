@@ -242,7 +242,6 @@ const ENRRMobilisableIndustriePopupContent = ({
       <PopupType className="fr-mr-3w">Industrie</PopupType>
       <PopupTitle className="fr-mr-3w">{industrie.nom_etabli}</PopupTitle>
       <PopupProperty label="Activité" value={industrie.type_act} />
-      <PopupProperty label="Exploitant" value={industrie.nom_commun} />
       <PopupProperty
         label="Potentiel minimal de chaleur valorisable (BT)"
         value={industrie.potbas_bt}
