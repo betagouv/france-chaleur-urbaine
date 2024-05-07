@@ -163,33 +163,31 @@ const ZonePotentielChaudPopupContent = ({
 }) => {
   return (
     <section>
-      {zonePotentielChaud.ID_ZONE && (
-        <PopupTitle className="fr-mr-3w">
-          Zone à {fortChaud ? ' fort' : ''} potentiel
-        </PopupTitle>
-      )}
+      <PopupTitle className="fr-mr-3w">
+        Zone à {fortChaud ? ' fort' : ''} potentiel
+      </PopupTitle>
       <strong>Nombre de bâtiments “intéressants”&nbsp;:</strong>&nbsp;
-      {isDefined(zonePotentielChaud.NBRE_BAT)
-        ? zonePotentielChaud.NBRE_BAT
+      {isDefined(zonePotentielChaud.bat_imp)
+        ? zonePotentielChaud.bat_imp
         : 'Non connu'}
       <br />
       <strong>Besoins en chauffage&nbsp;:</strong>&nbsp;
-      {isDefined(zonePotentielChaud.CHAUF_MWH) ? (
-        <>{formatMWh(zonePotentielChaud.CHAUF_MWH)}</>
+      {isDefined(zonePotentielChaud.chauf_mwh) ? (
+        <>{formatMWh(zonePotentielChaud.chauf_mwh)}</>
       ) : (
         'Non connu'
       )}
       <br />
       <strong>Besoins en eau chaude sanitaire&nbsp;:</strong>&nbsp;
-      {isDefined(zonePotentielChaud.ECS_MWH) ? (
-        <>{formatMWh(zonePotentielChaud.ECS_MWH)}</>
+      {isDefined(zonePotentielChaud.ecs_mwh) ? (
+        <>{formatMWh(zonePotentielChaud.ecs_mwh)}</>
       ) : (
         'Non connu'
       )}
       <br />
       <strong>Part du secteur tertiaire&nbsp;:</strong>&nbsp;
-      {isDefined(zonePotentielChaud.PART_TER) ? (
-        <>{prettyFormatNumber(zonePotentielChaud.PART_TER * 100, 2)}&nbsp;%</>
+      {isDefined(zonePotentielChaud.part_ter) ? (
+        <>{prettyFormatNumber(zonePotentielChaud.part_ter * 100, 2)}&nbsp;%</>
       ) : (
         'Non connu'
       )}

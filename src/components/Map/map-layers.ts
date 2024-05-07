@@ -283,7 +283,7 @@ export function buildMapLayers(
         type: 'vector',
         tiles: [`${location.origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
-        promoteId: 'ID_ZONE',
+        promoteId: 'id_zone',
         attribution:
           '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
