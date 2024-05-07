@@ -312,10 +312,14 @@ function SimpleMapLegend({
               )
             }
             domainTransform={{
-              percentToValue: (value) =>
-                value * 10 + Math.max(value - 70, 0) * 100,
-              valueToPercent: (value) =>
-                value / 10 - Math.max(value - 700, 0) / 11,
+              percentToValue: (v) =>
+                roundNumberProgressively(
+                  getLivraisonsAnnuellesFromPercentage(v)
+                ),
+              valueToPercent: (v) =>
+                roundNumberProgressively(
+                  getPercentageFromLivraisonsAnnuelles(v)
+                ),
             }}
             unit="GWh"
           />
@@ -1619,3 +1623,37 @@ function SimpleMapLegend({
 }
 
 export default SimpleMapLegend;
+
+function getLivraisonsAnnuellesFromPercentage(v: number): number {
+  if (v < 25) {
+    return 0.06 * v;
+  }
+  if (v < 50) {
+    return 0.54 * v - 12;
+  }
+  if (v < 75) {
+    return 3.4 * v - 155;
+  }
+  return 149.48 * v - 11111;
+}
+
+function getPercentageFromLivraisonsAnnuelles(v: number): number {
+  if (v < 1.5) {
+    return v / 0.06;
+  }
+  if (v < 15) {
+    return (v + 12) / 0.54;
+  }
+  if (v < 100) {
+    return (v + 155) / 3.4;
+  }
+  return (v + 11111) / 149.48;
+}
+
+function roundNumberProgressively(v: number): number {
+  return v > 2
+    ? Math.round(v)
+    : v > 1
+    ? Math.round(v * 10) / 10
+    : Math.round(v * 100) / 100;
+}
