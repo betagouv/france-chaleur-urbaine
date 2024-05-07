@@ -13,13 +13,24 @@ Example :
 idem ZonePotentielFortChaud
 */
 export type ZonePotentielChaud = {
-  GmlID: string;
-  'db_gd5kj.hsu_pnjyu.zone_a_potentiel_fort_chaud_zone_a_potentiel_fort_ch.fid': number;
-  ID_ZONE: string;
-  CHAUF_MWH: number;
-  ECS_MWH: number;
-  NBRE_BAT: number;
-  PART_TER: number;
-  st_area_shape_: number;
-  st_length_shape_: number;
+  fid: number;
+  geothermie: number;
+  surf_sol_8: number;
+  part_ter: number;
+  dep: string;
+  rdt_bt: number;
+  chauf_mwh: number;
+  ecs_mwh: number;
+  surf_sol_1: number;
+  id_zone: string;
+  rdt_ht: number;
+  surf_capt_: number;
+  code_com_i: string;
+  surf_cap_1: number;
+  bat_imp: number;
+  com_arr: string;
+  SHAPE__Length: number;
+  sol_moy: number;
+  part_ecs: number;
+  SHAPE__Area: number;
 };
