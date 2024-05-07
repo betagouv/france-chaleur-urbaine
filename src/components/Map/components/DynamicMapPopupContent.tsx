@@ -227,6 +227,7 @@ const ENRRMobilisableDatacenterPopupContent = ({
       <PopupProperty label="Catégorie" value={datacenter.categorie} />
       <PopupProperty label="Commune" value={datacenter.com_nom} />
       <PopupProperty label="Identifiant national" value={datacenter.id} />
+      <PopupProperty label="Source" value="Cerema" />
       <QualiteLabel value={datacenter.qualite_xy} />
     </section>
   );
@@ -262,6 +263,7 @@ const ENRRMobilisableIndustriePopupContent = ({
         value={industrie.pothaut_ht}
         unit="MWh/an"
       />
+      <PopupProperty label="Source" value={industrie.source} />
       <QualiteLabel value={industrie.quali_xy} />
     </section>
   );
@@ -280,6 +282,7 @@ const ENRRMobilisableInstallationElectrogenePopupContent = ({
       </PopupTitle>
       <PopupProperty label="Type" value={installationElectrogene.type_inst} />
       <PopupProperty label="Commune" value={installationElectrogene.com_nom} />
+      <PopupProperty label="Source" value="Cerema" />
       <QualiteLabel value={installationElectrogene.qualite_xy} />
     </section>
   );
@@ -333,6 +336,7 @@ const ENRRMobilisableUniteDIncinerationPopupContent = ({
         unit="MWh/an"
       />
       <PopupProperty label="Commune" value={uniteDIncineration.nom_comm} />
+      <PopupProperty label="Source" value={uniteDIncineration.info} />
     </section>
   );
 };
@@ -387,6 +391,7 @@ const ENRRMobilisableSolaireThermiqueFrichePopupContent = ({
       <PopupType className="fr-mr-3w">Friche</PopupType>
       <PopupTitle className="fr-mr-3w">{friche.site_nom}</PopupTitle>
       <PopupProperty label="Surface" value={friche.surf_site} unit="m²" />
+      <PopupProperty label="Source" value={friche.source_nom} />
     </section>
   );
 };
@@ -400,6 +405,7 @@ const ENRRMobilisableSolaireThermiqueParkingPopupContent = ({
     <section>
       <PopupType className="fr-mr-3w">Parking</PopupType>
       <PopupProperty label="Surface" value={parking.surfm2} unit="m²" />
+      <PopupProperty label="Source" value="Cerema" />
     </section>
   );
 };
