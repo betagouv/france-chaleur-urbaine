@@ -36,102 +36,63 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres -c "COPY (
               'energie_ratio_gaz', \"energie_ratio_gaz\",
               'energie_ratio_fioul', \"energie_ratio_fioul\",
               'energie_majoritaire', CASE
-                WHEN greatest(
-                    \"energie_ratio_biomasse\",
-                    \"energie_ratio_geothermie\",
-                    \"energie_ratio_uve\",
-                    \"energie_ratio_chaleurIndustrielle\",
-                    \"energie_ratio_solaireThermique\",
-                    \"energie_ratio_pompeAChaleur\",
-                    \"energie_ratio_gaz\",
-                    \"energie_ratio_fioul\"
-                ) = \"energie_ratio_biomasse\" THEN 'biomasse'
-                WHEN greatest(
-                    \"energie_ratio_biomasse\",
-                    \"energie_ratio_geothermie\",
-                    \"energie_ratio_uve\",
-                    \"energie_ratio_chaleurIndustrielle\",
-                    \"energie_ratio_solaireThermique\",
-                    \"energie_ratio_pompeAChaleur\",
-                    \"energie_ratio_gaz\",
-                    \"energie_ratio_fioul\"
-                ) = \"energie_ratio_geothermie\" THEN 'geothermie'
-                WHEN greatest(
-                    \"energie_ratio_biomasse\",
-                    \"energie_ratio_geothermie\",
-                    \"energie_ratio_uve\",
-                    \"energie_ratio_chaleurIndustrielle\",
-                    \"energie_ratio_solaireThermique\",
-                    \"energie_ratio_pompeAChaleur\",
-                    \"energie_ratio_gaz\",
-                    \"energie_ratio_fioul\"
-                ) = \"energie_ratio_uve\" THEN 'uve'
-                WHEN greatest(
-                    \"energie_ratio_biomasse\",
-                    \"energie_ratio_geothermie\",
-                    \"energie_ratio_uve\",
-                    \"energie_ratio_chaleurIndustrielle\",
-                    \"energie_ratio_solaireThermique\",
-                    \"energie_ratio_pompeAChaleur\",
-                    \"energie_ratio_gaz\",
-                    \"energie_ratio_fioul\"
-                ) = \"energie_ratio_chaleurIndustrielle\" THEN 'chaleurIndustrielle'
-                WHEN greatest(
-                    \"energie_ratio_biomasse\",
-                    \"energie_ratio_geothermie\",
-                    \"energie_ratio_uve\",
-                    \"energie_ratio_chaleurIndustrielle\",
-                    \"energie_ratio_solaireThermique\",
-                    \"energie_ratio_pompeAChaleur\",
-                    \"energie_ratio_gaz\",
-                    \"energie_ratio_fioul\"
-                ) = \"energie_ratio_solaireThermique\" THEN 'solaireThermique'
-                WHEN greatest(
-                    \"energie_ratio_biomasse\",
-                    \"energie_ratio_geothermie\",
-                    \"energie_ratio_uve\",
-                    \"energie_ratio_chaleurIndustrielle\",
-                    \"energie_ratio_solaireThermique\",
-                    \"energie_ratio_pompeAChaleur\",
-                    \"energie_ratio_gaz\",
-                    \"energie_ratio_fioul\"
-                ) = \"energie_ratio_pompeAChaleur\" THEN 'pompeAChaleur'
-                WHEN greatest(
-                    \"energie_ratio_biomasse\",
-                    \"energie_ratio_geothermie\",
-                    \"energie_ratio_uve\",
-                    \"energie_ratio_chaleurIndustrielle\",
-                    \"energie_ratio_solaireThermique\",
-                    \"energie_ratio_pompeAChaleur\",
-                    \"energie_ratio_gaz\",
-                    \"energie_ratio_fioul\"
-                ) = \"energie_ratio_gaz\" THEN 'gaz'
-                WHEN greatest(
-                    \"energie_ratio_biomasse\",
-                    \"energie_ratio_geothermie\",
-                    \"energie_ratio_uve\",
-                    \"energie_ratio_chaleurIndustrielle\",
-                    \"energie_ratio_solaireThermique\",
-                    \"energie_ratio_pompeAChaleur\",
-                    \"energie_ratio_gaz\",
-                    \"energie_ratio_fioul\"
-                ) = \"energie_ratio_fioul\" THEN 'fioul'
-              END
+                  WHEN energie_max_ratio = \"energie_ratio_biomasse\" THEN 'biomasse'
+                  WHEN energie_max_ratio = \"energie_ratio_geothermie\" THEN 'geothermie'
+                  WHEN energie_max_ratio = \"energie_ratio_uve\" THEN 'uve'
+                  WHEN energie_max_ratio = \"energie_ratio_chaleurIndustrielle\" THEN 'chaleurIndustrielle'
+                  WHEN energie_max_ratio = \"energie_ratio_solaireThermique\" THEN 'solaireThermique'
+                  WHEN energie_max_ratio = \"energie_ratio_pompeAChaleur\" THEN 'pompeAChaleur'
+                  WHEN energie_max_ratio = \"energie_ratio_gaz\" THEN 'gaz'
+                  WHEN energie_max_ratio = \"energie_ratio_fioul\" THEN 'fioul'
+                  WHEN energie_max_ratio = \"energie_ratio_autresEnr\" THEN 'autresEnr'
+                  WHEN energie_max_ratio = \"energie_ratio_chaufferiesElectriques\" THEN 'chaufferiesElectriques'
+                  WHEN energie_max_ratio = \"energie_ratio_charbon\" THEN 'charbon'
+                  WHEN energie_max_ratio = \"energie_ratio_gpl\" THEN 'gpl'
+                  WHEN energie_max_ratio = \"energie_ratio_autreChaleurRecuperee\" THEN 'autreChaleurRecuperee'
+                  WHEN energie_max_ratio = \"energie_ratio_biogaz\" THEN 'biogaz'
+                  ELSE NULL
+                END
             )
         ) AS feature
         FROM (
           SELECT
             *,
-            (\"prod_MWh_biomasse_solide\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_biomasse\",
-            (\"prod_MWh_geothermie\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_geothermie\",
-            (\"prod_MWh_dechets_internes\" + \"prod_MWh_UIOM\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_uve\",
-            (\"prod_MWh_chaleur_industiel\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_chaleurIndustrielle\",
-            (\"prod_MWh_solaire_thermique\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_solaireThermique\",
-            (\"prod_MWh_PAC\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_pompeAChaleur\",
-            (\"prod_MWh_gaz_naturel\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_gaz\",
-            (\"prod_MWh_fioul_domestique\" + \"prod_MWh_fioul_lourd\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_fioul\"
-          FROM reseaux_de_chaleur rdc
-        ) row
+            greatest(
+              \"energie_ratio_biomasse\",
+              \"energie_ratio_geothermie\",
+              \"energie_ratio_uve\",
+              \"energie_ratio_chaleurIndustrielle\",
+              \"energie_ratio_solaireThermique\",
+              \"energie_ratio_pompeAChaleur\",
+              \"energie_ratio_gaz\",
+              \"energie_ratio_fioul\",
+              \"energie_ratio_autresEnr\",
+              \"energie_ratio_chaufferiesElectriques\",
+              \"energie_ratio_charbon\",
+              \"energie_ratio_gpl\",
+              \"energie_ratio_autreChaleurRecuperee\",
+              \"energie_ratio_biogaz\"
+            ) as \"energie_max_ratio\"
+          FROM (
+            SELECT
+              *,
+              (\"prod_MWh_biomasse_solide\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_biomasse\",
+              (\"prod_MWh_geothermie\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_geothermie\",
+              (\"prod_MWh_dechets_internes\" + \"prod_MWh_UIOM\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_uve\",
+              (\"prod_MWh_chaleur_industiel\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_chaleurIndustrielle\",
+              (\"prod_MWh_solaire_thermique\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_solaireThermique\",
+              (\"prod_MWh_PAC\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_pompeAChaleur\",
+              (\"prod_MWh_gaz_naturel\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_gaz\",
+              (\"prod_MWh_fioul_domestique\" + \"prod_MWh_fioul_lourd\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_fioul\",
+              (\"prod_MWh_autres_ENR\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_autresEnr\",
+              (\"prod_MWh_chaudieres_electriques\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_chaufferiesElectriques\",
+              (\"prod_MWh_charbon\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_charbon\",
+              (\"prod_MWh_GPL\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_gpl\",
+              (\"prod_MWh_autre_chaleur_recuperee\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_autreChaleurRecuperee\",
+              (\"prod_MWh_biogaz\") / COALESCE(NULLIF(\"production_totale_MWh\", 0), 1) as \"energie_ratio_biogaz\"
+            FROM reseaux_de_chaleur rdc
+          ) row
+        ) row2
     ) features
 ) TO STDOUT" | sed -e 's/\\\\"/\\"/g' > reseaux_de_chaleur.geojson
 
