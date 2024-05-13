@@ -92,6 +92,18 @@ const infographies: InfographieItemProps[] = [
     linkUrl: '/img/FCU_Infographie_idees_recues_3.webp',
     eventKey: 'Téléchargement|Supports|Idées reçues 3',
   },
+  {
+    label: 'Les idées reçues n°4',
+    imgUrl: '/img/FCU_Infographie_idees_recues_4.preview.webp',
+    linkUrl: '/img/FCU_Infographie_idees_recues_4.webp',
+    eventKey: 'Téléchargement|Supports|Idées reçues 4',
+  },
+  {
+    label: 'Les idées reçues n°5',
+    imgUrl: '/img/FCU_Infographie_idees_recues_5.preview.webp',
+    linkUrl: '/img/FCU_Infographie_idees_recues_5.webp',
+    eventKey: 'Téléchargement|Supports|Idées reçues 5',
+  },
 ];
 
 const reportages: InfographieItemProps[] = [
