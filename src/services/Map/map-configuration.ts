@@ -56,11 +56,13 @@ export type MapConfiguration = {
     tauxENRR: Interval;
     emissionsCO2: Interval;
     prixMoyen: Interval;
+    livraisonsAnnuelles: Interval;
     anneeConstruction: Interval;
     limits: {
       tauxENRR: Interval;
       emissionsCO2: Interval;
       prixMoyen: Interval;
+      livraisonsAnnuelles: Interval;
       anneeConstruction: Interval;
     };
   } & Record<EnergieRatioConfKey, Interval>;
@@ -154,6 +156,7 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
     tauxENRR: percentageMaxInterval,
     emissionsCO2: defaultInterval,
     prixMoyen: defaultInterval,
+    livraisonsAnnuelles: defaultInterval,
     anneeConstruction: defaultInterval,
     limits: null, // fetched dynamically from the API
   },

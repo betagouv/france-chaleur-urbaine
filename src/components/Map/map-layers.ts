@@ -1169,6 +1169,11 @@ const reseauxDeChaleurFilters = [
     valueKey: 'PM',
   },
   {
+    confKey: 'livraisonsAnnuelles',
+    valueKey: 'livraisons_totale_MWh',
+    filterPreprocess: (v: number) => v * 1000,
+  },
+  {
     confKey: 'anneeConstruction',
     valueKey: 'annee_creation',
   },
