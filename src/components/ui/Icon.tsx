@@ -6,12 +6,12 @@ import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 
 type StyledIconProps = {
   cursor?: CSSProperties['cursor'];
-  rotate?: boolean;
+  flip?: boolean;
   color?: string;
 };
 
 const StyledIcon = styled.span<StyledIconProps>`
-  transform: ${({ rotate }) => (rotate ? 'rotate(-180deg)' : undefined)};
+  transform: ${({ flip }) => (flip ? 'rotate(-180deg)' : undefined)};
   transition: 0.3s;
   cursor: ${({ cursor }) => cursor};
   color: ${({ color }) => color};

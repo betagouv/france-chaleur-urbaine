@@ -679,7 +679,7 @@ function SimpleMapLegend({
               <Icon
                 riSize="1x"
                 name="ri-arrow-down-s-line"
-                rotate={!!sectionsExpansions['consommationsGaz']}
+                flip={!!sectionsExpansions['consommationsGaz']}
               />
             </Button>
           </Box>
@@ -850,7 +850,7 @@ function SimpleMapLegend({
               <Icon
                 riSize="1x"
                 name="ri-arrow-down-s-line"
-                rotate={!!sectionsExpansions['batimentsGazCollectif']}
+                flip={!!sectionsExpansions['batimentsGazCollectif']}
               />
             </Button>
           </Box>
@@ -927,7 +927,7 @@ function SimpleMapLegend({
               <Icon
                 riSize="1x"
                 name="ri-arrow-down-s-line"
-                rotate={!!sectionsExpansions['batimentsFioulCollectif']}
+                flip={!!sectionsExpansions['batimentsFioulCollectif']}
               />
             </Button>
           </Box>
@@ -1058,7 +1058,7 @@ function SimpleMapLegend({
               <Icon
                 riSize="1x"
                 name="ri-arrow-down-s-line"
-                rotate={!!sectionsExpansions['zonesOpportunite']}
+                flip={!!sectionsExpansions['zonesOpportunite']}
               />
             </Button>
           </Box>
@@ -1197,7 +1197,7 @@ function SimpleMapLegend({
               <Icon
                 riSize="1x"
                 name="ri-arrow-down-s-line"
-                rotate={!!sectionsExpansions['enrrMobilisables']}
+                flip={!!sectionsExpansions['enrrMobilisables']}
               />
             </Button>
           </Box>
@@ -1514,7 +1514,7 @@ function SimpleMapLegend({
               <Icon
                 riSize="1x"
                 name="ri-arrow-down-s-line"
-                rotate={!!sectionsExpansions['caracteristiquesBatiments']}
+                flip={!!sectionsExpansions['caracteristiquesBatiments']}
               />
             </Button>
           </Box>
