@@ -24,6 +24,12 @@ const useContactFormFCU = () => {
     null,
     parseAsString
   );
+  const [mtm_kwd] = useURLParamOrLocalStorage(
+    'mtm_kwd',
+    'mtm_kwd',
+    null,
+    parseAsString
+  );
 
   const timeoutScroller = useCallback(
     (delai: number, callback?: () => void) =>
@@ -94,7 +100,7 @@ const useContactFormFCU = () => {
         address
       );
       const response = await submitToAirtable(
-        formatDataToAirtable({ ...data, mtm_campaign }),
+        formatDataToAirtable({ ...data, mtm_campaign, mtm_kwd }),
         Airtable.UTILISATEURS
       );
       const { id } = await response.json();

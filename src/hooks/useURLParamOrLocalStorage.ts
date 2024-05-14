@@ -51,7 +51,7 @@ export function parseAsBoolean(value: string): boolean {
 
 export function parseAsString(value: string): string {
   try {
-    return JSON.parse(value);
+    return `${JSON.parse(value)}`;
   } catch {
     return value;
   }
