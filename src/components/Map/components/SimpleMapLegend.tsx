@@ -369,12 +369,7 @@ function SimpleMapLegend({
           </Box>
 
           <InfoIcon>
-            <Icon
-              riSize="1x"
-              name="ri-information-fill"
-              cursor="help"
-              mr="1w"
-            />
+            <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
 
             <Hoverable position="bottom">
               Pour les réseaux classés, le raccordement des bâtiments neufs ou
@@ -422,12 +417,7 @@ function SimpleMapLegend({
           </Text>
 
           <InfoIcon>
-            <Icon
-              riSize="1x"
-              name="ri-information-fill"
-              cursor="help"
-              mr="1w"
-            />
+            <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
 
             <Hoverable position="bottom">
               Dans cette zone, le raccordement des nouvelles constructions ou
@@ -489,12 +479,7 @@ function SimpleMapLegend({
           </Box>
 
           <InfoIcon>
-            <Icon
-              riSize="1x"
-              name="ri-information-fill"
-              cursor="help"
-              mr="1w"
-            />
+            <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
 
             <Hoverable position="bottom">
               Projets financés par l'ADEME ou signalés par les collectivités et
@@ -1033,7 +1018,7 @@ function SimpleMapLegend({
             </Text>
 
             <InfoIcon>
-              <Icon riSize="1x" name="ri-information-fill" cursor="help" />
+              <Icon size="sm" name="ri-information-fill" cursor="help" />
 
               <Hoverable position="bottom">
                 Modélisation réalisée par le Cerema dans le cadre du projet
@@ -1173,7 +1158,7 @@ function SimpleMapLegend({
             </Text>
 
             <InfoIcon>
-              <Icon riSize="1x" name="ri-information-fill" cursor="help" />
+              <Icon size="sm" name="ri-information-fill" cursor="help" />
 
               <Hoverable position="bottom">
                 Données du projet{' '}
@@ -1493,7 +1478,7 @@ function SimpleMapLegend({
             </Text>
 
             <InfoIcon>
-              <Icon riSize="1x" name="ri-information-fill" cursor="help" />
+              <Icon size="sm" name="ri-information-fill" cursor="help" />
 
               <Hoverable position="bottom">
                 Les DPE affichés par bâtiment résultent d'un extrapolation des
