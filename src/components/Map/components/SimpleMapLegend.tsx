@@ -149,6 +149,8 @@ function SimpleMapLegend({
           priority="tertiary no outline"
           size="small"
           onClick={() => toggleSectionExpansion('reseauxDeChaleur')}
+          aria-expanded={!!sectionsExpansions['reseauxDeChaleur']}
+          aria-controls={'reseauxDeChaleur'}
           title="Afficher/Masquer le détail"
         >
           <Icon riSize="1x" name="ri-equalizer-line" />
@@ -164,7 +166,10 @@ function SimpleMapLegend({
         Cliquez sur un réseau pour connaître ses caractéristiques
       </Text>
 
-      <CollapsibleBox expand={!!sectionsExpansions['reseauxDeChaleur']}>
+      <CollapsibleBox
+        id="reseauxDeChaleur"
+        expand={!!sectionsExpansions['reseauxDeChaleur']}
+      >
         <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
           <LegendSeparator />
           <Text size="xs" lineHeight="15px" fontStyle="italic" mx="1w">
@@ -208,6 +213,8 @@ function SimpleMapLegend({
               priority="tertiary no outline"
               size="small"
               onClick={() => toggleSectionExpansion('reseauxDeChaleurEnergies')}
+              aria-expanded={!!sectionsExpansions['reseauxDeChaleurEnergies']}
+              aria-controls={'reseauxDeChaleurEnergies'}
               title="Afficher plus de détail"
             >
               Plus d'options
@@ -215,6 +222,7 @@ function SimpleMapLegend({
           )}
 
           <CollapsibleBox
+            id="reseauxDeChaleurEnergies"
             expand={!!sectionsExpansions['reseauxDeChaleurEnergies']}
           >
             <Box
@@ -231,9 +239,11 @@ function SimpleMapLegend({
                 onClick={() =>
                   toggleSectionExpansion('reseauxDeChaleurEnergies')
                 }
+                aria-expanded={!!sectionsExpansions['reseauxDeChaleurEnergies']}
+                aria-controls={'reseauxDeChaleurEnergies'}
                 title="Masquer le détail"
               >
-                <Icon size="lg" name="ri-close-line" />
+                <Icon name="ri-close-line" />
               </Button>
               <DeactivatableBox
                 disabled={!mapConfiguration.reseauxDeChaleur.show}
@@ -309,7 +319,7 @@ function SimpleMapLegend({
       {enabledFeatures.includes('reseauxDeChaleur') && (
         <Box display="flex">
           <SingleCheckbox
-            id="reseauxDeChaleur"
+            name="reseauxDeChaleur"
             checked={mapConfiguration.reseauxDeChaleur.show}
             onChange={() => toggleLayer('reseauxDeChaleur')}
             trackingEvent="Carto|Réseaux chaleur"
@@ -388,7 +398,7 @@ function SimpleMapLegend({
       {enabledFeatures.includes('zonesDeDeveloppementPrioritaire') && (
         <Box display="flex">
           <SingleCheckbox
-            id="zonesDeDeveloppementPrioritaire"
+            name="zonesDeDeveloppementPrioritaire"
             checked={mapConfiguration.zonesDeDeveloppementPrioritaire}
             onChange={() => toggleLayer('zonesDeDeveloppementPrioritaire')}
             trackingEvent="Carto|Périmètres de développement prioritaire"
@@ -431,7 +441,7 @@ function SimpleMapLegend({
       {enabledFeatures.includes('reseauxEnConstruction') && (
         <Box display="flex">
           <SingleCheckbox
-            id="reseauxEnConstruction"
+            name="reseauxEnConstruction"
             checked={mapConfiguration.reseauxEnConstruction}
             onChange={() => toggleLayer('reseauxEnConstruction')}
             trackingEvent="Carto|Réseaux en construction"
@@ -492,7 +502,7 @@ function SimpleMapLegend({
       {enabledFeatures.includes('reseauxDeFroid') && (
         <Box display="flex">
           <SingleCheckbox
-            id="reseauxDeFroid"
+            name="reseauxDeFroid"
             checked={mapConfiguration.reseauxDeFroid}
             onChange={() => toggleLayer('reseauxDeFroid')}
             trackingEvent="Carto|Réseaux de froid"
@@ -573,7 +583,7 @@ function SimpleMapLegend({
 
           <Box display="flex">
             <SingleCheckbox
-              id="demandesEligibilite"
+              name="demandesEligibilite"
               checked={mapConfiguration.demandesEligibilite}
               onChange={() => toggleLayer('demandesEligibilite')}
               trackingEvent="Carto|Demandes de raccordement"
@@ -620,7 +630,7 @@ function SimpleMapLegend({
 
           <Box display="flex">
             <SingleCheckbox
-              id="consommationsGaz"
+              name="consommationsGaz"
               checked={mapConfiguration.consommationsGaz.show}
               onChange={(checked) => {
                 toggleLayer('consommationsGaz.show');
@@ -659,6 +669,8 @@ function SimpleMapLegend({
               priority="tertiary no outline"
               size="small"
               onClick={() => toggleSectionExpansion('consommationsGaz')}
+              aria-expanded={!!sectionsExpansions['consommationsGaz']}
+              aria-controls={'consommationsGaz'}
               title="Afficher/Masquer le détail"
             >
               <Icon
@@ -669,14 +681,17 @@ function SimpleMapLegend({
             </Button>
           </Box>
 
-          <CollapsibleBox expand={!!sectionsExpansions['consommationsGaz']}>
+          <CollapsibleBox
+            id="consommationsGaz"
+            expand={!!sectionsExpansions['consommationsGaz']}
+          >
             <DeactivatableBox
               disabled={!mapConfiguration.consommationsGaz.show}
             >
               <Box display="flex" flexWrap="wrap" px="3w">
                 <Box display="flex">
                   <SingleCheckbox
-                    id="consommationsGazLogements"
+                    name="consommationsGazLogements"
                     checked={mapConfiguration.consommationsGaz.logements}
                     onChange={() => toggleLayer('consommationsGaz.logements')}
                   />
@@ -706,7 +721,7 @@ function SimpleMapLegend({
 
                 <Box display="flex">
                   <SingleCheckbox
-                    id="consommationsGazTertiaire"
+                    name="consommationsGazTertiaire"
                     checked={mapConfiguration.consommationsGaz.tertiaire}
                     onChange={() => toggleLayer('consommationsGaz.tertiaire')}
                   />
@@ -736,7 +751,7 @@ function SimpleMapLegend({
 
                 <Box display="flex">
                   <SingleCheckbox
-                    id="consommationsGazIndustrie"
+                    name="consommationsGazIndustrie"
                     checked={mapConfiguration.consommationsGaz.industrie}
                     onChange={() => toggleLayer('consommationsGaz.industrie')}
                   />
@@ -792,7 +807,7 @@ function SimpleMapLegend({
 
           <Box display="flex">
             <SingleCheckbox
-              id="batimentsGazCollectif"
+              name="batimentsGazCollectif"
               checked={mapConfiguration.batimentsGazCollectif.show}
               onChange={(checked) => {
                 toggleLayer('batimentsGazCollectif.show');
@@ -830,6 +845,8 @@ function SimpleMapLegend({
               priority="tertiary no outline"
               size="small"
               onClick={() => toggleSectionExpansion('batimentsGazCollectif')}
+              aria-expanded={!!sectionsExpansions['batimentsGazCollectif']}
+              aria-controls={'batimentsGazCollectif'}
               title="Afficher/Masquer le détail"
             >
               <Icon
@@ -841,6 +858,7 @@ function SimpleMapLegend({
           </Box>
 
           <CollapsibleBox
+            id="batimentsGazCollectif"
             expand={!!sectionsExpansions['batimentsGazCollectif']}
           >
             <DeactivatableBox
@@ -869,7 +887,7 @@ function SimpleMapLegend({
 
           <Box display="flex">
             <SingleCheckbox
-              id="batimentsFioulCollectif"
+              name="batimentsFioulCollectif"
               checked={mapConfiguration.batimentsFioulCollectif.show}
               onChange={(checked) => {
                 toggleLayer('batimentsFioulCollectif.show');
@@ -907,6 +925,8 @@ function SimpleMapLegend({
               priority="tertiary no outline"
               size="small"
               onClick={() => toggleSectionExpansion('batimentsFioulCollectif')}
+              aria-expanded={!!sectionsExpansions['batimentsFioulCollectif']}
+              aria-controls={'batimentsFioulCollectif'}
               title="Afficher/Masquer le détail"
             >
               <Icon
@@ -918,6 +938,7 @@ function SimpleMapLegend({
           </Box>
 
           <CollapsibleBox
+            id="batimentsFioulCollectif"
             expand={!!sectionsExpansions['batimentsFioulCollectif']}
           >
             <DeactivatableBox
@@ -949,7 +970,7 @@ function SimpleMapLegend({
 
           <Box display="flex">
             <SingleCheckbox
-              id="batimentsRaccordes"
+              name="batimentsRaccordes"
               checked={mapConfiguration.batimentsRaccordes}
               onChange={() => toggleLayer('batimentsRaccordes')}
               trackingEvent="Carto|Bâtiments raccordés"
@@ -986,7 +1007,7 @@ function SimpleMapLegend({
 
           <Box display="flex">
             <SingleCheckbox
-              id="zonesOpportunite"
+              name="zonesOpportunite"
               checked={mapConfiguration.zonesOpportunite.show}
               onChange={(checked) => {
                 toggleLayer('zonesOpportunite.show');
@@ -1038,6 +1059,8 @@ function SimpleMapLegend({
               priority="tertiary no outline"
               size="small"
               onClick={() => toggleSectionExpansion('zonesOpportunite')}
+              aria-expanded={!!sectionsExpansions['zonesOpportunite']}
+              aria-controls={'zonesOpportunite'}
               title="Afficher/Masquer le détail"
             >
               <Icon
@@ -1048,7 +1071,10 @@ function SimpleMapLegend({
             </Button>
           </Box>
 
-          <CollapsibleBox expand={!!sectionsExpansions['zonesOpportunite']}>
+          <CollapsibleBox
+            id="zonesOpportunite"
+            expand={!!sectionsExpansions['zonesOpportunite']}
+          >
             <DeactivatableBox
               disabled={!mapConfiguration.zonesOpportunite.show}
               display="flex"
@@ -1058,7 +1084,7 @@ function SimpleMapLegend({
             >
               <Box display="flex">
                 <SingleCheckbox
-                  id="zonesPotentielChaud"
+                  name="zonesPotentielChaud"
                   checked={
                     mapConfiguration.zonesOpportunite.zonesPotentielChaud
                   }
@@ -1091,7 +1117,7 @@ function SimpleMapLegend({
 
               <Box display="flex">
                 <SingleCheckbox
-                  id="zonesPotentielFortChaud"
+                  name="zonesPotentielFortChaud"
                   checked={
                     mapConfiguration.zonesOpportunite.zonesPotentielFortChaud
                   }
@@ -1132,7 +1158,7 @@ function SimpleMapLegend({
 
           <Box display="flex">
             <SingleCheckbox
-              id="enrrMobilisables"
+              name="enrrMobilisables"
               checked={mapConfiguration.enrrMobilisables.show}
               onChange={(checked) => {
                 toggleLayer('enrrMobilisables.show');
@@ -1177,6 +1203,8 @@ function SimpleMapLegend({
               priority="tertiary no outline"
               size="small"
               onClick={() => toggleSectionExpansion('enrrMobilisables')}
+              aria-expanded={!!sectionsExpansions['enrrMobilisables']}
+              aria-controls={'enrrMobilisables'}
               title="Afficher/Masquer le détail"
             >
               <Icon
@@ -1187,7 +1215,10 @@ function SimpleMapLegend({
             </Button>
           </Box>
 
-          <CollapsibleBox expand={!!sectionsExpansions['enrrMobilisables']}>
+          <CollapsibleBox
+            id="enrrMobilisables"
+            expand={!!sectionsExpansions['enrrMobilisables']}
+          >
             <DeactivatableBox
               disabled={!mapConfiguration.enrrMobilisables.show}
               ml="3w"
@@ -1195,7 +1226,7 @@ function SimpleMapLegend({
             >
               <Box display="flex">
                 <SingleCheckbox
-                  id="showUnitesDIncineration"
+                  name="showUnitesDIncineration"
                   checked={
                     mapConfiguration.enrrMobilisables.showUnitesDIncineration
                   }
@@ -1229,7 +1260,7 @@ function SimpleMapLegend({
               </Box>
               <Box display="flex">
                 <SingleCheckbox
-                  id="showIndustrie"
+                  name="showIndustrie"
                   checked={mapConfiguration.enrrMobilisables.showIndustrie}
                   onChange={() => toggleLayer('enrrMobilisables.showIndustrie')}
                   trackingEvent="Carto|Industrie"
@@ -1259,7 +1290,7 @@ function SimpleMapLegend({
               </Box>
               <Box display="flex">
                 <SingleCheckbox
-                  id="showStationsDEpuration"
+                  name="showStationsDEpuration"
                   checked={
                     mapConfiguration.enrrMobilisables.showStationsDEpuration
                   }
@@ -1293,7 +1324,7 @@ function SimpleMapLegend({
               </Box>
               <Box display="flex">
                 <SingleCheckbox
-                  id="showDatacenters"
+                  name="showDatacenters"
                   checked={mapConfiguration.enrrMobilisables.showDatacenters}
                   onChange={() =>
                     toggleLayer('enrrMobilisables.showDatacenters')
@@ -1325,7 +1356,7 @@ function SimpleMapLegend({
               </Box>
               <Box display="flex">
                 <SingleCheckbox
-                  id="showInstallationsElectrogenes"
+                  name="showInstallationsElectrogenes"
                   checked={
                     mapConfiguration.enrrMobilisables
                       .showInstallationsElectrogenes
@@ -1363,7 +1394,7 @@ function SimpleMapLegend({
 
               <Box display="flex">
                 <SingleCheckbox
-                  id="friches"
+                  name="friches"
                   checked={
                     mapConfiguration.enrrMobilisables
                       .showSolaireThermiqueFriches
@@ -1397,7 +1428,7 @@ function SimpleMapLegend({
 
               <Box display="flex">
                 <SingleCheckbox
-                  id="parkings"
+                  name="parkings"
                   checked={
                     mapConfiguration.enrrMobilisables
                       .showSolaireThermiqueParkings
@@ -1439,7 +1470,7 @@ function SimpleMapLegend({
 
           <Box display="flex">
             <SingleCheckbox
-              id="caracteristiquesBatiments"
+              name="caracteristiquesBatiments"
               checked={mapConfiguration.caracteristiquesBatiments}
               onChange={(checked) => {
                 toggleLayer('caracteristiquesBatiments');
@@ -1494,6 +1525,8 @@ function SimpleMapLegend({
               onClick={() =>
                 toggleSectionExpansion('caracteristiquesBatiments')
               }
+              aria-expanded={!!sectionsExpansions['caracteristiquesBatiments']}
+              aria-controls={'caracteristiquesBatiments'}
               title="Afficher/Masquer le détail"
             >
               <Icon
@@ -1505,6 +1538,7 @@ function SimpleMapLegend({
           </Box>
 
           <CollapsibleBox
+            id="caracteristiquesBatiments"
             expand={!!sectionsExpansions['caracteristiquesBatiments']}
           >
             <DeactivatableBox
