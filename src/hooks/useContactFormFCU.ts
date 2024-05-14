@@ -3,6 +3,9 @@ import { useCallback, useRef, useState } from 'react';
 import { trackEvent } from 'src/services/analytics';
 import { AddressDataType } from 'src/types/AddressData';
 import { Airtable } from 'src/types/enum/Airtable';
+import useURLParamOrLocalStorage, {
+  parseAsString,
+} from '@hooks/useURLParamOrLocalStorage';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
@@ -15,6 +18,12 @@ const useContactFormFCU = () => {
   const [messageSent, setMessageSent] = useState(false);
   const [messageReceived, setMessageReceived] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('idle');
+  const [mtm_campaign] = useURLParamOrLocalStorage(
+    'mtm_campaign',
+    'mtm_campaign',
+    null,
+    parseAsString
+  );
 
   const timeoutScroller = useCallback(
     (delai: number, callback?: () => void) =>
@@ -85,7 +94,7 @@ const useContactFormFCU = () => {
         address
       );
       const response = await submitToAirtable(
-        formatDataToAirtable(data),
+        formatDataToAirtable({ ...data, mtm_campaign }),
         Airtable.UTILISATEURS
       );
       const { id } = await response.json();

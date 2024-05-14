@@ -44,6 +44,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     department,
     region,
     phone,
+    mtm_campaign,
   } = values;
 
   return {
@@ -65,6 +66,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     'Code Postal': postcode,
     Departement: department,
     Region: region,
+    Mtm_campaign: mtm_campaign,
   };
 };
 

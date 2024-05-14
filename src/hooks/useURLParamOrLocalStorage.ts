@@ -48,3 +48,11 @@ export default function useURLParamOrLocalStorage<T>(
 export function parseAsBoolean(value: string): boolean {
   return value === 'true';
 }
+
+export function parseAsString(value: string): string {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
