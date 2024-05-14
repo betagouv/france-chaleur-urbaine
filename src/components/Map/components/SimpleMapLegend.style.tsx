@@ -1,5 +1,4 @@
 import { TrackingEvent, trackEvent } from 'src/services/analytics';
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import Box from '@components/ui/Box';
 import styled, { css } from 'styled-components';
 
@@ -171,10 +170,4 @@ export const DeactivatableBox = styled(Box)<{ disabled?: boolean }>`
         user-select: none;
       }
     `}
-`;
-
-export const PotentielsRaccordementButton = styled(Button)`
-  display: flex;
-  text-wrap: nowrap;
-  gap: 8px;
 `;

@@ -1,8 +1,13 @@
-// import { Icon, Link, Modal } from '@codegouvfr/react-dsfr';
-// import { Modal } from '@codegouvfr/react-dsfr/Modal';
+import Button from '@codegouvfr/react-dsfr/Button';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import styled from 'styled-components';
+
+export const PotentielsRaccordementButton = styled(Button)`
+  display: flex;
+  text-wrap: nowrap;
+  gap: 8px;
+`;
 
 export const SpinnerWrapper = styled.div`
   display: flex;
@@ -14,10 +19,10 @@ export const SpinnerWrapper = styled.div`
 export const StyledModal = styled.div`
   // Surcharge la disposition par défaut qui est prédéfinie et statique
   // afin d'avoir plus de contrôle sur la largeur de la modal
-  // cf https://github.com/dataesr/react-dsfr/blob/666f089b2209a9c2d7ef73fe0f79f129923c2b7b/src/components/interface/Modal/Modal.js#L32-L33
+  // cf https://github.com/codegouvfr/react-dsfr/blob/35557b500126b4876737aeca8af1fd36e3a9e86b/src/Modal/Modal.tsx#L83-L90
 
   // force la classe fr-col-12 plutôt que fr-col-md-6
-  & > .fr-container-md .fr-col-12 {
+  & .fr-container-md .fr-col-12 {
     flex: 0 0 100% !important;
     max-width: 100% !important;
     width: 100% !important;
@@ -25,7 +30,7 @@ export const StyledModal = styled.div`
 `;
 
 export const ModalContentWrapper = styled.div`
-  margin-top: -2em;
+  margin-top: -3em;
   margin-bottom: -48px; // diminue le padding de la modale
 `;
 
@@ -57,13 +62,6 @@ export const BlackNumbersLine = styled.div`
 export const HorizontalSeparator = styled.div`
   width: 100%;
   border: 1px solid #e1e1e1;
-`;
-
-export const BigBlueText = styled.div`
-  color: #4550e5;
-  font-size: 18px;
-  font-weight: 500;
-  margin-top: 32px;
 `;
 
 export const DistanceLineText = styled.div`

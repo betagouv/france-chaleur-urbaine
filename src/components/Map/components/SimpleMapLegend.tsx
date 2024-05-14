@@ -1,8 +1,6 @@
-import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import ModalCarteFrance from './ModalCarteFrance';
 import Text from '@components/ui/Text';
-import { trackEvent } from 'src/services/analytics';
 import Image from 'next/image';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
@@ -38,7 +36,6 @@ import {
 import {
   DeactivatableBox,
   InfoIcon,
-  PotentielsRaccordementButton,
   SingleCheckbox,
 } from './SimpleMapLegend.style';
 import IconPolygon from './IconPolygon';
@@ -102,8 +99,6 @@ function SimpleMapLegend({
   legendTitle,
   ...props
 }: SimpleMapLegendProps) {
-  const router = useRouter();
-
   const enabledFeatures = useMemo(() => {
     return props.enabledFeatures ?? mapLegendFeatures;
   }, [props.enabledFeatures]);
@@ -135,14 +130,6 @@ function SimpleMapLegend({
     setProperty(mapConfiguration, property, interval);
     onMapConfigurationChange({ ...mapConfiguration });
   }
-
-  // Ouvre la modale de la carte quand potentiels-de-raccordement est dans l'URL
-  const [showStatsModal, setShowStatsModal] = useState(false);
-  useEffect(() => {
-    if (router.query['potentiels-de-raccordement'] !== undefined) {
-      setShowStatsModal(true);
-    }
-  }, []);
 
   return (
     <>
@@ -637,23 +624,8 @@ function SimpleMapLegend({
         <>
           <LegendSeparator />
           <Box textAlign="center">
-            <PotentielsRaccordementButton
-              priority="secondary"
-              size="small"
-              className="fr-mx-auto"
-              onClick={() => {
-                trackEvent('Carto|ouverture popup potentiels de raccordement');
-                setShowStatsModal(true);
-              }}
-            >
-              <Image src="/img/icon-france.png" alt="" width="19" height="19" />
-              Voir les potentiels de raccordement
-            </PotentielsRaccordementButton>
+            <ModalCarteFrance />
           </Box>
-          <ModalCarteFrance
-            isOpen={showStatsModal}
-            onClose={() => setShowStatsModal(false)}
-          />
         </>
       )}
 
