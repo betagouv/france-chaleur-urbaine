@@ -4,6 +4,8 @@ import { Alert } from '@dataesr/react-dsfr';
 import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
 import { getReadableDistance } from 'src/services/Map/distance';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { useMatomoAbTestingExperiment } from 'src/services/analytics';
 import { AddressDataType } from 'src/types/AddressData';
 import {
   bordeauxMetropoleCityCodes,
@@ -17,8 +19,6 @@ import {
   ContactFormWrapper,
   ContactMapResult,
 } from './components';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
-import { useMatomoAbTestingExperiment } from 'src/services/analytics';
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;

@@ -34,17 +34,45 @@ const isOnAnIRISNetwork = async (
   return !!result;
 };
 
-export const closestNetwork = async (
-  lat: number,
-  lon: number
-): Promise<{
+export type NetworkInfos = {
   distance: number;
   'Identifiant reseau': string;
   'Taux EnR&R': number;
   'contenu CO2 ACV': number;
   Gestionnaire: string;
   nom_reseau: string;
-}> => {
+};
+
+export const getNetworkInfosWithDistance = async (
+  networkId: string,
+  lat: number,
+  lon: number
+): Promise<NetworkInfos | null> => {
+  const network = await db('reseaux_de_chaleur')
+    .select(
+      'Identifiant reseau',
+      'Taux EnR&R',
+      'contenu CO2 ACV',
+      'Gestionnaire',
+      'nom_reseau',
+      db.raw(
+        `ST_Distance(
+          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
+          ST_Transform(geom, 2154)
+        ) as distance`
+      )
+    )
+    .where('has_trace', true)
+    .andWhere('Identifiant reseau', networkId)
+    .first();
+
+  return network;
+};
+
+export const closestNetwork = async (
+  lat: number,
+  lon: number
+): Promise<NetworkInfos> => {
   const network = await db('reseaux_de_chaleur')
     .select(
       db.raw(
@@ -276,7 +304,8 @@ export const getCityEligilityStatus = async (
 export const getEligilityStatus = async (
   lat: number,
   lon: number,
-  city?: string
+  city?: string,
+  networkId?: string
 ): Promise<HeatNetwork> => {
   const [inZDP, irisNetwork, inFuturNetwork, futurNetwork, network] =
     await Promise.all([
@@ -284,8 +313,13 @@ export const getEligilityStatus = async (
       isOnAnIRISNetwork(lat, lon),
       closestInFuturNetwork(lat, lon),
       closestFuturNetwork(lat, lon),
-      closestNetwork(lat, lon),
+      networkId
+        ? getNetworkInfosWithDistance(networkId, lat, lon)
+        : closestNetwork(lat, lon),
     ]);
+  if (!network) {
+    throw new Error(`Réseau ${networkId} non trouvé`);
+  }
 
   const eligibility = isEligible(Number(network.distance), city);
   const futurEligibility = isEligible(Number(futurNetwork.distance), city);

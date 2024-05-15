@@ -1,24 +1,25 @@
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
+import Text from '@components/ui/Text';
+import Link from 'next/link';
 import { getConso } from 'src/services/Map/conso';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { Network } from 'src/types/Summary/Network';
 import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
+import EligibilityTestBox from './EligibilityTestBox';
+import EnergiesChart from './EnergiesChart';
 import {
   AddressContent,
   BlueBox,
-  Box,
   BoxContent,
   BoxIcon,
+  BoxSection,
   Colmun,
   InformationsComplementairesBox,
   MapContainer,
   Title,
 } from './Network.styles';
-import EnergiesChart from './EnergiesChart';
-import Text from '@components/ui/Text';
-import Link from 'next/link';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
-import { Network } from 'src/types/Summary/Network';
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://')
@@ -129,7 +130,7 @@ const NetworkPanel = ({
               </BlueBox>
             )}
             {(!displayBlocks || displayBlocks.includes('techniques')) && (
-              <Box>
+              <BoxSection>
                 <h3>Caractéristiques techniques</h3>
                 <BoxContent>
                   <div>
@@ -268,11 +269,11 @@ const NetworkPanel = ({
                     </BoxContent>
                   </>
                 )}
-              </Box>
+              </BoxSection>
             )}
             {!isCold &&
               (!displayBlocks || displayBlocks.includes('tarifs')) && (
-                <Box>
+                <BoxSection>
                   <BoxIcon>
                     <span>
                       <h3>Informations tarifaires</h3>
@@ -374,10 +375,10 @@ const NetworkPanel = ({
                       Ces informations ne sont pas disponibles pour le moment.
                     </div>
                   )}
-                </Box>
+                </BoxSection>
               )}
             {(!displayBlocks || displayBlocks.includes('contacts')) && (
-              <Box>
+              <BoxSection>
                 <h3>Contacts</h3>
                 <BoxContent>
                   <div>
@@ -429,7 +430,7 @@ const NetworkPanel = ({
                       </div>
                     </BoxContent>
                   )}
-              </Box>
+              </BoxSection>
             )}
           </Colmun>
         )}
@@ -441,6 +442,10 @@ const NetworkPanel = ({
                 : 'fr-col-12'
             }
           >
+            {!isCold && (
+              <EligibilityTestBox networkId={network['Identifiant reseau']} />
+            )}
+
             {network.informationsComplementaires && (
               <InformationsComplementairesBox>
                 <h3>Informations complémentaires</h3>
@@ -480,10 +485,10 @@ const NetworkPanel = ({
             )}
             {!isCold &&
               (!displayBlocks || displayBlocks.includes('energies')) && (
-                <Box>
+                <BoxSection>
                   <h3>Mix énergétique</h3>
                   <EnergiesChart network={network} />
-                </Box>
+                </BoxSection>
               )}
             {(!displayBlocks || displayBlocks.includes('map')) && (
               <MapContainer>

@@ -21,6 +21,10 @@ export type CityNetwork = {
 
 export type HeatNetworksResponse = HeatNetwork & CityNetwork;
 
+export type FullHeatNetworksResponse = HeatNetworksResponse & {
+  distance: number;
+};
+
 export type AddressDetail = {
   geoAddress?: SuggestionItem;
   network: HeatNetworksResponse;

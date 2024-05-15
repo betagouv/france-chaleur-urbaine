@@ -7,7 +7,7 @@ import { MapSearchFormGlobalStyle } from './MapSearchForm.style';
 const MapSearchForm = ({
   onAddressSelect,
 }: {
-  onAddressSelect: HandleAddressSelect;
+  onAddressSelect?: HandleAddressSelect;
 }) => {
   const { heatNetworkService } = useServices();
 
