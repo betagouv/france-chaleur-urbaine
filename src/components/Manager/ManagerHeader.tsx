@@ -1,9 +1,6 @@
-import {
-  Button,
-  SearchableSelect,
-  Select,
-  TextInput,
-} from '@codegouvfr/react-dsfr';
+import { Input } from '@codegouvfr/react-dsfr/Input';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
@@ -180,50 +177,66 @@ const ManagerHeader = ({
   return (
     <Filters>
       <Filter>
-        <TextInput
+        <Input
           label="Rechercher par nom ou par mail:"
-          value={nameFilter}
-          onChange={(e) => setNameFilter(e.target.value)}
+          nativeInputProps={{
+            type: 'email',
+            required: true,
+            value: nameFilter,
+            onChange: (e) => setNameFilter(e.target.value),
+          }}
         />
       </Filter>
       <Filter>
-        <TextInput
+        <Input
           label="Rechercher par adresse:"
-          value={addressFilter}
-          onChange={(e) => setAddressFilter(e.target.value)}
+          nativeInputProps={{
+            type: 'email',
+            required: true,
+            value: addressFilter,
+            onChange: (e) => setAddressFilter(e.target.value),
+          }}
         />
       </Filter>
       <Filter>
         <Select
           label="Statut:"
-          selected={statusFilter}
-          onChange={(e: any) => setStatusFiler(e.target.value)}
           options={statusOptions}
+          nativeSelectProps={{
+            onChange: (e) => setStatusFiler(e.target.value),
+            value: statusFilter,
+          }}
         />
       </Filter>
       <Filter>
         <Select
           label="Mode de chauffage:"
-          selected={filterModeChauffage}
-          onChange={(e: any) => setFilterModeChauffage(e.target.value)}
           options={modeDeChauffageOptions}
+          nativeSelectProps={{
+            onChange: (e) => setFilterModeChauffage(e.target.value),
+            value: filterModeChauffage,
+          }}
         />
       </Filter>
       <Filter>
         <Select
           label="Type de chauffage:"
-          selected={filterTypeChauffage}
-          onChange={(e) => setFilterTypeChauffage(e.target.value)}
           options={typeDeChauffageOptions}
+          nativeSelectProps={{
+            onChange: (e) => setFilterTypeChauffage(e.target.value),
+            value: filterTypeChauffage,
+          }}
         />
       </Filter>
       {gestionnaireOptions.length > 1 && (
         <Filter>
-          <SearchableSelect
+          <Select // TODO: le select est normalement searchable
             label="Gestionnaire:"
             options={gestionnaireOptions}
-            selected={gestionnaireFilter}
-            onChange={setGestionnaireFilter}
+            nativeSelectProps={{
+              onChange: (e) => setGestionnaireFilter(e.target.value),
+              value: gestionnaireFilter,
+            }}
           />
         </Filter>
       )}

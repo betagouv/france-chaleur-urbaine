@@ -1,4 +1,4 @@
-import {
+/*import {
   Alert,
   Button,
   Checkbox,
@@ -6,8 +6,13 @@ import {
   Radio,
   RadioGroup,
   TextInput,
-} from '@codegouvfr/react-dsfr';
+} from '@codegouvfr/react-dsfr';*/
+import Button from '@codegouvfr/react-dsfr/Button';
+import Alert from '@codegouvfr/react-dsfr/Alert';
+import { Input } from '@codegouvfr/react-dsfr/Input';
+import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 import { ChangeEvent, FormEvent, useState } from 'react';
+import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 
 const additionWishValuesWithFormat = [
   'Tracé du réseau',
@@ -63,103 +68,148 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <TextInput
+      <Input
         label="Adresse mail"
-        type="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        nativeInputProps={{
+          type: 'email',
+          required: true,
+          value: email,
+          onChange: (e) => setEmail(e.target.value),
+        }}
       />
-      <RadioGroup
+      <RadioButtons
         legend="Vous êtes"
         name="user"
-        isInline
-        required
-        value={user}
-        onChange={setUser}
-      >
-        <Radio label="une collectivité" value="Collectivité" />
-        <Radio label="un exploitant" value="Exploitant" />
-        <Radio label="autre" value="autre" />
-      </RadioGroup>
+        options={[
+          {
+            label: 'une collectivité',
+            nativeInputProps: {
+              checked: user === 'Collectivité',
+              onChange: () => setUser('Collectivité'),
+            },
+          },
+          {
+            label: 'un exploitant',
+            nativeInputProps: {
+              checked: user === 'Exploitant',
+              onChange: () => setUser('Exploitant'),
+            },
+          },
+          {
+            label: 'autre',
+            nativeInputProps: {
+              checked: user === 'autre',
+              onChange: () => setUser('autre'),
+            },
+          },
+        ]}
+      />
+
       {user === 'autre' && (
-        <TextInput
-          name="otherUser"
+        <Input
           label="Precisez"
-          required
-          value={otherUser}
-          onChange={(e) => setOtherUser(e.target.value)}
+          nativeInputProps={{
+            name: 'otherUser',
+            required: true,
+            value: otherUser,
+            onChange: (e) => setOtherUser(e.target.value),
+          }}
         />
       )}
-      <TextInput
+      <Input
         label="Réseau(x) concerné(s)"
-        required
-        value={network}
-        onChange={(e) => setNetwork(e.target.value)}
+        nativeInputProps={{
+          required: true,
+          value: network,
+          onChange: (e) => setNetwork(e.target.value),
+        }}
       />
-      <RadioGroup
+      <RadioButtons
         legend="Vous souhaitez"
         name="wish"
-        isInline
-        required
-        value={wish}
-        onChange={setWish}
-      >
-        <Radio
-          label="ajouter des données /informations"
-          value="Ajout de données"
-        />
-        <Radio label="nous signaler une erreur" value="Signaler une erreur" />
-        <Radio
-          label="nous suggérer une fonctionnalité à ajouter à la carte"
-          value="Suggérer une fonctionnalité"
-        />
-        <Radio
-          label="nous indiquer le contact commercial à qui transmettre les demandes de raccordement reçues sur France chaleur Urbaine et relatives à votre réseau"
-          value="Indiquer un contact"
-        />
-      </RadioGroup>
+        options={[
+          {
+            label: 'ajouter des données /informations',
+            nativeInputProps: {
+              checked: wish === 'Ajout de données',
+              onChange: () => setWish('Ajout de données'),
+            },
+          },
+          {
+            label: 'nous signaler une erreur',
+            nativeInputProps: {
+              checked: wish === 'Signaler une erreur',
+              onChange: () => setWish('Signaler une erreur'),
+            },
+          },
+          {
+            label: 'nous suggérer une fonctionnalité à ajouter à la carte',
+            nativeInputProps: {
+              checked: wish === 'Suggérer une fonctionnalité',
+              onChange: () => setWish('Suggérer une fonctionnalité'),
+            },
+          },
+          {
+            label:
+              'nous indiquer le contact commercial à qui transmettre les demandes de raccordement reçues sur France chaleur Urbaine et relatives à votre réseau',
+            nativeInputProps: {
+              checked: wish === 'Indiquer un contact',
+              onChange: () => setWish('Indiquer un contact'),
+            },
+          },
+        ]}
+      />
       {wish === 'Ajout de données' && (
         <>
-          <CheckboxGroup legend="Vous voulez ajouter" isInline required>
-            {additionWishValues.map((value) => (
-              <Checkbox
-                key={value}
-                label={value}
-                id={value}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore: Create proper type
-                onClick={handleClickAdditionWish}
-              />
-            ))}
-          </CheckboxGroup>
+          <Checkbox
+            legend="Vous voulez ajouter"
+            orientation="horizontal"
+            options={additionWishValues.map((value) => {
+              return {
+                label: value,
+                nativeInputProps: {
+                  name: value,
+                  onChange: (e) => handleClickAdditionWish(e), // TODO: vérifier fonctionnmement
+                  value,
+                },
+              };
+            })}
+          />
           {additionWish.includes('autre') && (
-            <TextInput
+            <Input
               label="Precisez"
-              required
-              value={otherAdditionWish}
-              onChange={(e) => setOtherAdditionWish(e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: otherAdditionWish,
+                onChange: (e) => setOtherAdditionWish(e.target.value),
+              }}
             />
           )}
         </>
       )}
       {wish && wish !== 'Ajout de données' && (
-        <TextInput
+        <Input
           label="Precisez"
-          required
-          value={otherWish}
-          onChange={(e) => setOtherWish(e.target.value)}
+          nativeInputProps={{
+            required: true,
+            value: otherWish,
+            onChange: (e) => setOtherWish(e.target.value),
+          }}
         />
       )}
       {additionWishEmpty && (
         <p>
           <Alert
-            type="error"
             title={'Merci de sélectionner le type d’ajout.'}
+            severity="error"
           />
         </p>
       )}
-      <Button submit>
+      <Button
+        nativeButtonProps={{
+          type: 'submit',
+        }}
+      >
         {wish && wish === 'Ajout de données'
           ? 'Télécharger mes données'
           : 'Envoyer'}

@@ -1,7 +1,7 @@
-import { Modal } from '@codegouvfr/react-dsfr';
+/*import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import styled from 'styled-components';
 
-export const StyledModal = styled(Modal)`
+export const StyledModal = styled(createModal)`
   // force la classe fr-col-12 plutôt que fr-col-md-6
   & > .fr-container-md .fr-col-12 {
     flex: 0 0 100% !important;
@@ -23,3 +23,4 @@ export const HorizontalSeparator = styled.div`
   width: 100%;
   border: 1px solid #e1e1e1;
 `;
+*/

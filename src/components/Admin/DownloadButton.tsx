@@ -1,4 +1,4 @@
-import { Icon } from '@codegouvfr/react-dsfr';
+import Icon from '@components/ui/Icon';
 import { useServices } from 'src/services';
 
 const DownloadButton = ({ id, inError }: { id: string; inError: boolean }) => {
@@ -30,7 +30,7 @@ const DownloadButton = ({ id, inError }: { id: string; inError: boolean }) => {
 
   return (
     <button onClick={() => download()}>
-      <Icon name="ri-file-download-line" size="2x" />
+      <Icon name="ri-file-download-line" size="lg" />
     </button>
   );
 };

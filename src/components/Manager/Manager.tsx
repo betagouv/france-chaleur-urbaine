@@ -1,19 +1,20 @@
 import Hoverable from '@components//Hoverable';
-import HoverableIcon from '@components/Hoverable/HoverableIcon';
+//import HoverableIcon from '@components/Hoverable/HoverableIcon';
+import Icon from '@components/ui/Icon';
 import Map from '@components/Map/Map';
-import { Icon, Table } from '@codegouvfr/react-dsfr';
+import { Table } from '@codegouvfr/react-dsfr/Table';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
-import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
-import { RowsParams } from 'src/services/demands';
+//import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
+//import { RowsParams } from 'src/services/demands';
 import { Demand } from 'src/types/Summary/Demand';
-import AdditionalInformation from './AdditionalInformation';
-import Addresse from './Addresse';
-import Comment from './Comment';
-import Contact from './Contact';
-import Contacted from './Contacted';
+//import AdditionalInformation from './AdditionalInformation';
+//import Addresse from './Addresse';
+//import Comment from './Comment';
+//import Contact from './Contact';
+//import Contacted from './Contacted';
 import {
-  ColHeader,
+  //ColHeader,
   CollapseMap,
   Container,
   ManagerContainer,
@@ -22,8 +23,8 @@ import {
   TableContainer,
 } from './Manager.styles';
 import ManagerHeader from './ManagerHeader';
-import Status from './Status';
-import Tag from './Tag';
+//import Status from './Status';
+//import Tag from './Tag';
 import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
@@ -77,7 +78,7 @@ const Manager = () => {
   const [isFirstInit, setIsFirstInit] = useState<boolean>(true);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
-  const [sort, setSort] = useState<SortParamType>(defaultSort);
+  const [sort] = useState<SortParamType>(defaultSort); //setSort
   const refManagerTable: null | { current: any } = useRef(null);
   const [centerRow, setCenterRow] = useState<string>();
 
@@ -87,7 +88,7 @@ const Manager = () => {
   const [firstCenterPin, setFirstCenterPin] = useState<[number, number]>();
   const [initialZoom, setInitialZoom] = useState<number>(8);
 
-  const handleSort = useCallback(
+  /*const handleSort = useCallback(
     (key: keyof Demand, backupKey?: keyof Demand) => () => {
       const order =
         sort.key !== key || !sort.order
@@ -98,7 +99,7 @@ const Manager = () => {
       setSort(order ? { key, backupKey, order } : defaultSort);
     },
     [sort]
-  );
+  );*/
 
   const setMapCenter = (pin: [number, number]) => {
     setCenterPin(pin);
@@ -233,7 +234,7 @@ const Manager = () => {
     });
   }, [demandsService]);
 
-  const updateDemand = useCallback(
+  /*const updateDemand = useCallback(
     (demandId: string, demand: Partial<Demand>) => {
       demandsService.update(demandId, demand).then((response) => {
         if (response) {
@@ -244,7 +245,7 @@ const Manager = () => {
       });
     },
     [demands, demandsService]
-  );
+  );*/
 
   useEffect(() => {
     if (filteredDemands && filteredDemands.length > 0) {
@@ -262,7 +263,24 @@ const Manager = () => {
     addOnClick();
   }, [addOnClick, page]);
 
-  const demandRowsParams: RowsParams[] = [
+  const headers = [
+    'statut',
+    'prospect recontacté',
+    'contact / envoi de mails',
+    'adresse',
+    'date demandes',
+    'type de chauffage',
+    'mode de chauffage',
+    'distance au réseau',
+    'identifiant réseau',
+    'nom réseau',
+    'nb logements',
+    'conso gaz',
+    'commentaires',
+    'affecté à',
+  ];
+
+  /*const demandRowsParams: RowsParams[] = [
     {
       name: 'Statut',
       label: 'Statut',
@@ -409,7 +427,7 @@ const Manager = () => {
         />
       ),
     },
-  ];
+  ];*/
 
   return (
     <Container>
@@ -424,14 +442,17 @@ const Manager = () => {
             <div ref={refManagerTable}>
               {filteredDemands.length > 0 ? (
                 <Table
-                  columns={demandRowsParams}
-                  data={filteredDemands}
-                  rowKey="N° de dossier"
-                  pagination
-                  paginationPosition="left"
-                  page={page}
-                  setPage={setPage}
-                  perPage={rowPerPage}
+                  headers={headers}
+                  // récuperer un tableau des valeurs de chaque demandes
+                  data={filteredDemands.map((demande) =>
+                    Object.values(demande)
+                  )}
+                  //rowKey="N° de dossier"
+                  //pagination
+                  //paginationPosition="left"
+                  //page={page}
+                  //setPage={setPage}
+                  //perPage={rowPerPage}
                 />
               ) : (
                 <NoResult>Aucun résultat</NoResult>
@@ -448,7 +469,7 @@ const Manager = () => {
                   {mapCollapsed ? 'Agrandir la carte' : 'Réduire la carte'}
                 </Hoverable>
                 <Icon
-                  size="2x"
+                  size="lg"
                   name={
                     mapCollapsed
                       ? 'ri-arrow-left-s-fill'

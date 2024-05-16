@@ -1,4 +1,6 @@
-import { Button, Container, Icon, Select } from '@codegouvfr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import Icon from '@components/ui/Icon';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Heading from '@components/ui/Heading';
 import { fetchJSON, postFetchJSON } from '@utils/network';
 import { useEffect, useMemo, useState } from 'react';
@@ -58,7 +60,7 @@ const UserImpersonation = () => {
   }
 
   return (
-    <Container>
+    <Box as="main" className="fr-container fr-grid-row" my="4w">
       <Box p="2w">
         <Heading size="h3">
           <Icon name="ri-spy-line" />
@@ -81,7 +83,7 @@ const UserImpersonation = () => {
             }}
           >
             {tag}
-            <Icon iconPosition="right" name="ri-close-line" size="lg" />
+            <Icon name="ri-close-line" size="lg" />
           </button>
         ))}
 
@@ -89,19 +91,20 @@ const UserImpersonation = () => {
           <Select
             label="Tags gestionnaires"
             options={selectTagsOptions}
-            onChange={(e) =>
-              setSelectedTagsGestionnaires([
-                ...selectedTagsGestionnaires,
-                e.target.value,
-              ])
-            }
+            nativeSelectProps={{
+              onChange: (e) =>
+                setSelectedTagsGestionnaires([
+                  ...selectedTagsGestionnaires,
+                  e.target.value,
+                ]),
+            }}
           />
         </Box>
         <Button className="fr-mt-2w" onClick={() => startImpersonation()}>
           Lancer l'imposture
         </Button>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

@@ -1,4 +1,4 @@
-import { Select } from '@codegouvfr/react-dsfr';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import styled from 'styled-components';
 
 export const StatusSelect = styled(Select)`
