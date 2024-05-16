@@ -7,6 +7,7 @@ import { getReadableDistance } from 'src/services/Map/distance';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { useMatomoAbTestingExperiment } from 'src/services/analytics';
 import { AddressDataType } from 'src/types/AddressData';
+import { ContactFormInfos } from 'src/types/Summary/Demand';
 import {
   bordeauxMetropoleCityCodes,
   getEligibilityResult,
@@ -89,7 +90,7 @@ const EligibilityFormContact = ({
   }, [addressData, variation]);
 
   const handleSubmitForm = useCallback(
-    async (values: Record<string, string | number>) => {
+    async (values: ContactFormInfos) => {
       const sendedValues: any = {
         ...addressData,
         ...values,

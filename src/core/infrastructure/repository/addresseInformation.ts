@@ -284,7 +284,7 @@ export const getExport = (addresses: any[]) => {
   return XLSX.write(wb, { bookType: EXPORT_FORMAT.XLSX, type: 'base64' });
 };
 
-const isEligible = (distance: number, city?: string) => {
+const isDistanceEligible = (distance: number, city?: string) => {
   if (city && city.toLowerCase() === 'paris') {
     return { isEligible: distance <= 100, veryEligibleDistance: 60 };
   }
@@ -321,8 +321,11 @@ export const getEligilityStatus = async (
     throw new Error(`Réseau ${networkId} non trouvé`);
   }
 
-  const eligibility = isEligible(Number(network.distance), city);
-  const futurEligibility = isEligible(Number(futurNetwork.distance), city);
+  const eligibility = isDistanceEligible(Number(network.distance), city);
+  const futurEligibility = isDistanceEligible(
+    Number(futurNetwork.distance),
+    city
+  );
   if (
     eligibility.isEligible &&
     Number(network.distance) < eligibility.veryEligibleDistance

@@ -300,6 +300,22 @@ const trackingEvents = {
     google: 'Pm33CK6ms_oYEJDB_MIq', // Contact > Formulaire envoyé - Non Eligible
     facebook: 'Formulaire de contact inéligible - Carte - Envoi',
   },
+  'Eligibilité|Formulaire de contact éligible - Fiche réseau - Envoi': {
+    matomo: [
+      'Eligibilité',
+      'Formulaire de contact éligible - Fiche réseau - Envoi',
+    ],
+    google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible
+    facebook: 'Formulaire de contact éligible - Fiche réseau - Envoi',
+  },
+  'Eligibilité|Formulaire de contact inéligible - Fiche réseau - Envoi': {
+    matomo: [
+      'Eligibilité',
+      'Formulaire de contact inéligible - Fiche réseau - Envoi',
+    ],
+    google: 'Pm33CK6ms_oYEJDB_MIq', // Contact > Formulaire envoyé - Non Eligible
+    facebook: 'Formulaire de contact inéligible - Fiche réseau - Envoi',
+  },
   'Eligibilité|Formulaire de contact éligible - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Envoi'],
     google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible
@@ -338,6 +354,31 @@ const trackingEvents = {
     matomo: ['Eligibilité', 'Formulaire de test - Carte - Envoi'],
     google: 'z18zCKKms_oYEJDB_MIq', // Test éligibilité
     facebook: 'Formulaire de test - Carte - Envoi',
+    linkedin: 5492674,
+  },
+  // fiche réseau
+  'Eligibilité|Formulaire de test - Fiche réseau - Adresse Inéligible': {
+    matomo: [
+      'Eligibilité',
+      'Formulaire de test - Fiche réseau - Adresse Inéligible',
+    ],
+    google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
+    facebook: 'Formulaire de test - Fiche réseau - Adresse Inéligible',
+    linkedin: 5492666,
+  },
+  'Eligibilité|Formulaire de test - Fiche réseau - Adresse Éligible': {
+    matomo: [
+      'Eligibilité',
+      'Formulaire de test - Fiche réseau - Adresse Éligible',
+    ],
+    google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
+    facebook: 'Formulaire de test - Fiche réseau - Adresse Éligible',
+    linkedin: 5392842,
+  },
+  'Eligibilité|Formulaire de test - Fiche réseau - Envoi': {
+    matomo: ['Eligibilité', 'Formulaire de test - Fiche réseau - Envoi'],
+    google: 'z18zCKKms_oYEJDB_MIq', // Test éligibilité
+    facebook: 'Formulaire de test - Fiche réseau - Envoi',
     linkedin: 5492674,
   },
   'Eligibilité|Formulaire de test - Envoi': {

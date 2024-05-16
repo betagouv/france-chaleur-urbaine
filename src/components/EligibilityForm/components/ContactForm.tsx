@@ -1,8 +1,10 @@
 import Loader from '@components/Loader';
 import { Button } from '@dataesr/react-dsfr';
-import { Form, Formik, FormikValues } from 'formik';
+import { Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { useRef } from 'react';
+import { AnalyticsFormId } from 'src/services/analytics';
+import { ContactFormInfos } from 'src/types/Summary/Demand';
 import * as Yup from 'yup';
 import ContactConsent, {
   defaultValuesContactConsent,
@@ -13,10 +15,9 @@ import ContactInformation, {
   validationSchemasContactInformation,
 } from './ContactInformation';
 import { ContactFormFooter } from './EligibilityForm.styled';
-import { AnalyticsFormId } from 'src/services/analytics';
 
 type ContactFormProps = {
-  onSubmit: (values: FormikValues) => void;
+  onSubmit: (values: ContactFormInfos) => void;
   isLoading?: boolean;
   cardMode?: boolean;
   city?: string;
@@ -50,7 +51,7 @@ export const ContactForm = ({
     ...validationSchemasContactInformation,
     ...validationSchemasContactConsent,
   });
-  const handleSubmit = async (values: FormikValues) => {
+  const handleSubmit = async (values: ContactFormInfos) => {
     onSubmit({ ...values });
   };
   return (
