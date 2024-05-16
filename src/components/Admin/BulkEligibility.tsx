@@ -1,53 +1,74 @@
-import { Icon, Table, TextInput } from '@codegouvfr/react-dsfr';
-import Link from 'next/link';
+import { Input } from '@codegouvfr/react-dsfr/Input';
+//import Table, { type TableColumnDef } from '@components/ui/Table';
+import { Table } from '@codegouvfr/react-dsfr/Table';
+//import Icon from '@components/ui/Icon';
+//import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { EligibilityDemand } from 'src/types/EligibilityDemand';
-import DownloadButton from './DownloadButton';
+//import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';
 import Heading from '@components/ui/Heading';
 import Box from '@components/ui/Box';
 
-const columns = [
-  { name: 'id', label: 'Id' },
+/*const columns: TableColumnDef<
+  EligibilityDemand & { download: any; map: any }
+>[] = [
+  { key: 'id', label: 'Id' },
   {
-    name: 'emails',
+    key: 'emails',
     label: 'Emails',
-    render: ({ emails }: EligibilityDemand) => emails.join(', '),
+    //si email vide ne pas faire le join
+    render: ({ emails }: EligibilityDemand) =>
+      emails ? emails.join(', ') : [], //si email vide ne pas faire le join
   },
   {
-    name: 'created_at',
+    key: 'created_at',
     label: 'Date',
     render: ({ created_at }: EligibilityDemand) =>
       new Date(created_at).toLocaleDateString(),
   },
-  { name: 'version', label: 'Version' },
-  { name: 'addresses_count', label: "Nombre d'adresses" },
-  { name: 'error_count', label: "Nombre d'erreurs" },
-  { name: 'eligibile_count', label: "Nombre d'adresses éligibles" },
+  { key: 'version', label: 'Version' },
+  { key: 'addresses_count', label: "Nombre d'adresses" },
+  { key: 'error_count', label: "Nombre d'erreurs" },
+  { key: 'eligibile_count', label: "Nombre d'adresses éligibles" },
   {
-    name: 'in_error',
+    key: 'in_error',
     label: 'En erreur',
-    render: ({ in_error }: EligibilityDemand) => (in_error ? 'Oui' : 'Non'),
+    render: (param: EligibilityDemand) =>
+      param && param.in_error ? 'Oui' : 'Non',
   },
   {
-    name: 'download',
+    key: 'download',
     label: 'Telecharger',
-    render: ({ id, in_error }: EligibilityDemand) => (
-      <DownloadButton id={id} inError={in_error} />
-    ),
+    render: (param: EligibilityDemand) =>
+      param ? <DownloadButton id={param.id} inError={param.in_error} /> : null,
   },
   {
-    name: 'map',
+    key: 'map',
     label: 'Carte',
-    render: ({ id }: EligibilityDemand) => (
-      <Link href={`/carte?id=${id}`}>
-        <button>
-          <Icon name="ri-road-map-line" size="2x" />
-        </button>
-      </Link>
-    ),
+    render: (param: EligibilityDemand) =>
+      param ? (
+        <Link href={`/carte?id=${param.id}`}>
+          <button>
+            <Icon name="ri-road-map-line" size="lg" />
+          </button>
+        </Link>
+      ) : null,
   },
+];*/
+
+const headers = [
+  'id',
+  'emails',
+  'created_at',
+  'version',
+  'addresses_count',
+  'error_count',
+  'eligibile_count',
+  'in_error',
+  'download',
+  'map',
 ];
 
 const BulkEligibility = () => {
@@ -57,14 +78,14 @@ const BulkEligibility = () => {
   const [eligibilityDemands, setEligibilityDemands] = useState<
     EligibilityDemand[]
   >([]);
-  const [page, setPage] = useState(1);
+  //const [page, setPage] = useState(1);
 
   useEffect(() => {
     adminService.getEligibilityDemand().then(setEligibilityDemands);
   }, [adminService]);
 
   const filteredEligibilityDemands = useMemo(() => {
-    setPage(1);
+    //setPage(1);
     return filter
       ? eligibilityDemands.filter((demand) =>
           demand.emails.some((email) => email.includes(filter.toLowerCase()))
@@ -89,20 +110,30 @@ const BulkEligibility = () => {
                 0
               )} adresses éligibles`}
           </Heading>
-          <TextInput
-            placeholder="Email"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+          <Input
+            label="Email"
+            nativeInputProps={{
+              placeholder: 'Email',
+              value: filter,
+              onChange: (e) => setFilter(e.target.value),
+            }}
           />
         </Box>
         <Table
-          columns={columns}
-          data={filteredEligibilityDemands}
-          rowKey="id"
-          pagination
-          paginationPosition="center"
-          page={page}
-          setPage={setPage}
+          headers={headers}
+          data={filteredEligibilityDemands.map((demande) =>
+            Object.values(demande)
+          )} //filteredEligibilityDemands
+          //rowKey="id"
+          //pagination
+          //paginationPosition="center"
+          //page={page}
+          //setPage={setPage}
+          /*filteredEligibilityDemands.map((demand) => ({
+            ...demand,
+            download: demand.download,
+            map: demand.map,
+          }))*/
         />
         {filteredEligibilityDemands.length === 0 && <p>Pas de résultat</p>}
       </TableContainer>

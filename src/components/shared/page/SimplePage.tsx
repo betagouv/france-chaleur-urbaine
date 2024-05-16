@@ -25,19 +25,19 @@ import Head from 'next/head';
 // } from '@codegouvfr/react-dsfr/Header';
 import { Header } from '@codegouvfr/react-dsfr/Header';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
-import { signOut, useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { ComponentProps, Fragment } from 'react';
+import { useSession } from 'next-auth/react'; //signOut
+//import Link from 'next/link';
+//import { ComponentProps, Fragment } from 'react';
 import { USER_ROLE } from 'src/types/enum/UserRole';
-import Image from 'next/image';
+//import Image from 'next/image';
 import { useRouter } from 'next/router';
-import {
+/*import {
   FullScreenItems,
   FullScreenModeFirstLine,
   FullScreenModeNavLogo,
   StopImpersonationButton,
-} from './SimplePage.styles';
-import { deleteFetchJSON } from '@utils/network';
+} from './SimplePage.styles';*/
+//import { deleteFetchJSON } from '@utils/network';
 import { MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
@@ -323,12 +323,12 @@ const PageHeader = (props: PageHeaderProps) => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  const isFullScreenMode =
-    props.mode === 'public-fullscreen' || props.mode === 'authenticated';
+  /*const isFullScreenMode =
+    props.mode === 'public-fullscreen' || props.mode === 'authenticated';*/
 
-  const FirstLineContainer = isFullScreenMode
+  /*const FirstLineContainer = isFullScreenMode
     ? FullScreenModeFirstLine
-    : Fragment;
+    : Fragment;*/
 
   const navigationMenuItems =
     props.mode === 'authenticated'
@@ -346,6 +346,7 @@ const PageHeader = (props: PageHeaderProps) => {
   return (
     <>
       <Header
+        id="fr-header-header-with-quick-access-items"
         brandTop={
           <>
             République
@@ -366,7 +367,7 @@ const PageHeader = (props: PageHeaderProps) => {
         serviceTitle="France Chaleur Urbaine"
         quickAccessItems={[
           {
-            iconId: 'ri-account-box-line',
+            iconId: 'fr-icon-account-circle-line',
             linkProps: {
               href: '/connexion',
             },
