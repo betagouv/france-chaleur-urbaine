@@ -56,12 +56,13 @@ export type ContactFormInfos = {
 export type FormDemandCreation = ContactFormInfos & {
   address: string;
   coords: Coords;
-  eligibility: any; // FIXME
+  eligibility: any;
   heatingType: AvailableHeating;
   city: string;
   postcode: string;
   department: string;
   region: string;
+  networkId?: string;
 };
 
 export type AirtableDemandCreation = {

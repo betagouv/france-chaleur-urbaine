@@ -120,6 +120,8 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       postcode: selectedGeoAddress.properties.postcode,
       department: (addressContext[1] || '').trim(),
       region: (addressContext[2] || '').trim(),
+
+      networkId,
     };
     setFormState('sendingDemand');
     await submitToAirtable(

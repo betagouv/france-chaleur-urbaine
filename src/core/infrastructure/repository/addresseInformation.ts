@@ -47,21 +47,30 @@ export const getDistanceToNetwork = async (
   networkId: string,
   lat: number,
   lon: number
-): Promise<number> => {
-  const { distance } = (await db('reseaux_de_chaleur')
+): Promise<NetworkInfos> => {
+  const network = (await db('reseaux_de_chaleur')
     .select(
+      'Identifiant reseau',
+      'Taux EnR&R',
+      'contenu CO2 ACV',
+      'Gestionnaire',
+      'nom_reseau',
       db.raw(
-        `ST_Distance(
+        `round(ST_Distance(
           ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
           ST_Transform(geom, 2154)
-        ) as distance`
+        )) as distance`
       )
     )
     .where('has_trace', true)
     .andWhere('Identifiant reseau', networkId)
-    .first()) as { distance: number };
+    .first()) as NetworkInfos;
 
-  return distance;
+  if (!network) {
+    throw new Error(`Le réseau ${networkId} n'existe pas ou n'a pas de tracé`);
+  }
+
+  return network;
 };
 
 export const closestNetwork = async (
@@ -71,10 +80,10 @@ export const closestNetwork = async (
   const network = await db('reseaux_de_chaleur')
     .select(
       db.raw(
-        `ST_Distance(
+        `round(ST_Distance(
           ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
           ST_Transform(geom, 2154)
-        ) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire", nom_reseau`
+        )) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire", nom_reseau`
       )
     )
     .where('has_trace', true)
@@ -94,10 +103,10 @@ const closestFuturNetwork = async (
   const network = await db('zones_et_reseaux_en_construction')
     .select(
       db.raw(
-        `ST_Distance(
+        `round(ST_Distance(
           ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
           ST_Transform(geom, 2154)
-        ) as distance, "gestionnaire"`
+        )) as distance, "gestionnaire"`
       )
     )
     .where('is_zone', false)
@@ -279,7 +288,7 @@ export const getExport = (addresses: any[]) => {
   return XLSX.write(wb, { bookType: EXPORT_FORMAT.XLSX, type: 'base64' });
 };
 
-const getNetworkEligibilityDistances = (networkId: string) => {
+export const getNetworkEligibilityDistances = (networkId: string) => {
   // cas spécifique pour le réseau de Paris
   return networkId === '7501C'
     ? { eligibleDistance: 100, veryEligibleDistance: 60 }
@@ -309,6 +318,7 @@ export type NetworkEligibilityStatus = {
   isVeryEligible: boolean;
   eligibleDistance: number;
   veryEligibleDistance: number;
+  inPDP: boolean;
 };
 
 /**
@@ -319,16 +329,18 @@ export const getNetworkEligilityStatus = async (
   lat: number,
   lon: number
 ): Promise<NetworkEligibilityStatus> => {
-  const distance = await getDistanceToNetwork(networkId, lat, lon);
-  if (!distance) {
-    throw new Error(`Le réseau ${networkId} n'a pas de tracé`);
-  }
+  const [networkInfos, inPDP] = await Promise.all([
+    getDistanceToNetwork(networkId, lat, lon),
+    isInZDP(lat, lon),
+  ]);
   const eligibilityDistances = getNetworkEligibilityDistances(networkId);
 
   return {
-    distance: Math.round(distance),
-    isEligible: distance <= eligibilityDistances.eligibleDistance,
-    isVeryEligible: distance <= eligibilityDistances.veryEligibleDistance,
+    distance: networkInfos.distance,
+    inPDP,
+    isEligible: networkInfos.distance <= eligibilityDistances.eligibleDistance,
+    isVeryEligible:
+      networkInfos.distance <= eligibilityDistances.veryEligibleDistance,
     ...eligibilityDistances,
   };
 };

@@ -50,6 +50,7 @@ export const formatDataToAirtable: (
     department,
     region,
     phone,
+    networkId,
   } = values;
 
   return {
@@ -59,8 +60,8 @@ export const formatDataToAirtable: (
     Établissement: company,
     Éligibilité: eligibility.isEligible,
     Adresse: address,
-    Latitude: coords.lat, // FIXME vérifier si besoin du parseFloat
-    Longitude: coords.lon, // FIXME vérifier si besoin du parseFloat
+    Latitude: coords.lat,
+    Longitude: coords.lon,
     Mail: email,
     Téléphone: phone,
     'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
@@ -71,6 +72,7 @@ export const formatDataToAirtable: (
     'Code Postal': postcode,
     Departement: department,
     Region: region,
+    networkId,
   };
 };
 
