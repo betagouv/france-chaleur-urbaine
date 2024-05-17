@@ -299,7 +299,7 @@ export const ResultsBox = styled(Box)`
       opacity: 0;
     }
     to {
-      max-height: 1000px; // needs to be greater than the height of the box
+      max-height: 1200px; // needs to be greater than the height of the box
       opacity: 1;
     }
   }
