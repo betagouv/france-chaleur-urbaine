@@ -56,10 +56,7 @@ export const getDistanceToNetwork = async (
       'Gestionnaire',
       'nom_reseau',
       db.raw(
-        `round(ST_Distance(
-          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-          ST_Transform(geom, 2154)
-        )) as distance`
+        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`
       )
     )
     .where('has_trace', true)
@@ -80,10 +77,7 @@ export const closestNetwork = async (
   const network = await db('reseaux_de_chaleur')
     .select(
       db.raw(
-        `round(ST_Distance(
-          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-          ST_Transform(geom, 2154)
-        )) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire", nom_reseau`
+        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire", nom_reseau`
       )
     )
     .where('has_trace', true)
@@ -103,10 +97,7 @@ const closestFuturNetwork = async (
   const network = await db('zones_et_reseaux_en_construction')
     .select(
       db.raw(
-        `round(ST_Distance(
-          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-          ST_Transform(geom, 2154)
-        )) as distance, "gestionnaire"`
+        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance, "gestionnaire"`
       )
     )
     .where('is_zone', false)

@@ -62,7 +62,14 @@ export type FormDemandCreation = ContactFormInfos & {
   postcode: string;
   department: string;
   region: string;
+
+  // if the user is on a network page
   networkId?: string;
+
+  // if the user is coming from a campaign or ads
+  mtm_campaign?: string;
+  mtm_kwd?: string;
+  mtm_source?: string;
 };
 
 export type AirtableDemandCreation = {

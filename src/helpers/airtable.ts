@@ -50,6 +50,9 @@ export const formatDataToAirtable: (
     department,
     region,
     phone,
+    mtm_campaign,
+    mtm_kwd,
+    mtm_source,
     networkId,
   } = values;
 
@@ -72,6 +75,9 @@ export const formatDataToAirtable: (
     'Code Postal': postcode,
     Departement: department,
     Region: region,
+    'Campagne matomo': mtm_campaign,
+    'Campagne keywords': mtm_kwd,
+    'Campagne source': mtm_source,
     networkId,
   };
 };
