@@ -311,6 +311,9 @@ export type NetworkEligibilityStatus = {
   veryEligibleDistance: number;
 };
 
+/**
+ * Permet d'obtenir l'éligibilité d'un point géographique sur un réseau précis.
+ */
 export const getNetworkEligilityStatus = async (
   networkId: string,
   lat: number,
@@ -323,7 +326,7 @@ export const getNetworkEligilityStatus = async (
   const eligibilityDistances = getNetworkEligibilityDistances(networkId);
 
   return {
-    distance,
+    distance: Math.round(distance),
     isEligible: distance <= eligibilityDistances.eligibleDistance,
     isVeryEligible: distance <= eligibilityDistances.veryEligibleDistance,
     ...eligibilityDistances,
