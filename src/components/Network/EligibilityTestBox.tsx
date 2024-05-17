@@ -160,7 +160,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         <Box p="4w" border="1px solid #e7e7e7">
           <Box
             boxShadow={`inset 16px 0 0 0 ${
-              eligibilityStatus.isEligible ? '#78EB7B' : '#ea7c3f'
+              eligibilityStatus.isEligible ? '#3AB54A' : '#FF5655'
             }`}
             pl="4w"
             pt="2w"
