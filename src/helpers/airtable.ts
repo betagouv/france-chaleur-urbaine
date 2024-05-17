@@ -46,6 +46,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     phone,
     mtm_campaign,
     mtm_kwd,
+    mtm_source,
   } = values;
 
   return {
@@ -69,6 +70,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     Region: region,
     'Campagne matomo': mtm_campaign,
     'Campagne keywords': mtm_kwd,
+    'Campagne source': mtm_source,
   };
 };
 
