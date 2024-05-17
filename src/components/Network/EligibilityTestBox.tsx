@@ -54,18 +54,18 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       }
       setSelectedGeoAddress(geoAddress);
       setEligibilityStatus(undefined);
-      trackEvent(
-        `Eligibilité|Formulaire de test - Fiche réseau - Adresse ${
-          eligibilityStatus?.isEligible ? 'É' : 'Iné'
-        }ligible`,
-        address || 'Adresse indéfinie'
-      );
+      setHeatingType('');
     },
     [setSelectedGeoAddress]
   );
 
   // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
   const testAddressEligibility = async (geoAddress: SuggestionItem) => {
+    trackEvent(
+      `Eligibilité|Formulaire de test - Fiche réseau - Envoi`,
+      geoAddress.properties.label
+    );
+
     setFormState('loadingEligibility');
     const eligibilityStatus = await workMinimum(
       () =>
@@ -74,11 +74,12 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     );
     setFormState('idle');
     setEligibilityStatus(eligibilityStatus);
+
     trackEvent(
-      `Eligibilité|Formulaire de contact ${
-        eligibilityStatus?.isEligible ? 'é' : 'iné'
-      }ligible - Fiche réseau - Envoi`,
-      selectedGeoAddress?.properties.label
+      `Eligibilité|Formulaire de test - Fiche réseau - Adresse ${
+        eligibilityStatus?.isEligible ? 'É' : 'Iné'
+      }ligible`,
+      geoAddress.properties.label
     );
   };
 
@@ -87,14 +88,6 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     if (!selectedGeoAddress) {
       return;
     }
-
-    trackEvent(
-      `Eligibilité|Formulaire de contact ${
-        eligibilityStatus?.isEligible ? 'é' : 'iné'
-      }ligible - Envoi`,
-      'Fiche Réseau',
-      selectedGeoAddress?.properties.label
-    );
 
     const addressContext = selectedGeoAddress.properties.context.split(',');
     const demandCreation: FormDemandCreation = {
@@ -126,6 +119,12 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       Airtable.UTILISATEURS
     );
     setFormState('demandCreated');
+    trackEvent(
+      `Eligibilité|Formulaire de contact ${
+        eligibilityStatus?.isEligible ? 'é' : 'iné'
+      }ligible - Fiche réseau - Envoi`,
+      selectedGeoAddress?.properties.label
+    );
   };
 
   return (
@@ -241,25 +240,30 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                   : 'Contribuez au développement du réseau de chaleur en faisant connaître votre souhait de vous raccorder'}
               </Heading>
 
-              <SelectEnergy
-                label="Mode de chauffage actuel :"
-                name="heatingType"
-                selectOptions={energyInputsDefaultLabels}
-                onChange={(e) => setHeatingType(e.target.value)}
-                value={heatingType}
-              />
-              {heatingType === 'individuel' && (
-                <Alert
-                  className="fr-mt-2w"
-                  type="warning"
-                  small
-                  description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
-                />
-              )}
-
               <ContactForm
-                city={selectedGeoAddress?.properties.city ?? 'Paris'} // DEBUG
+                city={selectedGeoAddress?.properties.city}
                 onSubmit={submitContactForm}
+                isLoading={formState === 'sendingDemand'}
+                heatingTypeInput={
+                  <>
+                    <SelectEnergy
+                      label="Mode de chauffage actuel :"
+                      name="heatingType"
+                      className="fr-mt-2w"
+                      selectOptions={energyInputsDefaultLabels}
+                      onChange={(e) => setHeatingType(e.target.value)}
+                      value={heatingType}
+                    />
+                    {heatingType === 'individuel' && (
+                      <Alert
+                        className="fr-mt-2w"
+                        type="warning"
+                        small
+                        description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
+                      />
+                    )}
+                  </>
+                }
               />
             </>
           )}

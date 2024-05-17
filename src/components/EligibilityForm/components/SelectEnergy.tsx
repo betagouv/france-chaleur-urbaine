@@ -9,6 +9,7 @@ type CheckEligibilityFormProps = {
   cardMode?: boolean;
   value: string;
   onChange?: (e: any) => void;
+  className?: string;
 };
 
 const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
@@ -19,6 +20,7 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
   selectOptions = {},
   value,
   onChange,
+  className,
 }) => {
   const options = useMemo(() => {
     return Object.entries(selectOptions).map(([value, label]) => (
@@ -43,7 +45,7 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
         isInline={!cardMode}
         required
         value={value}
-        className="fr-mb-2w"
+        className={`fr-mb-2w ${className}`}
       >
         {options}
       </RadioGroup>

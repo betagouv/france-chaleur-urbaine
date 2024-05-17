@@ -2,7 +2,7 @@ import Loader from '@components/Loader';
 import { Button } from '@dataesr/react-dsfr';
 import { Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
-import { useRef } from 'react';
+import { ReactNode, useRef } from 'react';
 import { AnalyticsFormId } from 'src/services/analytics';
 import { ContactFormInfos } from 'src/types/Summary/Demand';
 import * as Yup from 'yup';
@@ -21,12 +21,14 @@ type ContactFormProps = {
   isLoading?: boolean;
   cardMode?: boolean;
   city?: string;
+  heatingTypeInput?: ReactNode; // gets inserted after the building type (structure), used in the network page
 };
 export const ContactForm = ({
   onSubmit,
   isLoading,
   cardMode,
   city,
+  heatingTypeInput,
 }: ContactFormProps) => {
   const formRef = useRef(null);
   const router = useRouter();
@@ -62,7 +64,11 @@ export const ContactForm = ({
     >
       {(formik) => (
         <Form id={AnalyticsFormId.form_contact} ref={formRef}>
-          <ContactInformation cardMode={cardMode} city={city} />
+          <ContactInformation
+            cardMode={cardMode}
+            city={city}
+            heatingTypeInput={heatingTypeInput}
+          />
           <ContactConsent />
           <ContactFormFooter>
             {isLoading ? (
