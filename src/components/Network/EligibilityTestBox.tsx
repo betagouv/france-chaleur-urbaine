@@ -241,8 +241,9 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
           ) : (
             <>
               <Heading size="h4" legacyColor="darkerblue" mt="2w">
-                Recevez plus d’informations adaptées à votre bâtiment de la part
-                du gestionnaire du réseau
+                {eligibilityStatus.isEligible
+                  ? 'Recevez des informations adaptées à votre bâtiment de la part du gestionnaire du réseau'
+                  : 'Contribuez au développement du réseau de chaleur en faisant connaître votre souhait de vous raccorder'}
               </Heading>
 
               <SelectEnergy
