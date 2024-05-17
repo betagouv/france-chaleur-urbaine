@@ -20,6 +20,7 @@ import { FullHeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { ContactFormInfos, FormDemandCreation } from 'src/types/Summary/Demand';
 import { Airtable } from 'src/types/enum/Airtable';
+import styled from 'styled-components';
 
 type FormState =
   | 'idle'
@@ -169,7 +170,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       </Box>
 
       {selectedGeoAddress && eligibilityStatus && (
-        <Box ref={resultsBoxRef} p="4w" border="1px solid #e7e7e7">
+        <ResultsBox ref={resultsBoxRef} p="4w" border="1px solid #e7e7e7">
           <Box
             boxShadow={`inset 16px 0 0 0 ${
               eligibilityStatus.isEligible ? '#3AB54A' : '#FF5655'
@@ -280,10 +281,26 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
               />
             </>
           )}
-        </Box>
+        </ResultsBox>
       )}
     </>
   );
 };
 
 export default EligibilityTestBox;
+
+export const ResultsBox = styled(Box)`
+  overflow: hidden;
+  animation: scrollDown 0.5s ease-out forwards;
+
+  @keyframes scrollDown {
+    from {
+      max-height: 0;
+      opacity: 0;
+    }
+    to {
+      max-height: 1000px; // needs to be greater than the height of the box
+      opacity: 1;
+    }
+  }
+`;
