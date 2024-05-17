@@ -1,9 +1,7 @@
+import { NetworkEligibilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import { AxiosResponse } from 'axios';
 import { HttpClient } from 'src/services/http';
-import {
-  FullHeatNetworksResponse,
-  HeatNetworksResponse,
-} from 'src/types/HeatNetworksResponse';
+import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
@@ -20,10 +18,10 @@ export class HeatNetworkService {
   async getNetworkEligibilityStatus(
     networkId: string,
     geoAddress: SuggestionItem
-  ): Promise<FullHeatNetworksResponse> {
+  ): Promise<NetworkEligibilityStatus> {
     const [lon, lat] = geoAddress.geometry.coordinates;
-    return await this.httpClient.get<FullHeatNetworksResponse>(
-      `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${geoAddress.properties.city}&networkId=${networkId}`
+    return await this.httpClient.get<NetworkEligibilityStatus>(
+      `/api/networks/${networkId}/eligibility?lat=${lat}&lon=${lon}`
     );
   }
 

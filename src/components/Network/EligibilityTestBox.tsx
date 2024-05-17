@@ -8,6 +8,7 @@ import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
+import { NetworkEligibilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import { Alert, Button } from '@dataesr/react-dsfr';
 import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
 import { workMinimum } from '@utils/time';
@@ -16,7 +17,6 @@ import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { trackEvent } from 'src/services/analytics';
-import { FullHeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { ContactFormInfos, FormDemandCreation } from 'src/types/Summary/Demand';
 import { Airtable } from 'src/types/enum/Airtable';
@@ -41,7 +41,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const [selectedGeoAddress, setSelectedGeoAddress] =
     useState<SuggestionItem>();
   const [eligibilityStatus, setEligibilityStatus] =
-    useState<FullHeatNetworksResponse>();
+    useState<NetworkEligibilityStatus>();
   const [heatingType, setHeatingType] = useState('');
   const [formState, setFormState] = useState<FormState>('idle');
   const resultsBoxRef = useRef<HTMLDivElement>();
@@ -193,8 +193,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
               <Text>
                 {!eligibilityStatus.isEligible ? (
                   <>Votre adresse n'est pas située à proximité de ce réseau.</>
-                ) : eligibilityStatus.distance <=
-                  (eligibilityStatus.veryEligibleDistance ?? 0) ? (
+                ) : eligibilityStatus.isVeryEligible ? (
                   <>
                     Votre adresse est <strong>à proximité immédiate</strong> de
                     ce réseau ({getReadableDistance(eligibilityStatus.distance)}
@@ -210,10 +209,11 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
               </Text>
             </Box>
 
-            {selectedGeoAddress.properties.city === 'Paris' && (
+            {/* cas spécifique pour le réseau de Paris */}
+            {networkId === '7501C' && (
               <Text size="sm" mt="2w">
                 A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au
-                moins 100&nbsp;kW.
+                moins {eligibilityStatus.eligibleDistance}&nbsp;kW.
               </Text>
             )}
           </Box>
