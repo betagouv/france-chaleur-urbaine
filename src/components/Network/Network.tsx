@@ -442,7 +442,7 @@ const NetworkPanel = ({
                 : 'fr-col-12'
             }
           >
-            {!isCold && (
+            {!isCold && network.has_trace && (
               <EligibilityTestBox networkId={network['Identifiant reseau']} />
             )}
 
