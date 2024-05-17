@@ -317,6 +317,8 @@ export const getEligilityStatus = async (
         ? getNetworkInfosWithDistance(networkId, lat, lon)
         : closestNetwork(lat, lon),
     ]);
+
+  // si pas de réseau, alors on est dans le cas d'un test pour un réseau sans tracé, ce qui n'est pas censé arriver
   if (!network) {
     throw new Error(`Réseau ${networkId} non trouvé`);
   }

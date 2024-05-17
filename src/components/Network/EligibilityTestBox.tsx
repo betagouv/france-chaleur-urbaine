@@ -52,7 +52,6 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       if (!geoAddress) {
         return;
       }
-      console.log('onAddressSelected', address, geoAddress);
       setSelectedGeoAddress(geoAddress);
       setEligibilityStatus(undefined);
       trackEvent(
@@ -73,7 +72,6 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         heatNetworkService.getNetworkEligibilityStatus(networkId, geoAddress),
       500
     );
-    console.log('testAddressEligibility', eligibilityStatus);
     setFormState('idle');
     setEligibilityStatus(eligibilityStatus);
     trackEvent(
@@ -89,7 +87,6 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     if (!selectedGeoAddress) {
       return;
     }
-    console.log('submitContactForm', contactFormInfos);
 
     trackEvent(
       `Eligibilité|Formulaire de contact ${
@@ -124,13 +121,11 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       region: (addressContext[2] || '').trim(),
     };
     setFormState('sendingDemand');
-    const response = await submitToAirtable(
+    await submitToAirtable(
       formatDataToAirtable(demandCreation),
       Airtable.UTILISATEURS
     );
-    const { id } = await response.json();
     setFormState('demandCreated');
-    console.log('airtable id', id);
   };
 
   return (
