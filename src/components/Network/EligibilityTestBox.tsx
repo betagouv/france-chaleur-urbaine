@@ -44,7 +44,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     useState<NetworkEligibilityStatus>();
   const [heatingType, setHeatingType] = useState('');
   const [formState, setFormState] = useState<FormState>('idle');
-  const resultsBoxRef = useRef<HTMLDivElement>();
+  const resultsBoxRef = useRef<HTMLDivElement | null>(null);
 
   // appelé quand une adresse a été sélectionnée dans la liste déroulante
   const onAddressSelected = useCallback(
@@ -172,118 +172,126 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       </Box>
 
       {selectedGeoAddress && eligibilityStatus && (
-        <ResultsBox ref={resultsBoxRef} p="4w" border="1px solid #e7e7e7">
-          <Box
-            boxShadow={`inset 16px 0 0 0 ${
-              eligibilityStatus.isEligible ? '#3AB54A' : '#FF5655'
-            }`}
-            pl="4w"
-            pt="2w"
-            pb="1w"
-          >
-            <Box display="flex" gap="16px">
-              <img
-                src={
-                  eligibilityStatus.isEligible
-                    ? '/img/reponses_tests_pouce_haut.webp'
-                    : '/img/reponses_tests_pouce_bas.webp'
-                }
-                alt=""
-                className="fr-col--top"
-              />
-              <Box backgroundColor="#C1C1C1" width="1px" />
-              <Text>
-                {!eligibilityStatus.isEligible ? (
-                  <>Votre adresse n'est pas située à proximité de ce réseau.</>
-                ) : eligibilityStatus.isVeryEligible ? (
-                  <>
-                    Votre adresse est <strong>à proximité immédiate</strong> de
-                    ce réseau ({getReadableDistance(eligibilityStatus.distance)}
-                    ).
-                  </>
-                ) : (
-                  <>
-                    Votre adresse n’est pas à proximité immédiate de ce réseau
-                    de chaleur, toutefois le réseau n’est pas très loin (
-                    {getReadableDistance(eligibilityStatus.distance)}).
-                  </>
-                )}{' '}
-              </Text>
-            </Box>
-
-            {/* cas spécifique pour le réseau de Paris */}
-            {networkId === '7501C' && (
-              <Text size="sm" mt="2w">
-                A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au
-                moins {eligibilityStatus.eligibleDistance}&nbsp;kW.
-              </Text>
-            )}
-          </Box>
-
-          {formState === 'demandCreated' ? (
+        <>
+          {/* pas réussi à intégrer ref dans le composant Box, fait planter la page principale */}
+          <div ref={resultsBoxRef} />
+          <ResultsBox p="4w" border="1px solid #e7e7e7">
             <Box
-              boxShadow="inset 16px 0 0 0 var(--border-default-blue-france)"
+              boxShadow={`inset 16px 0 0 0 ${
+                eligibilityStatus.isEligible ? '#3AB54A' : '#FF5655'
+              }`}
               pl="4w"
-              py="1w"
-              mt="2w"
+              pt="2w"
+              pb="1w"
             >
-              <Text size="lg" fontWeight="bold">
-                Votre demande de contact est bien prise en compte.
-              </Text>
+              <Box display="flex" gap="16px">
+                <img
+                  src={
+                    eligibilityStatus.isEligible
+                      ? '/img/reponses_tests_pouce_haut.webp'
+                      : '/img/reponses_tests_pouce_bas.webp'
+                  }
+                  alt=""
+                  className="fr-col--top"
+                />
+                <Box backgroundColor="#C1C1C1" width="1px" />
+                <Text>
+                  {!eligibilityStatus.isEligible ? (
+                    <>
+                      Votre adresse n'est pas située à proximité de ce réseau.
+                    </>
+                  ) : eligibilityStatus.isVeryEligible ? (
+                    <>
+                      Votre adresse est <strong>à proximité immédiate</strong>{' '}
+                      de ce réseau (
+                      {getReadableDistance(eligibilityStatus.distance)}
+                      ).
+                    </>
+                  ) : (
+                    <>
+                      Votre adresse n’est pas à proximité immédiate de ce réseau
+                      de chaleur, toutefois le réseau n’est pas très loin (
+                      {getReadableDistance(eligibilityStatus.distance)}).
+                    </>
+                  )}{' '}
+                </Text>
+              </Box>
 
-              {eligibilityStatus.isEligible && heatingType === 'collectif' && (
-                <Box mt="1w">
-                  Seul le gestionnaire du réseau pourra vous confirmer la
-                  faisabilité technique et les délais du raccordement. Sans
-                  attendre,{' '}
-                  <Link
-                    href="/documentation/guide-france-chaleur-urbaine.pdf"
-                    eventKey="Téléchargement|Guide FCU|Confirmation éligibilité"
-                    isExternal
-                  >
-                    téléchargez notre guide pratique
-                  </Link>{' '}
-                  afin d'en savoir plus sur les étapes d'un raccordement et les
-                  aides financières mobilisables.
-                </Box>
+              {/* cas spécifique pour le réseau de Paris */}
+              {networkId === '7501C' && (
+                <Text size="sm" mt="2w">
+                  A noter&nbsp;: sur Paris, la puissance souscrite doit être
+                  d’au moins {eligibilityStatus.eligibleDistance}&nbsp;kW.
+                </Text>
               )}
             </Box>
-          ) : (
-            <>
-              <Heading size="h4" legacyColor="darkerblue" mt="2w">
-                {eligibilityStatus.isEligible
-                  ? 'Recevez des informations adaptées à votre bâtiment de la part du gestionnaire du réseau'
-                  : 'Contribuez au développement du réseau de chaleur en faisant connaître votre souhait de vous raccorder'}
-              </Heading>
 
-              <ContactForm
-                city={selectedGeoAddress?.properties.city}
-                onSubmit={submitContactForm}
-                isLoading={formState === 'sendingDemand'}
-                heatingTypeInput={
-                  <>
-                    <SelectEnergy
-                      label="Mode de chauffage actuel :"
-                      name="heatingType"
-                      className="fr-mt-2w"
-                      selectOptions={energyInputsDefaultLabels}
-                      onChange={(e) => setHeatingType(e.target.value)}
-                      value={heatingType}
-                    />
-                    {heatingType === 'individuel' && (
-                      <Alert
+            {formState === 'demandCreated' ? (
+              <Box
+                boxShadow="inset 16px 0 0 0 var(--border-default-blue-france)"
+                pl="4w"
+                py="1w"
+                mt="2w"
+              >
+                <Text size="lg" fontWeight="bold">
+                  Votre demande de contact est bien prise en compte.
+                </Text>
+
+                {eligibilityStatus.isEligible &&
+                  heatingType === 'collectif' && (
+                    <Box mt="1w">
+                      Seul le gestionnaire du réseau pourra vous confirmer la
+                      faisabilité technique et les délais du raccordement. Sans
+                      attendre,{' '}
+                      <Link
+                        href="/documentation/guide-france-chaleur-urbaine.pdf"
+                        eventKey="Téléchargement|Guide FCU|Confirmation éligibilité"
+                        isExternal
+                      >
+                        téléchargez notre guide pratique
+                      </Link>{' '}
+                      afin d'en savoir plus sur les étapes d'un raccordement et
+                      les aides financières mobilisables.
+                    </Box>
+                  )}
+              </Box>
+            ) : (
+              <>
+                <Heading size="h4" legacyColor="darkerblue" mt="2w">
+                  {eligibilityStatus.isEligible
+                    ? 'Recevez des informations adaptées à votre bâtiment de la part du gestionnaire du réseau'
+                    : 'Contribuez au développement du réseau de chaleur en faisant connaître votre souhait de vous raccorder'}
+                </Heading>
+
+                <ContactForm
+                  city={selectedGeoAddress?.properties.city}
+                  onSubmit={submitContactForm}
+                  isLoading={formState === 'sendingDemand'}
+                  heatingTypeInput={
+                    <>
+                      <SelectEnergy
+                        label="Mode de chauffage actuel :"
+                        name="heatingType"
                         className="fr-mt-2w"
-                        type="warning"
-                        small
-                        description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
+                        selectOptions={energyInputsDefaultLabels}
+                        onChange={(e) => setHeatingType(e.target.value)}
+                        value={heatingType}
                       />
-                    )}
-                  </>
-                }
-              />
-            </>
-          )}
-        </ResultsBox>
+                      {heatingType === 'individuel' && (
+                        <Alert
+                          className="fr-mt-2w"
+                          type="warning"
+                          small
+                          description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
+                        />
+                      )}
+                    </>
+                  }
+                />
+              </>
+            )}
+          </ResultsBox>
+        </>
       )}
     </>
   );
