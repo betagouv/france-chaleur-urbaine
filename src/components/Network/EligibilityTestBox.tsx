@@ -11,7 +11,7 @@ import Text from '@components/ui/Text';
 import { Alert, Button } from '@dataesr/react-dsfr';
 import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
 import { workMinimum } from '@utils/time';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { getReadableDistance } from 'src/services/Map/distance';
@@ -43,6 +43,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     useState<FullHeatNetworksResponse>();
   const [heatingType, setHeatingType] = useState('');
   const [formState, setFormState] = useState<FormState>('idle');
+  const resultsBoxRef = useRef<HTMLDivElement>();
 
   // appelé quand une adresse a été sélectionnée dans la liste déroulante
   const onAddressSelected = useCallback(
@@ -81,6 +82,12 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       }ligible`,
       geoAddress.properties.label
     );
+
+    setTimeout(() => {
+      resultsBoxRef.current?.scrollIntoView({
+        behavior: 'smooth',
+      });
+    });
   };
 
   // appelé quand on soumet le formulaire de contact (dernière étape), on crée la demande côté airtable
@@ -125,6 +132,12 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       }ligible - Fiche réseau - Envoi`,
       selectedGeoAddress?.properties.label
     );
+
+    setTimeout(() => {
+      resultsBoxRef.current?.scrollIntoView({
+        behavior: 'smooth',
+      });
+    });
   };
 
   return (
@@ -156,7 +169,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
       </Box>
 
       {selectedGeoAddress && eligibilityStatus && (
-        <Box p="4w" border="1px solid #e7e7e7">
+        <Box ref={resultsBoxRef} p="4w" border="1px solid #e7e7e7">
           <Box
             boxShadow={`inset 16px 0 0 0 ${
               eligibilityStatus.isEligible ? '#3AB54A' : '#FF5655'

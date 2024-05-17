@@ -1,4 +1,10 @@
-import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
+import {
+  CSSProperties,
+  ForwardedRef,
+  HTMLAttributes,
+  PropsWithChildren,
+  forwardRef,
+} from 'react';
 import styled, { IntrinsicElementsKeys } from 'styled-components';
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
@@ -77,10 +83,11 @@ export interface BoxProps
  * Usage:
  *   <Box> => <div>
  */
-function Box(props: PropsWithChildren<BoxProps>) {
+function Box(props: PropsWithChildren<BoxProps>, ref: ForwardedRef<any>) {
   const { className, ...rest } = props;
   return (
     <StyledBox
+      ref={ref}
       as={props.as ?? 'div'}
       display={props.display ?? 'block'}
       flexDirection={props.flexDirection}
@@ -114,7 +121,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
     </StyledBox>
   );
 }
-export default Box;
+export default forwardRef(Box);
 
 const gridBreakpoints = {
   xs: '320',
