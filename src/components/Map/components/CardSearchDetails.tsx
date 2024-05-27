@@ -207,14 +207,14 @@ const CardSearchDetails = ({
                   {!storedAddress.contacted && (
                     <header>
                       {isEligible
-                        ? 'Vous souhaitez en savoir plus et être recontacté par le gestionnaire du réseau ?'
+                        ? 'Vous souhaitez en savoir plus ?'
                         : 'Vous souhaitez faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
                     </header>
                   )}
                   {!contactFormVisible && !storedAddress.contacted && (
                     <ContactFormButtonWrapper>
                       <Button onClick={displayContactForm}>
-                        Laissez vos coordonnées
+                        Etre recontacté par le gestionnaire du réseau
                       </Button>
                     </ContactFormButtonWrapper>
                   )}
