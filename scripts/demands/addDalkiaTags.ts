@@ -200,21 +200,27 @@ const updateDemands = async () => {
     const demands = await base(Airtable.UTILISATEURS).select().all();
     await Promise.all(
       demands
-        .filter((demand: any) => demand.get('Gestionnaires').includes('Dalkia'))
+        .filter(
+          (demand: any) =>
+            demand.get('Gestionnaires') &&
+            demand.get('Gestionnaires').includes('Dalkia')
+        )
         .map(async (demand) => {
           const network: string = demand.get('Identifiant réseau') as string;
           if (network) {
             const newTag = allTags[network];
             if (newTag) {
               const gestionnaires = demand.get('Gestionnaires') as [string];
-              gestionnaires.push(newTag);
-              await base(Airtable.UTILISATEURS).update(
-                demand.id,
-                {
-                  Gestionnaires: gestionnaires,
-                },
-                { typecast: true }
-              );
+              if (gestionnaires) {
+                gestionnaires.push(newTag);
+                await base(Airtable.UTILISATEURS).update(
+                  demand.id,
+                  {
+                    Gestionnaires: gestionnaires,
+                  },
+                  { typecast: true }
+                );
+              }
             }
           }
         })
