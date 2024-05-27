@@ -7,7 +7,7 @@ const AvantagesChauffageUrbain = ({ title }: { title?: string }) => {
   return (
     <Box className="fr-container">
       <Heading as="h2" center>
-        {title ? title : 'Les avantages du chauffage urbain par rapport au gaz'}
+        {title ? title : 'Les avantages du chauffage urbain'}
       </Heading>
       <Box className="fr-grid-row fr-grid-row--gutters" mt="10w">
         <Box
