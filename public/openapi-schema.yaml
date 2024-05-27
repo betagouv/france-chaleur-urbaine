@@ -115,7 +115,7 @@ paths:
                     description: true si l'adresse testée se situe dans le périmètre de développement prioritaire d'un réseau classé (zone où s'applique une obligation de raccordement pour certains bâtiments)
                   isBasedOnIris:
                     type: boolean
-                    description: s'il n'y a pas de réseau à moins de 1 km de l'adresse testée, nous vérifions s'il existe une consommation de chaleur sur un réseau dans le quartier (iris), sur la base des données locales de l'énergie. Le cas échéant, c'est qu'il existe un réseau dans le quartier, dont nous n'avons pas le tracé.
+                    description: KO -- s'il n'y a pas de réseau à moins de 1 km de l'adresse testée, nous vérifions s'il existe une consommation de chaleur sur un réseau dans le quartier (iris), sur la base des données locales de l'énergie. Le cas échéant, c'est qu'il existe un réseau dans le quartier, dont nous n'avons pas le tracé.
                   futurNetwork:
                     type: boolean
                     description: true si le réseau le plus proche, sur lequel est établi le résultat isEligible, est un réseau actuellement en construction

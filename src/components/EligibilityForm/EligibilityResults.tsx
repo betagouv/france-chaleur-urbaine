@@ -445,38 +445,6 @@ ${
   `,
 };
 
-// Metz
-const irisCollectif = {
-  eligibility: true,
-  body: (
-    distance: string,
-    inZDP: boolean,
-    gestionnaire: string | null,
-    tauxENRR: number | null,
-    city: string
-  ) => `
-### Bonne nouvelle !
-
-
-::arrow-item[**Un réseau de chaleur passe à proximité** de votre adresse (tracé non encore disponible sur France Chaleur Urbaine).]
-${
-  inZDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
-    : ''
-}
-::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
-${
-  city === 'Paris'
-    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
-    : ''
-}
-`,
-  text: `
-**France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
-#### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
-`,
-};
-
 // rue des hirondelles 76610 le havre
 const closeFuturIndividual = {
   body: (distance: string) => `
@@ -493,24 +461,7 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
   `,
 };
 
-// Metz
-const irisIndividual = {
-  body: () => `
-::arrow-item[**Votre immeuble est situé à proximité** d’un réseau de chaleur (tracé non encore disponible sur France Chaleur Urbaine).]
-::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
-::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
-::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
-`,
-  text: `
-**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
-Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
-`,
-};
-
 type EligibilityResultState =
-  | 'irisCollectif'
-  | 'irisIndividual'
-
   // très proche
   | 'closeFuturCollectif'
   | 'closeCollectif'
@@ -535,9 +486,6 @@ export const getEligibilityResultState = (
     const futurNetwork = eligibility.futurNetwork;
 
     if (eligibility.isEligible) {
-      if (eligibility.isBasedOnIris) {
-        return heatingType === 'collectif' ? 'irisCollectif' : 'irisIndividual';
-      }
       if (
         eligibility.distance !== null &&
         eligibility.veryEligibleDistance !== null
@@ -578,12 +526,6 @@ export const getEligibilityResult = (
 ) => {
   const state = getEligibilityResultState(heatingType, eligibility);
   switch (state) {
-    case 'irisCollectif': {
-      return irisCollectif;
-    }
-    case 'irisIndividual': {
-      return irisIndividual;
-    }
     case 'closeFuturCollectif': {
       return closeFuturCollectif;
     }

@@ -1,12 +1,12 @@
-import z from 'zod';
 import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
-import type { NextApiRequest } from 'next';
-import { withCors } from 'src/services/api/cors';
 import {
   handleRouteErrors,
   requireGetMethod,
   validateObjectSchema,
 } from '@helpers/server';
+import type { NextApiRequest } from 'next';
+import { withCors } from 'src/services/api/cors';
+import z from 'zod';
 
 export default withCors(
   handleRouteErrors(async (req: NextApiRequest) => {
@@ -22,7 +22,7 @@ export default withCors(
       isEligible: result.isEligible,
       distance: result.distance,
       inPDP: result.inZDP,
-      isBasedOnIris: result.isBasedOnIris,
+      isBasedOnIris: false,
       futurNetwork: result.futurNetwork,
       id: result.id,
       gestionnaire: result.gestionnaire,
