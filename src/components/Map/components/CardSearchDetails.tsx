@@ -214,7 +214,9 @@ const CardSearchDetails = ({
                   {!contactFormVisible && !storedAddress.contacted && (
                     <ContactFormButtonWrapper>
                       <Button onClick={displayContactForm}>
-                        Etre recontacté par le gestionnaire du réseau
+                        {isEligible
+                          ? 'Etre mis en relation avec le gestionnaire du réseau'
+                          : 'Laissez vos coordonnées'}
                       </Button>
                     </ContactFormButtonWrapper>
                   )}
