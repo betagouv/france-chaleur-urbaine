@@ -1,6 +1,10 @@
 # Table of contents
 
-* [Des filtres pour comparer les réseaux de chaleur](README.md)
+* [Atelier de co-construction France Chaleur Urbaine - EnRezo](README.md)
+* [L'Île-de-France, championne de la géothermie profonde](lile-de-france-championne-de-la-geothermie-profonde.md)
+* [France Chaleur Urbaine pour les bureaux d'études](france-chaleur-urbaine-pour-les-bureaux-detudes.md)
+* [Une émission pédagogique sur les réseaux de chaleur](une-emission-pedagogique-sur-les-reseaux-de-chaleur.md)
+* [Des filtres pour comparer les réseaux de chaleur](<README (27).md>)
 * [Un accès simplifié aux schémas directeurs des réseaux de chaleur](un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md)
 * [Identifier des zones d'implantation pour le solaire thermique](identifier-des-zones-dimplantation-pour-le-solaire-thermique.md)
 * [Un chauffage écologique et économique ? C'est possible !](un-chauffage-ecologique-et-economique-cest-possible.md)
