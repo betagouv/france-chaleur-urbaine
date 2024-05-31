@@ -1,10 +1,12 @@
-# Des filtres pour comparer les réseaux de chaleur
+# Atelier de co-construction France Chaleur Urbaine - EnRezo
 
-🔎 Filtrer les réseaux de chaleur selon leurs caractéristiques techniques et économiques, et faire ressortir des réseaux comparables : c'est désormais possible sur la [cartographie](https://france-chaleur-urbaine.beta.gouv.fr/carte) France Chaleur Urbaine !\
+💡 L'atelier de co-construction France Chaleur Urbaine - [EnRezo](https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo) (Cerema) s'est tenu le 30 mai 2024.\
 \
-🤓 Une nouvelle fois, cette fonctionnalité répond à une demande formulée par des usagers du service, en particulier des bureaux d'études, mais aussi des copropriétés soucieuses de disposer d'éléments de comparaison sur les performances environnementales et la compétitivité du réseau le plus proche.\
+🎯 L'objectif ? Recueillir les retours d'expérience et suggestions des usagers des deux services, pour encore mieux répondre à leurs besoins.\
 \
-🔧 Cette fonctionnalité permet de filtrer les réseaux à afficher en fonction de leur énergie majoritaire, taux EnR\&R, contenu CO2, prix moyen de la chaleur et année de construction. Il est également possible de définir des conditions sur le mix énergétique des réseaux à visualiser (cliquer sur "Plus d'options"). Il s'agit de la première étape d'un outil plus avancé de comparaison des réseaux, qui verra le jour dans les prochaines semaines.
+55 participants ont activement contribué à cet atelier. La diversité des acteurs représentés (collectivités, opérateurs des réseaux, bailleurs sociaux, bureaux d'études, institutionnels...) témoigne de l'intérêt que présentent ces services pour l'ensemble des parties prenantes.\
+\
+De nombreuses idées ont été exprimées, sur lesquelles nous aurons à cœur de travailler dans les mois à venir.\
 
-<figure><img src=".gitbook/assets/16 (1).jpg" alt=""><figcaption></figcaption></figure>
 
+🤔 Vous avez raté l'atelier ? N'hésitez pas à nous faire part de vos suggestions via notre [formulaire de contact](https://france-chaleur-urbaine.beta.gouv.fr/contact).
