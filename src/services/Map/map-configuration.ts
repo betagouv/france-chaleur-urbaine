@@ -205,13 +205,13 @@ export const defaultMapConfiguration = createMapConfiguration({
   },
   reseauxEnConstruction: true,
   consommationsGaz: {
-    show: true,
+    show: false,
   },
   batimentsGazCollectif: {
-    show: true,
+    show: false,
   },
   batimentsFioulCollectif: {
-    show: true,
+    show: false,
   },
 });
 

@@ -9,60 +9,67 @@ import MapReactGL, {
 } from 'react-map-gl/maplibre';
 
 import Hoverable from '@components/Hoverable';
+import Box from '@components/ui/Box';
 import { Icon } from '@dataesr/react-dsfr';
 import { useContactFormFCU, usePersistedState } from '@hooks';
+import useRouterReady from '@hooks/useRouterReady';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import debounce from '@utils/debounce';
+import { fetchJSON } from '@utils/network';
+import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useServices } from 'src/services';
-import {
-  AddressDetail,
-  HandleAddressSelect,
-} from 'src/types/HeatNetworksResponse';
-import { Point } from 'src/types/Point';
-import { StoredAddress } from 'src/types/StoredAddress';
-import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
-import {
-  MapMarkerInfos,
-  MapPopupInfos,
-  MapPopupType,
-} from 'src/types/MapComponentsInfos';
-import MapMarker from './components/MapMarker';
-import MapPopup from './components/MapPopup';
-import ZoneInfos from './components/SummaryBoxes';
-import {
-  CollapseLegend,
-  LegendSideBar,
-  LegendContainer,
-  LegendLogo,
-  LegendLogoLink,
-  LegendLogoList,
-  LegendSeparator,
-  MapControlWrapper,
-  MapStyle,
-  TopLegend,
-  TopLegendSwitch,
-} from './Map.style';
-import satelliteConfig from './satellite.config.json';
-import {
-  MapboxStyleDefinition,
-  MapboxStyleSwitcherControl,
-} from './StyleSwitcher';
-import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
-import { trackEvent } from 'src/services/analytics';
-import debounce from '@utils/debounce';
-import SimpleMapLegend, {
-  MapLegendFeature,
-} from './components/SimpleMapLegend';
 import { MapLayerMouseEvent } from 'react-map-gl';
+import { useServices } from 'src/services';
 import {
   MapConfiguration,
   MaybeEmptyMapConfiguration,
   defaultMapConfiguration,
   isMapConfigurationInitialized,
 } from 'src/services/Map/map-configuration';
+import { trackEvent } from 'src/services/analytics';
+import { SourceId } from 'src/services/tiles.config';
+import {
+  AddressDetail,
+  HandleAddressSelect,
+} from 'src/types/HeatNetworksResponse';
+import {
+  MapMarkerInfos,
+  MapPopupInfos,
+  MapPopupType,
+} from 'src/types/MapComponentsInfos';
+import { Point } from 'src/types/Point';
+import { StoredAddress } from 'src/types/StoredAddress';
+import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
+import {
+  CollapseLegend,
+  LegendContainer,
+  LegendLogo,
+  LegendLogoLink,
+  LegendLogoList,
+  LegendSeparator,
+  LegendSideBar,
+  MapControlWrapper,
+  MapStyle,
+  TopLegend,
+  TopLegendSwitch,
+} from './Map.style';
+import {
+  MapboxStyleDefinition,
+  MapboxStyleSwitcherControl,
+} from './StyleSwitcher';
+import CardSearchDetails from './components/CardSearchDetails';
+import { isDevModeEnabled } from './components/DevModeIcon';
+import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
+import MapMarker from './components/MapMarker';
+import MapPopup from './components/MapPopup';
+import MapSearchForm from './components/MapSearchForm';
+import SimpleMapLegend, {
+  MapLegendFeature,
+} from './components/SimpleMapLegend';
+import ZoneInfos from './components/SummaryBoxes';
 import {
   LayerId,
   ReseauxDeChaleurLimits,
@@ -70,14 +77,7 @@ import {
   buildMapLayers,
   layerSymbolsImagesURLs,
 } from './map-layers';
-import Box from '@components/ui/Box';
-import useRouterReady from '@hooks/useRouterReady';
-import MapSearchForm from './components/MapSearchForm';
-import CardSearchDetails from './components/CardSearchDetails';
-import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
-import { SourceId } from 'src/services/tiles.config';
-import { isDevModeEnabled } from './components/DevModeIcon';
-import { fetchJSON } from '@utils/network';
+import satelliteConfig from './satellite.config.json';
 
 const mapSettings = {
   defaultLongitude: 2.3,
@@ -240,6 +240,11 @@ const Map = ({
 
   useEffect(() => {
     if (setProMode) {
+      if (proMode) {
+        mapConfiguration.consommationsGaz.show = true;
+        mapConfiguration.batimentsGazCollectif.show = true;
+        mapConfiguration.batimentsFioulCollectif.show = true;
+      }
       setMapConfiguration({
         ...mapConfiguration,
         proMode: !!proMode,
