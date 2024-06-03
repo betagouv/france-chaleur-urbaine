@@ -584,3 +584,7 @@ export const gestionnairesPerNetwork: Record<string, string[]> = {
   '9518C': ['Dalkia_9518C', 'Dalkia'],
   '9520C': ['Dalkia_9520C', 'Dalkia'],
 };
+
+export const gestionnairesPerDepartment: Record<string, string[]> = {
+  'Puy-de-Dôme': ['ADUHME'],
+};

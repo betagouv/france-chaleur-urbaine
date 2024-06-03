@@ -28,6 +28,7 @@ export type Demand = DemandSummary &
     'Date demandes': string;
     Établissement: string;
     Ville: string;
+    Department: string;
     Conso: number;
     'Gestionnaire Conso': number;
     Logement: number;
