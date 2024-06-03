@@ -38,6 +38,7 @@ const csp = {
   'connect-src': [
     "'self'",
     'https://openmaptiles.geo.data.gouv.fr',
+    'https://openmaptiles.data.gouv.fr',
     'https://openmaptiles.github.io',
     'https://france-chaleur-urbaine.beta.gouv.fr/',
     'https://france-chaleur-urbaine-dev.osc-fr1.scalingo.io/',
