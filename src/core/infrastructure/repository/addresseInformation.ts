@@ -286,13 +286,6 @@ export const getNetworkEligibilityDistances = (networkId: string) => {
     : { eligibleDistance: 200, veryEligibleDistance: 100 };
 };
 
-const isDistanceEligible = (distance: number, city?: string) => {
-  if (city && city.toLowerCase() === 'paris') {
-    return { isEligible: distance <= 100, veryEligibleDistance: 60 };
-  }
-  return { isEligible: distance <= 200, veryEligibleDistance: 100 };
-};
-
 export const getCityEligilityStatus = async (
   city: string
 ): Promise<CityNetwork> => {
@@ -338,8 +331,7 @@ export const getNetworkEligilityStatus = async (
 
 export const getEligilityStatus = async (
   lat: number,
-  lon: number,
-  city?: string
+  lon: number
 ): Promise<HeatNetwork> => {
   const [inZDP, irisNetwork, inFuturNetwork, futurNetwork, network] =
     await Promise.all([
@@ -350,11 +342,21 @@ export const getEligilityStatus = async (
       closestNetwork(lat, lon),
     ]);
 
-  const eligibility = isDistanceEligible(Number(network.distance), city);
-  const futurEligibility = isDistanceEligible(
-    Number(futurNetwork.distance),
-    city
+  const eligibilityDistances = getNetworkEligibilityDistances(
+    network['Identifiant reseau']
   );
+  const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
+  const eligibility = {
+    isEligible:
+      Number(network.distance) <= eligibilityDistances.eligibleDistance,
+    veryEligibleDistance: eligibilityDistances.veryEligibleDistance,
+  };
+  const futurEligibility = {
+    isEligible:
+      futurNetwork.distance <= futurEligibilityDistances.eligibleDistance,
+    veryEligibleDistance: futurEligibilityDistances.veryEligibleDistance,
+  };
+
   if (
     eligibility.isEligible &&
     Number(network.distance) < eligibility.veryEligibleDistance
