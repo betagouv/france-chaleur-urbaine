@@ -40,6 +40,7 @@ const hasFirstColumn = (isCold: boolean, displayBlocks?: string[]) => {
 const hasSecondColumn = (isCold: boolean, displayBlocks?: string[]) => {
   return (
     !displayBlocks ||
+    displayBlocks.includes('formulaire_eligibilite') ||
     displayBlocks.includes('map') ||
     (!isCold && displayBlocks.includes('energies'))
   );
@@ -442,9 +443,14 @@ const NetworkPanel = ({
                 : 'fr-col-12'
             }
           >
-            {!isCold && network.has_trace && (
-              <EligibilityTestBox networkId={network['Identifiant reseau']} />
-            )}
+            {!displayBlocks ||
+              (displayBlocks.includes('formulaire_eligibilite') &&
+                !isCold &&
+                network.has_trace && (
+                  <EligibilityTestBox
+                    networkId={network['Identifiant reseau']}
+                  />
+                ))}
 
             {network.informationsComplementaires && (
               <InformationsComplementairesBox>
