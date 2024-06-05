@@ -36,7 +36,7 @@ export class HeatNetworkService {
       } else {
         const [lon, lat] = geoAddress.geometry.coordinates;
         return await this.httpClient.get<HeatNetworksResponse>(
-          `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${geoAddress.properties.city}`
+          `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}`
         );
       }
     } catch (e) {
