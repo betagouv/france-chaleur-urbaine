@@ -1,18 +1,30 @@
+import { NetworkEligibilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import { AxiosResponse } from 'axios';
 import { HttpClient } from 'src/services/http';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
+import { SuggestionItem } from 'src/types/Suggestions';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
+import { Network } from 'src/types/Summary/Network';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ServiceError } from './errors';
-import { SuggestionItem } from 'src/types/Suggestions';
-import { Network } from 'src/types/Summary/Network';
 
 export class HeatNetworkService {
   httpClient: HttpClient;
   constructor(http: HttpClient) {
     this.httpClient = http;
   }
+
+  async getNetworkEligibilityStatus(
+    networkId: string,
+    geoAddress: SuggestionItem
+  ): Promise<NetworkEligibilityStatus> {
+    const [lon, lat] = geoAddress.geometry.coordinates;
+    return await this.httpClient.get<NetworkEligibilityStatus>(
+      `/api/networks/${networkId}/eligibility?lat=${lat}&lon=${lon}`
+    );
+  }
+
   async findByCoords(
     geoAddress: SuggestionItem
   ): Promise<HeatNetworksResponse> {

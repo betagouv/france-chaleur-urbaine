@@ -1,11 +1,12 @@
 import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
-import { useCallback, useRef, useState } from 'react';
-import { trackEvent } from 'src/services/analytics';
-import { AddressDataType } from 'src/types/AddressData';
-import { Airtable } from 'src/types/enum/Airtable';
 import useURLParamOrLocalStorage, {
   parseAsString,
 } from '@hooks/useURLParamOrLocalStorage';
+import { useCallback, useRef, useState } from 'react';
+import { trackEvent } from 'src/services/analytics';
+import { AddressDataType } from 'src/types/AddressData';
+import { FormDemandCreation } from 'src/types/Summary/Demand';
+import { Airtable } from 'src/types/enum/Airtable';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
@@ -106,7 +107,12 @@ const useContactFormFCU = () => {
         address
       );
       const response = await submitToAirtable(
-        formatDataToAirtable({ ...data, mtm_campaign, mtm_kwd, mtm_source }),
+        formatDataToAirtable({
+          ...data,
+          mtm_campaign,
+          mtm_kwd,
+          mtm_source,
+        } as FormDemandCreation),
         Airtable.UTILISATEURS
       );
       const { id } = await response.json();

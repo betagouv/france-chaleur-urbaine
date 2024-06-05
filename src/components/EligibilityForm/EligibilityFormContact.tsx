@@ -4,7 +4,10 @@ import { Alert } from '@dataesr/react-dsfr';
 import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
 import { getReadableDistance } from 'src/services/Map/distance';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { useMatomoAbTestingExperiment } from 'src/services/analytics';
 import { AddressDataType } from 'src/types/AddressData';
+import { ContactFormInfos } from 'src/types/Summary/Demand';
 import {
   bordeauxMetropoleCityCodes,
   getEligibilityResult,
@@ -17,8 +20,6 @@ import {
   ContactFormWrapper,
   ContactMapResult,
 } from './components';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
-import { useMatomoAbTestingExperiment } from 'src/services/analytics';
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
@@ -89,7 +90,7 @@ const EligibilityFormContact = ({
   }, [addressData, variation]);
 
   const handleSubmitForm = useCallback(
-    async (values: Record<string, string | number>) => {
+    async (values: ContactFormInfos) => {
       const sendedValues: any = {
         ...addressData,
         ...values,
