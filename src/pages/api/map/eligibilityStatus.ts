@@ -14,7 +14,6 @@ const eligibilityStatus = handleRouteErrors(async (req: NextApiRequest) => {
   const { lat, lon } = await validateObjectSchema(req.query, {
     lat: z.coerce.number(),
     lon: z.coerce.number(),
-    city: z.string(),
   });
   return await getEligilityStatus(lat, lon);
 });
