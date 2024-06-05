@@ -222,6 +222,15 @@ const Map = ({
     fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then(
       (limits) => {
         mapConfiguration.reseauxDeChaleur.limits = limits;
+
+        // apply the limits to the filters
+        mapConfiguration.reseauxDeChaleur.anneeConstruction =
+          limits.anneeConstruction;
+        mapConfiguration.reseauxDeChaleur.emissionsCO2 = limits.emissionsCO2;
+        mapConfiguration.reseauxDeChaleur.livraisonsAnnuelles =
+          limits.livraisonsAnnuelles;
+        mapConfiguration.reseauxDeChaleur.prixMoyen = limits.prixMoyen;
+
         setMapConfiguration({
           ...mapConfiguration,
         });
@@ -599,7 +608,7 @@ const Map = ({
         };
         setMarkersList([newMarker]);
       }
-      jumpTo({ coordinates: initialCenter });
+      jumpTo({ coordinates: initialCenter, zoom: initialZoom });
     }
   }, [initialCenter, jumpTo, withCenterPin]);
 

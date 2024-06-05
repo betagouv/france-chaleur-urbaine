@@ -49,7 +49,7 @@ export function setProperty<Obj extends Record<string, any>>(
  * Deeply merge 2 objects in a new one.
  */
 export function deepMergeObjects<T, U>(obj1: T, obj2: U): T & U {
-  const result: any = { ...obj1 };
+  const result: any = cloneDeep(obj1);
 
   for (const key in obj2) {
     if (
@@ -72,4 +72,31 @@ export function deepMergeObjects<T, U>(obj1: T, obj2: U): T & U {
   }
 
   return result;
+}
+
+/**
+ * Deeply clone an object.
+ */
+export function cloneDeep(source: any): any {
+  const objectType = typeof source;
+  if (
+    objectType === 'string' ||
+    objectType === 'number' ||
+    objectType === 'boolean' ||
+    source === null ||
+    source === undefined
+  ) {
+    return source;
+  } else if (source instanceof Array) {
+    return source.map(cloneDeep);
+  } else if (source instanceof Date) {
+    return new Date(source.getTime());
+  } else if (objectType === 'object') {
+    return Object.keys(source).reduce((clone: any, key) => {
+      clone[key] = cloneDeep(source[key]);
+      return clone;
+    }, {});
+  } else {
+    throw new Error(`unknown object type: ${objectType}`);
+  }
 }

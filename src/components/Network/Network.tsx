@@ -41,6 +41,7 @@ const hasSecondColumn = (isCold: boolean, displayBlocks?: string[]) => {
   return (
     !displayBlocks ||
     displayBlocks.includes('formulaire_eligibilite') ||
+    displayBlocks.includes('informations') ||
     displayBlocks.includes('map') ||
     (!isCold && displayBlocks.includes('energies'))
   );
@@ -452,43 +453,45 @@ const NetworkPanel = ({
                   />
                 ))}
 
-            {network.informationsComplementaires && (
-              <InformationsComplementairesBox>
-                <h3>Informations complémentaires</h3>
-                {network.informationsComplementaires
-                  .split('\n')
-                  .map((line, index) =>
-                    line === '' ? (
-                      <br key={index} />
-                    ) : (
-                      <Text key={index}>{line}</Text>
-                    )
-                  )}
-                {network.fichiers.length > 0 && (
-                  <div className="fr-mt-2w">
-                    {network.fichiers.map((fichier, index) => (
-                      <Link
-                        key={index}
-                        href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
-                        className="fr-mr-1w"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {fichier.filename}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                <Text
-                  size="sm"
-                  legacyColor="lightgrey"
-                  fontStyle="italic"
-                  mt="4w"
-                >
-                  Informations fournies par la collectivité ou l’exploitant
-                </Text>
-              </InformationsComplementairesBox>
-            )}
+            {!displayBlocks ||
+              (displayBlocks.includes('informations') &&
+                network.informationsComplementaires && (
+                  <InformationsComplementairesBox>
+                    <h3>Informations complémentaires</h3>
+                    {network.informationsComplementaires
+                      .split('\n')
+                      .map((line, index) =>
+                        line === '' ? (
+                          <br key={index} />
+                        ) : (
+                          <Text key={index}>{line}</Text>
+                        )
+                      )}
+                    {network.fichiers.length > 0 && (
+                      <div className="fr-mt-2w">
+                        {network.fichiers.map((fichier, index) => (
+                          <Link
+                            key={index}
+                            href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
+                            className="fr-mr-1w"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {fichier.filename}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                    <Text
+                      size="sm"
+                      legacyColor="lightgrey"
+                      fontStyle="italic"
+                      mt="4w"
+                    >
+                      Informations fournies par la collectivité ou l’exploitant
+                    </Text>
+                  </InformationsComplementairesBox>
+                ))}
             {!isCold &&
               (!displayBlocks || displayBlocks.includes('energies')) && (
                 <BoxSection>
