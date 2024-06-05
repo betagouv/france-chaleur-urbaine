@@ -599,7 +599,7 @@ const Map = ({
         };
         setMarkersList([newMarker]);
       }
-      jumpTo({ coordinates: initialCenter });
+      jumpTo({ coordinates: initialCenter, zoom: initialZoom });
     }
   }, [initialCenter, jumpTo, withCenterPin]);
 
