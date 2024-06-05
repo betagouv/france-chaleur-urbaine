@@ -444,54 +444,51 @@ const NetworkPanel = ({
                 : 'fr-col-12'
             }
           >
-            {!displayBlocks ||
-              (displayBlocks.includes('formulaire_eligibilite') &&
-                !isCold &&
-                network.has_trace && (
-                  <EligibilityTestBox
-                    networkId={network['Identifiant reseau']}
-                  />
-                ))}
+            {(!displayBlocks ||
+              displayBlocks.includes('formulaire_eligibilite')) &&
+              !isCold &&
+              network.has_trace && (
+                <EligibilityTestBox networkId={network['Identifiant reseau']} />
+              )}
 
-            {!displayBlocks ||
-              (displayBlocks.includes('informations') &&
-                network.informationsComplementaires && (
-                  <InformationsComplementairesBox>
-                    <h3>Informations complémentaires</h3>
-                    {network.informationsComplementaires
-                      .split('\n')
-                      .map((line, index) =>
-                        line === '' ? (
-                          <br key={index} />
-                        ) : (
-                          <Text key={index}>{line}</Text>
-                        )
-                      )}
-                    {network.fichiers.length > 0 && (
-                      <div className="fr-mt-2w">
-                        {network.fichiers.map((fichier, index) => (
-                          <Link
-                            key={index}
-                            href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
-                            className="fr-mr-1w"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {fichier.filename}
-                          </Link>
-                        ))}
-                      </div>
+            {(!displayBlocks || displayBlocks.includes('informations')) &&
+              network.informationsComplementaires && (
+                <InformationsComplementairesBox>
+                  <h3>Informations complémentaires</h3>
+                  {network.informationsComplementaires
+                    .split('\n')
+                    .map((line, index) =>
+                      line === '' ? (
+                        <br key={index} />
+                      ) : (
+                        <Text key={index}>{line}</Text>
+                      )
                     )}
-                    <Text
-                      size="sm"
-                      legacyColor="lightgrey"
-                      fontStyle="italic"
-                      mt="4w"
-                    >
-                      Informations fournies par la collectivité ou l’exploitant
-                    </Text>
-                  </InformationsComplementairesBox>
-                ))}
+                  {network.fichiers.length > 0 && (
+                    <div className="fr-mt-2w">
+                      {network.fichiers.map((fichier, index) => (
+                        <Link
+                          key={index}
+                          href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
+                          className="fr-mr-1w"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {fichier.filename}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                  <Text
+                    size="sm"
+                    legacyColor="lightgrey"
+                    fontStyle="italic"
+                    mt="4w"
+                  >
+                    Informations fournies par la collectivité ou l’exploitant
+                  </Text>
+                </InformationsComplementairesBox>
+              )}
             {!isCold &&
               (!displayBlocks || displayBlocks.includes('energies')) && (
                 <BoxSection>
