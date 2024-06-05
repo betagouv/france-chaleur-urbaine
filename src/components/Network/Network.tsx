@@ -1,7 +1,7 @@
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
+import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import Link from 'next/link';
 import { getConso } from 'src/services/Map/conso';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { Network } from 'src/types/Summary/Network';
@@ -471,8 +471,9 @@ const NetworkPanel = ({
                           key={index}
                           href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
                           className="fr-mr-1w"
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          isExternal
+                          eventKey="Téléchargement|Schéma directeur"
+                          eventPayload={`${network['Identifiant reseau']},${fichier.filename}`}
                         >
                           {fichier.filename}
                         </Link>
