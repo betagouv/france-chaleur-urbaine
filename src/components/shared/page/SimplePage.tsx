@@ -1,22 +1,3 @@
-import Head from 'next/head';
-import {
-  HeaderBody,
-  Header,
-  HeaderNav,
-  HeaderOperator,
-  Logo,
-  NavItem,
-  Service,
-  Tool,
-  ToolItem,
-  ToolItemGroup,
-  NavSubItem,
-} from '@dataesr/react-dsfr';
-import { signOut, useSession } from 'next-auth/react';
-import Link from 'next/link';
-import { ComponentProps, Fragment } from 'react';
-import { USER_ROLE } from 'src/types/enum/UserRole';
-import Image from 'next/image';
 import {
   FooterBody,
   FooterBodyItem,
@@ -29,15 +10,32 @@ import {
   FooterPartnersLogo,
   FooterPartnersSecondaryTitle,
   FooterPartnersTitle,
+  Header,
+  HeaderBody,
+  HeaderNav,
+  HeaderOperator,
+  Logo,
+  NavItem,
+  NavSubItem,
+  Service,
+  Tool,
+  ToolItem,
+  ToolItemGroup,
 } from '@dataesr/react-dsfr';
+import { deleteFetchJSON } from '@utils/network';
+import { signOut, useSession } from 'next-auth/react';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { ComponentProps, Fragment } from 'react';
+import { USER_ROLE } from 'src/types/enum/UserRole';
 import {
   FullScreenItems,
   FullScreenModeFirstLine,
   FullScreenModeNavLogo,
   StopImpersonationButton,
 } from './SimplePage.styles';
-import { deleteFetchJSON } from '@utils/network';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
 
@@ -91,16 +89,16 @@ const publicNavigationMenu: NavigationItem[] = [
         href: '/#avantages-du-chauffage-urbain',
       },
       {
-        title: 'Comment se raccorder ?',
-        href: '/#comment-se-raccorder',
-      },
-      {
         title: 'Les coûts du chauffage urbain',
         href: '/#couts-du-chauffage-urbain',
       },
       {
         title: 'Les obligations de raccordement',
         href: '/#obligations-de-raccordement',
+      },
+      {
+        title: 'Comment se raccorder ?',
+        href: '/#comment-se-raccorder',
       },
     ],
   },
