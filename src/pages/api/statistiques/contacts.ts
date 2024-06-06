@@ -92,8 +92,6 @@ export default handleRouteErrors(async function demands(req: NextApiRequest) {
     group: z.enum(['all', 'monthly']),
   });
 
-  const demands = (await getAllDemands())
-    .reverse()
-    .reduce(reducer[group](), {});
-  return demands;
+  const demands = await getAllDemands();
+  return await demands.reverse().reduce(reducer[group](), {});
 });
