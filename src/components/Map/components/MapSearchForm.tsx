@@ -37,7 +37,6 @@ const MapSearchForm = ({
         placeholder="Rechercher une adresse"
         onAddressSelected={handleAddressSelected}
         className="map-search-form"
-        popoverClassName={'popover-map-search-form'}
       />
     </>
   );

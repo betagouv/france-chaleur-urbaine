@@ -40,7 +40,6 @@ const Eligibility = () => {
             setAddress(suggestionItem);
             return Promise.resolve();
           }}
-          popoverClassName={'popover-search-form'}
         />
         <Button
           disabled={!heatingType || !address}
