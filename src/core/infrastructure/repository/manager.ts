@@ -109,7 +109,7 @@ export const getGestionnaires = async (
     gestionnaires = gestionnaires.concat(configPerNetwork);
   }
 
-  const configPerDepartment = gestionnairesPerDepartment[demand.Department];
+  const configPerDepartment = gestionnairesPerDepartment[demand.Departement];
   if (configPerDepartment) {
     gestionnaires = gestionnaires.concat(configPerDepartment);
   }
