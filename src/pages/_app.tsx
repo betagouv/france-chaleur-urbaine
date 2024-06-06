@@ -135,10 +135,6 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   .fr-btn[target=_blank]:after {
     content: "\\ecaf" !important;
   }
-
-  .popover-search-form {
-    z-index: 3;
-  }
 `;
 
 const swrConfig: SWRConfiguration = {

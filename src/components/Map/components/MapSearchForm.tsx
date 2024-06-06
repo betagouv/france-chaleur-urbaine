@@ -7,7 +7,7 @@ import { MapSearchFormGlobalStyle } from './MapSearchForm.style';
 const MapSearchForm = ({
   onAddressSelect,
 }: {
-  onAddressSelect: HandleAddressSelect;
+  onAddressSelect?: HandleAddressSelect;
 }) => {
   const { heatNetworkService } = useServices();
 
@@ -37,7 +37,6 @@ const MapSearchForm = ({
         placeholder="Rechercher une adresse"
         onAddressSelected={handleAddressSelected}
         className="map-search-form"
-        popoverClassName={'popover-map-search-form'}
       />
     </>
   );

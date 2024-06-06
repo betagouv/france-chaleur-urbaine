@@ -1,24 +1,25 @@
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
+import Link from '@components/ui/Link';
+import Text from '@components/ui/Text';
 import { getConso } from 'src/services/Map/conso';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { Network } from 'src/types/Summary/Network';
 import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
+import EligibilityTestBox from './EligibilityTestBox';
+import EnergiesChart from './EnergiesChart';
 import {
   AddressContent,
   BlueBox,
-  Box,
   BoxContent,
   BoxIcon,
+  BoxSection,
   Colmun,
   InformationsComplementairesBox,
   MapContainer,
   Title,
 } from './Network.styles';
-import EnergiesChart from './EnergiesChart';
-import Text from '@components/ui/Text';
-import Link from 'next/link';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
-import { Network } from 'src/types/Summary/Network';
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://')
@@ -39,6 +40,8 @@ const hasFirstColumn = (isCold: boolean, displayBlocks?: string[]) => {
 const hasSecondColumn = (isCold: boolean, displayBlocks?: string[]) => {
   return (
     !displayBlocks ||
+    displayBlocks.includes('formulaire_eligibilite') ||
+    displayBlocks.includes('informations') ||
     displayBlocks.includes('map') ||
     (!isCold && displayBlocks.includes('energies'))
   );
@@ -129,7 +132,7 @@ const NetworkPanel = ({
               </BlueBox>
             )}
             {(!displayBlocks || displayBlocks.includes('techniques')) && (
-              <Box>
+              <BoxSection>
                 <h3>Caractéristiques techniques</h3>
                 <BoxContent>
                   <div>
@@ -268,11 +271,11 @@ const NetworkPanel = ({
                     </BoxContent>
                   </>
                 )}
-              </Box>
+              </BoxSection>
             )}
             {!isCold &&
               (!displayBlocks || displayBlocks.includes('tarifs')) && (
-                <Box>
+                <BoxSection>
                   <BoxIcon>
                     <span>
                       <h3>Informations tarifaires</h3>
@@ -374,10 +377,10 @@ const NetworkPanel = ({
                       Ces informations ne sont pas disponibles pour le moment.
                     </div>
                   )}
-                </Box>
+                </BoxSection>
               )}
             {(!displayBlocks || displayBlocks.includes('contacts')) && (
-              <Box>
+              <BoxSection>
                 <h3>Contacts</h3>
                 <BoxContent>
                   <div>
@@ -429,7 +432,7 @@ const NetworkPanel = ({
                       </div>
                     </BoxContent>
                   )}
-              </Box>
+              </BoxSection>
             )}
           </Colmun>
         )}
@@ -441,49 +444,58 @@ const NetworkPanel = ({
                 : 'fr-col-12'
             }
           >
-            {network.informationsComplementaires && (
-              <InformationsComplementairesBox>
-                <h3>Informations complémentaires</h3>
-                {network.informationsComplementaires
-                  .split('\n')
-                  .map((line, index) =>
-                    line === '' ? (
-                      <br key={index} />
-                    ) : (
-                      <Text key={index}>{line}</Text>
-                    )
+            {(!displayBlocks ||
+              displayBlocks.includes('formulaire_eligibilite')) &&
+              !isCold &&
+              network.has_trace && (
+                <EligibilityTestBox networkId={network['Identifiant reseau']} />
+              )}
+
+            {(!displayBlocks || displayBlocks.includes('informations')) &&
+              network.informationsComplementaires && (
+                <InformationsComplementairesBox>
+                  <h3>Informations complémentaires</h3>
+                  {network.informationsComplementaires
+                    .split('\n')
+                    .map((line, index) =>
+                      line === '' ? (
+                        <br key={index} />
+                      ) : (
+                        <Text key={index}>{line}</Text>
+                      )
+                    )}
+                  {network.fichiers.length > 0 && (
+                    <div className="fr-mt-2w">
+                      {network.fichiers.map((fichier, index) => (
+                        <Link
+                          key={index}
+                          href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
+                          className="fr-mr-1w"
+                          isExternal
+                          eventKey="Téléchargement|Schéma directeur"
+                          eventPayload={`${network['Identifiant reseau']},${fichier.filename}`}
+                        >
+                          {fichier.filename}
+                        </Link>
+                      ))}
+                    </div>
                   )}
-                {network.fichiers.length > 0 && (
-                  <div className="fr-mt-2w">
-                    {network.fichiers.map((fichier, index) => (
-                      <Link
-                        key={index}
-                        href={`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`}
-                        className="fr-mr-1w"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {fichier.filename}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                <Text
-                  size="sm"
-                  legacyColor="lightgrey"
-                  fontStyle="italic"
-                  mt="4w"
-                >
-                  Informations fournies par la collectivité ou l’exploitant
-                </Text>
-              </InformationsComplementairesBox>
-            )}
+                  <Text
+                    size="sm"
+                    legacyColor="lightgrey"
+                    fontStyle="italic"
+                    mt="4w"
+                  >
+                    Informations fournies par la collectivité ou l’exploitant
+                  </Text>
+                </InformationsComplementairesBox>
+              )}
             {!isCold &&
               (!displayBlocks || displayBlocks.includes('energies')) && (
-                <Box>
+                <BoxSection>
                   <h3>Mix énergétique</h3>
                   <EnergiesChart network={network} />
-                </Box>
+                </BoxSection>
               )}
             {(!displayBlocks || displayBlocks.includes('map')) && (
               <MapContainer>

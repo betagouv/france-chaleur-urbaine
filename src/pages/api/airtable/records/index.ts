@@ -1,6 +1,7 @@
 import {
   closestNetwork,
   getConso,
+  getDistanceToNetwork,
   getNbLogement,
 } from '@core/infrastructure/repository/addresseInformation';
 import {
@@ -20,7 +21,8 @@ export default handleRouteErrors(async function PostRecords(
 ) {
   requirePostMethod(req);
 
-  const { type, ...values } = req.body;
+  // networkId est présent si test depuis fiche réseau
+  const { type, networkId, ...values } = req.body;
   if (process.env.NEXT_PUBLIC_MOCK_USER_CREATION === 'true') {
     logger.info('create demand', {
       type,
@@ -55,7 +57,9 @@ export default handleRouteErrors(async function PostRecords(
       const [conso, nbLogement, network] = await Promise.all([
         getConso(values.Latitude, values.Longitude),
         getNbLogement(values.Latitude, values.Longitude),
-        closestNetwork(values.Latitude, values.Longitude),
+        networkId
+          ? getDistanceToNetwork(networkId, values.Latitude, values.Longitude)
+          : closestNetwork(values.Latitude, values.Longitude),
       ]);
 
       const gestionnaires = await getGestionnaires(

@@ -5,7 +5,4 @@ export const MapSearchFormGlobalStyle: any = createGlobalStyle` // TODO: Wait Fi
     width: 100%;
     margin-bottom: 0 !important;
   }
-  .popover-map-search-form {
-    z-index: 200;
-  }
 `;

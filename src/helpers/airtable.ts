@@ -1,3 +1,9 @@
+import {
+  AirtableDemandCreation,
+  FormDemandCreation,
+} from 'src/types/Summary/Demand';
+import { Airtable } from 'src/types/enum/Airtable';
+
 const formatHeatingEnergyToAirtable: (heatingEnergy: string) => string = (
   heatingEnergy
 ) => {
@@ -25,9 +31,9 @@ const formatHeatingTypeToAirtable: (heatingType?: string) => string = (
   }
 };
 
-export const formatDataToAirtable: (values: any) => Record<string, any> = (
-  values
-) => {
+export const formatDataToAirtable: (
+  values: FormDemandCreation
+) => AirtableDemandCreation = (values) => {
   const {
     address,
     coords,
@@ -47,6 +53,7 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     mtm_campaign,
     mtm_kwd,
     mtm_source,
+    networkId,
   } = values;
 
   return {
@@ -56,8 +63,8 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     Établissement: company,
     Éligibilité: eligibility.isEligible,
     Adresse: address,
-    Latitude: parseFloat(coords.lat),
-    Longitude: parseFloat(coords.lon),
+    Latitude: coords.lat,
+    Longitude: coords.lon,
     Mail: email,
     Téléphone: phone,
     'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
@@ -71,14 +78,15 @@ export const formatDataToAirtable: (values: any) => Record<string, any> = (
     'Campagne matomo': mtm_campaign,
     'Campagne keywords': mtm_kwd,
     'Campagne source': mtm_source,
+    networkId,
   };
 };
 
 export const submitToAirtable = async (
   values: any,
-  type: string
+  type: Airtable
 ): Promise<Response> => {
-  return fetch('./api/airtable/records', {
+  return fetch('/api/airtable/records', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

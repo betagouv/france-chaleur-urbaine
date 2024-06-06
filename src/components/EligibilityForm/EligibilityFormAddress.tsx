@@ -141,7 +141,6 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
         <AddressAutocomplete
           placeholder="Tapez ici votre adresse"
           onAddressSelected={handleAddressSelected}
-          popoverClassName={'popover-search-form'}
         />
       )}
     </>

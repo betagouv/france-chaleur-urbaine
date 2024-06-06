@@ -139,14 +139,6 @@ export default function Home() {
         <AvantagesChauffageUrbain />
       </Box>
 
-      <Box
-        py="10w"
-        backgroundColor="blue-france-main-525"
-        id="comment-se-raccorder"
-      >
-        <HowToRaccordement />
-      </Box>
-
       <Box py="10w" id="couts-du-chauffage-urbain">
         <CoutsChauffageUrbain />
       </Box>
@@ -247,6 +239,14 @@ export default function Home() {
 
       <Box py="10w" id="obligations-de-raccordement">
         <ObligationRaccordement />
+      </Box>
+
+      <Box
+        py="10w"
+        backgroundColor="blue-france-main-525"
+        id="comment-se-raccorder"
+      >
+        <HowToRaccordement />
       </Box>
 
       <Box py="10w" backgroundColor="blue-france-975-75" id="articles">

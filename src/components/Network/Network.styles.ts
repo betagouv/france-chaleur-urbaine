@@ -15,7 +15,7 @@ export const BlueBox = styled.div`
   }
 `;
 
-export const Box = styled.div`
+export const BoxSection = styled.div`
   padding: 32px;
   border: 1px solid #e7e7e7;
   color: #4550e5;

@@ -93,7 +93,6 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
       <AddressContainer>
         <AddressAutocomplete
           onAddressSelected={onAddressSelected}
-          popoverClassName={'popover-search-form'}
           placeholder="Tapez ici votre adresse"
         />
       </AddressContainer>
