@@ -174,7 +174,6 @@ const HeadSlice = ({
                 setGeoAddress(suggestionItem);
                 return Promise.resolve();
               }}
-              popoverClassName={'popover-search-form'}
             />
 
             <FormWarningMessage

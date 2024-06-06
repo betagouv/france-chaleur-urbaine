@@ -16,7 +16,7 @@ export const AddressAutocompleteGlobalStyle: any = createGlobalStyle` // TODO: W
   }
 
   [data-reach-combobox-popover] {
-    z-index: 2;
+    z-index: 200;
   }
 `;
 
