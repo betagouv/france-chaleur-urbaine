@@ -1,12 +1,9 @@
-# Atelier de co-construction France Chaleur Urbaine - EnRezo
+# Les réseaux de chaleur en région : focus sur la Normandie
 
-💡 L'atelier de co-construction France Chaleur Urbaine - [EnRezo](https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo) (Cerema) s'est tenu le 30 mai 2024.\
+🚴‍♂️ Nous prenons un peu d'avance sur le Tour de France et vous embarquons dès à présent dans un tour de France des réseaux de chaleur de nos régions...\
 \
-🎯 L'objectif ? Recueillir les retours d'expérience et suggestions des usagers des deux services, pour encore mieux répondre à leurs besoins.\
+📍 Pour notre première étape, direction la Normandie !\
 \
-55 participants ont activement contribué à cet atelier. La diversité des acteurs représentés (collectivités, opérateurs des réseaux, bailleurs sociaux, bureaux d'études, institutionnels...) témoigne de l'intérêt que présentent ces services pour l'ensemble des parties prenantes.\
+Les réseaux normands sont aujourd'hui au nombre de 49, avec un taux d'énergies renouvelables et de récupération de 76%. Les exemples ne manquent pas, avec des métropoles disposant déjà de plusieurs réseaux comme celles de [Rennes](https://metropole.rennes.fr/quatre-reseaux-de-chauffage-urbain-dans-la-metropole) ou [Rouen](https://energies.metropole-rouen-normandie.fr/votre-projet/collectivites-et-elus-2/les-reseaux-de-chaleur-urbains/), mais aussi des projets d'envergure comme sur [Le Havre Seine Métropole](https://www.lehavreseinemetropole.fr/reseau-de-chaleur-le-havre-sud) ou encore [Caen la Mer](https://caenlamer.fr/le-reseau-de-chaleur). À eux seuls ces deux projets représentent 120 km de nouveaux réseaux qui vont être créés dans les prochaines années, avec des taux ENR\&R de 80 à 100% !\
 \
-De nombreuses idées ont été exprimées, sur lesquelles nous aurons à cœur de travailler dans les mois à venir.\
-
-
-🤔 Vous avez raté l'atelier ? N'hésitez pas à nous faire part de vos suggestions via notre [formulaire de contact](https://france-chaleur-urbaine.beta.gouv.fr/contact).
+👉 Vous souhaitez en savoir plus sur les réseaux de chaleur normands ? Retrouvez tous les chiffres clés et deux exemples dans notre infographie ci-dessous.
