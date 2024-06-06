@@ -1,4 +1,4 @@
-import { getEligilityStatusAPIv1 } from '@core/infrastructure/repository/addresseInformation';
+import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import {
   handleRouteErrors,
   requireGetMethod,
@@ -17,12 +17,11 @@ export default withCors(
       lon: z.coerce.number(),
     });
 
-    const result = await getEligilityStatusAPIv1(lat, lon);
+    const result = await getEligilityStatus(lat, lon);
     return {
       isEligible: result.isEligible,
       distance: result.distance,
       inPDP: result.inZDP,
-      isBasedOnIris: result.isBasedOnIris,
       futurNetwork: result.futurNetwork,
       id: result.id,
       gestionnaire: result.gestionnaire,

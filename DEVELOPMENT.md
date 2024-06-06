@@ -6,7 +6,7 @@ Un schéma OpenAPI a été initialisé manuellement en yaml à partir du [Swagge
 Il se trouve dans `public/openapi-schema.yaml`.
 
 Voici les routes publiques qui y sont présentes :
-- GET /api/v1/eligibility : tester l'éligibilité d'un point géographique
+- GET /api/v2/eligibility : tester l'éligibilité d'un point géographique
 - GET /api/v1/networks : télécharger les réseaux de chaleur
 
 

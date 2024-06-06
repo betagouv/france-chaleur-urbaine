@@ -1,5 +1,9 @@
 import db from 'src/db';
-import { CityNetwork, HeatNetwork } from 'src/types/HeatNetworksResponse';
+import {
+  CityNetwork,
+  HeatNetwork,
+  HeatNetworkV1,
+} from 'src/types/HeatNetworksResponse';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import XLSX from 'xlsx';
 import isInZDP from './zdp';
@@ -326,14 +330,12 @@ export const getEligilityStatus = async (
   lat: number,
   lon: number
 ): Promise<HeatNetwork> => {
-  const [inZDP, irisNetwork, inFuturNetwork, futurNetwork, network] =
-    await Promise.all([
-      isInZDP(lat, lon),
-      isOnAnIRISNetwork(lat, lon),
-      closestInFuturNetwork(lat, lon),
-      closestFuturNetwork(lat, lon),
-      closestNetwork(lat, lon),
-    ]);
+  const [inZDP, inFuturNetwork, futurNetwork, network] = await Promise.all([
+    isInZDP(lat, lon),
+    closestInFuturNetwork(lat, lon),
+    closestFuturNetwork(lat, lon),
+    closestNetwork(lat, lon),
+  ]);
 
   const eligibilityDistances = getNetworkEligibilityDistances(
     network['Identifiant reseau']
@@ -422,10 +424,129 @@ export const getEligilityStatus = async (
   }
 
   return {
+    isEligible: false,
+    distance: null,
+    veryEligibleDistance: null,
+    inZDP,
+    futurNetwork: false,
+    id: null,
+    tauxENRR: null,
+    co2: null,
+    gestionnaire: null,
+  };
+};
+
+//To keep consistency with API v1
+export const getEligilityStatusAPIv1 = async (
+  lat: number,
+  lon: number
+): Promise<HeatNetworkV1> => {
+  const [inZDP, irisNetwork, inFuturNetwork, futurNetwork, network] =
+    await Promise.all([
+      isInZDP(lat, lon),
+      isOnAnIRISNetwork(lat, lon),
+      closestInFuturNetwork(lat, lon),
+      closestFuturNetwork(lat, lon),
+      closestNetwork(lat, lon),
+    ]);
+
+  const eligibilityDistances = getNetworkEligibilityDistances(
+    network['Identifiant reseau']
+  );
+  const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
+  const eligibility = {
+    isEligible:
+      Number(network.distance) <= eligibilityDistances.eligibleDistance,
+    veryEligibleDistance: eligibilityDistances.veryEligibleDistance,
+  };
+  const futurEligibility = {
+    isEligible:
+      futurNetwork.distance <= futurEligibilityDistances.eligibleDistance,
+    veryEligibleDistance: futurEligibilityDistances.veryEligibleDistance,
+  };
+
+  if (
+    eligibility.isEligible &&
+    Number(network.distance) < eligibility.veryEligibleDistance
+  ) {
+    return {
+      ...eligibility,
+      distance: Math.round(network.distance),
+      inZDP,
+      isBasedOnIris: false,
+      futurNetwork: false,
+      id: network['Identifiant reseau'],
+      tauxENRR: network['Taux EnR&R'],
+      co2: network['contenu CO2 ACV'],
+      gestionnaire: network['Gestionnaire'],
+    };
+  }
+  if (
+    futurEligibility.isEligible &&
+    Number(futurNetwork.distance) < futurEligibility.veryEligibleDistance
+  ) {
+    return {
+      ...futurEligibility,
+      distance: Math.round(futurNetwork.distance),
+      inZDP,
+      isBasedOnIris: false,
+      futurNetwork: true,
+      id: null,
+      tauxENRR: null,
+      co2: null,
+      gestionnaire: futurNetwork.gestionnaire,
+    };
+  }
+
+  if (inFuturNetwork) {
+    return {
+      isEligible: true,
+      distance: null,
+      veryEligibleDistance: null,
+      inZDP,
+      isBasedOnIris: false,
+      futurNetwork: true,
+      id: null,
+      tauxENRR: null,
+      co2: null,
+      gestionnaire: inFuturNetwork.gestionnaire,
+    };
+  }
+
+  if (Number(network.distance) < 1000) {
+    return {
+      ...eligibility,
+      distance: Math.round(network.distance),
+      inZDP,
+      isBasedOnIris: false,
+      futurNetwork: false,
+      id: network['Identifiant reseau'],
+      tauxENRR: network['Taux EnR&R'],
+      co2: network['contenu CO2 ACV'],
+      gestionnaire: network['Gestionnaire'],
+    };
+  }
+
+  if (Number(futurNetwork.distance) < 1000) {
+    return {
+      ...futurEligibility,
+      distance: Math.round(futurNetwork.distance),
+      inZDP,
+      isBasedOnIris: false,
+      futurNetwork: true,
+      id: null,
+      tauxENRR: null,
+      co2: null,
+      gestionnaire: futurNetwork.gestionnaire,
+    };
+  }
+
+  return {
     isEligible: irisNetwork,
     distance: null,
     veryEligibleDistance: null,
     inZDP,
+    isBasedOnIris: true,
     futurNetwork: false,
     id: null,
     tauxENRR: null,

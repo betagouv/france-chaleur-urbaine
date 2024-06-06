@@ -12,6 +12,11 @@ export type HeatNetwork = {
   co2: number | null;
 };
 
+//To keep consistency with API v1
+export type HeatNetworkV1 = HeatNetwork & {
+  isBasedOnIris: boolean;
+};
+
 export type CityNetwork = {
   basedOnCity: true;
   cityHasNetwork: boolean;
