@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Atelier de co-construction France Chaleur Urbaine - EnRezo](README.md)
+* [Les réseaux de chaleur en région : focus sur la Normandie](README.md)
+* [Atelier de co-construction France Chaleur Urbaine - EnRezo](<README (28).md>)
 * [L'Île-de-France, championne de la géothermie profonde](lile-de-france-championne-de-la-geothermie-profonde.md)
 * [France Chaleur Urbaine pour les bureaux d'études](france-chaleur-urbaine-pour-les-bureaux-detudes.md)
 * [Une émission pédagogique sur les réseaux de chaleur](une-emission-pedagogique-sur-les-reseaux-de-chaleur.md)
