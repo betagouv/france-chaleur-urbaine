@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/10 (4).jpg
+coverY: 0
+---
+
 # L'Île-de-France, championne de la géothermie profonde
 
 🥇 A l'approche des Jeux Olympiques, focus sur une première championne : l'Île-de-France, dans l'épreuve géothermie profonde !\
@@ -7,3 +12,5 @@
 👇 Petit récapitulatif en chiffres-clés ci-dessous.\
 \
 🤓 Retrouvez également nos précédentes infographies [ici](https://france-chaleur-urbaine.beta.gouv.fr/ressources/supports).
+
+<figure><img src=".gitbook/assets/1 (5).jpg" alt=""><figcaption></figcaption></figure>
