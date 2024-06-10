@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/Modele post linkedin (767 x 432 px).jpg
+coverY: 0
+---
+
 # Atelier de co-construction France Chaleur Urbaine - EnRezo
 
 💡 L'atelier de co-construction France Chaleur Urbaine - [EnRezo](https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo) (Cerema) s'est tenu le 30 mai 2024.\
@@ -10,3 +15,5 @@ De nombreuses idées ont été exprimées, sur lesquelles nous aurons à cœur d
 
 
 🤔 Vous avez raté l'atelier ? N'hésitez pas à nous faire part de vos suggestions via notre [formulaire de contact](https://france-chaleur-urbaine.beta.gouv.fr/contact).
+
+<figure><img src=".gitbook/assets/Modele post linkedin.png" alt=""><figcaption></figcaption></figure>
