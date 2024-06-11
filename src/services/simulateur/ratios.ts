@@ -228,4 +228,103 @@ export const ratiosTechniques = {
   // FIXME mettre tout le tableau
   ECS_Résidentiel: 35,
   RAF_Résidentiel: 8,
+
+  Puissance_CoefficientIntermittence: [
+    {
+      nom: 'A',
+      value: 70,
+    },
+    {
+      nom: 'B',
+      value: 70,
+    },
+    {
+      nom: 'C',
+      value: 90,
+    },
+    {
+      nom: 'D',
+      value: 90,
+    },
+    {
+      nom: 'E',
+      value: 100,
+    },
+    {
+      nom: 'F',
+      value: 100,
+    },
+    {
+      nom: 'G',
+      value: 100,
+    },
+    {
+      nom: 'RE2020 - Après 2020',
+      value: 70,
+    },
+    {
+      nom: 'RT2012 - Entre 2012 et 2020',
+      value: 70,
+    },
+    {
+      nom: 'RT2005 - Entre 2005 et 2012',
+      value: 90,
+    },
+    {
+      nom: 'RT2000 - Entre 2000 et 2005',
+      value: 90,
+    },
+    {
+      nom: 'de 1990 à 2000 ',
+      value: 100,
+    },
+    {
+      nom: 'de 1974 à 1990',
+      value: 100,
+    },
+    {
+      nom: 'avant 1974',
+      value: 100,
+    },
+    {
+      nom: 'Bureaux',
+      value: 80,
+    },
+    {
+      nom: 'Enseignement secondaire',
+      value: 80,
+    },
+    {
+      nom: 'Santé',
+      value: 90,
+    },
+    {
+      nom: 'Café, restaurant',
+      value: 80,
+    },
+    {
+      nom: 'Hôtel',
+      value: 80,
+    },
+    {
+      nom: 'Commerces',
+      value: 80,
+    },
+    {
+      nom: 'Enseignement primaire',
+      value: 80,
+    },
+    {
+      nom: 'Sport',
+      value: 60,
+    },
+    {
+      nom: 'Centre aqualudique',
+      value: 90,
+    },
+    {
+      nom: 'EHPAD',
+      value: 90,
+    },
+  ],
 } as const;
