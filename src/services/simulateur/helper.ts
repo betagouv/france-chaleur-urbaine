@@ -1,53 +1,72 @@
-export const typeBool: unique symbol = Symbol('bool');
-export const typeNumber: unique symbol = Symbol('number');
-export const typeString: unique symbol = Symbol('string');
+export function createParametresObject<T extends Record<keyof T, Parametre<T>>>(obj: T & Parametres<T>) {
+  return obj;
+}
 
-// type Parametres<
-//   Keys extends string,
-//   Type = TypeBool | TypeNumber | TypeString,
-// > = {
-//   [K in Keys]: {
-//     default:
-//       | ((
-//           getValue: (key: Keys) => number | string | boolean
-//         ) => ParametreType<Type> | undefined)
-//       | ParametreType<Type>
-//       | undefined;
-//     type?: Type;
-//     unit?: string;
-//     deps?: string[];
-//   };
-// };
-
-type Parametres<T extends Record<string, Parametre<T>>> = {
+type Parametres<T extends Record<keyof T, Parametre<T>>> = {
   [K in keyof T]: Parametre<T>;
 };
 
-type Parametre<T extends Record<string, Parametre<T>>> = {
-  // default: number | string | boolean | undefined | ((getValue: (key: string) => number | string | boolean | undefined) => number | string | boolean | undefined); // FIXME `key: string` devrait être keyof T, mais pas possible avec typescript :/
-  // on utilise 2 champs séparés car problème typescript
-  type?: typeof typeBool | typeof typeNumber | typeof typeString; // default to number
+type Parametre<T extends Record<keyof T, Parametre<T>>> = {
+  type?: ValueType; // default to typeNumber
+  options?: ParametreOption[];
   unit?: string;
   predecessors?: (keyof T)[]; // = parameters used in default formula
   successors?: (keyof T)[]; // computed automatically from predecessors
 } & (
   | {
-      defaultValue?: number | string | boolean | undefined;
+      defaultValue: number | string | boolean | undefined;
     }
   | {
-      defaultFormula?: (state: Record<keyof T, number | string | boolean | undefined>) => number | string | boolean | undefined;
+      /**
+       * Chaque formule peut utiliser d'autres variables via la fonction getValue(<id_variable>) si jamais la variable demandée n'est pas définie alors une exception est levée et
+       * le traitement est arrêté pour cette variable. Son état dans le state sera alors défini à undefined.
+       */
+      defaultFormula: (getValue: (key: keyof T) => any) => number | string | boolean | undefined;
     }
 );
 
-export function createParametresObject<T extends Record<string, Parametre<T>>>(obj: T & Parametres<T>) {
-  return obj;
+export const typeBool: unique symbol = Symbol('bool');
+export const typeNumber: unique symbol = Symbol('number');
+export const typeString: unique symbol = Symbol('string');
+
+export type ValueType = typeof typeBool | typeof typeNumber | typeof typeString;
+
+type ExtractTypeFromField<Type extends ValueType | undefined> = Type extends typeof typeBool ? boolean : Type extends typeof typeString ? string : number;
+
+export function getTypedValue(value: string | boolean, type: ValueType): ExtractTypeFromField<typeof type> | null {
+  switch (type) {
+    case typeBool:
+    case typeString:
+      return value;
+    case typeNumber:
+      return !isNaN(parseFloat(value as string)) ? parseFloat(value as string) : null;
+  }
 }
 
-// export function getTypedValue(value: string): string | number | boolean {
-//   return value === '' ? '' : !isNaN(Number(value)) ? Number(value) : value;
-// }
+type ParametreOption = {
+  value: string;
+  label: string;
+};
 
-export function getTypedValue(value: string | boolean, paramConfig: Parametre<any>): string | number | boolean {
-  return typeof value === 'boolean' ? value : paramConfig.type === typeNumber && !isNaN(Number(value)) ? Number(value) : value;
-  // return value === '' ? '' : !isNaN(Number(value)) ? Number(value) : value;
+export type ExtractStateFromParametres<P extends Record<keyof P, Parametre<P>>> = {
+  [K in keyof P]: P[K]['type'] extends 'bool' ? boolean : P[K]['type'] extends 'string' ? string : number;
+};
+
+export function completeSuccessors<T extends Record<string, Parametre<T>>>(parametres: Parametres<T>) {
+  const successorsByParametre = Object.entries(parametres).reduce(
+    (acc, [parametreKey, parametre]) => {
+      parametre.predecessors?.forEach((predecessor: keyof typeof parametres) => {
+        let predecessorSuccessors = acc[predecessor];
+        if (!predecessorSuccessors) {
+          acc[predecessor] = predecessorSuccessors = [] as (keyof typeof parametres)[];
+        }
+        predecessorSuccessors.push(parametreKey as keyof typeof parametres);
+      });
+      return acc;
+    },
+    {} as Record<keyof typeof parametres, (keyof typeof parametres)[]>
+  );
+  Object.entries(successorsByParametre).forEach(([parametreKey, successors]) => {
+    parametres[parametreKey as keyof typeof parametres].successors = successors;
+  });
 }
