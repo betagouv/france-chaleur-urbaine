@@ -18,3 +18,19 @@ type InternalFlattenKeys<Obj, ValueType> = Obj extends Record<string, any>
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
 };
+
+/**
+ * Preserve keys of object instead of returning string[].
+ */
+export function ObjectKeys<Obj extends object>(obj: Obj): (keyof Obj)[] {
+  return Object.keys(obj) as (keyof Obj)[];
+}
+
+/**
+ * Preserve keys of object instead of returning string[].
+ */
+export function ObjectEntries<Obj extends object>(obj: Obj) {
+  return Object.entries(obj) as {
+    [K in keyof Obj]: [K, Obj[K]];
+  }[keyof Obj][];
+}
