@@ -5,16 +5,12 @@ export type HeatNetwork = {
   distance: number | null;
   veryEligibleDistance: number | null;
   inZDP: boolean;
+  isBasedOnIris: boolean;
   futurNetwork: boolean;
   id: string | null;
   tauxENRR: number | null;
   gestionnaire: string | null;
   co2: number | null;
-};
-
-//To keep consistency with API v1
-export type HeatNetworkV1 = HeatNetwork & {
-  isBasedOnIris: boolean;
 };
 
 export type CityNetwork = {
