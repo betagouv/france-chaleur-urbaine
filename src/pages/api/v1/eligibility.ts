@@ -1,12 +1,12 @@
-import z from 'zod';
 import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
-import type { NextApiRequest } from 'next';
-import { withCors } from 'src/services/api/cors';
 import {
   handleRouteErrors,
   requireGetMethod,
   validateObjectSchema,
 } from '@helpers/server';
+import type { NextApiRequest } from 'next';
+import { withCors } from 'src/services/api/cors';
+import z from 'zod';
 
 export default withCors(
   handleRouteErrors(async (req: NextApiRequest) => {

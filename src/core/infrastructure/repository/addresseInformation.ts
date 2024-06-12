@@ -17,23 +17,6 @@ const hasFuturNetworkInCity = async (city: string): Promise<boolean> => {
   return !!result;
 };
 
-const isOnAnIRISNetwork = async (
-  lat: number,
-  lon: number
-): Promise<boolean> => {
-  const result = await db('network_iris')
-    .where(
-      db.raw(`ST_INTERSECTS(
-      ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-      ST_Transform(geom, 2154)
-    )
-  `)
-    )
-    .first();
-
-  return !!result;
-};
-
 export type NetworkInfos = {
   distance: number;
   'Identifiant reseau': string;
@@ -232,10 +215,6 @@ const legend = [
     "Résultat compilant distance au réseau et présence d'un réseau dans la zone",
   ],
   [
-    'Distance au réseau (m) si < 1000 m',
-    'Distance au réseau le plus proche. Lorsque le résultat du test est positif mais que la distance est "non disponible", cela signifie qu’il existe à un réseau de chaleur dans le quartier, mais que nous ne disposons pas de son tracé précis (information déduite des consommations de chaleur à l’iris sur les réseaux mise en open data par le SDES)',
-  ],
-  [
     'PDP (périmètre de développement prioritaire)',
     "Si l'adresse est comprise dans un PDP, son raccordement peut être obligatoire (valable pour les nouveaux bâtiments ou ceux renouvelant leur installation de chauffage au-dessus d'une certaine puissance)",
   ],
@@ -263,9 +242,6 @@ export const getExport = (addresses: any[]) => {
         address.label,
         address.score,
         address.isEligible && !address.futurNetwork ? 'Oui' : 'Non',
-        address.isEligible && address.isBasedOnIris
-          ? 'Non disponible'
-          : address.distance,
         address.inZDP ? 'Oui' : 'Non',
         address.isEligible && address.futurNetwork ? 'Oui' : 'Non',
         address.id,
@@ -333,14 +309,12 @@ export const getEligilityStatus = async (
   lat: number,
   lon: number
 ): Promise<HeatNetwork> => {
-  const [inZDP, irisNetwork, inFuturNetwork, futurNetwork, network] =
-    await Promise.all([
-      isInZDP(lat, lon),
-      isOnAnIRISNetwork(lat, lon),
-      closestInFuturNetwork(lat, lon),
-      closestFuturNetwork(lat, lon),
-      closestNetwork(lat, lon),
-    ]);
+  const [inZDP, inFuturNetwork, futurNetwork, network] = await Promise.all([
+    isInZDP(lat, lon),
+    closestInFuturNetwork(lat, lon),
+    closestFuturNetwork(lat, lon),
+    closestNetwork(lat, lon),
+  ]);
 
   const eligibilityDistances = getNetworkEligibilityDistances(
     network['Identifiant reseau']
@@ -434,11 +408,11 @@ export const getEligilityStatus = async (
   }
 
   return {
-    isEligible: irisNetwork,
+    isEligible: false,
     distance: null,
     veryEligibleDistance: null,
     inZDP,
-    isBasedOnIris: true,
+    isBasedOnIris: false,
     futurNetwork: false,
     id: null,
     tauxENRR: null,
