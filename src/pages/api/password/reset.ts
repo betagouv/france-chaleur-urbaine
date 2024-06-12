@@ -38,7 +38,7 @@ const reset = handleRouteErrors(async (req: NextApiRequest) => {
   const payload = {
     email,
     resetToken,
-    exp: Math.round(Date.now() / 1000) + 60 * 60, // 1 hour expiration
+    exp: Math.round(Date.now() / 1000) + 60 * 60 * 3, // 3 hour expiration
   };
 
   const token = jwt.sign(payload, process.env.NEXTAUTH_SECRET as string);
