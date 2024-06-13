@@ -1,3 +1,4 @@
+import { isDefined } from '@utils/core';
 import Link from 'next/link';
 import { getConso } from 'src/services/Map/conso';
 import { DemandSummary } from 'src/types/Summary/Demand';
@@ -7,7 +8,6 @@ import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
 import { PopupTitle } from '../Map.style';
-import { isDefined } from '@utils/core';
 import { objTypeEnergy } from '../map-layers';
 
 const writeTypeConso = (typeConso: string | unknown) => {
@@ -147,11 +147,14 @@ const MapPopupContent = ({
               <br />
             </>
           )}
-        {conso_raccordement && conso_raccordement !== 'secret' && (
+        {conso_raccordement && (
           <>
             <strong>Consommation de chaleur&nbsp;:</strong>&nbsp;
-            {conso_raccordement}
-            &nbsp;MWh/an
+            {conso_raccordement === 'nd' ||
+            conso_raccordement === 'secret' ||
+            conso_raccordement === 's'
+              ? 'Non connue'
+              : `${conso_raccordement} MWh/an`}
             <br />
           </>
         )}
