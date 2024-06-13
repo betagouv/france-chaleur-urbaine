@@ -4,6 +4,7 @@ import Advantages from './Contents/Advantages';
 import Bill from './Contents/Bill';
 import ClassedNetwork from './Contents/ClassedNetwork';
 import ColdNetwork from './Contents/ColdNetwork';
+import CoutRaccordement from './Contents/CoutRaccordement';
 import Feasability from './Contents/Feasability';
 import Fundings from './Contents/Fundings';
 import GreenEnergies from './Contents/GreenEnergies';
@@ -174,6 +175,18 @@ export const understandings: Record<string, Document> = {
       </>
     ),
     content: <Priority />,
+  },
+  'cout-raccordement': {
+    title: 'Combien coûte un raccordement ?',
+    description: (
+      <>
+        Le raccordement d’un bâtiment à un réseau de chaleur présente un coût
+        non négligeable. Toutefois, des aides permettent de le réduire
+        fortement. De plus, l’investissement peut être rapidement amorti dès
+        lors que le prix de la chaleur livrée par le réseau est compétitif.
+      </>
+    ),
+    content: <CoutRaccordement />,
   },
 };
 
