@@ -25,6 +25,7 @@ export default withCors(
       isBasedOnIris: result.isBasedOnIris,
       futurNetwork: result.futurNetwork,
       id: result.id,
+      name: result.name,
       gestionnaire: result.gestionnaire,
       rateENRR: result.tauxENRR,
       rateCO2: result.co2,
