@@ -214,6 +214,7 @@ const legend = [
     'Bâtiment potentiellement raccordable à un réseau existant',
     "Résultat compilant distance au réseau et présence d'un réseau dans la zone",
   ],
+  ['Distance au réseau (m) si < 1000 m', 'Distance au réseau le plus proche.'],
   [
     'PDP (périmètre de développement prioritaire)',
     "Si l'adresse est comprise dans un PDP, son raccordement peut être obligatoire (valable pour les nouveaux bâtiments ou ceux renouvelant leur installation de chauffage au-dessus d'une certaine puissance)",
@@ -242,6 +243,7 @@ export const getExport = (addresses: any[]) => {
         address.label,
         address.score,
         address.isEligible && !address.futurNetwork ? 'Oui' : 'Non',
+        address.distance,
         address.inZDP ? 'Oui' : 'Non',
         address.isEligible && address.futurNetwork ? 'Oui' : 'Non',
         address.id,
