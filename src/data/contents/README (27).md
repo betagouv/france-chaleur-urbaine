@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/6 (3).jpg
-coverY: 0
----
-
 # Des filtres pour comparer les réseaux de chaleur
 
 🔎 Filtrer les réseaux de chaleur selon leurs caractéristiques techniques et économiques, et faire ressortir des réseaux comparables : c'est désormais possible sur la [cartographie](https://france-chaleur-urbaine.beta.gouv.fr/carte) France Chaleur Urbaine !\

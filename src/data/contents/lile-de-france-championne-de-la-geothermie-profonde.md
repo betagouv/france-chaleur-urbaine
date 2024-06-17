@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/10 (4).jpg
-coverY: 0
----
-
 # L'Île-de-France, championne de la géothermie profonde
 
 🥇 A l'approche des Jeux Olympiques, focus sur une première championne : l'Île-de-France, dans l'épreuve géothermie profonde !\
