@@ -1,9 +1,10 @@
 // import ConsentBanner from '@components/ConsentBanner';
-import {
+/*import {
   FacebookMarkup,
   GoogleAdsMarkup,
   LinkedInMarkup,
-} from '@components/Markup';
+} from '@components/Markup';*/
+import { MuiDsfrThemeProvider } from './../MuiDsfrThemeProvider';
 
 // FIXME vérifier le flicker au chargement
 // import '@gouvfr/dsfr/dist/dsfr.min.css';
@@ -25,14 +26,14 @@ import {
 import { AdminService } from 'src/services/admin';
 import { DemandsService } from 'src/services/demands';
 import { axiosHttpClient } from 'src/services/http';
-import { iframedPaths } from 'src/services/iframe';
+//import { iframedPaths } from 'src/services/iframe';
 import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
-import { clientConfig } from 'src/client-config';
+//import { clientConfig } from 'src/client-config';
 import { useAnalytics } from 'src/services/analytics';
 import { SWRConfig, SWRConfiguration } from 'swr';
 import { usePreserveScroll } from '@hooks/usePreserveScroll';
-import HotjarMarkup from '@components/Markup/HotjarMarkup';
+//import HotjarMarkup from '@components/Markup/HotjarMarkup';
 import Link from 'next/link';
 
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
@@ -183,7 +184,7 @@ function App({
   useAnalytics();
 
   return (
-    <>
+    <MuiDsfrThemeProvider>
       <AppGlobalStyle />
       <DsfrFixUp />
       <ServicesContext.Provider
@@ -271,7 +272,7 @@ function App({
           </SessionProvider>
         </SWRConfig>
       </ServicesContext.Provider>
-    </>
+    </MuiDsfrThemeProvider>
   );
 }
 export default withDsfr(App);

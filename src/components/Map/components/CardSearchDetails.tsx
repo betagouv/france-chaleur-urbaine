@@ -1,4 +1,5 @@
-import { Button, Icon } from '@codegouvfr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import Icon from '@components/ui/Icon';
 import { useCallback, useMemo, useState } from 'react';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { Point } from 'src/types/Point';
@@ -194,12 +195,7 @@ const CardSearchDetails = ({
               </EligibilityResult>
               {!contactFormVisible && storedAddress.contacted ? (
                 <MessageConfirmBox>
-                  <Icon
-                    name="fr-icon-success-fill"
-                    size="lg"
-                    color="#78EB7B"
-                    iconPosition="right"
-                  />
+                  <Icon name="fr-icon-success-fill" size="lg" color="#78EB7B" />
                   Demande envoyée
                 </MessageConfirmBox>
               ) : (

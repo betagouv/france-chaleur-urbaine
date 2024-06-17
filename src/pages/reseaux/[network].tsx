@@ -5,9 +5,8 @@ import {
   getColdNetwork,
   getNetwork,
 } from '@core/infrastructure/repository/network';
-import { Breadcrumb, BreadcrumbItem } from '@codegouvfr/react-dsfr';
+import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
 import { GetStaticProps } from 'next';
-import Link from 'next/link';
 import { Network } from 'src/types/Summary/Network';
 
 const PageReseau = ({ network }: { network: Network }) => {
@@ -18,13 +17,26 @@ const PageReseau = ({ network }: { network: Network }) => {
   return (
     <SimplePage currentPage="/carte" mode="public-fullscreen">
       <Slice>
-        <Breadcrumb>
-          <BreadcrumbItem asLink={<Link href="/" />}>Accueil</BreadcrumbItem>
-          <BreadcrumbItem asLink={<Link href="/carte" />}>
-            Cartographie
-          </BreadcrumbItem>
-          <BreadcrumbItem>{network['Identifiant reseau']}</BreadcrumbItem>
-        </Breadcrumb>
+        <Breadcrumb
+          currentPageLabel={network['Identifiant reseau']}
+          homeLinkProps={{
+            href: '/',
+          }}
+          segments={[
+            {
+              label: 'Accueil',
+              linkProps: {
+                href: '/',
+              },
+            },
+            {
+              label: 'Cartographie',
+              linkProps: {
+                href: '/carte',
+              },
+            },
+          ]}
+        />
       </Slice>
       <Slice className="fr-mb-4w">
         <NetworkPanel network={network} />

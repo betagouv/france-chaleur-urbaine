@@ -1,74 +1,66 @@
+import {
+  DataGrid,
+  GridCellParams,
+  GridRenderCellParams,
+} from '@mui/x-data-grid';
 import { Input } from '@codegouvfr/react-dsfr/Input';
-//import Table, { type TableColumnDef } from '@components/ui/Table';
-import { Table } from '@codegouvfr/react-dsfr/Table';
-//import Icon from '@components/ui/Icon';
-//import Link from 'next/link';
+import Icon from '@components/ui/Icon';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { EligibilityDemand } from 'src/types/EligibilityDemand';
-//import DownloadButton from './DownloadButton';
+import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';
 import Heading from '@components/ui/Heading';
 import Box from '@components/ui/Box';
 
-/*const columns: TableColumnDef<
-  EligibilityDemand & { download: any; map: any }
->[] = [
-  { key: 'id', label: 'Id' },
+const columns = [
+  { field: 'id', headerName: 'Id' },
   {
-    key: 'emails',
-    label: 'Emails',
-    //si email vide ne pas faire le join
-    render: ({ emails }: EligibilityDemand) =>
-      emails ? emails.join(', ') : [], //si email vide ne pas faire le join
+    field: 'emails',
+    headerName: 'Emails',
+    valueGetter: (params: GridCellParams) =>
+      (params.row as EligibilityDemand).emails.join(', '),
   },
   {
-    key: 'created_at',
-    label: 'Date',
-    render: ({ created_at }: EligibilityDemand) =>
-      new Date(created_at).toLocaleDateString(),
+    field: 'created_at',
+    headerName: 'Date',
+    valueGetter: (params: GridCellParams) =>
+      new Date(
+        (params.row as EligibilityDemand).created_at
+      ).toLocaleDateString(),
   },
-  { key: 'version', label: 'Version' },
-  { key: 'addresses_count', label: "Nombre d'adresses" },
-  { key: 'error_count', label: "Nombre d'erreurs" },
-  { key: 'eligibile_count', label: "Nombre d'adresses éligibles" },
+  { field: 'version', headerName: 'Version' },
+  { field: 'addresses_count', headerName: "Nombre d'adresses" },
+  { field: 'error_count', headerName: "Nombre d'erreurs" },
+  { field: 'eligibile_count', headerName: "Nombre d'adresses éligibles" },
   {
-    key: 'in_error',
-    label: 'En erreur',
-    render: (param: EligibilityDemand) =>
-      param && param.in_error ? 'Oui' : 'Non',
-  },
-  {
-    key: 'download',
-    label: 'Telecharger',
-    render: (param: EligibilityDemand) =>
-      param ? <DownloadButton id={param.id} inError={param.in_error} /> : null,
+    field: 'in_error',
+    headerName: 'En erreur',
+    valueGetter: (params: GridCellParams) =>
+      (params.row as EligibilityDemand).in_error ? 'Oui' : 'Non',
   },
   {
-    key: 'map',
-    label: 'Carte',
-    render: (param: EligibilityDemand) =>
-      param ? (
-        <Link href={`/carte?id=${param.id}`}>
-          <button>
-            <Icon name="ri-road-map-line" size="lg" />
-          </button>
-        </Link>
-      ) : null,
+    field: 'download',
+    headerName: 'Telecharger',
+    renderCell: (params: GridRenderCellParams) => (
+      <DownloadButton
+        id={(params.row as EligibilityDemand).id}
+        inError={(params.row as EligibilityDemand).in_error}
+      />
+    ),
   },
-];*/
-
-const headers = [
-  'id',
-  'emails',
-  'created_at',
-  'version',
-  'addresses_count',
-  'error_count',
-  'eligibile_count',
-  'in_error',
-  'download',
-  'map',
+  {
+    field: 'map',
+    headerName: 'Carte',
+    renderCell: (params: GridRenderCellParams) => (
+      <Link href={`/carte?id=${(params.row as EligibilityDemand).id}`}>
+        <button>
+          <Icon name="ri-road-map-line" size="lg" />
+        </button>
+      </Link>
+    ),
+  },
 ];
 
 const BulkEligibility = () => {
@@ -119,22 +111,7 @@ const BulkEligibility = () => {
             }}
           />
         </Box>
-        <Table
-          headers={headers}
-          data={filteredEligibilityDemands.map((demande) =>
-            Object.values(demande)
-          )} //filteredEligibilityDemands
-          //rowKey="id"
-          //pagination
-          //paginationPosition="center"
-          //page={page}
-          //setPage={setPage}
-          /*filteredEligibilityDemands.map((demand) => ({
-            ...demand,
-            download: demand.download,
-            map: demand.map,
-          }))*/
-        />
+        <DataGrid columns={columns} rows={filteredEligibilityDemands} />
         {filteredEligibilityDemands.length === 0 && <p>Pas de résultat</p>}
       </TableContainer>
     </>
@@ -142,3 +119,27 @@ const BulkEligibility = () => {
 };
 
 export default BulkEligibility;
+/*
+        <Table
+          data={filteredEligibilityDemands.map((demande) =>
+            Object.values(demande)
+          )}
+          rowKey="id"
+          pagination
+          paginationPosition="center"
+          page={page}
+          setPage={setPage}
+        />
+const headers = [
+  'id',
+  'emails',
+  'created_at',
+  'version',
+  'addresses_count',
+  'error_count',
+  'eligibile_count',
+  'in_error',
+  'download',
+  'map',
+];
+        */

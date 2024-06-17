@@ -4,7 +4,9 @@ import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import LoadingButton from '@components/ui/LoadingButton';
 import Text from '@components/ui/Text';
-import { Icon, Radio, RadioGroup, TextInput } from '@codegouvfr/react-dsfr';
+import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
+import { Input } from '@codegouvfr/react-dsfr/Input';
+import Icon from '@components/ui/Icon';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { ModificationReseau } from '@pages/api/modification-reseau';
@@ -257,97 +259,121 @@ function ModifierReseauxPage() {
                 Voir la fiche actuelle du réseau
               </Link>
             )}
-            <RadioGroup
-              required
+            <RadioButtons
               legend=""
-              isInline
+              name="type"
+              options={[
+                {
+                  label: 'Collectivité',
+                  nativeInputProps: {
+                    value: 'collectivite',
+                    checked: formState.type === 'collectivite',
+                    onChange: () => setFormValue('type', 'collectivite'),
+                  },
+                },
+                {
+                  label: 'Exploitant',
+                  nativeInputProps: {
+                    value: 'exploitant',
+                    checked: formState.type === 'exploitant',
+                    onChange: () => setFormValue('type', 'exploitant'),
+                  },
+                },
+              ]}
+              orientation="horizontal"
               className="fr-mt-4w"
-              value={formState.type}
-              onChange={(value) => setFormValue('type', value)}
-            >
-              <Radio label="Collectivité" value="collectivite" />
-              <Radio label="Exploitant" value="exploitant" />
-            </RadioGroup>
-            <TextInput
-              required
+            />
+            <Input
               label="Votre nom"
-              value={formState.nom}
-              onChange={(e) => setFormValue('nom', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.nom,
+                onChange: (e) => setFormValue('nom', e.target.value),
+              }}
             />
-            <TextInput
-              required
+            <Input
               label="Votre prénom"
-              value={formState.prenom}
-              onChange={(e) => setFormValue('prenom', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.prenom,
+                onChange: (e) => setFormValue('prenom', e.target.value),
+              }}
             />
-            <TextInput
-              required
+            <Input
               label="Votre structure"
-              value={formState.structure}
-              onChange={(e) => setFormValue('structure', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.structure,
+                onChange: (e) => setFormValue('structure', e.target.value),
+              }}
             />
-            <TextInput
-              required
+            <Input
               label="Votre fonction"
-              value={formState.fonction}
-              onChange={(e) => setFormValue('fonction', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.fonction,
+                onChange: (e) => setFormValue('fonction', e.target.value),
+              }}
             />
-            <TextInput
-              required
-              type="email"
+            <Input
               label="Votre email"
-              value={formState.email}
-              onChange={(e) => setFormValue('email', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                type: 'email',
+                value: formState.email,
+                onChange: (e) => setFormValue('email', e.target.value),
+              }}
             />
 
             <Text mt="4w" mb="2w" fontWeight="bold">
               Modifier des informations erronées ou incomplètes sur la fiche
             </Text>
-            <RadioGroup
-              required
-              legend=""
-              isInline
-              value={
-                formState.reseauClasse !== undefined
-                  ? formState.reseauClasse
-                    ? 'classe'
-                    : 'nonClasse'
-                  : undefined
-              }
-              onChange={(value) =>
-                setFormValue('reseauClasse', value === 'classe')
-              }
-            >
-              {/* hack: the lib dataesr can't control this radio input so we force a rerender with the keys */}
-              <Radio
-                label="Réseau classé"
-                value="classe"
-                key={`${formState.reseauClasse}-classe`}
-              />
-              <Radio
-                label="Réseau non classé"
-                value="nonClasse"
-                key={`${formState.reseauClasse}-nonClasse`}
-              />
-            </RadioGroup>
-            <TextInput
-              required
+            <RadioButtons
+              legend="Classification du réseau"
+              name="reseauClasse"
+              options={[
+                {
+                  label: 'Réseau classé',
+                  nativeInputProps: {
+                    value: 'classe',
+                    checked: formState.reseauClasse === true,
+                    onChange: () => setFormValue('reseauClasse', true),
+                  },
+                },
+                {
+                  label: 'Réseau non classé',
+                  nativeInputProps: {
+                    value: 'nonClasse',
+                    checked: formState.reseauClasse === false,
+                    onChange: () => setFormValue('reseauClasse', false),
+                  },
+                },
+              ]}
+            />
+            <Input
               label="Maître d’ouvrage"
-              value={formState.maitreOuvrage}
-              onChange={(e) => setFormValue('maitreOuvrage', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.maitreOuvrage,
+                onChange: (e) => setFormValue('maitreOuvrage', e.target.value),
+              }}
             />
-            <TextInput
-              required
+            <Input
               label="Gestionnaire"
-              value={formState.gestionnaire}
-              onChange={(e) => setFormValue('gestionnaire', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.gestionnaire,
+                onChange: (e) => setFormValue('gestionnaire', e.target.value),
+              }}
             />
-            <TextInput
-              type={'url' as any} // unsupported type by the dsfr lib
+            <Input
               label="Site internet du réseau"
-              placeholder="https://www.monreseau.fr"
-              value={formState.siteInternet}
-              onChange={(e) => setFormValue('siteInternet', e.target.value)}
+              nativeInputProps={{
+                placeholder: 'https://www.monreseau.fr',
+                type: 'url', // unsupported type by the dsfr lib
+                value: formState.siteInternet,
+                onChange: (e) => setFormValue('siteInternet', e.target.value),
+              }}
             />
 
             <Text mt="4w" mb="1w" fontWeight="bold">
@@ -355,18 +381,19 @@ function ModifierReseauxPage() {
               la fiche du réseau ({clientConfig.networkInfoFieldMaxCharacters}{' '}
               caractères maximum)
             </Text>
-            <TextInput
-              textarea
-              placeholder="Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)"
-              value={formState.informationsComplementaires}
-              onChange={(e) =>
-                setFormValue('informationsComplementaires', e.target.value)
-              }
-              maxLength={clientConfig.networkInfoFieldMaxCharacters}
-              rows={5}
-              style={{ cursor: 'text' }} // defined to pointer by the dsfr lib
+            <Input
+              textArea={true}
+              label="Informations complémentaires"
+              nativeTextAreaProps={{
+                placeholder:
+                  'Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)',
+                value: formState.informationsComplementaires,
+                onChange: (e) =>
+                  setFormValue('informationsComplementaires', e.target.value),
+                rows: 5,
+                maxLength: clientConfig.networkInfoFieldMaxCharacters,
+              }}
             />
-
             <Text mt="4w" mb="1w" fontWeight="bold">
               Télécharger des documents à mettre à disposition depuis la fiche
               du réseau (schéma directeur, ...) - 3 documents PDF maximum (&lt;5
@@ -393,7 +420,7 @@ function ModifierReseauxPage() {
                   <Text key={index} mr="1w">
                     - {fichier.name} - {Math.round(fichier.size / 1024)} ko{' '}
                     <Button
-                      size="sm"
+                      size="small"
                       className="fr-btn--tertiary-no-outline"
                       title="Supprimer le fichier"
                       onClick={() => {
@@ -405,7 +432,6 @@ function ModifierReseauxPage() {
                         name="ri-delete-bin-2-line"
                         color="var(--text-default-error)"
                         size="lg"
-                        iconPosition="center"
                       />
                     </Button>
                     {fichier.size > 5 * 1024 * 1024 && (
