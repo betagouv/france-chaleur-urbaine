@@ -21,7 +21,7 @@ const closeCollectifOriginal = {
   }.]
 ${
   inZDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
@@ -84,8 +84,9 @@ const closeCollectifAmeliorationA = {
           <Box backgroundColor="#C1C1C1" width="1px" />
           <Text>
             Votre bâtiment est situé à proximité d’un réseau classé&nbsp;:{' '}
-            <strong>une obligation de raccordement peut s’appliquer</strong> en
-            cas de renouvellement de votre mode de chauffage.
+            <strong>une obligation de raccordement peut exister</strong> en cas
+            de renouvellement de votre mode de chauffage. Une amende de 300 000€
+            peut s’appliquer en cas de non-raccordement sans dérogation.
           </Text>
         </Box>
       )}
@@ -147,7 +148,7 @@ const closeCollectifAmeliorationB = {
   }.]
 ${
   inZDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
@@ -207,8 +208,9 @@ const closeCollectifAmeliorationAB = {
           <Box backgroundColor="#C1C1C1" width="1px" />
           <Text>
             Votre bâtiment est situé à proximité d’un réseau classé&nbsp;:{' '}
-            <strong>une obligation de raccordement peut s’appliquer</strong> en
-            cas de renouvellement de votre mode de chauffage.
+            <strong>une obligation de raccordement peut exister</strong> en cas
+            de renouvellement de votre mode de chauffage. Une amende de 300 000€
+            peut s’appliquer en cas de non-raccordement sans dérogation.
           </Text>
         </Box>
       )}
@@ -282,7 +284,7 @@ const intermediateCollectif = {
   }.]
 ${
   inZDP
-    ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+    ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
@@ -354,7 +356,7 @@ const closeFuturCollectif = {
   } (réseau prévu ou en construction).]
 ${
   inZDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
@@ -388,7 +390,7 @@ const farCollectifInZdp = {
     tauxENRR: number | null
   ) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse.]
-::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]
+::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
@@ -420,7 +422,7 @@ const intermediateFuturCollectif = {
   } (réseau prévu ou en construction).]
 ${
   inZDP
-    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
