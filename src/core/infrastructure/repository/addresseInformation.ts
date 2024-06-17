@@ -205,23 +205,29 @@ const headers = [
 
 const legend = [
   ['Adresse', 'Adresse reçue par France Chaleur Urbaine'],
-  ['Adresse testée', 'Adresse testée par France Chaleur Urbaine'],
+  [
+    'Adresse testée',
+    "Adresse testée par France Chaleur Urbaine (correspondance avec la Base d'adresse nationale)",
+  ],
   [
     "Indice de fiabilité de l'adresse testée",
-    "Min = 0 , Max = 1, Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement testée",
+    "Min = 0 , Max = 1. Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement testée",
   ],
   [
     'Bâtiment potentiellement raccordable à un réseau existant',
-    "Résultat compilant distance au réseau et présence d'un réseau dans la zone",
+    "Le bâtiment est jugé potentiellement raccordable s'il se situe à moins de 200 m d'un réseau existant, sauf sur Paris où ce seuil est réduit à 100 m. Attention, le mode de chauffage n'est pas pris en compte.",
   ],
-  ['Distance au réseau (m) si < 1000 m', 'Distance au réseau le plus proche.'],
+  [
+    'Distance au réseau (m) si < 1000 m',
+    'Distance au réseau le plus proche, fournie uniquement si elle est de moins de 1000m',
+  ],
   [
     'PDP (périmètre de développement prioritaire)',
-    "Si l'adresse est comprise dans un PDP, son raccordement peut être obligatoire (valable pour les nouveaux bâtiments ou ceux renouvelant leur installation de chauffage au-dessus d'une certaine puissance)",
+    "Positif si l'adresse se situe dans le périmètre de développement prioritaire d'un réseau classé (d'après les données dont nous disposons). Une obligation de raccordement peut alors s'appliquer. En savoir plus : https://france-chaleur-urbaine.beta.gouv.fr/ressources/prioritaire",
   ],
   [
     'Bâtiment potentiellement raccordable à un réseau en construction',
-    'Le bâtiment est à moins de 100 m du tracé d’un réseau en construction, ou situé dans une zone sur laquelle nous avons connaissance d’un réseau en construction ou en cours de mise en service (voir carte pour visualiser les zones)',
+    'Le bâtiment est situé à moins de 200 m du tracé d’un réseau en construction, ou situé dans une zone sur laquelle nous avons connaissance d’un réseau en construction ou en cours de mise en service (voir la carte pour visualiser les zones)',
   ],
   ['Identifiant du réseau le plus proche', 'Identifiant réseau national'],
   [
@@ -231,6 +237,11 @@ const legend = [
   [
     'Contenu CO2 ACV (g/kWh)',
     'Contenu CO2 en analyse du cycle de vie issu de l’arrêté DPE du 16 mars 2023 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716)',
+  ],
+  [], // empty line
+  [
+    'Mise en relation avec le gestionnaire',
+    "Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en ligne sur notre site ou nous contacter par mail si le besoin concerne plusieurs adresses : france-chaleur-urbaine@developpement-durable.gouv.fr ",
   ],
 ];
 
