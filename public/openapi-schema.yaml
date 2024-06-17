@@ -122,6 +122,9 @@ paths:
                   id:
                     type: string
                     description: identifiant national du réseau de chaleur le plus proche
+                  name:
+                    type: string
+                    example: Paris et communes limitrophes
                   rateENRR:
                     type: number
                     description: taux d'énergies renouvelables et de récupération du réseau de chaleur le plus proche, en %, sur la base du dernier arrêté "DPE"

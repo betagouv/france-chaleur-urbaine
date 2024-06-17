@@ -8,6 +8,7 @@ export type HeatNetwork = {
   isBasedOnIris: boolean;
   futurNetwork: boolean;
   id: string | null;
+  name: string | null;
   tauxENRR: number | null;
   gestionnaire: string | null;
   co2: number | null;
