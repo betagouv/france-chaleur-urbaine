@@ -27,6 +27,8 @@ type StyleProps = {
   minHeight?: CSSProperties['minHeight'];
   maxHeight?: CSSProperties['maxHeight'];
   opacity?: CSSProperties['opacity'];
+  gridTemplateColumns?: CSSProperties['gridTemplateColumns'];
+  columnGap?: CSSProperties['columnGap'];
 };
 
 const StyledBox = styled.div<StyleProps>`
@@ -63,6 +65,9 @@ const StyledBox = styled.div<StyleProps>`
   min-height: ${({ minHeight }) => minHeight};
   max-height: ${({ maxHeight }) => maxHeight};
   opacity: ${({ opacity }) => opacity};
+  grid-template-columns: ${({ gridTemplateColumns }) => gridTemplateColumns};
+  column-gap: ${({ columnGap }) => columnGap};
+  :
 `;
 
 export interface BoxProps
@@ -105,6 +110,8 @@ function Box(props: PropsWithChildren<BoxProps>) {
       minHeight={props.minHeight}
       maxHeight={props.maxHeight}
       opacity={props.opacity}
+      gridTemplateColumns={props.gridTemplateColumns}
+      columnGap={props.columnGap}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
       } ${spacingsToClasses(props)}`}

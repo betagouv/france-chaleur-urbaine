@@ -130,7 +130,7 @@ const SimulateurCoutRaccordement = () => {
           ) : (
             <TextInput
               type="number"
-              label="Surface"
+              label="Surface (m²)"
               key="surface"
               min="0"
               onChange={(e) => updateState('surface', parseInt(e.target.value))}

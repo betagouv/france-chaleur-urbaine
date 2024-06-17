@@ -1,4 +1,4 @@
-import Box, { ResponsiveRow } from '@components/ui/Box';
+import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import { Highlight } from '@dataesr/react-dsfr';
@@ -50,6 +50,7 @@ export const graphCoutRaccordementBatimentResidentielOptions = deepMergeObjects<
   title: 'Coût de raccordement - bâtiment résidentiel',
   hAxis: {
     title: 'Nombre de logements',
+    ticks: [100, 200, 300], // manuel sinon seulement 1 seul tick si largeur réduite
   },
   colors: ['#000091'],
 });
@@ -61,7 +62,7 @@ export const graphCoutRaccordementBatimentTertiaireOptions = deepMergeObjects<
   title: 'Coût de raccordement - bâtiment tertiaire',
   hAxis: {
     title: 'Surface en m²',
-    ticks: [2000, 5000, 10000, 15000], // manuel sinon seulement 1 seul tick à 10k...
+    ticks: [5000, 10000, 15000], // manuel sinon seulement 1 seul si largeur réduite
   },
   colors: ['#f95c5e'],
 });
@@ -298,9 +299,13 @@ const CoutRaccordement = () => {
         Des estimations de coûts de raccordement pour une longueur de
         branchement de 50m sont présentées ci-dessous :
       </p>
-      <ResponsiveRow breakpoint="xl">
+      <Box
+        display="grid"
+        gridTemplateColumns="repeat(auto-fit, minmax(330px, 1fr))"
+        columnGap="2em"
+      >
         <Chart
-          height="400px"
+          height="350px"
           width="100%"
           chartType="LineChart"
           chartLanguage="FR-fr"
@@ -309,7 +314,7 @@ const CoutRaccordement = () => {
           options={graphCoutRaccordementBatimentResidentielOptions}
         />
         <Chart
-          height="400px"
+          height="350px"
           width="100%"
           chartType="LineChart"
           chartLanguage="FR-fr"
@@ -317,7 +322,7 @@ const CoutRaccordement = () => {
           data={graphCoutRaccordementBatimentTertiaireData}
           options={graphCoutRaccordementBatimentTertiaireOptions}
         />
-      </ResponsiveRow>
+      </Box>
       <br />
       Ces estimations sont basées sur l’hypothèse de puissances de :
       <ul>
