@@ -348,7 +348,7 @@ const Statistics = () => {
                   <HoverableIcon
                     iconName="ri-information-fill"
                     position="bottom"
-                    iconSize="1x"
+                    iconSize="md"
                   >
                     Par raccordements à l’étude, on désigne ceux pour lesquels
                     une étude de faisabilité technico-économique est en cours au
@@ -433,7 +433,7 @@ const Statistics = () => {
                       <HoverableIcon
                         iconName="ri-information-fill"
                         position="bottom"
-                        iconSize="1x"
+                        iconSize="md"
                       >
                         A savoir : une partie des demandes déposées (environ
                         50%) ne peut aboutir en raison d'une distance trop
@@ -480,7 +480,7 @@ const Statistics = () => {
                       <HoverableIcon
                         iconName="ri-information-fill"
                         position="bottom"
-                        iconSize="1x"
+                        iconSize="md"
                       >
                         "Potentiellement raccordables" : tests effectués pour
                         des bâtiments situés à moins de 100 m d'un réseau (60 m

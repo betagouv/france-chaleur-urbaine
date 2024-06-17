@@ -1,5 +1,5 @@
 import Box from '@components/ui/Box';
-import { Icon } from '@codegouvfr/react-dsfr';
+import Icon from '@components/ui/Icon';
 import { NetworkSearchResult } from '@pages/api/networks/search';
 import {
   Combobox,
@@ -74,7 +74,7 @@ export default function NetworkSearchInput(props: NetworkSearchInputProps) {
         >
           {props.selectedNetwork['Identifiant reseau']} -{' '}
           {props.selectedNetwork.nom_reseau}
-          <Icon name="ri-close-line" size="lg" iconPosition="right" />
+          <Icon name="ri-close-line" size="lg" />
         </button>
       ) : (
         <Combobox

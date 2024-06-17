@@ -1,5 +1,6 @@
 import SimplePage from '@components/shared/page/SimplePage';
-import { Accordion, AccordionItem } from '@codegouvfr/react-dsfr';
+import { Accordion } from '@codegouvfr/react-dsfr/Accordion';
+import { fr } from '@codegouvfr/react-dsfr';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
@@ -317,13 +318,13 @@ const AidePage = () => {
           </a>
         </p>
 
-        <Accordion color="#000091" className="fr-mt-8w">
+        <div className={fr.cx('fr-accordions-group')}>
           {faqItems.map((item, index) => (
-            <AccordionItem key={index} title={item.title}>
+            <Accordion key={index} label={item.title}>
               {item.content}
-            </AccordionItem>
+            </Accordion>
           ))}
-        </Accordion>
+        </div>
       </div>
     </SimplePage>
   );

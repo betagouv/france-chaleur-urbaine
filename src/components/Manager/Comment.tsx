@@ -27,9 +27,12 @@ const Comment = ({
 
   return (
     <TextAreaInput
-      textarea
-      defaultValue={demand.Commentaire}
-      onChange={onChangeHandler}
+      label="Commentaire"
+      textArea={true}
+      nativeTextAreaProps={{
+        value: demand.Commentaire,
+        onChange: onChangeHandler,
+      }}
     />
   );
 };
