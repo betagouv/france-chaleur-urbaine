@@ -12,6 +12,8 @@ const closeCollectifOriginal = {
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ### Bonne nouvelle !
@@ -19,6 +21,11 @@ const closeCollectifOriginal = {
 ::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${
     distance ? `(${distance})` : ''
   }.]
+${
+  isClasse && !hasPDP
+    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
 ${
   inZDP
     ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
@@ -53,6 +60,8 @@ const closeCollectifAmeliorationA = {
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => (
     <Box display="flex" flexDirection="column" gap="32px">
@@ -139,6 +148,8 @@ const closeCollectifAmeliorationB = {
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ### Bonne nouvelle !
@@ -146,6 +157,11 @@ const closeCollectifAmeliorationB = {
 ::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${
     distance ? `(${distance})` : ''
   }.]
+${
+  isClasse && !hasPDP
+    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
 ${
   inZDP
     ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
@@ -177,6 +193,8 @@ const closeCollectifAmeliorationAB = {
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => (
     <Box display="flex" flexDirection="column" gap="32px">
@@ -277,11 +295,18 @@ const intermediateCollectif = {
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin ${
     distance ? `(${distance})` : ''
   }.]
+${
+  isClasse && !hasPDP
+    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
 ${
   inZDP
     ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
@@ -346,6 +371,8 @@ const closeFuturCollectif = {
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ### Bonne nouvelle !
@@ -415,6 +442,8 @@ const intermediateFuturCollectif = {
     inZDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** ${

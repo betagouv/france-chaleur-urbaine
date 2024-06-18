@@ -72,6 +72,8 @@ const EligibilityFormContact = ({
           addressData.eligibility.inZDP,
           addressData.eligibility.gestionnaire,
           addressData.eligibility.tauxENRR,
+          addressData.eligibility.isClasse,
+          addressData.eligibility.hasPDP,
           addressData.geoAddress?.properties.city
         )
       : '';

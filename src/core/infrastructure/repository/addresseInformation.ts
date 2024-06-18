@@ -24,6 +24,8 @@ export type NetworkInfos = {
   'contenu CO2 ACV': number;
   Gestionnaire: string;
   nom_reseau: string;
+  'reseaux classes': boolean;
+  has_PDP: boolean;
 };
 
 export const getDistanceToNetwork = async (
@@ -59,8 +61,15 @@ export const closestNetwork = async (
 ): Promise<NetworkInfos> => {
   const network = await db('reseaux_de_chaleur')
     .select(
+      'Identifiant reseau',
+      'Taux EnR&R',
+      'contenu CO2 ACV',
+      'Gestionnaire',
+      'nom_reseau',
+      'reseaux classes',
+      'has_PDP',
       db.raw(
-        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire", nom_reseau`
+        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`
       )
     )
     .where('has_trace', true)
@@ -359,6 +368,8 @@ export const getEligilityStatus = async (
       tauxENRR: network['Taux EnR&R'],
       co2: network['contenu CO2 ACV'],
       gestionnaire: network['Gestionnaire'],
+      isClasse: network['reseaux classes'],
+      hasPDP: network['has_PDP'],
     };
   }
   if (
@@ -376,6 +387,8 @@ export const getEligilityStatus = async (
       tauxENRR: null,
       co2: null,
       gestionnaire: futurNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
     };
   }
 
@@ -392,6 +405,8 @@ export const getEligilityStatus = async (
       tauxENRR: null,
       co2: null,
       gestionnaire: inFuturNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
     };
   }
 
@@ -407,6 +422,8 @@ export const getEligilityStatus = async (
       tauxENRR: network['Taux EnR&R'],
       co2: network['contenu CO2 ACV'],
       gestionnaire: network['Gestionnaire'],
+      isClasse: network['reseaux classes'],
+      hasPDP: network['has_PDP'],
     };
   }
 
@@ -422,6 +439,8 @@ export const getEligilityStatus = async (
       tauxENRR: null,
       co2: null,
       gestionnaire: futurNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
     };
   }
 
@@ -437,5 +456,7 @@ export const getEligilityStatus = async (
     tauxENRR: null,
     co2: null,
     gestionnaire: null,
+    isClasse: null,
+    hasPDP: null,
   };
 };

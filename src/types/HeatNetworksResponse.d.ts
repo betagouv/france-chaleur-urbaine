@@ -12,6 +12,8 @@ export type HeatNetwork = {
   tauxENRR: number | null;
   gestionnaire: string | null;
   co2: number | null;
+  isClasse: boolean | null;
+  hasPDP: boolean | null;
 };
 
 export type CityNetwork = {
