@@ -23,8 +23,8 @@ const demandsExportColumns: ExportColumn<Demand>[] = [
   { header: 'Téléphone', value: 'Téléphone' },
   { header: 'Adresse', value: 'Adresse' },
   {
-    header: 'En ZDP',
-    value: 'en ZDP',
+    header: 'En PDP',
+    value: 'en PDP',
   },
   { header: 'Date de demande', value: 'Date demandes' },
   { header: 'Type', value: 'Structure' },

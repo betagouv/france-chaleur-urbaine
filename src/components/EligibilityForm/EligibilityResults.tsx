@@ -9,7 +9,7 @@ const closeCollectifOriginal = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
     isClasse: boolean | null,
@@ -27,7 +27,7 @@ ${
     : ''
 }
 ${
-  inZDP
+  inPDP
     ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
@@ -57,7 +57,7 @@ const closeCollectifAmeliorationA = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
     isClasse: boolean | null,
@@ -83,7 +83,7 @@ const closeCollectifAmeliorationA = {
         </Text>
       </Box>
 
-      {inZDP && (
+      {inPDP && (
         <Box display="flex" gap="16px">
           <img
             src="/img/reponses_tests_réseau_classé.webp"
@@ -145,7 +145,7 @@ const closeCollectifAmeliorationB = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
     isClasse: boolean | null,
@@ -163,7 +163,7 @@ ${
     : ''
 }
 ${
-  inZDP
+  inPDP
     ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
@@ -190,7 +190,7 @@ const closeCollectifAmeliorationAB = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
     isClasse: boolean | null,
@@ -216,7 +216,7 @@ const closeCollectifAmeliorationAB = {
         </Text>
       </Box>
 
-      {inZDP && (
+      {inPDP && (
         <Box display="flex" gap="16px">
           <img
             src="/img/reponses_tests_réseau_classé.webp"
@@ -292,7 +292,7 @@ const intermediateCollectif = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
     isClasse: boolean | null,
@@ -308,7 +308,7 @@ ${
     : ''
 }
 ${
-  inZDP
+  inPDP
     ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
@@ -351,7 +351,7 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 };
 
 // Limours
-const farCollectifOutZdp = {
+const farCollectifOutPDP = {
   body: () => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse. Toutefois les réseaux de chaleur se développent !]
 ::arrow-item[Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, **pensez à améliorer l’isolation thermique de votre immeuble**. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
@@ -368,7 +368,7 @@ const closeFuturCollectif = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
     isClasse: boolean | null,
@@ -382,7 +382,7 @@ const closeFuturCollectif = {
     distance ? `(${distance})` : ''
   } (réseau prévu ou en construction).]
 ${
-  inZDP
+  inPDP
     ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
@@ -409,10 +409,10 @@ ${
 };
 
 // 2 rue hardenberg 92220 Bagneux
-const farCollectifInZdp = {
+const farCollectifInPDP = {
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null
   ) => `
@@ -439,7 +439,7 @@ const intermediateFuturCollectif = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
     isClasse: boolean | null,
@@ -450,7 +450,7 @@ const intermediateFuturCollectif = {
     distance ? `(${distance})` : ''
   } (réseau prévu ou en construction).]
 ${
-  inZDP
+  inPDP
     ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
@@ -505,8 +505,8 @@ type EligibilityResultState =
   | 'farIndividual'
 
   // pas proche
-  | 'farCollectifInZdp'
-  | 'farCollectifOutZdp'
+  | 'farCollectifInPDP'
+  | 'farCollectifOutPDP'
   | 'unknown';
 
 export const getEligibilityResultState = (
@@ -542,9 +542,9 @@ export const getEligibilityResultState = (
     }
 
     return heatingType === 'collectif'
-      ? eligibility.inZDP
-        ? 'farCollectifInZdp'
-        : 'farCollectifOutZdp'
+      ? eligibility.inPDP
+        ? 'farCollectifInPDP'
+        : 'farCollectifOutPDP'
       : 'farIndividual';
   }
   return 'unknown';
@@ -588,11 +588,11 @@ export const getEligibilityResult = (
     case 'farIndividual': {
       return farIndividual;
     }
-    case 'farCollectifInZdp': {
-      return farCollectifInZdp;
+    case 'farCollectifInPDP': {
+      return farCollectifInPDP;
     }
-    case 'farCollectifOutZdp': {
-      return farCollectifOutZdp;
+    case 'farCollectifOutPDP': {
+      return farCollectifOutPDP;
     }
     case 'unknown': {
       return {};
