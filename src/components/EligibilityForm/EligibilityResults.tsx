@@ -82,8 +82,7 @@ const closeCollectifAmeliorationA = {
           .
         </Text>
       </Box>
-
-      {inPDP && (
+      {(inPDP || (isClasse && !hasPDP)) && (
         <Box display="flex" gap="16px">
           <img
             src="/img/reponses_tests_réseau_classé.webp"
@@ -216,7 +215,7 @@ const closeCollectifAmeliorationAB = {
         </Text>
       </Box>
 
-      {inPDP && (
+      {(inPDP || (isClasse && !hasPDP)) && (
         <Box display="flex" gap="16px">
           <img
             src="/img/reponses_tests_réseau_classé.webp"
