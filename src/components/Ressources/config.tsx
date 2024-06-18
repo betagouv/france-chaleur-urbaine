@@ -129,6 +129,18 @@ export const understandings: Record<string, Document> = {
     ),
     content: <Advantages />,
   },
+  'cout-raccordement': {
+    title: 'Combien coûte un raccordement ?',
+    description: (
+      <>
+        Le raccordement d’un bâtiment à un réseau de chaleur présente un coût
+        non négligeable. Toutefois, des aides permettent de le réduire
+        fortement. De plus, l’investissement peut être rapidement amorti dès
+        lors que le prix de la chaleur livrée par le réseau est compétitif.
+      </>
+    ),
+    content: <CoutRaccordement />,
+  },
   aides: {
     title:
       'Le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires : une aide financière conséquente pour se raccorder',
@@ -175,18 +187,6 @@ export const understandings: Record<string, Document> = {
       </>
     ),
     content: <Priority />,
-  },
-  'cout-raccordement': {
-    title: 'Combien coûte un raccordement ?',
-    description: (
-      <>
-        Le raccordement d’un bâtiment à un réseau de chaleur présente un coût
-        non négligeable. Toutefois, des aides permettent de le réduire
-        fortement. De plus, l’investissement peut être rapidement amorti dès
-        lors que le prix de la chaleur livrée par le réseau est compétitif.
-      </>
-    ),
-    content: <CoutRaccordement />,
   },
 };
 
