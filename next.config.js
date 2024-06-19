@@ -205,6 +205,10 @@ module.exports = withBundleAnalyzer(
       org: 'betagouv',
       project: 'fcu-prod',
       url: 'https://sentry.incubateur.net/',
+      // do not exit if the build fails to interact with the sentry server
+      errorHandler: (err, invokeErr, compilation) => {
+        compilation.warnings.push('Sentry CLI Plugin: ' + err.message);
+      },
     },
     {
       // For all available options, see:
