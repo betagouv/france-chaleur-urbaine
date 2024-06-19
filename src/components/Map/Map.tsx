@@ -449,6 +449,7 @@ const Map = ({
         key: 'demands',
       },
       { layer: 'caracteristiquesBatiments', key: 'buildings' },
+      { layer: 'besoinsEnChaleur', key: 'besoinsEnChaleur' },
       { layer: 'consommationsGaz', key: 'consommation' },
       { layer: 'energy', key: 'energy' },
       { layer: 'batimentsRaccordes', key: 'raccordement' },

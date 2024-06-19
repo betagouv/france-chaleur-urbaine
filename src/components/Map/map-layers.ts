@@ -266,6 +266,7 @@ export type LayerId =
   | 'zonesPotentielChaud-contour'
   | 'zonesPotentielFortChaud'
   | 'zonesPotentielFortChaud-contour'
+  | 'besoinsEnChaleur'
   | 'caracteristiquesBatiments';
 
 // besoin d'une fonction dynamique pour avoir location.origin disponible côté client et aussi
@@ -457,6 +458,54 @@ export function buildMapLayers(
               0,
               intermediateTileLayersMinZoom + 0.2 + 1,
               themeDefBuildings.opacity,
+            ],
+          },
+        },
+      ],
+    },
+
+    // --------------------------------------------
+    // --- Besoins en chaleur des bâtiments ---
+    // --------------------------------------------
+    {
+      sourceId: 'besoinsEnChaleur',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
+        // minzoom: 10,
+        maxzoom: tileSourcesMaxZoom,
+      },
+      layers: [
+        {
+          id: 'besoinsEnChaleur',
+          source: 'besoinsEnChaleur',
+          'source-layer': 'layer',
+          minzoom: 6,
+          // minzoom: intermediateTileLayersMinZoom,
+          type: 'fill',
+          paint: {
+            'fill-color': [
+              'step',
+              ['coalesce', ['get', 'CHAUF_MWH'], 0], // FIXME extraire les seuils car réutilisés via légende
+              '#ffffff',
+              20,
+              '#ffffe5',
+              30,
+              '#fff7bc',
+              50,
+              '#fee391',
+              75,
+              '#fec44f',
+              150,
+              '#fe9929',
+              300,
+              '#ec7014',
+              600,
+              '#cc4c02',
+              900,
+              '#993404',
+              1200,
+              '#662506',
             ],
           },
         },
@@ -942,6 +991,10 @@ export function applyMapConfigurationToLayers(
   setLayerVisibility(
     'caracteristiquesBatiments',
     config.proMode && config.caracteristiquesBatiments
+  );
+  setLayerVisibility(
+    'besoinsEnChaleur',
+    true // fixme
   );
   setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
   setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);
