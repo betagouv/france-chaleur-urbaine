@@ -14,7 +14,10 @@ const matomoAnalyticsLoadingStateAtom =
 
 const onRouteChange = (url: string) => {
   // see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag&hl=fr#manually_send_page_view_events
-  if (clientConfig.tracking.googleTagId && typeof window?.gtag === 'function') {
+  if (
+    clientConfig.tracking.googleTagIds.length > 0 &&
+    typeof window?.gtag === 'function'
+  ) {
     window.gtag('event', 'page_view', {
       page_title: document.title,
       page_location: url,
@@ -80,7 +83,7 @@ export const useAnalytics = () => {
 
   if (typeof window === 'object') {
     document.addEventListener(
-      'gtag_loaded',
+      'multiplegtag_loaded',
       () => {
         setAnalyticsLoaded(true);
       },
@@ -591,8 +594,10 @@ const performTracking = (
     });
   }
   if (trackingConfig.google && typeof window?.gtag === 'function') {
-    window.gtag('event', 'conversion', {
-      send_to: `AW-${clientConfig.tracking.googleTagId}/${trackingConfig.google}`,
+    clientConfig.tracking.googleTagIds.forEach((googleTagId) => {
+      window.gtag('event', 'conversion', {
+        send_to: `${googleTagId}/${trackingConfig.google}`,
+      });
     });
   }
   if (trackingConfig.linkedin && typeof window?.lintrk === 'function') {
