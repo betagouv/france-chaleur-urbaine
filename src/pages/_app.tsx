@@ -167,8 +167,8 @@ function MyApp({
         {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
         {!iframedPaths.some((path) => router.pathname.match(path)) && (
           <ConsentBanner>
-            {clientConfig.tracking.googleTagId && (
-              <GoogleAdsMarkup googleId={clientConfig.tracking.googleTagId} />
+            {clientConfig.tracking.googleTagIds.length > 0 && (
+              <GoogleAdsMarkup googleIds={clientConfig.tracking.googleTagIds} />
             )}
             {clientConfig.tracking.facebookPixelId && (
               <FacebookMarkup

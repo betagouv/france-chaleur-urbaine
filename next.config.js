@@ -22,12 +22,13 @@ const csp = {
     "'sha256-6SC04Y6nNQLzwzyqa3SfGlAJoGLEAasou2bnNnkusvM='",
     "'sha256-344ePyJp7yxx64WKWpbs/ZvEDHA6mve7lS3i90cEPT4='", // ConsentBanner > tarteaucitron.init
     "'sha256-d7dsOzUkIPxujyMIFvd9lnMMqh0LRXgYPmFvbRYsL7Q='", // hotjar 3874965 6
+    "'sha256-c41wBsW028WuPX24+ZM3pzwOVhyxNRf2Gjs3yDf9nuo='", // google AW-11414741136,G-B35Q28PSV8
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://static.axept.io',
     'https://connect.facebook.net',
     'https://www.gstatic.com/',
-    'https://www.googletagmanager.com',
+    'https://www.googletagmanager.com https://*.googletagmanager.com',
     'https://www.googleadservices.com',
     'https://googleads.g.doubleclick.net',
     'https://connect.facebook.net',
@@ -52,6 +53,7 @@ const csp = {
     'https://api.mapbox.com/',
     'https://sentry.incubateur.net',
     'https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com',
+    'https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com',
   ],
   'img-src': ["'self'", 'https:', 'data:'],
   'font-src': ["'self'", 'https:', 'data:', 'https://*.hotjar.com'],
