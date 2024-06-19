@@ -22,6 +22,7 @@ const csp = {
     "'sha256-6SC04Y6nNQLzwzyqa3SfGlAJoGLEAasou2bnNnkusvM='",
     "'sha256-344ePyJp7yxx64WKWpbs/ZvEDHA6mve7lS3i90cEPT4='", // ConsentBanner > tarteaucitron.init
     "'sha256-d7dsOzUkIPxujyMIFvd9lnMMqh0LRXgYPmFvbRYsL7Q='", // hotjar 3874965 6
+    "'sha256-QgeMdwmWudzTtvMdGsiNx59tDaxP5VQ9M33970xxFqQ='", // google 11360539753
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://static.axept.io',
