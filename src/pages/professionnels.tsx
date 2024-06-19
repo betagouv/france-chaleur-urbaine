@@ -7,7 +7,7 @@ import HeadSliceForm from '@components/HeadSliceForm';
 import { ArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@components/Partners/Partners';
 import { issues, understandings } from '@components/Ressources/config';
-import Simulator from '@components/Ressources/Contents/Simulator';
+import SimulateurCoutRaccordement from '@components/Ressources/Contents/SimulateurCoutRaccordement';
 import Understanding from '@components/Ressources/Understanding';
 import SimplePage from '@components/shared/page/SimplePage';
 import SimulatorCO2 from '@components/SimulatorCO2';
@@ -296,11 +296,7 @@ const Professionnels = () => {
                 bâtiment
               </Text>
               <Box py="4w">
-                <Simulator
-                  cartridge
-                  backgroundColor="#F8F5F1"
-                  defaultStructure="Tertiaire"
-                />
+                <SimulateurCoutRaccordement embedded typeBatiment="tertiaire" />
               </Box>
             </Box>
 

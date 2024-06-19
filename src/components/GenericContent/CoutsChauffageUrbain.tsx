@@ -1,20 +1,11 @@
-import Simulator from '@components/Ressources/Contents/Simulator';
+import SimulateurCoutRaccordement from '@components/Ressources/Contents/SimulateurCoutRaccordement';
 import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import { LegacyColor } from '@components/ui/helpers/colors';
 import Image from 'next/image';
 
-const CoutsChauffageUrbain = ({
-  simulatorBgColor,
-  simulatorFormBgColor,
-  simulatorDisclaimerLegacyColor,
-}: {
-  simulatorBgColor?: string;
-  simulatorFormBgColor?: string;
-  simulatorDisclaimerLegacyColor?: LegacyColor;
-}) => {
+const CoutsChauffageUrbain = () => {
   return (
     <Box className="fr-container">
       <Heading as="h2" center>
@@ -45,14 +36,7 @@ const CoutsChauffageUrbain = ({
             </strong>
           </Text>
           <Box>
-            <Simulator
-              cartridge
-              backgroundColor={simulatorBgColor || undefined}
-              formBackgroundColor={simulatorFormBgColor || undefined}
-              disclaimerLegacyColor={
-                simulatorDisclaimerLegacyColor || undefined
-              }
-            />
+            <SimulateurCoutRaccordement embedded />
           </Box>
         </Box>
 
