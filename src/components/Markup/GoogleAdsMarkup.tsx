@@ -1,5 +1,4 @@
 const GoogleAdsMarkup = ({ googleIds }: { googleIds: string[] }) => {
-  console.log('NEXT_PUBLIC_GOOGLE_TAG_ID', googleIds);
   return (
     <script
       dangerouslySetInnerHTML={{
