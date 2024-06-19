@@ -23,7 +23,7 @@ const Status = ({
 
   return (
     <StatusSelect
-      label="Status"
+      label=""
       options={statusOptions}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore: Fix in react-DSFR

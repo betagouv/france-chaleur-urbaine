@@ -27,7 +27,7 @@ const Comment = ({
 
   return (
     <TextAreaInput
-      label="Commentaire"
+      label=""
       textArea={true}
       nativeTextAreaProps={{
         value: demand.Commentaire,
