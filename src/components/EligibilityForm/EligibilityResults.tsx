@@ -22,7 +22,7 @@ const closeCollectifOriginal = {
     distance ? `(${distance})` : ''
   }.]
 ${
-  isClasse && !hasPDP
+  isClasse && !hasPDP && !inPDP
     ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
     : ''
 }
@@ -157,7 +157,7 @@ const closeCollectifAmeliorationB = {
     distance ? `(${distance})` : ''
   }.]
 ${
-  isClasse && !hasPDP
+  isClasse && !hasPDP && !inPDP
     ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
     : ''
 }
@@ -302,7 +302,7 @@ const intermediateCollectif = {
     distance ? `(${distance})` : ''
   }.]
 ${
-  isClasse && !hasPDP
+  isClasse && !hasPDP && !inPDP
     ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
     : ''
 }
