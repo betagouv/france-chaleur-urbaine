@@ -2,7 +2,7 @@ import db from 'src/db';
 import { CityNetwork, HeatNetwork } from 'src/types/HeatNetworksResponse';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import XLSX from 'xlsx';
-import isInZDP from './zdp';
+import isInPDP from './pdp';
 
 const hasNetworkInCity = async (city: string): Promise<boolean> => {
   const result = await db('reseaux_de_chaleur')
@@ -24,6 +24,8 @@ export type NetworkInfos = {
   'contenu CO2 ACV': number;
   Gestionnaire: string;
   nom_reseau: string;
+  'reseaux classes': boolean;
+  has_PDP: boolean;
 };
 
 export const getDistanceToNetwork = async (
@@ -59,8 +61,15 @@ export const closestNetwork = async (
 ): Promise<NetworkInfos> => {
   const network = await db('reseaux_de_chaleur')
     .select(
+      'Identifiant reseau',
+      'Taux EnR&R',
+      'contenu CO2 ACV',
+      'Gestionnaire',
+      'nom_reseau',
+      'reseaux classes',
+      'has_PDP',
       db.raw(
-        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire", nom_reseau`
+        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`
       )
     )
     .where('has_trace', true)
@@ -255,7 +264,7 @@ export const getExport = (addresses: any[]) => {
         address.score,
         address.isEligible && !address.futurNetwork ? 'Oui' : 'Non',
         address.distance,
-        address.inZDP ? 'Oui' : 'Non',
+        address.inPDP ? 'Oui' : 'Non',
         address.isEligible && address.futurNetwork ? 'Oui' : 'Non',
         address.id,
         address.tauxENRR,
@@ -304,7 +313,7 @@ export const getNetworkEligilityStatus = async (
 ): Promise<NetworkEligibilityStatus> => {
   const [networkInfos, inPDP] = await Promise.all([
     getDistanceToNetwork(networkId, lat, lon),
-    isInZDP(lat, lon),
+    isInPDP(lat, lon),
   ]);
   const eligibilityDistances = getNetworkEligibilityDistances(networkId);
 
@@ -322,8 +331,8 @@ export const getEligilityStatus = async (
   lat: number,
   lon: number
 ): Promise<HeatNetwork> => {
-  const [inZDP, inFuturNetwork, futurNetwork, network] = await Promise.all([
-    isInZDP(lat, lon),
+  const [inPDP, inFuturNetwork, futurNetwork, network] = await Promise.all([
+    isInPDP(lat, lon),
     closestInFuturNetwork(lat, lon),
     closestFuturNetwork(lat, lon),
     closestNetwork(lat, lon),
@@ -351,7 +360,7 @@ export const getEligilityStatus = async (
     return {
       ...eligibility,
       distance: Math.round(network.distance),
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: false,
       id: network['Identifiant reseau'],
@@ -359,6 +368,8 @@ export const getEligilityStatus = async (
       tauxENRR: network['Taux EnR&R'],
       co2: network['contenu CO2 ACV'],
       gestionnaire: network['Gestionnaire'],
+      isClasse: network['reseaux classes'],
+      hasPDP: network['has_PDP'],
     };
   }
   if (
@@ -368,7 +379,7 @@ export const getEligilityStatus = async (
     return {
       ...futurEligibility,
       distance: Math.round(futurNetwork.distance),
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: true,
       id: null,
@@ -376,6 +387,8 @@ export const getEligilityStatus = async (
       tauxENRR: null,
       co2: null,
       gestionnaire: futurNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
     };
   }
 
@@ -384,7 +397,7 @@ export const getEligilityStatus = async (
       isEligible: true,
       distance: null,
       veryEligibleDistance: null,
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: true,
       id: null,
@@ -392,6 +405,8 @@ export const getEligilityStatus = async (
       tauxENRR: null,
       co2: null,
       gestionnaire: inFuturNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
     };
   }
 
@@ -399,7 +414,7 @@ export const getEligilityStatus = async (
     return {
       ...eligibility,
       distance: Math.round(network.distance),
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: false,
       id: network['Identifiant reseau'],
@@ -407,6 +422,8 @@ export const getEligilityStatus = async (
       tauxENRR: network['Taux EnR&R'],
       co2: network['contenu CO2 ACV'],
       gestionnaire: network['Gestionnaire'],
+      isClasse: network['reseaux classes'],
+      hasPDP: network['has_PDP'],
     };
   }
 
@@ -414,7 +431,7 @@ export const getEligilityStatus = async (
     return {
       ...futurEligibility,
       distance: Math.round(futurNetwork.distance),
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: true,
       id: null,
@@ -422,6 +439,8 @@ export const getEligilityStatus = async (
       tauxENRR: null,
       co2: null,
       gestionnaire: futurNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
     };
   }
 
@@ -429,7 +448,7 @@ export const getEligilityStatus = async (
     isEligible: false,
     distance: null,
     veryEligibleDistance: null,
-    inZDP,
+    inPDP,
     isBasedOnIris: false,
     futurNetwork: false,
     id: null,
@@ -437,5 +456,7 @@ export const getEligilityStatus = async (
     tauxENRR: null,
     co2: null,
     gestionnaire: null,
+    isClasse: null,
+    hasPDP: null,
   };
 };

@@ -69,9 +69,11 @@ const EligibilityFormContact = ({
     const computedBody = body
       ? body(
           getReadableDistance(addressData.eligibility.distance),
-          addressData.eligibility.inZDP,
+          addressData.eligibility.inPDP,
           addressData.eligibility.gestionnaire,
           addressData.eligibility.tauxENRR,
+          addressData.eligibility.isClasse,
+          addressData.eligibility.hasPDP,
           addressData.geoAddress?.properties.city
         )
       : '';
