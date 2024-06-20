@@ -95,15 +95,13 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
 
   return (
     <Box border="1px solid #e7e7e7" backgroundColor="#fff">
-      <Box p="3w">
-        <Badge icon="ri-money-euro-circle-line" text="Simulateur" />
-        <Heading as="h6" mt="1w" mb="1w">
-          Estimer le coût d’un raccordement*
-        </Heading>
-        <Box>pour une longueur de branchement de 50 m</Box>
-      </Box>
-      <Box display="flex" flexDirection={props.embedded ? 'column' : 'row'}>
+      <Box display="flex">
         <Box flex p="3w">
+          <Badge icon="ri-money-euro-circle-line" text="Simulateur" />
+          <Heading as="h6" mt="1w" mb="1w">
+            Estimer le coût d’un raccordement*
+          </Heading>
+          <Box mb="3w">pour une longueur de branchement de 50 m</Box>
           <Select
             label="Type de bâtiment"
             options={[
@@ -144,7 +142,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               onChange={(e) => updateState('surface', parseInt(e.target.value))}
             />
           )}
-          <Box>
+          <Text size="sm">
             *montants donnés à titre indicatif.
             {props.embedded && (
               <>
@@ -156,7 +154,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
                 .
               </>
             )}
-          </Box>
+          </Text>
         </Box>
         <Box flex backgroundColor="grey-975-75" p="3w">
           <Text fontWeight="bold" textTransform="uppercase">
@@ -181,17 +179,13 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
                 {prettyPrintCout(montantCouts?.[1])}
               </Heading>
               <Box border="1px solid #e7e7e7" my="3w" />
-              {props.embedded && (
-                <>
-                  <Text fontWeight="bold" textTransform="uppercase">
-                    Montant du coup de pouce
-                  </Text>
-                  <Heading as="h6" mt="2w">
-                    {prettyPrintCout(montantAide)}
-                  </Heading>
-                  <Box border="1px solid #e7e7e7" my="3w" />
-                </>
-              )}
+              <Text fontWeight="bold" textTransform="uppercase">
+                Montant du coup de pouce
+              </Text>
+              <Heading as="h6" mt="2w">
+                {prettyPrintCout(montantAide)}
+              </Heading>
+              <Box border="1px solid #e7e7e7" my="3w" />
               <Badge
                 type="info"
                 hasIcon
