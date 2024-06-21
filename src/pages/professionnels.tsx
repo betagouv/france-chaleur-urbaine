@@ -321,6 +321,11 @@ const Professionnels = () => {
                 pour un bâtiment tertiaire performant RE2020
                 (28&nbsp;kWhu/m²/an)
               </Text>
+              <Text mt="3w">
+                Retrouvez le prix moyen de la chaleur pour les réseaux classés
+                sur les fiches accessibles depuis notre{' '}
+                <Link href="/carte">cartographie</Link>.
+              </Text>
             </Box>
 
             <Box flex>
