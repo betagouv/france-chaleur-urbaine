@@ -26,7 +26,7 @@ export type Demand = DemandSummary &
     'Distance au réseau': number;
     'Gestionnaire Distance au réseau': number;
     'N° de dossier': string;
-    'en ZDP': string;
+    'en PDP': string;
     'Date demandes': string;
     Établissement: string;
     Ville: string;
@@ -87,7 +87,7 @@ export type AirtableDemandCreation = {
   'Mode de chauffage': string;
   'Type de chauffage': string;
   'Distance au réseau': number;
-  'en ZDP': string; // 'Oui' : 'Non',
+  'en PDP': string; // 'Oui' : 'Non',
   Ville: string;
   'Code Postal': string;
   Departement: string;

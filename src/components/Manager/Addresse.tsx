@@ -6,7 +6,7 @@ const Addresse = ({ demand }: { demand: Demand }) => {
   return (
     <Container>
       {demand.Adresse}
-      {demand['en ZDP'] === 'Oui' && <Tag text="PDP" />}
+      {demand['en PDP'] === 'Oui' && <Tag text="PDP" />}
     </Container>
   );
 };

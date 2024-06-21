@@ -70,7 +70,7 @@ export const formatDataToAirtable: (
     'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
     'Type de chauffage': formatHeatingTypeToAirtable(heatingType),
     'Distance au réseau': eligibility?.distance,
-    'en ZDP': eligibility.inZDP ? 'Oui' : 'Non',
+    'en PDP': eligibility.inPDP ? 'Oui' : 'Non',
     Ville: city,
     'Code Postal': postcode,
     Departement: department,

@@ -2,7 +2,7 @@ import db from 'src/db';
 import { CityNetwork, HeatNetwork } from 'src/types/HeatNetworksResponse';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import XLSX from 'xlsx';
-import isInZDP from './zdp';
+import isInPDP from './pdp';
 
 const hasNetworkInCity = async (city: string): Promise<boolean> => {
   const result = await db('reseaux_de_chaleur')
@@ -24,6 +24,8 @@ export type NetworkInfos = {
   'contenu CO2 ACV': number;
   Gestionnaire: string;
   nom_reseau: string;
+  'reseaux classes': boolean;
+  has_PDP: boolean;
 };
 
 export const getDistanceToNetwork = async (
@@ -59,8 +61,15 @@ export const closestNetwork = async (
 ): Promise<NetworkInfos> => {
   const network = await db('reseaux_de_chaleur')
     .select(
+      'Identifiant reseau',
+      'Taux EnR&R',
+      'contenu CO2 ACV',
+      'Gestionnaire',
+      'nom_reseau',
+      'reseaux classes',
+      'has_PDP',
       db.raw(
-        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance, "Identifiant reseau", "Taux EnR&R", "contenu CO2 ACV", "Gestionnaire", nom_reseau`
+        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`
       )
     )
     .where('has_trace', true)
@@ -205,23 +214,29 @@ const headers = [
 
 const legend = [
   ['Adresse', 'Adresse reçue par France Chaleur Urbaine'],
-  ['Adresse testée', 'Adresse testée par France Chaleur Urbaine'],
+  [
+    'Adresse testée',
+    "Adresse testée par France Chaleur Urbaine (correspondance avec la Base d'adresse nationale)",
+  ],
   [
     "Indice de fiabilité de l'adresse testée",
-    "Min = 0 , Max = 1, Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement testée",
+    "Min = 0 , Max = 1. Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement testée",
   ],
   [
     'Bâtiment potentiellement raccordable à un réseau existant',
-    "Résultat compilant distance au réseau et présence d'un réseau dans la zone",
+    "Le bâtiment est jugé potentiellement raccordable s'il se situe à moins de 200 m d'un réseau existant, sauf sur Paris où ce seuil est réduit à 100 m. Attention, le mode de chauffage n'est pas pris en compte.",
   ],
-  ['Distance au réseau (m) si < 1000 m', 'Distance au réseau le plus proche.'],
+  [
+    'Distance au réseau (m) si < 1000 m',
+    'Distance au réseau le plus proche, fournie uniquement si elle est de moins de 1000m',
+  ],
   [
     'PDP (périmètre de développement prioritaire)',
-    "Si l'adresse est comprise dans un PDP, son raccordement peut être obligatoire (valable pour les nouveaux bâtiments ou ceux renouvelant leur installation de chauffage au-dessus d'une certaine puissance)",
+    "Positif si l'adresse se situe dans le périmètre de développement prioritaire d'un réseau classé (d'après les données dont nous disposons). Une obligation de raccordement peut alors s'appliquer. En savoir plus : https://france-chaleur-urbaine.beta.gouv.fr/ressources/prioritaire",
   ],
   [
     'Bâtiment potentiellement raccordable à un réseau en construction',
-    'Le bâtiment est à moins de 100 m du tracé d’un réseau en construction, ou situé dans une zone sur laquelle nous avons connaissance d’un réseau en construction ou en cours de mise en service (voir carte pour visualiser les zones)',
+    'Le bâtiment est situé à moins de 200 m du tracé d’un réseau en construction, ou situé dans une zone sur laquelle nous avons connaissance d’un réseau en construction ou en cours de mise en service (voir la carte pour visualiser les zones)',
   ],
   ['Identifiant du réseau le plus proche', 'Identifiant réseau national'],
   [
@@ -231,6 +246,11 @@ const legend = [
   [
     'Contenu CO2 ACV (g/kWh)',
     'Contenu CO2 en analyse du cycle de vie issu de l’arrêté DPE du 16 mars 2023 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716)',
+  ],
+  [], // empty line
+  [
+    'Mise en relation avec le gestionnaire',
+    "Pour être mis en relation avec le gestionnaire d'un réseau pour obtenir plus d'informations, vous pouvez utiliser le formulaire en ligne sur notre site ou nous contacter par mail si le besoin concerne plusieurs adresses : france-chaleur-urbaine@developpement-durable.gouv.fr ",
   ],
 ];
 
@@ -244,7 +264,7 @@ export const getExport = (addresses: any[]) => {
         address.score,
         address.isEligible && !address.futurNetwork ? 'Oui' : 'Non',
         address.distance,
-        address.inZDP ? 'Oui' : 'Non',
+        address.inPDP ? 'Oui' : 'Non',
         address.isEligible && address.futurNetwork ? 'Oui' : 'Non',
         address.id,
         address.tauxENRR,
@@ -293,7 +313,7 @@ export const getNetworkEligilityStatus = async (
 ): Promise<NetworkEligibilityStatus> => {
   const [networkInfos, inPDP] = await Promise.all([
     getDistanceToNetwork(networkId, lat, lon),
-    isInZDP(lat, lon),
+    isInPDP(lat, lon),
   ]);
   const eligibilityDistances = getNetworkEligibilityDistances(networkId);
 
@@ -311,8 +331,8 @@ export const getEligilityStatus = async (
   lat: number,
   lon: number
 ): Promise<HeatNetwork> => {
-  const [inZDP, inFuturNetwork, futurNetwork, network] = await Promise.all([
-    isInZDP(lat, lon),
+  const [inPDP, inFuturNetwork, futurNetwork, network] = await Promise.all([
+    isInPDP(lat, lon),
     closestInFuturNetwork(lat, lon),
     closestFuturNetwork(lat, lon),
     closestNetwork(lat, lon),
@@ -340,13 +360,16 @@ export const getEligilityStatus = async (
     return {
       ...eligibility,
       distance: Math.round(network.distance),
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: false,
       id: network['Identifiant reseau'],
+      name: network['nom_reseau'],
       tauxENRR: network['Taux EnR&R'],
       co2: network['contenu CO2 ACV'],
       gestionnaire: network['Gestionnaire'],
+      isClasse: network['reseaux classes'],
+      hasPDP: network['has_PDP'],
     };
   }
   if (
@@ -356,13 +379,16 @@ export const getEligilityStatus = async (
     return {
       ...futurEligibility,
       distance: Math.round(futurNetwork.distance),
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: true,
       id: null,
+      name: null,
       tauxENRR: null,
       co2: null,
       gestionnaire: futurNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
     };
   }
 
@@ -371,13 +397,16 @@ export const getEligilityStatus = async (
       isEligible: true,
       distance: null,
       veryEligibleDistance: null,
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: true,
       id: null,
+      name: null,
       tauxENRR: null,
       co2: null,
       gestionnaire: inFuturNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
     };
   }
 
@@ -385,13 +414,16 @@ export const getEligilityStatus = async (
     return {
       ...eligibility,
       distance: Math.round(network.distance),
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: false,
       id: network['Identifiant reseau'],
+      name: network['nom_reseau'],
       tauxENRR: network['Taux EnR&R'],
       co2: network['contenu CO2 ACV'],
       gestionnaire: network['Gestionnaire'],
+      isClasse: network['reseaux classes'],
+      hasPDP: network['has_PDP'],
     };
   }
 
@@ -399,13 +431,16 @@ export const getEligilityStatus = async (
     return {
       ...futurEligibility,
       distance: Math.round(futurNetwork.distance),
-      inZDP,
+      inPDP,
       isBasedOnIris: false,
       futurNetwork: true,
       id: null,
+      name: null,
       tauxENRR: null,
       co2: null,
       gestionnaire: futurNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
     };
   }
 
@@ -413,12 +448,15 @@ export const getEligilityStatus = async (
     isEligible: false,
     distance: null,
     veryEligibleDistance: null,
-    inZDP,
+    inPDP,
     isBasedOnIris: false,
     futurNetwork: false,
     id: null,
+    name: null,
     tauxENRR: null,
     co2: null,
     gestionnaire: null,
+    isClasse: null,
+    hasPDP: null,
   };
 };

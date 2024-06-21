@@ -16,7 +16,7 @@ export const Source = styled.div`
 
 export const List = styled.ul<{ withoutMargin?: boolean }>`
   ${({ withoutMargin }) => withoutMargin && 'margin: 0;'}
-  li {
+  > li {
     margin: 0 0 8px 0;
     padding-left: 24px;
     list-style: none;

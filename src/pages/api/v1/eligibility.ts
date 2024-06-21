@@ -21,10 +21,11 @@ export default withCors(
     return {
       isEligible: result.isEligible,
       distance: result.distance,
-      inPDP: result.inZDP,
+      inPDP: result.inPDP,
       isBasedOnIris: result.isBasedOnIris,
       futurNetwork: result.futurNetwork,
       id: result.id,
+      name: result.name,
       gestionnaire: result.gestionnaire,
       rateENRR: result.tauxENRR,
       rateCO2: result.co2,
