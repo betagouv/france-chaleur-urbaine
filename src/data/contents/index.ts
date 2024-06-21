@@ -92,40 +92,40 @@ export const articles: Article[] = [
     title: 'Les réseaux de chaleur en région : focus sur la Normandie',
     slug: 'les-reseaux-de-chaleur-en-region-focus-sur-la-normandie',
     content: importFile(readme),
-    publishedDate: new Date('2024-04-30'), //
-    themes: ['Réseaux de chaleur', 'Cartographie et données', 'ENR&R', 'Prix'], //
+    publishedDate: new Date('2024-06-05'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
   },
   {
     image: '/contents/Modele post linkedin (767 x 432 px).jpg',
     title: 'Atelier de co-construction France Chaleur Urbaine - EnRezo',
     slug: 'atelier-de-co-construction-france-chaleur-urbaine-en-rezo',
     content: importFile(readme_28),
-    publishedDate: new Date('2024-04-30'), //
-    themes: ['Réseaux de chaleur', 'Cartographie et données', 'ENR&R', 'Prix'], //
+    publishedDate: new Date('2024-05-30'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/10 (4).jpg',
     title: "L'Île-de-France, championne de la géothermie profonde",
     slug: 'l-ile-de-france-championne-de-la-geothermie-profonde',
     content: importFile(ileDeFranceChampionGeorthermieProfonde),
-    publishedDate: new Date('2024-04-30'), //
-    themes: ['Réseaux de chaleur', 'Cartographie et données', 'ENR&R', 'Prix'], //
+    publishedDate: new Date('2024-05-23'),
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Infographie'],
   },
   {
     image: '/contents/13 (3).jpg',
     title: "France Chaleur Urbaine pour les bureaux d'études",
     slug: 'france-chaleur-urbaine-pour-les-bureaux-detudes',
     content: importFile(franceChaleurUrbainePourBureauxEtudes),
-    publishedDate: new Date('2024-04-30'), //
-    themes: ['Réseaux de chaleur', 'Cartographie et données', 'ENR&R', 'Prix'], //
+    publishedDate: new Date('2024-05-15'),
+    themes: ['Réseaux de chaleur'],
   },
   {
     image: '/contents/Capture d’écran 2024-06-11 à 10.21.48.png',
     title: 'Une émission pédagogique sur les réseaux de chaleur',
     slug: 'une-emission-pedagogique-sur-les-reseaux-de-chaleur',
     content: importFile(uneEmissionPedagogiqueReseauChaleur),
-    publishedDate: new Date('2024-04-30'), //
-    themes: ['Réseaux de chaleur', 'Cartographie et données', 'ENR&R', 'Prix'], //
+    publishedDate: new Date('2024-05-06'),
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/6 (3).jpg',
