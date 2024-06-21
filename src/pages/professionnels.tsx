@@ -285,7 +285,8 @@ const Professionnels = () => {
             <br />
             pour les bâtiments tertiaires performants
           </Heading>
-          <Heading as="h4" color="blue-france">
+
+          <Heading as="h4" color="blue-france" mt="10w">
             Le coût du raccordement
           </Heading>
           <Text>
@@ -305,11 +306,9 @@ const Professionnels = () => {
               proposées.
             </strong>
           </Text>
-          <Box py="4w">
-            <SimulateurCoutRaccordement embedded typeBatiment="tertiaire" />
-          </Box>
+          <SimulateurCoutRaccordement embedded typeBatiment="tertiaire" />
 
-          <Heading as="h4" color="blue-france">
+          <Heading as="h4" color="blue-france" mt="10w">
             Le coût de la chaleur
           </Heading>
           <ResponsiveRow>
