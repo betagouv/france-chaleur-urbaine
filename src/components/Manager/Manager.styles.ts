@@ -3,7 +3,7 @@ import {
   fullscreenHeaderHeight,
   tabHeaderHeight,
 } from '@components/shared/layout/MainLayout.data';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 export const Container = styled.div`
   margin: auto;
@@ -18,40 +18,6 @@ export const Container = styled.div`
   overflow: auto;
   display: flex;
   flex-direction: column;
-`;
-
-const iconSize = '6px';
-export const ColHeader = styled.div<{
-  sort?: 'asc' | 'desc';
-  width?: string;
-}>`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  cursor: pointer;
-  ${({ width }) => width && `width: ${width};`}
-
-  &:before {
-    content: '';
-    display: block;
-    width: 0;
-    height: 0;
-    opacity: 0.1;
-    margin: 0 ${iconSize} 0 0;
-    background-color: transparent;
-    border-width: ${iconSize} ${iconSize} 0 ${iconSize};
-    border-style: solid;
-    border-color: #000 transparent transparent;
-    ${({ sort }) =>
-      sort &&
-      css`
-        opacity: 1;
-        ${sort !== 'desc' &&
-        css`
-          transform: rotate(180deg);
-        `};
-      `}
-  }
 `;
 
 export const NoResult = styled.div`
@@ -73,27 +39,6 @@ export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
   width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : 'calc(70% - 16px)')};
   height: 100%;
   z-index: ${mapControlZindex + 1};
-
-  & .fr-table {
-    padding-top: 0 !important;
-  }
-
-  & table {
-    max-height: 100% !important;
-    tbody tr {
-      :hover {
-        background-color: #cfcfcf !important;
-      }
-    }
-    & th,
-    & td {
-      padding: 0.5rem !important;
-    }
-  }
-
-  & > div {
-    width: fit-content;
-  }
 `;
 
 export const MapContainer = styled.div<{ mapCollapsed: boolean }>`

@@ -1,5 +1,5 @@
 import { Demand } from 'src/types/Summary/Demand';
-import { EmailInfo, Name, OtherInfo } from './Contact.styles';
+import { EmailInfo, Name, OtherInfo, ContactInfos } from './Contact.styles';
 import Icon from '@components/ui/Icon';
 import ModalEmails from './ModalEmails';
 import { useState } from 'react';
@@ -14,7 +14,7 @@ const Contact = ({
   const [showEmailsModal, setShowEmailsModal] = useState(false);
 
   return (
-    <>
+    <ContactInfos className="fr-m-1w">
       <>
         <Name>
           {demand.Prénom ?? ''} {demand.Nom}
@@ -26,7 +26,7 @@ const Contact = ({
               setShowEmailsModal(true);
             }}
           >
-            <Icon size="lg" name="ri-mail-line" />
+            <Icon size="sm" name="ri-mail-line" className="fr-mr-1w" />
             <u>{demand.Mail}</u>
           </EmailInfo>
         )}
@@ -40,7 +40,7 @@ const Contact = ({
           onClose={() => setShowEmailsModal(false)}
         />
       )}
-    </>
+    </ContactInfos>
   );
 };
 
