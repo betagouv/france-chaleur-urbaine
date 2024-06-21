@@ -252,13 +252,16 @@ const Manager = () => {
     {
       field: 'Statut',
       headerName: 'Statut',
+      width: 300,
       renderCell: (params) => (
         <Status demand={params.row} updateDemand={updateDemand} />
       ),
     },
     {
       field: 'Prospect recontacté',
+      width: 60,
       headerName: 'Prospect recontacté',
+      align: 'center',
       renderCell: (params) => (
         <Contacted demand={params.row} updateDemand={updateDemand} />
       ),
@@ -266,6 +269,7 @@ const Manager = () => {
     {
       field: 'Contact / Envoi de mails',
       headerName: 'Contact',
+      width: 250,
       renderCell: (params) => (
         <Contact demand={params.row} updateDemand={updateDemand} />
       ),
@@ -273,6 +277,7 @@ const Manager = () => {
     {
       field: 'Adresse',
       headerName: 'Adresse',
+      width: 250,
       renderCell: (params) => <Addresse demand={params.row} />,
     },
     {
@@ -373,6 +378,14 @@ const Manager = () => {
                   columns={demandRowsParams}
                   rows={filteredDemands}
                   pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
+                  getRowHeight={() => 'auto'}
+                  getEstimatedRowHeight={() => 110}
+                  sx={{
+                    '& .MuiDataGrid-cell ': {
+                      display: 'flex',
+                      'align-items': 'center',
+                    },
+                  }}
                 />
               ) : (
                 <NoResult>Aucun résultat</NoResult>

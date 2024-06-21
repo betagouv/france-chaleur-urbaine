@@ -18,9 +18,10 @@ const Contacted = ({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore: to fix in react-dsfr
     <Checkbox
+      small
       options={[
         {
-          label: 'Prise de contact',
+          label: '',
           nativeInputProps: {
             value: 'Prise de contact',
             defaultChecked: demand['Prise de contact'],
