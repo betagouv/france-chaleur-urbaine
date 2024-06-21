@@ -98,14 +98,6 @@ const useContactFormFCU = () => {
       if (data && data.structure !== 'Tertiaire') {
         data.company = '';
       }
-      setMessageSent(true);
-      const { eligibility, address = '' } = (data as AddressDataType) || {};
-      trackEvent(
-        `Eligibilité|Formulaire de contact ${
-          eligibility?.isEligible ? 'é' : 'iné'
-        }ligible${fromMap ? ' - Carte' : ''} - Envoi`,
-        address
-      );
       const response = await submitToAirtable(
         formatDataToAirtable({
           ...data,
@@ -116,6 +108,14 @@ const useContactFormFCU = () => {
         Airtable.UTILISATEURS
       );
       const { id } = await response.json();
+      setMessageSent(true);
+      const { eligibility, address = '' } = (data as AddressDataType) || {};
+      trackEvent(
+        `Eligibilité|Formulaire de contact ${
+          eligibility?.isEligible ? 'é' : 'iné'
+        }ligible${fromMap ? ' - Carte' : ''} - Envoi`,
+        address
+      );
       const scrollTimer = timeoutScroller(500);
       setAddressData({
         ...addressData,

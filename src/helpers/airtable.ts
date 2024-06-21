@@ -86,13 +86,17 @@ export const submitToAirtable = async (
   values: any,
   type: Airtable
 ): Promise<Response> => {
-  return fetch('/api/airtable/records', {
+  const res = await fetch('/api/airtable/records', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ ...values, type }),
   });
+  if (!res.ok) {
+    throw new Error(`wrong status ${res.status}`);
+  }
+  return res;
 };
 
 export const updateAirtable = async (
