@@ -54,19 +54,20 @@ export const useAnalytics = () => {
         },
       });
 
+      // handle the case where matomo does not respond
+      const errorStateTimeout = setTimeout(() => {
+        if (matomoAnalyticsLoadingState === 'pending') {
+          setMatomoAnalyticsLoadedState('error');
+        }
+      }, 2000);
+
       // track the async deferred loading of the script by matomo-next
       // matomoAsyncInit is a specific callback used by Matomo
       // matomoAbTestingAsyncInit is a specific callback used by Matomo AB Testing framework
       window.matomoAbTestingAsyncInit = () => {
         setMatomoAnalyticsLoadedState('loaded');
+        clearTimeout(errorStateTimeout);
       };
-
-      // handle the case where matomo does not respond
-      setTimeout(() => {
-        if (matomoAnalyticsLoadingState === 'pending') {
-          setMatomoAnalyticsLoadedState('error');
-        }
-      }, 2000);
     }
   }, []);
 
@@ -630,7 +631,7 @@ const emptyActivateMethod = () => {
 
 const matomoABTestingExperiments = [
   {
-    name: 'TestMessagesFormulaireContact', // you can also use '1' (ID of the experiment) to hide the name
+    name: 'TestMessagesFormulaireContact',
     percentage: 100,
     includedTargets: [],
     excludedTargets: [],
