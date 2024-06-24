@@ -26,6 +26,15 @@ export const NoResult = styled.div`
   font-weight: bold;
 `;
 
+export const ColHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 56px;
+  white-space: normal;
+  line-height: 1.2;
+`;
+
 export const ManagerContainer = styled.div`
   height: 100%;
   width: 100%;

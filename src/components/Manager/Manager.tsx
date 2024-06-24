@@ -12,7 +12,7 @@ import Comment from './Comment';
 import Contact from './Contact';
 import Contacted from './Contacted';
 import {
-  //ColHeader,
+  ColHeader,
   CollapseMap,
   Container,
   ManagerContainer,
@@ -251,20 +251,20 @@ const Manager = () => {
   const demandRowsParams: GridColDef[] = [
     {
       field: 'Statut',
-      headerName: 'Statut',
       width: 300,
       renderCell: (params) => (
         <Status demand={params.row} updateDemand={updateDemand} />
       ),
+      renderHeader: () => <ColHeader>Statut</ColHeader>,
     },
     {
       field: 'Prospect recontacté',
-      width: 60,
-      headerName: 'Prospect recontacté',
+      width: 90,
       align: 'center',
       renderCell: (params) => (
         <Contacted demand={params.row} updateDemand={updateDemand} />
       ),
+      renderHeader: () => <ColHeader>Prospect recontacté</ColHeader>,
     },
     {
       field: 'Contact / Envoi de mails',
@@ -276,29 +276,29 @@ const Manager = () => {
     },
     {
       field: 'Adresse',
-      headerName: 'Adresse',
+      renderHeader: () => <ColHeader>Adresse</ColHeader>,
       width: 250,
       renderCell: (params) => <Addresse demand={params.row} />,
     },
     {
       field: 'Date demandes',
-      headerName: 'Date de la demande',
+      renderHeader: () => <ColHeader>Date de la demande</ColHeader>,
       renderCell: (params) =>
         new Date(params.row['Date demandes']).toLocaleDateString(),
     },
     {
       field: 'Type de chauffage',
-      headerName: 'Type',
+      renderHeader: () => <ColHeader>Type</ColHeader>,
       renderCell: (params) => <Tag text={params.row.Structure} />,
     },
     {
       field: 'Mode de chauffage',
-      headerName: 'Mode de chauffage',
+      renderHeader: () => <ColHeader>Mode de chauffage</ColHeader>,
       renderCell: (params) => <Tag text={displayModeDeChauffage(params.row)} />,
     },
     {
       field: 'Distance au réseau',
-      headerName: 'Distance au réseau (m)',
+      renderHeader: () => <ColHeader>Distance au réseau (m)</ColHeader>,
       renderCell: (params) => (
         <AdditionalInformation
           demand={params.row}
@@ -310,15 +310,16 @@ const Manager = () => {
     },
     {
       field: 'Identifiant réseau',
-      headerName: 'ID réseau le plus proche',
+      renderHeader: () => <ColHeader>ID réseau le plus proche</ColHeader>,
     },
     {
       field: 'Nom réseau',
-      headerName: 'Nom du réseau le plus proche',
+      width: 250,
+      renderHeader: () => <ColHeader>Nom du réseau le plus proche</ColHeader>,
     },
     {
       field: 'Nb logements',
-      headerName: 'Nb logements (lots)',
+      renderHeader: () => <ColHeader>Nb logements (lots)</ColHeader>,
       renderCell: (params) => (
         <AdditionalInformation
           demand={params.row}
@@ -330,7 +331,7 @@ const Manager = () => {
     },
     {
       field: 'Conso gaz',
-      headerName: 'Conso gaz (MWh)',
+      renderHeader: () => <ColHeader>Conso gaz (MWh)</ColHeader>,
       renderCell: (params) => (
         <AdditionalInformation
           demand={params.row}
@@ -342,14 +343,15 @@ const Manager = () => {
     },
     {
       field: 'Commentaires',
-      headerName: 'Commentaires',
+      width: 280,
+      renderHeader: () => <ColHeader>Commentaires</ColHeader>,
       renderCell: (params) => (
         <Comment demand={params.row} updateDemand={updateDemand} />
       ),
     },
     {
       field: 'Affecté à',
-      headerName: 'Affecté à',
+      renderHeader: () => <ColHeader>Affecté à</ColHeader>,
       renderCell: (params) => (
         <AdditionalInformation
           demand={params.row}
@@ -384,6 +386,13 @@ const Manager = () => {
                     '& .MuiDataGrid-cell ': {
                       display: 'flex',
                       'align-items': 'center',
+                    },
+                    '& .MuiDataGrid-columnHeaders div[role=row]': {
+                      bgcolor: '#F0EFE8',
+                      'border-bottom': '1px solid #333333',
+                    },
+                    '& .MuiDataGrid-columnHeaders': {
+                      'border-bottom': '1px solid #333333',
                     },
                   }}
                 />
