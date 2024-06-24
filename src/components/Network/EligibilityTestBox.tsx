@@ -25,8 +25,10 @@ import styled from 'styled-components';
 type FormState =
   | 'idle'
   | 'loadingEligibility'
+  | 'eligibilitySubmissionError'
   | 'sendingDemand'
-  | 'demandCreated';
+  | 'demandCreated'
+  | 'demandSubmissionError';
 
 interface EligibilityTestBoxProps {
   networkId: string;
@@ -63,32 +65,36 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
 
   // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
   const testAddressEligibility = async (geoAddress: SuggestionItem) => {
-    trackEvent(
-      `Eligibilité|Formulaire de test - Fiche réseau - Envoi`,
-      geoAddress.properties.label
-    );
+    try {
+      trackEvent(
+        `Eligibilité|Formulaire de test - Fiche réseau - Envoi`,
+        geoAddress.properties.label
+      );
 
-    setFormState('loadingEligibility');
-    const eligibilityStatus = await workMinimum(
-      () =>
-        heatNetworkService.getNetworkEligibilityStatus(networkId, geoAddress),
-      500
-    );
-    setFormState('idle');
-    setEligibilityStatus(eligibilityStatus);
+      setFormState('loadingEligibility');
+      const eligibilityStatus = await workMinimum(
+        () =>
+          heatNetworkService.getNetworkEligibilityStatus(networkId, geoAddress),
+        500
+      );
+      setFormState('idle');
+      setEligibilityStatus(eligibilityStatus);
 
-    trackEvent(
-      `Eligibilité|Formulaire de test - Fiche réseau - Adresse ${
-        eligibilityStatus?.isEligible ? 'É' : 'Iné'
-      }ligible`,
-      geoAddress.properties.label
-    );
+      trackEvent(
+        `Eligibilité|Formulaire de test - Fiche réseau - Adresse ${
+          eligibilityStatus?.isEligible ? 'É' : 'Iné'
+        }ligible`,
+        geoAddress.properties.label
+      );
 
-    setTimeout(() => {
-      resultsBoxRef.current?.scrollIntoView({
-        behavior: 'smooth',
+      setTimeout(() => {
+        resultsBoxRef.current?.scrollIntoView({
+          behavior: 'smooth',
+        });
       });
-    });
+    } catch (err) {
+      setFormState('eligibilitySubmissionError');
+    }
   };
 
   // appelé quand on soumet le formulaire de contact (dernière étape), on crée la demande côté airtable
@@ -96,51 +102,54 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     if (!selectedGeoAddress) {
       return;
     }
+    try {
+      const addressContext = selectedGeoAddress.properties.context.split(',');
+      const demandCreation: FormDemandCreation = {
+        // contact
+        ...contactFormInfos,
+        company:
+          contactFormInfos.structure === 'Tertiaire'
+            ? contactFormInfos.company
+            : '',
 
-    const addressContext = selectedGeoAddress.properties.context.split(',');
-    const demandCreation: FormDemandCreation = {
-      // contact
-      ...contactFormInfos,
-      company:
-        contactFormInfos.structure === 'Tertiaire'
-          ? contactFormInfos.company
-          : '',
+        heatingType: heatingType,
 
-      heatingType: heatingType,
+        eligibility: eligibilityStatus,
 
-      eligibility: eligibilityStatus,
+        // adresse
+        address: selectedGeoAddress.properties.label,
+        coords: {
+          lon: selectedGeoAddress.geometry.coordinates[0],
+          lat: selectedGeoAddress.geometry.coordinates[1],
+        },
+        city: selectedGeoAddress.properties.city,
+        postcode: selectedGeoAddress.properties.postcode,
+        department: (addressContext[1] || '').trim(),
+        region: (addressContext[2] || '').trim(),
 
-      // adresse
-      address: selectedGeoAddress.properties.label,
-      coords: {
-        lon: selectedGeoAddress.geometry.coordinates[0],
-        lat: selectedGeoAddress.geometry.coordinates[1],
-      },
-      city: selectedGeoAddress.properties.city,
-      postcode: selectedGeoAddress.properties.postcode,
-      department: (addressContext[1] || '').trim(),
-      region: (addressContext[2] || '').trim(),
+        networkId,
+      };
+      setFormState('sendingDemand');
+      await submitToAirtable(
+        formatDataToAirtable(demandCreation),
+        Airtable.UTILISATEURS
+      );
+      setFormState('demandCreated');
+      trackEvent(
+        `Eligibilité|Formulaire de contact ${
+          eligibilityStatus?.isEligible ? 'é' : 'iné'
+        }ligible - Fiche réseau - Envoi`,
+        selectedGeoAddress?.properties.label
+      );
 
-      networkId,
-    };
-    setFormState('sendingDemand');
-    await submitToAirtable(
-      formatDataToAirtable(demandCreation),
-      Airtable.UTILISATEURS
-    );
-    setFormState('demandCreated');
-    trackEvent(
-      `Eligibilité|Formulaire de contact ${
-        eligibilityStatus?.isEligible ? 'é' : 'iné'
-      }ligible - Fiche réseau - Envoi`,
-      selectedGeoAddress?.properties.label
-    );
-
-    setTimeout(() => {
-      resultsBoxRef.current?.scrollIntoView({
-        behavior: 'smooth',
+      setTimeout(() => {
+        resultsBoxRef.current?.scrollIntoView({
+          behavior: 'smooth',
+        });
       });
-    });
+    } catch (err) {
+      setFormState('demandSubmissionError');
+    }
   };
 
   return (
@@ -156,6 +165,12 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         />
 
         <Box display="flex" alignItems="center" justifyContent="end">
+          {formState === 'eligibilitySubmissionError' && (
+            <Box textColor="#c00">
+              Une erreur est survenue. Veuillez réessayer ou bien{' '}
+              <Link href="/contact">contacter le support</Link>.
+            </Box>
+          )}
           {formState === 'loadingEligibility' && (
             <Oval height={30} width={30} />
           )}
@@ -288,6 +303,12 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                     </>
                   }
                 />
+                {formState === 'demandSubmissionError' && (
+                  <Box textColor="#c00" mt="1w">
+                    Une erreur est survenue. Veuillez réessayer ou bien{' '}
+                    <Link href="/contact">contacter le support</Link>.
+                  </Box>
+                )}
               </>
             )}
           </ResultsBox>
