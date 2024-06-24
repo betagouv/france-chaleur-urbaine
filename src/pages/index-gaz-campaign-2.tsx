@@ -167,11 +167,7 @@ export default function Home() {
       </Box>
 
       <Box py="10w" id="couts-du-chauffage-urbain">
-        <CoutsChauffageUrbain
-          simulatorBgColor="#F8F5F1"
-          simulatorFormBgColor="#ffffff"
-          simulatorDisclaimerLegacyColor="darkblue"
-        />
+        <CoutsChauffageUrbain />
       </Box>
 
       <Box
