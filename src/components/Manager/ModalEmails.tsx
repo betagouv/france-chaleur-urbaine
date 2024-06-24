@@ -225,6 +225,7 @@ function ModalEmails(props: Props) {
                     disabled:
                       sentHistory &&
                       option.value !== 'other' &&
+                      Array.isArray(sentHistory) &&
                       sentHistory.some(
                         (email: any) => email.email_key === option.value
                       ),
