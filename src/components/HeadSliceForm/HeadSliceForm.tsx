@@ -71,7 +71,6 @@ const HeadSlice = ({
     addressData,
     contactReady,
     showWarning,
-    messageSent,
     messageReceived,
     loadingStatus,
     warningMessage,
@@ -203,7 +202,12 @@ const HeadSlice = ({
             <Buttons>
               <Button
                 size="lg"
-                disabled={!address || !geoAddress || !heatingType}
+                disabled={
+                  !address ||
+                  !geoAddress ||
+                  !heatingType ||
+                  (loadingStatus === 'loading' && !eligibilityError)
+                }
                 onClick={testAddress}
               >
                 Tester cette adresse
@@ -271,7 +275,6 @@ const HeadSlice = ({
           {address && (
             <EligibilityFormContact
               addressData={addressData}
-              isSent={messageSent}
               onSubmit={handleOnSubmitContact}
             />
           )}
