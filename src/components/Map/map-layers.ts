@@ -1,13 +1,13 @@
 import {
+  CircleLayerSpecification,
   ExpressionInputType,
+  ExpressionSpecification,
   FilterSpecification,
   LayerSpecification,
+  LineLayerSpecification,
+  Map,
   SourceSpecification,
   StyleSetterOptions,
-  Map,
-  ExpressionSpecification,
-  LineLayerSpecification,
-  CircleLayerSpecification,
 } from 'maplibre-gl';
 import {
   themeDefBuildings,
@@ -23,19 +23,19 @@ import {
   themeDefZonePotentielFortChaud,
 } from 'src/services/Map/businessRules/zonePotentielChaud';
 
-import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
+import { intervalsEqual } from '@utils/interval';
+import {
+  themeDefSolaireThermiqueFriches,
+  themeDefSolaireThermiqueParkings,
+} from 'src/services/Map/businessRules/enrrMobilisables';
 import {
   MapConfiguration,
   filtresEnergies,
   percentageMaxInterval,
 } from 'src/services/Map/map-configuration';
-import {
-  themeDefSolaireThermiqueFriches,
-  themeDefSolaireThermiqueParkings,
-} from 'src/services/Map/businessRules/enrrMobilisables';
 import { SourceId } from 'src/services/tiles.config';
 import { Network } from 'src/types/Summary/Network';
-import { intervalsEqual } from '@utils/interval';
+import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -227,6 +227,85 @@ const iconRatio = 1 / (iconSize / maxDisplaySize);
 const getSymbolRatio: (size: number) => number = (size) =>
   iconRatio * (size / maxDisplaySize);
 
+type ColorThreshold = {
+  value: number;
+  color: `#${string}`;
+};
+
+export const besoinsBatimentsDefaultColor = '#ffffff';
+export const besoinsEnChaleurColorThresholds: ColorThreshold[] = [
+  {
+    value: 20,
+    color: '#ffffe5',
+  },
+  {
+    value: 30,
+    color: '#fff7bc',
+  },
+  {
+    value: 50,
+    color: '#fee391',
+  },
+  {
+    value: 75,
+    color: '#fec44f',
+  },
+  {
+    value: 150,
+    color: '#fe9929',
+  },
+  {
+    value: 300,
+    color: '#ec7014',
+  },
+  {
+    value: 600,
+    color: '#cc4c02',
+  },
+  {
+    value: 900,
+    color: '#993404',
+  },
+  {
+    value: 1200,
+    color: '#662506',
+  },
+];
+export const besoinsEnFroidColorThresholds: ColorThreshold[] = [
+  {
+    value: 5,
+    color: '#deebf7',
+  },
+  {
+    value: 10,
+    color: '#c6dbef',
+  },
+  {
+    value: 15,
+    color: '#9ecae1',
+  },
+  {
+    value: 30,
+    color: '#6baed6',
+  },
+  {
+    value: 50,
+    color: '#4292c6',
+  },
+  {
+    value: 70,
+    color: '#2171b5',
+  },
+  {
+    value: 100,
+    color: '#08519c',
+  },
+  {
+    value: 300,
+    color: '#08306b',
+  },
+];
+
 export type MapSourceLayersSpecification = {
   sourceId: SourceId;
   source: SourceSpecification;
@@ -267,6 +346,9 @@ export type LayerId =
   | 'zonesPotentielFortChaud'
   | 'zonesPotentielFortChaud-contour'
   | 'besoinsEnChaleur'
+  | 'besoinsEnFroid'
+  | 'besoinsEnChaleurFroid-contour'
+  | 'besoinsIndustrielsCommunaux'
   | 'caracteristiquesBatiments';
 
 // besoin d'une fonction dynamique pour avoir location.origin disponible côté client et aussi
@@ -472,7 +554,6 @@ export function buildMapLayers(
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
-        // minzoom: 10,
         maxzoom: tileSourcesMaxZoom,
       },
       layers: [
@@ -480,32 +561,73 @@ export function buildMapLayers(
           id: 'besoinsEnChaleur',
           source: 'besoinsEnChaleur',
           'source-layer': 'layer',
-          minzoom: 6,
-          // minzoom: intermediateTileLayersMinZoom,
+          minzoom: intermediateTileLayersMinZoom,
           type: 'fill',
           paint: {
             'fill-color': [
               'step',
-              ['coalesce', ['get', 'CHAUF_MWH'], 0], // FIXME extraire les seuils car réutilisés via légende
-              '#ffffff',
-              20,
-              '#ffffe5',
-              30,
-              '#fff7bc',
-              50,
-              '#fee391',
-              75,
-              '#fec44f',
-              150,
-              '#fe9929',
-              300,
-              '#ec7014',
-              600,
-              '#cc4c02',
-              900,
-              '#993404',
-              1200,
-              '#662506',
+              ['coalesce', ['coalesce', ['get', 'CHAUF_MWH'], 0], 0],
+              besoinsBatimentsDefaultColor,
+              ...besoinsEnChaleurColorThresholds.flatMap((v) => [
+                v.value,
+                v.color,
+              ]),
+            ],
+            'fill-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              intermediateTileLayersMinZoom + 0.2,
+              0,
+              intermediateTileLayersMinZoom + 0.2 + 1,
+              1,
+            ],
+          },
+        },
+        {
+          id: 'besoinsEnFroid',
+          source: 'besoinsEnChaleur',
+          'source-layer': 'layer',
+          minzoom: intermediateTileLayersMinZoom,
+          type: 'fill',
+          paint: {
+            'fill-color': [
+              'step',
+              ['coalesce', ['get', 'FROID_MWH'], 0],
+              besoinsBatimentsDefaultColor,
+              ...besoinsEnFroidColorThresholds.flatMap((v) => [
+                v.value,
+                v.color,
+              ]),
+            ],
+            'fill-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              intermediateTileLayersMinZoom + 0.2,
+              0,
+              intermediateTileLayersMinZoom + 0.2 + 1,
+              1,
+            ],
+          },
+        },
+        {
+          id: 'besoinsEnChaleurFroid-contour',
+          source: 'besoinsEnChaleur',
+          'source-layer': 'layer',
+          minzoom: intermediateTileLayersMinZoom,
+          type: 'line',
+          paint: {
+            'line-color': '#777777',
+            'line-width': 0.5,
+            'line-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              intermediateTileLayersMinZoom + 0.2,
+              0,
+              intermediateTileLayersMinZoom + 0.2 + 1,
+              1,
             ],
           },
         },
@@ -994,8 +1116,17 @@ export function applyMapConfigurationToLayers(
   );
   setLayerVisibility(
     'besoinsEnChaleur',
-    true // fixme
+    config.proMode && config.besoinsEnChaleur
   );
+  setLayerVisibility('besoinsEnFroid', config.proMode && config.besoinsEnFroid);
+  setLayerVisibility(
+    'besoinsEnChaleurFroid-contour',
+    config.proMode && (config.besoinsEnChaleur || config.besoinsEnFroid)
+  );
+  // setLayerVisibility(
+  //   'besoinsIndustrielsCommunaux',
+  //   config.proMode && config.besoinsIndustrielsCommunaux
+  // );
   setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
   setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);
   setLayerVisibility(

@@ -29,6 +29,7 @@ type StyleProps = {
   opacity?: CSSProperties['opacity'];
   gridTemplateColumns?: CSSProperties['gridTemplateColumns'];
   columnGap?: CSSProperties['columnGap'];
+  cursor?: CSSProperties['cursor'];
 };
 
 const StyledBox = styled.div<StyleProps>`
@@ -67,6 +68,7 @@ const StyledBox = styled.div<StyleProps>`
   opacity: ${({ opacity }) => opacity};
   grid-template-columns: ${({ gridTemplateColumns }) => gridTemplateColumns};
   column-gap: ${({ columnGap }) => columnGap};
+  cursor: ${({ cursor }) => cursor};
   :
 `;
 
@@ -112,6 +114,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       opacity={props.opacity}
       gridTemplateColumns={props.gridTemplateColumns}
       columnGap={props.columnGap}
+      cursor={props.cursor}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
       } ${spacingsToClasses(props)}`}

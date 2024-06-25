@@ -1,8 +1,9 @@
-import { PopupTitle, PopupType } from '../Map.style';
+import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
-import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
 import { prettyFormatNumber } from '@utils/strings';
 import { ReactElement } from 'react';
+import { BesoinsEnChaleur } from 'src/types/layers/BesoinsEnChaleur';
+import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
 import {
   Datacenter,
   Industrie,
@@ -12,7 +13,7 @@ import {
   StationDEpuration,
   UniteDIncineration,
 } from 'src/types/layers/enrr_mobilisables';
-import Text from '@components/ui/Text';
+import { PopupTitle, PopupType } from '../Map.style';
 import { LayerId } from '../map-layers';
 
 export const layersWithDynamicContentPopup = [
@@ -25,6 +26,8 @@ export const layersWithDynamicContentPopup = [
   'enrrMobilisables-unites-d-incineration',
   'enrrMobilisables-friches',
   'enrrMobilisables-parkings',
+  'besoinsEnChaleur',
+  'besoinsEnFroid',
 ] as const satisfies ReadonlyArray<LayerId>;
 
 export function isDynamicPopupContent(
@@ -37,7 +40,13 @@ export function isDynamicPopupContent(
 // be careful to use the LayerId in the 'type' property
 export type DynamicPopupContentType =
   | ZonePotentielChaudPopupContentType
-  | ENRRMobilisablePopupContentType;
+  | ENRRMobilisablePopupContentType
+  | BesoinsEnChaleurPopupContentType;
+
+type BesoinsEnChaleurPopupContentType = {
+  type: 'besoinsEnChaleur' | 'besoinsEnFroid';
+  properties: BesoinsEnChaleur;
+};
 
 type ZonePotentielChaudPopupContentType = {
   type: 'zonesPotentielChaud' | 'zonesPotentielFortChaud';
@@ -144,6 +153,11 @@ const DynamicPopupContent = ({
           parking={content.properties}
         />
       );
+    case 'besoinsEnChaleur':
+    case 'besoinsEnFroid':
+      return (
+        <BesoinsEnChaleurPopupContent besoinsEnChaleur={content.properties} />
+      );
     default:
       throw new Error('not implemented');
   }
@@ -184,6 +198,51 @@ const ZonePotentielChaudPopupContent = ({
         label="Part du secteur tertiaire"
         value={zonePotentielChaud.part_ter}
         formatter={(v) => <>{prettyFormatNumber(v * 100, 2)}&nbsp;%</>}
+      />
+      <PopupProperty label="Source" value="Cerema" />
+    </section>
+  );
+};
+
+/**
+ * Contenu de la popup pour les zones à potentiel chaud et fort chaud.
+ */
+const BesoinsEnChaleurPopupContent = ({
+  besoinsEnChaleur,
+}: {
+  besoinsEnChaleur: BesoinsEnChaleur;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">Besoins en chaleur et froid</PopupTitle>
+      <PopupProperty
+        label="Besoins en chauffage"
+        value={besoinsEnChaleur.CHAUF_MWH}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins en ECS"
+        value={besoinsEnChaleur.ECS_MWH}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins en froid"
+        value={besoinsEnChaleur.FROID_MWH}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Part tertiaire de la surface des bâtiments"
+        value={besoinsEnChaleur.PART_TER}
+        unit="%"
+      />
+      <PopupProperty
+        label="Surface de plancher"
+        value={besoinsEnChaleur.SDP_M2}
+        unit="m²"
+      />
+      <PopupProperty
+        label="Identifiant BD TOPO"
+        value={besoinsEnChaleur.IDBATIMENT}
       />
       <PopupProperty label="Source" value="Cerema" />
     </section>

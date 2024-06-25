@@ -102,6 +102,9 @@ export type MapConfiguration = {
     zonesPotentielFortChaud: boolean;
   };
   caracteristiquesBatiments: boolean;
+  besoinsEnChaleur: boolean;
+  besoinsEnFroid: boolean;
+  besoinsIndustrielsCommunaux: boolean;
 };
 
 /**
@@ -196,6 +199,9 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
     zonesPotentielFortChaud: true,
   },
   caracteristiquesBatiments: false,
+  besoinsEnChaleur: false,
+  besoinsEnFroid: false,
+  besoinsIndustrielsCommunaux: false,
 };
 
 export const defaultMapConfiguration = createMapConfiguration({

@@ -1,15 +1,15 @@
+import Hoverable from '@components/Hoverable';
+import Box from '@components/ui/Box';
+import CollapsibleBox from '@components/ui/CollapsibleBox';
+import Icon from '@components/ui/Icon';
+import Link from '@components/ui/Link';
+import Text from '@components/ui/Text';
+import { Button, Select } from '@dataesr/react-dsfr';
+import { setProperty, toggleBoolean } from '@utils/core';
+import { Interval } from '@utils/interval';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
-import ModalCarteFrance from './ModalCarteFrance';
-import Text from '@components/ui/Text';
-import { trackEvent } from 'src/services/analytics';
-import Image from 'next/image';
-import { Button, Select } from '@dataesr/react-dsfr';
-import Link from '@components/ui/Link';
-import Icon from '@components/ui/Icon';
-import { LegendSeparator } from '../Map.style';
-import Box from '@components/ui/Box';
-import Hoverable from '@components/Hoverable';
 import {
   themeDefBuildings,
   themeDefDemands,
@@ -18,28 +18,6 @@ import {
   themeDefTypeGas,
   themeDefZoneDP,
 } from 'src/services/Map/businessRules';
-import ScaleLegend from './ScaleLegend';
-import {
-  MapConfiguration,
-  MapConfigurationProperty,
-  defaultMapConfiguration,
-  filtresEnergies,
-  percentageMaxInterval,
-} from 'src/services/Map/map-configuration';
-import { setProperty, toggleBoolean } from '@utils/core';
-import CollapsibleBox from '@components/ui/CollapsibleBox';
-import {
-  LegendDeskData,
-  energyLayerMaxOpacity,
-  batimentsRaccordesLayerMaxOpacity,
-} from '../map-layers';
-import {
-  DeactivatableBox,
-  InfoIcon,
-  PotentielsRaccordementButton,
-  SingleCheckbox,
-} from './SimpleMapLegend.style';
-import IconPolygon from './IconPolygon';
 import {
   themeDefSolaireThermiqueFriches,
   themeDefSolaireThermiqueParkings,
@@ -48,9 +26,34 @@ import {
   themeDefZonePotentielChaud,
   themeDefZonePotentielFortChaud,
 } from 'src/services/Map/businessRules/zonePotentielChaud';
+import {
+  MapConfiguration,
+  MapConfigurationProperty,
+  defaultMapConfiguration,
+  filtresEnergies,
+  percentageMaxInterval,
+} from 'src/services/Map/map-configuration';
+import { trackEvent } from 'src/services/analytics';
+import { LegendSeparator } from '../Map.style';
+import {
+  LegendDeskData,
+  batimentsRaccordesLayerMaxOpacity,
+  besoinsBatimentsDefaultColor,
+  besoinsEnChaleurColorThresholds,
+  besoinsEnFroidColorThresholds,
+  energyLayerMaxOpacity,
+} from '../map-layers';
 import DevModeIcon from './DevModeIcon';
+import IconPolygon from './IconPolygon';
+import ModalCarteFrance from './ModalCarteFrance';
 import RangeFilter from './RangeFilter';
-import { Interval } from '@utils/interval';
+import ScaleLegend from './ScaleLegend';
+import {
+  DeactivatableBox,
+  InfoIcon,
+  PotentielsRaccordementButton,
+  SingleCheckbox,
+} from './SimpleMapLegend.style';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -68,6 +71,8 @@ export const mapLegendFeatures = [
   'enrrMobilisables',
   'zonesOpportunite',
   'caracteristiquesBatiments',
+  'besoinsEnChaleur',
+  'besoinsEnFroid',
   'proModeLegend', // texte incitant à activer le mode pro
   'contributeButton', // boutons contribuer et télécharger les tracés
   'cartePotentielsRaccordements', // lien d'ouverture de la carte des potentiels de raccordement
@@ -92,6 +97,8 @@ const expansions = [
   'enrrMobilisables',
   'zonesOpportunite',
   'caracteristiquesBatiments',
+  'besoinsEnChaleur',
+  'besoinsEnFroid',
 ] as const;
 type Expansion = (typeof expansions)[number];
 
@@ -1589,6 +1596,198 @@ function SimpleMapLegend({
                       {letter.toUpperCase()}
                     </Box>
                   ))}
+              </Box>
+            </DeactivatableBox>
+          </CollapsibleBox>
+        </>
+      )}
+
+      {enabledFeatures.includes('besoinsEnChaleur') && (
+        <>
+          <LegendSeparator />
+
+          <Box display="flex">
+            <SingleCheckbox
+              id="besoinsEnChaleur"
+              checked={mapConfiguration.besoinsEnChaleur}
+              onChange={(checked) => {
+                toggleLayer('besoinsEnChaleur');
+                if (checked) {
+                  setSectionExpansion('besoinsEnChaleur', true);
+                }
+              }}
+              trackingEvent="Carto|DPE"
+            />
+
+            <IconPolygon
+              stroke={
+                besoinsEnChaleurColorThresholds[
+                  besoinsEnChaleurColorThresholds.length - 3 // lighter color
+                ].color
+              }
+              fillOpacity={0.7}
+              mt="1v"
+            />
+
+            <Text
+              as="label"
+              htmlFor="besoinsEnChaleur"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              fontWeight="bold"
+              cursor="pointer"
+              pt="1v"
+              px="1v"
+            >
+              Besoins en chaleur
+            </Text>
+
+            <InfoIcon>
+              <Icon size="1x" name="ri-information-fill" cursor="help" />
+
+              <Hoverable position="bottom">TODO</Hoverable>
+            </InfoIcon>
+
+            <Button
+              className="fr-px-1w"
+              hasBorder={false}
+              size="sm"
+              onClick={() => toggleSectionExpansion('besoinsEnChaleur')}
+              title="Afficher/Masquer le détail"
+            >
+              <Icon
+                size="lg"
+                name="ri-arrow-down-s-line"
+                className="fr-mr-0"
+                rotate={!!sectionsExpansions['besoinsEnChaleur']}
+              />
+            </Button>
+          </Box>
+
+          <CollapsibleBox expand={!!sectionsExpansions['besoinsEnChaleur']}>
+            <DeactivatableBox
+              disabled={!mapConfiguration.besoinsEnChaleur}
+              mx="1w"
+            >
+              <Box display="flex" border="1px solid #777" my="1w">
+                <Box
+                  height="10px"
+                  flex
+                  cursor="help"
+                  backgroundColor={besoinsBatimentsDefaultColor}
+                  title={`>= 0`}
+                />
+                {besoinsEnChaleurColorThresholds.map((v, index) => (
+                  <Box
+                    key={index}
+                    height="10px"
+                    flex
+                    cursor="help"
+                    backgroundColor={v.color}
+                    title={`>= ${v.value}`}
+                  />
+                ))}
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Text size="xs">0 MWh/an</Text>
+                <Text size="xs">6000 MWh/an</Text>
+              </Box>
+            </DeactivatableBox>
+          </CollapsibleBox>
+        </>
+      )}
+
+      {enabledFeatures.includes('besoinsEnFroid') && (
+        <>
+          <LegendSeparator />
+
+          <Box display="flex">
+            <SingleCheckbox
+              id="besoinsEnFroid"
+              checked={mapConfiguration.besoinsEnFroid}
+              onChange={(checked) => {
+                toggleLayer('besoinsEnFroid');
+                if (checked) {
+                  setSectionExpansion('besoinsEnFroid', true);
+                }
+              }}
+              trackingEvent="Carto|DPE"
+            />
+
+            <IconPolygon
+              stroke={
+                besoinsEnFroidColorThresholds[
+                  besoinsEnFroidColorThresholds.length - 3 // lighter color
+                ].color
+              }
+              fillOpacity={0.7}
+              mt="1v"
+            />
+
+            <Text
+              as="label"
+              htmlFor="besoinsEnFroid"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              fontWeight="bold"
+              cursor="pointer"
+              pt="1v"
+              px="1v"
+            >
+              Besoins en froid
+            </Text>
+
+            <InfoIcon>
+              <Icon size="1x" name="ri-information-fill" cursor="help" />
+
+              <Hoverable position="bottom">TODO</Hoverable>
+            </InfoIcon>
+
+            <Button
+              className="fr-px-1w"
+              hasBorder={false}
+              size="sm"
+              onClick={() => toggleSectionExpansion('besoinsEnFroid')}
+              title="Afficher/Masquer le détail"
+            >
+              <Icon
+                size="lg"
+                name="ri-arrow-down-s-line"
+                className="fr-mr-0"
+                rotate={!!sectionsExpansions['besoinsEnFroid']}
+              />
+            </Button>
+          </Box>
+
+          <CollapsibleBox expand={!!sectionsExpansions['besoinsEnFroid']}>
+            <DeactivatableBox
+              disabled={!mapConfiguration.besoinsEnFroid}
+              mx="1w"
+            >
+              <Box display="flex" border="1px solid #777" my="1w">
+                <Box
+                  height="10px"
+                  flex
+                  cursor="help"
+                  backgroundColor={besoinsBatimentsDefaultColor}
+                  title={`>= 0`}
+                />
+                {besoinsEnFroidColorThresholds.map((v, index) => (
+                  <Box
+                    key={index}
+                    height="10px"
+                    flex
+                    cursor="help"
+                    backgroundColor={v.color}
+                    title={`>= ${v.value}`}
+                  />
+                ))}
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Text size="xs">0 MWh/an</Text>
+                <Text size="xs">5000 MWh/an</Text>
               </Box>
             </DeactivatableBox>
           </CollapsibleBox>
