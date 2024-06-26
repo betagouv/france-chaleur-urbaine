@@ -20,7 +20,6 @@ const CardSearchDetailsForm: React.FC<{
     EligibilityFormContactRef,
     addressData,
     contactReady,
-    messageSent,
     messageReceived,
     handleOnChangeAddress,
     handleOnFetchAddress,
@@ -65,7 +64,6 @@ const CardSearchDetailsForm: React.FC<{
         <ContactFormWrapper active={contactReady && !messageReceived}>
           <EligibilityFormContact
             addressData={addressData}
-            isSent={messageSent}
             onSubmit={handleSubmitForm}
             cardMode
           />

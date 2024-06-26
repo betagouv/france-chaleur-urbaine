@@ -25,17 +25,16 @@ import {
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
-  isSent?: boolean;
   cardMode?: boolean;
   onSubmit?: (...arg: any) => Promise<any>;
 };
 
 const EligibilityFormContact = ({
   addressData,
-  isSent,
   cardMode,
   onSubmit,
 }: EligibilityFormContactType) => {
+  const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
 
   const { ready, variation } = useMatomoAbTestingExperiment(
@@ -113,7 +112,10 @@ const EligibilityFormContact = ({
         }
 
         if (onSubmit) {
-          await onSubmit(sendedValues);
+          setContactFormLoading(true);
+          await onSubmit(sendedValues).finally(() => {
+            setContactFormLoading(false);
+          });
         }
       } catch (err: any) {
         setContactFormError(true);
@@ -207,7 +209,7 @@ const EligibilityFormContact = ({
             <ContactForm
               city={addressData.geoAddress?.properties.city}
               onSubmit={handleSubmitForm}
-              isLoading={isSent}
+              isLoading={contactFormLoading}
               cardMode={cardMode}
             />
             {contactFormError && (
