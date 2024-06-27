@@ -15,6 +15,7 @@ export type AirtableTileInfo = BasicTileInfo & {
 export type DatabaseTileInfo = BasicTileInfo & {
   source: 'database';
   tiles: string;
+  compressedTiles?: boolean;
   extraWhere: (query: Knex.QueryBuilder) => Knex.QueryBuilder;
   id: string;
   airtable?: string;
@@ -260,8 +261,8 @@ export const tilesInfo: Record<SourceId, TileInfo> = {
   },
   besoinsEnChaleur: {
     source: 'database',
-    // tiles: 'besoins_en_chaleur_tiles',
-    tiles: 'besoins_chaleur_31',
+    tiles: 'besoins_en_chaleur_tiles',
+    compressedTiles: true,
     table: '', // useless
     properties: [], // useless
     sourceLayer: '', // useless

@@ -1,9 +1,9 @@
+import { tileSourcesMaxZoom } from '@components/Map/map-layers';
 import geojsonvt from 'geojson-vt';
 import db from 'src/db';
 import base from 'src/db/airtable';
 import vtpbf from 'vt-pbf';
 import { AirtableTileInfo, SourceId, tilesInfo } from './tiles.config';
-import { tileSourcesMaxZoom } from '@components/Map/map-layers';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
@@ -83,7 +83,12 @@ const cacheAirtableTiles = () => {
 
 cacheAirtableTiles();
 
-const getTiles = async (type: SourceId, x: number, y: number, z: number) => {
+const getTile = async (
+  type: SourceId,
+  x: number,
+  y: number,
+  z: number
+): Promise<{ data: any; compressed: boolean } | null> => {
   const tileInfo = tilesInfo[type];
   if (tileInfo.source === 'database') {
     const result = await db(tileInfo.tiles)
@@ -92,7 +97,9 @@ const getTiles = async (type: SourceId, x: number, y: number, z: number) => {
       .andWhere('z', z)
       .first();
 
-    return result?.tile;
+    return result?.tile
+      ? { data: result?.tile, compressed: !!tileInfo.compressedTiles }
+      : null;
   }
 
   if (airtableDayCached !== new Date().getDate()) {
@@ -107,10 +114,13 @@ const getTiles = async (type: SourceId, x: number, y: number, z: number) => {
   const tile = tiles.getTile(z, x, y);
 
   return tile
-    ? Buffer.from(
-        vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })
-      )
+    ? {
+        data: Buffer.from(
+          vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })
+        ),
+        compressed: false,
+      }
     : null;
 };
 
-export default getTiles;
+export default getTile;

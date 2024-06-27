@@ -554,14 +554,14 @@ export function buildMapLayers(
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
+        minzoom: intermediateTileLayersMinZoom,
+        maxzoom: 14,
       },
       layers: [
         {
           id: 'besoinsEnChaleur',
           source: 'besoinsEnChaleur',
           'source-layer': 'layer',
-          minzoom: intermediateTileLayersMinZoom,
           type: 'fill',
           paint: {
             'fill-color': [
@@ -588,7 +588,6 @@ export function buildMapLayers(
           id: 'besoinsEnFroid',
           source: 'besoinsEnChaleur',
           'source-layer': 'layer',
-          minzoom: intermediateTileLayersMinZoom,
           type: 'fill',
           paint: {
             'fill-color': [
@@ -615,7 +614,6 @@ export function buildMapLayers(
           id: 'besoinsEnChaleurFroid-contour',
           source: 'besoinsEnChaleur',
           'source-layer': 'layer',
-          minzoom: intermediateTileLayersMinZoom,
           type: 'line',
           paint: {
             'line-color': '#777777',
