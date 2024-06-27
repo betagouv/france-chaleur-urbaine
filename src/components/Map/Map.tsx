@@ -451,6 +451,7 @@ const Map = ({
       { layer: 'caracteristiquesBatiments', key: 'buildings' },
       { layer: 'besoinsEnChaleur', key: '*' },
       { layer: 'besoinsEnFroid', key: '*' },
+      { layer: 'besoinsEnChaleurIndustrieCommunes', key: '*' },
       { layer: 'consommationsGaz', key: 'consommation' },
       { layer: 'energy', key: 'energy' },
       { layer: 'batimentsRaccordes', key: 'raccordement' },

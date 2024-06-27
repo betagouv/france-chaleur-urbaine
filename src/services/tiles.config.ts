@@ -39,6 +39,7 @@ export const sourceIds = [
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
   'besoinsEnChaleur',
+  'besoinsEnChaleurIndustrieCommunes',
   'buildings', // caractéristiques des bâtiments
 ] as const;
 
@@ -262,6 +263,16 @@ export const tilesInfo: Record<SourceId, TileInfo> = {
   besoinsEnChaleur: {
     source: 'database',
     tiles: 'besoins_en_chaleur_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  besoinsEnChaleurIndustrieCommunes: {
+    source: 'database',
+    tiles: 'besoins_en_chaleur_industrie_communes_tiles',
     compressedTiles: true,
     table: '', // useless
     properties: [], // useless

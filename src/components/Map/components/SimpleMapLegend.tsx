@@ -40,6 +40,8 @@ import {
   batimentsRaccordesLayerMaxOpacity,
   besoinsBatimentsDefaultColor,
   besoinsEnChaleurColorThresholds,
+  besoinsEnChaleurIndustrieCommunesDefaultColor,
+  besoinsEnChaleurIndustrieCommunesThresholds,
   besoinsEnFroidColorThresholds,
   energyLayerMaxOpacity,
 } from '../map-layers';
@@ -73,6 +75,7 @@ export const mapLegendFeatures = [
   'caracteristiquesBatiments',
   'besoinsEnChaleur',
   'besoinsEnFroid',
+  'besoinsEnChaleurIndustrieCommunes',
   'proModeLegend', // texte incitant à activer le mode pro
   'contributeButton', // boutons contribuer et télécharger les tracés
   'cartePotentielsRaccordements', // lien d'ouverture de la carte des potentiels de raccordement
@@ -99,6 +102,7 @@ const expansions = [
   'caracteristiquesBatiments',
   'besoinsEnChaleur',
   'besoinsEnFroid',
+  'besoinsEnChaleurIndustrieCommunes',
 ] as const;
 type Expansion = (typeof expansions)[number];
 
@@ -1835,6 +1839,123 @@ function SimpleMapLegend({
               ne peuvent être affichés simultanément.
             </Text>
           )}
+        </>
+      )}
+
+      {enabledFeatures.includes('besoinsEnChaleurIndustrieCommunes') && (
+        <>
+          <LegendSeparator />
+
+          <Box display="flex">
+            <SingleCheckbox
+              id="besoinsEnChaleurIndustrieCommunes"
+              checked={mapConfiguration.besoinsEnChaleurIndustrieCommunes}
+              onChange={(checked) => {
+                toggleLayer('besoinsEnChaleurIndustrieCommunes');
+                if (checked) {
+                  setSectionExpansion(
+                    'besoinsEnChaleurIndustrieCommunes',
+                    true
+                  );
+                }
+              }}
+              trackingEvent="Carto|Besoins en chaleur secteur industriel"
+            />
+
+            <IconPolygon
+              stroke={
+                besoinsEnChaleurIndustrieCommunesThresholds[
+                  besoinsEnChaleurIndustrieCommunesThresholds.length - 1
+                ].color
+              }
+              fillOpacity={0.7}
+              mt="1v"
+            />
+
+            <Text
+              as="label"
+              htmlFor="besoinsEnChaleurIndustrieCommunes"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              fontWeight="bold"
+              cursor="pointer"
+              pt="1v"
+              px="1v"
+            >
+              Besoins en chaleur du secteur industriel
+            </Text>
+
+            <InfoIcon>
+              <Icon size="1x" name="ri-information-fill" cursor="help" />
+
+              <Hoverable position="bottom">
+                Modélisation réalisée par le Cerema dans le cadre du projet
+                EnRezo.
+                <br />
+                <Link
+                  href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
+                  isExternal
+                >
+                  Accéder à la méthodologie
+                </Link>
+              </Hoverable>
+            </InfoIcon>
+
+            <Button
+              className="fr-px-1w"
+              hasBorder={false}
+              size="sm"
+              onClick={() =>
+                toggleSectionExpansion('besoinsEnChaleurIndustrieCommunes')
+              }
+              title="Afficher/Masquer le détail"
+            >
+              <Icon
+                size="lg"
+                name="ri-arrow-down-s-line"
+                className="fr-mr-0"
+                rotate={
+                  !!sectionsExpansions['besoinsEnChaleurIndustrieCommunes']
+                }
+              />
+            </Button>
+          </Box>
+
+          <CollapsibleBox
+            expand={!!sectionsExpansions['besoinsEnChaleurIndustrieCommunes']}
+          >
+            <DeactivatableBox
+              disabled={!mapConfiguration.besoinsEnChaleurIndustrieCommunes}
+              mx="1w"
+            >
+              <Box display="flex" border="1px solid #777" my="1w">
+                <Box
+                  height="10px"
+                  flex
+                  cursor="help"
+                  backgroundColor={
+                    besoinsEnChaleurIndustrieCommunesDefaultColor
+                  }
+                  title={`>= 0`}
+                />
+                {besoinsEnChaleurIndustrieCommunesThresholds.map((v, index) => (
+                  <Box
+                    key={index}
+                    height="10px"
+                    flex
+                    cursor="help"
+                    backgroundColor={v.color}
+                    title={`>= ${v.value}`}
+                  />
+                ))}
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Text size="xs">0 MWh/an</Text>
+                <Text size="xs">1 500 000 MWh/an</Text>
+              </Box>
+            </DeactivatableBox>
+          </CollapsibleBox>
         </>
       )}
 

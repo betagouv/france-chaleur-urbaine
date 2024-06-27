@@ -228,6 +228,12 @@ const trackingEvents = {
   'Carto|Besoins en chaleur|Désactive': {
     matomo: ['Carto', 'Besoins en chaleur', 'Désactive'],
   },
+  'Carto|Besoins en chaleur secteur industriel|Active': {
+    matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Active'],
+  },
+  'Carto|Besoins en chaleur secteur industriel|Désactive': {
+    matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Désactive'],
+  },
   'Carto|Besoins en froid|Active': {
     matomo: ['Carto', 'Besoins en froid', 'Active'],
   },

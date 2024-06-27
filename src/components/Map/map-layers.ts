@@ -307,6 +307,30 @@ export const besoinsEnFroidColorThresholds: ColorThreshold[] = [
   },
 ];
 
+export const besoinsEnChaleurIndustrieCommunesDefaultColor = '#fbf2e7';
+export const besoinsEnChaleurIndustrieCommunesThresholds: ColorThreshold[] = [
+  {
+    value: 31000,
+    color: '#f3dce2',
+  },
+  {
+    value: 101000,
+    color: '#eac5dd',
+  },
+  {
+    value: 222000,
+    color: '#e6b9da',
+  },
+  {
+    value: 425000,
+    color: '#d1a8cc',
+  },
+  {
+    value: 764000,
+    color: '#bc97bd',
+  },
+];
+
 export type MapSourceLayersSpecification = {
   sourceId: SourceId;
   source: SourceSpecification;
@@ -349,7 +373,8 @@ export type LayerId =
   | 'besoinsEnChaleur'
   | 'besoinsEnFroid'
   | 'besoinsEnChaleurFroid-contour'
-  | 'besoinsIndustrielsCommunaux'
+  | 'besoinsEnChaleurIndustrieCommunes'
+  | 'besoinsEnChaleurIndustrieCommunes-contour'
   | 'caracteristiquesBatiments';
 
 const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> =
@@ -441,6 +466,50 @@ export function buildMapLayers(
       ],
     },
 
+    {
+      sourceId: 'besoinsEnChaleurIndustrieCommunes',
+      source: {
+        type: 'vector',
+        tiles: [
+          `${location.origin}/api/map/besoinsEnChaleurIndustrieCommunes/{z}/{x}/{y}`,
+        ],
+        minzoom: 5,
+        maxzoom: 11,
+        attribution:
+          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+      },
+      layers: [
+        {
+          id: 'besoinsEnChaleurIndustrieCommunes',
+          source: 'besoinsEnChaleurIndustrieCommunes',
+          'source-layer': 'layer',
+          type: 'fill',
+          paint: {
+            'fill-color': [
+              'step',
+              ['coalesce', ['get', 'conso_chal'], 0],
+              besoinsEnChaleurIndustrieCommunesDefaultColor,
+              ...besoinsEnChaleurIndustrieCommunesThresholds.flatMap((v) => [
+                v.value,
+                v.color,
+              ]),
+            ],
+            'fill-opacity': 0.7,
+          },
+        },
+        {
+          id: 'besoinsEnChaleurIndustrieCommunes-contour',
+          source: 'besoinsEnChaleurIndustrieCommunes',
+          'source-layer': 'layer',
+          type: 'line',
+          paint: {
+            'line-color': '#777777',
+            'line-width': 2,
+          },
+        },
+      ],
+    },
+
     // ------------------------------------------
     // --- Zones de développement prioritaire ---
     // ------------------------------------------
@@ -522,6 +591,8 @@ export function buildMapLayers(
         tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
         minzoom: 10,
         maxzoom: 14,
+        attribution:
+          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -1101,10 +1172,14 @@ export function applyMapConfigurationToLayers(
     'besoinsEnChaleurFroid-contour',
     config.proMode && (config.besoinsEnChaleur || config.besoinsEnFroid)
   );
-  // setLayerVisibility(
-  //   'besoinsIndustrielsCommunaux',
-  //   config.proMode && config.besoinsIndustrielsCommunaux
-  // );
+  setLayerVisibility(
+    'besoinsEnChaleurIndustrieCommunes',
+    config.proMode && config.besoinsEnChaleurIndustrieCommunes
+  );
+  setLayerVisibility(
+    'besoinsEnChaleurIndustrieCommunes-contour',
+    config.proMode && config.besoinsEnChaleurIndustrieCommunes
+  );
   setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
   setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);
   setLayerVisibility(

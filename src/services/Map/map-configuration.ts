@@ -104,7 +104,7 @@ export type MapConfiguration = {
   caracteristiquesBatiments: boolean;
   besoinsEnChaleur: boolean;
   besoinsEnFroid: boolean;
-  besoinsIndustrielsCommunaux: boolean;
+  besoinsEnChaleurIndustrieCommunes: boolean;
 };
 
 /**
@@ -201,7 +201,7 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
   caracteristiquesBatiments: false,
   besoinsEnChaleur: false,
   besoinsEnFroid: false,
-  besoinsIndustrielsCommunaux: false,
+  besoinsEnChaleurIndustrieCommunes: false,
 };
 
 export const defaultMapConfiguration = createMapConfiguration({

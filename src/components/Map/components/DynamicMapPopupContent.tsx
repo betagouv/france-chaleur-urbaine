@@ -2,7 +2,10 @@ import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
 import { prettyFormatNumber } from '@utils/strings';
 import { ReactElement } from 'react';
-import { BesoinsEnChaleur } from 'src/types/layers/BesoinsEnChaleur';
+import {
+  BesoinsEnChaleur,
+  BesoinsEnChaleurIndustrieCommunes,
+} from 'src/types/layers/BesoinsEnChaleur';
 import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
 import {
   Datacenter,
@@ -28,6 +31,7 @@ export const layersWithDynamicContentPopup = [
   'enrrMobilisables-parkings',
   'besoinsEnChaleur',
   'besoinsEnFroid',
+  'besoinsEnChaleurIndustrieCommunes',
 ] as const satisfies ReadonlyArray<LayerId>;
 
 export function isDynamicPopupContent(
@@ -41,11 +45,17 @@ export function isDynamicPopupContent(
 export type DynamicPopupContentType =
   | ZonePotentielChaudPopupContentType
   | ENRRMobilisablePopupContentType
-  | BesoinsEnChaleurPopupContentType;
+  | BesoinsEnChaleurPopupContentType
+  | BesoinsEnChaleurIndustrieCommunesPopupContentType;
 
 type BesoinsEnChaleurPopupContentType = {
   type: 'besoinsEnChaleur' | 'besoinsEnFroid';
   properties: BesoinsEnChaleur;
+};
+
+type BesoinsEnChaleurIndustrieCommunesPopupContentType = {
+  type: 'besoinsEnChaleurIndustrieCommunes';
+  properties: BesoinsEnChaleurIndustrieCommunes;
 };
 
 type ZonePotentielChaudPopupContentType = {
@@ -158,6 +168,12 @@ const DynamicPopupContent = ({
       return (
         <BesoinsEnChaleurPopupContent besoinsEnChaleur={content.properties} />
       );
+    case 'besoinsEnChaleurIndustrieCommunes':
+      return (
+        <BesoinsEnChaleurIndustrieCommunesPopupContent
+          besoinsEnChaleurIndustrieCommunes={content.properties}
+        />
+      );
     default:
       throw new Error('not implemented');
   }
@@ -205,7 +221,7 @@ const ZonePotentielChaudPopupContent = ({
 };
 
 /**
- * Contenu de la popup pour les zones à potentiel chaud et fort chaud.
+ * Contenu de la popup pour les besoins en chaleur et froid des bâtiments.
  */
 const BesoinsEnChaleurPopupContent = ({
   besoinsEnChaleur,
@@ -243,6 +259,45 @@ const BesoinsEnChaleurPopupContent = ({
       <PopupProperty
         label="Identifiant BD TOPO"
         value={besoinsEnChaleur.IDBATIMENT}
+      />
+      <PopupProperty label="Source" value="Cerema" />
+    </section>
+  );
+};
+
+/**
+ * Contenu de la popup pour les besoins en chaleur et froid des bâtiments.
+ */
+const BesoinsEnChaleurIndustrieCommunesPopupContent = ({
+  besoinsEnChaleurIndustrieCommunes,
+}: {
+  besoinsEnChaleurIndustrieCommunes: BesoinsEnChaleurIndustrieCommunes;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">
+        Besoins en chaleur du secteur industriel à{' '}
+        {besoinsEnChaleurIndustrieCommunes.libgeo}
+      </PopupTitle>
+      <PopupProperty
+        label="Besoin en chaleur et froid pour les process"
+        value={besoinsEnChaleurIndustrieCommunes.conso_proc}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins en chaleur pour le chauffage des locaux"
+        value={besoinsEnChaleurIndustrieCommunes.conso_loca}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Autres besoins"
+        value={besoinsEnChaleurIndustrieCommunes.conso_autr}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins totaux = tous usages"
+        value={besoinsEnChaleurIndustrieCommunes.conso_tot}
+        formatter={formatMWh}
       />
       <PopupProperty label="Source" value="Cerema" />
     </section>
