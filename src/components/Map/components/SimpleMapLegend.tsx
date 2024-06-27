@@ -150,6 +150,11 @@ function SimpleMapLegend({
     }
   }, []);
 
+  const nbCouchesFondBatiments =
+    (mapConfiguration.caracteristiquesBatiments ? 1 : 0) +
+    (mapConfiguration.besoinsEnChaleur ? 1 : 0) +
+    (mapConfiguration.besoinsEnFroid ? 1 : 0);
+
   return (
     <>
       <Box display="flex" alignItems="center">
@@ -1599,6 +1604,13 @@ function SimpleMapLegend({
               </Box>
             </DeactivatableBox>
           </CollapsibleBox>
+          {mapConfiguration.caracteristiquesBatiments &&
+            nbCouchesFondBatiments >= 2 && (
+              <Text color="error" size="xs" m="1w">
+                Les caractéristiques des bâtiments et besoins en chaleur et
+                froid ne peuvent être affichés simultanément.
+              </Text>
+            )}
         </>
       )}
 
@@ -1616,7 +1628,7 @@ function SimpleMapLegend({
                   setSectionExpansion('besoinsEnChaleur', true);
                 }
               }}
-              trackingEvent="Carto|DPE"
+              trackingEvent="Carto|Besoins en chaleur"
             />
 
             <IconPolygon
@@ -1646,7 +1658,17 @@ function SimpleMapLegend({
             <InfoIcon>
               <Icon size="1x" name="ri-information-fill" cursor="help" />
 
-              <Hoverable position="bottom">TODO</Hoverable>
+              <Hoverable position="bottom">
+                Modélisation réalisée par le Cerema dans le cadre du projet
+                EnRezo.
+                <br />
+                <Link
+                  href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid"
+                  isExternal
+                >
+                  Accéder à la méthodologie
+                </Link>
+              </Hoverable>
             </InfoIcon>
 
             <Button
@@ -1695,6 +1717,12 @@ function SimpleMapLegend({
               </Box>
             </DeactivatableBox>
           </CollapsibleBox>
+          {mapConfiguration.besoinsEnChaleur && nbCouchesFondBatiments >= 2 && (
+            <Text color="error" size="xs" m="1w">
+              Les caractéristiques des bâtiments et besoins en chaleur et froid
+              ne peuvent être affichés simultanément.
+            </Text>
+          )}
         </>
       )}
 
@@ -1712,7 +1740,7 @@ function SimpleMapLegend({
                   setSectionExpansion('besoinsEnFroid', true);
                 }
               }}
-              trackingEvent="Carto|DPE"
+              trackingEvent="Carto|Besoins en froid"
             />
 
             <IconPolygon
@@ -1742,7 +1770,17 @@ function SimpleMapLegend({
             <InfoIcon>
               <Icon size="1x" name="ri-information-fill" cursor="help" />
 
-              <Hoverable position="bottom">TODO</Hoverable>
+              <Hoverable position="bottom">
+                Modélisation réalisée par le Cerema dans le cadre du projet
+                EnRezo.
+                <br />
+                <Link
+                  href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid"
+                  isExternal
+                >
+                  Accéder à la méthodologie
+                </Link>
+              </Hoverable>
             </InfoIcon>
 
             <Button
@@ -1791,6 +1829,12 @@ function SimpleMapLegend({
               </Box>
             </DeactivatableBox>
           </CollapsibleBox>
+          {mapConfiguration.besoinsEnFroid && nbCouchesFondBatiments >= 2 && (
+            <Text color="error" size="xs" m="1w">
+              Les caractéristiques des bâtiments et besoins en chaleur et froid
+              ne peuvent être affichés simultanément.
+            </Text>
+          )}
         </>
       )}
 

@@ -1,5 +1,6 @@
 import {
   CircleLayerSpecification,
+  DataDrivenPropertyValueSpecification,
   ExpressionInputType,
   ExpressionSpecification,
   FilterSpecification,
@@ -351,6 +352,9 @@ export type LayerId =
   | 'besoinsIndustrielsCommunaux'
   | 'caracteristiquesBatiments';
 
+const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> =
+  ['interpolate', ['linear'], ['zoom'], 10 + 0.2, 0, 10 + 0.2 + 1, 1];
+
 // besoin d'une fonction dynamique pour avoir location.origin disponible côté client et aussi
 // pouvoir construire les layers selon les filtres
 export function buildMapLayers(
@@ -509,6 +513,68 @@ export function buildMapLayers(
     },
 
     // --------------------------------------------
+    // --- Besoins en chaleur des bâtiments ---
+    // --------------------------------------------
+    {
+      sourceId: 'besoinsEnChaleur',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
+        minzoom: 10,
+        maxzoom: 14,
+      },
+      layers: [
+        {
+          id: 'besoinsEnFroid',
+          source: 'besoinsEnChaleur',
+          'source-layer': 'layer',
+          type: 'fill',
+          paint: {
+            'fill-color': [
+              'step',
+              ['coalesce', ['get', 'FROID_MWH'], 0],
+              besoinsBatimentsDefaultColor,
+              ...besoinsEnFroidColorThresholds.flatMap((v) => [
+                v.value,
+                v.color,
+              ]),
+            ],
+            'fill-opacity': zoomOpacityTransitionAt10,
+          },
+        },
+        {
+          id: 'besoinsEnChaleur',
+          source: 'besoinsEnChaleur',
+          'source-layer': 'layer',
+          type: 'fill',
+          paint: {
+            'fill-color': [
+              'step',
+              ['coalesce', ['coalesce', ['get', 'CHAUF_MWH'], 0], 0],
+              besoinsBatimentsDefaultColor,
+              ...besoinsEnChaleurColorThresholds.flatMap((v) => [
+                v.value,
+                v.color,
+              ]),
+            ],
+            'fill-opacity': zoomOpacityTransitionAt10,
+          },
+        },
+        {
+          id: 'besoinsEnChaleurFroid-contour',
+          source: 'besoinsEnChaleur',
+          'source-layer': 'layer',
+          type: 'line',
+          paint: {
+            'line-color': '#777777',
+            'line-width': 0.5,
+            'line-opacity': zoomOpacityTransitionAt10,
+          },
+        },
+      ],
+    },
+
+    // --------------------------------------------
     // --- Caractéristiques des bâtiments (DPE) ---
     // --------------------------------------------
     {
@@ -540,92 +606,6 @@ export function buildMapLayers(
               0,
               intermediateTileLayersMinZoom + 0.2 + 1,
               themeDefBuildings.opacity,
-            ],
-          },
-        },
-      ],
-    },
-
-    // --------------------------------------------
-    // --- Besoins en chaleur des bâtiments ---
-    // --------------------------------------------
-    {
-      sourceId: 'besoinsEnChaleur',
-      source: {
-        type: 'vector',
-        tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
-        minzoom: intermediateTileLayersMinZoom,
-        maxzoom: 14,
-      },
-      layers: [
-        {
-          id: 'besoinsEnChaleur',
-          source: 'besoinsEnChaleur',
-          'source-layer': 'layer',
-          type: 'fill',
-          paint: {
-            'fill-color': [
-              'step',
-              ['coalesce', ['coalesce', ['get', 'CHAUF_MWH'], 0], 0],
-              besoinsBatimentsDefaultColor,
-              ...besoinsEnChaleurColorThresholds.flatMap((v) => [
-                v.value,
-                v.color,
-              ]),
-            ],
-            'fill-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              intermediateTileLayersMinZoom + 0.2,
-              0,
-              intermediateTileLayersMinZoom + 0.2 + 1,
-              1,
-            ],
-          },
-        },
-        {
-          id: 'besoinsEnFroid',
-          source: 'besoinsEnChaleur',
-          'source-layer': 'layer',
-          type: 'fill',
-          paint: {
-            'fill-color': [
-              'step',
-              ['coalesce', ['get', 'FROID_MWH'], 0],
-              besoinsBatimentsDefaultColor,
-              ...besoinsEnFroidColorThresholds.flatMap((v) => [
-                v.value,
-                v.color,
-              ]),
-            ],
-            'fill-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              intermediateTileLayersMinZoom + 0.2,
-              0,
-              intermediateTileLayersMinZoom + 0.2 + 1,
-              1,
-            ],
-          },
-        },
-        {
-          id: 'besoinsEnChaleurFroid-contour',
-          source: 'besoinsEnChaleur',
-          'source-layer': 'layer',
-          type: 'line',
-          paint: {
-            'line-color': '#777777',
-            'line-width': 0.5,
-            'line-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              intermediateTileLayersMinZoom + 0.2,
-              0,
-              intermediateTileLayersMinZoom + 0.2 + 1,
-              1,
             ],
           },
         },

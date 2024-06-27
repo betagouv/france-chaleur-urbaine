@@ -221,7 +221,7 @@ const BesoinsEnChaleurPopupContent = ({
         formatter={formatMWh}
       />
       <PopupProperty
-        label="Besoins en ECS"
+        label="Besoins en eau chaude sanitaire"
         value={besoinsEnChaleur.ECS_MWH}
         formatter={formatMWh}
       />
