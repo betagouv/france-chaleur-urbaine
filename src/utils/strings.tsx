@@ -1,3 +1,5 @@
+import { ReactElement } from 'react';
+
 export function prettyFormatNumber(
   number: number | null | undefined,
   precision?: number
@@ -32,4 +34,40 @@ export function ratioToHex(ratio: number): string {
 
   const hex = Math.floor(ratio * 255).toString(16);
   return `${hex.length === 1 ? '0' : ''}${hex}`;
+}
+
+export function formatMWh(value: number): ReactElement {
+  let unit: string;
+
+  if (value >= 1e6) {
+    value /= 1e6;
+    unit = 'TWh/an';
+  } else if (value >= 1e3) {
+    value /= 1e3;
+    unit = 'GWh/an';
+  } else {
+    unit = 'MWh/an';
+  }
+
+  return (
+    <>
+      {value.toPrecision(3)}&nbsp;{unit}
+    </>
+  );
+}
+
+export function formatMWhString(value: number): string {
+  let unit: string;
+
+  if (value >= 1e6) {
+    value /= 1e6;
+    unit = 'TWh/an';
+  } else if (value >= 1e3) {
+    value /= 1e3;
+    unit = 'GWh/an';
+  } else {
+    unit = 'MWh/an';
+  }
+
+  return `${value.toPrecision(3)} ${unit}`;
 }

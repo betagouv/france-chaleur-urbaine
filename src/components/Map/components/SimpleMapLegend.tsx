@@ -38,11 +38,9 @@ import { LegendSeparator } from '../Map.style';
 import {
   LegendDeskData,
   batimentsRaccordesLayerMaxOpacity,
-  besoinsBatimentsDefaultColor,
-  besoinsEnChaleurColorThresholds,
-  besoinsEnChaleurIndustrieCommunesDefaultColor,
-  besoinsEnChaleurIndustrieCommunesThresholds,
-  besoinsEnFroidColorThresholds,
+  besoinsEnChaleurIndustrieCommunesIntervals,
+  besoinsEnChaleurIntervals,
+  besoinsEnFroidIntervals,
   energyLayerMaxOpacity,
 } from '../map-layers';
 import DevModeIcon from './DevModeIcon';
@@ -1637,8 +1635,8 @@ function SimpleMapLegend({
 
             <IconPolygon
               stroke={
-                besoinsEnChaleurColorThresholds[
-                  besoinsEnChaleurColorThresholds.length - 3 // lighter color
+                besoinsEnChaleurIntervals[
+                  besoinsEnChaleurIntervals.length - 3 // lighter color
                 ].color
               }
               fillOpacity={0.7}
@@ -1697,27 +1695,26 @@ function SimpleMapLegend({
               mx="1w"
             >
               <Box display="flex" border="1px solid #777" my="1w">
-                <Box
-                  height="10px"
-                  flex
-                  cursor="help"
-                  backgroundColor={besoinsBatimentsDefaultColor}
-                  title={`>= 0`}
-                />
-                {besoinsEnChaleurColorThresholds.map((v, index) => (
+                {besoinsEnChaleurIntervals.map((interval, index) => (
                   <Box
                     key={index}
                     height="10px"
                     flex
                     cursor="help"
-                    backgroundColor={v.color}
-                    title={`>= ${v.value}`}
+                    backgroundColor={interval.color}
+                    title={`${interval.min} - ${interval.max}`}
                   />
                 ))}
               </Box>
               <Box display="flex" justifyContent="space-between">
-                <Text size="xs">0 MWh/an</Text>
-                <Text size="xs">6000 MWh/an</Text>
+                <Text size="xs">{besoinsEnChaleurIntervals[0].min}</Text>
+                <Text size="xs">
+                  {
+                    besoinsEnChaleurIntervals[
+                      besoinsEnChaleurIntervals.length - 1
+                    ].max
+                  }
+                </Text>
               </Box>
             </DeactivatableBox>
           </CollapsibleBox>
@@ -1749,8 +1746,8 @@ function SimpleMapLegend({
 
             <IconPolygon
               stroke={
-                besoinsEnFroidColorThresholds[
-                  besoinsEnFroidColorThresholds.length - 3 // lighter color
+                besoinsEnFroidIntervals[
+                  besoinsEnFroidIntervals.length - 3 // lighter color
                 ].color
               }
               fillOpacity={0.7}
@@ -1809,27 +1806,25 @@ function SimpleMapLegend({
               mx="1w"
             >
               <Box display="flex" border="1px solid #777" my="1w">
-                <Box
-                  height="10px"
-                  flex
-                  cursor="help"
-                  backgroundColor={besoinsBatimentsDefaultColor}
-                  title={`>= 0`}
-                />
-                {besoinsEnFroidColorThresholds.map((v, index) => (
+                {besoinsEnFroidIntervals.map((interval, index) => (
                   <Box
                     key={index}
                     height="10px"
                     flex
                     cursor="help"
-                    backgroundColor={v.color}
-                    title={`>= ${v.value}`}
+                    backgroundColor={interval.color}
+                    title={`${interval.min} - ${interval.max}`}
                   />
                 ))}
               </Box>
               <Box display="flex" justifyContent="space-between">
-                <Text size="xs">0 MWh/an</Text>
-                <Text size="xs">5000 MWh/an</Text>
+                <Text size="xs">{besoinsEnFroidIntervals[0].min}</Text>
+                <Text size="xs">
+                  {
+                    besoinsEnFroidIntervals[besoinsEnFroidIntervals.length - 1]
+                      .max
+                  }
+                </Text>
               </Box>
             </DeactivatableBox>
           </CollapsibleBox>
@@ -1864,8 +1859,8 @@ function SimpleMapLegend({
 
             <IconPolygon
               stroke={
-                besoinsEnChaleurIndustrieCommunesThresholds[
-                  besoinsEnChaleurIndustrieCommunesThresholds.length - 1
+                besoinsEnChaleurIndustrieCommunesIntervals[
+                  besoinsEnChaleurIndustrieCommunesIntervals.length - 1
                 ].color
               }
               fillOpacity={0.7}
@@ -1930,29 +1925,30 @@ function SimpleMapLegend({
               mx="1w"
             >
               <Box display="flex" border="1px solid #777" my="1w">
-                <Box
-                  height="10px"
-                  flex
-                  cursor="help"
-                  backgroundColor={
-                    besoinsEnChaleurIndustrieCommunesDefaultColor
-                  }
-                  title={`>= 0`}
-                />
-                {besoinsEnChaleurIndustrieCommunesThresholds.map((v, index) => (
-                  <Box
-                    key={index}
-                    height="10px"
-                    flex
-                    cursor="help"
-                    backgroundColor={v.color}
-                    title={`>= ${v.value}`}
-                  />
-                ))}
+                {besoinsEnChaleurIndustrieCommunesIntervals.map(
+                  (interval, index) => (
+                    <Box
+                      key={index}
+                      height="10px"
+                      flex
+                      cursor="help"
+                      backgroundColor={interval.color}
+                      title={`${interval.min} - ${interval.max}`}
+                    />
+                  )
+                )}
               </Box>
               <Box display="flex" justifyContent="space-between">
-                <Text size="xs">0 MWh/an</Text>
-                <Text size="xs">1 500 000 MWh/an</Text>
+                <Text size="xs">
+                  {besoinsEnChaleurIndustrieCommunesIntervals[0].min}
+                </Text>
+                <Text size="xs">
+                  {
+                    besoinsEnChaleurIndustrieCommunesIntervals[
+                      besoinsEnChaleurIndustrieCommunesIntervals.length - 1
+                    ].max
+                  }
+                </Text>
               </Box>
             </DeactivatableBox>
           </CollapsibleBox>

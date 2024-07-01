@@ -25,6 +25,7 @@ import {
 } from 'src/services/Map/businessRules/zonePotentielChaud';
 
 import { intervalsEqual } from '@utils/interval';
+import { formatMWhString } from '@utils/strings';
 import {
   themeDefSolaireThermiqueFriches,
   themeDefSolaireThermiqueParkings,
@@ -232,9 +233,15 @@ type ColorThreshold = {
   value: number;
   color: `#${string}`;
 };
+type LegendInterval = {
+  min: string;
+  max: string;
+  color: `#${string}`;
+};
 
-export const besoinsBatimentsDefaultColor = '#ffffff';
-export const besoinsEnChaleurColorThresholds: ColorThreshold[] = [
+const besoinsBatimentsDefaultColor = '#ffffff';
+const besoinsEnChaleurMaxValue = 6_000;
+const besoinsEnChaleurColorThresholds: ColorThreshold[] = [
   {
     value: 20,
     color: '#ffffe5',
@@ -272,7 +279,8 @@ export const besoinsEnChaleurColorThresholds: ColorThreshold[] = [
     color: '#662506',
   },
 ];
-export const besoinsEnFroidColorThresholds: ColorThreshold[] = [
+const besoinsEnFroidMaxValue = 5_000;
+const besoinsEnFroidColorThresholds: ColorThreshold[] = [
   {
     value: 5,
     color: '#deebf7',
@@ -307,8 +315,9 @@ export const besoinsEnFroidColorThresholds: ColorThreshold[] = [
   },
 ];
 
-export const besoinsEnChaleurIndustrieCommunesDefaultColor = '#fbf2e7';
-export const besoinsEnChaleurIndustrieCommunesThresholds: ColorThreshold[] = [
+const besoinsEnChaleurIndustrieCommunesDefaultColor = '#fbf2e7';
+const besoinsEnChaleurIndustrieCommunesMaxValue = 1_500_000;
+const besoinsEnChaleurIndustrieCommunesThresholds: ColorThreshold[] = [
   {
     value: 31000,
     color: '#f3dce2',
@@ -329,6 +338,55 @@ export const besoinsEnChaleurIndustrieCommunesThresholds: ColorThreshold[] = [
     value: 764000,
     color: '#bc97bd',
   },
+];
+
+export const besoinsEnChaleurIntervals: LegendInterval[] = [
+  {
+    min: formatMWhString(0),
+    max: formatMWhString(besoinsEnChaleurColorThresholds[0].value),
+    color: besoinsBatimentsDefaultColor,
+  },
+  ...besoinsEnChaleurColorThresholds.map((threshold, index, array) => {
+    return {
+      min: formatMWhString(threshold.value),
+      max: formatMWhString(array[index + 1]?.value ?? besoinsEnChaleurMaxValue),
+      color: threshold.color,
+    };
+  }),
+];
+
+export const besoinsEnFroidIntervals: LegendInterval[] = [
+  {
+    min: formatMWhString(0),
+    max: formatMWhString(besoinsEnFroidColorThresholds[0].value),
+    color: besoinsBatimentsDefaultColor,
+  },
+  ...besoinsEnFroidColorThresholds.map((threshold, index, array) => {
+    return {
+      min: formatMWhString(threshold.value),
+      max: formatMWhString(array[index + 1]?.value ?? besoinsEnFroidMaxValue),
+      color: threshold.color,
+    };
+  }),
+];
+
+export const besoinsEnChaleurIndustrieCommunesIntervals: LegendInterval[] = [
+  {
+    min: formatMWhString(0),
+    max: formatMWhString(besoinsEnChaleurIndustrieCommunesThresholds[0].value),
+    color: besoinsEnChaleurIndustrieCommunesDefaultColor,
+  },
+  ...besoinsEnChaleurIndustrieCommunesThresholds.map(
+    (threshold, index, array) => {
+      return {
+        min: formatMWhString(threshold.value),
+        max: formatMWhString(
+          array[index + 1]?.value ?? besoinsEnChaleurIndustrieCommunesMaxValue
+        ),
+        color: threshold.color,
+      };
+    }
+  ),
 ];
 
 export type MapSourceLayersSpecification = {
@@ -504,7 +562,7 @@ export function buildMapLayers(
           type: 'line',
           paint: {
             'line-color': '#777777',
-            'line-width': 2,
+            'line-width': 1,
           },
         },
       ],

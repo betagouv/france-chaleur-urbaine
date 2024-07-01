@@ -1,6 +1,6 @@
 import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
-import { prettyFormatNumber } from '@utils/strings';
+import { formatMWh, prettyFormatNumber } from '@utils/strings';
 import { ReactElement } from 'react';
 import {
   BesoinsEnChaleur,
@@ -303,26 +303,6 @@ const BesoinsEnChaleurIndustrieCommunesPopupContent = ({
     </section>
   );
 };
-
-function formatMWh(value: number): ReactElement {
-  let unit: string;
-
-  if (value >= 1e6) {
-    value /= 1e6;
-    unit = 'TWh/an';
-  } else if (value >= 1e3) {
-    value /= 1e3;
-    unit = 'GWh/an';
-  } else {
-    unit = 'MWh/an';
-  }
-
-  return (
-    <>
-      {value.toPrecision(3)}&nbsp;{unit}
-    </>
-  );
-}
 
 const ENRRMobilisableDatacenterPopupContent = ({
   datacenter,
