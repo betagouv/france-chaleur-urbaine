@@ -1,13 +1,14 @@
 import {
+  CircleLayerSpecification,
+  DataDrivenPropertyValueSpecification,
   ExpressionInputType,
+  ExpressionSpecification,
   FilterSpecification,
   LayerSpecification,
+  LineLayerSpecification,
+  Map,
   SourceSpecification,
   StyleSetterOptions,
-  Map,
-  ExpressionSpecification,
-  LineLayerSpecification,
-  CircleLayerSpecification,
 } from 'maplibre-gl';
 import {
   themeDefBuildings,
@@ -23,19 +24,20 @@ import {
   themeDefZonePotentielFortChaud,
 } from 'src/services/Map/businessRules/zonePotentielChaud';
 
-import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
+import { intervalsEqual } from '@utils/interval';
+import { formatMWhString } from '@utils/strings';
+import {
+  themeDefSolaireThermiqueFriches,
+  themeDefSolaireThermiqueParkings,
+} from 'src/services/Map/businessRules/enrrMobilisables';
 import {
   MapConfiguration,
   filtresEnergies,
   percentageMaxInterval,
 } from 'src/services/Map/map-configuration';
-import {
-  themeDefSolaireThermiqueFriches,
-  themeDefSolaireThermiqueParkings,
-} from 'src/services/Map/businessRules/enrrMobilisables';
 import { SourceId } from 'src/services/tiles.config';
 import { Network } from 'src/types/Summary/Network';
-import { intervalsEqual } from '@utils/interval';
+import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -227,6 +229,166 @@ const iconRatio = 1 / (iconSize / maxDisplaySize);
 const getSymbolRatio: (size: number) => number = (size) =>
   iconRatio * (size / maxDisplaySize);
 
+type ColorThreshold = {
+  value: number;
+  color: `#${string}`;
+};
+type LegendInterval = {
+  min: string;
+  max: string;
+  color: `#${string}`;
+};
+
+const besoinsBatimentsDefaultColor = '#ffffff';
+const besoinsEnChaleurMaxValue = 6_000;
+const besoinsEnChaleurColorThresholds: ColorThreshold[] = [
+  {
+    value: 20,
+    color: '#ffffe5',
+  },
+  {
+    value: 30,
+    color: '#fff7bc',
+  },
+  {
+    value: 50,
+    color: '#fee391',
+  },
+  {
+    value: 75,
+    color: '#fec44f',
+  },
+  {
+    value: 150,
+    color: '#fe9929',
+  },
+  {
+    value: 300,
+    color: '#ec7014',
+  },
+  {
+    value: 600,
+    color: '#cc4c02',
+  },
+  {
+    value: 900,
+    color: '#993404',
+  },
+  {
+    value: 1200,
+    color: '#662506',
+  },
+];
+const besoinsEnFroidMaxValue = 5_000;
+const besoinsEnFroidColorThresholds: ColorThreshold[] = [
+  {
+    value: 5,
+    color: '#deebf7',
+  },
+  {
+    value: 10,
+    color: '#c6dbef',
+  },
+  {
+    value: 15,
+    color: '#9ecae1',
+  },
+  {
+    value: 30,
+    color: '#6baed6',
+  },
+  {
+    value: 50,
+    color: '#4292c6',
+  },
+  {
+    value: 70,
+    color: '#2171b5',
+  },
+  {
+    value: 100,
+    color: '#08519c',
+  },
+  {
+    value: 300,
+    color: '#08306b',
+  },
+];
+
+const besoinsEnChaleurIndustrieCommunesDefaultColor = '#fbf2e7';
+const besoinsEnChaleurIndustrieCommunesMaxValue = 1_500_000;
+const besoinsEnChaleurIndustrieCommunesThresholds: ColorThreshold[] = [
+  {
+    value: 31000,
+    color: '#f3dce2',
+  },
+  {
+    value: 101000,
+    color: '#eac5dd',
+  },
+  {
+    value: 222000,
+    color: '#e6b9da',
+  },
+  {
+    value: 425000,
+    color: '#d1a8cc',
+  },
+  {
+    value: 764000,
+    color: '#bc97bd',
+  },
+];
+
+export const besoinsEnChaleurIntervals: LegendInterval[] = [
+  {
+    min: formatMWhString(0),
+    max: formatMWhString(besoinsEnChaleurColorThresholds[0].value),
+    color: besoinsBatimentsDefaultColor,
+  },
+  ...besoinsEnChaleurColorThresholds.map((threshold, index, array) => {
+    return {
+      min: formatMWhString(threshold.value),
+      max: formatMWhString(array[index + 1]?.value ?? besoinsEnChaleurMaxValue),
+      color: threshold.color,
+    };
+  }),
+];
+
+export const besoinsEnFroidIntervals: LegendInterval[] = [
+  {
+    min: formatMWhString(0),
+    max: formatMWhString(besoinsEnFroidColorThresholds[0].value),
+    color: besoinsBatimentsDefaultColor,
+  },
+  ...besoinsEnFroidColorThresholds.map((threshold, index, array) => {
+    return {
+      min: formatMWhString(threshold.value),
+      max: formatMWhString(array[index + 1]?.value ?? besoinsEnFroidMaxValue),
+      color: threshold.color,
+    };
+  }),
+];
+
+export const besoinsEnChaleurIndustrieCommunesIntervals: LegendInterval[] = [
+  {
+    min: formatMWhString(0),
+    max: formatMWhString(besoinsEnChaleurIndustrieCommunesThresholds[0].value),
+    color: besoinsEnChaleurIndustrieCommunesDefaultColor,
+  },
+  ...besoinsEnChaleurIndustrieCommunesThresholds.map(
+    (threshold, index, array) => {
+      return {
+        min: formatMWhString(threshold.value),
+        max: formatMWhString(
+          array[index + 1]?.value ?? besoinsEnChaleurIndustrieCommunesMaxValue
+        ),
+        color: threshold.color,
+      };
+    }
+  ),
+];
+
 export type MapSourceLayersSpecification = {
   sourceId: SourceId;
   source: SourceSpecification;
@@ -266,7 +428,15 @@ export type LayerId =
   | 'zonesPotentielChaud-contour'
   | 'zonesPotentielFortChaud'
   | 'zonesPotentielFortChaud-contour'
+  | 'besoinsEnChaleur'
+  | 'besoinsEnFroid'
+  | 'besoinsEnChaleurFroid-contour'
+  | 'besoinsEnChaleurIndustrieCommunes'
+  | 'besoinsEnChaleurIndustrieCommunes-contour'
   | 'caracteristiquesBatiments';
+
+const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> =
+  ['interpolate', ['linear'], ['zoom'], 10 + 0.2, 0, 10 + 0.2 + 1, 1];
 
 // besoin d'une fonction dynamique pour avoir location.origin disponible côté client et aussi
 // pouvoir construire les layers selon les filtres
@@ -354,6 +524,50 @@ export function buildMapLayers(
       ],
     },
 
+    {
+      sourceId: 'besoinsEnChaleurIndustrieCommunes',
+      source: {
+        type: 'vector',
+        tiles: [
+          `${location.origin}/api/map/besoinsEnChaleurIndustrieCommunes/{z}/{x}/{y}`,
+        ],
+        minzoom: 5,
+        maxzoom: 11,
+        attribution:
+          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+      },
+      layers: [
+        {
+          id: 'besoinsEnChaleurIndustrieCommunes',
+          source: 'besoinsEnChaleurIndustrieCommunes',
+          'source-layer': 'layer',
+          type: 'fill',
+          paint: {
+            'fill-color': [
+              'step',
+              ['coalesce', ['get', 'conso_chal'], 0],
+              besoinsEnChaleurIndustrieCommunesDefaultColor,
+              ...besoinsEnChaleurIndustrieCommunesThresholds.flatMap((v) => [
+                v.value,
+                v.color,
+              ]),
+            ],
+            'fill-opacity': 0.7,
+          },
+        },
+        {
+          id: 'besoinsEnChaleurIndustrieCommunes-contour',
+          source: 'besoinsEnChaleurIndustrieCommunes',
+          'source-layer': 'layer',
+          type: 'line',
+          paint: {
+            'line-color': '#777777',
+            'line-width': 1,
+          },
+        },
+      ],
+    },
+
     // ------------------------------------------
     // --- Zones de développement prioritaire ---
     // ------------------------------------------
@@ -420,6 +634,70 @@ export function buildMapLayers(
           paint: {
             ...outlineLayerStyle.paint,
             'line-color': themeDefHeatNetwork.futur.color,
+          },
+        },
+      ],
+    },
+
+    // --------------------------------------------
+    // --- Besoins en chaleur des bâtiments ---
+    // --------------------------------------------
+    {
+      sourceId: 'besoinsEnChaleur',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
+        minzoom: 10,
+        maxzoom: 14,
+        attribution:
+          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+      },
+      layers: [
+        {
+          id: 'besoinsEnFroid',
+          source: 'besoinsEnChaleur',
+          'source-layer': 'layer',
+          type: 'fill',
+          paint: {
+            'fill-color': [
+              'step',
+              ['coalesce', ['get', 'FROID_MWH'], 0],
+              besoinsBatimentsDefaultColor,
+              ...besoinsEnFroidColorThresholds.flatMap((v) => [
+                v.value,
+                v.color,
+              ]),
+            ],
+            'fill-opacity': zoomOpacityTransitionAt10,
+          },
+        },
+        {
+          id: 'besoinsEnChaleur',
+          source: 'besoinsEnChaleur',
+          'source-layer': 'layer',
+          type: 'fill',
+          paint: {
+            'fill-color': [
+              'step',
+              ['coalesce', ['coalesce', ['get', 'CHAUF_MWH'], 0], 0],
+              besoinsBatimentsDefaultColor,
+              ...besoinsEnChaleurColorThresholds.flatMap((v) => [
+                v.value,
+                v.color,
+              ]),
+            ],
+            'fill-opacity': zoomOpacityTransitionAt10,
+          },
+        },
+        {
+          id: 'besoinsEnChaleurFroid-contour',
+          source: 'besoinsEnChaleur',
+          'source-layer': 'layer',
+          type: 'line',
+          paint: {
+            'line-color': '#777777',
+            'line-width': 0.5,
+            'line-opacity': zoomOpacityTransitionAt10,
           },
         },
       ],
@@ -942,6 +1220,23 @@ export function applyMapConfigurationToLayers(
   setLayerVisibility(
     'caracteristiquesBatiments',
     config.proMode && config.caracteristiquesBatiments
+  );
+  setLayerVisibility(
+    'besoinsEnChaleur',
+    config.proMode && config.besoinsEnChaleur
+  );
+  setLayerVisibility('besoinsEnFroid', config.proMode && config.besoinsEnFroid);
+  setLayerVisibility(
+    'besoinsEnChaleurFroid-contour',
+    config.proMode && (config.besoinsEnChaleur || config.besoinsEnFroid)
+  );
+  setLayerVisibility(
+    'besoinsEnChaleurIndustrieCommunes',
+    config.proMode && config.besoinsEnChaleurIndustrieCommunes
+  );
+  setLayerVisibility(
+    'besoinsEnChaleurIndustrieCommunes-contour',
+    config.proMode && config.besoinsEnChaleurIndustrieCommunes
   );
   setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
   setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);

@@ -222,6 +222,24 @@ const trackingEvents = {
   'Carto|Bâtiments raccordés|Désactive': {
     matomo: ['Carto', 'Bâtiments raccordés', 'Désactive'],
   },
+  'Carto|Besoins en chaleur|Active': {
+    matomo: ['Carto', 'Besoins en chaleur', 'Active'],
+  },
+  'Carto|Besoins en chaleur|Désactive': {
+    matomo: ['Carto', 'Besoins en chaleur', 'Désactive'],
+  },
+  'Carto|Besoins en chaleur secteur industriel|Active': {
+    matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Active'],
+  },
+  'Carto|Besoins en chaleur secteur industriel|Désactive': {
+    matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Désactive'],
+  },
+  'Carto|Besoins en froid|Active': {
+    matomo: ['Carto', 'Besoins en froid', 'Active'],
+  },
+  'Carto|Besoins en froid|Désactive': {
+    matomo: ['Carto', 'Besoins en froid', 'Désactive'],
+  },
   'Carto|DPE|Active': {
     matomo: ['Carto', 'DPE', 'Active'],
   },
