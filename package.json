@@ -38,6 +38,7 @@
     "@commander-js/extra-typings": "^11.1.0",
     "@dataesr/react-dsfr": "^3.9.1",
     "@faker-js/faker": "^8.0.2",
+    "@getbrevo/brevo": "^2.2.0",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
     "@next/bundle-analyzer": "13.5.6",
     "@reach/combobox": "^0.18.0",
