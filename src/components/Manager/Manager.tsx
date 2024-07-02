@@ -220,14 +220,13 @@ const Manager = () => {
   }, [demandsService]);
 
   const updateDemand = useCallback(
-    (demandId: string, demand: Partial<Demand>) => {
-      demandsService.update(demandId, demand).then((response) => {
-        if (response) {
-          const index = demands.findIndex((d) => d.id === demandId);
-          demands.splice(index, 1, response);
-          setDemands([...demands]);
-        }
-      });
+    async (demandId: string, demand: Partial<Demand>) => {
+      const updatedDemand = await demandsService.update(demandId, demand);
+      if (updatedDemand) {
+        const index = demands.findIndex((d) => d.id === demandId);
+        demands.splice(index, 1, updatedDemand);
+        setDemands([...demands]);
+      }
     },
     [demands, demandsService]
   );

@@ -9,7 +9,7 @@ const Comment = ({
   updateDemand,
 }: {
   demand: Demand;
-  updateDemand: (demandId: string, demand: Partial<Demand>) => void;
+  updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
 }) => {
   const onChangeHandler = useMemo(
     () =>
