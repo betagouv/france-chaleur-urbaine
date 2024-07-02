@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Text from '@components/ui/Text';
 import Box from '@components/ui/Box';
 import { normalize } from '@utils/strings';
+import Tag from '@codegouvfr/react-dsfr/Tag';
 
 interface TagOption {
   label: string;
@@ -73,18 +74,20 @@ const UserImpersonation = () => {
         </Text>
 
         {selectedTagsGestionnaires.map((tag, index) => (
-          <button
-            key={index}
-            title="Retirer ce tag"
-            className="fr-tag fr-tag--sm fr-tag--dismiss fr-mr-1v"
-            onClick={() => {
-              selectedTagsGestionnaires.splice(index, 1);
-              setSelectedTagsGestionnaires([...selectedTagsGestionnaires]);
+          <Tag
+            key={tag}
+            dismissible
+            small
+            className="fr-mr-1v fr-mb-1w"
+            nativeButtonProps={{
+              onClick: () => {
+                selectedTagsGestionnaires.splice(index, 1);
+                setSelectedTagsGestionnaires([...selectedTagsGestionnaires]);
+              },
             }}
           >
             {tag}
-            <Icon name="ri-close-line" size="lg" />
-          </button>
+          </Tag>
         ))}
 
         <Box className="fr-col-xl-4 fr-col-md-6">
