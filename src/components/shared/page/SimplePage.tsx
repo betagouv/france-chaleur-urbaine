@@ -38,7 +38,12 @@ import { useRouter } from 'next/router';
   StopImpersonationButton,
 } from './SimplePage.styles';*/
 //import { deleteFetchJSON } from '@utils/network';
-import { MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
+import MainNavigation, {
+  MainNavigationProps,
+} from '@codegouvfr/react-dsfr/MainNavigation';
+import Box from '@components/ui/Box';
+import Link from '@components/ui/Link';
+import Image from 'next/image';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
 
@@ -62,7 +67,7 @@ const SimplePage = (props: SimplePageProps) => {
         currentPage={props.currentPage}
       />
       {props.children}
-      <PageFooter />
+      {/* <PageFooter /> */}
     </>
   );
 };
@@ -323,12 +328,12 @@ const PageHeader = (props: PageHeaderProps) => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  /*const isFullScreenMode =
-    props.mode === 'public-fullscreen' || props.mode === 'authenticated';*/
+  const isFullScreenMode =
+    props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
-  /*const FirstLineContainer = isFullScreenMode
-    ? FullScreenModeFirstLine
-    : Fragment;*/
+  // const FirstLineContainer = isFullScreenMode
+  //   ? FullScreenModeFirstLine
+  //   : Fragment;
 
   const navigationMenuItems =
     props.mode === 'authenticated'
@@ -346,7 +351,6 @@ const PageHeader = (props: PageHeaderProps) => {
   return (
     <>
       <Header
-        id="fr-header-header-with-quick-access-items"
         brandTop={
           <>
             République
@@ -374,7 +378,33 @@ const PageHeader = (props: PageHeaderProps) => {
             text: 'Espace gestionnaire',
           },
         ]}
-        navigation={markCurrentPageActive(navigationMenuItems, currentPath)}
+        navigation={
+          isFullScreenMode ? (
+            <Box display="flex">
+              <Link
+                href="/"
+                variant="tertiaryNoOutline"
+                title="Revenir à la page d'accueil"
+                p="0"
+                mr="3w"
+              >
+                <Image
+                  height={50}
+                  width={70}
+                  src="/logo-fcu.png"
+                  alt="logo france chaleur urbaine"
+                  priority
+                />
+              </Link>
+              <MainNavigation
+                items={markCurrentPageActive(navigationMenuItems, currentPath)}
+                className="fr-col"
+              />
+            </Box>
+          ) : (
+            markCurrentPageActive(navigationMenuItems, currentPath)
+          )
+        }
       />
 
       {/* <Header>
