@@ -20,10 +20,10 @@ const getGraphOptions = (network: Network) => [
     network.prod_MWh_chaudieres_electriques,
     '#e81919',
   ],
-  ['Gaz naturel', network.prod_MWh_gaz_naturel, '#ffb800'],
+  ['Gaz', network.prod_MWh_gaz_naturel, '#ffb800'],
   ['Charbon', network.prod_MWh_charbon, '#000000'],
   [
-    'Fiouls',
+    'Fioul',
     network.prod_MWh_fioul_domestique + network.prod_MWh_fioul_lourd,
     '#0065b8',
   ],
@@ -34,7 +34,7 @@ const getGraphOptions = (network: Network) => [
     network.prod_MWh_autre_chaleur_recuperee,
     '#d6c2e6',
   ],
-  ['PAC', network.prod_MWh_PAC, '#ec9ba4'],
+  ['Pompe à chaleur', network.prod_MWh_PAC, '#ec9ba4'],
   ['Biogaz', network.prod_MWh_biogaz, '#e6e905'],
   ['Solaire thermique', network.prod_MWh_solaire_thermique, '#ffff00'],
 ];

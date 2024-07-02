@@ -1,7 +1,11 @@
 import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
+import useURLParamOrLocalStorage, {
+  parseAsString,
+} from '@hooks/useURLParamOrLocalStorage';
 import { useCallback, useRef, useState } from 'react';
 import { trackEvent } from 'src/services/analytics';
 import { AddressDataType } from 'src/types/AddressData';
+import { FormDemandCreation } from 'src/types/Summary/Demand';
 import { Airtable } from 'src/types/enum/Airtable';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
@@ -15,6 +19,24 @@ const useContactFormFCU = () => {
   const [messageSent, setMessageSent] = useState(false);
   const [messageReceived, setMessageReceived] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState('idle');
+  const [mtm_campaign] = useURLParamOrLocalStorage(
+    'mtm_campaign',
+    'mtm_campaign',
+    null,
+    parseAsString
+  );
+  const [mtm_kwd] = useURLParamOrLocalStorage(
+    'mtm_kwd',
+    'mtm_kwd',
+    null,
+    parseAsString
+  );
+  const [mtm_source] = useURLParamOrLocalStorage(
+    'mtm_source',
+    'mtm_source',
+    null,
+    parseAsString
+  );
 
   const timeoutScroller = useCallback(
     (delai: number, callback?: () => void) =>
@@ -76,6 +98,16 @@ const useContactFormFCU = () => {
       if (data && data.structure !== 'Tertiaire') {
         data.company = '';
       }
+      const response = await submitToAirtable(
+        formatDataToAirtable({
+          ...data,
+          mtm_campaign,
+          mtm_kwd,
+          mtm_source,
+        } as FormDemandCreation),
+        Airtable.UTILISATEURS
+      );
+      const { id } = await response.json();
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};
       trackEvent(
@@ -84,11 +116,6 @@ const useContactFormFCU = () => {
         }ligible${fromMap ? ' - Carte' : ''} - Envoi`,
         address
       );
-      const response = await submitToAirtable(
-        formatDataToAirtable(data),
-        Airtable.UTILISATEURS
-      );
-      const { id } = await response.json();
       const scrollTimer = timeoutScroller(500);
       setAddressData({
         ...addressData,

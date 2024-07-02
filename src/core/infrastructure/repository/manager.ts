@@ -1,15 +1,16 @@
 import { faker } from '@faker-js/faker';
+import { invalidPermissionsError } from '@helpers/server';
 import { User } from 'next-auth';
+import db from 'src/db';
 import base from 'src/db/airtable';
 import { Demand } from 'src/types/Summary/Demand';
 import { Airtable } from 'src/types/enum/Airtable';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import {
   gestionnairesPerCity,
+  gestionnairesPerDepartment,
   gestionnairesPerNetwork,
 } from './gestionnaires.config';
-import db from 'src/db';
-import { invalidPermissionsError } from '@helpers/server';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
   const records = await base(Airtable.UTILISATEURS)
@@ -106,6 +107,11 @@ export const getGestionnaires = async (
   const configPerNetwork = gestionnairesPerNetwork[network];
   if (configPerNetwork) {
     gestionnaires = gestionnaires.concat(configPerNetwork);
+  }
+
+  const configPerDepartment = gestionnairesPerDepartment[demand.Departement];
+  if (configPerDepartment) {
+    gestionnaires = gestionnaires.concat(configPerDepartment);
   }
 
   const apiAccounts = await db('api_accounts').select('name', 'networks');

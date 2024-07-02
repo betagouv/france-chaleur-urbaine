@@ -8,14 +8,16 @@ const HoverableIcon = ({
   iconSize,
   iconName,
   position,
+  top,
 }: {
   children: ReactNode;
   iconSize?: 'xs' | 'sm' | 'lg' | 'md';
   iconName: any;
   position?: 'top' | 'right' | 'top-centered' | 'bottom' | 'bottom-centered';
+  top?: string;
 }) => {
   return (
-    <Container>
+    <Container top={top}>
       <Icon size={iconSize} name={iconName} />
       <Hoverable position={position || 'top'}>{children}</Hoverable>
     </Container>

@@ -17,11 +17,14 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
   const { password, token } = await validateObjectSchema(req.body, {
     password: zPassword,
     token: z.string().transform((token, ctx) => {
-      const decodedToken = jwt.verify(
-        req.body.token,
-        process.env.NEXTAUTH_SECRET as string
-      ) as { email: string; resetToken: string };
-      if (!decodedToken) {
+      try {
+        const decodedToken = jwt.verify(
+          token,
+          process.env.NEXTAUTH_SECRET as string
+        ) as { email: string; resetToken: string };
+
+        return decodedToken;
+      } catch (err) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
@@ -30,7 +33,6 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
 
         return z.NEVER;
       }
-      return decodedToken;
     }),
   });
 

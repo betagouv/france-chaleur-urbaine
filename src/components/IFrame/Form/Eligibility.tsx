@@ -39,7 +39,6 @@ const Eligibility = () => {
           onAddressSelected={(address, suggestionItem) => {
             setAddress(suggestionItem);
           }}
-          popoverClassName={'popover-search-form'}
         />
         <Button
           disabled={!heatingType || !address}

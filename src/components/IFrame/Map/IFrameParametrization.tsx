@@ -73,10 +73,7 @@ const IFrameParametrization = () => {
       />
       <div>Vous souhaitez centrer la carte sur un endroit en particulier ?</div>
       <AddressContainer>
-        <AddressAutocomplete
-          onAddressSelected={onAddressSelected}
-          popoverClassName={'popover-search-form'}
-        />
+        <AddressAutocomplete onAddressSelected={onAddressSelected} />
       </AddressContainer>
       <br />
       <IFrame>

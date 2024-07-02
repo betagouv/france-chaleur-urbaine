@@ -1,7 +1,11 @@
-# Les chaudières biomasse ne contribuent pas à la déforestation
+# Les réseaux de chaleur en région : focus sur la Normandie
 
-🌿 La biomasse fait souvent l'objet de débats... enflammés ! Peut-on vraiment la considérer comme une énergie renouvelable ? Y en aura-t-il assez pour tous les usages dans les prochaines années ? Est-elle vraiment locale ? Son utilisation en chaufferie ne contribue-t-elle pas au phénomène de déforestation ? C'est à cette dernière question que nous nous attaquons aujourd'hui, avec la seconde infographie de notre série sur les idées reçues.\
+🚴‍♂️ Nous prenons un peu d'avance sur le Tour de France et vous embarquons dès à présent dans un tour de France des réseaux de chaleur de nos régions...\
 \
-🌳 Et la réponse est non ! L'usage de la biomasse par les réseaux de chaleur ne participe pas à la destruction de la forêt française, dont la surface s'étend chaque année. La forêt est en revanche affectée par d'autres phénomènes, conséquences du changement climatique : canicules, sécheresses, incendies... Pour limiter l'importance de ceux-ci, il est urgent de réduire nos émissions de gaz à effet de serre, ce à quoi les réseaux de chaleur contribuent.
+📍 Pour notre première étape, direction la Normandie !\
+\
+Les réseaux normands sont aujourd'hui au nombre de 49, avec un taux d'énergies renouvelables et de récupération de 76%. Les exemples ne manquent pas, avec des métropoles disposant déjà de plusieurs réseaux comme celles de [Rennes](https://metropole.rennes.fr/quatre-reseaux-de-chauffage-urbain-dans-la-metropole) ou [Rouen](https://energies.metropole-rouen-normandie.fr/votre-projet/collectivites-et-elus-2/les-reseaux-de-chaleur-urbains/), mais aussi des projets d'envergure comme sur [Le Havre Seine Métropole](https://www.lehavreseinemetropole.fr/reseau-de-chaleur-le-havre-sud) ou encore [Caen la Mer](https://caenlamer.fr/le-reseau-de-chaleur). À eux seuls ces deux projets représentent 120 km de nouveaux réseaux qui vont être créés dans les prochaines années, avec des taux ENR\&R de 80 à 100% !\
+\
+👉 Vous souhaitez en savoir plus sur les réseaux de chaleur normands ? Retrouvez tous les chiffres clés et deux exemples dans notre infographie ci-dessous.
 
-<figure><img src=".gitbook/assets/2.jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/2 (5).jpg" alt=""><figcaption></figcaption></figure>

@@ -1,8 +1,12 @@
-import { PopupTitle, PopupType } from '../Map.style';
+import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
-import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
-import { prettyFormatNumber } from '@utils/strings';
+import { formatMWh, prettyFormatNumber } from '@utils/strings';
 import { ReactElement } from 'react';
+import {
+  BesoinsEnChaleur,
+  BesoinsEnChaleurIndustrieCommunes,
+} from 'src/types/layers/BesoinsEnChaleur';
+import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
 import {
   Datacenter,
   Industrie,
@@ -12,7 +16,7 @@ import {
   StationDEpuration,
   UniteDIncineration,
 } from 'src/types/layers/enrr_mobilisables';
-import Text from '@components/ui/Text';
+import { PopupTitle, PopupType } from '../Map.style';
 import { LayerId } from '../map-layers';
 
 export const layersWithDynamicContentPopup = [
@@ -25,6 +29,9 @@ export const layersWithDynamicContentPopup = [
   'enrrMobilisables-unites-d-incineration',
   'enrrMobilisables-friches',
   'enrrMobilisables-parkings',
+  'besoinsEnChaleur',
+  'besoinsEnFroid',
+  'besoinsEnChaleurIndustrieCommunes',
 ] as const satisfies ReadonlyArray<LayerId>;
 
 export function isDynamicPopupContent(
@@ -37,7 +44,19 @@ export function isDynamicPopupContent(
 // be careful to use the LayerId in the 'type' property
 export type DynamicPopupContentType =
   | ZonePotentielChaudPopupContentType
-  | ENRRMobilisablePopupContentType;
+  | ENRRMobilisablePopupContentType
+  | BesoinsEnChaleurPopupContentType
+  | BesoinsEnChaleurIndustrieCommunesPopupContentType;
+
+type BesoinsEnChaleurPopupContentType = {
+  type: 'besoinsEnChaleur' | 'besoinsEnFroid';
+  properties: BesoinsEnChaleur;
+};
+
+type BesoinsEnChaleurIndustrieCommunesPopupContentType = {
+  type: 'besoinsEnChaleurIndustrieCommunes';
+  properties: BesoinsEnChaleurIndustrieCommunes;
+};
 
 type ZonePotentielChaudPopupContentType = {
   type: 'zonesPotentielChaud' | 'zonesPotentielFortChaud';
@@ -144,6 +163,17 @@ const DynamicPopupContent = ({
           parking={content.properties}
         />
       );
+    case 'besoinsEnChaleur':
+    case 'besoinsEnFroid':
+      return (
+        <BesoinsEnChaleurPopupContent besoinsEnChaleur={content.properties} />
+      );
+    case 'besoinsEnChaleurIndustrieCommunes':
+      return (
+        <BesoinsEnChaleurIndustrieCommunesPopupContent
+          besoinsEnChaleurIndustrieCommunes={content.properties}
+        />
+      );
     default:
       throw new Error('not implemented');
   }
@@ -163,85 +193,116 @@ const ZonePotentielChaudPopupContent = ({
 }) => {
   return (
     <section>
-      {zonePotentielChaud.ID_ZONE && (
-        <PopupTitle className="fr-mr-3w">
-          Zone à {fortChaud ? ' fort' : ''} potentiel
-        </PopupTitle>
-      )}
-      <strong>Nombre de bâtiments “intéressants”&nbsp;:</strong>&nbsp;
-      {isDefined(zonePotentielChaud.NBRE_BAT)
-        ? zonePotentielChaud.NBRE_BAT
-        : 'Non connu'}
-      <br />
-      <strong>Besoins en chauffage&nbsp;:</strong>&nbsp;
-      {isDefined(zonePotentielChaud.CHAUF_MWH) ? (
-        <>{formatMWh(zonePotentielChaud.CHAUF_MWH)}</>
-      ) : (
-        'Non connu'
-      )}
-      <br />
-      <strong>Besoins en eau chaude sanitaire&nbsp;:</strong>&nbsp;
-      {isDefined(zonePotentielChaud.ECS_MWH) ? (
-        <>{formatMWh(zonePotentielChaud.ECS_MWH)}</>
-      ) : (
-        'Non connu'
-      )}
-      <br />
-      <strong>Part du secteur tertiaire&nbsp;:</strong>&nbsp;
-      {isDefined(zonePotentielChaud.PART_TER) ? (
-        <>{prettyFormatNumber(zonePotentielChaud.PART_TER * 100, 2)}&nbsp;%</>
-      ) : (
-        'Non connu'
-      )}
+      <PopupTitle className="fr-mr-3w">
+        Zone à {fortChaud ? ' fort' : ''} potentiel
+      </PopupTitle>
+      <PopupProperty
+        label="Nombre de bâtiments “intéressants”"
+        value={zonePotentielChaud.bat_imp}
+      />
+      <PopupProperty
+        label="Besoins en chauffage"
+        value={zonePotentielChaud.chauf_mwh}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins en eau chaude sanitaire"
+        value={zonePotentielChaud.ecs_mwh}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Part du secteur tertiaire"
+        value={zonePotentielChaud.part_ter}
+        formatter={(v) => <>{prettyFormatNumber(v * 100, 2)}&nbsp;%</>}
+      />
+      <PopupProperty label="Source" value="Cerema" />
     </section>
   );
 };
 
-function formatMWh(value: number): ReactElement {
-  let unit: string;
-
-  if (value >= 1e6) {
-    value /= 1e6;
-    unit = 'TWh/an';
-  } else if (value >= 1e3) {
-    value /= 1e3;
-    unit = 'GWh/an';
-  } else {
-    unit = 'MWh/an';
-  }
-
+/**
+ * Contenu de la popup pour les besoins en chaleur et froid des bâtiments.
+ */
+const BesoinsEnChaleurPopupContent = ({
+  besoinsEnChaleur,
+}: {
+  besoinsEnChaleur: BesoinsEnChaleur;
+}) => {
   return (
-    <>
-      {value.toPrecision(3)}&nbsp;{unit}
-    </>
+    <section>
+      <PopupTitle className="fr-mr-3w">Besoins en chaleur et froid</PopupTitle>
+      <PopupProperty
+        label="Besoins en chauffage"
+        value={besoinsEnChaleur.CHAUF_MWH}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins en eau chaude sanitaire"
+        value={besoinsEnChaleur.ECS_MWH}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins en froid"
+        value={besoinsEnChaleur.FROID_MWH}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Part tertiaire de la surface des bâtiments"
+        value={besoinsEnChaleur.PART_TER}
+        unit="%"
+      />
+      <PopupProperty
+        label="Surface de plancher"
+        value={besoinsEnChaleur.SDP_M2}
+        unit="m²"
+      />
+      <PopupProperty
+        label="Identifiant BD TOPO"
+        value={besoinsEnChaleur.IDBATIMENT}
+      />
+      <PopupProperty label="Source" value="Cerema" />
+    </section>
   );
-}
+};
 
 /**
- * Intervals:
- * - < 25 GWh
- * - [100;250 GWh[
- * - >= 2000 GWh
+ * Contenu de la popup pour les besoins en chaleur et froid des bâtiments.
  */
-function formatConsommation(value: string): string {
-  switch (value[0]) {
-    case '<': {
-      const match = /< (\d+) GWh/.exec(value);
-      return match ? `inférieure à ${match[1]} GWh/an` : value;
-    }
-    case '>': {
-      const match = />= (\d+) GWh/.exec(value);
-      return match ? `supérieure à ${match[1]} GWh/an` : value;
-    }
-    case '[': {
-      const match = /\[(\d+);(\d+) GWh\[/.exec(value);
-      return match ? `entre ${match[1]} et ${match[2]} GWh/an` : value;
-    }
-    default:
-      // unknown
-      return value;
-  }
-}
+const BesoinsEnChaleurIndustrieCommunesPopupContent = ({
+  besoinsEnChaleurIndustrieCommunes,
+}: {
+  besoinsEnChaleurIndustrieCommunes: BesoinsEnChaleurIndustrieCommunes;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">
+        Besoins en chaleur du secteur industriel à{' '}
+        {besoinsEnChaleurIndustrieCommunes.libgeo}
+      </PopupTitle>
+      <PopupProperty
+        label="Besoin en chaleur et froid pour les process"
+        value={besoinsEnChaleurIndustrieCommunes.conso_proc}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins en chaleur pour le chauffage des locaux"
+        value={besoinsEnChaleurIndustrieCommunes.conso_loca}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Autres besoins"
+        value={besoinsEnChaleurIndustrieCommunes.conso_autr}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins totaux = tous usages"
+        value={besoinsEnChaleurIndustrieCommunes.conso_tot}
+        formatter={formatMWh}
+      />
+      <PopupProperty label="Source" value="Cerema" />
+    </section>
+  );
+};
 
 const ENRRMobilisableDatacenterPopupContent = ({
   datacenter,
@@ -255,6 +316,7 @@ const ENRRMobilisableDatacenterPopupContent = ({
       <PopupProperty label="Catégorie" value={datacenter.categorie} />
       <PopupProperty label="Commune" value={datacenter.com_nom} />
       <PopupProperty label="Identifiant national" value={datacenter.id} />
+      <PopupProperty label="Source" value="Cerema" />
       <QualiteLabel value={datacenter.qualite_xy} />
     </section>
   );
@@ -268,24 +330,30 @@ const ENRRMobilisableIndustriePopupContent = ({
   return (
     <section>
       <PopupType className="fr-mr-3w">Industrie</PopupType>
-      <PopupTitle className="fr-mr-3w">{industrie.nom_site}</PopupTitle>
-      <PopupProperty label="Activité" value={industrie.activite} />
-      <PopupProperty label="Exploitant" value={industrie.exploitant} />
+      <PopupTitle className="fr-mr-3w">{industrie.nom_etabli}</PopupTitle>
+      <PopupProperty label="Activité" value={industrie.type_act} />
       <PopupProperty
-        label="Consommation"
-        value={industrie.conso}
-        formatter={formatConsommation}
+        label="Potentiel minimal de chaleur valorisable (BT)"
+        value={industrie.potbas_bt}
+        unit="MWh/an"
       />
       <PopupProperty
-        label="Température des effluents majoritaires"
-        value={industrie.t_major}
+        label="Potentiel maximale de chaleur valorisable (BT)"
+        value={industrie.pothaut_bt}
+        unit="MWh/an"
       />
       <PopupProperty
-        label="Température des effluents minoritaires"
-        value={industrie.t_minor}
+        label="Potentiel minimal de chaleur valorisable (HT)"
+        value={industrie.potbas_ht}
+        unit="MWh/an"
       />
-      <PopupProperty label="Commune" value={industrie.com_nom} />
-      <QualiteLabel value={industrie.qualite_xy} />
+      <PopupProperty
+        label="Potentiel maximale de chaleur valorisable (HT)"
+        value={industrie.pothaut_ht}
+        unit="MWh/an"
+      />
+      <PopupProperty label="Source" value={industrie.source} />
+      <QualiteLabel value={industrie.quali_xy} />
     </section>
   );
 };
@@ -303,6 +371,7 @@ const ENRRMobilisableInstallationElectrogenePopupContent = ({
       </PopupTitle>
       <PopupProperty label="Type" value={installationElectrogene.type_inst} />
       <PopupProperty label="Commune" value={installationElectrogene.com_nom} />
+      <PopupProperty label="Source" value="Cerema" />
       <QualiteLabel value={installationElectrogene.qualite_xy} />
     </section>
   );
@@ -329,6 +398,7 @@ const ENRRMobilisableStationsDEpurationPopupContent = ({
       />
       <PopupProperty label="Exploitant" value={stationDEpuration.exploitant} />
       <PopupProperty label="Commune" value={stationDEpuration.com_nom} />
+      <PopupProperty label="Source" value="Cerema" />
     </section>
   );
 };
@@ -345,9 +415,18 @@ const ENRRMobilisableUniteDIncinerationPopupContent = ({
         {uniteDIncineration.nom_inst}
       </PopupTitle>
       <PopupProperty label="Type" value={uniteDIncineration.type_inst} />
-      {/* Désactivé car non fiable dans les données pour le moment */}
-      {/* <PopupProperty label="Commune" value={uniteDIncineration.com_nom} /> */}
-      <QualiteLabel value={uniteDIncineration.qualite_xy} />
+      <PopupProperty
+        label="Potentiel minimal de chaleur valorisable"
+        value={uniteDIncineration.min_prd_cr}
+        unit="MWh/an"
+      />
+      <PopupProperty
+        label="Potentiel maximal de chaleur valorisable"
+        value={uniteDIncineration.max_prd_cr}
+        unit="MWh/an"
+      />
+      <PopupProperty label="Commune" value={uniteDIncineration.nom_comm} />
+      <PopupProperty label="Source" value={uniteDIncineration.info} />
     </section>
   );
 };
@@ -402,6 +481,7 @@ const ENRRMobilisableSolaireThermiqueFrichePopupContent = ({
       <PopupType className="fr-mr-3w">Friche</PopupType>
       <PopupTitle className="fr-mr-3w">{friche.site_nom}</PopupTitle>
       <PopupProperty label="Surface" value={friche.surf_site} unit="m²" />
+      <PopupProperty label="Source" value={friche.source_nom} />
     </section>
   );
 };
@@ -415,6 +495,7 @@ const ENRRMobilisableSolaireThermiqueParkingPopupContent = ({
     <section>
       <PopupType className="fr-mr-3w">Parking</PopupType>
       <PopupProperty label="Surface" value={parking.surfm2} unit="m²" />
+      <PopupProperty label="Source" value="Cerema" />
     </section>
   );
 };

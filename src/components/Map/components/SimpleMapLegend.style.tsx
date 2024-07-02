@@ -1,5 +1,5 @@
-import { TrackingEvent, trackEvent } from 'src/services/analytics';
 import Box from '@components/ui/Box';
+import { TrackingEvent, trackEvent } from 'src/services/analytics';
 import styled, { css } from 'styled-components';
 
 const StyledDSFRCheckbox = styled.div<{

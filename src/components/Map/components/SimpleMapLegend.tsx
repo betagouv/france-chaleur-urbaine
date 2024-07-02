@@ -1,14 +1,15 @@
-import { useMemo, useState } from 'react';
-import ModalCarteFrance from './ModalCarteFrance';
-import Text from '@components/ui/Text';
-import Image from 'next/image';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import Link from '@components/ui/Link';
-import Icon from '@components/ui/Icon';
-import { LegendSeparator } from '../Map.style';
-import Box from '@components/ui/Box';
 import Hoverable from '@components/Hoverable';
+import Box from '@components/ui/Box';
+import CollapsibleBox from '@components/ui/CollapsibleBox';
+import Icon from '@components/ui/Icon';
+import Link from '@components/ui/Link';
+import Text from '@components/ui/Text';
+import { setProperty, toggleBoolean } from '@utils/core';
+import { Interval } from '@utils/interval';
+import Image from 'next/image';
+import { useMemo, useState } from 'react';
 import {
   themeDefBuildings,
   themeDefDemands,
@@ -17,28 +18,6 @@ import {
   themeDefTypeGas,
   themeDefZoneDP,
 } from 'src/services/Map/businessRules';
-import ScaleLegend from './ScaleLegend';
-import {
-  MapConfiguration,
-  MapConfigurationProperty,
-  defaultMapConfiguration,
-  filtresEnergies,
-  percentageMaxInterval,
-  FiltreEnergieConfKey,
-} from 'src/services/Map/map-configuration';
-import { setProperty, toggleBoolean } from '@utils/core';
-import CollapsibleBox from '@components/ui/CollapsibleBox';
-import {
-  LegendDeskData,
-  energyLayerMaxOpacity,
-  batimentsRaccordesLayerMaxOpacity,
-} from '../map-layers';
-import {
-  DeactivatableBox,
-  InfoIcon,
-  SingleCheckbox,
-} from './SimpleMapLegend.style';
-import IconPolygon from './IconPolygon';
 import {
   themeDefSolaireThermiqueFriches,
   themeDefSolaireThermiqueParkings,
@@ -47,8 +26,33 @@ import {
   themeDefZonePotentielChaud,
   themeDefZonePotentielFortChaud,
 } from 'src/services/Map/businessRules/zonePotentielChaud';
+import {
+  FiltreEnergieConfKey,
+  MapConfiguration,
+  MapConfigurationProperty,
+  defaultMapConfiguration,
+  filtresEnergies,
+  percentageMaxInterval,
+} from 'src/services/Map/map-configuration';
+import { LegendSeparator } from '../Map.style';
+import {
+  LegendDeskData,
+  batimentsRaccordesLayerMaxOpacity,
+  besoinsEnChaleurIndustrieCommunesIntervals,
+  besoinsEnChaleurIntervals,
+  besoinsEnFroidIntervals,
+  energyLayerMaxOpacity,
+} from '../map-layers';
 import DevModeIcon from './DevModeIcon';
+import IconPolygon from './IconPolygon';
+import ModalCarteFrance from './ModalCarteFrance';
 import RangeFilter from './RangeFilter';
+import ScaleLegend from './ScaleLegend';
+import {
+  DeactivatableBox,
+  InfoIcon,
+  SingleCheckbox,
+} from './SimpleMapLegend.style';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -66,6 +70,9 @@ export const mapLegendFeatures = [
   'enrrMobilisables',
   'zonesOpportunite',
   'caracteristiquesBatiments',
+  'besoinsEnChaleur',
+  'besoinsEnFroid',
+  'besoinsEnChaleurIndustrieCommunes',
   'proModeLegend', // texte incitant à activer le mode pro
   'contributeButton', // boutons contribuer et télécharger les tracés
   'cartePotentielsRaccordements', // lien d'ouverture de la carte des potentiels de raccordement
@@ -90,6 +97,9 @@ const expansions = [
   'enrrMobilisables',
   'zonesOpportunite',
   'caracteristiquesBatiments',
+  'besoinsEnChaleur',
+  'besoinsEnFroid',
+  'besoinsEnChaleurIndustrieCommunes',
 ] as const;
 type Expansion = (typeof expansions)[number];
 
@@ -118,18 +128,23 @@ function SimpleMapLegend({
     });
   }
 
-  function toggleLayer(property: MapConfigurationProperty) {
+  function toggleLayer(property: MapConfigurationProperty<boolean>) {
     toggleBoolean(mapConfiguration, property);
     onMapConfigurationChange({ ...mapConfiguration });
   }
 
   function updateScaleInterval(
-    property: MapConfigurationProperty,
-    interval: [number, number]
+    property: MapConfigurationProperty<Interval>,
+    interval: Interval
   ) {
     setProperty(mapConfiguration, property, interval);
     onMapConfigurationChange({ ...mapConfiguration });
   }
+
+  const nbCouchesFondBatiments =
+    (mapConfiguration.caracteristiquesBatiments ? 1 : 0) +
+    (mapConfiguration.besoinsEnChaleur ? 1 : 0) +
+    (mapConfiguration.besoinsEnFroid ? 1 : 0);
 
   return (
     <>
@@ -305,6 +320,31 @@ function SimpleMapLegend({
           />
           <LegendSeparator />
           <RangeFilter
+            label="Livraisons annuelles de chaleur"
+            domain={
+              mapConfiguration.reseauxDeChaleur.limits.livraisonsAnnuelles
+            }
+            value={mapConfiguration.reseauxDeChaleur.livraisonsAnnuelles}
+            onChange={(values) =>
+              updateScaleInterval(
+                'reseauxDeChaleur.livraisonsAnnuelles',
+                values
+              )
+            }
+            domainTransform={{
+              percentToValue: (v) =>
+                roundNumberProgressively(
+                  getLivraisonsAnnuellesFromPercentage(v)
+                ),
+              valueToPercent: (v) =>
+                roundNumberProgressively(
+                  getPercentageFromLivraisonsAnnuelles(v)
+                ),
+            }}
+            unit="GWh"
+          />
+          <LegendSeparator />
+          <RangeFilter
             label="Année de construction"
             domain={mapConfiguration.reseauxDeChaleur.limits.anneeConstruction}
             value={mapConfiguration.reseauxDeChaleur.anneeConstruction}
@@ -321,7 +361,7 @@ function SimpleMapLegend({
           <SingleCheckbox
             name="reseauxDeChaleur"
             checked={mapConfiguration.reseauxDeChaleur.show}
-            onChange={() => toggleLayer('reseauxDeChaleur')}
+            onChange={() => toggleLayer('reseauxDeChaleur.show')}
             trackingEvent="Carto|Réseaux chaleur"
           />
 
@@ -1574,6 +1614,362 @@ function SimpleMapLegend({
               </Box>
             </DeactivatableBox>
           </CollapsibleBox>
+          {mapConfiguration.caracteristiquesBatiments &&
+            nbCouchesFondBatiments >= 2 && (
+              <Text color="error" size="xs" m="1w">
+                Les caractéristiques des bâtiments et besoins en chaleur et
+                froid ne peuvent être affichés simultanément.
+              </Text>
+            )}
+        </>
+      )}
+
+      {enabledFeatures.includes('besoinsEnChaleur') && (
+        <>
+          <LegendSeparator />
+
+          <Box display="flex">
+            <SingleCheckbox
+              name="besoinsEnChaleur"
+              checked={mapConfiguration.besoinsEnChaleur}
+              onChange={(checked) => {
+                toggleLayer('besoinsEnChaleur');
+                if (checked) {
+                  setSectionExpansion('besoinsEnChaleur', true);
+                }
+              }}
+              trackingEvent="Carto|Besoins en chaleur"
+            />
+
+            <IconPolygon
+              stroke={
+                besoinsEnChaleurIntervals[
+                  besoinsEnChaleurIntervals.length - 3 // lighter color
+                ].color
+              }
+              fillOpacity={0.7}
+              mt="1v"
+            />
+
+            <Text
+              as="label"
+              htmlFor="besoinsEnChaleur"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              fontWeight="bold"
+              cursor="pointer"
+              pt="1v"
+              px="1v"
+            >
+              Besoins en chaleur
+            </Text>
+
+            <InfoIcon>
+              <Icon size="sm" name="ri-information-fill" cursor="help" />
+
+              <Hoverable position="bottom">
+                Modélisation réalisée par le Cerema dans le cadre du projet
+                EnRezo.
+                <br />
+                <Link
+                  href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid"
+                  isExternal
+                >
+                  Accéder à la méthodologie
+                </Link>
+              </Hoverable>
+            </InfoIcon>
+
+            <Button
+              className="fr-px-1w"
+              priority="tertiary no outline"
+              size="small"
+              onClick={() => toggleSectionExpansion('besoinsEnChaleur')}
+              aria-expanded={!!sectionsExpansions['besoinsEnChaleur']}
+              aria-controls={'besoinsEnChaleur'}
+              title="Afficher/Masquer le détail"
+            >
+              <Icon
+                riSize="1x"
+                name="ri-arrow-down-s-line"
+                flip={!!sectionsExpansions['besoinsEnChaleur']}
+              />
+            </Button>
+          </Box>
+
+          <CollapsibleBox
+            id="besoinsEnChaleur"
+            expand={!!sectionsExpansions['besoinsEnChaleur']}
+          >
+            <DeactivatableBox
+              disabled={!mapConfiguration.besoinsEnChaleur}
+              mx="1w"
+            >
+              <Box display="flex" border="1px solid #777" my="1w">
+                {besoinsEnChaleurIntervals.map((interval, index) => (
+                  <Box
+                    key={index}
+                    height="10px"
+                    flex
+                    cursor="help"
+                    backgroundColor={interval.color}
+                    title={`${interval.min} - ${interval.max}`}
+                  />
+                ))}
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Text size="xs">{besoinsEnChaleurIntervals[0].min}</Text>
+                <Text size="xs">
+                  {
+                    besoinsEnChaleurIntervals[
+                      besoinsEnChaleurIntervals.length - 1
+                    ].max
+                  }
+                </Text>
+              </Box>
+            </DeactivatableBox>
+          </CollapsibleBox>
+          {mapConfiguration.besoinsEnChaleur && nbCouchesFondBatiments >= 2 && (
+            <Text color="error" size="xs" m="1w">
+              Les caractéristiques des bâtiments et besoins en chaleur et froid
+              ne peuvent être affichés simultanément.
+            </Text>
+          )}
+        </>
+      )}
+
+      {enabledFeatures.includes('besoinsEnFroid') && (
+        <>
+          <LegendSeparator />
+
+          <Box display="flex">
+            <SingleCheckbox
+              name="besoinsEnFroid"
+              checked={mapConfiguration.besoinsEnFroid}
+              onChange={(checked) => {
+                toggleLayer('besoinsEnFroid');
+                if (checked) {
+                  setSectionExpansion('besoinsEnFroid', true);
+                }
+              }}
+              trackingEvent="Carto|Besoins en froid"
+            />
+
+            <IconPolygon
+              stroke={
+                besoinsEnFroidIntervals[
+                  besoinsEnFroidIntervals.length - 3 // lighter color
+                ].color
+              }
+              fillOpacity={0.7}
+              mt="1v"
+            />
+
+            <Text
+              as="label"
+              htmlFor="besoinsEnFroid"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              fontWeight="bold"
+              cursor="pointer"
+              pt="1v"
+              px="1v"
+            >
+              Besoins en froid
+            </Text>
+
+            <InfoIcon>
+              <Icon size="sm" name="ri-information-fill" cursor="help" />
+
+              <Hoverable position="bottom">
+                Modélisation réalisée par le Cerema dans le cadre du projet
+                EnRezo.
+                <br />
+                <Link
+                  href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid"
+                  isExternal
+                >
+                  Accéder à la méthodologie
+                </Link>
+              </Hoverable>
+            </InfoIcon>
+
+            <Button
+              className="fr-px-1w"
+              priority="tertiary no outline"
+              size="small"
+              onClick={() => toggleSectionExpansion('besoinsEnFroid')}
+              aria-expanded={!!sectionsExpansions['besoinsEnFroid']}
+              aria-controls={'besoinsEnFroid'}
+              title="Afficher/Masquer le détail"
+            >
+              <Icon
+                riSize="1x"
+                name="ri-arrow-down-s-line"
+                flip={!!sectionsExpansions['besoinsEnFroid']}
+              />
+            </Button>
+          </Box>
+
+          <CollapsibleBox
+            id="besoinsEnFroid"
+            expand={!!sectionsExpansions['besoinsEnFroid']}
+          >
+            <DeactivatableBox
+              disabled={!mapConfiguration.besoinsEnFroid}
+              mx="1w"
+            >
+              <Box display="flex" border="1px solid #777" my="1w">
+                {besoinsEnFroidIntervals.map((interval, index) => (
+                  <Box
+                    key={index}
+                    height="10px"
+                    flex
+                    cursor="help"
+                    backgroundColor={interval.color}
+                    title={`${interval.min} - ${interval.max}`}
+                  />
+                ))}
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Text size="xs">{besoinsEnFroidIntervals[0].min}</Text>
+                <Text size="xs">
+                  {
+                    besoinsEnFroidIntervals[besoinsEnFroidIntervals.length - 1]
+                      .max
+                  }
+                </Text>
+              </Box>
+            </DeactivatableBox>
+          </CollapsibleBox>
+          {mapConfiguration.besoinsEnFroid && nbCouchesFondBatiments >= 2 && (
+            <Text color="error" size="xs" m="1w">
+              Les caractéristiques des bâtiments et besoins en chaleur et froid
+              ne peuvent être affichés simultanément.
+            </Text>
+          )}
+        </>
+      )}
+
+      {enabledFeatures.includes('besoinsEnChaleurIndustrieCommunes') && (
+        <>
+          <LegendSeparator />
+
+          <Box display="flex">
+            <SingleCheckbox
+              name="besoinsEnChaleurIndustrieCommunes"
+              checked={mapConfiguration.besoinsEnChaleurIndustrieCommunes}
+              onChange={(checked) => {
+                toggleLayer('besoinsEnChaleurIndustrieCommunes');
+                if (checked) {
+                  setSectionExpansion(
+                    'besoinsEnChaleurIndustrieCommunes',
+                    true
+                  );
+                }
+              }}
+              trackingEvent="Carto|Besoins en chaleur secteur industriel"
+            />
+
+            <IconPolygon
+              stroke={
+                besoinsEnChaleurIndustrieCommunesIntervals[
+                  besoinsEnChaleurIndustrieCommunesIntervals.length - 1
+                ].color
+              }
+              fillOpacity={0.7}
+              mt="1v"
+            />
+
+            <Text
+              as="label"
+              htmlFor="besoinsEnChaleurIndustrieCommunes"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              fontWeight="bold"
+              cursor="pointer"
+              pt="1v"
+              px="1v"
+            >
+              Besoins en chaleur du secteur industriel
+            </Text>
+
+            <InfoIcon>
+              <Icon size="sm" name="ri-information-fill" cursor="help" />
+
+              <Hoverable position="bottom">
+                Modélisation réalisée par le Cerema dans le cadre du projet
+                EnRezo.
+                <br />
+                <Link
+                  href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
+                  isExternal
+                >
+                  Accéder à la méthodologie
+                </Link>
+              </Hoverable>
+            </InfoIcon>
+
+            <Button
+              className="fr-px-1w"
+              priority="tertiary no outline"
+              size="small"
+              onClick={() =>
+                toggleSectionExpansion('besoinsEnChaleurIndustrieCommunes')
+              }
+              aria-expanded={
+                !!sectionsExpansions['besoinsEnChaleurIndustrieCommunes']
+              }
+              aria-controls={'besoinsEnChaleurIndustrieCommunes'}
+              title="Afficher/Masquer le détail"
+            >
+              <Icon
+                riSize="1x"
+                name="ri-arrow-down-s-line"
+                flip={!!sectionsExpansions['besoinsEnChaleurIndustrieCommunes']}
+              />
+            </Button>
+          </Box>
+
+          <CollapsibleBox
+            id="besoinsEnChaleurIndustrieCommunes"
+            expand={!!sectionsExpansions['besoinsEnChaleurIndustrieCommunes']}
+          >
+            <DeactivatableBox
+              disabled={!mapConfiguration.besoinsEnChaleurIndustrieCommunes}
+              mx="1w"
+            >
+              <Box display="flex" border="1px solid #777" my="1w">
+                {besoinsEnChaleurIndustrieCommunesIntervals.map(
+                  (interval, index) => (
+                    <Box
+                      key={index}
+                      height="10px"
+                      flex
+                      cursor="help"
+                      backgroundColor={interval.color}
+                      title={`${interval.min} - ${interval.max}`}
+                    />
+                  )
+                )}
+              </Box>
+              <Box display="flex" justifyContent="space-between">
+                <Text size="xs">
+                  {besoinsEnChaleurIndustrieCommunesIntervals[0].min}
+                </Text>
+                <Text size="xs">
+                  {
+                    besoinsEnChaleurIndustrieCommunesIntervals[
+                      besoinsEnChaleurIndustrieCommunesIntervals.length - 1
+                    ].max
+                  }
+                </Text>
+              </Box>
+            </DeactivatableBox>
+          </CollapsibleBox>
         </>
       )}
 
@@ -1606,3 +2002,37 @@ function SimpleMapLegend({
 }
 
 export default SimpleMapLegend;
+
+function getLivraisonsAnnuellesFromPercentage(v: number): number {
+  if (v < 25) {
+    return 0.06 * v;
+  }
+  if (v < 50) {
+    return 0.54 * v - 12;
+  }
+  if (v < 75) {
+    return 3.4 * v - 155;
+  }
+  return 149.48 * v - 11111;
+}
+
+function getPercentageFromLivraisonsAnnuelles(v: number): number {
+  if (v < 1.5) {
+    return v / 0.06;
+  }
+  if (v < 15) {
+    return (v + 12) / 0.54;
+  }
+  if (v < 100) {
+    return (v + 155) / 3.4;
+  }
+  return (v + 11111) / 149.48;
+}
+
+function roundNumberProgressively(v: number): number {
+  return v > 2
+    ? Math.round(v)
+    : v > 1
+    ? Math.round(v * 10) / 10
+    : Math.round(v * 100) / 100;
+}

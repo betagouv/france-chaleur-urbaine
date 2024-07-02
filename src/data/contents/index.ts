@@ -1,25 +1,14 @@
 import { Article } from 'src/types/Article';
-import readme from './README.md';
+import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
+import demandes from './2000-demandes.md';
+import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md';
+import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
 import readme_1_1_1_1 from './README (1) (1) (1) (1).md';
 import readme_1_1_1 from './README (1) (1) (1).md';
 import readme_1_1 from './README (1) (1).md';
 import readme_1_2_1 from './README (1) (2) (1).md';
 import readme_1_2 from './README (1) (2).md';
 import readme_1 from './README (1).md';
-import readme_2_1_1 from './README (2) (1) (1).md';
-import readme_2_1 from './README (2) (1).md';
-import readme_2 from './README (2).md';
-import readme_3_1_1_1 from './README (3) (1) (1) (1).md';
-import readme_3_1_1 from './README (3) (1) (1).md';
-import readme_3_1 from './README (3) (1).md';
-import readme_3 from './README (3).md';
-import readme_4 from './README (4).md';
-import readme_4_1 from './README (4) (1).md';
-import readme_5 from './README (5).md';
-import readme_6 from './README (6).md';
-import readme_7 from './README (7).md';
-import readme_8 from './README (8).md';
-import readme_9 from './README (9).md';
 import readme_10 from './README (10).md';
 import readme_11 from './README (11).md';
 import readme_12 from './README (12).md';
@@ -30,17 +19,40 @@ import readme_16 from './README (16).md';
 import readme_17 from './README (17).md';
 import readme_18 from './README (18).md';
 import readme_19 from './README (19).md';
+import readme_2_1_1 from './README (2) (1) (1).md';
+import readme_2_1 from './README (2) (1).md';
+import readme_2 from './README (2).md';
 import readme_20 from './README (20).md';
 import readme_21 from './README (21).md';
 import readme_22 from './README (22).md';
 import readme_23 from './README (23).md';
-import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md';
-import demandes from './2000-demandes.md';
+import readme_24 from './README (24).md';
+import readme_25 from './README (25).md';
+import readme_26 from './README (26).md';
+import readme_27 from './README (27).md';
+import readme_28 from './README (28).md';
+import readme_3_1_1_1 from './README (3) (1) (1) (1).md';
+import readme_3_1_1 from './README (3) (1) (1).md';
+import readme_3_1 from './README (3) (1).md';
+import readme_3 from './README (3).md';
+import readme_4_1 from './README (4) (1).md';
+import readme_4 from './README (4).md';
+import readme_5 from './README (5).md';
+import readme_6 from './README (6).md';
+import readme_7 from './README (7).md';
+import readme_8 from './README (8).md';
+import readme_9 from './README (9).md';
+import readme from './README.md';
+import donneesOpenDataEnrichies from './des-donnees-en-open-data-enrichies.md';
 import desObligationsDePartageDeDonnees from './des-obligations-de-partage-de-donnees-a-fcu-au-titre-du-fonds-chaleur.md';
 import desReseauxVertueux from './des-reseaux-vertueux.md';
+import deuxIdeesRecuesGeothermie from './deux-idees-recues-sur-la-geothermie.md';
+import deuxIdeesRecuesEnergieSolaire from './deux-idees-recues-sur-lenergie-solaire.md';
 import dossierSpecialSurLesReseauxDeChaleur from './dossier-special-sur-les-reseaux-de-chaleur.md';
 import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-urbain.md';
+import franceChaleurUrbainePourBureauxEtudes from './france-chaleur-urbaine-pour-les-bureaux-detudes.md';
 import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urbaine-se-construit-avec-ses-usagers.md';
+import identifierZonesImplantationsSolaireThermique from './identifier-des-zones-dimplantation-pour-le-solaire-thermique.md';
 import lappelAProjets1Ville1ReseauDeLademeEstRelance from './lappel-a-projets-1-ville-1-reseau-de-lademe-est-relance.md';
 import leChauffageLePlusEconomiquePourLhabitatCollectif from './le-chauffage-le-plus-economique-pour-lhabitat-collectif.md';
 import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.md';
@@ -51,6 +63,7 @@ import lesReseauxDeChaleurEnMoinsDe15Secondes from './les-reseaux-de-chaleur-en-
 import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
 import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
+import ileDeFranceChampionGeorthermieProfonde from './lile-de-france-championne-de-la-geothermie-profonde.md';
 import notreCampagneCharlevilleMezieres from './notre-campagne-sur-charleville-mezieres.md';
 import notreCampagneFresnes from './notre-campagne-sur-fresnes.md';
 import notreCampagneStrasbourg from './notre-campagne-sur-strasbourg.md';
@@ -58,11 +71,12 @@ import ouCreerReseauChaleurSurMonTerritoire from './ou-creer-un-reseau-de-chaleu
 import page_2 from './page-2.md';
 import partENRDansConsommationsChaleur from './part-des-enr-and-r-dans-nos-consommations-de-chaleur.md';
 import potentielsRaccordementTerritoire from './potentiels-de-raccordement-par-territoire.md';
-import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
-import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
+import accesSimplifieSchemasDirecteursReseauxChaleur from './un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md';
+import chauffageEcologiqueEconomiquePossible from './un-chauffage-ecologique-et-economique-cest-possible.md';
 import unGuidePourLesExploitants from './un-guide-pour-les-exploitants.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
+import uneEmissionPedagogiqueReseauChaleur from './une-emission-pedagogique-sur-les-reseaux-de-chaleur.md';
 import uneEnqueteIfopPourFranceChaleurUrbaine from './une-enquete-ifop-pour-france-chaleur-urbaine.md';
 import visiteCentraleFroidAlsaceChaufferieCharras from './visite-de-la-centrale-de-froid-alsace-et-de-la-chaufferie-charras.md';
 import visiteDunDatacenter from './visite-dun-datacenter.md';
@@ -74,10 +88,130 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/11 (2).jpg',
+    title: 'Les réseaux de chaleur en région : focus sur la Normandie',
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-la-normandie',
+    content: importFile(readme),
+    publishedDate: new Date('2024-06-05'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/Modele post linkedin (767 x 432 px).jpg',
+    title: 'Atelier de co-construction France Chaleur Urbaine - EnRezo',
+    slug: 'atelier-de-co-construction-france-chaleur-urbaine-en-rezo',
+    content: importFile(readme_28),
+    publishedDate: new Date('2024-05-30'),
+    themes: ['Réseaux de chaleur'],
+  },
+  {
+    image: '/contents/10 (4).jpg',
+    title: "L'Île-de-France, championne de la géothermie profonde",
+    slug: 'l-ile-de-france-championne-de-la-geothermie-profonde',
+    content: importFile(ileDeFranceChampionGeorthermieProfonde),
+    publishedDate: new Date('2024-05-23'),
+    themes: ['Réseaux de chaleur', 'ENR&R', 'Infographie'],
+  },
+  {
+    image: '/contents/13 (3).jpg',
+    title: "France Chaleur Urbaine pour les bureaux d'études",
+    slug: 'france-chaleur-urbaine-pour-les-bureaux-detudes',
+    content: importFile(franceChaleurUrbainePourBureauxEtudes),
+    publishedDate: new Date('2024-05-15'),
+    themes: ['Réseaux de chaleur'],
+  },
+  {
+    image: '/contents/Capture d’écran 2024-06-11 à 10.21.48.png',
+    title: 'Une émission pédagogique sur les réseaux de chaleur',
+    slug: 'une-emission-pedagogique-sur-les-reseaux-de-chaleur',
+    content: importFile(uneEmissionPedagogiqueReseauChaleur),
+    publishedDate: new Date('2024-05-06'),
+    themes: ['Réseaux de chaleur', 'Communication'],
+  },
+  {
+    image: '/contents/6 (3).jpg',
+    title: 'Des filtres pour comparer les réseaux de chaleur',
+    slug: 'des-filtres-pour-comparer-les-reseaux-de-chaleur',
+    content: importFile(readme_27),
+    publishedDate: new Date('2024-04-30'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données', 'ENR&R', 'Prix'],
+  },
+  {
+    image: '/contents/5 (3).jpg',
+    title: 'Un accès simplifié aux schémas directeurs des réseaux de chaleur',
+    slug: 'un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur',
+    content: importFile(accesSimplifieSchemasDirecteursReseauxChaleur),
+    publishedDate: new Date('2024-04-23'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données'],
+  },
+  {
+    image: '/contents/4 (3).jpg',
+    title: "Identifier des zones d'implantation pour le solaire thermique",
+    slug: 'identifier-des-zones-dimplantation-pour-le-solaire-thermique',
+    content: importFile(identifierZonesImplantationsSolaireThermique),
+    publishedDate: new Date('2024-04-16'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Cartographie et données'],
+  },
+  {
+    image: '/contents/7 (2).jpg',
+    title: "Un chauffage écologique et économique ? C'est possible !",
+    slug: 'un-chauffage-ecologique-et-economique-cest-possible',
+    content: importFile(chauffageEcologiqueEconomiquePossible),
+    publishedDate: new Date('2024-04-10'),
+    themes: ['Réseaux de chaleur', 'Prix', 'Infographie'],
+  },
+  {
+    image: '/contents/3 (4).jpg',
+    title: 'Des données en open data enrichies',
+    slug: 'des-donnees-en-open-data-enrichies',
+    content: importFile(donneesOpenDataEnrichies),
+    publishedDate: new Date('2024-04-08'),
+    themes: [
+      'Réseaux de chaleur',
+      'Réseaux de froid',
+      'Cartographie et données',
+    ],
+  },
+  {
+    image: '/contents/8 (3).jpg',
+    title: "Deux idées reçues sur l'énergie solaire",
+    slug: 'l-deux-idees-recues-sur-lenergie-solaire',
+    content: importFile(deuxIdeesRecuesEnergieSolaire),
+    publishedDate: new Date('2024-04-03'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/2 (4).jpg',
+    title: 'Des données à jour et facilement accessibles',
+    slug: 'l-des-donnees-a-jour-et-facilement-accessibles',
+    content: importFile(readme_26),
+    publishedDate: new Date('2024-03-29'),
+    themes: [
+      'Réseaux de chaleur',
+      'Réseaux de froid',
+      'Cartographie et données',
+    ],
+  },
+  {
+    image: '/contents/9 (3).jpg',
+    title: 'Deux idées reçues sur la géothermie',
+    slug: 'deux-idees-recues-sur-la-geothermie',
+    content: importFile(deuxIdeesRecuesGeothermie),
+    publishedDate: new Date('2024-03-26'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/1 (4).jpg',
+    title: 'Identifier les gisements de chaleur fatale',
+    slug: 'identifier-les-gisements-de-chaleur-fatale',
+    content: importFile(readme_25),
+    publishedDate: new Date('2024-03-22'),
+    themes: ['ENR&R', 'Réseaux de chaleur', 'Cartographie et données'],
+  },
+  {
     image: '/contents/vignetteBiomasse.jpg',
     title: 'Les chaudières biomasse ne contribuent pas à la déforestation',
     slug: 'les-chaudieres-biomasse-ne-contribuent-pas-a-la-deforestation',
-    content: importFile(readme),
+    content: importFile(readme_24),
     publishedDate: new Date('2024-03-20'),
     themes: ['ENR&R', 'Réseaux de chaleur', 'Infographie'],
   },

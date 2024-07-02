@@ -1,0 +1,22 @@
+{
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  // Utilise Prettier pour le formatage
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // Configure ESLint comme linter par défaut
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  // Active la correction automatique des erreurs à la sauvegarde pour ESLint
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true
+  }
+}

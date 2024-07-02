@@ -11,12 +11,11 @@ import { z } from 'zod';
 const eligibilityStatus = handleRouteErrors(async (req: NextApiRequest) => {
   requireGetMethod(req);
 
-  const { lat, lon, city } = await validateObjectSchema(req.query, {
+  const { lat, lon } = await validateObjectSchema(req.query, {
     lat: z.coerce.number(),
     lon: z.coerce.number(),
-    city: z.string(),
   });
-  return await getEligilityStatus(lat, lon, city);
+  return await getEligilityStatus(lat, lon);
 });
 
 export default withCors(eligibilityStatus);

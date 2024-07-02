@@ -1,6 +1,6 @@
+import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import SimplePage from '@components/shared/page/SimplePage';
-import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
@@ -16,6 +16,10 @@ const ArticleContentWrapper = styled(Box)`
   }
   a {
     word-break: break-word;
+  }
+  em {
+    color: inherit;
+    font-style: italic;
   }
 `;
 

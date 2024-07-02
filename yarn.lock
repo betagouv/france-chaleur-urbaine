@@ -371,10 +371,10 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@codegouvfr/react-dsfr@^1.9.9":
-  version "1.9.9"
-  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.9.9.tgz#d589723b671f5a5ecf65bf4d99fa18dac506e9ca"
-  integrity sha512-qy6r9BxOO36mBRwSMc7eR/paNjJrYrnXzLWwf22gTaIt/S7H8vPd4CZdyzc0RAClLtVD3FOYQdcRA/ytTmcPmQ==
+"@codegouvfr/react-dsfr@^1.9.21":
+  version "1.9.21"
+  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.9.21.tgz#6828dc2bf619dc3917703e094083418a4d1335c7"
+  integrity sha512-xhlI2AHpmDbaA8lrFIUtQGsF3GkW2o6gANIwNpmwkyRpNSMynJkLiZywJamGuGDkfY7qEMoZ/IeEUQWE1sUhvQ==
   dependencies:
     tsafe "^1.6.3"
     yargs-parser "^21.1.1"
@@ -3277,10 +3277,10 @@ ecdsa-sig-formatter@1.0.11:
   dependencies:
     safe-buffer "^5.0.1"
 
-ejs@^3.1.9:
-  version "3.1.9"
-  resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.9.tgz#03c9e8777fe12686a9effcef22303ca3d8eeb361"
-  integrity sha512-rC+QVNMJWv+MtPgkt0y+0rVEIdbtxVADApW9JXrUVlzHetgcyczP/E7DJmWJ4fJCZF2cPcBk0laWO9ZHMG3DmQ==
+ejs@^3.1.10:
+  version "3.1.10"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.10.tgz#69ab8358b14e896f80cc39e62087b88500c3ac3b"
+  integrity sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==
   dependencies:
     jake "^10.8.5"
 

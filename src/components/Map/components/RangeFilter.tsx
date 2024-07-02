@@ -16,6 +16,10 @@ interface RangeFilterProps {
   onChange: (values: Interval) => void;
   unit?: string;
   tooltip?: string | ReactNode;
+  domainTransform?: {
+    percentToValue: (value: number) => number;
+    valueToPercent: (value: number) => number;
+  };
 }
 
 const RangeFilter = ({
@@ -25,6 +29,7 @@ const RangeFilter = ({
   onChange,
   unit = '',
   tooltip,
+  domainTransform,
   ...props
 }: RangeFilterProps) => {
   return (
@@ -49,10 +54,24 @@ const RangeFilter = ({
         <Slider
           mode={2}
           step={1}
-          domain={domain}
-          values={value}
+          domain={domainTransform ? [0, 100] : domain}
+          values={
+            domainTransform
+              ? [
+                  domainTransform.valueToPercent(value[0]),
+                  domainTransform.valueToPercent(value[1]),
+                ]
+              : value
+          }
           onChange={(newValue) => {
-            onChange(newValue as Interval);
+            onChange(
+              (domainTransform
+                ? [
+                    domainTransform.percentToValue(newValue[0]),
+                    domainTransform.percentToValue(newValue[1]),
+                  ]
+                : newValue) as Interval
+            );
           }}
         >
           <Rail>

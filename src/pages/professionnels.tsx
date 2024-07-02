@@ -7,7 +7,7 @@ import HeadSliceForm from '@components/HeadSliceForm';
 import { ArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import Partners from '@components/Partners/Partners';
 import { issues, understandings } from '@components/Ressources/config';
-import Simulator from '@components/Ressources/Contents/Simulator';
+import SimulateurCoutRaccordement from '@components/Ressources/Contents/SimulateurCoutRaccordement';
 import Understanding from '@components/Ressources/Understanding';
 import SimplePage from '@components/shared/page/SimplePage';
 import SimulatorCO2 from '@components/SimulatorCO2';
@@ -285,37 +285,49 @@ const Professionnels = () => {
             <br />
             pour les bâtiments tertiaires performants
           </Heading>
-          <ResponsiveRow mt="10w">
-            <Box flex>
-              <Heading as="h4" color="blue-france">
-                Le coût du raccordement
-              </Heading>
-              <Text size="lg">
-                Estimez le montant du Coup de pouce "Chauffage des bâtiments
-                résidentiels collectifs et tertiaires” pour le raccordement d’un
-                bâtiment
-              </Text>
-              <Box py="4w">
-                <Simulator
-                  cartridge
-                  backgroundColor="#F8F5F1"
-                  defaultStructure="Tertiaire"
-                />
-              </Box>
-            </Box>
 
+          <Heading as="h4" color="blue-france" mt="10w">
+            Le coût du raccordement
+          </Heading>
+          <Text>
+            Estimez le montant du Coup de pouce
+            <Link href="/ressources/aides#contenu">
+              "Chauffage des bâtiments résidentiels collectifs et tertiaires”
+            </Link>{' '}
+            pour le raccordement d’un bâtiment
+          </Text>
+          <Text my="3w">
+            Différentes entreprises signataires de la charte "Chauffage des
+            bâtiments résidentiels collectifs et tertiaires” offrent cette
+            prime.{' '}
+            <strong>
+              Le montant de la prime peut significativement varier d’une
+              entreprise à l’autre, il est donc important de comparer les offres
+              proposées.
+            </strong>
+          </Text>
+          <SimulateurCoutRaccordement embedded typeBatiment="tertiaire" />
+
+          <Heading as="h4" color="blue-france" mt="10w">
+            Le coût de la chaleur
+          </Heading>
+          <ResponsiveRow>
             <Box flex>
-              <Heading as="h4" color="blue-france">
-                Le coût de la chaleur
-              </Heading>
-              <Text size="lg">
+              <Text>
                 Le{' '}
                 <Link href="/chauffage-urbain#contenu">chauffage urbain</Link>{' '}
                 est en moyenne le mode de chauffage le moins cher sur le marché
                 pour un bâtiment tertiaire performant RE2020
                 (28&nbsp;kWhu/m²/an)
               </Text>
+              <Text mt="3w">
+                Retrouvez le prix moyen de la chaleur pour les réseaux classés
+                sur les fiches accessibles depuis notre{' '}
+                <Link href="/carte">cartographie</Link>.
+              </Text>
+            </Box>
 
+            <Box flex>
               <Image
                 src="/img/pro_cout_chaleur.svg"
                 alt="Graphique comparatif du coût des méthodes de chauffage"
@@ -323,7 +335,7 @@ const Professionnels = () => {
                 height={499}
                 className="fr-responsive-img"
               />
-              <Text size="sm">
+              <Text size="xs">
                 Coût global chauffage et eau chaude sanitaire (€TTC/an) pour un
                 bâtiment de 1000&nbsp;m². Enquête sur le prix de vente de la
                 chaleur et du froid 2022 (Amorce 2023)

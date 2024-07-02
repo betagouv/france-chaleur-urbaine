@@ -163,10 +163,6 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   .fr-btn[target=_blank]:after {
     content: "\\ecaf" !important;
   }
-
-  .popover-search-form {
-    z-index: 3;
-  }
 `;
 
 const swrConfig: SWRConfiguration = {
@@ -199,8 +195,8 @@ function App({
         {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
         {/* {!iframedPaths.some((path) => router.pathname.match(path)) && (
           <ConsentBanner>
-            {clientConfig.tracking.googleTagId && (
-              <GoogleAdsMarkup googleId={clientConfig.tracking.googleTagId} />
+            {clientConfig.tracking.googleTagIds.length > 0 && (
+              <GoogleAdsMarkup googleIds={clientConfig.tracking.googleTagIds} />
             )}
             {clientConfig.tracking.facebookPixelId && (
               <FacebookMarkup

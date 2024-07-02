@@ -1,7 +1,7 @@
-import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
-import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
-import styled, { IntrinsicElementsKeys } from 'styled-components';
 import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
+import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
+import styled, { IntrinsicElementsKeys } from 'styled-components';
+import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type StyleProps = {
   display?: CSSProperties['display'];
@@ -13,6 +13,7 @@ type StyleProps = {
   gap?: CSSProperties['gap'];
   flex?: boolean;
   border?: CSSProperties['border'];
+  boxShadow?: CSSProperties['boxShadow'];
   backgroundColor?: CSSProperties['backgroundColor'];
   fontSize?: CSSProperties['fontSize'];
   textColor?: CSSProperties['color'];
@@ -28,6 +29,9 @@ type StyleProps = {
   maxHeight?: CSSProperties['maxHeight'];
   lineHeight?: CSSProperties['lineHeight'];
   opacity?: CSSProperties['opacity'];
+  gridTemplateColumns?: CSSProperties['gridTemplateColumns'];
+  columnGap?: CSSProperties['columnGap'];
+  cursor?: CSSProperties['cursor'];
 };
 
 const StyledBox = styled.div<StyleProps>`
@@ -40,6 +44,7 @@ const StyledBox = styled.div<StyleProps>`
   gap: ${({ gap }) => gap};
   flex: ${({ flex }) => (flex !== undefined ? (flex ? 1 : 0) : undefined)};
   border: ${({ border }) => border};
+  box-shadow: ${({ boxShadow }) => boxShadow};
   background-color: ${({ backgroundColor }) =>
     backgroundColor
       ? backgroundColor?.startsWith('#')
@@ -64,6 +69,10 @@ const StyledBox = styled.div<StyleProps>`
   max-height: ${({ maxHeight }) => maxHeight};
   line-height: ${({ lineHeight }) => lineHeight};
   opacity: ${({ opacity }) => opacity};
+  grid-template-columns: ${({ gridTemplateColumns }) => gridTemplateColumns};
+  column-gap: ${({ columnGap }) => columnGap};
+  cursor: ${({ cursor }) => cursor};
+  :
 `;
 
 export interface BoxProps
@@ -93,6 +102,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       gap={props.gap}
       flex={props.flex}
       border={props.border}
+      boxShadow={props.boxShadow}
       backgroundColor={props.backgroundColor}
       fontSize={props.fontSize}
       textColor={props.textColor}
@@ -107,6 +117,9 @@ function Box(props: PropsWithChildren<BoxProps>) {
       maxHeight={props.maxHeight}
       lineHeight={props.lineHeight}
       opacity={props.opacity}
+      gridTemplateColumns={props.gridTemplateColumns}
+      columnGap={props.columnGap}
+      cursor={props.cursor}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
       } ${props.iconLeft ?? ''} ${spacingsToClasses(props)}`}

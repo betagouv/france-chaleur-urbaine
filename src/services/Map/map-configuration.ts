@@ -56,11 +56,13 @@ export type MapConfiguration = {
     tauxENRR: Interval;
     emissionsCO2: Interval;
     prixMoyen: Interval;
+    livraisonsAnnuelles: Interval;
     anneeConstruction: Interval;
     limits: {
       tauxENRR: Interval;
       emissionsCO2: Interval;
       prixMoyen: Interval;
+      livraisonsAnnuelles: Interval;
       anneeConstruction: Interval;
     };
   } & Record<EnergieRatioConfKey, Interval>;
@@ -100,6 +102,9 @@ export type MapConfiguration = {
     zonesPotentielFortChaud: boolean;
   };
   caracteristiquesBatiments: boolean;
+  besoinsEnChaleur: boolean;
+  besoinsEnFroid: boolean;
+  besoinsEnChaleurIndustrieCommunes: boolean;
 };
 
 /**
@@ -119,7 +124,10 @@ export type MaybeEmptyMapConfiguration =
   | MapConfiguration
   | EmptyMapConfiguration;
 
-export type MapConfigurationProperty = FlattenKeys<MapConfiguration>;
+export type MapConfigurationProperty<ValueType = any> = FlattenKeys<
+  MapConfiguration,
+  ValueType
+>;
 
 export function isMapConfigurationInitialized(
   conf: MaybeEmptyMapConfiguration
@@ -151,6 +159,7 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
     tauxENRR: percentageMaxInterval,
     emissionsCO2: defaultInterval,
     prixMoyen: defaultInterval,
+    livraisonsAnnuelles: defaultInterval,
     anneeConstruction: defaultInterval,
     limits: null, // fetched dynamically from the API
   },
@@ -190,6 +199,9 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
     zonesPotentielFortChaud: true,
   },
   caracteristiquesBatiments: false,
+  besoinsEnChaleur: false,
+  besoinsEnFroid: false,
+  besoinsEnChaleurIndustrieCommunes: false,
 };
 
 export const defaultMapConfiguration = createMapConfiguration({
@@ -199,13 +211,13 @@ export const defaultMapConfiguration = createMapConfiguration({
   },
   reseauxEnConstruction: true,
   consommationsGaz: {
-    show: true,
+    show: false,
   },
   batimentsGazCollectif: {
-    show: true,
+    show: false,
   },
   batimentsFioulCollectif: {
-    show: true,
+    show: false,
   },
 });
 

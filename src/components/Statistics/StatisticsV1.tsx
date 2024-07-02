@@ -2,11 +2,11 @@ import Graph from '@components/Graph';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import { dataNumberFcu } from '@data';
+import { fetchJSON } from '@utils/network';
 import { useMemo } from 'react';
 import useSWR from 'swr';
 import Band from './Band';
 import { Container, GraphsWrapper } from './StatisticsV1.style';
-import { fetchJSON } from '@utils/network';
 
 type ReturnApiStatAirtable = {
   date: string;
@@ -63,12 +63,18 @@ const Statistics = () => {
         label,
         (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
           (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0),
+          (
+            entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0
+          )(entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
+          (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0),
         (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0),
+          (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
+          (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ??
+            0),
         (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0),
+          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
+          (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0),
       ];
     }),
   ];

@@ -23,8 +23,8 @@ import Head from 'next/head';
 //   // FooterPartnersSecondaryTitle,
 //   // FooterPartnersTitle,
 // } from '@codegouvfr/react-dsfr/Header';
-import { Header } from '@codegouvfr/react-dsfr/Header';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
+import { Header } from '@codegouvfr/react-dsfr/Header';
 import { useSession } from 'next-auth/react'; //signOut
 //import Link from 'next/link';
 //import { ComponentProps, Fragment } from 'react';
@@ -92,12 +92,6 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
         },
       },
       {
-        text: 'Comment se raccorder ?',
-        linkProps: {
-          href: '/#comment-se-raccorder',
-        },
-      },
-      {
         text: 'Les coûts du chauffage urbain',
         linkProps: {
           href: '/#couts-du-chauffage-urbain',
@@ -107,6 +101,12 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
         text: 'Les obligations de raccordement',
         linkProps: {
           href: '/#obligations-de-raccordement',
+        },
+      },
+      {
+        text: 'Comment se raccorder ?',
+        linkProps: {
+          href: '/#comment-se-raccorder',
         },
       },
     ],

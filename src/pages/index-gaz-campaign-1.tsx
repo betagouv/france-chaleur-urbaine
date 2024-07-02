@@ -42,7 +42,7 @@ export default function Home() {
                   className="img-object-cover"
                 />
               </Box>
-              <Box flex py="3w" className="fr-container">
+              <Box flex py="3w" pr="8w" className="fr-container">
                 <Heading as="h1" size="h2" color="blue-france" mt="1w">
                   Changez votre chaudière gaz pour le chauffage urbain et
                   maîtrisez vos factures
@@ -114,11 +114,7 @@ export default function Home() {
       </Box>
 
       <Box py="10w" id="couts-du-chauffage-urbain">
-        <CoutsChauffageUrbain
-          simulatorBgColor="#F8F5F1"
-          simulatorFormBgColor="#ffffff"
-          simulatorDisclaimerLegacyColor="darkblue"
-        />
+        <CoutsChauffageUrbain />
       </Box>
 
       <Box py="10w" backgroundColor="blue-france-975-75">

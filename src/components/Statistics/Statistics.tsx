@@ -1,6 +1,11 @@
 import Graph from '@components/Graph';
+import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Slice from '@components/Slice';
+import statistics from '@data/statistics';
+import { fetchJSON } from '@utils/network';
+import Link from 'next/link';
 import { useMemo } from 'react';
+import { MatomoMonthStat } from 'src/services/matomo_types';
 import useSWR from 'swr';
 import {
   Column,
@@ -19,11 +24,6 @@ import {
   NumberText,
   StatisticsSliceContainer,
 } from './Statistics.style';
-import statistics from '@data/statistics';
-import HoverableIcon from '@components/Hoverable/HoverableIcon';
-import Link from 'next/link';
-import { fetchJSON } from '@utils/network';
-import { MatomoMonthStat } from 'src/services/matomo_types';
 
 type ReturnApiStatAirtable = {
   date: string;
@@ -144,7 +144,10 @@ const Statistics = () => {
           (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
           (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
           (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0)
+          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
+          (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ??
+            0) +
+          (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0)
         );
       }
     }
@@ -308,10 +311,16 @@ const Statistics = () => {
             (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
             (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
             (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0);
+            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
+            (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ??
+              0) +
+            (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ??
+              0);
           nbTotalEligible +=
             (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
-            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0);
+            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
+            (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ??
+              0);
         }
       });
     if (nbTotalEligible && nbTotal) {

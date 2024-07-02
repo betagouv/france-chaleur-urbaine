@@ -1,10 +1,13 @@
 import Hoverable from '@components//Hoverable';
-import Icon from '@components/ui/Icon';
+import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
+import Icon from '@components/ui/Icon';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
 import { Demand } from 'src/types/Summary/Demand';
 import AdditionalInformation from './AdditionalInformation';
 import Addresse from './Addresse';
@@ -23,8 +26,6 @@ import {
 import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
-import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 const rowPerPage: number = 10;
 
@@ -275,7 +276,21 @@ const Manager = () => {
     },
     {
       field: 'Adresse',
-      renderHeader: () => <ColHeader>Adresse</ColHeader>,
+      renderHeader: () => (
+        <ColHeader>
+          Adresse
+          <HoverableIcon
+            iconName="ri-information-fill"
+            position="bottom"
+            iconSize="lg"
+            top="0px"
+          >
+            La mention “PDP" est indiquée pour les adresses situées dans le
+            périmètre de développement prioritaire d’un réseau classé (connu par
+            France Chaleur Urbaine).
+          </HoverableIcon>
+        </ColHeader>
+      ),
       width: 250,
       renderCell: (params) => <Addresse demand={params.row} />,
     },
@@ -297,7 +312,19 @@ const Manager = () => {
     },
     {
       field: 'Distance au réseau',
-      renderHeader: () => <ColHeader>Distance au réseau (m)</ColHeader>,
+      renderHeader: () => (
+        <ColHeader>
+          Distance au réseau (m)
+          <HoverableIcon
+            iconName="ri-information-fill"
+            position="bottom-centered"
+            iconSize="lg"
+            top="0px"
+          >
+            Distance à vol d'oiseau
+          </HoverableIcon>
+        </ColHeader>
+      ),
       renderCell: (params) => (
         <AdditionalInformation
           demand={params.row}
@@ -350,7 +377,24 @@ const Manager = () => {
     },
     {
       field: 'Affecté à',
-      renderHeader: () => <ColHeader>Affecté à</ColHeader>,
+      renderHeader: () => (
+        <ColHeader>
+          Affecté à
+          <HoverableIcon
+            iconName="ri-information-fill"
+            position="bottom"
+            iconSize="lg"
+            top="0px"
+          >
+            "Non affecté" : demande éloignée du réseau non transmise aux
+            opérateurs
+            <br />
+            <br />
+            Vous pouvez ajouter ou modifier une affectation : le changement sera
+            effectif après validation manuelle par l'équipe FCU.
+          </HoverableIcon>
+        </ColHeader>
+      ),
       renderCell: (params) => (
         <AdditionalInformation
           demand={params.row}
@@ -378,6 +422,8 @@ const Manager = () => {
                 <DataGrid
                   columns={demandRowsParams}
                   rows={filteredDemands}
+                  disableColumnMenu
+                  disableRowSelectionOnClick
                   pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
                   getRowHeight={() => 'auto'}
                   getEstimatedRowHeight={() => 110}

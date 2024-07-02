@@ -1,10 +1,11 @@
 import Input from '@components/shared/input';
 // import RadioGroup from '@components/shared/RadioGroup';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 import { Field, useFormikContext } from 'formik';
+import { ReactNode } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
-import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 
 const InputWraper = styled.div`
   opacity: 1;
@@ -85,9 +86,11 @@ export const validationSchemasContactInformation = {
 const ContactInformation = ({
   cardMode,
   city,
+  heatingTypeInput,
 }: {
   cardMode?: boolean;
   city?: string;
+  heatingTypeInput?: ReactNode; // gets inserted after the building type (structure), used in the network page
 }) => {
   const { values }: any = useFormikContext();
   return (
@@ -130,10 +133,15 @@ const ContactInformation = ({
             description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
           />
         )}
+      {heatingTypeInput}
       <fieldset className="fr-fieldset fr-my-1w">
         <InputWraper>
           {/* <RadioGroup
-            label={fieldLabelInformation.heatingEnergy.label}
+            label={
+              heatingTypeInput
+                ? 'Énergie de chauffage :'
+                : fieldLabelInformation.heatingEnergy.label
+            }
             name="heatingEnergy"
             inputs={fieldLabelInformation.heatingEnergy.inputs}
             required

@@ -235,10 +235,11 @@ const bulkEligibilitygibilityStatus = async (
       const address = informations.slice(0, informations.length - 5).join(',');
 
       const result = label
-        ? await getEligilityStatus(Number(lat), Number(lon), city)
+        ? await getEligilityStatus(Number(lat), Number(lon))
         : { isEligible: null };
       results.push({
         ...result,
+        city,
         address,
         score: Math.round(Number.parseFloat(score) * 1000) / 1000,
         label,

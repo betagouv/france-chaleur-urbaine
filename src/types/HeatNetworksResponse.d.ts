@@ -4,13 +4,16 @@ export type HeatNetwork = {
   isEligible: boolean;
   distance: number | null;
   veryEligibleDistance: number | null;
-  inZDP: boolean;
+  inPDP: boolean;
   isBasedOnIris: boolean;
   futurNetwork: boolean;
   id: string | null;
+  name: string | null;
   tauxENRR: number | null;
   gestionnaire: string | null;
   co2: number | null;
+  isClasse: boolean | null;
+  hasPDP: boolean | null;
 };
 
 export type CityNetwork = {
