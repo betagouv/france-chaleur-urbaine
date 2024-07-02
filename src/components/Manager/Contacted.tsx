@@ -6,7 +6,7 @@ const Contacted = ({
   updateDemand,
 }: {
   demand: Demand;
-  updateDemand: (demandId: string, demand: Partial<Demand>) => void;
+  updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
 }) => {
   const handleCheckboxChange = (e: any) => {
     updateDemand(demand.id, {
@@ -15,8 +15,6 @@ const Contacted = ({
   };
 
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore: to fix in react-dsfr
     <Checkbox
       small
       options={[
