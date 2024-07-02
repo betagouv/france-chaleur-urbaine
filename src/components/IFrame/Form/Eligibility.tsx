@@ -4,7 +4,7 @@ import {
   SelectEnergy,
 } from '@components/EligibilityForm/components';
 import AddressAutocomplete from '@components/addressAutocomplete';
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { Container, Form, Header } from './Eligibility.styles';
@@ -38,7 +38,6 @@ const Eligibility = () => {
           placeholder="Tapez ici votre adresse"
           onAddressSelected={(address, suggestionItem) => {
             setAddress(suggestionItem);
-            return Promise.resolve();
           }}
         />
         <Button

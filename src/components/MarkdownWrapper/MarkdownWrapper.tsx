@@ -1,4 +1,4 @@
-import { Highlight } from '@dataesr/react-dsfr';
+import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import rehypeRaw from 'rehype-raw';

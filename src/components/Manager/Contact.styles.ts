@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+export const ContactInfos = styled.div`
+  line-height: 20px;
+`;
+
 export const Name = styled.div`
   font-weight: bold;
   font-size: 14px;

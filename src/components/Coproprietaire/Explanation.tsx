@@ -1,6 +1,6 @@
 import { Glass, ImageContainer } from '@components/Infographie/index.styles';
 import WrappedText from '@components/WrappedText/WrappedText';
-import { Icon } from '@dataesr/react-dsfr';
+import Icon from '@components/ui/Icon';
 import { Container, Title } from './Explanation.styles';
 import CoproGuide from './CoproGuide';
 
@@ -37,7 +37,7 @@ const Explanation = () => {
               alt="Une solution d'avenir"
             />
             <Glass>
-              <Icon name="ri-search-eye-fill" size="2x" />
+              <Icon name="ri-search-eye-fill" size="lg" />
             </Glass>
           </ImageContainer>
         </div>

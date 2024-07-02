@@ -25,10 +25,7 @@ type AddressProps = {
   minCharactersLength?: number;
   className?: string;
   popoverClassName?: string;
-  onAddressSelected: (
-    address: string,
-    geoAddress?: SuggestionItem
-  ) => Promise<void>;
+  onAddressSelected: (address: string, geoAddress?: SuggestionItem) => any;
   onChange?: (e: string) => void;
 };
 
@@ -39,7 +36,7 @@ const findAddressInSuggestions = (
   return suggestions.find((item) => item.properties.label === address);
 };
 
-const AddressAutocomplete: React.FC<AddressProps> = ({
+const AddressAutocomplete = ({
   label = defaultLabel,
   emptySuggestionText = defaultEmptySuggestionText,
   debounceTime = 200,
@@ -50,7 +47,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
   centred,
   onAddressSelected,
   onChange,
-}) => {
+}: AddressProps) => {
   const router = useRouter();
   const [address, setAddress] = useState('');
   const [seeSuggestions, setSeeSuggestions] = useState(true);

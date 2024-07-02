@@ -1,5 +1,6 @@
-import { Button } from '@dataesr/react-dsfr';
-import { ComponentProps, PropsWithChildren } from 'react';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { PropsWithChildren } from 'react';
+//import { ButtonProps } from '@codegouvfr/react-dsfr/Button';
 import { Oval } from 'react-loader-spinner';
 import styled from 'styled-components';
 import Box from './Box';
@@ -18,27 +19,23 @@ const MainWrapper = styled.div<{ show: boolean }>`
   visibility: ${({ show }) => (show ? 'visible' : 'hidden')};
 `;
 
-type ButtonProps = ComponentProps<typeof Button>;
-
-interface AsyncButtonProps extends ButtonProps {
+/*interface AsyncButtonProps extends typeof Button {
   isLoading?: boolean;
-}
+}*/
 
-/**
- * Renders a button that displays a spinner while loading.
- * Usage:
- *  <LoadingButton isLoading={isSubmitting}>Submit</LoadingButton>
- */
+// Renders a button that displays a spinner while loading.
+// Usage:
+//  <LoadingButton isLoading={isSubmitting}>Submit</LoadingButton>
 function LoadingButton({
   children,
   disabled,
   isLoading = false,
   ...props
-}: PropsWithChildren<AsyncButtonProps>) {
+}: PropsWithChildren<any>) {
   return (
     <Button
       className="fr-mt-2w"
-      submit
+      type="submit"
       disabled={disabled || isLoading}
       {...props}
     >

@@ -42,7 +42,7 @@ export const filtresEnergies = [
   },
 ] as const satisfies ReadonlyArray<FiltreEnergie>;
 
-type FiltreEnergieConfKey = (typeof filtresEnergies)[number]['confKey'];
+export type FiltreEnergieConfKey = (typeof filtresEnergies)[number]['confKey'];
 
 type EnergieRatioConfKey = `energie_ratio_${FiltreEnergieConfKey}`;
 

@@ -14,7 +14,7 @@ const Status = ({
   updateDemand,
 }: {
   demand: Demand;
-  updateDemand: (demandId: string, demand: Partial<Demand>) => void;
+  updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
 }) => {
   const [status, setStatus] = useState('');
   useEffect(() => {
@@ -23,13 +23,14 @@ const Status = ({
 
   return (
     <StatusSelect
-      selected={status}
+      label=""
       options={statusOptions}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore: Fix in react-DSFR
-      onChange={(e) => {
-        setStatus(e.target.value);
-        updateDemand(demand.id, { Status: e.target.value });
+      nativeSelectProps={{
+        onChange: (e) => {
+          setStatus(e.target.value);
+          updateDemand(demand.id, { Status: e.target.value });
+        },
+        value: status,
       }}
     />
   );

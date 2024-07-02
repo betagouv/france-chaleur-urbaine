@@ -12,9 +12,9 @@ import Understanding from '@components/Ressources/Understanding';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import { Icon } from '@dataesr/react-dsfr';
 import Head from 'next/head';
 import Image from 'next/image';
 

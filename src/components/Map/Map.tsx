@@ -10,7 +10,7 @@ import MapReactGL, {
 
 import Hoverable from '@components/Hoverable';
 import Box from '@components/ui/Box';
-import { Icon } from '@dataesr/react-dsfr';
+import Icon from '@components/ui/Icon';
 import { useContactFormFCU, usePersistedState } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -797,7 +797,7 @@ const Map = ({
                     : 'Masquer la légende'}
                 </Hoverable>
                 <Icon
-                  size="2x"
+                  size="lg"
                   name={
                     legendCollapsed
                       ? 'ri-arrow-right-s-fill'

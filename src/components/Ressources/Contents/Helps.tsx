@@ -1,4 +1,4 @@
-import { Highlight } from '@dataesr/react-dsfr';
+import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import { BlueText, List, Source, Subtitle } from './Contents.styles';
 import Simulator from './Simulator';
 

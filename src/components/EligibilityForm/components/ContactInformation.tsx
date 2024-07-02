@@ -1,6 +1,7 @@
 import Input from '@components/shared/input';
-import RadioGroup from '@components/shared/RadioGroup';
-import { Alert } from '@dataesr/react-dsfr';
+// import RadioGroup from '@components/shared/RadioGroup';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 import { Field, useFormikContext } from 'formik';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
@@ -96,12 +97,30 @@ const ContactInformation = ({
     <>
       <fieldset className={`fr-fieldset fr-mt-${cardMode ? '1' : '3'}w`}>
         <InputWraper>
-          <RadioGroup
+          {/* <RadioGroup
             required
             isInline={!cardMode}
             label={fieldLabelInformation.structure.label}
             name="structure"
             inputs={fieldLabelInformation.structure.inputs}
+          /> */}
+          {/* FIXME intégrer les erreurs formik */}
+          <RadioButtons
+            legend={fieldLabelInformation.structure.label}
+            name="structure"
+            orientation={cardMode ? 'vertical' : 'horizontal'}
+            options={fieldLabelInformation.structure.inputs.map(
+              ({ value, label, id }) => ({
+                label: label,
+                nativeInputProps: {
+                  id: id,
+                  value: value,
+                  // FIXME vérifier
+                  // checked: value === optionValue,
+                  //  onChange: onChange,
+                },
+              })
+            )}
           />
         </InputWraper>
       </fieldset>
@@ -109,7 +128,7 @@ const ContactInformation = ({
         city !== 'Charleville-Mézières' && (
           <Alert
             className="fr-mt-2w"
-            type="warning"
+            severity="warning"
             small
             description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
           />
@@ -117,7 +136,7 @@ const ContactInformation = ({
       {heatingTypeInput}
       <fieldset className="fr-fieldset fr-my-1w">
         <InputWraper>
-          <RadioGroup
+          {/* <RadioGroup
             label={
               heatingTypeInput
                 ? 'Énergie de chauffage :'
@@ -127,6 +146,23 @@ const ContactInformation = ({
             inputs={fieldLabelInformation.heatingEnergy.inputs}
             required
             isInline={!cardMode}
+          /> */}
+          <RadioButtons
+            legend={fieldLabelInformation.heatingEnergy.label}
+            name="heatingEnergy"
+            orientation={cardMode ? 'vertical' : 'horizontal'}
+            options={fieldLabelInformation.heatingEnergy.inputs.map(
+              ({ value, label, id }) => ({
+                label: label,
+                nativeInputProps: {
+                  id: id,
+                  value: value,
+                  // FIXME vérifier
+                  // checked: value === optionValue,
+                  //  onChange: onChange,
+                },
+              })
+            )}
           />
         </InputWraper>
       </fieldset>

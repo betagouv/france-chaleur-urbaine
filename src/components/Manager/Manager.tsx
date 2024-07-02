@@ -1,11 +1,13 @@
 import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
-import { Icon, Table } from '@dataesr/react-dsfr';
+import Icon from '@components/ui/Icon';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
-import { RowsParams } from 'src/services/demands';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
 import { Demand } from 'src/types/Summary/Demand';
 import AdditionalInformation from './AdditionalInformation';
 import Addresse from './Addresse';
@@ -24,8 +26,6 @@ import {
 import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
-import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 const rowPerPage: number = 10;
 
@@ -77,7 +77,7 @@ const Manager = () => {
   const [isFirstInit, setIsFirstInit] = useState<boolean>(true);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
-  const [sort, setSort] = useState<SortParamType>(defaultSort);
+  const [sort] = useState<SortParamType>(defaultSort); //setSort
   const refManagerTable: null | { current: any } = useRef(null);
   const [centerRow, setCenterRow] = useState<string>();
 
@@ -86,19 +86,6 @@ const Manager = () => {
   const [centerPin, setCenterPin] = useState<[number, number]>();
   const [firstCenterPin, setFirstCenterPin] = useState<[number, number]>();
   const [initialZoom, setInitialZoom] = useState<number>(8);
-
-  const handleSort = useCallback(
-    (key: keyof Demand, backupKey?: keyof Demand) => () => {
-      const order =
-        sort.key !== key || !sort.order
-          ? 'desc'
-          : sort.order === 'desc'
-          ? 'asc'
-          : undefined;
-      setSort(order ? { key, backupKey, order } : defaultSort);
-    },
-    [sort]
-  );
 
   const setMapCenter = (pin: [number, number]) => {
     setCenterPin(pin);
@@ -234,14 +221,13 @@ const Manager = () => {
   }, [demandsService]);
 
   const updateDemand = useCallback(
-    (demandId: string, demand: Partial<Demand>) => {
-      demandsService.update(demandId, demand).then((response) => {
-        if (response) {
-          const index = demands.findIndex((d) => d.id === demandId);
-          demands.splice(index, 1, response);
-          setDemands([...demands]);
-        }
-      });
+    async (demandId: string, demand: Partial<Demand>) => {
+      const updatedDemand = await demandsService.update(demandId, demand);
+      if (updatedDemand) {
+        const index = demands.findIndex((d) => d.id === demandId);
+        demands.splice(index, 1, updatedDemand);
+        setDemands([...demands]);
+      }
     },
     [demands, demandsService]
   );
@@ -262,32 +248,36 @@ const Manager = () => {
     addOnClick();
   }, [addOnClick, page]);
 
-  const demandRowsParams: RowsParams[] = [
+  const demandRowsParams: GridColDef[] = [
     {
-      name: 'Statut',
-      label: 'Statut',
-      render: (demand) => (
-        <Status demand={demand} updateDemand={updateDemand} />
+      field: 'Statut',
+      width: 300,
+      renderCell: (params) => (
+        <Status demand={params.row} updateDemand={updateDemand} />
+      ),
+      renderHeader: () => <ColHeader>Statut</ColHeader>,
+    },
+    {
+      field: 'Prospect recontacté',
+      width: 90,
+      align: 'center',
+      renderCell: (params) => (
+        <Contacted demand={params.row} updateDemand={updateDemand} />
+      ),
+      renderHeader: () => <ColHeader>Prospect recontacté</ColHeader>,
+    },
+    {
+      field: 'Contact / Envoi de mails',
+      headerName: 'Contact',
+      width: 250,
+      renderCell: (params) => (
+        <Contact demand={params.row} updateDemand={updateDemand} />
       ),
     },
     {
-      name: 'Prospect recontacté',
-      label: 'Prospect recontacté',
-      render: (demand) => (
-        <Contacted demand={demand} updateDemand={updateDemand} />
-      ),
-    },
-    {
-      name: 'Contact / Envoi de mails',
-      label: 'Contact',
-      render: (demand) => (
-        <Contact demand={demand} updateDemand={updateDemand} />
-      ),
-    },
-    {
-      name: 'Adresse',
-      label: (
-        <>
+      field: 'Adresse',
+      renderHeader: () => (
+        <ColHeader>
           Adresse
           <HoverableIcon
             iconName="ri-information-fill"
@@ -299,49 +289,31 @@ const Manager = () => {
             périmètre de développement prioritaire d’un réseau classé (connu par
             France Chaleur Urbaine).
           </HoverableIcon>
-        </>
-      ),
-      render: (demand) => <Addresse demand={demand} />,
-    },
-    {
-      name: 'Date demandes',
-      label: (
-        <ColHeader
-          sort={sort.key === 'Date demandes' ? sort.order : undefined}
-          onClick={handleSort('Date demandes')}
-          width="100px"
-        >
-          Date de la demande
         </ColHeader>
       ),
-
-      render: (demand) =>
-        new Date(demand['Date demandes']).toLocaleDateString(),
+      width: 250,
+      renderCell: (params) => <Addresse demand={params.row} />,
     },
     {
-      name: 'Type de chauffage',
-      label: 'Type',
-      render: (demand) => <Tag text={demand.Structure} />,
+      field: 'Date demandes',
+      renderHeader: () => <ColHeader>Date de la demande</ColHeader>,
+      renderCell: (params) =>
+        new Date(params.row['Date demandes']).toLocaleDateString(),
     },
     {
-      name: 'Mode de chauffage',
-      label: 'Mode de chauffage',
-      render: (demand) => <Tag text={displayModeDeChauffage(demand)} />,
+      field: 'Type de chauffage',
+      renderHeader: () => <ColHeader>Type</ColHeader>,
+      renderCell: (params) => <Tag text={params.row.Structure} />,
     },
     {
-      name: 'Distance au réseau',
-      label: (
-        <ColHeader
-          sort={
-            sort.key === 'Gestionnaire Distance au réseau'
-              ? sort.order
-              : undefined
-          }
-          onClick={handleSort(
-            'Gestionnaire Distance au réseau',
-            'Distance au réseau'
-          )}
-        >
+      field: 'Mode de chauffage',
+      renderHeader: () => <ColHeader>Mode de chauffage</ColHeader>,
+      renderCell: (params) => <Tag text={displayModeDeChauffage(params.row)} />,
+    },
+    {
+      field: 'Distance au réseau',
+      renderHeader: () => (
+        <ColHeader>
           Distance au réseau (m)
           <HoverableIcon
             iconName="ri-information-fill"
@@ -353,23 +325,30 @@ const Manager = () => {
           </HoverableIcon>
         </ColHeader>
       ),
-      render: (demand) => (
+      renderCell: (params) => (
         <AdditionalInformation
-          demand={demand}
+          demand={params.row}
           field="Distance au réseau"
           updateDemand={updateDemand}
           type="number"
         />
       ),
     },
-    { name: 'Identifiant réseau', label: 'ID réseau le plus proche' },
-    { name: 'Nom réseau', label: 'Nom du réseau le plus proche' },
     {
-      name: 'Nb logements',
-      label: 'Nb logements (lots)',
-      render: (demand) => (
+      field: 'Identifiant réseau',
+      renderHeader: () => <ColHeader>ID réseau le plus proche</ColHeader>,
+    },
+    {
+      field: 'Nom réseau',
+      width: 250,
+      renderHeader: () => <ColHeader>Nom du réseau le plus proche</ColHeader>,
+    },
+    {
+      field: 'Nb logements',
+      renderHeader: () => <ColHeader>Nb logements (lots)</ColHeader>,
+      renderCell: (params) => (
         <AdditionalInformation
-          demand={demand}
+          demand={params.row}
           field="Logement"
           updateDemand={updateDemand}
           type="number"
@@ -377,11 +356,11 @@ const Manager = () => {
       ),
     },
     {
-      name: 'Conso gaz',
-      label: 'Conso gaz (MWh)',
-      render: (demand) => (
+      field: 'Conso gaz',
+      renderHeader: () => <ColHeader>Conso gaz (MWh)</ColHeader>,
+      renderCell: (params) => (
         <AdditionalInformation
-          demand={demand}
+          demand={params.row}
           field="Conso"
           updateDemand={updateDemand}
           type="number"
@@ -389,16 +368,17 @@ const Manager = () => {
       ),
     },
     {
-      name: 'Commentaires',
-      label: 'Commentaires',
-      render: (demand) => (
-        <Comment demand={demand} updateDemand={updateDemand} />
+      field: 'Commentaires',
+      width: 280,
+      renderHeader: () => <ColHeader>Commentaires</ColHeader>,
+      renderCell: (params) => (
+        <Comment demand={params.row} updateDemand={updateDemand} />
       ),
     },
     {
-      name: 'Affecté à',
-      label: (
-        <>
+      field: 'Affecté à',
+      renderHeader: () => (
+        <ColHeader>
           Affecté à
           <HoverableIcon
             iconName="ri-information-fill"
@@ -413,11 +393,11 @@ const Manager = () => {
             Vous pouvez ajouter ou modifier une affectation : le changement sera
             effectif après validation manuelle par l'équipe FCU.
           </HoverableIcon>
-        </>
+        </ColHeader>
       ),
-      render: (demand) => (
+      renderCell: (params) => (
         <AdditionalInformation
-          demand={demand}
+          demand={params.row}
           field="Affecté à"
           updateDemand={updateDemand}
           type="text"
@@ -439,15 +419,27 @@ const Manager = () => {
           <TableContainer mapCollapsed={mapCollapsed}>
             <div ref={refManagerTable}>
               {filteredDemands.length > 0 ? (
-                <Table
+                <DataGrid
                   columns={demandRowsParams}
-                  data={filteredDemands}
-                  rowKey="N° de dossier"
-                  pagination
-                  paginationPosition="left"
-                  page={page}
-                  setPage={setPage}
-                  perPage={rowPerPage}
+                  rows={filteredDemands}
+                  disableColumnMenu
+                  disableRowSelectionOnClick
+                  pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
+                  getRowHeight={() => 'auto'}
+                  getEstimatedRowHeight={() => 110}
+                  sx={{
+                    '& .MuiDataGrid-cell ': {
+                      display: 'flex',
+                      'align-items': 'center',
+                    },
+                    '& .MuiDataGrid-columnHeaders div[role=row]': {
+                      bgcolor: '#F0EFE8',
+                      'border-bottom': '1px solid #333333',
+                    },
+                    '& .MuiDataGrid-columnHeaders': {
+                      'border-bottom': '1px solid #333333',
+                    },
+                  }}
                 />
               ) : (
                 <NoResult>Aucun résultat</NoResult>
@@ -464,7 +456,7 @@ const Manager = () => {
                   {mapCollapsed ? 'Agrandir la carte' : 'Réduire la carte'}
                 </Hoverable>
                 <Icon
-                  size="2x"
+                  size="lg"
                   name={
                     mapCollapsed
                       ? 'ri-arrow-left-s-fill'

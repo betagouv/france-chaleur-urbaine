@@ -1,13 +1,15 @@
-import ConsentBanner from '@components/ConsentBanner';
-import {
+// import ConsentBanner from '@components/ConsentBanner';
+/*import {
   FacebookMarkup,
   GoogleAdsMarkup,
   LinkedInMarkup,
-} from '@components/Markup';
-import '@gouvfr/dsfr/dist/dsfr.min.css';
-import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
-import '@gouvfr/dsfr/dist/utility/icons/icons-editor/icons-editor.min.css';
-import '@gouvfr/dsfr/dist/utility/icons/icons-document/icons-document.min.css';
+} from '@components/Markup';*/
+import { MuiDsfrThemeProvider } from './../MuiDsfrThemeProvider';
+
+// FIXME vérifier le flicker au chargement
+// import '@gouvfr/dsfr/dist/dsfr.min.css';
+import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
+
 import 'remixicon/fonts/remixicon.css';
 import '@reach/combobox/styles.css';
 import { Session } from 'next-auth';
@@ -24,14 +26,40 @@ import {
 import { AdminService } from 'src/services/admin';
 import { DemandsService } from 'src/services/demands';
 import { axiosHttpClient } from 'src/services/http';
-import { iframedPaths } from 'src/services/iframe';
+//import { iframedPaths } from 'src/services/iframe';
 import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
-import { clientConfig } from 'src/client-config';
+//import { clientConfig } from 'src/client-config';
 import { useAnalytics } from 'src/services/analytics';
 import { SWRConfig, SWRConfiguration } from 'swr';
 import { usePreserveScroll } from '@hooks/usePreserveScroll';
-import HotjarMarkup from '@components/Markup/HotjarMarkup';
+//import HotjarMarkup from '@components/Markup/HotjarMarkup';
+import Link from 'next/link';
+
+declare module '@codegouvfr/react-dsfr/next-pagesdir' {
+  interface RegisterLink {
+    Link: typeof Link;
+  }
+}
+
+const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
+  defaultColorScheme: 'system',
+  Link,
+  preloadFonts: [
+    //"Marianne-Light",
+    //"Marianne-Light_Italic",
+    'Marianne-Regular',
+    //"Marianne-Regular_Italic",
+    'Marianne-Medium',
+    //"Marianne-Medium_Italic",
+    'Marianne-Bold',
+    //"Marianne-Bold_Italic",
+    //"Spectral-Regular",
+    //"Spectral-ExtraBold"
+  ],
+});
+
+export { dsfrDocumentApi };
 
 const og = {
   // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
@@ -141,7 +169,7 @@ const swrConfig: SWRConfiguration = {
   revalidateOnFocus: false,
 };
 
-function MyApp({
+function App({
   Component,
   pageProps,
 }: AppProps<{
@@ -152,7 +180,7 @@ function MyApp({
   useAnalytics();
 
   return (
-    <>
+    <MuiDsfrThemeProvider>
       <AppGlobalStyle />
       <DsfrFixUp />
       <ServicesContext.Provider
@@ -165,7 +193,7 @@ function MyApp({
         }}
       >
         {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
-        {!iframedPaths.some((path) => router.pathname.match(path)) && (
+        {/* {!iframedPaths.some((path) => router.pathname.match(path)) && (
           <ConsentBanner>
             {clientConfig.tracking.googleTagIds.length > 0 && (
               <GoogleAdsMarkup googleIds={clientConfig.tracking.googleTagIds} />
@@ -186,7 +214,7 @@ function MyApp({
                 />
               )}
           </ConsentBanner>
-        )}
+        )} */}
         <Head>
           {favicons.map(
             (
@@ -240,7 +268,7 @@ function MyApp({
           </SessionProvider>
         </SWRConfig>
       </ServicesContext.Provider>
-    </>
+    </MuiDsfrThemeProvider>
   );
 }
-export default MyApp;
+export default withDsfr(App);

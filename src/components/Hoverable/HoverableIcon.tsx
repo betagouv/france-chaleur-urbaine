@@ -1,4 +1,4 @@
-import { Icon } from '@dataesr/react-dsfr';
+import Icon from '@components/ui/Icon';
 import { ReactNode } from 'react';
 import Hoverable from '.';
 import { Container } from './HoverableIcon.styles';
@@ -11,24 +11,14 @@ const HoverableIcon = ({
   top,
 }: {
   children: ReactNode;
-  iconSize?:
-    | 'fw'
-    | 'xxs'
-    | 'xs'
-    | 'sm'
-    | '1x'
-    | 'lg'
-    | 'xl'
-    | '2x'
-    | '3x'
-    | '10x';
-  iconName: string;
+  iconSize?: 'xs' | 'sm' | 'lg' | 'md';
+  iconName: any;
   position?: 'top' | 'right' | 'top-centered' | 'bottom' | 'bottom-centered';
   top?: string;
 }) => {
   return (
     <Container top={top}>
-      <Icon size={iconSize || '1x'} name={iconName} />
+      <Icon size={iconSize} name={iconName} />
       <Hoverable position={position || 'top'}>{children}</Hoverable>
     </Container>
   );

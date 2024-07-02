@@ -1,5 +1,5 @@
 import Box from '@components/ui/Box';
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { usePersistedState } from '@hooks';
 import { useMemo, useState } from 'react';
 
@@ -33,9 +33,9 @@ function DevModeIcon() {
 
   return devMode ? (
     <Button
-      tertiary
-      size="sm"
-      icon="ri-close-line"
+      priority="tertiary"
+      size="small"
+      iconId="fr-icon-close-line"
       onClick={() => setDevMode(false)}
       title="Désactiver le mode développeur"
     />

@@ -24,7 +24,7 @@ const useSuggestions = ({
 }: configProps) => {
   const [suggestions, setSuggestions] = useState<SuggestionItem[]>([]);
   const [status, setStatus] = useState<ValueOf<Status>>(Status.Idle);
-  const mountedRef = useRef(true);
+  // const mountedRef = useRef(true);
   const DIGITS_THRESHOLD = 3;
   const { suggestionService } = useServices();
   const debounceFetch = debounce(async (query: string) => {
@@ -32,7 +32,7 @@ const useSuggestions = ({
       const searchTerm = query.trim();
       if (
         !searchTerm ||
-        !mountedRef.current ||
+        // !mountedRef.current ||
         searchTerm.length <= DIGITS_THRESHOLD
       ) {
         return;
@@ -57,11 +57,11 @@ const useSuggestions = ({
   const fetchSuggestions = (queryString: string) =>
     queryString.length >= minCharactersLength && debounceFetch(queryString);
 
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     mountedRef.current = false;
+  //   };
+  // }, []);
   return {
     suggestions,
     status,

@@ -1,5 +1,5 @@
-import { Radio, RadioGroup } from '@dataesr/react-dsfr';
-import React, { useMemo } from 'react';
+import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
+import React from 'react';
 
 type CheckEligibilityFormProps = {
   children?: React.ReactNode;
@@ -18,28 +18,27 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
   name,
   cardMode,
   selectOptions = {},
-  value,
+  // value,
   onChange,
-  className,
+  // className,
 }) => {
-  const options = useMemo(() => {
-    return Object.entries(selectOptions).map(([value, label]) => (
-      <Radio
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore: to fix in react-dsfr
-        name={name}
-        key={value}
-        label={label}
-        value={value}
-        onChange={onChange}
-      />
-    ));
-  }, [onChange, name, selectOptions]);
+  // const options = useMemo(() => {
+  //   return Object.entries(selectOptions).map(([value, label]) => (
+  //     <Radio
+  //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //       // @ts-ignore: to fix in react-dsfr
+  //       name={name}
+  //       key={value}
+  //       label={label}
+  //       value={value}
+  //       onChange={onChange}
+  //     />
+  //   ));
+  // }, [onChange, name, selectOptions]);
 
   return (
     <>
-      {children}
-      <RadioGroup
+      {/* <div>
         legend={(label as string) || 'Chauffage actuel :'}
         name={name}
         isInline={!cardMode}
@@ -48,7 +47,23 @@ const SelectEnergy: React.FC<CheckEligibilityFormProps> = ({
         className={`fr-mb-2w ${className}`}
       >
         {options}
-      </RadioGroup>
+      </div> */}
+
+      {children}
+      <RadioButtons
+        legend={label ?? 'Chauffage actuel :'}
+        name={name}
+        orientation={cardMode ? 'vertical' : 'horizontal'}
+        options={Object.entries(selectOptions).map(([value, label]) => ({
+          label: label,
+          nativeInputProps: {
+            value: value,
+            // FIXME vérifier
+            // checked: value === optionValue,
+            onChange: onChange,
+          },
+        }))}
+      />
     </>
   );
 };

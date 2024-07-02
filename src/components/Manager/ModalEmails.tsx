@@ -1,27 +1,35 @@
-import {
-  Button,
-  ModalClose,
-  ModalContent,
-  Select,
-  TextInput,
-} from '@dataesr/react-dsfr';
-import { FormEvent, useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import {
-  HorizontalSeparator,
-  ModalContentWrapper,
-  StyledModal,
-} from './ModalEmails.style';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Input } from '@codegouvfr/react-dsfr/Input';
+import { createModal } from '@codegouvfr/react-dsfr/Modal';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Heading from '@components/ui/Heading';
-import emailsList from '@data/manager/manager-emails-list';
+import Modal from '@components/ui/Modal';
 import emailsContentList from '@data/manager/manager-emails-content';
+import emailsList from '@data/manager/manager-emails-list';
+import { useSession } from 'next-auth/react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Demand } from 'src/types/Summary/Demand';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
+import styled from 'styled-components';
+
+const emailModal = createModal({
+  id: 'emails-modal',
+  isOpenedByDefault: false,
+});
+
+const ModalContentWrapper = styled.div`
+  margin-top: -3em;
+  margin-bottom: -48px; // diminue le padding de la modale
+`;
+const HorizontalSeparator = styled.div`
+  width: 100%;
+  border: 1px solid #e1e1e1;
+`;
 
 type Props = {
   isOpen: boolean;
   currentDemand: Demand;
-  updateDemand: (demandId: string, demand: Partial<Demand>) => void;
+  updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
   onClose: (...args: any[]) => any;
 };
 type EmailContent = {
@@ -63,6 +71,7 @@ function ModalEmails(props: Props) {
     setSent(false);
     setSentError(false);
     setSentHistory(undefined);
+    emailModal.open();
   };
 
   useEffect(() => {
@@ -165,16 +174,8 @@ function ModalEmails(props: Props) {
   };
 
   return (
-    <StyledModal
-      isOpen={props.isOpen}
-      hide={() => {
-        //resetModal();
-        props.onClose();
-        setIsLoaded(false);
-      }}
-    >
-      <ModalClose>Fermer</ModalClose>
-      <ModalContent>
+    <Modal>
+      <emailModal.Component title="" size="large">
         <ModalContentWrapper>
           <Heading as="h2" center>
             Envoi d'un courriel à {emailContent?.to}
@@ -199,8 +200,12 @@ function ModalEmails(props: Props) {
               </div>
               <HorizontalSeparator className="fr-mb-3w" />
               <Select
-                required
                 label="Choix de la réponse"
+                nativeSelectProps={{
+                  required: true,
+                  onChange: (e) => onSelectedEmailChanged(e.target.value),
+                  value: emailKey,
+                }}
                 options={[
                   {
                     value: '',
@@ -215,68 +220,77 @@ function ModalEmails(props: Props) {
                       disabled:
                         sentHistory &&
                         option.value !== 'other' &&
+                        Array.isArray(sentHistory) &&
                         sentHistory.some(
                           (email: any) => email.email_key === option.value
                         ),
                     };
                   }),
                 ]}
-                selected={emailKey}
-                onChange={(e) => onSelectedEmailChanged(e.target.value)}
               />
               <HorizontalSeparator className="fr-mb-3w" />
-              <form
-                onSubmit={submit}
-                className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6"
-              >
-                <TextInput
-                  required
+              <form onSubmit={submit}>
+                <Input
                   label="À"
-                  type="email"
-                  value={emailContent.to}
-                  disabled
+                  nativeInputProps={{
+                    type: 'email',
+                    required: true,
+                    disabled: true,
+                    value: emailContent.to,
+                  }}
                 />
-                <TextInput
-                  required
+                <Input
                   label="Répondre à"
-                  type="email"
-                  value={emailContent.replyTo}
-                  onChange={(e) =>
-                    setEmailContentValue('replyTo', e.target.value)
-                  }
+                  nativeInputProps={{
+                    type: 'email',
+                    required: true,
+                    value: emailContent.replyTo,
+                    onChange: (e) =>
+                      setEmailContentValue('replyTo', e.target.value),
+                  }}
                 />
-                <TextInput
+                <Input
                   label="Copie à"
-                  hint="Les adresses emails doivent être séparées par des virgules"
-                  value={emailContent?.cc}
-                  onChange={(e) => setEmailContentValue('cc', e.target.value)}
+                  hintText="Les adresses emails doivent être séparées par des virgules"
+                  nativeInputProps={{
+                    type: 'email',
+                    value: emailContent.cc,
+                    onChange: (e) => setEmailContentValue('cc', e.target.value),
+                  }}
                 />
-                <TextInput
-                  required
+                <Input
                   label="Objet"
-                  value={emailContent.object}
-                  onChange={(e) =>
-                    setEmailContentValue('object', e.target.value)
-                  }
+                  nativeInputProps={{
+                    type: 'text',
+                    required: true,
+                    value: emailContent.object,
+                    onChange: (e) =>
+                      setEmailContentValue('object', e.target.value),
+                  }}
                 />
-                <TextInput
-                  required
+                <Input
                   label="Corps"
-                  textarea
-                  value={emailContent.body}
-                  onChange={(e) => setEmailContentValue('body', e.target.value)}
-                  rows={10}
+                  textArea
+                  nativeTextAreaProps={{
+                    required: true,
+                    rows: 10,
+                    value: emailContent.body,
+                    onChange: (e) =>
+                      setEmailContentValue('body', e.target.value),
+                  }}
                 />
-                <TextInput
-                  required
+                <Input
                   label="Signature"
-                  hint="La signature sera sauvegardée pour le prochain envoi"
-                  value={emailContent.signature}
-                  onChange={(e) =>
-                    setEmailContentValue('signature', e.target.value)
-                  }
+                  hintText="La signature sera sauvegardée pour le prochain envoi"
+                  nativeInputProps={{
+                    type: 'email',
+                    required: true,
+                    value: emailContent.signature,
+                    onChange: (e) =>
+                      setEmailContentValue('signature', e.target.value),
+                  }}
                 />
-                <Button className="fr-mt-2w" submit>
+                <Button className="fr-mt-2w" type="submit">
                   Envoyer
                 </Button>
               </form>
@@ -295,8 +309,8 @@ function ModalEmails(props: Props) {
             </>
           )}
         </ModalContentWrapper>
-      </ModalContent>
-    </StyledModal>
+      </emailModal.Component>
+    </Modal>
   );
 }
 

@@ -1,3 +1,4 @@
+import Card from '@codegouvfr/react-dsfr/Card';
 import {
   coldNetworks,
   growths,
@@ -7,7 +8,6 @@ import {
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import Image from 'next/image';
 import { ReactNode } from 'react';
@@ -76,7 +76,7 @@ const ArticlesPage = () => {
 
       <Box py="10w" className="fr-container">
         <Heading
-          size="h2"
+          as="h2"
           color="blue-france"
           mb="6w"
           center
@@ -95,7 +95,7 @@ const ArticlesPage = () => {
       <Box backgroundColor="blue-france-975-75">
         <Box py="10w" className="fr-container">
           <Heading
-            size="h2"
+            as="h2"
             color="blue-france"
             mb="6w"
             center
@@ -114,7 +114,7 @@ const ArticlesPage = () => {
       </Box>
 
       <Box py="10w" className="fr-container">
-        <Heading size="h2" color="blue-france" mb="6w" center>
+        <Heading as="h2" color="blue-france" mb="6w" center>
           Une filière en pleine croissance
         </Heading>
         <Box className="fr-grid-row fr-grid-row--gutters">
@@ -126,7 +126,7 @@ const ArticlesPage = () => {
 
       <Box backgroundColor="blue-france-975-75">
         <Box py="10w" className="fr-container">
-          <Heading size="h3" color="blue-france" mb="6w" center>
+          <Heading as="h2" color="blue-france" mb="6w" center>
             Les réseaux de froid&nbsp;: un enjeu pour l'avenir
           </Heading>
           <Box className="fr-grid-row fr-grid-row--gutters">
@@ -150,23 +150,17 @@ interface ArticleItemProps {
 
 const ArticleItem = ({ title, description, slug }: ArticleItemProps) => (
   <div className="fr-col fr-col-12 fr-col-sm-6 fr-col-md-4">
-    <div className="fr-card fr-enlarge-link">
-      <div className="fr-card__body">
-        <div className="fr-card__content">
-          <h3 className="fr-card__title">
-            <Box textColor="text-title-blue-france">
-              <Link href={`/ressources/${slug}`}>{title}</Link>
-            </Box>
-          </h3>
-          <p className="fr-card__desc">{description}</p>
-          <div className="fr-card__end">
-            <p className="fr-card__detail">
-              Lire l'article
-              <span className="fr-icon--sm fr-icon-arrow-right-line fr-ml-1w" />
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Card
+      background
+      border
+      desc={description}
+      enlargeLink
+      linkProps={{
+        href: `/ressources/${slug}`,
+      }}
+      size="medium"
+      title={title}
+      titleAs="h3"
+    />
   </div>
 );

@@ -1,4 +1,3 @@
-import BulkEligibility from '@components/Admin/BulkEligibility';
 import UserImpersonation from '@components/Admin/UserImpersonation';
 import Users from '@components/Admin/Users';
 import SimplePage from '@components/shared/page/SimplePage';
@@ -11,7 +10,7 @@ export default function AdminPage(): JSX.Element {
     <SimplePage title="France Chaleur Urbaine - Admin" mode="authenticated">
       <UserImpersonation />
       <Users />
-      <BulkEligibility />
+      {/* <BulkEligibility /> */}
     </SimplePage>
   );
 }
