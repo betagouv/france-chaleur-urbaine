@@ -24,7 +24,6 @@ import Head from 'next/head';
 //   // FooterPartnersTitle,
 // } from '@codegouvfr/react-dsfr/Header';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
-import { Header } from '@codegouvfr/react-dsfr/Header';
 import { useSession } from 'next-auth/react'; //signOut
 //import Link from 'next/link';
 //import { ComponentProps, Fragment } from 'react';
@@ -44,6 +43,7 @@ import MainNavigation, {
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import Image from 'next/image';
+import { StyledHeader } from './SimplePage.styles';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
 
@@ -331,10 +331,6 @@ const PageHeader = (props: PageHeaderProps) => {
   const isFullScreenMode =
     props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
-  // const FirstLineContainer = isFullScreenMode
-  //   ? FullScreenModeFirstLine
-  //   : Fragment;
-
   const navigationMenuItems =
     props.mode === 'authenticated'
       ? [
@@ -350,7 +346,8 @@ const PageHeader = (props: PageHeaderProps) => {
 
   return (
     <>
-      <Header
+      <StyledHeader
+        isFullScreenMode={isFullScreenMode}
         brandTop={
           <>
             République
@@ -383,6 +380,7 @@ const PageHeader = (props: PageHeaderProps) => {
             <Box display="flex">
               <Link
                 href="/"
+                className="fcu-navigation-logo"
                 variant="tertiaryNoOutline"
                 title="Revenir à la page d'accueil"
                 p="0"
