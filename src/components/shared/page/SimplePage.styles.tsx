@@ -1,18 +1,6 @@
 import Header from '@codegouvfr/react-dsfr/Header';
 import styled, { css } from 'styled-components';
 
-// export const StopImpersonationButton = styled(ToolItem)`
-export const StopImpersonationButton = styled.div`
-  background-color: var(--background-flat-error) !important;
-  color: white !important;
-  border-radius: 6px;
-`;
-
-// Permet au composant ToolItemGroup de retrouver ce ToolItem
-// StopImpersonationButton.defaultProps = {
-//   __TYPE: 'ToolItem',
-// };
-
 export const StyledHeader = styled(Header)<{ isFullScreenMode: boolean }>`
   ${({ isFullScreenMode }) =>
     isFullScreenMode

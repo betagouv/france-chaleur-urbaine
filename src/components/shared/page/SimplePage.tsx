@@ -1,48 +1,20 @@
-import Head from 'next/head';
-// import {
-//   // HeaderBody,
-//   // Header,
-//   // HeaderNav,
-//   // HeaderOperator,
-//   // Logo,
-//   // NavItem,
-//   // Service,
-//   // Tool,
-//   // ToolItem,
-//   // ToolItemGroup,
-//   // NavSubItem,
-//   // FooterBody,
-//   // FooterBodyItem,
-//   // FooterBottom,
-//   // FooterCopy,
-//   // Footer as FooterDS,
-//   // FooterLink,
-//   // FooterOperator,
-//   // FooterPartners,
-//   // FooterPartnersLogo,
-//   // FooterPartnersSecondaryTitle,
-//   // FooterPartnersTitle,
-// } from '@codegouvfr/react-dsfr/Header';
+import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
-import { useSession } from 'next-auth/react'; //signOut
-//import Link from 'next/link';
-//import { ComponentProps, Fragment } from 'react';
-import { USER_ROLE } from 'src/types/enum/UserRole';
-//import Image from 'next/image';
-import { useRouter } from 'next/router';
-/*import {
-  FullScreenItems,
-  FullScreenModeFirstLine,
-  FullScreenModeNavLogo,
-  StopImpersonationButton,
-} from './SimplePage.styles';*/
-//import { deleteFetchJSON } from '@utils/network';
+import {
+  HeaderProps,
+  HeaderQuickAccessItem,
+} from '@codegouvfr/react-dsfr/Header';
 import MainNavigation, {
   MainNavigationProps,
 } from '@codegouvfr/react-dsfr/MainNavigation';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
+import { deleteFetchJSON } from '@utils/network';
+import { signOut, useSession } from 'next-auth/react';
+import Head from 'next/head';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { USER_ROLE } from 'src/types/enum/UserRole';
 import { StyledHeader } from './SimplePage.styles';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
@@ -67,7 +39,7 @@ const SimplePage = (props: SimplePageProps) => {
         currentPage={props.currentPage}
       />
       {props.children}
-      {/* <PageFooter /> */}
+      <PageFooter />
     </>
   );
 };
@@ -308,6 +280,49 @@ function markCurrentPageActive(
   });
 }
 
+const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
+  {
+    text: 'Espace gestionnaire',
+    iconId: 'fr-icon-account-circle-line',
+    linkProps: {
+      href: '/connexion',
+    },
+  },
+];
+
+function getAuthenticatedQuickAccessItems(
+  impersonating: boolean
+): HeaderProps.QuickAccessItem[] {
+  return [
+    ...(impersonating
+      ? [
+          {
+            text: 'Imposture en cours',
+            iconId: 'fr-icon-logout-box-r-line',
+            buttonProps: {
+              onClick: async () => {
+                await deleteFetchJSON('/api/admin/impersonate');
+                location.reload();
+              },
+              style: {
+                color: 'white',
+                backgroundColor: 'var(--background-flat-error)',
+                borderRadius: '6px',
+              },
+            },
+          } satisfies HeaderProps.QuickAccessItem,
+        ]
+      : []),
+    {
+      text: 'Se déconnecter',
+      iconId: 'fr-icon-logout-box-r-line',
+      buttonProps: {
+        onClick: () => signOut({ callbackUrl: '/' }),
+      },
+    },
+  ];
+}
+
 interface PageHeaderProps {
   mode: PageMode;
   currentPage?: string;
@@ -344,6 +359,11 @@ const PageHeader = (props: PageHeaderProps) => {
 
   const currentPath = props.currentPage ?? router.pathname;
 
+  const quickAccessItems =
+    props.mode === 'authenticated'
+      ? getAuthenticatedQuickAccessItems(!!session?.impersonating)
+      : publicQuickAccessItems;
+
   return (
     <>
       <StyledHeader
@@ -366,15 +386,7 @@ const PageHeader = (props: PageHeaderProps) => {
         }}
         serviceTagline="Faciliter les raccordements aux réseaux de chaleur"
         serviceTitle="France Chaleur Urbaine"
-        quickAccessItems={[
-          {
-            iconId: 'fr-icon-account-circle-line',
-            linkProps: {
-              href: '/connexion',
-            },
-            text: 'Espace gestionnaire',
-          },
-        ]}
+        quickAccessItems={quickAccessItems}
         navigation={
           isFullScreenMode ? (
             <Box display="flex">
@@ -398,137 +410,26 @@ const PageHeader = (props: PageHeaderProps) => {
                 items={markCurrentPageActive(navigationMenuItems, currentPath)}
                 className="fr-col"
               />
+              {isFullScreenMode && (
+                // structure from https://github.com/codegouvfr/react-dsfr/blob/eee67f75124b5c3d011703cb6c5cd88eb41ae54c/src/Header/Header.tsx#L158-L179
+                <Box className={fr.cx('fr-header__tools-links')}>
+                  <ul className={fr.cx('fr-btns-group', 'fr-col--middle')}>
+                    {quickAccessItems.map((quickAccessItem, index) => (
+                      <li key={index}>
+                        <HeaderQuickAccessItem
+                          quickAccessItem={quickAccessItem}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </Box>
+              )}
             </Box>
           ) : (
             markCurrentPageActive(navigationMenuItems, currentPath)
           )
         }
       />
-
-      {/* <Header>
-      <FirstLineContainer>
-        <HeaderBody>
-          <Logo splitCharacter={10}>République Française</Logo>
-          <HeaderOperator>
-            <Image
-              height={80}
-              width={112}
-              src="/logo-fcu.png"
-              alt="logo france chaleur urbaine"
-              priority
-            />
-          </HeaderOperator>
-
-          {!isFullScreenMode && (
-            <Service
-              title="France Chaleur Urbaine"
-              description="Faciliter les raccordements aux réseaux de chaleur"
-              asLink={
-                <Link
-                  href="/"
-                  title="Revenir à l'accueil"
-                  className="fr-header__service-title fr-link--md"
-                />
-              }
-            />
-          )}
-          {!isFullScreenMode && (
-            <Tool>
-              <ToolItemGroup>
-                <ToolItem
-                  asLink={<Link href="/connexion" className="fr-link" />}
-                >
-                  Espace gestionnaire
-                </ToolItem>
-              </ToolItemGroup>
-            </Tool>
-          )}
-        </HeaderBody>
-      </FirstLineContainer>
-
-      <HeaderNav>
-        {isFullScreenMode && (
-          <FullScreenModeNavLogo>
-            <Image
-              height={50}
-              width={70}
-              src="/logo-fcu.png"
-              alt="logo france chaleur urbaine"
-              priority
-            />
-          </FullScreenModeNavLogo>
-        )}
-        {navigationMenuItems.map(({ title, href, children }) => (
-          <NavItem
-            key={title}
-            title={title}
-            current={
-              href === currentPath ||
-              children?.some((subnav) => subnav.href === currentPath)
-            }
-            asLink={href ? <Link href={href}>{title}</Link> : undefined}
-          >
-            {children?.map((subNav) => (
-              <NavSubItem
-                key={subNav.title}
-                title={subNav.title}
-                link={subNav.href}
-                asLink={
-                  subNav.href ? (
-                    <Link href={subNav.href}>{subNav.title}</Link>
-                  ) : undefined
-                }
-                current={subNav.href === currentPath}
-              />
-            ))}
-          </NavItem>
-        ))}
-
-        {isFullScreenMode && (
-          <FullScreenItems>
-            {props.mode === 'authenticated' ? (
-              session?.impersonating ? (
-                <Tool>
-                  <ToolItemGroup>
-                    <StopImpersonationButton
-                      icon="ri-logout-box-r-line"
-                      onClick={async () => {
-                        await deleteFetchJSON('/api/admin/impersonate');
-                        location.reload();
-                      }}
-                    >
-                      Imposture en cours
-                    </StopImpersonationButton>
-
-                    <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
-                      Se déconnecter
-                    </ToolItem>
-                  </ToolItemGroup>
-                </Tool>
-              ) : (
-                <Tool>
-                  <ToolItemGroup>
-                    <ToolItem onClick={() => signOut({ callbackUrl: '/' })}>
-                      Se déconnecter
-                    </ToolItem>
-                  </ToolItemGroup>
-                </Tool>
-              )
-            ) : (
-              <Tool>
-                <ToolItemGroup>
-                  <ToolItem
-                    asLink={<Link href="/connexion" className="fr-link" />}
-                  >
-                    Espace gestionnaire
-                  </ToolItem>
-                </ToolItemGroup>
-              </Tool>
-            )}
-          </FullScreenItems>
-        )}
-      </HeaderNav>
-    </Header> */}
     </>
   );
 };
@@ -608,7 +509,7 @@ const PageFooter = () => (
       },
       {
         text: 'Code source',
-        // iconId: 'ri-github-line', // FIXME l'icone crée un souligné moche au survol
+        iconId: 'fr-icon-github-fill',
         linkProps: {
           href: 'https://github.com/betagouv/france-chaleur-urbaine',
         },
