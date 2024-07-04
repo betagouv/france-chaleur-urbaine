@@ -1,3 +1,4 @@
+import { logger } from '@helpers/logger';
 import {
   handleRouteErrors,
   requirePostMethod,
@@ -23,6 +24,7 @@ const reset = handleRouteErrors(async (req: NextApiRequest) => {
     .andWhere('active', true)
     .first();
   if (!user) {
+    logger.warn('reset-password: missing user', { email });
     await AirtableDB(Airtable.CONNEXION).create([
       {
         fields: {
