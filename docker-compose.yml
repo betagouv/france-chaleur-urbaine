@@ -2,14 +2,12 @@ services:
   db:
     image: postgis/postgis:14-3.4-alpine
     shm_size: 256m
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres_fcu
     ports:
       - '5432:5432'
     volumes:
-      - ./docker/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - db:/var/lib/postgresql/data
 
   mailpit:
@@ -24,12 +22,12 @@ services:
       - mailpit:/data
 
   web:
-    build: ./docker/web
-    command: sh -c "yarn dev"
+    build: .
     environment:
       DATABASE_URL: postgres://postgres:postgres_fcu@db:5432/postgres
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
+      UNSAFE_EVAL: true
     ports:
       - '3000:3000'
     volumes:
