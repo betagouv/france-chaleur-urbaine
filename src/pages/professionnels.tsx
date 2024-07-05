@@ -268,10 +268,11 @@ const Professionnels = () => {
             <Box flex>
               <BulkEligibilityForm />
               <Image
-                width={405}
-                height={250}
+                width="405"
+                height={0}
                 alt=""
                 src="/img/carto-addresses.png"
+                style={{ maxWidth: '100%', height: 'auto' }}
               />
             </Box>
           </ResponsiveRow>
