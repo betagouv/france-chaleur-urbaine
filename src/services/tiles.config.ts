@@ -15,6 +15,7 @@ export type AirtableTileInfo = BasicTileInfo & {
 export type DatabaseTileInfo = BasicTileInfo & {
   source: 'database';
   tiles: string;
+  compressedTiles?: boolean;
   extraWhere: (query: Knex.QueryBuilder) => Knex.QueryBuilder;
   id: string;
   airtable?: string;
@@ -37,6 +38,8 @@ export const sourceIds = [
   'enrrMobilisables-parkings',
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
+  'besoinsEnChaleur',
+  'besoinsEnChaleurIndustrieCommunes',
   'buildings', // caractéristiques des bâtiments
 ] as const;
 
@@ -251,6 +254,26 @@ export const tilesInfo: Record<SourceId, TileInfo> = {
   zonesPotentielFortChaud: {
     source: 'database',
     tiles: 'zone_a_potentiel_fort_chaud_tiles',
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  besoinsEnChaleur: {
+    source: 'database',
+    tiles: 'besoins_en_chaleur_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  besoinsEnChaleurIndustrieCommunes: {
+    source: 'database',
+    tiles: 'besoins_en_chaleur_industrie_communes_tiles',
+    compressedTiles: true,
     table: '', // useless
     properties: [], // useless
     sourceLayer: '', // useless

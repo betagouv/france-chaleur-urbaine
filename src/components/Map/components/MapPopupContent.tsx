@@ -217,7 +217,7 @@ const MapPopupContent = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Voir plus d'informations
+                Voir la fiche du réseau
               </Link>
             )}
           </>
@@ -289,7 +289,7 @@ export const ViasevaPopupContent = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              Voir plus d'informations
+              Voir la fiche du réseau
             </a>
           )}
         </section>

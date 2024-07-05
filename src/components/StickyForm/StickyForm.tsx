@@ -20,7 +20,6 @@ const StickyForm = ({ title }: { title?: string }) => {
     addressData,
     contactReady,
     showWarning,
-    messageSent,
     messageReceived,
     loadingStatus,
     warningMessage,
@@ -68,7 +67,6 @@ const StickyForm = ({ title }: { title?: string }) => {
         >
           <EligibilityFormContact
             addressData={addressData}
-            isSent={messageSent}
             onSubmit={handleOnSubmitContact}
           />
         </Slice>

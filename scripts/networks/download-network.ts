@@ -33,6 +33,7 @@ const conversionConfigReseauxDeChaleur = {
   //has_trace: TypeBool,
   //'non ref 2022': TypeBool,
   'reseaux classes': TypeBool,
+  has_PDP: TypeBool,
   nom_reseau: TypeString,
   communes: TypeStringToArray,
   MO: TypeString,

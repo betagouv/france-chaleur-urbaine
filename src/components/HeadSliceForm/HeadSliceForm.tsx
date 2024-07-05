@@ -11,11 +11,14 @@ import {
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
 import AddressAutocomplete from '@components/addressAutocomplete';
+import Box from '@components/ui/Box';
+import Link from '@components/ui/Link';
 import { Button } from '@dataesr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
+import { AnalyticsFormId } from 'src/services/analytics';
 import { AvailableHeating } from 'src/types/AddressData';
 import { SuggestionItem } from 'src/types/Suggestions';
 import BulkEligibilitySlice from './BulkEligibilitySlice';
@@ -32,7 +35,6 @@ import {
   Separator,
   SliceContactFormStyle,
 } from './HeadSliceForm.style';
-import { AnalyticsFormId } from 'src/services/analytics';
 
 type HeadBannerType = {
   bg?: string;
@@ -69,7 +71,6 @@ const HeadSlice = ({
     addressData,
     contactReady,
     showWarning,
-    messageSent,
     messageReceived,
     loadingStatus,
     warningMessage,
@@ -85,6 +86,7 @@ const HeadSlice = ({
   const [geoAddress, setGeoAddress] = useState<SuggestionItem>();
   const [address, setAddress] = useState('');
   const [autoValidate, setAutoValidate] = useState(false);
+  const [eligibilityError, setEligibilityError] = useState(false);
 
   const [displayBulkEligibility, setDisplayBulkEligibility] = useState(false);
 
@@ -105,6 +107,7 @@ const HeadSlice = ({
   );
 
   const testAddress = useCallback(async () => {
+    setEligibilityError(false);
     if (!geoAddress) {
       return;
     }
@@ -116,15 +119,18 @@ const HeadSlice = ({
     const [lon, lat] = geoAddress.geometry.coordinates;
     const coords = { lon, lat };
 
-    const networkData = await heatNetworkService.findByCoords(geoAddress);
-
-    handleOnSuccessAddress({
-      address,
-      heatingType,
-      coords,
-      geoAddress,
-      eligibility: networkData,
-    });
+    try {
+      const networkData = await heatNetworkService.findByCoords(geoAddress);
+      handleOnSuccessAddress({
+        address,
+        heatingType,
+        coords,
+        geoAddress,
+        eligibility: networkData,
+      });
+    } catch (err: any) {
+      setEligibilityError(true);
+    }
   }, [
     address,
     geoAddress,
@@ -182,14 +188,26 @@ const HeadSlice = ({
               {warningMessage}
             </FormWarningMessage>
 
-            <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
-              <Loader color="#fff" />
-            </LoaderWrapper>
+            {eligibilityError ? (
+              <Box textColor="#c00">
+                Une erreur est survenue. Veuillez réessayer ou bien{' '}
+                <Link href="/contact">contacter le support</Link>.
+              </Box>
+            ) : (
+              <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
+                <Loader color="#fff" />
+              </LoaderWrapper>
+            )}
 
             <Buttons>
               <Button
                 size="lg"
-                disabled={!address || !geoAddress || !heatingType}
+                disabled={
+                  !address ||
+                  !geoAddress ||
+                  !heatingType ||
+                  (loadingStatus === 'loading' && !eligibilityError)
+                }
                 onClick={testAddress}
               >
                 Tester cette adresse
@@ -218,6 +236,7 @@ const HeadSlice = ({
       ),
     [
       address,
+      eligibilityError,
       geoAddress,
       heatingType,
       testAddress,
@@ -256,7 +275,6 @@ const HeadSlice = ({
           {address && (
             <EligibilityFormContact
               addressData={addressData}
-              isSent={messageSent}
               onSubmit={handleOnSubmitContact}
             />
           )}

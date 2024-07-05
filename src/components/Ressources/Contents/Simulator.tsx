@@ -14,7 +14,7 @@ import {
 import Text from '@components/ui/Text';
 import { LegacyColor } from '@components/ui/helpers/colors';
 
-const prixSpotCEE = 8.42; // €/MWh cumac
+export const prixSpotCEE = 8.42; // €/MWh cumac
 
 const Simulator = ({
   cartridge,

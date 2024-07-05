@@ -1,22 +1,23 @@
-import { fetchBaseSchema } from './airtable/dump-schema';
-import { createModificationsReseau } from './airtable/create-modifications-reseau';
-import { KnownAirtableBase, knownAirtableBases } from './airtable/bases';
-import { downloadNetwork } from './networks/download-network';
 import {
-  createCommand,
   InvalidArgumentError,
+  createCommand,
 } from '@commander-js/extra-typings';
 import { logger } from '@helpers/logger';
+import { readFile } from 'fs/promises';
+import db from 'src/db';
 import {
-  SourceId,
   DatabaseTileInfo,
+  SourceId,
   tilesInfo,
   zSourceId,
 } from 'src/services/tiles.config';
-import db from 'src/db';
-import { readFile } from 'fs/promises';
-import { fillTiles } from './utils/tiles';
+import { KnownAirtableBase, knownAirtableBases } from './airtable/bases';
+import { createModificationsReseau } from './airtable/create-modifications-reseau';
+import { fetchBaseSchema } from './airtable/dump-schema';
+import { downloadNetwork } from './networks/download-network';
 import { generateTilesFromGeoJSON } from './networks/generate-tiles';
+import { importMvtDirectory } from './networks/import-mvt-directory';
+import { fillTiles } from './utils/tiles';
 
 const program = createCommand();
 
@@ -57,6 +58,32 @@ program
   .action(async (table, zoomMin, zoomMax, withIndex) => {
     await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
     await fillTiles(table, zoomMin, zoomMax, withIndex);
+  });
+
+program
+  .command('import-mvt-directory')
+  .argument('<mvtDirectory>', 'MVT directory root')
+  .argument('<destinationTable>', 'Destination table')
+  .action(async (mvtDirectory, destinationTable) => {
+    if (await db.schema.hasTable(destinationTable)) {
+      logger.info('flushing destination table', {
+        table: destinationTable,
+      });
+      await db(destinationTable).delete();
+    } else {
+      logger.info('destination table does not exist, creating it', {
+        table: destinationTable,
+      });
+      await db.schema.createTable(destinationTable, (table) => {
+        table.bigInteger('x').notNullable();
+        table.bigInteger('y').notNullable();
+        table.bigInteger('z').notNullable();
+        table.specificType('tile', 'bytea').notNullable();
+        table.primary(['x', 'y', 'z']);
+      });
+    }
+
+    await importMvtDirectory(mvtDirectory, destinationTable);
   });
 
 program

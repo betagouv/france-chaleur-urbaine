@@ -1,9 +1,10 @@
 import AddressAutocomplete from '@components/addressAutocomplete';
+import Box from '@components/ui/Box';
+import Link from '@components/ui/Link';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { AddressDataType } from 'src/types/AddressData';
-import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 
@@ -65,23 +66,6 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
     }
   }, [router.query]);
 
-  const checkEligibility = useCallback(
-    async (
-      geoAddress: SuggestionItem,
-      callBack: (response: HeatNetworksResponse) => void
-    ) => {
-      try {
-        setStatus('loading');
-        const networkData = await heatNetworkService.findByCoords(geoAddress);
-        callBack(networkData);
-        setStatus('success');
-      } catch (e) {
-        setStatus('error');
-      }
-    },
-    [heatNetworkService]
-  );
-
   const handleAddressSelected = useCallback(
     async (address: string, geoAddress?: SuggestionItem): Promise<void> => {
       if (!geoAddress) {
@@ -91,17 +75,25 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       if (onFetch) {
         onFetch({ address, geoAddress });
       }
-      await checkEligibility(geoAddress, (response: HeatNetworksResponse) =>
+
+      try {
+        setStatus('loading');
+        const [lon, lat] = geoAddress.geometry.coordinates;
+        const coords = { lon, lat };
+        const networkData = await heatNetworkService.findByCoords(geoAddress);
         setData({
           ...data,
           address,
           coords,
           geoAddress,
-          eligibility: response,
-        })
-      );
+          eligibility: networkData,
+        });
+        setStatus('success');
+      } catch (e) {
+        setStatus('eligibilitySubmissionError');
+      }
     },
-    [checkEligibility, coords, data, onFetch]
+    [heatNetworkService, coords, data, onFetch]
   );
 
   useEffect(() => {
@@ -142,6 +134,12 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           placeholder="Tapez ici votre adresse"
           onAddressSelected={handleAddressSelected}
         />
+      )}
+      {status === 'eligibilitySubmissionError' && (
+        <Box textColor="#c00" ml="auto">
+          Une erreur est survenue. Veuillez réessayer ou bien{' '}
+          <Link href="/contact">contacter le support</Link>.
+        </Box>
       )}
     </>
   );

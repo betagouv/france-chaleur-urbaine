@@ -9,9 +9,11 @@ const closeCollectifOriginal = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ### Bonne nouvelle !
@@ -20,8 +22,13 @@ const closeCollectifOriginal = {
     distance ? `(${distance})` : ''
   }.]
 ${
-  inZDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+  isClasse && !hasPDP && !inPDP
+    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
+${
+  inPDP
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
@@ -50,9 +57,11 @@ const closeCollectifAmeliorationA = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => (
     <Box display="flex" flexDirection="column" gap="32px">
@@ -73,8 +82,7 @@ const closeCollectifAmeliorationA = {
           .
         </Text>
       </Box>
-
-      {inZDP && (
+      {(inPDP || (isClasse && !hasPDP)) && (
         <Box display="flex" gap="16px">
           <img
             src="/img/reponses_tests_réseau_classé.webp"
@@ -84,8 +92,9 @@ const closeCollectifAmeliorationA = {
           <Box backgroundColor="#C1C1C1" width="1px" />
           <Text>
             Votre bâtiment est situé à proximité d’un réseau classé&nbsp;:{' '}
-            <strong>une obligation de raccordement peut s’appliquer</strong> en
-            cas de renouvellement de votre mode de chauffage.
+            <strong>une obligation de raccordement peut exister</strong> en cas
+            de renouvellement de votre mode de chauffage. Une amende de 300 000€
+            peut s’appliquer en cas de non-raccordement sans dérogation.
           </Text>
         </Box>
       )}
@@ -135,9 +144,11 @@ const closeCollectifAmeliorationB = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ### Bonne nouvelle !
@@ -146,8 +157,13 @@ const closeCollectifAmeliorationB = {
     distance ? `(${distance})` : ''
   }.]
 ${
-  inZDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+  isClasse && !hasPDP && !inPDP
+    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
+${
+  inPDP
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
@@ -173,9 +189,11 @@ const closeCollectifAmeliorationAB = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => (
     <Box display="flex" flexDirection="column" gap="32px">
@@ -197,7 +215,7 @@ const closeCollectifAmeliorationAB = {
         </Text>
       </Box>
 
-      {inZDP && (
+      {(inPDP || (isClasse && !hasPDP)) && (
         <Box display="flex" gap="16px">
           <img
             src="/img/reponses_tests_réseau_classé.webp"
@@ -207,8 +225,9 @@ const closeCollectifAmeliorationAB = {
           <Box backgroundColor="#C1C1C1" width="1px" />
           <Text>
             Votre bâtiment est situé à proximité d’un réseau classé&nbsp;:{' '}
-            <strong>une obligation de raccordement peut s’appliquer</strong> en
-            cas de renouvellement de votre mode de chauffage.
+            <strong>une obligation de raccordement peut exister</strong> en cas
+            de renouvellement de votre mode de chauffage. Une amende de 300 000€
+            peut s’appliquer en cas de non-raccordement sans dérogation.
           </Text>
         </Box>
       )}
@@ -272,17 +291,24 @@ const intermediateCollectif = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité immédiate de votre adresse, toutefois, le réseau n’est pas très loin ${
     distance ? `(${distance})` : ''
   }.]
 ${
-  inZDP
-    ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+  isClasse && !hasPDP && !inPDP
+    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
+${
+  inPDP
+    ? '::arrow-item[De plus, **vous êtes dans le périmètre de développement prioritaire** du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
@@ -324,7 +350,7 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 };
 
 // Limours
-const farCollectifOutZdp = {
+const farCollectifOutPDP = {
   body: () => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse. Toutefois les réseaux de chaleur se développent !]
 ::arrow-item[Sans attendre, pour réduire votre facture énergétique et limiter votre impact écologique, **pensez à améliorer l’isolation thermique de votre immeuble**. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
@@ -341,9 +367,11 @@ const closeFuturCollectif = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ### Bonne nouvelle !
@@ -353,8 +381,8 @@ const closeFuturCollectif = {
     distance ? `(${distance})` : ''
   } (réseau prévu ou en construction).]
 ${
-  inZDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+  inPDP
+    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
@@ -380,15 +408,15 @@ ${
 };
 
 // 2 rue hardenberg 92220 Bagneux
-const farCollectifInZdp = {
+const farCollectifInPDP = {
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null
   ) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse.]
-::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]
+::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
@@ -410,17 +438,19 @@ const intermediateFuturCollectif = {
   eligibility: true,
   body: (
     distance: string,
-    inZDP: boolean,
+    inPDP: boolean,
     gestionnaire: string | null,
     tauxENRR: number | null,
+    isClasse: boolean | null,
+    hasPDP: boolean | null,
     city: string
   ) => `
 ::arrow-item[**Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs** ${
     distance ? `(${distance})` : ''
   } (réseau prévu ou en construction).]
 ${
-  inZDP
-    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut s’appliquer (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>).]'
+  inPDP
+    ? '::arrow-item[De plus, vous êtes dans le périmètre de développement prioritaire du réseau le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
     : ''
 }
 ::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
@@ -474,8 +504,8 @@ type EligibilityResultState =
   | 'farIndividual'
 
   // pas proche
-  | 'farCollectifInZdp'
-  | 'farCollectifOutZdp'
+  | 'farCollectifInPDP'
+  | 'farCollectifOutPDP'
   | 'unknown';
 
 export const getEligibilityResultState = (
@@ -511,9 +541,9 @@ export const getEligibilityResultState = (
     }
 
     return heatingType === 'collectif'
-      ? eligibility.inZDP
-        ? 'farCollectifInZdp'
-        : 'farCollectifOutZdp'
+      ? eligibility.inPDP
+        ? 'farCollectifInPDP'
+        : 'farCollectifOutPDP'
       : 'farIndividual';
   }
   return 'unknown';
@@ -557,11 +587,11 @@ export const getEligibilityResult = (
     case 'farIndividual': {
       return farIndividual;
     }
-    case 'farCollectifInZdp': {
-      return farCollectifInZdp;
+    case 'farCollectifInPDP': {
+      return farCollectifInPDP;
     }
-    case 'farCollectifOutZdp': {
-      return farCollectifOutZdp;
+    case 'farCollectifOutPDP': {
+      return farCollectifOutPDP;
     }
     case 'unknown': {
       return {};

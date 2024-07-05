@@ -14,7 +14,10 @@ const matomoAnalyticsLoadingStateAtom =
 
 const onRouteChange = (url: string) => {
   // see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag&hl=fr#manually_send_page_view_events
-  if (clientConfig.tracking.googleTagId && typeof window?.gtag === 'function') {
+  if (
+    clientConfig.tracking.googleTagIds.length > 0 &&
+    typeof window?.gtag === 'function'
+  ) {
     window.gtag('event', 'page_view', {
       page_title: document.title,
       page_location: url,
@@ -51,19 +54,20 @@ export const useAnalytics = () => {
         },
       });
 
+      // handle the case where matomo does not respond
+      const errorStateTimeout = setTimeout(() => {
+        if (matomoAnalyticsLoadingState === 'pending') {
+          setMatomoAnalyticsLoadedState('error');
+        }
+      }, 2000);
+
       // track the async deferred loading of the script by matomo-next
       // matomoAsyncInit is a specific callback used by Matomo
       // matomoAbTestingAsyncInit is a specific callback used by Matomo AB Testing framework
       window.matomoAbTestingAsyncInit = () => {
         setMatomoAnalyticsLoadedState('loaded');
+        clearTimeout(errorStateTimeout);
       };
-
-      // handle the case where matomo does not respond
-      setTimeout(() => {
-        if (matomoAnalyticsLoadingState === 'pending') {
-          setMatomoAnalyticsLoadedState('error');
-        }
-      }, 2000);
     }
   }, []);
 
@@ -80,7 +84,7 @@ export const useAnalytics = () => {
 
   if (typeof window === 'object') {
     document.addEventListener(
-      'gtag_loaded',
+      'multiplegtag_loaded',
       () => {
         setAnalyticsLoaded(true);
       },
@@ -217,6 +221,24 @@ const trackingEvents = {
   },
   'Carto|Bâtiments raccordés|Désactive': {
     matomo: ['Carto', 'Bâtiments raccordés', 'Désactive'],
+  },
+  'Carto|Besoins en chaleur|Active': {
+    matomo: ['Carto', 'Besoins en chaleur', 'Active'],
+  },
+  'Carto|Besoins en chaleur|Désactive': {
+    matomo: ['Carto', 'Besoins en chaleur', 'Désactive'],
+  },
+  'Carto|Besoins en chaleur secteur industriel|Active': {
+    matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Active'],
+  },
+  'Carto|Besoins en chaleur secteur industriel|Désactive': {
+    matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Désactive'],
+  },
+  'Carto|Besoins en froid|Active': {
+    matomo: ['Carto', 'Besoins en froid', 'Active'],
+  },
+  'Carto|Besoins en froid|Désactive': {
+    matomo: ['Carto', 'Besoins en froid', 'Désactive'],
   },
   'Carto|DPE|Active': {
     matomo: ['Carto', 'DPE', 'Active'],
@@ -591,8 +613,10 @@ const performTracking = (
     });
   }
   if (trackingConfig.google && typeof window?.gtag === 'function') {
-    window.gtag('event', 'conversion', {
-      send_to: `AW-${clientConfig.tracking.googleTagId}/${trackingConfig.google}`,
+    clientConfig.tracking.googleTagIds.forEach((googleTagId) => {
+      window.gtag('event', 'conversion', {
+        send_to: `${googleTagId}/${trackingConfig.google}`,
+      });
     });
   }
   if (trackingConfig.linkedin && typeof window?.lintrk === 'function') {
@@ -625,7 +649,7 @@ const emptyActivateMethod = () => {
 
 const matomoABTestingExperiments = [
   {
-    name: 'TestMessagesFormulaireContact', // you can also use '1' (ID of the experiment) to hide the name
+    name: 'TestMessagesFormulaireContact',
     percentage: 100,
     includedTargets: [],
     excludedTargets: [],

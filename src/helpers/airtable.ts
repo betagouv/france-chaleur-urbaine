@@ -70,7 +70,7 @@ export const formatDataToAirtable: (
     'Mode de chauffage': formatHeatingEnergyToAirtable(heatingEnergy),
     'Type de chauffage': formatHeatingTypeToAirtable(heatingType),
     'Distance au réseau': eligibility?.distance,
-    'en ZDP': eligibility.inZDP ? 'Oui' : 'Non',
+    'en PDP': eligibility.inPDP ? 'Oui' : 'Non',
     Ville: city,
     'Code Postal': postcode,
     Departement: department,
@@ -86,13 +86,17 @@ export const submitToAirtable = async (
   values: any,
   type: Airtable
 ): Promise<Response> => {
-  return fetch('/api/airtable/records', {
+  const res = await fetch('/api/airtable/records', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ ...values, type }),
   });
+  if (!res.ok) {
+    throw new Error(`wrong status ${res.status}`);
+  }
+  return res;
 };
 
 export const updateAirtable = async (

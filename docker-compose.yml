@@ -12,26 +12,24 @@ services:
       - ./docker/postgresql.conf:/etc/postgresql/postgresql.conf:ro
       - db:/var/lib/postgresql/data
 
-  maildev:
-    image: maildev/maildev
-    environment:
-      MAILDEV_INCOMING_USER: mailuser
-      MAILDEV_INCOMING_PASS: mailpassword
+  mailpit:
+    image: axllent/mailpit:v1.18.5
+    restart: unless-stopped
     ports:
-      - '1080:1080'
-      - '1025:1025'
+      - 1025:1025
+      - 8025:8025
+    environment:
+      - MP_DATA_FILE=/data/mailpit.db
+    volumes:
+      - mailpit:/data
 
   web:
     build: ./docker/web
     command: sh -c "yarn dev"
     environment:
       DATABASE_URL: postgres://postgres:postgres_fcu@db:5432/postgres
-      MAIL_PASS: mailpassword
-      MAIL_USER: mailuser
-      MAIL_HOST: maildev
+      MAIL_HOST: mailpit
       MAIL_PORT: 1025
-      MAIL_SECURE: 'false'
-      MAIL_REQUIRE_TLS: 'false'
     ports:
       - '3000:3000'
     volumes:
@@ -41,3 +39,4 @@ services:
 
 volumes:
   db:
+  mailpit:

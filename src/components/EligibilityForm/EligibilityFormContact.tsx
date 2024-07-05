@@ -1,8 +1,10 @@
 import Map from '@components/Map/Map';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import Box from '@components/ui/Box';
+import Link from '@components/ui/Link';
 import { Alert } from '@dataesr/react-dsfr';
 import Image from 'next/image';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { useMatomoAbTestingExperiment } from 'src/services/analytics';
@@ -23,17 +25,18 @@ import {
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
-  isSent?: boolean;
   cardMode?: boolean;
-  onSubmit?: (...arg: any) => void;
+  onSubmit?: (...arg: any) => Promise<any>;
 };
 
 const EligibilityFormContact = ({
   addressData,
-  isSent,
   cardMode,
   onSubmit,
 }: EligibilityFormContactType) => {
+  const [contactFormLoading, setContactFormLoading] = useState(false);
+  const [contactFormError, setContactFormError] = useState(false);
+
   const { ready, variation } = useMatomoAbTestingExperiment(
     'TestMessagesFormulaireContact',
     {
@@ -69,9 +72,11 @@ const EligibilityFormContact = ({
     const computedBody = body
       ? body(
           getReadableDistance(addressData.eligibility.distance),
-          addressData.eligibility.inZDP,
+          addressData.eligibility.inPDP,
           addressData.eligibility.gestionnaire,
           addressData.eligibility.tauxENRR,
+          addressData.eligibility.isClasse,
+          addressData.eligibility.hasPDP,
           addressData.geoAddress?.properties.city
         )
       : '';
@@ -91,21 +96,29 @@ const EligibilityFormContact = ({
 
   const handleSubmitForm = useCallback(
     async (values: ContactFormInfos) => {
-      const sendedValues: any = {
-        ...addressData,
-        ...values,
-        computedEligibility,
-      };
-      if (addressData?.geoAddress?.properties) {
-        sendedValues.city = addressData.geoAddress.properties.city;
-        sendedValues.postcode = addressData.geoAddress.properties.postcode;
-        const context = addressData.geoAddress.properties.context.split(',');
-        sendedValues.department = (context[1] || '').trim();
-        sendedValues.region = (context[2] || '').trim();
-      }
+      try {
+        setContactFormError(false);
+        const sendedValues: any = {
+          ...addressData,
+          ...values,
+          computedEligibility,
+        };
+        if (addressData?.geoAddress?.properties) {
+          sendedValues.city = addressData.geoAddress.properties.city;
+          sendedValues.postcode = addressData.geoAddress.properties.postcode;
+          const context = addressData.geoAddress.properties.context.split(',');
+          sendedValues.department = (context[1] || '').trim();
+          sendedValues.region = (context[2] || '').trim();
+        }
 
-      if (onSubmit) {
-        onSubmit(sendedValues);
+        if (onSubmit) {
+          setContactFormLoading(true);
+          await onSubmit(sendedValues).finally(() => {
+            setContactFormLoading(false);
+          });
+        }
+      } catch (err: any) {
+        setContactFormError(true);
       }
     },
     [addressData, computedEligibility, onSubmit]
@@ -196,9 +209,15 @@ const EligibilityFormContact = ({
             <ContactForm
               city={addressData.geoAddress?.properties.city}
               onSubmit={handleSubmitForm}
-              isLoading={isSent}
+              isLoading={contactFormLoading}
               cardMode={cardMode}
             />
+            {contactFormError && (
+              <Box textColor="#c00" mt="1w">
+                Une erreur est survenue. Veuillez réessayer ou bien{' '}
+                <Link href="/contact">contacter le support</Link>.
+              </Box>
+            )}
           </ContactFormContentWrapper>
         </>
       )}

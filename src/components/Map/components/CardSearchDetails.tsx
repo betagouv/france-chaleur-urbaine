@@ -35,7 +35,7 @@ const CardSearchDetails = ({
     distance,
     isEligible,
     futurNetwork,
-    inZDP,
+    inPDP,
     cityHasNetwork,
     cityHasFuturNetwork,
   } = storedAddress.addressDetails?.network || {};
@@ -67,7 +67,7 @@ const CardSearchDetails = ({
       const baseMessage = futurNetwork
         ? 'Bonne nouvelle ! Un réseau de chaleur passera bientôt à proximité de cette adresse (prévu ou en construction).'
         : 'Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.';
-      return inZDP ? (
+      return inPDP ? (
         <>
           {baseMessage}
           <br />
@@ -83,7 +83,7 @@ const CardSearchDetails = ({
       const baseMessage = futurNetwork
         ? 'Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois un réseau passera prochainement dans les environs (prévu ou en construction).'
         : 'Votre immeuble n’est pas à proximité immédiate d’un réseau de chaleur, toutefois le réseau n’est pas très loin.';
-      return inZDP ? (
+      return inPDP ? (
         <>
           {baseMessage}
           <br />
@@ -98,7 +98,7 @@ const CardSearchDetails = ({
     {
       const baseMessage =
         "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";
-      return inZDP ? (
+      return inPDP ? (
         <>
           {baseMessage}
           <br />
@@ -118,7 +118,7 @@ const CardSearchDetails = ({
     distance,
     isEligible,
     futurNetwork,
-    inZDP,
+    inPDP,
   ]);
 
   const onClickHandler = useCallback(

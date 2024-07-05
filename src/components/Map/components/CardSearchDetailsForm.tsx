@@ -3,6 +3,8 @@ import {
   EligibilityFormContact,
   EligibilityFormMessageConfirmation,
 } from '@components/EligibilityForm';
+import Box from '@components/ui/Box';
+import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
 import React, { useCallback, useState } from 'react';
 import {
@@ -18,7 +20,6 @@ const CardSearchDetailsForm: React.FC<{
     EligibilityFormContactRef,
     addressData,
     contactReady,
-    messageSent,
     messageReceived,
     handleOnChangeAddress,
     handleOnFetchAddress,
@@ -26,6 +27,7 @@ const CardSearchDetailsForm: React.FC<{
     handleOnSubmitContact,
   } = useContactFormFCU();
 
+  const [contactFormError, setContactFormError] = useState(false);
   const [formIsSend, setFormIsSend] = useState(false);
 
   const onSuccess = useCallback(
@@ -33,10 +35,15 @@ const CardSearchDetailsForm: React.FC<{
     (data: any) => handleOnSuccessAddress(data, true, true),
     [handleOnSuccessAddress]
   );
-  const handleSubmitForm = (data: Record<string, any>) => {
-    handleOnSubmitContact(data, true);
-    onSubmit?.(data);
-    setFormIsSend(true);
+  const handleSubmitForm = async (data: Record<string, any>) => {
+    try {
+      setContactFormError(false);
+      await handleOnSubmitContact(data, true);
+      onSubmit?.(data);
+      setFormIsSend(true);
+    } catch (err) {
+      setContactFormError(true);
+    }
   };
 
   return (
@@ -57,10 +64,15 @@ const CardSearchDetailsForm: React.FC<{
         <ContactFormWrapper active={contactReady && !messageReceived}>
           <EligibilityFormContact
             addressData={addressData}
-            isSent={messageSent}
             onSubmit={handleSubmitForm}
             cardMode
           />
+          {contactFormError && (
+            <Box textColor="#c00" mt="1w">
+              Une erreur est survenue. Veuillez réessayer ou bien{' '}
+              <Link href="/contact">contacter le support</Link>.
+            </Box>
+          )}
         </ContactFormWrapper>
 
         <ContactFormWrapper active={messageReceived}>

@@ -4,7 +4,7 @@
 \
 Les données, qui portent actuellement sur l'année 2021, seront actualisées suite à la publication des résultats de la prochaine enquête annuelle réalisée par le SNCU.\
 \
-👉 Vous souhaitez accéder à ces fiches ? Il vous suffit pour cela de cliquer sur le réseau concerné sur notre carte, puis sur "Voir plus d'informations".\
+👉 Vous souhaitez accéder à ces fiches ? Il vous suffit pour cela de cliquer sur le réseau concerné sur notre carte, puis sur "Voir la fiche du réseau".\
 \
 Un grand merci à nos partenaires, et en particulier Via Sèva et le SNCU, sans qui cette diffusion n'aurait pas été possible.
 

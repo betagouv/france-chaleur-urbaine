@@ -229,12 +229,14 @@ const NetworkPanel = ({
                         <b>Fluide caloporteur - eau chaude</b>
                       </div>
                       <div>
-                        {network['eau_chaude']
-                          ? network['eau_chaude'].toUpperCase() !== 'oui'
-                            ? typeof Number(network['eau_chaude']) === 'number'
-                              ? `${Math.round(Number(network['eau_chaude']))} %`
-                              : 'Non'
-                            : 'Oui'
+                        {network['eau_chaude'] === null
+                          ? 'Non connu'
+                          : !isNaN(Number.parseFloat(network['eau_chaude']))
+                          ? `${Math.round(
+                              Number.parseFloat(network['eau_chaude'])
+                            )} %`
+                          : `${network['eau_chaude']}`.toLowerCase() === 'oui'
+                          ? 'Oui'
                           : 'Non'}
                       </div>
                     </BoxContent>
@@ -243,15 +245,17 @@ const NetworkPanel = ({
                         <b>Fluide caloporteur - eau surchauffée</b>
                       </div>
                       <div>
-                        {network['eau_surchauffee']
-                          ? network['eau_surchauffee'].toUpperCase() !== 'oui'
-                            ? typeof Number(network['eau_surchauffee']) ===
-                              'number'
-                              ? `${Math.round(
-                                  Number(network['eau_surchauffee'])
-                                )} %`
-                              : 'Non'
-                            : 'Oui'
+                        {network['eau_surchauffee'] === null
+                          ? 'Non connu'
+                          : !isNaN(
+                              Number.parseFloat(network['eau_surchauffee'])
+                            )
+                          ? `${Math.round(
+                              Number.parseFloat(network['eau_surchauffee'])
+                            )} %`
+                          : `${network['eau_surchauffee']}`.toLowerCase() ===
+                            'oui'
+                          ? 'Oui'
                           : 'Non'}
                       </div>
                     </BoxContent>
@@ -260,12 +264,14 @@ const NetworkPanel = ({
                         <b>Fluide caloporteur - vapeur</b>
                       </div>
                       <div>
-                        {network['vapeur']
-                          ? network['vapeur'].toUpperCase() !== 'oui'
-                            ? typeof Number(network['vapeur']) === 'number'
-                              ? `${Math.round(Number(network['vapeur']))} %`
-                              : 'Non'
-                            : 'Oui'
+                        {network['vapeur'] === null
+                          ? 'Non connu'
+                          : !isNaN(Number.parseFloat(network['vapeur']))
+                          ? `${Math.round(
+                              Number.parseFloat(network['vapeur'])
+                            )} %`
+                          : `${network['vapeur']}`.toLowerCase() === 'oui'
+                          ? 'Oui'
                           : 'Non'}
                       </div>
                     </BoxContent>
