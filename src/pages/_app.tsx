@@ -6,8 +6,6 @@
 } from '@components/Markup';*/
 import { MuiDsfrThemeProvider } from './../MuiDsfrThemeProvider';
 
-// FIXME vérifier le flicker au chargement
-// import '@gouvfr/dsfr/dist/dsfr.min.css';
 import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
 
 import '@reach/combobox/styles.css';
@@ -16,7 +14,6 @@ import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import 'remixicon/fonts/remixicon.css';
 import 'src/components/Map/StyleSwitcher/styles.css';
 import {
   HeatNetworkService,
