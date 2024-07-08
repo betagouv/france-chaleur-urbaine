@@ -608,7 +608,7 @@ function SimpleMapLegend({
             href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
             isExternal
             eventKey="Téléchargement|Tracés|carte"
-            className="fr-btn--sm d-block"
+            className="fr-btn--sm d-flex"
             mx="auto"
             mt="1w"
           >

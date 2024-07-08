@@ -10,13 +10,13 @@ import { MuiDsfrThemeProvider } from './../MuiDsfrThemeProvider';
 // import '@gouvfr/dsfr/dist/dsfr.min.css';
 import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
 
-import 'remixicon/fonts/remixicon.css';
 import '@reach/combobox/styles.css';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import 'remixicon/fonts/remixicon.css';
 import 'src/components/Map/StyleSwitcher/styles.css';
 import {
   HeatNetworkService,
@@ -30,9 +30,9 @@ import { axiosHttpClient } from 'src/services/http';
 import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
 //import { clientConfig } from 'src/client-config';
+import { usePreserveScroll } from '@hooks/usePreserveScroll';
 import { useAnalytics } from 'src/services/analytics';
 import { SWRConfig, SWRConfiguration } from 'swr';
-import { usePreserveScroll } from '@hooks/usePreserveScroll';
 //import HotjarMarkup from '@components/Markup/HotjarMarkup';
 import Link from 'next/link';
 
@@ -103,6 +103,9 @@ export const AppGlobalStyle = createGlobalStyle`
   }
   .d-inline-block {
     display: inline-block !important;
+  }
+  .d-flex {
+    display: flex !important;
   }
   // custom: not DSFR
   .fr-text--lightbold {
