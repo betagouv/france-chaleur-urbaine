@@ -1,13 +1,18 @@
-import Hoverable from '@components/Hoverable';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
+import Hoverable from '@components/Hoverable';
+import Icon from '@components/ui/Icon';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
+import { downloadObject } from '@utils/browser';
+import { formatAsISODate } from '@utils/date';
 import { LineString, Polygon } from 'geojson';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { MapRef } from 'react-map-gl/maplibre';
+import { clientConfig } from 'src/client-config';
 import { useServices } from 'src/services';
+import { trackEvent } from 'src/services/analytics';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
 import { GasSummary } from 'src/types/Summary/Gas';
@@ -23,11 +28,6 @@ import {
   ZoneInfosWrapper,
 } from './SummaryBoxes.style';
 import ZoneInfo from './ZoneInfo';
-import { clientConfig } from 'src/client-config';
-import { trackEvent } from 'src/services/analytics';
-import { downloadObject } from '@utils/browser';
-import { formatAsISODate } from '@utils/date';
-import Icon from '@components/ui/Icon';
 
 const getConso = (consos: GasSummary[]) => {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
@@ -304,7 +304,7 @@ const SummaryBoxes = ({
                           ) : (
                             <Button
                               size="small"
-                              iconId="ri-download-2-line"
+                              iconId="fr-icon-download-line"
                               onClick={() => bounds && exportData(bounds)}
                               disabled={!summary}
                             >
@@ -390,7 +390,7 @@ const SummaryBoxes = ({
 
                         <Button
                           size="small"
-                          iconId="ri-download-2-line"
+                          iconId="fr-icon-download-line"
                           onClick={() => {
                             downloadObject(
                               draw.getAll(),
@@ -415,7 +415,7 @@ const SummaryBoxes = ({
               (tabIndex === 0 && (!bounds || summary))) && (
               <DrawButton
                 size="small"
-                iconId="ri-edit-2-line"
+                iconId="fr-icon-edit-line"
                 onClick={() => {
                   draw.deleteAll();
                   setBounds(undefined);
@@ -432,7 +432,7 @@ const SummaryBoxes = ({
               <DrawButtons>
                 <Button
                   size="small"
-                  iconId="ri-edit-2-line"
+                  iconId="fr-icon-edit-line"
                   onClick={() => {
                     draw.deleteAll();
                     setBounds(undefined);
@@ -447,7 +447,7 @@ const SummaryBoxes = ({
                 <Button
                   className="hideable"
                   size="small"
-                  iconId="ri-add-line"
+                  iconId="fr-icon-add-line"
                   onClick={() => {
                     setDrawing(true);
                     trackEvent('Carto|Ajouter un segment');
@@ -459,7 +459,7 @@ const SummaryBoxes = ({
                 <Button
                   className="hideable"
                   size="small"
-                  iconId="ri-close-line"
+                  iconId="fr-icon-close-line"
                   onClick={() => {
                     const selected = draw.getSelectedIds();
                     if (selected.length > 0) {
@@ -486,7 +486,7 @@ const SummaryBoxes = ({
             {tabIndex === 1 && !lines && (
               <DrawButton
                 size="small"
-                iconId="ri-edit-2-line"
+                iconId="fr-icon-edit-line"
                 onClick={() => {
                   draw.deleteAll();
                   setBounds(undefined);

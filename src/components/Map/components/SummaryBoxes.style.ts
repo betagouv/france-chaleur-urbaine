@@ -76,7 +76,6 @@ export const DrawButtons = styled.div`
   width: max-content !important;
 
   .hideable {
-    display: block;
     @media (max-width: 715px) {
       display: none;
     }
