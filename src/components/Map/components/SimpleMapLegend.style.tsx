@@ -129,6 +129,7 @@ export function SingleCheckbox({
       <StyledCheckboxInput
         type="checkbox"
         name={name}
+        id={name}
         checked={checked}
         onChange={(event) => {
           onChange(event.target.checked);
