@@ -44,7 +44,7 @@ pg_restore --clean --if-exists --no-owner --no-privileges --verbose --no-comment
 
 - Appliquer les migrations de la BDD.
 ```sh
-DATABASE_URL="postgres://postgres:postgres_fcu@localhost:5432/postgres" yarn db:migrate
+DATABASE_URL="postgres://postgres:dummy@localhost:5432/postgres" yarn db:migrate
 ```
 
 - Désormais, sont accessibles :

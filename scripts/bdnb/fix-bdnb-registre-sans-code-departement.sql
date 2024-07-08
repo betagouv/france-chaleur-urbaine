@@ -1,5 +1,5 @@
 /*
-A importer avec `psql postgres://postgres:postgres_fcu@localhost:5432 -f fix-bdnb-registre-sans-code-departement.sql`
+A importer avec `psql postgres://postgres:dummy@localhost:5432 -f fix-bdnb-registre-sans-code-departement.sql`
 
 ## Description
 

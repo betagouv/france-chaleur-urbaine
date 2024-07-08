@@ -26,9 +26,9 @@ fi
 
 # export depuis BDD locale
 if [[ $dataonly = "true" ]]; then
-  pg_dump postgres://postgres:postgres_fcu@localhost:5432/postgres --data-only -t $table >/tmp/table.dump.sql
+  pg_dump postgres://postgres:dummy@localhost:5432/postgres --data-only -t $table >/tmp/table.dump.sql
 else
-  pg_dump postgres://postgres:postgres_fcu@localhost:5432/postgres --format=c --no-owner -t $table >/tmp/table.dump
+  pg_dump postgres://postgres:dummy@localhost:5432/postgres --format=c --no-owner -t $table >/tmp/table.dump
 fi
 
 if [[ $env = "prod" ]]; then

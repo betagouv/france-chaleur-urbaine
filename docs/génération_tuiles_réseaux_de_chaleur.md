@@ -4,7 +4,7 @@ Processus légèrement différent du fill-tiles classique étant donné qu'on a 
 
 ```sh
 # générer un fichier geojson depuis la table reseaux_de_chaleur
-psql postgres://postgres:postgres_fcu@localhost:5432/postgres -c "COPY (
+psql postgres://postgres:dummy@localhost:5432/postgres -c "COPY (
     SELECT jsonb_build_object(
         'type',     'FeatureCollection',
         'features', jsonb_agg(feature)

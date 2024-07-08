@@ -2,7 +2,7 @@
 
 # Permet d'exporter les fichiers CSV à partir des tables batiments_summary_*, construites avec le script prepare-batiments-summary.sh
 
-sql="psql postgres://postgres:postgres_fcu@localhost:5432"
+sql="psql postgres://postgres:dummy@localhost:5432"
 
 SECONDS=0
 

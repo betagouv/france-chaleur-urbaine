@@ -4,7 +4,7 @@ services:
     shm_size: 256m
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres_fcu
+      POSTGRES_PASSWORD: dummy
     ports:
       - '5432:5432'
     volumes:
@@ -24,7 +24,7 @@ services:
   web:
     build: .
     environment:
-      DATABASE_URL: postgres://postgres:postgres_fcu@db:5432/postgres
+      DATABASE_URL: postgres://postgres:dummy@db:5432/postgres
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
       UNSAFE_EVAL: true
