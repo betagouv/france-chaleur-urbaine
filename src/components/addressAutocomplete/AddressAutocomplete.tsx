@@ -1,3 +1,4 @@
+import { fr } from '@codegouvfr/react-dsfr';
 import { Combobox, ComboboxPopover } from '@reach/combobox';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -117,7 +118,7 @@ const AddressAutocomplete = ({
         <Combobox
           aria-label="address"
           aria-labelledby="address"
-          className="fr-input-wrap fr-fi-search-line"
+          className={fr.cx('fr-input-wrap', 'ri-search-line')}
           onSelect={(selectedAddress) =>
             handleSelect(selectedAddress, suggestions)
           }

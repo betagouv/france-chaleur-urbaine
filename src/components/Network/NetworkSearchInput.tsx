@@ -1,3 +1,4 @@
+import { fr } from '@codegouvfr/react-dsfr';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { NetworkSearchResult } from '@pages/api/networks/search';
@@ -78,7 +79,7 @@ export default function NetworkSearchInput(props: NetworkSearchInputProps) {
         </button>
       ) : (
         <Combobox
-          className="fr-input-wrap fr-fi-search-line"
+          className={fr.cx('fr-input-wrap', 'ri-search-line')}
           onSelect={(selectedNetworkOption) => {
             const selectedNetworkIdFCU = selectedNetworkOption.split(' - ')[0];
             const selectedNetwork = results.find(
