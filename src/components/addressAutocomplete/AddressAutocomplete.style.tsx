@@ -1,7 +1,7 @@
 import styled, { createGlobalStyle } from 'styled-components';
 
 export const AddressAutocompleteGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
-  .fr-input {
+  .light-theme .fr-input {
     transition: box-shadow .5s ease;
     color: #000074;
 
@@ -17,6 +17,7 @@ export const AddressAutocompleteGlobalStyle: any = createGlobalStyle` // TODO: W
 
   [data-reach-combobox-popover] {
     z-index: 200;
+    background-color: var(--background-contrast-grey);
   }
 `;
 
