@@ -290,7 +290,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                         name="heatingType"
                         className="fr-mt-2w"
                         selectOptions={energyInputsDefaultLabels}
-                        onChange={(e) => setHeatingType(e.target.value)}
+                        onChange={setHeatingType}
                         value={heatingType}
                       />
                       {heatingType === 'individuel' && (

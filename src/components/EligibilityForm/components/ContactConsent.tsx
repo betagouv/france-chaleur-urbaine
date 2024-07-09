@@ -1,4 +1,6 @@
+import { fr } from '@codegouvfr/react-dsfr';
 import Checkbox from '@components/shared/checkbox';
+import Box from '@components/ui/Box';
 import { Field } from 'formik';
 import * as Yup from 'yup';
 
@@ -16,12 +18,14 @@ export const validationSchemasContactConsent = {
 
 const ContactConsent = () => {
   return (
-    <fieldset className="fr-fieldset fr-mt-3w fr-checkbox-group">
-      <Field
-        name="termOfUse"
-        label={fieldLabelConsent.termOfUse}
-        component={Checkbox}
-      />
+    <fieldset className={fr.cx('fr-fieldset')}>
+      <Box className={fr.cx('fr-fieldset__element')} my="1w">
+        <Field
+          name="termOfUse"
+          label={fieldLabelConsent.termOfUse}
+          component={Checkbox}
+        />
+      </Box>
     </fieldset>
   );
 };

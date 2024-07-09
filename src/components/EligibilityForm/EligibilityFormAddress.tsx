@@ -122,7 +122,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           label={heatingLabel}
           name="heatingType"
           selectOptions={energyInputsLabels}
-          onChange={(e) => setHeatingType(e.target.value)}
+          onChange={setHeatingType}
           value={heatingType}
           cardMode={cardMode}
         >

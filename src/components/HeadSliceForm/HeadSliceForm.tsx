@@ -169,7 +169,7 @@ const HeadSlice = ({
               <SelectEnergy
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
-                onChange={(e) => setHeatingType(e.target.value)}
+                onChange={setHeatingType}
                 value={heatingType || ''}
               />
             </CheckEligibilityFormLabel>

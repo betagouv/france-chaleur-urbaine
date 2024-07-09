@@ -1,13 +1,14 @@
-import Input from '@components/shared/input';
-// import RadioGroup from '@components/shared/RadioGroup';
+import { fr } from '@codegouvfr/react-dsfr';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
+import Input from '@components/shared/input';
+import Box from '@components/ui/Box';
 import { Field, useFormikContext } from 'formik';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 
-const InputWraper = styled.div`
+const InputWraper = styled(Box)`
   opacity: 1;
   transition:
     opacity 0.25s ease,
@@ -18,7 +19,8 @@ const InputWraper = styled.div`
     max-height: 0;
   }
 
-  .fr-form-group {
+  // override fr-fieldset__element
+  && {
     margin-bottom: 0;
   }
 `;
@@ -95,79 +97,60 @@ const ContactInformation = ({
   const { values }: any = useFormikContext();
   return (
     <>
-      <fieldset className={`fr-fieldset fr-mt-${cardMode ? '1' : '3'}w`}>
-        <InputWraper>
-          {/* <RadioGroup
-            required
-            isInline={!cardMode}
-            label={fieldLabelInformation.structure.label}
-            name="structure"
-            inputs={fieldLabelInformation.structure.inputs}
-          /> */}
-          {/* FIXME intégrer les erreurs formik */}
+      <Field required>
+        {({ field }: any) => (
           <RadioButtons
             legend={fieldLabelInformation.structure.label}
             name="structure"
+            className={fr.cx(`fr-mt-${cardMode ? '1' : '3'}w`)}
             orientation={cardMode ? 'vertical' : 'horizontal'}
             options={fieldLabelInformation.structure.inputs.map(
-              ({ value, label, id }) => ({
+              ({ value, label }) => ({
                 label: label,
                 nativeInputProps: {
-                  id: id,
                   value: value,
-                  // FIXME vérifier
-                  // checked: value === optionValue,
-                  //  onChange: onChange,
+                  onChange: field.onChange,
                 },
               })
             )}
           />
-        </InputWraper>
-      </fieldset>
+        )}
+      </Field>
       {values.structure === 'Maison individuelle' &&
         city !== 'Charleville-Mézières' && (
           <Alert
-            className="fr-mt-2w"
+            className={fr.cx('fr-mt-2w')}
             severity="warning"
             small
             description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
           />
         )}
       {heatingTypeInput}
-      <fieldset className="fr-fieldset fr-my-1w">
-        <InputWraper>
-          {/* <RadioGroup
-            label={
+      <Field required>
+        {({ field }: any) => (
+          <RadioButtons
+            legend={
               heatingTypeInput
                 ? 'Énergie de chauffage :'
                 : fieldLabelInformation.heatingEnergy.label
             }
             name="heatingEnergy"
-            inputs={fieldLabelInformation.heatingEnergy.inputs}
-            required
-            isInline={!cardMode}
-          /> */}
-          <RadioButtons
-            legend={fieldLabelInformation.heatingEnergy.label}
-            name="heatingEnergy"
+            className={fr.cx('fr-my-1w')}
             orientation={cardMode ? 'vertical' : 'horizontal'}
             options={fieldLabelInformation.heatingEnergy.inputs.map(
-              ({ value, label, id }) => ({
+              ({ value, label }) => ({
                 label: label,
                 nativeInputProps: {
-                  id: id,
                   value: value,
-                  // FIXME vérifier
-                  // checked: value === optionValue,
-                  //  onChange: onChange,
+                  onChange: field.onChange,
                 },
               })
             )}
           />
-        </InputWraper>
-      </fieldset>
-      <fieldset className="fr-fieldset">
-        <InputWraper className="fr-my-1w">
+        )}
+      </Field>
+      <fieldset className={fr.cx('fr-fieldset')}>
+        <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
           <Field
             name="lastName"
             required
@@ -175,7 +158,7 @@ const ContactInformation = ({
             component={Input}
           />
         </InputWraper>
-        <InputWraper className="fr-my-1w">
+        <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
           <Field
             name="firstName"
             required
@@ -184,7 +167,7 @@ const ContactInformation = ({
           />
         </InputWraper>
         {values.structure === 'Tertiaire' && (
-          <InputWraper className="fr-my-1w">
+          <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
             <Field
               name="company"
               label={fieldLabelInformation.company}
@@ -193,7 +176,7 @@ const ContactInformation = ({
             />
           </InputWraper>
         )}
-        <InputWraper className="fr-my-1w">
+        <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
           <Field
             name="email"
             type="email"
@@ -202,7 +185,7 @@ const ContactInformation = ({
             required
           />
         </InputWraper>
-        <InputWraper className="fr-my-1w without-arrows">
+        <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
           <Field
             name="phone"
             placeholder="0605040302"
