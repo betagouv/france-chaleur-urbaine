@@ -12,7 +12,7 @@ export const UnderstandingCards = styled.div`
 
 export const UnderstandingCard = styled(Card)`
   width: 270px;
-  p {
+  .light-theme p {
     color: black !important;
   }
 `;

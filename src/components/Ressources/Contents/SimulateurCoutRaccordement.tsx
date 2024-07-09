@@ -97,7 +97,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
   }, [formState, montantAide]);
 
   return (
-    <Box border="1px solid #e7e7e7" backgroundColor="#fff">
+    <Box border="1px solid #e7e7e7">
       <Box display="flex">
         <Box flex p="3w">
           <Badge severity="new" noIcon>
