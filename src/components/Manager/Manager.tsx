@@ -429,6 +429,9 @@ const Manager = () => {
                   getRowHeight={() => 'auto'}
                   getEstimatedRowHeight={() => 110}
                   sx={{
+                    '&': {
+                      height: '80dvh!important',
+                    },
                     '& .MuiDataGrid-columnHeaderTitleContainer': {
                       overflow: 'visible',
                     },

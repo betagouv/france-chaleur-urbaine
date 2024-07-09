@@ -8,8 +8,8 @@ import styled from 'styled-components';
 export const Container = styled.div`
   margin: auto;
   padding: 16px;
-  height: calc(100vh - ${tabHeaderHeight});
-  height: calc(100dvh - ${tabHeaderHeight});
+  height: calc(200vh - ${tabHeaderHeight});
+  height: calc(200dvh - ${tabHeaderHeight});
 
   @media (min-width: 992px) {
     height: calc(100vh - ${fullscreenHeaderHeight});
@@ -21,7 +21,10 @@ export const Container = styled.div`
 `;
 
 export const NoResult = styled.div`
-  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
   font-size: 18px;
   font-weight: bold;
 `;
@@ -41,20 +44,31 @@ export const ManagerContainer = styled.div`
   height: 100%;
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+  @media (min-width: 992px) {
+    flex-direction: row;
+  }
 `;
 
 export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
   overflow: auto;
-  width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : 'calc(70% - 16px)')};
+  width: 100%;
+  @media (min-width: 992px) {
+    width: ${({ mapCollapsed }) =>
+      mapCollapsed ? '100%' : 'calc(70% - 16px)'};
+  }
   height: 100%;
   z-index: ${mapControlZindex + 1};
 `;
 
 export const MapContainer = styled.div<{ mapCollapsed: boolean }>`
   height: 100%;
-  width: ${({ mapCollapsed }) => (mapCollapsed ? '0%' : '30%')};
+  width: 100%;
+  @media (min-width: 992px) {
+    width: ${({ mapCollapsed }) => (mapCollapsed ? '0%' : '30%')};
+  }
   margin-bottom: 2.5rem;
 `;
 
@@ -69,7 +83,7 @@ export const CollapseMap = styled.button<{
   top: 50%;
   border-radius: ${({ mapCollapsed }) =>
     mapCollapsed ? '10px 0px 0px 10px' : '0px 10px 10px 0px'};
-  background-color: white;
+  background-color: var(--background-default-grey);
   border: solid 1px #dddddd;
   height: 60px;
   width: 28px;
