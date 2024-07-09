@@ -259,7 +259,7 @@ const Manager = () => {
     },
     {
       field: 'Prospect recontacté',
-      width: 90,
+      width: 100,
       align: 'center',
       renderCell: (params) => (
         <Contacted demand={params.row} updateDemand={updateDemand} />
@@ -281,8 +281,8 @@ const Manager = () => {
           Adresse
           <HoverableIcon
             iconName="ri-information-fill"
-            position="bottom"
-            iconSize="lg"
+            position="bottom-centered"
+            iconSize="sm"
             top="0px"
           >
             La mention “PDP" est indiquée pour les adresses situées dans le
@@ -318,7 +318,7 @@ const Manager = () => {
           <HoverableIcon
             iconName="ri-information-fill"
             position="bottom-centered"
-            iconSize="lg"
+            iconSize="sm"
             top="0px"
           >
             Distance à vol d'oiseau
@@ -382,8 +382,8 @@ const Manager = () => {
           Affecté à
           <HoverableIcon
             iconName="ri-information-fill"
-            position="bottom"
-            iconSize="lg"
+            position="left"
+            iconSize="sm"
             top="0px"
           >
             "Non affecté" : demande éloignée du réseau non transmise aux
@@ -422,22 +422,33 @@ const Manager = () => {
                 <DataGrid
                   columns={demandRowsParams}
                   rows={filteredDemands}
+                  autoHeight
+                  disableColumnSorting
                   disableColumnMenu
                   disableRowSelectionOnClick
-                  pageSizeOptions={[10, 100, { value: 1000, label: '1,000' }]}
                   getRowHeight={() => 'auto'}
                   getEstimatedRowHeight={() => 110}
                   sx={{
+                    '& .MuiDataGrid-columnHeaderTitleContainer': {
+                      overflow: 'visible',
+                    },
+                    '& .MuiDataGrid-columnHeaderTitleContainerContent': {
+                      flex: 1,
+                      overflow: 'visible',
+                    },
                     '& .MuiDataGrid-cell ': {
                       display: 'flex',
                       'align-items': 'center',
                     },
                     '& .MuiDataGrid-columnHeaders div[role=row]': {
-                      bgcolor: '#F0EFE8',
+                      bgcolor: 'var(--background-default-grey)',
                       'border-bottom': '1px solid #333333',
                     },
                     '& .MuiDataGrid-columnHeaders': {
                       'border-bottom': '1px solid #333333',
+                    },
+                    '& .MuiDataGrid-columnHeader': {
+                      overflow: 'visible',
                     },
                   }}
                 />

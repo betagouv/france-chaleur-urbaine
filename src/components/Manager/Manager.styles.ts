@@ -28,11 +28,13 @@ export const NoResult = styled.div`
 
 export const ColHeader = styled.div`
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
   height: 56px;
   white-space: normal;
   line-height: 1.2;
+  flex: 1;
 `;
 
 export const ManagerContainer = styled.div`

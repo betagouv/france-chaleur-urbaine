@@ -13,7 +13,7 @@ const HoverableIcon = ({
   children: ReactNode;
   iconSize?: 'xs' | 'sm' | 'lg' | 'md';
   iconName: any;
-  position?: 'top' | 'right' | 'top-centered' | 'bottom' | 'bottom-centered';
+  position?: React.ComponentProps<typeof Hoverable>['position'];
   top?: string;
 }) => {
   return (
