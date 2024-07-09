@@ -31,7 +31,7 @@ export const Description = styled.div`
   font-size: 19px;
   font-weight: 700;
   line-height: 27px;
-  color: #000074;
+  color: var(--legacy-darker-blue);
   b {
     color: #4550e5;
   }

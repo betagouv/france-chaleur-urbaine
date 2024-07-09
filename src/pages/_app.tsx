@@ -110,6 +110,10 @@ export const AppGlobalStyle = createGlobalStyle`
   }
   :root {
     --white: #fff;
+    --legacy-darker-blue: #ccd2fc;
+  }
+  :root[data-rf-theme='dark'] {
+    --legacy-darker-blue: #000074;
   }
 `;
 
