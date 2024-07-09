@@ -450,7 +450,7 @@ const PageFooter = () => (
     partnersLogos={{
       main: {
         alt: 'DRIEAT',
-        imgUrl: '/logo-DRIEAT.png',
+        imgUrl: '/logo-DRIEAT-white.png',
         linkProps: {
           href: 'http://www.driee.ile-de-france.developpement-durable.gouv.fr/',
           title: 'Lien vers le site du partenaire',
