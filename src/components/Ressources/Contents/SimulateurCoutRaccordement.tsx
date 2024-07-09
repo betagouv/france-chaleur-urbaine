@@ -1,4 +1,4 @@
-import Box from '@components/ui/Box';
+import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
@@ -95,7 +95,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
 
   return (
     <Box border="1px solid #e7e7e7" backgroundColor="#fff">
-      <Box display="flex">
+      <ResponsiveRow breakpoint="sm">
         <Box flex p="3w">
           <Badge icon="ri-money-euro-circle-line" text="Simulateur" />
           <Heading as="h6" mt="1w" mb="1w">
@@ -214,7 +214,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
             </>
           )}
         </Box>
-      </Box>
+      </ResponsiveRow>
     </Box>
   );
 };
