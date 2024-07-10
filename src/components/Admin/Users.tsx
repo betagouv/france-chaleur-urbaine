@@ -1,25 +1,31 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Input } from '@codegouvfr/react-dsfr/Input';
+import Box from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useMemo, useState } from 'react';
+import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { type UserResponse } from 'src/types/UserResponse';
 import { TableContainer } from './Users.styles';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import { Oval } from 'react-loader-spinner';
-import Table, { type TableColumnDef } from '@components/ui/Table';
 
-const columns: TableColumnDef<UserResponse>[] = [
+const columns: GridColDef<UserResponse>[] = [
   {
-    key: 'email',
-    label: 'Email',
+    field: 'email',
+    renderHeader: () => 'Email',
+    flex: 2,
   },
   {
-    key: 'last_connection',
-    label: 'Dernière connexion',
-    render: ({ last_connection }: UserResponse) => (
+    field: 'last_connection',
+    flex: 1,
+    renderHeader: () => 'Dernière connexion',
+    renderCell: ({ row: { last_connection } }) => (
       <>
-        {last_connection ? new Date(last_connection).toLocaleDateString() : ''}
+        {last_connection
+          ? new Date(last_connection).toLocaleDateString('fr-FR', {
+              dateStyle: 'long',
+            })
+          : ''}
       </>
     ),
   },
@@ -30,7 +36,6 @@ const Users = () => {
 
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [filter, setFilter] = useState('');
-  const [page, setPage] = useState(1);
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
@@ -38,7 +43,6 @@ const Users = () => {
   }, [adminService]);
 
   const filteredUsers = useMemo(() => {
-    setPage(1);
     return filter
       ? users.filter((user) => user.email.includes(filter.toLowerCase()))
       : users;
@@ -60,15 +64,13 @@ const Users = () => {
           }}
         />
       </Box>
-
-      <Table
+      <DataGrid
+        style={{ width: '100%' }}
         columns={columns}
-        data={filteredUsers}
-        // rowKey="email"
-        // pagination
-        // paginationPosition="center"
-        // page={page}
-        // setPage={setPage}
+        rows={filteredUsers}
+        getRowId={(row) => row.email}
+        autosizeOnMount
+        disableRowSelectionOnClick
       />
       {filteredUsers.length === 0 && <p>Pas de résultat</p>}
       {exporting ? (

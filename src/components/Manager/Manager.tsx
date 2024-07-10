@@ -248,7 +248,7 @@ const Manager = () => {
     addOnClick();
   }, [addOnClick, page]);
 
-  const demandRowsParams: GridColDef[] = [
+  const demandRowsParams: GridColDef<Demand>[] = [
     {
       field: 'Statut',
       width: 300,
