@@ -70,6 +70,22 @@ export const MapContainer = styled.div<{ mapCollapsed: boolean }>`
     width: ${({ mapCollapsed }) => (mapCollapsed ? '0%' : '30%')};
   }
   margin-bottom: 2.5rem;
+
+  .maplibregl-popup-content {
+    background-color: var(--background-default-grey);
+  }
+  .maplibregl-popup-anchor-left .maplibregl-popup-tip {
+    border-right-color: var(--background-default-grey);
+  }
+  .maplibregl-popup-anchor-top .maplibregl-popup-tip {
+    border-bottom-color: var(--background-default-grey);
+  }
+  .maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+    border-top-color: var(--background-default-grey);
+  }
+  .maplibregl-popup-anchor-right .maplibregl-popup-tip {
+    border-left-color: var(--background-default-grey);
+  }
 `;
 
 export const CollapseMap = styled.button<{
