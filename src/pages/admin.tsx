@@ -10,6 +10,7 @@ export default function AdminPage(): JSX.Element {
     <SimplePage title="France Chaleur Urbaine - Admin" mode="authenticated">
       <UserImpersonation />
       <Users />
+      {/* <BulkEligibility /> */}
     </SimplePage>
   );
 }
