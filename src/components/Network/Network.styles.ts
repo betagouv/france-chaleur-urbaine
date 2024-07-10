@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Title = styled.h1`
-  color: #000074;
+  color: var(--legacy-darker-blue);
   margin-bottom: 0;
 `;
 
@@ -20,7 +20,7 @@ export const BoxSection = styled.div`
   border: 1px solid #e7e7e7;
   color: #4550e5;
   h3 {
-    color: #000074;
+    color: var(--legacy-darker-blue);
   }
 `;
 
@@ -30,7 +30,7 @@ export const InformationsComplementairesBox = styled.div`
   border: 1px solid #e7e7e7;
   color: #4550e5;
   h3 {
-    color: #000074;
+    color: var(--legacy-darker-blue);
   }
 `;
 

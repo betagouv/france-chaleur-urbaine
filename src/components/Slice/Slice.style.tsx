@@ -48,7 +48,7 @@ export const SliceSection = styled.section<{ theme?: string }>`
       }
       case 'grey': {
         return css`
-          background-color: #f9f8f6;
+          background-color: var(--background-contrast-grey);
         `;
       }
     }
