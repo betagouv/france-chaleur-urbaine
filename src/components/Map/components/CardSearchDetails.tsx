@@ -163,11 +163,11 @@ const CardSearchDetails = ({
         >
           <Icon
             name={collapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-down-s-fill'}
-            size="lg"
+            size="sm"
           />
         </button>
         <button type="button" title="Fermer" onClick={onCloseHandler}>
-          <Icon name="ri-close-line" size="lg" />
+          <Icon name="ri-close-line" size="sm" />
         </button>
       </HeaderButtons>
       {!collapsed && (
