@@ -252,6 +252,7 @@ const Manager = () => {
     {
       field: 'Statut',
       width: 300,
+      sortable: false,
       renderCell: (params) => (
         <Status demand={params.row} updateDemand={updateDemand} />
       ),
@@ -260,6 +261,7 @@ const Manager = () => {
     {
       field: 'Prospect recontacté',
       width: 100,
+      sortable: false,
       align: 'center',
       renderCell: (params) => (
         <Contacted demand={params.row} updateDemand={updateDemand} />
@@ -270,6 +272,7 @@ const Manager = () => {
       field: 'Contact / Envoi de mails',
       headerName: 'Contact',
       width: 250,
+      sortable: false,
       renderCell: (params) => (
         <Contact demand={params.row} updateDemand={updateDemand} />
       ),
@@ -292,26 +295,31 @@ const Manager = () => {
         </ColHeader>
       ),
       width: 250,
+      sortable: false,
       renderCell: (params) => <Addresse demand={params.row} />,
     },
     {
       field: 'Date demandes',
+      sortable: true,
       renderHeader: () => <ColHeader>Date de la demande</ColHeader>,
       renderCell: (params) =>
         new Date(params.row['Date demandes']).toLocaleDateString(),
     },
     {
       field: 'Type de chauffage',
+      sortable: false,
       renderHeader: () => <ColHeader>Type</ColHeader>,
       renderCell: (params) => <Tag text={params.row.Structure} />,
     },
     {
       field: 'Mode de chauffage',
+      sortable: false,
       renderHeader: () => <ColHeader>Mode de chauffage</ColHeader>,
       renderCell: (params) => <Tag text={displayModeDeChauffage(params.row)} />,
     },
     {
       field: 'Distance au réseau',
+      sortable: false,
       renderHeader: () => (
         <ColHeader>
           Distance au réseau (m)
@@ -336,15 +344,18 @@ const Manager = () => {
     },
     {
       field: 'Identifiant réseau',
+      sortable: false,
       renderHeader: () => <ColHeader>ID réseau le plus proche</ColHeader>,
     },
     {
       field: 'Nom réseau',
       width: 250,
+      sortable: false,
       renderHeader: () => <ColHeader>Nom du réseau le plus proche</ColHeader>,
     },
     {
       field: 'Nb logements',
+      sortable: false,
       renderHeader: () => <ColHeader>Nb logements (lots)</ColHeader>,
       renderCell: (params) => (
         <AdditionalInformation
@@ -357,6 +368,7 @@ const Manager = () => {
     },
     {
       field: 'Conso gaz',
+      sortable: false,
       renderHeader: () => <ColHeader>Conso gaz (MWh)</ColHeader>,
       renderCell: (params) => (
         <AdditionalInformation
@@ -370,6 +382,7 @@ const Manager = () => {
     {
       field: 'Commentaires',
       width: 280,
+      sortable: false,
       renderHeader: () => <ColHeader>Commentaires</ColHeader>,
       renderCell: (params) => (
         <Comment demand={params.row} updateDemand={updateDemand} />
@@ -377,6 +390,7 @@ const Manager = () => {
     },
     {
       field: 'Affecté à',
+      sortable: false,
       renderHeader: () => (
         <ColHeader>
           Affecté à
@@ -423,7 +437,6 @@ const Manager = () => {
                   columns={demandRowsParams}
                   rows={filteredDemands}
                   autoHeight
-                  disableColumnSorting
                   disableColumnMenu
                   disableRowSelectionOnClick
                   getRowHeight={() => 'auto'}
