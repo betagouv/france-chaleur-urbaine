@@ -1,7 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import Box from '@components/ui/Box';
-import Icon from '@components/ui/Icon';
-import { NetworkSearchResult } from '@pages/api/networks/search';
 import {
   Combobox,
   ComboboxInput,
@@ -9,6 +7,7 @@ import {
   ComboboxOption,
   ComboboxPopover,
 } from '@components/ui/Combobox';
+import { NetworkSearchResult } from '@pages/api/networks/search';
 import debounce from '@utils/debounce';
 import { postFetchJSON } from '@utils/network';
 import { getUuid } from '@utils/random';
@@ -66,7 +65,12 @@ export default function NetworkSearchInput(props: NetworkSearchInputProps) {
 
       {props.selectedNetwork ? (
         <button
-          className="fr-tag fr-tag--sm fr-tag--dismiss fr-mt-2w"
+          className={fr.cx(
+            'fr-tag',
+            'fr-tag--sm',
+            'fr-tag--dismiss',
+            'fr-mt-2w'
+          )}
           title="Supprimer la sélection du réseau"
           onClick={() => {
             props.onNetworkSelect(null);
@@ -75,7 +79,6 @@ export default function NetworkSearchInput(props: NetworkSearchInputProps) {
         >
           {props.selectedNetwork['Identifiant reseau']} -{' '}
           {props.selectedNetwork.nom_reseau}
-          <Icon name="ri-close-line" size="lg" />
         </button>
       ) : (
         <Combobox
