@@ -158,7 +158,7 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   }
 
   .fr-btn--secondary {
-    background-color: white !important;
+    background-color: var(--background-default-grey) !important;
     :hover {
       background-color: var(--hover-tint) !important;
     }
