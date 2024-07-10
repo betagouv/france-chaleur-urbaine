@@ -11,10 +11,11 @@ import MapReactGL, {
 import Hoverable from '@components/Hoverable';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
-import { useContactFormFCU, usePersistedState } from '@hooks';
+import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import { useLocalStorageValue } from '@react-hookz/web';
 import debounce from '@utils/debounce';
 import { fetchJSON } from '@utils/network';
 import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
@@ -261,18 +262,14 @@ const Map = ({
     }
   }, [proMode, setMapConfiguration]);
 
-  const [soughtAddresses, setSoughtAddresses] = usePersistedState(
-    'mapSoughtAddresses',
-    [] as StoredAddress[],
-    {
-      beforeStorage: (value: any) => {
-        const newValue = value.map((address: any) => {
-          return address;
-        });
-        return newValue;
-      },
-    }
-  );
+  const { value: soughtAddresses, set: setSoughtAddresses } =
+    useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
+      'mapSoughtAddresses',
+      {
+        defaultValue: [],
+        initializeWithValue: true,
+      }
+    );
 
   const onMapClick = (e: MapLayerMouseEvent, key: string) => {
     const selectedFeature = e.features?.[0];

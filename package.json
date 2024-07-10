@@ -47,6 +47,7 @@
     "@mui/x-data-grid": "^7.6.1",
     "@next/bundle-analyzer": "13.5.6",
     "@reach/combobox": "^0.18.0",
+    "@react-hookz/web": "^24.0.4",
     "@rivercode/facebook-conversion-api-nextjs": "^4.3.2",
     "@sentry/nextjs": "^7.98.0",
     "@totak/matomo-next": "1.8.1-patched",
