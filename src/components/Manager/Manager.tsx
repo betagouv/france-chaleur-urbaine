@@ -435,6 +435,9 @@ const Manager = () => {
                     '& .MuiDataGrid-columnHeaderTitleContainer': {
                       overflow: 'visible',
                     },
+                    '& .MuiDataGrid-virtualScroller': {
+                      overflowY: 'scroll!important',
+                    },
                     '& .MuiDataGrid-columnHeaderTitleContainerContent': {
                       flex: 1,
                       overflow: 'visible',
