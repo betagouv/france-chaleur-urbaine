@@ -129,6 +129,22 @@ const NetworkPanel = ({
                       : 'Non connu'}
                   </div>
                 </BoxContent>
+                <BoxContent>
+                  <div>
+                    <b>Contenu CO2</b>
+                    <HoverableIcon
+                      iconName="ri-information-fill"
+                      position="bottom-centered"
+                    >
+                      Émissions directes
+                    </HoverableIcon>
+                  </div>
+                  <div>
+                    {network['contenu CO2']
+                      ? `${network['contenu CO2'] * 1000} g CO2/kWh`
+                      : 'Non connu'}
+                  </div>
+                </BoxContent>
               </BlueBox>
             )}
             {(!displayBlocks || displayBlocks.includes('techniques')) && (
@@ -530,23 +546,39 @@ const NetworkPanel = ({
             Fedene Réseaux de chaleur et de froid avec le concours de
             l’association AMORCE, sous tutelle du service des données et études
             statistiques (SDES) du ministère de la transition écologique.
-            {!isCold ? (
+            {isCold ? (
+              <>
+                {' '}
+                Excepté pour les “Performances environnementales" : la source
+                est l’
+                <a
+                  href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Arrêté du 5 juillet 2024
+                </a>{' '}
+                (DPE) réalisé sur la base des données portant sur l'année 2022
+                ou sur une moyenne 2020-2021-2022
+                <br />
+                <br />
+              </>
+            ) : (
               <>
                 <br />
                 Excepté pour les éléments suivants :
                 <ul>
                   <li>
-                    "Performances environnementales" : la source est l'
+                    "Performances environnementales" : la source est l’
                     <a
-                      href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716"
+                      href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781"
                       target="_blank"
                       rel="noreferrer noopener"
                     >
-                      Arrêté du 16 mars 2023
+                      Arrêté du 5 juillet 2024
                     </a>{' '}
                     (DPE) réalisé sur la base des données portant sur l'année
-                    2021 ou sur une moyenne 2019-2020-2021 (en attente de
-                    parution du nouvel arrêté)
+                    2022 ou sur une moyenne 2020-2021-2022
                   </li>
                   <li>
                     le fluide caloporteur pour les réseaux utilisant différents
@@ -556,16 +588,6 @@ const NetworkPanel = ({
                     2022)
                   </li>
                 </ul>
-              </>
-            ) : (
-              <>
-                {' '}
-                Excepté pour les “Performances environnementales" : la source
-                est l'Arrêté du 16 mars 2023 (DPE) réalisé sur la base des
-                données données portant sur l'année 2021 ou sur une moyenne
-                2019-2020-2021 (en attente de parution du nouvel arrêté).
-                <br />
-                <br />
               </>
             )}
             <img

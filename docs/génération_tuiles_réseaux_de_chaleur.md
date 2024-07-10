@@ -20,6 +20,7 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres -c "COPY (
               'Gestionnaire', \"Gestionnaire\",
               'Identifiant reseau', \"Identifiant reseau\",
               'reseaux classes', \"reseaux classes\",
+              'contenu CO2', \"contenu CO2\",
               'contenu CO2 ACV', \"contenu CO2 ACV\",
               'nom_reseau', \"nom_reseau\",
               'livraisons_totale_MWh', \"livraisons_totale_MWh\",
