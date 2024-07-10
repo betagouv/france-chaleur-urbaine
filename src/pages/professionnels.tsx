@@ -172,8 +172,8 @@ const Professionnels = () => {
               <Image
                 src="/img/pro_picto_1.svg"
                 alt=""
-                width={270}
-                height={232}
+                width="270"
+                height="232"
                 priority
                 className="img-object-contain"
               />
@@ -191,8 +191,8 @@ const Professionnels = () => {
               <Image
                 src="/img/pro_picto_2.svg"
                 alt=""
-                width={270}
-                height={232}
+                width="270"
+                height="232"
                 priority
                 className="img-object-contain"
               />
@@ -209,8 +209,8 @@ const Professionnels = () => {
               <Image
                 src="/img/pro_picto_3.svg"
                 alt=""
-                width={270}
-                height={232}
+                width="270"
+                height="232"
                 priority
                 className="img-object-contain"
               />
@@ -268,8 +268,8 @@ const Professionnels = () => {
             <Box flex>
               <BulkEligibilityForm />
               <Image
-                width="405"
-                height="250"
+                width={405}
+                height={250}
                 alt=""
                 src="/img/carto-addresses.png"
               />
