@@ -2,7 +2,7 @@ import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
 import Icon from '@components/ui/Icon';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Table, type ColumnDef } from '@components/ui/Table';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
@@ -248,7 +248,7 @@ const Manager = () => {
     addOnClick();
   }, [addOnClick, page]);
 
-  const demandRowsParams: GridColDef<Demand>[] = [
+  const demandRowsParams: ColumnDef<Demand>[] = [
     {
       field: 'Statut',
       width: 300,
@@ -433,7 +433,7 @@ const Manager = () => {
           <TableContainer mapCollapsed={mapCollapsed}>
             <div ref={refManagerTable}>
               {filteredDemands.length > 0 ? (
-                <DataGrid
+                <Table
                   columns={demandRowsParams}
                   rows={filteredDemands}
                   autoHeight
@@ -458,16 +458,6 @@ const Manager = () => {
                     '& .MuiDataGrid-cell ': {
                       display: 'flex',
                       'align-items': 'center',
-                    },
-                    '& .MuiDataGrid-columnHeaders div[role=row]': {
-                      bgcolor: 'var(--background-default-grey)',
-                      'border-bottom': '1px solid #333333',
-                    },
-                    '& .MuiDataGrid-columnHeaders': {
-                      'border-bottom': '1px solid #333333',
-                    },
-                    '& .MuiDataGrid-columnHeader': {
-                      overflow: 'visible',
                     },
                   }}
                 />

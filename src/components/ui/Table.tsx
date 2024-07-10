@@ -1,43 +1,65 @@
-import { Table as DSFRTable } from '@codegouvfr/react-dsfr/Table';
-import type { TableProps as DSFRTableProps } from '@codegouvfr/react-dsfr/Table';
-import { ReactNode, useMemo } from 'react';
+import { Pagination } from '@codegouvfr/react-dsfr/Pagination';
+import {
+  DataGrid,
+  GridValidRowModel,
+  gridPageCountSelector,
+  gridPaginationModelSelector,
+  useGridApiContext,
+  useGridSelector,
+  type DataGridProps,
+  type GridColDef,
+} from '@mui/x-data-grid';
 
-export interface TableColumnDef<T> {
-  key: keyof T;
-  label: string;
-  render?: (row: any) => ReactNode;
-}
+export type ColumnDef<T extends GridValidRowModel> = GridColDef<T>;
 
-interface TableProps<T> {
-  columns: TableColumnDef<T>[];
-  data: T[];
-}
-
-function Table<T>({ columns, data, ...props }: TableProps<T>) {
-  const [headers, rows] = useMemo(() => {
-    return [
-      columns.map((c) => c.label),
-      data.map((obj) =>
-        columns.map((c) => {
-          return c.render ? c.render(obj[c.key]) : (obj[c.key] as ReactNode);
-        })
-      ),
-    ];
-  }, [columns, data]);
+export function CustomPagination() {
+  const apiRef = useGridApiContext();
+  const paginationModel = useGridSelector(apiRef, gridPaginationModelSelector);
+  const pageCount = useGridSelector(apiRef, gridPageCountSelector);
 
   return (
-    <DSFRTable headers={headers} data={rows} />
-    // TODO pagination
-
-    //   <Table
-    //   headers={columns}
-    //   data={filteredUsers}
-    //   rowKey="email"
-    //   pagination
-    //   paginationPosition="center"
-    //   page={page}
-    //   setPage={setPage}
-    // />
+    <Pagination
+      count={pageCount}
+      defaultPage={paginationModel.page + 1}
+      getPageLinkProps={(page) => ({
+        onClick: () => apiRef.current.setPage(page - 1),
+        href: '#',
+      })}
+      showFirstLast
+    />
   );
 }
-export default Table;
+
+export const Table = <T extends GridValidRowModel>({
+  sx,
+  style,
+  autoHeight = true,
+  ...props
+}: DataGridProps<T>) => {
+  return (
+    <DataGrid
+      style={{ width: '100%', ...style }}
+      autoHeight={autoHeight}
+      slots={
+        {
+          // TODO : add custom pagination when https://github.com/codegouvfr/react-dsfr/pull/273/commits is merged
+          // pagination: CustomPagination,
+        }
+      }
+      sx={{
+        '& .MuiDataGrid-columnHeaders div[role=row]': {
+          'background-color': 'var(--background-default-grey)',
+          'border-bottom': '1px solid #333333',
+        },
+        '& .MuiDataGrid-columnHeaders': {
+          borderBottom: '1px solid #333333',
+        },
+        '& .MuiDataGrid-columnHeader': {
+          overflow: 'visible',
+        },
+        ...sx,
+      }}
+      {...props}
+    />
+  );
+};
