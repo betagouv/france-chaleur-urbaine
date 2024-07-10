@@ -19,6 +19,10 @@ export const AddressAutocompleteGlobalStyle: any = createGlobalStyle` // TODO: W
     z-index: 200;
     background-color: var(--background-contrast-grey);
   }
+
+  [data-reach-combobox-option]:hover {
+    background-color: var(--background-contrast-grey-hover);
+  }
 `;
 
 export default AddressAutocompleteGlobalStyle;
