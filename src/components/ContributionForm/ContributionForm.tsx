@@ -63,7 +63,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
         .join(', '),
       Précisions: otherWish,
       'Nom gestionnaire': nomGestionnaireWish,
-      Date: dateWish,
+      'Date mise en service': dateWish,
     });
   };
 
@@ -207,7 +207,6 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
               required
               value={dateWish}
               onChange={(e) => setDateWish(e.target.value)}
-              type="date"
             />
           )}
         </>
