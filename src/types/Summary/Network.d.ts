@@ -4,6 +4,7 @@ export interface Network {
   Gestionnaire: string;
   'Identifiant reseau': string;
   has_trace: boolean;
+  'contenu CO2': number;
   'contenu CO2 ACV': number;
   nom_reseau: string;
   'Rend%': number;
