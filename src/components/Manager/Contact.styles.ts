@@ -18,4 +18,5 @@ export const EmailInfo = styled.div`
   color: #868e96;
   font-size: 13px;
   cursor: pointer;
+  text-wrap: nowrap;
 `;
