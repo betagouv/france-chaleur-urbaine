@@ -1,5 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { Combobox, ComboboxPopover } from '@reach/combobox';
+import { Combobox, ComboboxPopover } from '@components/ui/Combobox';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';

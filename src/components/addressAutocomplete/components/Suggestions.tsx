@@ -1,4 +1,4 @@
-import { ComboboxList, ComboboxOption } from '@reach/combobox';
+import { ComboboxList, ComboboxOption } from '@components/ui/Combobox';
 import { SuggestionItem } from 'src/types/Suggestions';
 
 type SuggestionListProps = {

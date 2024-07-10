@@ -8,7 +8,7 @@ import {
   ComboboxList,
   ComboboxOption,
   ComboboxPopover,
-} from '@reach/combobox';
+} from '@components/ui/Combobox';
 import debounce from '@utils/debounce';
 import { postFetchJSON } from '@utils/network';
 import { getUuid } from '@utils/random';

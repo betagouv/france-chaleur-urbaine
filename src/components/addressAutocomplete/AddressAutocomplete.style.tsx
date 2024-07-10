@@ -14,15 +14,6 @@ export const AddressAutocompleteGlobalStyle: any = createGlobalStyle` // TODO: W
     box-shadow: 0 0 5px rgb(0 0 0 / 74%);
     border-radius: .25rem .25rem 0 0;
   }
-
-  [data-reach-combobox-popover] {
-    z-index: 200;
-    background-color: var(--background-contrast-grey);
-  }
-
-  [data-reach-combobox-option]:hover {
-    background-color: var(--background-contrast-grey-hover);
-  }
 `;
 
 export default AddressAutocompleteGlobalStyle;
