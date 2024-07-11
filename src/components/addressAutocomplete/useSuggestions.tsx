@@ -1,5 +1,6 @@
+import { useIsMounted } from '@react-hookz/web';
 import debounce from '@utils/debounce';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useServices } from 'src/services';
 import { SuggestionItem } from 'src/types/Suggestions';
 
@@ -24,17 +25,13 @@ const useSuggestions = ({
 }: configProps) => {
   const [suggestions, setSuggestions] = useState<SuggestionItem[]>([]);
   const [status, setStatus] = useState<ValueOf<Status>>(Status.Idle);
-  // const mountedRef = useRef(true);
+  const isMounted = useIsMounted();
   const DIGITS_THRESHOLD = 3;
   const { suggestionService } = useServices();
   const debounceFetch = debounce(async (query: string) => {
     try {
       const searchTerm = query.trim();
-      if (
-        !searchTerm ||
-        // !mountedRef.current ||
-        searchTerm.length <= DIGITS_THRESHOLD
-      ) {
+      if (!searchTerm || !isMounted || searchTerm.length <= DIGITS_THRESHOLD) {
         return;
       }
       setStatus(Status.Loading);
@@ -57,11 +54,6 @@ const useSuggestions = ({
   const fetchSuggestions = (queryString: string) =>
     queryString.length >= minCharactersLength && debounceFetch(queryString);
 
-  // useEffect(() => {
-  //   return () => {
-  //     mountedRef.current = false;
-  //   };
-  // }, []);
   return {
     suggestions,
     status,
