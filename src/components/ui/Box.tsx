@@ -19,6 +19,7 @@ type StyleProps = {
   textColor?: CSSProperties['color'];
   fontWeight?: 'light' | 'regular' | 'bold' | 'heavy';
   textAlign?: CSSProperties['textAlign'];
+  textWrap?: CSSProperties['textWrap'];
   position?: CSSProperties['position'];
   borderRadius?: CSSProperties['borderRadius'];
   width?: CSSProperties['width'];
@@ -59,6 +60,7 @@ const StyledBox = styled.div<StyleProps>`
         : `var(--${textColor})`
       : undefined};
   text-align: ${({ textAlign }) => textAlign};
+  text-wrap: ${({ textWrap }) => textWrap};
   position: ${({ position }) => position};
   border-radius: ${({ borderRadius }) => borderRadius};
   width: ${({ width }) => width};
@@ -107,6 +109,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       fontSize={props.fontSize}
       textColor={props.textColor}
       textAlign={props.textAlign}
+      textWrap={props.textWrap}
       position={props.position}
       borderRadius={props.borderRadius}
       width={props.width}

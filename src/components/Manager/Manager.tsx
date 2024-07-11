@@ -1,6 +1,7 @@
 import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
-import Map from '@components/Map/Map';
+import Map from '@components/Map';
+import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { Table, type ColumnDef } from '@components/ui/Table';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -10,7 +11,6 @@ import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
 import { Demand } from 'src/types/Summary/Demand';
 import AdditionalInformation from './AdditionalInformation';
-import Addresse from './Addresse';
 import Comment from './Comment';
 import Contact from './Contact';
 import Contacted from './Contacted';
@@ -260,7 +260,6 @@ const Manager = () => {
     },
     {
       field: 'Prospect recontacté',
-      width: 100,
       sortable: false,
       align: 'center',
       renderCell: (params) => (
@@ -271,7 +270,7 @@ const Manager = () => {
     {
       field: 'Contact / Envoi de mails',
       headerName: 'Contact',
-      width: 250,
+      minWidth: 280,
       sortable: false,
       renderCell: (params) => (
         <Contact demand={params.row} updateDemand={updateDemand} />
@@ -294,9 +293,14 @@ const Manager = () => {
           </HoverableIcon>
         </ColHeader>
       ),
-      width: 250,
+      width: 320,
       sortable: false,
-      renderCell: (params) => <Addresse demand={params.row} />,
+      renderCell: ({ row: demand }) => (
+        <Box textWrap="pretty">
+          {demand.Adresse}
+          {demand['en PDP'] === 'Oui' && <Tag text="PDP" />}
+        </Box>
+      ),
     },
     {
       field: 'Date demandes',
@@ -308,6 +312,7 @@ const Manager = () => {
     {
       field: 'Type de chauffage',
       sortable: false,
+      width: 120,
       headerName: 'Type',
       renderCell: (params) => <Tag text={params.row.Structure} />,
     },
@@ -319,7 +324,7 @@ const Manager = () => {
     },
     {
       field: 'Distance au réseau',
-      sortable: false,
+      width: 120,
       renderHeader: () => (
         <ColHeader>
           Distance au réseau (m)
@@ -344,6 +349,7 @@ const Manager = () => {
     },
     {
       field: 'Identifiant réseau',
+      width: 80,
       sortable: false,
       headerName: 'ID réseau le plus proche',
     },
@@ -352,10 +358,12 @@ const Manager = () => {
       width: 250,
       sortable: false,
       headerName: 'Nom du réseau le plus proche',
+      renderCell: ({ row }) => <Box textWrap="pretty">{row['Nom réseau']}</Box>,
     },
     {
       field: 'Nb logements',
       sortable: false,
+      width: 120,
       headerName: 'Nb logements (lots)',
       renderCell: (params) => (
         <AdditionalInformation
@@ -369,6 +377,7 @@ const Manager = () => {
     {
       field: 'Conso gaz',
       sortable: false,
+      width: 120,
       headerName: 'Conso gaz (MWh)',
       renderCell: (params) => (
         <AdditionalInformation
@@ -381,8 +390,8 @@ const Manager = () => {
     },
     {
       field: 'Commentaires',
-      width: 280,
       sortable: false,
+      width: 280,
       headerName: 'Commentaires',
       renderCell: (params) => (
         <Comment demand={params.row} updateDemand={updateDemand} />
@@ -391,6 +400,7 @@ const Manager = () => {
     {
       field: 'Affecté à',
       sortable: false,
+      width: 150,
       renderHeader: () => (
         <ColHeader>
           Affecté à
@@ -430,41 +440,19 @@ const Manager = () => {
       />
       {demands.length > 0 ? (
         <ManagerContainer>
-          <TableContainer mapCollapsed={mapCollapsed}>
-            <div ref={refManagerTable}>
-              {filteredDemands.length > 0 ? (
-                <Table
-                  columns={demandRowsParams}
-                  rows={filteredDemands}
-                  autoHeight
-                  disableColumnMenu
-                  disableRowSelectionOnClick
-                  getRowHeight={() => 'auto'}
-                  getEstimatedRowHeight={() => 110}
-                  sx={{
-                    '&': {
-                      height: '80dvh!important',
-                    },
-                    '& .MuiDataGrid-columnHeaderTitleContainer': {
-                      overflow: 'visible',
-                    },
-                    '& .MuiDataGrid-virtualScroller': {
-                      overflowY: 'scroll!important',
-                    },
-                    '& .MuiDataGrid-columnHeaderTitleContainerContent': {
-                      flex: 1,
-                      overflow: 'visible',
-                    },
-                    '& .MuiDataGrid-cell ': {
-                      display: 'flex',
-                      'align-items': 'center',
-                    },
-                  }}
-                />
-              ) : (
-                <NoResult>Aucun résultat</NoResult>
-              )}
-            </div>
+          <TableContainer mapCollapsed={mapCollapsed} ref={refManagerTable}>
+            {filteredDemands.length > 0 ? (
+              <Table
+                columns={demandRowsParams}
+                rows={filteredDemands}
+                disableColumnMenu
+                disableRowSelectionOnClick
+                columnHeaderHeight={100}
+                rowHeight={88}
+              />
+            ) : (
+              <NoResult>Aucun résultat</NoResult>
+            )}
           </TableContainer>
           <MapContainer mapCollapsed={mapCollapsed}>
             <>

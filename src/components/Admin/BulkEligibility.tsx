@@ -39,7 +39,7 @@ const columns: ColumnDef<EligibilityDemand>[] = [
   },
   {
     field: 'download',
-    headerName: 'Telecharger',
+    headerName: 'Télécharger',
     renderCell: (params) => (
       <DownloadButton id={params.row.id} inError={params.row.in_error} />
     ),
@@ -64,14 +64,12 @@ const BulkEligibility = () => {
   const [eligibilityDemands, setEligibilityDemands] = useState<
     EligibilityDemand[]
   >([]);
-  //const [page, setPage] = useState(1);
 
   useEffect(() => {
     adminService.getEligibilityDemand().then(setEligibilityDemands);
   }, [adminService]);
 
   const filteredEligibilityDemands = useMemo(() => {
-    //setPage(1);
     return filter
       ? eligibilityDemands.filter((demand) =>
           demand.emails.some((email) => email.includes(filter.toLowerCase()))
@@ -118,27 +116,3 @@ const BulkEligibility = () => {
 };
 
 export default BulkEligibility;
-/*
-        <Table
-          data={filteredEligibilityDemands.map((demande) =>
-            Object.values(demande)
-          )}
-          rowKey="id"
-          pagination
-          paginationPosition="center"
-          page={page}
-          setPage={setPage}
-        />
-const headers = [
-  'id',
-  'emails',
-  'created_at',
-  'version',
-  'addresses_count',
-  'error_count',
-  'eligibile_count',
-  'in_error',
-  'download',
-  'map',
-];
-        */

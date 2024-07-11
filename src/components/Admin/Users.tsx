@@ -68,6 +68,7 @@ const Users = () => {
         columns={columns}
         rows={filteredUsers}
         getRowId={(row) => row.email}
+        autoHeight
         autosizeOnMount
         disableRowSelectionOnClick
       />

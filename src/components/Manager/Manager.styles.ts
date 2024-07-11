@@ -53,7 +53,6 @@ export const ManagerContainer = styled.div`
 `;
 
 export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
-  overflow: auto;
   width: 100%;
   @media (min-width: 992px) {
     width: ${({ mapCollapsed }) =>

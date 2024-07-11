@@ -52,18 +52,15 @@ export function CustomPagination({
 export const Table = <T extends GridValidRowModel>({
   sx,
   style,
-  autoHeight = true,
   pageSize = 10,
   paginationProps,
-  autoPageSize = false,
   columns,
   ...props
 }: DataGridProps<T> & AdditionalTableProps) => {
   return (
     <DataGrid
       style={{ width: '100%', ...style }}
-      autoHeight={autoHeight}
-      autoPageSize={autoPageSize}
+      disableVirtualization
       columns={columns.map((column) => ({
         ...column,
         renderHeader:
@@ -77,19 +74,24 @@ export const Table = <T extends GridValidRowModel>({
         pagination: () => <CustomPagination {...paginationProps} />,
       }}
       sx={{
+        // header
+        '& .MuiDataGrid-columnHeader, && .MuiDataGrid-filler': {
+          backgroundColor: 'var(--background-alt-grey)',
+          borderBottom: '2px solid #333333',
+        },
+
+        // fix tooltips in headers
+        '& .MuiDataGrid-columnHeaderTitleContainer, & .MuiDataGrid-columnHeaderTitleContainerContent':
+          {
+            overflow: 'visible',
+            fontWeight: 'bold',
+          },
+
+        // cell
         '& .MuiDataGrid-cell': {
           display: 'flex',
           alignItems: 'center',
-        },
-        '& .MuiDataGrid-columnHeaders div[role=row]': {
-          backgroundColor: 'var(--background-default-grey)',
-          borderBottom: '1px solid #333333',
-        },
-        '& .MuiDataGrid-columnHeaders': {
-          borderBottom: '1px solid #333333',
-        },
-        '& .MuiDataGrid-columnHeader': {
-          overflow: 'visible',
+          lineHeight: '20px',
         },
         ...sx,
       }}
