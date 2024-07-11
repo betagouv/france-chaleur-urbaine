@@ -1,60 +1,54 @@
-import {
-  DataGrid,
-  GridCellParams,
-  GridRenderCellParams,
-} from '@mui/x-data-grid';
 import { Input } from '@codegouvfr/react-dsfr/Input';
+import Box from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
+import { Table, type ColumnDef } from '@components/ui/Table';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { EligibilityDemand } from 'src/types/EligibilityDemand';
 import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';
-import Heading from '@components/ui/Heading';
-import Box from '@components/ui/Box';
 
-const columns = [
+const columns: ColumnDef<EligibilityDemand>[] = [
   { field: 'id', headerName: 'Id' },
   {
     field: 'emails',
     headerName: 'Emails',
-    valueGetter: (params: GridCellParams) =>
-      (params.row as EligibilityDemand).emails.join(', '),
+    minWidth: 200,
+    valueGetter: (value) => (value as string[]).join(', '),
   },
   {
     field: 'created_at',
     headerName: 'Date',
-    valueGetter: (params: GridCellParams) =>
-      new Date(
-        (params.row as EligibilityDemand).created_at
-      ).toLocaleDateString(),
+    type: 'date',
+    valueGetter: (value) => new Date(value),
   },
   { field: 'version', headerName: 'Version' },
-  { field: 'addresses_count', headerName: "Nombre d'adresses" },
-  { field: 'error_count', headerName: "Nombre d'erreurs" },
-  { field: 'eligibile_count', headerName: "Nombre d'adresses éligibles" },
+  { field: 'addresses_count', headerName: "Nombre d'adresses", type: 'number' },
+  { field: 'error_count', headerName: "Nombre d'erreurs", type: 'number' },
+  {
+    field: 'eligibile_count',
+    headerName: "Nombre d'adresses éligibles",
+    type: 'number',
+  },
   {
     field: 'in_error',
     headerName: 'En erreur',
-    valueGetter: (params: GridCellParams) =>
-      (params.row as EligibilityDemand).in_error ? 'Oui' : 'Non',
+    valueGetter: (value) => (value ? 'Oui' : 'Non'),
   },
   {
     field: 'download',
     headerName: 'Telecharger',
-    renderCell: (params: GridRenderCellParams) => (
-      <DownloadButton
-        id={(params.row as EligibilityDemand).id}
-        inError={(params.row as EligibilityDemand).in_error}
-      />
+    renderCell: (params) => (
+      <DownloadButton id={params.row.id} inError={params.row.in_error} />
     ),
   },
   {
     field: 'map',
     headerName: 'Carte',
-    renderCell: (params: GridRenderCellParams) => (
-      <Link href={`/carte?id=${(params.row as EligibilityDemand).id}`}>
+    renderCell: (params) => (
+      <Link href={`/carte?id=${params.row.id}`}>
         <button>
           <Icon name="ri-road-map-line" size="lg" />
         </button>
@@ -85,22 +79,22 @@ const BulkEligibility = () => {
       : eligibilityDemands;
   }, [eligibilityDemands, filter]);
 
+  const totalDemands = filteredEligibilityDemands
+    .filter((demand) => !demand.in_error)
+    .reduce((acc, value) => acc + value.addresses_count - value.error_count, 0);
+  const totalTestedAddresses = filteredEligibilityDemands
+    .filter((demand) => !demand.in_error)
+    .reduce((acc, value) => acc + value.eligibile_count, 0);
   return (
     <>
       <TableContainer>
         <Box display="flex">
           <Heading as="h3" mx="2w">
-            {`Demandes d'éligibilités - ${filteredEligibilityDemands
-              .filter((demand) => !demand.in_error)
-              .reduce(
-                (acc, value) => acc + value.addresses_count - value.error_count,
-                0
-              )} adresses testées - ${filteredEligibilityDemands
-              .filter((demand) => !demand.in_error)
-              .reduce(
-                (acc, value) => acc + value.eligibile_count,
-                0
-              )} adresses éligibles`}
+            {`Demandes d'éligibilités - ${totalDemands.toLocaleString(
+              'fr-FR'
+            )} adresses testées - ${totalTestedAddresses.toLocaleString(
+              'fr-FR'
+            )} adresses éligibles`}
           </Heading>
           <Input
             label="Email"
@@ -111,7 +105,12 @@ const BulkEligibility = () => {
             }}
           />
         </Box>
-        <DataGrid columns={columns} rows={filteredEligibilityDemands} />
+        <Table
+          columns={columns}
+          rows={filteredEligibilityDemands}
+          disableAutosize
+          getRowHeight={() => 'auto'}
+        />
         {filteredEligibilityDemands.length === 0 && <p>Pas de résultat</p>}
       </TableContainer>
     </>
