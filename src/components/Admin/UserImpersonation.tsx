@@ -1,13 +1,13 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import Icon from '@components/ui/Icon';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import Heading from '@components/ui/Heading';
-import { fetchJSON, postFetchJSON } from '@utils/network';
-import { useEffect, useMemo, useState } from 'react';
-import Text from '@components/ui/Text';
-import Box from '@components/ui/Box';
-import { normalize } from '@utils/strings';
 import Tag from '@codegouvfr/react-dsfr/Tag';
+import Box from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
+import Text from '@components/ui/Text';
+import { fetchJSON, postFetchJSON } from '@utils/network';
+import { normalize } from '@utils/strings';
+import { useEffect, useMemo, useState } from 'react';
 
 interface TagOption {
   label: string;
@@ -41,6 +41,7 @@ const UserImpersonation = () => {
       {
         label: 'Sélectionner les tags gestionnaires',
         value: '',
+        searchValue: '',
         disabled: true,
       },
       ...allTagsGestionnaires,
@@ -93,7 +94,9 @@ const UserImpersonation = () => {
         <Box className="fr-col-xl-4 fr-col-md-6">
           <Select
             label="Tags gestionnaires"
-            options={selectTagsOptions}
+            options={selectTagsOptions.map(
+              ({ searchValue, ...option }) => option
+            )}
             nativeSelectProps={{
               onChange: (e) =>
                 setSelectedTagsGestionnaires([
