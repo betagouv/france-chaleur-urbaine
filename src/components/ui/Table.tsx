@@ -13,6 +13,7 @@ import {
   type DataGridProps,
   type GridColDef,
 } from '@mui/x-data-grid';
+import { ColHeader } from './Table.style';
 
 export type ColumnDef<T extends GridValidRowModel> = GridColDef<T>;
 
@@ -36,7 +37,7 @@ export function CustomPagination({
 
   return (
     <Pagination
-      className={`${fr.cx('fr-mt-3w')} ${className ?? ''}`}
+      className={`${fr.cx('fr-mt-3w', 'fr-mx-auto')} ${className ?? ''}`}
       count={pageCount}
       defaultPage={paginationModel.page + 1}
       getPageLinkProps={(page) => ({
@@ -55,6 +56,7 @@ export const Table = <T extends GridValidRowModel>({
   pageSize = 10,
   paginationProps,
   autoPageSize = false,
+  columns,
   ...props
 }: DataGridProps<T> & AdditionalTableProps) => {
   return (
@@ -62,6 +64,12 @@ export const Table = <T extends GridValidRowModel>({
       style={{ width: '100%', ...style }}
       autoHeight={autoHeight}
       autoPageSize={autoPageSize}
+      columns={columns.map((column) => ({
+        ...column,
+        renderHeader:
+          column.renderHeader ??
+          (() => <ColHeader>{column?.headerName}</ColHeader>),
+      }))}
       initialState={{
         pagination: { paginationModel: { pageSize } },
       }}
@@ -69,6 +77,10 @@ export const Table = <T extends GridValidRowModel>({
         pagination: () => <CustomPagination {...paginationProps} />,
       }}
       sx={{
+        '& .MuiDataGrid-cell': {
+          display: 'flex',
+          alignItems: 'center',
+        },
         '& .MuiDataGrid-columnHeaders div[role=row]': {
           'background-color': 'var(--background-default-grey)',
           'border-bottom': '1px solid #333333',
