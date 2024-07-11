@@ -16,24 +16,26 @@ import {
 
 export type ColumnDef<T extends GridValidRowModel> = GridColDef<T>;
 
+type CustomPaginationProps = Omit<
+  PaginationProps,
+  'count' | 'defaultPage' | 'getPageLinkProps'
+>;
+
 export type AdditionalTableProps = {
-  paginationProps?: Omit<
-    PaginationProps,
-    'count' | 'defaultPage' | 'getPageLinkProps'
-  >;
+  paginationProps?: CustomPaginationProps;
 };
 
 export function CustomPagination({
   className,
   ...props
-}: AdditionalTableProps['paginationProps']) {
+}: CustomPaginationProps) {
   const apiRef = useGridApiContext();
   const paginationModel = useGridSelector(apiRef, gridPaginationModelSelector);
   const pageCount = useGridSelector(apiRef, gridPageCountSelector);
 
   return (
     <Pagination
-      className={fr.cx('fr-mt-3w', className)}
+      className={`${fr.cx('fr-mt-3w')} ${className ?? ''}`}
       count={pageCount}
       defaultPage={paginationModel.page + 1}
       getPageLinkProps={(page) => ({

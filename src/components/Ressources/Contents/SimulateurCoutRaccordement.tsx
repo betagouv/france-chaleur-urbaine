@@ -111,22 +111,20 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
           <Box mb="3w">pour une longueur de branchement de 50 m</Box>
           <Select
             label="Type de bâtiment"
-            options={
-              [
-                {
-                  label: 'Résidentiel',
-                  value: 'residentiel',
-                },
-                {
-                  label: 'Tertiaire',
-                  value: 'tertiaire',
-                },
-              ] as const
-            }
+            options={[
+              {
+                label: 'Résidentiel',
+                value: 'residentiel',
+              },
+              {
+                label: 'Tertiaire',
+                value: 'tertiaire',
+              },
+            ]}
             nativeSelectProps={{
               value: formState.typeBatiment,
               onChange: (e) => {
-                updateState('typeBatiment', e.target.value);
+                updateState('typeBatiment', e.target.value as TypeBatiment);
                 updateState(
                   e.target.value === 'residentiel' ? 'nbLogements' : 'surface',
                   undefined
