@@ -1,10 +1,9 @@
-import { articles } from '@data/contents';
-// import { Icon, Link } from '@codegouvfr/react-dsfr';
-import Article from './Article';
-import { Articles, RemainingArticles } from './LastArticles.styles';
-import Link from 'next/link';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
+import { articles } from '@data/contents';
+import Link from 'next/link';
+import Article from './Article';
+import { Articles, RemainingArticles } from './LastArticles.styles';
 
 const LastArticles = () => {
   return (
