@@ -1,4 +1,8 @@
-import { Pagination } from '@codegouvfr/react-dsfr/Pagination';
+import { fr } from '@codegouvfr/react-dsfr';
+import {
+  Pagination,
+  type PaginationProps,
+} from '@codegouvfr/react-dsfr/Pagination';
 import {
   DataGrid,
   GridValidRowModel,
@@ -12,20 +16,31 @@ import {
 
 export type ColumnDef<T extends GridValidRowModel> = GridColDef<T>;
 
-export function CustomPagination() {
+export type AdditionalTableProps = {
+  paginationProps?: Omit<
+    PaginationProps,
+    'count' | 'defaultPage' | 'getPageLinkProps'
+  >;
+};
+
+export function CustomPagination({
+  className,
+  ...props
+}: AdditionalTableProps['paginationProps']) {
   const apiRef = useGridApiContext();
   const paginationModel = useGridSelector(apiRef, gridPaginationModelSelector);
   const pageCount = useGridSelector(apiRef, gridPageCountSelector);
 
   return (
     <Pagination
+      className={fr.cx('fr-mt-3w', className)}
       count={pageCount}
       defaultPage={paginationModel.page + 1}
       getPageLinkProps={(page) => ({
         onClick: () => apiRef.current.setPage(page - 1),
         href: '#',
       })}
-      showFirstLast
+      {...props}
     />
   );
 }
@@ -34,18 +49,16 @@ export const Table = <T extends GridValidRowModel>({
   sx,
   style,
   autoHeight = true,
+  paginationProps,
   ...props
-}: DataGridProps<T>) => {
+}: DataGridProps<T> & AdditionalTableProps) => {
   return (
     <DataGrid
       style={{ width: '100%', ...style }}
       autoHeight={autoHeight}
-      slots={
-        {
-          // TODO : add custom pagination when https://github.com/codegouvfr/react-dsfr/pull/273/commits is merged
-          // pagination: CustomPagination,
-        }
-      }
+      slots={{
+        pagination: () => <CustomPagination {...paginationProps} />,
+      }}
       sx={{
         '& .MuiDataGrid-columnHeaders div[role=row]': {
           'background-color': 'var(--background-default-grey)',

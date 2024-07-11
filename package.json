@@ -37,7 +37,7 @@
     "prebuild": "only-include-used-icons"
   },
   "dependencies": {
-    "@codegouvfr/react-dsfr": "^1.9.21",
+    "@codegouvfr/react-dsfr": "^1.9.25",
     "@commander-js/extra-typings": "^11.1.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
