@@ -82,8 +82,8 @@ export const Table = <T extends GridValidRowModel>({
           alignItems: 'center',
         },
         '& .MuiDataGrid-columnHeaders div[role=row]': {
-          'background-color': 'var(--background-default-grey)',
-          'border-bottom': '1px solid #333333',
+          backgroundColor: 'var(--background-default-grey)',
+          borderBottom: '1px solid #333333',
         },
         '& .MuiDataGrid-columnHeaders': {
           borderBottom: '1px solid #333333',
