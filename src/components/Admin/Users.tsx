@@ -56,7 +56,7 @@ const Users = () => {
         </Heading>
 
         <Input
-          label="Email"
+          label=""
           nativeInputProps={{
             placeholder: 'Email',
             value: filter,
@@ -73,21 +73,24 @@ const Users = () => {
         disableRowSelectionOnClick
       />
       {filteredUsers.length === 0 && <p>Pas de résultat</p>}
-      {exporting ? (
-        <Oval height={40} width={40} />
-      ) : (
-        <Button
-          onClick={() => {
-            setExporting(true);
-            adminService.exportObsoleteUsers().finally(() => {
-              setExporting(false);
-            });
-          }}
-        >
-          Exporter la liste des comptes obsolètes (connexion de plus de 6 mois
-          ou nulle)
-        </Button>
-      )}
+
+      <Box mt="3w">
+        {exporting ? (
+          <Oval height={40} width={40} />
+        ) : (
+          <Button
+            onClick={() => {
+              setExporting(true);
+              adminService.exportObsoleteUsers().finally(() => {
+                setExporting(false);
+              });
+            }}
+          >
+            Exporter la liste des comptes obsolètes (connexion de plus de 6 mois
+            ou nulle)
+          </Button>
+        )}
+      </Box>
     </TableContainer>
   );
 };

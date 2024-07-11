@@ -95,7 +95,7 @@ const BulkEligibility = () => {
             )} adresses éligibles`}
           </Heading>
           <Input
-            label="Email"
+            label=""
             nativeInputProps={{
               placeholder: 'Email',
               value: filter,
