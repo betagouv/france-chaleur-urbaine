@@ -23,6 +23,7 @@ type CustomPaginationProps = Omit<
 
 export type AdditionalTableProps = {
   paginationProps?: CustomPaginationProps;
+  pageSize?: number;
 };
 
 export function CustomPagination({
@@ -51,13 +52,19 @@ export const Table = <T extends GridValidRowModel>({
   sx,
   style,
   autoHeight = true,
+  pageSize = 10,
   paginationProps,
+  autoPageSize = false,
   ...props
 }: DataGridProps<T> & AdditionalTableProps) => {
   return (
     <DataGrid
       style={{ width: '100%', ...style }}
       autoHeight={autoHeight}
+      autoPageSize={autoPageSize}
+      initialState={{
+        pagination: { paginationModel: { pageSize } },
+      }}
       slots={{
         pagination: () => <CustomPagination {...paginationProps} />,
       }}
