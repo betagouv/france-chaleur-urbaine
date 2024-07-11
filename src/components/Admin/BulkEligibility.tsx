@@ -11,7 +11,7 @@ import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';
 
 const columns: ColumnDef<EligibilityDemand>[] = [
-  { field: 'id', headerName: 'Id' },
+  { field: 'id', headerName: 'Id', minWidth: 300 },
   {
     field: 'emails',
     headerName: 'Emails',
@@ -106,7 +106,7 @@ const BulkEligibility = () => {
         <Table
           columns={columns}
           rows={filteredEligibilityDemands}
-          disableAutosize
+          autoHeight
           getRowHeight={() => 'auto'}
         />
         {filteredEligibilityDemands.length === 0 && <p>Pas de résultat</p>}

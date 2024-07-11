@@ -75,10 +75,11 @@ export const Table = <T extends GridValidRowModel>({
       }}
       sx={{
         // header
-        '& .MuiDataGrid-columnHeader, && .MuiDataGrid-filler': {
-          backgroundColor: 'var(--background-alt-grey)',
-          borderBottom: '2px solid #333333',
-        },
+        '& .MuiDataGrid-columnHeader, & .MuiDataGrid-columnHeaders .MuiDataGrid-filler':
+          {
+            backgroundColor: 'var(--background-alt-grey)',
+            borderBottom: '2px solid #333333',
+          },
 
         // fix tooltips in headers
         '& .MuiDataGrid-columnHeaderTitleContainer, & .MuiDataGrid-columnHeaderTitleContainerContent':
