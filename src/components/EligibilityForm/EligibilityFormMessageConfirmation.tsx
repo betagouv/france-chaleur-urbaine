@@ -1,8 +1,8 @@
-import MarkdownWrapper from '@components/MarkdownWrapper';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { Input } from '@codegouvfr/react-dsfr/Input';
+import MarkdownWrapper from '@components/MarkdownWrapper';
 import { updateAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { AddressDataType } from 'src/types/AddressData';
@@ -124,9 +124,7 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
                 options={choices.map((choice) => ({
                   label: choice,
                   nativeInputProps: {
-                    required: true, // FIXME vérifier que chaque checkbox n'est pas obligatoire..
-                    checked: true,
-                    onClick: (e) => answer(choice, (e.target as any).value),
+                    onClick: (e) => answer(choice, (e.target as any).checked),
                   },
                 }))}
               />
@@ -134,8 +132,8 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
                 <Input
                   label=""
                   nativeInputProps={{
-                    required: true,
                     value: other,
+                    required: true,
                     placeholder: 'Veuillez préciser',
                     onChange: (e) => setOther(e.target.value),
                   }}
