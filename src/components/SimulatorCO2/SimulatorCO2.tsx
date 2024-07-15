@@ -1,4 +1,6 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import Box, { ResponsiveRow } from '@components/ui/Box';
+import Text from '@components/ui/Text';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
   TypeEnergy,
@@ -26,8 +28,6 @@ import {
   SmallResult,
   SurfSelect,
 } from './SimulatorCO2.style';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Text from '@components/ui/Text';
 
 const numberToString = (num: number, precision = 0) =>
   `${parseFloat(num.toFixed(precision))}`.replace('.', ',');
@@ -93,9 +93,14 @@ const SimulatorCO2: React.FC<{
         <Input
           label=""
           nativeInputProps={{
+            value: conso || '',
             type: 'number',
             placeholder: data.label.conso,
-            onChange: (e) => setConso(parseFloat(e.target.value)),
+            onChange: (e) => {
+              setConso(parseFloat(e.target.value));
+              setSurf(0);
+              setLog(0);
+            },
           }}
         />
       </fieldset>
@@ -104,9 +109,14 @@ const SimulatorCO2: React.FC<{
         <Input
           label=""
           nativeInputProps={{
+            value: surf || '',
             type: 'number',
             placeholder: data.label.surf,
-            onChange: (e) => setSurf(parseFloat(e.target.value)),
+            onChange: (e) => {
+              setSurf(parseFloat(e.target.value));
+              setConso(0);
+              setLog(0);
+            },
           }}
         />
       </fieldset>
@@ -115,9 +125,14 @@ const SimulatorCO2: React.FC<{
         <Input
           label=""
           nativeInputProps={{
+            value: log || '',
             type: 'number',
             placeholder: data.label.log,
-            onChange: (e) => setLog(parseFloat(e.target.value)),
+            onChange: (e) => {
+              setLog(parseFloat(e.target.value));
+              setSurf(0);
+              setConso(0);
+            },
           }}
         />
       </fieldset>
