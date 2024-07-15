@@ -8,12 +8,12 @@ export {
 } from '@reach/combobox';
 
 export const ComboboxPopover = styled(ReachComboboxPopover)`
-  & [data-reach-combobox-popover] {
+  &[data-reach-combobox-popover] {
     z-index: 200;
     background-color: var(--background-contrast-grey);
   }
 
-  & [data-reach-combobox-option]:hover {
+  [data-reach-combobox-option]:hover {
     background-color: var(--background-contrast-grey-hover);
   }
 `;
