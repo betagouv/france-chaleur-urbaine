@@ -5,7 +5,7 @@ const statistics = {
   networks: '810',
   heatPercent: '93',
   connectionPercent: '24',
-  iFrameIntegration: '58',
+  iFrameIntegration: '59',
   lastActu: '8 juillet 2024',
 };
 
