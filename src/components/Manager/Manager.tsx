@@ -4,11 +4,20 @@ import Map from '@components/Map';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { Table, type ColumnDef } from '@components/ui/Table';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { MapRef } from 'react-map-gl/maplibre';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
+import { Point } from 'src/types/Point';
 import { Demand } from 'src/types/Summary/Demand';
 import AdditionalInformation from './AdditionalInformation';
 import Comment from './Comment';
@@ -26,8 +35,6 @@ import {
 import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
-
-const rowPerPage: number = 10;
 
 type SortParamType = {
   key: keyof Demand;
@@ -70,155 +77,96 @@ const getSortBy = (arr: Demand[]) => (sort: SortParamType) => {
 
 const defaultSort: SortParamType = { key: 'Date demandes', order: 'desc' };
 
+type MapCenterLocation = {
+  center: Point;
+  zoom: number;
+};
+
 const Manager = () => {
   const { demandsService } = useServices();
-  const [page, setPage] = useState(1);
+  const tableApiRef = useGridApiRef();
+  const mapRef = useRef<MapRef>() as MutableRefObject<MapRef>;
+
   const [loading, setLoading] = useState(true);
-  const [isFirstInit, setIsFirstInit] = useState<boolean>(true);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
   const [sort] = useState<SortParamType>(defaultSort); //setSort
-  const refManagerTable: null | { current: any } = useRef(null);
-  const [centerRow, setCenterRow] = useState<string>();
 
   const [mapCollapsed, setMapCollapsed] = useState(false);
   const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
-  const [centerPin, setCenterPin] = useState<[number, number]>();
-  const [firstCenterPin, setFirstCenterPin] = useState<[number, number]>();
-  const [initialZoom, setInitialZoom] = useState<number>(8);
+  const [mapCenterLocation, setMapCenterLocation] =
+    useState<MapCenterLocation>();
 
-  const setMapCenter = (pin: [number, number]) => {
-    setCenterPin(pin);
-    setInitialZoom(16);
-  };
-
-  const highlightPin = useCallback((id: string) => {
-    setMapPins((currentMapPins) => {
-      const newMapPins: MapMarkerInfos[] = currentMapPins;
-      newMapPins.map((pin: MapMarkerInfos) => {
-        if (pin.id == id) {
-          pin.color = 'red';
-          setMapCenter([pin.longitude, pin.latitude]);
-        } else if (pin.color != '#4550e5') {
-          pin.color = '#4550e5';
-        }
-      });
-      return newMapPins;
-    });
-  }, []);
-
-  const highlightRow = useCallback(
-    (id: string) => {
-      if (refManagerTable.current) {
-        const rows: NodeList =
-          refManagerTable.current.querySelectorAll('tbody tr');
-        if (rows && rows.length > 0) {
-          let matchingRow: any | undefined;
-          rows.forEach((row: any) => {
-            row.style.removeProperty('background-color');
-            if (Object.values(row as Node)[0].key) {
-              const fileNumber = Object.values(row as Node)[0].key;
-              if (id == fileNumber) {
-                matchingRow = row;
-                return;
-              }
-            }
-          });
-          if (matchingRow) {
-            matchingRow.style.backgroundColor = '#cfcfcf';
-          } else {
-            //Highlight in another page
-            for (let i = 0; i < filteredDemands.length; i += 1) {
-              if (
-                filteredDemands[i] &&
-                id == filteredDemands[i]['N° de dossier']
-              ) {
-                const newPage = Math.floor(i / rowPerPage) + 1;
-                setCenterRow(id);
-                setPage(newPage);
-                break;
-              }
-            }
-          }
-        }
-      }
-    },
-    [filteredDemands]
-  );
-
-  const highlight = useCallback(
-    (id: string) => {
-      highlightPin(id);
-      highlightRow(id);
-    },
-    [highlightPin, highlightRow]
-  );
-
-  const addOnClick = useCallback(() => {
-    if (refManagerTable.current) {
-      const rows = refManagerTable.current.querySelectorAll('tbody tr');
-      if (rows && rows.length > 0) {
-        rows.forEach((row: Node) => {
-          if (Object.values(row)[0].key) {
-            const fileNumber = Object.values(row)[0].key;
-            const matchingDemand: any | undefined = demands.find(
-              (demand: any) => {
-                if (demand['N° de dossier'] == fileNumber) return demand;
-              }
-            );
-            if (matchingDemand) {
-              row.addEventListener('click', () => {
-                highlight(matchingDemand['N° de dossier']);
-              });
-            }
-          }
+  useEffect(() => {
+    (async () => {
+      try {
+        const demands = await demandsService.fetch();
+        setDemands(demands);
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
         });
-        setIsFirstInit(false);
       }
-    }
-  }, [demands, highlight]);
+    })();
+  }, [demandsService]);
 
-  const onUpdateMapPins = useCallback(() => {
-    const addressList: MapMarkerInfos[] = [];
-    let firstDemand: any;
-    if (filteredDemands) {
-      filteredDemands.forEach((demand: any) => {
-        if (demand.Latitude && demand.Longitude) {
-          !firstDemand && (firstDemand = demand);
-          addressList.push({
-            id: demand['N° de dossier'],
-            latitude: demand.Latitude,
-            longitude: demand.Longitude,
-            popup: true,
-            popupContent: demand.Adresse,
-            onClickAction: highlight,
-          });
-        }
-      });
-    }
-    setMapPins(addressList);
-    if (isFirstInit) {
-      addOnClick();
-      if (firstDemand) {
-        setFirstCenterPin([firstDemand.Longitude, firstDemand.Latitude]);
+  const highlightPin = useCallback(
+    (selectedPinId: string) => {
+      setMapPins((currentMapPins) => [
+        ...currentMapPins.map((pin) => ({
+          ...pin,
+          color: pin.id == selectedPinId ? 'red' : '#4550e5',
+        })),
+      ]);
+    },
+    [setMapPins]
+  );
+
+  // will highlight the pin, center on it and select the row in the table
+  const onMapPinClick = useCallback(
+    (demandId: string) => {
+      highlightPin(demandId);
+
+      tableApiRef.current.setRowSelectionModel([demandId]);
+
+      const pageSize =
+        tableApiRef.current.state.pagination.paginationModel.pageSize;
+      const rowIndex = tableApiRef.current.getSortedRowIds().indexOf(demandId);
+      const pageNumber = Math.floor(rowIndex / pageSize);
+      tableApiRef.current.setPage(pageNumber);
+    },
+    [highlightPin, tableApiRef]
+  );
+
+  // will highlight the pin, center on it and select the row in the table
+  const onRowSelection = useCallback(
+    (rows: GridRowSelectionModel) => {
+      const selectedId = rows[0] as string;
+      highlightPin(selectedId);
+      const selectedDemand = filteredDemands.find(
+        (demand) => demand.id === selectedId
+      );
+      // update the view after the pin has been highlighted
+      if (selectedDemand) {
+        setMapCenterLocation({
+          center: [selectedDemand.Longitude, selectedDemand.Latitude],
+          zoom: 16,
+        });
       }
-    }
-  }, [filteredDemands, isFirstInit, highlight, addOnClick]);
+    },
+    [highlightPin, filteredDemands, mapRef]
+  );
 
   const onFilterUpdate = useCallback(
     (demands: Demand[]) => {
       const sortedDemands = getSortBy(demands)(sort);
       setFilteredDemands(sortedDemands);
+      if (tableApiRef.current?.setPage) {
+        tableApiRef.current.setPage(0);
+      }
     },
     [sort]
   );
-
-  useEffect(() => {
-    demandsService.fetch().then((values) => {
-      setDemands(values);
-      setLoading(false);
-    });
-  }, [demandsService]);
 
   const updateDemand = useCallback(
     async (demandId: string, demand: Partial<Demand>) => {
@@ -232,21 +180,31 @@ const Manager = () => {
     [demands, demandsService]
   );
 
+  const refreshMapPins = useCallback(() => {
+    const addressList = filteredDemands.map<MapMarkerInfos>((demand) => ({
+      id: demand.id,
+      latitude: demand.Latitude,
+      longitude: demand.Longitude,
+      popup: true,
+      popupContent: demand.Adresse,
+      onClickAction: onMapPinClick,
+    }));
+    setMapPins(addressList);
+
+    // center on first demand
+    if (addressList[0]) {
+      setMapCenterLocation({
+        center: [addressList[0].longitude, addressList[0].latitude],
+        zoom: 8,
+      });
+    }
+  }, [filteredDemands]);
+
   useEffect(() => {
     if (filteredDemands && filteredDemands.length > 0) {
-      onUpdateMapPins();
+      refreshMapPins();
     }
-  }, [filteredDemands, onUpdateMapPins]);
-
-  useEffect(() => {
-    if (centerRow) {
-      highlight(centerRow);
-    }
-  }, [highlight, centerRow]);
-
-  useEffect(() => {
-    addOnClick();
-  }, [addOnClick, page]);
+  }, [filteredDemands, refreshMapPins]);
 
   const demandRowsParams: ColumnDef<Demand>[] = [
     {
@@ -433,22 +391,20 @@ const Manager = () => {
 
   return (
     <Container>
-      <ManagerHeader
-        demands={demands}
-        setFilteredDemands={onFilterUpdate}
-        setPage={setPage}
-      />
+      <ManagerHeader demands={demands} setFilteredDemands={onFilterUpdate} />
       {demands.length > 0 ? (
         <ManagerContainer>
-          <TableContainer mapCollapsed={mapCollapsed} ref={refManagerTable}>
+          <TableContainer mapCollapsed={mapCollapsed}>
             {filteredDemands.length > 0 ? (
               <Table
+                apiRef={tableApiRef}
                 columns={demandRowsParams}
                 rows={filteredDemands}
                 disableColumnMenu
-                disableRowSelectionOnClick
                 columnHeaderHeight={100}
                 rowHeight={88}
+                onRowSelectionModelChange={onRowSelection}
+                hideFooterSelectedRowCount
               />
             ) : (
               <NoResult>Aucun résultat</NoResult>
@@ -476,8 +432,8 @@ const Manager = () => {
                 <Map
                   noPopup
                   withoutLogo
-                  initialCenter={centerPin ? centerPin : firstCenterPin}
-                  initialZoom={initialZoom}
+                  initialCenter={mapCenterLocation?.center}
+                  initialZoom={mapCenterLocation?.zoom}
                   initialMapConfiguration={createMapConfiguration({
                     reseauxDeChaleur: {
                       show: true,
@@ -487,6 +443,7 @@ const Manager = () => {
                   })}
                   pinsList={mapPins}
                   geolocDisabled
+                  mapRef={mapRef}
                 />
               )}
             </>

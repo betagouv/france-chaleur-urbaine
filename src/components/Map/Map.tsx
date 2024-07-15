@@ -22,7 +22,14 @@ import { fetchJSON } from '@utils/network';
 import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { MapLayerMouseEvent } from 'react-map-gl';
 import { useServices } from 'src/services';
 import {
@@ -177,6 +184,7 @@ const Map = ({
   geolocDisabled,
   withFCUAttribution,
   persistViewStateInURL,
+  mapRef: mapRefParam,
 }: {
   withoutLogo?: boolean;
   initialMapConfiguration?: MapConfiguration;
@@ -193,11 +201,12 @@ const Map = ({
   setProMode?: (proMode: boolean) => void;
   popupType?: MapPopupType;
   pinsList?: MapMarkerInfos[];
-  initialCenter?: [number, number];
+  initialCenter?: Point;
   initialZoom?: number;
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
+  mapRef?: MutableRefObject<MapRef>;
 }) => {
   const router = useRouter();
 
@@ -248,6 +257,13 @@ const Map = ({
   }, [mapRef.current, legendCollapsed]);
 
   const [mapState, setMapState] = useState<'pending' | 'loaded'>('pending');
+
+  // exports the mapRef
+  useEffect(() => {
+    if (mapRefParam && mapRef.current) {
+      mapRefParam.current = mapRef.current;
+    }
+  }, [mapRef.current]);
 
   useEffect(() => {
     if (setProMode) {
@@ -693,18 +709,12 @@ const Map = ({
     }
   }, [mapState, mapRef, mapConfiguration]);
 
+  // FIXME pourquoi on doit passer par un setState ici ?
   useEffect(() => {
     if (pinsList) {
-      if (pinsList.length > 0) {
-        const centerPin: [number, number] = [
-          pinsList[0].longitude,
-          pinsList[0].latitude,
-        ];
-        jumpTo({ coordinates: centerPin, zoom: 8 });
-      }
       setMarkersList(pinsList);
     }
-  }, [jumpTo, pinsList]);
+  }, [pinsList]);
 
   const [viewState, setViewState] = useState<ViewState | null>(null);
   useEffect(() => {

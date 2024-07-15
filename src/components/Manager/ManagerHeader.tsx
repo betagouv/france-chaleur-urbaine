@@ -1,7 +1,7 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Input } from '@codegouvfr/react-dsfr/Input';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { Demand } from 'src/types/Summary/Demand';
@@ -71,11 +71,9 @@ const matchFilter = (filter: string, value: string | undefined) => {
 const ManagerHeader = ({
   demands,
   setFilteredDemands,
-  setPage,
 }: {
   demands: Demand[];
   setFilteredDemands: (demands: Demand[]) => void;
-  setPage: Dispatch<SetStateAction<number>>;
 }) => {
   const { demandsService } = useServices();
 
@@ -161,17 +159,6 @@ const ManagerHeader = ({
     gestionnaireFilter,
     demands,
     setFilteredDemands,
-  ]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [
-    addressFilter,
-    nameFilter,
-    statusFilter,
-    filterModeChauffage,
-    filterTypeChauffage,
-    setPage,
   ]);
 
   return (
