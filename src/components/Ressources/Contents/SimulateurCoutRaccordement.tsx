@@ -1,7 +1,7 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import Input from '@codegouvfr/react-dsfr/Input';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
-import Box from '@components/ui/Box';
+import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
@@ -98,7 +98,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
 
   return (
     <Box border="1px solid #e7e7e7">
-      <Box display="flex">
+      <ResponsiveRow breakpoint="sm">
         <Box flex p="3w">
           <Badge severity="new" noIcon>
             {/* the dsfr does not handle custom icons */}
@@ -221,7 +221,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
             </>
           )}
         </Box>
-      </Box>
+      </ResponsiveRow>
     </Box>
   );
 };

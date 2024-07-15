@@ -1,3 +1,4 @@
+import geoViewport from '@mapbox/geo-viewport';
 import MapReactGL, {
   AttributionControl,
   GeolocateControl,
@@ -768,6 +769,41 @@ const Map = ({
   if (router.query.zoom) {
     initialViewState.zoom =
       parseFloat(router.query.zoom as string) ?? mapSettings.defaultZoom;
+  }
+
+  // initial fit on bbox
+  if (router.query.bbox) {
+    const bbox = (router.query.bbox as string)
+      .split(',')
+      .map((n) => Number.parseFloat(n)) as [number, number, number, number];
+
+    const mapViewportFitPadding = 50; // px
+    const sideBarWidth = 345; // px
+    const headerWithProModeHeight = 106; // px
+    const headerHeight = 56; // px
+    const mapViewportWidth =
+      window.innerWidth -
+      (withLegend && !legendCollapsed ? sideBarWidth : 0) -
+      mapViewportFitPadding;
+    const mapViewportHeight =
+      window.innerHeight -
+      (setProMode || withHideLegendSwitch
+        ? headerWithProModeHeight
+        : headerHeight) -
+      mapViewportFitPadding;
+
+    const { center, zoom } = geoViewport.viewport(
+      bbox, // bounds
+      [mapViewportWidth, mapViewportHeight], // dimensions
+      11, // min zoom
+      16, // max zoom
+      512, // tile size for MVT
+      true // allow decimals in zoom
+    );
+
+    initialViewState.longitude = center[0] || mapSettings.defaultLongitude;
+    initialViewState.latitude = center[1] || mapSettings.defaultLatitude;
+    initialViewState.zoom = zoom;
   }
 
   return (

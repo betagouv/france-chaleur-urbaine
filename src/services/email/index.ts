@@ -18,8 +18,6 @@ type Attachment = {
 const mailTransport = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
-  ignoreTLS: process.env.MAIL_REQUIRE_TLS === 'false',
-  requireTLS: process.env.MAIL_REQUIRE_TLS === 'true',
   secure: process.env.MAIL_SECURE === 'true',
   auth: {
     user: process.env.MAIL_USER,
@@ -40,13 +38,12 @@ const send = (
     to: toEmail.join(','),
     cc: ccEmail && ccEmail.join(','),
     bcc: bccEmail.join(','),
-    from: `FCU <${process.env.SENDING_EMAIL}>`,
-    replyTo: replyTo || process.env.SENDING_EMAIL,
+    from: process.env.SENDING_EMAIL,
+    replyTo: replyTo || process.env.REPLYTO_EMAIL,
     subject,
     html,
     attachments,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
-    headers: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
   };
 
   return new Promise((resolve, reject) => {

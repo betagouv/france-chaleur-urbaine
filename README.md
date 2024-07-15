@@ -12,8 +12,10 @@ Pré-requis :
 - Node.js version 20
 - Yarn
 - Docker
-- Récupérer le dump des tables de référence auprès d'un membre de l'équipe
+- Récupérer le dump des tables de référence auprès d'un membre de l'équipe ou depuis le dashboard Scalingo
 - Récupérer le fichier `.env.local` auprès d'un membre de l'équipe
+
+### Site local
 
 - Installer les dépendances
 ```sh
@@ -27,20 +29,35 @@ yarn
 docker compose up -d
 ```
 
+- Importer le fichier dans la BDD (~ 20-30 minutes)
+
+Si le fichier a été récupéré depuis le dashboard Scalingo, il faut le décompresser avant de l'importer.
+```sh
+tar -xzvf 20240XXXXXXXXXX_france_chal_3098.tar.gz
+```
+
+puis
+
+```sh
+pg_restore --clean --if-exists --no-owner --no-privileges --verbose --no-comments --dbname postgres://postgres:postgres_fcu@localhost:5432/postgres 20240XXXXXXXXXX_france_chal_3098.pgsql
+```
+
 - Appliquer les migrations de la BDD.
 ```sh
 DATABASE_URL="postgres://postgres:postgres_fcu@localhost:5432/postgres" yarn db:migrate
-```
-
-- Importer le fichier `dump.sql` dans la BDD (~ 20-30 minutes)
-```sh
-pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres_fcu@localhost:5432/postgres dump.sql
 ```
 
 - Désormais, sont accessibles :
   - Le site internet : http://localhost:3000/
   - L'interface maildev pour les emails : http://localhost:1080/
   - La base de données PostgreSQL : localhost:5432
+
+### Airtable
+
+Une partie des données est stockées dans [Airtable](https://airtable.com/), l'email/mot de passe est partagé, à récupérer auprès d'un membre de l'équipe.
+
+1. Copier la base de données `FCU Prod` vers `FCU Dev <ton prenom>` (Cocher uniquement `Duplicate records`)
+2. Récupérer les API Keys et les modifier dans le fichier `.env.local`
 
 
 ## Lint

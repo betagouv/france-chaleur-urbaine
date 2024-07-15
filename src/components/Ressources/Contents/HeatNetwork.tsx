@@ -274,9 +274,10 @@ const HeatNetwork = ({
       réseaux de chaleur français ont un{' '}
       <b>contenu carbone moyen en analyse du cycle de vie de 125 eqCO2/kWh</b>{' '}
       seulement, un contenu qui a été divisé de près de moitié en 10 ans. En
-      2021, ils ont ainsi permis d’éviter l’émission de plus de 6,63 tonnes de
-      CO2 (par rapport à des chaudières individuelles gaz), soit l’équivalent de
-      11,6 millions d’aller-retours Paris-New York (source : SNCU).
+      2021, ils ont ainsi permis d’éviter l’émission de plus de 6,63 millions de
+      tonnes de CO2 (par rapport à des chaudières individuelles gaz), soit
+      l’équivalent de 11,6 millions d’aller-retours Paris-New York (source :
+      SNCU).
       <br />
       <br />
       43 % de la consommation énergétique de la France est consacrée à la
