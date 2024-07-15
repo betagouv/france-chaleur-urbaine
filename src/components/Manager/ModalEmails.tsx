@@ -1,21 +1,17 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Input } from '@codegouvfr/react-dsfr/Input';
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
+import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Heading from '@components/ui/Heading';
 import Modal from '@components/ui/Modal';
 import emailsContentList from '@data/manager/manager-emails-content';
 import emailsList from '@data/manager/manager-emails-list';
 import { useSession } from 'next-auth/react';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Demand } from 'src/types/Summary/Demand';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import styled from 'styled-components';
-
-const emailModal = createModal({
-  id: 'emails-modal',
-  isOpenedByDefault: false,
-});
 
 const ModalContentWrapper = styled.div`
   margin-top: -3em;
@@ -54,6 +50,20 @@ function ModalEmails(props: Props) {
 
   const { data: session, update } = useSession();
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const emailModal = useMemo(() => {
+    return createModal({
+      id: `emails-modal-${props.currentDemand.id}`,
+      isOpenedByDefault: false,
+    });
+  }, []);
+
+  useIsModalOpen(emailModal, {
+    onConceal() {
+      setIsLoaded(false);
+      props.onClose();
+    },
+  });
 
   const [alreadySent, setAlreadySent] = useState<string[]>([]);
   const [emailKey, setEmailKey] = useState('');

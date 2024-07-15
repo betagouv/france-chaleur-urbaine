@@ -1,8 +1,8 @@
-import { Demand } from 'src/types/Summary/Demand';
-import { EmailInfo, Name, OtherInfo, ContactInfos } from './Contact.styles';
 import Icon from '@components/ui/Icon';
-import ModalEmails from './ModalEmails';
 import { useState } from 'react';
+import { Demand } from 'src/types/Summary/Demand';
+import { ContactInfos, EmailInfo, Name, OtherInfo } from './Contact.styles';
+import ModalEmails from './ModalEmails';
 
 const Contact = ({
   demand,
