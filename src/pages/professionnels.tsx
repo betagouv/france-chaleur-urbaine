@@ -290,11 +290,11 @@ const Professionnels = () => {
             Le coût du raccordement
           </Heading>
           <Text>
-            Estimez le montant du Coup de pouce
+            Estimez le montant du Coup de pouce ”
             <Link href="/ressources/aides#contenu">
-              "Chauffage des bâtiments résidentiels collectifs et tertiaires”
-            </Link>{' '}
-            pour le raccordement d’un bâtiment
+              Chauffage des bâtiments résidentiels collectifs et tertiaires
+            </Link>
+            ” pour le raccordement d’un bâtiment
           </Text>
           <Text my="3w">
             Différentes entreprises signataires de la charte "Chauffage des
