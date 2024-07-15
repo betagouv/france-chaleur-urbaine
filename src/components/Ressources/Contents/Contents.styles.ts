@@ -100,7 +100,7 @@ export const StyledInfographieItem = styled.div<{ width: number }>`
     outline-width: 0;
 
     &:hover {
-      background-color: grey;
+      background-color: var(--hover);
     }
 
     &::after {
