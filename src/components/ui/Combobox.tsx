@@ -10,9 +10,12 @@ export {
 export const ComboboxPopover = styled(ReachComboboxPopover)`
   &[data-reach-combobox-popover] {
     z-index: 200;
-    background-color: var(--background-contrast-grey);
+    background-color: var(--background-default-grey);
   }
 
+  [data-reach-combobox-option] {
+    background-color: var(--background-default-grey);
+  }
   [data-reach-combobox-option]:hover {
     background-color: var(--background-contrast-grey-hover);
   }
