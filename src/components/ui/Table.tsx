@@ -37,7 +37,7 @@ export function CustomPagination({
 
   return (
     <Pagination
-      className={`${fr.cx('fr-mt-3w', 'fr-mx-auto')} ${className ?? ''}`}
+      className={`${fr.cx('fr-mx-auto')} ${className ?? ''}`}
       count={pageCount}
       defaultPage={paginationModel.page + 1}
       getPageLinkProps={(page) => ({
@@ -74,6 +74,9 @@ export const Table = <T extends GridValidRowModel>({
         pagination: () => <CustomPagination {...paginationProps} />,
       }}
       sx={{
+        '&': {
+          gap: '20px',
+        },
         // header
         '& .MuiDataGrid-columnHeader, & .MuiDataGrid-columnHeaders .MuiDataGrid-filler':
           {
@@ -87,7 +90,10 @@ export const Table = <T extends GridValidRowModel>({
             overflow: 'visible',
             fontWeight: 'bold',
           },
-
+        '& .MuiDataGrid-footerContainer': {
+          marginTop: '20px',
+          borderTop: 'none',
+        },
         // cell
         '& .MuiDataGrid-cell': {
           display: 'flex',
