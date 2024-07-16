@@ -90,7 +90,7 @@ const SummaryBoxes = ({
         }
       });
     }
-  }, [heatNetworkService, bounds, size]);
+  }, [bounds, size]);
 
   useEffect(() => {
     setDensite(undefined);
@@ -105,7 +105,7 @@ const SummaryBoxes = ({
         }
       });
     }
-  }, [heatNetworkService, lines]);
+  }, [lines]);
 
   const exportData = async (bounds: number[][]) => {
     if (bounds) {
