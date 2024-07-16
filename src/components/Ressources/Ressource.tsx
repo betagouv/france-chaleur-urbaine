@@ -113,12 +113,6 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                     },
                   })),
                 },
-                {
-                  text: 'Nos supports de communication',
-                  linkProps: {
-                    href: `/ressources/supports`,
-                  },
-                },
               ]}
             />
           </Box>
