@@ -1,4 +1,4 @@
-// import ConsentBanner from '@components/ConsentBanner';
+import { ConsentBanner } from '@components/ConsentBanner';
 /*import {
   FacebookMarkup,
   GoogleAdsMarkup,
@@ -185,6 +185,7 @@ function App({
 
   return (
     <MuiDsfrThemeProvider>
+      <ConsentBanner />
       <AppGlobalStyle />
       <DsfrFixUp />
       <ServicesContext.Provider
