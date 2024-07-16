@@ -363,14 +363,11 @@ const Professionnels = () => {
           <Heading as="h2" center legacyColor="white">
             Un moyen de lutter contre le changement climatique
           </Heading>
-          <ResponsiveRow pt="4w" gap="32px">
-            <Box className="fr-col-12 fr-col-lg-7 fr-col-xl-6">
+          <ResponsiveRow pt="4w">
+            <Box style={{ flex: 2 }}>
               <SimulatorCO2 typeSurf={TypeSurf.tertiaire} textColor="#ffffff" />
             </Box>
-            <Box
-              textColor="#ffffff"
-              className="fr-col-12 fr-col-lg-5 fr-col-xl-6"
-            >
+            <Box textColor="#ffffff" style={{ flex: 1 }}>
               <Image
                 width={75}
                 height={62}

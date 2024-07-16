@@ -220,8 +220,9 @@ const SimulatorCO2: React.FC<{
               >
                 <Box
                   display="flex"
-                  flexDirection="row"
-                  gap="5px"
+                  flexDirection="column"
+                  textAlign="center"
+                  gap="15px"
                   alignItems="center"
                 >
                   <Text fontSize="50px" fontWeight="bold">
@@ -240,14 +241,19 @@ const SimulatorCO2: React.FC<{
                 </Box>
                 <Box
                   display="flex"
-                  flexDirection="row"
+                  flexDirection="column"
+                  textAlign="center"
                   alignItems="center"
-                  gap="5px"
+                  gap="15px"
                 >
                   <Text fontSize="30px" fontWeight="bold">
                     {numberToString((economy * -1) / 5, 1)}
                   </Text>
-                  <Text>allers-retours Paris/New-York</Text>
+                  <Text>
+                    allers-retours
+                    <br />
+                    Paris/New-York
+                  </Text>
                 </Box>
               </Box>
 
