@@ -111,9 +111,12 @@ export const AppGlobalStyle = createGlobalStyle`
   :root {
     --white: #fff;
     --legacy-darker-blue: #000074;
+    --background-light: #f9f8f6;
+
   }
   :root[data-fr-theme='dark'] {
     --legacy-darker-blue: #ccd2fc;
+    --background-light: #060504;
   }
 `;
 
