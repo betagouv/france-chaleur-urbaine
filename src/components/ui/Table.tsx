@@ -100,6 +100,11 @@ export const Table = <T extends GridValidRowModel>({
           alignItems: 'center',
           lineHeight: '20px',
         },
+
+        // disable cell focus outline
+        '.MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus': {
+          outline: 'none !important',
+        },
         ...sx,
       }}
       {...props}
