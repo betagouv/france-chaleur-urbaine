@@ -366,7 +366,7 @@ function ModifierReseauxPage() {
               label="Site internet du réseau"
               nativeInputProps={{
                 placeholder: 'https://www.monreseau.fr',
-                type: 'url', // unsupported type by the dsfr lib
+                // type: 'url', uncomment when all data has been cleaned from airtable
                 value: formState.siteInternet,
                 onChange: (e) => setFormValue('siteInternet', e.target.value),
               }}
