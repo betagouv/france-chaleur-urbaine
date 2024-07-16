@@ -16,10 +16,9 @@ const Contacted = ({
 
   return (
     <Checkbox
-      small
       options={[
         {
-          label: ' ', // espace important pour afficher le style DSFR https://github.com/codegouvfr/react-dsfr/issues/281#issue-2411226322
+          label: '',
           nativeInputProps: {
             value: 'Prise de contact',
             defaultChecked: demand['Prise de contact'],
