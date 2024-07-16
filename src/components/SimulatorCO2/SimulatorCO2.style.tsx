@@ -1,6 +1,6 @@
-import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import { Input as DSFRInput } from '@codegouvfr/react-dsfr/Input';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import styled, { css } from 'styled-components';
 
 export const BoxSimulator = styled(Cartridge)`
@@ -83,8 +83,8 @@ export const Container = styled.div<{ custom: boolean }>`
     css`
       color: #4550e5;
       margin: auto;
-      background-color: #f9f8f6;
-      border: 1px solid #e7e7e7;
+      background-color: var(--background-light);
+      border: 1px solid var(--border-default-grey);
       border-radius: 40px;
       padding: 32px;
     `}
