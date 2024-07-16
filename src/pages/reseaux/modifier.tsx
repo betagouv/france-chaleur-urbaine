@@ -1,14 +1,14 @@
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Input } from '@codegouvfr/react-dsfr/Input';
+import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 import NetworkSearchInput from '@components/Network/NetworkSearchInput';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
 import LoadingButton from '@components/ui/LoadingButton';
 import Text from '@components/ui/Text';
-import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
-import { Input } from '@codegouvfr/react-dsfr/Input';
-import Icon from '@components/ui/Icon';
-import { Alert } from '@codegouvfr/react-dsfr/Alert';
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { ModificationReseau } from '@pages/api/modification-reseau';
 import { NetworkSearchResult } from '@pages/api/networks/search';
 import { postFetchJSON } from '@utils/network';
@@ -237,12 +237,7 @@ function ModifierReseauxPage() {
             className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6"
           >
             <NetworkSearchInput
-              label={
-                <>
-                  Identifiant SNCU - nom du réseau
-                  <span className="error"> *</span>
-                </>
-              }
+              label="Identifiant SNCU - nom du réseau"
               value={formState.idReseau}
               onChange={(value) => {
                 setFormValue('idReseau', value);
@@ -329,7 +324,8 @@ function ModifierReseauxPage() {
               Modifier des informations erronées ou incomplètes sur la fiche
             </Text>
             <RadioButtons
-              legend="Classification du réseau"
+              legend=""
+              orientation="horizontal"
               name="reseauClasse"
               options={[
                 {
@@ -379,11 +375,11 @@ function ModifierReseauxPage() {
             <Text mt="4w" mb="1w" fontWeight="bold">
               Renseigner des informations complémentaires à faire apparaître sur
               la fiche du réseau ({clientConfig.networkInfoFieldMaxCharacters}{' '}
-              caractères maximum)
+              caractères maximum) (Optionnel)
             </Text>
             <Input
               textArea={true}
-              label="Informations complémentaires"
+              label=""
               nativeTextAreaProps={{
                 placeholder:
                   'Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)',
@@ -397,7 +393,7 @@ function ModifierReseauxPage() {
             <Text mt="4w" mb="1w" fontWeight="bold">
               Télécharger des documents à mettre à disposition depuis la fiche
               du réseau (schéma directeur, ...) - 3 documents PDF maximum (&lt;5
-              Mo par fichier)
+              Mo par fichier) (Optionnel)
             </Text>
             <input
               className="fr-hidden"
