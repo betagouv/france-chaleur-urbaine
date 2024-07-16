@@ -1,8 +1,7 @@
-// import { Icon as DSFRIcon } from '@codegouvfr/react-dsfr';
-import { CSSProperties, HTMLAttributes } from 'react';
-import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
-import styled from 'styled-components';
 import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
+import { CSSProperties, HTMLAttributes } from 'react';
+import styled from 'styled-components';
+import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type StyledIconProps = {
   cursor?: CSSProperties['cursor'];
@@ -15,6 +14,7 @@ const StyledIcon = styled.span<StyledIconProps>`
   transition: 0.3s;
   cursor: ${({ cursor }) => cursor};
   color: ${({ color }) => color};
+  line-height: 0;
 
   &:before {
     vertical-align: middle;
