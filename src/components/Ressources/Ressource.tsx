@@ -1,12 +1,12 @@
+import Box from '@components/ui/Box';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import StickyForm from '../StickyForm/StickyForm';
 import Guide from './Guide';
 import Header from './Header';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
-import StickyForm from '../StickyForm/StickyForm';
 import { coldNetworks, growths, issues, understandings } from './config';
-import Box from '@components/ui/Box';
 
 const getContent = (ressourceKey: string) => {
   return (
@@ -39,6 +39,13 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
     };
   }, [router, ressourceKey]);
 
+  const selected = {
+    issues: Object.keys(issues).includes(ressourceKey),
+    understandings: Object.keys(understandings).includes(ressourceKey),
+    growths: Object.keys(growths).includes(ressourceKey),
+    coldNetworks: Object.keys(coldNetworks).includes(ressourceKey),
+  };
+
   return (
     <>
       <Header
@@ -56,7 +63,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
               items={[
                 {
                   text: 'Les enjeux de la transition énergétique avec les réseaux de chaleur',
-                  isActive: Object.keys(issues).includes(ressourceKey),
+                  isActive: selected.issues,
+                  expandedByDefault: selected.issues,
                   items: Object.entries(issues).map(([key, issue]) => ({
                     text: issue.title,
                     isActive: ressourceKey === key,
@@ -68,7 +76,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                 },
                 {
                   text: 'Les réseaux de chaleur en pratique : tout comprendre pour se raccorder',
-                  isActive: Object.keys(understandings).includes(ressourceKey),
+                  isActive: selected.understandings,
+                  expandedByDefault: selected.understandings,
                   items: Object.entries(understandings).map(([key, issue]) => ({
                     text: issue.title,
                     isActive: ressourceKey === key,
@@ -80,7 +89,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                 },
                 {
                   text: 'Une filière en pleine croissance',
-                  isActive: Object.keys(growths).includes(ressourceKey),
+                  isActive: selected.growths,
+                  expandedByDefault: selected.growths,
                   items: Object.entries(growths).map(([key, issue]) => ({
                     text: issue.title,
                     isActive: ressourceKey === key,
@@ -92,7 +102,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                 },
                 {
                   text: "Les réseaux de froid, un enjeu pour l'avenir",
-                  isActive: Object.keys(coldNetworks).includes(ressourceKey),
+                  isActive: selected.coldNetworks,
+                  expandedByDefault: selected.coldNetworks,
                   items: Object.entries(coldNetworks).map(([key, issue]) => ({
                     text: issue.title,
                     isActive: ressourceKey === key,
