@@ -6,7 +6,7 @@ import Document, {
   NextScript,
 } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
-import { dsfrDocumentApi } from './_app';
+import { augmentDocumentWithEmotionCache, dsfrDocumentApi } from './_app';
 
 const { getColorSchemeHtmlAttributes, augmentDocumentForDsfr } =
   dsfrDocumentApi;
@@ -56,3 +56,5 @@ export default class MyDocument extends Document {
 }
 
 augmentDocumentForDsfr(MyDocument);
+
+augmentDocumentWithEmotionCache(Document);
