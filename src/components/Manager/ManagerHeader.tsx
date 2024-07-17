@@ -91,8 +91,12 @@ const ManagerHeader = ({
   const [gestionnaireFilter, setGestionnaireFilter] = useState('');
 
   useEffect(() => {
-    setGestionnaireOptions(
-      demands
+    setGestionnaireOptions([
+      {
+        label: 'Tous',
+        value: '',
+      },
+      ...demands
         .map((demand) => demand['Affecté à'])
         .filter(
           (gestionnaire, index, gestionnaires) =>
@@ -102,8 +106,8 @@ const ManagerHeader = ({
         .map((gestionnaire) => ({
           label: gestionnaire,
           value: gestionnaire,
-        }))
-    );
+        })),
+    ]);
   }, [demands]);
 
   useEffect(() => {
