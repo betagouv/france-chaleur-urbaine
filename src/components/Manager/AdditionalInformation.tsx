@@ -47,6 +47,7 @@ const AdditionalInformation = ({
     <Container width={width}>
       <Input
         label=""
+        size="sm"
         nativeInputProps={{
           type: type,
           value: value,
