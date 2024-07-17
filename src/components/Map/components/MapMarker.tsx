@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { Marker, Popup } from 'react-map-gl/maplibre';
 import { Point } from 'src/types/Point';
 
+const markerOffset = [0, -12] as Point;
+const markerPopupOffset = [0, -22] as Point;
+
 const MapMarker = ({
   id,
   longitude,
@@ -39,7 +42,12 @@ const MapMarker = ({
 
   //Using dynamic svg to update color - the color property in Marker can't be change, it's not re-rendering
   return (
-    <Marker longitude={longitude} latitude={latitude} onClick={onClickMarker}>
+    <Marker
+      longitude={longitude}
+      latitude={latitude}
+      offset={markerOffset}
+      onClick={onClickMarker}
+    >
       <svg display="block" height="41px" width="27px" viewBox="0 0 27 41">
         <g fillRule="nonzero">
           <g transform="translate(3.0, 29.0)" fill="#000000">
@@ -123,7 +131,7 @@ const MapMarker = ({
         <Popup
           longitude={longitude}
           latitude={latitude}
-          offset={[0, -10] as Point}
+          offset={markerPopupOffset}
           onClose={() => setShowPopup(false)}
           onOpen={() => setShowPopup(true)}
         >
