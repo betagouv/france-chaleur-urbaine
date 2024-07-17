@@ -10,7 +10,8 @@ const Input = forwardRef<
   HTMLInputElement,
   React.ComponentProps<typeof StyledDSFRInput>
 >(({ label, size = 'md', ...props }, ref) => {
-  const optional = !props?.nativeInputProps?.required;
+  const optional =
+    !props?.nativeInputProps?.required && !props?.nativeTextAreaProps?.required;
 
   return (
     <StyledDSFRInput
