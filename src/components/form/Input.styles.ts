@@ -2,8 +2,10 @@ import { Input as DSFRInput } from '@codegouvfr/react-dsfr/Input';
 import styled, { css } from 'styled-components';
 
 export type InputSize = 'sm';
+export type InputCustomProps = { $size?: InputSize };
 
-export const Input = styled(DSFRInput)<{ $size?: InputSize }>`
+// Had to force typeof DSFRInput as type inference was not working when not
+export const Input: typeof DSFRInput = styled(DSFRInput)<InputCustomProps>`
   ${({ $size }) => css`
     ${$size === 'sm' &&
     css`
