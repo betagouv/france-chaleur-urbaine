@@ -102,9 +102,10 @@ export const Table = <T extends GridValidRowModel>({
         },
 
         // disable cell focus outline
-        '.MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus': {
-          outline: 'none !important',
-        },
+        '.MuiDataGrid-columnHeader:focus, & .MuiDataGrid-cell:focus, .MuiDataGrid-columnHeader:focus-within, & .MuiDataGrid-cell:focus-within':
+          {
+            outline: 'none !important',
+          },
         ...sx,
       }}
       {...props}
