@@ -277,6 +277,7 @@ const Manager = () => {
     {
       field: 'Mode de chauffage',
       sortable: false,
+      width: 130,
       headerName: 'Mode de chauffage',
       renderCell: (params) => <Tag text={displayModeDeChauffage(params.row)} />,
     },
