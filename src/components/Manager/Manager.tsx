@@ -36,47 +36,6 @@ import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
 
-type SortParamType = {
-  key: keyof Demand;
-  backupKey?: keyof Demand;
-  order: 'asc' | 'desc';
-};
-
-const getValueToSort = (
-  demand: Demand,
-  key: keyof Demand,
-  backupKey?: keyof Demand
-) =>
-  !backupKey || demand[key] !== undefined ? demand[key] : demand[backupKey];
-
-const getSortBy = (arr: Demand[]) => (sort: SortParamType) => {
-  if (!arr.length) return [];
-  if (!sort.key || !sort.order) {
-    return [...arr];
-  }
-  return [...arr].sort((_a, _b) => {
-    const a = getValueToSort(_a, sort.key, sort.backupKey);
-    const b = getValueToSort(_b, sort.key, sort.backupKey);
-    let sortResult = 0;
-    if (typeof a === 'undefined') {
-      if (typeof b === 'undefined') {
-        sortResult = 0;
-      } else {
-        sortResult = 1;
-      }
-    } else {
-      if (typeof b === 'undefined') {
-        sortResult = -1;
-      } else {
-        sortResult = a < b ? 1 : -1;
-      }
-    }
-    return sort.order === 'desc' ? sortResult : -1 * sortResult;
-  });
-};
-
-const defaultSort: SortParamType = { key: 'Date demandes', order: 'desc' };
-
 type MapCenterLocation = {
   center: Point;
   zoom: number;
@@ -90,7 +49,6 @@ const Manager = () => {
   const [loading, setLoading] = useState(true);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
-  const [sort] = useState<SortParamType>(defaultSort); //setSort
 
   const [mapCollapsed, setMapCollapsed] = useState(false);
   const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
@@ -108,7 +66,7 @@ const Manager = () => {
         });
       }
     })();
-  }, [demandsService]);
+  }, []);
 
   const highlightPin = useCallback(
     (selectedPinId: string) => {
@@ -159,13 +117,12 @@ const Manager = () => {
 
   const onFilterUpdate = useCallback(
     (demands: Demand[]) => {
-      const sortedDemands = getSortBy(demands)(sort);
-      setFilteredDemands(sortedDemands);
+      setFilteredDemands(demands);
       if (tableApiRef.current?.setPage) {
         tableApiRef.current.setPage(0);
       }
     },
-    [sort]
+    [demands]
   );
 
   const updateDemand = useCallback(
