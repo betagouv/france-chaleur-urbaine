@@ -90,6 +90,9 @@ export const Table = <T extends GridValidRowModel>({
             overflow: 'visible',
             fontWeight: 'bold',
           },
+        '& .MuiDataGrid-columnHeader--last': {
+          overflow: 'initial !important',
+        },
         '& .MuiDataGrid-footerContainer': {
           marginTop: '20px',
           borderTop: 'none',
