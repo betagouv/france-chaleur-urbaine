@@ -1,5 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import Checkbox from '@components/shared/checkbox';
+import Checkbox from '@components/form/formik/checkbox';
 import Box from '@components/ui/Box';
 import { Field } from 'formik';
 import * as Yup from 'yup';

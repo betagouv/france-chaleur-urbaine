@@ -1,7 +1,7 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
-import Input from '@components/shared/input';
+import Input from '@components/form/formik/input';
 import Box from '@components/ui/Box';
 import { Field, useFormikContext } from 'formik';
 import { ReactNode } from 'react';
