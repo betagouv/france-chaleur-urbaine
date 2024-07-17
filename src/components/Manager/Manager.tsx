@@ -158,9 +158,7 @@ const Manager = () => {
   }, [filteredDemands]);
 
   useEffect(() => {
-    if (filteredDemands && filteredDemands.length > 0) {
-      refreshMapPins();
-    }
+    refreshMapPins();
   }, [filteredDemands, refreshMapPins]);
 
   const demandRowsParams: ColumnDef<Demand>[] = [
