@@ -1,6 +1,6 @@
 import { isDevModeEnabled } from '@components/Map/components/DevModeIcon';
 import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
-import { init as initMatomo } from '@totak/matomo-next';
+import { init as initMatomo } from '@socialgouv/matomo-next';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { Router } from 'next/router';
 import { useEffect, useState } from 'react';

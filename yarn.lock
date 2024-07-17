@@ -1633,6 +1633,11 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.2.tgz#5981a8db18b56ba38ef0efb7d995b12aa7b51918"
   integrity sha512-sXXKG+uL9IrKqViTtao2Ws6dy0znu9sOaP1di/jKGW1M6VssO8vlpXCQcpZ+jisQ1tTFAC5Jo/EOzFbggBagFQ==
 
+"@socialgouv/matomo-next@^1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@socialgouv/matomo-next/-/matomo-next-1.9.0.tgz#84622225bd7074651a92796cb86522a1e8c30e08"
+  integrity sha512-emanE7vFQXkfdqELcoLXnXRVnQrbSNnhqcyu1qnlBR3xt0cmkDMfLoH8Z7phNWgT2msdNFoVnXxp+3I4hAhw7g==
+
 "@swc/helpers@0.5.2":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.5.2.tgz#85ea0c76450b61ad7d10a37050289eded783c27d"
@@ -1662,11 +1667,6 @@
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^9.0.0"
     "@types/react-dom" "^18.0.0"
-
-"@totak/matomo-next@1.8.1-patched":
-  version "1.8.1-patched"
-  resolved "https://registry.yarnpkg.com/@totak/matomo-next/-/matomo-next-1.8.1-patched.tgz#c51868cf07fb54551d4f00a58c667b229757c304"
-  integrity sha512-/cv5hUHVxmvfFzdV7FUaqYZlUjDMtspMbno/0f8vM01kLQRbTU7BOHmD3d34CkPLN3t1g8Y3bErVJCXRybsq8w==
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
