@@ -52,8 +52,7 @@ const AdditionalInformation = ({
           type: type,
           value: value,
           onChange: (e) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore: force type
+            // @ts-expect-error: force type
             demand[`Gestionnaire ${field}`] =
               type === 'number' ? parseFloat(e.target.value) : e.target.value;
             setValue(e.target.value);

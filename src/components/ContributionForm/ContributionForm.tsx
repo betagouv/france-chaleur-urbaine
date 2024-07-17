@@ -160,7 +160,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
                 label: value,
                 nativeInputProps: {
                   name: value,
-                  onChange: (e) => handleClickAdditionWish(e), // TODO: vérifier fonctionnmement
+                  onChange: (e) => handleClickAdditionWish(e),
                   value,
                 },
               };

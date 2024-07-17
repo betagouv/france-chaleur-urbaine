@@ -1,18 +1,15 @@
-import { ConsentBanner } from '@components/ConsentBanner';
-/*import {
-  FacebookMarkup,
-  GoogleAdsMarkup,
-  LinkedInMarkup,
-} from '@components/Markup';*/
-import { MuiDsfrThemeProvider } from './../MuiDsfrThemeProvider';
-
 import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
 import '@reach/combobox/styles.css';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
+
+import { ConsentBanner } from '@components/ConsentBanner';
+import { usePreserveScroll } from '@hooks/usePreserveScroll';
+import { MuiDsfrThemeProvider } from 'src/MuiDsfrThemeProvider';
 import 'src/components/Map/StyleSwitcher/styles.css';
 import {
   HeatNetworkService,
@@ -20,18 +17,13 @@ import {
   SuggestionService,
 } from 'src/services';
 import { AdminService } from 'src/services/admin';
+import { useAnalytics } from 'src/services/analytics';
 import { DemandsService } from 'src/services/demands';
 import { axiosHttpClient } from 'src/services/http';
-import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
-//import { iframedPaths } from 'src/services/iframe';
 import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
-//import { clientConfig } from 'src/client-config';
-import { usePreserveScroll } from '@hooks/usePreserveScroll';
-import { useAnalytics } from 'src/services/analytics';
 import { SWRConfig, SWRConfiguration } from 'swr';
-//import HotjarMarkup from '@components/Markup/HotjarMarkup';
-import Link from 'next/link';
+import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
 
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
   interface RegisterLink {
@@ -208,29 +200,6 @@ function App({
           adminService: new AdminService(axiosHttpClient),
         }}
       >
-        {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
-        {/* {!iframedPaths.some((path) => router.pathname.match(path)) && (
-          <ConsentBanner>
-            {clientConfig.tracking.googleTagIds.length > 0 && (
-              <GoogleAdsMarkup googleIds={clientConfig.tracking.googleTagIds} />
-            )}
-            {clientConfig.tracking.facebookPixelId && (
-              <FacebookMarkup
-                facebookId={clientConfig.tracking.facebookPixelId}
-              />
-            )}
-            {clientConfig.tracking.linkInPartnerId && (
-              <LinkedInMarkup tagId={clientConfig.tracking.linkInPartnerId} />
-            )}
-            {clientConfig.tracking.hotjarId &&
-              clientConfig.tracking.hotjarSv && (
-                <HotjarMarkup
-                  hotjarId={clientConfig.tracking.hotjarId}
-                  hotjarSv={clientConfig.tracking.hotjarSv}
-                />
-              )}
-          </ConsentBanner>
-        )} */}
         <Head>
           {favicons.map(
             (
