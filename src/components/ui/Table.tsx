@@ -95,10 +95,22 @@ export const Table = <T extends GridValidRowModel>({
         '& .MuiDataGrid-columnHeader--last': {
           overflow: 'initial !important',
         },
+
+        // always display sort icons, not just on hover
+        '& .MuiDataGrid-iconButtonContainer': {
+          visibility: 'visible',
+          width: 'auto',
+        },
+        '& .MuiDataGrid-columnHeader:not(.MuiDataGrid-columnHeader--sorted) .MuiDataGrid-sortIcon':
+          {
+            opacity: 0.3,
+          },
+
         '& .MuiDataGrid-footerContainer': {
           marginTop: '20px',
           borderTop: 'none',
         },
+
         // cell
         '& .MuiDataGrid-cell': {
           display: 'flex',
