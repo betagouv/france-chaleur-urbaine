@@ -293,7 +293,6 @@ function ModalEmails(props: Props) {
                   label="Signature"
                   hintText="La signature sera sauvegardée pour le prochain envoi"
                   nativeInputProps={{
-                    type: 'email',
                     required: true,
                     value: emailContent.signature,
                     onChange: (e) =>
