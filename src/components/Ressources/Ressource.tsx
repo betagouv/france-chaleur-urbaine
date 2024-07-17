@@ -39,13 +39,6 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
     };
   }, [router, ressourceKey]);
 
-  const selected = {
-    issues: Object.keys(issues).includes(ressourceKey),
-    understandings: Object.keys(understandings).includes(ressourceKey),
-    growths: Object.keys(growths).includes(ressourceKey),
-    coldNetworks: Object.keys(coldNetworks).includes(ressourceKey),
-  };
-
   return (
     <>
       <Header
@@ -63,8 +56,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
               items={[
                 {
                   text: 'Les enjeux de la transition énergétique avec les réseaux de chaleur',
-                  isActive: selected.issues,
-                  expandedByDefault: selected.issues,
+                  isActive: Object.keys(issues).includes(ressourceKey),
+                  expandedByDefault: true,
                   items: Object.entries(issues).map(([key, issue]) => ({
                     text: issue.title,
                     isActive: ressourceKey === key,
@@ -76,8 +69,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                 },
                 {
                   text: 'Les réseaux de chaleur en pratique : tout comprendre pour se raccorder',
-                  isActive: selected.understandings,
-                  expandedByDefault: selected.understandings,
+                  isActive: Object.keys(understandings).includes(ressourceKey),
+                  expandedByDefault: true,
                   items: Object.entries(understandings).map(([key, issue]) => ({
                     text: issue.title,
                     isActive: ressourceKey === key,
@@ -89,8 +82,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                 },
                 {
                   text: 'Une filière en pleine croissance',
-                  isActive: selected.growths,
-                  expandedByDefault: selected.growths,
+                  isActive: Object.keys(growths).includes(ressourceKey),
+                  expandedByDefault: true,
                   items: Object.entries(growths).map(([key, issue]) => ({
                     text: issue.title,
                     isActive: ressourceKey === key,
@@ -102,8 +95,8 @@ const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {
                 },
                 {
                   text: "Les réseaux de froid, un enjeu pour l'avenir",
-                  isActive: selected.coldNetworks,
-                  expandedByDefault: selected.coldNetworks,
+                  isActive: Object.keys(coldNetworks).includes(ressourceKey),
+                  expandedByDefault: true,
                   items: Object.entries(coldNetworks).map(([key, issue]) => ({
                     text: issue.title,
                     isActive: ressourceKey === key,
