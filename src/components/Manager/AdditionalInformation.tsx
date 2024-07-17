@@ -1,4 +1,4 @@
-import { Input } from '@codegouvfr/react-dsfr/Input';
+import Input from '@components/form/Input';
 import debounce from '@utils/debounce';
 import { useEffect, useMemo, useState } from 'react';
 import { Demand } from 'src/types/Summary/Demand';

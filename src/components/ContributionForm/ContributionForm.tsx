@@ -1,18 +1,9 @@
-/*import {
-  Alert,
-  Button,
-  Checkbox,
-  CheckboxGroup,
-  Radio,
-  RadioGroup,
-  TextInput,
-} from '@codegouvfr/react-dsfr';*/
-import Button from '@codegouvfr/react-dsfr/Button';
 import Alert from '@codegouvfr/react-dsfr/Alert';
-import { Input } from '@codegouvfr/react-dsfr/Input';
-import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import Button from '@codegouvfr/react-dsfr/Button';
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
+import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
+import Input from '@components/form/Input';
+import { ChangeEvent, FormEvent, useState } from 'react';
 
 const additionWishValuesWithFormat = [
   'Tracé du réseau',

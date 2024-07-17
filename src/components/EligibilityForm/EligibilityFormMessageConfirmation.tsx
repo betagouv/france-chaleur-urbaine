@@ -1,8 +1,8 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
-import { Input } from '@codegouvfr/react-dsfr/Input';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import Input from '@components/form/Input';
 import { updateAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { AddressDataType } from 'src/types/AddressData';

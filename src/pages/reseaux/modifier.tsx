@@ -1,8 +1,8 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { Input } from '@codegouvfr/react-dsfr/Input';
 import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 import NetworkSearchInput from '@components/Network/NetworkSearchInput';
+import Input from '@components/form/Input';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';

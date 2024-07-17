@@ -1,4 +1,4 @@
-import { Input } from '@codegouvfr/react-dsfr/Input';
+import Input from '@components/form/Input';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';

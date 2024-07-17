@@ -1,5 +1,5 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { Input } from '@codegouvfr/react-dsfr/Input';
+import Input from '@components/form/Input';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
@@ -32,6 +32,7 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
       <Input
         label="Email"
         nativeInputProps={{
+          required: true,
           placeholder: 'Saisir votre email',
           autoComplete: 'email',
           value: email,
@@ -42,6 +43,7 @@ export const LoginForm = ({ callbackUrl }: LoginFormProps) => {
         <Input
           label="Mot de passe"
           nativeInputProps={{
+            required: true,
             type: seePassword ? 'text' : 'password',
             placeholder: 'Saisir votre mot de passe',
             autoComplete: 'password',

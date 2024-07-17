@@ -1,8 +1,8 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { Input } from '@codegouvfr/react-dsfr/Input';
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import Input from '@components/form/Input';
 import Heading from '@components/ui/Heading';
 import Modal from '@components/ui/Modal';
 import emailsContentList from '@data/manager/manager-emails-content';

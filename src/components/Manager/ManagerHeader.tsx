@@ -1,6 +1,6 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { Input } from '@codegouvfr/react-dsfr/Input';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import Input from '@components/form/Input';
 import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';

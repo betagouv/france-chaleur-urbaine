@@ -1,4 +1,4 @@
-import { Input as DSFRInput } from '@codegouvfr/react-dsfr/Input';
+import DSFRInput from '@components/form/Input';
 import { _hasError } from '@utils/form-utils';
 
 const Input = ({

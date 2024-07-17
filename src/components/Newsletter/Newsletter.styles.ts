@@ -1,4 +1,4 @@
-import { Input } from '@codegouvfr/react-dsfr/Input';
+import Input from '@components/form/Input';
 import styled from 'styled-components';
 
 export const Container = styled.form`
