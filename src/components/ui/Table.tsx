@@ -102,6 +102,7 @@ export const Table = <T extends GridValidRowModel>({
           display: 'flex',
           alignItems: 'center',
           lineHeight: '20px',
+          textWrap: 'balance',
         },
 
         // disable cell focus outline
