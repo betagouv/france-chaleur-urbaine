@@ -11,7 +11,7 @@ import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';
 
 const columns: ColumnDef<EligibilityDemand>[] = [
-  { field: 'id', headerName: 'Id', minWidth: 300 },
+  { field: 'id', headerName: 'Id', minWidth: 150 },
   {
     field: 'emails',
     headerName: 'Emails',
@@ -21,8 +21,15 @@ const columns: ColumnDef<EligibilityDemand>[] = [
   {
     field: 'created_at',
     headerName: 'Date',
-    type: 'date',
-    valueGetter: (value) => new Date(value),
+    renderCell: ({ row: { created_at } }) => (
+      <>
+        {created_at
+          ? new Date(created_at).toLocaleDateString('fr-FR', {
+              dateStyle: 'long',
+            })
+          : ''}
+      </>
+    ),
   },
   { field: 'version', headerName: 'Version' },
   { field: 'addresses_count', headerName: "Nombre d'adresses", type: 'number' },
