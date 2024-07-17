@@ -55,6 +55,7 @@ export const Table = <T extends GridValidRowModel>({
   pageSize = 10,
   paginationProps,
   columns,
+  initialState,
   ...props
 }: DataGridProps<T> & AdditionalTableProps) => {
   return (
@@ -69,6 +70,7 @@ export const Table = <T extends GridValidRowModel>({
       }))}
       initialState={{
         pagination: { paginationModel: { pageSize } },
+        ...(initialState ?? {}),
       }}
       slots={{
         pagination: () => <CustomPagination {...paginationProps} />,

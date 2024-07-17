@@ -361,6 +361,11 @@ const Manager = () => {
                 rowHeight={96}
                 onRowSelectionModelChange={onRowSelection}
                 hideFooterSelectedRowCount
+                initialState={{
+                  sorting: {
+                    sortModel: [{ field: 'Date demandes', sort: 'desc' }],
+                  },
+                }}
               />
             ) : (
               <NoResult>Aucun résultat</NoResult>
