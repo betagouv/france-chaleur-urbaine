@@ -1,24 +1,26 @@
+import { Input as DSFRInputOriginal } from '@codegouvfr/react-dsfr/Input';
 import React, { forwardRef } from 'react';
-import { Input as DSFRInput, type InputSize } from './Input.styles';
+import { Input as StyledDSFRInput, type InputSize } from './Input.styles';
 
-export type InputProps = React.ComponentProps<typeof DSFRInput> & {
+export type InputProps = React.ComponentProps<typeof DSFRInputOriginal> & {
   size?: InputSize;
 };
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, size = 'md', ...props }, ref) => {
-    const optional = !props?.nativeInputProps?.required;
+const Input = forwardRef<
+  HTMLInputElement,
+  React.ComponentProps<typeof StyledDSFRInput>
+>(({ label, size = 'md', ...props }, ref) => {
+  const optional = !props?.nativeInputProps?.required;
 
-    return (
-      <DSFRInput
-        ref={ref}
-        $size={size}
-        label={label ? `${label}${optional ? ' (Optionnel)' : ''}` : label}
-        {...props}
-      />
-    );
-  }
-);
+  return (
+    <StyledDSFRInput
+      ref={ref}
+      $size={size}
+      label={label ? `${label}${optional ? ' (Optionnel)' : ''}` : label}
+      {...props}
+    />
+  );
+});
 
 Input.displayName = 'Input';
 
