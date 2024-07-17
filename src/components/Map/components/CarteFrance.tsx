@@ -1,4 +1,10 @@
-import { MouseEventHandler, SyntheticEvent, useRef, useState } from 'react';
+import {
+  MouseEventHandler,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { Tooltip, WrapperDiv } from './CarteFrance.style';
 
@@ -12,28 +18,31 @@ export type DataByArea = {
   [areaId: string]: { value: number; color: string };
 };
 
-interface Props {
+interface CarteFranceProps {
   mode: AreaMode;
   dataByArea: DataByArea;
   selectedAreaId: string | undefined;
   onAreaSelect: (areaId: string) => any;
+  enableHover: boolean;
 }
 
+const defaultTooltipInfos = {
+  x: 0,
+  y: 0,
+  visible: false,
+  content: <></>,
+};
+
 /**
- * Affiche une carte de la france par département avec les données déjà préparées en paramètre
+ * Affiche une carte de la france par département avec les données déjà préparées en paramètre.
  * Les données SVG des départements ont été retouchés avec Inkscape pour obtenir les contours des régions et france entière.
  */
-function CarteFrance(props: Props) {
+function CarteFrance(props: CarteFranceProps) {
   const wrapperDivRef = useRef<HTMLDivElement>(null);
-  const [tooltipInfos, setTooltipInfos] = useState({
-    x: 0,
-    y: 0,
-    visible: false,
-    content: <></>,
-  });
+  const [tooltipInfos, setTooltipInfos] = useState(defaultTooltipInfos);
 
   const onMouseMove: MouseEventHandler = (event) => {
-    if (!wrapperDivRef.current) {
+    if (!wrapperDivRef.current || !props.enableHover) {
       return;
     }
     const target = event.target as HTMLElement;
@@ -56,7 +65,6 @@ function CarteFrance(props: Props) {
   };
 
   function onClick(event: SyntheticEvent<SVGPathElement>) {
-    event.stopPropagation(); // fix a bug with @dataesr/react-dsfr
     props.onAreaSelect(
       (event.target as SVGPathElement).dataset.code_insee as string
     );
@@ -68,11 +76,18 @@ function CarteFrance(props: Props) {
       : props.dataByArea[areaId]?.color ?? defaultFillColor;
   }
 
+  useEffect(() => {
+    if (!props.enableHover) {
+      setTooltipInfos(defaultTooltipInfos);
+    }
+  }, [props.enableHover]);
+
   return (
     <WrapperDiv
       ref={wrapperDivRef}
       onMouseMove={onMouseMove}
       onMouseOut={onMouseOut}
+      enableHover={props.enableHover}
     >
       {props.mode === 'regional' && (
         <svg

@@ -14,8 +14,6 @@ export const SpinnerWrapper = styled.div`
   justify-content: center;
 `;
 
-// FIXME remettre une modale
-// export const StyledModal = styled(Modal)`
 export const StyledModal = styled.div`
   // Surcharge la disposition par défaut qui est prédéfinie et statique
   // afin d'avoir plus de contrôle sur la largeur de la modal

@@ -1,43 +1,43 @@
+import { ButtonsGroup } from '@codegouvfr/react-dsfr/ButtonsGroup';
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
-import { ButtonsGroup } from '@codegouvfr/react-dsfr/ButtonsGroup';
-import CarteFrance, { DataByArea } from './CarteFrance';
+import Box from '@components/ui/Box';
+import Icon from '@components/ui/Icon';
+import Modal from '@components/ui/Modal';
+import Text from '@components/ui/Text';
+import Tooltip from '@components/ui/Tooltip';
+import useInitialSearchParam from '@hooks/useInitialSearchParam';
+import { fetchJSON } from '@utils/network';
+import { prettyFormatNumber } from '@utils/strings';
+import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
+import { Oval } from 'react-loader-spinner';
+import { trackEvent } from 'src/services/analytics';
+import CarteFrance, { DataByArea } from './CarteFrance';
 import {
   BigBlueNumber,
-  ExtraBigBlueText,
-  Bin as DataBin,
+  BigGreyNumber,
   BlackNumber,
   BlackNumbersLine,
   BlackText,
   BlueNumber,
   BlueText,
+  Bin as DataBin,
+  DataLink,
   DistanceLineText,
+  ExtraBigBlueText,
   FirstColumn,
-  BigGreyNumber,
   GreyText,
   HorizontalSeparator,
   LayoutTwoColumns,
   LegendSourceLine,
   LegendTitle,
   ModalContentWrapper,
+  PotentielsRaccordementButton,
   SecondColumn,
-  DataLink,
   SpinnerWrapper,
   StyledModal,
-  PotentielsRaccordementButton,
 } from './ModalCarteFrance.style';
-import { Oval } from 'react-loader-spinner';
-import { prettyFormatNumber } from '@utils/strings';
-import { fetchJSON } from '@utils/network';
-import Tooltip from '@components/ui/Tooltip';
-import { trackEvent } from 'src/services/analytics';
-import Image from 'next/image';
-import Modal from '@components/ui/Modal';
-import Icon from '@components/ui/Icon';
-import Box from '@components/ui/Box';
-import Text from '@components/ui/Text';
-import useInitialSearchParam from '@hooks/useInitialSearchParam';
 
 const minFillColor = '#E2E3EE';
 const maxFillColor = '#4550E5';
@@ -218,51 +218,6 @@ function ModalCarteFrance() {
                     },
                   ]}
                 />
-                {/* <Button
-              priority={area !== 'national' ? 'secondary' : 'primary'}
-              onClick={() => {
-                setArea('national');
-                setSelectedData(statsData.national);
-              }}
-            >
-              National
-            </Button>
-            <Button
-              priority={area !== 'regional' ? 'secondary' : 'primary'}
-              onClick={() => {
-                setArea('regional');
-
-                // sélectionne la région si on vient d'un département
-                if (area === 'departemental' && selectedData) {
-                  setSelectedData(
-                    statsData.regional.find(
-                      (r) =>
-                        r.region_code ===
-                        (selectedData as BDNBStatsParDepartement).region_code
-                    )!
-                  );
-                }
-                // réinitialise la sélection si on vient de national
-                if (area === 'national') {
-                  setSelectedData(null);
-                }
-              }}
-            >
-              Régional
-            </Button>
-            <Button
-              priority={area !== 'departemental' ? 'secondary' : 'primary'}
-              onClick={() => {
-                setArea('departemental');
-
-                // réinitialise la sélection si on vient de national ou régional
-                if (area !== 'departemental') {
-                  setSelectedData(null);
-                }
-              }}
-            >
-              Départemental
-            </Button> */}
 
                 <HorizontalSeparator />
 
@@ -465,6 +420,9 @@ function ModalCarteFrance() {
                               )!
                         );
                       }}
+                      // because when the modal is closed, it is only hidden and hover effects remain active
+                      // thus we need to explicitly disable them when the modal is closed
+                      enableHover={isOpen}
                     />
 
                     <LegendSourceLine>
