@@ -40,7 +40,10 @@ function Contribution() {
   const submit = async (data: any) => {
     try {
       await submitToAirtable(data, Airtable.CONTRIBUTION);
-      if (data.Souhait === 'Ajout de données') {
+      if (
+        data.Souhait === 'Ajout de données' ||
+        data.Souhait === 'Déposer des éléments'
+      ) {
         router.push(
           'https://e.pcloud.com/#page=puplink&code=XjWZ2YJ44fMhie47yc9zWyMA35OElcQ7'
         );
