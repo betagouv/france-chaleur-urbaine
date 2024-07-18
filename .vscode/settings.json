@@ -4,16 +4,12 @@
   // Utilise Prettier pour le formatage
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   // Configure ESLint comme linter par défaut
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   // Active la correction automatique des erreurs à la sauvegarde pour ESLint
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
+    "source.fixAll.eslint": "explicit"
+    // eslint import/order s'occupe des imports
+    // "source.organizeImports": "explicit"
   },
   "files.exclude": {
     "**/.git": true,
