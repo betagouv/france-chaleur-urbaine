@@ -12,3 +12,5 @@
 En complément, sont aussi diffusés sur France Chaleur Urbaine les besoins en chaleur du secteur industriel à la maille communale, également modélisés par le Cerema.\
 
 
+<figure><img src=".gitbook/assets/FCU_besoins-chaleur.jpg" alt=""><figcaption></figcaption></figure>
+
