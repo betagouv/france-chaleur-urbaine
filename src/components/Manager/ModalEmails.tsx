@@ -114,8 +114,8 @@ function ModalEmails(props: Props) {
     key: Key,
     value: EmailContent[Key]
   ) {
-    setEmailContent((emailContent) => ({
-      ...emailContent,
+    setEmailContent((oldEmailContent) => ({
+      ...oldEmailContent,
       [key]: value,
     }));
   }
@@ -246,7 +246,7 @@ function ModalEmails(props: Props) {
                     type: 'email',
                     required: true,
                     disabled: true,
-                    value: emailContent.to,
+                    defaultValue: emailContent.to,
                   }}
                 />
                 <Input
