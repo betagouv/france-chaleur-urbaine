@@ -1,9 +1,10 @@
-import { handleRouteErrors, requireGetMethod } from '@helpers/server';
-import { Network } from 'src/types/Summary/Network';
-import db from 'src/db';
 import { rateLimit } from 'express-rate-limit';
 import { NextApiResponse } from 'next';
 import { NextApiRequest } from 'next';
+
+import { handleRouteErrors, requireGetMethod } from '@helpers/server';
+import db from 'src/db';
+import { Network } from 'src/types/Summary/Network';
 
 // disable the warning for this route as the result is big > 50MB
 export const config = {
@@ -21,19 +22,13 @@ const rateLimitMiddleware = rateLimit({
     next(new Error('rate limit'));
   },
   keyGenerator: (request) =>
-    request.ip ||
-    request.headers['x-forwarded-for'] ||
-    request.headers['x-real-ip'] ||
-    request.connection.remoteAddress,
+    request.ip || request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || request.connection.remoteAddress,
 });
 
-const expressMiddlewareToNext =
-  (middleware: any) => (request: NextApiRequest, response: NextApiResponse) =>
-    new Promise((resolve, reject) => {
-      middleware(request, response, (result?: Error) =>
-        result instanceof Error ? reject(result) : resolve(result)
-      );
-    });
+const expressMiddlewareToNext = (middleware: any) => (request: NextApiRequest, response: NextApiResponse) =>
+  new Promise((resolve, reject) => {
+    middleware(request, response, (result?: Error) => (result instanceof Error ? reject(result) : resolve(result)));
+  });
 
 const rateLimitRequest = expressMiddlewareToNext(rateLimitMiddleware);
 

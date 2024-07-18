@@ -1,5 +1,6 @@
-import { mapControlZindex } from '@components/Map/Map.style';
 import styled from 'styled-components';
+
+import { mapControlZindex } from '@components/Map/Map.style';
 
 export const Filters = styled.div`
   display: flex;

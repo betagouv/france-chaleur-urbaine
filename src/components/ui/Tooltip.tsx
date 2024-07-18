@@ -1,11 +1,9 @@
-import Hoverable from '@components/Hoverable';
 import { ReactNode } from 'react';
-import {
-  StyledSimpleTooltip,
-  StyledSimpleTooltipContent,
-  StyledTooltip,
-} from './Tooltip.style';
+
+import Hoverable from '@components/Hoverable';
+
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
+import { StyledSimpleTooltip, StyledSimpleTooltipContent, StyledTooltip } from './Tooltip.style';
 
 interface TooltipProps {
   children: ReactNode;
@@ -35,11 +33,7 @@ interface SimpleTooltipProps extends SpacingProperties {
 export function SimpleTooltip(props: SimpleTooltipProps) {
   return (
     <>
-      <StyledSimpleTooltip
-        className={`${spacingsToClasses(props)} ${props.className ?? ''}`}
-      >
-        {props.icon}
-      </StyledSimpleTooltip>
+      <StyledSimpleTooltip className={`${spacingsToClasses(props)} ${props.className ?? ''}`}>{props.icon}</StyledSimpleTooltip>
       <StyledSimpleTooltipContent>{props.children}</StyledSimpleTooltipContent>
     </>
   );

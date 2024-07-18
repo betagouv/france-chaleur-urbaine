@@ -1,41 +1,28 @@
+import Image from 'next/image';
+import styled from 'styled-components';
+
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import Image from 'next/image';
-import styled from 'styled-components';
 
 const OutilsPage = () => {
   return (
     <SimplePage title="Nos outils - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
-        <Box
-          display="flex"
-          gap="16px"
-          maxWidth="1000px"
-          mx="auto"
-          pt="8w"
-          px="2w"
-        >
+        <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>
             <Heading size="h1" color="blue-france">
               Nos outils
             </Heading>
             <Text size="lg" mb="3w">
-              Accédez aux différents outils mis à disposition par France Chaleur
-              Urbaine.
+              Accédez aux différents outils mis à disposition par France Chaleur Urbaine.
             </Text>
           </Box>
 
           <Box className="fr-hidden fr-unhidden-lg">
-            <Image
-              src="/img/ressources_header.webp"
-              alt=""
-              width={152}
-              height={180}
-              priority
-            />
+            <Image src="/img/ressources_header.webp" alt="" width={152} height={180} priority />
           </Box>
         </Box>
       </Box>
@@ -47,8 +34,7 @@ const OutilsPage = () => {
         <Box display="flex" my="2w">
           <FCUArrowIcon />
           <Text size="lg" ml="1w">
-            Repérer sur un parc de bâtiments ceux potentiellement raccordables,
-            et accéder aux caractéristiques des réseaux les plus proches
+            Repérer sur un parc de bâtiments ceux potentiellement raccordables, et accéder aux caractéristiques des réseaux les plus proches
           </Text>
         </Box>
         <Link variant="secondary" href="/professionnels#test-liste">
@@ -64,14 +50,10 @@ const OutilsPage = () => {
           <Box display="flex" my="2w">
             <FCUArrowIcon />
             <Text size="lg" ml="1w">
-              Intégrer dans un site internet notre test d’adresse et notre
-              carte, en un copier-coller
+              Intégrer dans un site internet notre test d’adresse et notre carte, en un copier-coller
             </Text>
           </Box>
-          <Link
-            variant="secondary"
-            href="/collectivites-et-exploitants#iframe-carte"
-          >
+          <Link variant="secondary" href="/collectivites-et-exploitants#iframe-carte">
             Accéder
           </Link>
         </Box>
@@ -87,11 +69,7 @@ const OutilsPage = () => {
             Intégrer l’API du test d’adresse ou des réseaux
           </Text>
         </Box>
-        <Link
-          variant="secondary"
-          href="https://api.gouv.fr/les-api/api-france-chaleur-urbaine"
-          isExternal
-        >
+        <Link variant="secondary" href="https://api.gouv.fr/les-api/api-france-chaleur-urbaine" isExternal>
           Accéder
         </Link>
       </Box>
@@ -107,11 +85,7 @@ const OutilsPage = () => {
               Télécharger les données et tracés des réseaux
             </Text>
           </Box>
-          <Link
-            variant="secondary"
-            href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
-            isExternal
-          >
+          <Link variant="secondary" href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/" isExternal>
             Accéder
           </Link>
         </Box>
@@ -124,9 +98,8 @@ const OutilsPage = () => {
         <Box display="flex" my="2w">
           <FCUArrowIcon />
           <Text size="lg" ml="1w">
-            Evaluer le montant des aides pour le raccordement de votre bâtiment
-            (coup de pouce chauffage des bâtiments résidentiels collectifs et
-            tertiaires)
+            Evaluer le montant des aides pour le raccordement de votre bâtiment (coup de pouce chauffage des bâtiments résidentiels
+            collectifs et tertiaires)
           </Text>
         </Box>
         <Link variant="secondary" href="/professionnels#simulateur-aide">

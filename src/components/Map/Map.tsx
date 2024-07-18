@@ -1,4 +1,12 @@
 import geoViewport from '@mapbox/geo-viewport';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import { useLocalStorageValue } from '@react-hookz/web';
+import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { useRouter } from 'next/router';
+import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MapLayerMouseEvent } from 'react-map-gl';
 import MapReactGL, {
   AttributionControl,
   GeolocateControl,
@@ -14,44 +22,32 @@ import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import { useLocalStorageValue } from '@react-hookz/web';
 import debounce from '@utils/debounce';
 import { fetchJSON } from '@utils/network';
-import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import { useRouter } from 'next/router';
-import {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { MapLayerMouseEvent } from 'react-map-gl';
 import { useServices } from 'src/services';
+import { trackEvent } from 'src/services/analytics';
 import {
   MapConfiguration,
   MaybeEmptyMapConfiguration,
   defaultMapConfiguration,
   isMapConfigurationInitialized,
 } from 'src/services/Map/map-configuration';
-import { trackEvent } from 'src/services/analytics';
 import { SourceId } from 'src/services/tiles.config';
-import {
-  AddressDetail,
-  HandleAddressSelect,
-} from 'src/types/HeatNetworksResponse';
-import {
-  MapMarkerInfos,
-  MapPopupInfos,
-  MapPopupType,
-} from 'src/types/MapComponentsInfos';
+import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
+import { MapMarkerInfos, MapPopupInfos, MapPopupType } from 'src/types/MapComponentsInfos';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
+
+import CardSearchDetails from './components/CardSearchDetails';
+import { isDevModeEnabled } from './components/DevModeIcon';
+import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
+import MapMarker from './components/MapMarker';
+import MapPopup from './components/MapPopup';
+import MapSearchForm from './components/MapSearchForm';
+import SimpleMapLegend, { MapLegendFeature } from './components/SimpleMapLegend';
+import ZoneInfos from './components/SummaryBoxes';
+import { LayerId, ReseauxDeChaleurLimits, applyMapConfigurationToLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
   LegendContainer,
@@ -65,28 +61,8 @@ import {
   TopLegend,
   TopLegendSwitch,
 } from './Map.style';
-import {
-  MapboxStyleDefinition,
-  MapboxStyleSwitcherControl,
-} from './StyleSwitcher';
-import CardSearchDetails from './components/CardSearchDetails';
-import { isDevModeEnabled } from './components/DevModeIcon';
-import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
-import MapMarker from './components/MapMarker';
-import MapPopup from './components/MapPopup';
-import MapSearchForm from './components/MapSearchForm';
-import SimpleMapLegend, {
-  MapLegendFeature,
-} from './components/SimpleMapLegend';
-import ZoneInfos from './components/SummaryBoxes';
-import {
-  LayerId,
-  ReseauxDeChaleurLimits,
-  applyMapConfigurationToLayers,
-  buildMapLayers,
-  layerSymbolsImagesURLs,
-} from './map-layers';
 import satelliteConfig from './satellite.config.json';
+import { MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
 
 const mapSettings = {
   defaultLongitude: 2.3,
@@ -101,12 +77,7 @@ let hoveredStateId: MapGeoJSONFeature['id'] | null = null;
 /**
  * The hover state is used in the layers to change the style of the feature using ['feature-state', 'hover']
  */
-const setFeatureHoveringState = (
-  map: MapRef,
-  hover: boolean,
-  source: SourceId,
-  sourceLayer: string
-) => {
+const setFeatureHoveringState = (map: MapRef, hover: boolean, source: SourceId, sourceLayer: string) => {
   if (hoveredStateId) {
     map.setFeatureState(
       {
@@ -144,8 +115,7 @@ const addLayerHoverListeners = (map: MapRef, config: HoverConfig) => {
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
 
-const carteConfig =
-  'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json';
+const carteConfig = 'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json';
 const styles: MapboxStyleDefinition[] = [
   {
     title: 'Carte',
@@ -213,10 +183,7 @@ const Map = ({
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
-  const [mapConfiguration, setMapConfiguration] =
-    useState<MaybeEmptyMapConfiguration>(
-      initialMapConfiguration ?? defaultMapConfiguration
-    );
+  const [mapConfiguration, setMapConfiguration] = useState<MaybeEmptyMapConfiguration>(initialMapConfiguration ?? defaultMapConfiguration);
 
   const [draw, setDraw] = useState<any>();
   const [drawing, setDrawing] = useState(false);
@@ -230,23 +197,19 @@ const Map = ({
     setLegendCollapsed(window.innerWidth < 992);
 
     // amend the configuration with metadata limits of networks
-    fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then(
-      (limits) => {
-        mapConfiguration.reseauxDeChaleur.limits = limits;
+    fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then((limits) => {
+      mapConfiguration.reseauxDeChaleur.limits = limits;
 
-        // apply the limits to the filters
-        mapConfiguration.reseauxDeChaleur.anneeConstruction =
-          limits.anneeConstruction;
-        mapConfiguration.reseauxDeChaleur.emissionsCO2 = limits.emissionsCO2;
-        mapConfiguration.reseauxDeChaleur.livraisonsAnnuelles =
-          limits.livraisonsAnnuelles;
-        mapConfiguration.reseauxDeChaleur.prixMoyen = limits.prixMoyen;
+      // apply the limits to the filters
+      mapConfiguration.reseauxDeChaleur.anneeConstruction = limits.anneeConstruction;
+      mapConfiguration.reseauxDeChaleur.emissionsCO2 = limits.emissionsCO2;
+      mapConfiguration.reseauxDeChaleur.livraisonsAnnuelles = limits.livraisonsAnnuelles;
+      mapConfiguration.reseauxDeChaleur.prixMoyen = limits.prixMoyen;
 
-        setMapConfiguration({
-          ...mapConfiguration,
-        });
-      }
-    );
+      setMapConfiguration({
+        ...mapConfiguration,
+      });
+    });
   }, []);
 
   // resize the map when the container renders
@@ -279,14 +242,13 @@ const Map = ({
     }
   }, [proMode, setMapConfiguration]);
 
-  const { value: soughtAddresses, set: setSoughtAddresses } =
-    useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
-      'mapSoughtAddresses',
-      {
-        defaultValue: [],
-        initializeWithValue: true,
-      }
-    );
+  const { value: soughtAddresses, set: setSoughtAddresses } = useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
+    'mapSoughtAddresses',
+    {
+      defaultValue: [],
+      initializeWithValue: true,
+    }
+  );
 
   const onMapClick = (e: MapLayerMouseEvent, key: string) => {
     const selectedFeature = e.features?.[0];
@@ -301,9 +263,7 @@ const Map = ({
     setPopupInfos({
       latitude: e.lngLat.lat,
       longitude: e.lngLat.lng,
-      content: layersWithDynamicContentPopup.includes(
-        selectedFeature.layer.id as any
-      )
+      content: layersWithDynamicContentPopup.includes(selectedFeature.layer.id as any)
         ? {
             type: selectedFeature.layer.id,
             properties: selectedFeature.properties,
@@ -312,30 +272,17 @@ const Map = ({
     });
   };
 
-  const jumpTo = useCallback(
-    ({
-      coordinates,
-      zoom,
-    }: {
-      coordinates: [number, number];
-      zoom?: number;
-    }) => {
-      if (mapRef.current) {
-        mapRef.current.jumpTo({
-          center: { lon: coordinates[0], lat: coordinates[1] },
-          zoom: zoom || 16,
-        });
-      }
-    },
-    []
-  );
+  const jumpTo = useCallback(({ coordinates, zoom }: { coordinates: [number, number]; zoom?: number }) => {
+    if (mapRef.current) {
+      mapRef.current.jumpTo({
+        center: { lon: coordinates[0], lat: coordinates[1] },
+        zoom: zoom || 16,
+      });
+    }
+  }, []);
 
   const markAddressAsContacted = (address: Partial<StoredAddress>) => {
-    setSoughtAddresses(
-      soughtAddresses.map((addr) =>
-        addr.id === address.id ? { ...addr, contacted: true } : addr
-      )
-    );
+    setSoughtAddresses(soughtAddresses.map((addr) => (addr.id === address.id ? { ...addr, contacted: true } : addr)));
   };
 
   const onAddressSelectHandle: HandleAddressSelect = useCallback(
@@ -344,9 +291,7 @@ const Map = ({
         date: Date.now(),
       };
       const id = getAddressId(coordinates);
-      const existingAddress = soughtAddresses.findIndex(
-        ({ id: soughtAddressesId }) => soughtAddressesId === id
-      );
+      const existingAddress = soughtAddresses.findIndex(({ id: soughtAddressesId }) => soughtAddressesId === id);
 
       if (existingAddress === -1) {
         const newAddress = {
@@ -373,13 +318,7 @@ const Map = ({
 
       jumpTo({ coordinates });
     },
-    [
-      handleOnFetchAddress,
-      handleOnSuccessAddress,
-      jumpTo,
-      setSoughtAddresses,
-      soughtAddresses,
-    ]
+    [handleOnFetchAddress, handleOnSuccessAddress, jumpTo, setSoughtAddresses, soughtAddresses]
   );
 
   const removeSoughtAddresses = useCallback(
@@ -389,9 +328,7 @@ const Map = ({
       }
 
       const id = getAddressId(result.coordinates);
-      const addressIndex = soughtAddresses.findIndex(
-        ({ coordinates }) => getAddressId(coordinates) === id
-      );
+      const addressIndex = soughtAddresses.findIndex(({ coordinates }) => getAddressId(coordinates) === id);
 
       if (collapsedCardIndex === soughtAddresses.length - 1 - addressIndex) {
         setCollapsedCardIndex(-1);
@@ -562,19 +499,11 @@ const Map = ({
 
   const onMapSourceData = (e: MapSourceDataEvent) => {
     const map = mapRef.current?.getMap();
-    if (
-      mapState === 'loaded' ||
-      !map ||
-      !isMapConfigurationInitialized(mapConfiguration)
-    ) {
+    if (mapState === 'loaded' || !map || !isMapConfigurationInitialized(mapConfiguration)) {
       return;
     }
 
-    if (
-      (e.sourceId === 'openmaptiles' || e.sourceId === 'raster-tiles') &&
-      e.isSourceLoaded &&
-      e.tile
-    ) {
+    if ((e.sourceId === 'openmaptiles' || e.sourceId === 'raster-tiles') && e.isSourceLoaded && e.tile) {
       buildMapLayers(mapConfiguration).forEach((spec) => {
         if (map.getSource(spec.sourceId)) {
           return;
@@ -608,10 +537,7 @@ const Map = ({
           const id = getAddressId([address.lon, address.lat]);
           if (
             // Remove duplicates
-            !newMarkersList.some(
-              (marker) =>
-                marker.id === id && marker.popupContent === address.label
-            )
+            !newMarkersList.some((marker) => marker.id === id && marker.popupContent === address.label)
           ) {
             const newMarker = {
               id: getAddressId([address.lon, address.lat]),
@@ -650,24 +576,16 @@ const Map = ({
     }
 
     const { coord, id } = router.query;
-    if (
-      !geolocDisabled &&
-      !coord &&
-      !initialCenter &&
-      !id &&
-      navigator.geolocation
-    ) {
+    if (!geolocDisabled && !coord && !initialCenter && !id && navigator.geolocation) {
       if (navigator.permissions) {
-        navigator.permissions
-          .query({ name: 'geolocation' })
-          .then(({ state }) => {
-            if (state === 'granted' || state === 'prompt') {
-              navigator.geolocation.getCurrentPosition((pos) => {
-                const { longitude, latitude } = pos.coords;
-                jumpTo({ coordinates: [longitude, latitude], zoom: 13 });
-              });
-            }
-          });
+        navigator.permissions.query({ name: 'geolocation' }).then(({ state }) => {
+          if (state === 'granted' || state === 'prompt') {
+            navigator.geolocation.getCurrentPosition((pos) => {
+              const { longitude, latitude } = pos.coords;
+              jumpTo({ coordinates: [longitude, latitude], zoom: 13 });
+            });
+          }
+        });
       } else {
         navigator.geolocation.getCurrentPosition((pos) => {
           const { longitude, latitude } = pos.coords;
@@ -684,24 +602,20 @@ const Map = ({
     }
     let shouldUpdate = false;
     const newMarkersList: MapMarkerInfos[] = markersList;
-    const newSoughtAddresses = soughtAddresses.map(
-      (sAddress: any | never[]) => {
-        const id = sAddress.id;
-        const markerIndex = newMarkersList.findIndex(
-          (marker) => marker.id === id
-        );
-        if (markerIndex === -1) {
-          const newMarker = {
-            id: sAddress.id,
-            latitude: sAddress.coordinates[1],
-            longitude: sAddress.coordinates[0],
-          };
-          newMarkersList.push(newMarker);
-          shouldUpdate = true;
-        }
-        return sAddress;
+    const newSoughtAddresses = soughtAddresses.map((sAddress: any | never[]) => {
+      const id = sAddress.id;
+      const markerIndex = newMarkersList.findIndex((marker) => marker.id === id);
+      if (markerIndex === -1) {
+        const newMarker = {
+          id: sAddress.id,
+          latitude: sAddress.coordinates[1],
+          longitude: sAddress.coordinates[0],
+        };
+        newMarkersList.push(newMarker);
+        shouldUpdate = true;
       }
-    );
+      return sAddress;
+    });
     if (shouldUpdate) {
       setSoughtAddresses(newSoughtAddresses);
       setMarkersList(newMarkersList);
@@ -733,8 +647,7 @@ const Map = ({
       setViewState({
         longitude: parseFloat(lng) || mapSettings.defaultLongitude,
         latitude: parseFloat(lat) || mapSettings.defaultLatitude,
-        zoom:
-          parseFloat(router.query.zoom as string) || mapSettings.defaultZoom,
+        zoom: parseFloat(router.query.zoom as string) || mapSettings.defaultZoom,
       });
     }
   }, []);
@@ -746,9 +659,7 @@ const Map = ({
       debounce((viewState: ViewState, proMode: boolean) => {
         router.replace(
           {
-            search: `coord=${viewState.longitude.toFixed(
-              7
-            )},${viewState.latitude.toFixed(7)}&zoom=${viewState.zoom.toFixed(
+            search: `coord=${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}&zoom=${viewState.zoom.toFixed(
               2
             )}&proMode=${proMode}`,
           },
@@ -780,37 +691,26 @@ const Map = ({
 
   if (router.query.coord) {
     const [lng, lat] = (router.query.coord as string).split(',');
-    initialViewState.longitude =
-      parseFloat(lng) || mapSettings.defaultLongitude;
+    initialViewState.longitude = parseFloat(lng) || mapSettings.defaultLongitude;
     initialViewState.latitude = parseFloat(lat) || mapSettings.defaultLatitude;
     initialViewState.zoom = initialZoom || 13;
   }
 
   if (router.query.zoom) {
-    initialViewState.zoom =
-      parseFloat(router.query.zoom as string) ?? mapSettings.defaultZoom;
+    initialViewState.zoom = parseFloat(router.query.zoom as string) ?? mapSettings.defaultZoom;
   }
 
   // initial fit on bbox
   if (router.query.bbox) {
-    const bbox = (router.query.bbox as string)
-      .split(',')
-      .map((n) => Number.parseFloat(n)) as [number, number, number, number];
+    const bbox = (router.query.bbox as string).split(',').map((n) => Number.parseFloat(n)) as [number, number, number, number];
 
     const mapViewportFitPadding = 50; // px
     const sideBarWidth = 345; // px
     const headerWithProModeHeight = 106; // px
     const headerHeight = 56; // px
-    const mapViewportWidth =
-      window.innerWidth -
-      (withLegend && !legendCollapsed ? sideBarWidth : 0) -
-      mapViewportFitPadding;
+    const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? sideBarWidth : 0) - mapViewportFitPadding;
     const mapViewportHeight =
-      window.innerHeight -
-      (setProMode || withHideLegendSwitch
-        ? headerWithProModeHeight
-        : headerHeight) -
-      mapViewportFitPadding;
+      window.innerHeight - (setProMode || withHideLegendSwitch ? headerWithProModeHeight : headerHeight) - mapViewportFitPadding;
 
     const { center, zoom } = geoViewport.viewport(
       bbox, // bounds
@@ -840,29 +740,12 @@ const Map = ({
         {withLegend && (
           <>
             {!withHideLegendSwitch && (
-              <CollapseLegend
-                legendCollapsed={legendCollapsed}
-                onClick={() => setLegendCollapsed(!legendCollapsed)}
-              >
-                <Hoverable position="right">
-                  {legendCollapsed
-                    ? 'Afficher la légende'
-                    : 'Masquer la légende'}
-                </Hoverable>
-                <Icon
-                  size="lg"
-                  name={
-                    legendCollapsed
-                      ? 'ri-arrow-right-s-fill'
-                      : 'ri-arrow-left-s-fill'
-                  }
-                />
+              <CollapseLegend legendCollapsed={legendCollapsed} onClick={() => setLegendCollapsed(!legendCollapsed)}>
+                <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
+                <Icon size="lg" name={legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'} />
               </CollapseLegend>
             )}
-            <LegendSideBar
-              legendCollapsed={legendCollapsed}
-              withHideLegendSwitch={withHideLegendSwitch}
-            >
+            <LegendSideBar legendCollapsed={legendCollapsed} withHideLegendSwitch={withHideLegendSwitch}>
               <LegendContainer withoutLogo={withoutLogo}>
                 <Box m="2w">
                   <MapSearchForm onAddressSelect={onAddressSelectHandle} />
@@ -878,17 +761,12 @@ const Map = ({
                             onClick={jumpTo}
                             onClickClose={removeSoughtAddresses}
                             onContacted={markAddressAsContacted}
-                            collapsed={
-                              collapsedCardIndex !==
-                              soughtAddresses.length - 1 - index
-                            }
+                            collapsed={collapsedCardIndex !== soughtAddresses.length - 1 - index}
                             setCollapsed={(collapsed) => {
                               if (collapsed) {
                                 setCollapsedCardIndex(-1);
                               } else {
-                                setCollapsedCardIndex(
-                                  soughtAddresses.length - 1 - index
-                                );
+                                setCollapsedCardIndex(soughtAddresses.length - 1 - index);
                               }
                             }}
                           />
@@ -902,23 +780,14 @@ const Map = ({
                   mapConfiguration={mapConfiguration}
                   legendTitle={legendTitle}
                   enabledFeatures={enabledLegendFeatures}
-                  onMapConfigurationChange={(config) =>
-                    setMapConfiguration(config)
-                  }
+                  onMapConfigurationChange={(config) => setMapConfiguration(config)}
                 />
               </LegendContainer>
             </LegendSideBar>
             {!withoutLogo && (
               <LegendLogoList legendCollapsed={legendCollapsed}>
-                <LegendLogoLink
-                  href="https://france-chaleur-urbaine.beta.gouv.fr/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src="/logo-fcu-with-typo.jpg"
-                    alt="logo france chaleur urbaine"
-                  />
+                <LegendLogoLink href="https://france-chaleur-urbaine.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                  <img src="/logo-fcu-with-typo.jpg" alt="logo france chaleur urbaine" />
                 </LegendLogoLink>
                 {legendLogoOpt && (
                   <LegendLogo>
@@ -931,20 +800,13 @@ const Map = ({
         )}
         {withDrawing && mapRef.current && (
           <MapControlWrapper legendCollapsed={legendCollapsed}>
-            <ZoneInfos
-              map={mapRef.current}
-              draw={draw}
-              setDrawing={setDrawing}
-            />
+            <ZoneInfos map={mapRef.current} draw={draw} setDrawing={setDrawing} />
           </MapControlWrapper>
         )}
         {(setProMode || withHideLegendSwitch) && (
           <TopLegend legendCollapsed={!withLegend || legendCollapsed}>
             {setProMode && (
-              <TopLegendSwitch
-                legendCollapsed={legendCollapsed}
-                isProMode={true}
-              >
+              <TopLegendSwitch legendCollapsed={legendCollapsed} isProMode={true}>
                 <div className="fr-toggle fr-toggle--label-left">
                   <input
                     type="checkbox"
@@ -985,9 +847,7 @@ const Map = ({
                     data-fr-checked-label="Activé"
                     data-fr-unchecked-label="Désactivé"
                   >
-                    {legendCollapsed
-                      ? 'Afficher la légende'
-                      : 'Masquer la légende'}
+                    {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
                   </label>
                 </div>
               </TopLegendSwitch>
@@ -1005,14 +865,8 @@ const Map = ({
             onSourceData={onMapSourceData}
             ref={mapRef}
           >
-            {!geolocDisabled && (
-              <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />
-            )}
-            <NavigationControl
-              showZoom={true}
-              visualizePitch={true}
-              position="top-left"
-            />
+            {!geolocDisabled && <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />}
+            <NavigationControl showZoom={true} visualizePitch={true} position="top-left" />
             <AttributionControl
               compact={false}
               position="bottom-right"
@@ -1024,12 +878,7 @@ const Map = ({
             />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
             {popupInfos && (
-              <MapPopup
-                latitude={popupInfos.latitude}
-                longitude={popupInfos.longitude}
-                content={popupInfos.content}
-                type={popupType}
-              />
+              <MapPopup latitude={popupInfos.latitude} longitude={popupInfos.longitude} content={popupInfos.content} type={popupType} />
             )}
             {markersList.length > 0 &&
               markersList.map((marker: MapMarkerInfos) => (

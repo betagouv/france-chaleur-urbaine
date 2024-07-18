@@ -1,14 +1,15 @@
 import Head from 'next/head';
+
 import Advantages from '@components/Coproprietaire/Advantages';
 import Interviews from '@components/Coproprietaire/Interviews';
 import HeadSliceForm from '@components/HeadSliceForm';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
+import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import { comparatifRcu } from '@data/coproprietaire';
-import SimplePage from '@components/shared/page/SimplePage';
 
 export default function FresnesPage() {
   return (
@@ -42,12 +43,7 @@ Améliorez votre confort et baissez vos factures !
       <Slice padding={8}>
         <Advantages />
       </Slice>
-      <Slice
-        padding={8}
-        theme="grey"
-        className="slice-comparatif-rcu"
-        header={`### La solution de chauffage la plus compétitive`}
-      >
+      <Slice padding={8} theme="grey" className="slice-comparatif-rcu" header={`### La solution de chauffage la plus compétitive`}>
         <WrappedBlock data={comparatifRcu} reverse />
       </Slice>
       <Slice padding={8}>
@@ -61,10 +57,7 @@ Une alternative écologique au fioul et au gaz !`}
         />
       </Slice>
       <Slice theme="blue-background" padding={5}>
-        <SliceForm
-          title="Votre copropriété pourrait-elle être raccordée à un réseau de chaleur ?"
-          colored
-        />
+        <SliceForm title="Votre copropriété pourrait-elle être raccordée à un réseau de chaleur ?" colored />
       </Slice>
     </SimplePage>
   );

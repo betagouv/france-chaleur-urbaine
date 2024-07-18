@@ -1,23 +1,18 @@
-import {
-  getEligilityStatus,
-  getExport,
-} from '@core/infrastructure/repository/addresseInformation';
-import { logger } from '@helpers/logger';
-import axios from 'axios';
 import crypto from 'crypto';
+
+import axios from 'axios';
 import FormData from 'form-data';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { v4 as uuidv4 } from 'uuid';
+import * as yup from 'yup';
+
+import { getEligilityStatus, getExport } from '@core/infrastructure/repository/addresseInformation';
+import { logger } from '@helpers/logger';
 import db from 'src/db';
 import base from 'src/db/airtable';
 import { withCors } from 'src/services/api/cors';
-import {
-  sendBulkEligibilityError,
-  sendBulkEligibilityErrorAdmin,
-  sendBulkEligibilityResult,
-} from 'src/services/email';
+import { sendBulkEligibilityError, sendBulkEligibilityErrorAdmin, sendBulkEligibilityResult } from 'src/services/email';
 import { Airtable } from 'src/types/enum/Airtable';
-import { v4 as uuidv4 } from 'uuid';
-import * as yup from 'yup';
 
 const version = 8;
 
@@ -96,8 +91,7 @@ const CSVToArray = (strData: string, strDelimiter: string) => {
 const sendMail = async (id: string, email: string, addresses: any[]) => {
   await sendBulkEligibilityResult(id, email, {
     filename: 'test-eligibilite.xlsx',
-    contentType:
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     content: getExport(addresses),
     encoding: 'base64',
   });
@@ -122,9 +116,7 @@ const sendErrorMail = async (email: string, addresses: string) => {
 
 const bulkEligibilitygibilityStatus = async (
   req: NextApiRequest,
-  res: NextApiResponse<
-    { id: string; progress: number; result?: string; error?: boolean } | string
-  >
+  res: NextApiResponse<{ id: string; progress: number; result?: string; error?: boolean } | string>
 ) => {
   if (req.method !== 'POST') {
     return res.status(501);
@@ -150,20 +142,12 @@ const bulkEligibilitygibilityStatus = async (
   const jobLogger = logger.child({ hash });
   const start = Date.now();
 
-  let existingEligibilityTest = await db('eligibility_tests')
-    .where('hash', hash)
-    .andWhere('version', version)
-    .first();
+  let existingEligibilityTest = await db('eligibility_tests').where('hash', hash).andWhere('version', version).first();
 
   if (existingEligibilityTest) {
     res.status(200).send('File already exists, send email');
-    while (
-      !existingEligibilityTest.result &&
-      !existingEligibilityTest.in_error
-    ) {
-      existingEligibilityTest = await db('eligibility_tests')
-        .where('id', existingEligibilityTest.id)
-        .first();
+    while (!existingEligibilityTest.result && !existingEligibilityTest.in_error) {
+      existingEligibilityTest = await db('eligibility_tests').where('id', existingEligibilityTest.id).first();
     }
 
     if (existingEligibilityTest.in_error) {
@@ -174,11 +158,7 @@ const bulkEligibilitygibilityStatus = async (
       });
     } else {
       jobLogger.info('existing file, send results by email');
-      await sendMail(
-        existingEligibilityTest.id,
-        email,
-        JSON.parse(existingEligibilityTest.result)
-      );
+      await sendMail(existingEligibilityTest.id, email, JSON.parse(existingEligibilityTest.result));
     }
 
     return;
@@ -189,9 +169,7 @@ const bulkEligibilitygibilityStatus = async (
     jobLogger.info('launch bulk eligibility computation', {
       addresses_count: formattedAddresses.length,
     });
-    res
-      .status(200)
-      .send('File do not exists, computing result then send email');
+    res.status(200).send('File do not exists, computing result then send email');
 
     await db('eligibility_tests').insert({
       id,
@@ -209,18 +187,11 @@ const bulkEligibilitygibilityStatus = async (
     form.append('result_columns', 'result_score');
     form.append('result_columns', 'result_city');
 
-    const addressesCoords = await axios.post(
-      'https://api-adresse.data.gouv.fr/search/csv/',
-      form,
-      {
-        headers: form.getHeaders(),
-      }
-    );
+    const addressesCoords = await axios.post('https://api-adresse.data.gouv.fr/search/csv/', form, {
+      headers: form.getHeaders(),
+    });
 
-    const addressesInformation = CSVToArray(
-      addressesCoords.data as string,
-      ','
-    );
+    const addressesInformation = CSVToArray(addressesCoords.data as string, ',');
     const results = [];
     let errorCount = 0;
     let eligibileCount = 0;
@@ -234,9 +205,7 @@ const bulkEligibilitygibilityStatus = async (
       const lat = informations[informations.length - 5];
       const address = informations.slice(0, informations.length - 5).join(',');
 
-      const result = label
-        ? await getEligilityStatus(Number(lat), Number(lon))
-        : { isEligible: null };
+      const result = label ? await getEligilityStatus(Number(lat), Number(lon)) : { isEligible: null };
       results.push({
         ...result,
         city,

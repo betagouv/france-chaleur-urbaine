@@ -6,10 +6,7 @@ type FacebookScriptProps = React.ComponentProps<typeof Script> & {
 };
 
 // https://developers.facebook.com/docs/meta-pixel/get-started/
-const FacebookScript: React.FC<FacebookScriptProps> = ({
-  pixelId,
-  ...props
-}) => {
+const FacebookScript: React.FC<FacebookScriptProps> = ({ pixelId, ...props }) => {
   return (
     <>
       <Script id="facebook-snippet" {...props}>

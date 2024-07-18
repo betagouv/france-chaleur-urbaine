@@ -1,15 +1,12 @@
-import {
-  handleRouteErrors,
-  invalidRouteError,
-  validateObjectSchema,
-} from '@helpers/server';
 import type { NextApiRequest } from 'next';
 import z from 'zod';
+
+import { handleRouteErrors, invalidRouteError, validateObjectSchema } from '@helpers/server';
+import { zAirtableRecordId } from '@utils/validation';
 import db from 'src/db';
 import base from 'src/db/airtable';
 import { sendManagerEmail } from 'src/services/email';
 import { Airtable } from 'src/types/enum/Airtable';
-import { zAirtableRecordId } from '@utils/validation';
 
 const zManagerEmail = {
   emailContent: z.object({
@@ -42,19 +39,12 @@ export default handleRouteErrors(
         .all();
       const emailsList = rawEmailsList.map((record) => ({
         email_key: record.get('email_key'),
-        date: record.get('sent_at')
-          ? new Date(record.get('sent_at') as string).toLocaleDateString(
-              'fr-FR'
-            )
-          : '',
+        date: record.get('sent_at') ? new Date(record.get('sent_at') as string).toLocaleDateString('fr-FR') : '',
       }));
       return emailsList;
     } else if (req.method === 'POST') {
       const parseReqBody = await JSON.parse(req.body);
-      const { emailContent, demand_id, key } = await validateObjectSchema(
-        parseReqBody,
-        zManagerEmail
-      );
+      const { emailContent, demand_id, key } = await validateObjectSchema(parseReqBody, zManagerEmail);
 
       //Log the email
       await base(Airtable.UTILISATEURS_EMAILS).create(

@@ -1,6 +1,7 @@
 import { useIsMounted } from '@react-hookz/web';
-import debounce from '@utils/debounce';
 import { useState } from 'react';
+
+import debounce from '@utils/debounce';
 import { useServices } from 'src/services';
 import { SuggestionItem } from 'src/types/Suggestions';
 
@@ -18,11 +19,7 @@ type configProps = {
   minCharactersLength?: number;
 };
 
-const useSuggestions = ({
-  limit = 5,
-  debounceTime = 300,
-  minCharactersLength = 3,
-}: configProps) => {
+const useSuggestions = ({ limit = 5, debounceTime = 300, minCharactersLength = 3 }: configProps) => {
   const [suggestions, setSuggestions] = useState<SuggestionItem[]>([]);
   const [status, setStatus] = useState<ValueOf<Status>>(Status.Idle);
   const isMounted = useIsMounted();
@@ -35,12 +32,9 @@ const useSuggestions = ({
         return;
       }
       setStatus(Status.Loading);
-      const fetchedSuggestions = await suggestionService.fetchSuggestions(
-        searchTerm,
-        {
-          limit: limit.toString(),
-        }
-      );
+      const fetchedSuggestions = await suggestionService.fetchSuggestions(searchTerm, {
+        limit: limit.toString(),
+      });
 
       setSuggestions(fetchedSuggestions.features);
       setStatus(Status.Success);
@@ -51,8 +45,7 @@ const useSuggestions = ({
       });
     }
   }, debounceTime);
-  const fetchSuggestions = (queryString: string) =>
-    queryString.length >= minCharactersLength && debounceFetch(queryString);
+  const fetchSuggestions = (queryString: string) => queryString.length >= minCharactersLength && debounceFetch(queryString);
 
   return {
     suggestions,

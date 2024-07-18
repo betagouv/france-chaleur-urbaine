@@ -1,6 +1,8 @@
-import { Guide } from './CoproGuide.styles';
 import Link from 'next/link';
+
 import { trackEvent } from 'src/services/analytics';
+
+import { Guide } from './CoproGuide.styles';
 
 const CoproGuide = ({ guideClassName }: { guideClassName?: string }) => {
   return (

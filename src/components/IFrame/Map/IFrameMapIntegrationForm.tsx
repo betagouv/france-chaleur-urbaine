@@ -1,29 +1,21 @@
-import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import React, { ReactNode, useState } from 'react';
-import { SuggestionItem } from 'src/types/Suggestions';
-import { AddressContainer } from './IFrameParametrization.styles';
-import { Coords } from 'src/types/Coords';
-import {
-  DivQuestionCenterMap,
-  StyledIFrameLink,
-} from './IFrameMapIntegrationForm.styles';
+
+import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { LegendURLKey, selectableLayers } from '@pages/map';
+import { Coords } from 'src/types/Coords';
+import { SuggestionItem } from 'src/types/Suggestions';
+
+import { DivQuestionCenterMap, StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
+import { AddressContainer } from './IFrameParametrization.styles';
 
 const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
   const [coords, setCoords] = useState<Coords | null>(null);
-  const [selectedLayers, setSelectedLayers] = useState<LegendURLKey[]>(
-    selectableLayers.map((l) => l.key)
-  );
+  const [selectedLayers, setSelectedLayers] = useState<LegendURLKey[]>(selectableLayers.map((l) => l.key));
 
-  const url = `legend=true${
-    coords ? `&coord=${coords.lon},${coords.lat}&zoom=12` : ''
-  }&displayLegend=${selectedLayers.join(',')}`;
+  const url = `legend=true${coords ? `&coord=${coords.lon},${coords.lat}&zoom=12` : ''}&displayLegend=${selectedLayers.join(',')}`;
 
-  const onAddressSelected = async (
-    address: string,
-    geoAddress?: SuggestionItem
-  ) => {
+  const onAddressSelected = async (address: string, geoAddress?: SuggestionItem) => {
     if (!geoAddress) {
       setCoords(null);
       return;
@@ -51,26 +43,13 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
           label: selectableLayer.label,
           nativeInputProps: {
             defaultChecked: true,
-            onClick: (e) =>
-              toggleLayerSelection(
-                selectableLayer.key,
-                (e.target as any).checked
-              ),
+            onClick: (e) => toggleLayerSelection(selectableLayer.key, (e.target as any).checked),
           },
         }))}
       />
-      {label ? (
-        label
-      ) : (
-        <DivQuestionCenterMap>
-          Vous souhaitez centrer la carte sur un endroit en particulier ?
-        </DivQuestionCenterMap>
-      )}
+      {label ? label : <DivQuestionCenterMap>Vous souhaitez centrer la carte sur un endroit en particulier ?</DivQuestionCenterMap>}
       <AddressContainer>
-        <AddressAutocomplete
-          onAddressSelected={onAddressSelected}
-          placeholder="Tapez ici votre adresse"
-        />
+        <AddressAutocomplete onAddressSelected={onAddressSelected} placeholder="Tapez ici votre adresse" />
       </AddressContainer>
       <StyledIFrameLink
         className="fr-mt-3w"

@@ -1,13 +1,7 @@
 import styled, { css } from 'styled-components';
 
 export const Container = styled.div<{
-  position:
-    | 'top'
-    | 'right'
-    | 'top-centered'
-    | 'bottom'
-    | 'bottom-centered'
-    | 'left';
+  position: 'top' | 'right' | 'top-centered' | 'bottom' | 'bottom-centered' | 'left';
 }>`
   display: none;
   width: max-content;

@@ -1,10 +1,11 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
+
 import { getSpreadSheet } from '@core/infrastructure/repository/export';
 import { handleRouteErrors, requirePostMethod } from '@helpers/server';
-import type { NextApiRequest, NextApiResponse } from 'next';
 import db from 'src/db';
+import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ExportColumn } from 'src/types/ExportColumn';
 import { User } from 'src/types/User';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 
 const usersExportColumns: ExportColumn<User>[] = [
   {
@@ -34,14 +35,8 @@ export default handleRouteErrors(
       .orderBy('created_at');
     const csv = getSpreadSheet(usersExportColumns, users, EXPORT_FORMAT.XLSX);
 
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    );
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename=comptes_obsoletes.xlsx`
-    );
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=comptes_obsoletes.xlsx`);
 
     return res.status(200).send(csv);
   },

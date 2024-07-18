@@ -1,23 +1,19 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
+import { HeaderProps, HeaderQuickAccessItem } from '@codegouvfr/react-dsfr/Header';
+import MainNavigation, { MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
+import Head from 'next/head';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { signOut, useSession } from 'next-auth/react';
 
-import {
-  HeaderProps,
-  HeaderQuickAccessItem,
-} from '@codegouvfr/react-dsfr/Header';
-import MainNavigation, {
-  MainNavigationProps,
-} from '@codegouvfr/react-dsfr/MainNavigation';
 import { FooterConsentManagementItem } from '@components/ConsentBanner';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { deleteFetchJSON } from '@utils/network';
-import { signOut, useSession } from 'next-auth/react';
-import Head from 'next/head';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { USER_ROLE } from 'src/types/enum/UserRole';
+
 import { StyledHeader } from './SimplePage.styles';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
@@ -37,10 +33,7 @@ const SimplePage = (props: SimplePageProps) => {
           <title>{props.title}</title>
         </Head>
       )}
-      <PageHeader
-        mode={props.mode ?? 'public'}
-        currentPage={props.currentPage}
-      />
+      <PageHeader mode={props.mode ?? 'public'} currentPage={props.currentPage} />
       {props.children}
       <PageFooter />
     </>
@@ -257,15 +250,9 @@ const adminNavigationMenu: MainNavigationProps.Item[] = [
   },
 ];
 
-function markCurrentPageActive(
-  menuItems: MainNavigationProps.Item[],
-  currentUrl: string
-): MainNavigationProps.Item[] {
+function markCurrentPageActive(menuItems: MainNavigationProps.Item[], currentUrl: string): MainNavigationProps.Item[] {
   return menuItems.map((item) => {
-    const subMenu = markCurrentPageActive(
-      item.menuLinks ?? [],
-      currentUrl
-    ) as MainNavigationProps.Item.Link[];
+    const subMenu = markCurrentPageActive(item.menuLinks ?? [], currentUrl) as MainNavigationProps.Item.Link[];
 
     const subMenuItemActive = subMenu.some((child) => child.isActive);
 
@@ -293,9 +280,7 @@ const publicQuickAccessItems: HeaderProps.QuickAccessItem[] = [
   },
 ];
 
-function getAuthenticatedQuickAccessItems(
-  impersonating: boolean
-): HeaderProps.QuickAccessItem[] {
+function getAuthenticatedQuickAccessItems(impersonating: boolean): HeaderProps.QuickAccessItem[] {
   return [
     ...(impersonating
       ? [
@@ -346,26 +331,20 @@ const PageHeader = (props: PageHeaderProps) => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  const isFullScreenMode =
-    props.mode === 'public-fullscreen' || props.mode === 'authenticated';
+  const isFullScreenMode = props.mode === 'public-fullscreen' || props.mode === 'authenticated';
 
   const navigationMenuItems =
     props.mode === 'authenticated'
       ? [
           ...authenticatedNavigationMenu,
-          ...(status === 'authenticated' &&
-          session.user.role === USER_ROLE.ADMIN
-            ? adminNavigationMenu
-            : []),
+          ...(status === 'authenticated' && session.user.role === USER_ROLE.ADMIN ? adminNavigationMenu : []),
         ]
       : publicNavigationMenu;
 
   const currentPath = props.currentPage ?? router.pathname;
 
   const quickAccessItems =
-    props.mode === 'authenticated'
-      ? getAuthenticatedQuickAccessItems(!!session?.impersonating)
-      : publicQuickAccessItems;
+    props.mode === 'authenticated' ? getAuthenticatedQuickAccessItems(!!session?.impersonating) : publicQuickAccessItems;
 
   return (
     <>
@@ -393,35 +372,17 @@ const PageHeader = (props: PageHeaderProps) => {
         navigation={
           isFullScreenMode ? (
             <Box display="flex">
-              <Link
-                href="/"
-                className="fcu-navigation-logo"
-                variant="tertiaryNoOutline"
-                title="Revenir à la page d'accueil"
-                p="0"
-                mr="3w"
-              >
-                <Image
-                  height={50}
-                  width={70}
-                  src="/logo-fcu.png"
-                  alt="logo france chaleur urbaine"
-                  priority
-                />
+              <Link href="/" className="fcu-navigation-logo" variant="tertiaryNoOutline" title="Revenir à la page d'accueil" p="0" mr="3w">
+                <Image height={50} width={70} src="/logo-fcu.png" alt="logo france chaleur urbaine" priority />
               </Link>
-              <MainNavigation
-                items={markCurrentPageActive(navigationMenuItems, currentPath)}
-                className="fr-col"
-              />
+              <MainNavigation items={markCurrentPageActive(navigationMenuItems, currentPath)} className="fr-col" />
               {isFullScreenMode && (
                 // structure from https://github.com/codegouvfr/react-dsfr/blob/eee67f75124b5c3d011703cb6c5cd88eb41ae54c/src/Header/Header.tsx#L158-L179
                 <Box className={fr.cx('fr-header__tools-links')}>
                   <ul className={fr.cx('fr-btns-group', 'fr-col--middle')}>
                     {quickAccessItems.map((quickAccessItem, index) => (
                       <li key={index}>
-                        <HeaderQuickAccessItem
-                          quickAccessItem={quickAccessItem}
-                        />
+                        <HeaderQuickAccessItem quickAccessItem={quickAccessItem} />
                       </li>
                     ))}
                   </ul>
@@ -441,9 +402,8 @@ const PageFooter = () => (
   <Footer
     contentDescription={
       <>
-        France Chaleur Urbaine est un projet d'innovation pour accélérer le
-        raccordement des bâtiments aux réseaux de chaleur en vue de l'atteinte
-        des objectifs de développement de la chaleur d'origine renouvelable.
+        France Chaleur Urbaine est un projet d'innovation pour accélérer le raccordement des bâtiments aux réseaux de chaleur en vue de
+        l'atteinte des objectifs de développement de la chaleur d'origine renouvelable.
         <br />
         <br />
         <Text as="span" fontWeight="bold">
@@ -451,9 +411,7 @@ const PageFooter = () => (
         </Text>
         <br />
         <Text as="span" fontWeight="bold">
-          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">
-            france-chaleur-urbaine@developpement-durable.gouv.fr
-          </a>
+          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
         </Text>
       </>
     }

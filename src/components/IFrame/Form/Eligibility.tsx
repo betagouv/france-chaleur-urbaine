@@ -1,14 +1,13 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
-import {
-  CheckEligibilityFormLabel,
-  SelectEnergy,
-} from '@components/EligibilityForm/components';
-import AddressAutocomplete from '@components/addressAutocomplete';
 import Image from 'next/image';
 import { useState } from 'react';
+
+import AddressAutocomplete from '@components/addressAutocomplete';
+import { CheckEligibilityFormLabel, SelectEnergy } from '@components/EligibilityForm/components';
+import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
 import { AnalyticsFormId } from 'src/services/analytics';
 import { SuggestionItem } from 'src/types/Suggestions';
+
 import { Container, Form, Header } from './Eligibility.styles';
 
 const Eligibility = () => {
@@ -18,21 +17,11 @@ const Eligibility = () => {
     <Container>
       <Header>
         <b>Votre immeuble pourrait-il être raccordé à un réseau de chaleur ?</b>
-        <Image
-          height={136}
-          width={242}
-          src="/logo-fcu-with-typo.jpg"
-          alt="logo france chaleur urbaine"
-        />
+        <Image height={136} width={242} src="/logo-fcu-with-typo.jpg" alt="logo france chaleur urbaine" />
       </Header>
       <Form id={AnalyticsFormId.form_test_adresse}>
         <CheckEligibilityFormLabel>
-          <SelectEnergy
-            name="heatingType"
-            selectOptions={energyInputsDefaultLabels}
-            onChange={setHeatingType}
-            value={heatingType}
-          />
+          <SelectEnergy name="heatingType" selectOptions={energyInputsDefaultLabels} onChange={setHeatingType} value={heatingType} />
         </CheckEligibilityFormLabel>
         <AddressAutocomplete
           placeholder="Tapez ici votre adresse"
@@ -43,9 +32,7 @@ const Eligibility = () => {
         <Button
           disabled={!heatingType || !address}
           onClick={() =>
-            window.open(
-              `https://france-chaleur-urbaine.beta.gouv.fr?heating=${heatingType}&address=${address?.properties.label}`
-            )
+            window.open(`https://france-chaleur-urbaine.beta.gouv.fr?heating=${heatingType}&address=${address?.properties.label}`)
           }
         >
           Tester mon adresse

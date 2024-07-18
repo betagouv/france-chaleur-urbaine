@@ -1,14 +1,15 @@
 import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 import { getArticle } from '@data/contents';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 import { Article } from 'src/types/Article';
-import styled from 'styled-components';
 
 const ArticleContentWrapper = styled(Box)`
   img {

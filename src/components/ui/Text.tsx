@@ -1,6 +1,7 @@
 import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
-import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
+
 import { LegacyColor, legacyColors } from './helpers/colors';
+import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type TextType = 'h6' | 'label' | 'p' | 'div' | 'span' | 'strong' | 'blockquote';
 type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'lead';
@@ -9,10 +10,7 @@ interface Label {
   htmlFor?: string | undefined;
 }
 
-interface TextProps
-  extends SpacingProperties,
-    HTMLAttributes<HTMLDivElement>,
-    Label {
+interface TextProps extends SpacingProperties, HTMLAttributes<HTMLDivElement>, Label {
   as?: TextType;
   size?: TextSize | `${number}px`;
   fontSize?: string;
@@ -64,11 +62,7 @@ function Text({
     fontSize: fontSize ?? 'inherit',
     lineHeight: lineHeight ?? 'inherit',
     fontStyle: fontStyle ?? 'normal',
-    color: color
-      ? `var(--text-default-${color})`
-      : legacyColor
-      ? legacyColors[legacyColor]
-      : undefined,
+    color: color ? `var(--text-default-${color})` : legacyColor ? legacyColors[legacyColor] : undefined,
     textAlign: textAlign,
     cursor: cursor,
     display: display,

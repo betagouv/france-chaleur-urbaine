@@ -1,6 +1,7 @@
+import { useRouter } from 'next/router';
+
 import Ressource from '@components/Ressources/Ressource';
 import SimplePage from '@components/shared/page/SimplePage';
-import { useRouter } from 'next/router';
 
 const RessourcePage = () => {
   const router = useRouter();

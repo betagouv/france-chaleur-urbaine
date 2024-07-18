@@ -2,8 +2,9 @@ import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@codegouvfr/react-dsfr/Button';
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
-import Input from '@components/form/Input';
 import { ChangeEvent, FormEvent, useState } from 'react';
+
+import Input from '@components/form/Input';
 
 const additionWishValuesWithFormat = [
   'Tracé du réseau',
@@ -11,11 +12,7 @@ const additionWishValuesWithFormat = [
   "Tracé d'une extension prévue du réseau",
 ];
 
-const additionWishValues = [
-  ...additionWishValuesWithFormat,
-  'Informations tarifaires',
-  'autre',
-];
+const additionWishValues = [...additionWishValuesWithFormat, 'Informations tarifaires', 'autre'];
 
 const additionWishValuesADEME = [
   'Tracé d’un nouveau réseau',
@@ -39,10 +36,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (
-      (wish === 'Ajout de données' || wish === 'Déposer des éléments') &&
-      additionWish.length === 0
-    ) {
+    if ((wish === 'Ajout de données' || wish === 'Déposer des éléments') && additionWish.length === 0) {
       setAdditionWishEmpty(true);
       return;
     }
@@ -52,11 +46,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
       Utilisateur: user === 'autre' ? otherUser : user,
       'Réseau(x)': network,
       Souhait: wish,
-      'Ajout de': additionWish
-        .map((value) =>
-          value === 'autre' ? `Autre : ${otherAdditionWish}` : value
-        )
-        .join(', '),
+      'Ajout de': additionWish.map((value) => (value === 'autre' ? `Autre : ${otherAdditionWish}` : value)).join(', '),
       Précisions: otherWish,
       'Nom gestionnaire': nomGestionnaireWish,
       'Date mise en service': dateWish,
@@ -163,8 +153,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
             },
           },
           {
-            label:
-              'déposer des éléments dans le cadre d’une demande de subvention ADEME',
+            label: 'déposer des éléments dans le cadre d’une demande de subvention ADEME',
             nativeInputProps: {
               checked: wish === 'Déposer des éléments',
               onChange: () => setWish('Déposer des éléments'),
@@ -201,18 +190,16 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
         </>
       )}
 
-      {wish &&
-        wish !== 'Ajout de données' &&
-        wish !== 'Déposer des éléments' && (
-          <Input
-            label="Précisez"
-            nativeInputProps={{
-              required: true,
-              value: otherWish,
-              onChange: (e) => setOtherWish(e.target.value),
-            }}
-          />
-        )}
+      {wish && wish !== 'Ajout de données' && wish !== 'Déposer des éléments' && (
+        <Input
+          label="Précisez"
+          nativeInputProps={{
+            required: true,
+            value: otherWish,
+            onChange: (e) => setOtherWish(e.target.value),
+          }}
+        />
+      )}
       {wish === 'Déposer des éléments' && (
         <>
           <Input
@@ -246,10 +233,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
             })}
           />
 
-          {(additionWish.includes('Tracé d’un nouveau réseau') ||
-            additionWish.includes(
-              'Tracé d’une extension d’un réseau existant'
-            )) && (
+          {(additionWish.includes('Tracé d’un nouveau réseau') || additionWish.includes('Tracé d’une extension d’un réseau existant')) && (
             <Input
               label="Préciser la date de mise en service prévisionnelle"
               nativeInputProps={{
@@ -263,10 +247,7 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
       )}
       {additionWishEmpty && (
         <p>
-          <Alert
-            title={'Merci de sélectionner le type d’ajout.'}
-            severity="error"
-          />
+          <Alert title={'Merci de sélectionner le type d’ajout.'} severity="error" />
         </p>
       )}
       <Button
@@ -274,18 +255,13 @@ const ContributionForm = ({ submit }: { submit: (data: any) => void }) => {
           type: 'submit',
         }}
       >
-        {wish &&
-        (wish === 'Ajout de données' || wish === 'Déposer des éléments')
-          ? 'Télécharger mes données'
-          : 'Envoyer'}
+        {wish && (wish === 'Ajout de données' || wish === 'Déposer des éléments') ? 'Télécharger mes données' : 'Envoyer'}
       </Button>
-      {((wish === 'Ajout de données' &&
-        additionWishValuesWithFormat.some((x) => additionWish.includes(x))) ||
+      {((wish === 'Ajout de données' && additionWishValuesWithFormat.some((x) => additionWish.includes(x))) ||
         wish === 'Déposer des éléments') && (
         <span className="fr-hint-text">
-          Formats acceptés : .shp, gpkg (geopackage), .geojson, .dxf, .gdb,
-          .tab, .kmz <br />A défaut, un .dwg peut être transmis, mais il ne
-          pourra être exploité que s'il est géolocalisé
+          Formats acceptés : .shp, gpkg (geopackage), .geojson, .dxf, .gdb, .tab, .kmz <br />A défaut, un .dwg peut être transmis, mais il
+          ne pourra être exploité que s'il est géolocalisé
         </span>
       )}
     </form>

@@ -103,8 +103,7 @@ export const EligibilityResult = styled.div<MapCardType>`
   font-size: 14px;
 
   ${({ isEligible }) => css`
-    box-shadow: inset 8px 0 0 0
-      ${(isEligible ? eligibleStyle : ineligibleStyle).bgColor};
+    box-shadow: inset 8px 0 0 0 ${(isEligible ? eligibleStyle : ineligibleStyle).bgColor};
   `}
 `;
 

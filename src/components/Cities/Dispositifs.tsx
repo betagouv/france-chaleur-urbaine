@@ -1,11 +1,9 @@
-import WrappedText from '@components/WrappedText/WrappedText';
 import Link from 'next/link';
+
+import WrappedText from '@components/WrappedText/WrappedText';
+
 import { Image } from './City.styles';
-import {
-  DispositifsContainer,
-  DispositifsColumn,
-  Title,
-} from './Dispositifs.styles';
+import { DispositifsContainer, DispositifsColumn, Title } from './Dispositifs.styles';
 
 export type DispositifsData = {
   title?: string;
@@ -37,25 +35,16 @@ const Dispositifs = ({
           {dispositifsTitle && <Title>{dispositifsTitle}</Title>}
           <DispositifsContainer>
             {dispositifs.map((dispositif: any, i) => (
-              <DispositifsColumn
-                className="fr-col-md-6 fr-col-12"
-                key={`${city}'-'+${i}`}
-              >
+              <DispositifsColumn className="fr-col-md-6 fr-col-12" key={`${city}'-'+${i}`}>
                 {dispositif.title && <h4>{dispositif.title}</h4>}
-                {dispositif.img && (
-                  <Image src={dispositif.img.src} alt={dispositif.img.alt} />
-                )}
+                {dispositif.img && <Image src={dispositif.img.src} alt={dispositif.img.alt} />}
                 <WrappedText body={dispositif.description} />
                 {dispositif.link && (
                   <div className="fr-btn fr-mt-2w fr-ml-4w">
                     <Link
                       href={dispositif.link.href}
                       target={dispositif.link.target}
-                      rel={
-                        dispositif.link.target === '_blank'
-                          ? 'noopener noreferrer'
-                          : undefined
-                      }
+                      rel={dispositif.link.target === '_blank' ? 'noopener noreferrer' : undefined}
                     >
                       {dispositif.link.title}
                     </Link>

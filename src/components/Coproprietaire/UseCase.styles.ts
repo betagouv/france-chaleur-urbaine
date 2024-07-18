@@ -1,5 +1,6 @@
-import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import styled from 'styled-components';
+
+import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 
 export const Box = styled(Cartridge)`
   @media (min-width: 1145px) {

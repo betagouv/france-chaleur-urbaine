@@ -1,23 +1,22 @@
-import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
-import { ZodRawShape, z } from 'zod';
-import { parentLogger } from './logger';
+import { captureException } from '@sentry/nextjs';
 import { HttpStatusCode } from 'axios';
 import { errors as formidableErrors } from 'formidable';
-import { captureException } from '@sentry/nextjs';
-import { USER_ROLE } from 'src/types/enum/UserRole';
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 import { Session, getServerSession } from 'next-auth';
+import { ZodRawShape, z } from 'zod';
+
 import { nextAuthOptions } from '@pages/api/auth/[...nextauth]';
 import { BadRequestError } from 'src/services/errors';
+import { USER_ROLE } from 'src/types/enum/UserRole';
+
+import { parentLogger } from './logger';
 
 const FormidableError = (formidableErrors as any).default;
 
 /**
  * Valide un objet selon un schéma zod.
  */
-export async function validateObjectSchema<Shape extends ZodRawShape>(
-  object: any,
-  shape: Shape
-): Promise<z.infer<z.ZodObject<Shape>>> {
+export async function validateObjectSchema<Shape extends ZodRawShape>(object: any, shape: Shape): Promise<z.infer<z.ZodObject<Shape>>> {
   return z.strictObject(shape).parseAsync(object);
 }
 
@@ -39,30 +38,17 @@ const defaultRouteOptions = {
  *  - erreur de route (invalidRouteError) => retourne un statut 404
  *  - postgres => retourne un statut 500
  */
-export function handleRouteErrors(
-  handler: NextApiHandler,
-  options?: RouteOptions
-): NextApiHandler {
-  const routeOptions: RouteOptions = Object.assign(
-    {},
-    defaultRouteOptions,
-    options
-  );
+export function handleRouteErrors(handler: NextApiHandler, options?: RouteOptions): NextApiHandler {
+  const routeOptions: RouteOptions = Object.assign({}, defaultRouteOptions, options);
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const startTime = Date.now();
     const logger = parentLogger.child({
       url: req.url,
-      ip: process.env.LOG_REQUEST_IP
-        ? req.headers['x-forwarded-for'] ?? req.socket.remoteAddress
-        : undefined,
+      ip: process.env.LOG_REQUEST_IP ? req.headers['x-forwarded-for'] ?? req.socket.remoteAddress : undefined,
     });
     try {
       if (routeOptions?.requireAuthentication) {
-        await requireAuthentication(
-          req,
-          res,
-          routeOptions.requireAuthentication
-        );
+        await requireAuthentication(req, res, routeOptions.requireAuthentication);
       }
       const handlerResult = await handler(req, res);
       if (!res.headersSent) {
@@ -151,9 +137,7 @@ export function handleRouteErrors(
   };
 }
 
-export const requiredAuthenticationError = new Error(
-  'Authentification requise'
-); // 401
+export const requiredAuthenticationError = new Error('Authentification requise'); // 401
 export const invalidPermissionsError = new Error('Permissions invalides'); // 403
 export const invalidRouteError = new Error('invalid route'); // 404
 
@@ -194,10 +178,7 @@ export async function requireAuthentication(
   if (!req.user.active) {
     throw invalidPermissionsError;
   }
-  if (
-    configOrRoles instanceof Array &&
-    !configOrRoles.includes(req.user.role)
-  ) {
+  if (configOrRoles instanceof Array && !configOrRoles.includes(req.user.role)) {
     throw invalidPermissionsError;
   }
   return session;

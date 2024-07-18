@@ -1,4 +1,5 @@
 import Chart from 'react-google-charts';
+
 import { Container, GraphWrapper } from './Graph.style';
 
 const Graph = ({
@@ -29,17 +30,12 @@ const Graph = ({
   vAxisTextStyle?: any;
   colors?: string[];
 }) => {
-  const total = formatedData
-    .slice(1)
-    .reduce((acc, current) => acc + current[1], 0);
+  const total = formatedData.slice(1).reduce((acc, current) => acc + current[1], 0);
   return (
     <Container large={large}>
       <GraphWrapper>
         {error ? (
-          <div>
-            Erreur lors du chargement des données statistiques, veuillez nous
-            excuser et réessayer plus tard.
-          </div>
+          <div>Erreur lors du chargement des données statistiques, veuillez nous excuser et réessayer plus tard.</div>
         ) : !data ? (
           'Chargement des données...'
         ) : (

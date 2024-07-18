@@ -6,11 +6,7 @@ type HotjarScriptProps = React.ComponentProps<typeof Script> & {
   hjsv: string;
 };
 
-const HotjarScript: React.FC<HotjarScriptProps> = ({
-  hjid,
-  hjsv,
-  ...props
-}) => {
+const HotjarScript: React.FC<HotjarScriptProps> = ({ hjid, hjsv, ...props }) => {
   return (
     <Script id="hotjar-snippet" {...props}>
       {`(function(h,o,t,j,a,r){

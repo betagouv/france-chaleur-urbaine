@@ -1,15 +1,13 @@
-import { getExport } from '@core/infrastructure/repository/addresseInformation';
 import type { NextApiRequest, NextApiResponse } from 'next';
+
+import { getExport } from '@core/infrastructure/repository/addresseInformation';
 import db from 'src/db';
 import { withCors } from 'src/services/api/cors';
 import { ErrorResponse } from 'src/types/ErrorResponse';
 
 const bulkEligibilitygibilityStatus = async (
   req: NextApiRequest,
-  res: NextApiResponse<
-    | { id: string; progress: number; result?: any[]; error?: boolean }
-    | ErrorResponse
-  >
+  res: NextApiResponse<{ id: string; progress: number; result?: any[]; error?: boolean } | ErrorResponse>
 ) => {
   const id = req.query.id as string;
 

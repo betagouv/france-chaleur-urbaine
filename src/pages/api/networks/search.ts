@@ -1,12 +1,9 @@
-import {
-  handleRouteErrors,
-  requirePostMethod,
-  validateObjectSchema,
-} from '@helpers/server';
+import { z } from 'zod';
+
+import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@helpers/server';
 import { clientConfig } from 'src/client-config';
 import db from 'src/db';
 import { Network } from 'src/types/Summary/Network';
-import { z } from 'zod';
 
 const selectedNetworkFields = [
   'id_fcu',
@@ -23,10 +20,7 @@ const selectedNetworkFields = [
   'fichiers',
 ] satisfies (keyof Network)[];
 
-export type NetworkSearchResult = Pick<
-  Network,
-  (typeof selectedNetworkFields)[number]
->;
+export type NetworkSearchResult = Pick<Network, (typeof selectedNetworkFields)[number]>;
 
 /**
  * Search for hot and cold networks by id or name, and return 10 elements max
@@ -34,9 +28,7 @@ export type NetworkSearchResult = Pick<
 export default handleRouteErrors(async (req) => {
   requirePostMethod(req);
   const { search } = await validateObjectSchema(req.body, {
-    search: z
-      .string()
-      .min(clientConfig.networkSearchMinimumCharactersThreshold),
+    search: z.string().min(clientConfig.networkSearchMinimumCharactersThreshold),
   });
   const [hotNetworks, coldNetworks] = await Promise.all([
     db<NetworkSearchResult>('reseaux_de_chaleur')
@@ -51,9 +43,7 @@ export default handleRouteErrors(async (req) => {
       .limit(10),
   ]);
   return [...hotNetworks, ...coldNetworks]
-    .sort((a, b) =>
-      a['Identifiant reseau'] < b['Identifiant reseau'] ? -1 : 1
-    )
+    .sort((a, b) => (a['Identifiant reseau'] < b['Identifiant reseau'] ? -1 : 1))
     .slice(0, 10)
     .map((network) => {
       network.website_gestionnaire = network.website_gestionnaire?.trim(); // type postgresql character... should be varying character

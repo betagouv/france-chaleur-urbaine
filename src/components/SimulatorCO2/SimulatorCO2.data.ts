@@ -1,6 +1,5 @@
 export const dataSimulator = {
-  chapo:
-    'Estimer les émissions de CO2 évitées par le raccordement de vos locaux à un réseau de chaleur*',
+  chapo: 'Estimer les émissions de CO2 évitées par le raccordement de vos locaux à un réseau de chaleur*',
   label: {
     conso: 'Consommation (MWh/an)',
     surf: 'Surface (m²)**',
@@ -16,8 +15,7 @@ export const dataSimulator = {
 };
 
 export const dataSimulatorTertiaire = {
-  chapo:
-    'Estimer les émissions de CO2 évitées par le raccordement de vos locaux à un réseau de chaleur*',
+  chapo: 'Estimer les émissions de CO2 évitées par le raccordement de vos locaux à un réseau de chaleur*',
   label: {
     conso: 'Consommation (MWh/an)',
     surf: 'Surface (m²)*',

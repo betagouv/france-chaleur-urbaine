@@ -1,8 +1,9 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import Checkbox from '@components/form/formik/checkbox';
-import Box from '@components/ui/Box';
 import { Field } from 'formik';
 import * as Yup from 'yup';
+
+import Checkbox from '@components/form/formik/checkbox';
+import Box from '@components/ui/Box';
 
 export const fieldLabelConsent = {
   termOfUse: 'J’accepte les conditions générales d’utilisation du service.',
@@ -20,11 +21,7 @@ const ContactConsent = () => {
   return (
     <fieldset className={fr.cx('fr-fieldset')}>
       <Box className={fr.cx('fr-fieldset__element')} my="1w">
-        <Field
-          name="termOfUse"
-          label={fieldLabelConsent.termOfUse}
-          component={Checkbox}
-        />
+        <Field name="termOfUse" label={fieldLabelConsent.termOfUse} component={Checkbox} />
       </Box>
     </fieldset>
   );

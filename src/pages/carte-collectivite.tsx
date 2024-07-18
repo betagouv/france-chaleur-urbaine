@@ -12,10 +12,7 @@ const CollectivityMap = () => {
           },
           zonesDeDeveloppementPrioritaire: true,
         })}
-        enabledLegendFeatures={[
-          'reseauxDeChaleur',
-          'zonesDeDeveloppementPrioritaire',
-        ]}
+        enabledLegendFeatures={['reseauxDeChaleur', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
         withHideLegendSwitch

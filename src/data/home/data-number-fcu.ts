@@ -5,8 +5,7 @@ const dataNumberFcu = {
   data: [
     {
       value: '> 90',
-      description:
-        'Partenariats effectifs ou en cours de montage avec des collectivités et exploitants',
+      description: 'Partenariats effectifs ou en cours de montage avec des collectivités et exploitants',
     },
     {
       value: `> ${statistics.connection}`,

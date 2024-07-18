@@ -1,8 +1,8 @@
 import { StyledIFrameLink } from '@components/IFrame/Map/IFrameMapIntegrationForm.styles';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { Container, Image } from '@components/Press/index.styles';
-import Slice from '@components/Slice';
 import SimplePage from '@components/shared/page/SimplePage';
+import Slice from '@components/Slice';
 
 const PressJanuary24 = () => {
   return (
@@ -39,11 +39,7 @@ Alors que l’exercice de planification écologique mené à l’échelle nation
             className="fr-mt-1w"
             link={`<iframe title="France chaleur urbaine - Éligibilité" src="https://france-chaleur-urbaine.beta.gouv.fr/form" width="100%" height="330" />`}
           />
-          <Image
-            className="fr-mt-3w"
-            src="/img/FCU_Infographie_carte.jpg"
-            alt="Carte France Chaleur Urbaine"
-          />
+          <Image className="fr-mt-3w" src="/img/FCU_Infographie_carte.jpg" alt="Carte France Chaleur Urbaine" />
           <MarkdownWrapper
             value={`
 <br />

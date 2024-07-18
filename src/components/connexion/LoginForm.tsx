@@ -1,14 +1,11 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import Input from '@components/form/Input';
-import { signIn } from 'next-auth/react';
 import Link from 'next/link';
+import { signIn } from 'next-auth/react';
 import { FormEvent, useState } from 'react';
-import {
-  Container,
-  Password,
-  PasswordIcon,
-  PasswordInput,
-} from './Form.styles';
+
+import Input from '@components/form/Input';
+
+import { Container, Password, PasswordIcon, PasswordInput } from './Form.styles';
 
 export interface LoginFormProps {
   callbackUrl: string;

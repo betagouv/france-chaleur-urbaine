@@ -1,12 +1,14 @@
-import { NetworkEligibilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import { AxiosResponse } from 'axios';
+
+import { NetworkEligibilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import { HttpClient } from 'src/services/http';
+import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
 import { Network } from 'src/types/Summary/Network';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
+
 import { ServiceError } from './errors';
 
 export class HeatNetworkService {
@@ -15,29 +17,18 @@ export class HeatNetworkService {
     this.httpClient = http;
   }
 
-  async getNetworkEligibilityStatus(
-    networkId: string,
-    geoAddress: SuggestionItem
-  ): Promise<NetworkEligibilityStatus> {
+  async getNetworkEligibilityStatus(networkId: string, geoAddress: SuggestionItem): Promise<NetworkEligibilityStatus> {
     const [lon, lat] = geoAddress.geometry.coordinates;
-    return await this.httpClient.get<NetworkEligibilityStatus>(
-      `/api/networks/${networkId}/eligibility?lat=${lat}&lon=${lon}`
-    );
+    return await this.httpClient.get<NetworkEligibilityStatus>(`/api/networks/${networkId}/eligibility?lat=${lat}&lon=${lon}`);
   }
 
-  async findByCoords(
-    geoAddress: SuggestionItem
-  ): Promise<HeatNetworksResponse> {
+  async findByCoords(geoAddress: SuggestionItem): Promise<HeatNetworksResponse> {
     try {
       if (geoAddress.properties.label === geoAddress.properties.city) {
-        return await this.httpClient.get<HeatNetworksResponse>(
-          `/api/map/cityNetwork?&city=${geoAddress.properties.city}`
-        );
+        return await this.httpClient.get<HeatNetworksResponse>(`/api/map/cityNetwork?&city=${geoAddress.properties.city}`);
       } else {
         const [lon, lat] = geoAddress.geometry.coordinates;
-        return await this.httpClient.get<HeatNetworksResponse>(
-          `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}`
-        );
+        return await this.httpClient.get<HeatNetworksResponse>(`/api/map/eligibilityStatus?lat=${lat}&lon=${lon}`);
       }
     } catch (e) {
       throw new ServiceError(e);
@@ -46,9 +37,7 @@ export class HeatNetworkService {
 
   async findByIdentifiant(identifiant: string): Promise<Network> {
     try {
-      return await this.httpClient.get<Network>(
-        `/api/map/network?&identifiant=${identifiant}`
-      );
+      return await this.httpClient.get<Network>(`/api/map/network?&identifiant=${identifiant}`);
     } catch (e) {
       throw new ServiceError(e);
     }
@@ -63,9 +52,7 @@ export class HeatNetworkService {
     result?: string;
     error?: boolean;
   }> {
-    return this.httpClient
-      .post('/api/map/bulkEligibilityStatus', { addresses, email })
-      .then((response) => response.data);
+    return this.httpClient.post('/api/map/bulkEligibilityStatus', { addresses, email }).then((response) => response.data);
   }
 
   async bulkEligibilityValues(id: string): Promise<{
@@ -78,18 +65,12 @@ export class HeatNetworkService {
   }
 
   async bulkEligibilityExport(id: string): Promise<string> {
-    return this.httpClient
-      .post(`/api/map/bulkEligibilityStatus/${id}`)
-      .then((response) => response.data);
+    return this.httpClient.post(`/api/map/bulkEligibilityStatus/${id}`).then((response) => response.data);
   }
 
   async densite(line: number[][][]): Promise<Densite> {
     try {
-      return await this.httpClient.get<Densite>(
-        `/api/map/summary?type=line&coordinates=${encodeURIComponent(
-          JSON.stringify(line)
-        )}`
-      );
+      return await this.httpClient.get<Densite>(`/api/map/summary?type=line&coordinates=${encodeURIComponent(JSON.stringify(line))}`);
     } catch (e) {
       throw new ServiceError(e);
     }
@@ -97,19 +78,13 @@ export class HeatNetworkService {
 
   async summary(bounds: number[][]): Promise<Summary> {
     try {
-      return await this.httpClient.get<Summary>(
-        `/api/map/summary?type=polygon&coordinates=${encodeURIComponent(
-          JSON.stringify(bounds)
-        )}`
-      );
+      return await this.httpClient.get<Summary>(`/api/map/summary?type=polygon&coordinates=${encodeURIComponent(JSON.stringify(bounds))}`);
     } catch (e) {
       throw new ServiceError(e);
     }
   }
 
-  getFileToDownload = async (
-    response: AxiosResponse
-  ): Promise<{ fileName: string; blob: Blob }> => {
+  getFileToDownload = async (response: AxiosResponse): Promise<{ fileName: string; blob: Blob }> => {
     let fileName = `export.xlsx`;
 
     const contentDisposition = response.headers['content-disposition'];
@@ -136,17 +111,10 @@ export class HeatNetworkService {
     return { fileName, blob };
   };
 
-  async downloadSummary(
-    bounds: number[][],
-    format: EXPORT_FORMAT
-  ): Promise<any> {
+  async downloadSummary(bounds: number[][], format: EXPORT_FORMAT): Promise<any> {
     try {
       return await this.httpClient
-        .post(
-          `/api/map/summary?type=polygon&format=${format}&coordinates=${encodeURIComponent(
-            JSON.stringify(bounds)
-          )}`
-        )
+        .post(`/api/map/summary?type=polygon&format=${format}&coordinates=${encodeURIComponent(JSON.stringify(bounds))}`)
         .then(async (response) => {
           const { fileName, blob } = await this.getFileToDownload(response);
 

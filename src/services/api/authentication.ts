@@ -1,11 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+
 import db from 'src/db';
 import { ApiAccount } from 'src/types/ApiAccount';
 
-export const apiUser = async (
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<ApiAccount | null> => {
+export const apiUser = async (req: NextApiRequest, res: NextApiResponse): Promise<ApiAccount | null> => {
   const { key } = req.query;
 
   if (!key) {
@@ -32,9 +30,7 @@ export const apiUser = async (
     return null;
   }
 
-  const account: ApiAccount = await db('api_accounts')
-    .where('key', key)
-    .first();
+  const account: ApiAccount = await db('api_accounts').where('key', key).first();
   if (!account || account.token !== bearerToken[1]) {
     res.status(401).json({
       message: 'Please check account key and token',

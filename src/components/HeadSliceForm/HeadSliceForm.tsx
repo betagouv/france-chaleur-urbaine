@@ -1,26 +1,21 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import {
-  EligibilityFormContact,
-  EligibilityFormMessageConfirmation,
-  EnergyInputsLabelsType,
-} from '@components/EligibilityForm';
+import { useRouter } from 'next/router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
+import AddressAutocomplete from '@components/addressAutocomplete';
+import { EligibilityFormContact, EligibilityFormMessageConfirmation, EnergyInputsLabelsType } from '@components/EligibilityForm';
+import { CheckEligibilityFormLabel, SelectEnergy } from '@components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
-import {
-  CheckEligibilityFormLabel,
-  SelectEnergy,
-} from '@components/EligibilityForm/components';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
-import AddressAutocomplete from '@components/addressAutocomplete';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
-import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { AnalyticsFormId } from 'src/services/analytics';
 import { AvailableHeating } from 'src/types/AddressData';
 import { SuggestionItem } from 'src/types/Suggestions';
+
 import BulkEligibilitySlice from './BulkEligibilitySlice';
 import {
   Buttons,
@@ -131,14 +126,7 @@ const HeadSlice = ({
     } catch (err: any) {
       setEligibilityError(true);
     }
-  }, [
-    address,
-    geoAddress,
-    heatingType,
-    heatNetworkService,
-    handleOnFetchAddress,
-    handleOnSuccessAddress,
-  ]);
+  }, [address, geoAddress, heatingType, heatNetworkService, handleOnFetchAddress, handleOnSuccessAddress]);
 
   useEffect(() => {
     const { heating, address } = router.query;
@@ -181,16 +169,11 @@ const HeadSlice = ({
               }}
             />
 
-            <FormWarningMessage
-              show={!!(address && geoAddress && !heatingType)}
-            >
-              {warningMessage}
-            </FormWarningMessage>
+            <FormWarningMessage show={!!(address && geoAddress && !heatingType)}>{warningMessage}</FormWarningMessage>
 
             {eligibilityError ? (
               <Box textColor="#c00">
-                Une erreur est survenue. Veuillez réessayer ou bien{' '}
-                <Link href="/contact">contacter le support</Link>.
+                Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
               </Box>
             ) : (
               <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
@@ -201,12 +184,7 @@ const HeadSlice = ({
             <Buttons>
               <Button
                 size="large"
-                disabled={
-                  !address ||
-                  !geoAddress ||
-                  !heatingType ||
-                  (loadingStatus === 'loading' && !eligibilityError)
-                }
+                disabled={!address || !geoAddress || !heatingType || (loadingStatus === 'loading' && !eligibilityError)}
                 onClick={testAddress}
               >
                 Tester cette adresse
@@ -264,36 +242,15 @@ const HeadSlice = ({
       <SliceContactFormStyle />
 
       <div ref={EligibilityFormContactRef}>
-        <Slice
-          padding={5}
-          theme="grey"
-          className={`slice-contact-form-wrapper ${
-            contactReady && !messageReceived ? 'active' : ''
-          }`}
-        >
-          {address && (
-            <EligibilityFormContact
-              addressData={addressData}
-              onSubmit={handleOnSubmitContact}
-            />
-          )}
+        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${contactReady && !messageReceived ? 'active' : ''}`}>
+          {address && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
         </Slice>
 
-        <Slice
-          padding={5}
-          theme="grey"
-          className={`slice-contact-form-wrapper ${
-            messageReceived ? 'active' : ''
-          }`}
-        >
+        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${messageReceived ? 'active' : ''}`}>
           <EligibilityFormMessageConfirmation addressData={addressData} />
         </Slice>
 
-        {!externBulkForm && withBulkEligibility && (
-          <BulkEligibilitySlice
-            displayBulkEligibility={displayBulkEligibility}
-          />
-        )}
+        {!externBulkForm && withBulkEligibility && <BulkEligibilitySlice displayBulkEligibility={displayBulkEligibility} />}
       </div>
     </>
   );

@@ -1,13 +1,15 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import Input from '@codegouvfr/react-dsfr/Input';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
+import { useMemo, useState } from 'react';
+
 import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
-import { useMemo, useState } from 'react';
+
 import { prixSpotCEE } from './Simulator';
 
 type TypeBatiment = 'residentiel' | 'tertiaire';
@@ -32,10 +34,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
     typeBatiment: props.typeBatiment ?? 'residentiel',
   });
 
-  function updateState<Key extends keyof FormState>(
-    key: Key,
-    value: FormState[Key]
-  ) {
+  function updateState<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
     setFormState((state) => ({
       ...state,
       [key]: value,
@@ -43,10 +42,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
   }
 
   const montantAide = useMemo(() => {
-    const value =
-      formState.typeBatiment === 'residentiel'
-        ? formState.nbLogements
-        : formState.surface;
+    const value = formState.typeBatiment === 'residentiel' ? formState.nbLogements : formState.surface;
     if (!value) {
       return null;
     }
@@ -75,23 +71,14 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
 
   const montantCoutsApresAide = useMemo(() => {
     if (montantCouts instanceof Array && isDefined(montantAide)) {
-      return [
-        Math.max(0, montantCouts[0] - montantAide),
-        Math.max(0, montantCouts[1] - montantAide),
-      ];
+      return [Math.max(0, montantCouts[0] - montantAide), Math.max(0, montantCouts[1] - montantAide)];
     }
     return null;
   }, [montantCouts, montantAide]);
 
   const montantCoutsParLogementApresAide = useMemo(() => {
-    if (
-      montantCoutsApresAide instanceof Array &&
-      isDefined(formState.nbLogements)
-    ) {
-      return [
-        montantCoutsApresAide[0] / formState.nbLogements,
-        montantCoutsApresAide[1] / formState.nbLogements,
-      ];
+    if (montantCoutsApresAide instanceof Array && isDefined(formState.nbLogements)) {
+      return [montantCoutsApresAide[0] / formState.nbLogements, montantCoutsApresAide[1] / formState.nbLogements];
     }
     return null;
   }, [formState, montantAide]);
@@ -125,10 +112,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               value: formState.typeBatiment,
               onChange: (e) => {
                 updateState('typeBatiment', e.target.value as TypeBatiment);
-                updateState(
-                  e.target.value === 'residentiel' ? 'nbLogements' : 'surface',
-                  undefined
-                );
+                updateState(e.target.value === 'residentiel' ? 'nbLogements' : 'surface', undefined);
               },
             }}
           />
@@ -139,8 +123,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               nativeInputProps={{
                 type: 'number',
                 min: 0,
-                onChange: (e) =>
-                  updateState('nbLogements', parseInt(e.target.value)),
+                onChange: (e) => updateState('nbLogements', parseInt(e.target.value)),
               }}
             />
           ) : (
@@ -150,8 +133,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               nativeInputProps={{
                 type: 'number',
                 min: 0,
-                onChange: (e) =>
-                  updateState('surface', parseInt(e.target.value)),
+                onChange: (e) => updateState('surface', parseInt(e.target.value)),
               }}
             />
           )}
@@ -160,11 +142,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
             {props.embedded && (
               <>
                 {' '}
-                En savoir plus sur notre{' '}
-                <Link href="/ressources/cout-raccordement#contenu">
-                  article dédié
-                </Link>
-                .
+                En savoir plus sur notre <Link href="/ressources/cout-raccordement#contenu">article dédié</Link>.
               </>
             )}
           </Text>
@@ -176,18 +154,14 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
           {montantCouts === outOfRangeValue ? (
             <Box mt="2w">
               <Badge severity="warning">
-                Le simulateur n'est pour le moment pas disponible pour des
-                bâtiments de plus de{' '}
-                {formState.typeBatiment === 'residentiel'
-                  ? '330 logements'
-                  : '20 000 m²'}
+                Le simulateur n'est pour le moment pas disponible pour des bâtiments de plus de{' '}
+                {formState.typeBatiment === 'residentiel' ? '330 logements' : '20 000 m²'}
               </Badge>
             </Box>
           ) : (
             <>
               <Heading as="h6" mt="2w">
-                Entre {prettyPrintCout(montantCouts?.[0])} et{' '}
-                {prettyPrintCout(montantCouts?.[1])}
+                Entre {prettyPrintCout(montantCouts?.[0])} et {prettyPrintCout(montantCouts?.[1])}
               </Heading>
               <Box border="1px solid #e7e7e7" my="3w" />
               <Text fontWeight="bold" textTransform="uppercase">
@@ -199,25 +173,21 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
               <Box border="1px solid #e7e7e7" my="3w" />
               <Badge severity="info">Après déduction du coup de pouce</Badge>
               <Heading as="h6" mb="0" mt="1w">
-                {montantCoutsApresAide?.[0] === 0 &&
-                montantCoutsApresAide?.[1] === 0 ? (
+                {montantCoutsApresAide?.[0] === 0 && montantCoutsApresAide?.[1] === 0 ? (
                   <>Raccordement gratuit&nbsp;!</>
                 ) : (
                   <>
-                    Entre {prettyPrintCout(montantCoutsApresAide?.[0])} et{' '}
-                    {prettyPrintCout(montantCoutsApresAide?.[1])}
+                    Entre {prettyPrintCout(montantCoutsApresAide?.[0])} et {prettyPrintCout(montantCoutsApresAide?.[1])}
                   </>
                 )}
               </Heading>
 
-              {formState.typeBatiment === 'residentiel' &&
-                montantCoutsParLogementApresAide instanceof Array && (
-                  <Text mt="1w">
-                    Soit {prettyPrintCout(montantCoutsParLogementApresAide[0])}{' '}
-                    à {prettyPrintCout(montantCoutsParLogementApresAide[1])} par
-                    logement
-                  </Text>
-                )}
+              {formState.typeBatiment === 'residentiel' && montantCoutsParLogementApresAide instanceof Array && (
+                <Text mt="1w">
+                  Soit {prettyPrintCout(montantCoutsParLogementApresAide[0])} à {prettyPrintCout(montantCoutsParLogementApresAide[1])} par
+                  logement
+                </Text>
+              )}
             </>
           )}
         </Box>
@@ -390,35 +360,22 @@ const intervallesCoutsRaccordementTertiaire: IntervalleCoutRaccordement[] = [
   },
 ];
 
-function getCoutRaccordementResidentiel(
-  nbLogements: number
-): [number, number] | typeof outOfRangeValue {
+function getCoutRaccordementResidentiel(nbLogements: number): [number, number] | typeof outOfRangeValue {
   const intervalle = intervallesCoutsRaccordementResidentiel.find(
-    (intervalle) =>
-      intervalle.min <= nbLogements && nbLogements <= intervalle.max
+    (intervalle) => intervalle.min <= nbLogements && nbLogements <= intervalle.max
   );
   if (!intervalle) {
     return outOfRangeValue;
   }
-  return [
-    intervalle.lowRange.a * nbLogements + intervalle.lowRange.b,
-    intervalle.highRange.a * nbLogements + intervalle.highRange.b,
-  ];
+  return [intervalle.lowRange.a * nbLogements + intervalle.lowRange.b, intervalle.highRange.a * nbLogements + intervalle.highRange.b];
 }
 
 const outOfRangeValue: unique symbol = Symbol('outOfRangeValue');
 
-function getCoutRaccordementTertiaire(
-  surface: number
-): [number, number] | typeof outOfRangeValue {
-  const intervalle = intervallesCoutsRaccordementTertiaire.find(
-    (intervalle) => intervalle.min <= surface && surface <= intervalle.max
-  );
+function getCoutRaccordementTertiaire(surface: number): [number, number] | typeof outOfRangeValue {
+  const intervalle = intervallesCoutsRaccordementTertiaire.find((intervalle) => intervalle.min <= surface && surface <= intervalle.max);
   if (!intervalle) {
     return outOfRangeValue;
   }
-  return [
-    intervalle.lowRange.a * surface + intervalle.lowRange.b,
-    intervalle.highRange.a * surface + intervalle.highRange.b,
-  ];
+  return [intervalle.lowRange.a * surface + intervalle.lowRange.b, intervalle.highRange.a * surface + intervalle.highRange.b];
 }

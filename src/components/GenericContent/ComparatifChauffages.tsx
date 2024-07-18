@@ -1,8 +1,9 @@
+import Image from 'next/image';
+
 import { ArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
-import Image from 'next/image';
 
 const ComparatifChauffage = () => {
   return (
@@ -12,14 +13,7 @@ const ComparatifChauffage = () => {
       </Heading>
       <ResponsiveRow mt="8w">
         <Box flex>
-          <Image
-            src="/img/chauffage_collectif_fioul.svg"
-            alt=""
-            width="270"
-            height="206"
-            priority
-            className="d-block img-object-contain"
-          />
+          <Image src="/img/chauffage_collectif_fioul.svg" alt="" width="270" height="206" priority className="d-block img-object-contain" />
           <Heading as="h3" mt="3w" legacyColor="darkerblue">
             Chauffage collectif au fioul
           </Heading>
@@ -31,8 +25,7 @@ const ComparatifChauffage = () => {
             </ArrowPuce>
             <ArrowPuce>
               <Text size="lg" legacyColor="black">
-                Énergie importée, dont l'approvisionnement est sensible au
-                contexte géopolitique
+                Énergie importée, dont l'approvisionnement est sensible au contexte géopolitique
               </Text>
             </ArrowPuce>
             <ArrowPuce>
@@ -47,22 +40,14 @@ const ComparatifChauffage = () => {
             </ArrowPuce>
             <ArrowPuce>
               <Text size="lg" legacyColor="black">
-                Tarifs élevés et fortement fluctuants (près de 67&nbsp;% de
-                hausse entre septembre 2021 et août 2022)
+                Tarifs élevés et fortement fluctuants (près de 67&nbsp;% de hausse entre septembre 2021 et août 2022)
               </Text>
             </ArrowPuce>
           </Box>
         </Box>
 
         <Box flex>
-          <Image
-            src="/img/chauffage_collectif_gaz.svg"
-            alt=""
-            width="270"
-            height="206"
-            priority
-            className="d-block img-object-contain"
-          />
+          <Image src="/img/chauffage_collectif_gaz.svg" alt="" width="270" height="206" priority className="d-block img-object-contain" />
           <Heading as="h3" mt="3w" legacyColor="darkerblue">
             Chauffage collectif au gaz
           </Heading>
@@ -74,8 +59,7 @@ const ComparatifChauffage = () => {
             </ArrowPuce>
             <ArrowPuce>
               <Text size="lg" legacyColor="black">
-                Entretien rigoureux des installations nécessaire pour limiter
-                les risques associés aux chaudières
+                Entretien rigoureux des installations nécessaire pour limiter les risques associés aux chaudières
               </Text>
             </ArrowPuce>
             <ArrowPuce>
@@ -85,22 +69,14 @@ const ComparatifChauffage = () => {
             </ArrowPuce>
             <ArrowPuce>
               <Text size="lg" legacyColor="black">
-                Énergie importée, dont l'approvisionnement est sensible au
-                contexte géopolitique
+                Énergie importée, dont l'approvisionnement est sensible au contexte géopolitique
               </Text>
             </ArrowPuce>
           </Box>
         </Box>
 
         <Box flex>
-          <Image
-            src="/img/chauffage_reseau_chaleur.svg"
-            alt=""
-            width="270"
-            height="206"
-            priority
-            className="d-block img-object-contain"
-          />
+          <Image src="/img/chauffage_reseau_chaleur.svg" alt="" width="270" height="206" priority className="d-block img-object-contain" />
           <Heading as="h3" mt="3w" legacyColor="darkerblue">
             Réseau de chaleur
           </Heading>
@@ -112,8 +88,7 @@ const ComparatifChauffage = () => {
             </ArrowPuce>
             <ArrowPuce>
               <Text size="lg" legacyColor="black">
-                Absence de chaudière et de stockage au sein de l'immeuble -
-                sécurité assurée
+                Absence de chaudière et de stockage au sein de l'immeuble - sécurité assurée
               </Text>
             </ArrowPuce>
             <ArrowPuce>
@@ -128,8 +103,7 @@ const ComparatifChauffage = () => {
             </ArrowPuce>
             <ArrowPuce>
               <Text size="lg" legacyColor="black">
-                TVA à 5.5&nbsp;% pour tous les réseaux alimentés plus de
-                50&nbsp;% par des énergies renouvelables et de récupération
+                TVA à 5.5&nbsp;% pour tous les réseaux alimentés plus de 50&nbsp;% par des énergies renouvelables et de récupération
               </Text>
             </ArrowPuce>
           </Box>

@@ -1,7 +1,8 @@
-import Box from '@components/ui/Box';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { usePersistedState } from '@hooks';
 import { useMemo, useState } from 'react';
+
+import Box from '@components/ui/Box';
+import { usePersistedState } from '@hooks';
 
 declare let window: Window & {
   devModeEnabled?: boolean;

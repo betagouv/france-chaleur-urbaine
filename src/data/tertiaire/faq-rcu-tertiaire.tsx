@@ -12,8 +12,7 @@ Il est à noter que le mix énergétique est variable d’un réseau à l’autr
 `,
   },
   {
-    label:
-      'Quel est le tarif de la chaleur fournie par les réseaux ? La stabilité des prix est-elle garantie ?',
+    label: 'Quel est le tarif de la chaleur fournie par les réseaux ? La stabilité des prix est-elle garantie ?',
     body: `La tarification de la chaleur diffère d’un réseau à l’autre, en fonction des caractéristiques du réseau (taux d’énergies renouvelables, nombre d’abonnés,...). Le prix de vente comprend une part fixe (abonnement) et une part variable relative à la consommation. Pour les réseaux de chaleur alimentés à plus de 50 % par des énergies renouvelables et de récupération, un taux de TVA réduit à 5.5 % s’applique sur l’ensemble de la facture. Ce taux réduit s’applique uniquement sur la part fixe (abonnement) pour les autres réseaux. Le prix de la chaleur peut évoluer d’une année sur l’autre (inflation, prix des énergies, coût de l'ingénierie...), mais ces fluctuations restent largement inférieures à celles subies par les prix du gaz, du fioul ou de l’électricité. Cela est d’autant plus vrai que le taux d’énergies renouvelables et de récupération du réseau est élevé.`,
   },
   {

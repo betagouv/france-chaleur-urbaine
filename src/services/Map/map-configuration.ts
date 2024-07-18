@@ -111,35 +111,22 @@ export type MapConfiguration = {
  * Map configuration qui doit être complétée dynamiquement avec les limites
  * des réseaux de chaleur, afin de construire les limites pour les filtres.
  */
-export type EmptyMapConfiguration = Omit<
-  MapConfiguration,
-  'reseauxDeChaleur'
-> & {
+export type EmptyMapConfiguration = Omit<MapConfiguration, 'reseauxDeChaleur'> & {
   reseauxDeChaleur: Omit<MapConfiguration['reseauxDeChaleur'], 'limits'> & {
     limits: null;
   };
 };
 
-export type MaybeEmptyMapConfiguration =
-  | MapConfiguration
-  | EmptyMapConfiguration;
+export type MaybeEmptyMapConfiguration = MapConfiguration | EmptyMapConfiguration;
 
-export type MapConfigurationProperty<ValueType = any> = FlattenKeys<
-  MapConfiguration,
-  ValueType
->;
+export type MapConfigurationProperty<ValueType = any> = FlattenKeys<MapConfiguration, ValueType>;
 
-export function isMapConfigurationInitialized(
-  conf: MaybeEmptyMapConfiguration
-): conf is MapConfiguration {
+export function isMapConfigurationInitialized(conf: MaybeEmptyMapConfiguration): conf is MapConfiguration {
   return !!conf.reseauxDeChaleur.limits;
 }
 
 export const percentageMaxInterval: Interval = [0, 100];
-export const defaultInterval: Interval = [
-  Number.MIN_SAFE_INTEGER,
-  Number.MAX_SAFE_INTEGER,
-];
+export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 
 const emptyMapConfiguration: EmptyMapConfiguration = {
   proMode: false,
@@ -227,8 +214,6 @@ export const iframeSimpleMapConfiguration = createMapConfiguration({
   },
 });
 
-export function createMapConfiguration(
-  config: DeepPartial<MapConfiguration>
-): MapConfiguration {
+export function createMapConfiguration(config: DeepPartial<MapConfiguration>): MapConfiguration {
   return deepMergeObjects(emptyMapConfiguration, config);
 }

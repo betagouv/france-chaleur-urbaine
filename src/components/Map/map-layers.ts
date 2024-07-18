@@ -10,6 +10,9 @@ import {
   SourceSpecification,
   StyleSetterOptions,
 } from 'maplibre-gl';
+
+import { intervalsEqual } from '@utils/interval';
+import { formatMWhString } from '@utils/strings';
 import {
   themeDefBuildings,
   themeDefDemands,
@@ -19,25 +22,12 @@ import {
   themeDefZoneDP,
 } from 'src/services/Map/businessRules';
 import { arrColorFromDefBuildingsDpeEnergy } from 'src/services/Map/businessRules/buildings';
-import {
-  themeDefZonePotentielChaud,
-  themeDefZonePotentielFortChaud,
-} from 'src/services/Map/businessRules/zonePotentielChaud';
-
-import { intervalsEqual } from '@utils/interval';
-import { formatMWhString } from '@utils/strings';
-import {
-  themeDefSolaireThermiqueFriches,
-  themeDefSolaireThermiqueParkings,
-} from 'src/services/Map/businessRules/enrrMobilisables';
-import {
-  MapConfiguration,
-  filtresEnergies,
-  percentageMaxInterval,
-} from 'src/services/Map/map-configuration';
+import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
+import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
+import { MapConfiguration, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 import { SourceId } from 'src/services/tiles.config';
-import { Network } from 'src/types/Summary/Network';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
+import { Network } from 'src/types/Summary/Network';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -106,10 +96,7 @@ export const LegendDeskData = {
 // --- Heat Network ---
 // --------------------
 
-export const outlineCenterLayerStyle: Pick<
-  CircleLayerSpecification,
-  'type' | 'paint'
-> = {
+export const outlineCenterLayerStyle: Pick<CircleLayerSpecification, 'type' | 'paint'> = {
   type: 'circle',
   paint: {
     'circle-stroke-color': [
@@ -118,58 +105,21 @@ export const outlineCenterLayerStyle: Pick<
       themeDefHeatNetwork.classed.color,
       themeDefHeatNetwork.outline.color,
     ],
-    'circle-stroke-width': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      5,
-      2,
-      8,
-      2,
-      9,
-      3,
-      15,
-      4,
-    ],
+    'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5, 2, 8, 2, 9, 3, 15, 4],
     'circle-color': '#fff',
-    'circle-radius': [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      5,
-      0,
-      8,
-      0,
-      9,
-      4,
-      15,
-      10,
-    ],
+    'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 0, 8, 0, 9, 4, 15, 10],
   },
 };
 
-export const outlineLayerStyle: Pick<
-  LineLayerSpecification,
-  'type' | 'layout' | 'paint'
-> = {
+export const outlineLayerStyle: Pick<LineLayerSpecification, 'type' | 'layout' | 'paint'> = {
   type: 'line',
   layout: {
     'line-join': 'round',
     'line-cap': 'round',
   },
   paint: {
-    'line-color': [
-      'case',
-      ['boolean', ['get', 'reseaux classes']],
-      themeDefHeatNetwork.classed.color,
-      themeDefHeatNetwork.outline.color,
-    ],
-    'line-width': [
-      'case',
-      ['boolean', ['feature-state', 'hover'], false],
-      3,
-      2,
-    ],
+    'line-color': ['case', ['boolean', ['get', 'reseaux classes']], themeDefHeatNetwork.classed.color, themeDefHeatNetwork.outline.color],
+    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 3, 2],
     'line-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0.75, 15, 1],
   },
 };
@@ -180,12 +130,7 @@ export const outlineLayerStyle: Pick<
 const CONSO = 'conso_nb';
 const TYPE_GAS = 'code_grand';
 const arrColorFromDefTypeGas = [
-  ...Object.entries(themeDefTypeGas).flatMap(
-    ([TypeGasName, styleObject]: [string, any]) => [
-      TypeGasName,
-      styleObject.color,
-    ]
-  ),
+  ...Object.entries(themeDefTypeGas).flatMap(([TypeGasName, styleObject]: [string, any]) => [TypeGasName, styleObject.color]),
 ] as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];
 
 // --------------
@@ -207,27 +152,21 @@ export const typeEnergy = {
   [ENERGY_USED.SansObjet]: ENERGY_TYPE.Unknown,
   [ENERGY_USED.Default]: ENERGY_TYPE.Unknown,
 };
-export const objTypeEnergy = Object.entries(typeEnergy).reduce(
-  (acc: any, [key, value]: [string, string]) => {
-    return {
-      ...acc,
-      [value]: [...(acc[value] || []), key],
-    };
-  },
-  {}
-);
-const arrColorFromDefEnergy = Object.entries(themeDefEnergy).flatMap(
-  ([energyName, styleObject]: [string, any]) => [
-    objTypeEnergy[energyName],
-    styleObject.color,
-  ]
-) as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];
+export const objTypeEnergy = Object.entries(typeEnergy).reduce((acc: any, [key, value]: [string, string]) => {
+  return {
+    ...acc,
+    [value]: [...(acc[value] || []), key],
+  };
+}, {});
+const arrColorFromDefEnergy = Object.entries(themeDefEnergy).flatMap(([energyName, styleObject]: [string, any]) => [
+  objTypeEnergy[energyName],
+  styleObject.color,
+]) as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];
 
 const iconSize = 31;
 const maxDisplaySize = 29;
 const iconRatio = 1 / (iconSize / maxDisplaySize);
-const getSymbolRatio: (size: number) => number = (size) =>
-  iconRatio * (size / maxDisplaySize);
+const getSymbolRatio: (size: number) => number = (size) => iconRatio * (size / maxDisplaySize);
 
 type ColorThreshold = {
   value: number;
@@ -376,17 +315,13 @@ export const besoinsEnChaleurIndustrieCommunesIntervals: LegendInterval[] = [
     max: formatMWhString(besoinsEnChaleurIndustrieCommunesThresholds[0].value),
     color: besoinsEnChaleurIndustrieCommunesDefaultColor,
   },
-  ...besoinsEnChaleurIndustrieCommunesThresholds.map(
-    (threshold, index, array) => {
-      return {
-        min: formatMWhString(threshold.value),
-        max: formatMWhString(
-          array[index + 1]?.value ?? besoinsEnChaleurIndustrieCommunesMaxValue
-        ),
-        color: threshold.color,
-      };
-    }
-  ),
+  ...besoinsEnChaleurIndustrieCommunesThresholds.map((threshold, index, array) => {
+    return {
+      min: formatMWhString(threshold.value),
+      max: formatMWhString(array[index + 1]?.value ?? besoinsEnChaleurIndustrieCommunesMaxValue),
+      color: threshold.color,
+    };
+  }),
 ];
 
 export type MapSourceLayersSpecification = {
@@ -435,14 +370,19 @@ export type LayerId =
   | 'besoinsEnChaleurIndustrieCommunes-contour'
   | 'caracteristiquesBatiments';
 
-const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> =
-  ['interpolate', ['linear'], ['zoom'], 10 + 0.2, 0, 10 + 0.2 + 1, 1];
+const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  10 + 0.2,
+  0,
+  10 + 0.2 + 1,
+  1,
+];
 
 // besoin d'une fonction dynamique pour avoir location.origin disponible côté client et aussi
 // pouvoir construire les layers selon les filtres
-export function buildMapLayers(
-  config: MapConfiguration
-): MapSourceLayersSpecification[] {
+export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecification[] {
   return [
     // ---------------------------
     // --- zonesPotentielChaud ---
@@ -454,8 +394,7 @@ export function buildMapLayers(
         tiles: [`${location.origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
         promoteId: 'id_zone',
-        attribution:
-          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -490,13 +429,10 @@ export function buildMapLayers(
       sourceId: 'zonesPotentielFortChaud',
       source: {
         type: 'vector',
-        tiles: [
-          `${location.origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`,
-        ],
+        tiles: [`${location.origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
         promoteId: 'id_zone',
-        attribution:
-          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -528,13 +464,10 @@ export function buildMapLayers(
       sourceId: 'besoinsEnChaleurIndustrieCommunes',
       source: {
         type: 'vector',
-        tiles: [
-          `${location.origin}/api/map/besoinsEnChaleurIndustrieCommunes/{z}/{x}/{y}`,
-        ],
+        tiles: [`${location.origin}/api/map/besoinsEnChaleurIndustrieCommunes/{z}/{x}/{y}`],
         minzoom: 5,
         maxzoom: 11,
-        attribution:
-          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -547,10 +480,7 @@ export function buildMapLayers(
               'step',
               ['coalesce', ['get', 'conso_chal'], 0],
               besoinsEnChaleurIndustrieCommunesDefaultColor,
-              ...besoinsEnChaleurIndustrieCommunesThresholds.flatMap((v) => [
-                v.value,
-                v.color,
-              ]),
+              ...besoinsEnChaleurIndustrieCommunesThresholds.flatMap((v) => [v.value, v.color]),
             ],
             'fill-opacity': 0.7,
           },
@@ -609,11 +539,7 @@ export function buildMapLayers(
           source: 'futurNetwork',
           'source-layer': 'futurOutline',
           minzoom: tileLayersMinZoom,
-          filter: [
-            'all',
-            ['==', ['get', 'is_zone'], true],
-            ...buildFiltreGestionnaire(config.filtreGestionnaire),
-          ],
+          filter: ['all', ['==', ['get', 'is_zone'], true], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
           type: 'fill',
           paint: {
             'fill-color': themeDefHeatNetwork.futur.color,
@@ -625,11 +551,7 @@ export function buildMapLayers(
           source: 'futurNetwork',
           'source-layer': 'futurOutline',
           minzoom: tileLayersMinZoom,
-          filter: [
-            'all',
-            ['==', ['get', 'is_zone'], false],
-            ...buildFiltreGestionnaire(config.filtreGestionnaire),
-          ],
+          filter: ['all', ['==', ['get', 'is_zone'], false], ...buildFiltreGestionnaire(config.filtreGestionnaire)],
           ...outlineLayerStyle,
           paint: {
             ...outlineLayerStyle.paint,
@@ -649,8 +571,7 @@ export function buildMapLayers(
         tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
         minzoom: 10,
         maxzoom: 14,
-        attribution:
-          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -663,10 +584,7 @@ export function buildMapLayers(
               'step',
               ['coalesce', ['get', 'FROID_MWH'], 0],
               besoinsBatimentsDefaultColor,
-              ...besoinsEnFroidColorThresholds.flatMap((v) => [
-                v.value,
-                v.color,
-              ]),
+              ...besoinsEnFroidColorThresholds.flatMap((v) => [v.value, v.color]),
             ],
             'fill-opacity': zoomOpacityTransitionAt10,
           },
@@ -681,10 +599,7 @@ export function buildMapLayers(
               'step',
               ['coalesce', ['coalesce', ['get', 'CHAUF_MWH'], 0], 0],
               besoinsBatimentsDefaultColor,
-              ...besoinsEnChaleurColorThresholds.flatMap((v) => [
-                v.value,
-                v.color,
-              ]),
+              ...besoinsEnChaleurColorThresholds.flatMap((v) => [v.value, v.color]),
             ],
             'fill-opacity': zoomOpacityTransitionAt10,
           },
@@ -748,13 +663,10 @@ export function buildMapLayers(
       sourceId: 'enrrMobilisables-friches',
       source: {
         type: 'vector',
-        tiles: [
-          `${location.origin}/api/map/enrrMobilisables-friches/{z}/{x}/{y}`,
-        ],
+        tiles: [`${location.origin}/api/map/enrrMobilisables-friches/{z}/{x}/{y}`],
         promoteId: 'GmlID',
         maxzoom: tileSourcesMaxZoom,
-        attribution:
-          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -789,13 +701,10 @@ export function buildMapLayers(
       sourceId: 'enrrMobilisables-parkings',
       source: {
         type: 'vector',
-        tiles: [
-          `${location.origin}/api/map/enrrMobilisables-parkings/{z}/{x}/{y}`,
-        ],
+        tiles: [`${location.origin}/api/map/enrrMobilisables-parkings/{z}/{x}/{y}`],
         promoteId: 'GmlID',
         maxzoom: tileSourcesMaxZoom,
-        attribution:
-          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -900,12 +809,7 @@ export function buildMapLayers(
             ],
           },
           paint: {
-            'icon-color': [
-              'match',
-              ['get', TYPE_ENERGY],
-              ...arrColorFromDefEnergy,
-              themeDefEnergy.unknow.color,
-            ],
+            'icon-color': ['match', ['get', TYPE_ENERGY], ...arrColorFromDefEnergy, themeDefEnergy.unknow.color],
             'icon-opacity': [
               'interpolate',
               ['linear'],
@@ -941,12 +845,7 @@ export function buildMapLayers(
             'circle-sort-key': ['-', ['coalesce', ['get', CONSO], 0]],
           },
           paint: {
-            'circle-color': [
-              'match',
-              ['get', TYPE_GAS],
-              ...arrColorFromDefTypeGas,
-              themeDefTypeGas.unknow.color,
-            ],
+            'circle-color': ['match', ['get', TYPE_GAS], ...arrColorFromDefTypeGas, themeDefTypeGas.unknow.color],
             'circle-radius': [
               'case',
               ['<', ['get', CONSO], LegendDeskData.gasUsage.min],
@@ -1102,8 +1001,7 @@ export function buildMapLayers(
         tiles: [`${location.origin}/api/map/enrrMobilisables/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
         promoteId: 'GmlID',
-        attribution:
-          '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
 
       // the source contains one layer that contains all features
@@ -1188,27 +1086,15 @@ export function buildMapLayers(
 // extends the Map type to get fully typed layer and source ids
 interface FCUMap extends Map {
   getLayer(id: LayerId): ReturnType<Map['getLayer']>;
-  setLayoutProperty(
-    layerId: LayerId,
-    name: string,
-    value: any,
-    options?: StyleSetterOptions
-  ): this;
+  setLayoutProperty(layerId: LayerId, name: string, value: any, options?: StyleSetterOptions): this;
 
-  setFilter(
-    layerId: LayerId,
-    filter?: FilterSpecification | null,
-    options?: StyleSetterOptions
-  ): this;
+  setFilter(layerId: LayerId, filter?: FilterSpecification | null, options?: StyleSetterOptions): this;
 }
 
 /**
  * Apply the map configuration to the map layers.
  */
-export function applyMapConfigurationToLayers(
-  map: FCUMap,
-  config: MapConfiguration
-) {
+export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfiguration) {
   function setLayerVisibility(layerId: LayerId, visible: boolean) {
     if (!map.getLayer(layerId)) {
       console.warn(`Layer '${layerId}' is not set on map`);
@@ -1217,143 +1103,68 @@ export function applyMapConfigurationToLayers(
     map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
   }
 
-  setLayerVisibility(
-    'caracteristiquesBatiments',
-    config.proMode && config.caracteristiquesBatiments
-  );
-  setLayerVisibility(
-    'besoinsEnChaleur',
-    config.proMode && config.besoinsEnChaleur
-  );
+  setLayerVisibility('caracteristiquesBatiments', config.proMode && config.caracteristiquesBatiments);
+  setLayerVisibility('besoinsEnChaleur', config.proMode && config.besoinsEnChaleur);
   setLayerVisibility('besoinsEnFroid', config.proMode && config.besoinsEnFroid);
-  setLayerVisibility(
-    'besoinsEnChaleurFroid-contour',
-    config.proMode && (config.besoinsEnChaleur || config.besoinsEnFroid)
-  );
-  setLayerVisibility(
-    'besoinsEnChaleurIndustrieCommunes',
-    config.proMode && config.besoinsEnChaleurIndustrieCommunes
-  );
-  setLayerVisibility(
-    'besoinsEnChaleurIndustrieCommunes-contour',
-    config.proMode && config.besoinsEnChaleurIndustrieCommunes
-  );
+  setLayerVisibility('besoinsEnChaleurFroid-contour', config.proMode && (config.besoinsEnChaleur || config.besoinsEnFroid));
+  setLayerVisibility('besoinsEnChaleurIndustrieCommunes', config.proMode && config.besoinsEnChaleurIndustrieCommunes);
+  setLayerVisibility('besoinsEnChaleurIndustrieCommunes-contour', config.proMode && config.besoinsEnChaleurIndustrieCommunes);
   setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
   setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);
-  setLayerVisibility(
-    'demandesEligibilite',
-    config.proMode && config.demandesEligibilite
-  );
-  setLayerVisibility(
-    'energy',
-    config.proMode &&
-      (config.batimentsFioulCollectif.show || config.batimentsGazCollectif.show)
-  );
-  setLayerVisibility(
-    'reseauxEnConstruction-trace',
-    config.reseauxEnConstruction
-  );
-  setLayerVisibility(
-    'reseauxEnConstruction-zone',
-    config.reseauxEnConstruction
-  );
-  setLayerVisibility(
-    'consommationsGaz',
-    config.proMode && config.consommationsGaz.show
-  );
-  setLayerVisibility(
-    'reseauxDeChaleur-avec-trace',
-    config.reseauxDeChaleur.show
-  );
-  setLayerVisibility(
-    'reseauxDeChaleur-sans-trace',
-    config.reseauxDeChaleur.show
-  );
-  setLayerVisibility(
-    'batimentsRaccordes',
-    config.proMode && config.batimentsRaccordes
-  );
-  setLayerVisibility(
-    'zonesDeDeveloppementPrioritaire',
-    config.zonesDeDeveloppementPrioritaire
-  );
+  setLayerVisibility('demandesEligibilite', config.proMode && config.demandesEligibilite);
+  setLayerVisibility('energy', config.proMode && (config.batimentsFioulCollectif.show || config.batimentsGazCollectif.show));
+  setLayerVisibility('reseauxEnConstruction-trace', config.reseauxEnConstruction);
+  setLayerVisibility('reseauxEnConstruction-zone', config.reseauxEnConstruction);
+  setLayerVisibility('consommationsGaz', config.proMode && config.consommationsGaz.show);
+  setLayerVisibility('reseauxDeChaleur-avec-trace', config.reseauxDeChaleur.show);
+  setLayerVisibility('reseauxDeChaleur-sans-trace', config.reseauxDeChaleur.show);
+  setLayerVisibility('batimentsRaccordes', config.proMode && config.batimentsRaccordes);
+  setLayerVisibility('zonesDeDeveloppementPrioritaire', config.zonesDeDeveloppementPrioritaire);
   setLayerVisibility(
     'enrrMobilisables-datacenter',
-    config.proMode &&
-      config.enrrMobilisables.show &&
-      config.enrrMobilisables.showDatacenters
+    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showDatacenters
   );
-  setLayerVisibility(
-    'enrrMobilisables-industrie',
-    config.proMode &&
-      config.enrrMobilisables.show &&
-      config.enrrMobilisables.showIndustrie
-  );
+  setLayerVisibility('enrrMobilisables-industrie', config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showIndustrie);
   setLayerVisibility(
     'enrrMobilisables-installations-electrogenes',
-    config.proMode &&
-      config.enrrMobilisables.show &&
-      config.enrrMobilisables.showInstallationsElectrogenes
+    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showInstallationsElectrogenes
   );
   setLayerVisibility(
     'enrrMobilisables-stations-d-epuration',
-    config.proMode &&
-      config.enrrMobilisables.show &&
-      config.enrrMobilisables.showStationsDEpuration
+    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showStationsDEpuration
   );
   setLayerVisibility(
     'enrrMobilisables-unites-d-incineration',
-    config.proMode &&
-      config.enrrMobilisables.show &&
-      config.enrrMobilisables.showUnitesDIncineration
+    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showUnitesDIncineration
   );
   setLayerVisibility(
     'enrrMobilisables-friches',
-    config.proMode &&
-      config.enrrMobilisables.show &&
-      config.enrrMobilisables.showSolaireThermiqueFriches
+    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueFriches
   );
   setLayerVisibility(
     'enrrMobilisables-friches-contour',
-    config.proMode &&
-      config.enrrMobilisables.show &&
-      config.enrrMobilisables.showSolaireThermiqueFriches
+    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueFriches
   );
   setLayerVisibility(
     'enrrMobilisables-parkings',
-    config.proMode &&
-      config.enrrMobilisables.show &&
-      config.enrrMobilisables.showSolaireThermiqueParkings
+    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueParkings
   );
   setLayerVisibility(
     'enrrMobilisables-parkings-contour',
-    config.proMode &&
-      config.enrrMobilisables.show &&
-      config.enrrMobilisables.showSolaireThermiqueParkings
+    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueParkings
   );
-  setLayerVisibility(
-    'zonesPotentielChaud',
-    config.proMode &&
-      config.zonesOpportunite.show &&
-      config.zonesOpportunite.zonesPotentielChaud
-  );
+  setLayerVisibility('zonesPotentielChaud', config.proMode && config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud);
   setLayerVisibility(
     'zonesPotentielChaud-contour',
-    config.proMode &&
-      config.zonesOpportunite.show &&
-      config.zonesOpportunite.zonesPotentielChaud
+    config.proMode && config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud
   );
   setLayerVisibility(
     'zonesPotentielFortChaud',
-    config.proMode &&
-      config.zonesOpportunite.show &&
-      config.zonesOpportunite.zonesPotentielFortChaud
+    config.proMode && config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud
   );
   setLayerVisibility(
     'zonesPotentielFortChaud-contour',
-    config.proMode &&
-      config.zonesOpportunite.show &&
-      config.zonesOpportunite.zonesPotentielFortChaud
+    config.proMode && config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud
   );
 
   // custom filters for energy and consommationsGaz
@@ -1390,11 +1201,7 @@ export function applyMapConfigurationToLayers(
     config.consommationsGaz.show && [
       'all',
       config.consommationsGaz.interval
-        ? [
-            'all',
-            ['>=', ['get', CONSO], config.consommationsGaz.interval[0]],
-            ['<=', ['get', CONSO], config.consommationsGaz.interval[1]],
-          ]
+        ? ['all', ['>=', ['get', CONSO], config.consommationsGaz.interval[0]], ['<=', ['get', CONSO], config.consommationsGaz.interval[1]]]
         : true,
       [
         'any',
@@ -1474,45 +1281,26 @@ const reseauxDeChaleurFilters = [
   },
 ] satisfies ReseauxDeChaleurFilter[];
 
-export type ReseauxDeChaleurLimits = Record<
-  (typeof reseauxDeChaleurFilters)[number]['confKey'],
-  [min: number, max: number]
->;
+export type ReseauxDeChaleurLimits = Record<(typeof reseauxDeChaleurFilters)[number]['confKey'], [min: number, max: number]>;
 
 /**
  * Applique chaque filtre de réseau de chaleur si l'intervalle est compris
  * dans [min, max], ou les désactive s'ils sont strictement égaux à l'intervalle par défaut.
  */
-function buildReseauxDeChaleurFilters(
-  conf: MapConfiguration['reseauxDeChaleur']
-): ExpressionSpecification[] {
+function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeChaleur']): ExpressionSpecification[] {
   return [
     ...(conf.energieMajoritaire
-      ? ([
-          ['==', ['get', 'energie_majoritaire'], conf.energieMajoritaire],
-        ] satisfies ExpressionSpecification[])
+      ? ([['==', ['get', 'energie_majoritaire'], conf.energieMajoritaire]] satisfies ExpressionSpecification[])
       : []),
     ...reseauxDeChaleurFilters.flatMap((filtre) => {
-      const minValue = filtre.filterPreprocess
-        ? filtre.filterPreprocess(conf[filtre.confKey][0])
-        : conf[filtre.confKey][0];
-      const maxValue = filtre.filterPreprocess
-        ? filtre.filterPreprocess(conf[filtre.confKey][1])
-        : conf[filtre.confKey][1];
+      const minValue = filtre.filterPreprocess ? filtre.filterPreprocess(conf[filtre.confKey][0]) : conf[filtre.confKey][0];
+      const maxValue = filtre.filterPreprocess ? filtre.filterPreprocess(conf[filtre.confKey][1]) : conf[filtre.confKey][1];
 
       return intervalsEqual(conf[filtre.confKey], conf.limits![filtre.confKey])
         ? []
         : ([
-            [
-              '>=',
-              ['coalesce', ['get', filtre.valueKey], Number.MIN_SAFE_INTEGER],
-              minValue,
-            ],
-            [
-              '<=',
-              ['coalesce', ['get', filtre.valueKey], Number.MAX_SAFE_INTEGER],
-              maxValue,
-            ],
+            ['>=', ['coalesce', ['get', filtre.valueKey], Number.MIN_SAFE_INTEGER], minValue],
+            ['<=', ['coalesce', ['get', filtre.valueKey], Number.MAX_SAFE_INTEGER], maxValue],
           ] satisfies ExpressionSpecification[]);
     }),
     ...filtresEnergies.flatMap((filtre) => {
@@ -1524,24 +1312,14 @@ function buildReseauxDeChaleurFilters(
       return intervalsEqual(interval, percentageMaxInterval)
         ? []
         : ([
-            [
-              '>=',
-              ['coalesce', ['get', fullConfKey], Number.MIN_SAFE_INTEGER],
-              minValue / 100,
-            ],
-            [
-              '<=',
-              ['coalesce', ['get', fullConfKey], Number.MAX_SAFE_INTEGER],
-              maxValue / 100,
-            ],
+            ['>=', ['coalesce', ['get', fullConfKey], Number.MIN_SAFE_INTEGER], minValue / 100],
+            ['<=', ['coalesce', ['get', fullConfKey], Number.MAX_SAFE_INTEGER], maxValue / 100],
           ] satisfies ExpressionSpecification[]);
     }),
   ].filter((v) => v !== null);
 }
 
-function buildFiltreGestionnaire(
-  filtreGestionnaire: MapConfiguration['filtreGestionnaire']
-): ExpressionSpecification[] {
+function buildFiltreGestionnaire(filtreGestionnaire: MapConfiguration['filtreGestionnaire']): ExpressionSpecification[] {
   return filtreGestionnaire.length > 0
     ? [
         [
@@ -1566,16 +1344,8 @@ function buildFiltreGestionnaire(
     : [];
 }
 
-function buildFiltreIdentifiantReseau(
-  filtreIdentifiantReseau: MapConfiguration['filtreIdentifiantReseau']
-): ExpressionSpecification[] {
+function buildFiltreIdentifiantReseau(filtreIdentifiantReseau: MapConfiguration['filtreIdentifiantReseau']): ExpressionSpecification[] {
   return filtreIdentifiantReseau.length > 0
-    ? [
-        [
-          'in',
-          ['coalesce', ['get', 'Identifiant reseau'], ''],
-          ['literal', filtreIdentifiantReseau],
-        ],
-      ]
+    ? [['in', ['coalesce', ['get', 'Identifiant reseau'], ''], ['literal', filtreIdentifiantReseau]]]
     : [];
 }

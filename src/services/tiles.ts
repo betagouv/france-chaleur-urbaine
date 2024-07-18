@@ -1,8 +1,10 @@
-import { tileSourcesMaxZoom } from '@components/Map/map-layers';
 import geojsonvt from 'geojson-vt';
+import vtpbf from 'vt-pbf';
+
+import { tileSourcesMaxZoom } from '@components/Map/map-layers';
 import db from 'src/db';
 import base from 'src/db/airtable';
-import vtpbf from 'vt-pbf';
+
 import { AirtableTileInfo, SourceId, tilesInfo } from './tiles.config';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
@@ -26,10 +28,7 @@ const getObjectIndexFromAirtable = async (tileInfo: AirtableTileInfo) => {
             type: 'Point',
             coordinates: [longitude, latitude],
           },
-          properties: tileInfo.properties.reduce(function (
-            acc: any,
-            key: string
-          ) {
+          properties: tileInfo.properties.reduce(function (acc: any, key: string) {
             const value = record.get(key);
             if (value) {
               acc[key] = value;
@@ -57,49 +56,25 @@ const cacheAirtableTiles = () => {
   airtableDayCached = new Date().getDate();
   Object.entries(tilesInfo).forEach(([type, tileInfo]) => {
     if (tileInfo.source === 'airtable') {
-      debug &&
-        console.info(
-          `Indexing tiles for ${type} from airtable ${tileInfo.table}...`
-        );
+      debug && console.info(`Indexing tiles for ${type} from airtable ${tileInfo.table}...`);
       getObjectIndexFromAirtable(tileInfo)
         .then((result) => {
           airtableTiles[type as SourceId] = result;
-          debug &&
-            console.info(
-              `Indexing tiles for ${type} from airtable ${tileInfo.table} done`
-            );
+          debug && console.info(`Indexing tiles for ${type} from airtable ${tileInfo.table} done`);
         })
-        .catch(
-          (e) =>
-            debug &&
-            console.error(
-              `Indexing tiles for ${type} from airtable ${tileInfo.table} failed`,
-              e
-            )
-        );
+        .catch((e) => debug && console.error(`Indexing tiles for ${type} from airtable ${tileInfo.table} failed`, e));
     }
   });
 };
 
 cacheAirtableTiles();
 
-const getTile = async (
-  type: SourceId,
-  x: number,
-  y: number,
-  z: number
-): Promise<{ data: any; compressed: boolean } | null> => {
+const getTile = async (type: SourceId, x: number, y: number, z: number): Promise<{ data: any; compressed: boolean } | null> => {
   const tileInfo = tilesInfo[type];
   if (tileInfo.source === 'database') {
-    const result = await db(tileInfo.tiles)
-      .where('x', x)
-      .andWhere('y', y)
-      .andWhere('z', z)
-      .first();
+    const result = await db(tileInfo.tiles).where('x', x).andWhere('y', y).andWhere('z', z).first();
 
-    return result?.tile
-      ? { data: result?.tile, compressed: !!tileInfo.compressedTiles }
-      : null;
+    return result?.tile ? { data: result?.tile, compressed: !!tileInfo.compressedTiles } : null;
   }
 
   if (airtableDayCached !== new Date().getDate()) {
@@ -115,9 +90,7 @@ const getTile = async (
 
   return tile
     ? {
-        data: Buffer.from(
-          vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })
-        ),
+        data: Buffer.from(vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })),
         compressed: false,
       }
     : null;

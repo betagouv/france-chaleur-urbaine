@@ -27,12 +27,7 @@ SliderRail.propTypes = {
 // *******************************************************
 // HANDLE COMPONENT
 // *******************************************************
-export function Handle({
-  domain: [min, max],
-  handle: { id, value, percent },
-  disabled,
-  getHandleProps,
-}) {
+export function Handle({ domain: [min, max], handle: { id, value, percent }, disabled, getHandleProps }) {
   return (
     <Fragment>
       <div

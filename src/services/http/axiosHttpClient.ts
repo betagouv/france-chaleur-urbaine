@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+
 import { HttpClient } from './HttpClient';
 
 class AxiosHttpClient implements HttpClient {

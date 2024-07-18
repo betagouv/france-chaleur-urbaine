@@ -1,10 +1,11 @@
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { useRouter } from 'next/router';
+import { ReactNode, useState } from 'react';
+
 import ContributionForm from '@components/ContributionForm/ContributionForm';
 import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
-import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { submitToAirtable } from '@helpers/airtable';
-import { useRouter } from 'next/router';
-import { ReactNode, useState } from 'react';
 import { Airtable } from 'src/types/enum/Airtable';
 
 type ResultType = {
@@ -23,11 +24,8 @@ const results: Record<string, ResultType> = {
     title: 'Une erreur est survenue.',
     description: (
       <span>
-        Veuillez réessayer plus tard, si le problème persiste contactez nous
-        directement à l'adresse:{' '}
-        <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">
-          france-chaleur-urbaine@developpement-durable.gouv.fr
-        </a>
+        Veuillez réessayer plus tard, si le problème persiste contactez nous directement à l'adresse:{' '}
+        <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">france-chaleur-urbaine@developpement-durable.gouv.fr</a>
       </span>
     ),
   },
@@ -40,13 +38,8 @@ function Contribution() {
   const submit = async (data: any) => {
     try {
       await submitToAirtable(data, Airtable.CONTRIBUTION);
-      if (
-        data.Souhait === 'Ajout de données' ||
-        data.Souhait === 'Déposer des éléments'
-      ) {
-        router.push(
-          'https://e.pcloud.com/#page=puplink&code=XjWZ2YJ44fMhie47yc9zWyMA35OElcQ7'
-        );
+      if (data.Souhait === 'Ajout de données' || data.Souhait === 'Déposer des éléments') {
+        router.push('https://e.pcloud.com/#page=puplink&code=XjWZ2YJ44fMhie47yc9zWyMA35OElcQ7');
       } else {
         setResult(results.success);
       }
@@ -62,11 +55,7 @@ function Contribution() {
         header={`## Vous souhaitez contribuer à notre carte en ajoutant des données ou en nous signalant une erreur ? C'est possible ! Complétez le formulaire ci-dessous :`}
       >
         {result ? (
-          <Alert
-            severity={result.type}
-            title={result.title}
-            description={result.description as string}
-          />
+          <Alert severity={result.type} title={result.title} description={result.description as string} />
         ) : (
           <ContributionForm submit={submit} />
         )}

@@ -1,6 +1,7 @@
+import styled, { css } from 'styled-components';
+
 import Box from '@components/ui/Box';
 import { TrackingEvent, trackEvent } from 'src/services/analytics';
-import styled, { css } from 'styled-components';
 
 const StyledDSFRCheckbox = styled.div<{
   checked: boolean;
@@ -20,10 +21,7 @@ const StyledDSFRCheckbox = styled.div<{
       var(--border-action-high-blue-france) 5px,
       transparent 6px
     ),
-    linear-gradient(
-      var(--border-action-high-blue-france),
-      var(--border-action-high-blue-france)
-    ),
+    linear-gradient(var(--border-action-high-blue-france), var(--border-action-high-blue-france)),
     radial-gradient(
       at calc(100% - 5px) 4px,
       transparent 4px,
@@ -31,10 +29,7 @@ const StyledDSFRCheckbox = styled.div<{
       var(--border-action-high-blue-france) 5px,
       transparent 6px
     ),
-    linear-gradient(
-      var(--border-action-high-blue-france),
-      var(--border-action-high-blue-france)
-    ),
+    linear-gradient(var(--border-action-high-blue-france), var(--border-action-high-blue-france)),
     radial-gradient(
       at calc(100% - 5px) calc(100% - 4px),
       transparent 4px,
@@ -42,10 +37,7 @@ const StyledDSFRCheckbox = styled.div<{
       var(--border-action-high-blue-france) 5px,
       transparent 6px
     ),
-    linear-gradient(
-      var(--border-action-high-blue-france),
-      var(--border-action-high-blue-france)
-    ),
+    linear-gradient(var(--border-action-high-blue-france), var(--border-action-high-blue-france)),
     radial-gradient(
       at 5px calc(100% - 4px),
       transparent 4px,
@@ -53,11 +45,7 @@ const StyledDSFRCheckbox = styled.div<{
       var(--border-action-high-blue-france) 5px,
       transparent 6px
     ),
-    linear-gradient(
-      var(--border-action-high-blue-france),
-      var(--border-action-high-blue-france)
-    ),
-    var(--data-uri-svg);
+    linear-gradient(var(--border-action-high-blue-france), var(--border-action-high-blue-france)), var(--data-uri-svg);
   background-position:
     0 0,
     0.25rem 0,
@@ -101,10 +89,7 @@ const StyledCheckboxInput = styled.input`
   width: 1rem !important;
 `;
 
-type ExtractSuffix<
-  T extends string,
-  S extends string,
-> = T extends `${infer Prefix}${S}` ? Prefix : never;
+type ExtractSuffix<T extends string, S extends string> = T extends `${infer Prefix}${S}` ? Prefix : never;
 
 type LegendTrackingEvent = ExtractSuffix<TrackingEvent, '|Active'>;
 
@@ -118,12 +103,7 @@ interface SingleCheckboxProps {
 /**
  * Offre une checkbox DSFR fonctionnant de manière séparée de son label.
  */
-export function SingleCheckbox({
-  name,
-  checked,
-  onChange,
-  trackingEvent,
-}: SingleCheckboxProps) {
+export function SingleCheckbox({ name, checked, onChange, trackingEvent }: SingleCheckboxProps) {
   return (
     <Box position="relative" px="1w" py="1v">
       <StyledCheckboxInput
@@ -133,8 +113,7 @@ export function SingleCheckbox({
         checked={checked}
         onChange={(event) => {
           onChange(event.target.checked);
-          trackingEvent &&
-            trackEvent(`${trackingEvent}|${checked ? 'Active' : 'Désactive'}`);
+          trackingEvent && trackEvent(`${trackingEvent}|${checked ? 'Active' : 'Désactive'}`);
         }}
         className="opacity-0"
       />

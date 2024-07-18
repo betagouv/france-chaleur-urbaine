@@ -1,5 +1,6 @@
-import { SliceBody } from '@components/Slice/Slice.style';
 import { createGlobalStyle } from 'styled-components';
+
+import { SliceBody } from '@components/Slice/Slice.style';
 
 export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
   .user-experience-description {

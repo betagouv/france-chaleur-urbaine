@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ClassedNetworksColumn } from './ClassedNetworks.styles';
+
 import MarkdownWrapper from '@components/MarkdownWrapper';
+
+import { ClassedNetworksColumn } from './ClassedNetworks.styles';
 
 const ClassedNetworks = ({
   city,
@@ -40,20 +42,10 @@ Cette obligation s’applique dans une certaine zone autour du réseau, qualifi�
       text += `:button-link[Voir le périmètre de développement prioritaire]{href="/carte" className="fr-btn--sm fr-mt-2w"}`;
 
     setNetworkText(text);
-    if (
-      city === 'paris' ||
-      city === 'grenoble' ||
-      city === 'lyon' ||
-      city === 'bordeaux' ||
-      city === 'metz'
-    ) {
+    if (city === 'paris' || city === 'grenoble' || city === 'lyon' || city === 'bordeaux' || city === 'metz') {
       const kw = city === 'metz' ? '30' : '100';
-      setConcernedText1(
-        `Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à ${kw}kW`
-      );
-      setConcernedText2(
-        `Tout bâtiment renouvelant son installation de chauffage au-dessus de ${kw}kW`
-      );
+      setConcernedText1(`Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à ${kw}kW`);
+      setConcernedText2(`Tout bâtiment renouvelant son installation de chauffage au-dessus de ${kw}kW`);
     } else {
       setConcernedText1(
         `Tout bâtiment neuf dont les besoins de chauffage sont supérieurs à une certaine puissance, définie par la collectivité`

@@ -1,14 +1,11 @@
 import bcrypt from 'bcryptjs';
 import nextAuth, { AuthOptions, Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+
 import db from 'src/db';
 
 const login = async (email: string, password: string) => {
-  const user = await db('users')
-    .select()
-    .where('email', email.toLowerCase().trim())
-    .andWhere('active', true)
-    .first();
+  const user = await db('users').select().where('email', email.toLowerCase().trim()).andWhere('active', true).first();
 
   if (!user) {
     return null;

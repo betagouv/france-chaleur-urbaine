@@ -3,10 +3,7 @@ type DebouncedFunction<T extends (...args: any[]) => any> = {
   cancel: () => void;
 };
 
-const debounce = <Handler extends (...args: any[]) => any>(
-  handler: Handler,
-  timer: number
-): DebouncedFunction<Handler> => {
+const debounce = <Handler extends (...args: any[]) => any>(handler: Handler, timer: number): DebouncedFunction<Handler> => {
   let timeOut: NodeJS.Timeout;
 
   const debouncedFunc = (...arg: Parameters<Handler>) => {

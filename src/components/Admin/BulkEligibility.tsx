@@ -1,12 +1,14 @@
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+
 import Input from '@components/form/Input';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import { Table, type ColumnDef } from '@components/ui/Table';
-import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { EligibilityDemand } from 'src/types/EligibilityDemand';
+
 import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';
 
@@ -47,9 +49,7 @@ const columns: ColumnDef<EligibilityDemand>[] = [
   {
     field: 'download',
     headerName: 'Télécharger',
-    renderCell: (params) => (
-      <DownloadButton id={params.row.id} inError={params.row.in_error} />
-    ),
+    renderCell: (params) => <DownloadButton id={params.row.id} inError={params.row.in_error} />,
   },
   {
     field: 'map',
@@ -68,9 +68,7 @@ const BulkEligibility = () => {
   const { adminService } = useServices();
 
   const [filter, setFilter] = useState('');
-  const [eligibilityDemands, setEligibilityDemands] = useState<
-    EligibilityDemand[]
-  >([]);
+  const [eligibilityDemands, setEligibilityDemands] = useState<EligibilityDemand[]>([]);
 
   useEffect(() => {
     adminService.getEligibilityDemand().then(setEligibilityDemands);
@@ -78,9 +76,7 @@ const BulkEligibility = () => {
 
   const filteredEligibilityDemands = useMemo(() => {
     return filter
-      ? eligibilityDemands.filter((demand) =>
-          demand.emails.some((email) => email.includes(filter.toLowerCase()))
-        )
+      ? eligibilityDemands.filter((demand) => demand.emails.some((email) => email.includes(filter.toLowerCase())))
       : eligibilityDemands;
   }, [eligibilityDemands, filter]);
 
@@ -95,9 +91,7 @@ const BulkEligibility = () => {
       <TableContainer>
         <Box display="flex">
           <Heading as="h3" mx="2w">
-            {`Demandes d'éligibilités - ${totalDemands.toLocaleString(
-              'fr-FR'
-            )} adresses testées - ${totalTestedAddresses.toLocaleString(
+            {`Demandes d'éligibilités - ${totalDemands.toLocaleString('fr-FR')} adresses testées - ${totalTestedAddresses.toLocaleString(
               'fr-FR'
             )} adresses éligibles`}
           </Heading>
@@ -110,12 +104,7 @@ const BulkEligibility = () => {
             }}
           />
         </Box>
-        <Table
-          columns={columns}
-          rows={filteredEligibilityDemands}
-          autoHeight
-          getRowHeight={() => 'auto'}
-        />
+        <Table columns={columns} rows={filteredEligibilityDemands} autoHeight getRowHeight={() => 'auto'} />
         {filteredEligibilityDemands.length === 0 && <p>Pas de résultat</p>}
       </TableContainer>
     </>

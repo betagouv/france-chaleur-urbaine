@@ -1,9 +1,11 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { submitToAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
+
+import { submitToAirtable } from '@helpers/airtable';
 import { Airtable } from 'src/types/enum/Airtable';
+
 import { Container, Email } from './Newsletter.styles';
 
 const Newsletter = () => {
@@ -13,18 +15,13 @@ const Newsletter = () => {
   const addToNewsletter = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    submitToAirtable({ Email: email }, Airtable.NEWSLETTER).then(() =>
-      setSent(true)
-    );
+    submitToAirtable({ Email: email }, Airtable.NEWSLETTER).then(() => setSent(true));
   };
 
   return (
     <Container onSubmit={addToNewsletter}>
       {sent ? (
-        <Alert
-          severity="success"
-          title="Vous recevrez désormais notre newsletter. Pensez à vérifier vos spams."
-        />
+        <Alert severity="success" title="Vous recevrez désormais notre newsletter. Pensez à vérifier vos spams." />
       ) : (
         <>
           <Email

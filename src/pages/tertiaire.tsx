@@ -1,6 +1,7 @@
+import Head from 'next/head';
+
 import SimplePage from '@components/shared/page/SimplePage';
 import Tertiaire from '@components/Tertiaire';
-import Head from 'next/head';
 
 export default function TertiairePage() {
   return (

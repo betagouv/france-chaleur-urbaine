@@ -1,11 +1,9 @@
-import NetworkPanel from '@components/Network/Network';
-import {
-  getColdNetwork,
-  getNetwork,
-} from '@core/infrastructure/repository/network';
 import { GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+
+import NetworkPanel from '@components/Network/Network';
+import { getColdNetwork, getNetwork } from '@core/infrastructure/repository/network';
 import { Network } from 'src/types/Summary/Network';
 
 const PageReseau = ({ network }: { network: Network }) => {
@@ -31,13 +29,7 @@ const PageReseau = ({ network }: { network: Network }) => {
     displayBlocks = blocs;
   }
 
-  return (
-    <NetworkPanel
-      network={network}
-      displayBlocks={displayBlocks}
-      externalLinks
-    />
-  );
+  return <NetworkPanel network={network} displayBlocks={displayBlocks} externalLinks />;
 };
 
 export async function getStaticPaths() {

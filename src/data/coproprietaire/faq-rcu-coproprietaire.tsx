@@ -12,8 +12,7 @@ Il est à noter que le mix énergétique est variable d’un réseau à l’autr
 `,
   },
   {
-    label:
-      'Quel est le tarif de la chaleur fournie par les réseaux ? La stabilité des prix est-elle garantie ?',
+    label: 'Quel est le tarif de la chaleur fournie par les réseaux ? La stabilité des prix est-elle garantie ?',
     body: `La tarification de la chaleur diffère d’un réseau à l’autre, en fonction des caractéristiques du réseau (taux d’énergies renouvelables, nombre d’abonnés,...). Le prix de vente comprend une part fixe (abonnement) et une part variable relative à la consommation. Pour les réseaux de chaleur alimentés à plus de 50 % par des énergies renouvelables et de récupération, un taux de TVA réduit à 5.5 % s’applique sur l’ensemble de la facture. Ce taux réduit s’applique uniquement sur la part fixe (abonnement) pour les autres réseaux. Le prix de la chaleur peut évoluer d’une année sur l’autre (inflation, prix des énergies, coût de l'ingénierie...), mais ces fluctuations restent largement inférieures à celles subies par les prix du gaz, du fioul ou de l’électricité. Cela est d’autant plus vrai que le taux d’énergies renouvelables et de récupération du réseau est élevé.`,
   },
   {
@@ -27,8 +26,7 @@ Par ailleurs, pour les réseaux de chaleur alimentés à plus de 50 % par des é
 `,
   },
   {
-    label:
-      'Chacun aura-t-il une facture correspondant à sa propre consommation ?',
+    label: 'Chacun aura-t-il une facture correspondant à sa propre consommation ?',
     body: `Lors du raccordement d’une copropriété à un réseau de chaleur, c’est le syndic de copropriété qui est qualifié « d’abonné » du réseau de chaleur tandis que les copropriétaires en sont les « usagers ». La facture adressée au syndic par le gestionnaire du réseau comprend une part fixe correspondant à l’abonnement et une part variable fonction de la consommation de la copropriété. Le syndic a la charge de refacturer les coûts aux usagers conformément au règlement de copropriété, comme pour un chauffage collectif classique. Pour rappel, la loi impose que chaque usager ait une facture calculée sur la base de sa propre consommation, sauf cas de dérogation (lorsque cela est techniquement impossible en particulier).`,
   },
   {
@@ -41,8 +39,7 @@ Au niveau contractuel, les relations entre les différents acteurs sont régies 
 `,
   },
   {
-    label:
-      'Quelles sont les étapes à suivre pour raccorder ma copropriété à un réseau de chaleur ?',
+    label: 'Quelles sont les étapes à suivre pour raccorder ma copropriété à un réseau de chaleur ?',
     body: `France Chaleur Urbaine, tiers neutre et indépendant, vous accompagne dans la mise en place de votre projet, dont les grandes étapes seront les suivantes :
 - déterminer la compatibilité du raccordement :
   - savoir si un réseau de chaleur passe à proximité de ma copropriété ou dans le cas contraire si des travaux d’extension/création sont prévus prochainement ;

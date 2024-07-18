@@ -11,10 +11,7 @@ const configToURI = (config: ConfigType) =>
     .map(([key, value]) => `${key}=${value}`)
     .join('&');
 
-const buildMatomoURL = (
-  config: ConfigType = {},
-  bulkConfig: ConfigType[] = []
-) => {
+const buildMatomoURL = (config: ConfigType = {}, bulkConfig: ConfigType[] = []) => {
   const queryParams = {
     token_auth: MATOMO_TOKEN,
     idSite: MATOMO_ID_SITE,
@@ -24,9 +21,7 @@ const buildMatomoURL = (
     ...bulkConfig.reduce(
       (acc, configEntry: ConfigType, i: number) => ({
         ...acc,
-        [`urls[${i}]`]: encodeURIComponent(
-          configToURI({ ...config, ...configEntry })
-        ),
+        [`urls[${i}]`]: encodeURIComponent(configToURI({ ...config, ...configEntry })),
       }),
       {}
     ),
@@ -55,9 +50,7 @@ export const bulkFetchRangeFromMatomo = async <Result>(
   const bulkResults: Result[][] | MatomoErrorResult[] = await response.json();
   // consider failure if the first bulk result is an error
   if (isMatomoErrorResult(bulkResults)) {
-    throw new Error(
-      `matomo error: ${(bulkResults[0] as MatomoErrorResult).message}`
-    );
+    throw new Error(`matomo error: ${(bulkResults[0] as MatomoErrorResult).message}`);
   }
 
   return bulkResults.map((bulkResult, i) => ({
@@ -73,9 +66,7 @@ export const bulkFetchRangeFromMatomo = async <Result>(
   }));
 };
 
-function isMatomoErrorResult<Result>(
-  bulkResults: Result[][] | MatomoErrorResult[]
-): bulkResults is MatomoErrorResult[] {
+function isMatomoErrorResult<Result>(bulkResults: Result[][] | MatomoErrorResult[]): bulkResults is MatomoErrorResult[] {
   return (bulkResults[0] as any).result === 'error';
 }
 
@@ -94,9 +85,10 @@ export function generateMonthsToNow(): string[] {
     .map((v, i) => {
       const baseDate = new Date(currentDate.toDateString());
       baseDate.setMonth(baseDate.getMonth() - i);
-      const date = `${baseDate.getFullYear()}-${(baseDate.getMonth() + 1)
+      const date = `${baseDate.getFullYear()}-${(baseDate.getMonth() + 1).toString().padStart(2, '0')}-${baseDate
+        .getDate()
         .toString()
-        .padStart(2, '0')}-${baseDate.getDate().toString().padStart(2, '0')}`;
+        .padStart(2, '0')}`;
       return date;
     });
   return months;

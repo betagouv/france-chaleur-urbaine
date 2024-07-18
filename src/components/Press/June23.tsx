@@ -1,5 +1,6 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
+
 import { Container } from './index.styles';
 
 const June2023 = () => {
