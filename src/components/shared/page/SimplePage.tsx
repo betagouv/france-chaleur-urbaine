@@ -11,6 +11,7 @@ import MainNavigation, {
 import { FooterConsentManagementItem } from '@components/ConsentBanner';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
+import Text from '@components/ui/Text';
 import { deleteFetchJSON } from '@utils/network';
 import { signOut, useSession } from 'next-auth/react';
 import Head from 'next/head';
@@ -436,14 +437,27 @@ const PageHeader = (props: PageHeaderProps) => {
   );
 };
 
-const footerDescription = `France Chaleur Urbaine est un projet d'innovation pour accélérer
-  le raccordement des bâtiments aux réseaux de chaleur en vue de
-  l'atteinte des objectifs de développement de la chaleur
-  d'origine renouvelable.`;
-
 const PageFooter = () => (
   <Footer
-    contentDescription={footerDescription}
+    contentDescription={
+      <>
+        France Chaleur Urbaine est un projet d'innovation pour accélérer le
+        raccordement des bâtiments aux réseaux de chaleur en vue de l'atteinte
+        des objectifs de développement de la chaleur d'origine renouvelable.
+        <br />
+        <br />
+        <Text as="span" fontWeight="bold">
+          Faites nous part de vos propositions pour améliorer ce service&nbsp;:
+        </Text>
+        <br />
+        <Text as="span" fontWeight="bold">
+          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr">
+            france-chaleur-urbaine@developpement-durable.gouv.fr
+          </a>
+        </Text>
+      </>
+    }
+    domains={[]}
     operatorLogo={{
       imgUrl: '/logo-fcu-with-typo.jpg',
       orientation: 'horizontal',
