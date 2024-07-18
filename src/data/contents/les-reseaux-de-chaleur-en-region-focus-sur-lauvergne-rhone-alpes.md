@@ -6,4 +6,9 @@
 \
 Les réseaux de chaleur continuent de se développer dans la région, aussi bien dans les métropoles, avec un nouveau réseau en construction sur la [Métropole de Lyon](https://www.grandlyon.com/) par exemple, qu'en zone plus rurale, comme sur la [ville de Saint-Marcellin](https://www.saint-marcellin.fr/) où un nouveau réseau alimentera le nord de la commune d'ici fin 2025.\
 \
-🔎 Les réseaux de chaleur de la région Auvergne-Rhône-Alpes en quelques chiffres clés et exemples, c'est ici ! 👇\
+🔎 Les réseaux de chaleur de la région Auvergne-Rhône-Alpes en quelques chiffres clés et exemples, c'est ici ! 👇
+
+\
+
+
+<figure><img src=".gitbook/assets/FCU_AURA (1).jpg" alt=""><figcaption></figcaption></figure>

@@ -5,3 +5,6 @@
 📊 Basées sur les données d'exploitation de l'année 2022 ou d'une moyenne sur les années 2020-2021-2022, ces valeurs sont notamment celles à utiliser pour la réalisation des diagnostics de performance énergétique ou pour l'application de la RE2020 et de la RT2012.\
 \
 👉 Liens vers l'arrêté : [https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781)
+
+<figure><img src=".gitbook/assets/FCU_tauxENRR-contenuCO2.jpg" alt=""><figcaption></figcaption></figure>
+

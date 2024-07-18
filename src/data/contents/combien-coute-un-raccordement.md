@@ -9,3 +9,5 @@
 👉 Une nouvelle étape est ainsi franchie vers davantage de transparence sur les tarifs, chantier que nous poursuivrons ces prochains mois.\
 \
 🙏 Un grand merci à la FEDENE Réseaux de chaleur & froid pour la transmission de ces éléments.
+
+<figure><img src=".gitbook/assets/FCU_couts-raccordement.jpg" alt=""><figcaption></figcaption></figure>
