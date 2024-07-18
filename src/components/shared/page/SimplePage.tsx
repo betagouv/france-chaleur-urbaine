@@ -372,7 +372,7 @@ const PageHeader = (props: PageHeaderProps) => {
   return (
     <>
       <StyledHeader
-        isFullScreenMode={isFullScreenMode}
+        $isFullScreenMode={isFullScreenMode}
         brandTop={
           <>
             République

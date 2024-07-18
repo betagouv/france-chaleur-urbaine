@@ -1,9 +1,9 @@
 import Header from '@codegouvfr/react-dsfr/Header';
 import styled, { css } from 'styled-components';
 
-export const StyledHeader = styled(Header)<{ isFullScreenMode: boolean }>`
-  ${({ isFullScreenMode }) =>
-    isFullScreenMode
+export const StyledHeader = styled(Header)<{ $isFullScreenMode: boolean }>`
+  ${({ $isFullScreenMode }) =>
+    $isFullScreenMode
       ? css`
           // In fullscreen mode, hide the first line of the header
           // but only when the hamburger menu is not displayed.
