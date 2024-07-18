@@ -1,13 +1,8 @@
 import { Card } from '@codegouvfr/react-dsfr/Card';
+
 import { Article as ArticleType } from 'src/types/Article';
 
-const Article = ({
-  article,
-  isHorizontal,
-}: {
-  article: ArticleType;
-  isHorizontal?: boolean;
-}) => {
+const Article = ({ article, isHorizontal }: { article: ArticleType; isHorizontal?: boolean }) => {
   return (
     <Card
       title={article.title}

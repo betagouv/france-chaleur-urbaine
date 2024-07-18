@@ -6,10 +6,7 @@ type LinkedInScriptProps = React.ComponentProps<typeof Script> & {
 };
 
 // https://www.linkedin.com/help/lms/answer/a415868
-const LinkedInScript: React.FC<LinkedInScriptProps> = ({
-  partnerId,
-  ...props
-}) => {
+const LinkedInScript: React.FC<LinkedInScriptProps> = ({ partnerId, ...props }) => {
   return (
     <>
       <Script id="linkedin-snippet" {...props}>

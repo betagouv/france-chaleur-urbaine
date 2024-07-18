@@ -13,12 +13,7 @@ const DalkiaMap = () => {
           },
           filtreGestionnaire: ['dalkia'],
         })}
-        enabledLegendFeatures={[
-          'reseauxDeChaleur',
-          'reseauxDeFroid',
-          'reseauxEnConstruction',
-          'zonesDeDeveloppementPrioritaire',
-        ]}
+        enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
         withHideLegendSwitch

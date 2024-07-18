@@ -1,6 +1,8 @@
-import Icon from '@components/ui/Icon';
 import { useState } from 'react';
+
+import Icon from '@components/ui/Icon';
 import { Demand } from 'src/types/Summary/Demand';
+
 import { ContactInfos, EmailInfo, Name, OtherInfo } from './Contact.styles';
 import ModalEmails from './ModalEmails';
 

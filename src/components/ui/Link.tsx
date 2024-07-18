@@ -1,6 +1,8 @@
 import NextLink from 'next/link';
 import { PropsWithChildren } from 'react';
+
 import { TrackingEvent, trackEvent } from 'src/services/analytics';
+
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 const linkVariantToClass = {
@@ -52,9 +54,7 @@ function Link({
           trackEvent(eventKey, eventPayload?.split(',').map((v) => v.trim()));
         }
       }}
-      className={`${className} ${
-        linkVariantToClass[variant]
-      } ${spacingsToClasses(props)}`}
+      className={`${className} ${linkVariantToClass[variant]} ${spacingsToClasses(props)}`}
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
       {...props}

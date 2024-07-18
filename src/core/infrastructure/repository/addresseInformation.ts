@@ -1,19 +1,17 @@
-import db from 'src/db';
-import { CityNetwork, HeatNetwork } from 'src/types/HeatNetworksResponse';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import XLSX from 'xlsx';
+
+import db from 'src/db';
+import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
+import { CityNetwork, HeatNetwork } from 'src/types/HeatNetworksResponse';
+
 import isInPDP from './pdp';
 
 const hasNetworkInCity = async (city: string): Promise<boolean> => {
-  const result = await db('reseaux_de_chaleur')
-    .whereRaw('? = any(communes)', [city])
-    .first();
+  const result = await db('reseaux_de_chaleur').whereRaw('? = any(communes)', [city]).first();
   return !!result;
 };
 const hasFuturNetworkInCity = async (city: string): Promise<boolean> => {
-  const result = await db('zones_et_reseaux_en_construction')
-    .whereRaw('? = any(communes)', [city])
-    .first();
+  const result = await db('zones_et_reseaux_en_construction').whereRaw('? = any(communes)', [city]).first();
   return !!result;
 };
 
@@ -28,11 +26,7 @@ export type NetworkInfos = {
   has_PDP: boolean;
 };
 
-export const getDistanceToNetwork = async (
-  networkId: string,
-  lat: number,
-  lon: number
-): Promise<NetworkInfos> => {
+export const getDistanceToNetwork = async (networkId: string, lat: number, lon: number): Promise<NetworkInfos> => {
   const network = (await db('reseaux_de_chaleur')
     .select(
       'Identifiant reseau',
@@ -40,9 +34,7 @@ export const getDistanceToNetwork = async (
       'contenu CO2 ACV',
       'Gestionnaire',
       'nom_reseau',
-      db.raw(
-        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`
-      )
+      db.raw(`round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`)
     )
     .where('has_trace', true)
     .andWhere('Identifiant reseau', networkId)
@@ -55,10 +47,7 @@ export const getDistanceToNetwork = async (
   return network;
 };
 
-export const closestNetwork = async (
-  lat: number,
-  lon: number
-): Promise<NetworkInfos> => {
+export const closestNetwork = async (lat: number, lon: number): Promise<NetworkInfos> => {
   const network = await db('reseaux_de_chaleur')
     .select(
       'Identifiant reseau',
@@ -68,9 +57,7 @@ export const closestNetwork = async (
       'nom_reseau',
       'reseaux classes',
       'has_PDP',
-      db.raw(
-        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`
-      )
+      db.raw(`round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance`)
     )
     .where('has_trace', true)
     .orderBy('distance')
@@ -87,11 +74,7 @@ const closestFuturNetwork = async (
   gestionnaire: string;
 }> => {
   const network = await db('zones_et_reseaux_en_construction')
-    .select(
-      db.raw(
-        `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance, "gestionnaire"`
-      )
-    )
+    .select(db.raw(`round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154)) as distance, "gestionnaire"`))
     .where('is_zone', false)
     .orderBy('distance')
     .first();
@@ -118,10 +101,7 @@ const closestInFuturNetwork = async (
   return network;
 };
 
-export const getConso = async (
-  lat: number,
-  lon: number
-): Promise<{ conso_nb: number; rownum: string } | null> => {
+export const getConso = async (lat: number, lon: number): Promise<{ conso_nb: number; rownum: string } | null> => {
   const result = await db('donnees_de_consos')
     .select('rownum', 'conso_nb')
     .where(
@@ -136,20 +116,12 @@ export const getConso = async (
   return result;
 };
 
-export const getConsoById = async (
-  id: string
-): Promise<{ conso_nb: number; rownum: string } | null> => {
-  const result = await db('donnees_de_consos')
-    .select('rownum', 'conso_nb')
-    .where('rownum', id)
-    .first();
+export const getConsoById = async (id: string): Promise<{ conso_nb: number; rownum: string } | null> => {
+  const result = await db('donnees_de_consos').select('rownum', 'conso_nb').where('rownum', id).first();
   return result;
 };
 
-export const getNbLogement = async (
-  lat: number,
-  lon: number
-): Promise<{ nb_logements: number; id: string } | null> => {
+export const getNbLogement = async (lat: number, lon: number): Promise<{ nb_logements: number; id: string } | null> => {
   const region = await db('regions')
     .select('bnb_nom')
     .where(
@@ -175,11 +147,7 @@ export const getNbLogement = async (
   return result;
 };
 
-export const getNbLogementById = async (
-  id: string,
-  lat: number,
-  lon: number
-): Promise<{ nb_logements: number; id: string } | null> => {
+export const getNbLogementById = async (id: string, lat: number, lon: number): Promise<{ nb_logements: number; id: string } | null> => {
   const region = await db('regions')
     .select('bnb_nom')
     .where(
@@ -192,10 +160,7 @@ export const getNbLogementById = async (
     )
     .first();
 
-  const result = await db(region.bnb_nom)
-    .select('id', 'ffo_bat_nb_log as nb_logements')
-    .where('id', id)
-    .first();
+  const result = await db(region.bnb_nom).select('id', 'ffo_bat_nb_log as nb_logements').where('id', id).first();
   return result;
 };
 
@@ -214,10 +179,7 @@ const headers = [
 
 const legend = [
   ['Adresse', 'Adresse reçue par France Chaleur Urbaine'],
-  [
-    'Adresse testée',
-    "Adresse testée par France Chaleur Urbaine (correspondance avec la Base d'adresse nationale)",
-  ],
+  ['Adresse testée', "Adresse testée par France Chaleur Urbaine (correspondance avec la Base d'adresse nationale)"],
   [
     "Indice de fiabilité de l'adresse testée",
     "Min = 0 , Max = 1. Cet indice traduit la correspondance entre l'adresse renseignée par l'utilisateur et celle effectivement testée",
@@ -226,10 +188,7 @@ const legend = [
     'Bâtiment potentiellement raccordable à un réseau existant',
     "Le bâtiment est jugé potentiellement raccordable s'il se situe à moins de 200 m d'un réseau existant, sauf sur Paris où ce seuil est réduit à 100 m. Attention, le mode de chauffage n'est pas pris en compte.",
   ],
-  [
-    'Distance au réseau (m) si < 1000 m',
-    'Distance au réseau le plus proche, fournie uniquement si elle est de moins de 1000m',
-  ],
+  ['Distance au réseau (m) si < 1000 m', 'Distance au réseau le plus proche, fournie uniquement si elle est de moins de 1000m'],
   [
     'PDP (périmètre de développement prioritaire)',
     "Positif si l'adresse se situe dans le périmètre de développement prioritaire d'un réseau classé (d'après les données dont nous disposons). Une obligation de raccordement peut alors s'appliquer. En savoir plus : https://france-chaleur-urbaine.beta.gouv.fr/ressources/prioritaire",
@@ -284,13 +243,8 @@ export const getNetworkEligibilityDistances = (networkId: string) => {
     : { eligibleDistance: 200, veryEligibleDistance: 100 };
 };
 
-export const getCityEligilityStatus = async (
-  city: string
-): Promise<CityNetwork> => {
-  const [cityHasNetwork, cityHasFuturNetwork] = await Promise.all([
-    hasNetworkInCity(city),
-    hasFuturNetworkInCity(city),
-  ]);
+export const getCityEligilityStatus = async (city: string): Promise<CityNetwork> => {
+  const [cityHasNetwork, cityHasFuturNetwork] = await Promise.all([hasNetworkInCity(city), hasFuturNetworkInCity(city)]);
   return { basedOnCity: true, cityHasNetwork, cityHasFuturNetwork };
 };
 
@@ -306,31 +260,20 @@ export type NetworkEligibilityStatus = {
 /**
  * Permet d'obtenir l'éligibilité d'un point géographique sur un réseau précis.
  */
-export const getNetworkEligilityStatus = async (
-  networkId: string,
-  lat: number,
-  lon: number
-): Promise<NetworkEligibilityStatus> => {
-  const [networkInfos, inPDP] = await Promise.all([
-    getDistanceToNetwork(networkId, lat, lon),
-    isInPDP(lat, lon),
-  ]);
+export const getNetworkEligilityStatus = async (networkId: string, lat: number, lon: number): Promise<NetworkEligibilityStatus> => {
+  const [networkInfos, inPDP] = await Promise.all([getDistanceToNetwork(networkId, lat, lon), isInPDP(lat, lon)]);
   const eligibilityDistances = getNetworkEligibilityDistances(networkId);
 
   return {
     distance: networkInfos.distance,
     inPDP,
     isEligible: networkInfos.distance <= eligibilityDistances.eligibleDistance,
-    isVeryEligible:
-      networkInfos.distance <= eligibilityDistances.veryEligibleDistance,
+    isVeryEligible: networkInfos.distance <= eligibilityDistances.veryEligibleDistance,
     ...eligibilityDistances,
   };
 };
 
-export const getEligilityStatus = async (
-  lat: number,
-  lon: number
-): Promise<HeatNetwork> => {
+export const getEligilityStatus = async (lat: number, lon: number): Promise<HeatNetwork> => {
   const [inPDP, inFuturNetwork, futurNetwork, network] = await Promise.all([
     isInPDP(lat, lon),
     closestInFuturNetwork(lat, lon),
@@ -338,25 +281,18 @@ export const getEligilityStatus = async (
     closestNetwork(lat, lon),
   ]);
 
-  const eligibilityDistances = getNetworkEligibilityDistances(
-    network['Identifiant reseau']
-  );
+  const eligibilityDistances = getNetworkEligibilityDistances(network['Identifiant reseau']);
   const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
   const eligibility = {
-    isEligible:
-      Number(network.distance) <= eligibilityDistances.eligibleDistance,
+    isEligible: Number(network.distance) <= eligibilityDistances.eligibleDistance,
     veryEligibleDistance: eligibilityDistances.veryEligibleDistance,
   };
   const futurEligibility = {
-    isEligible:
-      futurNetwork.distance <= futurEligibilityDistances.eligibleDistance,
+    isEligible: futurNetwork.distance <= futurEligibilityDistances.eligibleDistance,
     veryEligibleDistance: futurEligibilityDistances.veryEligibleDistance,
   };
 
-  if (
-    eligibility.isEligible &&
-    Number(network.distance) < eligibility.veryEligibleDistance
-  ) {
+  if (eligibility.isEligible && Number(network.distance) < eligibility.veryEligibleDistance) {
     return {
       ...eligibility,
       distance: Math.round(network.distance),
@@ -372,10 +308,7 @@ export const getEligilityStatus = async (
       hasPDP: network['has_PDP'],
     };
   }
-  if (
-    futurEligibility.isEligible &&
-    Number(futurNetwork.distance) < futurEligibility.veryEligibleDistance
-  ) {
+  if (futurEligibility.isEligible && Number(futurNetwork.distance) < futurEligibility.veryEligibleDistance) {
     return {
       ...futurEligibility,
       distance: Math.round(futurNetwork.distance),

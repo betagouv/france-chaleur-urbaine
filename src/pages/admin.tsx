@@ -1,9 +1,10 @@
+import { GetServerSideProps } from 'next';
+import { getSession } from 'next-auth/react';
+
 import BulkEligibility from '@components/Admin/BulkEligibility';
 import UserImpersonation from '@components/Admin/UserImpersonation';
 import Users from '@components/Admin/Users';
 import SimplePage from '@components/shared/page/SimplePage';
-import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 
 export default function AdminPage(): JSX.Element {

@@ -1,20 +1,17 @@
-import Box from '@components/ui/Box';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import StickyForm from '../StickyForm/StickyForm';
+
+import Box from '@components/ui/Box';
+
+import { coldNetworks, growths, issues, understandings } from './config';
 import Guide from './Guide';
 import Header from './Header';
 import { SideMenu, StickyWrapper } from './Ressource.styles';
 import RessourceContent from './RessourceContent';
-import { coldNetworks, growths, issues, understandings } from './config';
+import StickyForm from '../StickyForm/StickyForm';
 
 const getContent = (ressourceKey: string) => {
-  return (
-    issues[ressourceKey] ||
-    understandings[ressourceKey] ||
-    growths[ressourceKey] ||
-    coldNetworks[ressourceKey]
-  );
+  return issues[ressourceKey] || understandings[ressourceKey] || growths[ressourceKey] || coldNetworks[ressourceKey];
 };
 
 const Ressource = ({ ressourceKey }: { ressourceKey: string }) => {

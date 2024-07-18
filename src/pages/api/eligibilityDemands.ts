@@ -1,5 +1,6 @@
-import { handleRouteErrors, requireGetMethod } from '@helpers/server';
 import type { NextApiRequest } from 'next';
+
+import { handleRouteErrors, requireGetMethod } from '@helpers/server';
 import db from 'src/db';
 import { EligibilityDemand } from 'src/types/EligibilityDemand';
 
@@ -9,11 +10,7 @@ export default handleRouteErrors(
 
     const demands = await db
       .from('eligibility_demands')
-      .leftJoin(
-        'eligibility_tests',
-        'eligibility_demands.eligibility_test_id',
-        'eligibility_tests.id'
-      )
+      .leftJoin('eligibility_tests', 'eligibility_demands.eligibility_test_id', 'eligibility_tests.id')
       .select([
         'email',
         'eligibility_tests.id',

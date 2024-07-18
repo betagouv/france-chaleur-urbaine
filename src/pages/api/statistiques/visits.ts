@@ -1,8 +1,9 @@
-import db from 'src/db';
-import { bulkFetchRangeFromMatomo } from '../../../services/matomo';
 import { handleRouteErrors } from '@helpers/server';
-import { STAT_KEY, STAT_METHOD, STAT_PERIOD } from 'src/types/enum/MatomoStats';
+import db from 'src/db';
 import { MatomoUniqueVisitorsMetrics } from 'src/services/matomo_types';
+import { STAT_KEY, STAT_METHOD, STAT_PERIOD } from 'src/types/enum/MatomoStats';
+
+import { bulkFetchRangeFromMatomo } from '../../../services/matomo';
 
 export default handleRouteErrors(async () => {
   let results = await bulkFetchRangeFromMatomo<MatomoUniqueVisitorsMetrics>({

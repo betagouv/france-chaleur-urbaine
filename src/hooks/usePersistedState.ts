@@ -10,10 +10,7 @@ type PersistedStateOption = {
 function usePersistedState<T>(
   name: string,
   defaultValue: T,
-  {
-    beforeStorage = () => undefined,
-    keyPrefix = STORED_KEY,
-  }: PersistedStateOption = {}
+  { beforeStorage = () => undefined, keyPrefix = STORED_KEY }: PersistedStateOption = {}
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [value, setValue] = useState(defaultValue);
   const key = useMemo(() => `${keyPrefix}-${name}`, [keyPrefix, name]);
@@ -22,10 +19,7 @@ function usePersistedState<T>(
   const saveInStorage = useCallback(
     (key: string, value: any) => {
       if (typeof window === 'undefined') return;
-      return window.localStorage.setItem(
-        key,
-        JSON.stringify(beforeStorage(value))
-      );
+      return window.localStorage.setItem(key, JSON.stringify(beforeStorage(value)));
     },
     [beforeStorage]
   );
@@ -53,8 +47,7 @@ function usePersistedState<T>(
       try {
         saveInStorage(key, value);
         nameRef.current = key;
-        if (typeof window !== 'undefined')
-          window.localStorage.removeItem(lastName);
+        if (typeof window !== 'undefined') window.localStorage.removeItem(lastName);
       } catch (err) {
         console.error(err);
       }

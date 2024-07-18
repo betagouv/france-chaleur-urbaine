@@ -1,6 +1,7 @@
 import { CSSProperties, PropsWithChildren } from 'react';
-import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
+
 import { LegacyColor, legacyColors } from './helpers/colors';
+import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type HeadingType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 type HeadingSize = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
@@ -30,20 +31,14 @@ function Heading(props: PropsWithChildren<HeadingProps>) {
     throw new Error('cannot use color and legacyColor at the same time');
   }
   const style: CSSProperties = {
-    color: props.color
-      ? `var(--text-title-${props.color})`
-      : props.legacyColor
-      ? legacyColors[props.legacyColor]
-      : undefined,
+    color: props.color ? `var(--text-title-${props.color})` : props.legacyColor ? legacyColors[props.legacyColor] : undefined,
     textAlign: props.center ? 'center' : undefined,
     maxWidth: props.maxWidth,
   };
 
   return (
     <Type
-      className={`fr-${props.size ?? Type} ${
-        props.center ? 'fr-text-center' : ''
-      }
+      className={`fr-${props.size ?? Type} ${props.center ? 'fr-text-center' : ''}
       ${spacingsToClasses(props)} ${props.className ?? ''}`}
       style={style}
       id={props.id}

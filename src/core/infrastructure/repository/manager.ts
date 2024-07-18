@@ -1,24 +1,20 @@
 import { faker } from '@faker-js/faker';
-import { invalidPermissionsError } from '@helpers/server';
 import { User } from 'next-auth';
+
+import { invalidPermissionsError } from '@helpers/server';
 import db from 'src/db';
 import base from 'src/db/airtable';
-import { Demand } from 'src/types/Summary/Demand';
 import { Airtable } from 'src/types/enum/Airtable';
 import { USER_ROLE } from 'src/types/enum/UserRole';
-import {
-  gestionnairesPerCity,
-  gestionnairesPerDepartment,
-  gestionnairesPerNetwork,
-} from './gestionnaires.config';
+import { Demand } from 'src/types/Summary/Demand';
+
+import { gestionnairesPerCity, gestionnairesPerDepartment, gestionnairesPerNetwork } from './gestionnaires.config';
 
 export const getAllDemands = async (): Promise<Demand[]> => {
   const records = await base(Airtable.UTILISATEURS)
     .select({ sort: [{ field: 'Date demandes', direction: 'desc' }] })
     .all();
-  return records.map(
-    (record) => ({ id: record.id, ...record.fields }) as Demand
-  );
+  return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 export const getAllNewDemands = async (): Promise<Demand[]> => {
@@ -30,9 +26,7 @@ export const getAllNewDemands = async (): Promise<Demand[]> => {
         )`,
     })
     .all();
-  return records.map(
-    (record) => ({ id: record.id, ...record.fields }) as Demand
-  );
+  return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
@@ -55,26 +49,18 @@ export const getAllToRelanceDemands = async (): Promise<Demand[]> => {
       )`,
     })
     .all();
-  return records.map(
-    (record) => ({ id: record.id, ...record.fields }) as Demand
-  );
+  return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
-export const getToRelanceDemand = async (
-  id: string
-): Promise<Demand | undefined> => {
+export const getToRelanceDemand = async (id: string): Promise<Demand | undefined> => {
   const records = await base(Airtable.UTILISATEURS)
     .select({
       filterByFormula: `{Relance ID} = "${id}"`,
     })
     .all();
-  return records.map(
-    (record) => ({ id: record.id, ...record.fields }) as Demand
-  )[0];
+  return records.map((record) => ({ id: record.id, ...record.fields }) as Demand)[0];
 };
-export const getAllStaledDemandsSince = async (
-  dateDiff: number
-): Promise<Demand[]> => {
+export const getAllStaledDemandsSince = async (dateDiff: number): Promise<Demand[]> => {
   const records = await base(Airtable.UTILISATEURS)
     .select({
       filterByFormula: `AND(
@@ -83,15 +69,10 @@ export const getAllStaledDemandsSince = async (
         )`,
     })
     .all();
-  return records.map(
-    (record) => ({ id: record.id, ...record.fields }) as Demand
-  );
+  return records.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
-export const getGestionnaires = async (
-  demand: Demand,
-  network: string
-): Promise<string[]> => {
+export const getGestionnaires = async (demand: Demand, network: string): Promise<string[]> => {
   let city = demand.Ville;
   if (!city) {
     const address = demand.Adresse.split(' ');
@@ -125,9 +106,7 @@ export const getGestionnaires = async (
   return [...new Set(gestionnaires)];
 };
 
-export const getGestionnairesDemands = async (
-  gestionnaires: string[]
-): Promise<Demand[]> => {
+export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<Demand[]> => {
   const records = await base(Airtable.UTILISATEURS)
     .select({
       sort: [{ field: 'Date demandes', direction: 'desc' }],
@@ -136,13 +115,7 @@ export const getGestionnairesDemands = async (
 
   return records
     .map((record) => ({ id: record.id, ...record.fields }) as Demand)
-    .filter(
-      (record) =>
-        record.Gestionnaires &&
-        record.Gestionnaires.some((gestionnaire) =>
-          gestionnaires.includes(gestionnaire)
-        )
-    );
+    .filter((record) => record.Gestionnaires && record.Gestionnaires.some((gestionnaire) => gestionnaires.includes(gestionnaire)));
 };
 
 export const getDemands = async (user: User): Promise<Demand[]> => {
@@ -164,9 +137,7 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
           return (
             gestionnaires &&
             gestionnaires.some(
-              (gestionnaire) =>
-                (user.role === USER_ROLE.DEMO && gestionnaire === 'Paris') ||
-                user.gestionnaires.includes(gestionnaire)
+              (gestionnaire) => (user.role === USER_ROLE.DEMO && gestionnaire === 'Paris') || user.gestionnaires.includes(gestionnaire)
             )
           );
         });
@@ -182,36 +153,23 @@ export const getDemands = async (user: User): Promise<Demand[]> => {
             Téléphone: `0${faker.string.numeric(9)}`,
           }) as Demand
       )
-    : filteredRecords.map(
-        (record) => ({ id: record.id, ...record.fields }) as Demand
-      );
+    : filteredRecords.map((record) => ({ id: record.id, ...record.fields }) as Demand);
 };
 
 const getDemand = async (user: User, demandId: string): Promise<Demand> => {
   const record = await base(Airtable.UTILISATEURS).find(demandId);
   const gestionnaires = record.get('Gestionnaires') as string[];
-  if (
-    user.role !== USER_ROLE.ADMIN &&
-    !gestionnaires.some((gestionnaire) =>
-      user.gestionnaires.includes(gestionnaire)
-    )
-  ) {
+  if (user.role !== USER_ROLE.ADMIN && !gestionnaires.some((gestionnaire) => user.gestionnaires.includes(gestionnaire))) {
     throw invalidPermissionsError;
   }
   return { id: record.id, ...record.fields } as Demand;
 };
 
-export const updateDemand = async (
-  user: User,
-  demandId: string,
-  update: Partial<Demand>
-): Promise<Demand | null> => {
+export const updateDemand = async (user: User, demandId: string, update: Partial<Demand>): Promise<Demand | null> => {
   // check permissions
   await getDemand(user, demandId);
 
-  const [record] = await base(Airtable.UTILISATEURS).update([
-    { id: demandId, fields: update },
-  ]);
+  const [record] = await base(Airtable.UTILISATEURS).update([{ id: demandId, fields: update }]);
 
   // legacy check, may be obsolete as errors seem to be thrown by the Airtable API
   const error = (record as any)?.error;

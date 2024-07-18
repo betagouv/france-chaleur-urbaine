@@ -1,12 +1,10 @@
-import {
-  handleRouteErrors,
-  requireGetMethod,
-  validateObjectSchema,
-} from '@helpers/server';
+import { Readable } from 'stream';
+
+import { z } from 'zod';
+
+import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@helpers/server';
 import { AirtableDB } from 'src/db/airtable';
 import { NetworkAttachment } from 'src/types/Summary/Network';
-import { Readable } from 'stream';
-import { z } from 'zod';
 
 export const config = {
   api: {
@@ -30,9 +28,7 @@ export default handleRouteErrors(async (req, res) => {
   if (!network) {
     throw new Error('not found');
   }
-  const fichier = (network.fields.fichiers! as NetworkAttachment[]).find(
-    (fichier) => fichier.id === fileId
-  );
+  const fichier = (network.fields.fichiers! as NetworkAttachment[]).find((fichier) => fichier.id === fileId);
   if (!fichier) {
     throw new Error('not found');
   }

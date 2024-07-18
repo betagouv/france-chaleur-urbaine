@@ -5,10 +5,7 @@ type FormInputAutoIdType = { id: string; name: string };
 
 const useFormInputAutoId = ({ id, name }: FormInputAutoIdType) => {
   const refId = useRef(uuidv4());
-  const autoId = useMemo(
-    () => `${id || name || 'id'}-${refId.current}`,
-    [name, id]
-  );
+  const autoId = useMemo(() => `${id || name || 'id'}-${refId.current}`, [name, id]);
 
   return autoId;
 };

@@ -1,4 +1,5 @@
 import cron from 'cron';
+
 import { launchJob } from './launch';
 
 new cron.CronJob({

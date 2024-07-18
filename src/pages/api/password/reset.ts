@@ -1,16 +1,13 @@
-import { logger } from '@helpers/logger';
-import {
-  handleRouteErrors,
-  requirePostMethod,
-  validateObjectSchema,
-} from '@helpers/server';
 import jwt from 'jsonwebtoken';
 import type { NextApiRequest } from 'next';
+import { z } from 'zod';
+
+import { logger } from '@helpers/logger';
+import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@helpers/server';
 import db from 'src/db';
 import { AirtableDB } from 'src/db/airtable';
 import { sendResetPasswordEmail } from 'src/services/email';
 import { Airtable } from 'src/types/enum/Airtable';
-import { z } from 'zod';
 
 const reset = handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);
@@ -19,10 +16,7 @@ const reset = handleRouteErrors(async (req: NextApiRequest) => {
     email: z.string().email().toLowerCase().trim(),
   });
 
-  const user = await db('users')
-    .where('email', email)
-    .andWhere('active', true)
-    .first();
+  const user = await db('users').where('email', email).andWhere('active', true).first();
   if (!user) {
     logger.warn('reset-password: missing user', { email });
     await AirtableDB(Airtable.CONNEXION).create([

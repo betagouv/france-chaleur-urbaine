@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import Box from './ui/Box';
 import Icon from './ui/Icon';
 
@@ -25,11 +26,7 @@ const Slideshow = ({ images }: SlideshowProps) => {
         }}
       />
 
-      <nav
-        role="navigation"
-        className="fr-pagination fr-mt-1w"
-        aria-label="Pagination"
-      >
+      <nav role="navigation" className="fr-pagination fr-mt-1w" aria-label="Pagination">
         <ul className="fr-pagination__list">
           <li>
             <a
@@ -38,9 +35,7 @@ const Slideshow = ({ images }: SlideshowProps) => {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                setVisibleSlideIndex(
-                  (visibleSlideIndex - 1 + images.length) % images.length
-                );
+                setVisibleSlideIndex((visibleSlideIndex - 1 + images.length) % images.length);
               }}
             >
               <Icon name="ri-arrow-left-s-line" size="sm" />

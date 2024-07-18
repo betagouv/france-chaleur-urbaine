@@ -1,37 +1,25 @@
+import { GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { MapRef } from 'react-map-gl/maplibre';
+
 import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { Table, type ColumnDef } from '@components/ui/Table';
-import { GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
-import {
-  MutableRefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { MapRef } from 'react-map-gl/maplibre';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
 import { Point } from 'src/types/Point';
 import { Demand } from 'src/types/Summary/Demand';
+
 import AdditionalInformation from './AdditionalInformation';
 import Comment from './Comment';
 import Contact from './Contact';
 import Contacted from './Contacted';
-import {
-  ColHeader,
-  CollapseMap,
-  Container,
-  ManagerContainer,
-  MapContainer,
-  NoResult,
-  TableContainer,
-} from './Manager.styles';
+import { ColHeader, CollapseMap, Container, ManagerContainer, MapContainer, NoResult, TableContainer } from './Manager.styles';
 import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
@@ -52,8 +40,7 @@ const Manager = () => {
 
   const [mapCollapsed, setMapCollapsed] = useState(false);
   const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
-  const [mapCenterLocation, setMapCenterLocation] =
-    useState<MapCenterLocation>();
+  const [mapCenterLocation, setMapCenterLocation] = useState<MapCenterLocation>();
 
   useEffect(() => {
     (async () => {
@@ -87,8 +74,7 @@ const Manager = () => {
 
       tableApiRef.current.setRowSelectionModel([demandId]);
 
-      const pageSize =
-        tableApiRef.current.state.pagination.paginationModel.pageSize;
+      const pageSize = tableApiRef.current.state.pagination.paginationModel.pageSize;
       const rowIndex = tableApiRef.current.getSortedRowIds().indexOf(demandId);
       const pageNumber = Math.floor(rowIndex / pageSize);
       tableApiRef.current.setPage(pageNumber);
@@ -101,9 +87,7 @@ const Manager = () => {
     (rows: GridRowSelectionModel) => {
       const selectedId = rows[0] as string;
       highlightPin(selectedId);
-      const selectedDemand = filteredDemands.find(
-        (demand) => demand.id === selectedId
-      );
+      const selectedDemand = filteredDemands.find((demand) => demand.id === selectedId);
       // update the view after the pin has been highlighted
       if (selectedDemand) {
         setMapCenterLocation({
@@ -166,18 +150,14 @@ const Manager = () => {
       field: 'Statut',
       width: 300,
       sortable: false,
-      renderCell: (params) => (
-        <Status demand={params.row} updateDemand={updateDemand} />
-      ),
+      renderCell: (params) => <Status demand={params.row} updateDemand={updateDemand} />,
       headerName: 'Statut',
     },
     {
       field: 'Prospect recontacté',
       sortable: false,
       align: 'center',
-      renderCell: (params) => (
-        <Contacted demand={params.row} updateDemand={updateDemand} />
-      ),
+      renderCell: (params) => <Contacted demand={params.row} updateDemand={updateDemand} />,
       headerName: 'Prospect recontacté',
     },
     {
@@ -185,24 +165,16 @@ const Manager = () => {
       headerName: 'Contact',
       minWidth: 280,
       sortable: false,
-      renderCell: (params) => (
-        <Contact demand={params.row} updateDemand={updateDemand} />
-      ),
+      renderCell: (params) => <Contact demand={params.row} updateDemand={updateDemand} />,
     },
     {
       field: 'Adresse',
       renderHeader: () => (
         <ColHeader>
           Adresse
-          <HoverableIcon
-            iconName="ri-information-fill"
-            position="bottom-centered"
-            iconSize="sm"
-            top="0px"
-          >
-            La mention “PDP" est indiquée pour les adresses situées dans le
-            périmètre de développement prioritaire d’un réseau classé (connu par
-            France Chaleur Urbaine).
+          <HoverableIcon iconName="ri-information-fill" position="bottom-centered" iconSize="sm" top="0px">
+            La mention “PDP" est indiquée pour les adresses situées dans le périmètre de développement prioritaire d’un réseau classé (connu
+            par France Chaleur Urbaine).
           </HoverableIcon>
         </ColHeader>
       ),
@@ -219,8 +191,7 @@ const Manager = () => {
       field: 'Date demandes',
       sortable: true,
       headerName: 'Date de la demande',
-      renderCell: (params) =>
-        new Date(params.row['Date demandes']).toLocaleDateString(),
+      renderCell: (params) => new Date(params.row['Date demandes']).toLocaleDateString(),
     },
     {
       field: 'Type de chauffage',
@@ -242,23 +213,13 @@ const Manager = () => {
       renderHeader: () => (
         <ColHeader>
           Distance au réseau (m)
-          <HoverableIcon
-            iconName="ri-information-fill"
-            position="bottom-centered"
-            iconSize="sm"
-            top="0px"
-          >
+          <HoverableIcon iconName="ri-information-fill" position="bottom-centered" iconSize="sm" top="0px">
             Distance à vol d'oiseau
           </HoverableIcon>
         </ColHeader>
       ),
       renderCell: (params) => (
-        <AdditionalInformation
-          demand={params.row}
-          field="Distance au réseau"
-          updateDemand={updateDemand}
-          type="number"
-        />
+        <AdditionalInformation demand={params.row} field="Distance au réseau" updateDemand={updateDemand} type="number" />
       ),
     },
     {
@@ -279,37 +240,21 @@ const Manager = () => {
       sortable: false,
       width: 120,
       headerName: 'Nb logements (lots)',
-      renderCell: (params) => (
-        <AdditionalInformation
-          demand={params.row}
-          field="Logement"
-          updateDemand={updateDemand}
-          type="number"
-        />
-      ),
+      renderCell: (params) => <AdditionalInformation demand={params.row} field="Logement" updateDemand={updateDemand} type="number" />,
     },
     {
       field: 'Conso gaz',
       sortable: false,
       width: 120,
       headerName: 'Conso gaz (MWh)',
-      renderCell: (params) => (
-        <AdditionalInformation
-          demand={params.row}
-          field="Conso"
-          updateDemand={updateDemand}
-          type="number"
-        />
-      ),
+      renderCell: (params) => <AdditionalInformation demand={params.row} field="Conso" updateDemand={updateDemand} type="number" />,
     },
     {
       field: 'Commentaires',
       sortable: false,
       width: 280,
       headerName: 'Commentaires',
-      renderCell: (params) => (
-        <Comment demand={params.row} updateDemand={updateDemand} />
-      ),
+      renderCell: (params) => <Comment demand={params.row} updateDemand={updateDemand} />,
     },
     {
       field: 'Affecté à',
@@ -318,29 +263,16 @@ const Manager = () => {
       renderHeader: () => (
         <ColHeader>
           Affecté à
-          <HoverableIcon
-            iconName="ri-information-fill"
-            position="left"
-            iconSize="sm"
-            top="0px"
-          >
-            "Non affecté" : demande éloignée du réseau non transmise aux
-            opérateurs
+          <HoverableIcon iconName="ri-information-fill" position="left" iconSize="sm" top="0px">
+            "Non affecté" : demande éloignée du réseau non transmise aux opérateurs
             <br />
             <br />
-            Vous pouvez ajouter ou modifier une affectation : le changement sera
-            effectif après validation manuelle par l'équipe FCU.
+            Vous pouvez ajouter ou modifier une affectation : le changement sera effectif après validation manuelle par l'équipe FCU.
           </HoverableIcon>
         </ColHeader>
       ),
       renderCell: (params) => (
-        <AdditionalInformation
-          demand={params.row}
-          field="Affecté à"
-          updateDemand={updateDemand}
-          type="text"
-          width={125}
-        />
+        <AdditionalInformation demand={params.row} field="Affecté à" updateDemand={updateDemand} type="text" width={125} />
       ),
     },
   ];
@@ -373,21 +305,9 @@ const Manager = () => {
           </TableContainer>
           <MapContainer mapCollapsed={mapCollapsed}>
             <>
-              <CollapseMap
-                mapCollapsed={mapCollapsed}
-                onClick={() => setMapCollapsed(!mapCollapsed)}
-              >
-                <Hoverable position="left">
-                  {mapCollapsed ? 'Agrandir la carte' : 'Réduire la carte'}
-                </Hoverable>
-                <Icon
-                  size="lg"
-                  name={
-                    mapCollapsed
-                      ? 'ri-arrow-left-s-fill'
-                      : 'ri-arrow-right-s-fill'
-                  }
-                />
+              <CollapseMap mapCollapsed={mapCollapsed} onClick={() => setMapCollapsed(!mapCollapsed)}>
+                <Hoverable position="left">{mapCollapsed ? 'Agrandir la carte' : 'Réduire la carte'}</Hoverable>
+                <Icon size="lg" name={mapCollapsed ? 'ri-arrow-left-s-fill' : 'ri-arrow-right-s-fill'} />
               </CollapseMap>
               {!mapCollapsed && (
                 <Map
@@ -411,11 +331,7 @@ const Manager = () => {
           </MapContainer>
         </ManagerContainer>
       ) : (
-        <h2>
-          {loading
-            ? 'Chargement de vos données en cours...'
-            : "Vous n'avez pas encore reçu de demandes"}
-        </h2>
+        <h2>{loading ? 'Chargement de vos données en cours...' : "Vous n'avez pas encore reçu de demandes"}</h2>
       )}
     </Container>
   );

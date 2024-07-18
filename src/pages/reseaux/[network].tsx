@@ -1,12 +1,10 @@
-import NetworkPanel from '@components/Network/Network';
-import Slice from '@components/Slice/Slice';
-import SimplePage from '@components/shared/page/SimplePage';
-import {
-  getColdNetwork,
-  getNetwork,
-} from '@core/infrastructure/repository/network';
 import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
 import { GetStaticProps } from 'next';
+
+import NetworkPanel from '@components/Network/Network';
+import SimplePage from '@components/shared/page/SimplePage';
+import Slice from '@components/Slice/Slice';
+import { getColdNetwork, getNetwork } from '@core/infrastructure/repository/network';
 import { Network } from 'src/types/Summary/Network';
 
 const PageReseau = ({ network }: { network: Network }) => {

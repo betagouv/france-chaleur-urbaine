@@ -1,5 +1,6 @@
-import { Container as HoverableIconContainer } from '@components/Hoverable/HoverableIcon.styles';
 import styled from 'styled-components';
+
+import { Container as HoverableIconContainer } from '@components/Hoverable/HoverableIcon.styles';
 
 export const Title = styled.h1`
   color: var(--legacy-darker-blue);

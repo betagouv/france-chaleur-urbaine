@@ -1,5 +1,7 @@
-import MarkdownWrapper from '@components/MarkdownWrapper';
 import React from 'react';
+
+import MarkdownWrapper from '@components/MarkdownWrapper';
+
 import { ImageContainer } from './WrappedBlock.style';
 
 const ImgBlock: React.FC<{

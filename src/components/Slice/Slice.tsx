@@ -1,13 +1,8 @@
-import MarkdownWrapper from '@components/MarkdownWrapper';
 import React from 'react';
-import {
-  SliceBody,
-  SliceContainer,
-  SliceContainerWrapper,
-  SliceContainerWrapperType,
-  SliceHiddenImg,
-  SliceSection,
-} from './Slice.style';
+
+import MarkdownWrapper from '@components/MarkdownWrapper';
+
+import { SliceBody, SliceContainer, SliceContainerWrapper, SliceContainerWrapperType, SliceHiddenImg, SliceSection } from './Slice.style';
 
 const Slice: React.FC<
   {
@@ -20,26 +15,9 @@ const Slice: React.FC<
     direction?: string;
     justifyContent?: string;
   } & SliceContainerWrapperType
-> = ({
-  children,
-  id,
-  className,
-  header,
-  theme,
-  padding,
-  bg,
-  bgPos,
-  bgSize,
-  bgColor,
-  direction,
-  justifyContent,
-}) => {
+> = ({ children, id, className, header, theme, padding, bg, bgPos, bgSize, bgColor, direction, justifyContent }) => {
   return (
-    <SliceSection
-      id={id}
-      className={`fr-container--fluid ${className}`}
-      theme={theme}
-    >
+    <SliceSection id={id} className={`fr-container--fluid ${className}`} theme={theme}>
       <div className="fr-grid-row fr-grid-row--center">
         <SliceContainerWrapper
           className={`fr-col-lg-12 ${padding ? `fr-py-${padding}w` : ''}`}

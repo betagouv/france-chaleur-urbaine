@@ -1,6 +1,7 @@
-import Box from '@components/ui/Box';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+
+import Box from '@components/ui/Box';
 import { trackEvent } from 'src/services/analytics';
 
 const TrackedVideo = ({
@@ -28,14 +29,7 @@ const TrackedVideo = ({
   return (
     <Box className="fr-content-media">
       <Box className="fr-responsive-vid">
-        <video
-          onPlay={onPlay}
-          height={height}
-          width={width}
-          controls
-          poster={poster}
-          src={src}
-        />
+        <video onPlay={onPlay} height={height} width={width} controls poster={poster} src={src} />
       </Box>
     </Box>
   );

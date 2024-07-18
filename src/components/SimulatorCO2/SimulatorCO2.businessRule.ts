@@ -28,12 +28,7 @@ export const dataEnergy = {
   },
 };
 
-export const getConso = (
-  conso: number,
-  log: number,
-  surf: number,
-  typeSurf: TypeSurf
-): number | undefined => {
+export const getConso = (conso: number, log: number, surf: number, typeSurf: TypeSurf): number | undefined => {
   if (conso) {
     return conso;
   }
@@ -53,19 +48,10 @@ export const getConso = (
 };
 
 // --> émission en tonnes CO2/an pour le type d'energie selectionnée :
-export const getEmissionCO2 = (conso?: number, energy?: TypeEnergy): number =>
-  conso && energy ? dataEnergy[energy].eco2 * conso : 0;
+export const getEmissionCO2 = (conso?: number, energy?: TypeEnergy): number => (conso && energy ? dataEnergy[energy].eco2 * conso : 0);
 
 // --> économie en tonnes de CO2
-export const getEconomy = (co2EnergyRef: number, co2Energy: number): number =>
-  co2EnergyRef && co2Energy ? co2EnergyRef - co2Energy : 0;
+export const getEconomy = (co2EnergyRef: number, co2Energy: number): number => (co2EnergyRef && co2Energy ? co2EnergyRef - co2Energy : 0);
 
-export const getPercentGasReduct = (
-  energyRef?: TypeEnergy,
-  energy?: TypeEnergy
-) =>
-  energyRef && energy
-    ? ((dataEnergy[energyRef].eco2 - dataEnergy[energy].eco2) /
-        dataEnergy[energy].eco2) *
-      100
-    : 0;
+export const getPercentGasReduct = (energyRef?: TypeEnergy, energy?: TypeEnergy) =>
+  energyRef && energy ? ((dataEnergy[energyRef].eco2 - dataEnergy[energy].eco2) / dataEnergy[energy].eco2) * 100 : 0;

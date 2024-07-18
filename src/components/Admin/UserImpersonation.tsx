@@ -1,13 +1,14 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Tag from '@codegouvfr/react-dsfr/Tag';
+import { useEffect, useMemo, useState } from 'react';
+
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
 import { fetchJSON, postFetchJSON } from '@utils/network';
 import { normalize } from '@utils/strings';
-import { useEffect, useMemo, useState } from 'react';
 
 interface TagOption {
   label: string;
@@ -16,12 +17,8 @@ interface TagOption {
 }
 
 const UserImpersonation = () => {
-  const [selectedTagsGestionnaires, setSelectedTagsGestionnaires] = useState<
-    string[]
-  >([]);
-  const [allTagsGestionnaires, setAllTagsGestionnaires] = useState<TagOption[]>(
-    []
-  );
+  const [selectedTagsGestionnaires, setSelectedTagsGestionnaires] = useState<string[]>([]);
+  const [allTagsGestionnaires, setAllTagsGestionnaires] = useState<TagOption[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -70,8 +67,7 @@ const UserImpersonation = () => {
         </Heading>
 
         <Text mb="2w">
-          Cette section permet de vous faire passer pour un profil gestionnaire
-          avec des tags particuliers à des fins de test.
+          Cette section permet de vous faire passer pour un profil gestionnaire avec des tags particuliers à des fins de test.
         </Text>
 
         {selectedTagsGestionnaires.map((tag, index) => (
@@ -94,15 +90,9 @@ const UserImpersonation = () => {
         <Box className="fr-col-xl-4 fr-col-md-6">
           <Select
             label="Tags gestionnaires"
-            options={selectTagsOptions.map(
-              ({ searchValue, ...option }) => option
-            )}
+            options={selectTagsOptions.map(({ searchValue, ...option }) => option)}
             nativeSelectProps={{
-              onChange: (e) =>
-                setSelectedTagsGestionnaires([
-                  ...selectedTagsGestionnaires,
-                  e.target.value,
-                ]),
+              onChange: (e) => setSelectedTagsGestionnaires([...selectedTagsGestionnaires, e.target.value]),
             }}
           />
         </Box>

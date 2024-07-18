@@ -12,14 +12,8 @@ export const displayModeDeChauffage = (demand: Demand) => {
       demand['Mode de chauffage'].toLowerCase().trim() === 'fioul' ||
       demand['Mode de chauffage'].toLowerCase() === 'électricité')
   ) {
-    return `${demand['Mode de chauffage'][0].toUpperCase()}${demand[
-      'Mode de chauffage'
-    ]
-      .slice(1)
-      .trim()} ${
-      demand['Type de chauffage']
-        ? demand['Type de chauffage'].toLowerCase()
-        : ''
+    return `${demand['Mode de chauffage'][0].toUpperCase()}${demand['Mode de chauffage'].slice(1).trim()} ${
+      demand['Type de chauffage'] ? demand['Type de chauffage'].toLowerCase() : ''
     }`;
   }
   return demand['Type de chauffage'];

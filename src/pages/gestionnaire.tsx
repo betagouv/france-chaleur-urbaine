@@ -1,8 +1,9 @@
-import Manager from '@components/Manager/Manager';
-import SimplePage from '@components/shared/page/SimplePage';
 import { GetServerSideProps } from 'next';
 import { getSession, signOut, useSession } from 'next-auth/react';
 import { useEffect } from 'react';
+
+import Manager from '@components/Manager/Manager';
+import SimplePage from '@components/shared/page/SimplePage';
 
 export default function Gestionnaire(): JSX.Element {
   const { data: session } = useSession();
@@ -13,10 +14,7 @@ export default function Gestionnaire(): JSX.Element {
   }, [session]);
 
   return (
-    <SimplePage
-      title="France Chaleur Urbaine - Espace gestionnaire"
-      mode="authenticated"
-    >
+    <SimplePage title="France Chaleur Urbaine - Espace gestionnaire" mode="authenticated">
       <Manager />
     </SimplePage>
   );

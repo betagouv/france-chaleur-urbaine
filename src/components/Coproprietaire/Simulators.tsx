@@ -1,16 +1,12 @@
-import Simulator from '@components/Ressources/Contents/Simulator';
-import WrappedText from '@components/WrappedText/WrappedText';
 import Link from 'next/link';
-import { Container } from './Explanation.styles';
-import { Title } from '@components/Ressources/Contents/Simulator.styles';
 
-const Simulators = ({
-  textTitle,
-  simulatorTitle,
-}: {
-  textTitle?: string;
-  simulatorTitle?: string;
-}) => {
+import Simulator from '@components/Ressources/Contents/Simulator';
+import { Title } from '@components/Ressources/Contents/Simulator.styles';
+import WrappedText from '@components/WrappedText/WrappedText';
+
+import { Container } from './Explanation.styles';
+
+const Simulators = ({ textTitle, simulatorTitle }: { textTitle?: string; simulatorTitle?: string }) => {
   return (
     <Container>
       <div className="fr-col-12 fr-col-lg-6">
@@ -23,9 +19,7 @@ const Simulators = ({
         `}
         />
         <div className="fr-btn fr-mt-1w fr-ml-4w">
-          <Link href="/ressources/aides#contenu">
-            Tout savoir sur cette aide
-          </Link>
+          <Link href="/ressources/aides#contenu">Tout savoir sur cette aide</Link>
         </div>
       </div>
       <div>

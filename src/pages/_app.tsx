@@ -1,29 +1,25 @@
 import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
 import '@reach/combobox/styles.css';
-import { Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
+import { createGlobalStyle } from 'styled-components';
+import { SWRConfig, SWRConfiguration } from 'swr';
+import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
 
 import { ConsentBanner } from '@components/ConsentBanner';
 import { usePreserveScroll } from '@hooks/usePreserveScroll';
 import { MuiDsfrThemeProvider } from 'src/MuiDsfrThemeProvider';
 import 'src/components/Map/StyleSwitcher/styles.css';
-import {
-  HeatNetworkService,
-  ServicesContext,
-  SuggestionService,
-} from 'src/services';
+import { HeatNetworkService, ServicesContext, SuggestionService } from 'src/services';
 import { AdminService } from 'src/services/admin';
 import { useAnalytics } from 'src/services/analytics';
 import { DemandsService } from 'src/services/demands';
 import { axiosHttpClient } from 'src/services/http';
 import { PasswordService } from 'src/services/password';
-import { createGlobalStyle } from 'styled-components';
-import { SWRConfig, SWRConfiguration } from 'swr';
-import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
 
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
   interface RegisterLink {
@@ -51,10 +47,9 @@ const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
 export { dsfrDocumentApi };
 
 // https://github.com/codegouvfr/react-dsfr/issues/281#issuecomment-2231266401
-const { withAppEmotionCache, augmentDocumentWithEmotionCache } =
-  createEmotionSsrAdvancedApproach({
-    key: 'css',
-  });
+const { withAppEmotionCache, augmentDocumentWithEmotionCache } = createEmotionSsrAdvancedApproach({
+  key: 'css',
+});
 
 export { augmentDocumentWithEmotionCache };
 
@@ -67,8 +62,7 @@ const og = {
   title: 'Accélérons les raccordements aux réseaux de chaleur.',
   decretTertiaireDescription:
     'Raccorder son bâtiment au réseau de chaleur, c’est jusqu’à 23 % de réduction de consommations d’énergie comptabilisée ! En application de l’arrêté du 13 avril 2022 relatif aux obligations d’actions de réduction des consommations d’énergie finale dans des bâtiments à usage tertiaire, un coefficient de 0,77 est appliqué aux calculs des consommations d’énergie des bâtiments raccordés aux réseaux de chaleur.',
-  description:
-    'Une solution de chauffage écologique et économique exploitant des énergies renouvelables et de récupération locales.',
+  description: 'Une solution de chauffage écologique et économique exploitant des énergies renouvelables et de récupération locales.',
   twitterCard: 'summary_large_image',
 };
 
@@ -201,26 +195,12 @@ function App({
         }}
       >
         <Head>
-          {favicons.map(
-            (
-              faviconProps: { rel: string; href: string; type?: string },
-              i: number
-            ) => (
-              <link key={i} {...faviconProps} />
-            )
-          )}
+          {favicons.map((faviconProps: { rel: string; href: string; type?: string }, i: number) => (
+            <link key={i} {...faviconProps} />
+          ))}
           {/* <!-- HTML Meta Tags --> */}
-          <title>
-            Facilitez le raccordement à un chauffage économique et écologique
-          </title>
-          <meta
-            name="description"
-            content={
-              router.pathname === '/decret-tertiaire'
-                ? og.decretTertiaireDescription
-                : og.description
-            }
-          />
+          <title>Facilitez le raccordement à un chauffage économique et écologique</title>
+          <meta name="description" content={router.pathname === '/decret-tertiaire' ? og.decretTertiaireDescription : og.description} />
 
           {/* <!-- Facebook Meta Tags --> */}
           <meta property="og:url" content={og.url} />
@@ -228,11 +208,7 @@ function App({
           <meta property="og:title" content={og.title} />
           <meta
             property="og:description"
-            content={
-              router.pathname === '/decret-tertiaire'
-                ? og.decretTertiaireDescription
-                : og.description
-            }
+            content={router.pathname === '/decret-tertiaire' ? og.decretTertiaireDescription : og.description}
           />
           <meta property="og:image" content={og.imagePreview} />
 

@@ -1,27 +1,19 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import Image from 'next/image';
+import { useCallback, useMemo, useState } from 'react';
+
 import Map from '@components/Map/Map';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
-import Image from 'next/image';
-import { useCallback, useMemo, useState } from 'react';
+import { useMatomoAbTestingExperiment } from 'src/services/analytics';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
-import { useMatomoAbTestingExperiment } from 'src/services/analytics';
 import { AddressDataType } from 'src/types/AddressData';
 import { ContactFormInfos } from 'src/types/Summary/Demand';
-import {
-  bordeauxMetropoleCityCodes,
-  getEligibilityResult,
-  getEligibilityResultState,
-} from './EligibilityResults';
-import {
-  ContactForm,
-  ContactFormContentWrapper,
-  ContactFormResultMessage,
-  ContactFormWrapper,
-  ContactMapResult,
-} from './components';
+
+import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
+import { bordeauxMetropoleCityCodes, getEligibilityResult, getEligibilityResultState } from './EligibilityResults';
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
@@ -29,24 +21,13 @@ type EligibilityFormContactType = {
   onSubmit?: (...arg: any) => Promise<any>;
 };
 
-const EligibilityFormContact = ({
-  addressData,
-  cardMode,
-  onSubmit,
-}: EligibilityFormContactType) => {
+const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: EligibilityFormContactType) => {
   const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
 
-  const { ready, variation } = useMatomoAbTestingExperiment(
-    'TestMessagesFormulaireContact',
-    {
-      enable:
-        getEligibilityResultState(
-          addressData.heatingType,
-          addressData.eligibility
-        ) === 'closeCollectif',
-    }
-  );
+  const { ready, variation } = useMatomoAbTestingExperiment('TestMessagesFormulaireContact', {
+    enable: getEligibilityResultState(addressData.heatingType, addressData.eligibility) === 'closeCollectif',
+  });
 
   const { body, computedEligibility, text } = useMemo(() => {
     if (!addressData.eligibility || !variation) {
@@ -58,17 +39,10 @@ const EligibilityFormContact = ({
       body,
       eligibility: computedEligibility,
       text,
-    }: any = getEligibilityResult(
-      variation,
-      addressData.heatingType,
-      addressData.eligibility
-    );
+    }: any = getEligibilityResult(variation, addressData.heatingType, addressData.eligibility);
 
     const addBordeauxLink =
-      addressData.geoAddress?.properties.citycode &&
-      bordeauxMetropoleCityCodes.includes(
-        addressData.geoAddress?.properties.citycode
-      );
+      addressData.geoAddress?.properties.citycode && bordeauxMetropoleCityCodes.includes(addressData.geoAddress?.properties.citycode);
     const computedBody = body
       ? body(
           getReadableDistance(addressData.eligibility.distance),
@@ -132,12 +106,7 @@ const EligibilityFormContact = ({
       {addressData.eligibility?.basedOnCity && !cardMode ? (
         <>
           <ContactFormContentWrapper>
-            <ContactFormResultMessage
-              eligible={
-                addressData.eligibility?.cityHasNetwork ||
-                addressData.eligibility?.cityHasFuturNetwork
-              }
-            >
+            <ContactFormResultMessage eligible={addressData.eligibility?.cityHasNetwork || addressData.eligibility?.cityHasFuturNetwork}>
               {addressData.eligibility?.cityHasNetwork
                 ? 'Un réseau de chaleur passe dans cette ville : renseignez une adresse pour pouvoir être mis en relation avec le gestionnaire du réseau.'
                 : addressData.eligibility?.cityHasFuturNetwork
@@ -197,12 +166,7 @@ const EligibilityFormContact = ({
           <ContactFormContentWrapper>
             {!cardMode && (
               <>
-                <Image
-                  src="/img/logo_rf.png"
-                  alt="logo france chaleur urbaine"
-                  width={50}
-                  height={45}
-                />
+                <Image src="/img/logo_rf.png" alt="logo france chaleur urbaine" width={50} height={45} />
                 <MarkdownWrapper value={text} className="h4-dark-blue" />
               </>
             )}
@@ -214,8 +178,7 @@ const EligibilityFormContact = ({
             />
             {contactFormError && (
               <Box textColor="#c00" mt="1w">
-                Une erreur est survenue. Veuillez réessayer ou bien{' '}
-                <Link href="/contact">contacter le support</Link>.
+                Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
               </Box>
             )}
           </ContactFormContentWrapper>

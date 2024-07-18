@@ -1,4 +1,5 @@
 import { PropsWithChildren } from 'react';
+
 import Box from './Box';
 
 interface CollapsibleBoxProps {
@@ -7,13 +8,7 @@ interface CollapsibleBoxProps {
   className?: string;
 }
 
-export default function CollapsibleBox({
-  id,
-  expand,
-  className,
-  children,
-  ...props
-}: PropsWithChildren<CollapsibleBoxProps>) {
+export default function CollapsibleBox({ id, expand, className, children, ...props }: PropsWithChildren<CollapsibleBoxProps>) {
   return (
     <Box position="relative">
       <div id={id} className={`${className ?? ''} fr-collapse`} {...props}>

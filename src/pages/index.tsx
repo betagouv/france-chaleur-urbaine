@@ -1,3 +1,6 @@
+import Head from 'next/head';
+import Image from 'next/image';
+
 import LastArticles from '@components/Articles/LastArticles';
 import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
 import AvantagesChauffageUrbain from '@components/GenericContent/AvantagesChauffageUrbain';
@@ -15,8 +18,6 @@ import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import Head from 'next/head';
-import Image from 'next/image';
 
 const coproprietaireCards = {
   reseau: issues.reseau,
@@ -39,20 +40,9 @@ export default function Home() {
         checkEligibility
         withWrapper={(form) => (
           <Box backgroundColor="blue-cumulus-950-100">
-            <Box
-              className="fr-container"
-              display="flex"
-              alignItems="center"
-              gap="16px"
-            >
+            <Box className="fr-container" display="flex" alignItems="center" gap="16px">
               <Box flex className="fr-hidden fr-unhidden-lg">
-                <Image
-                  src="/img/copro_header.webp"
-                  alt=""
-                  width={624}
-                  height={420}
-                  priority
-                />
+                <Image src="/img/copro_header.webp" alt="" width={624} height={420} priority />
               </Box>
 
               <Box flex py="3w">
@@ -60,8 +50,7 @@ export default function Home() {
                   Vous êtes copropriétaire ?
                 </Text>
                 <Heading as="h1" size="h2" color="blue-france" mt="1w">
-                  Le chauffage urbain&nbsp;: une solution écologique à prix
-                  maîtrisé&nbsp;!
+                  Le chauffage urbain&nbsp;: une solution écologique à prix maîtrisé&nbsp;!
                 </Heading>
                 <Text mb="2w">Testez votre éligibilité en 2 clics</Text>
                 {form}
@@ -79,37 +68,25 @@ export default function Home() {
           <ResponsiveRow mt="10w">
             <Box display="flex" flexDirection="column" alignItems="center" flex>
               <Heading as="h3" color="blue-france" mb="4w">
-                Un chauffage écologique à prix compétitif déjà adopté par 6
-                millions de Français
+                Un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français
               </Heading>
               <Text size="lg">
                 Le chauffage urbain consiste à{' '}
-                <strong>
-                  distribuer de la chaleur produite de façon centralisée à un
-                  ensemble de bâtiments
-                </strong>
-                , via des canalisations souterraines. On parle aussi de réseaux
-                de chaleur.{' '}
+                <strong>distribuer de la chaleur produite de façon centralisée à un ensemble de bâtiments</strong>, via des canalisations
+                souterraines. On parle aussi de réseaux de chaleur.{' '}
                 <strong>
                   Ces réseaux sont alimentés à plus de 66% par des{' '}
-                  <Link href="/ressources/energies-vertes#contenu">
-                    énergies renouvelables et de récupération locales
-                  </Link>
-                  .
+                  <Link href="/ressources/energies-vertes#contenu">énergies renouvelables et de récupération locales</Link>.
                 </strong>
               </Text>
               <Text size="lg" mt="3w">
-                La chaleur est transportée jusqu'à une sous-station installée
-                dans votre copropriété, puis acheminée aux différents logements
-                par des canalisations internes à l’immeuble.
+                La chaleur est transportée jusqu'à une sous-station installée dans votre copropriété, puis acheminée aux différents
+                logements par des canalisations internes à l’immeuble.
               </Text>
               <Text size="lg" mt="3w">
-                Dans la plupart des cas, le réseau de chaleur appartient à une
-                collectivité territoriale et est{' '}
-                <Link href="/ressources/acteurs#contenu">
-                  géré en concession
-                </Link>{' '}
-                par un exploitant, qui s’occupe notamment des raccordements.
+                Dans la plupart des cas, le réseau de chaleur appartient à une collectivité territoriale et est{' '}
+                <Link href="/ressources/acteurs#contenu">géré en concession</Link> par un exploitant, qui s’occupe notamment des
+                raccordements.
               </Text>
             </Box>
 
@@ -131,11 +108,7 @@ export default function Home() {
         </Box>
       </Box>
 
-      <Box
-        py="10w"
-        backgroundColor="blue-france-975-75"
-        id="avantages-du-chauffage-urbain"
-      >
+      <Box py="10w" backgroundColor="blue-france-975-75" id="avantages-du-chauffage-urbain">
         <AvantagesChauffageUrbain />
       </Box>
 
@@ -151,19 +124,10 @@ export default function Home() {
                 Un exemple de cas concret
               </Heading>
 
-              <Text size="lg">
-                Copropriété chauffée au gaz collectif de 126 logements répartis
-                en 3 bâtiments.
-              </Text>
+              <Text size="lg">Copropriété chauffée au gaz collectif de 126 logements répartis en 3 bâtiments.</Text>
 
               <Box display="flex" alignItems="center" mt="4w">
-                <Image
-                  src="/img/copro_cout_1.webp"
-                  alt=""
-                  width={160}
-                  height={140}
-                  className="img-object-contain"
-                />
+                <Image src="/img/copro_cout_1.webp" alt="" width={160} height={140} className="img-object-contain" />
                 <Box ml="2w">
                   <Text size="lg">Durée des travaux&nbsp;:</Text>
                   <Text size="lg" color="success">
@@ -173,13 +137,7 @@ export default function Home() {
               </Box>
 
               <Box display="flex" alignItems="center" mt="1w">
-                <Image
-                  src="/img/copro_cout_2.webp"
-                  alt=""
-                  width={160}
-                  height={140}
-                  className="img-object-contain"
-                />
+                <Image src="/img/copro_cout_2.webp" alt="" width={160} height={140} className="img-object-contain" />
                 <Box ml="2w">
                   <Text size="lg">Coût du raccordement&nbsp;:</Text>
                   <Text size="lg">105 000€ - 76 000€ d’aides</Text>
@@ -190,13 +148,7 @@ export default function Home() {
               </Box>
 
               <Box display="flex" alignItems="center" mt="1w">
-                <Image
-                  src="/img/copro_cout_3.webp"
-                  alt=""
-                  width={160}
-                  height={140}
-                  className="img-object-contain"
-                />
+                <Image src="/img/copro_cout_3.webp" alt="" width={160} height={140} className="img-object-contain" />
                 <Box ml="2w">
                   <Text size="lg">Coût de la chaleur&nbsp;:</Text>
                   <Text size="lg">
@@ -215,15 +167,13 @@ export default function Home() {
                 Les témoignages
               </Heading>
               <Text size="lg" mb="2w">
-                Le chauffage urbain, ce sont les copropriétaires et les syndics
-                qui en parlent le mieux !
+                Le chauffage urbain, ce sont les copropriétaires et les syndics qui en parlent le mieux !
               </Text>
 
               <Icon name="fr-icon-quote-line" color="#6A6AF4" />
 
               <Text as="blockquote" ml="0" mt="1w" fontStyle="italic">
-                Je conseille vivement le raccordement à un réseau de chaleur
-                pour des raisons économiques et écologiques.
+                Je conseille vivement le raccordement à un réseau de chaleur pour des raisons économiques et écologiques.
               </Text>
               <Text size="sm" mt="2w">
                 Henry Hostein Président du conseil syndical
@@ -241,11 +191,7 @@ export default function Home() {
         <ObligationRaccordement />
       </Box>
 
-      <Box
-        py="10w"
-        backgroundColor="blue-france-main-525"
-        id="comment-se-raccorder"
-      >
+      <Box py="10w" backgroundColor="blue-france-main-525" id="comment-se-raccorder">
         <HowToRaccordement />
       </Box>
 

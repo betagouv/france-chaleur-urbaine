@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Popup } from 'react-map-gl/maplibre';
+
 import { MapPopupType } from 'src/types/MapComponentsInfos';
-import MapPopupContent, { ViasevaPopupContent } from './MapPopupContent';
 import { Point } from 'src/types/Point';
-import DynamicPopupContent, {
-  isDynamicPopupContent,
-} from './DynamicMapPopupContent';
+
+import DynamicPopupContent, { isDynamicPopupContent } from './DynamicMapPopupContent';
+import MapPopupContent, { ViasevaPopupContent } from './MapPopupContent';
 
 const MapPopup = ({
   longitude,
@@ -22,8 +22,7 @@ const MapPopup = ({
 
   useEffect(() => {
     {
-      content.coldNetwork &&
-        (content.network = { ...content.coldNetwork, isCold: true });
+      content.coldNetwork && (content.network = { ...content.coldNetwork, isCold: true });
     }
     setShow(true);
   }, [content, latitude, longitude]);
@@ -36,11 +35,7 @@ const MapPopup = ({
           latitude={latitude}
           offset={[0, -10] as Point}
           closeButton
-          className={`popup-map-layer ${
-            isDynamicPopupContent(content)
-              ? 'popup-map-layer--fluid'
-              : 'popup-map-layer--standard'
-          }`}
+          className={`popup-map-layer ${isDynamicPopupContent(content) ? 'popup-map-layer--fluid' : 'popup-map-layer--standard'}`}
           onClose={() => setShow(false)}
         >
           {isDynamicPopupContent(content) ? (
@@ -51,9 +46,7 @@ const MapPopup = ({
               {(type == MapPopupType.VIASEVA ||
                 type == MapPopupType.ENGIE ||
                 type === MapPopupType.DALKIA ||
-                type === MapPopupType.IDEX) && (
-                <ViasevaPopupContent {...content} />
-              )}
+                type === MapPopupType.IDEX) && <ViasevaPopupContent {...content} />}
             </>
           )}
         </Popup>

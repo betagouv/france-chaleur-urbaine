@@ -1,19 +1,14 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import { useMemo, useRef, useState } from 'react';
+import styled from 'styled-components';
+
 import Box from '@components/ui/Box';
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxList,
-  ComboboxOption,
-  ComboboxPopover,
-} from '@components/ui/Combobox';
+import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxPopover } from '@components/ui/Combobox';
 import { NetworkSearchResult } from '@pages/api/networks/search';
 import debounce from '@utils/debounce';
 import { postFetchJSON } from '@utils/network';
 import { getUuid } from '@utils/random';
-import { useMemo, useRef, useState } from 'react';
 import { clientConfig } from 'src/client-config';
-import styled from 'styled-components';
 
 interface NetworkSearchInputProps {
   label: string | JSX.Element;
@@ -31,12 +26,9 @@ export default function NetworkSearchInput(props: NetworkSearchInputProps) {
 
   const debouncedSearchNetworks: (search: string) => void = useMemo(() => {
     return debounce(async (search: string) => {
-      const networks = await postFetchJSON<NetworkSearchResult[]>(
-        '/api/networks/search',
-        {
-          search,
-        }
-      );
+      const networks = await postFetchJSON<NetworkSearchResult[]>('/api/networks/search', {
+        search,
+      });
       setIsFetching(false);
       setResults(networks);
     }, 300);
@@ -46,10 +38,7 @@ export default function NetworkSearchInput(props: NetworkSearchInputProps) {
     const newSearchTerm = event.target.value;
     props.onChange(newSearchTerm);
 
-    if (
-      newSearchTerm.length >=
-      clientConfig.networkSearchMinimumCharactersThreshold
-    ) {
+    if (newSearchTerm.length >= clientConfig.networkSearchMinimumCharactersThreshold) {
       setIsFetching(true);
       debouncedSearchNetworks(newSearchTerm);
     } else {
@@ -65,30 +54,21 @@ export default function NetworkSearchInput(props: NetworkSearchInputProps) {
 
       {props.selectedNetwork ? (
         <button
-          className={fr.cx(
-            'fr-tag',
-            'fr-tag--sm',
-            'fr-tag--dismiss',
-            'fr-mt-2w'
-          )}
+          className={fr.cx('fr-tag', 'fr-tag--sm', 'fr-tag--dismiss', 'fr-mt-2w')}
           title="Supprimer la sélection du réseau"
           onClick={() => {
             props.onNetworkSelect(null);
             props.onChange('');
           }}
         >
-          {props.selectedNetwork['Identifiant reseau']} -{' '}
-          {props.selectedNetwork.nom_reseau}
+          {props.selectedNetwork['Identifiant reseau']} - {props.selectedNetwork.nom_reseau}
         </button>
       ) : (
         <Combobox
           className={fr.cx('fr-input-wrap', 'ri-search-line')}
           onSelect={(selectedNetworkOption) => {
             const selectedNetworkIdFCU = selectedNetworkOption.split(' - ')[0];
-            const selectedNetwork = results.find(
-              (network) =>
-                network['Identifiant reseau'] === selectedNetworkIdFCU
-            );
+            const selectedNetwork = results.find((network) => network['Identifiant reseau'] === selectedNetworkIdFCU);
             props.onChange(selectedNetworkOption);
             if (selectedNetwork) {
               props.onNetworkSelect(selectedNetwork);
@@ -106,17 +86,11 @@ export default function NetworkSearchInput(props: NetworkSearchInputProps) {
             autoComplete="off"
           />
 
-          {(results.length > 0 ||
-            (props.value.length >=
-              clientConfig.networkSearchMinimumCharactersThreshold &&
-              !isFetching)) && (
+          {(results.length > 0 || (props.value.length >= clientConfig.networkSearchMinimumCharactersThreshold && !isFetching)) && (
             <ComboboxPopover>
               <ComboboxList>
                 {results.map((network) => (
-                  <StyledComboxOption
-                    key={network.id_fcu}
-                    value={`${network['Identifiant reseau']} - ${network.nom_reseau}`}
-                  />
+                  <StyledComboxOption key={network.id_fcu} value={`${network['Identifiant reseau']} - ${network.nom_reseau}`} />
                 ))}
                 {results.length === 0 && <Box>Aucun réseau trouvé</Box>}
               </ComboboxList>

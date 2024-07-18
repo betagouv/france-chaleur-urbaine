@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import Chart from 'react-google-charts';
+
 import { Network } from 'src/types/Summary/Network';
 
 type GraphLegend = {
@@ -15,39 +16,19 @@ const getGraphOptions = (network: Network) => [
   ['Biomasse', network.prod_MWh_biomasse_solide, '#87ca46'],
   ['Géothermie', network.prod_MWh_geothermie, '#c4218e'],
   ['Autres ENR&R', network.prod_MWh_autres_ENR, '#bcd090'],
-  [
-    'Chaufferies électriques',
-    network.prod_MWh_chaudieres_electriques,
-    '#e81919',
-  ],
+  ['Chaufferies électriques', network.prod_MWh_chaudieres_electriques, '#e81919'],
   ['Gaz', network.prod_MWh_gaz_naturel, '#ffb800'],
   ['Charbon', network.prod_MWh_charbon, '#000000'],
-  [
-    'Fioul',
-    network.prod_MWh_fioul_domestique + network.prod_MWh_fioul_lourd,
-    '#0065b8',
-  ],
+  ['Fioul', network.prod_MWh_fioul_domestique + network.prod_MWh_fioul_lourd, '#0065b8'],
   ['GPL', network.prod_MWh_GPL, '#0009b7'],
   ['Autres', network.prod_MWh_autres, '#747474'],
-  [
-    'Autre chaleur récupérée',
-    network.prod_MWh_autre_chaleur_recuperee,
-    '#d6c2e6',
-  ],
+  ['Autre chaleur récupérée', network.prod_MWh_autre_chaleur_recuperee, '#d6c2e6'],
   ['Pompe à chaleur', network.prod_MWh_PAC, '#ec9ba4'],
   ['Biogaz', network.prod_MWh_biogaz, '#e6e905'],
   ['Solaire thermique', network.prod_MWh_solaire_thermique, '#ffff00'],
 ];
 
-const EnergiesChart = ({
-  network,
-  width,
-  height,
-}: {
-  network: Network;
-  width?: string;
-  height?: string;
-}) => {
+const EnergiesChart = ({ network, width, height }: { network: Network; width?: string; height?: string }) => {
   const graphOptions = useMemo(() => getGraphOptions(network), [network]);
   const [legendOptions, setLegendOptions] = useState<GraphLegend>({});
   const [chartAreaWidth, setChartAreaWidth] = useState<string>('100%');
@@ -83,9 +64,7 @@ const EnergiesChart = ({
       chartType="PieChart"
       chartLanguage="FR-fr"
       loader={<div>Chargement du graphe...</div>}
-      data={graphOptions.map((mix, index) =>
-        index === 0 ? mix : [mix[0], mix[1]]
-      )}
+      data={graphOptions.map((mix, index) => (index === 0 ? mix : [mix[0], mix[1]]))}
       options={{
         colors: graphOptions.slice(1).map((option) => option[2] as string),
         chartArea: { width: chartAreaWidth, height: '90%' },

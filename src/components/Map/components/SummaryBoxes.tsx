@@ -1,32 +1,25 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
-import Hoverable from '@components/Hoverable';
-import Icon from '@components/ui/Icon';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
-import { downloadObject } from '@utils/browser';
-import { formatAsISODate } from '@utils/date';
 import { LineString, Polygon } from 'geojson';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { MapRef } from 'react-map-gl/maplibre';
+
+import Hoverable from '@components/Hoverable';
+import Icon from '@components/ui/Icon';
+import { downloadObject } from '@utils/browser';
+import { formatAsISODate } from '@utils/date';
 import { clientConfig } from 'src/client-config';
 import { useServices } from 'src/services';
 import { trackEvent } from 'src/services/analytics';
+import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { Summary } from 'src/types/Summary';
 import { Densite } from 'src/types/Summary/Densite';
 import { GasSummary } from 'src/types/Summary/Gas';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
-import {
-  CollapseZone,
-  DrawButton,
-  DrawButtons,
-  Explanation,
-  Export,
-  InfoIcon,
-  ZoneInfos,
-  ZoneInfosWrapper,
-} from './SummaryBoxes.style';
+
+import { CollapseZone, DrawButton, DrawButtons, Explanation, Export, InfoIcon, ZoneInfos, ZoneInfosWrapper } from './SummaryBoxes.style';
 import ZoneInfo from './ZoneInfo';
 
 const getConso = (consos: GasSummary[]) => {
@@ -42,8 +35,7 @@ const getDensite = (size: number, densite: GasSummary[]) => {
   if (densite.length === 0) {
     return '0 MWh/m';
   }
-  const value =
-    densite.reduce((acc, value) => acc + value.conso_nb, 0) / (size * 1000);
+  const value = densite.reduce((acc, value) => acc + value.conso_nb, 0) / (size * 1000);
   if (value > 1000) {
     return `${(value / 1000).toFixed(2)} GWh/m`;
   }
@@ -51,15 +43,7 @@ const getDensite = (size: number, densite: GasSummary[]) => {
   return `${value.toFixed(2)} MWh/m`;
 };
 
-const SummaryBoxes = ({
-  map,
-  draw,
-  setDrawing,
-}: {
-  map: MapRef;
-  draw: MapboxDraw;
-  setDrawing: Dispatch<SetStateAction<boolean>>;
-}) => {
+const SummaryBoxes = ({ map, draw, setDrawing }: { map: MapRef; draw: MapboxDraw; setDrawing: Dispatch<SetStateAction<boolean>> }) => {
   const { heatNetworkService } = useServices();
 
   const zoneIndex = useRef(0);
@@ -162,17 +146,9 @@ const SummaryBoxes = ({
 
   return (
     <>
-      <CollapseZone
-        zoneCollapsed={zoneCollapsed}
-        onClick={() => setZoneCollapsed(!zoneCollapsed)}
-      >
-        <Hoverable position="top-centered">
-          {zoneCollapsed ? 'Afficher le panneau' : 'Masquer le panneau'}
-        </Hoverable>
-        <Icon
-          riSize="2x"
-          name={zoneCollapsed ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'}
-        />
+      <CollapseZone zoneCollapsed={zoneCollapsed} onClick={() => setZoneCollapsed(!zoneCollapsed)}>
+        <Hoverable position="top-centered">{zoneCollapsed ? 'Afficher le panneau' : 'Masquer le panneau'}</Hoverable>
+        <Icon riSize="2x" name={zoneCollapsed ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'} />
       </CollapseZone>
       {!zoneCollapsed && (
         <>
@@ -189,31 +165,19 @@ const SummaryBoxes = ({
                     size && size > clientConfig.summaryAreaSizeLimit ? (
                       <Explanation>
                         <span>
-                          La zone définie est trop grande ({size.toFixed(2)}{' '}
-                          km²), veuillez réduire la taille de recherche (maximum
-                          5 km²). Si vous avez besoin de statistiques sur une
-                          zone élargie ou plus précise, n'hésitez pas à{' '}
-                          <a
-                            href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
+                          La zone définie est trop grande ({size.toFixed(2)} km²), veuillez réduire la taille de recherche (maximum 5 km²).
+                          Si vous avez besoin de statistiques sur une zone élargie ou plus précise, n'hésitez pas à{' '}
+                          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr" target="_blank" rel="noopener noreferrer">
                             nous contacter
                           </a>
                         </span>
                       </Explanation>
                     ) : bounds && !summary ? (
-                      <Explanation>
-                        Extraction des données correspondant à la zone définie
-                        en cours...
-                      </Explanation>
+                      <Explanation>Extraction des données correspondant à la zone définie en cours...</Explanation>
                     ) : !summary ? (
                       <Explanation>
-                        Pour afficher et exporter des données sur une zone
-                        (consommation de gaz, adresse des bâtiments chauffés au
-                        gaz ou fioul collectif,...), cliquez sur au moins trois
-                        points puis validez cette zone en rejoignant le premier
-                        point.
+                        Pour afficher et exporter des données sur une zone (consommation de gaz, adresse des bâtiments chauffés au gaz ou
+                        fioul collectif,...), cliquez sur au moins trois points puis validez cette zone en rejoignant le premier point.
                       </Explanation>
                     ) : (
                       <ZoneInfos>
@@ -225,19 +189,13 @@ const SummaryBoxes = ({
                           values={[
                             {
                               label: 'Total',
-                              value: summary.energy.filter(
-                                ({ energie_utilisee }) =>
-                                  energie_utilisee === 'fioul'
-                              ).length,
+                              value: summary.energy.filter(({ energie_utilisee }) => energie_utilisee === 'fioul').length,
                             },
                             {
                               label: 'Proche réseau (<50 m)',
                               value: summary.energy
                                 .filter((energy) => energy.is_close)
-                                .filter(
-                                  ({ energie_utilisee }) =>
-                                    energie_utilisee === 'fioul'
-                                ).length,
+                                .filter(({ energie_utilisee }) => energie_utilisee === 'fioul').length,
                             },
                           ]}
                         />
@@ -249,19 +207,13 @@ const SummaryBoxes = ({
                           values={[
                             {
                               label: 'Total',
-                              value: summary.energy.filter(
-                                ({ energie_utilisee }) =>
-                                  energie_utilisee === 'gaz'
-                              ).length,
+                              value: summary.energy.filter(({ energie_utilisee }) => energie_utilisee === 'gaz').length,
                             },
                             {
                               label: 'Proche réseau (<50 m)',
                               value: summary.energy
                                 .filter((energy) => energy.is_close)
-                                .filter(
-                                  ({ energie_utilisee }) =>
-                                    energie_utilisee === 'gaz'
-                                ).length,
+                                .filter(({ energie_utilisee }) => energie_utilisee === 'gaz').length,
                             },
                           ]}
                         />
@@ -275,9 +227,7 @@ const SummaryBoxes = ({
                             },
                             {
                               label: 'Proche réseau (<50 m)',
-                              value: getConso(
-                                summary.gas.filter((gas) => gas.is_close)
-                              ),
+                              value: getConso(summary.gas.filter((gas) => gas.is_close)),
                             },
                           ]}
                         />
@@ -289,12 +239,7 @@ const SummaryBoxes = ({
                           values={[
                             {
                               label: 'Km',
-                              value: (
-                                summary.network.reduce(
-                                  (acc, current) => acc + current.length,
-                                  0
-                                ) / 1000
-                              ).toFixed(2),
+                              value: (summary.network.reduce((acc, current) => acc + current.length, 0) / 1000).toFixed(2),
                             },
                           ]}
                         />
@@ -319,18 +264,12 @@ const SummaryBoxes = ({
                   label: 'Calculer une densité thermique linéaire',
                   content:
                     lines && !densite ? (
-                      <>
-                        Extraction des données correspondant au tracé défini en
-                        cours...
-                      </>
+                      <>Extraction des données correspondant au tracé défini en cours...</>
                     ) : !densite ? (
                       <>
-                        Pour calculer une distance et la densité thermique
-                        linéaire associée, définissez un tracé en cliquant sur
-                        deux points ou plus, puis validez en cliquant sur
-                        entrée. Vous pouvez alors ajouter des segments à votre
-                        tracé, ou en retirez. Vous pouvez aussi cliquer sur les
-                        points pour les déplacer.
+                        Pour calculer une distance et la densité thermique linéaire associée, définissez un tracé en cliquant sur deux
+                        points ou plus, puis validez en cliquant sur entrée. Vous pouvez alors ajouter des segments à votre tracé, ou en
+                        retirez. Vous pouvez aussi cliquer sur les points pour les déplacer.
                       </>
                     ) : (
                       <ZoneInfos>
@@ -369,9 +308,8 @@ const SummaryBoxes = ({
                               <InfoIcon>
                                 <Icon size="sm" name="ri-information-fill" />
                                 <Hoverable>
-                                  Densité thermique calculée sur la base des
-                                  consommations de gaz à l'adresse situées à une
-                                  distance de 10 ou 50 m du tracé défini
+                                  Densité thermique calculée sur la base des consommations de gaz à l'adresse situées à une distance de 10
+                                  ou 50 m du tracé défini
                                 </Hoverable>
                               </InfoIcon>
                             </>
@@ -394,9 +332,7 @@ const SummaryBoxes = ({
                           onClick={() => {
                             downloadObject(
                               draw.getAll(),
-                              `FCU_export_tracé_${formatAsISODate(
-                                new Date()
-                              )}.geojson`,
+                              `FCU_export_tracé_${formatAsISODate(new Date())}.geojson`,
                               'application/geo+json'
                             );
                           }}
@@ -411,8 +347,7 @@ const SummaryBoxes = ({
               ]}
             />
 
-            {((size && size > 5) ||
-              (tabIndex === 0 && (!bounds || summary))) && (
+            {((size && size > 5) || (tabIndex === 0 && (!bounds || summary))) && (
               <DrawButton
                 size="small"
                 iconId="fr-icon-edit-line"
@@ -468,10 +403,7 @@ const SummaryBoxes = ({
                       draw.delete(selected);
                       setLines(
                         all.features
-                          .filter(
-                            (feature) =>
-                              !selected.includes(feature.id as string)
-                          )
+                          .filter((feature) => !selected.includes(feature.id as string))
                           .map((feature) => {
                             return (feature.geometry as LineString).coordinates;
                           })

@@ -1,19 +1,12 @@
+import Input from '@codegouvfr/react-dsfr/Input';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import Link from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
-import {
-  Container,
-  Disclaimer,
-  Form,
-  Inputs,
-  RedirectionButton,
-  Result,
-  ResultValue,
-  Title,
-} from './Simulator.styles';
-import Text from '@components/ui/Text';
+
 import { LegacyColor } from '@components/ui/helpers/colors';
-import Input from '@codegouvfr/react-dsfr/Input';
+import Text from '@components/ui/Text';
+
+import { Container, Disclaimer, Form, Inputs, RedirectionButton, Result, ResultValue, Title } from './Simulator.styles';
 
 export const prixSpotCEE = 8.42; // €/MWh cumac
 
@@ -58,16 +51,10 @@ const Simulator = ({
   help = help * 0.75 * prixSpotCEE;
 
   return (
-    <Container
-      withMargin={withMargin}
-      cartridge={cartridge}
-      withRedirection={withRedirection}
-      backgroundColor={backgroundColor}
-    >
+    <Container withMargin={withMargin} cartridge={cartridge} withRedirection={withRedirection} backgroundColor={backgroundColor}>
       {withTitle && (
         <Title>
-          Estimer le montant du Coup de pouce « Chauffage des bâtiments
-          résidentiels collectifs et tertiaires » pour le raccordement de mon
+          Estimer le montant du Coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires » pour le raccordement de mon
           bâtiment
         </Title>
       )}
@@ -90,10 +77,7 @@ const Simulator = ({
             nativeInputProps={{
               type: 'number',
               min: 1,
-              placeholder:
-                structure === 'Résidentiel'
-                  ? 'Nombre de logements'
-                  : 'Surface (m²)',
+              placeholder: structure === 'Résidentiel' ? 'Nombre de logements' : 'Surface (m²)',
               pattern: '[0-9]*',
               value,
               onChange: (e) => setValue(e.target.value),
@@ -131,9 +115,7 @@ const Simulator = ({
       </Form>
       {withRedirection && (
         <RedirectionButton>
-          <Link href="/ressources/aides#contenu">
-            Tout savoir sur cette aide
-          </Link>
+          <Link href="/ressources/aides#contenu">Tout savoir sur cette aide</Link>
         </RedirectionButton>
       )}
       {children}

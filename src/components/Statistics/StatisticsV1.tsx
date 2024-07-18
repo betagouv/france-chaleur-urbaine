@@ -1,10 +1,12 @@
+import { useMemo } from 'react';
+import useSWR from 'swr';
+
 import Graph from '@components/Graph';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import { dataNumberFcu } from '@data';
 import { fetchJSON } from '@utils/network';
-import { useMemo } from 'react';
-import useSWR from 'swr';
+
 import Band from './Band';
 import { Container, GraphsWrapper } from './StatisticsV1.style';
 
@@ -33,20 +35,12 @@ const monthToString = [
 const today = new Date();
 
 const Statistics = () => {
-  const { data: rawDataActions, error: errorDataActions } = useSWR<any>(
-    '/api/statistiques/actions',
-    fetchJSON,
-    {
-      onError: (err) => console.warn('errorDataActions >>', err),
-    }
-  );
+  const { data: rawDataActions, error: errorDataActions } = useSWR<any>('/api/statistiques/actions', fetchJSON, {
+    onError: (err) => console.warn('errorDataActions >>', err),
+  });
 
   const dataActions = useMemo(() => {
-    if (
-      !rawDataActions ||
-      rawDataActions?.results?.error ||
-      rawDataActions?.result === 'error'
-    ) {
+    if (!rawDataActions || rawDataActions?.results?.error || rawDataActions?.result === 'error') {
       return null;
     }
     return rawDataActions.results;
@@ -56,22 +50,17 @@ const Statistics = () => {
     ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
     ...(dataActions ?? []).map((entry: any) => {
       const [year, month] = entry?.date?.split('-') || ['YYYY', 'MM'];
-      const label = `${
-        !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
-      } ${year}`;
+      const label = `${!isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month} ${year}`;
       return [
         label,
         (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
           (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-          (
-            entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0
-          )(entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+          (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0)(entry['Formulaire de test - Adresse Éligible'] ?? 0) +
           (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
           (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0),
         (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
           (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ??
-            0),
+          (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0),
         (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
           (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
           (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0),
@@ -79,20 +68,12 @@ const Statistics = () => {
     }),
   ];
 
-  const { data: rawDataVisits, error: errorVisits } = useSWR<any>(
-    '/api/statistiques/visits',
-    fetchJSON,
-    {
-      onError: (err) => console.warn('errorVisits >>', err),
-    }
-  );
+  const { data: rawDataVisits, error: errorVisits } = useSWR<any>('/api/statistiques/visits', fetchJSON, {
+    onError: (err) => console.warn('errorVisits >>', err),
+  });
 
   const dataVisits = useMemo(() => {
-    if (
-      !rawDataVisits ||
-      rawDataVisits?.results?.error ||
-      rawDataVisits?.result === 'error'
-    ) {
+    if (!rawDataVisits || rawDataVisits?.results?.error || rawDataVisits?.result === 'error') {
       return null;
     }
 
@@ -104,37 +85,22 @@ const Statistics = () => {
     ...(dataVisits ?? []).map((entry: any) => {
       if (entry) {
         const [year, month] = entry?.date?.split('-') || ['YYYY', 'MM'];
-        const label = `${
-          !isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month
-        } ${year}`;
+        const label = `${!isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month} ${year}`;
         return [label, entry.value || 0];
       }
     }),
   ];
 
   //From Airtable
-  const { data: rawDataMonthContact, error: errorMonthContact } = useSWR<any>(
-    '/api/statistiques/contacts?group=monthly',
-    fetchJSON,
-    {
-      onError: (err) => console.warn('errorMonthContact >>', err),
-    }
-  );
+  const { data: rawDataMonthContact, error: errorMonthContact } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
+    onError: (err) => console.warn('errorMonthContact >>', err),
+  });
 
   const dataMonthContact = useMemo(
     () =>
       rawDataMonthContact
-        ? Object.entries(
-            (rawDataMonthContact as Record<string, ReturnApiStatAirtable>) || {}
-          )
-            .filter(
-              ([key]) =>
-                key !==
-                `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
-                  2,
-                  '0'
-                )}`
-            )
+        ? Object.entries((rawDataMonthContact as Record<string, ReturnApiStatAirtable>) || {})
+            .filter(([key]) => key !== `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`)
             .map(([key, value]) => {
               return {
                 period: new Date(key),
@@ -146,18 +112,11 @@ const Statistics = () => {
   );
 
   const formatedDataMonthContact = [
-    [
-      'x',
-      'Total des prises de contact',
-      'Contact pour adresses non éligibles',
-      'Contact pour adresses éligibles',
-    ],
+    ['x', 'Total des prises de contact', 'Contact pour adresses non éligibles', 'Contact pour adresses éligibles'],
     ...(dataMonthContact
       ? dataMonthContact.map((val) => {
           const { period, nbTotal, nbEligible, nbUneligible } = val;
-          const label = `${
-            monthToString[period.getMonth()]
-          } ${period.getFullYear()}`;
+          const label = `${monthToString[period.getMonth()]} ${period.getFullYear()}`;
 
           return [label, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
         })
@@ -165,20 +124,14 @@ const Statistics = () => {
   ];
 
   //From Airtable
-  const { data: rawDataCountContact, error: errorCountContact } = useSWR<any>(
-    '/api/statistiques/contacts?group=all',
-    fetchJSON,
-    {
-      onError: (err) => console.warn('errorCountContact >>', err),
-    }
-  );
+  const { data: rawDataCountContact, error: errorCountContact } = useSWR<any>('/api/statistiques/contacts?group=all', fetchJSON, {
+    onError: (err) => console.warn('errorCountContact >>', err),
+  });
 
   const dataCountContact = useMemo(
     () =>
       rawDataCountContact
-        ? Object.entries(
-            (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
-          ).map(([, { date, ...value }]) => {
+        ? Object.entries((rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}).map(([, { date, ...value }]) => {
             return {
               date: new Date(date),
               ...value,
@@ -203,28 +156,15 @@ const Statistics = () => {
       : []),
   ];
 
-  const { data: rawDataCountBulkContact, error: errorCountBulkContact } =
-    useSWR<any>('/api/statistiques/bulk', fetchJSON, {
-      onError: (err) => console.warn('errorCountContact >>', err),
-    });
+  const { data: rawDataCountBulkContact, error: errorCountBulkContact } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
+    onError: (err) => console.warn('errorCountContact >>', err),
+  });
 
   const dataCountBulkContact = useMemo(
     () =>
       rawDataCountBulkContact
-        ? Object.entries(
-            (rawDataCountBulkContact as Record<
-              string,
-              ReturnApiStatAirtable
-            >) || {}
-          )
-            .filter(
-              ([key]) =>
-                key !==
-                `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
-                  2,
-                  '0'
-                )}`
-            )
+        ? Object.entries((rawDataCountBulkContact as Record<string, ReturnApiStatAirtable>) || {})
+            .filter(([key]) => key !== `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`)
             .map(([key, value]) => {
               return {
                 period: new Date(key),
@@ -240,9 +180,7 @@ const Statistics = () => {
     ...(dataCountBulkContact
       ? dataCountBulkContact.map((val) => {
           const { period, nbTotal, nbEligible, nbUneligible } = val;
-          const label = `${
-            monthToString[period.getMonth()]
-          } ${period.getFullYear()}`;
+          const label = `${monthToString[period.getMonth()]} ${period.getFullYear()}`;
 
           return [label, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
         })
@@ -255,21 +193,15 @@ const Statistics = () => {
         <Slice padding={4}>
           <h2> Statistiques</h2>
           <span>
-            En France, les besoins en chauffage ne sont couverts qu’à hauteur de
-            5% par des réseaux de chaleur.
+            En France, les besoins en chauffage ne sont couverts qu’à hauteur de 5% par des réseaux de chaleur.
             <div>
-              <b>
-                Pourtant, ce mode de chauffage émet au minimum 2 fois moins de
-                gaz à effet de serre que le fioul ou le gaz
-              </b>{' '}
-              (source : SNCU).
+              <b>Pourtant, ce mode de chauffage émet au minimum 2 fois moins de gaz à effet de serre que le fioul ou le gaz</b> (source :
+              SNCU).
             </div>
             <div>
               <b>
-                La loi de transition énergétique pour la croissance verte fixe
-                un objectif de multiplication par 5 de la quantité de chaud et
-                de froid livrée par les réseaux en 2030, par rapport à 2012 :
-                cela revient à 4 à 5 millions d’équivalent-logements
+                La loi de transition énergétique pour la croissance verte fixe un objectif de multiplication par 5 de la quantité de chaud
+                et de froid livrée par les réseaux en 2030, par rapport à 2012 : cela revient à 4 à 5 millions d’équivalent-logements
                 supplémentaires à raccorder (estimation Amorce) !
               </b>
             </div>
@@ -281,8 +213,7 @@ const Statistics = () => {
         <Slice padding={4}>
           <span>
             <i>
-              Pour une consommation moyenne de 10 MWh/an, avec un réseau de
-              chaleur alimenté à 62% par des énergies renouvelables (= taux
+              Pour une consommation moyenne de 10 MWh/an, avec un réseau de chaleur alimenté à 62% par des énergies renouvelables (= taux
               moyen pour les réseaux de chaleur français)
             </i>
           </span>

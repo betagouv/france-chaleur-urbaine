@@ -1,12 +1,14 @@
-import WrappedText from '@components/WrappedText/WrappedText';
 import Link from 'next/link';
+
 import Map from '@components/Map/Map';
 import ClassedNetwork from '@components/Network/ClassedNetwork';
 import EnergiesChart from '@components/Network/EnergiesChart';
-import { Network } from 'src/types/Summary/Network';
-import { NetworkContainer, NetworkColumn } from './Networks.styles';
 import Slice from '@components/Slice';
+import WrappedText from '@components/WrappedText/WrappedText';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { Network } from 'src/types/Summary/Network';
+
+import { NetworkContainer, NetworkColumn } from './Networks.styles';
 
 type NetworksData = {
   isClassed: boolean;
@@ -15,67 +17,38 @@ type NetworksData = {
   gestionnaires?: string;
 };
 
-const Networks = ({
-  networksData,
-  network,
-  cityCoord,
-}: {
-  networksData: NetworksData;
-  network?: Network;
-  cityCoord: [number, number];
-}) => {
+const Networks = ({ networksData, network, cityCoord }: { networksData: NetworksData; network?: Network; cityCoord: [number, number] }) => {
   return (
     <NetworkContainer>
       <NetworkColumn className="fr-col-md-6 fr-col-12">
-        {networksData.gestionnaires && (
-          <WrappedText body={`::arrow-item[${networksData.gestionnaires}]`} />
-        )}
+        {networksData.gestionnaires && <WrappedText body={`::arrow-item[${networksData.gestionnaires}]`} />}
         {networksData.isClassed && (
           <>
-            {!network && (
-              <WrappedText
-                body={`::arrow-item[Certains de ces réseaux sont classés]`}
-              />
-            )}
+            {!network && <WrappedText body={`::arrow-item[Certains de ces réseaux sont classés]`} />}
             <div className="fr-pb-4w">
               <ClassedNetwork />
             </div>
           </>
         )}
         {!network && (
-          <WrappedText
-            body={`::arrow-item[Pour savoir de quel réseau votre bâtiment dépend, **veuillez tester votre adresse**]`}
-          />
+          <WrappedText body={`::arrow-item[Pour savoir de quel réseau votre bâtiment dépend, **veuillez tester votre adresse**]`} />
         )}
-        {networksData.heatedPlaces && (
-          <WrappedText
-            body={`::arrow-item[Plus de **${networksData.heatedPlaces} logements** chauffés]`}
-          />
-        )}
+        {networksData.heatedPlaces && <WrappedText body={`::arrow-item[Plus de **${networksData.heatedPlaces} logements** chauffés]`} />}
         {network && (
           <>
             {network.longueur_reseau > 0 && (
+              <WrappedText body={`::arrow-item[**${network.longueur_reseau} km** de canalisations souterraines]`} />
+            )}
+            {network['Taux EnR&R'] !== null && network['Taux EnR&R'] !== undefined && (
               <WrappedText
-                body={`::arrow-item[**${network.longueur_reseau} km** de canalisations souterraines]`}
+                body={`::arrow-item[Le taux **d'énergies renouvelables et de récupération** du réseau est de **${network['Taux EnR&R']} %**]`}
               />
             )}
-            {network['Taux EnR&R'] !== null &&
-              network['Taux EnR&R'] !== undefined && (
-                <WrappedText
-                  body={`::arrow-item[Le taux **d'énergies renouvelables et de récupération** du réseau est de **${network['Taux EnR&R']} %**]`}
-                />
-              )}
-            {network.Gestionnaire && (
-              <WrappedText
-                body={`::arrow-item[Le réseau est géré par **${network.Gestionnaire}**.]`}
-              />
-            )}
+            {network.Gestionnaire && <WrappedText body={`::arrow-item[Le réseau est géré par **${network.Gestionnaire}**.]`} />}
             <Slice padding={4}>
               <EnergiesChart network={network} height="250px" />
               <div className="fr-btn fr-mt-4w fr-m-auto">
-                <Link href={`/reseaux/${network['Identifiant reseau']}`}>
-                  Voir la fiche technique du réseau
-                </Link>
+                <Link href={`/reseaux/${network['Identifiant reseau']}`}>Voir la fiche technique du réseau</Link>
               </div>
             </Slice>
           </>
@@ -91,9 +64,7 @@ const Networks = ({
             reseauxDeChaleur: {
               show: true,
             },
-            filtreIdentifiantReseau: networksData.identifiant
-              ? [networksData.identifiant]
-              : [],
+            filtreIdentifiantReseau: networksData.identifiant ? [networksData.identifiant] : [],
           })}
         />
       </NetworkColumn>

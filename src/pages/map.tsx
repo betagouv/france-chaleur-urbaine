@@ -1,8 +1,9 @@
-import IframeWrapper from '@components/IframeWrapper';
-import Map from '@components/Map/Map';
-import { MapLegendFeature } from '@components/Map/components/SimpleMapLegend';
-import useRouterReady from '@hooks/useRouterReady';
 import { useRouter } from 'next/router';
+
+import IframeWrapper from '@components/IframeWrapper';
+import { MapLegendFeature } from '@components/Map/components/SimpleMapLegend';
+import Map from '@components/Map/Map';
+import useRouterReady from '@hooks/useRouterReady';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
 export const selectableLayers = [
@@ -26,10 +27,7 @@ export const selectableLayers = [
 
 export type LegendURLKey = (typeof selectableLayers)[number]['key'];
 
-const legendURLKeyToLegendFeature: Record<
-  LegendURLKey | string,
-  MapLegendFeature
-> = {
+const legendURLKeyToLegendFeature: Record<LegendURLKey | string, MapLegendFeature> = {
   reseau_chaleur: 'reseauxDeChaleur',
   futur_reseau: 'reseauxEnConstruction',
   reseau_froid: 'reseauxDeFroid',

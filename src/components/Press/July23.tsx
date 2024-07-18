@@ -1,5 +1,6 @@
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Slice from '@components/Slice';
+
 import { Container, Image } from './index.styles';
 
 const July2023 = () => {
@@ -40,10 +41,7 @@ Voir notre [page dédiée aux réseaux de froid](/ressources/reseau-de-froid#con
 Pour nous contacter : [france-chaleur-urbaine@developpement-durable.gouv.fr](mailto:france-chaleur-urbaine@developpement-durable.gouv.fr)
 `}
         />
-        <Image
-          src="/img/FCU_Infographie_Froid.jpg"
-          alt="Les réseaux de froid"
-        />
+        <Image src="/img/FCU_Infographie_Froid.jpg" alt="Les réseaux de froid" />
       </Slice>
     </Container>
   );

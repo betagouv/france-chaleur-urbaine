@@ -8,12 +8,7 @@ const ViasevaMap = () => {
     <IframeWrapper>
       <Map
         initialMapConfiguration={iframeSimpleMapConfiguration}
-        enabledLegendFeatures={[
-          'reseauxDeChaleur',
-          'reseauxDeFroid',
-          'reseauxEnConstruction',
-          'zonesDeDeveloppementPrioritaire',
-        ]}
+        enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
         withHideLegendSwitch

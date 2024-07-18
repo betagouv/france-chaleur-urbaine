@@ -12,16 +12,7 @@ type SelectEnergyProps = {
   className?: string;
 };
 
-const SelectEnergy = ({
-  children,
-  label,
-  name,
-  cardMode,
-  selectOptions = {},
-  value,
-  onChange,
-  className,
-}: SelectEnergyProps) => {
+const SelectEnergy = ({ children, label, name, cardMode, selectOptions = {}, value, onChange, className }: SelectEnergyProps) => {
   return (
     <>
       {children}

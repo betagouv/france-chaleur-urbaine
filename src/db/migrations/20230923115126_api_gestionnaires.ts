@@ -8,12 +8,8 @@ export async function up(knex: Knex): Promise<void> {
     table.string('name');
   });
 
-  await knex.raw(
-    'ALTER TABLE users ADD CONSTRAINT users_email_unicity UNIQUE (email);'
-  );
-  await knex.raw(
-    'ALTER TABLE api_accounts ADD COLUMN networks varchar(255)[];'
-  );
+  await knex.raw('ALTER TABLE users ADD CONSTRAINT users_email_unicity UNIQUE (email);');
+  await knex.raw('ALTER TABLE api_accounts ADD COLUMN networks varchar(255)[];');
 }
 
 export async function down(knex: Knex): Promise<void> {

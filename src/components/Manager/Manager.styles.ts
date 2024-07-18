@@ -1,9 +1,7 @@
-import { mapControlZindex } from '@components/Map/Map.style';
-import {
-  fullscreenHeaderHeight,
-  tabHeaderHeight,
-} from '@components/shared/layout/MainLayout.data';
 import styled from 'styled-components';
+
+import { mapControlZindex } from '@components/Map/Map.style';
+import { fullscreenHeaderHeight, tabHeaderHeight } from '@components/shared/layout/MainLayout.data';
 
 export const Container = styled.div`
   margin: auto;
@@ -55,8 +53,7 @@ export const ManagerContainer = styled.div`
 export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
   width: 100%;
   @media (min-width: 992px) {
-    width: ${({ mapCollapsed }) =>
-      mapCollapsed ? '100%' : 'calc(70% - 16px)'};
+    width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : 'calc(70% - 16px)')};
   }
   height: 100%;
   z-index: ${mapControlZindex + 1};
@@ -93,11 +90,9 @@ export const CollapseMap = styled.button<{
   position: absolute;
   padding: 0px;
   z-index: ${mapControlZindex + 2};
-  left: ${({ mapCollapsed }) =>
-    mapCollapsed ? 'calc(100% - (28px + 16px))' : 'calc(70%-16px)'};
+  left: ${({ mapCollapsed }) => (mapCollapsed ? 'calc(100% - (28px + 16px))' : 'calc(70%-16px)')};
   top: 50%;
-  border-radius: ${({ mapCollapsed }) =>
-    mapCollapsed ? '10px 0px 0px 10px' : '0px 10px 10px 0px'};
+  border-radius: ${({ mapCollapsed }) => (mapCollapsed ? '10px 0px 0px 10px' : '0px 10px 10px 0px')};
   background-color: var(--background-default-grey);
   border: solid 1px #dddddd;
   height: 60px;

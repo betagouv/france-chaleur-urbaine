@@ -15,9 +15,6 @@ export const themeDefBuildings = {
   opacity: 0.65,
 };
 
-export const arrColorFromDefBuildingsDpeEnergy = Object.entries(
-  themeDefBuildings.colors
-).flatMap(([dpeCode, dpeStyleDef]: [string, any]) => [
-  dpeCode,
-  dpeStyleDef.color,
-]) as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];
+export const arrColorFromDefBuildingsDpeEnergy = Object.entries(themeDefBuildings.colors).flatMap(
+  ([dpeCode, dpeStyleDef]: [string, any]) => [dpeCode, dpeStyleDef.color]
+) as [ExpressionInputType, ExpressionInputType, ...ExpressionInputType[]];

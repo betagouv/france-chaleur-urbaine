@@ -3,6 +3,7 @@ import { PropsWithChildren } from 'react';
 //import { ButtonProps } from '@codegouvfr/react-dsfr/Button';
 import { Oval } from 'react-loader-spinner';
 import styled from 'styled-components';
+
 import Box from './Box';
 
 const LoadingWrapper = styled.div<{ show: boolean }>`
@@ -26,29 +27,12 @@ const MainWrapper = styled.div<{ show: boolean }>`
 // Renders a button that displays a spinner while loading.
 // Usage:
 //  <LoadingButton isLoading={isSubmitting}>Submit</LoadingButton>
-function LoadingButton({
-  children,
-  disabled,
-  isLoading = false,
-  ...props
-}: PropsWithChildren<any>) {
+function LoadingButton({ children, disabled, isLoading = false, ...props }: PropsWithChildren<any>) {
   return (
-    <Button
-      className="fr-mt-2w"
-      type="submit"
-      disabled={disabled || isLoading}
-      {...props}
-    >
+    <Button className="fr-mt-2w" type="submit" disabled={disabled || isLoading} {...props}>
       <Box display="grid">
         <LoadingWrapper show={isLoading}>
-          <Oval
-            height={24}
-            width={24}
-            strokeWidth={6}
-            color="blue"
-            secondaryColor="blue"
-            visible={isLoading}
-          />
+          <Oval height={24} width={24} strokeWidth={6} color="blue" secondaryColor="blue" visible={isLoading} />
         </LoadingWrapper>
         <MainWrapper show={!isLoading}>{children}</MainWrapper>
       </Box>

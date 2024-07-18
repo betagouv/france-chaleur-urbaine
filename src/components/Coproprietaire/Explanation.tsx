@@ -1,16 +1,16 @@
 import { Glass, ImageContainer } from '@components/Infographie/index.styles';
-import WrappedText from '@components/WrappedText/WrappedText';
 import Icon from '@components/ui/Icon';
-import { Container, Title } from './Explanation.styles';
+import WrappedText from '@components/WrappedText/WrappedText';
+
 import CoproGuide from './CoproGuide';
+import { Container, Title } from './Explanation.styles';
 
 const Explanation = () => {
   return (
     <>
       <Title>
         <h2>
-          Un chauffage <b>écologique</b> à <b>prix compétitif</b> déjà adopté
-          par 6 millions de Français
+          Un chauffage <b>écologique</b> à <b>prix compétitif</b> déjà adopté par 6 millions de Français
         </h2>
       </Title>
       <Container>
@@ -27,15 +27,8 @@ const Explanation = () => {
           <CoproGuide />
         </div>
         <div className="fr-col-12 fr-col-md-6 fr-offset-lg-1 fr-col-lg-4">
-          <ImageContainer
-            href="/img/FCU_Infographie_Avenir.jpg"
-            target="_blank"
-          >
-            <img
-              width="100%"
-              src="/img/FCU_Infographie_small.jpeg"
-              alt="Une solution d'avenir"
-            />
+          <ImageContainer href="/img/FCU_Infographie_Avenir.jpg" target="_blank">
+            <img width="100%" src="/img/FCU_Infographie_small.jpeg" alt="Une solution d'avenir" />
             <Glass>
               <Icon name="ri-search-eye-fill" size="lg" />
             </Glass>

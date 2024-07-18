@@ -1,15 +1,12 @@
-import {
-  handleRouteErrors,
-  requirePostMethod,
-  validateObjectSchema,
-} from '@helpers/server';
-import { zPassword } from '@utils/validation';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { NextApiRequest } from 'next';
+import { z } from 'zod';
+
+import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@helpers/server';
+import { zPassword } from '@utils/validation';
 import db from 'src/db';
 import { BadRequestError } from 'src/services/errors';
-import { z } from 'zod';
 
 const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);
@@ -18,17 +15,13 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
     password: zPassword,
     token: z.string().transform((token, ctx) => {
       try {
-        const decodedToken = jwt.verify(
-          token,
-          process.env.NEXTAUTH_SECRET as string
-        ) as { email: string; resetToken: string };
+        const decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET as string) as { email: string; resetToken: string };
 
         return decodedToken;
       } catch (err) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message:
-            'Lien invalide. Veuillez redemander un lien de réinitialisation.',
+          message: 'Lien invalide. Veuillez redemander un lien de réinitialisation.',
         });
 
         return z.NEVER;
@@ -36,24 +29,17 @@ const changePasswordRequest = handleRouteErrors(async (req: NextApiRequest) => {
     }),
   });
 
-  const user = await db('users')
-    .where('email', token.email)
-    .andWhere('active', true)
-    .first();
+  const user = await db('users').where('email', token.email).andWhere('active', true).first();
   if (!user) {
     throw new BadRequestError('Email incorrect');
   }
 
   if (!user.reset_token) {
-    throw new BadRequestError(
-      'Ce lien a déjà été utilisé. Veuillez redemander un lien de réinitialisation.'
-    );
+    throw new BadRequestError('Ce lien a déjà été utilisé. Veuillez redemander un lien de réinitialisation.');
   }
 
   if (user.reset_token !== token.resetToken) {
-    throw new BadRequestError(
-      'Lien invalide. Veuillez redemander un lien de réinitialisation'
-    );
+    throw new BadRequestError('Lien invalide. Veuillez redemander un lien de réinitialisation');
   }
 
   const salt = await bcrypt.genSalt(10);

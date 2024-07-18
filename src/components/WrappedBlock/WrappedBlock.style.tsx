@@ -11,8 +11,7 @@ export const Container = styled.div<{
   gap: 32px;
 
   @media (min-width: 992px) {
-    flex-direction: ${({ reverse, direction }) =>
-      reverse ? ' row-reverse' : direction || 'row'};
+    flex-direction: ${({ reverse, direction }) => (reverse ? ' row-reverse' : direction || 'row')};
     flex: 1;
   }
 `;

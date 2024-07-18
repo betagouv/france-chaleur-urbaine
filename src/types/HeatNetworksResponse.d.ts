@@ -29,8 +29,4 @@ export type AddressDetail = {
   network: HeatNetworksResponse;
 };
 
-export type HandleAddressSelect = (
-  address: string,
-  coordinates: Point,
-  geoAddress: AddressDetail
-) => void;
+export type HandleAddressSelect = (address: string, coordinates: Point, geoAddress: AddressDetail) => void;

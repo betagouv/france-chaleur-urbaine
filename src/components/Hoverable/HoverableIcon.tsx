@@ -1,7 +1,10 @@
-import Icon from '@components/ui/Icon';
 import { ReactNode } from 'react';
-import Hoverable from '.';
+
+import Icon from '@components/ui/Icon';
+
 import { Container } from './HoverableIcon.styles';
+
+import Hoverable from '.';
 
 const HoverableIcon = ({
   children,

@@ -4,10 +4,7 @@ type GoogleTagsScriptProps = React.ComponentProps<typeof Script> & {
   tagIds: string[];
 };
 
-const GoogleTagsScript: React.FC<GoogleTagsScriptProps> = ({
-  tagIds,
-  ...props
-}) => {
+const GoogleTagsScript: React.FC<GoogleTagsScriptProps> = ({ tagIds, ...props }) => {
   return (
     <>
       {tagIds.map((tagId) => (

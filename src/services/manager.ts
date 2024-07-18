@@ -1,16 +1,18 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import db from 'src/db';
 import base from 'src/db/airtable';
+import { Airtable } from 'src/types/enum/Airtable';
 import { Demand } from 'src/types/Summary/Demand';
 import { User } from 'src/types/User';
-import { Airtable } from 'src/types/enum/Airtable';
-import { v4 as uuidv4 } from 'uuid';
+
+import { sendNewDemands, sendOldDemands, sendRelanceMail } from './email';
 import {
   getAllNewDemands,
   getAllStaledDemandsSince,
   getAllToRelanceDemands,
   getToRelanceDemand,
 } from '../core/infrastructure/repository/manager';
-import { sendNewDemands, sendOldDemands, sendRelanceMail } from './email';
 
 const groupDemands = (demands: Demand[]): Record<string, Demand[]> => {
   const groupedDemands: Record<string, Demand[]> = {};
@@ -28,10 +30,7 @@ const groupDemands = (demands: Demand[]): Record<string, Demand[]> => {
   return groupedDemands;
 };
 
-const groupUsers = (
-  users: User[],
-  extraFilter: (user: User) => boolean
-): Record<string, string[]> => {
+const groupUsers = (users: User[], extraFilter: (user: User) => boolean): Record<string, string[]> => {
   const groupedUsers: Record<string, string[]> = {};
   users
     .filter((user) => user.email.includes('@'))
@@ -101,12 +100,7 @@ const oldDemands = async (users: User[]) => {
 export const weeklyOldManagerMail = async () => {
   const users: User[] = await db('users')
     .where('active', true)
-    .select(
-      'gestionnaires',
-      'email',
-      'receive_new_demands',
-      'receive_old_demands'
-    );
+    .select('gestionnaires', 'email', 'receive_new_demands', 'receive_old_demands');
 
   await oldDemands(users);
 };
@@ -114,12 +108,7 @@ export const weeklyOldManagerMail = async () => {
 export const dailyNewManagerMail = async () => {
   const users: User[] = await db('users')
     .where('active', true)
-    .select(
-      'gestionnaires',
-      'email',
-      'receive_new_demands',
-      'receive_old_demands'
-    );
+    .select('gestionnaires', 'email', 'receive_new_demands', 'receive_old_demands');
 
   await newDemands(users);
 };
@@ -140,8 +129,7 @@ export const dailyRelanceMail = async () => {
     const relanced = demand['Relance envoyée'];
     const uuid = uuidv4();
     await base(Airtable.UTILISATEURS).update(demand.id, {
-      [relanced ? 'Seconde relance envoyée' : 'Relance envoyée']:
-        new Date().toDateString(),
+      [relanced ? 'Seconde relance envoyée' : 'Relance envoyée']: new Date().toDateString(),
       'Relance ID': uuid,
     });
     await sendRelanceMail(demand, uuid);

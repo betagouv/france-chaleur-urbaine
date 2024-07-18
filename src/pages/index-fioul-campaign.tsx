@@ -1,3 +1,6 @@
+import Head from 'next/head';
+import Image from 'next/image';
+
 import AvantagesChauffageUrbain from '@components/GenericContent/AvantagesChauffageUrbain';
 import ComparatifChauffage from '@components/GenericContent/ComparatifChauffages';
 import CoutsChauffageUrbain from '@components/GenericContent/CoutsChauffageUrbain';
@@ -9,8 +12,6 @@ import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import Head from 'next/head';
-import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -27,11 +28,7 @@ export default function Home() {
         withWrapper={(form) => (
           <Box backgroundColor="#C3E4E1">
             <Box display="flex" alignItems="stretch" gap="16px">
-              <Box
-                flex
-                className="fr-hidden fr-unhidden-lg"
-                alignItems="stretch"
-              >
+              <Box flex className="fr-hidden fr-unhidden-lg" alignItems="stretch">
                 <Image
                   src="/img/banner_chauffage_gaz.png"
                   alt=""
@@ -44,8 +41,7 @@ export default function Home() {
               </Box>
               <Box flex py="3w" pr="8w" className="fr-container">
                 <Heading as="h1" size="h2" color="blue-france" mt="1w">
-                  Changez votre chaudière fioul pour le chauffage urbain et
-                  maîtrisez vos factures
+                  Changez votre chaudière fioul pour le chauffage urbain et maîtrisez vos factures
                 </Heading>
                 <Text mb="2w">Testez votre éligibilité en 2 clics&nbsp;!</Text>
                 {form}
@@ -59,11 +55,7 @@ export default function Home() {
         <AvantagesChauffageUrbain title="Les avantages du chauffage urbain par rapport au fioul" />
       </Box>
 
-      <Box
-        py="10w"
-        id="comprendre-le-chauffage-urbain"
-        backgroundColor="blue-france-975-75"
-      >
+      <Box py="10w" id="comprendre-le-chauffage-urbain" backgroundColor="blue-france-975-75">
         <Box className="fr-container">
           <Heading as="h2" center>
             Comprendre le chauffage urbain
@@ -75,24 +67,16 @@ export default function Home() {
               </Heading>
               <Text size="lg">
                 Le chauffage urbain consiste à{' '}
-                <strong>
-                  distribuer de la chaleur produite de façon centralisée à un
-                  ensemble de bâtiments
-                </strong>
-                , via des canalisations souterraines. On parle aussi de réseaux
-                de chaleur.{' '}
+                <strong>distribuer de la chaleur produite de façon centralisée à un ensemble de bâtiments</strong>, via des canalisations
+                souterraines. On parle aussi de réseaux de chaleur.{' '}
                 <strong>
                   Ces réseaux sont alimentés à plus de 66% par des{' '}
-                  <Link href="/ressources/energies-vertes#contenu">
-                    énergies renouvelables et de récupération locales
-                  </Link>
-                  .
+                  <Link href="/ressources/energies-vertes#contenu">énergies renouvelables et de récupération locales</Link>.
                 </strong>
               </Text>
               <Text size="lg" mt="3w">
-                La chaleur est transportée jusqu'à une sous-station installée
-                dans votre copropriété, puis acheminée aux différents logements
-                par des canalisations internes à l’immeuble.
+                La chaleur est transportée jusqu'à une sous-station installée dans votre copropriété, puis acheminée aux différents
+                logements par des canalisations internes à l’immeuble.
               </Text>
               <Link variant="primary" href="reseaux-chaleur#contenu" mt="3w">
                 En savoir plus
@@ -121,11 +105,7 @@ export default function Home() {
         <ComparatifChauffage />
       </Box>
 
-      <Box
-        py="10w"
-        backgroundColor="blue-france-main-525"
-        id="comment-se-raccorder"
-      >
+      <Box py="10w" backgroundColor="blue-france-main-525" id="comment-se-raccorder">
         <HowToRaccordement downloadLinkPos="right" />
       </Box>
 

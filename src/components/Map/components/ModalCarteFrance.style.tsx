@@ -1,7 +1,8 @@
 import Button from '@codegouvfr/react-dsfr/Button';
+import styled from 'styled-components';
+
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
-import styled from 'styled-components';
 
 export const PotentielsRaccordementButton = styled(Button)`
   display: flex;

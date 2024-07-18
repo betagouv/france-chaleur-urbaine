@@ -3,6 +3,7 @@ import ejs from 'ejs';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore: type not official
 import nodemailer from 'nodemailer';
+
 import { Demand } from 'src/types/Summary/Demand';
 
 dotenv.config({ path: '.env.local' });
@@ -47,65 +48,36 @@ const send = (
   };
 
   return new Promise((resolve, reject) => {
-    mailTransport.sendMail(mail, (error: any, info: any) =>
-      error ? reject(error) : resolve(info)
-    );
+    mailTransport.sendMail(mail, (error: any, info: any) => (error ? reject(error) : resolve(info)));
   });
 };
 
-export const sendNewDemands = async (
-  email: string,
-  demands: number
-): Promise<void> => {
-  const html = await ejs.renderFile(
-    './src/services/email/views/new-demands.ejs',
-    {
-      demands,
-      link: `${process.env.NEXTAUTH_URL}/connexion`,
-    }
-  );
+export const sendNewDemands = async (email: string, demands: number): Promise<void> => {
+  const html = await ejs.renderFile('./src/services/email/views/new-demands.ejs', {
+    demands,
+    link: `${process.env.NEXTAUTH_URL}/connexion`,
+  });
 
-  return send(
-    [email],
-    '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire',
-    html
-  );
+  return send([email], '[France Chaleur Urbaine] Nouvelle(s) demande(s) dans votre espace gestionnaire', html);
 };
 
 export const sendOldDemands = async (email: string): Promise<void> => {
-  const html = await ejs.renderFile(
-    './src/services/email/views/old-demands.ejs',
-    {
-      link: `${process.env.NEXTAUTH_URL}/connexion`,
-    }
-  );
+  const html = await ejs.renderFile('./src/services/email/views/old-demands.ejs', {
+    link: `${process.env.NEXTAUTH_URL}/connexion`,
+  });
 
-  return send(
-    [email],
-    '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge',
-    html
-  );
+  return send([email], '[France Chaleur Urbaine] Vous avez des demandes en attente de prise en charge', html);
 };
 
 export const sendInscriptionEmail = async (email: string): Promise<void> => {
-  const html = await ejs.renderFile(
-    './src/services/email/views/inscription.ejs',
-    {
-      link: process.env.NEXTAUTH_URL,
-    }
-  );
+  const html = await ejs.renderFile('./src/services/email/views/inscription.ejs', {
+    link: process.env.NEXTAUTH_URL,
+  });
 
-  return send(
-    [email],
-    '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire',
-    html
-  );
+  return send([email], '[France Chaleur Urbaine] Ouverture de votre espace gestionnaire', html);
 };
 
-export const sendResetPasswordEmail = async (
-  email: string,
-  token: string
-): Promise<void> => {
+export const sendResetPasswordEmail = async (email: string, token: string): Promise<void> => {
   const html = await ejs.renderFile('./src/services/email/views/password.ejs', {
     link: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
   });
@@ -113,72 +85,33 @@ export const sendResetPasswordEmail = async (
   return send([email], 'Réinitialisation de votre mot de passe FCU', html);
 };
 
-export const sendBulkEligibilityResult = async (
-  id: string,
-  email: string,
-  attachment: Attachment
-): Promise<void> => {
-  const html = await ejs.renderFile(
-    './src/services/email/views/bulk-eligibility.ejs',
-    {
-      link: `${process.env.NEXTAUTH_URL}/carte?id=${id}`,
-    }
-  );
+export const sendBulkEligibilityResult = async (id: string, email: string, attachment: Attachment): Promise<void> => {
+  const html = await ejs.renderFile('./src/services/email/views/bulk-eligibility.ejs', {
+    link: `${process.env.NEXTAUTH_URL}/carte?id=${id}`,
+  });
 
-  return send(
-    [email],
-    '[France Chaleur Urbaine] Résultat de votre test',
-    html,
-    [],
-    [],
-    [attachment]
-  );
+  return send([email], '[France Chaleur Urbaine] Résultat de votre test', html, [], [], [attachment]);
 };
 
-export const sendBulkEligibilityErrorAdmin = async (
-  emails: string | undefined,
-  user: string,
-  attachment: Attachment
-): Promise<void> => {
+export const sendBulkEligibilityErrorAdmin = async (emails: string | undefined, user: string, attachment: Attachment): Promise<void> => {
   if (!emails) {
     return;
   }
 
-  const html = await ejs.renderFile(
-    './src/services/email/views/bulk-eligibility-error-admin.ejs',
-    {
-      user,
-    }
-  );
+  const html = await ejs.renderFile('./src/services/email/views/bulk-eligibility-error-admin.ejs', {
+    user,
+  });
 
-  return send(
-    emails.split(','),
-    "[France Chaleur Urbaine] Erreur lors d'un test",
-    html,
-    [],
-    [],
-    [attachment]
-  );
+  return send(emails.split(','), "[France Chaleur Urbaine] Erreur lors d'un test", html, [], [], [attachment]);
 };
 
-export const sendBulkEligibilityError = async (
-  email: string
-): Promise<void> => {
-  const html = await ejs.renderFile(
-    './src/services/email/views/bulk-eligibility-error.ejs'
-  );
+export const sendBulkEligibilityError = async (email: string): Promise<void> => {
+  const html = await ejs.renderFile('./src/services/email/views/bulk-eligibility-error.ejs');
 
-  return send(
-    [email],
-    '[France Chaleur Urbaine] Erreur lors de votre test',
-    html
-  );
+  return send([email], '[France Chaleur Urbaine] Erreur lors de votre test', html);
 };
 
-export const sendRelanceMail = async (
-  demand: Demand,
-  id: string
-): Promise<void> => {
+export const sendRelanceMail = async (demand: Demand, id: string): Promise<void> => {
   const html = await ejs.renderFile('./src/services/email/views/relance.ejs', {
     firstName: demand.Prénom,
     date: new Date(demand['Date demandes']).toLocaleDateString('fr-FR', {
@@ -200,13 +133,10 @@ export const sendManagerEmail = async (
   cc: string[],
   replyTo: string
 ): Promise<void> => {
-  const html = await ejs.renderFile(
-    './src/services/email/views/manager-email.ejs',
-    {
-      content: body,
-      signature: signature,
-    }
-  );
+  const html = await ejs.renderFile('./src/services/email/views/manager-email.ejs', {
+    content: body,
+    signature: signature,
+  });
 
   return send([recipient], subject, html, cc, [], [], replyTo);
 };

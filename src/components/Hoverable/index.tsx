@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+
 import { Container } from './hoverable.styles';
 
 const Hoverable = ({
@@ -6,13 +7,7 @@ const Hoverable = ({
   position,
 }: {
   children: ReactNode;
-  position?:
-    | 'top'
-    | 'right'
-    | 'top-centered'
-    | 'bottom'
-    | 'bottom-centered'
-    | 'left';
+  position?: 'top' | 'right' | 'top-centered' | 'bottom' | 'bottom-centered' | 'left';
 }) => {
   return (
     <Container position={position || 'top'} className="hover-info">

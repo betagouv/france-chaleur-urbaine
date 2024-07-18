@@ -1,7 +1,8 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
+
 import { getSpreadSheet } from '@core/infrastructure/repository/export';
 import { getDemands } from '@core/infrastructure/repository/manager';
 import { handleRouteErrors, invalidPermissionsError } from '@helpers/server';
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { ExportColumn } from 'src/types/ExportColumn';
 import { Demand } from 'src/types/Summary/Demand';
@@ -40,25 +41,17 @@ const demandsExportColumns: ExportColumn<Demand>[] = [
   {
     header: 'Distance au réseau (m)',
     value: (demand) =>
-      demand['Gestionnaire Distance au réseau'] === undefined
-        ? demand['Distance au réseau']
-        : demand['Gestionnaire Distance au réseau'],
+      demand['Gestionnaire Distance au réseau'] === undefined ? demand['Distance au réseau'] : demand['Gestionnaire Distance au réseau'],
   },
   { header: 'ID réseau le plus proche', value: 'Identifiant réseau' },
   { header: 'Nom du réseau le plus proche', value: 'Nom réseau' },
   {
     header: 'Nb logements',
-    value: (demand) =>
-      demand['Gestionnaire Logement'] === undefined
-        ? demand['Logement']
-        : demand['Gestionnaire Logement'],
+    value: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand['Logement'] : demand['Gestionnaire Logement']),
   },
   {
     header: 'Conso gaz (MWh)',
-    value: (demand) =>
-      demand['Gestionnaire Conso'] === undefined
-        ? demand['Conso']
-        : demand['Gestionnaire Conso'],
+    value: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand['Conso'] : demand['Gestionnaire Conso']),
   },
   { header: 'Commentaires', value: 'Commentaire' },
   {
@@ -75,20 +68,10 @@ export default handleRouteErrors(
 
     if (req.method === 'POST') {
       const demands = await getDemands(req.user);
-      const csv = getSpreadSheet(
-        demandsExportColumns,
-        demands,
-        EXPORT_FORMAT.XLSX
-      );
+      const csv = getSpreadSheet(demandsExportColumns, demands, EXPORT_FORMAT.XLSX);
 
-      res.setHeader(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      );
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename=demands_fcu.xlsx`
-      );
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=demands_fcu.xlsx`);
 
       return res.status(200).send(csv);
     }
