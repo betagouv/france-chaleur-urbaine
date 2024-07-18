@@ -6,7 +6,6 @@ import { StatusSelect } from './Status.styles';
 const statusOptions = Object.values(DEMANDE_STATUS).map((status: string) => ({
   label: status,
   value: status,
-  disabled: false,
 }));
 
 const Status = ({
@@ -25,12 +24,13 @@ const Status = ({
     <StatusSelect
       label=""
       options={statusOptions}
+      placeholder="Sélectionner un statut"
       nativeSelectProps={{
         onChange: (e) => {
           setStatus(e.target.value);
           updateDemand(demand.id, { Status: e.target.value });
         },
-        value: status,
+        value: status ?? DEMANDE_STATUS.EMPTY,
       }}
     />
   );
