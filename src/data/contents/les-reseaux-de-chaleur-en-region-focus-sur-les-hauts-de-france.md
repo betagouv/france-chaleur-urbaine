@@ -6,7 +6,4 @@
 \
 👇 On vous en dit plus en quelques chiffres clés dans l'infographie ci-dessous...
 
-\
-
-
 <figure><img src=".gitbook/assets/FCU_Hauts-de-France.jpg" alt=""><figcaption></figcaption></figure>
