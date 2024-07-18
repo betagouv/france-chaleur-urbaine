@@ -1,11 +1,11 @@
 import { List } from '@components/Ressources/Contents/Contents.styles';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
+import Heading from '@components/ui/Heading';
 import { dataNumberFcu } from '@data';
 import { FooterPartnersLogo, Logo } from '@dataesr/react-dsfr';
 import Link from 'next/link';
 import { Description, Logos, Row, Title } from './index.styles';
-import Heading from '@components/ui/Heading';
 
 const Us = () => {
   return (
@@ -71,7 +71,7 @@ const Us = () => {
             du programme Beta.gouv.fr de la Direction interministérielle du
             numérique (DINUM), qui aide les administrations publiques à
             construire des services numériques utiles, simples et faciles à
-            utiliser. À ce titre, une équipe de 6 freelances (designer, chargés
+            utiliser. À ce titre, une équipe de 10 freelances (designer, chargés
             de déploiement, developpeurs...) accompagne le projet.
             <br />
             En savoir plus :{' '}
@@ -84,10 +84,9 @@ const Us = () => {
       <Slice padding={4}>
         <Title>Nos financeurs :</Title>
         <p>
-          France Chaleur Urbaine est financé par France Relance (au titre d’un
-          guichet porté par la DINUM), par la Direction générale de l’énergie et
-          du climat du Ministère de la transition écologique, par l’ADEME et par
-          la DRIEAT.
+          France Chaleur Urbaine est financé par la Direction interministérielle
+          du numérique, par la Direction générale de l’énergie et du climat du
+          Ministère de la transition écologique, par l’ADEME et par la DRIEAT.
         </p>
         <Logos>
           <FooterPartnersLogo
@@ -101,12 +100,6 @@ const Us = () => {
             imageSrc="/logo-ADEME.svg"
             target="_blank"
             imageAlt="Gouvernement"
-          />
-          <FooterPartnersLogo
-            href="https://www.economie.gouv.fr/plan-de-relance"
-            imageSrc="/logo-relance.png"
-            target="_blank"
-            imageAlt="France relance"
           />
         </Logos>
       </Slice>
