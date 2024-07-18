@@ -9,8 +9,7 @@
 ✅ les besoins en chaleur des bâtiments, modélisés par le Cerema sur la base des caractéristiques des bâtiments (fichiers fonciers, BD Topo), qui permettent d'avoir une estimation pour la totalité des bâtiments résidentiels et tertiaires en France. A noter que les besoins en froid sont également diffusés ;\
 ✅ les caractéristiques des bâtiments issues de différentes sources : usage, surface de plancher, nombre de logements, année de construction, DPE estimé...\
 \
-En complément, sont aussi diffusés sur France Chaleur Urbaine les besoins en chaleur du secteur industriel à la maille communale, également modélisés par le Cerema.\
-
+En complément, sont aussi diffusés sur France Chaleur Urbaine les besoins en chaleur du secteur industriel à la maille communale, également modélisés par le Cerema.
 
 <figure><img src=".gitbook/assets/FCU_besoins-chaleur.jpg" alt=""><figcaption></figcaption></figure>
 

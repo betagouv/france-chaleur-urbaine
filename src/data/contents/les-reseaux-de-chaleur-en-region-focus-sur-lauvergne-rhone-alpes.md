@@ -8,7 +8,4 @@ Les réseaux de chaleur continuent de se développer dans la région, aussi bien
 \
 🔎 Les réseaux de chaleur de la région Auvergne-Rhône-Alpes en quelques chiffres clés et exemples, c'est ici ! 👇
 
-\
-
-
 <figure><img src=".gitbook/assets/FCU_AURA (1).jpg" alt=""><figcaption></figcaption></figure>
