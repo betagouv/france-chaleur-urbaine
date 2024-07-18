@@ -1,9 +1,9 @@
 import { List } from '@components/Ressources/Contents/Contents.styles';
 import Slice from '@components/Slice';
 import TextList from '@components/TextList';
+import Heading from '@components/ui/Heading';
 import { dataNumberFcu } from '@data';
 import { Description, Logos, Row, Title } from './index.styles';
-import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 
 const Us = () => {
@@ -68,7 +68,7 @@ const Us = () => {
             du programme Beta.gouv.fr de la Direction interministérielle du
             numérique (DINUM), qui aide les administrations publiques à
             construire des services numériques utiles, simples et faciles à
-            utiliser. À ce titre, une équipe de 6 freelances (designer, chargés
+            utiliser. À ce titre, une équipe de 10 freelances (designer, chargés
             de déploiement, développeurs...) accompagne le projet.
             <br />
             En savoir plus :{' '}
@@ -81,10 +81,9 @@ const Us = () => {
       <Slice padding={4}>
         <Title>Nos financeurs :</Title>
         <p>
-          France Chaleur Urbaine est financé par France Relance (au titre d’un
-          guichet porté par la DINUM), par la Direction générale de l’énergie et
-          du climat du Ministère de la transition écologique, par l’ADEME et par
-          la DRIEAT.
+          France Chaleur Urbaine est financé par la Direction interministérielle
+          du numérique, par la Direction générale de l’énergie et du climat du
+          Ministère de la transition écologique, par l’ADEME et par la DRIEAT.
         </p>
         <Logos>
           <Link href="https://www.gouvernement.fr/" isExternal>
@@ -93,27 +92,6 @@ const Us = () => {
           <Link href="https://www.ademe.fr" isExternal>
             <img src="/logo-ADEME.svg" alt="Gouvernement" height="80px" />
           </Link>
-          <Link href="https://www.economie.gouv.fr/plan-de-relance" isExternal>
-            <img src="/logo-relance.png" alt="France relance" height="80px" />
-          </Link>
-          {/* <FooterPartnersLogo
-            href="https://www.gouvernement.fr/"
-            imageSrc="/logo-government.svg"
-            target="_blank"
-            imageAlt="Gouvernement"
-          />
-          <FooterPartnersLogo
-            href="https://www.ademe.fr"
-            imageSrc="/logo-ADEME.svg"
-            target="_blank"
-            imageAlt="Gouvernement"
-          />
-          <FooterPartnersLogo
-            href="https://www.economie.gouv.fr/plan-de-relance"
-            imageSrc="/logo-relance.png"
-            target="_blank"
-            imageAlt="France relance"
-          /> */}
         </Logos>
       </Slice>
       <Slice padding={4} theme="color">

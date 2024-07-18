@@ -353,7 +353,7 @@ const Statistics = () => {
               <NumberContainer>
                 <NumberBlock className="fr-col-md-6 fr-col-12">
                   <NumberHighlight>{statistics.connection}</NumberHighlight>
-                  Raccordements à l'étude
+                  Raccordements à l'étude ou en cours
                   <HoverableIcon
                     iconName="ri-information-fill"
                     position="bottom"
@@ -367,7 +367,7 @@ const Statistics = () => {
                     votée en AG avant que les travaux ne puissent démarrer.
                   </HoverableIcon>
                   <br />
-                  <NumberText>(~22 080 logements)</NumberText>
+                  <NumberText>(~{statistics.logements} logements)</NumberText>
                   <br />
                   <NumberSubText className="fr-mt-1w">
                     A titre de comparaison, le nombre total de bâtiments
