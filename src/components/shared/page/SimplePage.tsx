@@ -8,10 +8,7 @@ import {
 import MainNavigation, {
   MainNavigationProps,
 } from '@codegouvfr/react-dsfr/MainNavigation';
-import {
-  FooterConsentManagementItem,
-  FooterPersonalDataPolicyItem,
-} from '@components/ConsentBanner';
+import { FooterConsentManagementItem } from '@components/ConsentBanner';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import { deleteFetchJSON } from '@utils/network';
@@ -488,14 +485,13 @@ const PageFooter = () => (
       href: '/mentions-legales',
     }}
     bottomItems={[
-      <FooterPersonalDataPolicyItem key="personal-data-policy" />,
-      <FooterConsentManagementItem key="consent-management" />,
       {
         text: 'Données personnelles',
         linkProps: {
           href: '/politique-de-confidentialite',
         },
       },
+      <FooterConsentManagementItem key="consent-management" />,
       {
         text: 'Statistiques',
         linkProps: {
