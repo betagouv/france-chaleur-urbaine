@@ -1,33 +1,24 @@
+import ButtonsGroup from '@codegouvfr/react-dsfr/ButtonsGroup';
+import Box from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
+import Text from '@components/ui/Text';
 import { partenaires } from '@data/partenaires/partnerData';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { shuffleArray } from '@utils/array';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Arrow,
   PartnerImage,
   PartnerImages,
   PartnerLink,
 } from './Partners.style';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Text from '@components/ui/Text';
-import Icon from '@components/ui/Icon';
-import ButtonsGroup from '@codegouvfr/react-dsfr/ButtonsGroup';
 
 const Partners = () => {
   const [firstLogo, setFirstLogo] = useState(0);
-  const logos = useMemo(() => {
-    const shuffledLogos = partenaires
-      .map(({ image, title, link }) => ({
-        key: title,
-        image,
-        title,
-        link,
-        sort: Math.random(),
-      }))
-      .sort((a, b) => a.sort - b.sort);
+  const [logos, setLogos] = useState(partenaires);
 
-    return shuffledLogos.concat(
-      shuffledLogos.map((logo) => ({ ...logo, key: `${logo.title}-2` }))
-    );
+  useEffect(() => {
+    setLogos(shuffleArray(partenaires));
   }, []);
 
   const setNextLogo = useCallback(
@@ -61,13 +52,13 @@ const Partners = () => {
             <Icon name="ri-arrow-left-circle-line" size="lg" />
           </Arrow>
           <PartnerImages>
-            {logos.map(({ key, image, title, link }, index) => (
+            {logos.map(({ image, title, link }, index) => (
               <PartnerLink
                 show={index >= firstLogo}
                 href={link}
                 target="_blank"
                 rel="noreferrer noopener"
-                key={key}
+                key={title}
               >
                 <PartnerImage src={image} alt={title} loading="lazy" />
               </PartnerLink>
