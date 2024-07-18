@@ -1,17 +1,14 @@
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 import NetworkSearchInput from '@components/Network/NetworkSearchInput';
+import Input from '@components/form/Input';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
 import LoadingButton from '@components/ui/LoadingButton';
 import Text from '@components/ui/Text';
-import {
-  Alert,
-  Button,
-  Icon,
-  Radio,
-  RadioGroup,
-  TextInput,
-} from '@dataesr/react-dsfr';
 import { ModificationReseau } from '@pages/api/modification-reseau';
 import { NetworkSearchResult } from '@pages/api/networks/search';
 import { postFetchJSON } from '@utils/network';
@@ -230,7 +227,7 @@ function ModifierReseauxPage() {
 
         {formSent ? (
           <Alert
-            type="success"
+            severity="success"
             title="Merci pour votre contribution"
             description="Nous reviendrons rapidement vers vous pour vous confirmer la bonne prise en compte des éléments transmis."
           />
@@ -240,12 +237,7 @@ function ModifierReseauxPage() {
             className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6"
           >
             <NetworkSearchInput
-              label={
-                <>
-                  Identifiant SNCU - nom du réseau
-                  <span className="error"> *</span>
-                </>
-              }
+              label="Identifiant SNCU - nom du réseau"
               value={formState.idReseau}
               onChange={(value) => {
                 setFormValue('idReseau', value);
@@ -262,120 +254,146 @@ function ModifierReseauxPage() {
                 Voir la fiche actuelle du réseau
               </Link>
             )}
-            <RadioGroup
-              required
+            <RadioButtons
               legend=""
-              isInline
+              name="type"
+              options={[
+                {
+                  label: 'Collectivité',
+                  nativeInputProps: {
+                    value: 'collectivite',
+                    checked: formState.type === 'collectivite',
+                    onChange: () => setFormValue('type', 'collectivite'),
+                  },
+                },
+                {
+                  label: 'Exploitant',
+                  nativeInputProps: {
+                    value: 'exploitant',
+                    checked: formState.type === 'exploitant',
+                    onChange: () => setFormValue('type', 'exploitant'),
+                  },
+                },
+              ]}
+              orientation="horizontal"
               className="fr-mt-4w"
-              value={formState.type}
-              onChange={(value) => setFormValue('type', value)}
-            >
-              <Radio label="Collectivité" value="collectivite" />
-              <Radio label="Exploitant" value="exploitant" />
-            </RadioGroup>
-            <TextInput
-              required
+            />
+            <Input
               label="Votre nom"
-              value={formState.nom}
-              onChange={(e) => setFormValue('nom', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.nom,
+                onChange: (e) => setFormValue('nom', e.target.value),
+              }}
             />
-            <TextInput
-              required
+            <Input
               label="Votre prénom"
-              value={formState.prenom}
-              onChange={(e) => setFormValue('prenom', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.prenom,
+                onChange: (e) => setFormValue('prenom', e.target.value),
+              }}
             />
-            <TextInput
-              required
+            <Input
               label="Votre structure"
-              value={formState.structure}
-              onChange={(e) => setFormValue('structure', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.structure,
+                onChange: (e) => setFormValue('structure', e.target.value),
+              }}
             />
-            <TextInput
-              required
+            <Input
               label="Votre fonction"
-              value={formState.fonction}
-              onChange={(e) => setFormValue('fonction', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.fonction,
+                onChange: (e) => setFormValue('fonction', e.target.value),
+              }}
             />
-            <TextInput
-              required
-              type="email"
+            <Input
               label="Votre email"
-              value={formState.email}
-              onChange={(e) => setFormValue('email', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                type: 'email',
+                value: formState.email,
+                onChange: (e) => setFormValue('email', e.target.value),
+              }}
             />
 
             <Text mt="4w" mb="2w" fontWeight="bold">
               Modifier des informations erronées ou incomplètes sur la fiche
             </Text>
-            <RadioGroup
-              required
+            <RadioButtons
               legend=""
-              isInline
-              value={
-                formState.reseauClasse !== undefined
-                  ? formState.reseauClasse
-                    ? 'classe'
-                    : 'nonClasse'
-                  : undefined
-              }
-              onChange={(value) =>
-                setFormValue('reseauClasse', value === 'classe')
-              }
-            >
-              {/* hack: the lib dataesr can't control this radio input so we force a rerender with the keys */}
-              <Radio
-                label="Réseau classé"
-                value="classe"
-                key={`${formState.reseauClasse}-classe`}
-              />
-              <Radio
-                label="Réseau non classé"
-                value="nonClasse"
-                key={`${formState.reseauClasse}-nonClasse`}
-              />
-            </RadioGroup>
-            <TextInput
-              required
+              orientation="horizontal"
+              name="reseauClasse"
+              options={[
+                {
+                  label: 'Réseau classé',
+                  nativeInputProps: {
+                    value: 'classe',
+                    checked: formState.reseauClasse === true,
+                    onChange: () => setFormValue('reseauClasse', true),
+                  },
+                },
+                {
+                  label: 'Réseau non classé',
+                  nativeInputProps: {
+                    value: 'nonClasse',
+                    checked: formState.reseauClasse === false,
+                    onChange: () => setFormValue('reseauClasse', false),
+                  },
+                },
+              ]}
+            />
+            <Input
               label="Maître d’ouvrage"
-              value={formState.maitreOuvrage}
-              onChange={(e) => setFormValue('maitreOuvrage', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.maitreOuvrage,
+                onChange: (e) => setFormValue('maitreOuvrage', e.target.value),
+              }}
             />
-            <TextInput
-              required
+            <Input
               label="Gestionnaire"
-              value={formState.gestionnaire}
-              onChange={(e) => setFormValue('gestionnaire', e.target.value)}
+              nativeInputProps={{
+                required: true,
+                value: formState.gestionnaire,
+                onChange: (e) => setFormValue('gestionnaire', e.target.value),
+              }}
             />
-            <TextInput
-              type={'url' as any} // unsupported type by the dsfr lib
+            <Input
               label="Site internet du réseau"
-              placeholder="https://www.monreseau.fr"
-              value={formState.siteInternet}
-              onChange={(e) => setFormValue('siteInternet', e.target.value)}
+              nativeInputProps={{
+                placeholder: 'https://www.monreseau.fr',
+                // type: 'url', uncomment when all data has been cleaned from airtable
+                value: formState.siteInternet,
+                onChange: (e) => setFormValue('siteInternet', e.target.value),
+              }}
             />
 
             <Text mt="4w" mb="1w" fontWeight="bold">
               Renseigner des informations complémentaires à faire apparaître sur
               la fiche du réseau ({clientConfig.networkInfoFieldMaxCharacters}{' '}
-              caractères maximum)
+              caractères maximum) (Optionnel)
             </Text>
-            <TextInput
-              textarea
-              placeholder="Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)"
-              value={formState.informationsComplementaires}
-              onChange={(e) =>
-                setFormValue('informationsComplementaires', e.target.value)
-              }
-              maxLength={clientConfig.networkInfoFieldMaxCharacters}
-              rows={5}
-              style={{ cursor: 'text' }} // defined to pointer by the dsfr lib
+            <Input
+              textArea={true}
+              label=""
+              nativeTextAreaProps={{
+                placeholder:
+                  'Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)',
+                value: formState.informationsComplementaires,
+                onChange: (e) =>
+                  setFormValue('informationsComplementaires', e.target.value),
+                rows: 5,
+                maxLength: clientConfig.networkInfoFieldMaxCharacters,
+              }}
             />
-
             <Text mt="4w" mb="1w" fontWeight="bold">
               Télécharger des documents à mettre à disposition depuis la fiche
               du réseau (schéma directeur, ...) - 3 documents PDF maximum (&lt;5
-              Mo par fichier)
+              Mo par fichier) (Optionnel)
             </Text>
             <input
               className="fr-hidden"
@@ -389,7 +407,7 @@ function ModifierReseauxPage() {
             <div className="fr-grid-row fr-grid-row--top">
               <Button
                 onClick={() => fileUploadInputRef.current!.click()}
-                secondary
+                priority="secondary"
               >
                 Choisir un fichier
               </Button>
@@ -398,7 +416,7 @@ function ModifierReseauxPage() {
                   <Text key={index} mr="1w">
                     - {fichier.name} - {Math.round(fichier.size / 1024)} ko{' '}
                     <Button
-                      size="sm"
+                      size="small"
                       className="fr-btn--tertiary-no-outline"
                       title="Supprimer le fichier"
                       onClick={() => {
@@ -410,7 +428,6 @@ function ModifierReseauxPage() {
                         name="ri-delete-bin-2-line"
                         color="var(--text-default-error)"
                         size="lg"
-                        iconPosition="center"
                       />
                     </Button>
                     {fichier.size > 5 * 1024 * 1024 && (

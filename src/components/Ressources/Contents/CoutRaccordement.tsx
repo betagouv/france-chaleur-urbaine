@@ -1,7 +1,7 @@
+import Highlight from '@codegouvfr/react-dsfr/Highlight';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
-import { Highlight } from '@dataesr/react-dsfr';
 import { deepMergeObjects } from '@utils/core';
 import { ComponentProps } from 'react';
 import Chart from 'react-google-charts';

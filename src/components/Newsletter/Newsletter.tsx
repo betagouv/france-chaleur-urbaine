@@ -1,4 +1,5 @@
-import { Alert, Button } from '@dataesr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { submitToAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
@@ -21,21 +22,26 @@ const Newsletter = () => {
     <Container onSubmit={addToNewsletter}>
       {sent ? (
         <Alert
-          type="success"
+          severity="success"
           title="Vous recevrez désormais notre newsletter. Pensez à vérifier vos spams."
         />
       ) : (
         <>
           <Email
-            type="email"
-            placeholder="Paris@villedeparis.fr"
-            value={email}
-            onChange={(e: any) => setEmail(e.target.value)}
+            label="Email"
+            hideLabel
+            nativeInputProps={{
+              type: 'email',
+              required: true,
+              placeholder: 'Paris@villedeparis.fr',
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+            }}
           />
           {sending ? (
             <Oval height={40} width={40} />
           ) : (
-            <Button secondary submit>
+            <Button type="submit" priority="secondary">
               S'inscrire
             </Button>
           )}

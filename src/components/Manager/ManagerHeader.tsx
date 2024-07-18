@@ -1,10 +1,7 @@
-import {
-  Button,
-  SearchableSelect,
-  Select,
-  TextInput,
-} from '@dataesr/react-dsfr';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import Input from '@components/form/Input';
+import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { Demand } from 'src/types/Summary/Demand';
@@ -74,11 +71,9 @@ const matchFilter = (filter: string, value: string | undefined) => {
 const ManagerHeader = ({
   demands,
   setFilteredDemands,
-  setPage,
 }: {
   demands: Demand[];
   setFilteredDemands: (demands: Demand[]) => void;
-  setPage: Dispatch<SetStateAction<number>>;
 }) => {
   const { demandsService } = useServices();
 
@@ -96,8 +91,12 @@ const ManagerHeader = ({
   const [gestionnaireFilter, setGestionnaireFilter] = useState('');
 
   useEffect(() => {
-    setGestionnaireOptions(
-      demands
+    setGestionnaireOptions([
+      {
+        label: 'Tous',
+        value: '',
+      },
+      ...demands
         .map((demand) => demand['Affecté à'])
         .filter(
           (gestionnaire, index, gestionnaires) =>
@@ -107,8 +106,8 @@ const ManagerHeader = ({
         .map((gestionnaire) => ({
           label: gestionnaire,
           value: gestionnaire,
-        }))
-    );
+        })),
+    ]);
   }, [demands]);
 
   useEffect(() => {
@@ -166,64 +165,69 @@ const ManagerHeader = ({
     setFilteredDemands,
   ]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [
-    addressFilter,
-    nameFilter,
-    statusFilter,
-    filterModeChauffage,
-    filterTypeChauffage,
-    setPage,
-  ]);
-
   return (
     <Filters>
       <Filter>
-        <TextInput
+        <Input
           label="Rechercher par nom ou par mail:"
-          value={nameFilter}
-          onChange={(e) => setNameFilter(e.target.value)}
+          nativeInputProps={{
+            type: 'email',
+            required: true,
+            value: nameFilter,
+            onChange: (e) => setNameFilter(e.target.value),
+          }}
         />
       </Filter>
       <Filter>
-        <TextInput
+        <Input
           label="Rechercher par adresse:"
-          value={addressFilter}
-          onChange={(e) => setAddressFilter(e.target.value)}
+          nativeInputProps={{
+            type: 'email',
+            required: true,
+            value: addressFilter,
+            onChange: (e) => setAddressFilter(e.target.value),
+          }}
         />
       </Filter>
       <Filter>
         <Select
           label="Statut:"
-          selected={statusFilter}
-          onChange={(e: any) => setStatusFiler(e.target.value)}
           options={statusOptions}
+          nativeSelectProps={{
+            onChange: (e) => setStatusFiler(e.target.value),
+            value: statusFilter,
+          }}
         />
       </Filter>
       <Filter>
         <Select
           label="Mode de chauffage:"
-          selected={filterModeChauffage}
-          onChange={(e: any) => setFilterModeChauffage(e.target.value)}
           options={modeDeChauffageOptions}
+          nativeSelectProps={{
+            onChange: (e) => setFilterModeChauffage(e.target.value),
+            value: filterModeChauffage,
+          }}
         />
       </Filter>
       <Filter>
         <Select
           label="Type de chauffage:"
-          selected={filterTypeChauffage}
-          onChange={(e) => setFilterTypeChauffage(e.target.value)}
           options={typeDeChauffageOptions}
+          nativeSelectProps={{
+            onChange: (e) => setFilterTypeChauffage(e.target.value),
+            value: filterTypeChauffage,
+          }}
         />
       </Filter>
       {gestionnaireOptions.length > 1 && (
         <Filter>
-          <SearchableSelect
+          <Select
             label="Gestionnaire:"
             options={gestionnaireOptions}
-            selected={gestionnaireFilter}
-            onChange={setGestionnaireFilter}
+            nativeSelectProps={{
+              onChange: (e) => setGestionnaireFilter(e.target.value),
+              value: gestionnaireFilter,
+            }}
           />
         </Filter>
       )}

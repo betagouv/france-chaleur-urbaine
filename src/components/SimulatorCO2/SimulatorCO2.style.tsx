@@ -1,5 +1,6 @@
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import { Select, TextInput } from '@dataesr/react-dsfr';
+import DSFRInput from '@components/form/Input';
 import styled, { css } from 'styled-components';
 
 export const BoxSimulator = styled(Cartridge)`
@@ -39,7 +40,7 @@ export const SurfSelect = styled(Select)`
   max-width: 300px;
 `;
 
-export const Input = styled(TextInput)`
+export const Input = styled(DSFRInput)`
   display: inline-block;
   width: calc(100% - 30px);
   &:not(first-child) {
@@ -82,8 +83,8 @@ export const Container = styled.div<{ custom: boolean }>`
     css`
       color: #4550e5;
       margin: auto;
-      background-color: #f9f8f6;
-      border: 1px solid #e7e7e7;
+      background-color: var(--background-light);
+      border: 1px solid var(--border-default-grey);
       border-radius: 40px;
       padding: 32px;
     `}

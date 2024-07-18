@@ -41,6 +41,8 @@ export type Demand = DemandSummary &
     'Identifiant réseau'?: string;
     'Nom réseau'?: string;
     'Emails envoyés'?: string;
+    Longitude: number;
+    Latitude: number;
   };
 
 export type ContactFormInfos = {

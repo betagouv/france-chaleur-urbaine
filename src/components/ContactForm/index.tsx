@@ -1,4 +1,7 @@
-import { Alert, Button, Select, TextInput } from '@dataesr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import Input from '@components/form/Input';
 import { submitToAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
 import { Airtable } from 'src/types/enum/Airtable';
@@ -32,7 +35,7 @@ const ContactForm = () => {
     <>
       {sent ? (
         <Alert
-          type="success"
+          severity="success"
           title="Merci pour votre message"
           description="Nous reviendrons rapidement vers vous."
         />
@@ -41,40 +44,43 @@ const ContactForm = () => {
           onSubmit={submit}
           className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6"
         >
-          <TextInput
-            required
+          <Input
             label="Votre nom :"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            nativeInputProps={{
+              required: true,
+              value: name,
+              onChange: (e) => setName(e.target.value),
+            }}
           />
-          <TextInput
-            required
+          <Input
             label="Votre prénom :"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            nativeInputProps={{
+              required: true,
+              value: firstName,
+              onChange: (e) => setFirstName(e.target.value),
+            }}
           />
-          <TextInput
-            required
-            type="email"
+          <Input
             label="Votre adresse e-mail :"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            nativeInputProps={{
+              type: 'email',
+              required: true,
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+            }}
           />
-          <TextInput
+          <Input
             label="Votre numéro de téléphone :"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            nativeInputProps={{
+              value: phone,
+              onChange: (e) => setPhone(e.target.value),
+            }}
           />
+
           <Select
-            required
             label="Objet du message :"
+            placeholder="- Sélectionner l'objet de votre message -"
             options={[
-              {
-                value: '',
-                label: "- Sélectionner l'objet de votre message -",
-                disabled: true,
-                hidden: true,
-              },
               {
                 value: 'Suivi',
                 label: 'Suivre une demande déposée sur France Chaleur Urbaine',
@@ -91,18 +97,23 @@ const ContactForm = () => {
               { value: 'probleme', label: 'Signaler un problème sur le site' },
               { value: 'autre', label: 'Autre' },
             ]}
-            selected={reason}
-            onChange={(e) => setReason(e.target.value)}
+            nativeSelectProps={{
+              required: true,
+              value: reason,
+              onChange: (e) => setReason(e.target.value),
+            }}
           />
-          <TextInput
-            required
-            textarea
+          <Input
+            textArea
             label="Votre message :"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            rows={5}
+            nativeTextAreaProps={{
+              required: true,
+              value: message,
+              onChange: (e) => setMessage(e.target.value),
+              rows: 5,
+            }}
           />
-          <Button className="fr-mt-2w" submit>
+          <Button className="fr-mt-2w" type="submit">
             Envoyer
           </Button>
         </form>

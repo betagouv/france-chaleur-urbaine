@@ -1,3 +1,4 @@
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import {
   EligibilityFormContact,
   EligibilityFormMessageConfirmation,
@@ -13,7 +14,6 @@ import Slice from '@components/Slice';
 import AddressAutocomplete from '@components/addressAutocomplete';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
-import { Button } from '@dataesr/react-dsfr';
 import { useContactFormFCU } from '@hooks';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -169,7 +169,7 @@ const HeadSlice = ({
               <SelectEnergy
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
-                onChange={(e) => setHeatingType(e.target.value)}
+                onChange={setHeatingType}
                 value={heatingType || ''}
               />
             </CheckEligibilityFormLabel>
@@ -178,7 +178,6 @@ const HeadSlice = ({
               onAddressSelected={(address, suggestionItem) => {
                 setAddress(address);
                 setGeoAddress(suggestionItem);
-                return Promise.resolve();
               }}
             />
 
@@ -201,7 +200,7 @@ const HeadSlice = ({
 
             <Buttons>
               <Button
-                size="lg"
+                size="large"
                 disabled={
                   !address ||
                   !geoAddress ||
@@ -217,8 +216,8 @@ const HeadSlice = ({
                 <>
                   <Separator />
                   <Button
-                    size="lg"
-                    secondary
+                    size="large"
+                    priority="secondary"
                     onClick={() => {
                       setDisplayBulkEligibility(true);
                       router.push('#test-liste');

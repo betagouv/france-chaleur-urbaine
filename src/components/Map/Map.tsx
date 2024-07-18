@@ -11,17 +11,25 @@ import MapReactGL, {
 
 import Hoverable from '@components/Hoverable';
 import Box from '@components/ui/Box';
-import { Icon } from '@dataesr/react-dsfr';
-import { useContactFormFCU, usePersistedState } from '@hooks';
+import Icon from '@components/ui/Icon';
+import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import { useLocalStorageValue } from '@react-hookz/web';
 import debounce from '@utils/debounce';
 import { fetchJSON } from '@utils/network';
 import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { MapLayerMouseEvent } from 'react-map-gl';
 import { useServices } from 'src/services';
 import {
@@ -176,6 +184,7 @@ const Map = ({
   geolocDisabled,
   withFCUAttribution,
   persistViewStateInURL,
+  mapRef: mapRefParam,
 }: {
   withoutLogo?: boolean;
   initialMapConfiguration?: MapConfiguration;
@@ -192,11 +201,12 @@ const Map = ({
   setProMode?: (proMode: boolean) => void;
   popupType?: MapPopupType;
   pinsList?: MapMarkerInfos[];
-  initialCenter?: [number, number];
+  initialCenter?: Point;
   initialZoom?: number;
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
+  mapRef?: MutableRefObject<MapRef>;
 }) => {
   const router = useRouter();
 
@@ -248,6 +258,13 @@ const Map = ({
 
   const [mapState, setMapState] = useState<'pending' | 'loaded'>('pending');
 
+  // exports the mapRef
+  useEffect(() => {
+    if (mapRefParam && mapRef.current) {
+      mapRefParam.current = mapRef.current;
+    }
+  }, [mapRef.current]);
+
   useEffect(() => {
     if (setProMode) {
       if (proMode) {
@@ -262,18 +279,14 @@ const Map = ({
     }
   }, [proMode, setMapConfiguration]);
 
-  const [soughtAddresses, setSoughtAddresses] = usePersistedState(
-    'mapSoughtAddresses',
-    [] as StoredAddress[],
-    {
-      beforeStorage: (value: any) => {
-        const newValue = value.map((address: any) => {
-          return address;
-        });
-        return newValue;
-      },
-    }
-  );
+  const { value: soughtAddresses, set: setSoughtAddresses } =
+    useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
+      'mapSoughtAddresses',
+      {
+        defaultValue: [],
+        initializeWithValue: true,
+      }
+    );
 
   const onMapClick = (e: MapLayerMouseEvent, key: string) => {
     const selectedFeature = e.features?.[0];
@@ -592,15 +605,25 @@ const Map = ({
       if (response.result) {
         const newMarkersList: MapMarkerInfos[] = [];
         response.result.forEach((address) => {
-          const newMarker = {
-            id: getAddressId([address.lon, address.lat]),
-            latitude: address.lat,
-            longitude: address.lon,
-            color: address.isEligible ? 'green' : 'red',
-            popup: true,
-            popupContent: address.label,
-          };
-          newMarkersList.push(newMarker);
+          const id = getAddressId([address.lon, address.lat]);
+          if (
+            // Remove duplicates
+            !newMarkersList.some(
+              (marker) =>
+                marker.id === id && marker.popupContent === address.label
+            )
+          ) {
+            const newMarker = {
+              id: getAddressId([address.lon, address.lat]),
+              latitude: address.lat,
+              longitude: address.lon,
+              color: address.isEligible ? 'green' : 'red',
+              popup: true,
+              popupContent: address.label,
+            };
+
+            newMarkersList.push(newMarker);
+          }
         });
         setMarkersList(newMarkersList);
       }
@@ -696,18 +719,12 @@ const Map = ({
     }
   }, [mapState, mapRef, mapConfiguration]);
 
+  // FIXME pourquoi on doit passer par un setState ici ?
   useEffect(() => {
     if (pinsList) {
-      if (pinsList.length > 0) {
-        const centerPin: [number, number] = [
-          pinsList[0].longitude,
-          pinsList[0].latitude,
-        ];
-        jumpTo({ coordinates: centerPin, zoom: 8 });
-      }
       setMarkersList(pinsList);
     }
-  }, [jumpTo, pinsList]);
+  }, [pinsList]);
 
   const [viewState, setViewState] = useState<ViewState | null>(null);
   useEffect(() => {
@@ -833,7 +850,7 @@ const Map = ({
                     : 'Masquer la légende'}
                 </Hoverable>
                 <Icon
-                  size="2x"
+                  size="lg"
                   name={
                     legendCollapsed
                       ? 'ri-arrow-right-s-fill'

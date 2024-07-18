@@ -1,4 +1,4 @@
-import { Card } from '@dataesr/react-dsfr';
+import { Card } from '@codegouvfr/react-dsfr/Card';
 import styled from 'styled-components';
 
 export const UnderstandingCards = styled.div`
@@ -12,18 +12,11 @@ export const UnderstandingCards = styled.div`
 
 export const UnderstandingCard = styled(Card)`
   width: 270px;
-  p {
+  .light-theme p {
     color: black !important;
   }
 `;
 
 export const CardContainer = styled.div`
   position: relative;
-`;
-
-export const BottomLink = styled.div`
-  color: black;
-  position: absolute;
-  bottom: 12px;
-  right: 55px;
 `;

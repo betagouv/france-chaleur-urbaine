@@ -1,6 +1,8 @@
-import SimplePage from '@components/shared/page/SimplePage';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import Slice from '@components/Slice';
-import { Alert, Button, TextInput } from '@dataesr/react-dsfr';
+import Input from '@components/form/Input';
+import SimplePage from '@components/shared/page/SimplePage';
 import { submitToAirtable } from '@helpers/airtable';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
@@ -57,17 +59,20 @@ function Satisfaction() {
           </>
         )}
         {sent ? (
-          <Alert type="success" title="Merci pour votre retour." />
+          <Alert severity="success" title="Merci pour votre retour." />
         ) : (
           <form onSubmit={send}>
-            <TextInput
-              required
-              textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Je laisse un commentaire"
+            <Input
+              textArea
+              label="Commentaire"
+              nativeTextAreaProps={{
+                value: comment,
+                onChange: (e) => setComment(e.target.value),
+                placeholder: 'Je laisse un commentaire',
+                required: true,
+              }}
             />
-            <Button submit>Envoyer</Button>
+            <Button type="submit">Envoyer</Button>
           </form>
         )}
         <br />

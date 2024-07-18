@@ -5,14 +5,26 @@ import useRouterReady from '@hooks/useRouterReady';
 import { useRouter } from 'next/router';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
-export const legendURLKeys = [
-  'reseau_chaleur',
-  'reseau_froid',
-  'futur_reseau',
-  'pdp',
+export const selectableLayers = [
+  {
+    label: 'Les réseaux de chaleur existants',
+    key: 'reseau_chaleur',
+  },
+  {
+    label: 'Les réseaux de chaleur en construction',
+    key: 'futur_reseau',
+  },
+  {
+    label: 'Les périmètres de développement prioritaire',
+    key: 'pdp',
+  },
+  {
+    label: 'Les réseaux de froid',
+    key: 'reseau_froid',
+  },
 ] as const;
 
-export type LegendURLKey = (typeof legendURLKeys)[number];
+export type LegendURLKey = (typeof selectableLayers)[number]['key'];
 
 const legendURLKeyToLegendFeature: Record<
   LegendURLKey | string,

@@ -23,7 +23,7 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
     `}
   h1,
   h2 {
-    color: #000074;
+    color: var(--legacy-darker-blue);
   }
   h3,
   h4 {

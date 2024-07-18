@@ -7,7 +7,7 @@ export const Container = styled.div`
 `;
 
 export const Title = styled.h1`
-  color: #000074;
+  color: var(--legacy-darker-blue);
   font-size: 43px;
   line-height: 44px;
   font-weight: 400;
@@ -15,7 +15,7 @@ export const Title = styled.h1`
 `;
 
 export const Description = styled.div`
-  color: #000074;
+  color: var(--legacy-darker-blue);
   margin: 32px 0;
   li {
     cursor: pointer;

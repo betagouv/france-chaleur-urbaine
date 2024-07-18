@@ -17,6 +17,8 @@ export const StyledTooltip = styled.div`
 `;
 
 export const StyledSimpleTooltip = styled.div`
+  line-height: 0;
+
   &:hover + div {
     display: block;
   }

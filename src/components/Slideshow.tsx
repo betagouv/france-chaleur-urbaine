@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Icon } from '@dataesr/react-dsfr';
 import Box from './ui/Box';
+import Icon from './ui/Icon';
 
 export interface SlideshowProps {
   images: string[];
@@ -43,7 +43,7 @@ const Slideshow = ({ images }: SlideshowProps) => {
                 );
               }}
             >
-              <Icon name="ri-arrow-left-s-line" />
+              <Icon name="ri-arrow-left-s-line" size="sm" />
               Précédent
             </a>
           </li>
@@ -59,7 +59,7 @@ const Slideshow = ({ images }: SlideshowProps) => {
               }}
             >
               Suivant
-              <Icon name="ri-arrow-right-s-line" />
+              <Icon name="ri-arrow-right-s-line" size="sm" />
             </a>
           </li>
         </ul>

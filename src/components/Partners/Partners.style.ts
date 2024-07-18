@@ -18,6 +18,7 @@ export const PartnerImages = styled.div`
 
 export const PartnerLink = styled.a<{ show?: boolean }>`
   background-image: unset !important;
+
   ${({ show }) =>
     !show &&
     css`
@@ -27,5 +28,6 @@ export const PartnerLink = styled.a<{ show?: boolean }>`
 
 export const PartnerImage = styled.img`
   cursor: pointer;
+  background-color: white;
   height: 100px;
 `;

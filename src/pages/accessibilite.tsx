@@ -58,7 +58,6 @@ function Accessibilite() {
               <li>Markdown</li>
               <li>Maplibre</li>
               <li>React Map GL</li>
-              <li>Tarteaucitron</li>
             </ul>
             <p>
               Si vous n’arrivez pas à accéder à un contenu ou à un service, vous

@@ -300,18 +300,21 @@ const NetworkPanel = ({
                 <BoxSection>
                   <BoxIcon>
                     <span>
-                      <h3>Informations tarifaires</h3>
+                      <h3>
+                        Informations tarifaires
+                        <HoverableIcon
+                          iconSize="lg"
+                          iconName="ri-information-fill"
+                          position="top-centered"
+                        >
+                          La comparaison avec le prix des autres énergies n’est
+                          pertinente qu’en coût global annuel, en intégrant les
+                          coûts d’exploitation, de maintenance et
+                          d’investissement, amortis sur la durée de vie des
+                          installations.
+                        </HoverableIcon>
+                      </h3>
                     </span>
-                    <HoverableIcon
-                      iconSize="lg"
-                      iconName="ri-information-fill"
-                      position="top-centered"
-                    >
-                      La comparaison avec le prix des autres énergies n’est
-                      pertinente qu’en coût global annuel, en intégrant les
-                      coûts d’exploitation, de maintenance et d’investissement,
-                      amortis sur la durée de vie des installations.
-                    </HoverableIcon>
                   </BoxIcon>
                   {network.PM ||
                   network.PM_L ||

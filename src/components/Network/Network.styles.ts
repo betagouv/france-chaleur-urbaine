@@ -1,7 +1,8 @@
+import { Container as HoverableIconContainer } from '@components/Hoverable/HoverableIcon.styles';
 import styled from 'styled-components';
 
 export const Title = styled.h1`
-  color: #000074;
+  color: var(--legacy-darker-blue);
   margin-bottom: 0;
 `;
 
@@ -20,7 +21,7 @@ export const BoxSection = styled.div`
   border: 1px solid #e7e7e7;
   color: #4550e5;
   h3 {
-    color: #000074;
+    color: var(--legacy-darker-blue);
   }
 `;
 
@@ -30,7 +31,7 @@ export const InformationsComplementairesBox = styled.div`
   border: 1px solid #e7e7e7;
   color: #4550e5;
   h3 {
-    color: #000074;
+    color: var(--legacy-darker-blue);
   }
 `;
 
@@ -43,7 +44,16 @@ export const Colmun = styled.div`
 export const BoxContent = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
+  > div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    ${HoverableIconContainer} {
+      top: -2px;
+    }
+  }
 `;
 
 export const AddressContent = styled.div`
@@ -55,7 +65,16 @@ export const MapContainer = styled.div`
 `;
 
 export const BoxIcon = styled.div`
-  span {
-    display: inline-flex;
+  display: flex;
+  align-items: center;
+
+  h3 {
+    ${HoverableIconContainer} {
+      color: #4550e5;
+    }
+  }
+
+  ${HoverableIconContainer} {
+    top: -1px !important;
   }
 `;

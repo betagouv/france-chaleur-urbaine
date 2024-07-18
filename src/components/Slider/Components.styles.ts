@@ -6,7 +6,7 @@ const ScaleLabel = styled.div`
   padding: 8px;
   width: fit-content;
   border-radius: 6px;
-  background-color: #f3f6f9;
+  background-color: var(--info-975-75);
   font-size: 12px;
   text-align: center;
 `;

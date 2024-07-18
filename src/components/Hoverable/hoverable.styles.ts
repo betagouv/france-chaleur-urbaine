@@ -39,9 +39,8 @@ export const Container = styled.div<{
         `;
       case 'left':
         return css`
-          top: 50%;
+          top: 80%;
           right: calc(100% + 8px);
-          transform: translateY(50%);
         `;
       default:
         return css`

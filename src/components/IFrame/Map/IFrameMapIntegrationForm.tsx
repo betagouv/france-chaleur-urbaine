@@ -1,5 +1,5 @@
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
-import { Checkbox, CheckboxGroup } from '@dataesr/react-dsfr';
+import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import React, { ReactNode, useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { AddressContainer } from './IFrameParametrization.styles';
@@ -8,36 +8,13 @@ import {
   DivQuestionCenterMap,
   StyledIFrameLink,
 } from './IFrameMapIntegrationForm.styles';
-
-const selectableLayers = [
-  {
-    label: 'Les réseaux de chaleur existants',
-    key: 'reseau_chaleur',
-  },
-  {
-    label: 'Les réseaux de chaleur en construction',
-    key: 'futur_reseau',
-  },
-  {
-    label: 'Les périmètres de développement prioritaire',
-    key: 'pdp',
-  },
-  {
-    label: 'Les réseaux de froid',
-    key: 'reseau_froid',
-  },
-] as const;
-
-type LayerKey = (typeof selectableLayers)[number]['key'];
+import { LegendURLKey, selectableLayers } from '@pages/map';
 
 const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
   const [coords, setCoords] = useState<Coords | null>(null);
-  const [selectedLayers, setSelectedLayers] = useState<LayerKey[]>([
-    'pdp',
-    'futur_reseau',
-    'reseau_froid',
-    'reseau_chaleur',
-  ]);
+  const [selectedLayers, setSelectedLayers] = useState<LegendURLKey[]>(
+    selectableLayers.map((l) => l.key)
+  );
 
   const url = `legend=true${
     coords ? `&coord=${coords.lon},${coords.lat}&zoom=12` : ''
@@ -58,7 +35,7 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
     });
   };
 
-  const toggleLayerSelection = (layerName: LayerKey, enable: boolean) => {
+  const toggleLayerSelection = (layerName: LegendURLKey, enable: boolean) => {
     if (enable) {
       setSelectedLayers([...selectedLayers, layerName]);
     } else {
@@ -68,21 +45,20 @@ const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
 
   return (
     <>
-      <CheckboxGroup>
-        {selectableLayers.map((selectableLayer) => (
-          <Checkbox
-            key={selectableLayer.key}
-            label={selectableLayer.label}
-            defaultChecked={true}
-            onClick={(e) =>
+      <Checkbox
+        legend=""
+        options={selectableLayers.map((selectableLayer) => ({
+          label: selectableLayer.label,
+          nativeInputProps: {
+            defaultChecked: true,
+            onClick: (e) =>
               toggleLayerSelection(
                 selectableLayer.key,
                 (e.target as any).checked
-              )
-            }
-          />
-        ))}
-      </CheckboxGroup>
+              ),
+          },
+        }))}
+      />
       {label ? (
         label
       ) : (

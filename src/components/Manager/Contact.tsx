@@ -1,20 +1,20 @@
-import { Demand } from 'src/types/Summary/Demand';
-import { EmailInfo, Name, OtherInfo } from './Contact.styles';
-import { Icon } from '@dataesr/react-dsfr';
-import ModalEmails from './ModalEmails';
+import Icon from '@components/ui/Icon';
 import { useState } from 'react';
+import { Demand } from 'src/types/Summary/Demand';
+import { ContactInfos, EmailInfo, Name, OtherInfo } from './Contact.styles';
+import ModalEmails from './ModalEmails';
 
 const Contact = ({
   demand,
   updateDemand,
 }: {
   demand: Demand;
-  updateDemand: (demandId: string, demand: Partial<Demand>) => void;
+  updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
 }) => {
   const [showEmailsModal, setShowEmailsModal] = useState(false);
 
   return (
-    <>
+    <ContactInfos className="fr-m-1w">
       <>
         <Name>
           {demand.Prénom ?? ''} {demand.Nom}
@@ -26,7 +26,7 @@ const Contact = ({
               setShowEmailsModal(true);
             }}
           >
-            <Icon size="lg" name="ri-mail-line" />
+            <Icon size="sm" name="ri-mail-line" className="fr-mr-1w" />
             <u>{demand.Mail}</u>
           </EmailInfo>
         )}
@@ -40,7 +40,7 @@ const Contact = ({
           onClose={() => setShowEmailsModal(false)}
         />
       )}
-    </>
+    </ContactInfos>
   );
 };
 

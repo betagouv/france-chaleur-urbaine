@@ -3,9 +3,8 @@ import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import Heading from '@components/ui/Heading';
 import { dataNumberFcu } from '@data';
-import { FooterPartnersLogo, Logo } from '@dataesr/react-dsfr';
-import Link from 'next/link';
 import { Description, Logos, Row, Title } from './index.styles';
+import Link from '@components/ui/Link';
 
 const Us = () => {
   return (
@@ -15,9 +14,7 @@ const Us = () => {
           Qui sommes-nous&nbsp;?
         </Heading>
         <Row>
-          <Logo splitCharacter={10} href="">
-            République Française
-          </Logo>
+          <div className="fr-logo">République Française</div>
           <Description>
             France Chaleur Urbaine est un{' '}
             <b>service gratuit proposé par l’État</b> qui promeut le chauffage
@@ -61,7 +58,7 @@ const Us = () => {
             En savoir plus :{' '}
             <Link
               href="https://www.drieat.ile-de-france.developpement-durable.gouv.fr/"
-              target="_blank"
+              isExternal
             >
               https://www.drieat.ile-de-france.developpement-durable.gouv.fr/
             </Link>
@@ -72,10 +69,10 @@ const Us = () => {
             numérique (DINUM), qui aide les administrations publiques à
             construire des services numériques utiles, simples et faciles à
             utiliser. À ce titre, une équipe de 10 freelances (designer, chargés
-            de déploiement, developpeurs...) accompagne le projet.
+            de déploiement, développeurs...) accompagne le projet.
             <br />
             En savoir plus :{' '}
-            <Link href="https://beta.gouv.fr" target="_blank">
+            <Link href="https://beta.gouv.fr" isExternal>
               beta.gouv.fr
             </Link>
           </li>
@@ -89,18 +86,12 @@ const Us = () => {
           Ministère de la transition écologique, par l’ADEME et par la DRIEAT.
         </p>
         <Logos>
-          <FooterPartnersLogo
-            href="https://www.gouvernement.fr/"
-            imageSrc="/logo-government.svg"
-            target="_blank"
-            imageAlt="Gouvernement"
-          />
-          <FooterPartnersLogo
-            href="https://www.ademe.fr"
-            imageSrc="/logo-ADEME.svg"
-            target="_blank"
-            imageAlt="Gouvernement"
-          />
+          <Link href="https://www.gouvernement.fr/" isExternal>
+            <img src="/logo-government.svg" alt="Gouvernement" height="80px" />
+          </Link>
+          <Link href="https://www.ademe.fr" isExternal>
+            <img src="/logo-ADEME.svg" alt="Gouvernement" height="80px" />
+          </Link>
         </Logos>
       </Slice>
       <Slice padding={4} theme="color">

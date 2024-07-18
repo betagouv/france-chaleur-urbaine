@@ -1,4 +1,4 @@
-import { Col, Row } from '@dataesr/react-dsfr';
+import Box from '@components/ui/Box';
 import { List, Subtitle } from './Contents.styles';
 
 const contents = [
@@ -37,23 +37,23 @@ const Strengths = () => {
   return (
     <>
       {contents.map((content, index) => (
-        <Row key={content.title} className="fr-my-4w">
-          <Col n="sm-0 md-1" className="fr-hidden fr-unhidden-md">
+        <Box key={content.title} className="fr-grid-row fr-my-4w">
+          <Box className="fr-col-sm fr-col-md-1 fr-hidden fr-unhidden-md">
             <img
               width="100%"
               src={`/img/ressources-strenghts-${index + 1}.svg`}
               alt=""
             />
-          </Col>
-          <Col n="sm-12 md-11">
+          </Box>
+          <Box className="fr-col-sm-12 fr-col-md-11">
             <Subtitle>{content.title}</Subtitle>
             <List>
               {content.list.map((item, index) => (
                 <li key={index}>{item}</li>
               ))}
             </List>
-          </Col>
-        </Row>
+          </Box>
+        </Box>
       ))}
     </>
   );

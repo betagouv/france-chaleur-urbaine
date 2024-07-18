@@ -8,13 +8,17 @@ export const Container = styled.div`
   margin: -32px auto 0 auto;
   top: 0px;
   padding: 8px;
-  background-color: white;
+  background-color: var(--background-default-grey);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 32px;
-  border: 1px solid #b4b4b4;
+  border: 1px solid var(--border-default-grey);
   box-shadow: 0px 4px 4px 0px #00000040;
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 0px 4px 4px 0px #ffffff40;
+  }
+
   z-index: 2;
 
   .fr-form-group {

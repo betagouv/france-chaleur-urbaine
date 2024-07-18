@@ -1,3 +1,5 @@
+import Alert from '@codegouvfr/react-dsfr/Alert';
+import Button from '@codegouvfr/react-dsfr/Button';
 import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
 import {
   ContactForm,
@@ -9,7 +11,6 @@ import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { NetworkEligibilityStatus } from '@core/infrastructure/repository/addresseInformation';
-import { Alert, Button } from '@dataesr/react-dsfr';
 import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
 import { workMinimum } from '@utils/time';
 import { useCallback, useRef, useState } from 'react';
@@ -289,13 +290,13 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
                         name="heatingType"
                         className="fr-mt-2w"
                         selectOptions={energyInputsDefaultLabels}
-                        onChange={(e) => setHeatingType(e.target.value)}
+                        onChange={setHeatingType}
                         value={heatingType}
                       />
                       {heatingType === 'individuel' && (
                         <Alert
                           className="fr-mt-2w"
-                          type="warning"
+                          severity="warning"
                           small
                           description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
                         />

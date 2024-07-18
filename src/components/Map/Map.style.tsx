@@ -160,7 +160,7 @@ export const LegendSideBar = styled.div<{
     `}
   width: 333px;
   min-width: 333px;
-  background: #ffffff;
+  background: var(--background-default-grey);
   border: 1px solid #dddddd;
   box-shadow:
     0px 16px 16px -16px rgba(0, 0, 0, 0.32),
@@ -194,7 +194,7 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   left: ${({ legendCollapsed }) => (legendCollapsed ? '-23px' : '310px')};
   top: 50%;
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--background-default-grey);
   border: solid 1px #dddddd;
   height: 60px;
   width: 51px;
@@ -216,14 +216,14 @@ export const LegendLogoList = styled.div<{
   position: absolute;
   bottom: 0px;
   z-index: 9999;
-  background: #ffffff;
+  background: var(--background-default-grey);
   ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
   height:100px;
 `;
 
 export const LegendLogoLink = styled.a`
   width: 166px;
-  background-color: white;
+  background-color: var(--background-default-grey);
   img {
     width: 100%;
     vertical-align: middle;
@@ -237,7 +237,7 @@ export const LegendLogoLink = styled.a`
 
 export const LegendLogo = styled.div`
   width: 166px;
-  background-color: white;
+  background-color: var(--background-default-grey);
   img {
     width: 100%;
     vertical-align: middle;
@@ -248,7 +248,7 @@ export const LegendLogo = styled.div`
 export const TopLegend = styled.div<{
   legendCollapsed: boolean;
 }>`
-  background-color: white;
+  background-color: var(--background-default-grey);
   width: ${({ legendCollapsed }) =>
     legendCollapsed ? '100%' : 'calc(100% - 333px)'};
   @media (max-width: 600px) {

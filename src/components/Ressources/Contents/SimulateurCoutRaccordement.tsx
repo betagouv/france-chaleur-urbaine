@@ -1,8 +1,11 @@
+import Badge from '@codegouvfr/react-dsfr/Badge';
+import Input from '@codegouvfr/react-dsfr/Input';
+import Select from '@codegouvfr/react-dsfr/SelectNext';
 import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import { Badge, Select, TextInput } from '@dataesr/react-dsfr';
 import { isDefined } from '@utils/core';
 import { useMemo, useState } from 'react';
 import { prixSpotCEE } from './Simulator';
@@ -94,10 +97,14 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
   }, [formState, montantAide]);
 
   return (
-    <Box border="1px solid #e7e7e7" backgroundColor="#fff">
+    <Box border="1px solid #e7e7e7">
       <ResponsiveRow breakpoint="sm">
         <Box flex p="3w">
-          <Badge icon="ri-money-euro-circle-line" text="Simulateur" />
+          <Badge severity="new" noIcon>
+            {/* the dsfr does not handle custom icons */}
+            <Icon name="fr-icon-money-euro-circle-line" size="sm" mr="1v" />
+            Simulateur
+          </Badge>
           <Heading as="h6" mt="1w" mb="1w">
             Estimer le coût d’un raccordement*
           </Heading>
@@ -114,32 +121,38 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
                 value: 'tertiaire',
               },
             ]}
-            selected={formState.typeBatiment}
-            onChange={(e) => {
-              updateState('typeBatiment', e.target.value);
-              updateState(
-                e.target.value === 'residentiel' ? 'nbLogements' : 'surface',
-                undefined
-              );
+            nativeSelectProps={{
+              value: formState.typeBatiment,
+              onChange: (e) => {
+                updateState('typeBatiment', e.target.value as TypeBatiment);
+                updateState(
+                  e.target.value === 'residentiel' ? 'nbLogements' : 'surface',
+                  undefined
+                );
+              },
             }}
           />
           {formState.typeBatiment === 'residentiel' ? (
-            <TextInput
-              type="number"
-              label="Nombre de logements"
+            <Input
               key="nbLogements"
-              min="0"
-              onChange={(e) =>
-                updateState('nbLogements', parseInt(e.target.value))
-              }
+              label="Nombre de logements"
+              nativeInputProps={{
+                type: 'number',
+                min: 0,
+                onChange: (e) =>
+                  updateState('nbLogements', parseInt(e.target.value)),
+              }}
             />
           ) : (
-            <TextInput
-              type="number"
-              label="Surface (m²)"
+            <Input
               key="surface"
-              min="0"
-              onChange={(e) => updateState('surface', parseInt(e.target.value))}
+              label="Surface (m²)"
+              nativeInputProps={{
+                type: 'number',
+                min: 0,
+                onChange: (e) =>
+                  updateState('surface', parseInt(e.target.value)),
+              }}
             />
           )}
           <Text size="sm">
@@ -162,15 +175,13 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
           </Text>
           {montantCouts === outOfRangeValue ? (
             <Box mt="2w">
-              <Badge
-                type="warning"
-                hasIcon
-                text={`Le simulateur n'est pour le moment pas disponible pour des bâtiments de plus de ${
-                  formState.typeBatiment === 'residentiel'
-                    ? '330 logements'
-                    : '20 000 m²'
-                }`}
-              />
+              <Badge severity="warning">
+                Le simulateur n'est pour le moment pas disponible pour des
+                bâtiments de plus de{' '}
+                {formState.typeBatiment === 'residentiel'
+                  ? '330 logements'
+                  : '20 000 m²'}
+              </Badge>
             </Box>
           ) : (
             <>
@@ -186,11 +197,7 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
                 {prettyPrintCout(montantAide)}
               </Heading>
               <Box border="1px solid #e7e7e7" my="3w" />
-              <Badge
-                type="info"
-                hasIcon
-                text="Après déduction du coup de pouce"
-              />
+              <Badge severity="info">Après déduction du coup de pouce</Badge>
               <Heading as="h6" mb="0" mt="1w">
                 {montantCoutsApresAide?.[0] === 0 &&
                 montantCoutsApresAide?.[1] === 0 ? (

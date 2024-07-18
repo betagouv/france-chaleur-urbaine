@@ -1,8 +1,10 @@
+import Card from '@codegouvfr/react-dsfr/Card';
+import Tag from '@codegouvfr/react-dsfr/Tag';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
+
 import { articles } from '@data/contents';
 import Image from 'next/image';
 import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
@@ -19,7 +21,7 @@ const themes = [
     .keys(),
 ].sort();
 
-const Articles = () => {
+const ActualitesPage = () => {
   const [selectedThemes, setSelectedThemes] = useQueryState(
     'themes',
     parseAsArrayOf(parseAsString).withDefault([])
@@ -113,47 +115,35 @@ const Articles = () => {
                 className="fr-col-12 fr-col-sm-6 fr-col-md-6 fr-col-lg-4"
                 key={article.slug}
               >
-                <div className="fr-card fr-enlarge-link">
-                  <div className="fr-card__body">
-                    <div className="fr-card__content">
-                      <h3 className="fr-card__title">
-                        <Box textColor="text-title-blue-france">
-                          <Link href={`/actus/${article.slug}`}>
-                            {article.title}
-                          </Link>
+                <Card
+                  background
+                  border
+                  desc={getArticleAbstract(article.content)}
+                  enlargeLink
+                  imageAlt=""
+                  imageUrl={article.image}
+                  linkProps={{
+                    href: `/actus/${article.slug}`,
+                  }}
+                  size="medium"
+                  start={
+                    <ul className="fr-tags-group">
+                      {article.themes.map((theme, index) => (
+                        <Box as="li" key={index} lineHeight="1em !important">
+                          <Tag small>{theme}</Tag>
                         </Box>
-                      </h3>
-                      <p className="fr-card__desc">
-                        {getArticleAbstract(article.content)}
-                      </p>
-
-                      <div className="fr-card__start">
-                        <ul className="fr-tags-group">
-                          {article.themes.map((theme, index) => (
-                            <li key={index} className="fr-tag">
-                              {theme}
-                            </li>
-                          ))}
-                        </ul>
-
-                        <p className="fr-card__detail fr-icon-arrow-right-line">
-                          Publié le{' '}
-                          {article.publishedDate.toLocaleDateString('fr-FR')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="fr-card__header">
-                    <div className="fr-card__img">
-                      <img
-                        className="fr-responsive-img"
-                        src={article.image}
-                        alt=""
-                        loading="lazy"
-                      />
-                    </div>
-                  </div>
-                </div>
+                      ))}
+                    </ul>
+                  }
+                  title={article.title}
+                  titleAs="h3"
+                  detail={
+                    <Box as="span" iconLeft="fr-icon-arrow-right-line">
+                      Publié le{' '}
+                      {article.publishedDate.toLocaleDateString('fr-FR')}
+                    </Box>
+                  }
+                />
               </div>
             ))}
           </Box>
@@ -163,7 +153,7 @@ const Articles = () => {
   );
 };
 
-export default Articles;
+export default ActualitesPage;
 
 const markdownLinksRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
 
