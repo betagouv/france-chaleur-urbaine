@@ -1,4 +1,4 @@
-sql="psql --quiet --no-align --pset=tuples_only postgres://postgres:postgres_fcu@localhost:5432"
+sql="psql --quiet --no-align --pset=tuples_only postgres://postgres:dummy@localhost:5432"
 
 case "$(uname -s)" in
 Linux*) machine=Linux ;;

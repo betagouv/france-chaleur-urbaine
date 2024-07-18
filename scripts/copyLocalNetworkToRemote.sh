@@ -18,8 +18,8 @@ if [[ ! "${tables[@]}" =~ "$table" ]]; then
 fi
 
 # export depuis BDD locale
-pg_dump postgres://postgres:postgres_fcu@localhost:5432 --format=c --data-only -t ${table} >/tmp/table.dump
-pg_dump postgres://postgres:postgres_fcu@localhost:5432 --format=c --data-only -t ${table}_tiles >/tmp/tiles.dump
+pg_dump postgres://postgres:dummy@localhost:5432 --format=c --data-only -t ${table} >/tmp/table.dump
+pg_dump postgres://postgres:dummy@localhost:5432 --format=c --data-only -t ${table}_tiles >/tmp/tiles.dump
 
 if [[ $env = "prod" ]]; then
   SCALINGO_APP=france-chaleur-urbaine
