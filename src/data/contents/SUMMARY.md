@@ -1,6 +1,8 @@
 # Table of contents
 
-* [Identifier les besoins en chaleur des bâtiments](README.md)
+* [Actualisation des taux d'énergies renouvelables et contenu CO2](README.md)
+* [Les réseaux de chaleur en région : focus sur l'Auvergne-Rhône-Alpes](les-reseaux-de-chaleur-en-region-focus-sur-lauvergne-rhone-alpes.md)
+* [Identifier les besoins en chaleur des bâtiments](<README (30).md>)
 * [Les réseaux de chaleur en région : focus sur la Bourgogne-Franche-Comté](les-reseaux-de-chaleur-en-region-focus-sur-la-bourgogne-franche-comte.md)
 * [Combien coûte un raccordement ?](combien-coute-un-raccordement.md)
 * [Les réseaux de chaleur en région : focus sur le Grand Est](les-reseaux-de-chaleur-en-region-focus-sur-le-grand-est.md)
