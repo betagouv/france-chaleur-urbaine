@@ -1,7 +1,7 @@
-# Actualisation des taux d'énergies renouvelables et contenu CO2
+# Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur
 
-🔎 Vous recherchez les valeurs réglementaires à utiliser pour le taux d'énergies renouvelables et de récupération et le contenu CO2 d'un réseau de chaleur ou de froid ? Retrouvez sur la carte et les fiches par réseau France Chaleur Urbaine les valeurs du dernier "arrêté DPE", en date du 5 juillet 2024.\
+🚴‍♂️ Pour la sixième étape de notre tour de France des réseaux de chaleur, nous partons en [Région Sud - Provence-Alpes-Côte d'Azur](https://www.maregionsud.fr/).\
 \
-📊 Basées sur les données d'exploitation de l'année 2022 ou d'une moyenne sur les années 2020-2021-2022, ces valeurs sont notamment celles à utiliser pour la réalisation des diagnostics de performance énergétique ou pour l'application de la RE2020 et de la RT2012.\
+🔎 La région compte 41 réseaux de chaleur, dont 5 assurent également la fourniture de froid. Ces derniers sont en réalité des boucles d'eau tempérée : un fluide à basse température circule dans le réseau, dont la température est rehaussée ou abaissée grâce à des pompes à chaleur en bas d'immeuble. Ces boucles mobilisent différentes sources d'énergie, notamment la géothermie de surface, mais aussi la thalassothermie, c'est-à-dire l'exploitation des calories de la mer. C'est par exemple le cas du réseau de la Seyne-sur-Mer ([Toulon Provence Méditerranée](https://metropoletpm.fr/)), qui fut le premier réseau français à valoriser l'énergie de la Méditerranée, ou encore du réseau aujourd'hui en cours de création à Port-de-Bouc.\
 \
-👉 Liens vers l'arrêté : [https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781)
+🤓 Quelques chiffres clés sur les réseaux de la région Provence-Alpes-Côte d'Azur ci-dessous !
