@@ -1,14 +1,7 @@
-# Identifier les besoins en chaleur des bâtiments
+# Actualisation des taux d'énergies renouvelables et contenu CO2
 
-📢 Nouveauté sur France Chaleur Urbaine : retrouvez les besoins en chaleur des bâtiments, modélisés par le [Cerema](https://www.cerema.fr/fr) dans le cadre du projet [EnRezo](https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo) !\
+🔎 Vous recherchez les valeurs réglementaires à utiliser pour le taux d'énergies renouvelables et de récupération et le contenu CO2 d'un réseau de chaleur ou de froid ? Retrouvez sur la carte et les fiches par réseau France Chaleur Urbaine les valeurs du dernier "arrêté DPE", en date du 5 juillet 2024.\
 \
-🔧 En attendant de se refaire une beauté pour la rentrée (avec une meilleure structuration de l'information, pour s'y retrouver plus facilement), la [carte France Chaleur Urbaine](https://france-chaleur-urbaine.beta.gouv.fr/carte) offre ainsi un outil encore plus complet pour évaluer les potentiels de raccordement aux réseaux de chaleur, en permettant d'accéder simultanément à plusieurs bases de données complémentaires :\
+📊 Basées sur les données d'exploitation de l'année 2022 ou d'une moyenne sur les années 2020-2021-2022, ces valeurs sont notamment celles à utiliser pour la réalisation des diagnostics de performance énergétique ou pour l'application de la RE2020 et de la RT2012.\
 \
-✅ les consommations de gaz à l'adresse, pour repérer les gros consommateurs d'un territoire (données réelles pour l'année 2022 - source SDES) ;\
-✅ l'identification des bâtiments à chauffage collectif au gaz ou fioul, les plus facilement raccordables (données issues de la Base de données nationale des bâtiments du CSTB et du Registre national d'immatriculation des copropriétés de l'Anah) ;\
-✅ les besoins en chaleur des bâtiments, modélisés par le Cerema sur la base des caractéristiques des bâtiments (fichiers fonciers, BD Topo), qui permettent d'avoir une estimation pour la totalité des bâtiments résidentiels et tertiaires en France. A noter que les besoins en froid sont également diffusés ;\
-✅ les caractéristiques des bâtiments issues de différentes sources : usage, surface de plancher, nombre de logements, année de construction, DPE estimé...\
-\
-En complément, sont aussi diffusés sur France Chaleur Urbaine les besoins en chaleur du secteur industriel à la maille communale, également modélisés par le Cerema.\
-
-
+👉 Liens vers l'arrêté : [https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781)
