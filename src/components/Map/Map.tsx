@@ -605,15 +605,25 @@ const Map = ({
       if (response.result) {
         const newMarkersList: MapMarkerInfos[] = [];
         response.result.forEach((address) => {
-          const newMarker = {
-            id: getAddressId([address.lon, address.lat]),
-            latitude: address.lat,
-            longitude: address.lon,
-            color: address.isEligible ? 'green' : 'red',
-            popup: true,
-            popupContent: address.label,
-          };
-          newMarkersList.push(newMarker);
+          const id = getAddressId([address.lon, address.lat]);
+          if (
+            // Remove duplicates
+            !newMarkersList.some(
+              (marker) =>
+                marker.id === id && marker.popupContent === address.label
+            )
+          ) {
+            const newMarker = {
+              id: getAddressId([address.lon, address.lat]),
+              latitude: address.lat,
+              longitude: address.lon,
+              color: address.isEligible ? 'green' : 'red',
+              popup: true,
+              popupContent: address.label,
+            };
+
+            newMarkersList.push(newMarker);
+          }
         });
         setMarkersList(newMarkersList);
       }
