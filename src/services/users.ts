@@ -21,11 +21,11 @@ export const upsertUsersFromApi = async (
 
   const warnings: string[] = [];
   const emails = networks.flatMap((user) => user.contacts);
-  //Désactivation des users non ré-importés
-  await db('users')
+  //On ne désactive pas les comptes supprimés -- vérification manuelle
+  /*await db('users')
     .update('active', false)
     .whereNotIn('email', emails)
-    .andWhere('from_api', account.key);
+    .andWhere('from_api', account.key);*/
 
   const existingUsers = await db('users')
     .select('email')
