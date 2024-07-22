@@ -1,5 +1,5 @@
 ---
-cover: .gitbook/assets/Modele post linkedin (767 x 432 px) (1).jpg
+cover: .gitbook/assets/12 (3).jpg
 coverY: 0
 ---
 
