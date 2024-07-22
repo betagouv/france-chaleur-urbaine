@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/Modele post linkedin (767 x 432 px) (1).jpg
+coverY: 0
+---
+
 # Les réseaux de chaleur en région : focus sur les Hauts-de-France
 
 🚲 Pour la deuxième étape de notre tour de France des réseaux de chaleur, direction les [Hauts-de-France](https://www.hautsdefrance.fr/) !\

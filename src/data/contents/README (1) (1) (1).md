@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/18 (2).jpg
+coverY: 0
+---
+
 # La géothermie profonde
 
 🤓 Toujours dans notre démarche de faciliter la compréhension par le grand public des réseaux de chaleur, nous entamons une série explicative sur les énergies renouvelables et de récupération qui alimentent les réseaux.\

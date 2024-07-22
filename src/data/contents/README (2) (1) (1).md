@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/16 (2).jpg
+coverY: 0
+---
+
 # Les ménages français et le chauffage
 
 🌫️ Avec près de 20 % des émissions de gaz à effet de serre nationales, le chauffage est un défi majeur de la transition énergétique
