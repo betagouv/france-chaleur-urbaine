@@ -31,17 +31,7 @@ export const upsertUsersFromApi = async (
     .select('email')
     .where('from_api', account.key);
 
-  //Si Tags FCU vide on supprime la ligne - pour potentiellement la ré-importer.
-  /*await Promise.all(
-    airtableUsersAPI
-      .filter((airtableUserAPI) => !airtableUserAPI.get('Tags FCU'))
-      .map((airtableUserAPI) =>
-        base(Airtable.GESTIONNAIRES_API).destroy(airtableUserAPI.getId())
-      )
-  );*/
-
   //On ne supprime pas dans le Airtable les users non ré-importés mais on met Réseaux vides
-  //TODO - check avec Florence
   await Promise.all(
     airtableUsersAPI
       .filter(
@@ -192,7 +182,6 @@ export const upsertUsersFromApi = async (
 };
 
 export const updateUsers = async () => {
-  console.log('updateUsers');
   const newEmails: string[] = [];
   const demands = await base(Airtable.UTILISATEURS).select().all();
   const managers = demands
