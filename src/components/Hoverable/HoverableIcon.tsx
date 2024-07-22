@@ -8,7 +8,7 @@ import Hoverable from '.';
 
 const HoverableIcon = ({
   children,
-  iconSize,
+  iconSize = 'sm',
   iconName,
   position,
   top,
