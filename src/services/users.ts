@@ -1,12 +1,13 @@
+import { ApiNetwork } from '@pages/api/v1/users/[key]';
 import bcrypt from 'bcryptjs';
+import { ApiAccount } from 'src/types/ApiAccount';
 import { Airtable } from 'src/types/enum/Airtable';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 import db from '../db';
 import base from '../db/airtable';
 import { sendInscriptionEmail } from './email';
-import { ApiAccount } from 'src/types/ApiAccount';
-import { ApiNetwork } from '@pages/api/v1/users/[key]';
 
+//ATTENTION -- ici ça ne fonctionne que dans le cas où c'est utilisé par Engie car dans le Airtable on ne vérifie pas la clé API
 export const upsertUsersFromApi = async (
   account: ApiAccount,
   networks: ApiNetwork[]
@@ -20,6 +21,7 @@ export const upsertUsersFromApi = async (
 
   const warnings: string[] = [];
   const emails = networks.flatMap((user) => user.contacts);
+  //Désactivation des users non ré-importés
   await db('users')
     .update('active', false)
     .whereNotIn('email', emails)
@@ -29,19 +31,21 @@ export const upsertUsersFromApi = async (
     .select('email')
     .where('from_api', account.key);
 
-  await Promise.all(
+  //Si Tags FCU vide on supprime la ligne - pour potentiellement la ré-importer.
+  /*await Promise.all(
     airtableUsersAPI
       .filter((airtableUserAPI) => !airtableUserAPI.get('Tags FCU'))
       .map((airtableUserAPI) =>
         base(Airtable.GESTIONNAIRES_API).destroy(airtableUserAPI.getId())
       )
-  );
+  );*/
 
+  //On ne supprime pas dans le Airtable les users non ré-importés mais on met Réseaux vides
+  //TODO - check avec Florence
   await Promise.all(
     airtableUsersAPI
       .filter(
         (airtableUserAPI) =>
-          airtableUserAPI.get('Tags FCU') &&
           !emails.includes(airtableUserAPI.get('Email') as string)
       )
       .map((airtableUserAPI) =>
@@ -50,6 +54,8 @@ export const upsertUsersFromApi = async (
         })
       )
   );
+
+  //Check les droits pour ajouter un gestionnaire sur le réseau
   const users: Record<string, string[]> = {};
   networks.forEach((network) => {
     if (!account.networks.includes(network.id_sncu)) {
@@ -96,7 +102,7 @@ export const upsertUsersFromApi = async (
         const airtableUser = airtableUsers.find(
           (airtableUser) => airtableUser.get('Email') === user
         );
-        //Tags FCU
+        //Tags de la calonne "Tags FCU" dans le Airtable
         const fcuTags = airtableUserAPI
           ? (airtableUserAPI.get('Tags FCU') as string[])
           : [];
@@ -120,7 +126,8 @@ export const upsertUsersFromApi = async (
             })
             .onConflict('email')
             .merge({ gestionnaires: allGestionnaires, active: true }),
-          airtableUserAPI && fcuTags && fcuTags.length > 0
+          //Maj Airtable avec les nouveaux tags Réseaux (ou ajoute le nouveau compte)
+          airtableUserAPI
             ? base(Airtable.GESTIONNAIRES_API).update(
                 airtableUserAPI.id,
                 {
@@ -185,6 +192,7 @@ export const upsertUsersFromApi = async (
 };
 
 export const updateUsers = async () => {
+  console.log('updateUsers');
   const newEmails: string[] = [];
   const demands = await base(Airtable.UTILISATEURS).select().all();
   const managers = demands
@@ -195,6 +203,9 @@ export const updateUsers = async () => {
     );
 
   const airtableUsers = await base(Airtable.GESTIONNAIRES).select().all();
+  const airtableUsersAPI = await base(Airtable.GESTIONNAIRES_API)
+    .select()
+    .all();
 
   const users = await db('users')
     .select('email')
@@ -243,6 +254,35 @@ export const updateUsers = async () => {
           gestionnaires,
           active: true,
         });
+        const airtableUserAPI = airtableUsersAPI.find((userAPI) => {
+          let userAPIEmail = userAPI.get('Email') as string;
+          userAPIEmail = userAPIEmail.toLowerCase().trim();
+          if (userAPIEmail === email) {
+            return userAPI;
+          }
+        });
+        if (airtableUserAPI) {
+          const newTagsFCU = gestionnaires;
+          const tagsReseaux = airtableUserAPI.get('Réseaux') as string[];
+          if (tagsReseaux) {
+            tagsReseaux.forEach((gestionnaire) => {
+              const tag = gestionnaire.trim();
+              const index = newTagsFCU.findIndex((t) => t === tag);
+              if (index !== -1) {
+                newTagsFCU.splice(index, 1);
+              }
+            });
+            await base(Airtable.GESTIONNAIRES_API).update(
+              airtableUserAPI.id,
+              {
+                'Tags FCU': newTagsFCU,
+              },
+              {
+                typecast: true,
+              }
+            );
+          }
+        }
       }
     }
   }
