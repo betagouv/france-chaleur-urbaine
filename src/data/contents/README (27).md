@@ -11,5 +11,5 @@ coverY: 0
 \
 🔧 Cette fonctionnalité permet de filtrer les réseaux à afficher en fonction de leur énergie majoritaire, taux EnR\&R, contenu CO2, prix moyen de la chaleur et année de construction. Il est également possible de définir des conditions sur le mix énergétique des réseaux à visualiser (cliquer sur "Plus d'options"). Il s'agit de la première étape d'un outil plus avancé de comparaison des réseaux, qui verra le jour dans les prochaines semaines.
 
-<figure><img src=".gitbook/assets/16 (1).jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/16 (1) (1).jpg" alt=""><figcaption></figcaption></figure>
 

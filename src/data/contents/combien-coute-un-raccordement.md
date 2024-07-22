@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/20 (1).jpg
+coverY: 0
+---
+
 # Combien coûte un raccordement ?
 
 💸 Combien coûte un raccordement à un réseau de chaleur ? Difficile de répondre à cette question, tant ce coût peut être influencé par de nombreux paramètres : longueur de branchement, taille de l'échangeur, configuration de la voirie... Et pourtant, c'est la première question que se pose toute personne souhaitant envisager un raccordement !\
