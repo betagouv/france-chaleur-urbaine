@@ -1,22 +1,16 @@
-import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { useMemo, useState } from 'react';
-import { SuggestionItem } from 'src/types/Suggestions';
-import {
-  AddressContainer,
-  Container,
-  IFrame,
-} from './IFrameParametrization.styles';
-import IFrameLink from '../Form/IFrameLink';
+
+import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
 import { LegendURLKey, selectableLayers } from '@pages/map';
+import { SuggestionItem } from 'src/types/Suggestions';
+
+import { AddressContainer, Container, IFrame } from './IFrameParametrization.styles';
+import IFrameLink from '../Form/IFrameLink';
 
 const IFrameParametrization = () => {
-  const [coords, setCoords] = useState<{ lon: number; lat: number } | null>(
-    null
-  );
-  const [selectedInfo, setSelectedInfo] = useState<LegendURLKey[]>([
-    ...selectableLayers.map((l) => l.key),
-  ]);
+  const [coords, setCoords] = useState<{ lon: number; lat: number } | null>(null);
+  const [selectedInfo, setSelectedInfo] = useState<LegendURLKey[]>([...selectableLayers.map((l) => l.key)]);
 
   const url = useMemo(() => {
     let result = 'legend=true';
@@ -29,10 +23,7 @@ const IFrameParametrization = () => {
     return result;
   }, [coords, selectedInfo]);
 
-  const onAddressSelected = async (
-    address: string,
-    geoAddress?: SuggestionItem
-  ) => {
+  const onAddressSelected = async (address: string, geoAddress?: SuggestionItem) => {
     if (!geoAddress) {
       setCoords(null);
       return;
@@ -55,9 +46,8 @@ const IFrameParametrization = () => {
   return (
     <Container>
       <h4>Intégrez notre cartographie à votre site</h4>
-      Il vous suffit de sélectionner les informations que vous voulez afficher
-      et de copier les lignes de code obtenues dans le code source de votre
-      site.
+      Il vous suffit de sélectionner les informations que vous voulez afficher et de copier les lignes de code obtenues dans le code source
+      de votre site.
       <br />
       <br />
       <Checkbox
@@ -66,8 +56,7 @@ const IFrameParametrization = () => {
           label: selectableLayer.label,
           nativeInputProps: {
             checked: true,
-            onClick: (e) =>
-              setCheckBoxState(selectableLayer.key, (e.target as any).checked),
+            onClick: (e) => setCheckBoxState(selectableLayer.key, (e.target as any).checked),
           },
         }))}
       />
@@ -88,20 +77,14 @@ src="https://france-chaleur-urbaine.beta.gouv.fr/map?${url}"
         />
       </IFrame>
       <br />
-      Pensez à ajuster les valeurs des variables "width" et "height" pour
-      obtenir un affichage optimal sur votre site. Vous pouvez par ailleurs
-      ajuster le niveau de zoom souhaité dans le lien (entre 1 et 17).
+      Pensez à ajuster les valeurs des variables "width" et "height" pour obtenir un affichage optimal sur votre site. Vous pouvez par
+      ailleurs ajuster le niveau de zoom souhaité dans le lien (entre 1 et 17).
       <br />
       <br />
       <div>
         <b>
-          Si vous souhaitez une carte personnalisée avec seulement vos réseaux,
-          votre logo ou d'autres informations, n'hésitez pas à{' '}
-          <a
-            href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          Si vous souhaitez une carte personnalisée avec seulement vos réseaux, votre logo ou d'autres informations, n'hésitez pas à{' '}
+          <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr" target="_blank" rel="noopener noreferrer">
             nous contacter
           </a>
         </b>

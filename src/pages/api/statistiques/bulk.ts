@@ -2,10 +2,7 @@ import { handleRouteErrors } from '@helpers/server';
 import db from 'src/db';
 
 export default handleRouteErrors(async () => {
-  const data = await db('eligibility_tests')
-    .select()
-    .whereNull('in_error')
-    .orderBy('created_at', 'asc');
+  const data = await db('eligibility_tests').select().whereNull('in_error').orderBy('created_at', 'asc');
 
   const defaultMonthValue = {
     nbTotal: 0,

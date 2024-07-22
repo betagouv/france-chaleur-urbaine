@@ -1,11 +1,8 @@
-import {
-  handleRouteErrors,
-  requireGetMethod,
-  validateObjectSchema,
-} from '@helpers/server';
 import type { NextApiRequest } from 'next';
-import db from 'src/db';
 import { z } from 'zod';
+
+import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@helpers/server';
+import db from 'src/db';
 
 type DPE = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'N';
 
@@ -58,10 +55,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   await Promise.all(
     regions.map(async (region) => {
       const dpeRegion = await db(region.bnb_nom)
-        .select(
-          'dpe_mix_arrete_classe_bilan_dpe',
-          'dpe_mix_arrete_classe_emission_ges'
-        )
+        .select('dpe_mix_arrete_classe_bilan_dpe', 'dpe_mix_arrete_classe_emission_ges')
         .whereRaw(
           `
               dpe_mix_arrete_classe_bilan_dpe is not null

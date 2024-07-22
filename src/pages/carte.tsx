@@ -1,21 +1,13 @@
+import styled from 'styled-components';
+
 import Map from '@components/Map';
 import { mapLegendFeatures } from '@components/Map/components/SimpleMapLegend';
-import {
-  fullscreenHeaderHeight,
-  tabHeaderHeight,
-} from '@components/shared/layout/MainLayout.data';
+import { fullscreenHeaderHeight, tabHeaderHeight } from '@components/shared/layout/MainLayout.data';
 import SimplePage from '@components/shared/page/SimplePage';
-import useURLParamOrLocalStorage, {
-  parseAsBoolean,
-} from '@hooks/useURLParamOrLocalStorage'; // parseAsBoolean,
 import useInitialSearchParam from '@hooks/useInitialSearchParam';
+import useURLParamOrLocalStorage, { parseAsBoolean } from '@hooks/useURLParamOrLocalStorage'; // parseAsBoolean,
 import { setProperty } from '@utils/core';
-import {
-  MapConfigurationProperty,
-  createMapConfiguration,
-  defaultMapConfiguration,
-} from 'src/services/Map/map-configuration';
-import styled from 'styled-components';
+import { MapConfigurationProperty, createMapConfiguration, defaultMapConfiguration } from 'src/services/Map/map-configuration';
 
 const MapWrapper = styled.div`
   height: calc(100vh - ${tabHeaderHeight});
@@ -47,18 +39,11 @@ export const layerURLKeysToMapConfigPath = {
 
 export type LayerURLKey = keyof typeof layerURLKeysToMapConfigPath;
 
-export const layerURLKeys = Object.keys(
-  layerURLKeysToMapConfigPath
-) as ReadonlyArray<LayerURLKey>;
+export const layerURLKeys = Object.keys(layerURLKeysToMapConfigPath) as ReadonlyArray<LayerURLKey>;
 
 const Carte = () => {
   // read the pro mode from the URL or get the local storage value
-  const [proMode, setProMode] = useURLParamOrLocalStorage(
-    'proMode',
-    'mapProMode',
-    false,
-    parseAsBoolean
-  );
+  const [proMode, setProMode] = useURLParamOrLocalStorage('proMode', 'mapProMode', false, parseAsBoolean);
 
   // amend the initial map configuration with additional layers
   const additionalLayersQuery = useInitialSearchParam('additionalLayers');
@@ -68,18 +53,13 @@ const Carte = () => {
         .filter((key) => layerURLKeys.includes(key as LayerURLKey))
         .map((key) => layerURLKeysToMapConfigPath[key as LayerURLKey])
     : [];
-  const initialMapConfiguration = createMapConfiguration(
-    defaultMapConfiguration
-  );
+  const initialMapConfiguration = createMapConfiguration(defaultMapConfiguration);
   additionalLayers.forEach((updateKey) => {
     setProperty(initialMapConfiguration, updateKey, true);
   });
 
   return (
-    <SimplePage
-      title="Carte des réseaux : France Chaleur Urbaine"
-      mode="public-fullscreen"
-    >
+    <SimplePage title="Carte des réseaux : France Chaleur Urbaine" mode="public-fullscreen">
       <MapWrapper>
         {proMode !== null && (
           <Map
@@ -92,13 +72,7 @@ const Carte = () => {
             enabledLegendFeatures={
               proMode
                 ? mapLegendFeatures.filter((f) => f !== 'proModeLegend')
-                : [
-                    'reseauxDeChaleur',
-                    'reseauxDeFroid',
-                    'reseauxEnConstruction',
-                    'zonesDeDeveloppementPrioritaire',
-                    'proModeLegend',
-                  ]
+                : ['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire', 'proModeLegend']
             }
             persistViewStateInURL
           />

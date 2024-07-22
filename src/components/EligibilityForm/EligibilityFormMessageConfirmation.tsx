@@ -1,13 +1,15 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import Input from '@components/form/Input';
-import { updateAirtable } from '@helpers/airtable';
 import { FormEvent, useState } from 'react';
+import styled from 'styled-components';
+
+import Input from '@components/form/Input';
+import MarkdownWrapper from '@components/MarkdownWrapper';
+import { updateAirtable } from '@helpers/airtable';
 import { AddressDataType } from 'src/types/AddressData';
 import { Airtable } from 'src/types/enum/Airtable';
-import styled from 'styled-components';
+
 import { ContactFormEligibilityResult } from './components';
 
 const UnderlinedLink = styled.a`
@@ -30,13 +32,7 @@ const choices = [
 
 type Choice = (typeof choices)[number];
 
-const EligibilityFormMessageConfirmation = ({
-  addressData = {},
-  cardMode,
-}: {
-  addressData: AddressDataType;
-  cardMode?: boolean;
-}) => {
+const EligibilityFormMessageConfirmation = ({ addressData = {}, cardMode }: { addressData: AddressDataType; cardMode?: boolean }) => {
   const [other, setOther] = useState('');
   const [sondage, setSondage] = useState<string[]>([]);
   const [sondageAnswered, setSondageAnswered] = useState(false);
@@ -63,8 +59,7 @@ const EligibilityFormMessageConfirmation = ({
   };
 
   const linkToMap =
-    addressData?.geoAddress?.geometry?.coordinates &&
-    `./carte/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`;
+    addressData?.geoAddress?.geometry?.coordinates && `./carte/?coord=${addressData.geoAddress.geometry.coordinates}&zoom=15`;
 
   const { structure, computedEligibility } = addressData;
 
@@ -89,31 +84,15 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
     <>
       <ContactFormEligibilityResult cardMode={cardMode}>
         <header>
-          <MarkdownWrapper
-            value={
-              structure
-                ? message?.[computedEligibility ? 'eligible' : 'ineligible']
-                    ?.title
-                : ''
-            }
-          />
+          <MarkdownWrapper value={structure ? message?.[computedEligibility ? 'eligible' : 'ineligible']?.title : ''} />
         </header>
         <MarkdownWrapper
-          value={
-            structure
-              ? message?.[computedEligibility ? 'eligible' : 'ineligible']?.[
-                  cardMode ? 'bodyCardMode' : 'body'
-                ]
-              : ''
-          }
+          value={structure ? message?.[computedEligibility ? 'eligible' : 'ineligible']?.[cardMode ? 'bodyCardMode' : 'body'] : ''}
         />
       </ContactFormEligibilityResult>
       {addressData.airtableId &&
         (sondageAnswered ? (
-          <Alert
-            severity="success"
-            title="Merci pour votre contribution"
-          ></Alert>
+          <Alert severity="success" title="Merci pour votre contribution"></Alert>
         ) : (
           <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
             <form onSubmit={sendSondage}>
@@ -144,11 +123,7 @@ Sans attendre, :extra-link[téléchargez notre guide pratique]{href="/documentat
           </div>
         ))}
       <div className="fr-grid-row fr-grid-row--center fr-mt-5w">
-        <UnderlinedLink
-          className="fr-md-auto"
-          href={process.env.NEXT_PUBLIC_FEEDBACK_URL}
-          target="_blank"
-        >
+        <UnderlinedLink className="fr-md-auto" href={process.env.NEXT_PUBLIC_FEEDBACK_URL} target="_blank">
           <img
             src="https://voxusagers.numerique.gouv.fr/static/bouton-bleu.svg"
             alt="Je donne mon avis"

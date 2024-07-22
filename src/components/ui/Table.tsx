@@ -1,8 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import {
-  Pagination,
-  type PaginationProps,
-} from '@codegouvfr/react-dsfr/Pagination';
+import { Pagination, type PaginationProps } from '@codegouvfr/react-dsfr/Pagination';
 import {
   DataGrid,
   GridValidRowModel,
@@ -13,24 +10,19 @@ import {
   type DataGridProps,
   type GridColDef,
 } from '@mui/x-data-grid';
+
 import { ColHeader } from './Table.style';
 
 export type ColumnDef<T extends GridValidRowModel> = GridColDef<T>;
 
-type CustomPaginationProps = Omit<
-  PaginationProps,
-  'count' | 'defaultPage' | 'getPageLinkProps'
->;
+type CustomPaginationProps = Omit<PaginationProps, 'count' | 'defaultPage' | 'getPageLinkProps'>;
 
 export type AdditionalTableProps = {
   paginationProps?: CustomPaginationProps;
   pageSize?: number;
 };
 
-export function CustomPagination({
-  className,
-  ...props
-}: CustomPaginationProps) {
+export function CustomPagination({ className, ...props }: CustomPaginationProps) {
   const apiRef = useGridApiContext();
   const paginationModel = useGridSelector(apiRef, gridPaginationModelSelector);
   const pageCount = useGridSelector(apiRef, gridPageCountSelector);
@@ -64,9 +56,7 @@ export const Table = <T extends GridValidRowModel>({
       disableVirtualization
       columns={columns.map((column) => ({
         ...column,
-        renderHeader:
-          column.renderHeader ??
-          (() => <ColHeader>{column?.headerName}</ColHeader>),
+        renderHeader: column.renderHeader ?? (() => <ColHeader>{column?.headerName}</ColHeader>),
       }))}
       initialState={{
         pagination: { paginationModel: { pageSize } },
@@ -80,18 +70,16 @@ export const Table = <T extends GridValidRowModel>({
           gap: '20px',
         },
         // header
-        '& .MuiDataGrid-columnHeader, & .MuiDataGrid-columnHeaders .MuiDataGrid-filler':
-          {
-            backgroundColor: 'var(--background-alt-grey)',
-            borderBottom: '2px solid #333333',
-          },
+        '& .MuiDataGrid-columnHeader, & .MuiDataGrid-columnHeaders .MuiDataGrid-filler': {
+          backgroundColor: 'var(--background-alt-grey)',
+          borderBottom: '2px solid #333333',
+        },
 
         // fix tooltips in headers
-        '& .MuiDataGrid-columnHeaderTitleContainer, & .MuiDataGrid-columnHeaderTitleContainerContent':
-          {
-            overflow: 'visible',
-            fontWeight: 'bold',
-          },
+        '& .MuiDataGrid-columnHeaderTitleContainer, & .MuiDataGrid-columnHeaderTitleContainerContent': {
+          overflow: 'visible',
+          fontWeight: 'bold',
+        },
         '& .MuiDataGrid-columnHeader--last': {
           overflow: 'initial !important',
         },
@@ -101,10 +89,9 @@ export const Table = <T extends GridValidRowModel>({
           visibility: 'visible',
           width: 'auto',
         },
-        '& .MuiDataGrid-columnHeader:not(.MuiDataGrid-columnHeader--sorted) .MuiDataGrid-sortIcon':
-          {
-            opacity: 0.3,
-          },
+        '& .MuiDataGrid-columnHeader:not(.MuiDataGrid-columnHeader--sorted) .MuiDataGrid-sortIcon': {
+          opacity: 0.3,
+        },
 
         '& .MuiDataGrid-footerContainer': {
           marginTop: '20px',

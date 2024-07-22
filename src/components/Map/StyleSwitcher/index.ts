@@ -41,24 +41,12 @@ export class MapboxStyleSwitcherControl implements IControl {
   private styles: MapboxStyleDefinition[];
   private defaultStyle: string;
 
-  constructor(
-    styles?: MapboxStyleDefinition[],
-    options?: MapboxStyleSwitcherOptions | string
-  ) {
+  constructor(styles?: MapboxStyleDefinition[], options?: MapboxStyleSwitcherOptions | string) {
     this.styles = styles || MapboxStyleSwitcherControl.DEFAULT_STYLES;
-    const defaultStyle =
-      typeof options === 'string'
-        ? options
-        : options
-        ? options.defaultStyle
-        : undefined;
-    this.defaultStyle =
-      defaultStyle || MapboxStyleSwitcherControl.DEFAULT_STYLE;
+    const defaultStyle = typeof options === 'string' ? options : options ? options.defaultStyle : undefined;
+    this.defaultStyle = defaultStyle || MapboxStyleSwitcherControl.DEFAULT_STYLE;
     this.onDocumentClick = this.onDocumentClick.bind(this);
-    this.events =
-      typeof options !== 'string' && options
-        ? options.eventListeners
-        : undefined;
+    this.events = typeof options !== 'string' && options ? options.eventListeners : undefined;
   }
 
   public getDefaultPosition(): ControlPosition {
@@ -97,11 +85,7 @@ export class MapboxStyleSwitcherControl implements IControl {
           elms[0].classList.remove('active');
         }
         srcElement.classList.add('active');
-        if (
-          this.events &&
-          this.events.onChange &&
-          this.events.onChange(event, style)
-        ) {
+        if (this.events && this.events.onChange && this.events.onChange(event, style)) {
           return;
         }
       });
@@ -127,12 +111,7 @@ export class MapboxStyleSwitcherControl implements IControl {
   }
 
   public onRemove(): void {
-    if (
-      !this.controlContainer ||
-      !this.controlContainer.parentNode ||
-      !this.map ||
-      !this.styleButton
-    ) {
+    if (!this.controlContainer || !this.controlContainer.parentNode || !this.map || !this.styleButton) {
       return;
     }
     this.styleButton.removeEventListener('click', this.onDocumentClick);
@@ -156,10 +135,7 @@ export class MapboxStyleSwitcherControl implements IControl {
   }
 
   private onDocumentClick(event: MouseEvent): void {
-    if (
-      this.controlContainer &&
-      !this.controlContainer.contains(event.target as Element)
-    ) {
+    if (this.controlContainer && !this.controlContainer.contains(event.target as Element)) {
       this.closeModal();
     }
   }

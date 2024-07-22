@@ -2,16 +2,17 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import { useSession } from 'next-auth/react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import styled from 'styled-components';
+
 import Input from '@components/form/Input';
 import Heading from '@components/ui/Heading';
 import Modal from '@components/ui/Modal';
 import emailsContentList from '@data/manager/manager-emails-content';
 import emailsList from '@data/manager/manager-emails-list';
-import { useSession } from 'next-auth/react';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { Demand } from 'src/types/Summary/Demand';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
-import styled from 'styled-components';
+import { Demand } from 'src/types/Summary/Demand';
 
 const ModalContentWrapper = styled.div`
   margin-top: -3em;
@@ -67,9 +68,7 @@ function ModalEmails(props: Props) {
 
   const [alreadySent, setAlreadySent] = useState<string[]>([]);
   const [emailKey, setEmailKey] = useState('');
-  const [emailContent, setEmailContent] = useState<EmailContent>(
-    getDefaultEmailContent()
-  );
+  const [emailContent, setEmailContent] = useState<EmailContent>(getDefaultEmailContent());
   const [sent, setSent] = useState(false);
   const [sentError, setSentError] = useState(false);
   const [sentHistory, setSentHistory] = useState<[]>();
@@ -86,12 +85,9 @@ function ModalEmails(props: Props) {
 
   useEffect(() => {
     const getEmailsHistory = async () => {
-      const res = await fetch(
-        `/api/managerEmail?demand_id=${props.currentDemand.id}`,
-        {
-          method: 'GET',
-        }
-      );
+      const res = await fetch(`/api/managerEmail?demand_id=${props.currentDemand.id}`, {
+        method: 'GET',
+      });
       const list = await res.json();
       setSentHistory(list);
     };
@@ -110,10 +106,7 @@ function ModalEmails(props: Props) {
     }
   }, [props.currentDemand]);
 
-  function setEmailContentValue<Key extends keyof EmailContent>(
-    key: Key,
-    value: EmailContent[Key]
-  ) {
+  function setEmailContentValue<Key extends keyof EmailContent>(key: Key, value: EmailContent[Key]) {
     setEmailContent((oldEmailContent) => ({
       ...oldEmailContent,
       [key]: value,
@@ -123,10 +116,7 @@ function ModalEmails(props: Props) {
   const onSelectedEmailChanged = (emailKey: string) => {
     setEmailKey(emailKey);
     setEmailContentValue('object', emailsContentList[emailKey].object);
-    const body = emailsContentList[emailKey].body.replace(
-      '[adresse]',
-      props.currentDemand.Adresse
-    );
+    const body = emailsContentList[emailKey].body.replace('[adresse]', props.currentDemand.Adresse);
     setEmailContentValue('body', body);
   };
 
@@ -161,11 +151,7 @@ function ModalEmails(props: Props) {
         'Emails envoyés': alreadySent.join('\n'),
         'Prise de contact': true, //Prospect recontacté
       };
-      if (
-        emailKey === 'koFarFromNetwok' ||
-        emailKey === 'koIndividualHeat' ||
-        emailKey === 'koOther'
-      ) {
+      if (emailKey === 'koFarFromNetwok' || emailKey === 'koIndividualHeat' || emailKey === 'koOther') {
         updatedFields.Status = DEMANDE_STATUS.UNREALISABLE;
       } else if (emailKey === 'askForPieces') {
         updatedFields.Status = DEMANDE_STATUS.WAITING;
@@ -231,9 +217,7 @@ function ModalEmails(props: Props) {
                         sentHistory &&
                         option.value !== 'other' &&
                         Array.isArray(sentHistory) &&
-                        sentHistory.some(
-                          (email: any) => email.email_key === option.value
-                        ),
+                        sentHistory.some((email: any) => email.email_key === option.value),
                     };
                   }),
                 ]}
@@ -255,8 +239,7 @@ function ModalEmails(props: Props) {
                     type: 'email',
                     required: true,
                     value: emailContent.replyTo,
-                    onChange: (e) =>
-                      setEmailContentValue('replyTo', e.target.value),
+                    onChange: (e) => setEmailContentValue('replyTo', e.target.value),
                   }}
                 />
                 <Input
@@ -274,8 +257,7 @@ function ModalEmails(props: Props) {
                     type: 'text',
                     required: true,
                     value: emailContent.object,
-                    onChange: (e) =>
-                      setEmailContentValue('object', e.target.value),
+                    onChange: (e) => setEmailContentValue('object', e.target.value),
                   }}
                 />
                 <Input
@@ -285,8 +267,7 @@ function ModalEmails(props: Props) {
                     required: true,
                     rows: 10,
                     value: emailContent.body,
-                    onChange: (e) =>
-                      setEmailContentValue('body', e.target.value),
+                    onChange: (e) => setEmailContentValue('body', e.target.value),
                   }}
                 />
                 <Input
@@ -295,8 +276,7 @@ function ModalEmails(props: Props) {
                   nativeInputProps={{
                     required: true,
                     value: emailContent.signature,
-                    onChange: (e) =>
-                      setEmailContentValue('signature', e.target.value),
+                    onChange: (e) => setEmailContentValue('signature', e.target.value),
                   }}
                 />
                 <Button className="fr-mt-2w" type="submit">

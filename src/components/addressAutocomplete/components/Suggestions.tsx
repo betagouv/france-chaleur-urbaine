@@ -8,9 +8,7 @@ type SuggestionListProps = {
 const Suggestions: React.FC<SuggestionListProps> = ({ suggestions }) => (
   <ComboboxList>
     {suggestions.map(({ properties }: SuggestionItem, index) => {
-      return (
-        <ComboboxOption key={properties.id + index} value={properties.label} />
-      );
+      return <ComboboxOption key={properties.id + index} value={properties.label} />;
     })}
   </ComboboxList>
 );

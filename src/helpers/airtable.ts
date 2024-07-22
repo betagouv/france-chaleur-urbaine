@@ -1,12 +1,7 @@
-import {
-  AirtableDemandCreation,
-  FormDemandCreation,
-} from 'src/types/Summary/Demand';
 import { Airtable } from 'src/types/enum/Airtable';
+import { AirtableDemandCreation, FormDemandCreation } from 'src/types/Summary/Demand';
 
-const formatHeatingEnergyToAirtable: (heatingEnergy: string) => string = (
-  heatingEnergy
-) => {
+const formatHeatingEnergyToAirtable: (heatingEnergy: string) => string = (heatingEnergy) => {
   switch (heatingEnergy) {
     case 'électricité':
       return 'Électricité';
@@ -18,9 +13,7 @@ const formatHeatingEnergyToAirtable: (heatingEnergy: string) => string = (
       return 'Autre / Je ne sais pas';
   }
 };
-const formatHeatingTypeToAirtable: (heatingType?: string) => string = (
-  heatingType
-) => {
+const formatHeatingTypeToAirtable: (heatingType?: string) => string = (heatingType) => {
   switch (heatingType) {
     case 'individuel':
       return 'Individuel';
@@ -31,9 +24,7 @@ const formatHeatingTypeToAirtable: (heatingType?: string) => string = (
   }
 };
 
-export const formatDataToAirtable: (
-  values: FormDemandCreation
-) => AirtableDemandCreation = (values) => {
+export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDemandCreation = (values) => {
   const {
     address,
     coords,
@@ -82,10 +73,7 @@ export const formatDataToAirtable: (
   };
 };
 
-export const submitToAirtable = async (
-  values: any,
-  type: Airtable
-): Promise<Response> => {
+export const submitToAirtable = async (values: any, type: Airtable): Promise<Response> => {
   const res = await fetch('/api/airtable/records', {
     method: 'POST',
     headers: {
@@ -99,11 +87,7 @@ export const submitToAirtable = async (
   return res;
 };
 
-export const updateAirtable = async (
-  recordId: string,
-  values: any,
-  type: string
-): Promise<Response> => {
+export const updateAirtable = async (recordId: string, values: any, type: string): Promise<Response> => {
   return fetch(`./api/airtable/records/${recordId}`, {
     method: 'PUT',
     headers: {

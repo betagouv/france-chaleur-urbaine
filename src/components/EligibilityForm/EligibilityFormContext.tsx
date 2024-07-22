@@ -1,4 +1,5 @@
 import React, { useMemo, useReducer } from 'react';
+
 import { Point } from 'src/types/Point';
 
 const initialState = {
@@ -8,10 +9,7 @@ const initialState = {
   status: '',
 };
 
-function reducer(
-  state: typeof initialState,
-  action: { type: string; value: any }
-) {
+function reducer(state: typeof initialState, action: { type: string; value: any }) {
   switch (action.type) {
     case 'address':
       return { ...initialState, ...state, address: action.value };
@@ -28,9 +26,7 @@ function reducer(
 
 export const Context = React.createContext(initialState);
 
-const EligibilityFormProvider: React.FC<{ children?: React.ReactNode }> = ({
-  children,
-}) => {
+const EligibilityFormProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const contextValue = useMemo(() => ({ ...state, dispatch }), [state]);
 

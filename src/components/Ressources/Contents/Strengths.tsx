@@ -1,4 +1,5 @@
 import Box from '@components/ui/Box';
+
 import { List, Subtitle } from './Contents.styles';
 
 const contents = [
@@ -27,9 +28,7 @@ const contents = [
   },
   {
     title: 'Emploi :',
-    list: [
-      'Une source d’emploi non délocalisable (construction, fonctionnement, maintenance).',
-    ],
+    list: ['Une source d’emploi non délocalisable (construction, fonctionnement, maintenance).'],
   },
 ];
 
@@ -39,11 +38,7 @@ const Strengths = () => {
       {contents.map((content, index) => (
         <Box key={content.title} className="fr-grid-row fr-my-4w">
           <Box className="fr-col-sm fr-col-md-1 fr-hidden fr-unhidden-md">
-            <img
-              width="100%"
-              src={`/img/ressources-strenghts-${index + 1}.svg`}
-              alt=""
-            />
+            <img width="100%" src={`/img/ressources-strenghts-${index + 1}.svg`} alt="" />
           </Box>
           <Box className="fr-col-sm-12 fr-col-md-11">
             <Subtitle>{content.title}</Subtitle>

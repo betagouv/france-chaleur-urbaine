@@ -1,4 +1,5 @@
 import Link from 'next/link';
+
 import { Container, Separator } from './ClassedNetwork.styles';
 
 const ClassedNetwork = ({ externalLinks }: { externalLinks?: boolean }) => {

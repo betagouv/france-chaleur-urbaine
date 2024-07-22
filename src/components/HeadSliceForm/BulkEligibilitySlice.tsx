@@ -2,11 +2,7 @@ import BulkEligibilityForm from '@components/EligibilityForm/BulkEligibilityForm
 import Slice from '@components/Slice/Slice';
 import WrappedText from '@components/WrappedText/WrappedText';
 
-const BulkEligibilitySlice = ({
-  displayBulkEligibility,
-}: {
-  displayBulkEligibility: boolean;
-}) => {
+const BulkEligibilitySlice = ({ displayBulkEligibility }: { displayBulkEligibility: boolean }) => {
   return (
     <div id="test-liste">
       {displayBulkEligibility && (

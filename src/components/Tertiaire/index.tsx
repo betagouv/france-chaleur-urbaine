@@ -1,17 +1,18 @@
 import HeadSliceForm from '@components/HeadSliceForm';
 import MarkdownWrapper from '@components/MarkdownWrapper';
-import Understanding from '@components/Ressources/Understanding';
 import { growths, issues, understandings } from '@components/Ressources/config';
+import Understanding from '@components/Ressources/Understanding';
+import { GlobalStyle } from '@components/shared/layout/Global.style';
 import Simulator from '@components/SimulatorCO2';
 import { TypeSurf } from '@components/SimulatorCO2/SimulatorCO2.businessRule';
 import Slice from '@components/Slice';
 import SliceForm from '@components/SliceForm';
 import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
-import { GlobalStyle } from '@components/shared/layout/Global.style';
 import { comparatifRcu, fcuSolutionForFutur } from '@data/tertiaire';
-import Owner from './Owner';
+
 import { TertiaireStyle } from './index.styles';
+import Owner from './Owner';
 
 const tertiaireCards = {
   'energies-vertes': issues['energies-vertes'],
@@ -23,14 +24,8 @@ const tertiaireCards = {
 export default function Tertiaire({ alt }: { alt?: boolean }) {
   const futur = (
     <Slice theme="color" padding={4}>
-      <MarkdownWrapper
-        value={fcuSolutionForFutur.body}
-        className="fcuSolutionForFuturBody"
-      />
-      <MarkdownWrapper
-        value={fcuSolutionForFutur.listing}
-        className="fcuSolutionForFuturListing"
-      />
+      <MarkdownWrapper value={fcuSolutionForFutur.body} className="fcuSolutionForFuturBody" />
+      <MarkdownWrapper value={fcuSolutionForFutur.listing} className="fcuSolutionForFuturListing" />
     </Slice>
   );
 
@@ -43,11 +38,7 @@ export default function Tertiaire({ alt }: { alt?: boolean }) {
         bg="/img/head-slice-bg-tertiaire.png"
         pageBody={`
 Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
-# ${
-          alt
-            ? 'Décret tertiaire : optez pour le chauffage urbain'
-            : 'Optez pour le chauffage urbain, écologique et économique'
-        }`}
+# ${alt ? 'Décret tertiaire : optez pour le chauffage urbain' : 'Optez pour le chauffage urbain, écologique et économique'}`}
         formLabel="Votre bâtiment pourrait-il être raccordé&nbsp;?"
         energyInputsLabels={{
           collectif: 'Central',
@@ -74,11 +65,7 @@ Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
         <SliceForm />
       </Slice>
 
-      <Slice
-        theme="color"
-        padding={8}
-        header={`## Un moyen efficace de lutter contre le changement climatique`}
-      >
+      <Slice theme="color" padding={8} header={`## Un moyen efficace de lutter contre le changement climatique`}>
         <Simulator typeSurf={TypeSurf.tertiaire}>
           <MarkdownWrapper
             value={`
@@ -99,13 +86,7 @@ Vos locaux sont chauffés au fioul ou au gaz&nbsp;?
         <WrappedBlock data={comparatifRcu} />
       </Slice>
 
-      <Slice
-        theme="grey"
-        padding={7}
-        header={`## Découvrez les dispositifs d’aides`}
-        direction="row"
-        className="aides-rcu"
-      >
+      <Slice theme="grey" padding={7} header={`## Découvrez les dispositifs d’aides`} direction="row" className="aides-rcu">
         <MarkdownWrapper
           value={`##### Vous souhaitez raccorder vos locaux au chauffage urbain&nbsp;?  
 

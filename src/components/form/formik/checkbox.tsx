@@ -1,6 +1,7 @@
+import { ErrorMessage } from 'formik';
+
 import { useFormInputAutoId } from '@hooks';
 import { _hasError } from '@utils/form-utils';
-import { ErrorMessage } from 'formik';
 
 const Checkbox = ({ label, field, form, id, ...otherProps }: any) => {
   const hasError = _hasError(field.name, form);
@@ -13,13 +14,7 @@ const Checkbox = ({ label, field, form, id, ...otherProps }: any) => {
       <label htmlFor={inputId} className="fr-label">
         {label}
       </label>
-      {hasError && (
-        <ErrorMessage
-          name={field.name}
-          component={'p'}
-          className="fr-error-text"
-        />
-      )}
+      {hasError && <ErrorMessage name={field.name} component={'p'} className="fr-error-text" />}
     </div>
   );
 };

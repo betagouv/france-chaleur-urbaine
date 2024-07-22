@@ -1,9 +1,10 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import { FormEvent, useState } from 'react';
+
 import Input from '@components/form/Input';
 import { submitToAirtable } from '@helpers/airtable';
-import { FormEvent, useState } from 'react';
 import { Airtable } from 'src/types/enum/Airtable';
 
 const ContactForm = () => {
@@ -34,16 +35,9 @@ const ContactForm = () => {
   return (
     <>
       {sent ? (
-        <Alert
-          severity="success"
-          title="Merci pour votre message"
-          description="Nous reviendrons rapidement vers vous."
-        />
+        <Alert severity="success" title="Merci pour votre message" description="Nous reviendrons rapidement vers vous." />
       ) : (
-        <form
-          onSubmit={submit}
-          className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6"
-        >
+        <form onSubmit={submit} className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6">
           <Input
             label="Votre nom :"
             nativeInputProps={{

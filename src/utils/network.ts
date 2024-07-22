@@ -8,10 +8,7 @@ export const fetchJSON = async <Data = any>(url: string): Promise<Data> => {
   return await res.json();
 };
 
-export const postFetchJSON = async <Data = any>(
-  url: string,
-  body: any
-): Promise<Data> => {
+export const postFetchJSON = async <Data = any>(url: string, body: any): Promise<Data> => {
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -27,9 +24,7 @@ export const postFetchJSON = async <Data = any>(
   return await res.json();
 };
 
-export const deleteFetchJSON = async <Data = any>(
-  url: string
-): Promise<Data> => {
+export const deleteFetchJSON = async <Data = any>(url: string): Promise<Data> => {
   const res = await fetch(url, {
     method: 'DELETE',
     headers: {

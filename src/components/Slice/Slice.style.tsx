@@ -101,8 +101,7 @@ export const SliceBody = styled.div<{
 }>`
   display: flex;
   flex-direction: column;
-  ${({ justifyContent }) =>
-    justifyContent && `justify-content: ${justifyContent};`}
+  ${({ justifyContent }) => justifyContent && `justify-content: ${justifyContent};`}
 
   @media (min-width: 992px) {
     flex-direction: ${({ direction }) => direction || 'column'};

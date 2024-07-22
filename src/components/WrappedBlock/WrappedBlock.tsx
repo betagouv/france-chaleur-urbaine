@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ImgBlock from './ImgBlock';
 import TextBlock from './TextBlock';
 import { Container } from './WrappedBlock.style';
@@ -10,10 +11,7 @@ const WrappedText: React.FC<{
   direction?: string;
   className?: string;
 }> = ({ children, data, reverse, direction, className }) => {
-  const mapFunc = (
-    { type, props }: { type?: string; props?: Record<string, unknown> },
-    index: number
-  ) => {
+  const mapFunc = ({ type, props }: { type?: string; props?: Record<string, unknown> }, index: number) => {
     const key = index;
     switch (type) {
       case 'image': {

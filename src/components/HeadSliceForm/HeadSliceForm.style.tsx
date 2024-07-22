@@ -29,11 +29,7 @@ export const HeadSliceContainer = styled.div<{ needGradient?: boolean }>`
     margin: 0 -1rem;
     padding: 0 1rem;
     background-color: rgba(256, 256, 256, 0.8);
-    background-image: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(79 173 199 / 50%)
-    );
+    background-image: linear-gradient(to bottom, transparent, rgb(79 173 199 / 50%));
   }
 
   @media (max-width: 1440px) {

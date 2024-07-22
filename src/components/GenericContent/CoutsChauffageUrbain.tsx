@@ -1,9 +1,10 @@
+import Image from 'next/image';
+
 import SimulateurCoutRaccordement from '@components/Ressources/Contents/SimulateurCoutRaccordement';
 import Box, { ResponsiveRow } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import Image from 'next/image';
 
 const CoutsChauffageUrbain = () => {
   return (
@@ -17,20 +18,15 @@ const CoutsChauffageUrbain = () => {
           Le coût du raccordement
         </Heading>
         <Text>
-          Le coup de pouce{' '}
-          <Link href="/ressources/aides#contenu">
-            "Chauffage des bâtiments résidentiels collectifs et tertiaires”
-          </Link>{' '}
-          permet d’obtenir des aides financières conséquentes pour se raccorder.
-          Le coût du raccordement peut ainsi être réduit à quelques centaines
-          d’euros par logement.
+          Le coup de pouce <Link href="/ressources/aides#contenu">"Chauffage des bâtiments résidentiels collectifs et tertiaires”</Link>{' '}
+          permet d’obtenir des aides financières conséquentes pour se raccorder. Le coût du raccordement peut ainsi être réduit à quelques
+          centaines d’euros par logement.
         </Text>
         <Text my="3w">
-          Différentes entreprises signataires de la charte "Chauffage des
-          bâtiments résidentiels collectifs et tertiaires” offrent cette prime.{' '}
+          Différentes entreprises signataires de la charte "Chauffage des bâtiments résidentiels collectifs et tertiaires” offrent cette
+          prime.{' '}
           <strong>
-            Le montant de la prime peut significativement varier d’une
-            entreprise à l’autre, il est donc important de comparer les offres
+            Le montant de la prime peut significativement varier d’une entreprise à l’autre, il est donc important de comparer les offres
             proposées.
           </strong>
         </Text>
@@ -45,15 +41,12 @@ const CoutsChauffageUrbain = () => {
       <ResponsiveRow>
         <Box flex>
           <Text>
-            Le <Link href="/chauffage-urbain#contenu">chauffage urbain</Link>{' '}
-            est en moyenne le mode de chauffage le moins cher sur le marché pour
-            les logements en habitat collectif (copropriété, logement
-            social...), devant le gaz, l’électricité et le fioul. L’usage
-            d’énergies locales assure également une certaine stabilité des prix.
+            Le <Link href="/chauffage-urbain#contenu">chauffage urbain</Link> est en moyenne le mode de chauffage le moins cher sur le
+            marché pour les logements en habitat collectif (copropriété, logement social...), devant le gaz, l’électricité et le fioul.
+            L’usage d’énergies locales assure également une certaine stabilité des prix.
           </Text>
           <Text mt="3w">
-            Retrouvez le prix moyen de la chaleur pour les réseaux classés sur
-            les fiches accessibles depuis notre{' '}
+            Retrouvez le prix moyen de la chaleur pour les réseaux classés sur les fiches accessibles depuis notre{' '}
             <Link href="/carte">cartographie</Link>.
           </Text>
         </Box>
@@ -66,10 +59,8 @@ const CoutsChauffageUrbain = () => {
             className="fr-responsive-img"
           />
           <Text size="xs">
-            Coût global annuel chauffage + eau chaude sanitaire pour un logement
-            moyen (70&nbsp;m²) construit entre 2005 et 2012 (consommation :
-            96&nbsp;kWhu/m²/an). Enquête sur le prix de vente de la chaleur et
-            du froid 2022 (Amorce 2023)
+            Coût global annuel chauffage + eau chaude sanitaire pour un logement moyen (70&nbsp;m²) construit entre 2005 et 2012
+            (consommation : 96&nbsp;kWhu/m²/an). Enquête sur le prix de vente de la chaleur et du froid 2022 (Amorce 2023)
           </Text>
         </Box>
       </ResponsiveRow>

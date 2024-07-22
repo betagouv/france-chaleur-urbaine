@@ -86,8 +86,7 @@ export const ContactFormResultMessage = styled.div<{
   eligible?: boolean;
   cardMode?: boolean;
 }>`
-  box-shadow: inset ${(cardMode) => (cardMode ? '8px' : '16px')} 0 0 0
-    ${({ eligible }) => (eligible ? '#78EB7B' : '#ea7c3f')};
+  box-shadow: inset ${(cardMode) => (cardMode ? '8px' : '16px')} 0 0 0 ${({ eligible }) => (eligible ? '#78EB7B' : '#ea7c3f')};
   background-color: var(--g200);
   margin-bottom: 8px;
   font-size: ${({ cardMode }) => (cardMode ? '14px' : '16px')};

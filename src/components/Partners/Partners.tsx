@@ -1,17 +1,14 @@
 import ButtonsGroup from '@codegouvfr/react-dsfr/ButtonsGroup';
+import { useCallback, useEffect, useState } from 'react';
+
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
 import { partenaires } from '@data/partenaires/partnerData';
 import { shuffleArray } from '@utils/array';
-import { useCallback, useEffect, useState } from 'react';
-import {
-  Arrow,
-  PartnerImage,
-  PartnerImages,
-  PartnerLink,
-} from './Partners.style';
+
+import { Arrow, PartnerImage, PartnerImages, PartnerLink } from './Partners.style';
 
 const Partners = () => {
   const [firstLogo, setFirstLogo] = useState(0);
@@ -23,9 +20,7 @@ const Partners = () => {
 
   const setNextLogo = useCallback(
     (value: number) => {
-      setFirstLogo(
-        (firstLogo + value + partenaires.length) % partenaires.length
-      );
+      setFirstLogo((firstLogo + value + partenaires.length) % partenaires.length);
     },
     [firstLogo]
   );
@@ -42,9 +37,8 @@ const Partners = () => {
           Notre réseau de partenaires
         </Heading>
         <Text textAlign="center" maxWidth="80w" className="fr-m-md-auto">
-          Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent
-          au développement du service, apportent des données, utilisent le
-          service ou s’en font le relais.
+          Plusieurs acteurs soutiennent France Chaleur Urbaine : ils contribuent au développement du service, apportent des données,
+          utilisent le service ou s’en font le relais.
         </Text>
 
         <Box display="flex" alignItems="center" gap="16px" mt="8w">
@@ -53,13 +47,7 @@ const Partners = () => {
           </Arrow>
           <PartnerImages>
             {logos.map(({ image, title, link }, index) => (
-              <PartnerLink
-                show={index >= firstLogo}
-                href={link}
-                target="_blank"
-                rel="noreferrer noopener"
-                key={title}
-              >
+              <PartnerLink show={index >= firstLogo} href={link} target="_blank" rel="noreferrer noopener" key={title}>
                 <PartnerImage src={image} alt={title} loading="lazy" />
               </PartnerLink>
             ))}

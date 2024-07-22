@@ -1,12 +1,9 @@
-import { updateDemand } from '@core/infrastructure/repository/manager';
-import {
-  handleRouteErrors,
-  requirePutMethod,
-  validateObjectSchema,
-} from '@helpers/server';
 import type { NextApiRequest } from 'next';
-import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import { z } from 'zod';
+
+import { updateDemand } from '@core/infrastructure/repository/manager';
+import { handleRouteErrors, requirePutMethod, validateObjectSchema } from '@helpers/server';
+import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 
 const zDemandUpdate = {
   Status: z.nativeEnum(DEMANDE_STATUS).optional(),
@@ -27,11 +24,7 @@ export default handleRouteErrors(
 
     const demandUpdate = await validateObjectSchema(req.body, zDemandUpdate);
 
-    const demand = await updateDemand(
-      req.user,
-      req.query.demandId as string,
-      demandUpdate
-    );
+    const demand = await updateDemand(req.user, req.query.demandId as string, demandUpdate);
     return demand;
   },
   {

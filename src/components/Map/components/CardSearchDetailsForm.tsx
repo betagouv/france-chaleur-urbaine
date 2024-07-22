@@ -1,16 +1,11 @@
-import {
-  EligibilityFormAddress,
-  EligibilityFormContact,
-  EligibilityFormMessageConfirmation,
-} from '@components/EligibilityForm';
+import React, { useCallback, useState } from 'react';
+
+import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@components/EligibilityForm';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
-import React, { useCallback, useState } from 'react';
-import {
-  CardSearchDetailsFormStyle,
-  ContactFormWrapper,
-} from './CardSearchDetailsForm.style';
+
+import { CardSearchDetailsFormStyle, ContactFormWrapper } from './CardSearchDetailsForm.style';
 
 const CardSearchDetailsForm: React.FC<{
   fullAddress: any;
@@ -62,24 +57,16 @@ const CardSearchDetailsForm: React.FC<{
       <CardSearchDetailsFormStyle />
       <div ref={EligibilityFormContactRef}>
         <ContactFormWrapper active={contactReady && !messageReceived}>
-          <EligibilityFormContact
-            addressData={addressData}
-            onSubmit={handleSubmitForm}
-            cardMode
-          />
+          <EligibilityFormContact addressData={addressData} onSubmit={handleSubmitForm} cardMode />
           {contactFormError && (
             <Box textColor="#c00" mt="1w">
-              Une erreur est survenue. Veuillez réessayer ou bien{' '}
-              <Link href="/contact">contacter le support</Link>.
+              Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
             </Box>
           )}
         </ContactFormWrapper>
 
         <ContactFormWrapper active={messageReceived}>
-          <EligibilityFormMessageConfirmation
-            addressData={addressData}
-            cardMode
-          />
+          <EligibilityFormMessageConfirmation addressData={addressData} cardMode />
         </ContactFormWrapper>
       </div>
     </>

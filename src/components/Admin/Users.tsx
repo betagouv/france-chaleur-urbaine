@@ -1,12 +1,14 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
+import { useEffect, useMemo, useState } from 'react';
+import { Oval } from 'react-loader-spinner';
+
 import Input from '@components/form/Input';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import { Table, type ColumnDef } from '@components/ui/Table';
-import { useEffect, useMemo, useState } from 'react';
-import { Oval } from 'react-loader-spinner';
 import { useServices } from 'src/services';
 import { type UserResponse } from 'src/types/UserResponse';
+
 import { TableContainer } from './Users.styles';
 
 const columns: ColumnDef<UserResponse>[] = [
@@ -43,9 +45,7 @@ const Users = () => {
   }, [adminService]);
 
   const filteredUsers = useMemo(() => {
-    return filter
-      ? users.filter((user) => user.email.includes(filter.toLowerCase()))
-      : users;
+    return filter ? users.filter((user) => user.email.includes(filter.toLowerCase())) : users;
   }, [users, filter]);
 
   return (
@@ -64,14 +64,7 @@ const Users = () => {
           }}
         />
       </Box>
-      <Table
-        columns={columns}
-        rows={filteredUsers}
-        getRowId={(row) => row.email}
-        autoHeight
-        autosizeOnMount
-        disableRowSelectionOnClick
-      />
+      <Table columns={columns} rows={filteredUsers} getRowId={(row) => row.email} autoHeight autosizeOnMount disableRowSelectionOnClick />
       {filteredUsers.length === 0 && <p>Pas de résultat</p>}
 
       <Box mt="3w">
@@ -86,8 +79,7 @@ const Users = () => {
               });
             }}
           >
-            Exporter la liste des comptes obsolètes (connexion de plus de 6 mois
-            ou nulle)
+            Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
           </Button>
         )}
       </Box>

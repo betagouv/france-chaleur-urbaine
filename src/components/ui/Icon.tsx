@@ -1,6 +1,7 @@
 import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 import { CSSProperties, HTMLAttributes } from 'react';
 import styled from 'styled-components';
+
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type StyledIconProps = {
@@ -26,39 +27,18 @@ type IconProps = StyledIconProps & {
   // dsfr size
   size?: 'xs' | 'sm' | 'md' | 'lg';
   // remix icons size
-  riSize?:
-    | 'xs'
-    | 'sm'
-    | 'lg'
-    | 'xl'
-    | 'xxs'
-    | '1x'
-    | '2x'
-    | '3x'
-    | '4x'
-    | '5x'
-    | '6x'
-    | '7x'
-    | '8x'
-    | '9x'
-    | '10x';
+  riSize?: 'xs' | 'sm' | 'lg' | 'xl' | 'xxs' | '1x' | '2x' | '3x' | '4x' | '5x' | '6x' | '7x' | '8x' | '9x' | '10x';
 };
 
 /**
  * Renders an Icon with UI helpers and that can rotate.
  */
-function Icon({
-  name,
-  size,
-  riSize,
-  className,
-  ...props
-}: IconProps & SpacingProperties & HTMLAttributes<HTMLDivElement>) {
+function Icon({ name, size, riSize, className, ...props }: IconProps & SpacingProperties & HTMLAttributes<HTMLDivElement>) {
   return (
     <StyledIcon
-      className={`${name ?? ''} ${size ? `fr-icon--${size}` : ''} ${
-        riSize ? `ri-${riSize}` : ''
-      } ${className ?? ''} ${spacingsToClasses(props)}`}
+      className={`${name ?? ''} ${size ? `fr-icon--${size}` : ''} ${riSize ? `ri-${riSize}` : ''} ${className ?? ''} ${spacingsToClasses(
+        props
+      )}`}
       aria-hidden
       {...props}
     />

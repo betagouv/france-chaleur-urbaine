@@ -1,10 +1,11 @@
+import Image from 'next/image';
+
 import { StyledInfographieItem } from '@components/Ressources/Contents/Contents.styles';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import Image from 'next/image';
 import { TrackingEvent } from 'src/services/analytics';
 
 const infographies: InfographieItemProps[] = [
@@ -229,33 +230,19 @@ const SupportsPage = () => {
   return (
     <SimplePage title="Nos supports - France Chaleur Urbaine">
       <Box backgroundColor="blue-cumulus-950-100">
-        <Box
-          display="flex"
-          gap="16px"
-          maxWidth="1000px"
-          mx="auto"
-          pt="8w"
-          px="2w"
-        >
+        <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>
             <Heading size="h1" color="blue-france">
               Nos supports pédagogiques
             </Heading>
             <Text size="lg" mb="3w">
-              Retrouvez tous nos supports de communication pour comprendre
-              simplement et rapidement les enjeux liés aux réseaux de chaleur ou
-              mieux connaître notre service.
+              Retrouvez tous nos supports de communication pour comprendre simplement et rapidement les enjeux liés aux réseaux de chaleur
+              ou mieux connaître notre service.
             </Text>
           </Box>
 
           <Box className="fr-hidden fr-unhidden-lg">
-            <Image
-              src="/img/ressources_header.webp"
-              alt=""
-              width={152}
-              height={180}
-              priority
-            />
+            <Image src="/img/ressources_header.webp" alt="" width={152} height={180} priority />
           </Box>
         </Box>
       </Box>
@@ -322,10 +309,7 @@ interface InfographieItemProps {
 }
 
 const InfographieItem = ({ width = 150, ...props }: InfographieItemProps) => (
-  <StyledInfographieItem
-    className="fr-card fr-card--no-border fr-card--no-background fr-enlarge-link"
-    width={width}
-  >
+  <StyledInfographieItem className="fr-card fr-card--no-border fr-card--no-background fr-enlarge-link" width={width}>
     <Link href={props.linkUrl} isExternal eventKey={props.eventKey}>
       <img src={props.imgUrl} alt="" loading="lazy" width={width} />
       <Text size="sm" p="1v">

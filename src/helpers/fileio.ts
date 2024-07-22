@@ -1,6 +1,8 @@
 import { readFile } from 'fs/promises';
-import { logger } from './logger';
+
 import axios from 'axios';
+
+import { logger } from './logger';
 
 export const FILEIO_API_URL = 'https://file.io/';
 

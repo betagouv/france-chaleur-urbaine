@@ -1,5 +1,6 @@
 import { HttpClient } from 'src/services/http';
 import { SuggestionResponse } from 'src/types/Suggestions';
+
 import { ServiceError } from './errors';
 
 export class SuggestionService {
@@ -7,10 +8,7 @@ export class SuggestionService {
   constructor(http: HttpClient) {
     this.httpClient = http;
   }
-  async fetchSuggestions(
-    searchTerm: string,
-    params?: { limit: string }
-  ): Promise<SuggestionResponse> {
+  async fetchSuggestions(searchTerm: string, params?: { limit: string }): Promise<SuggestionResponse> {
     try {
       const baseURL = process.env.NEXT_PUBLIC_BAN_API_BASE_URL;
 
@@ -19,9 +17,7 @@ export class SuggestionService {
         ...params,
       }).toString();
 
-      return await this.httpClient.get<SuggestionResponse>(
-        `${baseURL}?${queryString}`
-      );
+      return await this.httpClient.get<SuggestionResponse>(`${baseURL}?${queryString}`);
     } catch (e) {
       throw new ServiceError(e);
     }

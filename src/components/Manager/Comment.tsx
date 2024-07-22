@@ -1,8 +1,9 @@
 import { useEffect, useMemo } from 'react';
-import { Demand } from 'src/types/Summary/Demand';
-import { TextAreaInput } from './Comment.styles';
 
 import debounce from '@utils/debounce';
+import { Demand } from 'src/types/Summary/Demand';
+
+import { TextAreaInput } from './Comment.styles';
 
 const Comment = ({
   demand,

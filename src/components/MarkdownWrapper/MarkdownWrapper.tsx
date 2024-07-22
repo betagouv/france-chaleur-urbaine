@@ -9,6 +9,7 @@ import remarkDirectiveRehype from 'remark-directive-rehype';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
+
 import {
   ArrowItem,
   ButtonLink,
@@ -31,10 +32,7 @@ export const RoutedLink = (props: any) => {
   const { href, target } = props;
   const extProps = {
     target: target || (href && isExternalLink(href) ? '_blank' : undefined),
-    rel:
-      href && isExternalLink(href)
-        ? ['nofollow', 'noopener', 'noreferrer'].join(' ')
-        : '',
+    rel: href && isExternalLink(href) ? ['nofollow', 'noopener', 'noreferrer'].join(' ') : '',
   };
   return <Link {...props} {...extProps} />;
 };
@@ -88,11 +86,7 @@ const MarkdownWrapper: React.FC<{
   return typeof value === 'object' ? (
     value
   ) : (
-    <MarkdownWrapperStyled
-      className={className}
-      id={id && String(id)}
-      {...props}
-    >
+    <MarkdownWrapperStyled className={className} id={id && String(id)} {...props}>
       {
         processor({
           'check-item': CheckItem,

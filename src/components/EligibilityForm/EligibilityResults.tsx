@@ -18,9 +18,7 @@ const closeCollectifOriginal = {
   ) => `
 ### Bonne nouvelle !
 
-::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${
-    distance ? `(${distance})` : ''
-  }.]
+::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${distance ? `(${distance})` : ''}.]
 ${
   isClasse && !hasPDP && !inPDP
     ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
@@ -35,17 +33,11 @@ ${
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR
-          ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.`
-          : ''
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
       }]`
     : ''
 }
-${
-  city === 'Paris'
-    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
-    : ''
-}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
 `,
   text: `
 **France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
@@ -66,15 +58,10 @@ const closeCollectifAmeliorationA = {
   ) => (
     <Box display="flex" flexDirection="column" gap="32px">
       <Box display="flex" gap="16px">
-        <img
-          src="/img/reponses_tests_pouce_haut.webp"
-          alt=""
-          className="fr-col--top"
-        />
+        <img src="/img/reponses_tests_pouce_haut.webp" alt="" className="fr-col--top" />
         <Box backgroundColor="#C1C1C1" width="1px" />
         <Text>
-          Un réseau de chaleur <strong>passe à proximité immédiate</strong> de
-          votre adresse{' '}
+          Un réseau de chaleur <strong>passe à proximité immédiate</strong> de votre adresse{' '}
           {distance
             ? `
           (${distance})`
@@ -84,54 +71,33 @@ const closeCollectifAmeliorationA = {
       </Box>
       {(inPDP || (isClasse && !hasPDP)) && (
         <Box display="flex" gap="16px">
-          <img
-            src="/img/reponses_tests_réseau_classé.webp"
-            alt=""
-            className="fr-col--top"
-          />
+          <img src="/img/reponses_tests_réseau_classé.webp" alt="" className="fr-col--top" />
           <Box backgroundColor="#C1C1C1" width="1px" />
           <Text>
-            Votre bâtiment est situé à proximité d’un réseau classé&nbsp;:{' '}
-            <strong>une obligation de raccordement peut exister</strong> en cas
-            de renouvellement de votre mode de chauffage. Une amende de 300 000€
-            peut s’appliquer en cas de non-raccordement sans dérogation.
+            Votre bâtiment est situé à proximité d’un réseau classé&nbsp;: <strong>une obligation de raccordement peut exister</strong> en
+            cas de renouvellement de votre mode de chauffage. Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans
+            dérogation.
           </Text>
         </Box>
       )}
 
       <Box display="flex" gap="16px">
-        <img
-          src="/img/reponses_tests_pouce_haut.webp"
-          alt=""
-          className="fr-col--top"
-        />
+        <img src="/img/reponses_tests_pouce_haut.webp" alt="" className="fr-col--top" />
         <Box backgroundColor="#C1C1C1" width="1px" />
         <Text>
-          Avec un chauffage collectif,{' '}
-          <strong>
-            votre immeuble dispose des équipements nécessaires&nbsp;!
-          </strong>
+          Avec un chauffage collectif, <strong>votre immeuble dispose des équipements nécessaires&nbsp;!</strong>
         </Text>
       </Box>
 
       <Box display="flex" gap="16px">
-        <img
-          src="/img/reponses_tests_information.webp"
-          alt=""
-          className="fr-col--top"
-        />
+        <img src="/img/reponses_tests_information.webp" alt="" className="fr-col--top" />
         <Box backgroundColor="#C1C1C1" width="1px" />
         <Text>
-          Le gestionnaire est {gestionnaire}. Le taux d’énergies renouvelables
-          et de récupération du réseau est de <strong>{tauxENRR}%</strong>.
+          Le gestionnaire est {gestionnaire}. Le taux d’énergies renouvelables et de récupération du réseau est de{' '}
+          <strong>{tauxENRR}%</strong>.
         </Text>
       </Box>
-      {city === 'Paris' && (
-        <Text size="sm">
-          A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au moins
-          100&nbsp;kW.
-        </Text>
-      )}
+      {city === 'Paris' && <Text size="sm">A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</Text>}
     </Box>
   ),
   text: `
@@ -153,9 +119,7 @@ const closeCollectifAmeliorationB = {
   ) => `
 ### Bonne nouvelle !
 
-::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${
-    distance ? `(${distance})` : ''
-  }.]
+::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${distance ? `(${distance})` : ''}.]
 ${
   isClasse && !hasPDP && !inPDP
     ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
@@ -170,17 +134,11 @@ ${
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR
-          ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.`
-          : ''
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
       }]`
     : ''
 }
-${
-  city === 'Paris'
-    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
-    : ''
-}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
 `,
   text: '#### Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau',
 };
@@ -198,15 +156,10 @@ const closeCollectifAmeliorationAB = {
   ) => (
     <Box display="flex" flexDirection="column" gap="32px">
       <Box display="flex" gap="16px">
-        <img
-          src="/img/reponses_tests_pouce_haut.webp"
-          alt=""
-          className="fr-col--top"
-        />
+        <img src="/img/reponses_tests_pouce_haut.webp" alt="" className="fr-col--top" />
         <Box backgroundColor="#C1C1C1" width="1px" />
         <Text>
-          Un réseau de chaleur <strong>passe à proximité immédiate</strong> de
-          votre adresse{' '}
+          Un réseau de chaleur <strong>passe à proximité immédiate</strong> de votre adresse{' '}
           {distance
             ? `
           (${distance})`
@@ -217,54 +170,33 @@ const closeCollectifAmeliorationAB = {
 
       {(inPDP || (isClasse && !hasPDP)) && (
         <Box display="flex" gap="16px">
-          <img
-            src="/img/reponses_tests_réseau_classé.webp"
-            alt=""
-            className="fr-col--top"
-          />
+          <img src="/img/reponses_tests_réseau_classé.webp" alt="" className="fr-col--top" />
           <Box backgroundColor="#C1C1C1" width="1px" />
           <Text>
-            Votre bâtiment est situé à proximité d’un réseau classé&nbsp;:{' '}
-            <strong>une obligation de raccordement peut exister</strong> en cas
-            de renouvellement de votre mode de chauffage. Une amende de 300 000€
-            peut s’appliquer en cas de non-raccordement sans dérogation.
+            Votre bâtiment est situé à proximité d’un réseau classé&nbsp;: <strong>une obligation de raccordement peut exister</strong> en
+            cas de renouvellement de votre mode de chauffage. Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans
+            dérogation.
           </Text>
         </Box>
       )}
 
       <Box display="flex" gap="16px">
-        <img
-          src="/img/reponses_tests_pouce_haut.webp"
-          alt=""
-          className="fr-col--top"
-        />
+        <img src="/img/reponses_tests_pouce_haut.webp" alt="" className="fr-col--top" />
         <Box backgroundColor="#C1C1C1" width="1px" />
         <Text>
-          Avec un chauffage collectif,{' '}
-          <strong>
-            votre immeuble dispose des équipements nécessaires&nbsp;!
-          </strong>
+          Avec un chauffage collectif, <strong>votre immeuble dispose des équipements nécessaires&nbsp;!</strong>
         </Text>
       </Box>
 
       <Box display="flex" gap="16px">
-        <img
-          src="/img/reponses_tests_information.webp"
-          alt=""
-          className="fr-col--top"
-        />
+        <img src="/img/reponses_tests_information.webp" alt="" className="fr-col--top" />
         <Box backgroundColor="#C1C1C1" width="1px" />
         <Text>
-          Le gestionnaire est {gestionnaire}. Le taux d’énergies renouvelables
-          et de récupération du réseau est de <strong>{tauxENRR}%</strong>.
+          Le gestionnaire est {gestionnaire}. Le taux d’énergies renouvelables et de récupération du réseau est de{' '}
+          <strong>{tauxENRR}%</strong>.
         </Text>
       </Box>
-      {city === 'Paris' && (
-        <Text size="sm">
-          A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au moins
-          100&nbsp;kW.
-        </Text>
-      )}
+      {city === 'Paris' && <Text size="sm">A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</Text>}
     </Box>
   ),
   text: '#### Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau',
@@ -273,9 +205,7 @@ const closeCollectifAmeliorationAB = {
 // 3 rue du petit bois 78370 Plaisir
 const closeIndividual = {
   body: (distance: string) => `
-::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur ${
-    distance ? `(${distance})` : ''
-  }.]
+::arrow-item[**Votre immeuble est situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
 ::arrow-item[Toutefois au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
 ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
@@ -315,17 +245,11 @@ ${
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR
-          ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.`
-          : ''
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
       }]`
     : ''
 }
-${
-  city === 'Paris'
-    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
-    : ''
-}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
   `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
@@ -336,9 +260,7 @@ ${
 // 1 rue du berry 78370 Plaisir
 const farIndividual = {
   body: (distance: string) => `
-::arrow-item[**Votre immeuble n'est pas situé à proximité** immédiate d’un réseau de chaleur ${
-    distance ? `(${distance})` : ''
-  }.]
+::arrow-item[**Votre immeuble n'est pas situé à proximité** immédiate d’un réseau de chaleur ${distance ? `(${distance})` : ''}.]
 ::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
 ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
 ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
@@ -389,17 +311,11 @@ ${
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du futur réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR
-          ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.`
-          : ''
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.` : ''
       }]`
     : ''
 }
-${
-  city === 'Paris'
-    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
-    : ''
-}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
 `,
   text: `
 **France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
@@ -409,20 +325,13 @@ ${
 
 // 2 rue hardenberg 92220 Bagneux
 const farCollectifInPDP = {
-  body: (
-    distance: string,
-    inPDP: boolean,
-    gestionnaire: string | null,
-    tauxENRR: number | null
-  ) => `
+  body: (distance: string, inPDP: boolean, gestionnaire: string | null, tauxENRR: number | null) => `
 ::arrow-item[**Il n’existe pour le moment pas de réseau de chaleur** à proximité de votre adresse.]
 ::arrow-item[Toutefois, les réseaux de chaleur se développent et **vous êtes dans le périmètre de développement prioritaire du réseau** le plus proche. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR
-          ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.`
-          : ''
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
       }]`
     : ''
 }
@@ -457,17 +366,11 @@ ${
 ${
   gestionnaire
     ? `::arrow-item[Le gestionnaire du futur réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR
-          ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.`
-          : ''
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau sera de **${tauxENRR}%**.` : ''
       }]`
     : ''
 }
-${
-  city === 'Paris'
-    ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]'
-    : ''
-}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
   `,
   text: `
 **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
@@ -508,18 +411,12 @@ type EligibilityResultState =
   | 'farCollectifOutPDP'
   | 'unknown';
 
-export const getEligibilityResultState = (
-  heatingType: AvailableHeating,
-  eligibility?: HeatNetworksResponse
-): EligibilityResultState => {
+export const getEligibilityResultState = (heatingType: AvailableHeating, eligibility?: HeatNetworksResponse): EligibilityResultState => {
   if (eligibility && heatingType) {
     const futurNetwork = eligibility.futurNetwork;
 
     if (eligibility.isEligible) {
-      if (
-        eligibility.distance !== null &&
-        eligibility.veryEligibleDistance !== null
-      ) {
+      if (eligibility.distance !== null && eligibility.veryEligibleDistance !== null) {
         if (eligibility.distance <= eligibility.veryEligibleDistance) {
           if (heatingType === 'collectif') {
             return futurNetwork ? 'closeFuturCollectif' : 'closeCollectif';
@@ -527,24 +424,16 @@ export const getEligibilityResultState = (
           return futurNetwork ? 'closeFuturIndividual' : 'closeIndividual';
         }
         if (heatingType === 'collectif') {
-          return futurNetwork
-            ? 'intermediateFuturCollectif'
-            : 'intermediateCollectif';
+          return futurNetwork ? 'intermediateFuturCollectif' : 'intermediateCollectif';
         }
         return 'farIndividual';
       }
       if (eligibility.distance === null && futurNetwork) {
-        return heatingType === 'collectif'
-          ? 'closeFuturCollectif'
-          : 'closeFuturIndividual';
+        return heatingType === 'collectif' ? 'closeFuturCollectif' : 'closeFuturIndividual';
       }
     }
 
-    return heatingType === 'collectif'
-      ? eligibility.inPDP
-        ? 'farCollectifInPDP'
-        : 'farCollectifOutPDP'
-      : 'farIndividual';
+    return heatingType === 'collectif' ? (eligibility.inPDP ? 'farCollectifInPDP' : 'farCollectifOutPDP') : 'farIndividual';
   }
   return 'unknown';
 };

@@ -1,12 +1,14 @@
+import Link from 'next/link';
+import { useMemo } from 'react';
+import useSWR from 'swr';
+
 import Graph from '@components/Graph';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Slice from '@components/Slice';
 import statistics from '@data/statistics';
 import { fetchJSON } from '@utils/network';
-import Link from 'next/link';
-import { useMemo } from 'react';
 import { MatomoMonthStat } from 'src/services/matomo_types';
-import useSWR from 'swr';
+
 import {
   Column,
   ColumnContainer,
@@ -71,11 +73,7 @@ const graphOptions = {
   colors: ['#83B0F3', '#64B847', '#1f8d49', '#009099'],
 };
 
-const getFormattedDataSum = (
-  formatedData: number[][],
-  startYear?: number,
-  startMonth?: number
-) => {
+const getFormattedDataSum = (formatedData: number[][], startYear?: number, startMonth?: number) => {
   //Month : 1 to 12
   let nbTotal = 0;
   formatedData &&
@@ -97,19 +95,12 @@ const getFormattedDataSum = (
 
 const getFormattedData = <Data,>(
   data: Data[] | undefined,
-  getValueFonction: (
-    year: string,
-    monthIndex: number,
-    entry: Data
-  ) => number | undefined | null
+  getValueFonction: (year: string, monthIndex: number, entry: Data) => number | undefined | null
 ): number[][] => {
   if (!data) {
     return [];
   }
-  const returnData = Array.from({ length: 12 }, (n, i) => [
-    monthToString[i],
-    ...new Array(yearsList.length).fill(null),
-  ]);
+  const returnData = Array.from({ length: 12 }, (n, i) => [monthToString[i], ...new Array(yearsList.length).fill(null)]);
   let notEmpty = false;
   yearsList.forEach((year: string, i) => {
     monthToString.forEach((month: string, j) => {
@@ -129,62 +120,43 @@ const getFormattedData = <Data,>(
 };
 
 const Statistics = () => {
-  const { data: dataActions, error: errorDataActions } = useSWR<
-    MatomoMonthStat[]
-  >('/api/statistiques/actions', fetchJSON, {
+  const { data: dataActions, error: errorDataActions } = useSWR<MatomoMonthStat[]>('/api/statistiques/actions', fetchJSON, {
     onError: (err) => console.warn('errorDataActions >>', err),
   });
 
-  const formatedDataEligibilityTest = getFormattedData(
-    dataActions,
-    (year: string, monthIndex: number, entry) => {
-      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
-      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-        return (
-          (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
-          (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ??
-            0) +
-          (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0)
-        );
-      }
+  const formatedDataEligibilityTest = getFormattedData(dataActions, (year: string, monthIndex: number, entry) => {
+    const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
+    if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+      return (
+        (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
+        (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
+        (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
+        (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
+        (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0) +
+        (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0)
+      );
     }
-  );
+  });
 
-  const { data: dataVisits, error: errorVisits } = useSWR<MatomoMonthStat[]>(
-    '/api/statistiques/visits',
-    fetchJSON,
-    {
-      onError: (err) => console.warn('errorVisits >>', err),
-    }
-  );
+  const { data: dataVisits, error: errorVisits } = useSWR<MatomoMonthStat[]>('/api/statistiques/visits', fetchJSON, {
+    onError: (err) => console.warn('errorVisits >>', err),
+  });
 
-  const formatedDataVisits = getFormattedData(
-    dataVisits,
-    (year: string, monthIndex: number, entry) => {
-      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
-      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-        return entry.value;
-      }
+  const formatedDataVisits = getFormattedData(dataVisits, (year: string, monthIndex: number, entry) => {
+    const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
+    if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+      return entry.value;
     }
-  );
+  });
 
   //From Airtable
-  const { data: rawDataCountContact, error: errorCountContact } = useSWR<any>(
-    '/api/statistiques/contacts?group=monthly',
-    fetchJSON,
-    {
-      onError: (err) => console.warn('errorCountContact >>', err),
-    }
-  );
+  const { data: rawDataCountContact, error: errorCountContact } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
+    onError: (err) => console.warn('errorCountContact >>', err),
+  });
   const dataCountContact = useMemo(
     () =>
       rawDataCountContact
-        ? Object.entries(
-            (rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}
-          ).map(([, { ...value }]) => {
+        ? Object.entries((rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}).map(([, { ...value }]) => {
             return {
               ...value,
             };
@@ -192,35 +164,25 @@ const Statistics = () => {
         : undefined,
     [rawDataCountContact]
   );
-  const formatedDataCountContact = getFormattedData(
-    dataCountContact,
-    (year: string, monthIndex: number, entry) => {
-      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
-      if (
-        parseInt(entryMonth) - 1 === monthIndex &&
-        entryYear === year &&
-        (entryYear !== today.getFullYear().toString() ||
-          parseInt(entryMonth) - 1 !== today.getMonth())
-      ) {
-        return entry.nbTotal;
-      }
+  const formatedDataCountContact = getFormattedData(dataCountContact, (year: string, monthIndex: number, entry) => {
+    const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
+    if (
+      parseInt(entryMonth) - 1 === monthIndex &&
+      entryYear === year &&
+      (entryYear !== today.getFullYear().toString() || parseInt(entryMonth) - 1 !== today.getMonth())
+    ) {
+      return entry.nbTotal;
     }
-  );
+  });
 
-  const { data: rawDataCountBulkContact, error: errorCountBulkContact } =
-    useSWR<any>('/api/statistiques/bulk', fetchJSON, {
-      onError: (err) => console.warn('errorCountContact >>', err),
-    });
+  const { data: rawDataCountBulkContact, error: errorCountBulkContact } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
+    onError: (err) => console.warn('errorCountContact >>', err),
+  });
 
   const dataCountBulkContact = useMemo(
     () =>
       rawDataCountBulkContact
-        ? Object.entries(
-            (rawDataCountBulkContact as Record<
-              string,
-              ReturnApiStatAirtable
-            >) || {}
-          ).map(([key, value]) => {
+        ? Object.entries((rawDataCountBulkContact as Record<string, ReturnApiStatAirtable>) || {}).map(([key, value]) => {
             return {
               period: key,
               ...value,
@@ -229,39 +191,27 @@ const Statistics = () => {
         : undefined,
     [rawDataCountBulkContact]
   );
-  const formatedDataCountBulkContact = getFormattedData(
-    dataCountBulkContact,
-    (year: string, monthIndex: number, entry) => {
-      const [entryYear, entryMonth] = entry?.period?.split('-') || [
-        'YYYY',
-        'MM',
-      ];
-      if (
-        parseInt(entryMonth) - 1 === monthIndex &&
-        entryYear === year &&
-        (entryYear !== today.getFullYear().toString() ||
-          parseInt(entryMonth) - 1 !== today.getMonth())
-      ) {
-        return entry.nbTotal;
-      }
+  const formatedDataCountBulkContact = getFormattedData(dataCountBulkContact, (year: string, monthIndex: number, entry) => {
+    const [entryYear, entryMonth] = entry?.period?.split('-') || ['YYYY', 'MM'];
+    if (
+      parseInt(entryMonth) - 1 === monthIndex &&
+      entryYear === year &&
+      (entryYear !== today.getFullYear().toString() || parseInt(entryMonth) - 1 !== today.getMonth())
+    ) {
+      return entry.nbTotal;
     }
-  );
+  });
 
-  const { data: dataVisitsMap, error: errorVisitsMap } = useSWR<
-    MatomoMonthStat[]
-  >('/api/statistiques/visitsMap', fetchJSON, {
+  const { data: dataVisitsMap, error: errorVisitsMap } = useSWR<MatomoMonthStat[]>('/api/statistiques/visitsMap', fetchJSON, {
     onError: (err) => console.warn('errorVisitsMap >>', err),
   });
 
-  const formatedDataVisitsMap = getFormattedData(
-    dataVisitsMap,
-    (year: string, monthIndex: number, entry) => {
-      const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
-      if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
-        return entry.value;
-      }
+  const formatedDataVisitsMap = getFormattedData(dataVisitsMap, (year: string, monthIndex: number, entry) => {
+    const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
+    if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
+      return entry.value;
     }
-  );
+  });
 
   const totalContactDemands = useMemo(() => {
     //Not using formatted data because we want all data and not only since 2022
@@ -285,16 +235,8 @@ const Statistics = () => {
   const percentAddressTests = useMemo(() => {
     const startYear = 2023;
     const startMonth = 5;
-    const nbAdressesTests = getFormattedDataSum(
-      formatedDataEligibilityTest,
-      startYear,
-      startMonth
-    );
-    const nbVisits = getFormattedDataSum(
-      formatedDataVisits,
-      startYear,
-      startMonth
-    );
+    const nbAdressesTests = getFormattedDataSum(formatedDataEligibilityTest, startYear, startMonth);
+    const nbVisits = getFormattedDataSum(formatedDataVisits, startYear, startMonth);
     if (nbVisits && nbAdressesTests) {
       return (nbAdressesTests / nbVisits) * 100;
     }
@@ -312,15 +254,12 @@ const Statistics = () => {
             (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
             (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
             (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
-            (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ??
-              0) +
-            (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ??
-              0);
+            (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0) +
+            (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0);
           nbTotalEligible +=
             (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
             (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
-            (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ??
-              0);
+            (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0);
         }
       });
     if (nbTotalEligible && nbTotal) {
@@ -354,33 +293,23 @@ const Statistics = () => {
                 <NumberBlock className="fr-col-md-6 fr-col-12">
                   <NumberHighlight>{statistics.connection}</NumberHighlight>
                   Raccordements à l'étude ou en cours
-                  <HoverableIcon
-                    iconName="ri-information-fill"
-                    position="bottom"
-                    iconSize="md"
-                  >
-                    Par raccordements à l’étude, on désigne ceux pour lesquels
-                    une étude de faisabilité technico-économique est en cours au
-                    niveau du gestionnaire du réseau, ou a été transmise à la
-                    copropriété ou au bâtiment tertiaire. En copropriété, la
-                    proposition du gestionnaire de réseau devra ensuite être
-                    votée en AG avant que les travaux ne puissent démarrer.
+                  <HoverableIcon iconName="ri-information-fill" position="bottom" iconSize="md">
+                    Par raccordements à l’étude, on désigne ceux pour lesquels une étude de faisabilité technico-économique est en cours au
+                    niveau du gestionnaire du réseau, ou a été transmise à la copropriété ou au bâtiment tertiaire. En copropriété, la
+                    proposition du gestionnaire de réseau devra ensuite être votée en AG avant que les travaux ne puissent démarrer.
                   </HoverableIcon>
                   <br />
                   <NumberText>(~{statistics.logements} logements)</NumberText>
                   <br />
                   <NumberSubText className="fr-mt-1w">
-                    A titre de comparaison, le nombre total de bâtiments
-                    raccordés en France en 2022 s'élève à 2435
+                    A titre de comparaison, le nombre total de bâtiments raccordés en France en 2022 s'élève à 2435
                   </NumberSubText>
                 </NumberBlock>
                 <NumberBlock className="fr-col-md-6 fr-col-12">
                   <NumberHighlight>~ {statistics.CO2Tons}</NumberHighlight>
                   Tonnes de CO2 potentiellement économisées par an
                   <br />
-                  <NumberItalicText>
-                    1 tonne = 1 aller-retour Paris-New York en avion
-                  </NumberItalicText>
+                  <NumberItalicText>1 tonne = 1 aller-retour Paris-New York en avion</NumberItalicText>
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>
@@ -426,9 +355,7 @@ const Statistics = () => {
                       totalContactDemands.toLocaleString('fr-FR')
                     ) : (
                       <>
-                        <LoadingTextHighlight>
-                          Chargement en cours...
-                        </LoadingTextHighlight>
+                        <LoadingTextHighlight>Chargement en cours...</LoadingTextHighlight>
                         <br />
                       </>
                     )}
@@ -439,15 +366,9 @@ const Statistics = () => {
                   <NumberHighlight>
                     <span>{statistics.connectionPercent}%</span>
                     <NumberHoverableIcon>
-                      <HoverableIcon
-                        iconName="ri-information-fill"
-                        position="bottom"
-                        iconSize="md"
-                      >
-                        A savoir : une partie des demandes déposées (environ
-                        50%) ne peut aboutir en raison d'une distance trop
-                        importante au réseau ou d'un mode de chauffage
-                        préexistant individuel.
+                      <HoverableIcon iconName="ri-information-fill" position="bottom" iconSize="md">
+                        A savoir : une partie des demandes déposées (environ 50%) ne peut aboutir en raison d'une distance trop importante
+                        au réseau ou d'un mode de chauffage préexistant individuel.
                       </HoverableIcon>
                     </NumberHoverableIcon>
                   </NumberHighlight>
@@ -477,23 +398,16 @@ const Statistics = () => {
             <ColumnContainer>
               <NumberContainer>
                 <NumberBlock>
-                  <NumberHighlight>
-                    {totalAddressTests.toLocaleString('fr-FR')}
-                  </NumberHighlight>
+                  <NumberHighlight>{totalAddressTests.toLocaleString('fr-FR')}</NumberHighlight>
                   Total d'adresses testées
                 </NumberBlock>
                 <NumberBlock className="fr-mt-2w">
                   <NumberHighlight>
                     <span>{Math.round(percentAddressPossible)}%</span>
                     <NumberHoverableIcon>
-                      <HoverableIcon
-                        iconName="ri-information-fill"
-                        position="bottom"
-                        iconSize="md"
-                      >
-                        "Potentiellement raccordables" : tests effectués pour
-                        des bâtiments situés à moins de 100 m d'un réseau (60 m
-                        sur Paris)
+                      <HoverableIcon iconName="ri-information-fill" position="bottom" iconSize="md">
+                        "Potentiellement raccordables" : tests effectués pour des bâtiments situés à moins de 100 m d'un réseau (60 m sur
+                        Paris)
                       </HoverableIcon>
                     </NumberHoverableIcon>
                   </NumberHighlight>
@@ -523,9 +437,7 @@ const Statistics = () => {
             <ColumnContainer>
               <NumberContainer>
                 <NumberBlock>
-                  <NumberHighlight>
-                    {Math.round(percentAddressTests)}%
-                  </NumberHighlight>
+                  <NumberHighlight>{Math.round(percentAddressTests)}%</NumberHighlight>
                   Des visiteurs testent une adresse
                 </NumberBlock>
               </NumberContainer>
@@ -553,13 +465,8 @@ const Statistics = () => {
               <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
               <NumberContainer>
                 <NumberBlock>
-                  <NumberHighlight>
-                    {statistics.iFrameIntegration}
-                  </NumberHighlight>
-                  Intégrations de nos{' '}
-                  <Link href="/collectivites-et-exploitants#iframe-carte">
-                    iframes
-                  </Link>
+                  <NumberHighlight>{statistics.iFrameIntegration}</NumberHighlight>
+                  Intégrations de nos <Link href="/collectivites-et-exploitants#iframe-carte">iframes</Link>
                 </NumberBlock>
                 <HorizontalSeparator />
                 <NumberBlock>
@@ -590,11 +497,8 @@ const Statistics = () => {
             <ColumnContainer>
               <NumberContainer>
                 <NumberBlock>
-                  <NumberHighlight>
-                    {totalBulkTests.toLocaleString('fr-FR')}
-                  </NumberHighlight>
-                  Total d'adresses testées en liste (tests en masse par des
-                  professionnels)
+                  <NumberHighlight>{totalBulkTests.toLocaleString('fr-FR')}</NumberHighlight>
+                  Total d'adresses testées en liste (tests en masse par des professionnels)
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>

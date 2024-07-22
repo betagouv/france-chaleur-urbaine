@@ -11,7 +11,6 @@ export const zPassword = z.string().refine(
     return true;
   },
   {
-    message:
-      'Le mot de passe doit contenir au moins 8 caractères, une lettre minuscule, une lettre majuscule et un chiffre.',
+    message: 'Le mot de passe doit contenir au moins 8 caractères, une lettre minuscule, une lettre majuscule et un chiffre.',
   }
 );

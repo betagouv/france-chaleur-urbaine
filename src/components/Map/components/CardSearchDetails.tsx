@@ -1,9 +1,11 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import Icon from '@components/ui/Icon';
 import { useCallback, useMemo, useState } from 'react';
+
+import Icon from '@components/ui/Icon';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
+
 import {
   ContactFormButtonWrapper,
   ContactFormWrapper,
@@ -31,22 +33,12 @@ const CardSearchDetails = ({
   collapsed,
   setCollapsed,
 }: CardSearchDetailsProps) => {
-  const {
-    basedOnCity,
-    distance,
-    isEligible,
-    futurNetwork,
-    inPDP,
-    cityHasNetwork,
-    cityHasFuturNetwork,
-  } = storedAddress.addressDetails?.network || {};
+  const { basedOnCity, distance, isEligible, futurNetwork, inPDP, cityHasNetwork, cityHasFuturNetwork } =
+    storedAddress.addressDetails?.network || {};
 
   const [contactFormVisible, setContactFormVisible] = useState(false);
 
-  const readableDistance = useMemo(
-    () => getReadableDistance(distance),
-    [distance]
-  );
+  const readableDistance = useMemo(() => getReadableDistance(distance), [distance]);
 
   const eligibilityWording = useMemo(() => {
     if (basedOnCity) {
@@ -61,10 +53,7 @@ const CardSearchDetails = ({
       return "Il n'y a pour le moment pas de réseau de chaleur dans cette ville";
     }
 
-    if (
-      (isEligible && distance === null) ||
-      (distance !== null && distance < 100)
-    ) {
+    if ((isEligible && distance === null) || (distance !== null && distance < 100)) {
       const baseMessage = futurNetwork
         ? 'Bonne nouvelle ! Un réseau de chaleur passera bientôt à proximité de cette adresse (prévu ou en construction).'
         : 'Bonne nouvelle ! Un réseau de chaleur passe à proximité de cette adresse.';
@@ -72,8 +61,7 @@ const CardSearchDetails = ({
         <>
           {baseMessage}
           <br />
-          Votre bâtiment est situé dans le périmètre de développement
-          prioritaire du réseau : une obligation de raccordement peut
+          Votre bâtiment est situé dans le périmètre de développement prioritaire du réseau : une obligation de raccordement peut
           s’appliquer en cas de renouvellement de votre mode de chauffage.
         </>
       ) : (
@@ -88,8 +76,7 @@ const CardSearchDetails = ({
         <>
           {baseMessage}
           <br />
-          Votre bâtiment est situé dans le périmètre de développement
-          prioritaire du réseau : une obligation de raccordement peut
+          Votre bâtiment est situé dans le périmètre de développement prioritaire du réseau : une obligation de raccordement peut
           s’appliquer en cas de renouvellement de votre mode de chauffage.
         </>
       ) : (
@@ -97,36 +84,24 @@ const CardSearchDetails = ({
       );
     }
     {
-      const baseMessage =
-        "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";
+      const baseMessage = "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";
       return inPDP ? (
         <>
           {baseMessage}
           <br />
-          Toutefois, votre bâtiment est situé dans le périmètre de développement
-          prioritaire du réseau : le réseau se développe et une obligation de
-          raccordement peut s’appliquer en cas de renouvellement de votre mode
-          de chauffage.
+          Toutefois, votre bâtiment est situé dans le périmètre de développement prioritaire du réseau : le réseau se développe et une
+          obligation de raccordement peut s’appliquer en cas de renouvellement de votre mode de chauffage.
         </>
       ) : (
         baseMessage
       );
     }
-  }, [
-    basedOnCity,
-    cityHasNetwork,
-    cityHasFuturNetwork,
-    distance,
-    isEligible,
-    futurNetwork,
-    inPDP,
-  ]);
+  }, [basedOnCity, cityHasNetwork, cityHasFuturNetwork, distance, isEligible, futurNetwork, inPDP]);
 
   const onClickHandler = useCallback(
     (evt: React.MouseEvent<HTMLElement>) => {
       evt.stopPropagation();
-      const returnVal =
-        (typeof onClick === 'function' && onClick(storedAddress)) || undefined;
+      const returnVal = (typeof onClick === 'function' && onClick(storedAddress)) || undefined;
       return returnVal;
     },
     [onClick, storedAddress]
@@ -140,31 +115,16 @@ const CardSearchDetails = ({
     [onClickClose, storedAddress]
   );
 
-  const markAddressAsContacted = useCallback(
-    () => onContacted(storedAddress),
-    [onContacted, storedAddress]
-  );
+  const markAddressAsContacted = useCallback(() => onContacted(storedAddress), [onContacted, storedAddress]);
 
   const displayContactForm = useCallback(() => setContactFormVisible(true), []);
 
   return (
-    <MapCard
-      isEligible={
-        basedOnCity ? cityHasFuturNetwork || cityHasNetwork : isEligible
-      }
-      collapsed={collapsed}
-    >
+    <MapCard isEligible={basedOnCity ? cityHasFuturNetwork || cityHasNetwork : isEligible} collapsed={collapsed}>
       <header onClick={onClickHandler}>{storedAddress.address}</header>
       <HeaderButtons>
-        <button
-          type="button"
-          title={collapsed ? 'Agrandir' : 'Reduire'}
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          <Icon
-            name={collapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-down-s-fill'}
-            size="sm"
-          />
+        <button type="button" title={collapsed ? 'Agrandir' : 'Reduire'} onClick={() => setCollapsed(!collapsed)}>
+          <Icon name={collapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-down-s-fill'} size="sm" />
         </button>
         <button type="button" title="Fermer" onClick={onCloseHandler}>
           <Icon name="ri-close-line" size="sm" />
@@ -176,21 +136,10 @@ const CardSearchDetails = ({
             eligibilityWording
           ) : (
             <>
-              <EligibilityResult
-                isEligible={
-                  basedOnCity
-                    ? cityHasFuturNetwork || cityHasNetwork
-                    : isEligible
-                }
-              >
+              <EligibilityResult isEligible={basedOnCity ? cityHasFuturNetwork || cityHasNetwork : isEligible}>
                 {eligibilityWording}
                 <div>
-                  <strong>
-                    {readableDistance &&
-                      `Le réseau ${
-                        futurNetwork ? 'passera' : 'passe'
-                      } à ${readableDistance}`}
-                  </strong>
+                  <strong>{readableDistance && `Le réseau ${futurNetwork ? 'passera' : 'passe'} à ${readableDistance}`}</strong>
                 </div>
               </EligibilityResult>
               {!contactFormVisible && storedAddress.contacted ? (
@@ -210,18 +159,11 @@ const CardSearchDetails = ({
                   {!contactFormVisible && !storedAddress.contacted && (
                     <ContactFormButtonWrapper>
                       <Button onClick={displayContactForm}>
-                        {isEligible
-                          ? 'Etre mis en relation avec le gestionnaire du réseau'
-                          : 'Laissez vos coordonnées'}
+                        {isEligible ? 'Etre mis en relation avec le gestionnaire du réseau' : 'Laissez vos coordonnées'}
                       </Button>
                     </ContactFormButtonWrapper>
                   )}
-                  {contactFormVisible && (
-                    <CardSearchDetailsForm
-                      fullAddress={storedAddress}
-                      onSubmit={markAddressAsContacted}
-                    />
-                  )}
+                  {contactFormVisible && <CardSearchDetailsForm fullAddress={storedAddress} onSubmit={markAddressAsContacted} />}
                 </ContactFormWrapper>
               )}
             </>

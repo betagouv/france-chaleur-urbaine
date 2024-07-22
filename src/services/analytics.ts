@@ -1,23 +1,20 @@
-import { isDevModeEnabled } from '@components/Map/components/DevModeIcon';
 import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
 import { init as initMatomo } from '@socialgouv/matomo-next';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { Router } from 'next/router';
 import { useEffect, useState } from 'react';
+
+import { isDevModeEnabled } from '@components/Map/components/DevModeIcon';
 import { clientConfig } from 'src/client-config';
 
 // globally accessible atom (state)
 type MatomoAnalyticsLoadingState = 'pending' | 'loaded' | 'error';
 
-const matomoAnalyticsLoadingStateAtom =
-  atom<MatomoAnalyticsLoadingState>('pending');
+const matomoAnalyticsLoadingStateAtom = atom<MatomoAnalyticsLoadingState>('pending');
 
 const onRouteChange = (url: string) => {
   // see https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag&hl=fr#manually_send_page_view_events
-  if (
-    clientConfig.tracking.googleTagIds.length > 0 &&
-    typeof window?.gtag === 'function'
-  ) {
+  if (clientConfig.tracking.googleTagIds.length > 0 && typeof window?.gtag === 'function') {
     window.gtag('event', 'page_view', {
       page_title: document.title,
       page_location: url,
@@ -38,16 +35,10 @@ let hookInitialized = false;
  * Facebook and Linkedin track page views automatically when loaded.
  */
 export const useAnalytics = () => {
-  const [matomoAnalyticsLoadingState, setMatomoAnalyticsLoadedState] = useAtom(
-    matomoAnalyticsLoadingStateAtom
-  );
+  const [matomoAnalyticsLoadingState, setMatomoAnalyticsLoadedState] = useAtom(matomoAnalyticsLoadingStateAtom);
 
   useEffect(() => {
-    if (
-      !hookInitialized &&
-      clientConfig.tracking.matomoServerURL &&
-      clientConfig.tracking.matomoSiteId
-    ) {
+    if (!hookInitialized && clientConfig.tracking.matomoServerURL && clientConfig.tracking.matomoSiteId) {
       hookInitialized = true;
 
       initMatomo({
@@ -329,18 +320,12 @@ const trackingEvents = {
     facebook: 'Formulaire de contact inéligible - Carte - Envoi',
   },
   'Eligibilité|Formulaire de contact éligible - Fiche réseau - Envoi': {
-    matomo: [
-      'Eligibilité',
-      'Formulaire de contact éligible - Fiche réseau - Envoi',
-    ],
+    matomo: ['Eligibilité', 'Formulaire de contact éligible - Fiche réseau - Envoi'],
     google: 'boNMCKums_oYEJDB_MIq', // Contact > Formulaire envoyé - Eligible
     facebook: 'Formulaire de contact éligible - Fiche réseau - Envoi',
   },
   'Eligibilité|Formulaire de contact inéligible - Fiche réseau - Envoi': {
-    matomo: [
-      'Eligibilité',
-      'Formulaire de contact inéligible - Fiche réseau - Envoi',
-    ],
+    matomo: ['Eligibilité', 'Formulaire de contact inéligible - Fiche réseau - Envoi'],
     google: 'Pm33CK6ms_oYEJDB_MIq', // Contact > Formulaire envoyé - Non Eligible
     facebook: 'Formulaire de contact inéligible - Fiche réseau - Envoi',
   },
@@ -386,19 +371,13 @@ const trackingEvents = {
   },
   // fiche réseau
   'Eligibilité|Formulaire de test - Fiche réseau - Adresse Inéligible': {
-    matomo: [
-      'Eligibilité',
-      'Formulaire de test - Fiche réseau - Adresse Inéligible',
-    ],
+    matomo: ['Eligibilité', 'Formulaire de test - Fiche réseau - Adresse Inéligible'],
     google: 'Pb_7CKWms_oYEJDB_MIq', // Formulaire - non éligible
     facebook: 'Formulaire de test - Fiche réseau - Adresse Inéligible',
     linkedin: 5492666,
   },
   'Eligibilité|Formulaire de test - Fiche réseau - Adresse Éligible': {
-    matomo: [
-      'Eligibilité',
-      'Formulaire de test - Fiche réseau - Adresse Éligible',
-    ],
+    matomo: ['Eligibilité', 'Formulaire de test - Fiche réseau - Adresse Éligible'],
     google: 'hhBSCKims_oYEJDB_MIq', // Formulaire - éligible
     facebook: 'Formulaire de test - Fiche réseau - Adresse Éligible',
     linkedin: 5392842,
@@ -434,18 +413,10 @@ const trackingEvents = {
     matomo: ['Téléchargement', 'Guide FCU', 'Confirmation éligibilité'],
   },
   'Téléchargement|Guide Collectivités|Collectivités et exploitants': {
-    matomo: [
-      'Téléchargement',
-      'Guide Collectivités',
-      'Collectivités et exploitants',
-    ],
+    matomo: ['Téléchargement', 'Guide Collectivités', 'Collectivités et exploitants'],
   },
   'Téléchargement|Guide Exploitants|Collectivités et exploitants': {
-    matomo: [
-      'Téléchargement',
-      'Guide Exploitants',
-      'Collectivités et exploitants',
-    ],
+    matomo: ['Téléchargement', 'Guide Exploitants', 'Collectivités et exploitants'],
   },
   'Téléchargement|Tracés|carte': {
     matomo: ['Téléchargement', 'Tracés', 'carte'],
@@ -496,11 +467,7 @@ const trackingEvents = {
     matomo: ['Téléchargement', 'Supports', 'Campagne pub facebook 2'],
   },
   'Téléchargement|Supports|Visuel promotion affiche information': {
-    matomo: [
-      'Téléchargement',
-      'Supports',
-      'Visuel promotion affiche information',
-    ],
+    matomo: ['Téléchargement', 'Supports', 'Visuel promotion affiche information'],
   },
   'Téléchargement|Supports|Visuel promotion post LI ou FB 1': {
     matomo: ['Téléchargement', 'Supports', 'Visuel promotion post LI ou FB 1'],
@@ -603,10 +570,7 @@ declare let window: Window & {
   hj: (...args: any[]) => void; // hotjar
 };
 
-const performTracking = (
-  trackingConfig: TrackingConfiguration,
-  eventPayload?: any[]
-) => {
+const performTracking = (trackingConfig: TrackingConfiguration, eventPayload?: any[]) => {
   if (trackingConfig.facebook && typeof window?.fbq === 'function') {
     // we may need to use custom events trackCustom when we want more information
     // see https://developers.facebook.com/docs/meta-pixel/reference
@@ -629,11 +593,7 @@ const performTracking = (
     window.lintrk('track', { conversion_id: trackingConfig.linkedin });
   }
   if (trackingConfig.matomo && typeof window?._paq?.push === 'function') {
-    window._paq.push([
-      'trackEvent',
-      ...trackingConfig.matomo,
-      ...(eventPayload ?? []),
-    ]);
+    window._paq.push(['trackEvent', ...trackingConfig.matomo, ...(eventPayload ?? [])]);
   }
 };
 
@@ -680,12 +640,9 @@ const matomoABTestingExperiments = [
   },
 ] as const satisfies ReadonlyArray<MatomoABTestingExperiment>;
 
-type MatomoABTestingExperimentName =
-  (typeof matomoABTestingExperiments)[number]['name'];
+type MatomoABTestingExperimentName = (typeof matomoABTestingExperiments)[number]['name'];
 
-export type MatomoABTestingExperimentVariations<
-  Name extends MatomoABTestingExperimentName,
-> = Extract<
+export type MatomoABTestingExperimentVariations<Name extends MatomoABTestingExperimentName> = Extract<
   (typeof matomoABTestingExperiments)[number],
   { name: Name }
 >['variations'][number]['name'];
@@ -717,9 +674,7 @@ const defaultOptions: MatomoAbTestingExperimentOptions = {
  *   )
  *   ```
  */
-export const useMatomoAbTestingExperiment = <
-  Name extends MatomoABTestingExperimentName,
->(
+export const useMatomoAbTestingExperiment = <Name extends MatomoABTestingExperimentName>(
   experimentName: MatomoABTestingExperimentName,
   options: MatomoAbTestingExperimentOptions = defaultOptions
 ):
@@ -731,9 +686,7 @@ export const useMatomoAbTestingExperiment = <
       ready: boolean;
       variation: undefined;
     } => {
-  const matomoAnalyticsLoadingState = useAtomValue(
-    matomoAnalyticsLoadingStateAtom
-  );
+  const matomoAnalyticsLoadingState = useAtomValue(matomoAnalyticsLoadingStateAtom);
   if (matomoAnalyticsLoadingState === 'pending') {
     return { ready: false, variation: undefined };
   }
@@ -743,9 +696,7 @@ export const useMatomoAbTestingExperiment = <
     return { ready: true, variation: 'original' };
   }
 
-  const experiment = new window.Matomo.AbTesting.Experiment(
-    matomoABTestingExperiments.find((e) => e.name === experimentName)
-  );
+  const experiment = new window.Matomo.AbTesting.Experiment(matomoABTestingExperiments.find((e) => e.name === experimentName));
 
   return { ready: true, variation: experiment.getActivatedVariationName() };
 };

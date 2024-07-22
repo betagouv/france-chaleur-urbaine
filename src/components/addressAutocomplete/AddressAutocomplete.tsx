@@ -1,16 +1,12 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { Combobox, ComboboxPopover } from '@components/ui/Combobox';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { Combobox, ComboboxPopover } from '@components/ui/Combobox';
 import { SuggestionItem } from 'src/types/Suggestions';
-import AddressAutocompleteGlobalStyle, {
-  EmptySuggestion,
-} from './AddressAutocomplete.style';
-import {
-  AddressAutocompleteLabel,
-  AddressInput,
-  Suggestions,
-} from './components';
+
+import AddressAutocompleteGlobalStyle, { EmptySuggestion } from './AddressAutocomplete.style';
+import { AddressAutocompleteLabel, AddressInput, Suggestions } from './components';
 import useSuggestions from './useSuggestions';
 
 const defaultLabel = '';
@@ -30,10 +26,7 @@ type AddressProps = {
   onChange?: (e: string) => void;
 };
 
-const findAddressInSuggestions = (
-  address: string,
-  suggestions: SuggestionItem[]
-): SuggestionItem | undefined => {
+const findAddressInSuggestions = (address: string, suggestions: SuggestionItem[]): SuggestionItem | undefined => {
   return suggestions.find((item) => item.properties.label === address);
 };
 
@@ -89,10 +82,7 @@ const AddressAutocomplete = ({
     }
   }, [router.query, suggestions, handleSelect, router]);
 
-  const shouldDisplaySuggestions = useMemo(
-    () => seeSuggestions && status !== 'idle' && status !== 'loading',
-    [status, seeSuggestions]
-  );
+  const shouldDisplaySuggestions = useMemo(() => seeSuggestions && status !== 'idle' && status !== 'loading', [status, seeSuggestions]);
   const hasSuggestions = useMemo(() => !!suggestions.length, [suggestions]);
 
   const onChangeHandler = (event: React.FormEvent<HTMLInputElement>) => {
@@ -110,31 +100,17 @@ const AddressAutocomplete = ({
     <>
       <AddressAutocompleteGlobalStyle />
       <div className={`fr-input-group ${className || ''}`}>
-        {label && (
-          <AddressAutocompleteLabel centred={centred}>
-            {label}
-          </AddressAutocompleteLabel>
-        )}
+        {label && <AddressAutocompleteLabel centred={centred}>{label}</AddressAutocompleteLabel>}
         <Combobox
           aria-label="address"
           aria-labelledby="address"
           className={fr.cx('fr-input-wrap', 'ri-search-line')}
-          onSelect={(selectedAddress) =>
-            handleSelect(selectedAddress, suggestions)
-          }
+          onSelect={(selectedAddress) => handleSelect(selectedAddress, suggestions)}
         >
-          <AddressInput
-            onChange={onChangeHandler}
-            placeholder={placeholder}
-            value={address}
-          />
+          <AddressInput onChange={onChangeHandler} placeholder={placeholder} value={address} />
           {shouldDisplaySuggestions && (
             <ComboboxPopover className={popoverClassName}>
-              {hasSuggestions ? (
-                <Suggestions suggestions={suggestions} />
-              ) : (
-                <EmptySuggestion>{emptySuggestionText}</EmptySuggestion>
-              )}
+              {hasSuggestions ? <Suggestions suggestions={suggestions} /> : <EmptySuggestion>{emptySuggestionText}</EmptySuggestion>}
             </ComboboxPopover>
           )}
         </Combobox>

@@ -1,9 +1,6 @@
 import * as Sentry from '@sentry/node';
-import {
-  dailyNewManagerMail,
-  dailyRelanceMail,
-  weeklyOldManagerMail,
-} from 'src/services/manager';
+
+import { dailyNewManagerMail, dailyRelanceMail, weeklyOldManagerMail } from 'src/services/manager';
 import { updateUsers } from 'src/services/users';
 import '../../sentry.node.config';
 

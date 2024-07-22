@@ -1,11 +1,13 @@
+import { useRouter } from 'next/router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
 import AddressAutocomplete from '@components/addressAutocomplete';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
-import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { AddressDataType } from 'src/types/AddressData';
 import { SuggestionItem } from 'src/types/Suggestions';
+
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 
 export type EnergyInputsLabelsType = { collectif: string; individuel: string };
@@ -42,8 +44,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
 }) => {
   const router = useRouter();
   const coords = useMemo(() => {
-    const [lon, lat] = fullAddress?.addressDetails?.geoAddress?.geometry
-      ?.coordinates || [null, null];
+    const [lon, lat] = fullAddress?.addressDetails?.geoAddress?.geometry?.coordinates || [null, null];
     return (lon ?? lat) && { lon, lat };
   }, [fullAddress]);
 
@@ -129,16 +130,10 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
           {formLabel}
         </SelectEnergy>
       </CheckEligibilityFormLabel>
-      {!coords && (
-        <AddressAutocomplete
-          placeholder="Tapez ici votre adresse"
-          onAddressSelected={handleAddressSelected}
-        />
-      )}
+      {!coords && <AddressAutocomplete placeholder="Tapez ici votre adresse" onAddressSelected={handleAddressSelected} />}
       {status === 'eligibilitySubmissionError' && (
         <Box textColor="#c00" ml="auto">
-          Une erreur est survenue. Veuillez réessayer ou bien{' '}
-          <Link href="/contact">contacter le support</Link>.
+          Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
         </Box>
       )}
     </>

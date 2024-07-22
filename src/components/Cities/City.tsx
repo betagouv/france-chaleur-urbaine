@@ -1,9 +1,19 @@
+import { useCallback, useEffect, useState } from 'react';
+
 import Advantages from '@components/Coproprietaire/Advantages';
+import CoproGuide from '@components/Coproprietaire/CoproGuide';
 import Informations from '@components/Coproprietaire/Informations';
-import Slice from '@components/Slice';
-import Header from './Header';
+import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
+import Simulators from '@components/Coproprietaire/Simulators';
 import MarkdownWrapper from '@components/MarkdownWrapper';
+import Slice from '@components/Slice';
 import StickyForm from '@components/StickyForm/StickyForm';
+import WrappedText from '@components/WrappedText';
+import userExperience from '@data/villes/user-experience';
+import citiesData from '@data/villes/villes';
+import { useServices } from 'src/services';
+import { Network } from 'src/types/Summary/Network';
+
 import {
   CityContainer,
   CityDescriptionContainer,
@@ -13,18 +23,10 @@ import {
   Subtitle,
   Title,
 } from './City.styles';
-import WrappedText from '@components/WrappedText';
-import citiesData from '@data/villes/villes';
-import userExperience from '@data/villes/user-experience';
-import Simulators from '@components/Coproprietaire/Simulators';
-import Dispositifs, { DispositifsData } from './Dispositifs';
-import Networks from './Networks';
-import { Network } from 'src/types/Summary/Network';
-import { useCallback, useEffect, useState } from 'react';
-import { useServices } from 'src/services';
-import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
-import CoproGuide from '@components/Coproprietaire/CoproGuide';
 import ClassedNetworks from './ClassedNetworks';
+import Dispositifs, { DispositifsData } from './Dispositifs';
+import Header from './Header';
+import Networks from './Networks';
 
 const City = ({ city }: { city: string }) => {
   const [network, setNetwork] = useState<Network>();
@@ -38,8 +40,7 @@ const City = ({ city }: { city: string }) => {
         return;
       }
 
-      const networkData =
-        await heatNetworkService.findByIdentifiant(identifiant);
+      const networkData = await heatNetworkService.findByIdentifiant(identifiant);
       if (networkData) {
         setNetwork(networkData);
       }
@@ -60,19 +61,12 @@ const City = ({ city }: { city: string }) => {
     <CityContainer>
       {cityData && (
         <>
-          <Header
-            city={cityData.name}
-            bannerSrc={`/img/banner_ville_${city}.jpg`}
-          />
-          <StickyForm
-            title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`}
-          />
+          <Header city={cityData.name} bannerSrc={`/img/banner_ville_${city}.jpg`} />
+          <StickyForm title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`} />
           <Slice padding={4}>
             <CityDescriptionContainer>
               <Title>
-                {isUniqueNetwork
-                  ? 'Votre réseau de chaleur '
-                  : 'Vos réseaux de chaleur '}
+                {isUniqueNetwork ? 'Votre réseau de chaleur ' : 'Vos réseaux de chaleur '}
                 {city === 'strasbourg' ? 'sur ' : 'à '}
                 <b>{cityData.nameNetwork}</b>
               </Title>
@@ -80,11 +74,7 @@ const City = ({ city }: { city: string }) => {
             </CityDescriptionContainer>
             {cityData.networksData && (
               <Slice padding={4}>
-                <Networks
-                  networksData={cityData.networksData}
-                  network={network}
-                  cityCoord={cityData.coord as [number, number]}
-                ></Networks>
+                <Networks networksData={cityData.networksData} network={network} cityCoord={cityData.coord as [number, number]}></Networks>
               </Slice>
             )}
           </Slice>
@@ -111,9 +101,7 @@ const City = ({ city }: { city: string }) => {
                 nameNetwork={cityData.nameNetwork}
                 allClassed={cityData.networksData?.allClassed}
                 isUniqueNetwork={isUniqueNetwork}
-                hasDevelopmentPerimeter={
-                  cityData.networksData?.hasDevelopmentPerimeter
-                }
+                hasDevelopmentPerimeter={cityData.networksData?.hasDevelopmentPerimeter}
               />
             </Slice>
           )}
@@ -151,18 +139,9 @@ const City = ({ city }: { city: string }) => {
               )}
             </Slice>
           </DispositifsSlice>
-          <Slice
-            theme="grey"
-            padding={8}
-            header="## Les différentes étapes en copropriété :"
-          >
+          <Slice theme="grey" padding={8} header="## Les différentes étapes en copropriété :">
             {userExperience.map((props, i) => (
-              <WrappedText
-                key={`user-experience-${i}`}
-                textClassName="user-experience-description"
-                center
-                {...props}
-              />
+              <WrappedText key={`user-experience-${i}`} textClassName="user-experience-description" center {...props} />
             ))}
           </Slice>
         </>

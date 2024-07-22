@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const helmet = require('helmet');
-const { withSentryConfig } = require('@sentry/nextjs');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+const { withSentryConfig } = require('@sentry/nextjs');
+const helmet = require('helmet');
 
 const isGithubCI = process.env.NODE_ENV === 'production' && process.env.CI;
 
@@ -61,11 +61,7 @@ const csp = {
   ],
   'img-src': ["'self'", 'https:', 'data:'],
   'font-src': ["'self'", 'https:', 'data:', 'https://*.hotjar.com'],
-  'frame-src': [
-    'https://td.doubleclick.net',
-    'https://www.facebook.com/',
-    'https://www.youtube.com/',
-  ],
+  'frame-src': ['https://td.doubleclick.net', 'https://www.facebook.com/', 'https://www.youtube.com/'],
   'style-src': ["'self'", 'https:', "'unsafe-inline'", 'https://*.hotjar.com'],
   'worker-src': ["'self'", 'blob:'],
 };

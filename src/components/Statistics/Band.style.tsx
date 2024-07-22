@@ -21,15 +21,13 @@ export const Container = styled.div`
   }
 `;
 
-export const Circle = styled.div.attrs<CirclePropsType>(
-  ({ children, color, bgColor }) => ({
-    children: (
-      <CircleContent color={color} bgColor={bgColor}>
-        {children}
-      </CircleContent>
-    ),
-  })
-)<CirclePropsType>`
+export const Circle = styled.div.attrs<CirclePropsType>(({ children, color, bgColor }) => ({
+  children: (
+    <CircleContent color={color} bgColor={bgColor}>
+      {children}
+    </CircleContent>
+  ),
+}))<CirclePropsType>`
   grid-column: 2/4;
 `;
 

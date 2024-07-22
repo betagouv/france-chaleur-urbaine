@@ -1,4 +1,6 @@
 import Link from 'next/link';
+
+import { isDefined } from '@utils/core';
 import { getConso } from 'src/services/Map/conso';
 import { DemandSummary } from 'src/types/Summary/Demand';
 import { EnergySummary } from 'src/types/Summary/Energy';
@@ -6,9 +8,9 @@ import { FuturNetworkSummary } from 'src/types/Summary/FuturNetwork';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
 import { RaccordementSummary } from 'src/types/Summary/Raccordement';
-import { PopupTitle } from '../Map.style';
-import { isDefined } from '@utils/core';
+
 import { objTypeEnergy } from '../map-layers';
+import { PopupTitle } from '../Map.style';
 
 const writeTypeConso = (typeConso: string | unknown) => {
   switch (typeConso) {
@@ -71,23 +73,13 @@ const MapPopupContent = ({
     'Type de chauffage': type_chauffage_demands,
     Structure: structure,
   } = demands || {};
-  const {
-    ADRESSE: address_raccordement,
-    CONSO: conso_raccordement,
-    ID: id_raccordement,
-  } = raccordement || {};
+  const { ADRESSE: address_raccordement, CONSO: conso_raccordement, ID: id_raccordement } = raccordement || {};
 
   const energie_utilisee = energie_utilisee_buildings || mode_chauffage_demands;
-  const textAddress =
-    addr_label_buildings ||
-    addr_label_consommation ||
-    addr_label_demands ||
-    address_raccordement;
+  const textAddress = addr_label_buildings || addr_label_consommation || addr_label_demands || address_raccordement;
   const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
 
-  const displayNetwork =
-    (network || futurNetwork) &&
-    !(buildings || consommation || demands || energy);
+  const displayNetwork = (network || futurNetwork) && !(buildings || consommation || demands || energy);
 
   return (
     <>
@@ -137,16 +129,14 @@ const MapPopupContent = ({
             <br />
           </>
         )}
-        {conso_nb &&
-          (!energie_utilisee ||
-            objTypeEnergy?.gas.includes(energie_utilisee)) && (
-            <>
-              <strong>Conso. gaz&nbsp;:</strong>&nbsp;
-              {conso_nb.toFixed(2)}
-              &nbsp;MWh/an
-              <br />
-            </>
-          )}
+        {conso_nb && (!energie_utilisee || objTypeEnergy?.gas.includes(energie_utilisee)) && (
+          <>
+            <strong>Conso. gaz&nbsp;:</strong>&nbsp;
+            {conso_nb.toFixed(2)}
+            &nbsp;MWh/an
+            <br />
+          </>
+        )}
         {conso_raccordement && conso_raccordement !== 'secret' && (
           <>
             <strong>Consommation de chaleur&nbsp;:</strong>&nbsp;
@@ -182,13 +172,9 @@ const MapPopupContent = ({
         )}
         {displayNetwork && network && (
           <>
-            {network.nom_reseau && (
-              <PopupTitle>{network.nom_reseau}</PopupTitle>
-            )}
+            {network.nom_reseau && <PopupTitle>{network.nom_reseau}</PopupTitle>}
             <strong>Identifiant&nbsp;:</strong>&nbsp;
-            {network['Identifiant reseau']
-              ? network['Identifiant reseau']
-              : 'Non connu'}
+            {network['Identifiant reseau'] ? network['Identifiant reseau'] : 'Non connu'}
             <br />
             <strong>Gestionnaire&nbsp;:</strong>&nbsp;
             {network.Gestionnaire ? network.Gestionnaire : 'Non connu'}
@@ -196,10 +182,7 @@ const MapPopupContent = ({
             {!network.isCold && (
               <>
                 <strong>Taux EnR&R&nbsp;:</strong>&nbsp;
-                {network['Taux EnR&R'] !== null &&
-                network['Taux EnR&R'] !== undefined
-                  ? network['Taux EnR&R'] + '%'
-                  : 'Non connu'}
+                {network['Taux EnR&R'] !== null && network['Taux EnR&R'] !== undefined ? network['Taux EnR&R'] + '%' : 'Non connu'}
                 <br />
               </>
             )}
@@ -207,16 +190,10 @@ const MapPopupContent = ({
               Contenu&nbsp;CO<sub>2</sub>&nbsp;ACV&nbsp;:
             </strong>
             &nbsp;
-            {network['contenu CO2 ACV']
-              ? Math.round(network['contenu CO2 ACV'] * 1000) + 'g/kWh'
-              : 'Non connu'}
+            {network['contenu CO2 ACV'] ? Math.round(network['contenu CO2 ACV'] * 1000) + 'g/kWh' : 'Non connu'}
             <br />
             {network['Identifiant reseau'] && (
-              <Link
-                href={`/reseaux/${network['Identifiant reseau']}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link href={`/reseaux/${network['Identifiant reseau']}`} target="_blank" rel="noopener noreferrer">
                 Voir la fiche du réseau
               </Link>
             )}
@@ -225,14 +202,10 @@ const MapPopupContent = ({
         {displayNetwork && futurNetwork && (
           <>
             <strong>Gestionnaire&nbsp;:</strong>&nbsp;
-            {futurNetwork.gestionnaire
-              ? futurNetwork.gestionnaire
-              : 'Non connu'}
+            {futurNetwork.gestionnaire ? futurNetwork.gestionnaire : 'Non connu'}
             <br />
             <strong>Mise en service&nbsp;:</strong>&nbsp;
-            {futurNetwork.mise_en_service
-              ? futurNetwork.mise_en_service
-              : 'Non connu'}
+            {futurNetwork.mise_en_service ? futurNetwork.mise_en_service : 'Non connu'}
             <br />
           </>
         )}
@@ -243,13 +216,7 @@ const MapPopupContent = ({
 
 export default MapPopupContent;
 
-export const ViasevaPopupContent = ({
-  network,
-  futurNetwork,
-}: {
-  network?: NetworkSummary;
-  futurNetwork?: FuturNetworkSummary;
-}) => {
+export const ViasevaPopupContent = ({ network, futurNetwork }: { network?: NetworkSummary; futurNetwork?: FuturNetworkSummary }) => {
   return (
     <>
       {network ? (
@@ -258,37 +225,26 @@ export const ViasevaPopupContent = ({
           {!network.isCold && (
             <>
               <strong>Taux EnR&R&nbsp;:</strong>&nbsp;
-              {network['Taux EnR&R'] !== null &&
-              network['Taux EnR&R'] !== undefined
-                ? network['Taux EnR&R'] + '%'
-                : 'Non connu'}
+              {network['Taux EnR&R'] !== null && network['Taux EnR&R'] !== undefined ? network['Taux EnR&R'] + '%' : 'Non connu'}
               <br />
             </>
           )}
           <strong>
             Contenu&nbsp;CO<sub>2</sub>&nbsp;ACV&nbsp;:&nbsp;
           </strong>
-          {network['contenu CO2 ACV']
-            ? Math.round(network['contenu CO2 ACV'] * 1000) + 'g/kWh'
-            : 'Non connu'}
+          {network['contenu CO2 ACV'] ? Math.round(network['contenu CO2 ACV'] * 1000) + 'g/kWh' : 'Non connu'}
           <br />
           <strong>
             Livraison totale de {network.isCold ? 'froid' : 'chaleur'}
             &nbsp;:&nbsp;
           </strong>
-          {network.livraisons_totale_MWh
-            ? `${getConso(network.livraisons_totale_MWh)}/an`
-            : 'Non connu'}
+          {network.livraisons_totale_MWh ? `${getConso(network.livraisons_totale_MWh)}/an` : 'Non connu'}
           <br />
           <strong>Nombre de bâtiments raccordés&nbsp;:</strong>&nbsp;
           {network.nb_pdl ? network.nb_pdl : 'Non connu'}
           <br />
           {network['Identifiant reseau'] && (
-            <a
-              href={`/reseaux/${network['Identifiant reseau']}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={`/reseaux/${network['Identifiant reseau']}`} target="_blank" rel="noopener noreferrer">
               Voir la fiche du réseau
             </a>
           )}
@@ -297,14 +253,10 @@ export const ViasevaPopupContent = ({
         futurNetwork && (
           <section>
             <strong>Gestionnaire&nbsp;:</strong>&nbsp;
-            {futurNetwork.gestionnaire
-              ? futurNetwork.gestionnaire
-              : 'Non connu'}
+            {futurNetwork.gestionnaire ? futurNetwork.gestionnaire : 'Non connu'}
             <br />
             <strong>Mise en service&nbsp;:</strong>&nbsp;
-            {futurNetwork.mise_en_service
-              ? futurNetwork.mise_en_service
-              : 'Non connu'}
+            {futurNetwork.mise_en_service ? futurNetwork.mise_en_service : 'Non connu'}
           </section>
         )
       )}

@@ -1,19 +1,15 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import Loader from '@components/Loader';
 import { Form, Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { ReactNode, useRef } from 'react';
+import * as Yup from 'yup';
+
+import Loader from '@components/Loader';
 import { AnalyticsFormId } from 'src/services/analytics';
 import { ContactFormInfos } from 'src/types/Summary/Demand';
-import * as Yup from 'yup';
-import ContactConsent, {
-  defaultValuesContactConsent,
-  validationSchemasContactConsent,
-} from './ContactConsent';
-import ContactInformation, {
-  defaultValuesContactInformation,
-  validationSchemasContactInformation,
-} from './ContactInformation';
+
+import ContactConsent, { defaultValuesContactConsent, validationSchemasContactConsent } from './ContactConsent';
+import ContactInformation, { defaultValuesContactInformation, validationSchemasContactInformation } from './ContactInformation';
 import { ContactFormFooter } from './EligibilityForm.styled';
 
 type ContactFormProps = {
@@ -23,13 +19,7 @@ type ContactFormProps = {
   city?: string;
   heatingTypeInput?: ReactNode; // gets inserted after the building type (structure), used in the network page
 };
-export const ContactForm = ({
-  onSubmit,
-  isLoading,
-  cardMode,
-  city,
-  heatingTypeInput,
-}: ContactFormProps) => {
+export const ContactForm = ({ onSubmit, isLoading, cardMode, city, heatingTypeInput }: ContactFormProps) => {
   const formRef = useRef(null);
   const router = useRouter();
 
@@ -57,18 +47,10 @@ export const ContactForm = ({
     onSubmit({ ...values });
   };
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
+    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
       {(formik) => (
         <Form id={AnalyticsFormId.form_contact} ref={formRef}>
-          <ContactInformation
-            cardMode={cardMode}
-            city={city}
-            heatingTypeInput={heatingTypeInput}
-          />
+          <ContactInformation cardMode={cardMode} city={city} heatingTypeInput={heatingTypeInput} />
           <ContactConsent />
           <ContactFormFooter>
             {isLoading ? (
@@ -79,10 +61,7 @@ export const ContactForm = ({
               </Button>
             )}
             {formik.isSubmitting && !formik.isValid && (
-              <p className="fr-error-text">
-                Veuillez remplir les champs obligatoires(*) avant d'envoyer
-                votre demande
-              </p>
+              <p className="fr-error-text">Veuillez remplir les champs obligatoires(*) avant d'envoyer votre demande</p>
             )}
           </ContactFormFooter>
         </Form>

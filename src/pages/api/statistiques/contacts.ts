@@ -1,12 +1,9 @@
-import { getAllDemands } from '@core/infrastructure/repository/manager';
-import {
-  handleRouteErrors,
-  requireGetMethod,
-  validateObjectSchema,
-} from '@helpers/server';
 import type { NextApiRequest } from 'next';
-import { Demand } from 'src/types/Summary/Demand';
 import { z } from 'zod';
+
+import { getAllDemands } from '@core/infrastructure/repository/manager';
+import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@helpers/server';
+import { Demand } from 'src/types/Summary/Demand';
 
 type CalcResult = {
   date?: string;
@@ -24,10 +21,7 @@ const reducer = {
       const key = fields['Date demandes'];
 
       nbTotal++;
-      if (
-        fields['Éligibilité'] &&
-        (!fields['Distance au réseau'] || fields['Distance au réseau'] <= 100)
-      ) {
+      if (fields['Éligibilité'] && (!fields['Distance au réseau'] || fields['Distance au réseau'] <= 100)) {
         nbEligible++;
       } else {
         nbUneligible++;
@@ -60,16 +54,12 @@ const reducer = {
       const key = `${year}-${month}`;
 
       const value = {
-        ...((acc as Record<string, typeof defaultMonthValue>)?.[key] ||
-          defaultMonthValue),
+        ...((acc as Record<string, typeof defaultMonthValue>)?.[key] || defaultMonthValue),
       };
 
       value.date = key;
       value.nbTotal++;
-      if (
-        fields['Éligibilité'] &&
-        (!fields['Distance au réseau'] || fields['Distance au réseau'] <= 100)
-      ) {
+      if (fields['Éligibilité'] && (!fields['Distance au réseau'] || fields['Distance au réseau'] <= 100)) {
         value.nbEligible++;
       } else {
         value.nbUneligible++;
@@ -92,8 +82,6 @@ export default handleRouteErrors(async function demands(req: NextApiRequest) {
     group: z.enum(['all', 'monthly']),
   });
 
-  const demands = (await getAllDemands())
-    .reverse()
-    .reduce(reducer[group](), {});
+  const demands = (await getAllDemands()).reverse().reduce(reducer[group](), {});
   return demands;
 });

@@ -17,18 +17,15 @@ export const MapStyle: any = createGlobalStyle<{
       display: flex;
       width: 100%;
       height: 100%;
-      border: ${({ withBorder }) =>
-        withBorder ? '1px solid #c3c3c3' : undefined}
+      border: ${({ withBorder }) => (withBorder ? '1px solid #c3c3c3' : undefined)}
     }
 
     .map, .maplibregl-map {
       position: absolute !important;
       left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : '333px')};
       ${({ withTopLegend }) => withTopLegend && 'top: 41px;'}
-      width: ${({ legendCollapsed }) =>
-        legendCollapsed ? '100%' : 'calc(100% - 333px) !important'};
-      height: ${({ withTopLegend }) =>
-        withTopLegend ? 'calc(100% - 41px) !important' : '100%'};
+      width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : 'calc(100% - 333px) !important')};
+      height: ${({ withTopLegend }) => (withTopLegend ? 'calc(100% - 41px) !important' : '100%')};
       ${({ withProMode, withHideLegendSwitch, legendCollapsed }) =>
         withProMode &&
         withHideLegendSwitch &&
@@ -135,8 +132,7 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   width: 1100px;
   padding: 32px;
   bottom: 0;
-  left: ${({ legendCollapsed }) =>
-    legendCollapsed ? '50vw' : 'calc((100vw - 333px)/2 + 333px)'};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '50vw' : 'calc((100vw - 333px)/2 + 333px)')};
   transform: translateX(-50%);
 
   ${mapMediumMedia} {
@@ -249,8 +245,7 @@ export const TopLegend = styled.div<{
   legendCollapsed: boolean;
 }>`
   background-color: var(--background-default-grey);
-  width: ${({ legendCollapsed }) =>
-    legendCollapsed ? '100%' : 'calc(100% - 333px)'};
+  width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : 'calc(100% - 333px)')};
   @media (max-width: 600px) {
     width: 100%;
     display: block;

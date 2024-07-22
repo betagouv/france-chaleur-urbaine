@@ -1,8 +1,10 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import Input from '@components/form/Input';
 import { FormEvent, useState } from 'react';
+
+import Input from '@components/form/Input';
 import { useServices } from 'src/services';
+
 import { Container } from './Form.styles';
 
 const ResetPasswordForm = () => {
@@ -24,14 +26,9 @@ const ResetPasswordForm = () => {
           severity="success"
           title={
             <>
-              Un email pour réinitialiser votre mot de passe vous a été envoyé,
-              pensez à vérifier vos spams. Si vous ne recevez pas de mail de
-              réinitialisation, merci de nous contacter :{' '}
-              <a
-                href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              Un email pour réinitialiser votre mot de passe vous a été envoyé, pensez à vérifier vos spams. Si vous ne recevez pas de mail
+              de réinitialisation, merci de nous contacter :{' '}
+              <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr" target="_blank" rel="noopener noreferrer">
                 france-chaleur-urbaine@developpement-durable.gouv.fr
               </a>
               .

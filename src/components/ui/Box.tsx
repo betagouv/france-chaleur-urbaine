@@ -1,6 +1,7 @@
 import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
 import styled, { IntrinsicElementsKeys } from 'styled-components';
+
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type StyleProps = {
@@ -47,18 +48,9 @@ const StyledBox = styled.div<StyleProps>`
   border: ${({ border }) => border};
   box-shadow: ${({ boxShadow }) => boxShadow};
   background-color: ${({ backgroundColor }) =>
-    backgroundColor
-      ? backgroundColor?.startsWith('#')
-        ? backgroundColor
-        : `var(--${backgroundColor})`
-      : undefined}};
+    backgroundColor ? (backgroundColor?.startsWith('#') ? backgroundColor : `var(--${backgroundColor})`) : undefined}};
   font-size: ${({ fontSize }) => fontSize};
-  color: ${({ textColor }) =>
-    textColor
-      ? textColor.startsWith('#')
-        ? textColor
-        : `var(--${textColor})`
-      : undefined};
+  color: ${({ textColor }) => (textColor ? (textColor.startsWith('#') ? textColor : `var(--${textColor})`) : undefined)};
   text-align: ${({ textAlign }) => textAlign};
   text-wrap: ${({ textWrap }) => textWrap};
   position: ${({ position }) => position};
@@ -77,10 +69,7 @@ const StyledBox = styled.div<StyleProps>`
   :
 `;
 
-export interface BoxProps
-  extends StyleProps,
-    SpacingProperties,
-    HTMLAttributes<HTMLDivElement> {
+export interface BoxProps extends StyleProps, SpacingProperties, HTMLAttributes<HTMLDivElement> {
   as?: IntrinsicElementsKeys;
   iconLeft?: FrIconClassName | RiIconClassName;
 }
@@ -123,9 +112,9 @@ function Box(props: PropsWithChildren<BoxProps>) {
       gridTemplateColumns={props.gridTemplateColumns}
       columnGap={props.columnGap}
       cursor={props.cursor}
-      className={`${className ?? ''} ${
-        props.fontWeight ? `fr-text--${props.fontWeight}` : ''
-      } ${props.iconLeft ?? ''} ${spacingsToClasses(props)}`}
+      className={`${className ?? ''} ${props.fontWeight ? `fr-text--${props.fontWeight}` : ''} ${props.iconLeft ?? ''} ${spacingsToClasses(
+        props
+      )}`}
       {...rest}
     >
       {props.children}
@@ -153,8 +142,7 @@ export const ResponsiveRow = styled(Box)<{
   display: flex;
   gap: ${({ gap }) => gap ?? '64px'};
 
-  @media (max-width: ${({ breakpoint }) =>
-      gridBreakpoints[breakpoint ?? 'lg']}px) {
+  @media (max-width: ${({ breakpoint }) => gridBreakpoints[breakpoint ?? 'lg']}px) {
     flex-direction: column;
 
     gap: 24px;

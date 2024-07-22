@@ -1,15 +1,8 @@
 import Icon from '@components/ui/Icon';
+
 import { Glass, ImageContainer } from './index.styles';
 
-const Infographie = ({
-  src,
-  alt,
-  height,
-}: {
-  src: string;
-  alt: string;
-  height?: number;
-}) => {
+const Infographie = ({ src, alt, height }: { src: string; alt: string; height?: number }) => {
   return (
     <ImageContainer href={src.replace('_small', '')} target="_blank">
       <img width={216} height={height || 350} src={src} alt={alt} />

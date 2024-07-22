@@ -1,13 +1,10 @@
-import {
-  handleRouteErrors,
-  requirePutMethod,
-  validateObjectSchema,
-} from '@helpers/server';
-import { zAirtableRecordId } from '@utils/validation';
 import type { NextApiRequest } from 'next';
+import { z } from 'zod';
+
+import { handleRouteErrors, requirePutMethod, validateObjectSchema } from '@helpers/server';
+import { zAirtableRecordId } from '@utils/validation';
 import base from 'src/db/airtable';
 import { Airtable } from 'src/types/enum/Airtable';
-import { z } from 'zod';
 
 export default handleRouteErrors(async (req: NextApiRequest) => {
   requirePutMethod(req);
@@ -23,11 +20,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
 
   switch (type) {
     case Airtable.UTILISATEURS: {
-      await base(Airtable.UTILISATEURS).update(
-        id,
-        { Sondage: values.sondage },
-        { typecast: true }
-      );
+      await base(Airtable.UTILISATEURS).update(id, { Sondage: values.sondage }, { typecast: true });
     }
   }
 });

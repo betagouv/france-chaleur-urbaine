@@ -13,12 +13,7 @@ const IdexMap = () => {
           },
           filtreGestionnaire: ['idex', 'mixéner'],
         })}
-        enabledLegendFeatures={[
-          'reseauxDeChaleur',
-          'reseauxDeFroid',
-          'reseauxEnConstruction',
-          'zonesDeDeveloppementPrioritaire',
-        ]}
+        enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
         withHideLegendSwitch

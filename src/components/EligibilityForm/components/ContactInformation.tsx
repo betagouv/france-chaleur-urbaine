@@ -1,12 +1,13 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
-import Input from '@components/form/formik/input';
-import Box from '@components/ui/Box';
 import { Field, useFormikContext } from 'formik';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
+
+import Input from '@components/form/formik/input';
+import Box from '@components/ui/Box';
 
 const InputWraper = styled(Box)`
   opacity: 1;
@@ -64,9 +65,7 @@ export const defaultValuesContactInformation = {
   phone: '',
 };
 export const validationSchemasContactInformation = {
-  structure: Yup.string().required(
-    'Veuillez renseigner votre type de bâtiment'
-  ),
+  structure: Yup.string().required('Veuillez renseigner votre type de bâtiment'),
   lastName: Yup.string().required('Veuillez renseigner votre nom'),
   firstName: Yup.string().required('Veuillez renseigner votre prénom'),
   company: Yup.string(),
@@ -74,9 +73,7 @@ export const validationSchemasContactInformation = {
     /^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$/,
     'Veuillez renseigner votre numéro de téléphone sous le format 0605040302'
   ),
-  email: Yup.string()
-    .email('Votre adresse email n‘est pas valide')
-    .required('Veuillez renseigner votre adresse email'),
+  email: Yup.string().email('Votre adresse email n‘est pas valide').required('Veuillez renseigner votre adresse email'),
   heatingEnergy: Yup.string()
     .required('Veuillez renseigner votre chauffage')
     .oneOf(
@@ -104,94 +101,59 @@ const ContactInformation = ({
             name="structure"
             className={fr.cx(`fr-mt-${cardMode ? '1' : '3'}w`)}
             orientation={cardMode ? 'vertical' : 'horizontal'}
-            options={fieldLabelInformation.structure.inputs.map(
-              ({ value, label }) => ({
-                label: label,
-                nativeInputProps: {
-                  value: value,
-                  onChange: field.onChange,
-                },
-              })
-            )}
+            options={fieldLabelInformation.structure.inputs.map(({ value, label }) => ({
+              label: label,
+              nativeInputProps: {
+                value: value,
+                onChange: field.onChange,
+              },
+            }))}
           />
         )}
       </Field>
-      {values.structure === 'Maison individuelle' &&
-        city !== 'Charleville-Mézières' && (
-          <Alert
-            className={fr.cx('fr-mt-2w')}
-            severity="warning"
-            small
-            description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
-          />
-        )}
+      {values.structure === 'Maison individuelle' && city !== 'Charleville-Mézières' && (
+        <Alert
+          className={fr.cx('fr-mt-2w')}
+          severity="warning"
+          small
+          description="Le raccordement des maisons individuelles reste compliqué à ce jour, pour des raisons techniques et économiques. Il est probable que le gestionnaire du réseau ne donne pas suite à votre demande."
+        />
+      )}
       {heatingTypeInput}
       <Field required>
         {({ field }: any) => (
           <RadioButtons
-            legend={
-              heatingTypeInput
-                ? 'Énergie de chauffage :'
-                : fieldLabelInformation.heatingEnergy.label
-            }
+            legend={heatingTypeInput ? 'Énergie de chauffage :' : fieldLabelInformation.heatingEnergy.label}
             name="heatingEnergy"
             className={fr.cx('fr-my-1w')}
             orientation={cardMode ? 'vertical' : 'horizontal'}
-            options={fieldLabelInformation.heatingEnergy.inputs.map(
-              ({ value, label }) => ({
-                label: label,
-                nativeInputProps: {
-                  value: value,
-                  onChange: field.onChange,
-                },
-              })
-            )}
+            options={fieldLabelInformation.heatingEnergy.inputs.map(({ value, label }) => ({
+              label: label,
+              nativeInputProps: {
+                value: value,
+                onChange: field.onChange,
+              },
+            }))}
           />
         )}
       </Field>
       <fieldset className={fr.cx('fr-fieldset')}>
         <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-          <Field
-            name="lastName"
-            required
-            label={fieldLabelInformation.lastName}
-            component={Input}
-          />
+          <Field name="lastName" required label={fieldLabelInformation.lastName} component={Input} />
         </InputWraper>
         <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-          <Field
-            name="firstName"
-            required
-            label={fieldLabelInformation.firstName}
-            component={Input}
-          />
+          <Field name="firstName" required label={fieldLabelInformation.firstName} component={Input} />
         </InputWraper>
         {values.structure === 'Tertiaire' && (
           <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-            <Field
-              name="company"
-              label={fieldLabelInformation.company}
-              component={Input}
-              required
-            />
+            <Field name="company" label={fieldLabelInformation.company} component={Input} required />
           </InputWraper>
         )}
         <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-          <Field
-            name="email"
-            type="email"
-            label={fieldLabelInformation.email}
-            component={Input}
-            required
-          />
+          <Field name="email" type="email" label={fieldLabelInformation.email} component={Input} required />
         </InputWraper>
         <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-          <Field
-            name="phone"
-            placeholder="0605040302"
-            label={fieldLabelInformation.phone}
-            component={Input}
-          />
+          <Field name="phone" placeholder="0605040302" label={fieldLabelInformation.phone} component={Input} />
         </InputWraper>
       </fieldset>
     </>

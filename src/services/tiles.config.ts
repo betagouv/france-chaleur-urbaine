@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
-import { Airtable } from 'src/types/enum/Airtable';
 import { z } from 'zod';
+
+import { Airtable } from 'src/types/enum/Airtable';
 
 type BasicTileInfo = {
   table: string;
@@ -58,9 +59,7 @@ const bnbFields = `
   dpe_mix_arrete_classe_emission_ges AS dpe_ges
 `;
 
-export const preTable: (region: string) => Record<string, string> = (
-  region
-) => ({
+export const preTable: (region: string) => Record<string, string> = (region) => ({
   'pre-table-energy': `
     SELECT ${bnbFields}, geom_adresse as geom
     FROM "${region}"
@@ -81,12 +80,7 @@ export const tilesInfo: Record<SourceId, TileInfo> = {
   demands: {
     source: 'airtable',
     table: Airtable.UTILISATEURS,
-    properties: [
-      'Mode de chauffage',
-      'Adresse',
-      'Type de chauffage',
-      'Structure',
-    ],
+    properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
     sourceLayer: 'demands',
   },
   raccordements: {
@@ -205,14 +199,7 @@ export const tilesInfo: Record<SourceId, TileInfo> = {
     tiles: 'donnees_de_consos_tiles',
     id: 'rownum',
     extraWhere: (query) => query.whereIn('code_grand', ['R', 'T', 'I']),
-    properties: [
-      'rownum',
-      'code_grand',
-      'conso_nb',
-      'adresse',
-      'nom_commun',
-      'pdl_nb',
-    ],
+    properties: ['rownum', 'code_grand', 'conso_nb', 'adresse', 'nom_commun', 'pdl_nb'],
     sourceLayer: 'gasUsage',
   },
   enrrMobilisables: {

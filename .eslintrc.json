@@ -24,13 +24,7 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "@typescript-eslint",
-    "prettier",
-    "better-styled-components",
-    "react-hooks"
-  ],
+  "plugins": ["react", "@typescript-eslint", "prettier", "better-styled-components", "react-hooks"],
   "rules": {
     "prettier/prettier": "error",
     "react/prefer-stateless-function": 0,
@@ -64,6 +58,28 @@
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
     "no-irregular-whitespace": "off",
-    "@next/next/no-img-element": "off"
+    "@next/next/no-img-element": "off",
+
+    // turn on errors for missing imports
+    "import/no-unresolved": "error",
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin", // Built-in imports (come from NodeJS native) go first
+          "external", // <- External imports
+          "internal", // <- Absolute imports
+          ["sibling", "parent"], // <- Relative imports, the sibling and parent types can be mingled together
+          "index", // <- index imports
+          "unknown" // <- unknown imports always last
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "json/*": ["error", { "allowComments": true }]
   }
 }

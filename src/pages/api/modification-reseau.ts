@@ -1,16 +1,12 @@
-import { NextApiRequest } from 'next';
 import formidable from 'formidable';
+import { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import {
-  handleRouteErrors,
-  requirePostMethod,
-  validateObjectSchema,
-} from '@helpers/server';
-import { AirtableDB } from 'src/db/airtable';
-import { logger } from '@helpers/logger';
 import { fileIOClient } from '@helpers/fileio';
+import { logger } from '@helpers/logger';
+import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@helpers/server';
 import { clientConfig } from 'src/client-config';
+import { AirtableDB } from 'src/db/airtable';
 
 export const config = {
   api: {
@@ -21,10 +17,7 @@ export const config = {
 // multipart form data may contain one field multiple times so we get the first element
 const zModificationReseau = {
   idReseau: z.preprocess((val: any) => val[0], z.string()),
-  type: z.preprocess(
-    (val: any) => val[0],
-    z.enum(['collectivite', 'exploitant'])
-  ),
+  type: z.preprocess((val: any) => val[0], z.enum(['collectivite', 'exploitant'])),
   nom: z.preprocess((val: any) => val[0], z.string()),
   prenom: z.preprocess((val: any) => val[0], z.string()),
   structure: z.preprocess((val: any) => val[0], z.string()),
@@ -46,10 +39,7 @@ const zModificationReseau = {
     (val: any) => (val[0] === '' ? undefined : val[0]), // empty string or a valid URL
     z.string().url().optional()
   ),
-  informationsComplementaires: z.preprocess(
-    (val: any) => val[0],
-    z.string().max(clientConfig.networkInfoFieldMaxCharacters)
-  ),
+  informationsComplementaires: z.preprocess((val: any) => val[0], z.string().max(clientConfig.networkInfoFieldMaxCharacters)),
   fichiers: z.optional(
     z.array(
       z.object({
@@ -61,9 +51,7 @@ const zModificationReseau = {
   ),
 };
 
-export type ModificationReseau = z.infer<
-  z.ZodObject<typeof zModificationReseau>
->;
+export type ModificationReseau = z.infer<z.ZodObject<typeof zModificationReseau>>;
 
 export default handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);
@@ -76,20 +64,14 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
 
   const [fields, files] = await form.parse(req);
 
-  const { fichiers, ...formValues } = await validateObjectSchema(
-    { ...fields, fichiers: files.fichiers },
-    zModificationReseau
-  );
+  const { fichiers, ...formValues } = await validateObjectSchema({ ...fields, fichiers: files.fichiers }, zModificationReseau);
 
   const record = await AirtableDB('FCU - Modifications réseau').create(
     {
       ...formValues,
       fichiers: await Promise.all(
         (files.fichiers ?? []).map(async (fichier, index) => {
-          const externalURL = await fileIOClient.uploadTempFile(
-            fichier.filepath,
-            fichier.originalFilename ?? `Fichier ${index + 1}.pdf`
-          );
+          const externalURL = await fileIOClient.uploadTempFile(fichier.filepath, fichier.originalFilename ?? `Fichier ${index + 1}.pdf`);
           return {
             filename: fichier.originalFilename ?? `Fichier ${index + 1}`,
             url: externalURL,

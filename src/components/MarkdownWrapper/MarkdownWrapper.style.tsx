@@ -1,19 +1,17 @@
 import Link from 'next/link';
-import { TrackingEvent, trackEvent } from 'src/services/analytics';
 import styled, { css } from 'styled-components';
 
-export const isExternalLink = (href: string) =>
-  href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
+import { TrackingEvent, trackEvent } from 'src/services/analytics';
+
+export const isExternalLink = (href: string) => href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
 
 type MarkdownWrapperStyledProps = {
   className?: string;
   withPadding?: boolean;
 };
-export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps>(
-  ({ className }: MarkdownWrapperStyledProps) => ({
-    className: `md-wrapper ${className || ''}`,
-  })
-)<MarkdownWrapperStyledProps>`
+export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps>(({ className }: MarkdownWrapperStyledProps) => ({
+  className: `md-wrapper ${className || ''}`,
+}))<MarkdownWrapperStyledProps>`
   ${({ withPadding }) =>
     withPadding &&
     `
@@ -235,13 +233,9 @@ type CheckItemType = {
   checked?: boolean;
   className?: string;
 };
-export const CheckItem = styled.div.attrs<CheckItemType>(
-  ({ checked, className }) => ({
-    className: checked
-      ? `fr-fi-checkbox-circle-fill list-item ${className}`
-      : className,
-  })
-)<CheckItemType>`
+export const CheckItem = styled.div.attrs<CheckItemType>(({ checked, className }) => ({
+  className: checked ? `fr-fi-checkbox-circle-fill list-item ${className}` : className,
+}))<CheckItemType>`
   ${({ checked }) => (checked ? CheckItemDefault : CheckItemFCU)}
 `;
 
@@ -280,13 +274,7 @@ const CountPuce = styled.div`
   text-align: center;
 `;
 
-export const CountItem = ({
-  number,
-  children,
-}: {
-  number: number;
-  children: string;
-}) => (
+export const CountItem = ({ number, children }: { number: number; children: string }) => (
   <div>
     <CountPuce>{number}</CountPuce>
     {children}

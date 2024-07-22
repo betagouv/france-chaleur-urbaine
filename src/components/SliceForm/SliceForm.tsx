@@ -1,26 +1,11 @@
-import {
-  EligibilityFormAddress,
-  EligibilityFormContact,
-  EligibilityFormMessageConfirmation,
-} from '@components/EligibilityForm';
+import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@components/EligibilityForm';
 import { FormLabel } from '@components/HeadSliceForm/HeadSliceForm.style';
 import Slice from '@components/Slice';
 import { useContactFormFCU } from '@hooks';
-import {
-  Container,
-  FormWarningMessage,
-  Loader,
-  LoaderWrapper,
-  SliceContactFormStyle,
-} from './SliceForm.style';
 
-const HeadSlice = ({
-  title,
-  colored,
-}: {
-  title?: string;
-  colored?: boolean;
-}) => {
+import { Container, FormWarningMessage, Loader, LoaderWrapper, SliceContactFormStyle } from './SliceForm.style';
+
+const HeadSlice = ({ title, colored }: { title?: string; colored?: boolean }) => {
   const {
     EligibilityFormContactRef,
     addressData,
@@ -41,19 +26,13 @@ const HeadSlice = ({
         <Container>
           <EligibilityFormAddress
             colored={colored}
-            formLabel={
-              <FormLabel colored={colored}>
-                {title || 'Votre immeuble pourrait-il être raccordé ?'}
-              </FormLabel>
-            }
+            formLabel={<FormLabel colored={colored}>{title || 'Votre immeuble pourrait-il être raccordé ?'}</FormLabel>}
             onChange={handleOnChangeAddress}
             onFetch={handleOnFetchAddress}
             onSuccess={handleOnSuccessAddress}
           />
 
-          <FormWarningMessage show={showWarning}>
-            {warningMessage}
-          </FormWarningMessage>
+          <FormWarningMessage show={showWarning}>{warningMessage}</FormWarningMessage>
 
           <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
             <Loader />
@@ -63,26 +42,11 @@ const HeadSlice = ({
 
       <SliceContactFormStyle />
       <div ref={EligibilityFormContactRef}>
-        <Slice
-          padding={5}
-          theme="grey"
-          className={`slice-contact-form-wrapper ${
-            contactReady && !messageReceived ? 'active' : ''
-          }`}
-        >
-          <EligibilityFormContact
-            addressData={addressData}
-            onSubmit={handleOnSubmitContact}
-          />
+        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${contactReady && !messageReceived ? 'active' : ''}`}>
+          <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />
         </Slice>
 
-        <Slice
-          padding={5}
-          theme="grey"
-          className={`slice-contact-form-wrapper ${
-            messageReceived ? 'active' : ''
-          }`}
-        >
+        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${messageReceived ? 'active' : ''}`}>
           <EligibilityFormMessageConfirmation addressData={addressData} />
         </Slice>
       </div>

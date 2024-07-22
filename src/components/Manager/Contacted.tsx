@@ -1,4 +1,5 @@
 import { Demand } from 'src/types/Summary/Demand';
+
 import { Checkbox } from './Contacted.styles';
 
 const Contacted = ({

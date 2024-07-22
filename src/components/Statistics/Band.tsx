@@ -1,11 +1,4 @@
-import {
-  Circle,
-  Container,
-  Equal,
-  Label,
-  Separator,
-  Value,
-} from './Band.style';
+import { Circle, Container, Equal, Label, Separator, Value } from './Band.style';
 
 const Band = () => {
   return (

@@ -6,11 +6,7 @@ type AddressInputProps = {
   value: string;
 };
 
-const AddressInput: React.FC<AddressInputProps> = ({
-  placeholder = '',
-  onChange,
-  value,
-}) => (
+const AddressInput: React.FC<AddressInputProps> = ({ placeholder = '', onChange, value }) => (
   <ComboboxInput
     className="fr-input"
     type="text"

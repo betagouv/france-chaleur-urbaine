@@ -1,12 +1,6 @@
 import { ReactNode } from 'react';
-import {
-  IconWrapper,
-  Info,
-  Label,
-  Title,
-  Value,
-  ZoneInfoWrapper,
-} from './ZoneInfo.style';
+
+import { IconWrapper, Info, Label, Title, Value, ZoneInfoWrapper } from './ZoneInfo.style';
 
 const ZoneInfo = ({
   color,
@@ -25,9 +19,7 @@ const ZoneInfo = ({
 }) => {
   return (
     <ZoneInfoWrapper>
-      <IconWrapper withBackground={withBackground}>
-        {icon && <img src={`/icons/picto-${icon}.svg`} alt="" />}
-      </IconWrapper>
+      <IconWrapper withBackground={withBackground}>{icon && <img src={`/icons/picto-${icon}.svg`} alt="" />}</IconWrapper>
       <Info alignTop={alignTop}>
         <Title>{title}</Title>
         <div>

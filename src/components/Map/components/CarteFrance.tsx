@@ -1,11 +1,6 @@
-import {
-  MouseEventHandler,
-  SyntheticEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { MouseEventHandler, SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+
 import { Tooltip, WrapperDiv } from './CarteFrance.style';
 
 // component adapted from https://github.com/regisenguehard/carte-france-svg
@@ -65,15 +60,11 @@ function CarteFrance(props: CarteFranceProps) {
   };
 
   function onClick(event: SyntheticEvent<SVGPathElement>) {
-    props.onAreaSelect(
-      (event.target as SVGPathElement).dataset.code_insee as string
-    );
+    props.onAreaSelect((event.target as SVGPathElement).dataset.code_insee as string);
   }
 
   function getAreaColor(areaId: string): string {
-    return props.selectedAreaId === areaId
-      ? '#86eee0'
-      : props.dataByArea[areaId]?.color ?? defaultFillColor;
+    return props.selectedAreaId === areaId ? '#86eee0' : props.dataByArea[areaId]?.color ?? defaultFillColor;
   }
 
   useEffect(() => {
@@ -83,20 +74,9 @@ function CarteFrance(props: CarteFranceProps) {
   }, [props.enableHover]);
 
   return (
-    <WrapperDiv
-      ref={wrapperDivRef}
-      onMouseMove={onMouseMove}
-      onMouseOut={onMouseOut}
-      enableHover={props.enableHover}
-    >
+    <WrapperDiv ref={wrapperDivRef} onMouseMove={onMouseMove} onMouseOut={onMouseOut} enableHover={props.enableHover}>
       {props.mode === 'regional' && (
-        <svg
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          x="0px"
-          y="0px"
-          viewBox="80 0 657 588"
-        >
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="80 0 657 588">
           <g>
             <path
               d="m368.8 133.7-4 9.5-3.8-.1-2.3 2.6 1.8 5.8 3.6 6.6.5 10.9 6.2 5.4 1.2 5.6 2.3 2.2 3.1-.7 2.8 10.6 6.9-.7 1.9-2.9 1.5 2.7 2.8-1.8 3.7.6.7 3.1 4.2 4.3-.6 2.7-2.6 1.5 9.2.7 11.2-2.7 3.9-5.4.2-5.8 15.4-3-.4-8.5 2.9-.8 3-5-2.6-1.7-3.5-8.3 2.6-2.2.4-2-9.3-6-3.9-4.2.7-2.8-1.8-2.5-2.6-.7-8.1 2.9-2.5-1.6-2 2.2-6.9-1-10.9-6.4-2.2 1.6-9.2-2.2-6.3 1.8-5.6-1.1z"
@@ -193,13 +173,7 @@ function CarteFrance(props: CarteFranceProps) {
         </svg>
       )}
       {props.mode === 'departemental' && (
-        <svg
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          x="0px"
-          y="0px"
-          viewBox="80 0 657 588"
-        >
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="80 0 657 588">
           <g data-nom="Île-de-France" data-code_insee="11">
             <path
               data-nom="Paris"
@@ -903,11 +877,7 @@ function CarteFrance(props: CarteFranceProps) {
 
       {/* Attach the tooltip to the body so that the tooltip does not get truncated when overflowing */}
       {createPortal(
-        <Tooltip
-          visible={tooltipInfos.visible}
-          x={tooltipInfos.x}
-          y={tooltipInfos.y}
-        >
+        <Tooltip visible={tooltipInfos.visible} x={tooltipInfos.x} y={tooltipInfos.y}>
           {tooltipInfos.content}
         </Tooltip>,
         document.body

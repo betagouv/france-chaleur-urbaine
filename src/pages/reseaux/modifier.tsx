@@ -1,8 +1,12 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
-import NetworkSearchInput from '@components/Network/NetworkSearchInput';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+
 import Input from '@components/form/Input';
+import NetworkSearchInput from '@components/Network/NetworkSearchInput';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
@@ -13,16 +17,6 @@ import { ModificationReseau } from '@pages/api/modification-reseau';
 import { NetworkSearchResult } from '@pages/api/networks/search';
 import { postFetchJSON } from '@utils/network';
 import { sleep } from '@utils/time';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import {
-  ChangeEvent,
-  FormEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
 import { clientConfig } from 'src/client-config';
 
 type FormState = Omit<ModificationReseau, 'fichiers'> & {
@@ -47,10 +41,7 @@ const initialFormState: FormState = {
   fichiers: [],
 };
 
-type FichiersError =
-  | 'file_size_exceeded'
-  | 'files_count_exceeded'
-  | 'invalid_file_type';
+type FichiersError = 'file_size_exceeded' | 'files_count_exceeded' | 'invalid_file_type';
 
 function ModifierReseauxPage() {
   const router = useRouter();
@@ -58,8 +49,7 @@ function ModifierReseauxPage() {
   const [formSent, setFormSent] = useState(false);
   const [apiError, setAPIError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedNetwork, setSelectedNetwork] =
-    useState<NetworkSearchResult | null>(null);
+  const [selectedNetwork, setSelectedNetwork] = useState<NetworkSearchResult | null>(null);
   const [formState, setFormState] = useState<FormState>(initialFormState);
 
   const fichiersError = useMemo<FichiersError | null>(() => {
@@ -72,10 +62,7 @@ function ModifierReseauxPage() {
       : null;
   }, [formState.fichiers]);
 
-  async function setFormValue<Key extends keyof FormState>(
-    key: Key,
-    value: FormState[Key]
-  ) {
+  async function setFormValue<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
     setFormState((formState) => ({
       ...formState,
       [key]: value,
@@ -88,12 +75,9 @@ function ModifierReseauxPage() {
     if (router.isReady && typeof reseau === 'string') {
       setFormValue('idReseau', reseau);
       (async () => {
-        const [network] = await postFetchJSON<NetworkSearchResult[]>(
-          '/api/networks/search',
-          {
-            search: reseau,
-          }
-        );
+        const [network] = await postFetchJSON<NetworkSearchResult[]>('/api/networks/search', {
+          search: reseau,
+        });
         if (network) {
           onNetworkSelect(network);
           // download existing files as if they were uploaded by the user
@@ -102,10 +86,7 @@ function ModifierReseauxPage() {
               await Promise.all(
                 network.fichiers.map(
                   async (fichier) =>
-                    await createFileFromURL(
-                      `/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`,
-                      fichier.filename
-                    )
+                    await createFileFromURL(`/api/networks/${network['Identifiant reseau']}/files/${fichier.id}`, fichier.filename)
                 )
               )
             ).filter((v): v is File => v !== null);
@@ -155,10 +136,7 @@ function ModifierReseauxPage() {
       return;
     }
 
-    setFormValue(
-      'idReseau',
-      `${network['Identifiant reseau']} - ${network.nom_reseau}`
-    );
+    setFormValue('idReseau', `${network['Identifiant reseau']} - ${network.nom_reseau}`);
     setFormValue('reseauClasse', network['reseaux classes'] ?? false);
     setFormValue(
       'maitreOuvrage',
@@ -173,10 +151,7 @@ function ModifierReseauxPage() {
     );
     setFormValue('gestionnaire', network.Gestionnaire ?? '');
     setFormValue('siteInternet', network.website_gestionnaire ?? '');
-    setFormValue(
-      'informationsComplementaires',
-      network.informationsComplementaires ?? ''
-    );
+    setFormValue('informationsComplementaires', network.informationsComplementaires ?? '');
   }
 
   async function handleFileUpload(event: ChangeEvent<HTMLInputElement>) {
@@ -188,41 +163,30 @@ function ModifierReseauxPage() {
   }
 
   return (
-    <SimplePage
-      title="Modification de page réseau : France Chaleur Urbaine"
-      currentPage="/ressources/outils"
-    >
+    <SimplePage title="Modification de page réseau : France Chaleur Urbaine" currentPage="/ressources/outils">
       <Box py="4w" className="fr-container">
         <Heading as="h1" size="h3" color="blue-france">
-          Complétez les informations qui apparaissent sur la fiche de votre
-          réseau
+          Complétez les informations qui apparaissent sur la fiche de votre réseau
         </Heading>
 
-        <Text>
-          Sur les fiches par réseau, dans un souci d'homogénéité, seules sont
-          diffusées par France Chaleur Urbaine&nbsp;:
-        </Text>
+        <Text>Sur les fiches par réseau, dans un souci d'homogénéité, seules sont diffusées par France Chaleur Urbaine&nbsp;:</Text>
         <ul>
           <li>
-            les données issues de la dernière enquête réalisée par la FEDENE
-            Réseaux de chaleur & froid pour le compte du ministère de la
+            les données issues de la dernière enquête réalisée par la FEDENE Réseaux de chaleur & froid pour le compte du ministère de la
             transition énergétique&nbsp;;
           </li>
           <li>les données réglementaires de l'arrêté "DPE".</li>
         </ul>
         <Text mt="2w">
-          Il vous est toutefois donné la possibilité de compléter ces éléments
-          par toute information qui vous semblerait utile (verdissement ou
-          développement en cours ou actés, capacité de raccordement du réseau,
-          puissance minimale requise,...). Vos compléments apparaîtront sur la
-          fiche dans un encadré intitulé "Informations complémentaires fournies
-          par la collectivité ou l'exploitant du réseau".
+          Il vous est toutefois donné la possibilité de compléter ces éléments par toute information qui vous semblerait utile (verdissement
+          ou développement en cours ou actés, capacité de raccordement du réseau, puissance minimale requise,...). Vos compléments
+          apparaîtront sur la fiche dans un encadré intitulé "Informations complémentaires fournies par la collectivité ou l'exploitant du
+          réseau".
         </Text>
         <Text mt="2w" mb="6w">
-          Vous avez également la possibilité de télécharger jusqu'à 3 documents
-          PDF que vous jugez utiles à porter à la connaissance des usagers de
-          France chaleur Urbaine. Nous vous encourageons notamment à déposer le
-          schéma directeur du réseau, qui nous est souvent demandé.
+          Vous avez également la possibilité de télécharger jusqu'à 3 documents PDF que vous jugez utiles à porter à la connaissance des
+          usagers de France chaleur Urbaine. Nous vous encourageons notamment à déposer le schéma directeur du réseau, qui nous est souvent
+          demandé.
         </Text>
 
         {formSent ? (
@@ -232,10 +196,7 @@ function ModifierReseauxPage() {
             description="Nous reviendrons rapidement vers vous pour vous confirmer la bonne prise en compte des éléments transmis."
           />
         ) : (
-          <form
-            onSubmit={submitForm}
-            className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6"
-          >
+          <form onSubmit={submitForm} className="fr-col-12 fr-col-md-10 fr-col-lg-8 fr-col-xl-6">
             <NetworkSearchInput
               label="Identifiant SNCU - nom du réseau"
               value={formState.idReseau}
@@ -247,10 +208,7 @@ function ModifierReseauxPage() {
               onNetworkSelect={onNetworkSelect}
             />
             {selectedNetwork && (
-              <Link
-                href={`/reseaux/${selectedNetwork['Identifiant reseau']}`}
-                target="_blank"
-              >
+              <Link href={`/reseaux/${selectedNetwork['Identifiant reseau']}`} target="_blank">
                 Voir la fiche actuelle du réseau
               </Link>
             )}
@@ -373,9 +331,8 @@ function ModifierReseauxPage() {
             />
 
             <Text mt="4w" mb="1w" fontWeight="bold">
-              Renseigner des informations complémentaires à faire apparaître sur
-              la fiche du réseau ({clientConfig.networkInfoFieldMaxCharacters}{' '}
-              caractères maximum) (Optionnel)
+              Renseigner des informations complémentaires à faire apparaître sur la fiche du réseau (
+              {clientConfig.networkInfoFieldMaxCharacters} caractères maximum) (Optionnel)
             </Text>
             <Input
               textArea={true}
@@ -384,16 +341,14 @@ function ModifierReseauxPage() {
                 placeholder:
                   'Projets de verdissement ou de développement du réseau, puissance minimale requise pour le raccordement, ou toute autre information utile (cible grand public et professionnels)',
                 value: formState.informationsComplementaires,
-                onChange: (e) =>
-                  setFormValue('informationsComplementaires', e.target.value),
+                onChange: (e) => setFormValue('informationsComplementaires', e.target.value),
                 rows: 5,
                 maxLength: clientConfig.networkInfoFieldMaxCharacters,
               }}
             />
             <Text mt="4w" mb="1w" fontWeight="bold">
-              Télécharger des documents à mettre à disposition depuis la fiche
-              du réseau (schéma directeur, ...) - 3 documents PDF maximum (&lt;5
-              Mo par fichier) (Optionnel)
+              Télécharger des documents à mettre à disposition depuis la fiche du réseau (schéma directeur, ...) - 3 documents PDF maximum
+              (&lt;5 Mo par fichier) (Optionnel)
             </Text>
             <input
               className="fr-hidden"
@@ -405,10 +360,7 @@ function ModifierReseauxPage() {
               aria-hidden
             />
             <div className="fr-grid-row fr-grid-row--top">
-              <Button
-                onClick={() => fileUploadInputRef.current!.click()}
-                priority="secondary"
-              >
+              <Button onClick={() => fileUploadInputRef.current!.click()} priority="secondary">
                 Choisir un fichier
               </Button>
               <Box ml="2w">
@@ -424,11 +376,7 @@ function ModifierReseauxPage() {
                         setFormValue('fichiers', [...formState.fichiers]);
                       }}
                     >
-                      <Icon
-                        name="ri-delete-bin-2-line"
-                        color="var(--text-default-error)"
-                        size="lg"
-                      />
+                      <Icon name="ri-delete-bin-2-line" color="var(--text-default-error)" size="lg" />
                     </Button>
                     {fichier.size > 5 * 1024 * 1024 && (
                       <Text as="div" color="error">
@@ -449,28 +397,16 @@ function ModifierReseauxPage() {
                 Vous ne pouvez déposer que 3 fichiers maximum.
               </Text>
             )}
-            <Text mt="6w">
-              Les informations transmises seront validées manuellement par
-              France Chaleur Urbaine avant mise en ligne.
-            </Text>
+            <Text mt="6w">Les informations transmises seront validées manuellement par France Chaleur Urbaine avant mise en ligne.</Text>
 
-            <LoadingButton
-              className="fr-mt-2w"
-              submit
-              isLoading={isSubmitting}
-              disabled={fichiersError !== null}
-            >
+            <LoadingButton className="fr-mt-2w" submit isLoading={isSubmitting} disabled={fichiersError !== null}>
               Soumettre la demande de modification
             </LoadingButton>
 
             {apiError && (
               <Text color="error" mt="2w">
                 Une erreur est survenue. Veuillez{' '}
-                <a
-                  href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href="mailto:france-chaleur-urbaine@developpement-durable.gouv.fr" target="_blank" rel="noopener noreferrer">
                   nous contacter
                 </a>
                 .
@@ -493,10 +429,7 @@ function stripBadAirtableValues(value: string): string {
  * Helper used to create a File object (as used by the input[type=file] component)
  * to display already existing files as if they had been uploaded manually.
  */
-async function createFileFromURL(
-  url: string,
-  filename: string
-): Promise<File | null> {
+async function createFileFromURL(url: string, filename: string): Promise<File | null> {
   try {
     const res = await fetch(url);
     if (!res.ok) {
