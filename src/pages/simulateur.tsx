@@ -1,3 +1,4 @@
+import Simulator from '@components/Simulator';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
@@ -76,6 +77,11 @@ function SimulateurPage() {
           </Box>
         </Box>
       </Box>
+
+      <Heading as="h1" color="blue-france">
+        Simulateur avec React-Hook-Form
+      </Heading>
+      <Simulator />
     </SimplePage>
   );
 }
