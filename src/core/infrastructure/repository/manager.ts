@@ -109,6 +109,7 @@ export const getGestionnaires = async (demand: Demand, network: string): Promise
 export const getGestionnairesDemands = async (gestionnaires: string[]): Promise<Demand[]> => {
   const records = await base(Airtable.UTILISATEURS)
     .select({
+      filterByFormula: `{Gestionnaires validés} = TRUE()`,
       sort: [{ field: 'Date demandes', direction: 'desc' }],
     })
     .all();
