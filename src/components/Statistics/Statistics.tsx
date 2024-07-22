@@ -293,7 +293,7 @@ const Statistics = () => {
                 <NumberBlock className="fr-col-md-6 fr-col-12">
                   <NumberHighlight>{statistics.connection}</NumberHighlight>
                   Raccordements à l'étude ou en cours
-                  <HoverableIcon iconName="ri-information-fill" position="bottom" iconSize="md">
+                  <HoverableIcon iconName="ri-information-fill" position="bottom">
                     Par raccordements à l’étude, on désigne ceux pour lesquels une étude de faisabilité technico-économique est en cours au
                     niveau du gestionnaire du réseau, ou a été transmise à la copropriété ou au bâtiment tertiaire. En copropriété, la
                     proposition du gestionnaire de réseau devra ensuite être votée en AG avant que les travaux ne puissent démarrer.
@@ -366,7 +366,7 @@ const Statistics = () => {
                   <NumberHighlight>
                     <span>{statistics.connectionPercent}%</span>
                     <NumberHoverableIcon>
-                      <HoverableIcon iconName="ri-information-fill" position="bottom" iconSize="md">
+                      <HoverableIcon iconName="ri-information-fill" position="bottom">
                         A savoir : une partie des demandes déposées (environ 50%) ne peut aboutir en raison d'une distance trop importante
                         au réseau ou d'un mode de chauffage préexistant individuel.
                       </HoverableIcon>
@@ -405,7 +405,7 @@ const Statistics = () => {
                   <NumberHighlight>
                     <span>{Math.round(percentAddressPossible)}%</span>
                     <NumberHoverableIcon>
-                      <HoverableIcon iconName="ri-information-fill" position="bottom" iconSize="md">
+                      <HoverableIcon iconName="ri-information-fill" position="bottom">
                         "Potentiellement raccordables" : tests effectués pour des bâtiments situés à moins de 100 m d'un réseau (60 m sur
                         Paris)
                       </HoverableIcon>
