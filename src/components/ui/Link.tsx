@@ -1,5 +1,5 @@
-import { PropsWithChildren } from 'react';
 import NextLink from 'next/link';
+import { PropsWithChildren } from 'react';
 import { TrackingEvent, trackEvent } from 'src/services/analytics';
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
@@ -7,6 +7,7 @@ const linkVariantToClass = {
   primary: 'fr-btn',
   secondary: 'fr-btn fr-btn--secondary',
   tertiary: 'fr-btn fr-btn--tertiary',
+  tertiaryNoOutline: 'fr-btn fr-btn--tertiary-no-outline',
   text: '',
   link: 'fr-link d-inline-block',
 } as const;
@@ -19,6 +20,7 @@ interface LinkProps extends SpacingProperties {
   className?: string;
   variant?: keyof typeof linkVariantToClass;
   isExternal?: boolean;
+  title?: string;
 }
 
 /**
@@ -36,6 +38,7 @@ function Link({
   className = '',
   variant = 'text',
   isExternal = false,
+  title,
   ...props
 }: PropsWithChildren<LinkProps>) {
   // when the href contains an anchor, use a classic link which works best with scrolling
@@ -43,6 +46,7 @@ function Link({
   return (
     <Tag
       href={href}
+      title={title}
       onClick={() => {
         if (eventKey) {
           trackEvent(eventKey, eventPayload?.split(',').map((v) => v.trim()));

@@ -1,8 +1,8 @@
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import Map from '@components/Map/Map';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
-import { Alert } from '@dataesr/react-dsfr';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 import { getReadableDistance } from 'src/services/Map/distance';
@@ -187,7 +187,7 @@ const EligibilityFormContact = ({
               addressData.heatingType === 'individuel' && (
                 <Alert
                   className="fr-mt-2w"
-                  type="warning"
+                  severity="warning"
                   small
                   description="Au vu de votre mode de chauffage actuel, le raccordement de votre immeuble nécessiterait des travaux conséquents et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble"
                 />

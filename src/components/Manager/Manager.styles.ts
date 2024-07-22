@@ -3,13 +3,13 @@ import {
   fullscreenHeaderHeight,
   tabHeaderHeight,
 } from '@components/shared/layout/MainLayout.data';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 export const Container = styled.div`
   margin: auto;
   padding: 16px;
-  height: calc(100vh - ${tabHeaderHeight});
-  height: calc(100dvh - ${tabHeaderHeight});
+  height: calc(200vh - ${tabHeaderHeight});
+  height: calc(200dvh - ${tabHeaderHeight});
 
   @media (min-width: 992px) {
     height: calc(100vh - ${fullscreenHeaderHeight});
@@ -20,86 +20,71 @@ export const Container = styled.div`
   flex-direction: column;
 `;
 
-const iconSize = '6px';
-export const ColHeader = styled.div<{
-  sort?: 'asc' | 'desc';
-  width?: string;
-}>`
+export const NoResult = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  cursor: pointer;
-  ${({ width }) => width && `width: ${width};`}
-
-  &:before {
-    content: '';
-    display: block;
-    width: 0;
-    height: 0;
-    opacity: 0.1;
-    margin: 0 ${iconSize} 0 0;
-    background-color: transparent;
-    border-width: ${iconSize} ${iconSize} 0 ${iconSize};
-    border-style: solid;
-    border-color: #000 transparent transparent;
-    ${({ sort }) =>
-      sort &&
-      css`
-        opacity: 1;
-        ${sort !== 'desc' &&
-        css`
-          transform: rotate(180deg);
-        `};
-      `}
-  }
-`;
-
-export const NoResult = styled.div`
-  margin-top: 16px;
+  justify-content: center;
+  flex: 1;
   font-size: 18px;
   font-weight: bold;
+`;
+
+export const ColHeader = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  height: 56px;
+  white-space: normal;
+  line-height: 1.2;
+  flex: 1;
 `;
 
 export const ManagerContainer = styled.div`
   height: 100%;
   width: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+  @media (min-width: 992px) {
+    flex-direction: row;
+  }
 `;
 
 export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
-  overflow: auto;
-  width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : 'calc(70% - 16px)')};
+  width: 100%;
+  @media (min-width: 992px) {
+    width: ${({ mapCollapsed }) =>
+      mapCollapsed ? '100%' : 'calc(70% - 16px)'};
+  }
   height: 100%;
   z-index: ${mapControlZindex + 1};
-
-  & .fr-table {
-    padding-top: 0 !important;
-  }
-
-  & table {
-    max-height: 100% !important;
-    tbody tr {
-      :hover {
-        background-color: #cfcfcf !important;
-      }
-    }
-    & th,
-    & td {
-      padding: 0.5rem !important;
-    }
-  }
-
-  & > div {
-    width: fit-content;
-  }
 `;
 
 export const MapContainer = styled.div<{ mapCollapsed: boolean }>`
   height: 100%;
-  width: ${({ mapCollapsed }) => (mapCollapsed ? '0%' : '30%')};
+  width: 100%;
+  @media (min-width: 992px) {
+    width: ${({ mapCollapsed }) => (mapCollapsed ? '0%' : '30%')};
+  }
   margin-bottom: 2.5rem;
+
+  .maplibregl-popup-content {
+    background-color: var(--background-default-grey);
+  }
+  .maplibregl-popup-anchor-left .maplibregl-popup-tip {
+    border-right-color: var(--background-default-grey);
+  }
+  .maplibregl-popup-anchor-top .maplibregl-popup-tip {
+    border-bottom-color: var(--background-default-grey);
+  }
+  .maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+    border-top-color: var(--background-default-grey);
+  }
+  .maplibregl-popup-anchor-right .maplibregl-popup-tip {
+    border-left-color: var(--background-default-grey);
+  }
 `;
 
 export const CollapseMap = styled.button<{
@@ -113,7 +98,7 @@ export const CollapseMap = styled.button<{
   top: 50%;
   border-radius: ${({ mapCollapsed }) =>
     mapCollapsed ? '10px 0px 0px 10px' : '0px 10px 10px 0px'};
-  background-color: white;
+  background-color: var(--background-default-grey);
   border: solid 1px #dddddd;
   height: 60px;
   width: 28px;

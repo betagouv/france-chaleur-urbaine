@@ -1,7 +1,4 @@
-import { CardDescription, CardTitle } from '@dataesr/react-dsfr';
-import Link from 'next/link';
 import {
-  BottomLink,
   CardContainer,
   UnderstandingCard,
   UnderstandingCards,
@@ -14,20 +11,20 @@ const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {
       {Object.entries(cards || understandings).map(([key, understanding]) => (
         <CardContainer key={key}>
           <UnderstandingCard
-            asLink={<Link href={`/ressources/${key}#contenu`} />}
-          >
-            <CardTitle>
-              {cards && understanding.altTitle
+            title={
+              cards && understanding.altTitle
                 ? understanding.altTitle
-                : understanding.title}
-            </CardTitle>
-            <CardDescription>
-              {understanding.description}
-              <br />
-              <br />
-            </CardDescription>
-          </UnderstandingCard>
-          <BottomLink>Lire l'article</BottomLink>
+                : understanding.title
+            }
+            desc={understanding.description}
+            linkProps={{
+              href: `/ressources/${key}#contenu`,
+            }}
+            border
+            enlargeLink
+            size="small"
+            titleAs="h4"
+          ></UnderstandingCard>
         </CardContainer>
       ))}
     </UnderstandingCards>

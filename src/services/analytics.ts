@@ -1,6 +1,6 @@
 import { isDevModeEnabled } from '@components/Map/components/DevModeIcon';
 import { fbEvent } from '@rivercode/facebook-conversion-api-nextjs';
-import { init as initMatomo } from '@totak/matomo-next';
+import { init as initMatomo } from '@socialgouv/matomo-next';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { Router } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -29,6 +29,9 @@ const onRouteChange = (url: string) => {
   }
 };
 
+// prevent the double init effect due to strict mode
+let hookInitialized = false;
+
 /**
  * Register analytics (Matomo only for now).
  * Matomo and Google Analytics page views both have to be triggered manually.
@@ -41,9 +44,12 @@ export const useAnalytics = () => {
 
   useEffect(() => {
     if (
+      !hookInitialized &&
       clientConfig.tracking.matomoServerURL &&
       clientConfig.tracking.matomoSiteId
     ) {
+      hookInitialized = true;
+
       initMatomo({
         url: clientConfig.tracking.matomoServerURL,
         siteId: clientConfig.tracking.matomoSiteId,

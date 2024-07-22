@@ -1,4 +1,4 @@
-import { Highlight } from '@dataesr/react-dsfr';
+import { Highlight } from '@codegouvfr/react-dsfr/Highlight';
 import { useRef } from 'react';
 import { Description } from '../RessourceContent.styles';
 import { List, Source, Subtitle } from './Contents.styles';

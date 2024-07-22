@@ -353,11 +353,11 @@ const Statistics = () => {
               <NumberContainer>
                 <NumberBlock className="fr-col-md-6 fr-col-12">
                   <NumberHighlight>{statistics.connection}</NumberHighlight>
-                  Raccordements à l'étude
+                  Raccordements à l'étude ou en cours
                   <HoverableIcon
                     iconName="ri-information-fill"
                     position="bottom"
-                    iconSize="1x"
+                    iconSize="md"
                   >
                     Par raccordements à l’étude, on désigne ceux pour lesquels
                     une étude de faisabilité technico-économique est en cours au
@@ -367,7 +367,7 @@ const Statistics = () => {
                     votée en AG avant que les travaux ne puissent démarrer.
                   </HoverableIcon>
                   <br />
-                  <NumberText>(~22 080 logements)</NumberText>
+                  <NumberText>(~{statistics.logements} logements)</NumberText>
                   <br />
                   <NumberSubText className="fr-mt-1w">
                     A titre de comparaison, le nombre total de bâtiments
@@ -442,7 +442,7 @@ const Statistics = () => {
                       <HoverableIcon
                         iconName="ri-information-fill"
                         position="bottom"
-                        iconSize="1x"
+                        iconSize="md"
                       >
                         A savoir : une partie des demandes déposées (environ
                         50%) ne peut aboutir en raison d'une distance trop
@@ -489,7 +489,7 @@ const Statistics = () => {
                       <HoverableIcon
                         iconName="ri-information-fill"
                         position="bottom"
-                        iconSize="1x"
+                        iconSize="md"
                       >
                         "Potentiellement raccordables" : tests effectués pour
                         des bâtiments situés à moins de 100 m d'un réseau (60 m

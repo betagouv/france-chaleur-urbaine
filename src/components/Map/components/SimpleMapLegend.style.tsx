@@ -1,6 +1,5 @@
-import { TrackingEvent, trackEvent } from 'src/services/analytics';
-import { Button } from '@dataesr/react-dsfr';
 import Box from '@components/ui/Box';
+import { TrackingEvent, trackEvent } from 'src/services/analytics';
 import styled, { css } from 'styled-components';
 
 const StyledDSFRCheckbox = styled.div<{
@@ -110,7 +109,7 @@ type ExtractSuffix<
 type LegendTrackingEvent = ExtractSuffix<TrackingEvent, '|Active'>;
 
 interface SingleCheckboxProps {
-  id: string;
+  name: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
   trackingEvent?: LegendTrackingEvent;
@@ -120,7 +119,7 @@ interface SingleCheckboxProps {
  * Offre une checkbox DSFR fonctionnant de manière séparée de son label.
  */
 export function SingleCheckbox({
-  id,
+  name,
   checked,
   onChange,
   trackingEvent,
@@ -129,8 +128,8 @@ export function SingleCheckbox({
     <Box position="relative" px="1w" py="1v">
       <StyledCheckboxInput
         type="checkbox"
-        name={id}
-        id={id}
+        name={name}
+        id={name}
         checked={checked}
         onChange={(event) => {
           onChange(event.target.checked);
@@ -171,10 +170,4 @@ export const DeactivatableBox = styled(Box)<{ disabled?: boolean }>`
         user-select: none;
       }
     `}
-`;
-
-export const PotentielsRaccordementButton = styled(Button)`
-  display: flex;
-  text-wrap: nowrap;
-  gap: 8px;
 `;

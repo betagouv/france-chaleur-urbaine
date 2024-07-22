@@ -19,14 +19,19 @@ export const MapCard = styled.div<MapCardType>`
   display: block;
   position: relative;
   margin-bottom: 8px;
-  background-color: white;
+  background-color: var(--background-default-grey);
   border-style: solid;
   border-width: 0 0 ${({ collapsed }) => (collapsed ? '0' : '10px')} 0;
 
   border-radius: 4px;
   overflow: hidden;
 
-  box-shadow: 1px 0 4px 1px rgb(0 0 0 / 20%);
+  @media (prefers-color-scheme: light) {
+    box-shadow: 1px 0 4px 1px rgb(0 0 0 / 20%);
+  }
+  @media (prefers-color-scheme: dark) {
+    box-shadow: 1px 0 4px 1px rgb(255 255 255 / 20%);
+  }
 
   > header {
     padding: 8px 62px 8px 8px;
@@ -66,29 +71,33 @@ export const HeaderButtons = styled.div`
   position: absolute;
   top: 8px;
   right: 0;
+  display: flex;
 
   > button {
     padding: 0;
     margin-right: 8px;
     cursor: pointer;
-    background-color: white;
+    background-color: var(--background-default-grey);
     box-shadow: 0 1px 2px 1px #33333333;
     width: 20px;
     height: 20px;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    > .icon-left {
-      margin-right: 0;
+    > span {
+      margin-top: -3px; // fix icon vertical alignment
     }
 
     &:hover {
-      background-color: #eeeeee;
+      background-color: var(--background-default-grey-hover);
     }
   }
 `;
 
 export const EligibilityResult = styled.div<MapCardType>`
-  background-color: #eeeeee;
+  background-color: var(--background-default-grey-hover);
   padding: 8px 8px 8px 16px;
   margin-bottom: 8px;
   font-size: 14px;

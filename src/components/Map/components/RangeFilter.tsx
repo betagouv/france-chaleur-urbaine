@@ -38,16 +38,14 @@ const RangeFilter = ({
         <Text size="sm" lineHeight="18px" fontWeight="bold" mr="1w">
           {label}
         </Text>
-
         {tooltip && (
           <SimpleTooltip
-            icon={<Icon size="1x" name="ri-information-fill" cursor="help" />}
+            icon={<Icon size="sm" name="ri-information-fill" cursor="help" />}
           >
             {tooltip}
           </SimpleTooltip>
         )}
       </Box>
-
       <Box position="relative" mt="2w" mx="1w" {...props}>
         {/* Space needed for margins to work */}
         <Box minHeight="1px" />
@@ -107,10 +105,9 @@ const RangeFilter = ({
           </Tracks>
         </Slider>
       </Box>
-
       <Box display="flex" justifyContent="space-between" mt="2w">
         <Box
-          backgroundColor="#f3f6f9"
+          backgroundColor="info-975-75"
           borderRadius="6px"
           p="1w"
           fontSize="12px"
@@ -122,7 +119,7 @@ const RangeFilter = ({
         </Box>
 
         <Box
-          backgroundColor="#f3f6f9"
+          backgroundColor="info-975-75"
           borderRadius="6px"
           p="1w"
           fontSize="12px"

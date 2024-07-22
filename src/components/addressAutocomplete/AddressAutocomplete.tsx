@@ -1,4 +1,5 @@
-import { Combobox, ComboboxPopover } from '@reach/combobox';
+import { fr } from '@codegouvfr/react-dsfr';
+import { Combobox, ComboboxPopover } from '@components/ui/Combobox';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SuggestionItem } from 'src/types/Suggestions';
@@ -25,10 +26,7 @@ type AddressProps = {
   minCharactersLength?: number;
   className?: string;
   popoverClassName?: string;
-  onAddressSelected: (
-    address: string,
-    geoAddress?: SuggestionItem
-  ) => Promise<void>;
+  onAddressSelected: (address: string, geoAddress?: SuggestionItem) => any;
   onChange?: (e: string) => void;
 };
 
@@ -39,7 +37,7 @@ const findAddressInSuggestions = (
   return suggestions.find((item) => item.properties.label === address);
 };
 
-const AddressAutocomplete: React.FC<AddressProps> = ({
+const AddressAutocomplete = ({
   label = defaultLabel,
   emptySuggestionText = defaultEmptySuggestionText,
   debounceTime = 200,
@@ -50,7 +48,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
   centred,
   onAddressSelected,
   onChange,
-}) => {
+}: AddressProps) => {
   const router = useRouter();
   const [address, setAddress] = useState('');
   const [seeSuggestions, setSeeSuggestions] = useState(true);
@@ -120,7 +118,7 @@ const AddressAutocomplete: React.FC<AddressProps> = ({
         <Combobox
           aria-label="address"
           aria-labelledby="address"
-          className="fr-input-wrap fr-fi-search-line"
+          className={fr.cx('fr-input-wrap', 'ri-search-line')}
           onSelect={(selectedAddress) =>
             handleSelect(selectedAddress, suggestions)
           }

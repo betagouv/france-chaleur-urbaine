@@ -1,4 +1,6 @@
-import { Select } from '@dataesr/react-dsfr';
+import { Select } from '@codegouvfr/react-dsfr/SelectNext';
+import Box, { ResponsiveRow } from '@components/ui/Box';
+import Text from '@components/ui/Text';
 import { ReactNode, useCallback, useMemo, useState } from 'react';
 import {
   TypeEnergy,
@@ -26,8 +28,6 @@ import {
   SmallResult,
   SurfSelect,
 } from './SimulatorCO2.style';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Text from '@components/ui/Text';
 
 const numberToString = (num: number, precision = 0) =>
   `${parseFloat(num.toFixed(precision))}`.replace('.', ',');
@@ -91,41 +91,68 @@ const SimulatorCO2: React.FC<{
     <>
       <fieldset>
         <Input
-          type="number"
-          placeholder={data.label.conso}
-          onChange={(e: any) => setConso(parseFloat(e.target.value))}
+          label=""
+          nativeInputProps={{
+            value: conso || '',
+            type: 'number',
+            placeholder: data.label.conso,
+            onChange: (e) => {
+              setConso(parseFloat(e.target.value));
+              setSurf(0);
+              setLog(0);
+            },
+          }}
         />
       </fieldset>
       <fieldset>
         ou
         <Input
-          type="number"
-          placeholder={data.label.surf}
-          onChange={(e: any) => setSurf(parseFloat(e.target.value))}
+          label=""
+          nativeInputProps={{
+            value: surf || '',
+            type: 'number',
+            placeholder: data.label.surf,
+            onChange: (e) => {
+              setSurf(parseFloat(e.target.value));
+              setConso(0);
+              setLog(0);
+            },
+          }}
         />
       </fieldset>
       <fieldset>
         ou
         <Input
-          type="number"
-          placeholder={data.label.log}
-          onChange={(e: any) => setLog(parseInt(e.target.value))}
+          label=""
+          nativeInputProps={{
+            value: log || '',
+            type: 'number',
+            placeholder: data.label.log,
+            onChange: (e) => {
+              setLog(parseFloat(e.target.value));
+              setSurf(0);
+              setConso(0);
+            },
+          }}
         />
       </fieldset>
       <fieldset>
         <Select
-          onChange={selectHandleChange}
-          selected={energy}
+          label=""
           options={[
             {
               label: data.label.chauffage,
               value: '',
             },
-          ].concat(
-            Object.entries(dataEnergy)
+            ...Object.entries(dataEnergy)
               .filter(([key]) => key !== 'rdc')
-              .map(([key, { label }]) => ({ label, value: key }))
-          )}
+              .map(([key, { label }]) => ({ label, value: key })),
+          ]}
+          nativeSelectProps={{
+            required: true,
+            value: energy,
+            onChange: selectHandleChange,
+          }}
         />
       </fieldset>
     </>
@@ -135,9 +162,13 @@ const SimulatorCO2: React.FC<{
     <>
       {!typeSurf && (
         <SurfSelect
-          selected={simulatorType}
+          label=""
           options={buildingTypeSelectOptions}
-          onChange={(e: any) => setSimulatorType(e.target.value)}
+          nativeSelectProps={{
+            required: true,
+            value: simulatorType,
+            onChange: (e: any) => setSimulatorType(e.target.value),
+          }}
         />
       )}
       {typeSurf === TypeSurf.copropriete ? (
@@ -189,8 +220,9 @@ const SimulatorCO2: React.FC<{
               >
                 <Box
                   display="flex"
-                  flexDirection="row"
-                  gap="5px"
+                  flexDirection="column"
+                  textAlign="center"
+                  gap="15px"
                   alignItems="center"
                 >
                   <Text fontSize="50px" fontWeight="bold">
@@ -209,14 +241,19 @@ const SimulatorCO2: React.FC<{
                 </Box>
                 <Box
                   display="flex"
-                  flexDirection="row"
+                  flexDirection="column"
+                  textAlign="center"
                   alignItems="center"
-                  gap="5px"
+                  gap="15px"
                 >
                   <Text fontSize="30px" fontWeight="bold">
                     {numberToString((economy * -1) / 5, 1)}
                   </Text>
-                  <Text>allers-retours Paris/New-York</Text>
+                  <Text>
+                    allers-retours
+                    <br />
+                    Paris/New-York
+                  </Text>
                 </Box>
               </Box>
 

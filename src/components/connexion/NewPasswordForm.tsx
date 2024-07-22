@@ -1,4 +1,5 @@
-import { Button, TextInput } from '@dataesr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import Input from '@components/form/Input';
 import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useState } from 'react';
 import { useServices } from 'src/services';
@@ -47,23 +48,27 @@ const NewPasswordForm = ({ token }: { token: string }) => {
   };
   return (
     <Container onSubmit={reset}>
-      <TextInput
-        required
-        type="password"
+      <Input
         label="Mot de passe"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        nativeInputProps={{
+          required: true,
+          type: 'password',
+          value: password,
+          onChange: (e) => setPassword(e.target.value),
+        }}
       />
-      <TextInput
-        required
-        type="password"
+      <Input
         label="Confirmer"
-        value={confirmation}
-        onChange={(e) => setConfirmation(e.target.value)}
+        nativeInputProps={{
+          required: true,
+          type: 'password',
+          value: confirmation,
+          onChange: (e) => setConfirmation(e.target.value),
+        }}
       />
-      {error && <PasswordAlert type="error" title={error} />}
-      {fail && <PasswordAlert type="error" title={fail} />}
-      <Button submit>Changer mon mot de passe</Button>
+      {error && <PasswordAlert severity="error" title={error} />}
+      {fail && <PasswordAlert severity="error" title={fail} />}
+      <Button type="submit">Changer mon mot de passe</Button>
     </Container>
   );
 };

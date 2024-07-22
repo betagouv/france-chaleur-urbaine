@@ -1,20 +1,15 @@
-import ConsentBanner from '@components/ConsentBanner';
-import {
-  FacebookMarkup,
-  GoogleAdsMarkup,
-  LinkedInMarkup,
-} from '@components/Markup';
-import '@gouvfr/dsfr/dist/dsfr.min.css';
-import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
-import '@gouvfr/dsfr/dist/utility/icons/icons-editor/icons-editor.min.css';
-import '@gouvfr/dsfr/dist/utility/icons/icons-document/icons-document.min.css';
-import 'remixicon/fonts/remixicon.css';
+import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
 import '@reach/combobox/styles.css';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
+
+import { ConsentBanner } from '@components/ConsentBanner';
+import { usePreserveScroll } from '@hooks/usePreserveScroll';
+import { MuiDsfrThemeProvider } from 'src/MuiDsfrThemeProvider';
 import 'src/components/Map/StyleSwitcher/styles.css';
 import {
   HeatNetworkService,
@@ -22,16 +17,46 @@ import {
   SuggestionService,
 } from 'src/services';
 import { AdminService } from 'src/services/admin';
+import { useAnalytics } from 'src/services/analytics';
 import { DemandsService } from 'src/services/demands';
 import { axiosHttpClient } from 'src/services/http';
-import { iframedPaths } from 'src/services/iframe';
 import { PasswordService } from 'src/services/password';
 import { createGlobalStyle } from 'styled-components';
-import { clientConfig } from 'src/client-config';
-import { useAnalytics } from 'src/services/analytics';
 import { SWRConfig, SWRConfiguration } from 'swr';
-import { usePreserveScroll } from '@hooks/usePreserveScroll';
-import HotjarMarkup from '@components/Markup/HotjarMarkup';
+import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
+
+declare module '@codegouvfr/react-dsfr/next-pagesdir' {
+  interface RegisterLink {
+    Link: typeof Link;
+  }
+}
+
+const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
+  defaultColorScheme: 'system',
+  Link,
+  preloadFonts: [
+    //"Marianne-Light",
+    //"Marianne-Light_Italic",
+    'Marianne-Regular',
+    //"Marianne-Regular_Italic",
+    'Marianne-Medium',
+    //"Marianne-Medium_Italic",
+    'Marianne-Bold',
+    //"Marianne-Bold_Italic",
+    //"Spectral-Regular",
+    //"Spectral-ExtraBold"
+  ],
+});
+
+export { dsfrDocumentApi };
+
+// https://github.com/codegouvfr/react-dsfr/issues/281#issuecomment-2231266401
+const { withAppEmotionCache, augmentDocumentWithEmotionCache } =
+  createEmotionSsrAdvancedApproach({
+    key: 'css',
+  });
+
+export { augmentDocumentWithEmotionCache };
 
 const og = {
   // TODO: USE https://www.screenshotmachine.com/website-screenshot-api.php
@@ -76,12 +101,22 @@ export const AppGlobalStyle = createGlobalStyle`
   .d-inline-block {
     display: inline-block !important;
   }
+  .d-flex {
+    display: flex !important;
+  }
   // custom: not DSFR
   .fr-text--lightbold {
     font-weight: 500 !important;
   }
   :root {
     --white: #fff;
+    --legacy-darker-blue: #000074;
+    --background-light: #f9f8f6;
+
+  }
+  :root[data-fr-theme='dark'] {
+    --legacy-darker-blue: #ccd2fc;
+    --background-light: #060504;
   }
 `;
 
@@ -126,7 +161,7 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   }
 
   .fr-btn--secondary {
-    background-color: white !important;
+    background-color: var(--background-default-grey) !important;
     :hover {
       background-color: var(--hover-tint) !important;
     }
@@ -141,7 +176,7 @@ const swrConfig: SWRConfiguration = {
   revalidateOnFocus: false,
 };
 
-function MyApp({
+function App({
   Component,
   pageProps,
 }: AppProps<{
@@ -152,7 +187,8 @@ function MyApp({
   useAnalytics();
 
   return (
-    <>
+    <MuiDsfrThemeProvider>
+      <ConsentBanner />
       <AppGlobalStyle />
       <DsfrFixUp />
       <ServicesContext.Provider
@@ -164,29 +200,6 @@ function MyApp({
           adminService: new AdminService(axiosHttpClient),
         }}
       >
-        {/* Always add matomo https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies-solutions-pour-les-outils-de-mesure-daudience */}
-        {!iframedPaths.some((path) => router.pathname.match(path)) && (
-          <ConsentBanner>
-            {clientConfig.tracking.googleTagIds.length > 0 && (
-              <GoogleAdsMarkup googleIds={clientConfig.tracking.googleTagIds} />
-            )}
-            {clientConfig.tracking.facebookPixelId && (
-              <FacebookMarkup
-                facebookId={clientConfig.tracking.facebookPixelId}
-              />
-            )}
-            {clientConfig.tracking.linkInPartnerId && (
-              <LinkedInMarkup tagId={clientConfig.tracking.linkInPartnerId} />
-            )}
-            {clientConfig.tracking.hotjarId &&
-              clientConfig.tracking.hotjarSv && (
-                <HotjarMarkup
-                  hotjarId={clientConfig.tracking.hotjarId}
-                  hotjarSv={clientConfig.tracking.hotjarSv}
-                />
-              )}
-          </ConsentBanner>
-        )}
         <Head>
           {favicons.map(
             (
@@ -240,7 +253,7 @@ function MyApp({
           </SessionProvider>
         </SWRConfig>
       </ServicesContext.Provider>
-    </>
+    </MuiDsfrThemeProvider>
   );
 }
-export default MyApp;
+export default withDsfr(withAppEmotionCache(App));

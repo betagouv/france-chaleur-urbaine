@@ -291,11 +291,11 @@ const Professionnels = () => {
             Le coût du raccordement
           </Heading>
           <Text>
-            Estimez le montant du Coup de pouce
+            Estimez le montant du Coup de pouce ”
             <Link href="/ressources/aides#contenu">
-              "Chauffage des bâtiments résidentiels collectifs et tertiaires”
-            </Link>{' '}
-            pour le raccordement d’un bâtiment
+              Chauffage des bâtiments résidentiels collectifs et tertiaires
+            </Link>
+            ” pour le raccordement d’un bâtiment
           </Text>
           <Text my="3w">
             Différentes entreprises signataires de la charte "Chauffage des
@@ -364,13 +364,10 @@ const Professionnels = () => {
             Un moyen de lutter contre le changement climatique
           </Heading>
           <ResponsiveRow pt="4w">
-            <Box className="fr-col-12 fr-col-lg-6 fr-col-xl-6">
+            <Box style={{ flex: 2 }}>
               <SimulatorCO2 typeSurf={TypeSurf.tertiaire} textColor="#ffffff" />
             </Box>
-            <Box
-              textColor="#ffffff"
-              className="fr-col-12 fr-col-lg-6 fr-col-xl-6"
-            >
+            <Box textColor="#ffffff" style={{ flex: 1 }}>
               <Image
                 width={75}
                 height={62}

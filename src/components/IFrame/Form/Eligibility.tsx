@@ -1,15 +1,15 @@
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
 import {
   CheckEligibilityFormLabel,
   SelectEnergy,
 } from '@components/EligibilityForm/components';
 import AddressAutocomplete from '@components/addressAutocomplete';
-import { Button } from '@dataesr/react-dsfr';
+import Image from 'next/image';
 import { useState } from 'react';
+import { AnalyticsFormId } from 'src/services/analytics';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { Container, Form, Header } from './Eligibility.styles';
-import Image from 'next/image';
-import { AnalyticsFormId } from 'src/services/analytics';
 
 const Eligibility = () => {
   const [heatingType, setHeatingType] = useState('');
@@ -30,7 +30,7 @@ const Eligibility = () => {
           <SelectEnergy
             name="heatingType"
             selectOptions={energyInputsDefaultLabels}
-            onChange={(e) => setHeatingType(e.target.value)}
+            onChange={setHeatingType}
             value={heatingType}
           />
         </CheckEligibilityFormLabel>
@@ -38,7 +38,6 @@ const Eligibility = () => {
           placeholder="Tapez ici votre adresse"
           onAddressSelected={(address, suggestionItem) => {
             setAddress(suggestionItem);
-            return Promise.resolve();
           }}
         />
         <Button

@@ -1,49 +1,63 @@
-import { Icon, Table, TextInput } from '@dataesr/react-dsfr';
+import Input from '@components/form/Input';
+import Box from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
+import { Table, type ColumnDef } from '@components/ui/Table';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useServices } from 'src/services';
 import { EligibilityDemand } from 'src/types/EligibilityDemand';
 import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';
-import Heading from '@components/ui/Heading';
-import Box from '@components/ui/Box';
 
-const columns = [
-  { name: 'id', label: 'Id' },
+const columns: ColumnDef<EligibilityDemand>[] = [
+  { field: 'id', headerName: 'Id', minWidth: 150 },
   {
-    name: 'emails',
-    label: 'Emails',
-    render: ({ emails }: EligibilityDemand) => emails.join(', '),
+    field: 'emails',
+    headerName: 'Emails',
+    minWidth: 200,
+    valueGetter: (value) => (value as string[]).join(', '),
   },
   {
-    name: 'created_at',
-    label: 'Date',
-    render: ({ created_at }: EligibilityDemand) =>
-      new Date(created_at).toLocaleDateString(),
+    field: 'created_at',
+    headerName: 'Date',
+    renderCell: ({ row: { created_at } }) => (
+      <>
+        {created_at
+          ? new Date(created_at).toLocaleDateString('fr-FR', {
+              dateStyle: 'long',
+            })
+          : ''}
+      </>
+    ),
   },
-  { name: 'version', label: 'Version' },
-  { name: 'addresses_count', label: "Nombre d'adresses" },
-  { name: 'error_count', label: "Nombre d'erreurs" },
-  { name: 'eligibile_count', label: "Nombre d'adresses éligibles" },
+  { field: 'version', headerName: 'Version' },
+  { field: 'addresses_count', headerName: "Nombre d'adresses", type: 'number' },
+  { field: 'error_count', headerName: "Nombre d'erreurs", type: 'number' },
   {
-    name: 'in_error',
-    label: 'En erreur',
-    render: ({ in_error }: EligibilityDemand) => (in_error ? 'Oui' : 'Non'),
+    field: 'eligibile_count',
+    headerName: "Nombre d'adresses éligibles",
+    type: 'number',
   },
   {
-    name: 'download',
-    label: 'Telecharger',
-    render: ({ id, in_error }: EligibilityDemand) => (
-      <DownloadButton id={id} inError={in_error} />
+    field: 'in_error',
+    headerName: 'En erreur',
+    valueGetter: (value) => (value ? 'Oui' : 'Non'),
+  },
+  {
+    field: 'download',
+    headerName: 'Télécharger',
+    renderCell: (params) => (
+      <DownloadButton id={params.row.id} inError={params.row.in_error} />
     ),
   },
   {
-    name: 'map',
-    label: 'Carte',
-    render: ({ id }: EligibilityDemand) => (
-      <Link href={`/carte?id=${id}`}>
+    field: 'map',
+    headerName: 'Carte',
+    renderCell: (params) => (
+      <Link href={`/carte?id=${params.row.id}`}>
         <button>
-          <Icon name="ri-road-map-line" size="2x" />
+          <Icon name="ri-road-map-line" size="lg" />
         </button>
       </Link>
     ),
@@ -57,14 +71,12 @@ const BulkEligibility = () => {
   const [eligibilityDemands, setEligibilityDemands] = useState<
     EligibilityDemand[]
   >([]);
-  const [page, setPage] = useState(1);
 
   useEffect(() => {
     adminService.getEligibilityDemand().then(setEligibilityDemands);
   }, [adminService]);
 
   const filteredEligibilityDemands = useMemo(() => {
-    setPage(1);
     return filter
       ? eligibilityDemands.filter((demand) =>
           demand.emails.some((email) => email.includes(filter.toLowerCase()))
@@ -72,37 +84,37 @@ const BulkEligibility = () => {
       : eligibilityDemands;
   }, [eligibilityDemands, filter]);
 
+  const totalDemands = filteredEligibilityDemands
+    .filter((demand) => !demand.in_error)
+    .reduce((acc, value) => acc + value.addresses_count - value.error_count, 0);
+  const totalTestedAddresses = filteredEligibilityDemands
+    .filter((demand) => !demand.in_error)
+    .reduce((acc, value) => acc + value.eligibile_count, 0);
   return (
     <>
       <TableContainer>
         <Box display="flex">
           <Heading as="h3" mx="2w">
-            {`Demandes d'éligibilités - ${filteredEligibilityDemands
-              .filter((demand) => !demand.in_error)
-              .reduce(
-                (acc, value) => acc + value.addresses_count - value.error_count,
-                0
-              )} adresses testées - ${filteredEligibilityDemands
-              .filter((demand) => !demand.in_error)
-              .reduce(
-                (acc, value) => acc + value.eligibile_count,
-                0
-              )} adresses éligibles`}
+            {`Demandes d'éligibilités - ${totalDemands.toLocaleString(
+              'fr-FR'
+            )} adresses testées - ${totalTestedAddresses.toLocaleString(
+              'fr-FR'
+            )} adresses éligibles`}
           </Heading>
-          <TextInput
-            placeholder="Email"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+          <Input
+            label=""
+            nativeInputProps={{
+              placeholder: 'Email',
+              value: filter,
+              onChange: (e) => setFilter(e.target.value),
+            }}
           />
         </Box>
         <Table
           columns={columns}
-          data={filteredEligibilityDemands}
-          rowKey="id"
-          pagination
-          paginationPosition="center"
-          page={page}
-          setPage={setPage}
+          rows={filteredEligibilityDemands}
+          autoHeight
+          getRowHeight={() => 'auto'}
         />
         {filteredEligibilityDemands.length === 0 && <p>Pas de résultat</p>}
       </TableContainer>

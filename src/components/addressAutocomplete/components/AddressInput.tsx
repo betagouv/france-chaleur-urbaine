@@ -1,4 +1,4 @@
-import { ComboboxInput } from '@reach/combobox';
+import { ComboboxInput } from '@components/ui/Combobox';
 
 type AddressInputProps = {
   placeholder?: string;

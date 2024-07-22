@@ -1,3 +1,4 @@
+import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
 import styled, { IntrinsicElementsKeys } from 'styled-components';
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
@@ -18,6 +19,7 @@ type StyleProps = {
   textColor?: CSSProperties['color'];
   fontWeight?: 'light' | 'regular' | 'bold' | 'heavy';
   textAlign?: CSSProperties['textAlign'];
+  textWrap?: CSSProperties['textWrap'];
   position?: CSSProperties['position'];
   borderRadius?: CSSProperties['borderRadius'];
   width?: CSSProperties['width'];
@@ -26,6 +28,7 @@ type StyleProps = {
   height?: CSSProperties['height'];
   minHeight?: CSSProperties['minHeight'];
   maxHeight?: CSSProperties['maxHeight'];
+  lineHeight?: CSSProperties['lineHeight'];
   opacity?: CSSProperties['opacity'];
   gridTemplateColumns?: CSSProperties['gridTemplateColumns'];
   columnGap?: CSSProperties['columnGap'];
@@ -57,6 +60,7 @@ const StyledBox = styled.div<StyleProps>`
         : `var(--${textColor})`
       : undefined};
   text-align: ${({ textAlign }) => textAlign};
+  text-wrap: ${({ textWrap }) => textWrap};
   position: ${({ position }) => position};
   border-radius: ${({ borderRadius }) => borderRadius};
   width: ${({ width }) => width};
@@ -65,6 +69,7 @@ const StyledBox = styled.div<StyleProps>`
   height: ${({ height }) => height};
   min-height: ${({ minHeight }) => minHeight};
   max-height: ${({ maxHeight }) => maxHeight};
+  line-height: ${({ lineHeight }) => lineHeight};
   opacity: ${({ opacity }) => opacity};
   grid-template-columns: ${({ gridTemplateColumns }) => gridTemplateColumns};
   column-gap: ${({ columnGap }) => columnGap};
@@ -77,6 +82,7 @@ export interface BoxProps
     SpacingProperties,
     HTMLAttributes<HTMLDivElement> {
   as?: IntrinsicElementsKeys;
+  iconLeft?: FrIconClassName | RiIconClassName;
 }
 
 /**
@@ -89,7 +95,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
   return (
     <StyledBox
       as={props.as ?? 'div'}
-      display={props.display ?? 'block'}
+      display={props.display}
       flexDirection={props.flexDirection}
       flexWrap={props.flexWrap}
       alignItems={props.alignItems}
@@ -103,6 +109,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       fontSize={props.fontSize}
       textColor={props.textColor}
       textAlign={props.textAlign}
+      textWrap={props.textWrap}
       position={props.position}
       borderRadius={props.borderRadius}
       width={props.width}
@@ -111,13 +118,14 @@ function Box(props: PropsWithChildren<BoxProps>) {
       height={props.height}
       minHeight={props.minHeight}
       maxHeight={props.maxHeight}
+      lineHeight={props.lineHeight}
       opacity={props.opacity}
       gridTemplateColumns={props.gridTemplateColumns}
       columnGap={props.columnGap}
       cursor={props.cursor}
       className={`${className ?? ''} ${
         props.fontWeight ? `fr-text--${props.fontWeight}` : ''
-      } ${spacingsToClasses(props)}`}
+      } ${props.iconLeft ?? ''} ${spacingsToClasses(props)}`}
       {...rest}
     >
       {props.children}

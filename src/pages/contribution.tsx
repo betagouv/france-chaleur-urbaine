@@ -1,7 +1,7 @@
 import ContributionForm from '@components/ContributionForm/ContributionForm';
 import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
-import { Alert } from '@dataesr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { submitToAirtable } from '@helpers/airtable';
 import { useRouter } from 'next/router';
 import { ReactNode, useState } from 'react';
@@ -63,7 +63,7 @@ function Contribution() {
       >
         {result ? (
           <Alert
-            type={result.type}
+            severity={result.type}
             title={result.title}
             description={result.description as string}
           />

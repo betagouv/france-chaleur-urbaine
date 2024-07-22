@@ -1,4 +1,4 @@
-import { Button } from '@dataesr/react-dsfr';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import styled, { css } from 'styled-components';
 
 export const ZoneInfosWrapper = styled.div`
@@ -9,7 +9,7 @@ export const ZoneInfosWrapper = styled.div`
   position: relative;
   width: 100%;
   gap: 16px;
-  background-color: white;
+  background-color: var(--background-default-grey);
   padding: 16px;
   border-radius: 8px;
   border: 1px solid #dddddd;
@@ -36,7 +36,7 @@ export const CollapseZone = styled.button<{ zoneCollapsed: boolean }>`
     `}
   transform: translateX(-50%) translateY(-50%);
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--background-default-grey);
   border: solid 1px #dddddd;
   height: 51px;
   width: 60px;
@@ -76,7 +76,6 @@ export const DrawButtons = styled.div`
   width: max-content !important;
 
   .hideable {
-    display: block;
     @media (max-width: 715px) {
       display: none;
     }

@@ -6,7 +6,6 @@ import { StatusSelect } from './Status.styles';
 const statusOptions = Object.values(DEMANDE_STATUS).map((status: string) => ({
   label: status,
   value: status,
-  disabled: false,
 }));
 
 const Status = ({
@@ -14,7 +13,7 @@ const Status = ({
   updateDemand,
 }: {
   demand: Demand;
-  updateDemand: (demandId: string, demand: Partial<Demand>) => void;
+  updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
 }) => {
   const [status, setStatus] = useState('');
   useEffect(() => {
@@ -23,13 +22,15 @@ const Status = ({
 
   return (
     <StatusSelect
-      selected={status}
+      label=""
       options={statusOptions}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore: Fix in react-DSFR
-      onChange={(e) => {
-        setStatus(e.target.value);
-        updateDemand(demand.id, { Status: e.target.value });
+      placeholder="Sélectionner un statut"
+      nativeSelectProps={{
+        onChange: (e) => {
+          setStatus(e.target.value);
+          updateDemand(demand.id, { Status: e.target.value });
+        },
+        value: status ?? DEMANDE_STATUS.EMPTY,
       }}
     />
   );

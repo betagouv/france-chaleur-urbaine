@@ -1,14 +1,25 @@
 import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
-import Map from '@components/Map/Map';
-import { Icon, Table } from '@dataesr/react-dsfr';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import Map from '@components/Map';
+import Box from '@components/ui/Box';
+import Icon from '@components/ui/Icon';
+import { Table, type ColumnDef } from '@components/ui/Table';
+import { GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { MapRef } from 'react-map-gl/maplibre';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
-import { RowsParams } from 'src/services/demands';
+import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
+import { Point } from 'src/types/Point';
 import { Demand } from 'src/types/Summary/Demand';
 import AdditionalInformation from './AdditionalInformation';
-import Addresse from './Addresse';
 import Comment from './Comment';
 import Contact from './Contact';
 import Contacted from './Contacted';
@@ -24,352 +35,253 @@ import {
 import ManagerHeader from './ManagerHeader';
 import Status from './Status';
 import Tag from './Tag';
-import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
 
-const rowPerPage: number = 10;
-
-type SortParamType = {
-  key: keyof Demand;
-  backupKey?: keyof Demand;
-  order: 'asc' | 'desc';
+type MapCenterLocation = {
+  center: Point;
+  zoom: number;
 };
-
-const getValueToSort = (
-  demand: Demand,
-  key: keyof Demand,
-  backupKey?: keyof Demand
-) =>
-  !backupKey || demand[key] !== undefined ? demand[key] : demand[backupKey];
-
-const getSortBy = (arr: Demand[]) => (sort: SortParamType) => {
-  if (!arr.length) return [];
-  if (!sort.key || !sort.order) {
-    return [...arr];
-  }
-  return [...arr].sort((_a, _b) => {
-    const a = getValueToSort(_a, sort.key, sort.backupKey);
-    const b = getValueToSort(_b, sort.key, sort.backupKey);
-    let sortResult = 0;
-    if (typeof a === 'undefined') {
-      if (typeof b === 'undefined') {
-        sortResult = 0;
-      } else {
-        sortResult = 1;
-      }
-    } else {
-      if (typeof b === 'undefined') {
-        sortResult = -1;
-      } else {
-        sortResult = a < b ? 1 : -1;
-      }
-    }
-    return sort.order === 'desc' ? sortResult : -1 * sortResult;
-  });
-};
-
-const defaultSort: SortParamType = { key: 'Date demandes', order: 'desc' };
 
 const Manager = () => {
   const { demandsService } = useServices();
-  const [page, setPage] = useState(1);
+  const tableApiRef = useGridApiRef();
+  const mapRef = useRef<MapRef>() as MutableRefObject<MapRef>;
+
   const [loading, setLoading] = useState(true);
-  const [isFirstInit, setIsFirstInit] = useState<boolean>(true);
   const [demands, setDemands] = useState<Demand[]>([]);
   const [filteredDemands, setFilteredDemands] = useState<Demand[]>([]);
-  const [sort, setSort] = useState<SortParamType>(defaultSort);
-  const refManagerTable: null | { current: any } = useRef(null);
-  const [centerRow, setCenterRow] = useState<string>();
 
   const [mapCollapsed, setMapCollapsed] = useState(false);
   const [mapPins, setMapPins] = useState<MapMarkerInfos[]>([]);
-  const [centerPin, setCenterPin] = useState<[number, number]>();
-  const [firstCenterPin, setFirstCenterPin] = useState<[number, number]>();
-  const [initialZoom, setInitialZoom] = useState<number>(8);
+  const [mapCenterLocation, setMapCenterLocation] =
+    useState<MapCenterLocation>();
 
-  const handleSort = useCallback(
-    (key: keyof Demand, backupKey?: keyof Demand) => () => {
-      const order =
-        sort.key !== key || !sort.order
-          ? 'desc'
-          : sort.order === 'desc'
-          ? 'asc'
-          : undefined;
-      setSort(order ? { key, backupKey, order } : defaultSort);
-    },
-    [sort]
-  );
-
-  const setMapCenter = (pin: [number, number]) => {
-    setCenterPin(pin);
-    setInitialZoom(16);
-  };
-
-  const highlightPin = useCallback((id: string) => {
-    setMapPins((currentMapPins) => {
-      const newMapPins: MapMarkerInfos[] = currentMapPins;
-      newMapPins.map((pin: MapMarkerInfos) => {
-        if (pin.id == id) {
-          pin.color = 'red';
-          setMapCenter([pin.longitude, pin.latitude]);
-        } else if (pin.color != '#4550e5') {
-          pin.color = '#4550e5';
-        }
-      });
-      return newMapPins;
-    });
+  useEffect(() => {
+    (async () => {
+      try {
+        const demands = await demandsService.fetch();
+        setDemands(demands);
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
+        });
+      }
+    })();
   }, []);
 
-  const highlightRow = useCallback(
-    (id: string) => {
-      if (refManagerTable.current) {
-        const rows: NodeList =
-          refManagerTable.current.querySelectorAll('tbody tr');
-        if (rows && rows.length > 0) {
-          let matchingRow: any | undefined;
-          rows.forEach((row: any) => {
-            row.style.removeProperty('background-color');
-            if (Object.values(row as Node)[0].key) {
-              const fileNumber = Object.values(row as Node)[0].key;
-              if (id == fileNumber) {
-                matchingRow = row;
-                return;
-              }
-            }
-          });
-          if (matchingRow) {
-            matchingRow.style.backgroundColor = '#cfcfcf';
-          } else {
-            //Highlight in another page
-            for (let i = 0; i < filteredDemands.length; i += 1) {
-              if (
-                filteredDemands[i] &&
-                id == filteredDemands[i]['N° de dossier']
-              ) {
-                const newPage = Math.floor(i / rowPerPage) + 1;
-                setCenterRow(id);
-                setPage(newPage);
-                break;
-              }
-            }
-          }
-        }
-      }
+  const highlightPin = useCallback(
+    (selectedPinId: string) => {
+      setMapPins((currentMapPins) => [
+        ...currentMapPins.map((pin) => ({
+          ...pin,
+          color: pin.id == selectedPinId ? 'red' : '#4550e5',
+        })),
+      ]);
     },
-    [filteredDemands]
+    [setMapPins]
   );
 
-  const highlight = useCallback(
-    (id: string) => {
-      highlightPin(id);
-      highlightRow(id);
+  // will highlight the pin, center on it and select the row in the table
+  const onMapPinClick = useCallback(
+    (demandId: string) => {
+      highlightPin(demandId);
+
+      tableApiRef.current.setRowSelectionModel([demandId]);
+
+      const pageSize =
+        tableApiRef.current.state.pagination.paginationModel.pageSize;
+      const rowIndex = tableApiRef.current.getSortedRowIds().indexOf(demandId);
+      const pageNumber = Math.floor(rowIndex / pageSize);
+      tableApiRef.current.setPage(pageNumber);
     },
-    [highlightPin, highlightRow]
+    [highlightPin, tableApiRef]
   );
 
-  const addOnClick = useCallback(() => {
-    if (refManagerTable.current) {
-      const rows = refManagerTable.current.querySelectorAll('tbody tr');
-      if (rows && rows.length > 0) {
-        rows.forEach((row: Node) => {
-          if (Object.values(row)[0].key) {
-            const fileNumber = Object.values(row)[0].key;
-            const matchingDemand: any | undefined = demands.find(
-              (demand: any) => {
-                if (demand['N° de dossier'] == fileNumber) return demand;
-              }
-            );
-            if (matchingDemand) {
-              row.addEventListener('click', () => {
-                highlight(matchingDemand['N° de dossier']);
-              });
-            }
-          }
+  // will highlight the pin, center on it and select the row in the table
+  const onRowSelection = useCallback(
+    (rows: GridRowSelectionModel) => {
+      const selectedId = rows[0] as string;
+      highlightPin(selectedId);
+      const selectedDemand = filteredDemands.find(
+        (demand) => demand.id === selectedId
+      );
+      // update the view after the pin has been highlighted
+      if (selectedDemand) {
+        setMapCenterLocation({
+          center: [selectedDemand.Longitude, selectedDemand.Latitude],
+          zoom: 16,
         });
-        setIsFirstInit(false);
       }
-    }
-  }, [demands, highlight]);
-
-  const onUpdateMapPins = useCallback(() => {
-    const addressList: MapMarkerInfos[] = [];
-    let firstDemand: any;
-    if (filteredDemands) {
-      filteredDemands.forEach((demand: any) => {
-        if (demand.Latitude && demand.Longitude) {
-          !firstDemand && (firstDemand = demand);
-          addressList.push({
-            id: demand['N° de dossier'],
-            latitude: demand.Latitude,
-            longitude: demand.Longitude,
-            popup: true,
-            popupContent: demand.Adresse,
-            onClickAction: highlight,
-          });
-        }
-      });
-    }
-    setMapPins(addressList);
-    if (isFirstInit) {
-      addOnClick();
-      if (firstDemand) {
-        setFirstCenterPin([firstDemand.Longitude, firstDemand.Latitude]);
-      }
-    }
-  }, [filteredDemands, isFirstInit, highlight, addOnClick]);
+    },
+    [highlightPin, filteredDemands, mapRef]
+  );
 
   const onFilterUpdate = useCallback(
     (demands: Demand[]) => {
-      const sortedDemands = getSortBy(demands)(sort);
-      setFilteredDemands(sortedDemands);
+      setFilteredDemands(demands);
+      if (tableApiRef.current?.setPage) {
+        tableApiRef.current.setPage(0);
+      }
     },
-    [sort]
+    [demands]
   );
 
-  useEffect(() => {
-    demandsService.fetch().then((values) => {
-      setDemands(values);
-      setLoading(false);
-    });
-  }, [demandsService]);
-
   const updateDemand = useCallback(
-    (demandId: string, demand: Partial<Demand>) => {
-      demandsService.update(demandId, demand).then((response) => {
-        if (response) {
-          const index = demands.findIndex((d) => d.id === demandId);
-          demands.splice(index, 1, response);
-          setDemands([...demands]);
-        }
-      });
+    async (demandId: string, demand: Partial<Demand>) => {
+      const updatedDemand = await demandsService.update(demandId, demand);
+      if (updatedDemand) {
+        const index = demands.findIndex((d) => d.id === demandId);
+        demands.splice(index, 1, updatedDemand);
+        setDemands([...demands]);
+      }
     },
     [demands, demandsService]
   );
 
-  useEffect(() => {
-    if (filteredDemands && filteredDemands.length > 0) {
-      onUpdateMapPins();
+  const refreshMapPins = useCallback(() => {
+    const addressList = filteredDemands.map<MapMarkerInfos>((demand) => ({
+      id: demand.id,
+      latitude: demand.Latitude,
+      longitude: demand.Longitude,
+      popup: true,
+      popupContent: demand.Adresse,
+      onClickAction: onMapPinClick,
+    }));
+    setMapPins(addressList);
+
+    // center on first demand
+    if (addressList[0]) {
+      setMapCenterLocation({
+        center: [addressList[0].longitude, addressList[0].latitude],
+        zoom: 8,
+      });
     }
-  }, [filteredDemands, onUpdateMapPins]);
+  }, [filteredDemands]);
 
   useEffect(() => {
-    if (centerRow) {
-      highlight(centerRow);
-    }
-  }, [highlight, centerRow]);
+    refreshMapPins();
+  }, [filteredDemands, refreshMapPins]);
 
-  useEffect(() => {
-    addOnClick();
-  }, [addOnClick, page]);
-
-  const demandRowsParams: RowsParams[] = [
+  const demandRowsParams: ColumnDef<Demand>[] = [
     {
-      name: 'Statut',
-      label: 'Statut',
-      render: (demand) => (
-        <Status demand={demand} updateDemand={updateDemand} />
+      field: 'Statut',
+      width: 300,
+      sortable: false,
+      renderCell: (params) => (
+        <Status demand={params.row} updateDemand={updateDemand} />
+      ),
+      headerName: 'Statut',
+    },
+    {
+      field: 'Prospect recontacté',
+      sortable: false,
+      align: 'center',
+      renderCell: (params) => (
+        <Contacted demand={params.row} updateDemand={updateDemand} />
+      ),
+      headerName: 'Prospect recontacté',
+    },
+    {
+      field: 'Contact / Envoi de mails',
+      headerName: 'Contact',
+      minWidth: 280,
+      sortable: false,
+      renderCell: (params) => (
+        <Contact demand={params.row} updateDemand={updateDemand} />
       ),
     },
     {
-      name: 'Prospect recontacté',
-      label: 'Prospect recontacté',
-      render: (demand) => (
-        <Contacted demand={demand} updateDemand={updateDemand} />
-      ),
-    },
-    {
-      name: 'Contact / Envoi de mails',
-      label: 'Contact',
-      render: (demand) => (
-        <Contact demand={demand} updateDemand={updateDemand} />
-      ),
-    },
-    {
-      name: 'Adresse',
-      label: (
-        <>
+      field: 'Adresse',
+      renderHeader: () => (
+        <ColHeader>
           Adresse
           <HoverableIcon
             iconName="ri-information-fill"
-            position="bottom"
-            iconSize="lg"
+            position="bottom-centered"
+            iconSize="sm"
             top="0px"
           >
             La mention “PDP" est indiquée pour les adresses situées dans le
             périmètre de développement prioritaire d’un réseau classé (connu par
             France Chaleur Urbaine).
           </HoverableIcon>
-        </>
-      ),
-      render: (demand) => <Addresse demand={demand} />,
-    },
-    {
-      name: 'Date demandes',
-      label: (
-        <ColHeader
-          sort={sort.key === 'Date demandes' ? sort.order : undefined}
-          onClick={handleSort('Date demandes')}
-          width="100px"
-        >
-          Date de la demande
         </ColHeader>
       ),
-
-      render: (demand) =>
-        new Date(demand['Date demandes']).toLocaleDateString(),
+      width: 320,
+      sortable: false,
+      renderCell: ({ row: demand }) => (
+        <Box textWrap="pretty">
+          {demand.Adresse}
+          {demand['en PDP'] === 'Oui' && <Tag text="PDP" />}
+        </Box>
+      ),
     },
     {
-      name: 'Type de chauffage',
-      label: 'Type',
-      render: (demand) => <Tag text={demand.Structure} />,
+      field: 'Date demandes',
+      sortable: true,
+      headerName: 'Date de la demande',
+      renderCell: (params) =>
+        new Date(params.row['Date demandes']).toLocaleDateString(),
     },
     {
-      name: 'Mode de chauffage',
-      label: 'Mode de chauffage',
-      render: (demand) => <Tag text={displayModeDeChauffage(demand)} />,
+      field: 'Type de chauffage',
+      sortable: false,
+      width: 120,
+      headerName: 'Type',
+      renderCell: (params) => <Tag text={params.row.Structure} />,
     },
     {
-      name: 'Distance au réseau',
-      label: (
-        <ColHeader
-          sort={
-            sort.key === 'Gestionnaire Distance au réseau'
-              ? sort.order
-              : undefined
-          }
-          onClick={handleSort(
-            'Gestionnaire Distance au réseau',
-            'Distance au réseau'
-          )}
-        >
+      field: 'Mode de chauffage',
+      sortable: false,
+      width: 130,
+      headerName: 'Mode de chauffage',
+      renderCell: (params) => <Tag text={displayModeDeChauffage(params.row)} />,
+    },
+    {
+      field: 'Distance au réseau',
+      width: 120,
+      renderHeader: () => (
+        <ColHeader>
           Distance au réseau (m)
           <HoverableIcon
             iconName="ri-information-fill"
             position="bottom-centered"
-            iconSize="lg"
+            iconSize="sm"
             top="0px"
           >
             Distance à vol d'oiseau
           </HoverableIcon>
         </ColHeader>
       ),
-      render: (demand) => (
+      renderCell: (params) => (
         <AdditionalInformation
-          demand={demand}
+          demand={params.row}
           field="Distance au réseau"
           updateDemand={updateDemand}
           type="number"
         />
       ),
     },
-    { name: 'Identifiant réseau', label: 'ID réseau le plus proche' },
-    { name: 'Nom réseau', label: 'Nom du réseau le plus proche' },
     {
-      name: 'Nb logements',
-      label: 'Nb logements (lots)',
-      render: (demand) => (
+      field: 'Identifiant réseau',
+      width: 80,
+      sortable: false,
+      headerName: 'ID réseau le plus proche',
+    },
+    {
+      field: 'Nom réseau',
+      width: 250,
+      sortable: false,
+      headerName: 'Nom du réseau le plus proche',
+      renderCell: ({ row }) => <Box textWrap="pretty">{row['Nom réseau']}</Box>,
+    },
+    {
+      field: 'Nb logements',
+      sortable: false,
+      width: 120,
+      headerName: 'Nb logements (lots)',
+      renderCell: (params) => (
         <AdditionalInformation
-          demand={demand}
+          demand={params.row}
           field="Logement"
           updateDemand={updateDemand}
           type="number"
@@ -377,11 +289,13 @@ const Manager = () => {
       ),
     },
     {
-      name: 'Conso gaz',
-      label: 'Conso gaz (MWh)',
-      render: (demand) => (
+      field: 'Conso gaz',
+      sortable: false,
+      width: 120,
+      headerName: 'Conso gaz (MWh)',
+      renderCell: (params) => (
         <AdditionalInformation
-          demand={demand}
+          demand={params.row}
           field="Conso"
           updateDemand={updateDemand}
           type="number"
@@ -389,21 +303,25 @@ const Manager = () => {
       ),
     },
     {
-      name: 'Commentaires',
-      label: 'Commentaires',
-      render: (demand) => (
-        <Comment demand={demand} updateDemand={updateDemand} />
+      field: 'Commentaires',
+      sortable: false,
+      width: 280,
+      headerName: 'Commentaires',
+      renderCell: (params) => (
+        <Comment demand={params.row} updateDemand={updateDemand} />
       ),
     },
     {
-      name: 'Affecté à',
-      label: (
-        <>
+      field: 'Affecté à',
+      sortable: false,
+      width: 150,
+      renderHeader: () => (
+        <ColHeader>
           Affecté à
           <HoverableIcon
             iconName="ri-information-fill"
-            position="bottom"
-            iconSize="lg"
+            position="left"
+            iconSize="sm"
             top="0px"
           >
             "Non affecté" : demande éloignée du réseau non transmise aux
@@ -413,11 +331,11 @@ const Manager = () => {
             Vous pouvez ajouter ou modifier une affectation : le changement sera
             effectif après validation manuelle par l'équipe FCU.
           </HoverableIcon>
-        </>
+        </ColHeader>
       ),
-      render: (demand) => (
+      renderCell: (params) => (
         <AdditionalInformation
-          demand={demand}
+          demand={params.row}
           field="Affecté à"
           updateDemand={updateDemand}
           type="text"
@@ -429,30 +347,29 @@ const Manager = () => {
 
   return (
     <Container>
-      <ManagerHeader
-        demands={demands}
-        setFilteredDemands={onFilterUpdate}
-        setPage={setPage}
-      />
+      <ManagerHeader demands={demands} setFilteredDemands={onFilterUpdate} />
       {demands.length > 0 ? (
         <ManagerContainer>
           <TableContainer mapCollapsed={mapCollapsed}>
-            <div ref={refManagerTable}>
-              {filteredDemands.length > 0 ? (
-                <Table
-                  columns={demandRowsParams}
-                  data={filteredDemands}
-                  rowKey="N° de dossier"
-                  pagination
-                  paginationPosition="left"
-                  page={page}
-                  setPage={setPage}
-                  perPage={rowPerPage}
-                />
-              ) : (
-                <NoResult>Aucun résultat</NoResult>
-              )}
-            </div>
+            {filteredDemands.length > 0 ? (
+              <Table
+                apiRef={tableApiRef}
+                columns={demandRowsParams}
+                rows={filteredDemands}
+                disableColumnMenu
+                columnHeaderHeight={100}
+                rowHeight={96}
+                onRowSelectionModelChange={onRowSelection}
+                hideFooterSelectedRowCount
+                initialState={{
+                  sorting: {
+                    sortModel: [{ field: 'Date demandes', sort: 'desc' }],
+                  },
+                }}
+              />
+            ) : (
+              <NoResult>Aucun résultat</NoResult>
+            )}
           </TableContainer>
           <MapContainer mapCollapsed={mapCollapsed}>
             <>
@@ -464,7 +381,7 @@ const Manager = () => {
                   {mapCollapsed ? 'Agrandir la carte' : 'Réduire la carte'}
                 </Hoverable>
                 <Icon
-                  size="2x"
+                  size="lg"
                   name={
                     mapCollapsed
                       ? 'ri-arrow-left-s-fill'
@@ -476,8 +393,8 @@ const Manager = () => {
                 <Map
                   noPopup
                   withoutLogo
-                  initialCenter={centerPin ? centerPin : firstCenterPin}
-                  initialZoom={initialZoom}
+                  initialCenter={mapCenterLocation?.center}
+                  initialZoom={mapCenterLocation?.zoom}
                   initialMapConfiguration={createMapConfiguration({
                     reseauxDeChaleur: {
                       show: true,
@@ -487,6 +404,7 @@ const Manager = () => {
                   })}
                   pinsList={mapPins}
                   geolocDisabled
+                  mapRef={mapRef}
                 />
               )}
             </>

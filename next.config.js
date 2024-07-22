@@ -20,9 +20,13 @@ const csp = {
     "'sha256-3I33qFPfa/PLrN/3rrrC4vJBjmKYiuXWQ+ZfnHiEWmo='",
     "'sha256-ksltjYbI6Uoozfn80t6ROvA1rBbTP9X8qGPGwHmWBpA='",
     "'sha256-6SC04Y6nNQLzwzyqa3SfGlAJoGLEAasou2bnNnkusvM='",
-    "'sha256-344ePyJp7yxx64WKWpbs/ZvEDHA6mve7lS3i90cEPT4='", // ConsentBanner > tarteaucitron.init
-    "'sha256-d7dsOzUkIPxujyMIFvd9lnMMqh0LRXgYPmFvbRYsL7Q='", // hotjar 3874965 6
-    "'sha256-c41wBsW028WuPX24+ZM3pzwOVhyxNRf2Gjs3yDf9nuo='", // google AW-11414741136,G-B35Q28PSV8
+    "'sha256-97wOF3M88fYLy2LjCcAesoBeW6RxVfjzwxmdozWRZ6g='", // DEV - google 11414741136
+    "'sha256-b4GFU36HxV/ajsLtGxYpBvVIlonNc0Dz5lk+ZTMKysY='", // PROD - Facebook Pixel 3064783047067401
+    "'sha256-HJKFxmK7TOzDhaTvZ/x57pCQ5J3T79wgEi6DW/SQUYw='", // PROD - Google AW-11414741136
+    "'sha256-9xQZ2hSESjymT1y2YtvxuZ6EXm0FLyd5Phk9Z66fbMg='", // PROD - Google G-B35Q28PSV8
+    "'sha256-/CSSb6w0OrYpmMov6mf2agdZaX5CEjsuUL45DW0yKI4='", // PROD - Hotjar 3874965 6
+    "'sha256-cLrFOA9eDIz+hTs9m3AUrlzvroRre9vJ4cvv1ygI/Bw='", // PROD - LinkedIn 3494650
+    "'sha256-cWPc/BJwUWRnFb5b17VxDNk72/ZwL1GOqTQ6dAU/P3E='", // PROD - unknown yet
     'https://stats.data.gouv.fr',
     'https://stats.beta.gouv.fr',
     'https://static.axept.io',
@@ -118,6 +122,8 @@ module.exports = withBundleAnalyzer(
       eslint: {
         ignoreDuringBuilds: true,
       },
+      reactStrictMode: true,
+      swcMinify: true,
       async redirects() {
         return [
           {
@@ -190,13 +196,18 @@ module.exports = withBundleAnalyzer(
           })),
         ];
       },
-      webpack: function (config) {
+      webpack: (config) => {
         config.module.rules.push({
           test: /\.md$/,
           use: 'raw-loader',
         });
+        config.module.rules.push({
+          test: /\.woff2$/,
+          type: 'asset/resource',
+        });
         return config;
       },
+      transpilePackages: ['@codegouvfr/react-dsfr'],
     },
     {
       // For all available options, see:

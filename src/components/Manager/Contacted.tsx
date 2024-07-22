@@ -6,18 +6,26 @@ const Contacted = ({
   updateDemand,
 }: {
   demand: Demand;
-  updateDemand: (demandId: string, demand: Partial<Demand>) => void;
+  updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
 }) => {
+  const handleCheckboxChange = (e: any) => {
+    updateDemand(demand.id, {
+      'Prise de contact': e.target.checked,
+    });
+  };
+
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore: to fix in react-dsfr
     <Checkbox
-      defaultChecked={demand['Prise de contact']}
-      onChange={(e: any) =>
-        updateDemand(demand.id, {
-          'Prise de contact': e.target.checked,
-        })
-      }
+      options={[
+        {
+          label: '',
+          nativeInputProps: {
+            value: 'Prise de contact',
+            defaultChecked: demand['Prise de contact'],
+            onChange: handleCheckboxChange,
+          },
+        },
+      ]}
     ></Checkbox>
   );
 };

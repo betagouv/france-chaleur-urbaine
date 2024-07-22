@@ -1,4 +1,4 @@
-import { TextInput } from '@dataesr/react-dsfr';
+import Input from '@components/form/Input';
 import debounce from '@utils/debounce';
 import { useEffect, useMemo, useState } from 'react';
 import { Demand } from 'src/types/Summary/Demand';
@@ -45,16 +45,19 @@ const AdditionalInformation = ({
 
   return (
     <Container width={width}>
-      <TextInput
-        type={type}
-        value={value}
-        onChange={(e) => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore: force type
-          demand[`Gestionnaire ${field}`] =
-            type === 'number' ? parseFloat(e.target.value) : e.target.value;
-          setValue(e.target.value);
-          onChangeHandler(e);
+      <Input
+        label=""
+        size="sm"
+        nativeInputProps={{
+          type: type,
+          value: value,
+          onChange: (e) => {
+            // @ts-expect-error: force type
+            demand[`Gestionnaire ${field}`] =
+              type === 'number' ? parseFloat(e.target.value) : e.target.value;
+            setValue(e.target.value);
+            onChangeHandler(e);
+          },
         }}
       />
     </Container>

@@ -1,4 +1,6 @@
-import { Alert, Button, TextInput } from '@dataesr/react-dsfr';
+import { Alert } from '@codegouvfr/react-dsfr/Alert';
+import { Button } from '@codegouvfr/react-dsfr/Button';
+import Input from '@components/form/Input';
 import { FormEvent, useState } from 'react';
 import { useServices } from 'src/services';
 import { Container } from './Form.styles';
@@ -19,7 +21,7 @@ const ResetPasswordForm = () => {
     <Container onSubmit={reset} fullWidth={success}>
       {success ? (
         <Alert
-          type="success"
+          severity="success"
           title={
             <>
               Un email pour réinitialiser votre mot de passe vous a été envoyé,
@@ -38,14 +40,16 @@ const ResetPasswordForm = () => {
         />
       ) : (
         <>
-          <TextInput
-            required
-            label="Votre email:"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+          <Input
+            label="Votre email :"
+            nativeInputProps={{
+              required: true,
+              type: 'email',
+              value: email,
+              onChange: (e) => setEmail(e.target.value),
+            }}
           />
-          <Button submit>Réinitialiser</Button>
+          <Button type="submit">Réinitialiser</Button>
         </>
       )}
     </Container>

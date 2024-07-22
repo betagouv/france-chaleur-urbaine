@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 type TooltipProps = {
   visible: boolean;
@@ -27,14 +27,19 @@ export const Tooltip = styled.div.attrs<TooltipProps>(({ visible, x, y }) => ({
   z-index: 2000;
 `;
 
-export const WrapperDiv = styled.div`
+export const WrapperDiv = styled.div<{ enableHover: boolean }>`
   width: 100%;
   position: relative;
   pointer-events: none;
 
-  g {
-    pointer-events: fill;
-  }
+  ${({ enableHover }) =>
+    enableHover
+      ? css`
+          g {
+            pointer-events: fill;
+          }
+        `
+      : ''}
 
   path {
     stroke: #000000;
@@ -42,7 +47,12 @@ export const WrapperDiv = styled.div`
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-opacity: 0.25;
-    cursor: pointer;
+    ${({ enableHover }) =>
+      enableHover
+        ? css`
+            cursor: pointer;
+          `
+        : ''}
   }
 
   path:hover {
