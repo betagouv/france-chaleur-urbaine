@@ -1,0 +1,20 @@
+import z from 'zod';
+
+export const simulatorSchema = z.object({
+  // affichage: z.enum(['grand-public', 'technicien'], {
+  //   invalid_type_error: 'Vous devez choisir',
+  //   required_error: 'Vous devez choisir',
+  // }),
+  // departement: z.string({ required_error: 'Le département est obligatoire.' }),
+  // commune: z.string({ required_error: 'Le département est obligatoire.' }),
+  description: z.string().optional(),
+  adresse: z
+    .string({ required_error: 'L’adresse est obligatoire.' })
+    .min(1, { message: 'Champ obligatoire' })
+    .max(5, { message: 'moins que 5' }),
+  type_batiment: z.enum(['residentiel', 'tertiaire'], {
+    required_error: 'Le type de bâtiment est obligatoire.',
+  }),
+});
+
+export type SimulatorSchemaType = z.infer<typeof simulatorSchema>;
