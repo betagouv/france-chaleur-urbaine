@@ -6,6 +6,8 @@ import {
 } from 'react-hook-form';
 import DSFRInput from '../Input';
 
+export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
+
 const TextArea = <FormValues extends FieldValues>({
   name,
   defaultValue,
@@ -14,7 +16,10 @@ const TextArea = <FormValues extends FieldValues>({
   shouldUnregister,
   textArea,
   ...props
-}: UseControllerProps<FormValues> & React.ComponentProps<typeof DSFRInput>) => {
+}: UseControllerProps<FormValues> &
+  Omit<DSFRInputProps, 'nativeInputProps'> & {
+    textArea?: true;
+  }) => {
   const { field, fieldState } = useController({
     name,
     defaultValue,
@@ -31,7 +36,7 @@ const TextArea = <FormValues extends FieldValues>({
   return (
     <DSFRInput
       {...field}
-      textArea={true as any}
+      textArea={true}
       state={props.state ?? fieldState.error ? 'error' : 'default'}
       stateRelatedMessage={
         props.stateRelatedMessage ?? fieldState.error?.message
