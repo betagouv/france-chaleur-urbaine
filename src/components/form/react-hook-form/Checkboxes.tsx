@@ -1,9 +1,5 @@
 import { Checkbox as DSFRCheckbox } from '@codegouvfr/react-dsfr/Checkbox';
-import {
-  FieldValues,
-  UseControllerProps,
-  useController,
-} from 'react-hook-form';
+import { FieldValues, UseControllerProps, useController } from 'react-hook-form';
 
 export type DSFRCheckboxProps = React.ComponentProps<typeof DSFRCheckbox>;
 export type CheckboxOption = {
@@ -11,13 +7,12 @@ export type CheckboxOption = {
   label?: DSFRCheckboxProps['options'][0]['label'];
   hintText?: DSFRCheckboxProps['options'][0]['hintText'];
 };
-export type CheckboxesProps<FormValues extends FieldValues> =
-  UseControllerProps<FormValues> &
-    Omit<DSFRCheckboxProps, 'legend' | 'options' | 'name'> & {
-      options: CheckboxOption[]; // Simplify use
-      label?: DSFRCheckboxProps['legend']; // harmonize with Input
-      onChange?: (options?: CheckboxOption[]) => void;
-    };
+export type CheckboxesProps<FormValues extends FieldValues> = UseControllerProps<FormValues> &
+  Omit<DSFRCheckboxProps, 'legend' | 'options' | 'name'> & {
+    options: CheckboxOption[]; // Simplify use
+    label?: DSFRCheckboxProps['legend']; // harmonize with Input
+    onChange?: (options?: CheckboxOption[]) => void;
+  };
 
 const Checkboxes = <FormValues extends FieldValues>({
   name,
@@ -59,17 +54,13 @@ const Checkboxes = <FormValues extends FieldValues>({
             }
 
             onChange(newValues);
-            onExternalChange?.(
-              options.filter((o) => newValues.includes(o.value))
-            );
+            onExternalChange?.(options.filter((o) => newValues.includes(o.value)));
           },
         },
       }))}
       legend={legend}
       state={props.state ?? fieldState.error ? 'error' : 'default'}
-      stateRelatedMessage={
-        props.stateRelatedMessage ?? fieldState.error?.message
-      }
+      stateRelatedMessage={props.stateRelatedMessage ?? fieldState.error?.message}
       {...props}
     />
   );

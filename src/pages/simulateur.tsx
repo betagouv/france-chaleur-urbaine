@@ -1,11 +1,12 @@
+import { ChangeEvent } from 'react';
+
+import SimplePage from '@components/shared/page/SimplePage';
 import Simulator from '@components/Simulator';
 import PublicodesSimulator from '@components/Simulator/PublicodesSimulator';
-import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import { isDefined } from '@utils/core';
 import { ObjectEntries } from '@utils/typescript';
-import { ChangeEvent } from 'react';
 import { typeBool } from 'src/services/simulateur/helper';
 import { useSimulatorState } from 'src/services/simulateur/hook';
 import { KeyParametre, parametres } from 'src/services/simulateur/parametres';
@@ -13,14 +14,10 @@ import { KeyParametre, parametres } from 'src/services/simulateur/parametres';
 function SimulateurPage() {
   const { publicState, internalState, updateState } = useSimulatorState();
 
-  function onFormFieldUpdate(
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) {
+  function onFormFieldUpdate(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     updateState(
       e.target.name as KeyParametre,
-      e.target instanceof HTMLInputElement && e.target.type === 'checkbox'
-        ? e.target.checked
-        : e.target.value
+      e.target instanceof HTMLInputElement && e.target.type === 'checkbox' ? e.target.checked : e.target.value
     );
   }
 

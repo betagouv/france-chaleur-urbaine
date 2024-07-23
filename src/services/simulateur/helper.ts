@@ -31,7 +31,11 @@ export const typeString: unique symbol = Symbol('string');
 
 export type ValueType = typeof typeBool | typeof typeNumber | typeof typeString;
 
-type ExtractTypeFromField<Type extends ValueType | undefined> = Type extends typeof typeBool ? boolean : Type extends typeof typeString ? string : number;
+type ExtractTypeFromField<Type extends ValueType | undefined> = Type extends typeof typeBool
+  ? boolean
+  : Type extends typeof typeString
+  ? string
+  : number;
 
 export function getTypedValue(value: string | boolean, type: ValueType): ExtractTypeFromField<typeof type> | null {
   switch (type) {

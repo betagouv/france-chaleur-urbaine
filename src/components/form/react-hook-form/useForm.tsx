@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDebouncedEffect, usePrevious } from '@react-hookz/web';
-import { getChanges } from '@utils/objects';
 import React from 'react';
 import {
   FormProvider,
@@ -11,6 +10,9 @@ import {
   type SubmitHandler,
   type UseFormProps,
 } from 'react-hook-form';
+
+import { getChanges } from '@utils/objects';
+
 import Checkboxes from './Checkboxes';
 import Input from './Input';
 import Radio from './Radio';
@@ -27,14 +29,9 @@ interface UseFormOnChangeData<T extends FieldValues> {
   isValid: boolean;
 }
 
-type UseFormOnChange<T extends FieldValues> = (
-  callback: UseFormOnChangeData<T>
-) => any;
+type UseFormOnChange<T extends FieldValues> = (callback: UseFormOnChangeData<T>) => any;
 
-export const useForm = <
-  TFieldValues extends FieldValues = FieldValues,
-  TContext = any,
->({
+export const useForm = <TFieldValues extends FieldValues = FieldValues, TContext = any>({
   schema,
   onChange,
   ...props
@@ -66,11 +63,7 @@ export const useForm = <
       return (
         // Wrap all forms with the FormProvider to allow using useController in inputs
         <FormProvider {...methods}>
-          <form
-            className={className}
-            onSubmit={methods.handleSubmit(onSubmit)}
-            {...rest}
-          >
+          <form className={className} onSubmit={methods.handleSubmit(onSubmit)} {...rest}>
             {children}
           </form>
         </FormProvider>
@@ -84,9 +77,7 @@ export const useForm = <
     () =>
       onChange?.({
         values: submitValues,
-        changed: !previousSubmitValues
-          ? []
-          : getChanges(submitValues, previousSubmitValues),
+        changed: !previousSubmitValues ? [] : getChanges(submitValues, previousSubmitValues),
         isDirty,
         isValid,
       }),

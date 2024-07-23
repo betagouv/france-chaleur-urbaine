@@ -1,10 +1,6 @@
 import { Select as DSFRSelect } from '@codegouvfr/react-dsfr/SelectNext';
 import React from 'react';
-import {
-  FieldValues,
-  UseControllerProps,
-  useController,
-} from 'react-hook-form';
+import { FieldValues, UseControllerProps, useController } from 'react-hook-form';
 
 export type DSFRSelectProps = React.ComponentProps<typeof DSFRSelect>;
 
@@ -53,9 +49,7 @@ const Select = <FormValues extends FieldValues>({
       }))}
       hint={hint}
       state={props.state ?? fieldState.error ? 'error' : 'default'}
-      stateRelatedMessage={
-        props.stateRelatedMessage ?? fieldState.error?.message
-      }
+      stateRelatedMessage={props.stateRelatedMessage ?? fieldState.error?.message}
       {...props}
     />
   );
