@@ -9,6 +9,7 @@ import {
 } from 'react-hook-form';
 import Input from './Input';
 import Radio from './Radio';
+import Select from './Select';
 import TextArea from './TextArea';
 import Toggle from './Toggle';
 
@@ -60,5 +61,6 @@ export const useForm = <
     Input: Input<TFieldValues>,
     Radio: Radio<TFieldValues>,
     Toggle: Toggle<TFieldValues>,
+    Select: Select<TFieldValues>,
   };
 };
