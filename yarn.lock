@@ -371,6 +371,11 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
+"@betagouv/france-chaleur-urbaine-publicodes@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@betagouv/france-chaleur-urbaine-publicodes/-/france-chaleur-urbaine-publicodes-0.1.0.tgz#0ec80b2899d57e08c298642bcf813016ba1c663e"
+  integrity sha512-vElTAX3H0di4POc/xxJ4qihjx6dLlJVW9sKHcQUCOugh3uFPWZ2Q/ozLGDTs6Yg5l3fi1fGoVtPFpj6yA7u/oQ==
+
 "@codegouvfr/react-dsfr@^1.9.31":
   version "1.9.31"
   resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.9.31.tgz#b8747a20344766fbf2692c82d4fe77f26923cf99"
@@ -6661,6 +6666,11 @@ psl@^1.1.33:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.9.0.tgz#d0df2a137f00794565fcaf3b2c00cd09f8d5a5a7"
   integrity sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==
+
+publicodes@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/publicodes/-/publicodes-1.4.0.tgz#6f126326d0895ec9679ea31fa2c12a27b206f633"
+  integrity sha512-42LTuqGB8g8DP3ZUbT4vKu+D6fR7iJ+Ibcsw0SALFw25UKPpRBi8ibYvcoDt4FWf9CAFUKaSdLe6EYN1GS2W3w==
 
 pump@^3.0.0:
   version "3.0.0"
