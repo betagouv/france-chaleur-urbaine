@@ -19,16 +19,17 @@ export { z } from 'zod';
 export const useForm = <
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
->(
-  props: UseFormProps<TFieldValues, TContext> & {
-    schema?: Parameters<typeof zodResolver> | Parameters<typeof zodResolver>[0];
-  }
-) => {
-  if (props?.schema && !props.resolver) {
-    if (Array.isArray(props.schema)) {
-      props.resolver = zodResolver(...props.schema);
+>({
+  schema,
+  ...props
+}: UseFormProps<TFieldValues, TContext> & {
+  schema?: Parameters<typeof zodResolver> | Parameters<typeof zodResolver>[0];
+}) => {
+  if (schema && !props.resolver) {
+    if (Array.isArray(schema)) {
+      props.resolver = zodResolver(...schema);
     } else {
-      props.resolver = zodResolver(props.schema);
+      props.resolver = zodResolver(schema);
     }
   }
 
