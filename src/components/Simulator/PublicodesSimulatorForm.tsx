@@ -16,7 +16,6 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ children, className, onSu
   const { Form, Input } = useForm<PublicodeSimulatorSchemaType>({
     schema: publicodesSimulatorSchema,
     defaultValues: {},
-    mode: 'onChange',
     onChange: ({ changed }) => {
       changed?.forEach(({ path, value }) => {
         setField(path as DottedName, value);
