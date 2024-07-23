@@ -11,7 +11,7 @@ import {
   type UseFormProps,
 } from 'react-hook-form';
 
-import { getChanges } from '@utils/objects';
+import { getObjectDifferences } from '@utils/objects';
 
 import Checkboxes from './Checkboxes';
 import Input from './Input';
@@ -24,7 +24,7 @@ export { z } from 'zod';
 
 interface UseFormOnChangeData<T extends FieldValues> {
   values: DeepPartialSkipArrayKey<T>;
-  changed?: ReturnType<typeof getChanges>;
+  changed?: ReturnType<typeof getObjectDifferences>;
   isDirty: boolean;
   isValid: boolean;
 }
@@ -77,7 +77,7 @@ export const useForm = <TFieldValues extends FieldValues = FieldValues, TContext
     () =>
       onChange?.({
         values: submitValues,
-        changed: !previousSubmitValues ? [] : getChanges(submitValues, previousSubmitValues),
+        changed: !previousSubmitValues ? [] : getObjectDifferences(submitValues, previousSubmitValues),
         isDirty,
         isValid,
       }),
