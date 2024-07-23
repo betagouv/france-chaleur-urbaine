@@ -7,6 +7,7 @@ import {
   type SubmitHandler,
   type UseFormProps,
 } from 'react-hook-form';
+import Checkboxes from './Checkboxes';
 import Input from './Input';
 import Radio from './Radio';
 import Select from './Select';
@@ -62,5 +63,6 @@ export const useForm = <
     Radio: Radio<TFieldValues>,
     Toggle: Toggle<TFieldValues>,
     Select: Select<TFieldValues>,
+    Checkboxes: Checkboxes<TFieldValues>,
   };
 };
