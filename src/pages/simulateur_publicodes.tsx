@@ -1,10 +1,11 @@
 import rules, { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import Engine from 'publicodes';
+import { useMemo, useState } from 'react';
+
 import Input from '@components/form/Input';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
-import Engine from 'publicodes';
-import { useMemo, useState } from 'react';
 
 function SimulateurPage() {
   const [, updateState] = useState({});
@@ -57,9 +58,7 @@ function SimulateurPage() {
           }}
         />
         <Box>IMC = {getValueAsString('résultat')}</Box>
-        <Box>
-          Interprêtation = {getValueAsString('résultat . interpretation')}
-        </Box>
+        <Box>Interprêtation = {getValueAsString('résultat . interpretation')}</Box>
       </Box>
     </SimplePage>
   );

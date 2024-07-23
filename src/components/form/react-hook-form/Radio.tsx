@@ -1,9 +1,5 @@
 import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
-import {
-  FieldValues,
-  UseControllerProps,
-  useController,
-} from 'react-hook-form';
+import { FieldValues, UseControllerProps, useController } from 'react-hook-form';
 
 export type RadioButtonsProps = React.ComponentProps<typeof RadioButtons>;
 export type RadioOption = { value: string | number; label?: string };
@@ -40,9 +36,7 @@ const RadioInput = <FormValues extends FieldValues>({
       }))}
       legend={legend}
       state={props.state ?? fieldState.error ? 'error' : 'default'}
-      stateRelatedMessage={
-        props.stateRelatedMessage ?? fieldState.error?.message
-      }
+      stateRelatedMessage={props.stateRelatedMessage ?? fieldState.error?.message}
       {...props}
     />
   );

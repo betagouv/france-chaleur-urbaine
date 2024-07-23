@@ -1,25 +1,16 @@
 import rules, { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
-import { useForm } from '@components/form/react-hook-form/useForm';
 import React from 'react';
-import usePublicodesEngine from './usePublicodesEngine';
-import {
-  PublicodeSimulatorSchemaType,
-  publicodesSimulatorSchema,
-} from './validation';
 
-type SimulatorFormProps = Omit<
-  React.HTMLAttributes<HTMLFormElement>,
-  'onSubmit'
-> & {
+import { useForm } from '@components/form/react-hook-form/useForm';
+
+import usePublicodesEngine from './usePublicodesEngine';
+import { PublicodeSimulatorSchemaType, publicodesSimulatorSchema } from './validation';
+
+type SimulatorFormProps = Omit<React.HTMLAttributes<HTMLFormElement>, 'onSubmit'> & {
   onSubmit: (data: PublicodeSimulatorSchemaType) => any;
 };
 
-const SimulatorForm: React.FC<SimulatorFormProps> = ({
-  children,
-  className,
-  onSubmit: onExternalSubmit,
-  ...props
-}) => {
+const SimulatorForm: React.FC<SimulatorFormProps> = ({ children, className, onSubmit: onExternalSubmit, ...props }) => {
   const { setField, getField } = usePublicodesEngine<DottedName>(rules);
 
   const { Form, Input } = useForm<PublicodeSimulatorSchemaType>({
