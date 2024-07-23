@@ -1,10 +1,7 @@
 import z from 'zod';
 
 export const simulatorSchema = z.object({
-  // affichage: z.enum(['grand-public', 'technicien'], {
-  //   invalid_type_error: 'Vous devez choisir',
-  //   required_error: 'Vous devez choisir',
-  // }),
+  mode_pro: z.boolean(),
   // departement: z.string({ required_error: 'Le département est obligatoire.' }),
   // commune: z.string({ required_error: 'Le département est obligatoire.' }),
   description: z.string().optional(),
