@@ -27,11 +27,14 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({
     Toggle,
     Select,
     Checkboxes,
-    getValues,
   } = useForm<SimulatorSchemaType>({
     schema: simulatorSchema,
     defaultValues: {
       departement: '59',
+    },
+    onChange: ({ values }) => {
+      // debug form values
+      onExternalSubmit(values as any);
     },
   });
   const onSubmit: React.ComponentProps<typeof Form>['onSubmit'] = (values) => {
@@ -39,15 +42,6 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({
   };
 
   const departmentId = watch('departement');
-
-  console.log(''); //eslint-disable-line
-  console.log(
-    '╔════START══getValues()══════════════════════════════════════════════════'
-  ); //eslint-disable-line
-  console.log(getValues()); //eslint-disable-line
-  console.log(
-    '╚════END════getValues()══════════════════════════════════════════════════'
-  ); //eslint-disable-line
 
   return (
     <Form className={className} onSubmit={onSubmit} {...props}>
