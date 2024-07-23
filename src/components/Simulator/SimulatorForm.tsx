@@ -17,18 +17,37 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({
   onSubmit: onExternalSubmit,
   ...props
 }) => {
-  const { watch, Form, resetField, Input, Radio, TextArea, Toggle, Select } =
-    useForm<SimulatorSchemaType>({
-      schema: simulatorSchema,
-      defaultValues: {
-        departement: '59',
-      },
-    });
+  const {
+    watch,
+    Form,
+    resetField,
+    Input,
+    Radio,
+    TextArea,
+    Toggle,
+    Select,
+    Checkboxes,
+    getValues,
+  } = useForm<SimulatorSchemaType>({
+    schema: simulatorSchema,
+    defaultValues: {
+      departement: '59',
+    },
+  });
   const onSubmit: React.ComponentProps<typeof Form>['onSubmit'] = (values) => {
     onExternalSubmit(values);
   };
 
   const departmentId = watch('departement');
+
+  console.log(''); //eslint-disable-line
+  console.log(
+    '╔════START══getValues()══════════════════════════════════════════════════'
+  ); //eslint-disable-line
+  console.log(getValues()); //eslint-disable-line
+  console.log(
+    '╚════END════getValues()══════════════════════════════════════════════════'
+  ); //eslint-disable-line
 
   return (
     <Form className={className} onSubmit={onSubmit} {...props}>
@@ -38,6 +57,7 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({
         labelPosition="left"
         showCheckedHint={false}
       />
+
       <Radio
         rules={{ required: true }}
         name="type_batiment"
@@ -81,6 +101,19 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({
           }))}
         name="commune"
         label="Commune"
+      />
+      <Checkboxes
+        name="services_supplementaires"
+        options={[
+          {
+            label: 'Inclure l’eau chaude',
+            value: 'eau_chaude',
+          },
+          {
+            label: 'Inclure la climatisation',
+            value: 'climatisation',
+          },
+        ]}
       />
       <input type="submit" value="Envoyer" />
     </Form>
