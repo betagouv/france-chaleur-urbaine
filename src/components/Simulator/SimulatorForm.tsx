@@ -15,15 +15,23 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({
   onSubmit: onExternalSubmit,
   ...props
 }) => {
-  const { Form, Input, Radio, TextArea } = useForm<SimulatorSchemaType>({
-    schema: simulatorSchema,
-    defaultValues: {},
-  });
+  const { Form, Input, Radio, TextArea, Toggle } = useForm<SimulatorSchemaType>(
+    {
+      schema: simulatorSchema,
+      defaultValues: {},
+    }
+  );
   const onSubmit: React.ComponentProps<typeof Form>['onSubmit'] = (values) => {
     onExternalSubmit(values);
   };
   return (
     <Form className={className} onSubmit={onSubmit} {...props}>
+      <Toggle
+        name="mode_pro"
+        label="Mode pro"
+        labelPosition="left"
+        showCheckedHint={false}
+      />
       <Radio
         rules={{ required: true }}
         name="type_batiment"
@@ -46,6 +54,7 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({
         hintText="Plus que 5 caractères"
       />
       <TextArea name="description" label="Entrez une description" />
+
       <input type="submit" value="Envoyer" />
     </Form>
   );
