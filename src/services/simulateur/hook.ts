@@ -1,8 +1,10 @@
 // https://amorcelyon-my.sharepoint.com/:x:/r/personal/rbeaulieu_amorce_asso_fr/_layouts/15/Doc.aspx?sourcedoc=%7BB3D36B52-F019-42A2-9523-3BC15594260A%7D&file=1004888_20240522_AMORCE_Fichier%20calcul.xlsx&action=default&mobileredirect=true
 
+import { useState } from 'react';
+
 import { isDefined } from '@utils/core';
 import { ObjectKeys } from '@utils/typescript';
-import { useState } from 'react';
+
 import { ExtractStateFromParametres, getTypedValue, typeNumber } from './helper';
 import { KeyParametre, parametres } from './parametres';
 
@@ -31,7 +33,11 @@ const initialInternalState = ObjectKeys(parametres).reduce((acc, paramKey) => {
   return acc;
 }, {} as InternalState);
 
-export function useSimulatorState(): { internalState: InternalState; publicState: PublicState; updateState: (key: KeyParametre, value: string | boolean) => void } {
+export function useSimulatorState(): {
+  internalState: InternalState;
+  publicState: PublicState;
+  updateState: (key: KeyParametre, value: string | boolean) => void;
+} {
   const [internalState, setInternalState] = useState<InternalState>(initialInternalState);
   const [publicState, setPublicState] = useState<PublicState>({});
 
@@ -57,7 +63,12 @@ export function useSimulatorState(): { internalState: InternalState; publicState
       return newInternalState[key];
     }
 
-    const newValue = value !== '' ? typedValue : 'defaultValue' in parametre ? parametre.defaultValue : tryFormula(() => parametre.defaultFormula(getValue));
+    const newValue =
+      value !== ''
+        ? typedValue
+        : 'defaultValue' in parametre
+        ? parametre.defaultValue
+        : tryFormula(() => parametre.defaultFormula(getValue));
     newInternalState[key] = typeof newValue === 'number' ? roundNumber(newValue) : typedValue !== null ? newValue : undefined;
 
     // gets every dependant parameter
@@ -69,7 +80,11 @@ export function useSimulatorState(): { internalState: InternalState; publicState
       parameterKeysToUpdate.push(...(parametreToUpdate.successors ?? []).filter((param) => !parameterKeysToUpdate.includes(param)));
 
       const publicConstant = publicState[parameterKeyToUpdate];
-      const newValue = isPublicVariableDefined(publicConstant) ? getTypedValue(publicConstant, parametreToUpdate.type ?? typeNumber) : 'defaultValue' in parametreToUpdate ? parametreToUpdate.defaultValue : tryFormula(() => parametreToUpdate.defaultFormula(getValue));
+      const newValue = isPublicVariableDefined(publicConstant)
+        ? getTypedValue(publicConstant, parametreToUpdate.type ?? typeNumber)
+        : 'defaultValue' in parametreToUpdate
+        ? parametreToUpdate.defaultValue
+        : tryFormula(() => parametreToUpdate.defaultFormula(getValue));
       newInternalState[parameterKeyToUpdate] = typeof newValue === 'number' ? roundNumber(newValue) : newValue;
     }
     setInternalState(newInternalState);

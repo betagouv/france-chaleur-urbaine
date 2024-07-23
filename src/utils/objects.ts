@@ -16,10 +16,7 @@ const getChangedFields = (obj: any, prefix = '') => {
   return changedFields;
 };
 
-export const getChanges = <T extends Record<string, any>>(
-  newObject: T,
-  previousObject: T
-) => {
+export const getChanges = <T extends Record<string, any>>(newObject: T, previousObject: T) => {
   const differences = diff(previousObject, newObject);
 
   return getChangedFields(differences);

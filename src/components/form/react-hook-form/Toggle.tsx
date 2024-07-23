@@ -1,9 +1,5 @@
 import { ToggleSwitch } from '@codegouvfr/react-dsfr/ToggleSwitch';
-import {
-  FieldValues,
-  UseControllerProps,
-  useController,
-} from 'react-hook-form';
+import { FieldValues, UseControllerProps, useController } from 'react-hook-form';
 
 export type ToggleSwitchProps = React.ComponentProps<typeof ToggleSwitch>;
 
@@ -35,9 +31,7 @@ const RadioInput = <FormValues extends FieldValues>({
     <ToggleSwitch
       {...field}
       checked={value as any}
-      inputTitle={
-        inputTitle || '' /* Because inputTitle is mandatory in DSFR */
-      }
+      inputTitle={inputTitle || '' /* Because inputTitle is mandatory in DSFR */}
       helperText={helperText}
       {...props}
     />

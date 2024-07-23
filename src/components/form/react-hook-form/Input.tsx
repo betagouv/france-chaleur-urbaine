@@ -1,9 +1,6 @@
 import React from 'react';
-import {
-  FieldValues,
-  UseControllerProps,
-  useController,
-} from 'react-hook-form';
+import { FieldValues, UseControllerProps, useController } from 'react-hook-form';
+
 import DSFRInput from '../Input';
 
 export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
@@ -40,9 +37,7 @@ const Input = <FormValues extends FieldValues>({
       {...field}
       textArea={false}
       state={props.state ?? fieldState.error ? 'error' : 'default'}
-      stateRelatedMessage={
-        props.stateRelatedMessage ?? fieldState.error?.message
-      }
+      stateRelatedMessage={props.stateRelatedMessage ?? fieldState.error?.message}
       {...props}
     />
   );

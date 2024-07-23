@@ -23,6 +23,4 @@ export const publicodesSimulatorSchema = z.object({
 });
 
 export type SimulatorSchemaType = z.infer<typeof simulatorSchema>;
-export type PublicodeSimulatorSchemaType = z.infer<
-  typeof publicodesSimulatorSchema
->;
+export type PublicodeSimulatorSchemaType = z.infer<typeof publicodesSimulatorSchema>;

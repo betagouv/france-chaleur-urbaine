@@ -1,5 +1,7 @@
-import Box from '@components/ui/Box';
 import React from 'react';
+
+import Box from '@components/ui/Box';
+
 import PublicodesSimulatorForm from './PublicodesSimulatorForm';
 import PublicodesSimulatorResults from './PublicodesSimulatorResults';
 import { type PublicodeSimulatorSchemaType } from './validation';
@@ -8,11 +10,7 @@ type PublicodesSimulatorProps = React.HTMLAttributes<HTMLDivElement> & {
   // TODO
 };
 
-const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
-  children,
-  className,
-  ...props
-}) => {
+const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, className, ...props }) => {
   const [results, setResults] = React.useState<PublicodeSimulatorSchemaType>();
 
   return (

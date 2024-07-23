@@ -17,7 +17,8 @@ export const parametres = createParametresObject({
     options: communes.map((c) => ({ label: c.nom, value: c.codeInsee })),
   },
   DegréJoursUnifiéSpécifique: {
-    defaultFormula: (getValue) => departements.find((d) => d.codeDepartement === getValue('Departement'))?.djuMoyenne ?? ratiosTechniques.DJU_REF,
+    defaultFormula: (getValue) =>
+      departements.find((d) => d.codeDepartement === getValue('Departement'))?.djuMoyenne ?? ratiosTechniques.DJU_REF,
     predecessors: ['Departement'],
   },
   TempératureRéférence: {
@@ -68,7 +69,10 @@ export const parametres = createParametresObject({
   },
   ConsommationSpecifiqueChauffage: {
     // =XLOOKUP(1;('Ratios techniques'!A:A="CHAF")*('Ratios techniques'!B:B=$C$26);'Ratios techniques'!C:C;"Non trouvé")
-    defaultFormula: (getValue) => (getValue('MethodeCalculBesoins') === 'dpe' ? ratiosTechniques.Chauffage.find((i) => i.nom === getValue('DPE'))?.value : ratiosTechniques.Chauffage.find((i) => i.nom === getValue('NormeThermique'))?.value),
+    defaultFormula: (getValue) =>
+      getValue('MethodeCalculBesoins') === 'dpe'
+        ? ratiosTechniques.Chauffage.find((i) => i.nom === getValue('DPE'))?.value
+        : ratiosTechniques.Chauffage.find((i) => i.nom === getValue('NormeThermique'))?.value,
     unit: 'W/m3.°C',
     predecessors: ['MethodeCalculBesoins', 'DPE', 'NormeThermique'],
   },
@@ -76,14 +80,21 @@ export const parametres = createParametresObject({
     // =IFERROR(IF(Choix_methode<>"Normes thermiques et âge du bâtiment";Conso_spé*Surface*_DJU_spe/DJU_ref;Conso_spé*24*_DJU_spe*Surface*Hauteur/1000);"Veuillez choisir le/la "&$A$26)
     defaultFormula: (getValue) =>
       getValue('MethodeCalculBesoins') === 'dpe'
-        ? (getValue('ConsommationSpecifiqueChauffage') * getValue('Surface') * getValue('DegréJoursUnifiéSpécifique')) / ratiosTechniques.DJU_REF
-        : (getValue('ConsommationSpecifiqueChauffage') * 24 * getValue('DegréJoursUnifiéSpécifique') * getValue('Surface') * ratiosTechniques.Hauteur) / 1000,
+        ? (getValue('ConsommationSpecifiqueChauffage') * getValue('Surface') * getValue('DegréJoursUnifiéSpécifique')) /
+          ratiosTechniques.DJU_REF
+        : (getValue('ConsommationSpecifiqueChauffage') *
+            24 *
+            getValue('DegréJoursUnifiéSpécifique') *
+            getValue('Surface') *
+            ratiosTechniques.Hauteur) /
+          1000,
     unit: 'kWh',
     predecessors: ['MethodeCalculBesoins', 'ConsommationSpecifiqueChauffage', 'Surface', 'DegréJoursUnifiéSpécifique'],
   },
   ConsommationSpecifiqueECS: {
     // =IF(Type_bat="Tertiaire";XLOOKUP(1;('Ratios techniques'!A:A="ECS")*('Ratios techniques'!B:B=$C$26);'Ratios techniques'!C:C;"Non trouvé");XLOOKUP(1;('Ratios techniques'!A:A="ECS")*('Ratios techniques'!B:B=Type_bat);'Ratios techniques'!C:C;"Non trouvé"))
-    defaultFormula: (getValue) => (getValue('TypeBatiment') === 'tertiaire' ? /*getValue('NormeThermique')*/ 0 : ratiosTechniques.ECS_Résidentiel),
+    defaultFormula: (getValue) =>
+      getValue('TypeBatiment') === 'tertiaire' ? /*getValue('NormeThermique')*/ 0 : ratiosTechniques.ECS_Résidentiel,
     unit: '???',
     predecessors: ['TypeBatiment', 'Surface'],
   },
@@ -95,7 +106,8 @@ export const parametres = createParametresObject({
   },
   ConsommationSpecifiqueRafraichissement: {
     // =IF(Type_bat="Tertiaire";XLOOKUP(1;('Ratios techniques'!A:A="RAF")*('Ratios techniques'!B:B=$C$26);'Ratios techniques'!C:C;"Non trouvé");XLOOKUP(1;('Ratios techniques'!A:A="RAF")*('Ratios techniques'!B:B=Type_bat);'Ratios techniques'!C:C;"Non trouvé"))
-    defaultFormula: (getValue) => (getValue('TypeBatiment') === 'tertiaire' ? /*getValue('NormeThermique')*/ 0 : ratiosTechniques.RAF_Résidentiel),
+    defaultFormula: (getValue) =>
+      getValue('TypeBatiment') === 'tertiaire' ? /*getValue('NormeThermique')*/ 0 : ratiosTechniques.RAF_Résidentiel,
     unit: '???',
     predecessors: ['ConsommationSpecifiqueChauffage', 'Surface'],
   },
@@ -195,14 +207,19 @@ export const parametres = createParametresObject({
   // Calculs techniques (pas paramétrables)
   NbHeureFonctionnementPleinePuissanceChauffageContinu: {
     // =(DJU_spe*24)/(TNC-Temp_ref)
-    defaultFormula: (getValue) => (getValue('DegréJoursUnifiéSpécifique') * 24) / (getValue('Puissance_TemperatureDeNonChauffage') - getValue('TempératureRéférence')),
+    defaultFormula: (getValue) =>
+      (getValue('DegréJoursUnifiéSpécifique') * 24) / (getValue('Puissance_TemperatureDeNonChauffage') - getValue('TempératureRéférence')),
     unit: 'kWh',
     predecessors: ['DegréJoursUnifiéSpécifique', 'Puissance_TemperatureDeNonChauffage', 'TempératureRéférence'],
   },
   // =IF(Type_bat="Tertiaire";XLOOKUP(1;('Ratios techniques'!A:A="RAF")*('Ratios techniques'!B:B=$C$26);'Ratios techniques'!C:C;"Non trouvé");XLOOKUP(1;('Ratios techniques'!A:A="RAF")*('Ratios techniques'!B:B=Type_bat);'Ratios techniques'!C:C;"Non trouvé"))
   NbHeureFonctionnementPleinePuissance: {
     // =NHFPPcc*(IF(Type_bat="Résidentiel";XLOOKUP('Paramètres techniques'!C26;'Ratios techniques'!$B$139:$B$152;'Ratios techniques'!$C$139:$C$152);XLOOKUP(Choix_methode;'Ratios techniques'!$B$139:$B$162;'Ratios techniques'!$C$139:$C$162)))
-    defaultFormula: (getValue) => getValue('NbHeureFonctionnementPleinePuissance') * (getValue('TypeBatiment') === 'residentiel' ? ratiosTechniques.Puissance_CoefficientIntermittence.find((e) => e.nom === getValue('DPE'))?.value : getValue('MethodeCalculBesoins')), // FIXME 2e partie formule semble erronée
+    defaultFormula: (getValue) =>
+      getValue('NbHeureFonctionnementPleinePuissance') *
+      (getValue('TypeBatiment') === 'residentiel'
+        ? ratiosTechniques.Puissance_CoefficientIntermittence.find((e) => e.nom === getValue('DPE'))?.value
+        : getValue('MethodeCalculBesoins')), // FIXME 2e partie formule semble erronée
     unit: 'kWh',
     predecessors: ['NbHeureFonctionnementPleinePuissance', 'TypeBatiment', 'DPE', 'MethodeCalculBesoins'],
   },
