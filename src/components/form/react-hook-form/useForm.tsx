@@ -10,6 +10,7 @@ import {
 import Input from './Input';
 import Radio from './Radio';
 import TextArea from './TextArea';
+import Toggle from './Toggle';
 
 export { z } from 'zod';
 
@@ -58,5 +59,6 @@ export const useForm = <
     TextArea: TextArea<TFieldValues>,
     Input: Input<TFieldValues>,
     Radio: Radio<TFieldValues>,
+    Toggle: Toggle<TFieldValues>,
   };
 };
