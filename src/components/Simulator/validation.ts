@@ -17,4 +17,12 @@ export const simulatorSchema = z.object({
   }),
 });
 
+export const publicodesSimulatorSchema = z.object({
+  taille: z.string().optional(),
+  poids: z.string().optional(),
+});
+
 export type SimulatorSchemaType = z.infer<typeof simulatorSchema>;
+export type PublicodeSimulatorSchemaType = z.infer<
+  typeof publicodesSimulatorSchema
+>;
