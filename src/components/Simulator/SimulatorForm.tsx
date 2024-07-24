@@ -70,6 +70,17 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ children, className, onSu
         name="commune"
         label="Commune"
       />
+
+      <Select
+        options={[
+          {
+            label: 'DPE 1',
+            value: 'dpe-1',
+          },
+        ]}
+        name="dpe"
+        label="DPE (ou année de construction ou norme thermique)"
+      />
       <Checkboxes
         name="services_supplementaires"
         options={[
