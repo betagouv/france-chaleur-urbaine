@@ -110,7 +110,7 @@ export const articles: Article[] = [
     slug: 'actualisation-des-taux-denergies-renouvelables-et-contenu-co-2-des-reseaux',
     content: importFile(actualisationTauxEnergiesRenouvelablesEtContenuCO2DesReseaux),
     publishedDate: new Date('2024-07-11'),
-    themes: [], //TODO
+    themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Cartographie et données', 'Réglementation'],
   },
   {
     image: '/contents/16 (1).jpg',
