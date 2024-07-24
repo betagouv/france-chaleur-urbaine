@@ -11,7 +11,7 @@ type SimulatorFormProps = Omit<React.HTMLAttributes<HTMLFormElement>, 'onSubmit'
 };
 
 const SimulatorForm: React.FC<SimulatorFormProps> = ({ children, className, onSubmit: onExternalSubmit, ...props }) => {
-  const { watch, Form, resetField, Input, Radio, TextArea, Toggle, Select, Checkboxes } = useForm<SimulatorSchemaType>({
+  const { watch, Form, resetField, Input, Radio, TextArea, Toggle, Select, Checkboxes, Checkbox } = useForm<SimulatorSchemaType>({
     schema: simulatorSchema,
     defaultValues: {
       departement: '59',
@@ -83,6 +83,7 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ children, className, onSu
           },
         ]}
       />
+      <Checkbox name="terms" legend="Terms" label="J’accepte les conditions d’utilisation" hintText="Mais lisez les avant" />
       <input type="submit" value="Envoyer" />
     </Form>
   );
