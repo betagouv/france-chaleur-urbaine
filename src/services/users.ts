@@ -17,25 +17,26 @@ export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwo
 
   const warnings: string[] = [];
   const emails = networks.flatMap((user) => user.contacts);
-  await db('users').update('active', false).whereNotIn('email', emails).andWhere('from_api', account.key);
+  //On ne désactive pas les comptes supprimés -- vérification manuelle
+  /*await db('users')
+    .update('active', false)
+    .whereNotIn('email', emails)
+    .andWhere('from_api', account.key);*/
 
   const existingUsers = await db('users').select('email').where('from_api', account.key);
 
+  //On ne supprime pas dans le Airtable les users non ré-importés mais on met Réseaux vides
   await Promise.all(
     airtableUsersAPI
-      .filter((airtableUserAPI) => !airtableUserAPI.get('Tags FCU'))
-      .map((airtableUserAPI) => base(Airtable.GESTIONNAIRES_API).destroy(airtableUserAPI.getId()))
-  );
-
-  await Promise.all(
-    airtableUsersAPI
-      .filter((airtableUserAPI) => airtableUserAPI.get('Tags FCU') && !emails.includes(airtableUserAPI.get('Email') as string))
+      .filter((airtableUserAPI) => !emails.includes(airtableUserAPI.get('Email') as string))
       .map((airtableUserAPI) =>
         base(Airtable.GESTIONNAIRES_API).update(airtableUserAPI.id, {
           Réseaux: [],
         })
       )
   );
+
+  //Check les droits pour ajouter un gestionnaire sur le réseau
   const users: Record<string, string[]> = {};
   networks.forEach((network) => {
     if (!account.networks.includes(network.id_sncu)) {
@@ -85,7 +86,8 @@ export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwo
             })
             .onConflict('email')
             .merge({ gestionnaires: allGestionnaires, active: true }),
-          airtableUserAPI && fcuTags && fcuTags.length > 0
+          //Maj Airtable avec les nouveaux tags Réseaux (ou ajoute le nouveau compte)
+          airtableUserAPI
             ? base(Airtable.GESTIONNAIRES_API).update(
                 airtableUserAPI.id,
                 {
@@ -155,6 +157,7 @@ export const updateUsers = async () => {
     .filter((manager, index, values) => manager && values.findIndex((x) => x === manager) === index);
 
   const airtableUsers = await base(Airtable.GESTIONNAIRES).select().all();
+  const airtableUsersAPI = await base(Airtable.GESTIONNAIRES_API).select().all();
 
   const users = await db('users').select('email').where('role', USER_ROLE.GESTIONNAIRE);
   const existingEmails = new Set(users.map((user) => user.email));
@@ -196,6 +199,35 @@ export const updateUsers = async () => {
           gestionnaires,
           active: true,
         });
+        const airtableUserAPI = airtableUsersAPI.find((userAPI) => {
+          let userAPIEmail = userAPI.get('Email') as string;
+          userAPIEmail = userAPIEmail.toLowerCase().trim();
+          if (userAPIEmail === email) {
+            return userAPI;
+          }
+        });
+        if (airtableUserAPI) {
+          const newTagsFCU = gestionnaires;
+          const tagsReseaux = airtableUserAPI.get('Réseaux') as string[];
+          if (tagsReseaux) {
+            tagsReseaux.forEach((gestionnaire) => {
+              const tag = gestionnaire.trim();
+              const index = newTagsFCU.findIndex((t) => t === tag);
+              if (index !== -1) {
+                newTagsFCU.splice(index, 1);
+              }
+            });
+            await base(Airtable.GESTIONNAIRES_API).update(
+              airtableUserAPI.id,
+              {
+                'Tags FCU': newTagsFCU,
+              },
+              {
+                typecast: true,
+              }
+            );
+          }
+        }
       }
     }
   }
