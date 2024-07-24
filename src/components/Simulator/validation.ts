@@ -4,6 +4,7 @@ export const simulatorSchema = z.object({
   mode_pro: z.boolean().optional(),
   // departement: z.string({ required_error: 'Le département est obligatoire.' }),
   // commune: z.string({ required_error: 'Le département est obligatoire.' }),
+  dpe: z.string().optional(),
   description: z.string().optional(),
   services_supplementaires: z.array(z.string()).optional(),
   departement: z.string({ required_error: 'Le département est obligatoire.' }),
