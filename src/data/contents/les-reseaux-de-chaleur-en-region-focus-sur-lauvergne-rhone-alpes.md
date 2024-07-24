@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/16 (1).jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur l'Auvergne-Rhône-Alpes
 
 🚴‍♂️ Pour la cinquième étape de notre tour de France des réseaux de chaleur, direction la [Région Auvergne-Rhône-Alpes](https://www.auvergnerhonealpes.fr/).\

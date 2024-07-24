@@ -4,6 +4,8 @@ import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
 import demandes from './2000-demandes.md';
 import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md';
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
+import actualisationTauxEnergiesRenouvelablesEtContenuCO2DesReseaux from './actualisation-des-taux-denergies-renouvelables-et-contenu-co2-des-reseaux.md';
+import combienCouteRaccordement from './combien-coute-un-raccordement.md';
 import donneesOpenDataEnrichies from './des-donnees-en-open-data-enrichies.md';
 import desObligationsDePartageDeDonnees from './des-obligations-de-partage-de-donnees-a-fcu-au-titre-du-fonds-chaleur.md';
 import desReseauxVertueux from './des-reseaux-vertueux.md';
@@ -21,6 +23,10 @@ import leChauffageUrbainPourLesBatimentsTertiairesUnContexteOnNePeutPlusFavorabl
 import leClassementDesReseauxBilan from './le-classement-des-reseaux-quel-bilan.md';
 import lesReseauxDeChaleurDesEnergiesVertes from './les-reseaux-de-chaleur-des-energies-vertes.md';
 import lesReseauxDeChaleurEnMoinsDe15Secondes from './les-reseaux-de-chaleur-en-moins-de-15-secondes.md';
+import lesReseauxDeChaleurRegionBourgogneFrancheComte from './les-reseaux-de-chaleur-en-region-focus-sur-la-bourgogne-franche-comte.md';
+import lesReseauxDeChaleurRegionAuvergneRhoneAlpes from './les-reseaux-de-chaleur-en-region-focus-sur-lauvergne-rhone-alpes.md';
+import lesReseauxDeChaleurRegionGrandEst from './les-reseaux-de-chaleur-en-region-focus-sur-le-grand-est.md';
+import lesReseauxDeChaleurRegionHautsDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-les-hauts-de-france.md';
 import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
 import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
@@ -60,10 +66,12 @@ import readme_25 from './README (25).md';
 import readme_26 from './README (26).md';
 import readme_27 from './README (27).md';
 import readme_28 from './README (28).md';
+import readme_29 from './README (29).md';
 import readme_3_1_1_1 from './README (3) (1) (1) (1).md';
 import readme_3_1_1 from './README (3) (1) (1).md';
 import readme_3_1 from './README (3) (1).md';
 import readme_3 from './README (3).md';
+import readme_30 from './README (30).md';
 import readme_4_1 from './README (4) (1).md';
 import readme_4 from './README (4).md';
 import readme_5 from './README (5).md';
@@ -89,10 +97,74 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/15 (1).jpg',
+    title: "Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur",
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-la-provence-alpes-cote-d-azur',
+    content: importFile(readme),
+    publishedDate: new Date('2024-07-16'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/19 (2).jpg',
+    title: "Actualisation des taux d'énergies renouvelables et contenu CO2 des réseaux",
+    slug: 'actualisation-des-taux-denergies-renouvelables-et-contenu-co-2-des-reseaux',
+    content: importFile(actualisationTauxEnergiesRenouvelablesEtContenuCO2DesReseaux),
+    publishedDate: new Date('2024-07-11'),
+    themes: [], //TODO
+  },
+  {
+    image: '/contents/16 (1).jpg',
+    title: "Les réseaux de chaleur en région : focus sur l'Auvergne-Rhône-Alpes",
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-l-auvergne-rhone-alpes',
+    content: importFile(lesReseauxDeChaleurRegionAuvergneRhoneAlpes),
+    publishedDate: new Date('2024-07-05'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/21 (1).jpg',
+    title: 'Identifier les besoins en chaleur des bâtiments',
+    slug: 'identifier-les-besoins-en-chaleur-des-batiments',
+    content: importFile(readme_30),
+    publishedDate: new Date('2024-07-02'),
+    themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Cartographie et données'],
+  },
+  {
+    image: '/contents/17 (3).jpg',
+    title: 'Les réseaux de chaleur en région : focus sur la Bourgogne-Franche-Comté',
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-la-bourgogne-franche-comte',
+    content: importFile(lesReseauxDeChaleurRegionBourgogneFrancheComte),
+    publishedDate: new Date('2024-06-27'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/20 (1).jpg',
+    title: 'Combien coûte un raccordement ?',
+    slug: 'combien-coute-un-raccordement',
+    content: importFile(combienCouteRaccordement),
+    publishedDate: new Date('2024-06-25'),
+    themes: ['Réseaux de chaleur', 'Prix', 'Cartographie et données'],
+  },
+  {
+    image: '/contents/18 (1).jpg',
+    title: 'Les réseaux de chaleur en région : focus sur le Grand Est',
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-le-grand-est',
+    content: importFile(lesReseauxDeChaleurRegionGrandEst),
+    publishedDate: new Date('2024-06-19'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/12 (3).jpg',
+    title: 'Les réseaux de chaleur en région : focus sur les Hauts-de-France',
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-les-hauts-de-france',
+    content: importFile(lesReseauxDeChaleurRegionHautsDeFrance),
+    publishedDate: new Date('2024-06-12'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
     image: '/contents/11 (2).jpg',
     title: 'Les réseaux de chaleur en région : focus sur la Normandie',
     slug: 'les-reseaux-de-chaleur-en-region-focus-sur-la-normandie',
-    content: importFile(readme),
+    content: importFile(readme_29),
     publishedDate: new Date('2024-06-05'),
     themes: ['Réseaux de chaleur', 'Infographie'],
   },
@@ -577,7 +649,7 @@ export const articles: Article[] = [
     themes: ['Réseaux de chaleur', 'Réglementation'],
   },
   {
-    image: '/contents/20.jpg',
+    image: '/contents/20 (2).jpg',
     title: "Visite d'une chaufferie biomasse",
     slug: 'visite-d-une-chaufferie-biomasse',
     content: importFile(visiteDuneChaufferieBiomasse),
@@ -585,7 +657,7 @@ export const articles: Article[] = [
     themes: ['ENR&R', 'Réseaux de chaleur', 'Reportage'],
   },
   {
-    image: '/contents/19.jpg',
+    image: '/contents/19 (1).jpg',
     title: 'La biomasse',
     slug: 'la-biomasse',
     content: importFile(readme_2),

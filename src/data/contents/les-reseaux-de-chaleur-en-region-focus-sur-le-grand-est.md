@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/18 (1).jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur le Grand Est
 
 🚲 Pour la 3ème étape de notre tour de France des réseaux de chaleur direction la région [Grand Est](https://www.grandest.fr/) !\
