@@ -63,10 +63,10 @@ export const ConsentBanner = () => {
   const router = useRouter();
   return (
     <>
-      <ConsentBannerAndConsentManagement />
-
       {!iframedPaths.some((path) => router.pathname.match(path)) && (
         <>
+          <ConsentBannerAndConsentManagement />
+
           {googleEnabled && finalityConsent?.google_analytics && <GoogleTagsScript tagIds={clientConfig.tracking.googleTagIds} />}
           {linkedinEnabled && finalityConsent?.linkedin_insights && (
             <LinkedInScript partnerId={clientConfig.tracking.linkInPartnerId as string} />
