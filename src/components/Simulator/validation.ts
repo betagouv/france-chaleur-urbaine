@@ -8,6 +8,9 @@ export const simulatorSchema = z.object({
   services_supplementaires: z.array(z.string()).optional(),
   departement: z.string({ required_error: 'Le département est obligatoire.' }),
   commune: z.string({ required_error: 'La commune est obligatoire.' }),
+  terms: z.boolean({ required_error: "Vous devez accepter les conditions d'utilisation" }).refine((val) => val === true, {
+    message: "Vous devez accepter les conditions d'utilisation",
+  }),
   adresse: z
     .string({ required_error: 'L’adresse est obligatoire.' })
     .min(1, { message: 'Champ obligatoire' })

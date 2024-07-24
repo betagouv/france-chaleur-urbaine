@@ -13,6 +13,7 @@ import {
 
 import { getObjectDifferences } from '@utils/objects';
 
+import Checkbox from './Checkbox';
 import Checkboxes from './Checkboxes';
 import Input from './Input';
 import Radio from './Radio';
@@ -94,5 +95,6 @@ export const useForm = <TFieldValues extends FieldValues = FieldValues, TContext
     Toggle: Toggle<TFieldValues>,
     Select: Select<TFieldValues>,
     Checkboxes: Checkboxes<TFieldValues>,
+    Checkbox: Checkbox<TFieldValues>,
   };
 };
