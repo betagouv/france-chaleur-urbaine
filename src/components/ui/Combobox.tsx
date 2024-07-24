@@ -1,6 +1,6 @@
 import { ComboboxPopover as ReachComboboxPopover } from '@reach/combobox';
 import styled from 'styled-components';
-export { Combobox, ComboboxInput, ComboboxList, ComboboxOption } from '@reach/combobox';
+export { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxOptionText } from '@reach/combobox';
 
 export const ComboboxPopover = styled(ReachComboboxPopover)`
   &[data-reach-combobox-popover] {
