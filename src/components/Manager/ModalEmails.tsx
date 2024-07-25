@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import Heading from '@components/ui/Heading';
 import Modal from '@components/ui/Modal';
 import emailsContentList from '@data/manager/manager-emails-content';

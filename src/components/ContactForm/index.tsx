@@ -3,7 +3,7 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { FormEvent, useState } from 'react';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import { submitToAirtable } from '@helpers/airtable';
 import { Airtable } from 'src/types/enum/Airtable';
 

@@ -3,7 +3,7 @@ import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import { useServices } from 'src/services';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import { Demand } from 'src/types/Summary/Demand';
