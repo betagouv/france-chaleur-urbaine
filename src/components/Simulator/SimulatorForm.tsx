@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Autocomplete from '@components/form/Autocomplete';
+import AutocompleteInput from '@components/form/dsfr/AutocompleteInput';
 import { useForm } from '@components/form/react-hook-form/useForm';
 import { useServices } from 'src/services';
 
@@ -37,7 +37,7 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ children, className, onSu
     <Form className={className} onSubmit={onSubmit} {...props}>
       <Toggle name="mode_pro" label="Mode pro" labelPosition="left" showCheckedHint={false} />
 
-      <Autocomplete<Awaited<ReturnType<typeof fetchOptions>>[number]>
+      <AutocompleteInput
         fetchFn={fetchOptions}
         label={"Autocomplete de l'adresse"}
         onSelect={(address) => {
