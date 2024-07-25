@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';

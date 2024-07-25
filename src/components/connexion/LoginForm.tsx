@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { FormEvent, useState } from 'react';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 
 import { Container, Password, PasswordIcon, PasswordInput } from './Form.styles';
 

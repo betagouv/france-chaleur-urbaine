@@ -2,7 +2,7 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useEffect, useMemo, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import { Table, type ColumnDef } from '@components/ui/Table';

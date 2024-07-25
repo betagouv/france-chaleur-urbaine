@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import debounce from '@utils/debounce';
 import { Demand } from 'src/types/Summary/Demand';
 
