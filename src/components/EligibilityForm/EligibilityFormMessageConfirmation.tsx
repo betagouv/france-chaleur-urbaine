@@ -4,7 +4,7 @@ import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { FormEvent, useState } from 'react';
 import styled from 'styled-components';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import { updateAirtable } from '@helpers/airtable';
 import { AddressDataType } from 'src/types/AddressData';

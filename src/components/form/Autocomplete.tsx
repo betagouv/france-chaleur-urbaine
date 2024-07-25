@@ -6,8 +6,8 @@ import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxOptionTe
 import Icon from '@components/ui/Icon';
 import debounce from '@utils/debounce';
 
-import FieldWrapper, { type FieldWrapperProps } from './FieldWrapper';
-import { type InputProps } from './Input';
+import FieldWrapper, { type FieldWrapperProps } from './dsfr/FieldWrapper';
+import { type InputProps } from './dsfr/Input';
 
 type DefaultOption = Record<string, any>;
 

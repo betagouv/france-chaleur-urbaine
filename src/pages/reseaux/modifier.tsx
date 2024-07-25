@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import NetworkSearchInput from '@components/Network/NetworkSearchInput';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';

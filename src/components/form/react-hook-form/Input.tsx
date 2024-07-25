@@ -1,7 +1,7 @@
 import React from 'react';
 import { FieldValues, UseControllerProps, useController } from 'react-hook-form';
 
-import DSFRInput from '../Input';
+import DSFRInput from '../dsfr/Input';
 
 export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
 

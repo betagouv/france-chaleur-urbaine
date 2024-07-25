@@ -2,7 +2,7 @@ import rules, { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Engine from 'publicodes';
 import { useMemo, useState } from 'react';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
