@@ -6,19 +6,14 @@ import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxOptionTe
 import Icon from '@components/ui/Icon';
 import debounce from '@utils/debounce';
 
-import Input from './Input';
+import FieldWrapper, { type FieldWrapperProps } from './FieldWrapper';
+import { type InputProps } from './Input';
 
-type InputProps = React.ComponentProps<typeof Input>;
 type DefaultOption = Record<string, any>;
 
-type AutocompleteProps<Option extends DefaultOption> = Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> & {
+type AutocompleteProps<Option extends DefaultOption> = Omit<FieldWrapperProps, 'onSelect'> & {
   fetchFn: (query: string) => Promise<Option[]>;
   debounceTime?: number;
-  label: InputProps['label'];
-  disabled?: InputProps['disabled'];
-  hintText?: InputProps['hintText'];
-  state?: InputProps['state'];
-  stateRelatedMessage?: InputProps['stateRelatedMessage'];
   onSelect: (option: Option) => void;
   onClear?: () => void;
   nativeInputProps?: Omit<InputProps['nativeInputProps'], 'onChange' | 'value'>;
@@ -71,20 +66,14 @@ const Autocomplete = <Option extends DefaultOption>({
   }, [inputValue, debouncedFetch]);
 
   return (
-    <div
-      className={fr.cx('fr-input-group', {
-        'fr-input-group--error': state === 'error',
-        'fr-input-group--valid': state === 'success',
-        'fr-input-group--disabled': disabled,
-      })}
+    <FieldWrapper
+      fieldId={generatedId}
+      label={label}
+      hintText={hintText}
+      state={state}
+      stateRelatedMessage={stateRelatedMessage}
       {...props}
     >
-      {(label || hintText) && (
-        <label className="fr-label" htmlFor={generatedId}>
-          {label}
-          {hintText && <span className="fr-hint-text">{hintText}</span>}
-        </label>
-      )}
       <Combobox>
         <div className={fr.cx('fr-input-wrap')}>
           <ComboboxInput
@@ -158,8 +147,7 @@ const Autocomplete = <Option extends DefaultOption>({
           </ComboboxPopover>
         )}
       </Combobox>
-      {state === 'error' && <p className="fr-error-text">{stateRelatedMessage}</p>}
-    </div>
+    </FieldWrapper>
   );
 };
 
