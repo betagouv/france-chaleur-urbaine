@@ -18,6 +18,6 @@ _Les schémas directeurs sont diffusés sur les fiches par réseau, accessibles 
 _Lien d'accès direct vers les fiches :_ [_https://france-chaleur-urbaine.beta.gouv.fr/reseaux/9106C_](https://france-chaleur-urbaine.beta.gouv.fr/reseaux/9106C)\
 _(en remplaçant l'identifiant SNCU indiqué dans le lien par celui du réseau souhaité)_
 
-![](<.gitbook/assets/15 (1).jpg>)\
+![](<.gitbook/assets/15 (1) (1).jpg>)\
 
 
