@@ -28,7 +28,7 @@ declare module '@codegouvfr/react-dsfr/next-pagesdir' {
 }
 
 const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
-  defaultColorScheme: 'system',
+  defaultColorScheme: 'light',
   Link,
   preloadFonts: [
     //"Marianne-Light",
@@ -106,11 +106,14 @@ export const AppGlobalStyle = createGlobalStyle`
     --white: #fff;
     --legacy-darker-blue: #000074;
     --background-light: #f9f8f6;
-
+    color-scheme: only light !important;
+    color-scheme: light !important;
   }
+
   :root[data-fr-theme='dark'] {
-    --legacy-darker-blue: #ccd2fc;
-    --background-light: #060504;
+    /*--legacy-darker-blue: #ccd2fc;
+    --background-light: #060504;*/
+    color-scheme: light !important;
   }
 `;
 
