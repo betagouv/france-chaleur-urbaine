@@ -673,7 +673,7 @@ export const articles: Article[] = [
     themes: ['ENR&R', 'Réseaux de chaleur', 'Reportage'],
   },
   {
-    image: '/contents/18.jpg',
+    image: '/contents/18 (2).jpg',
     title: 'La géothermie profonde',
     slug: 'la-géothermie-profonde',
     content: importFile(readme_1_1_1),
@@ -689,7 +689,7 @@ export const articles: Article[] = [
     themes: ['ENR&R', 'Réseaux de chaleur'],
   },
   {
-    image: '/contents/16.jpg',
+    image: '/contents/16 (2).jpg',
     title: 'Les ménages français et le chauffage',
     slug: 'les-ménages-français-et-le-chauffage',
     content: importFile(readme_2_1_1),
@@ -697,7 +697,7 @@ export const articles: Article[] = [
     themes: ['Réseaux de chaleur', 'Prix', 'Infographie'],
   },
   {
-    image: '/contents/15.jpg',
+    image: '/contents/15 (2).jpg',
     title: 'La décarbonation des réseaux de chaleur est en marche !',
     slug: 'la-décarbonation-des-réseaux-de-chaleur-est-en-marche',
     content: importFile(readme_1_2_1),
