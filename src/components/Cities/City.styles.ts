@@ -52,21 +52,6 @@ export const SimulatorsContainer = styled.div`
     line-height: 24px !important;
   }
   .simulator-result {
-    width: 100%;
     color: #000091;
-  }
-`;
-
-export const CityDescriptionContainer = styled.div`
-  div,
-  strong {
-    color: #000091;
-  }
-`;
-
-export const DispositifsSlice = styled.div`
-  .slice-header h2 {
-    max-width: 600px;
-    margin: auto;
   }
 `;

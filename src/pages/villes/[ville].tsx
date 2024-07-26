@@ -1,7 +1,7 @@
+//import { GlobalStyle } from '@components/shared/layout/Global.style';
 import { useRouter } from 'next/router';
 
 import City from '@components/Cities/City';
-import { GlobalStyle } from '@components/shared/layout/Global.style';
 import SimplePage from '@components/shared/page/SimplePage';
 
 const PageVille = () => {
@@ -14,7 +14,7 @@ const PageVille = () => {
 
   return (
     <SimplePage>
-      <GlobalStyle />
+      {/* <GlobalStyle /> */}
       <City city={city} />
     </SimplePage>
   );
