@@ -481,7 +481,7 @@ const Map = ({
         addLayerHoverListeners(map, {
           layer: 'reseauxDeChaleur-avec-trace',
           source: 'network',
-          sourceLayer: 'outline',
+          sourceLayer: 'layer',
         });
         addLayerHoverListeners(map, {
           layer: 'reseauxEnConstruction-trace',
