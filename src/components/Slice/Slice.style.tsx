@@ -103,9 +103,9 @@ export const SliceBody = styled.div<{
   flex-direction: column;
   ${({ justifyContent }) => justifyContent && `justify-content: ${justifyContent};`}
 
-  @media (min-width: 992px) {
-    flex-direction: ${({ direction }) => direction || 'column'};
-  }
+  ${({ theme, direction }) => theme.media.lg`
+    flex-direction: ${direction || 'column'};
+  `}
 `;
 
 export const SliceHiddenImg = styled.img`

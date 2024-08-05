@@ -8,9 +8,9 @@ export const TertiaireStyle: any = createGlobalStyle`
       flex: 1;
       color: var(--bf500);
 
-      @media (min-width: 992px) {
+      ${({ theme }) => theme.media.lg`
         padding: 0 3rem;
-      }
+      `}
 
       p {
         font-size: 1.15rem;

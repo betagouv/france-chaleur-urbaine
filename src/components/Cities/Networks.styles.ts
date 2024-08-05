@@ -24,12 +24,12 @@ export const NetworkContainer = styled.div`
 `;
 
 export const NetworkColumn = styled.div`
-  @media (min-width: 768px) {
+  ${({ theme }) => theme.media.md`
     :nth-child(even) {
       padding-left: 16px;
     }
     :nth-child(odd) {
       padding-right: 16px;
     }
-  }
+  `}
 `;

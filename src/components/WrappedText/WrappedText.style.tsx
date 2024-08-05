@@ -10,14 +10,15 @@ export const Container = styled.div<ContainerType>`
   flex-direction: column;
   justify-content: space-between;
 
-  @media (min-width: 992px) {
-    flex-direction: ${({ reverse }) => (reverse ? ' row-reverse' : 'row')};
-    ${({ center }) =>
+  ${({ theme, reverse, center }) => theme.media.lg`
+    flex-direction: ${reverse ? ' row-reverse' : 'row'};
+    ${
       center &&
       css`
         align-items: center;
-      `}
-  }
+      `
+    }
+  `}
 `;
 export const ImageContainer = styled.div`
   flex: 1;

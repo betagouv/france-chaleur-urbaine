@@ -10,10 +10,10 @@ export const Container = styled.div<{
   align-items: center;
   gap: 32px;
 
-  @media (min-width: 992px) {
-    flex-direction: ${({ reverse, direction }) => (reverse ? ' row-reverse' : direction || 'row')};
+  ${({ theme, reverse, direction }) => theme.media.lg`
+    flex-direction: ${reverse ? ' row-reverse' : direction || 'row'};
     flex: 1;
-  }
+  `}
 `;
 export const ImageContainer = styled.div`
   > img {
