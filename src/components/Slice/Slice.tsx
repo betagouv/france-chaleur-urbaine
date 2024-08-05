@@ -17,7 +17,7 @@ const Slice: React.FC<
   } & SliceContainerWrapperType
 > = ({ children, id, className, header, theme, padding, bg, bgPos, bgSize, bgColor, direction, justifyContent }) => {
   return (
-    <SliceSection id={id} className={`fr-container--fluid ${className}`} theme={theme}>
+    <SliceSection id={id} className={`fr-container--fluid ${className}`} themeColor={theme}>
       <div className="fr-grid-row fr-grid-row--center">
         <SliceContainerWrapper
           className={`fr-col-lg-12 ${padding ? `fr-py-${padding}w` : ''}`}

@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components';
 
-export const SliceSection = styled.section<{ theme?: string }>`
-  ${({ theme }) => {
-    switch (theme) {
+export const SliceSection = styled.section<{ themeColor?: string }>`
+  ${({ themeColor }) => {
+    switch (themeColor) {
       case 'blue-background': {
         // Hack to display the contact form in blue in the accueil page
         return css`

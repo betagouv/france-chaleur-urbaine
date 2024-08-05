@@ -125,7 +125,7 @@ export const CounterItem = styled.div`
   `}
 `;
 
-export const Cartridge = styled.div<{ theme: string }>`
+export const Cartridge = styled.div<{ themeColor: string }>`
   display: inline-block;
   background-color: #ffdecf;
   padding: 8px 16px;
@@ -147,8 +147,8 @@ export const Cartridge = styled.div<{ theme: string }>`
       color: currentColor !important;
     }
 
-    ${({ theme }) => {
-      switch (theme) {
+    ${({ themeColor }) => {
+      switch (themeColor) {
         case 'color':
         case 'blue': {
           return css`
