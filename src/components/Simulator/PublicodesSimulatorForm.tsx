@@ -1,24 +1,23 @@
-import rules, { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import React from 'react';
 
 import { useForm } from '@components/form/react-hook-form/useForm';
 
-import usePublicodesEngine from './usePublicodesEngine';
+import useSimulatorEngine from './useSimulatorEngine';
 import { PublicodeSimulatorSchemaType, publicodesSimulatorSchema } from './validation';
 
 type SimulatorFormProps = Omit<React.HTMLAttributes<HTMLFormElement>, 'onSubmit'> & {
   onSubmit: (data: PublicodeSimulatorSchemaType) => any;
+  engine: ReturnType<typeof useSimulatorEngine>;
 };
 
-const SimulatorForm: React.FC<SimulatorFormProps> = ({ children, className, onSubmit: onExternalSubmit, ...props }) => {
-  const { setField, getField } = usePublicodesEngine<DottedName>(rules);
-
+const SimulatorForm: React.FC<SimulatorFormProps> = ({ children, className, engine, onSubmit: onExternalSubmit, ...props }) => {
   const { Form, Input } = useForm<PublicodeSimulatorSchemaType>({
     schema: publicodesSimulatorSchema,
     defaultValues: {},
     onChange: ({ changed }) => {
       changed?.forEach(({ path, value }) => {
-        setField(path as DottedName, value);
+        engine.setField(path as DottedName, value);
       });
     },
   });
@@ -32,18 +31,18 @@ const SimulatorForm: React.FC<SimulatorFormProps> = ({ children, className, onSu
         name="taille"
         label="Quelle est votre taille (en cm) ?"
         nativeInputProps={{
-          placeholder: `${getField('taille') ?? ''}`,
+          placeholder: `${engine.getField('taille') ?? ''}`,
         }}
       />
       <Input
         name="poids"
         label="Quel est votre poids (en kg) ?"
         nativeInputProps={{
-          placeholder: `${getField('poids') ?? ''}`,
+          placeholder: `${engine.getField('poids') ?? ''}`,
         }}
       />
-      <div>IMC = {getField('résultat')}</div>
-      <div>Interprêtation = {getField('résultat . interpretation')}</div>
+      <div>IMC = {engine.getField('résultat')}</div>
+      <div>Interprêtation = {engine.getField('résultat . interpretation')}</div>
     </Form>
   );
 };
