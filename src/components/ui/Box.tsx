@@ -2,6 +2,8 @@ import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
 import styled, { IntrinsicElementsKeys } from 'styled-components';
 
+import { type Breakpoint } from '@components/Theme/theme';
+
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type StyleProps = {
@@ -123,28 +125,17 @@ function Box(props: PropsWithChildren<BoxProps>) {
 }
 export default Box;
 
-const gridBreakpoints = {
-  xs: '320',
-  sm: '576',
-  md: '768',
-  lg: '992',
-  xl: '1440',
-};
-type GridBreakpoint = keyof typeof gridBreakpoints;
-
 /**
  * Renders a container that displays as row after the breakpoint and as a column before.
  */
 export const ResponsiveRow = styled(Box)<{
-  breakpoint?: GridBreakpoint;
+  breakpoint?: Breakpoint;
   gap?: CSSProperties['gap'];
 }>`
   display: flex;
   gap: ${({ gap }) => gap ?? '64px'};
-
-  @media (max-width: ${({ breakpoint }) => gridBreakpoints[breakpoint ?? 'lg']}px) {
+  ${({ theme, breakpoint }) => theme.media[breakpoint ?? 'lg']`
     flex-direction: column;
-
     gap: 24px;
-  }
+  `}
 `;

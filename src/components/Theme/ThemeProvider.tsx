@@ -2,10 +2,12 @@ import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesd
 import '@reach/combobox/styles.css';
 import Link from 'next/link';
 import React from 'react';
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
 import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
 
 import { MuiDsfrThemeProvider } from './MuiDsfrThemeProvider';
+import theme from './theme';
+import './theme.d';
 
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
   interface RegisterLink {
@@ -128,11 +130,13 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
 
 function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
-    <MuiDsfrThemeProvider>
-      <AppGlobalStyle />
-      <DsfrFixUp />
-      {children}
-    </MuiDsfrThemeProvider>
+    <StyledComponentsThemeProvider theme={theme}>
+      <MuiDsfrThemeProvider>
+        <AppGlobalStyle />
+        <DsfrFixUp />
+        {children}
+      </MuiDsfrThemeProvider>
+    </StyledComponentsThemeProvider>
   );
 }
 export default withDsfr(withAppEmotionCache(ThemeProvider));
