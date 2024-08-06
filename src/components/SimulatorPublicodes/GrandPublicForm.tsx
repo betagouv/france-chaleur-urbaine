@@ -15,12 +15,8 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
         label="Adresse"
         onSelect={(address) => {
           // TODO engine.setField('commune', address.properties.postcode);
-          console.log(''); //eslint-disable-line
-          console.log('╔════START══address══════════════════════════════════════════════════'); //eslint-disable-line
-          console.log(address); //eslint-disable-line
-          console.log('╚════END════address══════════════════════════════════════════════════'); //eslint-disable-line
 
-          engine.setField(
+          engine.setStringField(
             'département',
             address.properties.context
               .split(', ')[1]

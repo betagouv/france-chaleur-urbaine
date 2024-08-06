@@ -18,6 +18,10 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
     rerender({});
   };
 
+  const setStringField = (key: DottedName, value: any) => {
+    setField(key, value === '' ? null : `'${value}'`);
+  };
+
   const getField = (key: DottedName) => {
     const result = engine.evaluate(key as any).nodeValue;
 
@@ -30,6 +34,7 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
   return {
     getField,
     setField,
+    setStringField,
   };
 };
 

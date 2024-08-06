@@ -1,3 +1,4 @@
+import { fr } from '@codegouvfr/react-dsfr';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import Drawer from '@mui/material/Drawer';
@@ -6,6 +7,7 @@ import React from 'react';
 
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
+import cx from '@utils/cx';
 
 import GrandPublicForm from './GrandPublicForm';
 import PublicodesSimulatorResults from './Results';
@@ -23,18 +25,26 @@ export type TabId = 'batiment' | 'modes';
 const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, className, ...props }) => {
   const engine = useSimulatorEngine();
   const [open, setOpen] = React.useState(false);
-  const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: engine.getField('mode affichage') });
+  const engineDisplayMode = engine.getField('mode affichage');
+  const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: engineDisplayMode });
   const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: 'batiment' });
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
 
+  React.useEffect(() => {
+    // In case displayMode is set through url query param, we need to update the engine
+    if (displayMode !== engineDisplayMode) {
+      engine.setStringField('mode affichage', displayMode);
+    }
+  }, [displayMode, engineDisplayMode]);
+
   const results = <PublicodesSimulatorResults className="" engine={engine} />;
 
   return (
-    <div className={className} {...props}>
-      <Section className="fr-container">
+    <div className={cx(fr.cx('fr-container'), className)} {...props}>
+      <Section>
         <header>
           <div>
             <Heading as="h2">Simulateur de prix et d'émissions de CO2</Heading>
@@ -47,11 +57,11 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, cla
             labelPosition="left"
             inputTitle="Mode Pro"
             showCheckedHint={false}
-            checked={displayMode === "'technicien'"}
+            checked={displayMode === 'technicien'}
             onChange={(checked) => {
-              const newValue = checked ? "'technicien'" : "'grand public'";
+              const newValue = checked ? 'technicien' : 'grand public';
               setDisplayMode(newValue);
-              engine.setField('mode affichage', newValue);
+              engine.setStringField('mode affichage', newValue);
             }}
           />
         </header>
