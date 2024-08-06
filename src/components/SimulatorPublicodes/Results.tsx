@@ -19,6 +19,7 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
       <br />
       {displayResult('mode affichage')}
       {displayResult('département')}
+      {displayResult('type de bâtiment')}
     </div>
   );
 };
