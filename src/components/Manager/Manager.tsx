@@ -1,5 +1,5 @@
 import { GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapRef } from 'react-map-gl/maplibre';
 
 import Hoverable from '@components//Hoverable';
@@ -114,8 +114,9 @@ const Manager = () => {
       const updatedDemand = await demandsService.update(demandId, demand);
       if (updatedDemand) {
         const index = demands.findIndex((d) => d.id === demandId);
-        demands.splice(index, 1, updatedDemand);
-        setDemands([...demands]);
+        const newDemands = [...demands];
+        newDemands.splice(index, 1, updatedDemand);
+        setDemands(newDemands);
       }
     },
     [demands, demandsService]
@@ -145,137 +146,140 @@ const Manager = () => {
     refreshMapPins();
   }, [filteredDemands, refreshMapPins]);
 
-  const demandRowsParams: ColumnDef<Demand>[] = [
-    {
-      field: 'Statut',
-      width: 300,
-      sortable: false,
-      renderCell: (params) => <Status demand={params.row} updateDemand={updateDemand} />,
-      headerName: 'Statut',
-    },
-    {
-      field: 'Prospect recontacté',
-      sortable: false,
-      align: 'center',
-      renderCell: (params) => <Contacted demand={params.row} updateDemand={updateDemand} />,
-      headerName: 'Prospect recontacté',
-    },
-    {
-      field: 'Contact / Envoi de mails',
-      headerName: 'Contact',
-      minWidth: 280,
-      sortable: false,
-      renderCell: (params) => <Contact demand={params.row} updateDemand={updateDemand} />,
-    },
-    {
-      field: 'Adresse',
-      renderHeader: () => (
-        <ColHeader>
-          Adresse
-          <HoverableIcon iconName="ri-information-fill" position="bottom-centered" iconSize="sm" top="0px">
-            La mention “PDP" est indiquée pour les adresses situées dans le périmètre de développement prioritaire d’un réseau classé (connu
-            par France Chaleur Urbaine).
-          </HoverableIcon>
-        </ColHeader>
-      ),
-      width: 320,
-      sortable: false,
-      renderCell: ({ row: demand }) => (
-        <Box textWrap="pretty">
-          {demand.Adresse}
-          {demand['en PDP'] === 'Oui' && <Tag text="PDP" />}
-        </Box>
-      ),
-    },
-    {
-      field: 'Date demandes',
-      sortable: true,
-      headerName: 'Date de la demande',
-      renderCell: (params) => new Date(params.row['Date demandes']).toLocaleDateString(),
-    },
-    {
-      field: 'Type de chauffage',
-      sortable: false,
-      width: 120,
-      headerName: 'Type',
-      renderCell: (params) => <Tag text={params.row.Structure} />,
-    },
-    {
-      field: 'Mode de chauffage',
-      sortable: false,
-      width: 130,
-      headerName: 'Mode de chauffage',
-      renderCell: (params) => <Tag text={displayModeDeChauffage(params.row)} />,
-    },
-    {
-      field: 'Distance au réseau',
-      width: 120,
-      renderHeader: () => (
-        <ColHeader>
-          Distance au réseau (m)
-          <HoverableIcon iconName="ri-information-fill" position="bottom-centered" iconSize="sm" top="0px">
-            Distance à vol d'oiseau
-          </HoverableIcon>
-        </ColHeader>
-      ),
-      renderCell: (params) => (
-        <AdditionalInformation demand={params.row} field="Distance au réseau" updateDemand={updateDemand} type="number" />
-      ),
-    },
-    {
-      field: 'Identifiant réseau',
-      width: 80,
-      sortable: false,
-      headerName: 'ID réseau le plus proche',
-    },
-    {
-      field: 'Nom réseau',
-      width: 250,
-      sortable: false,
-      headerName: 'Nom du réseau le plus proche',
-      renderCell: ({ row }) => <Box textWrap="pretty">{row['Nom réseau']}</Box>,
-    },
-    {
-      field: 'Nb logements',
-      sortable: false,
-      width: 120,
-      headerName: 'Nb logements (lots)',
-      renderCell: (params) => <AdditionalInformation demand={params.row} field="Logement" updateDemand={updateDemand} type="number" />,
-    },
-    {
-      field: 'Conso gaz',
-      sortable: false,
-      width: 120,
-      headerName: 'Conso gaz (MWh)',
-      renderCell: (params) => <AdditionalInformation demand={params.row} field="Conso" updateDemand={updateDemand} type="number" />,
-    },
-    {
-      field: 'Commentaires',
-      sortable: false,
-      width: 280,
-      headerName: 'Commentaires',
-      renderCell: (params) => <Comment demand={params.row} updateDemand={updateDemand} />,
-    },
-    {
-      field: 'Affecté à',
-      sortable: false,
-      width: 150,
-      renderHeader: () => (
-        <ColHeader>
-          Affecté à
-          <HoverableIcon iconName="ri-information-fill" position="left" iconSize="sm" top="0px">
-            "Non affecté" : demande éloignée du réseau non transmise aux opérateurs
-            <br />
-            <br />
-            Vous pouvez ajouter ou modifier une affectation : le changement sera effectif après validation manuelle par l'équipe FCU.
-          </HoverableIcon>
-        </ColHeader>
-      ),
-      renderCell: (params) => (
-        <AdditionalInformation demand={params.row} field="Affecté à" updateDemand={updateDemand} type="text" width={125} />
-      ),
-    },
-  ];
+  const demandRowsParams: ColumnDef<Demand>[] = useMemo(
+    () => [
+      {
+        field: 'Statut',
+        width: 300,
+        sortable: false,
+        renderCell: (params) => <Status demand={params.row} updateDemand={updateDemand} />,
+        headerName: 'Statut',
+      },
+      {
+        field: 'Prospect recontacté',
+        sortable: false,
+        align: 'center',
+        renderCell: (params) => <Contacted demand={params.row} updateDemand={updateDemand} />,
+        headerName: 'Prospect recontacté',
+      },
+      {
+        field: 'Contact / Envoi de mails',
+        headerName: 'Contact',
+        minWidth: 280,
+        sortable: false,
+        renderCell: (params) => <Contact demand={params.row} updateDemand={updateDemand} />,
+      },
+      {
+        field: 'Adresse',
+        renderHeader: () => (
+          <ColHeader>
+            Adresse
+            <HoverableIcon iconName="ri-information-fill" position="bottom-centered" iconSize="sm" top="0px">
+              La mention “PDP" est indiquée pour les adresses situées dans le périmètre de développement prioritaire d’un réseau classé
+              (connu par France Chaleur Urbaine).
+            </HoverableIcon>
+          </ColHeader>
+        ),
+        width: 320,
+        sortable: false,
+        renderCell: ({ row: demand }) => (
+          <Box textWrap="pretty">
+            {demand.Adresse}
+            {demand['en PDP'] === 'Oui' && <Tag text="PDP" />}
+          </Box>
+        ),
+      },
+      {
+        field: 'Date demandes',
+        sortable: true,
+        headerName: 'Date de la demande',
+        renderCell: (params) => new Date(params.row['Date demandes']).toLocaleDateString(),
+      },
+      {
+        field: 'Type de chauffage',
+        sortable: false,
+        width: 120,
+        headerName: 'Type',
+        renderCell: (params) => <Tag text={params.row.Structure} />,
+      },
+      {
+        field: 'Mode de chauffage',
+        sortable: false,
+        width: 130,
+        headerName: 'Mode de chauffage',
+        renderCell: (params) => <Tag text={displayModeDeChauffage(params.row)} />,
+      },
+      {
+        field: 'Distance au réseau',
+        width: 120,
+        renderHeader: () => (
+          <ColHeader>
+            Distance au réseau (m)
+            <HoverableIcon iconName="ri-information-fill" position="bottom-centered" iconSize="sm" top="0px">
+              Distance à vol d'oiseau
+            </HoverableIcon>
+          </ColHeader>
+        ),
+        renderCell: (params) => (
+          <AdditionalInformation demand={params.row} field="Distance au réseau" updateDemand={updateDemand} type="number" />
+        ),
+      },
+      {
+        field: 'Identifiant réseau',
+        width: 80,
+        sortable: false,
+        headerName: 'ID réseau le plus proche',
+      },
+      {
+        field: 'Nom réseau',
+        width: 250,
+        sortable: false,
+        headerName: 'Nom du réseau le plus proche',
+        renderCell: ({ row }) => <Box textWrap="pretty">{row['Nom réseau']}</Box>,
+      },
+      {
+        field: 'Nb logements',
+        sortable: false,
+        width: 120,
+        headerName: 'Nb logements (lots)',
+        renderCell: (params) => <AdditionalInformation demand={params.row} field="Logement" updateDemand={updateDemand} type="number" />,
+      },
+      {
+        field: 'Conso gaz',
+        sortable: false,
+        width: 120,
+        headerName: 'Conso gaz (MWh)',
+        renderCell: (params) => <AdditionalInformation demand={params.row} field="Conso" updateDemand={updateDemand} type="number" />,
+      },
+      {
+        field: 'Commentaires',
+        sortable: false,
+        width: 280,
+        headerName: 'Commentaires',
+        renderCell: (params) => <Comment demand={params.row} updateDemand={updateDemand} />,
+      },
+      {
+        field: 'Affecté à',
+        sortable: false,
+        width: 150,
+        renderHeader: () => (
+          <ColHeader>
+            Affecté à
+            <HoverableIcon iconName="ri-information-fill" position="left" iconSize="sm" top="0px">
+              "Non affecté" : demande éloignée du réseau non transmise aux opérateurs
+              <br />
+              <br />
+              Vous pouvez ajouter ou modifier une affectation : le changement sera effectif après validation manuelle par l'équipe FCU.
+            </HoverableIcon>
+          </ColHeader>
+        ),
+        renderCell: (params) => (
+          <AdditionalInformation demand={params.row} field="Affecté à" updateDemand={updateDemand} type="text" width={125} />
+        ),
+      },
+    ],
+    [updateDemand]
+  );
 
   return (
     <Container>
