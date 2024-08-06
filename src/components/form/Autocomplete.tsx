@@ -17,7 +17,7 @@ export type AutocompleteProps<Option extends DefaultOption> = Omit<React.Compone
   getOptionValue: (option: Option) => string;
 };
 
-const AutocompleteInput = <Option extends DefaultOption>({
+const Autocomplete = <Option extends DefaultOption>({
   fetchFn,
   nativeInputProps,
   debounceTime = 300,
@@ -121,4 +121,4 @@ const AutocompleteInput = <Option extends DefaultOption>({
   );
 };
 
-export default AutocompleteInput;
+export default Autocomplete;
