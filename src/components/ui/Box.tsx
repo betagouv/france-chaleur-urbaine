@@ -133,9 +133,10 @@ export const ResponsiveRow = styled(Box)<{
   gap?: CSSProperties['gap'];
 }>`
   display: flex;
-  gap: ${({ gap }) => gap ?? '64px'};
-  ${({ theme, breakpoint }) => theme.media[breakpoint ?? 'lg']`
-    flex-direction: column;
-    gap: 24px;
+  gap: 24px;
+  flex-direction: column;
+  ${({ theme, breakpoint, gap }) => theme.media[breakpoint ?? 'lg']`
+    flex-direction: row;
+    gap: ${gap ?? '64px'};
   `}
 `;
