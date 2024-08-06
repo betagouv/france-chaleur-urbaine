@@ -58,6 +58,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, cla
             inputTitle="Mode Pro"
             showCheckedHint={false}
             checked={displayMode === 'technicien'}
+            className={fr.cx('fr-mt-0')}
             onChange={(checked) => {
               const newValue = checked ? 'technicien' : 'grand public';
               setDisplayMode(newValue);
