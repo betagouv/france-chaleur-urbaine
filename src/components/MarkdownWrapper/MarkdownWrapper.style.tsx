@@ -14,10 +14,8 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
 }))<MarkdownWrapperStyledProps>`
   ${({ withPadding, theme }) =>
     withPadding &&
-    `
-    ${theme.media.lg`
+    theme.media.lg`
       padding: 0 3rem;
-    `}
     `}
   h1,
   h2 {
