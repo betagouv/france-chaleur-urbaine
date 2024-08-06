@@ -1,8 +1,6 @@
 import { ChangeEvent } from 'react';
 
 import SimplePage from '@components/shared/page/SimplePage';
-import Simulator from '@components/Simulator';
-import PublicodesSimulator from '@components/Simulator/PublicodesSimulator';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import { isDefined } from '@utils/core';
@@ -24,10 +22,6 @@ function SimulateurPage() {
   return (
     <SimplePage title="Simulateur : France Chaleur Urbaine">
       <Box py="4w" className="fr-container">
-        <Heading as="h1" color="blue-france">
-          Simulateur avec Publicodes
-        </Heading>
-        <PublicodesSimulator />
         <Heading as="h1" color="blue-france">
           Simulateur
         </Heading>
@@ -77,10 +71,6 @@ function SimulateurPage() {
             <pre>internal state {JSON.stringify(internalState, null, 2)}</pre>
           </Box>
         </Box>
-        <Heading as="h1" color="blue-france">
-          Simulateur avec React-Hook-Form
-        </Heading>
-        <Simulator />
       </Box>
     </SimplePage>
   );
