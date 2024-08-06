@@ -37,6 +37,7 @@
     "prebuild": "only-include-used-icons"
   },
   "dependencies": {
+    "@betagouv/france-chaleur-urbaine-publicodes": "^0.1.0",
     "@codegouvfr/react-dsfr": "^1.9.31",
     "@commander-js/extra-typings": "^11.1.0",
     "@emotion/react": "^11.11.4",
@@ -54,7 +55,6 @@
     "@rivercode/facebook-conversion-api-nextjs": "^4.3.2",
     "@sentry/nextjs": "^7.98.0",
     "@socialgouv/matomo-next": "^1.9.0",
-    "@betagouv/france-chaleur-urbaine-publicodes": "^0.1.0",
     "@turf/area": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/length": "^6.5.0",
@@ -81,7 +81,7 @@
     "next-auth": "^4.24.5",
     "next-sitemap": "^4.2.3",
     "nodemailer": "^6.9.9",
-    "nuqs": "^1.17.1",
+    "nuqs": "^1.17.7",
     "p-limit": "3.1.0",
     "pg": "^8.11.3",
     "postcss": "^8.2.10",

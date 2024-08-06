@@ -6121,10 +6121,10 @@ npm-run-path@^5.1.0:
   dependencies:
     path-key "^4.0.0"
 
-nuqs@^1.17.1:
-  version "1.17.1"
-  resolved "https://registry.yarnpkg.com/nuqs/-/nuqs-1.17.1.tgz#26873cf91add0dc376e6a6c916ea89b1d70f5b4a"
-  integrity sha512-zJPisj8L+SzKzt57c5s3fJW0ikksPr+PyeLyNwvx0i5ggTr5XR5uFhCoX/T+Mkmb6X5UxHB/0nnuZyFiQsh0cA==
+nuqs@^1.17.7:
+  version "1.17.7"
+  resolved "https://registry.yarnpkg.com/nuqs/-/nuqs-1.17.7.tgz#dbd998569b65c81998afa05e76a2668301cb5a70"
+  integrity sha512-LiiC5XGqVPCGNA3Hg4tPmI5Ur0egmp+mB9FLWPltQfC6VbQyHqkJf4aZV6f9o8wX86Le9KAIHdnNCtx0f1ZTnw==
   dependencies:
     mitt "^3.0.1"
 
