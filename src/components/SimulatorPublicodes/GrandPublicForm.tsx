@@ -1,6 +1,7 @@
 import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
+import RadioInput from '@components/form/publicodes/Radio';
 
 import { type SimulatorEngine } from './useSimulatorEngine';
 
@@ -27,17 +28,7 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
           );
         }}
       />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      GrandPublicForm
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
+      <RadioInput name="type de bâtiment" small orientation="horizontal" />
       {/* <Input
         name="taille"
         label="Quelle est votre taille (en cm) ?"

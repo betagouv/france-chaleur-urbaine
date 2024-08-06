@@ -9,7 +9,7 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
   const [, rerender] = React.useState({});
 
   const engine = React.useMemo(() => new Engine(rules, options), []);
-
+  const parsedRules = engine.getParsedRules();
   const setField = (key: DottedName, value: any) => {
     engine.setSituation({
       ...engine.getSituation(),
@@ -31,8 +31,12 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
     }
     return `${result}`;
   };
+
+  const getParsedRule = (key: DottedName) => parsedRules[key as string];
+
   return {
     getField,
+    getRule: getParsedRule,
     setField,
     setStringField,
   };
