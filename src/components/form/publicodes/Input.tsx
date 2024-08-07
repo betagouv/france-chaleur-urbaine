@@ -16,12 +16,12 @@ const Input = ({
     name: string;
   }) => {
   const { engine } = usePublicodesFormContext();
-  const [value, setValue] = React.useState(engine.getField(name));
-  const [canBeEmpty] = React.useState(!engine.getField(name));
+  const [value, setValue] = React.useState(engine.getField(name) as string | number);
+  const [canBeEmpty] = React.useState(engine.getField(name) === null || engine.getField(name) === undefined);
 
   const onChangeField = (newValue: string) => {
     setValue(newValue);
-    engine.setStringField(name, newValue);
+    engine.setField(name, newValue);
   };
 
   return (
@@ -30,7 +30,7 @@ const Input = ({
       nativeInputProps={{
         ...nativeInputProps,
         value,
-        placeholder: engine.getField(name),
+        placeholder: `${engine.getField(name)}`,
         onChange: (e) => {
           e.stopPropagation();
           onChangeField(e.target.value);
