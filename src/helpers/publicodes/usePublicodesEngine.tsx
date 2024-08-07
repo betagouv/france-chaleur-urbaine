@@ -5,6 +5,27 @@ type EngineConstructorParameters = ConstructorParameters<typeof Engine>;
 type Rules = EngineConstructorParameters[0];
 type Options = EngineConstructorParameters[1];
 
+type Unit = {
+  numerators: string[];
+  denominators: string[];
+};
+
+const formatUnit = ({ numerators, denominators }: Unit): string => {
+  const superscript = ['\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u2076', '\u2077', '\u2078', '\u2079'];
+  const format = (arr: string[]): string => {
+    const count: Record<string, number> = arr.reduce((acc: Record<string, number>, curr: string) => {
+      acc[curr] = (acc[curr] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.entries(count)
+      .map(([key, value]) => key + (value > 1 ? superscript[value] : ''))
+      .join('');
+  };
+  const nums = format(numerators);
+  const dens = format(denominators);
+  return nums + (dens ? ' / ' + dens : '');
+};
+
 const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
   const [, rerender] = React.useState({});
 
@@ -47,6 +68,12 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
     return result;
   };
 
+  const getUnit = (key: DottedName) => {
+    const node = getNode(key as any);
+    const unit = !node?.unit ? '' : formatUnit(node.unit);
+    return unit;
+  };
+
   const getParsedRule = (key: DottedName) => parsedRules[key as string];
 
   return {
@@ -55,6 +82,7 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
     setField,
     setStringField,
     getNode,
+    getUnit,
   };
 };
 
