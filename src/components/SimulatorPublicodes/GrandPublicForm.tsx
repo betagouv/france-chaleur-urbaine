@@ -70,6 +70,7 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
           step: 1,
         }}
       />
+      <Select name="Température émetteurs" label="Température émetteurs" />
 
       {/* <Input
         name="taille"
