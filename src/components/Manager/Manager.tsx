@@ -110,13 +110,15 @@ const Manager = () => {
   );
 
   const updateDemand = useCallback(
-    async (demandId: string, demand: Partial<Demand>) => {
-      const updatedDemand = await demandsService.update(demandId, demand);
+    async (demandId: string, demandUpdate: Partial<Demand>) => {
+      const updatedDemand = await demandsService.update(demandId, demandUpdate);
       if (updatedDemand) {
-        const index = demands.findIndex((d) => d.id === demandId);
-        const newDemands = [...demands];
-        newDemands.splice(index, 1, updatedDemand);
-        setDemands(newDemands);
+        const existingDemand = demands.find((d) => d.id === demandId);
+        if (existingDemand) {
+          // on mute directement l'objet et on ne recrée pas un nouveau tableau demands pour ne pas réinitialiser la pagination de la datagrid
+          Object.assign(existingDemand, updatedDemand);
+          setDemands(demands);
+        }
       }
     },
     [demands, demandsService]
