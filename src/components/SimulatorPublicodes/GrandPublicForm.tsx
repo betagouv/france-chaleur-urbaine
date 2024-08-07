@@ -3,6 +3,7 @@ import React from 'react';
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import Input from '@components/form/publicodes/Input';
 import RadioInput from '@components/form/publicodes/Radio';
+import Select from '@components/form/publicodes/Select';
 
 import { type SimulatorEngine } from './useSimulatorEngine';
 
@@ -26,6 +27,17 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
       <Input name="degré jours unifié spécifique froid" label="degré jours unifié spécifique froid" iconId="fr-icon-temp-cold-fill" />
       <Input name="température de référence chaud" label="température de référence chaud" iconId="fr-icon-temp-cold-fill" />
       <Input name="augmenter la température de chauffe" label="augmenter la température de chauffe" iconId="fr-icon-temp-cold-fill" />
+      <Select name="choix du réseau de chaleur" label="choix du réseau de chaleur" />
+      <Select name="choix du réseau de froid" label="choix du réseau de froid" />
+      <Input
+        name="nombre de logement dans l'immeuble concerné"
+        label="nombre de logement dans l'immeuble concerné"
+        nativeInputProps={{
+          inputMode: 'numeric',
+          pattern: '[0-9]{5}',
+          type: 'number',
+        }}
+      />
       {/* <Input
         name="taille"
         label="Quelle est votre taille (en cm) ?"
