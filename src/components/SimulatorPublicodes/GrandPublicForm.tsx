@@ -18,15 +18,7 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
         onSelect={(address) => {
           // TODO engine.setField('commune', address.properties.postcode);
 
-          engine.setStringField(
-            'département',
-            address.properties.context
-              .split(', ')[1]
-              .toUpperCase()
-              // remove accents
-              .normalize('NFD')
-              .replace(/[\u0300-\u036f]/g, '')
-          );
+          engine.setStringField('code département', address.properties.context.split(', ')[0]);
         }}
       />
       <RadioInput name="type de bâtiment" small orientation="horizontal" />
