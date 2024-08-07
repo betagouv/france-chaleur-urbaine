@@ -21,13 +21,13 @@ export const ContactFormWrapper = styled.div<{ cardMode?: boolean }>`
   align-items: flex-start;
   justify-content: stretch;
 
-  ${({ cardMode }) => css`
+  ${({ cardMode, theme }) => css`
     ${!cardMode ? 'padding: 24px 0' : ''};
     gap: ${cardMode ? '0' : '32px'};
 
-    @media (min-width: 992px) {
+    ${theme.media.lg`
       flex-direction: ${cardMode ? 'column' : 'row'};
-    }
+    `}
   `}
 `;
 

@@ -133,9 +133,9 @@ export const SimulatorForm = styled.form`
   flex-direction: column;
   justify-content: space-between;
 
-  @media (min-width: 992px) {
+  ${({ theme }) => theme.media.lg`
     flex: 1;
-  }
+  `}
 
   fieldset {
     padding: 0;

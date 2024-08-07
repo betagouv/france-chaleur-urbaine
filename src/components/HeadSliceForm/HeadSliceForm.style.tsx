@@ -39,10 +39,10 @@ export const HeadSliceContainer = styled.div<{ needGradient?: boolean }>`
 `;
 
 export const Container = styled.div`
-  @media (min-width: 992px) {
+  ${({ theme }) => theme.media.lg`
     padding-left: 3rem;
     margin-left: 50%;
-  }
+  `}
 `;
 
 export const PageTitlePreTitle = styled.span`

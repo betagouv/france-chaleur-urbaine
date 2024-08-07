@@ -12,12 +12,10 @@ type MarkdownWrapperStyledProps = {
 export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps>(({ className }: MarkdownWrapperStyledProps) => ({
   className: `md-wrapper ${className || ''}`,
 }))<MarkdownWrapperStyledProps>`
-  ${({ withPadding }) =>
+  ${({ withPadding, theme }) =>
     withPadding &&
-    `
-    @media (min-width: 992px) {
+    theme.media.lg`
       padding: 0 3rem;
-    }
     `}
   h1,
   h2 {
@@ -117,15 +115,15 @@ export const CounterItem = styled.div`
   float: left;
   margin: -0.4em 0.6em -0.2em 0em;
 
-  @media (min-width: 992px) {
+  ${({ theme }) => theme.media.lg`
     position: absolute;
     left: 0;
     margin: 0;
     float: none;
-  }
+  `}
 `;
 
-export const Cartridge = styled.div<{ theme: string }>`
+export const Cartridge = styled.div<{ themeColor: string }>`
   display: inline-block;
   background-color: #ffdecf;
   padding: 8px 16px;
@@ -147,8 +145,8 @@ export const Cartridge = styled.div<{ theme: string }>`
       color: currentColor !important;
     }
 
-    ${({ theme }) => {
-      switch (theme) {
+    ${({ themeColor }) => {
+      switch (themeColor) {
         case 'color':
         case 'blue': {
           return css`
