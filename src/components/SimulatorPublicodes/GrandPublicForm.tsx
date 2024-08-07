@@ -57,6 +57,19 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
         }}
       />
       <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
+      <Select name="type de production ECS" label="type de production ECS" />
+      <Input
+        name="Part de la surface à climatiser"
+        label="Part de la surface à climatiser"
+        nativeInputProps={{
+          inputMode: 'numeric',
+          maxLength: 3,
+          type: 'number',
+          min: 0,
+          max: 100,
+          step: 1,
+        }}
+      />
 
       {/* <Input
         name="taille"
