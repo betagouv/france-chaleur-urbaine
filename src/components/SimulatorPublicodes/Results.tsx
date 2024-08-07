@@ -27,8 +27,8 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
       {displayResult('mode affichage')}
       {displayResult('type de bâtiment')}
       <h3 className="fr-mt-2w fr-mb-0">Département</h3>
-      {displayResult('département')}
       {displayResult('code département')}
+      {displayResult('nom département')}
       {displayResult('degré jours unifié spécifique chaud')}
       {displayResult('degré jours unifié spécifique froid')}
       {displayResult('zone climatique')}
