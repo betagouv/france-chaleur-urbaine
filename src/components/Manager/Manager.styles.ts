@@ -9,10 +9,10 @@ export const Container = styled.div`
   height: calc(200vh - ${tabHeaderHeight});
   height: calc(200dvh - ${tabHeaderHeight});
 
-  @media (min-width: 992px) {
+  ${({ theme }) => theme.media.lg`
     height: calc(100vh - ${fullscreenHeaderHeight});
     height: calc(100dvh - ${fullscreenHeaderHeight});
-  }
+  `}
   overflow: auto;
   display: flex;
   flex-direction: column;
@@ -45,16 +45,16 @@ export const ManagerContainer = styled.div`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  @media (min-width: 992px) {
+  ${({ theme }) => theme.media.lg`
     flex-direction: row;
-  }
+  `}
 `;
 
 export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
   width: 100%;
-  @media (min-width: 992px) {
-    width: ${({ mapCollapsed }) => (mapCollapsed ? '100%' : 'calc(70% - 16px)')};
-  }
+  ${({ theme, mapCollapsed }) => theme.media.lg`
+    width: ${mapCollapsed ? '100%' : 'calc(70% - 16px)'};
+  `}
   height: 100%;
   z-index: ${mapControlZindex + 1};
 `;
@@ -62,9 +62,9 @@ export const TableContainer = styled.div<{ mapCollapsed: boolean }>`
 export const MapContainer = styled.div<{ mapCollapsed: boolean }>`
   height: 100%;
   width: 100%;
-  @media (min-width: 992px) {
-    width: ${({ mapCollapsed }) => (mapCollapsed ? '0%' : '30%')};
-  }
+  ${({ theme, mapCollapsed }) => theme.media.lg`
+    width: ${mapCollapsed ? '0%' : '30%'};
+  `}
   margin-bottom: 2.5rem;
 
   .maplibregl-popup-content {

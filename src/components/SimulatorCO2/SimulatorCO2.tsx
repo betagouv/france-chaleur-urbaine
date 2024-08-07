@@ -150,7 +150,7 @@ const SimulatorCO2: React.FC<{
           <h4>Moins de gaz à effet de serre !</h4>
           <p>Estimez les émissions de CO2 évitées grâce au raccordement de votre copropriété à un réseau de chaleur*</p>
           <CartridgeSimulatorForm>{form}</CartridgeSimulatorForm>
-          <SimulatorResult theme="yellow">
+          <SimulatorResult themeColor="yellow">
             <BigResult>{numberToString(economy * -1, 1)}</BigResult> tonnes de CO2 évitées par an
             <Separator />
             <SmallResult>{Math.round(percentGasReduct * -1)}%</SmallResult> de réduction des émissions de gaz à effet de serre
@@ -228,7 +228,7 @@ const SimulatorCO2: React.FC<{
   );
 
   return typeSurf === TypeSurf.copropriete ? (
-    <BoxSimulator theme="white">{content}</BoxSimulator>
+    <BoxSimulator themeColor="white">{content}</BoxSimulator>
   ) : (
     <Box textColor={textColor}>
       <Container custom={!typeSurf}>{content}</Container>
