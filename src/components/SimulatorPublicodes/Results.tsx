@@ -114,7 +114,8 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
       {displayResult('Production eau chaude sanitaire', false)}
       {displayResult('type de production ECS', false)}
       {displayResult('Part de la surface à climatiser', false)}
-      <h2 className="fr-mt-2w fr-mb-0">Autre</h2>
+      {displayResult('Température émetteurs', false)}
+      {displayResult('Température émetteurs delta')}
     </div>
   );
 };
