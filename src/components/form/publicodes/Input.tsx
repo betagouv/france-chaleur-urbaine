@@ -16,20 +16,28 @@ const Input = ({
     name: string;
   }) => {
   const { engine } = usePublicodesFormContext();
+  const [value, setValue] = React.useState(engine.getField(name));
+  const [canBeEmpty] = React.useState(!engine.getField(name));
+
+  const onChangeField = (newValue: string) => {
+    setValue(newValue);
+    engine.setStringField(name, newValue);
+  };
 
   return (
     <DSFRInput
       textArea={false}
       nativeInputProps={{
         ...nativeInputProps,
-        value: engine.getField(name),
+        value,
+        placeholder: engine.getField(name),
         onChange: (e) => {
           e.stopPropagation();
-          engine.setStringField(name, e.target.value);
+          onChangeField(e.target.value);
         },
       }}
-      // state={props.state ?? fieldState.error ? 'error' : 'default'}
-      // stateRelatedMessage={props.stateRelatedMessage ?? fieldState.error?.message}
+      state={props.state ?? (!canBeEmpty && value === '') ? 'error' : 'default'}
+      stateRelatedMessage={props.stateRelatedMessage ?? 'Sélectionnez une valeur'}
       {...props}
     />
   );
