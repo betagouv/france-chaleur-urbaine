@@ -8,14 +8,18 @@ type SimulatorResultsProps = React.HTMLAttributes<HTMLDivElement> & {
 const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className, engine, ...props }) => {
   const displayResult = (key: Parameters<typeof engine.getField>[0], calculated = true) => {
     const rule = engine.getRule(key);
-
+    const value = engine.getField(key);
+    const valueType = typeof value;
+    const result =
+      valueType === 'number' ? value.toLocaleString('en') : valueType === 'string' ? value : <pre>{JSON.stringify(value, null, 2)}</pre>;
     return (
       <div>
         {calculated ? '🔄' : '✏️'} {key}
         <strong>
-          : {engine.getField(key)}
+          : {result}
           {rule.rawNode.unité ? ` ${rule.rawNode.unité}` : ''}
-        </strong>
+        </strong>{' '}
+        <small>{valueType}</small>
       </div>
     );
   };

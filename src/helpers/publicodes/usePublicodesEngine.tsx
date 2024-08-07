@@ -29,7 +29,7 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
       console.warn(`${key} cannot be evaluated`);
       return '';
     }
-    return `${result}`;
+    return result;
   };
 
   const getParsedRule = (key: DottedName) => parsedRules[key as string];
