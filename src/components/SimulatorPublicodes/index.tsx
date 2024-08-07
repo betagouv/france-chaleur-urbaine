@@ -27,7 +27,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, cla
   const engine = useSimulatorEngine();
   const [open, setOpen] = React.useState(false);
   const engineDisplayMode = engine.getField('mode affichage');
-  const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: engineDisplayMode });
+  const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: engineDisplayMode as string });
   const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: 'batiment' });
 
   const toggleDrawer = (newOpen: boolean) => () => {
