@@ -16,6 +16,8 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
   };
   const displayResult = (key: Parameters<typeof engine.getField>[0], calculated = true) => {
     const rule = engine.getRule(key);
+    const node = engine.getNode(key);
+
     const value = engine.getField(key);
     const valueType = typeof value;
     const result =
@@ -26,13 +28,25 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
       ) : (
         <pre style={{ display: 'inline-block' }}>{JSON.stringify(value, null, 2)}</pre>
       );
+    const unit = !node?.unit
+      ? ''
+      : node.unit.numerators.join('') + (node.unit.denominators.length ? ' / ' + node.unit.denominators.join('') : '');
     return (
       <>
-        <div style={{ padding: '0.5rem' }}>
+        <div style={{ padding: '0.25rem' }}>
           {calculated ? '🔄' : '✏️'} {key}:
-          <strong style={{ border: '1px solid', padding: '0 0.5rem', minWidth: '100px', display: 'inline-block' }}>
+          <strong
+            style={{
+              border: '1px solid',
+              minWidth: '100px',
+              margin: '0 0 0 1rem',
+              padding: '0 0.5rem',
+              display: 'inline-block',
+              background: '#EEE',
+            }}
+          >
             {result as any}
-            {rule.rawNode.unité ? ` ${rule.rawNode.unité}` : ''}
+            {unit ? ` ${unit}` : ''}
           </strong>{' '}
           <small style={{ display: 'inline-block', marginLeft: '1rem' }}>{valueType}</small>
           <small
@@ -42,7 +56,12 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
             {showRuleDetails[key] ? 'Hide Rule' : 'Show Rule'}
           </small>
         </div>
-        {showRuleDetails[key] && <pre style={{ display: 'block', maxWidth: '500px' }}>{JSON.stringify(rule, null, 2)}</pre>}
+        {showRuleDetails[key] && (
+          <pre style={{ display: 'block', maxWidth: '500px' }}>
+            {JSON.stringify(rule, null, 2)}
+            {JSON.stringify(node, null, 2)}
+          </pre>
+        )}
       </>
     );
   };

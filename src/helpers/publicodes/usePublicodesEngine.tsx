@@ -27,8 +27,18 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
     (window as any).engine = engine;
   }
 
+  const getNode = (key: DottedName) => {
+    const result = engine.evaluate(key as any);
+
+    if (result === null || result === undefined) {
+      console.warn(`${key} cannot be evaluated`);
+      return {} as typeof result;
+    }
+    return result;
+  };
+
   const getField = (key: DottedName) => {
-    const result = engine.evaluate(key as any).nodeValue;
+    const result = getNode(key as any).nodeValue;
 
     if (result === null || result === undefined) {
       console.warn(`${key} cannot be evaluated`);
@@ -44,6 +54,7 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
     getRule: getParsedRule,
     setField,
     setStringField,
+    getNode,
   };
 };
 
