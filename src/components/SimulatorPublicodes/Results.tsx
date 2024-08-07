@@ -34,7 +34,14 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
       {displayResult('zone climatique')}
       {displayResult('température de référence chaud')}
       {displayResult('augmenter la température de chauffe')}
-      <h2>Autre</h2>
+      <h2 className="fr-mt-2w fr-mb-0">Paramètres Réseaux de chaleur et de froid</h2>
+      {displayResult('choix du réseau de chaleur', false)}
+      {displayResult('contenu CO2 réseau de chaleur')}
+      {displayResult('choix du réseau de froid', false)}
+      {displayResult('contenu CO2 réseau de froid')}
+      <h2 className="fr-mt-2w fr-mb-0">Besoins et choix du bâtiment</h2>
+      {displayResult("nombre de logement dans l'immeuble concerné", false)}
+      <h2 className="fr-mt-2w fr-mb-0">Autre</h2>
     </div>
   );
 };
