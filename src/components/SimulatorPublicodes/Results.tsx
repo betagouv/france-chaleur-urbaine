@@ -11,12 +11,18 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
     const value = engine.getField(key);
     const valueType = typeof value;
     const result =
-      valueType === 'number' ? value.toLocaleString('en') : valueType === 'string' ? value : <pre>{JSON.stringify(value, null, 2)}</pre>;
+      valueType === 'number' ? (
+        value.toLocaleString('en')
+      ) : valueType === 'string' ? (
+        value
+      ) : (
+        <pre style={{ display: 'inline-block' }}>{JSON.stringify(value, null, 2)}</pre>
+      );
     return (
       <div>
         {calculated ? '🔄' : '✏️'} {key}
         <strong>
-          : {result}
+          : {result as any}
           {rule.rawNode.unité ? ` ${rule.rawNode.unité}` : ''}
         </strong>{' '}
         <small>{valueType}</small>
