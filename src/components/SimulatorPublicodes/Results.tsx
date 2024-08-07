@@ -5,27 +5,6 @@ type SimulatorResultsProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
 };
 
-type Unit = {
-  numerators: string[];
-  denominators: string[];
-};
-
-const formatUnit = ({ numerators, denominators }: Unit): string => {
-  const superscript = ['\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u2076', '\u2077', '\u2078', '\u2079'];
-  const format = (arr: string[]): string => {
-    const count: Record<string, number> = arr.reduce((acc: Record<string, number>, curr: string) => {
-      acc[curr] = (acc[curr] || 0) + 1;
-      return acc;
-    }, {});
-    return Object.entries(count)
-      .map(([key, value]) => key + (value > 1 ? superscript[value] : ''))
-      .join('');
-  };
-  const nums = format(numerators);
-  const dens = format(denominators);
-  return nums + (dens ? ' / ' + dens : '');
-};
-
 const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className, engine, ...props }) => {
   const [showRuleDetails, setShowRuleDetails] = React.useState<Record<string, boolean>>({});
 
@@ -49,7 +28,7 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
       ) : (
         <pre style={{ display: 'inline-block' }}>{JSON.stringify(value, null, 2)}</pre>
       );
-    const unit = !node?.unit ? '' : formatUnit(node.unit);
+    const unit = engine.getUnit(key);
 
     return (
       <>
