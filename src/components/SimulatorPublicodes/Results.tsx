@@ -6,12 +6,12 @@ type SimulatorResultsProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className, engine, ...props }) => {
-  const displayResult = (key: Parameters<typeof engine.getField>[0]) => {
+  const displayResult = (key: Parameters<typeof engine.getField>[0], calculated = true) => {
     const rule = engine.getRule(key);
 
     return (
       <div>
-        {key}
+        {calculated ? '🔄' : '✏️'} {key}
         <strong>
           : {engine.getField(key)}
           {rule.rawNode.unité ? ` ${rule.rawNode.unité}` : ''}
@@ -24,10 +24,10 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
     <div className={className} {...props}>
       Ici, on retrouve les résultats
       <h2 className="fr-mt-2w fr-mb-0">Paramètres généraux</h2>
-      {displayResult('mode affichage')}
-      {displayResult('type de bâtiment')}
+      {displayResult('mode affichage', false)}
+      {displayResult('type de bâtiment', false)}
       <h3 className="fr-mt-2w fr-mb-0">Département</h3>
-      {displayResult('code département')}
+      {displayResult('code département', false)}
       {displayResult('nom département')}
       {displayResult('degré jours unifié spécifique chaud')}
       {displayResult('degré jours unifié spécifique froid')}
