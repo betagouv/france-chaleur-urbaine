@@ -7,11 +7,11 @@ export const StyledHeader = styled(Header)<{ $isFullScreenMode: boolean }>`
       ? css`
           // In fullscreen mode, hide the first line of the header
           // but only when the hamburger menu is not displayed.
-          @media (min-width: 992px) {
+          ${({ theme }) => theme.media.lg`
             .fr-header__body {
               display: none;
             }
-          }
+          `}
 
           // In fullscreen mode, hide the service row
           .fr-header__service {

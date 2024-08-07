@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components';
 
-export const SliceSection = styled.section<{ theme?: string }>`
-  ${({ theme }) => {
-    switch (theme) {
+export const SliceSection = styled.section<{ themeColor?: string }>`
+  ${({ themeColor }) => {
+    switch (themeColor) {
       case 'blue-background': {
         // Hack to display the contact form in blue in the accueil page
         return css`
@@ -103,9 +103,9 @@ export const SliceBody = styled.div<{
   flex-direction: column;
   ${({ justifyContent }) => justifyContent && `justify-content: ${justifyContent};`}
 
-  @media (min-width: 992px) {
-    flex-direction: ${({ direction }) => direction || 'column'};
-  }
+  ${({ theme, direction }) => theme.media.lg`
+    flex-direction: ${direction || 'column'};
+  `}
 `;
 
 export const SliceHiddenImg = styled.img`

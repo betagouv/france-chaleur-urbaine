@@ -7,9 +7,9 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     position: relative;
     margin-top: 32px;
     
-    @media (min-width: 992px) {
+    ${({ theme }) => theme.media.lg`
       padding-left: 5.75em;
-    }
+    `}
 
     .cartridge-4 {
       @media (max-width: 991px) {
@@ -32,9 +32,9 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
   .fcuSolutionForFuturFooter {
     text-align: center;
     
-    @media (min-width: 992px) {
+    ${({ theme }) => theme.media.lg`
       padding: 0 7rem;
-    }
+    `}
 
     p {
       margin: 0;
@@ -44,9 +44,9 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
   }
   .fcuSolutionForFuturFooter {
     margin-top: 1rem;
-    @media (min-width: 992px) {
+    ${({ theme }) => theme.media.lg`
       margin-top: 3rem;
-    }
+    `}
   }
   .fcuSolutionForFuturListing {
     display: flex;
@@ -54,11 +54,11 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     margin-top: 1rem;
     gap: 32px;
     
-    @media (min-width: 992px) {
+    ${({ theme }) => theme.media.lg`
       margin-top: 3rem;
       justify-content: space-between;
       flex-direction: row;
-    }
+    `}
 
     p {
       font-size: 1.05rem;
@@ -67,10 +67,10 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     }
 
     & > div {
-      @media (min-width: 992px) {
+      ${({ theme }) => theme.media.lg`
         flex: 1;
         max-width: 29%;
-      }
+      `}
     }
   }
 
@@ -153,9 +153,9 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     b {
       color: #4550E5
     }
-    @media (min-width: 992px) {
+    ${({ theme }) => theme.media.lg`
       padding-left: 64px;
-    }
+    `}
 
     .button-with-margin {
       margin-right: 16px;
@@ -182,16 +182,16 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
 
     .presentation-rcu-tertiaire-cartridge {
       margin-bottom: 32px;
-      @media (min-width: 992px) {
+      ${({ theme }) => theme.media.lg`
         margin-bottom: 0;
         margin-right: 16px;
-      }
+      `}
     }
 
     .presentation-rcu-tertiaire-body {
-      @media (min-width: 992px) {
+      ${({ theme }) => theme.media.lg`
         margin-left: 16px;
-      }
+      `}
     }
 
     .presentation-rcu-tertiaire-cartridge,
@@ -208,9 +208,9 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     .presentation-rcu-tertiaire-cartridges {
       display: flex;
       gap: 16px;
-      @media (min-width: 992px) {
+      ${({ theme }) => theme.media.lg`
         gap: 32px;
-      }
+      `}
       justify-content: center;
       margin-bottom: 16px;
       b {

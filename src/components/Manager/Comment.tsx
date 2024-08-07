@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import debounce from '@utils/debounce';
 import { Demand } from 'src/types/Summary/Demand';
@@ -12,19 +12,30 @@ const Comment = ({
   demand: Demand;
   updateDemand: (demandId: string, demand: Partial<Demand>) => Promise<void>;
 }) => {
-  const onChangeHandler = useMemo(
+  const [value, setValue] = useState(demand.Commentaire);
+
+  const debouncedUpdateDemand = useMemo(
     () =>
       debounce(
-        (e) =>
+        (value: string) =>
           updateDemand(demand.id, {
-            Commentaire: e.target.value,
+            Commentaire: value,
           }),
         500
       ),
     [demand.id, updateDemand]
   );
 
-  useEffect(() => () => onChangeHandler.cancel(), [onChangeHandler]);
+  useEffect(() => () => debouncedUpdateDemand.cancel(), [debouncedUpdateDemand]);
+
+  const onChangeHandler = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      setValue(value);
+      debouncedUpdateDemand(value);
+    },
+    [debouncedUpdateDemand]
+  );
 
   return (
     <TextAreaInput
@@ -32,7 +43,7 @@ const Comment = ({
       size="sm"
       textArea={true}
       nativeTextAreaProps={{
-        value: demand.Commentaire,
+        value,
         onChange: onChangeHandler,
       }}
     />

@@ -5,20 +5,18 @@ type CirclePropsType = {
   bgColor?: string;
 };
 
-const breakpointDesktop = 992;
-
 export const Container = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 8px;
   grid-auto-rows: minmax(40px, auto);
 
-  @media (min-width: ${breakpointDesktop}px) {
+  ${({ theme }) => theme.media.lg`
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     justify-content: space-evenly;
-  }
+  `}
 `;
 
 export const Circle = styled.div.attrs<CirclePropsType>(({ children, color, bgColor }) => ({
@@ -48,9 +46,9 @@ export const CircleContent = styled.div<CirclePropsType>`
   justify-content: center;
   align-items: center;
 
-  @media (min-width: ${breakpointDesktop}px) {
+  ${({ theme }) => theme.media.lg`
     margin: 8px;
-  }
+  `}
 `;
 
 export const Value = styled.p`

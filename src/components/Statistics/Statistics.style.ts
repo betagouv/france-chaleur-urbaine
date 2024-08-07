@@ -17,14 +17,14 @@ export const StatisticsSliceContainer = styled.div`
 `;
 
 export const Column = styled.div`
-  @media (min-width: 768px) {
+  ${({ theme }) => theme.media.md`
     :nth-child(even) {
       padding-left: 1rem;
     }
     :nth-child(odd) {
       padding-right: 1rem;
     }
-  }
+  `}
 `;
 
 export const ColumnContainer = styled.div<{

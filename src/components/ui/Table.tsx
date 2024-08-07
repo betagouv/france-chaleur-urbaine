@@ -53,6 +53,11 @@ export const Table = <T extends GridValidRowModel>({
   return (
     <DataGrid
       style={{ width: '100%', ...style }}
+      onCellKeyDown={(params, event) => {
+        // permet de ne pas utiliser la navigation clavier de MUI, qui empêche notamment les espaces
+        // dans les champs Input
+        event.defaultMuiPrevented = true;
+      }}
       disableVirtualization
       columns={columns.map((column) => ({
         ...column,

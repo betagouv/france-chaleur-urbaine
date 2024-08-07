@@ -24,8 +24,7 @@ export const TableContainer = styled.div<{ small?: boolean }>`
     background-image: none;
     line-height: 0;
   }
-
-  @media (min-width: 768px) {
+  ${({ theme }) => theme.media.md`
     padding: 64px;
-  }
+  `}
 `;

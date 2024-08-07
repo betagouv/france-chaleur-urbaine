@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  @media (min-width: 768px) {
+  ${({ theme }) => theme.media.md`
     margin-left: 32px;
-  }
+  `}
 `;
 
 export const Title = styled.h1`

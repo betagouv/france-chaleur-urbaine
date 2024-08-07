@@ -20,13 +20,13 @@ export const Container = styled.div<{
     color: white;
   }
   padding: 16px;
-  ${({ withMargin }) =>
+  ${({ withMargin, theme }) =>
     withMargin &&
     `
   margin: 32px 0;
-  @media (min-width: 576px) {
+  ${theme.media.sm`
     margin: 32px 0 32px 64px;
-  }
+  `}
   `}
 `;
 

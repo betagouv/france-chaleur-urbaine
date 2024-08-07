@@ -216,6 +216,12 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
           href: '/contact',
         },
       },
+      {
+        text: 'Nos statistiques',
+        linkProps: {
+          href: '/stats',
+        },
+      },
     ],
   },
 ];

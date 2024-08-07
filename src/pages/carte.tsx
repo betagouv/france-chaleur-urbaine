@@ -13,10 +13,10 @@ const MapWrapper = styled.div`
   height: calc(100vh - ${tabHeaderHeight});
   height: calc(100dvh - ${tabHeaderHeight});
 
-  @media (min-width: 992px) {
+  ${({ theme }) => theme.media.lg`
     height: calc(100vh - ${fullscreenHeaderHeight});
     height: calc(100dvh - ${fullscreenHeaderHeight});
-  }
+  `}
 `;
 
 export const layerURLKeysToMapConfigPath = {
