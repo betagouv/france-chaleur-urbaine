@@ -3,7 +3,7 @@ import { ServerStyleSheet } from 'styled-components';
 
 import { augmentDocumentWithEmotionCache, dsfrDocumentApi } from './_app';
 
-const { getColorSchemeHtmlAttributes, augmentDocumentForDsfr } = dsfrDocumentApi;
+const { augmentDocumentForDsfr } = dsfrDocumentApi;
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -33,7 +33,7 @@ export default class MyDocument extends Document {
 
   render() {
     return (
-      <Html lang="fr" prefix="og: http://ogp.me/ns#" {...getColorSchemeHtmlAttributes(this.props)}>
+      <Html lang="fr" data-fr-scheme="light" prefix="og: http://ogp.me/ns#">
         <Head />
         <body>
           <Main />
