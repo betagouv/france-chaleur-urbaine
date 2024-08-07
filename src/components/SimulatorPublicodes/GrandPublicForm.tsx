@@ -22,10 +22,10 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
         }}
       />
       <RadioInput name="type de bâtiment" small orientation="horizontal" />
-      <Input name="degré jours unifié spécifique chaud" label="degré jours unifié spécifique chaud" />
-      <Input name="degré jours unifié spécifique froid" label="degré jours unifié spécifique froid" />
-      <Input name="température de référence chaud" label="température de référence chaud" />
-      <Input name="augmenter la température de chauffe" label="augmenter la température de chauffe" />
+      <Input name="degré jours unifié spécifique chaud" label="degré jours unifié spécifique chaud" iconId="fr-icon-temp-cold-fill" />
+      <Input name="degré jours unifié spécifique froid" label="degré jours unifié spécifique froid" iconId="fr-icon-temp-cold-fill" />
+      <Input name="température de référence chaud" label="température de référence chaud" iconId="fr-icon-temp-cold-fill" />
+      <Input name="augmenter la température de chauffe" label="augmenter la température de chauffe" iconId="fr-icon-temp-cold-fill" />
       {/* <Input
         name="taille"
         label="Quelle est votre taille (en cm) ?"
