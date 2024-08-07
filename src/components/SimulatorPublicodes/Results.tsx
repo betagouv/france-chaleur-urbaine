@@ -6,6 +6,14 @@ type SimulatorResultsProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className, engine, ...props }) => {
+  const [showRuleDetails, setShowRuleDetails] = React.useState<Record<string, boolean>>({});
+
+  const toggleRuleDetails = (key: string) => {
+    setShowRuleDetails((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
   const displayResult = (key: Parameters<typeof engine.getField>[0], calculated = true) => {
     const rule = engine.getRule(key);
     const value = engine.getField(key);
@@ -19,14 +27,23 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
         <pre style={{ display: 'inline-block' }}>{JSON.stringify(value, null, 2)}</pre>
       );
     return (
-      <div>
-        {calculated ? '🔄' : '✏️'} {key}
-        <strong>
-          : {result as any}
-          {rule.rawNode.unité ? ` ${rule.rawNode.unité}` : ''}
-        </strong>{' '}
-        <small>{valueType}</small>
-      </div>
+      <>
+        <div style={{ padding: '0.5rem' }}>
+          {calculated ? '🔄' : '✏️'} {key}:
+          <strong style={{ border: '1px solid', padding: '0 0.5rem', minWidth: '100px', display: 'inline-block' }}>
+            {result as any}
+            {rule.rawNode.unité ? ` ${rule.rawNode.unité}` : ''}
+          </strong>{' '}
+          <small style={{ display: 'inline-block', marginLeft: '1rem' }}>{valueType}</small>
+          <small
+            style={{ borderBottom: '1px dashed', cursor: 'pointer', display: 'inline-block', marginLeft: '1rem' }}
+            onClick={() => toggleRuleDetails(key)}
+          >
+            {showRuleDetails[key] ? 'Hide Rule' : 'Show Rule'}
+          </small>
+        </div>
+        {showRuleDetails[key] && <pre style={{ display: 'block', maxWidth: '500px' }}>{JSON.stringify(rule, null, 2)}</pre>}
+      </>
     );
   };
 
