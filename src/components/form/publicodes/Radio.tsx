@@ -5,6 +5,19 @@ import { usePublicodesFormContext } from './FormProvider';
 export type RadioButtonsProps = React.ComponentProps<typeof RadioButtons>;
 export type RadioOption = { value: string | number; label?: string };
 
+const getOptions = (engine: ReturnType<typeof usePublicodesFormContext>['engine'], name: string): string[] => {
+  const rule = engine.getRule(name);
+  if (rule.rawNode['une possibilité']) {
+    return (rule.rawNode as any)['une possibilité']['possibilités'].map((value: string) => value.replace(/^'+|'+$/g, '')) || [];
+  }
+
+  if (rule.rawNode['par défaut']) {
+    return getOptions(engine, (rule.rawNode as any)['par défaut']);
+  }
+
+  return [];
+};
+
 const RadioInput = ({
   name,
   label: legend,
@@ -15,9 +28,7 @@ const RadioInput = ({
 }) => {
   const { engine } = usePublicodesFormContext();
 
-  const options: string[] = (engine.getRule(name) as any).rawNode['une possibilité']['possibilités'].map((value: string) =>
-    value.replace(/^'+|'+$/g, '')
-  );
+  const options = getOptions(engine, name);
   const valueInEngine = engine.getField(name);
 
   return (
