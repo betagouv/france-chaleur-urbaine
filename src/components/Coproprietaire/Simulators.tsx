@@ -32,7 +32,7 @@ const Simulators = ({
             <WhiteArrowPuce>
               <Text>
                 Le coup de pouce <strong>«&nbsp;Chauffage des bâtiments résidentiels collectifs ettertiaires&nbsp;»</strong> permet
-                d’obtenir des aides financières conséquentes pour seraccorder.
+                d’obtenir des aides financières conséquentes pour se raccorder.
               </Text>
             </WhiteArrowPuce>
             <WhiteArrowPuce>
@@ -46,7 +46,7 @@ const Simulators = ({
             <WhiteArrowPuce>
               <Text>
                 Différentes entreprises signataires de la charte « Chauffage des bâtiments résidentiels collectifs et tertiaires » offrent
-                cette prime.{' '}
+                cette prime. <br />
                 <strong>
                   Le montant de la prime peut significativement varier d’une entreprise à l’autre, il est donc important de comparer les
                   offres proposées.

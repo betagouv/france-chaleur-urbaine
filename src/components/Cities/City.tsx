@@ -15,7 +15,7 @@ import citiesData from '@data/villes/villes';
 import { useServices } from 'src/services';
 import { Network } from 'src/types/Summary/Network';
 
-import { CityContainer, VideoGuideColumn, Subtitle } from './City.styles';
+import { CityContainer, VideoGuideColumn } from './City.styles';
 import ClassedNetworks from './ClassedNetworks';
 import Dispositifs, { DispositifsData } from './Dispositifs';
 import Header from './Header';
@@ -65,8 +65,8 @@ const City = ({ city }: { city: string }) => {
                   {cityData.nameNetwork}
                 </Text>
               </Heading>
-              <Box textColor="blue-france-113" mb="4w">
-                <Text>{cityData.description}</Text>
+              <Box mb="4w">
+                <Text legacyColor="darkblue">{cityData.description}</Text>
               </Box>
             </Box>
             {cityData.networksData && (
@@ -88,11 +88,15 @@ const City = ({ city }: { city: string }) => {
           <Box p="8w" className="fr-container">
             <ResponsiveRow>
               <VideoGuideColumn>
-                <Subtitle>Découvrez des témoignages sur le terrain</Subtitle>
+                <Heading as="h3" color="blue-france" size="h4">
+                  Découvrez des témoignages sur le terrain
+                </Heading>
                 <InterviewsVideos />
               </VideoGuideColumn>
               <VideoGuideColumn>
-                <Subtitle>Le guide complet sur le raccordement</Subtitle>
+                <Heading as="h3" color="blue-france" size="h4">
+                  Le guide complet sur le raccordement
+                </Heading>
                 <CoproGuide guideClassName="fr-mb-0" />
               </VideoGuideColumn>
             </ResponsiveRow>
@@ -129,7 +133,7 @@ const City = ({ city }: { city: string }) => {
               <Simulators
                 textTitle="Le coup de pouce « Chauffage des bâtiments résidentiels collectifs et tertiaires »"
                 simulatorTitle="Estimez le coup de pouce pour votre résidence"
-                simulatorResultColor="var(--blue-france-113)"
+                simulatorResultColor="var(--blue-france-sun-113-625)"
                 simulatorResultBackgroundColor="#F8D86E"
                 simulatorBackgroundColor="var(--blue-france-main-525)"
                 simulatorDisclaimerLegacyColor="white"
@@ -146,53 +150,11 @@ const City = ({ city }: { city: string }) => {
             )}
           </Box>
 
-          {/* <Slice
-            theme="grey"
-            padding={8}
-            header="## Les différentes étapes en copropriété :"
-          > */}
-          {/* 
-          <Slice theme="grey" padding={8} header="## Les différentes étapes en copropriété :">
-            {userExperience.map((props, i) => (
-              <WrappedText key={`user-experience-${i}`} textClassName="user-experience-description" center {...props} />
-            ))}
-          </Slice>
-            <Box p="8w" backgroundColor="#f9f8f6">
-              <ResponsiveRow className="fr-container">
-                <ClassedNetworks
-                  city={city}
-                  nameNetwork={cityData.nameNetwork}
-                  allClassed={cityData.networksData?.allClassed}
-                  isUniqueNetwork={isUniqueNetwork}
-                  hasDevelopmentPerimeter={
-                    cityData.networksData?.hasDevelopmentPerimeter
-                  }
-                />
-              </ResponsiveRow>
-            </Box> */}
           <Box p="8w" backgroundColor="#f9f8f6">
-            <Heading as="h2" center>
+            <Heading as="h2" color="blue-france" center>
               Les différentes étapes en copropriété :
             </Heading>
             <Box display="flex" flexDirection="column" className="fr-container">
-              {/*   <Box>
-              <CountPuce>{number}</CountPuce>
-                  <Text>
-                    Anne est copropriétaire d’un immeuble de 126&nbsp;logements répartis en 3 bâtiments.
-                    <br />
-                    La chaudière collective au gaz ayant 20&nbsp;ans le conseil syndical cherche un chauffage plus performant.
-                    <br />
-                    <strong>Elle vérifie sur France Chaleur Urbaine si la copropriété est raccordable.</strong>
-                  </Text>
-                  <Image>
-
-                  </Image>
-                </CountItem>
-              body: `::counter-item[01.]  
-
-    imgSrc: `/img/user-experience-1.png`,
-    imgAlt: `Portrait d’Anne`,
-              </Box> */}
               {userExperience.map((props, i) => (
                 <Box
                   key={`box-user-experience-${i}`}
@@ -202,7 +164,7 @@ const City = ({ city }: { city: string }) => {
                   justifyContent="space-between"
                   position="relative"
                 >
-                  <WrappedText key={`user-experience-${i}`} center {...props} />
+                  <WrappedText textClassName="user-experience-description" key={`user-experience-${i}`} center {...props} />
                 </Box>
               ))}
             </Box>
