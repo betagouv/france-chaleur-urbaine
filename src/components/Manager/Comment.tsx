@@ -37,12 +37,6 @@ const Comment = ({
     [debouncedUpdateDemand]
   );
 
-  useEffect(() => {
-    if (demand && value === '') {
-      setValue(demand[`Commentaire`]);
-    }
-  }, [demand, value]);
-
   return (
     <TextAreaInput
       label=""
