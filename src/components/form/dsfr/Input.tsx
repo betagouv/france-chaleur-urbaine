@@ -14,7 +14,16 @@ const Input = forwardRef<HTMLDivElement, InputProps>(({ label, size, ...props },
       ref={ref}
       // @ts-expect-error don't manage to make typescript infer correctly
       $size={size}
-      label={label ? `${label}${optional ? ' (Optionnel)' : ''}` : label}
+      label={
+        label ? (
+          <>
+            {label}
+            {optional ? <small> (Optionnel)</small> : ''}
+          </>
+        ) : (
+          label
+        )
+      }
       {...props}
     />
   );

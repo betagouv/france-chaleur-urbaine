@@ -9,6 +9,7 @@ const Input = ({
   name,
   textArea,
   nativeInputProps,
+  label,
   ...props
 }: DSFRInputProps &
   Omit<DSFRInputProps, 'nativeTextAreaProps'> & {
@@ -18,12 +19,19 @@ const Input = ({
   const { engine } = usePublicodesFormContext();
   // const [value, setValue] = React.useState(engine.getField(name) as string | number);
   const value = engine.getField(name) as string | number;
+  const unit = engine.getUnit(name);
   const [canBeEmpty] = React.useState(engine.getField(name) === null || engine.getField(name) === undefined);
   const [isEmpty, setIsEmpty] = React.useState(canBeEmpty);
 
   return (
     <DSFRInput
       textArea={false}
+      label={
+        <>
+          {label}
+          {unit ? <small> ({unit})</small> : ''}
+        </>
+      }
       nativeInputProps={{
         ...nativeInputProps,
         value: isEmpty ? '' : value,
