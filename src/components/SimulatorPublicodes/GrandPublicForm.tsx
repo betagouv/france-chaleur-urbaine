@@ -34,7 +34,7 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
         label="nombre de logement dans l'immeuble concerné"
         nativeInputProps={{
           inputMode: 'numeric',
-          pattern: '[0-9]{5}',
+          maxLength: 5, // a l'air de ne pas fonctionner
           type: 'number',
         }}
       />
