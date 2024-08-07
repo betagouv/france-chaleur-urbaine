@@ -27,15 +27,25 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
 
     if (result === null || result === undefined) {
       console.warn(`${key} cannot be evaluated`);
-      return '';
+      return null;
     }
-    return `${result}`;
+    return result;
+  };
+
+  const getStringField = (key: DottedName) => {
+    return `${getField(key) ?? ''}`;
+  };
+
+  const getNumberField = (key: DottedName): number => {
+    return (getField(key) as number) ?? 0;
   };
 
   const getParsedRule = (key: DottedName) => parsedRules[key as string];
 
   return {
     getField,
+    getStringField,
+    getNumberField,
     getRule: getParsedRule,
     setField,
     setStringField,
