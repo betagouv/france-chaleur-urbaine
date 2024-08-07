@@ -51,6 +51,9 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
       {displayResult('contenu CO2 réseau de froid')}
       <h2 className="fr-mt-2w fr-mb-0">Besoins et choix du bâtiment</h2>
       {displayResult("nombre de logement dans l'immeuble concerné", false)}
+      {displayResult('surface logement type tertiaire', false)}
+      {displayResult("Nombre d'habitants moyen par appartement", false)}
+      {displayResult('Production eau chaude sanitaire', false)}
       <h2 className="fr-mt-2w fr-mb-0">Autre</h2>
     </div>
   );

@@ -38,6 +38,26 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
           type: 'number',
         }}
       />
+      <Input
+        name="surface logement type tertiaire"
+        label="surface logement type tertiaire"
+        nativeInputProps={{
+          inputMode: 'numeric',
+          maxLength: 6, // a l'air de ne pas fonctionner
+          type: 'number',
+        }}
+      />
+      <Input
+        name="Nombre d'habitants moyen par appartement"
+        label="Nombre d'habitants moyen par appartement"
+        nativeInputProps={{
+          inputMode: 'numeric',
+          maxLength: 2, // a l'air de ne pas fonctionner
+          type: 'number',
+        }}
+      />
+      <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
+
       {/* <Input
         name="taille"
         label="Quelle est votre taille (en cm) ?"
