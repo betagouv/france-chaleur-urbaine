@@ -71,6 +71,17 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
         }}
       />
       <Select name="Température émetteurs" label="Température émetteurs" />
+      <Select
+        name="méthode de calcul pour les besoins en chauffage et refroidissement"
+        label="méthode de calcul pour les besoins en chauffage et refroidissement"
+        hintText="ne fonctionne pas pour le moment"
+      />
+      {engine.getField('type de bâtiment') === 'résidentiel' && <Select name="méthode résidentiel" label="méthode résidentiel" />}
+      {engine.getField('type de bâtiment') === 'tertiaire' && <Select name="méthode tertiaire" label="méthode tertiaire" />}
+      {engine.getField('méthode de calcul pour les besoins en chauffage et refroidissement') === 'DPE' && <Select name="DPE" label="DPE" />}
+      {engine.getField('méthode de calcul pour les besoins en chauffage et refroidissement') === 'Normes thermiques et âge du bâtiment' && (
+        <Select name="normes thermiques et âge du bâtiment" label="normes thermiques et âge du bâtiment" />
+      )}
 
       {/* <Input
         name="taille"
