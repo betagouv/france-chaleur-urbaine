@@ -119,6 +119,14 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
       {displayResult('Part de la surface à climatiser', false)}
       {displayResult('Température émetteurs', false)}
       {displayResult('Température émetteurs delta')}
+      <h2 className="fr-mt-2w fr-mb-0">Besoins calculés</h2>
+      {displayResult('méthode de calcul pour les besoins en chauffage et refroidissement', false)}
+      {displayResult('méthode résidentiel', false)}
+      {displayResult('méthode tertiaire', false)}
+      {displayResult('DPE', false)}
+      {displayResult('normes thermiques et âge du bâtiment', false)}
+      {displayResult('consommation spécifique chauffage')}
+      {displayResult('besoins chauffage par appartement')}
     </div>
   );
 };
