@@ -18,7 +18,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
       <Accordion label="Généraux">
         <AddressAutocomplete
           label="Adresse"
-          onSelect={(address) => {
+          onSelect={async (address) => {
             // TODO engine.setField('commune', address.properties.postcode);
 
             engine.setStringField('code département', address.properties.context.split(', ')[0]);
