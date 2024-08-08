@@ -10,6 +10,7 @@ type DefaultOption = Record<string, any>;
 export type AutocompleteProps<Option extends DefaultOption> = Omit<React.ComponentProps<typeof Combobox>, 'children' | 'onSelect'> & {
   fetchFn: (query: string) => Promise<Option[]>;
   debounceTime?: number;
+  minCharThreshold?: number;
   onSelect: (option: Option) => void;
   onClear?: () => void;
   nativeInputProps?: Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'>;
@@ -21,6 +22,7 @@ const Autocomplete = <Option extends DefaultOption>({
   fetchFn,
   nativeInputProps,
   debounceTime = 300,
+  minCharThreshold = 0,
   getOptionLabel,
   getOptionValue,
   onSelect,
@@ -49,7 +51,7 @@ const Autocomplete = <Option extends DefaultOption>({
   );
 
   useEffect(() => {
-    if (inputValue) {
+    if (inputValue?.length >= minCharThreshold) {
       debouncedFetch(inputValue);
     } else {
       setOptions([]);
