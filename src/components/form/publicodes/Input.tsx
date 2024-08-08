@@ -1,3 +1,4 @@
+import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import React from 'react';
 
 import { upperCaseFirstChar } from '@utils/strings';
@@ -16,7 +17,7 @@ const Input = ({
 }: DSFRInputProps &
   Omit<DSFRInputProps, 'nativeTextAreaProps'> & {
     textArea?: false;
-    name: string;
+    name: DottedName;
     label: string;
   }) => {
   const { engine } = usePublicodesFormContext();
