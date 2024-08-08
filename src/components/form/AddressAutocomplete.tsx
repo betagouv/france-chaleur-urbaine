@@ -17,6 +17,7 @@ const AddressAutocomplete = ({ nativeInputProps, onSelect, onClear, ...props }: 
 
   return (
     <Autocomplete
+      minCharThreshold={3} // API BAN
       fetchFn={fetchOptions}
       onSelect={(address) => {
         // setAddress(address);
