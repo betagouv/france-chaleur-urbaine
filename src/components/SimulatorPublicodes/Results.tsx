@@ -2,6 +2,7 @@ import React from 'react';
 import { JsonView } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 
+import Graph from './Graph';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type SimulatorResultsProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -94,6 +95,7 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
   return (
     <div className={className} {...props}>
       Ici, on retrouve les résultats
+      <Graph engine={engine} />
       <h2 className="fr-mt-2w fr-mb-0">Paramètres généraux</h2>
       {displayResult('mode affichage', false)}
       {displayResult('type de bâtiment', false)}

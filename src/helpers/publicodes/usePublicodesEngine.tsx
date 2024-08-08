@@ -63,9 +63,13 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
 
     if (result === null || result === undefined) {
       console.warn(`${key} cannot be evaluated`);
-      return '';
+      return result;
     }
     return result;
+  };
+
+  const getFieldAsNumber = (key: DottedName) => {
+    return (getField(key) as number) || 0;
   };
 
   const getUnit = (key: DottedName) => {
@@ -83,6 +87,7 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
     setStringField,
     getNode,
     getUnit,
+    getFieldAsNumber,
   };
 };
 
