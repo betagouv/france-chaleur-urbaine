@@ -13,6 +13,8 @@ type GrandPublicFormProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, engine, ...props }) => {
+  const typeBatiment = engine.getField('type de bâtiment');
+
   return (
     <div {...props}>
       <h2>Paramètres techniques</h2>
@@ -37,16 +39,17 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
       <Accordion label="Besoins et choix du bâtiment">
         <Accordion label="Choix du bâtiment">
           <RadioInput name="type de bâtiment" small orientation="horizontal" />
-
-          <Input
-            name="nombre de logement dans l'immeuble concerné"
-            label="nombre de logement dans l'immeuble concerné"
-            nativeInputProps={{
-              inputMode: 'numeric',
-              maxLength: 5, // a l'air de ne pas fonctionner
-              type: 'number',
-            }}
-          />
+          {typeBatiment === 'résidentiel' && (
+            <Input
+              name="nombre de logement dans l'immeuble concerné"
+              label="nombre de logement dans l'immeuble concerné"
+              nativeInputProps={{
+                inputMode: 'numeric',
+                maxLength: 5, // a l'air de ne pas fonctionner
+                type: 'number',
+              }}
+            />
+          )}
           <Input
             name="surface logement type tertiaire"
             label="surface logement type tertiaire"
@@ -56,15 +59,17 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
               type: 'number',
             }}
           />
-          <Input
-            name="Nombre d'habitants moyen par appartement"
-            label="Nombre d'habitants moyen par appartement"
-            nativeInputProps={{
-              inputMode: 'numeric',
-              maxLength: 2, // a l'air de ne pas fonctionner
-              type: 'number',
-            }}
-          />
+          {typeBatiment === 'résidentiel' && (
+            <Input
+              name="Nombre d'habitants moyen par appartement"
+              label="Nombre d'habitants moyen par appartement"
+              nativeInputProps={{
+                inputMode: 'numeric',
+                maxLength: 2, // a l'air de ne pas fonctionner
+                type: 'number',
+              }}
+            />
+          )}
           <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
           <Select name="type de production ECS" label="type de production ECS" />
           <Input
@@ -87,14 +92,14 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
             label="méthode de calcul pour les besoins en chauffage et refroidissement"
             hintText="ne fonctionne pas pour le moment"
           />
-          {engine.getField('type de bâtiment') === 'résidentiel' && (
+          {typeBatiment === 'résidentiel' && (
             <Select
               name="méthode résidentiel"
               label="méthode de calcul pour les besoins en chauffage et refroidissement"
               hintText="méthode résidentiel"
             />
           )}
-          {engine.getField('type de bâtiment') === 'tertiaire' && (
+          {typeBatiment === 'tertiaire' && (
             <Select
               name="méthode tertiaire"
               label="méthode de calcul pour les besoins en chauffage et refroidissement"
