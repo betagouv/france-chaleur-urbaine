@@ -12,17 +12,17 @@ type Unit = {
 
 const formatUnit = ({ numerators, denominators }: Unit): string => {
   const superscript = ['\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u2076', '\u2077', '\u2078', '\u2079'];
-  const format = (arr: string[]): string => {
+  const format = (arr: string[], delimiter: string = ''): string => {
     const count: Record<string, number> = arr.reduce((acc: Record<string, number>, curr: string) => {
       acc[curr] = (acc[curr] || 0) + 1;
       return acc;
     }, {});
     return Object.entries(count)
       .map(([key, value]) => key + (value > 1 ? superscript[value] : ''))
-      .join('');
+      .join(delimiter);
   };
   const nums = format(numerators);
-  const dens = format(denominators);
+  const dens = format(denominators, ' / ');
   return nums + (dens ? ' / ' + dens : '');
 };
 

@@ -19,7 +19,7 @@ const Select = ({
 }) => {
   const { engine } = usePublicodesFormContext();
 
-  const options: string[] = (engine.getRule(name) as any).rawNode['une possibilité']['possibilités'].map((value: string) =>
+  const options: string[] = ((engine.getRule(name) as any).rawNode['une possibilité']?.['possibilités'] || []).map((value: string) =>
     value.replace(/^'+|'+$/g, '')
   );
   const value = engine.getField(name);
