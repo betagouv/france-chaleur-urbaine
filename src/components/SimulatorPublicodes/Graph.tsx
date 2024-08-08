@@ -61,26 +61,23 @@ const typesInstallation = [
 ] as const;
 
 const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
-  const emissionsCO2GraphData = React.useMemo(
-    () => [
-      [
-        'Mode de chauffage',
-        'Scope 1 : Besoin de chauffage',
-        'Scope 2 : Auxiliaires et combustible électrique',
-        'Scope 3 : Émissions indirectes',
-      ],
-      ...typesInstallation.map((typeInstallation) => [
-        typeInstallation,
-        engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . besoins de chauffage`) +
-          engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . besoins d'ECS`),
-        engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . auxiliaires et combustible électrique`) +
-          engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . ECS solaire thermique`) +
-          engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . ECS avec ballon électrique`),
-        engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . Scope 3`),
-      ]),
+  const emissionsCO2GraphData = [
+    [
+      'Mode de chauffage',
+      'Scope 1 : Besoin de chauffage',
+      'Scope 2 : Auxiliaires et combustible électrique',
+      'Scope 3 : Émissions indirectes',
     ],
-    []
-  );
+    ...typesInstallation.map((typeInstallation) => [
+      typeInstallation,
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . besoins de chauffage`) +
+        engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . besoins d'ECS`),
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . auxiliaires et combustible électrique`) +
+        engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . ECS solaire thermique`) +
+        engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . ECS avec ballon électrique`),
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . Scope 3`),
+    ]),
+  ];
 
   return (
     <div className={cx('', className)} {...props}>
