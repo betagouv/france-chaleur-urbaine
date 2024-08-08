@@ -9,22 +9,6 @@ type DebugProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
 };
 
-// const coutGraphOptions: ComponentProps<typeof Chart>['options'] = {
-//   title: 'Décomposition du coût global chauffage & ECS',
-//   chartArea: { width: '50%' },
-//   isStacked: true,
-//   colors: ['#FF5655', '#0063CB', '#27A658'],
-//   legend: { position: 'top' },
-//   hAxis: {
-//     title: 'Coût €TCC/logement par an',
-//     minValue: 0,
-//     format: '# €',
-//   },
-//   vAxis: {
-//     title: 'Mode de chauffage',
-//   },
-// };
-
 const Debug: React.FC<DebugProps> = ({ engine, className, ...props }) => {
   const [showRuleDetails, setShowRuleDetails] = React.useState<Record<string, boolean>>({});
 
