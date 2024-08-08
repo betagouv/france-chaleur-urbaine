@@ -92,6 +92,7 @@
     "react-dom": "^18.2.0",
     "react-google-charts": "^4.0.1",
     "react-hook-form": "^7.52.1",
+    "react-json-view-lite": "^1.4.0",
     "react-loader-spinner": "^6.1.0",
     "react-map-gl": "^7.1.6",
     "rehype": "^12.0.1",
