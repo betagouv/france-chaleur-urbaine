@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { upperCaseFirstChar } from '@utils/strings';
+
 import DSFRInput from '../dsfr/Input';
 import { usePublicodesFormContext } from '../publicodes/FormProvider';
 
@@ -15,6 +17,7 @@ const Input = ({
   Omit<DSFRInputProps, 'nativeTextAreaProps'> & {
     textArea?: false;
     name: string;
+    label: string;
   }) => {
   const { engine } = usePublicodesFormContext();
   // const [value, setValue] = React.useState(engine.getField(name) as string | number);
@@ -28,7 +31,7 @@ const Input = ({
       textArea={false}
       label={
         <>
-          {label}
+          {upperCaseFirstChar(label)}
           {unit ? <small> ({unit})</small> : ''}
         </>
       }
