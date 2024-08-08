@@ -20,6 +20,8 @@ const Simulator = ({
   backgroundColor,
   formBackgroundColor,
   disclaimerLegacyColor,
+  resultColor,
+  resultBackgroundColor,
 }: {
   cartridge?: boolean;
   withMargin?: boolean;
@@ -30,6 +32,8 @@ const Simulator = ({
   backgroundColor?: string;
   formBackgroundColor?: string;
   disclaimerLegacyColor?: LegacyColor;
+  resultColor?: string;
+  resultBackgroundColor?: string;
 }) => {
   const [structure, setStructure] = useState(defaultStructure || 'Résidentiel');
   const [value, setValue] = useState('');
@@ -85,7 +89,7 @@ const Simulator = ({
           />
         </Inputs>
         <div>
-          <Result cartridge={cartridge} className="simulator-result">
+          <Result cartridge={cartridge} className="simulator-result" color={resultColor} backgroundColor={resultBackgroundColor}>
             <ResultValue>
               {help.toLocaleString('fr-FR', {
                 style: 'currency',
