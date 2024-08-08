@@ -18,6 +18,11 @@ const getOptions = (engine: ReturnType<typeof usePublicodesFormContext>['engine'
   return [];
 };
 
+// Convertit les booléen de nodeValue en oui ou non pour correspondre au formulaire.
+const fixupBooleanEngineValue = (value: any): any => {
+  return typeof value === 'boolean' ? (value ? 'oui' : 'non') : value;
+};
+
 const RadioInput = ({
   name,
   label: legend,
@@ -29,7 +34,7 @@ const RadioInput = ({
   const { engine } = usePublicodesFormContext();
 
   const options = getOptions(engine, name);
-  const valueInEngine = engine.getField(name);
+  const valueInEngine = fixupBooleanEngineValue(engine.getField(name));
 
   return (
     <RadioButtons
@@ -41,7 +46,12 @@ const RadioInput = ({
           value: optionValue,
           onChange: (e) => {
             e.stopPropagation();
-            engine.setStringField(name, e.target.value);
+            const value = e.target.value;
+            if (['oui', 'non'].includes(value)) {
+              engine.setField(name, value);
+            } else {
+              engine.setStringField(name, value);
+            }
           },
         },
       }))}
