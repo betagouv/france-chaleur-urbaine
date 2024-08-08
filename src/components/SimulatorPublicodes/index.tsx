@@ -13,8 +13,8 @@ import cx from '@utils/cx';
 import GrandPublicForm from './GrandPublicForm';
 import PublicodesSimulatorResults from './Results';
 import { FloatingButton, Results, Section, Simulator } from './SimulatorPublicodes.style';
-import TechnicienBatimentForm from './TechnicienBatimentForm';
-import TechnicienModesForm from './TechnicienModesForm';
+import TechnicienParametresEconomiques from './TechnicienParametresEconomiques';
+import TechnicienParametresTechniques from './TechnicienParametresTechniques';
 import useSimulatorEngine from './useSimulatorEngine';
 
 type PublicodesSimulatorProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -28,7 +28,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, cla
   const [open, setOpen] = React.useState(false);
   const engineDisplayMode = engine.getField('mode affichage');
   const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: engineDisplayMode as string });
-  const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: 'batiment' });
+  const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: 'techniques' });
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
@@ -76,21 +76,31 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, cla
                 <Tabs
                   selectedTabId={selectedTabId}
                   tabs={[
-                    { tabId: 'batiment', label: <small>Bâtiment</small> },
                     {
-                      tabId: 'modes',
+                      tabId: 'techniques',
                       label: (
                         <small>
-                          Modes de chauffage
-                          <br /> et de refroidissement
+                          Paramètres
+                          <br />
+                          techniques
+                        </small>
+                      ),
+                    },
+                    {
+                      tabId: 'economiques',
+                      label: (
+                        <small>
+                          Paramètres
+                          <br />
+                          économiques
                         </small>
                       ),
                     },
                   ]}
                   onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}
                 >
-                  {selectedTabId === 'batiment' && <TechnicienBatimentForm engine={engine} />}
-                  {selectedTabId === 'modes' && <TechnicienModesForm engine={engine} />}
+                  {selectedTabId === 'techniques' && <TechnicienParametresTechniques engine={engine} />}
+                  {selectedTabId === 'economiques' && <TechnicienParametresEconomiques engine={engine} />}
                 </Tabs>
               )}
             </div>
