@@ -41,23 +41,74 @@ const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = 
 };
 
 const typesInstallation = [
-  'Réseaux de chaleur x Collectif',
-  'Réseaux de froid x Collectif',
-  'Poêle à granulés indiv x Individuel',
-  'Chaudière à granulés coll x Collectif',
-  'Gaz indiv avec cond x Individuel',
-  'Gaz indiv sans cond x Individuel',
-  'Gaz coll avec cond x Collectif',
-  'Gaz coll sans cond x Collectif',
-  'Fioul indiv x Individuel',
-  'Fioul coll x Collectif',
-  'PAC air-air x Individuel',
-  'PAC air-air x Collectif',
-  'PAC eau-eau x Individuel',
-  'PAC eau-eau x Collectif',
-  'PAC air-eau x Individuel',
-  'PAC air-eau x Collectif',
-  'Radiateur électrique x Individuel',
+  {
+    label: 'Réseaux de chaleur',
+    publicodesKey: 'Réseaux de chaleur x Collectif',
+  },
+  {
+    label: 'Réseaux de froid',
+    publicodesKey: 'Réseaux de froid x Collectif',
+  },
+  {
+    label: 'Poêle à granulés indiv',
+    publicodesKey: 'Poêle à granulés indiv x Individuel',
+  },
+  {
+    label: 'Chaudière à granulés coll',
+    publicodesKey: 'Chaudière à granulés coll x Collectif',
+  },
+  {
+    label: 'Gaz indiv avec cond',
+    publicodesKey: 'Gaz indiv avec cond x Individuel',
+  },
+  {
+    label: 'Gaz indiv sans cond',
+    publicodesKey: 'Gaz indiv sans cond x Individuel',
+  },
+  {
+    label: 'Gaz coll avec cond',
+    publicodesKey: 'Gaz coll avec cond x Collectif',
+  },
+  {
+    label: 'Gaz coll sans cond',
+    publicodesKey: 'Gaz coll sans cond x Collectif',
+  },
+  {
+    label: 'Fioul indiv',
+    publicodesKey: 'Fioul indiv x Individuel',
+  },
+  {
+    label: 'Fioul coll',
+    publicodesKey: 'Fioul coll x Collectif',
+  },
+  {
+    label: 'PAC air-air indiv',
+    publicodesKey: 'PAC air-air x Individuel',
+  },
+  {
+    label: 'PAC air-air coll / tertiaire',
+    publicodesKey: 'PAC air-air x Collectif',
+  },
+  {
+    label: 'PAC eau-eau indiv',
+    publicodesKey: 'PAC eau-eau x Individuel',
+  },
+  {
+    label: 'PAC eau-eau coll / tertiaire',
+    publicodesKey: 'PAC eau-eau x Collectif',
+  },
+  {
+    label: 'PAC air-eau indiv',
+    publicodesKey: 'PAC air-eau x Individuel',
+  },
+  {
+    label: 'PAC air-eau coll / tertiaire',
+    publicodesKey: 'PAC air-eau x Collectif',
+  },
+  {
+    label: 'Radiateur électrique',
+    publicodesKey: 'Radiateur électrique x Individuel',
+  },
 ] as const;
 
 const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
@@ -69,20 +120,20 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
       'Scope 3 : Émissions indirectes',
     ],
     ...typesInstallation.map((typeInstallation) => [
-      typeInstallation,
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . besoins de chauffage`) +
-        engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . besoins d'ECS`),
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . auxiliaires et combustible électrique`) +
-        engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . ECS solaire thermique`) +
-        engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . ECS avec ballon électrique`),
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation} . Scope 3`),
+      typeInstallation.label,
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . besoins de chauffage`) +
+        engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . besoins d'ECS`),
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . auxiliaires et combustible électrique`) +
+        engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . ECS solaire thermique`) +
+        engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . ECS avec ballon électrique`),
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . Scope 3`),
     ]),
   ];
 
   return (
-    <div className={cx('', className)} {...props}>
+    <div className={cx(className)} {...props}>
       <Chart
-        height="400px"
+        height="600px"
         width="100%"
         chartType="BarChart"
         chartLanguage="FR-fr"
