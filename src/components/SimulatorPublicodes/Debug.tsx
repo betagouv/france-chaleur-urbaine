@@ -42,7 +42,7 @@ const Debug: React.FC<DebugProps> = ({ engine, className, ...props }) => {
     const valueType = typeof value;
     const result =
       valueType === 'number' ? (
-        value.toLocaleString('en')
+        value?.toLocaleString('fr-FR')
       ) : valueType === 'string' ? (
         value
       ) : (
