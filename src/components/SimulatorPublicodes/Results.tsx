@@ -1,6 +1,9 @@
 import React from 'react';
+import { JsonView } from 'react-json-view-lite';
+import 'react-json-view-lite/dist/index.css';
 
 import { type SimulatorEngine } from './useSimulatorEngine';
+
 type SimulatorResultsProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
 };
@@ -67,7 +70,7 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
                 fontSize: '10px',
               }}
             >
-              Node {JSON.stringify(node, null, 2)}
+              Node <JsonView data={node} />
             </pre>
             <pre
               style={{
@@ -80,7 +83,7 @@ const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className
               }}
             >
               Rule
-              {JSON.stringify(rule, null, 2)}
+              <JsonView data={rule} />
             </pre>
           </>
         )}
