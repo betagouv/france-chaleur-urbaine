@@ -32,6 +32,7 @@ const Input = ({
           {unit ? <small> ({unit})</small> : ''}
         </>
       }
+      hideOptionalLabel
       nativeInputProps={{
         ...nativeInputProps,
         value: isEmpty ? '' : value,

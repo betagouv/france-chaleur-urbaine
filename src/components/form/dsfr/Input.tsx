@@ -4,10 +4,11 @@ import { Input as StyledDSFRInput, type InputSize } from './Input.styles';
 
 export type InputProps = React.ComponentProps<typeof StyledDSFRInput> & {
   size?: InputSize;
+  hideOptionalLabel?: boolean;
 };
 
-const Input = forwardRef<HTMLDivElement, InputProps>(({ label, size, ...props }, ref) => {
-  const optional = !props?.nativeInputProps?.required && !props?.nativeTextAreaProps?.required;
+const Input = forwardRef<HTMLDivElement, InputProps>(({ label, size, hideOptionalLabel, ...props }, ref) => {
+  const optional = !hideOptionalLabel && !props?.nativeInputProps?.required && !props?.nativeTextAreaProps?.required;
 
   return (
     <StyledDSFRInput
