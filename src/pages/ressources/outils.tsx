@@ -107,6 +107,19 @@ const OutilsPage = () => {
         </Link>
 
         <Heading size="h3" color="blue-france" mb="0" mt="8w">
+          Simulateur de prix et d'émissions de CO2
+        </Heading>
+        <Box display="flex" my="2w">
+          <FCUArrowIcon />
+          <Text size="lg" ml="1w">
+            Comparer les différents modes de chauffage.
+          </Text>
+        </Box>
+        <Link variant="secondary" href="/simulateur">
+          Accéder
+        </Link>
+
+        <Heading size="h3" color="blue-france" mb="0" mt="8w">
           Simulateur de CO2
         </Heading>
         <Box display="flex" my="2w">
