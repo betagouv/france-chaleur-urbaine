@@ -189,46 +189,46 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           <Input name="ratios . GAZ COLL SCOND Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
           <Input name="ratios . GAZ COLL SCOND Durée de vie" label="Durée de vie" />
         </Accordion>
-        <Accordion label="Fioul">
-          <Accordion label="Fioul indiv">
-            <Input name="ratios . FIOUL IND Rendement chaudière" label="Rendement chaudière" />
-            <Input name="ratios . FIOUL IND Conso combustible" label="Conso combustible" />
-            <Input name="ratios . FIOUL IND Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
-            <Input name="ratios . FIOUL IND Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
-            <Input name="ratios . FIOUL IND Durée de vie" label="Durée de vie" />
-          </Accordion>
-          <Accordion label="Fioul coll">
-            <Input name="ratios . FIOUL COLL Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
-            <Input name="ratios . FIOUL COLL Rendement chaudière ECS" label="Rendement chaudière ECS" />
-            <Input name="ratios . FIOUL COLL Conso combustible" label="Conso combustible" />
-            <Input name="ratios . FIOUL COLL Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
-            <Input name="ratios . FIOUL COLL Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
-            <Input name="ratios . FIOUL COLL Durée de vie" label="Durée de vie" />
-          </Accordion>
+      </Accordion>
+      <Accordion label="Fioul">
+        <Accordion label="Fioul indiv">
+          <Input name="ratios . FIOUL IND Rendement chaudière" label="Rendement chaudière" />
+          <Input name="ratios . FIOUL IND Conso combustible" label="Conso combustible" />
+          <Input name="ratios . FIOUL IND Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
+          <Input name="ratios . FIOUL IND Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
+          <Input name="ratios . FIOUL IND Durée de vie" label="Durée de vie" />
         </Accordion>
-        <Accordion label="Pompe à chaleur">
-          <Accordion label="PAC air/air réversible">
-            <Input name="ratios . PAC AIR AIR SCOP indiv" label="SCOP indiv" />
-            <Input name="ratios . PAC AIR AIR SCOP coll" label="SCOP coll" />
-            <Input name="ratios . PAC AIR AIR SEER indiv" label="SEER indiv" />
-            <Input name="ratios . PAC AIR AIR SEER coll" label="SEER coll" />
-            <Input name="ratios . PAC AIR AIR Durée de vie indiv" label="Durée de vie indiv" />
-            <Input name="ratios . PAC AIR AIR Durée de vie coll" label="Durée de vie coll" />
-          </Accordion>
-          <Accordion label="PAC eau/eau">
-            <Input name="ratios . PAC EAU EAU SCOP indiv capteurs horizontaux" label="SCOP indiv capteurs horizontaux" />
-            <Input name="ratios . PAC EAU EAU SCOP coll champ de sondes" label="SCOP coll champ de sondes" />
-            <Input name="ratios . PAC EAU EAU Durée de vie" label="Durée de vie" />
-            <Input name="ratios . PAC EAU EAU Durée de vie puits géothermiques" label="Durée de vie puits géothermiques" />
-          </Accordion>
-          <Accordion label="PAC air/eau réversible">
-            <Input name="ratios . PAC AIR EAU SCOP indiv" label="SCOP indiv" />
-            <Input name="ratios . PAC AIR EAU SCOP coll" label="SCOP coll" />
-            <Input name="ratios . PAC AIR EAU SEER indiv" label="SEER indiv" />
-            <Input name="ratios . PAC AIR EAU SEER coll" label="SEER coll" />
-            <Input name="ratios . PAC AIR EAU Durée de vie indiv" label="Durée de vie indiv" />
-            <Input name="ratios . PAC AIR EAU Durée de vie coll" label="Durée de vie coll" />
-          </Accordion>
+        <Accordion label="Fioul coll">
+          <Input name="ratios . FIOUL COLL Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
+          <Input name="ratios . FIOUL COLL Rendement chaudière ECS" label="Rendement chaudière ECS" />
+          <Input name="ratios . FIOUL COLL Conso combustible" label="Conso combustible" />
+          <Input name="ratios . FIOUL COLL Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
+          <Input name="ratios . FIOUL COLL Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
+          <Input name="ratios . FIOUL COLL Durée de vie" label="Durée de vie" />
+        </Accordion>
+      </Accordion>
+      <Accordion label="Pompe à chaleur">
+        <Accordion label="PAC air/air réversible">
+          <Input name="ratios . PAC AIR AIR SCOP indiv" label="SCOP indiv" />
+          <Input name="ratios . PAC AIR AIR SCOP coll" label="SCOP coll" />
+          <Input name="ratios . PAC AIR AIR SEER indiv" label="SEER indiv" />
+          <Input name="ratios . PAC AIR AIR SEER coll" label="SEER coll" />
+          <Input name="ratios . PAC AIR AIR Durée de vie indiv" label="Durée de vie indiv" />
+          <Input name="ratios . PAC AIR AIR Durée de vie coll" label="Durée de vie coll" />
+        </Accordion>
+        <Accordion label="PAC eau/eau">
+          <Input name="ratios . PAC EAU EAU SCOP indiv capteurs horizontaux" label="SCOP indiv capteurs horizontaux" />
+          <Input name="ratios . PAC EAU EAU SCOP coll champ de sondes" label="SCOP coll champ de sondes" />
+          <Input name="ratios . PAC EAU EAU Durée de vie" label="Durée de vie" />
+          <Input name="ratios . PAC EAU EAU Durée de vie puits géothermiques" label="Durée de vie puits géothermiques" />
+        </Accordion>
+        <Accordion label="PAC air/eau réversible">
+          <Input name="ratios . PAC AIR EAU SCOP indiv" label="SCOP indiv" />
+          <Input name="ratios . PAC AIR EAU SCOP coll" label="SCOP coll" />
+          <Input name="ratios . PAC AIR EAU SEER indiv" label="SEER indiv" />
+          <Input name="ratios . PAC AIR EAU SEER coll" label="SEER coll" />
+          <Input name="ratios . PAC AIR EAU Durée de vie indiv" label="Durée de vie indiv" />
+          <Input name="ratios . PAC AIR EAU Durée de vie coll" label="Durée de vie coll" />
         </Accordion>
       </Accordion>
       <Accordion label="Radiateur électrique indiv">
