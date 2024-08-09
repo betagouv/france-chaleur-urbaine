@@ -44,7 +44,7 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
     setField(key, value === '' ? null : `'${value}'`);
   };
 
-  if (typeof window !== 'undefined' && !(window as any).engine) {
+  if (typeof window !== 'undefined') {
     (window as any).engine = engine;
   }
 
