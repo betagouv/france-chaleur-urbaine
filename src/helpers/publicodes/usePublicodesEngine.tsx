@@ -26,7 +26,7 @@ const formatUnit = ({ numerators, denominators }: Unit): string => {
   return nums + (dens ? ' / ' + dens : '');
 };
 
-const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
+const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: Options) => {
   const [, rerender] = React.useState({});
 
   const engine = React.useMemo(() => new Engine(rules, options), []);
@@ -80,6 +80,10 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
 
   const getParsedRule = (key: DottedName) => parsedRules[key as string];
 
+  const getSituation = () => {
+    return engine.getSituation() as Record<DottedName, number | string>;
+  };
+
   return {
     getField,
     getRule: getParsedRule,
@@ -88,6 +92,7 @@ const usePublicodesEngine = <DottedName,>(rules: Rules, options?: Options) => {
     getNode,
     getUnit,
     getFieldAsNumber,
+    getSituation,
   };
 };
 

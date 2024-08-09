@@ -1,5 +1,5 @@
 import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { upperCaseFirstChar } from '@utils/strings';
 
@@ -21,11 +21,12 @@ const Input = ({
     label: string;
   }) => {
   const { engine } = usePublicodesFormContext();
-  // const [value, setValue] = React.useState(engine.getField(name) as string | number);
-  const value = engine.getField(name) as string | number;
+  const placeholder = engine.getField(name) as string | number;
+  const value = engine.getSituation()[name];
   const unit = engine.getUnit(name);
-  const [canBeEmpty] = React.useState(engine.getField(name) === null || engine.getField(name) === undefined);
-  const [isEmpty, setIsEmpty] = React.useState(canBeEmpty);
+
+  const [valueType] = useState(typeof placeholder);
+  const fieldType = valueType === 'number' ? 'number' : 'text';
 
   return (
     <DSFRInput
@@ -39,16 +40,16 @@ const Input = ({
       hideOptionalLabel
       nativeInputProps={{
         ...nativeInputProps,
-        value: isEmpty ? '' : value,
-        placeholder: `${engine.getField(name)}`,
+        type: fieldType,
+        value: value ?? '',
+        placeholder: `${placeholder}`,
         onChange: (e) => {
           e.stopPropagation();
           const newValue = e.target.value;
-          setIsEmpty(newValue === '');
           engine.setField(name, newValue);
         },
       }}
-      state={props.state ?? (!canBeEmpty && isEmpty) ? 'error' : 'default'}
+      // state={props.state ?? fieldState.error ? 'error' : 'default'}
       stateRelatedMessage={props.stateRelatedMessage ?? 'Sélectionnez une valeur'}
       {...props}
     />
