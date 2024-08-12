@@ -10,6 +10,7 @@ import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 import cx from '@utils/cx';
 
+import DebugDrawer from './DebugDrawer';
 import GrandPublicForm from './GrandPublicForm';
 import PublicodesSimulatorResults from './Results';
 import { FloatingButton, Results, Section, Simulator } from './SimulatorPublicodes.style';
@@ -111,6 +112,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, cla
             <Drawer open={open} onClose={toggleDrawer(false)} anchor="right">
               {results}
             </Drawer>
+            <DebugDrawer engine={engine} />
           </Simulator>
         </Section>
       </FormProvider>
