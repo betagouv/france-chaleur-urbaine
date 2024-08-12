@@ -10,7 +10,7 @@ type Unit = {
   denominators: string[];
 };
 
-const formatUnit = ({ numerators, denominators }: Unit): string => {
+export const formatUnit = ({ numerators, denominators }: Unit): string => {
   const superscript = ['\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u2076', '\u2077', '\u2078', '\u2079'];
   const format = (arr: string[], delimiter: string = ''): string => {
     const count: Record<string, number> = arr.reduce((acc: Record<string, number>, curr: string) => {
