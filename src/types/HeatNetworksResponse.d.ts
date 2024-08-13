@@ -14,13 +14,13 @@ export type HeatNetwork = {
   co2: number | null;
   isClasse: boolean | null;
   hasPDP: boolean | null;
+  hasNoTraceNetwork: boolean | null;
 };
 
 export type CityNetwork = {
   basedOnCity: true;
   cityHasNetwork: boolean;
   cityHasFuturNetwork: boolean;
-  cityHasNoTraceNetwork: boolean;
 };
 
 export type HeatNetworksResponse = HeatNetwork & CityNetwork;
