@@ -83,6 +83,20 @@ const CardSearchDetails = ({
         baseMessage
       );
     }
+    if (cityHasNetwork) {
+      const baseMessage =
+        'Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.';
+      return inPDP ? (
+        <>
+          {baseMessage}
+          <br />
+          Votre bâtiment est situé dans le périmètre de développement prioritaire du réseau : une obligation de raccordement peut
+          s’appliquer en cas de renouvellement de votre mode de chauffage.
+        </>
+      ) : (
+        baseMessage
+      );
+    }
     {
       const baseMessage = "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";
       return inPDP ? (
