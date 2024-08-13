@@ -20,6 +20,7 @@ export type CityNetwork = {
   basedOnCity: true;
   cityHasNetwork: boolean;
   cityHasFuturNetwork: boolean;
+  cityHasNoTraceNetwork: boolean;
 };
 
 export type HeatNetworksResponse = HeatNetwork & CityNetwork;

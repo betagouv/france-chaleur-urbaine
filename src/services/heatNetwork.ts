@@ -35,8 +35,8 @@ export class HeatNetworkService {
           const cityNetwork: HeatNetworksResponse = await this.httpClient.get<HeatNetworksResponse>(
             `/api/map/cityNetwork?&city=${geoAddress.properties.city}`
           );
-          if (cityNetwork.cityHasNetwork) {
-            heatNetwork.cityHasNetwork = true;
+          if (cityNetwork.cityHasNoTraceNetwork) {
+            heatNetwork.cityHasNoTraceNetwork = true;
           }
         }
         return heatNetwork;

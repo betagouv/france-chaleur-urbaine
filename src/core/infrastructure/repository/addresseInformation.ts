@@ -14,6 +14,10 @@ const hasFuturNetworkInCity = async (city: string): Promise<boolean> => {
   const result = await db('zones_et_reseaux_en_construction').whereRaw('? = any(communes)', [city]).first();
   return !!result;
 };
+const hasNotTraceNetworkInCity = async (city: string): Promise<boolean> => {
+  const result = await db('reseaux_de_chaleur').where('has_trace', false).andWhereRaw('? = any(communes)', [city]).first();
+  return !!result;
+};
 
 export type NetworkInfos = {
   distance: number;
@@ -244,8 +248,12 @@ export const getNetworkEligibilityDistances = (networkId: string) => {
 };
 
 export const getCityEligilityStatus = async (city: string): Promise<CityNetwork> => {
-  const [cityHasNetwork, cityHasFuturNetwork] = await Promise.all([hasNetworkInCity(city), hasFuturNetworkInCity(city)]);
-  return { basedOnCity: true, cityHasNetwork, cityHasFuturNetwork };
+  const [cityHasNetwork, cityHasFuturNetwork, cityHasNoTraceNetwork] = await Promise.all([
+    hasNetworkInCity(city),
+    hasFuturNetworkInCity(city),
+    hasNotTraceNetworkInCity(city),
+  ]);
+  return { basedOnCity: true, cityHasNetwork, cityHasFuturNetwork, cityHasNoTraceNetwork };
 };
 
 export type NetworkEligibilityStatus = {
