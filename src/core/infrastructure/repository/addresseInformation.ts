@@ -14,10 +14,6 @@ const hasFuturNetworkInCity = async (city: string): Promise<boolean> => {
   const result = await db('zones_et_reseaux_en_construction').whereRaw('? = any(communes)', [city]).first();
   return !!result;
 };
-const hasNoTraceNetworkInCity = async (city: string): Promise<boolean> => {
-  const result = await db('reseaux_de_chaleur').where('has_trace', false).andWhereRaw('? = any(communes)', [city]).first();
-  return !!result;
-};
 
 export type NetworkInfos = {
   distance: number;
@@ -28,6 +24,15 @@ export type NetworkInfos = {
   nom_reseau: string;
   'reseaux classes': boolean;
   has_PDP: boolean;
+};
+
+const getNoTraceNetworkInCity = async (city: string): Promise<NetworkInfos> => {
+  const result = await db('reseaux_de_chaleur')
+    .select('Identifiant reseau', 'Taux EnR&R', 'contenu CO2 ACV', 'Gestionnaire', 'nom_reseau')
+    .where('has_trace', false)
+    .andWhereRaw('? = any(communes)', [city])
+    .first();
+  return result;
 };
 
 export const getDistanceToNetwork = async (networkId: string, lat: number, lon: number): Promise<NetworkInfos> => {
@@ -290,7 +295,7 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
     closestFuturNetwork(lat, lon),
     closestNetwork(lat, lon),
   ]);
-  const hasNoTraceNetwork = city ? await hasNoTraceNetworkInCity(city) : false;
+  const noTraceNetwork = city ? await getNoTraceNetworkInCity(city) : null;
 
   const eligibilityDistances = getNetworkEligibilityDistances(network['Identifiant reseau']);
   const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
@@ -392,6 +397,24 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
       hasNoTraceNetwork: null,
     };
   }
+  if (noTraceNetwork) {
+    return {
+      isEligible: false,
+      distance: null,
+      veryEligibleDistance: null,
+      inPDP,
+      isBasedOnIris: false,
+      futurNetwork: false,
+      id: noTraceNetwork['Identifiant reseau'],
+      name: noTraceNetwork.nom_reseau,
+      tauxENRR: noTraceNetwork['Taux EnR&R'],
+      co2: noTraceNetwork['contenu CO2 ACV'],
+      gestionnaire: noTraceNetwork.Gestionnaire,
+      isClasse: null,
+      hasPDP: null,
+      hasNoTraceNetwork: true,
+    };
+  }
 
   return {
     isEligible: false,
@@ -407,6 +430,6 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
     gestionnaire: null,
     isClasse: null,
     hasPDP: null,
-    hasNoTraceNetwork: hasNoTraceNetwork,
+    hasNoTraceNetwork: false,
   };
 };
