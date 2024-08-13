@@ -33,7 +33,7 @@ const CardSearchDetails = ({
   collapsed,
   setCollapsed,
 }: CardSearchDetailsProps) => {
-  const { basedOnCity, distance, isEligible, futurNetwork, inPDP, cityHasNetwork, cityHasFuturNetwork, cityHasNoTraceNetwork } =
+  const { basedOnCity, distance, isEligible, futurNetwork, inPDP, cityHasNetwork, cityHasFuturNetwork, hasNoTraceNetwork } =
     storedAddress.addressDetails?.network || {};
 
   const [contactFormVisible, setContactFormVisible] = useState(false);
@@ -83,7 +83,7 @@ const CardSearchDetails = ({
         baseMessage
       );
     }
-    if (cityHasNoTraceNetwork) {
+    if (hasNoTraceNetwork) {
       const baseMessage =
         'Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.';
       return inPDP ? (

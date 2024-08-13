@@ -14,7 +14,7 @@ const hasFuturNetworkInCity = async (city: string): Promise<boolean> => {
   const result = await db('zones_et_reseaux_en_construction').whereRaw('? = any(communes)', [city]).first();
   return !!result;
 };
-const hasNotTraceNetworkInCity = async (city: string): Promise<boolean> => {
+const hasNoTraceNetworkInCity = async (city: string): Promise<boolean> => {
   const result = await db('reseaux_de_chaleur').where('has_trace', false).andWhereRaw('? = any(communes)', [city]).first();
   return !!result;
 };
@@ -179,6 +179,7 @@ const headers = [
   'Identifiant du réseau le plus proche',
   'Taux EnR&R du réseau le plus proche',
   'Contenu CO2 ACV (g/kWh)',
+  'Présence d’un réseau non localisé sur la commune',
 ];
 
 const legend = [
@@ -210,6 +211,10 @@ const legend = [
     'Contenu CO2 ACV (g/kWh)',
     'Contenu CO2 en analyse du cycle de vie issu de l’arrêté DPE du 16 mars 2023 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716)',
   ],
+  [
+    'Présence d’un réseau non localisé sur la commune',
+    'Présence d’un réseau non localisé sur la commune : un réseau existe dans cette commune, mais nous ne disposons pas de son tracé.',
+  ],
   [], // empty line
   [
     'Mise en relation avec le gestionnaire',
@@ -232,6 +237,7 @@ export const getExport = (addresses: any[]) => {
         address.id,
         address.tauxENRR,
         address.co2 ? Math.round(address.co2 * 1000) : null,
+        address.hasNoTraceNetwork ? 'Oui' : 'Non',
       ])
     )
   );
@@ -248,12 +254,8 @@ export const getNetworkEligibilityDistances = (networkId: string) => {
 };
 
 export const getCityEligilityStatus = async (city: string): Promise<CityNetwork> => {
-  const [cityHasNetwork, cityHasFuturNetwork, cityHasNoTraceNetwork] = await Promise.all([
-    hasNetworkInCity(city),
-    hasFuturNetworkInCity(city),
-    hasNotTraceNetworkInCity(city),
-  ]);
-  return { basedOnCity: true, cityHasNetwork, cityHasFuturNetwork, cityHasNoTraceNetwork };
+  const [cityHasNetwork, cityHasFuturNetwork] = await Promise.all([hasNetworkInCity(city), hasFuturNetworkInCity(city)]);
+  return { basedOnCity: true, cityHasNetwork, cityHasFuturNetwork };
 };
 
 export type NetworkEligibilityStatus = {
@@ -281,13 +283,14 @@ export const getNetworkEligilityStatus = async (networkId: string, lat: number, 
   };
 };
 
-export const getEligilityStatus = async (lat: number, lon: number): Promise<HeatNetwork> => {
+export const getEligilityStatus = async (lat: number, lon: number, city?: string): Promise<HeatNetwork> => {
   const [inPDP, inFuturNetwork, futurNetwork, network] = await Promise.all([
     isInPDP(lat, lon),
     closestInFuturNetwork(lat, lon),
     closestFuturNetwork(lat, lon),
     closestNetwork(lat, lon),
   ]);
+  const hasNoTraceNetwork = city ? await hasNoTraceNetworkInCity(city) : false;
 
   const eligibilityDistances = getNetworkEligibilityDistances(network['Identifiant reseau']);
   const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances
@@ -314,6 +317,7 @@ export const getEligilityStatus = async (lat: number, lon: number): Promise<Heat
       gestionnaire: network['Gestionnaire'],
       isClasse: network['reseaux classes'],
       hasPDP: network['has_PDP'],
+      hasNoTraceNetwork: null,
     };
   }
   if (futurEligibility.isEligible && Number(futurNetwork.distance) < futurEligibility.veryEligibleDistance) {
@@ -330,6 +334,7 @@ export const getEligilityStatus = async (lat: number, lon: number): Promise<Heat
       gestionnaire: futurNetwork.gestionnaire,
       isClasse: null,
       hasPDP: null,
+      hasNoTraceNetwork: null,
     };
   }
 
@@ -348,6 +353,7 @@ export const getEligilityStatus = async (lat: number, lon: number): Promise<Heat
       gestionnaire: inFuturNetwork.gestionnaire,
       isClasse: null,
       hasPDP: null,
+      hasNoTraceNetwork: null,
     };
   }
 
@@ -365,6 +371,7 @@ export const getEligilityStatus = async (lat: number, lon: number): Promise<Heat
       gestionnaire: network['Gestionnaire'],
       isClasse: network['reseaux classes'],
       hasPDP: network['has_PDP'],
+      hasNoTraceNetwork: null,
     };
   }
 
@@ -382,6 +389,7 @@ export const getEligilityStatus = async (lat: number, lon: number): Promise<Heat
       gestionnaire: futurNetwork.gestionnaire,
       isClasse: null,
       hasPDP: null,
+      hasNoTraceNetwork: null,
     };
   }
 
@@ -399,5 +407,6 @@ export const getEligilityStatus = async (lat: number, lon: number): Promise<Heat
     gestionnaire: null,
     isClasse: null,
     hasPDP: null,
+    hasNoTraceNetwork: hasNoTraceNetwork,
   };
 };

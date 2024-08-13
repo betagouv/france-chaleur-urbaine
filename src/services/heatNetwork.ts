@@ -29,16 +29,8 @@ export class HeatNetworkService {
       } else {
         const [lon, lat] = geoAddress.geometry.coordinates;
         const heatNetwork: HeatNetworksResponse = await this.httpClient.get<HeatNetworksResponse>(
-          `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}`
+          `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${geoAddress.properties.city}`
         );
-        if (!heatNetwork.isEligible) {
-          const cityNetwork: HeatNetworksResponse = await this.httpClient.get<HeatNetworksResponse>(
-            `/api/map/cityNetwork?&city=${geoAddress.properties.city}`
-          );
-          if (cityNetwork.cityHasNoTraceNetwork) {
-            heatNetwork.cityHasNoTraceNetwork = true;
-          }
-        }
         return heatNetwork;
       }
     } catch (e) {
