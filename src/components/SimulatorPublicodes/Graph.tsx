@@ -115,17 +115,14 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
   const emissionsCO2GraphData = [
     [
       'Mode de chauffage',
-      'Scope 1 : Besoin de chauffage',
-      'Scope 2 : Auxiliaires et combustible électrique',
+      "Scope 1 : Production directe d'énergie",
+      "Scope 2 : Production indirecte d'énergie",
       'Scope 3 : Émissions indirectes',
     ],
     ...typesInstallation.map((typeInstallation) => [
       typeInstallation.label,
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . besoins de chauffage`) +
-        engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . besoins d'ECS`),
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . auxiliaires et combustible électrique`) +
-        engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . ECS solaire thermique`) +
-        engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . ECS avec ballon électrique`),
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . Scope 1`),
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . Scope 2`),
       engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . Scope 3`),
     ]),
   ];
