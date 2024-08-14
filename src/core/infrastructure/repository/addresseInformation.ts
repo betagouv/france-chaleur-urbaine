@@ -216,10 +216,7 @@ const legend = [
     'Contenu CO2 ACV (g/kWh)',
     'Contenu CO2 en analyse du cycle de vie issu de l’arrêté DPE du 16 mars 2023 (https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047329716)',
   ],
-  [
-    'Présence d’un réseau non localisé sur la commune',
-    'Présence d’un réseau non localisé sur la commune : un réseau existe dans cette commune, mais nous ne disposons pas de son tracé.',
-  ],
+  ['Présence d’un réseau non localisé sur la commune', 'Un réseau existe dans cette commune, mais nous ne disposons pas de son tracé.'],
   [], // empty line
   [
     'Mise en relation avec le gestionnaire',
