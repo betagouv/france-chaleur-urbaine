@@ -1,3 +1,4 @@
+import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { Select as DSFRSelect } from '@codegouvfr/react-dsfr/SelectNext';
 import React from 'react';
 
@@ -13,7 +14,7 @@ const Select = ({
   nativeSelectProps,
   ...props
 }: Omit<DSFRSelectProps, 'hint' | 'options'> & {
-  name: string;
+  name: DottedName;
   hintText?: DSFRSelectProps['hint']; // harmonize with Input
   onChange?: (option?: string) => void;
 }) => {
