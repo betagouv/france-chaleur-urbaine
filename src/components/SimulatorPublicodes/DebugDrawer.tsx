@@ -1,7 +1,7 @@
 import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Button from '@codegouvfr/react-dsfr/Button';
 import Table from '@codegouvfr/react-dsfr/Table';
-import { Drawer } from '@mui/material';
+import { Drawer, Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
 import { useState } from 'react';
 import styled from 'styled-components';
 
@@ -15,6 +15,12 @@ type DebugDrawerProps = {
   engine: SimulatorEngine;
 };
 
+const RuleTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} classes={{ popper: className }} />)({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: 'none',
+  },
+});
+
 const DebugDrawer = ({ engine }: DebugDrawerProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -22,10 +28,20 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
     const node = engine.getNode(key);
     const value = Math.round(node.nodeValue as number);
     const unit = node.unit ? formatUnit(node.unit) : '';
-    return `${value} ${unit}`;
+    return (
+      <RuleTooltip title={key}>
+        <span>
+          {value} {unit}
+        </span>
+      </RuleTooltip>
+    );
   };
   const bool = (key: DottedName) => {
-    return `${engine.getField(key) ? 'oui' : 'non'}`;
+    return (
+      <RuleTooltip title={key}>
+        <span>{engine.getField(key) ? 'oui' : 'non'}</span>
+      </RuleTooltip>
+    );
   };
 
   return (
