@@ -84,31 +84,28 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           <Select name="Température émetteurs" label="Température émetteurs" />
         </Accordion>
         <Accordion label="Besoins calculés">
-          <Select
-            name="méthode de calcul pour les besoins en chauffage et refroidissement"
-            label="méthode de calcul pour les besoins en chauffage et refroidissement"
-            hintText="ne fonctionne pas pour le moment"
-          />
           {typeBatiment === 'résidentiel' && (
-            <Select
-              name="méthode résidentiel"
-              label="méthode de calcul pour les besoins en chauffage et refroidissement"
-              hintText="méthode résidentiel"
-            />
+            <>
+              <Select
+                name="méthode résidentiel"
+                label="méthode de calcul pour les besoins en chauffage et refroidissement"
+                hintText="méthode résidentiel"
+              />
+              {engine.getField('méthode résidentiel') === 'DPE' && <Select name="DPE" label="DPE" />}
+              {engine.getField('méthode résidentiel') === 'Normes thermiques et âge du bâtiment' && (
+                <Select name="normes thermiques et âge du bâtiment" label="normes thermiques et âge du bâtiment" />
+              )}
+            </>
           )}
           {typeBatiment === 'tertiaire' && (
-            <Select
-              name="méthode tertiaire"
-              label="méthode de calcul pour les besoins en chauffage et refroidissement"
-              hintText="méthode tertiaire"
-            />
-          )}
-          {engine.getField('méthode de calcul pour les besoins en chauffage et refroidissement') === 'DPE' && (
-            <Select name="DPE" label="DPE" />
-          )}
-          {engine.getField('méthode de calcul pour les besoins en chauffage et refroidissement') ===
-            'Normes thermiques et âge du bâtiment' && (
-            <Select name="normes thermiques et âge du bâtiment" label="normes thermiques et âge du bâtiment" />
+            <>
+              <Select
+                name="méthode tertiaire"
+                label="méthode de calcul pour les besoins en chauffage et refroidissement"
+                hintText="méthode tertiaire"
+              />
+              <Select name="normes thermiques tertiaire" label="normes thermiques tertiaire" />
+            </>
           )}
           <Input name="consommation spécifique chauffage" label="consommation spécifique chauffage" />
           <Input name="besoins chauffage par appartement" label="besoins chauffage par appartement" />
