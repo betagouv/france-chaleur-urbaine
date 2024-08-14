@@ -394,6 +394,44 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
   `,
 };
 
+const noTraceCollectif = {
+  eligibility: true,
+  body: (gestionnaire: string | null, tauxENRR: number | null, isClasse: boolean | null, city: string) => `
+::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
+${
+  isClasse
+    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
+    : ''
+}
+::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires** : il s’agit du cas le plus favorable pour un raccordement !]
+${
+  gestionnaire
+    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
+        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
+      }]`
+    : ''
+}
+${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
+  `,
+  text: `
+**France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet d’être **mis en relation avec le gestionnaire** du réseau le plus proche **afin de vérifier la faisabilité du raccordement et de bénéficier d’une première estimation tarifaire gratuite et sans engagement.**
+**Il vous suffit pour cela de déposer vos coordonnées ci-dessous.**
+  `,
+};
+
+const noTraceIndividual = {
+  body: () => `
+  ::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
+  ::arrow-item[Au vu de votre chauffage actuel, **le raccordement de votre immeuble nécessiterait des travaux conséquents** et coûteux, avec notamment la création d’un réseau interne de distribution au sein de l’immeuble.]
+  ::arrow-item[**L’amélioration de l’isolation thermique de votre immeuble** constitue un autre levier pour réduire votre facture énergétique et limiter votre impact écologique. Pour être accompagné dans vos projets de rénovation énergétique, rendez-vous sur [**France Rénov’**](https://france-renov.gouv.fr/).]
+  ::arrow-item[Découvrez également d’autres solutions de chauffage **[ici](https://france-renov.gouv.fr/renovation/chauffage)**.]
+      `,
+  text: `
+  **France Chaleur Urbaine** est un service gratuit du Ministère de la transition écologique qui vous permet de découvrir **instantanément** si un réseau passe près de chez vous
+  Votre situation n’est pas favorable **pour un raccordement, mais si vous souhaitez tout de même en savoir plus ou faire connaître votre demande**, laissez-nous vos coordonnées pour que nous les transmettions à votre collectivité ou au **gestionnaire du réseau le plus proche.**
+      `,
+};
+
 type EligibilityResultState =
   // très proche
   | 'closeFuturCollectif'
@@ -409,7 +447,11 @@ type EligibilityResultState =
   // pas proche
   | 'farCollectifInPDP'
   | 'farCollectifOutPDP'
-  | 'unknown';
+  | 'unknown'
+
+  // réseau sans tracé
+  | 'noTraceCollectif'
+  | 'noTraceIndividual';
 
 export const getEligibilityResultState = (heatingType: AvailableHeating, eligibility?: HeatNetworksResponse): EligibilityResultState => {
   if (eligibility && heatingType) {
@@ -431,6 +473,8 @@ export const getEligibilityResultState = (heatingType: AvailableHeating, eligibi
       if (eligibility.distance === null && futurNetwork) {
         return heatingType === 'collectif' ? 'closeFuturCollectif' : 'closeFuturIndividual';
       }
+    } else if (eligibility.hasNoTraceNetwork) {
+      return heatingType === 'collectif' ? 'noTraceCollectif' : 'noTraceIndividual';
     }
 
     return heatingType === 'collectif' ? (eligibility.inPDP ? 'farCollectifInPDP' : 'farCollectifOutPDP') : 'farIndividual';
@@ -484,6 +528,12 @@ export const getEligibilityResult = (
     }
     case 'unknown': {
       return {};
+    }
+    case 'noTraceCollectif': {
+      return noTraceCollectif;
+    }
+    case 'noTraceIndividual': {
+      return noTraceIndividual;
     }
   }
 };

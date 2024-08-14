@@ -84,8 +84,7 @@ const CardSearchDetails = ({
       );
     }
     if (hasNoTraceNetwork) {
-      return;
-      ('Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.');
+      return <>Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.</>;
     }
     {
       const baseMessage = "D'après nos données, il n'y a pour le moment pas de réseau de chaleur à proximité de cette adresse.";
