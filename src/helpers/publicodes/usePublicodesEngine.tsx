@@ -85,6 +85,7 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
   };
 
   return {
+    internalEngine: engine,
     getField,
     getRule: getParsedRule,
     setField,

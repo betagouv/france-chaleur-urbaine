@@ -233,6 +233,18 @@ const Debug: React.FC<DebugProps> = ({ engine, className, ...props }) => {
       {displayResult('ratios . CHAUF EAU SOLAIRE Rendement stockage ballon', false)}
       {displayResult('ratios . CHAUF EAU SOLAIRE Durée de vie', false)}
       {displayResult("ratios . CHAUF EAU SOLAIRE Part du solaire dans la production d'ECS", false)}
+
+      <h2 className="fr-mt-4w fr-mb-0">Calculs techniques</h2>
+      <h3 className="fr-mt-2w fr-mb-0">Chauffage</h3>
+      {displayResult('Calcul . Chauffage Nb heure fonctionnement pleine puissance chauffage continu')}
+      {displayResult('Calcul . Chauffage Nb heure fonctionnement pleine puissance')}
+      {displayResult('Calcul . Chauffage Puissance chauffage appelée')}
+      <h3 className="fr-mt-2w fr-mb-0">ECS</h3>
+      {displayResult('Calcul . ECS Nb heure fonctionnement non climatique')}
+      {displayResult('Calcul . ECS Puissance ECS appelée')}
+      <h3 className="fr-mt-2w fr-mb-0">Climatisation</h3>
+      {displayResult('Calcul . Climatisation Nb heure fonctionnement pleine puissance')}
+      {displayResult('Calcul . Climatisation Puissance refroidissement appelée')}
     </div>
   );
 };
