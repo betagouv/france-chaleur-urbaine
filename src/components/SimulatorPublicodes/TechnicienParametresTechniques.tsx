@@ -114,7 +114,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           <Input name="besoins chauffage par appartement" label="besoins chauffage par appartement" />
           <Input name="consommation spécifique ECS" label="consommation spécifique ECS" />
           <Input name="besoins eau chaude sanitaire par appartement" label="besoins eau chaude sanitaire par appartement" />
-          <Input name="consommation spécifique climatisation par habitant" label="consommation spécifique climatisation par habitant" />
+          <Input name="consommation spécifique climatisation" label="consommation spécifique climatisation par habitant" />
           <Input name="besoins en climatisation par appartement" label="besoins en climatisation par appartement" />
         </Accordion>
       </Accordion>
@@ -135,8 +135,8 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Accordion label="RCU">
           <Input name="ratios . RCU Rendement sous station chauffage" label="RCU Rendement sous station chauffage" />
           <Input name="ratios . RCU Rendement sous station ECS" label="RCU Rendement sous station ECS" />
-          <Input name="ratios . RCU Conso auxilliaire chauffage" label="RCU Conso auxilliaire chauffage" />
-          <Input name="ratios . RCU Conso auxilliaire ECS" label="RCU Conso auxilliaire ECS" />
+          <Input name="ratios . RCU Conso auxiliaire chauffage" label="RCU Conso auxiliaire chauffage" />
+          <Input name="ratios . RCU Conso auxiliaire ECS" label="RCU Conso auxiliaire ECS" />
           <Input name="ratios . RCU Durée avant renouvellement" label="RCU Durée avant renouvellement" />
         </Accordion>
         <Accordion label="RFU">
@@ -154,7 +154,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Accordion label="Chaudière à granulés coll">
           <Input name="ratios . GRA CHAUD Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
           <Input name="ratios . GRA CHAUD Conso combustible" label="Conso combustible" />
-          <Input name="ratios . GRA CHAUD Conso auxilliaire" label="Conso auxilliaire" />
+          <Input name="ratios . GRA CHAUD Conso auxiliaire" label="Conso auxiliaire" />
           <Input name="ratios . GRA CHAUD Durée de vie" label="Durée de vie" />
         </Accordion>
       </Accordion>
@@ -163,30 +163,30 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           <Input name="ratios . GAZ IND COND Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
           <Input name="ratios . GAZ IND COND Rendement chaudière ECS" label="Rendement chaudière ECS" />
           <Input name="ratios . GAZ IND COND Conso combustible" label="Conso combustible" />
-          <Input name="ratios . GAZ IND COND Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
-          <Input name="ratios . GAZ IND COND Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
+          <Input name="ratios . GAZ IND COND Conso auxiliaire chauffage" label="Conso auxiliaire chauffage" />
+          <Input name="ratios . GAZ IND COND Conso auxiliaire ECS" label="Conso auxiliaire ECS" />
           <Input name="ratios . GAZ IND COND Durée de vie" label="Durée de vie" />
         </Accordion>
         <Accordion label="Gaz indiv sans cond">
           <Input name="ratios . GAZ IND SCOND Rendement chaudière" label="Rendement chaudière" />
           <Input name="ratios . GAZ IND SCOND Conso combustible" label="Conso combustible" />
-          <Input name="ratios . GAZ IND SCOND Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
-          <Input name="ratios . GAZ IND SCOND Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
+          <Input name="ratios . GAZ IND SCOND Conso auxiliaire chauffage" label="Conso auxiliaire chauffage" />
+          <Input name="ratios . GAZ IND SCOND Conso auxiliaire ECS" label="Conso auxiliaire ECS" />
           <Input name="ratios . GAZ IND SCOND Durée de vie" label="Durée de vie" />
         </Accordion>
         <Accordion label="Gaz coll avec cond">
           <Input name="ratios . GAZ COLL COND Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
           <Input name="ratios . GAZ COLL COND Rendement chaudière ECS" label="Rendement chaudière ECS" />
           <Input name="ratios . GAZ COLL COND Conso combustible" label="Conso combustible" />
-          <Input name="ratios . GAZ COLL COND Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
-          <Input name="ratios . GAZ COLL COND Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
+          <Input name="ratios . GAZ COLL COND Conso auxiliaire chauffage" label="Conso auxiliaire chauffage" />
+          <Input name="ratios . GAZ COLL COND Conso auxiliaire ECS" label="Conso auxiliaire ECS" />
           <Input name="ratios . GAZ COLL COND Durée de vie" label="Durée de vie" />
         </Accordion>
         <Accordion label="Gaz coll sans cond">
           <Input name="ratios . GAZ COLL SCOND Rendement chaudière" label="Rendement chaudière" />
           <Input name="ratios . GAZ COLL SCOND Conso combustible" label="Conso combustible" />
-          <Input name="ratios . GAZ COLL SCOND Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
-          <Input name="ratios . GAZ COLL SCOND Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
+          <Input name="ratios . GAZ COLL SCOND Conso auxiliaire chauffage" label="Conso auxiliaire chauffage" />
+          <Input name="ratios . GAZ COLL SCOND Conso auxiliaire ECS" label="Conso auxiliaire ECS" />
           <Input name="ratios . GAZ COLL SCOND Durée de vie" label="Durée de vie" />
         </Accordion>
       </Accordion>
@@ -194,16 +194,16 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Accordion label="Fioul indiv">
           <Input name="ratios . FIOUL IND Rendement chaudière" label="Rendement chaudière" />
           <Input name="ratios . FIOUL IND Conso combustible" label="Conso combustible" />
-          <Input name="ratios . FIOUL IND Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
-          <Input name="ratios . FIOUL IND Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
+          <Input name="ratios . FIOUL IND Conso auxiliaire chauffage" label="Conso auxiliaire chauffage" />
+          <Input name="ratios . FIOUL IND Conso auxiliaire ECS" label="Conso auxiliaire ECS" />
           <Input name="ratios . FIOUL IND Durée de vie" label="Durée de vie" />
         </Accordion>
         <Accordion label="Fioul coll">
           <Input name="ratios . FIOUL COLL Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
           <Input name="ratios . FIOUL COLL Rendement chaudière ECS" label="Rendement chaudière ECS" />
           <Input name="ratios . FIOUL COLL Conso combustible" label="Conso combustible" />
-          <Input name="ratios . FIOUL COLL Conso auxilliaire chauffage" label="Conso auxilliaire chauffage" />
-          <Input name="ratios . FIOUL COLL Conso auxilliaire ECS" label="Conso auxilliaire ECS" />
+          <Input name="ratios . FIOUL COLL Conso auxiliaire chauffage" label="Conso auxiliaire chauffage" />
+          <Input name="ratios . FIOUL COLL Conso auxiliaire ECS" label="Conso auxiliaire ECS" />
           <Input name="ratios . FIOUL COLL Durée de vie" label="Durée de vie" />
         </Accordion>
       </Accordion>

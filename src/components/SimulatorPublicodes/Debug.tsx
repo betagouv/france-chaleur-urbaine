@@ -131,7 +131,7 @@ const Debug: React.FC<DebugProps> = ({ engine, className, ...props }) => {
       {displayResult('besoins chauffage par appartement', false)}
       {displayResult('consommation spécifique ECS', false)}
       {displayResult('besoins eau chaude sanitaire par appartement', false)}
-      {displayResult('consommation spécifique climatisation par habitant', false)}
+      {displayResult('consommation spécifique climatisation', false)}
       {displayResult('besoins en climatisation par appartement', false)}
       <h2 className="fr-mt-2w fr-mb-0">Calcul puissance</h2>
       {displayResult('ratios . PUIS Température de non chauffage', false)}
@@ -143,8 +143,8 @@ const Debug: React.FC<DebugProps> = ({ engine, className, ...props }) => {
       <h3 className="fr-mt-2w fr-mb-0">RFU</h3>
       {displayResult('ratios . RCU Rendement sous station chauffage', false)}
       {displayResult('ratios . RCU Rendement sous station ECS', false)}
-      {displayResult('ratios . RCU Conso auxilliaire chauffage', false)}
-      {displayResult('ratios . RCU Conso auxilliaire ECS', false)}
+      {displayResult('ratios . RCU Conso auxiliaire chauffage', false)}
+      {displayResult('ratios . RCU Conso auxiliaire ECS', false)}
       {displayResult('ratios . RCU Durée avant renouvellement', false)}
       <h3 className="fr-mt-2w fr-mb-0">RCU</h3>
       {displayResult('ratios . RFU Rendement sous station', false)}
@@ -158,48 +158,48 @@ const Debug: React.FC<DebugProps> = ({ engine, className, ...props }) => {
       <h3 className="fr-mt-2w fr-mb-0">Chaudière à granulés coll</h3>
       {displayResult('ratios . GRA CHAUD Rendement chaudière chauffage', false)}
       {displayResult('ratios . GRA CHAUD Conso combustible', false)}
-      {displayResult('ratios . GRA CHAUD Conso auxilliaire', false)}
+      {displayResult('ratios . GRA CHAUD Conso auxiliaire', false)}
       {displayResult('ratios . GRA CHAUD Durée de vie', false)}
       <h2 className="fr-mt-2w fr-mb-0">Gaz</h2>
       <h3 className="fr-mt-2w fr-mb-0">Gaz indiv avec cond</h3>
       {displayResult('ratios . GAZ IND COND Rendement chaudière chauffage', false)}
       {displayResult('ratios . GAZ IND COND Rendement chaudière ECS', false)}
       {displayResult('ratios . GAZ IND COND Conso combustible', false)}
-      {displayResult('ratios . GAZ IND COND Conso auxilliaire chauffage', false)}
-      {displayResult('ratios . GAZ IND COND Conso auxilliaire ECS', false)}
+      {displayResult('ratios . GAZ IND COND Conso auxiliaire chauffage', false)}
+      {displayResult('ratios . GAZ IND COND Conso auxiliaire ECS', false)}
       {displayResult('ratios . GAZ IND COND Durée de vie', false)}
       <h3 className="fr-mt-2w fr-mb-0">Gaz indiv sans cond</h3>
       {displayResult('ratios . GAZ IND SCOND Rendement chaudière', false)}
       {displayResult('ratios . GAZ IND SCOND Conso combustible', false)}
-      {displayResult('ratios . GAZ IND SCOND Conso auxilliaire chauffage', false)}
-      {displayResult('ratios . GAZ IND SCOND Conso auxilliaire ECS', false)}
+      {displayResult('ratios . GAZ IND SCOND Conso auxiliaire chauffage', false)}
+      {displayResult('ratios . GAZ IND SCOND Conso auxiliaire ECS', false)}
       {displayResult('ratios . GAZ IND SCOND Durée de vie', false)}
       <h3 className="fr-mt-2w fr-mb-0">Gaz coll avec cond</h3>
       {displayResult('ratios . GAZ COLL COND Rendement chaudière chauffage', false)}
       {displayResult('ratios . GAZ COLL COND Rendement chaudière ECS', false)}
       {displayResult('ratios . GAZ COLL COND Conso combustible', false)}
-      {displayResult('ratios . GAZ COLL COND Conso auxilliaire chauffage', false)}
-      {displayResult('ratios . GAZ COLL COND Conso auxilliaire ECS', false)}
+      {displayResult('ratios . GAZ COLL COND Conso auxiliaire chauffage', false)}
+      {displayResult('ratios . GAZ COLL COND Conso auxiliaire ECS', false)}
       {displayResult('ratios . GAZ COLL COND Durée de vie', false)}
       <h3 className="fr-mt-2w fr-mb-0">Gaz coll sans cond</h3>
       {displayResult('ratios . GAZ COLL SCOND Rendement chaudière', false)}
       {displayResult('ratios . GAZ COLL SCOND Conso combustible', false)}
-      {displayResult('ratios . GAZ COLL SCOND Conso auxilliaire chauffage', false)}
-      {displayResult('ratios . GAZ COLL SCOND Conso auxilliaire ECS', false)}
+      {displayResult('ratios . GAZ COLL SCOND Conso auxiliaire chauffage', false)}
+      {displayResult('ratios . GAZ COLL SCOND Conso auxiliaire ECS', false)}
       {displayResult('ratios . GAZ COLL SCOND Durée de vie', false)}
       <h2 className="fr-mt-2w fr-mb-0">Fioul</h2>
       <h3 className="fr-mt-2w fr-mb-0">Fioul indiv</h3>
       {displayResult('ratios . FIOUL IND Rendement chaudière', false)}
       {displayResult('ratios . FIOUL IND Conso combustible', false)}
-      {displayResult('ratios . FIOUL IND Conso auxilliaire chauffage', false)}
-      {displayResult('ratios . FIOUL IND Conso auxilliaire ECS', false)}
+      {displayResult('ratios . FIOUL IND Conso auxiliaire chauffage', false)}
+      {displayResult('ratios . FIOUL IND Conso auxiliaire ECS', false)}
       {displayResult('ratios . FIOUL IND Durée de vie', false)}
       <h3 className="fr-mt-2w fr-mb-0">Fioul coll</h3>
       {displayResult('ratios . FIOUL COLL Rendement chaudière chauffage', false)}
       {displayResult('ratios . FIOUL COLL Rendement chaudière ECS', false)}
       {displayResult('ratios . FIOUL COLL Conso combustible', false)}
-      {displayResult('ratios . FIOUL COLL Conso auxilliaire chauffage', false)}
-      {displayResult('ratios . FIOUL COLL Conso auxilliaire ECS', false)}
+      {displayResult('ratios . FIOUL COLL Conso auxiliaire chauffage', false)}
+      {displayResult('ratios . FIOUL COLL Conso auxiliaire ECS', false)}
       {displayResult('ratios . FIOUL COLL Durée de vie', false)}
       <h2 className="fr-mt-2w fr-mb-0">Pompe à chaleur</h2>
       <h3 className="fr-mt-2w fr-mb-0">PAC air/air réversible</h3>
