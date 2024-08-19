@@ -644,7 +644,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             headers={[
               'Installations',
               "Besoin d'installation supplémentaire pour produire l'ECS ?",
-              'Scopr 1 - Besoin de chauffage et ECS si même équipement (kgCO2 équ.)',
+              'Scope 1 - Besoin de chauffage et ECS si même équipement (kgCO2 équ.)',
               'Scope 2 - Auxiliaires et combustible électrique (kgCO2 équ.)',
               'Scope 2 - Ecs solaire thermique',
               'Scope 2 - Eau chaude sanitaire avec ballon électrique',
