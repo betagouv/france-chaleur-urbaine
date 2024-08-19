@@ -236,6 +236,9 @@ const Debug: React.FC<DebugProps> = ({ engine, className, ...props }) => {
 
       <h2 className="fr-mt-4w fr-mb-0">Calculs techniques</h2>
       <h3 className="fr-mt-2w fr-mb-0">Chauffage</h3>
+      {displayResult('degré jours unifié spécifique chaud')}
+      {displayResult('ratios . PUIS Température de non chauffage')}
+      {displayResult('température de référence chaud')}
       {displayResult('Calcul . Chauffage Nb heure fonctionnement pleine puissance chauffage continu')}
       {displayResult('Calcul . Chauffage Nb heure fonctionnement pleine puissance')}
       {displayResult('Calcul . Chauffage Puissance chauffage appelée')}
