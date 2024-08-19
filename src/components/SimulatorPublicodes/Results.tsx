@@ -12,7 +12,6 @@ type SimulatorResultsProps = React.HTMLAttributes<HTMLDivElement> & {
 const SimulatorResults: React.FC<SimulatorResultsProps> = ({ children, className, engine, ...props }) => {
   return (
     <div className={className} {...props}>
-      Ici, on retrouve les résultats
       <Graph engine={engine} />
       <Accordion label="Debug">
         <Debug engine={engine} style={{ maxHeight: '800px', overflow: 'auto' }} />
