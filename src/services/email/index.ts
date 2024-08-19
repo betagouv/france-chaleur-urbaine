@@ -120,6 +120,10 @@ export const sendRelanceMail = async (demand: Demand, id: string): Promise<void>
       day: 'numeric',
     }),
     link: `${process.env.NEXTAUTH_URL}/satisfaction?id=${id}&satisfaction=`,
+    calendarLink:
+      demand.Structure === 'Copropriété' || demand.Structure === 'Maison individuelle'
+        ? 'https://calendly.com/erwan-gravez-beta/30min'
+        : 'https://app.calendso.incubateur.net/camillefwok/15min',
   });
 
   return send([demand.Mail], 'Votre demande sur France Chaleur Urbaine', html);
