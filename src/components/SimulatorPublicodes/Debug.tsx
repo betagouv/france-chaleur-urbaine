@@ -107,9 +107,9 @@ const Debug: React.FC<DebugProps> = ({ engine, className, ...props }) => {
       {displayResult('température de référence chaud')}
       {displayResult('augmenter la température de chauffe')}
       <h2 className="fr-mt-2w fr-mb-0">Paramètres Réseaux de chaleur et de froid</h2>
-      {displayResult('choix du réseau de chaleur', false)}
+      {/* {displayResult('choix du réseau de chaleur', false)} */}
       {displayResult('contenu CO2 réseau de chaleur')}
-      {displayResult('choix du réseau de froid', false)}
+      {/* {displayResult('choix du réseau de froid', false)} */}
       {displayResult('contenu CO2 réseau de froid')}
       <h2 className="fr-mt-2w fr-mb-0">Besoins et choix du bâtiment</h2>
       <h3 className="fr-mt-2w fr-mb-0">Choix du bâtiment</h3>

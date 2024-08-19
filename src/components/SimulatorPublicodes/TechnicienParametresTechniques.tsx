@@ -29,10 +29,11 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="température de référence chaud" label="température de référence chaud" iconId="fr-icon-temp-cold-fill" />
         <Input name="augmenter la température de chauffe" label="augmenter la température de chauffe" iconId="fr-icon-temp-cold-fill" />
       </Accordion>
-      <Accordion label="Réseaux de chaleur et de froid">
+      {/* Pas besoin car seront définis via l'adresse en externe */}
+      {/* <Accordion label="Réseaux de chaleur et de froid">
         <Select name="choix du réseau de chaleur" label="choix du réseau de chaleur" />
         <Select name="choix du réseau de froid" label="choix du réseau de froid" />
-      </Accordion>
+      </Accordion> */}
       <Accordion label="Besoins et choix du bâtiment">
         <Accordion label="Choix du bâtiment">
           <RadioInput name="type de bâtiment" small orientation="horizontal" />
