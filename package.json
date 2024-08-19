@@ -86,7 +86,7 @@
     "pg": "^8.11.3",
     "postcss": "^8.2.10",
     "prettier": "3.0.2",
-    "publicodes": "npm:@totak/publicodes@1.5.0-fcu2",
+    "publicodes": "npm:@totak/publicodes@1.5.0-fcu3",
     "react": "^18.2.0",
     "react-compound-slider": "^3.4.0",
     "react-dom": "^18.2.0",

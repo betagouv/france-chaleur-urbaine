@@ -6672,10 +6672,10 @@ psl@^1.1.33:
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.9.0.tgz#d0df2a137f00794565fcaf3b2c00cd09f8d5a5a7"
   integrity sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==
 
-"publicodes@npm:@totak/publicodes@1.5.0-fcu2":
-  version "1.5.0-fcu2"
-  resolved "https://registry.yarnpkg.com/@totak/publicodes/-/publicodes-1.5.0-fcu2.tgz#219158f7531ace2ddc8641ef3b5f13367ee62fc0"
-  integrity sha512-IBQT97dgpEi8efBOfdxey3q3s5Eq/rkc8p0Vy2MExA7HFEp/HrtypoFl+ASD7AoXGSLEhN5VAwmryjtlSdBxvg==
+"publicodes@npm:@totak/publicodes@1.5.0-fcu3":
+  version "1.5.0-fcu3"
+  resolved "https://registry.yarnpkg.com/@totak/publicodes/-/publicodes-1.5.0-fcu3.tgz#34a4c5f275e9a706f74a6d0f015a03db2303fea0"
+  integrity sha512-t8Yrw4wCPvkbZBxn3hTq1FAkXDaAv+YM+r+C+owObOe3blEBoltihe+9EC+jPtEJMisoXoWc9XL05A9mRiBD8w==
 
 pump@^3.0.0:
   version "3.0.0"
