@@ -69,7 +69,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
 
           <Table
             caption="Coût d'achat du combustible"
-            headers={['Paramètres', 'Part abonnement', 'Part consommation']}
+            headers={['Paramètres', 'Part abonnement', 'Part consommation', 'Heures creuses']}
             data={[
               [
                 'Chaleur (RCU)',
@@ -84,7 +84,8 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
               [
                 'Electricité indiv',
                 number("Calcul Eco . Coût d'achat du combustible . Electricité indiv x Part abonnement"),
-                number("Calcul Eco . Coût d'achat du combustible . Electricité indiv x Part consommation"),
+                number("Calcul Eco . Coût d'achat du combustible . Electricité indiv x Part consommation HP"),
+                number("Calcul Eco . Coût d'achat du combustible . Electricité indiv x Part consommation HC"),
               ],
               [
                 'Electricité coll',
@@ -270,6 +271,156 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 roundNumber('Calcul Eco . Radiateur électrique . Investissement ballon ECS solaire panneau inclus'),
                 roundNumber('Calcul Eco . Radiateur électrique . Total investissement avec ballon ECS à accumulation'),
                 roundNumber('Calcul Eco . Radiateur électrique . Total investissement ballon ECS solaire panneaux'),
+              ],
+            ]}
+          />
+
+          <Table
+            caption="P1 - Coût du combustible par lgt type / tertiaire"
+            headers={[
+              'Installation',
+              'Coût du combustible abonnement (P1 abo) €TTC/an',
+              'Coût du combustible consommation (P1 conso) €TTC/an',
+              "Coût électricité auxilliaire (P1') €TTC/an",
+              'Coût combustible pour balllon ECS à accumulation (P1 ECS) €TTC/an',
+              'Coût combustible pour ballon ECS solaire (P1 ECS) €TTC/an',
+            ]}
+            data={[
+              [
+                'Réseaux de chaleur',
+                roundNumber('Calcul Eco . Réseaux de chaleur . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Réseaux de chaleur . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Réseaux de chaleur . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Réseaux de chaleur . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Réseaux de chaleur . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Réseaux de froid',
+                roundNumber('Calcul Eco . Réseaux de froid . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Réseaux de froid . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Réseaux de froid . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Réseaux de froid . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Réseaux de froid . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Poêle à granulés indiv',
+                roundNumber('Calcul Eco . Poêle à granulés indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Poêle à granulés indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Poêle à granulés indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Poêle à granulés indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Poêle à granulés indiv . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Chaudière à granulés coll',
+                roundNumber('Calcul Eco . Chaudière à granulés coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Chaudière à granulés coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Chaudière à granulés coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Chaudière à granulés coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Chaudière à granulés coll . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Gaz indiv avec cond',
+                roundNumber('Calcul Eco . Gaz indiv avec cond . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Gaz indiv avec cond . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Gaz indiv avec cond . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Gaz indiv avec cond . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Gaz indiv avec cond . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Gaz indiv sans cond',
+                roundNumber('Calcul Eco . Gaz indiv sans cond . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Gaz indiv sans cond . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Gaz indiv sans cond . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Gaz indiv sans cond . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Gaz indiv sans cond . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Gaz coll avec cond',
+                roundNumber('Calcul Eco . Gaz coll avec cond . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Gaz coll avec cond . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Gaz coll avec cond . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Gaz coll avec cond . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Gaz coll avec cond . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Gaz coll sans cond',
+                roundNumber('Calcul Eco . Gaz coll sans cond . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Gaz coll sans cond . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Gaz coll sans cond . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Gaz coll sans cond . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Gaz coll sans cond . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Fioul indiv',
+                roundNumber('Calcul Eco . Fioul indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Fioul indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Fioul indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Fioul indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Fioul indiv . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Fioul coll',
+                roundNumber('Calcul Eco . Fioul coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Fioul coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Fioul coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Fioul coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Fioul coll . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'PAC air/air indiv',
+                roundNumber('Calcul Eco . PAC air-air indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC air-air indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC air-air indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC air-air indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . PAC air-air indiv . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'PAC air-air collectif-tertiaire',
+                roundNumber('Calcul Eco . PAC air-air coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC air-air coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC air-air coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC air-air coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . PAC air-air coll . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'PAC eau-eau indiv',
+                roundNumber('Calcul Eco . PAC eau-eau indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC eau-eau indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC eau-eau indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC eau-eau indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . PAC eau-eau indiv . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'PAC eau-eau collectif-tertiaire',
+                roundNumber('Calcul Eco . PAC eau-eau coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC eau-eau coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC eau-eau coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC eau-eau coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . PAC eau-eau coll . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'PAC air-eau indiv',
+                roundNumber('Calcul Eco . PAC air-eau indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC air-eau indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC air-eau indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC air-eau indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . PAC air-eau indiv . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'PAC air-eau collectif-tertiaire',
+                roundNumber('Calcul Eco . PAC air-eau coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC air-eau coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC air-eau coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC air-eau coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . PAC air-eau coll . Coût combustible pour ballon ECS solaire'),
+              ],
+              [
+                'Radiateur électrique',
+                roundNumber('Calcul Eco . Radiateur électrique . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Radiateur électrique . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Radiateur électrique . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Radiateur électrique . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber('Calcul Eco . Radiateur électrique . Coût combustible pour ballon ECS solaire'),
               ],
             ]}
           />
