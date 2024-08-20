@@ -56,8 +56,8 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, cla
       'zone climatique': "'H2'",
       'sous zone climatique': "'H2c'",
 
-      'contenu CO2 réseau de chaleur': 0.085,
-      'contenu CO2 réseau de froid': 0.017,
+      'caractéristique réseau de chaleur . contenu CO2': 0.085,
+      'caractéristique réseau de froid . contenu CO2': 0.017,
       'type de bâtiment': "'résidentiel'",
       'Production eau chaude sanitaire': 'oui',
       'méthode résidentiel': "'DPE'",
