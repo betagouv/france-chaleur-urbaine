@@ -8,21 +8,21 @@ type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
 };
 
-// const coutGraphOptions: ComponentProps<typeof Chart>['options'] = {
-//   title: 'Décomposition du coût global chauffage & ECS',
-//   chartArea: { width: '50%' },
-//   isStacked: true,
-//   colors: ['#FF5655', '#0063CB', '#27A658'],
-//   legend: { position: 'top' },
-//   hAxis: {
-//     title: 'Coût €TCC/logement par an',
-//     minValue: 0,
-//     format: '# €',
-//   },
-//   vAxis: {
-//     title: 'Mode de chauffage',
-//   },
-// };
+const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
+  title: 'Décomposition du coût global chauffage & ECS',
+  chartArea: { width: '50%' },
+  isStacked: true,
+  colors: ['#FF5655', '#0063CB', '#27A658'],
+  // legend: { position: 'top' },
+  hAxis: {
+    title: 'Coût €TCC/logement par an',
+    minValue: 0,
+    format: '# €',
+  },
+  vAxis: {
+    title: 'Mode de chauffage',
+  },
+};
 
 const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   title: 'Émissions annuelles de CO2',
@@ -43,75 +43,105 @@ const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = 
 const typesInstallation = [
   {
     label: 'Réseaux de chaleur',
-    publicodesKey: 'Réseaux de chaleur x Collectif',
+    emissionsCO2PublicodesKey: 'Réseaux de chaleur x Collectif',
+    coutPublicodeKey: 'Réseaux de chaleur',
   },
   {
     label: 'Réseaux de froid',
-    publicodesKey: 'Réseaux de froid x Collectif',
+    emissionsCO2PublicodesKey: 'Réseaux de froid x Collectif',
+    coutPublicodeKey: 'Réseaux de froid',
   },
   {
     label: 'Poêle à granulés indiv',
-    publicodesKey: 'Poêle à granulés indiv x Individuel',
+    emissionsCO2PublicodesKey: 'Poêle à granulés indiv x Individuel',
+    coutPublicodeKey: 'Poêle à granulés indiv',
   },
   {
     label: 'Chaudière à granulés coll',
-    publicodesKey: 'Chaudière à granulés coll x Collectif',
+    emissionsCO2PublicodesKey: 'Chaudière à granulés coll x Collectif',
+    coutPublicodeKey: 'Chaudière à granulés coll',
   },
   {
     label: 'Gaz indiv avec cond',
-    publicodesKey: 'Gaz indiv avec cond x Individuel',
+    emissionsCO2PublicodesKey: 'Gaz indiv avec cond x Individuel',
+    coutPublicodeKey: 'Gaz indiv avec cond',
   },
   {
     label: 'Gaz indiv sans cond',
-    publicodesKey: 'Gaz indiv sans cond x Individuel',
+    emissionsCO2PublicodesKey: 'Gaz indiv sans cond x Individuel',
+    coutPublicodeKey: 'Gaz indiv sans cond',
   },
   {
     label: 'Gaz coll avec cond',
-    publicodesKey: 'Gaz coll avec cond x Collectif',
+    emissionsCO2PublicodesKey: 'Gaz coll avec cond x Collectif',
+    coutPublicodeKey: 'Gaz coll avec cond',
   },
   {
     label: 'Gaz coll sans cond',
-    publicodesKey: 'Gaz coll sans cond x Collectif',
+    emissionsCO2PublicodesKey: 'Gaz coll sans cond x Collectif',
+    coutPublicodeKey: 'Gaz coll sans cond',
   },
   {
     label: 'Fioul indiv',
-    publicodesKey: 'Fioul indiv x Individuel',
+    emissionsCO2PublicodesKey: 'Fioul indiv x Individuel',
+    coutPublicodeKey: 'Fioul indiv',
   },
   {
     label: 'Fioul coll',
-    publicodesKey: 'Fioul coll x Collectif',
+    emissionsCO2PublicodesKey: 'Fioul coll x Collectif',
+    coutPublicodeKey: 'Fioul coll',
   },
   {
     label: 'PAC air-air indiv',
-    publicodesKey: 'PAC air-air x Individuel',
+    emissionsCO2PublicodesKey: 'PAC air-air x Individuel',
+    coutPublicodeKey: 'PAC air-air indiv',
   },
   {
     label: 'PAC air-air coll / tertiaire',
-    publicodesKey: 'PAC air-air x Collectif',
+    emissionsCO2PublicodesKey: 'PAC air-air x Collectif',
+    coutPublicodeKey: 'PAC eau-eau indiv',
   },
   {
     label: 'PAC eau-eau indiv',
-    publicodesKey: 'PAC eau-eau x Individuel',
+    emissionsCO2PublicodesKey: 'PAC eau-eau x Individuel',
+    coutPublicodeKey: 'PAC air-eau indiv',
   },
   {
     label: 'PAC eau-eau coll / tertiaire',
-    publicodesKey: 'PAC eau-eau x Collectif',
+    emissionsCO2PublicodesKey: 'PAC eau-eau x Collectif',
+    coutPublicodeKey: 'PAC air-air coll',
   },
   {
     label: 'PAC air-eau indiv',
-    publicodesKey: 'PAC air-eau x Individuel',
+    emissionsCO2PublicodesKey: 'PAC air-eau x Individuel',
+    coutPublicodeKey: 'PAC eau-eau coll',
   },
   {
     label: 'PAC air-eau coll / tertiaire',
-    publicodesKey: 'PAC air-eau x Collectif',
+    emissionsCO2PublicodesKey: 'PAC air-eau x Collectif',
+    coutPublicodeKey: 'PAC air-eau coll',
   },
   {
     label: 'Radiateur électrique',
-    publicodesKey: 'Radiateur électrique x Individuel',
+    emissionsCO2PublicodesKey: 'Radiateur électrique x Individuel',
+    coutPublicodeKey: 'Radiateur électrique',
   },
 ] as const;
 
 const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
+  const coutGraphData = [
+    ['Mode de chauffage', 'P1 abo', 'P1 conso', "P1'", 'P1 ECS', 'P2', 'P3', 'P4'],
+    ...typesInstallation.map((typeInstallation) => [
+      typeInstallation.label,
+      engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible abonnement`),
+      engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible consommation`),
+      engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût électricité auxiliaire`),
+      engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût combustible pour ballon ECS à accumulation`),
+      engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . petit entretien P2`),
+      engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . gros entretien P3`),
+      0, // TODO P4 PMT
+    ]),
+  ];
   const emissionsCO2GraphData = [
     [
       'Mode de chauffage',
@@ -121,14 +151,23 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
     ],
     ...typesInstallation.map((typeInstallation) => [
       typeInstallation.label,
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . Scope 1`),
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . Scope 2`),
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.publicodesKey} . Scope 3`),
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
+      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
     ]),
   ];
 
   return (
     <div className={cx(className)} {...props}>
+      <Chart
+        height="600px"
+        width="100%"
+        chartType="BarChart"
+        chartLanguage="FR-fr"
+        loader={<div>Chargement du graphe...</div>}
+        data={coutGraphData}
+        options={coutGraphOptions}
+      />
       <Chart
         height="600px"
         width="100%"
