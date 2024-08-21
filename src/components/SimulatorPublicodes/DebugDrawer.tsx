@@ -596,6 +596,138 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
           />
 
           <Table
+            caption="Si besoins équipements ECS différenciés"
+            headers={[
+              'Installations',
+              "Besoin d'installation supplémentaire pour produire l'ECS ?",
+              'Volume du ballon ECS (L)',
+              "Consommation d'électricité (kWh/an)",
+              "Appoint d'éléctricité (kWh/an)",
+            ]}
+            data={[
+              [
+                'Réseaux de chaleur',
+                bool("Installation x Réseaux de chaleur x Collectif . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Réseaux de chaleur x Collectif . volume du ballon ECS'),
+                roundNumber("Installation x Réseaux de chaleur x Collectif . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Réseaux de chaleur x Collectif . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Réseaux de froid',
+                bool("Installation x Réseaux de froid x Collectif . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Réseaux de froid x Collectif . volume du ballon ECS'),
+                roundNumber("Installation x Réseaux de froid x Collectif . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Réseaux de froid x Collectif . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Poêle à granulés indiv',
+                bool("Installation x Poêle à granulés indiv x Individuel . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Poêle à granulés indiv x Individuel . volume du ballon ECS'),
+                roundNumber("Installation x Poêle à granulés indiv x Individuel . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Poêle à granulés indiv x Individuel . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Chaudière à granulés coll',
+                bool("Installation x Chaudière à granulés coll x Collectif . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Chaudière à granulés coll x Collectif . volume du ballon ECS'),
+                roundNumber("Installation x Chaudière à granulés coll x Collectif . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Chaudière à granulés coll x Collectif . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Gaz indiv avec cond',
+                bool("Installation x Gaz indiv avec cond x Individuel . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Gaz indiv avec cond x Individuel . volume du ballon ECS'),
+                roundNumber("Installation x Gaz indiv avec cond x Individuel . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Gaz indiv avec cond x Individuel . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Gaz indiv sans cond',
+                bool("Installation x Gaz indiv sans cond x Individuel . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Gaz indiv sans cond x Individuel . volume du ballon ECS'),
+                roundNumber("Installation x Gaz indiv sans cond x Individuel . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Gaz indiv sans cond x Individuel . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Gaz coll avec cond',
+                bool("Installation x Gaz coll avec cond x Collectif . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Gaz coll avec cond x Collectif . volume du ballon ECS'),
+                roundNumber("Installation x Gaz coll avec cond x Collectif . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Gaz coll avec cond x Collectif . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Gaz coll sans cond',
+                bool("Installation x Gaz coll sans cond x Collectif . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Gaz coll sans cond x Collectif . volume du ballon ECS'),
+                roundNumber("Installation x Gaz coll sans cond x Collectif . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Gaz coll sans cond x Collectif . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Fioul indiv',
+                bool("Installation x Fioul indiv x Individuel . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Fioul indiv x Individuel . volume du ballon ECS'),
+                roundNumber("Installation x Fioul indiv x Individuel . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Fioul indiv x Individuel . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Fioul coll',
+                bool("Installation x Fioul coll x Collectif . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Fioul coll x Collectif . volume du ballon ECS'),
+                roundNumber("Installation x Fioul coll x Collectif . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Fioul coll x Collectif . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'PAC air/air indiv',
+                bool("Installation x PAC air-air x Individuel . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x PAC air-air x Individuel . volume du ballon ECS'),
+                roundNumber("Installation x PAC air-air x Individuel . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x PAC air-air x Individuel . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'PAC air/air collectif/tertiaire',
+                bool("Installation x PAC air-air x Collectif . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x PAC air-air x Collectif . volume du ballon ECS'),
+                roundNumber("Installation x PAC air-air x Collectif . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x PAC air-air x Collectif . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'PAC eau/eau indiv',
+                bool("Installation x PAC eau-eau x Individuel . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x PAC eau-eau x Individuel . volume du ballon ECS'),
+                roundNumber("Installation x PAC eau-eau x Individuel . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x PAC eau-eau x Individuel . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'PAC eau/eau collectif/tertiaire',
+                bool("Installation x PAC eau-eau x Collectif . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x PAC eau-eau x Collectif . volume du ballon ECS'),
+                roundNumber("Installation x PAC eau-eau x Collectif . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x PAC eau-eau x Collectif . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'PAC air/eau indiv',
+                bool("Installation x PAC air-eau x Individuel . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x PAC air-eau x Individuel . volume du ballon ECS'),
+                roundNumber("Installation x PAC air-eau x Individuel . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x PAC air-eau x Individuel . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'PAC air/eau collectif/tertiaire',
+                bool("Installation x PAC air-eau x Collectif . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x PAC air-eau x Collectif . volume du ballon ECS'),
+                roundNumber("Installation x PAC air-eau x Collectif . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x PAC air-eau x Collectif . appoint d'électricité chauffe-eau solaire"),
+              ],
+              [
+                'Radiateur électrique',
+                bool("Installation x Radiateur électrique x Individuel . besoin d'installation supplémentaire pour produire l'ECS"),
+                roundNumber('Installation x Radiateur électrique x Individuel . volume du ballon ECS'),
+                roundNumber("Installation x Radiateur électrique x Individuel . consommation d'électricité chauffe-eau électrique"),
+                roundNumber("Installation x Radiateur électrique x Individuel . appoint d'électricité chauffe-eau solaire"),
+              ],
+            ]}
+          />
+
+          <Table
             caption="Bilan par lgt / tertiaire"
             headers={[
               'Installations',
