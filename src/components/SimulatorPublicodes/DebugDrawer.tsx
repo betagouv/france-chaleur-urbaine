@@ -425,6 +425,142 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
 
+          <Table
+            caption="P2, P3 - Coût de l'entretien"
+            headers={[
+              'Installation',
+              'Petit entretien (P2) €TTC/an',
+              'Gros entretien (P3) €TTC/an',
+              'Par logement/tertiaire - Petit entretien (P2) €TTC/an',
+              'Par logement/tertiaire - Gros entretien (P3) €TTC/an',
+            ]}
+            data={[
+              [
+                'Réseaux de chaleur',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de chaleur . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de chaleur . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de chaleur . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de chaleur . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'Réseaux de froid',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de froid . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de froid . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de froid . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de froid . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'Poêle à granulés indiv',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Poêle à granulés indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Poêle à granulés indiv . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Poêle à granulés indiv . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Poêle à granulés indiv . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'Chaudière à granulés coll',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Chaudière à granulés coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Chaudière à granulés coll . gros entretien P3"),
+                roundNumber(
+                  "Calcul Eco . P2 P3 Coût de l'entretien . Chaudière à granulés coll . petit entretien P2 par logement tertiaire"
+                ),
+                roundNumber(
+                  "Calcul Eco . P2 P3 Coût de l'entretien . Chaudière à granulés coll . gros entretien P3 par logement tertiaire"
+                ),
+              ],
+              [
+                'Gaz indiv avec cond',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv avec cond . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv avec cond . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv avec cond . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv avec cond . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'Gaz indiv sans cond',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv sans cond . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv sans cond . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv sans cond . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv sans cond . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'Gaz coll avec cond',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll avec cond . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll avec cond . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll avec cond . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll avec cond . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'Gaz coll sans cond',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll sans cond . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll sans cond . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll sans cond . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll sans cond . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'Fioul indiv',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul indiv . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul indiv . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul indiv . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'Fioul coll',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul coll . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul coll . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul coll . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'PAC air/air indiv',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air indiv . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air indiv . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air indiv . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'PAC air/air collectif/tertiaire',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air coll . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air coll . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air coll . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'PAC eau/eau indiv',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau indiv . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau indiv . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau indiv . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'PAC eau/eau collectif/tertiaire',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau coll . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau coll . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau coll . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'PAC air/eau indiv',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau indiv . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau indiv . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau indiv . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'PAC air/eau collectif/tertiaire',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau coll . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau coll . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau coll . gros entretien P3 par logement tertiaire"),
+              ],
+              [
+                'Radiateur électrique',
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Radiateur électrique . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Radiateur électrique . gros entretien P3"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Radiateur électrique . petit entretien P2 par logement tertiaire"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Radiateur électrique . gros entretien P3 par logement tertiaire"),
+              ],
+            ]}
+          />
+
           <Heading size="h2">Calculs techniques</Heading>
 
           <Table
