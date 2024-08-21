@@ -115,7 +115,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
               'Investissement équipement par lgt type / tertiaire (€)',
               'Investissement ballon ECS à accumulation (€)',
               'Investissement ballon ECS solaire (panneau inclus) (€)',
-              'Total investissement avec balllon  ECS à accumulation (€)',
+              'Total investissement avec ballon  ECS à accumulation (€)',
               'Total investissement ballon ECS solaire (panneaux inclus) (€)',
             ]}
             data={[
@@ -282,7 +282,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
               'Coût du combustible abonnement (P1 abo) €TTC/an',
               'Coût du combustible consommation (P1 conso) €TTC/an',
               "Coût électricité auxilliaire (P1') €TTC/an",
-              'Coût combustible pour balllon ECS à accumulation (P1 ECS) €TTC/an',
+              'Coût combustible pour ballon ECS à accumulation (P1 ECS) €TTC/an',
               'Coût combustible pour ballon ECS solaire (P1 ECS) €TTC/an',
             ]}
             data={[
@@ -849,7 +849,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
               'Investissement équipement par lgt type / tertiaire (€)',
               'Investissement ballon ECS à accumulation (€)', // inutile
               'Investissement ballon ECS solaire (panneau inclus) (€)', // inutile
-              'Total investissement avec balllon  ECS à accumulation (€)',
+              'Total investissement avec ballon  ECS à accumulation (€)',
               'Total investissement ballon ECS solaire (panneaux inclus) (€)',
             ]}
             data={[
