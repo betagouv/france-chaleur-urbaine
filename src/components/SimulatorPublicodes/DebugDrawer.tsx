@@ -375,7 +375,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 roundNumber('Calcul Eco . PAC air-air indiv . Coût combustible pour ballon ECS solaire'),
               ],
               [
-                'PAC air-air collectif-tertiaire',
+                'PAC air/air collectif-tertiaire',
                 roundNumber('Calcul Eco . PAC air-air coll . Coût du combustible abonnement'),
                 roundNumber('Calcul Eco . PAC air-air coll . Coût du combustible consommation'),
                 roundNumber('Calcul Eco . PAC air-air coll . Coût électricité auxiliaire'),
@@ -383,7 +383,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 roundNumber('Calcul Eco . PAC air-air coll . Coût combustible pour ballon ECS solaire'),
               ],
               [
-                'PAC eau-eau indiv',
+                'PAC eau/eau indiv',
                 roundNumber('Calcul Eco . PAC eau-eau indiv . Coût du combustible abonnement'),
                 roundNumber('Calcul Eco . PAC eau-eau indiv . Coût du combustible consommation'),
                 roundNumber('Calcul Eco . PAC eau-eau indiv . Coût électricité auxiliaire'),
@@ -391,7 +391,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 roundNumber('Calcul Eco . PAC eau-eau indiv . Coût combustible pour ballon ECS solaire'),
               ],
               [
-                'PAC eau-eau collectif-tertiaire',
+                'PAC eau/eau collectif-tertiaire',
                 roundNumber('Calcul Eco . PAC eau-eau coll . Coût du combustible abonnement'),
                 roundNumber('Calcul Eco . PAC eau-eau coll . Coût du combustible consommation'),
                 roundNumber('Calcul Eco . PAC eau-eau coll . Coût électricité auxiliaire'),
@@ -399,7 +399,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 roundNumber('Calcul Eco . PAC eau-eau coll . Coût combustible pour ballon ECS solaire'),
               ],
               [
-                'PAC air-eau indiv',
+                'PAC air/eau indiv',
                 roundNumber('Calcul Eco . PAC air-eau indiv . Coût du combustible abonnement'),
                 roundNumber('Calcul Eco . PAC air-eau indiv . Coût du combustible consommation'),
                 roundNumber('Calcul Eco . PAC air-eau indiv . Coût électricité auxiliaire'),
@@ -407,7 +407,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 roundNumber('Calcul Eco . PAC air-eau indiv . Coût combustible pour ballon ECS solaire'),
               ],
               [
-                'PAC air-eau collectif-tertiaire',
+                'PAC air/eau collectif-tertiaire',
                 roundNumber('Calcul Eco . PAC air-eau coll . Coût du combustible abonnement'),
                 roundNumber('Calcul Eco . PAC air-eau coll . Coût du combustible consommation'),
                 roundNumber('Calcul Eco . PAC air-eau coll . Coût électricité auxiliaire'),
