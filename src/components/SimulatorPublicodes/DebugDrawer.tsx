@@ -2,11 +2,14 @@ import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Button from '@codegouvfr/react-dsfr/Button';
 import Table from '@codegouvfr/react-dsfr/Table';
 import { Drawer, Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
+import { utils } from 'publicodes';
 import { useState } from 'react';
 import styled from 'styled-components';
 
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
+import Link from '@components/ui/Link';
 import { formatUnit } from '@helpers/publicodes/usePublicodesEngine';
 
 import { type SimulatorEngine } from './useSimulatorEngine';
@@ -20,6 +23,11 @@ const RuleTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {
     maxWidth: 'none',
   },
 });
+const RuleLink = styled(Link)`
+  &[target='_blank']::after {
+    display: none !important;
+  }
+`;
 
 const DebugDrawer = ({ engine }: DebugDrawerProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -30,9 +38,12 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
     const unit = node.unit ? formatUnit(node.unit) : '';
     return (
       <RuleTooltip title={key}>
-        <span>
-          {value} {unit}
-        </span>
+        <Box textWrap="nowrap">
+          {value} {unit}{' '}
+          <RuleLink variant="tertiaryNoOutline" href={`http://localhost:5173/doc/${utils.encodeRuleName(key)}`} isExternal px="1w">
+            <Icon name="fr-icon-article-line" />
+          </RuleLink>
+        </Box>
       </RuleTooltip>
     );
   };
@@ -42,16 +53,24 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
     const unit = node.unit ? formatUnit(node.unit) : '';
     return (
       <RuleTooltip title={key}>
-        <span>
-          {value} {unit}
-        </span>
+        <Box textWrap="nowrap">
+          {value} {unit}{' '}
+          <RuleLink variant="tertiaryNoOutline" href={`http://localhost:5173/doc/${utils.encodeRuleName(key)}`} isExternal px="1w">
+            <Icon name="fr-icon-article-line" />
+          </RuleLink>
+        </Box>
       </RuleTooltip>
     );
   };
   const bool = (key: DottedName) => {
     return (
       <RuleTooltip title={key}>
-        <span>{engine.getField(key) ? 'oui' : 'non'}</span>
+        <Box textWrap="nowrap">
+          {engine.getField(key) ? 'oui' : 'non'}{' '}
+          <RuleLink variant="tertiaryNoOutline" href={`http://localhost:5173/doc/${utils.encodeRuleName(key)}`} isExternal px="1w">
+            <Icon name="fr-icon-article-line" />
+          </RuleLink>
+        </Box>
       </RuleTooltip>
     );
   };
