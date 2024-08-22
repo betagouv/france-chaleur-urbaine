@@ -705,7 +705,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
           <Table
             caption="Puissance totale des installations"
             headers={[
-              'Installations',
+              'Installation',
               'Production eau chaude sanitaire ?',
               'Puissance nécessaire équipement chauffage (kW)',
               'Puissance nécessaire pour ECS avec équipement (kW)',
@@ -873,7 +873,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
           <Table
             caption="Si besoins équipements ECS différenciés"
             headers={[
-              'Installations',
+              'Installation',
               "Besoin d'installation supplémentaire pour produire l'ECS ?",
               'Volume du ballon ECS (L)',
               "Consommation d'électricité (kWh/an)",
@@ -1005,7 +1005,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
           <Table
             caption="Bilan par lgt / tertiaire"
             headers={[
-              'Installations',
+              'Installation',
               'Consommation combustible chaleur',
               'Consommation combustible froid',
               'Consommation auxiliaire (kWh elec/an)',
@@ -1119,7 +1119,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
           <Table
             caption="Bilan des consommations par lgt / tertiaire"
             headers={[
-              'Installations',
+              'Installation',
               'Consommation combustible hors électricité',
               "Consommation d'électricité lié au chauffage/refroidissement et à la production d'ECS (kWh/an)",
             ]}
@@ -1251,7 +1251,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
           <Table
             caption="Calculs environnementaux"
             headers={[
-              'Installations',
+              'Installation',
               "Besoin d'installation supplémentaire pour produire l'ECS ?",
               'Scope 1 - Besoin de chauffage et ECS si même équipement (kgCO2 équ.)',
               'Scope 2 - Auxiliaires et combustible électrique (kgCO2 équ.)',
