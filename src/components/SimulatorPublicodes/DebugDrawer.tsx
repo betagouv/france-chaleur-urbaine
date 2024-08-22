@@ -561,6 +561,145 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
 
+          <Table
+            caption="Montant des aides par logement/tertiaire"
+            headers={['Installation', "Ma prime renov' (€)", 'Coup de pouce (€)', 'CEE (€)', 'Coût total des aides (€)']}
+            data={[
+              [
+                'Réseaux de chaleur',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Réseaux de chaleur . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Réseaux de chaleur . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Réseaux de chaleur . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Réseaux de chaleur . Total'),
+              ],
+              [
+                'Réseaux de froid',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Réseaux de froid . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Réseaux de froid . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Réseaux de froid . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Réseaux de froid . Total'),
+              ],
+              [
+                'Poêle à granulés indiv',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Poêle à granulés indiv . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Poêle à granulés indiv . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Poêle à granulés indiv . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Poêle à granulés indiv . Total'),
+              ],
+              [
+                'Chaudière à granulés coll',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Chaudière à granulés coll . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Chaudière à granulés coll . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Chaudière à granulés coll . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Chaudière à granulés coll . Total'),
+              ],
+              [
+                'Gaz indiv avec cond',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Gaz indiv avec cond . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz indiv avec cond . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz indiv avec cond . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz indiv avec cond . Total'),
+              ],
+              [
+                'Gaz indiv sans cond',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Gaz indiv sans cond . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz indiv sans cond . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz indiv sans cond . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz indiv sans cond . Total'),
+              ],
+              [
+                'Gaz coll avec cond',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Gaz coll avec cond . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz coll avec cond . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz coll avec cond . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz coll avec cond . Total'),
+              ],
+              [
+                'Gaz coll sans cond',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Gaz coll sans cond . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz coll sans cond . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz coll sans cond . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Gaz coll sans cond . Total'),
+              ],
+              [
+                'Fioul indiv',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Fioul indiv . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Fioul indiv . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Fioul indiv . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Fioul indiv . Total'),
+              ],
+              [
+                'Fioul coll',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Fioul coll . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Fioul coll . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Fioul coll . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Fioul coll . Total'),
+              ],
+              [
+                'PAC air/air indiv',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . PAC air-air indiv . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-air indiv . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-air indiv . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-air indiv . Total'),
+              ],
+              [
+                'PAC air/air collectif-tertiaire',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . PAC air-air coll . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-air coll . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-air coll . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-air coll . Total'),
+              ],
+              [
+                'PAC eau/eau indiv',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . PAC eau-eau indiv . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC eau-eau indiv . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC eau-eau indiv . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC eau-eau indiv . Total'),
+              ],
+              [
+                'PAC eau/eau collectif-tertiaire',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . PAC eau-eau coll . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC eau-eau coll . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC eau-eau coll . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC eau-eau coll . Total'),
+              ],
+              [
+                'PAC air/eau indiv',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau indiv . Total'),
+              ],
+              [
+                'PAC air/eau collectif-tertiaire',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau coll . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau coll . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau coll . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . PAC air-eau coll . Total'),
+              ],
+              [
+                'Radiateur électrique',
+                roundNumber("Calcul Eco . Montant des aides par logement tertiaire . Radiateur électrique . Ma prime renov'"),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Radiateur électrique . Coup de pouce'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Radiateur électrique . CEE'),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Radiateur électrique . Total'),
+              ],
+              [
+                'Panneau solaire thermique pour production ECS',
+                roundNumber(
+                  "Calcul Eco . Montant des aides par logement tertiaire . Panneau solaire thermique pour production ECS . Ma prime renov'"
+                ),
+                roundNumber(
+                  'Calcul Eco . Montant des aides par logement tertiaire . Panneau solaire thermique pour production ECS . Coup de pouce'
+                ),
+                roundNumber('Calcul Eco . Montant des aides par logement tertiaire . Panneau solaire thermique pour production ECS . CEE'),
+                roundNumber(
+                  'Calcul Eco . Montant des aides par logement tertiaire . Panneau solaire thermique pour production ECS . Total'
+                ),
+              ],
+            ]}
+          />
+
           <Heading size="h2">Calculs techniques</Heading>
 
           <Table
@@ -1103,176 +1242,6 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 roundNumber(
                   "Installation x Radiateur électrique x Individuel . consommation d'électricité lié au chauffage-refroidissement et à la production d'ECS"
                 ),
-              ],
-            ]}
-          />
-
-          <Heading size="h2">Calculs économiques</Heading>
-
-          <Table
-            caption="P4 - Investissement total (sans aide) €TTC"
-            headers={[
-              'Installations',
-              'Investissement équipement total (€)',
-              'Investissement équipement par lgt type / tertiaire (€)',
-              'Investissement ballon ECS à accumulation (€)', // inutile
-              'Investissement ballon ECS solaire (panneau inclus) (€)', // inutile
-              'Total investissement avec ballon  ECS à accumulation (€)',
-              'Total investissement ballon ECS solaire (panneaux inclus) (€)',
-            ]}
-            data={[
-              [
-                'Réseaux de chaleur',
-                roundNumber('Calcul Eco . Réseaux de chaleur . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Réseaux de chaleur . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Réseaux de chaleur . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Réseaux de chaleur . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Réseaux de chaleur . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Réseaux de chaleur . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Réseaux de froid',
-                roundNumber('Calcul Eco . Réseaux de froid . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Réseaux de froid . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Réseaux de froid . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Réseaux de froid . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Réseaux de froid . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Réseaux de froid . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Poêle à granulés indiv',
-                roundNumber('Calcul Eco . Poêle à granulés indiv . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Poêle à granulés indiv . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Poêle à granulés indiv . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Poêle à granulés indiv . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Poêle à granulés indiv . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Poêle à granulés indiv . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Chaudière à granulés coll',
-                roundNumber('Calcul Eco . Chaudière à granulés coll . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Chaudière à granulés coll . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Chaudière à granulés coll . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Chaudière à granulés coll . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Chaudière à granulés coll . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Chaudière à granulés coll . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Gaz indiv avec cond',
-                roundNumber('Calcul Eco . Gaz indiv avec cond . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Gaz indiv avec cond . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Gaz indiv avec cond . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Gaz indiv avec cond . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Gaz indiv avec cond . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Gaz indiv avec cond . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Gaz indiv sans cond',
-                roundNumber('Calcul Eco . Gaz indiv sans cond . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Gaz indiv sans cond . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Gaz indiv sans cond . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Gaz indiv sans cond . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Gaz indiv sans cond . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Gaz indiv sans cond . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Gaz coll avec cond',
-                roundNumber('Calcul Eco . Gaz coll avec cond . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Gaz coll avec cond . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Gaz coll avec cond . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Gaz coll avec cond . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Gaz coll avec cond . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Gaz coll avec cond . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Gaz coll sans cond',
-                roundNumber('Calcul Eco . Gaz coll sans cond . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Gaz coll sans cond . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Gaz coll sans cond . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Gaz coll sans cond . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Gaz coll sans cond . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Gaz coll sans cond . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Fioul indiv',
-                roundNumber('Calcul Eco . Fioul indiv . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Fioul indiv . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Fioul indiv . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Fioul indiv . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Fioul indiv . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Fioul indiv . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Fioul coll',
-                roundNumber('Calcul Eco . Fioul coll . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Fioul coll . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Fioul coll . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Fioul coll . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Fioul coll . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Fioul coll . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'PAC air/air indiv',
-                roundNumber('Calcul Eco . PAC air-air indiv . Investissement équipement Total'),
-                roundNumber('Calcul Eco . PAC air-air indiv . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . PAC air-air indiv . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC air-air indiv . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . PAC air-air indiv . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC air-air indiv . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'PAC air/air collectif/tertiaire',
-                roundNumber('Calcul Eco . PAC air-air coll . Investissement équipement Total'),
-                roundNumber('Calcul Eco . PAC air-air coll . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . PAC air-air coll . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC air-air coll . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . PAC air-air coll . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC air-air coll . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'PAC eau/eau indiv',
-                roundNumber('Calcul Eco . PAC eau-eau indiv . Investissement équipement Total'),
-                roundNumber('Calcul Eco . PAC eau-eau indiv . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . PAC eau-eau indiv . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC eau-eau indiv . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . PAC eau-eau indiv . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC eau-eau indiv . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'PAC eau/eau collectif/tertiaire',
-                roundNumber('Calcul Eco . PAC eau-eau coll . Investissement équipement Total'),
-                roundNumber('Calcul Eco . PAC eau-eau coll . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . PAC eau-eau coll . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC eau-eau coll . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . PAC eau-eau coll . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC eau-eau coll . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'PAC air/eau indiv',
-                roundNumber('Calcul Eco . PAC air-eau indiv . Investissement équipement Total'),
-                roundNumber('Calcul Eco . PAC air-eau indiv . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . PAC air-eau indiv . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC air-eau indiv . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . PAC air-eau indiv . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC air-eau indiv . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'PAC air/eau collectif/tertiaire',
-                roundNumber('Calcul Eco . PAC air-eau coll . Investissement équipement Total'),
-                roundNumber('Calcul Eco . PAC air-eau coll . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . PAC air-eau coll . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC air-eau coll . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . PAC air-eau coll . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . PAC air-eau coll . Total investissement ballon ECS solaire panneaux'),
-              ],
-              [
-                'Radiateur électrique',
-                roundNumber('Calcul Eco . Radiateur électrique . Investissement équipement Total'),
-                roundNumber('Calcul Eco . Radiateur électrique . Investissement équipement par logement type tertiaire'),
-                roundNumber('Calcul Eco . Radiateur électrique . Investissement ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Radiateur électrique . Investissement ballon ECS solaire panneau inclus'),
-                roundNumber('Calcul Eco . Radiateur électrique . Total investissement avec ballon ECS à accumulation'),
-                roundNumber('Calcul Eco . Radiateur électrique . Total investissement ballon ECS solaire panneaux'),
               ],
             ]}
           />
