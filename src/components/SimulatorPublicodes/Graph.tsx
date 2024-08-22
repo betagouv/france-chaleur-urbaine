@@ -12,7 +12,7 @@ const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   title: 'Décomposition du coût global chauffage & ECS',
   chartArea: { width: '50%' },
   isStacked: true,
-  colors: ['#FF5655', '#0063CB', '#27A658'],
+  // colors: ['#FF5655', '#0063CB', '#27A658'],
   // legend: { position: 'top' },
   hAxis: {
     title: 'Coût €TCC/logement par an',
@@ -130,7 +130,7 @@ const typesInstallation = [
 
 const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
   const coutGraphData = [
-    ['Mode de chauffage', 'P1 abo', 'P1 conso', "P1'", 'P1 ECS', 'P2', 'P3', 'P4'],
+    ['Mode de chauffage', 'P1 abo', 'P1 conso', "P1'", 'P1 ECS', 'P2', 'P3', 'P4 moins aides', 'aides'],
     ...typesInstallation.map((typeInstallation) => [
       typeInstallation.label,
       engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible abonnement`),
@@ -139,7 +139,9 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
       engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût combustible pour ballon ECS à accumulation`),
       engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . petit entretien P2`),
       engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . gros entretien P3`),
-      0, // TODO P4 PMT
+      // TODO manque les différents types d'installation avec élec ou solaire
+      engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`),
+      engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`),
     ]),
   ];
   const emissionsCO2GraphData = [
