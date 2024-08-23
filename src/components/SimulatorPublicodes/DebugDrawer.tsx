@@ -28,6 +28,15 @@ const RuleLink = styled(Link)`
     display: none !important;
   }
 `;
+const ScrollDrawer = styled(Drawer)`
+  & .MuiPaper-root {
+    max-width: 100%;
+  }
+`;
+const DebugTable = styled(Table)`
+  max-width: 100%;
+  overflow-x: auto;
+`;
 
 const DebugDrawer = ({ engine }: DebugDrawerProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -81,12 +90,272 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
         DEBUG
       </FloatingButton>
 
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} anchor="right">
+      <ScrollDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} anchor="right">
         <Button onClick={() => setDrawerOpen(false)}>Fermer</Button>
-        <Box px="3w">
+        <Box px="3w" maxWidth="100%">
+          <Heading size="h2">Bilan 1an</Heading>
+
+          <DebugTable
+            caption="Bilan à 1 an par lgt type / tertiaire chauffage"
+            headers={[
+              'Installation',
+              'P1 abo',
+              'P1 conso',
+              "P1'",
+              'P1 ECS',
+              'P2',
+              'P3',
+              'P4',
+              'P4 moins aides',
+              'Aides',
+              'Total sans aides',
+              'Total avec aides',
+            ]}
+            data={[
+              [
+                'Réseaux de chaleur',
+                roundNumber('Calcul Eco . Réseaux de chaleur . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Réseaux de chaleur . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Réseaux de chaleur . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Réseaux de chaleur . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de chaleur . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de chaleur . gros entretien P3"),
+                roundNumber('Bilan x Réseaux de chaleur . P4'),
+                roundNumber('Bilan x Réseaux de chaleur . P4 moins aides'),
+                roundNumber('Bilan x Réseaux de chaleur . aides'),
+                roundNumber('Bilan x Réseaux de chaleur . total sans aides'),
+                roundNumber('Bilan x Réseaux de chaleur . total avec aides'),
+              ],
+              [
+                'Réseaux de froid',
+                roundNumber('Calcul Eco . Réseaux de froid . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Réseaux de froid . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Réseaux de froid . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Réseaux de froid . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de froid . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Réseaux de froid . gros entretien P3"),
+                roundNumber('Bilan x Réseaux de froid . P4'),
+                roundNumber('Bilan x Réseaux de froid . P4 moins aides'),
+                roundNumber('Bilan x Réseaux de froid . aides'),
+                roundNumber('Bilan x Réseaux de froid . total sans aides'),
+                roundNumber('Bilan x Réseaux de froid . total avec aides'),
+              ],
+              [
+                'Poêle à granulés indiv',
+                roundNumber('Calcul Eco . Poêle à granulés indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Poêle à granulés indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Poêle à granulés indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Poêle à granulés indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Poêle à granulés indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Poêle à granulés indiv . gros entretien P3"),
+                roundNumber('Bilan x Poêle à granulés indiv . P4'),
+                roundNumber('Bilan x Poêle à granulés indiv . P4 moins aides'),
+                roundNumber('Bilan x Poêle à granulés indiv . aides'),
+                roundNumber('Bilan x Poêle à granulés indiv . total sans aides'),
+                roundNumber('Bilan x Poêle à granulés indiv . total avec aides'),
+              ],
+              [
+                'Chaudière à granulés coll',
+                roundNumber('Calcul Eco . Chaudière à granulés coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Chaudière à granulés coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Chaudière à granulés coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Chaudière à granulés coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Chaudière à granulés coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Chaudière à granulés coll . gros entretien P3"),
+                roundNumber('Bilan x Chaudière à granulés coll . P4'),
+                roundNumber('Bilan x Chaudière à granulés coll . P4 moins aides'),
+                roundNumber('Bilan x Chaudière à granulés coll . aides'),
+                roundNumber('Bilan x Chaudière à granulés coll . total sans aides'),
+                roundNumber('Bilan x Chaudière à granulés coll . total avec aides'),
+              ],
+              [
+                'Gaz indiv avec cond',
+                roundNumber('Calcul Eco . Gaz indiv avec cond . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Gaz indiv avec cond . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Gaz indiv avec cond . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Gaz indiv avec cond . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv avec cond . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv avec cond . gros entretien P3"),
+                roundNumber('Bilan x Gaz indiv avec cond . P4'),
+                roundNumber('Bilan x Gaz indiv avec cond . P4 moins aides'),
+                roundNumber('Bilan x Gaz indiv avec cond . aides'),
+                roundNumber('Bilan x Gaz indiv avec cond . total sans aides'),
+                roundNumber('Bilan x Gaz indiv avec cond . total avec aides'),
+              ],
+              [
+                'Gaz indiv sans cond',
+                roundNumber('Calcul Eco . Gaz indiv sans cond . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Gaz indiv sans cond . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Gaz indiv sans cond . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Gaz indiv sans cond . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv sans cond . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz indiv sans cond . gros entretien P3"),
+                roundNumber('Bilan x Gaz indiv sans cond . P4'),
+                roundNumber('Bilan x Gaz indiv sans cond . P4 moins aides'),
+                roundNumber('Bilan x Gaz indiv sans cond . aides'),
+                roundNumber('Bilan x Gaz indiv sans cond . total sans aides'),
+                roundNumber('Bilan x Gaz indiv sans cond . total avec aides'),
+              ],
+              [
+                'Gaz coll avec cond',
+                roundNumber('Calcul Eco . Gaz coll avec cond . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Gaz coll avec cond . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Gaz coll avec cond . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Gaz coll avec cond . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll avec cond . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll avec cond . gros entretien P3"),
+                roundNumber('Bilan x Gaz coll avec cond . P4'),
+                roundNumber('Bilan x Gaz coll avec cond . P4 moins aides'),
+                roundNumber('Bilan x Gaz coll avec cond . aides'),
+                roundNumber('Bilan x Gaz coll avec cond . total sans aides'),
+                roundNumber('Bilan x Gaz coll avec cond . total avec aides'),
+              ],
+              [
+                'Gaz coll sans cond',
+                roundNumber('Calcul Eco . Gaz coll sans cond . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Gaz coll sans cond . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Gaz coll sans cond . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Gaz coll sans cond . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll sans cond . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Gaz coll sans cond . gros entretien P3"),
+                roundNumber('Bilan x Gaz coll sans cond . P4'),
+                roundNumber('Bilan x Gaz coll sans cond . P4 moins aides'),
+                roundNumber('Bilan x Gaz coll sans cond . aides'),
+                roundNumber('Bilan x Gaz coll sans cond . total sans aides'),
+                roundNumber('Bilan x Gaz coll sans cond . total avec aides'),
+              ],
+              [
+                'Fioul indiv',
+                roundNumber('Calcul Eco . Fioul indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Fioul indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Fioul indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Fioul indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul indiv . gros entretien P3"),
+                roundNumber('Bilan x Fioul indiv . P4'),
+                roundNumber('Bilan x Fioul indiv . P4 moins aides'),
+                roundNumber('Bilan x Fioul indiv . aides'),
+                roundNumber('Bilan x Fioul indiv . total sans aides'),
+                roundNumber('Bilan x Fioul indiv . total avec aides'),
+              ],
+              [
+                'Fioul coll',
+                roundNumber('Calcul Eco . Fioul coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Fioul coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Fioul coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Fioul coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Fioul coll . gros entretien P3"),
+                roundNumber('Bilan x Fioul coll . P4'),
+                roundNumber('Bilan x Fioul coll . P4 moins aides'),
+                roundNumber('Bilan x Fioul coll . aides'),
+                roundNumber('Bilan x Fioul coll . total sans aides'),
+                roundNumber('Bilan x Fioul coll . total avec aides'),
+              ],
+              [
+                'PAC air/air indiv',
+                roundNumber('Calcul Eco . PAC air-air indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC air-air indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC air-air indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC air-air indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air indiv . gros entretien P3"),
+                roundNumber('Bilan x PAC air-air indiv . P4'),
+                roundNumber('Bilan x PAC air-air indiv . P4 moins aides'),
+                roundNumber('Bilan x PAC air-air indiv . aides'),
+                roundNumber('Bilan x PAC air-air indiv . total sans aides'),
+                roundNumber('Bilan x PAC air-air indiv . total avec aides'),
+              ],
+              [
+                'PAC air/air collectif-tertiaire',
+                roundNumber('Calcul Eco . PAC air-air coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC air-air coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC air-air coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC air-air coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-air coll . gros entretien P3"),
+                roundNumber('Bilan x PAC air-air coll . P4'),
+                roundNumber('Bilan x PAC air-air coll . P4 moins aides'),
+                roundNumber('Bilan x PAC air-air coll . aides'),
+                roundNumber('Bilan x PAC air-air coll . total sans aides'),
+                roundNumber('Bilan x PAC air-air coll . total avec aides'),
+              ],
+              [
+                'PAC eau/eau indiv',
+                roundNumber('Calcul Eco . PAC eau-eau indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC eau-eau indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC eau-eau indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC eau-eau indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau indiv . gros entretien P3"),
+                roundNumber('Bilan x PAC eau-eau indiv . P4'),
+                roundNumber('Bilan x PAC eau-eau indiv . P4 moins aides'),
+                roundNumber('Bilan x PAC eau-eau indiv . aides'),
+                roundNumber('Bilan x PAC eau-eau indiv . total sans aides'),
+                roundNumber('Bilan x PAC eau-eau indiv . total avec aides'),
+              ],
+              [
+                'PAC eau/eau collectif-tertiaire',
+                roundNumber('Calcul Eco . PAC eau-eau coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC eau-eau coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC eau-eau coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC eau-eau coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC eau-eau coll . gros entretien P3"),
+                roundNumber('Bilan x PAC eau-eau coll . P4'),
+                roundNumber('Bilan x PAC eau-eau coll . P4 moins aides'),
+                roundNumber('Bilan x PAC eau-eau coll . aides'),
+                roundNumber('Bilan x PAC eau-eau coll . total sans aides'),
+                roundNumber('Bilan x PAC eau-eau coll . total avec aides'),
+              ],
+              [
+                'PAC air/eau indiv',
+                roundNumber('Calcul Eco . PAC air-eau indiv . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC air-eau indiv . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC air-eau indiv . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC air-eau indiv . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau indiv . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau indiv . gros entretien P3"),
+                roundNumber('Bilan x PAC air-eau indiv . P4'),
+                roundNumber('Bilan x PAC air-eau indiv . P4 moins aides'),
+                roundNumber('Bilan x PAC air-eau indiv . aides'),
+                roundNumber('Bilan x PAC air-eau indiv . total sans aides'),
+                roundNumber('Bilan x PAC air-eau indiv . total avec aides'),
+              ],
+              [
+                'PAC air/eau collectif-tertiaire',
+                roundNumber('Calcul Eco . PAC air-eau coll . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . PAC air-eau coll . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . PAC air-eau coll . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . PAC air-eau coll . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau coll . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . PAC air-eau coll . gros entretien P3"),
+                roundNumber('Bilan x PAC air-eau coll . P4'),
+                roundNumber('Bilan x PAC air-eau coll . P4 moins aides'),
+                roundNumber('Bilan x PAC air-eau coll . aides'),
+                roundNumber('Bilan x PAC air-eau coll . total sans aides'),
+                roundNumber('Bilan x PAC air-eau coll . total avec aides'),
+              ],
+              [
+                'Radiateur électrique',
+                roundNumber('Calcul Eco . Radiateur électrique . Coût du combustible abonnement'),
+                roundNumber('Calcul Eco . Radiateur électrique . Coût du combustible consommation'),
+                roundNumber('Calcul Eco . Radiateur électrique . Coût électricité auxiliaire'),
+                roundNumber('Calcul Eco . Radiateur électrique . Coût combustible pour ballon ECS à accumulation'),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Radiateur électrique . petit entretien P2"),
+                roundNumber("Calcul Eco . P2 P3 Coût de l'entretien . Radiateur électrique . gros entretien P3"),
+                roundNumber('Bilan x Radiateur électrique . P4'),
+                roundNumber('Bilan x Radiateur électrique . P4 moins aides'),
+                roundNumber('Bilan x Radiateur électrique . aides'),
+                roundNumber('Bilan x Radiateur électrique . total sans aides'),
+                roundNumber('Bilan x Radiateur électrique . total avec aides'),
+              ],
+            ]}
+          />
+
           <Heading size="h2">Calculs économiques</Heading>
 
-          <Table
+          <DebugTable
             caption="Coût d'achat du combustible"
             headers={['Paramètres', 'Part abonnement', 'Part consommation', 'Heures creuses']}
             data={[
@@ -126,7 +395,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
 
-          <Table
+          <DebugTable
             caption="P4 - Investissement total (sans aide) €TTC"
             headers={[
               'Installation',
@@ -294,7 +563,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
 
-          <Table
+          <DebugTable
             caption="P1 - Coût du combustible par lgt type / tertiaire"
             headers={[
               'Installation',
@@ -444,7 +713,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
 
-          <Table
+          <DebugTable
             caption="P2, P3 - Coût de l'entretien"
             headers={[
               'Installation',
@@ -580,7 +849,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
 
-          <Table
+          <DebugTable
             caption="Montant des aides par logement/tertiaire"
             headers={['Installation', "Ma prime renov' (€)", 'Coup de pouce (€)', 'CEE (€)', 'Coût total des aides (€)']}
             data={[
@@ -721,7 +990,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
 
           <Heading size="h2">Calculs techniques</Heading>
 
-          <Table
+          <DebugTable
             caption="Puissance totale des installations"
             headers={[
               'Installation',
@@ -889,7 +1158,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
 
-          <Table
+          <DebugTable
             caption="Si besoins équipements ECS différenciés"
             headers={[
               'Installation',
@@ -1021,7 +1290,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
 
-          <Table
+          <DebugTable
             caption="Bilan par lgt / tertiaire"
             headers={[
               'Installation',
@@ -1135,7 +1404,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
 
-          <Table
+          <DebugTable
             caption="Bilan des consommations par lgt / tertiaire"
             headers={[
               'Installation',
@@ -1267,7 +1536,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
 
           <Heading size="h2">Calculs environnementaux</Heading>
 
-          <Table
+          <DebugTable
             caption="Calculs environnementaux"
             headers={[
               'Installation',
@@ -1471,7 +1740,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
             ]}
           />
         </Box>
-      </Drawer>
+      </ScrollDrawer>
     </>
   );
 };
