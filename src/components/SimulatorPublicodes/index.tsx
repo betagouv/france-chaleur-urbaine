@@ -1,5 +1,6 @@
 import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { fr } from '@codegouvfr/react-dsfr';
+import Button from '@codegouvfr/react-dsfr/Button';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import Drawer from '@mui/material/Drawer';
@@ -35,15 +36,11 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
 }) => {
   const engine = useSimulatorEngine();
 
-  const [open, setOpen] = React.useState(false);
+  const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
   const engineDisplayMode = engine.getField('mode affichage');
   const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: defaultDisplayMode || (engineDisplayMode as string) });
 
   const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: defaultTabId || 'techniques' });
-
-  const toggleDrawer = (newOpen: boolean) => () => {
-    setOpen(newOpen);
-  };
 
   React.useEffect(() => {
     // In case displayMode is set through url query param, we need to update the engine
@@ -138,10 +135,11 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
               )}
             </div>
             <Results>{results}</Results>
-            <FloatingButton onClick={toggleDrawer(true)} iconId="ri-arrow-up-fill">
+            <FloatingButton onClick={() => setGraphDrawerOpen(true)} iconId="ri-arrow-up-fill">
               Voir les résultats
             </FloatingButton>
-            <Drawer open={open} onClose={toggleDrawer(false)} anchor="right">
+            <Drawer open={graphDrawerOpen} onClose={() => setGraphDrawerOpen(false)} anchor="right">
+              <Button onClick={() => setGraphDrawerOpen(false)}>Fermer</Button>
               {results}
             </Drawer>
             <DebugDrawer engine={engine} />
