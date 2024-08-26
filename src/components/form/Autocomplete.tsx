@@ -62,7 +62,17 @@ const Autocomplete = <Option extends DefaultOption>({
   return (
     <Combobox {...props}>
       <div style={{ position: 'relative' }}>
-        <ComboboxInput id={generatedId} value={inputValue} onChange={(event) => setInputValue(event.target.value)} {...nativeInputProps} />
+        <ComboboxInput
+          id={generatedId}
+          value={inputValue}
+          onChange={(event) => setInputValue(event.target.value)}
+          {...nativeInputProps}
+          style={{
+            ...nativeInputProps?.style,
+            textOverflow: 'ellipsis',
+            paddingRight: '2.5rem',
+          }}
+        />
         {loading && (
           <Oval
             height={16}
