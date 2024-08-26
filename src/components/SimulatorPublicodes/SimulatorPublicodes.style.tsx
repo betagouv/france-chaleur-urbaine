@@ -33,19 +33,23 @@ export const Results = styled.div`
 export const Simulator = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 16px;
   margin: 32px 0;
-
-  div:first-child {
-    flex: 1;
-  }
-  ${Results} {
-    flex: 2;
-  }
 
   ${({ theme }) => theme.media.lg`
     flex-direction: row;
     gap: 32px;
+
+    > div:nth-child(2) {
+      flex: 2;
+      position: sticky;
+      top: 0;
+    }
+
+    > div:nth-child(1) {
+      flex: 1;
+    }
   `}
 `;
 
