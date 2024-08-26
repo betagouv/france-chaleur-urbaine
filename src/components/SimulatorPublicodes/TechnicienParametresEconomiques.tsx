@@ -49,8 +49,33 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           label="Pose et mise en place de l'installation"
         />
         <Input name="ratios économiques . Investissement x TVA" label="TVA" />
+        <Input name="Investissement x frais de raccordement au réseaux x RCU" label="frais de raccordement au réseaux x RCU" />
+        <Input name="Investissement x frais de raccordement au réseaux x RFU" label="frais de raccordement au réseaux x RFU" />
+        <Input name="Investissement x Poêle à granulés indiv" label="Poêle à granulés indiv" />
+        <Input name="Investissement x Chaudière à granulés coll" label="Chaudière à granulés coll" />
+        <Input name="ratios économiques . Gaz x indiv avec cond" label="Gaz x indiv avec cond" />
+        <Input name="ratios économiques . Gaz x indiv sans cond" label="Gaz x indiv sans cond" />
+        <Input name="ratios économiques . Gaz x coll avec cond" label="Gaz x coll avec cond" />
+        <Input name="ratios économiques . Gaz x coll sans cond" label="Gaz x coll sans cond" />
+        <Input name="ratios économiques . Fioul x indiv" label="Fioul x indiv" />
+        <Input name="ratios économiques . Fioul x collectif" label="Fioul x collectif" />
+        <Input name="ratios économiques . PAC x air-air réversible x Individuel" label="PAC x air-air réversible x Individuel" />
+        <Input name="ratios économiques . PAC x eau-eau non réversible x Individuel" label="PAC x eau-eau non réversible x Individuel" />
+        <Input name="ratios économiques . PAC x air-eau réversible x Individuel" label="PAC x air-eau réversible x Individuel" />
+        <Input name="ratios économiques . PAC x air-air réversible x Collectif" label="PAC x air-air réversible x Collectif" />
+        <Input name="ratios économiques . PAC x eau-eau non réversible x Collectif" label="PAC x eau-eau non réversible x Collectif" />
+        <Input name="ratios économiques . PAC x eau-eau non réversible . Coûts hors captage sous-sol" label="Coûts hors captage sous-sol" />
+        <Input
+          name="ratios économiques . PAC x eau-eau non réversible . Coûts captage sous-sol champs sur sonde"
+          label="Coûts captage sous-sol champs sur sonde"
+        />
+        <Input name="ratios économiques . PAC x air-eau réversible x Collectif" label="PAC x air-eau réversible x Collectif" />
+        <Input name="ratios économiques . Radiateur électrique x Individuel" label="Radiateur électrique x Individuel" />
+        <Input name="ratios économiques . Chauffe-eau x électrique à accumulation" label="Chauffe-eau x électrique à accumulation" />
+        <Input name="ratios économiques . Chauffe-eau x solaire" label="Chauffe-eau x solaire" />
+        <Input name="ratios économiques . Chauffe-eau x solaire prix panneaux" label="Chauffe-eau x solaire prix panneaux" />
+
         <Input name="ratios économiques . Amortissement x Taux actualisation" label="Taux actualisation" />
-        {/* TODO compléter */}
       </Accordion>
 
       <Accordion label="Combustibles (P1)">
