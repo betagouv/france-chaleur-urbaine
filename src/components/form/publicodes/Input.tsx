@@ -1,11 +1,11 @@
 import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { useDebouncedEffect } from '@react-hookz/web';
 import React, { useState } from 'react';
 
 import { upperCaseFirstChar } from '@utils/strings';
 
 import DSFRInput from '../dsfr/Input';
 import { usePublicodesFormContext } from '../publicodes/FormProvider';
-
 export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
 
 const Input = ({
@@ -22,11 +22,21 @@ const Input = ({
   }) => {
   const { engine } = usePublicodesFormContext();
   const placeholder = engine.getField(name) as string | number;
-  const value = engine.getSituation()[name];
   const unit = engine.getUnit(name);
+  const [value, setValue] = React.useState(engine.getSituation()[name]);
 
   const [valueType] = useState(typeof placeholder);
   const fieldType = valueType === 'number' ? 'number' : 'text';
+
+  useDebouncedEffect(
+    () => {
+      if (typeof value !== 'undefined') {
+        engine.setField(name, value);
+      }
+    },
+    [name, value],
+    500
+  );
 
   return (
     <DSFRInput
@@ -46,7 +56,7 @@ const Input = ({
         onChange: (e) => {
           e.stopPropagation();
           const newValue = e.target.value;
-          engine.setField(name, newValue);
+          setValue(newValue);
         },
       }}
       // state={props.state ?? fieldState.error ? 'error' : 'default'}
