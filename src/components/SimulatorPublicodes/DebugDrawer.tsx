@@ -86,7 +86,11 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
 
   return (
     <>
-      <FloatingButton onClick={() => setDrawerOpen(true)} iconId="ri-arrow-up-fill">
+      <FloatingButton
+        onClick={() => setDrawerOpen(true)}
+        iconId="ri-table-2"
+        style={{ top: '40%', width: '100px', right: '-30px', background: 'grey' }}
+      >
         DEBUG
       </FloatingButton>
 
