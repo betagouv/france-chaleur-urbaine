@@ -109,7 +109,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
             </>
           )}
           <Input name="consommation spécifique chauffage" label="consommation spécifique chauffage" />
-          <Input name="besoins chauffage par appartement" label="besoins chauffage par appartement" />
+          <Input name="besoins chauffage par appartement" label="besoins chauffage par appartement" placeholderPrecision={2} />
           <Input name="consommation spécifique ECS" label="consommation spécifique ECS" />
           <Input name="besoins eau chaude sanitaire par appartement" label="besoins eau chaude sanitaire par appartement" />
           <Input name="consommation spécifique climatisation" label="consommation spécifique climatisation par habitant" />
@@ -146,12 +146,12 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
       <Accordion label="Granulés">
         <Accordion label="Poêle à granulés indiv">
           <Input name="ratios . GRA POELE Rendement poêle chauffage" label="Rendement poêle chauffage" />
-          <Input name="ratios . GRA POELE Conso combustible" label="Conso combustible" />
+          <Input name="ratios . GRA POELE Conso combustible" label="Conso combustible" placeholderPrecision={4} />
           <Input name="ratios . GRA POELE Durée de vie" label="Durée de vie" />
         </Accordion>
         <Accordion label="Chaudière à granulés coll">
           <Input name="ratios . GRA CHAUD Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
-          <Input name="ratios . GRA CHAUD Conso combustible" label="Conso combustible" />
+          <Input name="ratios . GRA CHAUD Conso combustible" label="Conso combustible" placeholderPrecision={4} />
           <Input name="ratios . GRA CHAUD Conso auxiliaire" label="Conso auxiliaire" />
           <Input name="ratios . GRA CHAUD Durée de vie" label="Durée de vie" />
         </Accordion>

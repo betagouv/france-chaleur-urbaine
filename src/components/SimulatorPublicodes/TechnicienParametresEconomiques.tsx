@@ -18,8 +18,16 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
       <Select name="sous zone climatique" label="Sous-zone climatique" />
 
       <Accordion label="Puissance totale des installations">
-        <Input name="Installation x Réseaux de chaleur x Collectif . gamme de puissance existante" label="Réseaux de chaleur" />
-        <Input name="Installation x Réseaux de froid x Collectif . gamme de puissance existante" label="Réseaux de froid" />
+        <Input
+          name="Installation x Réseaux de chaleur x Collectif . gamme de puissance existante"
+          label="Réseaux de chaleur"
+          placeholderPrecision={2}
+        />
+        <Input
+          name="Installation x Réseaux de froid x Collectif . gamme de puissance existante"
+          label="Réseaux de froid"
+          placeholderPrecision={2}
+        />
         <Input name="Installation x Poêle à granulés indiv x Individuel . gamme de puissance existante" label="Poêle à granulés indiv" />
         <Input
           name="Installation x Chaudière à granulés coll x Collectif . gamme de puissance existante"
@@ -29,8 +37,8 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="Installation x Gaz indiv sans cond x Individuel . gamme de puissance existante" label="Gaz indiv sans cond" />
         <Input name="Installation x Gaz coll avec cond x Collectif . gamme de puissance existante" label="Gaz coll avec cond" />
         <Input name="Installation x Gaz coll sans cond x Collectif . gamme de puissance existante" label="Gaz coll sans cond" />
-        <Input name="Installation x Fioul indiv x Individuel . gamme de puissance existante" label="Fioul indiv" />
-        <Input name="Installation x Fioul coll x Collectif . gamme de puissance existante" label="Fioul coll" />
+        <Input name="Installation x Fioul indiv x Individuel . gamme de puissance existante" label="Fioul indiv" placeholderPrecision={4} />
+        <Input name="Installation x Fioul coll x Collectif . gamme de puissance existante" label="Fioul coll" placeholderPrecision={4} />
         <Input name="Installation x PAC air-air x Individuel . gamme de puissance existante" label="PAC air-air" />
         <Input name="Installation x PAC eau-eau x Collectif . gamme de puissance existante" label="PAC eau-eau" />
         <Input name="Installation x PAC air-eau x Collectif . gamme de puissance existante" label="PAC air-eau" />
