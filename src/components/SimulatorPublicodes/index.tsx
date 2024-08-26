@@ -20,17 +20,26 @@ import TechnicienParametresTechniques from './TechnicienParametresTechniques';
 import useSimulatorEngine from './useSimulatorEngine';
 
 type PublicodesSimulatorProps = React.HTMLAttributes<HTMLDivElement> & {
-  // TODO
+  displayMode: string;
+  tabId: string;
 };
 
 export type TabId = 'batiment' | 'modes';
 
-const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({ children, className, ...props }) => {
+const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
+  children,
+  className,
+  displayMode: defaultDisplayMode,
+  tabId: defaultTabId,
+  ...props
+}) => {
   const engine = useSimulatorEngine();
+
   const [open, setOpen] = React.useState(false);
   const engineDisplayMode = engine.getField('mode affichage');
-  const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: engineDisplayMode as string });
-  const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: 'techniques' });
+  const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: defaultDisplayMode || (engineDisplayMode as string) });
+
+  const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: defaultTabId || 'techniques' });
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
