@@ -5,8 +5,10 @@ import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput'
 import Input from '@components/form/publicodes/Input';
 import RadioInput from '@components/form/publicodes/Radio';
 import Select from '@components/form/publicodes/Select';
+import { postFetchJSON } from '@utils/network';
 
 import { type SimulatorEngine } from './useSimulatorEngine';
+
 type TechnicienBatimentFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
 };
@@ -19,7 +21,34 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <AddressAutocomplete
           label="Adresse"
           onSelect={async (address) => {
-            // TODO engine.setField('commune', address.properties.postcode);
+            const infos = await postFetchJSON('/api/location-infos', {
+              lon: address.geometry.coordinates[0],
+              lat: address.geometry.coordinates[1],
+              city: address.properties.city,
+            });
+            console.debug('locations-infos', infos);
+
+            engine.setField('caractéristique réseau de chaleur . contenu CO2', infos.nearestReseauDeChaleur['contenu CO2']);
+            engine.setField('caractéristique réseau de chaleur . contenu CO2 ACV', infos.nearestReseauDeChaleur['contenu CO2 ACV']);
+            engine.setField('caractéristique réseau de chaleur . coût résidentiel', infos.nearestReseauDeChaleur['PM_L']);
+            engine.setField('caractéristique réseau de chaleur . coût tertiaire', infos.nearestReseauDeChaleur['PM_T']);
+            engine.setField(
+              'caractéristique réseau de chaleur . livraisons totales',
+              infos.nearestReseauDeChaleur['livraisons_totale_MWh']
+            );
+            engine.setField('caractéristique réseau de chaleur . part fixe', infos.nearestReseauDeChaleur['PF%']);
+            engine.setField('caractéristique réseau de chaleur . part variable', infos.nearestReseauDeChaleur['PV%']);
+            engine.setField('caractéristique réseau de chaleur . prix moyen', infos.nearestReseauDeChaleur['PM']);
+            engine.setField('caractéristique réseau de chaleur . production totale', infos.nearestReseauDeChaleur['production_totale_MWh']);
+            engine.setField('caractéristique réseau de chaleur . taux EnRR', infos.nearestReseauDeChaleur['Taux EnR&R']);
+
+            engine.setField('caractéristique réseau de froid . contenu CO2', infos.nearestReseauDeFroid['contenu CO2']);
+            engine.setField('caractéristique réseau de froid . contenu CO2 ACV', infos.nearestReseauDeFroid['contenu CO2 ACV']);
+            engine.setField('caractéristique réseau de froid . livraisons totales', infos.nearestReseauDeFroid['livraisons_totale_MWh']);
+            engine.setField('caractéristique réseau de froid . production totale', infos.nearestReseauDeFroid['production_totale_MWh']);
+            engine.setField('caractéristique réseau de froid . taux EnRR', infos.nearestReseauDeFroid['Taux EnR&R']);
+
+            // TODO infos ville
 
             engine.setStringField('code département', address.properties.context.split(', ')[0]);
           }}
