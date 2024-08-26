@@ -3,6 +3,7 @@ import Chart from 'react-google-charts';
 
 import cx from '@utils/cx';
 
+import { ChartPlaceholder } from './SimulatorPublicodes.style';
 import { type SimulatorEngine } from './useSimulatorEngine';
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
@@ -166,7 +167,13 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
         width="100%"
         chartType="BarChart"
         chartLanguage="FR-fr"
-        loader={<div>Chargement du graphe...</div>}
+        loader={
+          <ChartPlaceholder>
+            Chargement du graphe...
+            <br />
+            <strong>{coutGraphOptions.title}</strong>
+          </ChartPlaceholder>
+        }
         data={coutGraphData}
         options={coutGraphOptions}
       />
@@ -175,7 +182,13 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
         width="100%"
         chartType="BarChart"
         chartLanguage="FR-fr"
-        loader={<div>Chargement du graphe...</div>}
+        loader={
+          <ChartPlaceholder>
+            Chargement du graphe...
+            <br />
+            <strong>{emissionsCO2GraphOptions.title}</strong>
+          </ChartPlaceholder>
+        }
         data={emissionsCO2GraphData}
         options={emissionsCO2GraphOptions}
       />
