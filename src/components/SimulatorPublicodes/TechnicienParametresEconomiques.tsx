@@ -54,7 +54,83 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
       </Accordion>
 
       <Accordion label="Combustibles (P1)">
-        {/* TODO compléter */}
+        <Accordion label="Gaz">
+          <Input
+            name="Paramètres économiques . Gaz x Puissance souscrite pour calcul installation collective ou tertiaire"
+            label="Puissance souscrite pour calcul installation collective ou tertiaire"
+          />
+          <Input
+            name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC collectif ou tertiaire"
+            label="Abonnement x Part Fixe TTC collectif ou tertiaire"
+          />
+          <Input
+            name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel"
+            label="Abonnement x Part Fixe TTC individuel"
+          />
+          <Input
+            name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel x Coût distribution HT"
+            label="Abonnement x Part Fixe TTC individuel x Coût distribution HT"
+          />
+          <Input
+            name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel x Coût commerciaux hors CEE HT"
+            label="Abonnement x Part Fixe TTC individuel x Coût commerciaux hors CEE HT"
+          />
+          <Input name="Paramètres économiques . Gaz x Consommation x Part Variable TTC" label="Consommation x Part Variable TTC" />
+          <Input name="Paramètres économiques . Gaz x Coût de la molécule HT" label="Coût de la molécule HT" />
+          <Input name="Paramètres économiques . Gaz x Coût de transport HT" label="Coût de transport HT" />
+          <Input name="Paramètres économiques . Gaz x Coût distribution HT" label="Coût distribution HT" />
+          <Input name="Paramètres économiques . Gaz x Coût des CEE HT" label="Coût des CEE HT" />
+          <Input
+            name="Paramètres économiques . Gaz x Taxe x Part fixe x Contribution tarifaire d'acheminement CTA"
+            label="Taxe x Part fixe x Contribution tarifaire d'acheminement CTA"
+          />
+          <Input name="Paramètres économiques . Gaz x Taxe x Part fixe x TVA" label="Taxe x Part fixe x TVA" />
+          <Input
+            name="Paramètres économiques . Gaz x Taxe x Part variable x Taxe intérieure de consommation sur le gaz naturel TICGN"
+            label="Taxe x Part variable x Taxe intérieure de consommation sur le gaz naturel TICGN"
+          />
+          <Input name="Paramètres économiques . Gaz x Taxe x Part variable x TVA" label="Taxe x Part variable x TVA" />
+        </Accordion>
+        <Accordion label="Électricité">
+          <Select name="Paramètres économiques . Electricité x Option tarifaire" label="Option tarifaire" />
+          <Input name="Paramètres économiques . Electricité x Puissance souscrite indiv" label="Puissance souscrite indiv" />
+          <Input name="Paramètres économiques . Electricité x Puissance souscrite coll" label="Puissance souscrite coll" />
+          <Input name="Paramètres économiques . Electricité x Abonnement Part Fixe indiv" label="Abonnement Part Fixe indiv" />
+          <Input name="Paramètres économiques . Electricité x Abonnement Part Fixe coll" label="Abonnement Part Fixe coll" />
+          <Input
+            name="Paramètres économiques . Electricité x Consommation Part variable en heure pleine"
+            label="Consommation Part variable en heure pleine"
+          />
+          <Input
+            name="Paramètres économiques . Electricité x Consommation Part variable en heure creuse"
+            label="Consommation Part variable en heure creuse"
+          />
+          <Input
+            name="ratios économiques . Coût des combustibles x Electricité . Heure pleine x Heure creuse . Part de la consommation en HP"
+            label="Part de la consommation en HP"
+          />
+          <Input
+            name="ratios économiques . Coût des combustibles x Electricité . Heure pleine x Heure creuse . Part de la consommation en HC"
+            label="Part de la consommation en HC"
+          />
+          <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x CTA" label="Part Fixe x CTA" />
+          <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x TVA" label="Part Fixe x TVA" />
+          <Input
+            name="Paramètres économiques . Electricité x Taxe . Part Variable x Accise sur l'électricité ex TIPCSE CSPE"
+            label="Part Variable x Accise sur l'électricité ex TIPCSE CSPE"
+          />
+          <Input name="Paramètres économiques . Electricité x Taxe . Part Variable x TVA" label="Part variable - TVA" />
+        </Accordion>
+        <Accordion label="Granulés">
+          <Select name="Paramètres économiques . Granulés . Type de conditionnement" label="Type de conditionnement" />
+          <Input name="Paramètres économiques . Granulés . Prix pour les granulés" label="Prix pour les granulés" />
+          <Input name="Paramètres économiques . Granulés . TVA" label="TVA" />
+        </Accordion>
+        <Accordion label="Fioul">
+          <Input name="Paramètres économiques . Fioul . Prix livraison incluse" label="Prix livraison incluse" />
+          <Input name="Paramètres économiques . Fioul . TVA" label="TVA" />
+          <Input name="Paramètres économiques . Fioul . TICPE" label="TICPE" />
+        </Accordion>
         <Accordion label="Réseaux de chaleur RCU">
           <Input name="Paramètres économiques . Réseaux chaleur . Coût" label="Coût" />
           <Input name="Paramètres économiques . Réseaux chaleur . Part fixe" label="Part fixe" />
