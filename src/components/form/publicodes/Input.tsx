@@ -10,6 +10,7 @@ export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
 
 const Input = ({
   name,
+  placeholderPrecision,
   textArea,
   nativeInputProps,
   label,
@@ -17,6 +18,7 @@ const Input = ({
 }: DSFRInputProps &
   Omit<DSFRInputProps, 'nativeTextAreaProps'> & {
     textArea?: false;
+    placeholderPrecision?: number;
     name: DottedName;
     label: string;
   }) => {
@@ -52,7 +54,7 @@ const Input = ({
         ...nativeInputProps,
         type: fieldType,
         value: value ?? '',
-        placeholder: `${placeholder}`,
+        placeholder: `${placeholderPrecision ? (placeholder as number).toFixed(placeholderPrecision) : placeholder}`,
         onChange: (e) => {
           e.stopPropagation();
           const newValue = e.target.value;
