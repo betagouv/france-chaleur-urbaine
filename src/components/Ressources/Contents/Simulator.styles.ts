@@ -82,9 +82,12 @@ export const Inputs = styled.div<{
 
 export const Result = styled.div<{
   cartridge?: boolean;
+  color?: string;
+  backgroundColor?: string;
 }>`
   width: 100%;
   background-color: #27a658;
+  ${({ backgroundColor }) => (backgroundColor ? `background-color: ${backgroundColor};` : `background-color: #27a658;`)}
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -96,11 +99,7 @@ export const Result = styled.div<{
     min-width: 300px;
   }
   height: 125px;
-  ${({ cartridge }) =>
-    cartridge &&
-    `
-    color: #fff;
-  `}
+  ${({ cartridge, color }) => (color || cartridge) && (color ? `color: ${color};` : `color: #fff;`)}
 `;
 
 export const Disclaimer = styled.div<{

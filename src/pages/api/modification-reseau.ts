@@ -35,10 +35,13 @@ const zModificationReseau = {
   }, z.boolean()),
   maitreOuvrage: z.preprocess((val: any) => val[0], z.string()),
   gestionnaire: z.preprocess((val: any) => val[0], z.string()),
-  siteInternet: z.preprocess(
-    (val: any) => (val[0] === '' ? undefined : val[0]), // empty string or a valid URL
-    z.string().url().optional()
-  ),
+  siteInternet: z.preprocess((val: any) => {
+    if (val[0]) {
+      const link: string = String(val[0]).trim();
+      return link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;
+    }
+    return val[0];
+  }, z.string().optional()),
   informationsComplementaires: z.preprocess((val: any) => val[0], z.string().max(clientConfig.networkInfoFieldMaxCharacters)),
   fichiers: z.optional(
     z.array(
