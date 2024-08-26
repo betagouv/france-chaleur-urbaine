@@ -14,8 +14,8 @@ type TechnicienBatimentFormProps = React.HTMLAttributes<HTMLDivElement> & {
 const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ children, className, engine, ...props }) => {
   return (
     <div {...props}>
-      <Input name="zone climatique" label="Zone climatique" />
-      <Input name="sous zone climatique" label="Sous-zone climatique" />
+      <Select name="zone climatique" label="Zone climatique" />
+      <Select name="sous zone climatique" label="Sous-zone climatique" />
 
       <Accordion label="Puissance totale des installations">
         <Input name="Installation x Réseaux de chaleur x Collectif . gamme de puissance existante" label="Réseaux de chaleur" />
