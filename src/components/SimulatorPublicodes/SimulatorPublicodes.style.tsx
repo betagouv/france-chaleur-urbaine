@@ -63,3 +63,14 @@ export const FloatingButton = styled(Button)`
     display: none;
   `}
 `;
+
+export const ChartPlaceholder = styled.div`
+  width: 100%;
+  height: 600px;
+  display: flex;
+  border: 1px solid #f7f7f7;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+`;
