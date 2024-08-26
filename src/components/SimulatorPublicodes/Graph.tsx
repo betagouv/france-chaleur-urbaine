@@ -15,7 +15,7 @@ const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   // colors: ['#FF5655', '#0063CB', '#27A658'],
   // legend: { position: 'top' },
   hAxis: {
-    title: 'Coût €TCC/logement par an',
+    title: 'Coût €TTC/logement par an',
     minValue: 0,
     format: '# €',
   },
