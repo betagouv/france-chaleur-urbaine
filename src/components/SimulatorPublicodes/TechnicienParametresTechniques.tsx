@@ -25,7 +25,9 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
               lon: address.geometry.coordinates[0],
               lat: address.geometry.coordinates[1],
               city: address.properties.city,
+              cityCode: address.properties.citycode,
             });
+
             console.debug('locations-infos', infos);
 
             engine.setField('caractéristique réseau de chaleur . contenu CO2', infos.nearestReseauDeChaleur['contenu CO2']);
@@ -46,11 +48,9 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
             engine.setField('caractéristique réseau de froid . contenu CO2 ACV', infos.nearestReseauDeFroid['contenu CO2 ACV']);
             engine.setField('caractéristique réseau de froid . livraisons totales', infos.nearestReseauDeFroid['livraisons_totale_MWh']);
             engine.setField('caractéristique réseau de froid . production totale', infos.nearestReseauDeFroid['production_totale_MWh']);
-            engine.setField('caractéristique réseau de froid . taux EnRR', infos.nearestReseauDeFroid['Taux EnR&R']);
 
-            // TODO infos ville
-
-            engine.setStringField('code département', address.properties.context.split(', ')[0]);
+            engine.setField('code département', infos.infosVilles.departement_id);
+            engine.setField('température de référence chaud', +infos.infosVilles.temperature_ref_altitude_moyenne);
           }}
         />
         <Input name="degré jours unifié spécifique chaud" label="degré jours unifié spécifique chaud" iconId="fr-icon-temp-cold-fill" />
