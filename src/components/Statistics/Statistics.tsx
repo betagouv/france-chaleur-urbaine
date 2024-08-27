@@ -8,6 +8,7 @@ import Slice from '@components/Slice';
 import statistics from '@data/statistics';
 import { fetchJSON } from '@utils/network';
 import { MatomoMonthStat } from 'src/services/matomo_types';
+import { STAT_LABEL } from 'src/types/enum/MatomoStats';
 
 import {
   Column,
@@ -26,13 +27,6 @@ import {
   NumberText,
   StatisticsSliceContainer,
 } from './Statistics.style';
-
-type ReturnApiStatAirtable = {
-  date: string;
-  nbTotal: number;
-  nbEligible: number;
-  nbUneligible: number;
-};
 
 const getYearsList = () => {
   const years = [];
@@ -128,12 +122,12 @@ const Statistics = () => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
     if (parseInt(entryMonth) - 1 === monthIndex && entryYear === year) {
       return (
-        (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
-        (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
-        (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-        (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
-        (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0) +
-        (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0)
+        (entry[STAT_LABEL.FORM_TEST_UNELIGIBLE] ?? 0) +
+        (entry[STAT_LABEL.FORM_TEST_ELIGIBLE] ?? 0) +
+        (entry[STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE] ?? 0) +
+        (entry[STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE] ?? 0) +
+        (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE] ?? 0) +
+        (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0)
       );
     }
   });
@@ -150,21 +144,10 @@ const Statistics = () => {
   });
 
   //From Airtable
-  const { data: rawDataCountContact, error: errorCountContact } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
+  const { data: dataCountContact, error: errorCountContact } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
     onError: (err) => console.warn('errorCountContact >>', err),
   });
-  const dataCountContact = useMemo(
-    () =>
-      rawDataCountContact
-        ? Object.entries((rawDataCountContact as Record<string, ReturnApiStatAirtable>) || {}).map(([, { ...value }]) => {
-            return {
-              ...value,
-            };
-          })
-        : undefined,
-    [rawDataCountContact]
-  );
-  const formatedDataCountContact = getFormattedData(dataCountContact, (year: string, monthIndex: number, entry) => {
+  const formatedDataCountContact = getFormattedData(dataCountContact, (year: string, monthIndex: number, entry: any) => {
     const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
     if (
       parseInt(entryMonth) - 1 === monthIndex &&
@@ -175,24 +158,12 @@ const Statistics = () => {
     }
   });
 
-  const { data: rawDataCountBulkContact, error: errorCountBulkContact } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
+  const { data: dataCountBulkContact, error: errorCountBulkContact } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
     onError: (err) => console.warn('errorCountContact >>', err),
   });
 
-  const dataCountBulkContact = useMemo(
-    () =>
-      rawDataCountBulkContact
-        ? Object.entries((rawDataCountBulkContact as Record<string, ReturnApiStatAirtable>) || {}).map(([key, value]) => {
-            return {
-              period: key,
-              ...value,
-            };
-          })
-        : undefined,
-    [rawDataCountBulkContact]
-  );
-  const formatedDataCountBulkContact = getFormattedData(dataCountBulkContact, (year: string, monthIndex: number, entry) => {
-    const [entryYear, entryMonth] = entry?.period?.split('-') || ['YYYY', 'MM'];
+  const formatedDataCountBulkContact = getFormattedData(dataCountBulkContact, (year: string, monthIndex: number, entry: any) => {
+    const [entryYear, entryMonth] = entry?.date?.split('-') || ['YYYY', 'MM'];
     if (
       parseInt(entryMonth) - 1 === monthIndex &&
       entryYear === year &&
@@ -250,16 +221,16 @@ const Statistics = () => {
       dataActions.forEach((entry) => {
         if (entry) {
           nbTotal +=
-            (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
-            (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
-            (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
-            (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0) +
-            (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0);
+            (entry[STAT_LABEL.FORM_TEST_UNELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_ELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0);
           nbTotalEligible +=
-            (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
-            (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
-            (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0);
+            (entry[STAT_LABEL.FORM_TEST_ELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE] ?? 0) +
+            (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0);
         }
       });
     if (nbTotalEligible && nbTotal) {
