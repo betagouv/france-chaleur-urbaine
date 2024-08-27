@@ -37,7 +37,7 @@
     "prebuild": "only-include-used-icons"
   },
   "dependencies": {
-    "@betagouv/france-chaleur-urbaine-publicodes": "^0.4.0",
+    "@betagouv/france-chaleur-urbaine-publicodes": "^0.9.0",
     "@codegouvfr/react-dsfr": "^1.9.31",
     "@commander-js/extra-typings": "^11.1.0",
     "@emotion/react": "^11.11.4",
@@ -86,7 +86,7 @@
     "pg": "^8.11.3",
     "postcss": "^8.2.10",
     "prettier": "3.0.2",
-    "publicodes": "npm:@totak/publicodes@1.5.0-fcu4",
+    "publicodes": "npm:@totak/publicodes@1.5.0-fcu5",
     "react": "^18.2.0",
     "react-compound-slider": "^3.4.0",
     "react-dom": "^18.2.0",
