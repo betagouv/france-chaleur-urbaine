@@ -20,7 +20,7 @@
     "build": "next build",
     "build:analyze": "ANALYZE=true yarn build",
     "start": "next start -p $PORT",
-    "prepare": "husky install",
+    "prepare": "husky",
     "prettier-check": "prettier --write src",
     "prelint": "yarn prettier-check",
     "lint": "next lint",
@@ -34,7 +34,8 @@
     "db:revert:one": "knex migrate:down",
     "scalingo-postbuild": "yarn build && next-sitemap",
     "predev": "only-include-used-icons",
-    "prebuild": "only-include-used-icons"
+    "prebuild": "only-include-used-icons",
+    "talisman:add-exception": "node-talisman -i -g pre-commit"
   },
   "dependencies": {
     "@codegouvfr/react-dsfr": "^1.9.31",
@@ -146,11 +147,12 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "husky": "^8.0.3",
+    "husky": "^9.1.5",
     "jsdom": "^23.2.0",
     "lint-staged": "^14.0.0",
     "nock": "^13.3.3",
     "node-mocks-http": "^1.13.0",
+    "node-talisman": "^1.29.11",
     "prettier-plugin-organize-imports": "^3.2.3",
     "raw-loader": "^4.0.2",
     "sinon": "^15.2.0",
@@ -158,11 +160,6 @@
     "tsx": "^4.7.0",
     "typescript": "5.1.6",
     "vitest": "^1.0.4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "resolutions": {
     "styled-components": "^5",
