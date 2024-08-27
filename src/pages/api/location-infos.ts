@@ -34,6 +34,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
         'PV%'
       )
       .where('has_trace', true)
+      .whereNotNull('nom_reseau')
       .orderByRaw(distanceSubQuery)
       .first(),
     db('reseaux_de_froid')
