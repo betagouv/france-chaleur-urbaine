@@ -12,7 +12,7 @@ import { fetchBaseSchema } from './airtable/dump-schema';
 import { downloadNetwork } from './networks/download-network';
 import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 import { importMvtDirectory } from './networks/import-mvt-directory';
-import AmorceFileReader from './simulateur/AmorceFileReader';
+import { importAndFixSimulateurData, updateSimulateurData } from './simulateur/import';
 import { fillTiles } from './utils/tiles';
 
 const program = createCommand();
@@ -128,58 +128,14 @@ program
 
 program
   .command('update-simulateur')
+  .description('Take AMORCE file and either create records in database or update them.')
   .argument('<filepath>', 'Path to the Amorce file')
-  .action(async (filepath) => {
-    const reader = new AmorceFileReader(filepath);
-    const departmentData = reader.getDepartementData();
-
-    for (const dept of departmentData) {
-      try {
-        await db('departements')
-          .insert({
-            nom_departement: dept['Nom département'],
-            id: dept['Code département'],
-            dju_chaud_moyen: dept['DJU chaud moyen'],
-            dju_froid_moyen: dept['DJU froid moyen'],
-            zone_climatique: dept['Zone climatique'],
-            source: dept['Source '],
-            annee: dept['Année'],
-          })
-          .onConflict('id')
-          .merge();
-      } catch (error: any) {
-        console.error('Error updating department:', error.toString());
-        console.error(dept);
-      }
-    }
-
-    const cityData = reader.getCityData();
-
-    let count = 0;
-    for (const city of cityData) {
-      count++;
-      if (count % 1000 === 0) {
-        console.log(`Processing city ${count}/${cityData.length}`);
-      }
-
-      try {
-        await db('communes')
-          .insert({
-            id: city['Code commune INSEE'],
-            code_postal: city['Code postal'],
-            commune: city.Commune,
-            departement_id: city['Département'],
-            altitude_moyenne: city['Altitude moyenne'],
-            temperature_ref_altitude_moyenne: city['T°C réf / altitude_moyenne'] || 0,
-            source: city['Source '],
-            sous_zones_climatiques: city['Sous-zones climatiques'],
-          })
-          .onConflict('id')
-          .merge();
-      } catch (error: any) {
-        console.error('Error updating city:', error.toString());
-        console.error(city);
-      }
+  .option('--create', 'Create records in database as Insee code being wrong, it needs to be fetched elsewhere')
+  .action(async (filepath, options) => {
+    if (options.create) {
+      await importAndFixSimulateurData(filepath);
+    } else {
+      await updateSimulateurData(filepath);
     }
   });
 
