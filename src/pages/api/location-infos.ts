@@ -8,11 +8,12 @@ const zLocationInfos = {
   lon: z.number(),
   lat: z.number(),
   city: z.string(),
+  cityCode: z.string(),
 };
 
 export default handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);
-  const { lon, lat, city } = await validateObjectSchema(req.body, zLocationInfos);
+  const { lon, lat, cityCode, city } = await validateObjectSchema(req.body, zLocationInfos);
 
   const distanceSubQuery = `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154))`;
   const [nearestReseauDeChaleur, nearestReseauDeFroid, infosVilles] = await Promise.all([
@@ -49,7 +50,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       .where('has_trace', true)
       .orderByRaw(distanceSubQuery)
       .first(),
-    { city }, // FIXME inclure la table
+    db('communes').where('id', cityCode).orWhere('commune', city.toUpperCase()).first(),
   ]);
 
   return {
