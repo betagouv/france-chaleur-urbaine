@@ -130,15 +130,56 @@ program
   .command('update-simulateur')
   .argument('<filepath>', 'Path to the Amorce file')
   .action(async (filepath) => {
-    try {
-      const reader = new AmorceFileReader(filepath);
-      const cityData = reader.getCityData();
-      const departmentData = reader.getDepartementData();
+    const reader = new AmorceFileReader(filepath);
+    const departmentData = reader.getDepartementData();
 
-      console.log(JSON.stringify(cityData, null, 2)); //eslint-disable-line
-      console.log(JSON.stringify(departmentData, null, 2)); //eslint-disable-line
-    } catch (error: any) {
-      console.error('Error updating simulateur:', error.toString());
+    for (const dept of departmentData) {
+      try {
+        await db('departements')
+          .insert({
+            nom_departement: dept['Nom département'],
+            id: dept['Code département'],
+            dju_chaud_moyen: dept['DJU chaud moyen'],
+            dju_froid_moyen: dept['DJU froid moyen'],
+            zone_climatique: dept['Zone climatique'],
+            source: dept['Source '],
+            annee: dept['Année'],
+          })
+          .onConflict('id')
+          .merge();
+      } catch (error: any) {
+        console.error('Error updating department:', error.toString());
+        console.error(dept);
+      }
+    }
+
+    const cityData = reader.getCityData();
+
+    let count = 0;
+    for (const city of cityData) {
+      count++;
+      if (count % 1000 === 0) {
+        console.log(`Processing city ${count}/${cityData.length}`);
+      }
+
+      try {
+        await db('communes')
+          .insert({
+            id: city['Code commune INSEE'],
+            code_postal: city['Code postal'],
+            commune: city.Commune,
+            departement_id: city['Département'],
+            altitude_moyenne: city['Altitude moyenne'],
+            temperature_ref_altitude_moyenne: city['T°C réf / altitude_moyenne'] || 0,
+            source: city['Source '],
+            sous_zones_climatiques: city['Sous-zones climatiques'],
+          })
+          .onConflict('id')
+          .merge();
+      } catch (error: any) {
+        console.error('Error updating city:', error.toString());
+        console.error(city);
+      }
     }
   });
 
