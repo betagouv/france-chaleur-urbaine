@@ -1,8 +1,8 @@
 import { MatomoErrorResult } from './matomo_types';
 
-const MATOMO_URL = 'https://stats.beta.gouv.fr';
-const MATOMO_TOKEN = '01bc9ad5c8f063652450f1220ac9320b';
-const MATOMO_ID_SITE = 83;
+const MATOMO_URL = process.env.NEXT_PUBLIC_MATOMO_URL;
+const MATOMO_TOKEN = process.env.MATOMO_TOKEN;
+const MATOMO_ID_SITE = process.env.NEXT_PUBLIC_MATOMO_SITE_ID;
 
 type ConfigType = Record<string, unknown>;
 
