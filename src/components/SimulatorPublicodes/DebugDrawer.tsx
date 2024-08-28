@@ -11,6 +11,7 @@ import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import { formatUnit } from '@helpers/publicodes/usePublicodesEngine';
+import { clientConfig } from 'src/client-config';
 
 import { type SimulatorEngine } from './useSimulatorEngine';
 
@@ -49,7 +50,12 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
       <RuleTooltip title={key}>
         <Box textWrap="nowrap">
           {value} {unit}{' '}
-          <RuleLink variant="tertiaryNoOutline" href={`http://localhost:5173/doc/${utils.encodeRuleName(key)}`} isExternal px="1w">
+          <RuleLink
+            variant="tertiaryNoOutline"
+            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}`}
+            isExternal
+            px="1w"
+          >
             <Icon name="fr-icon-article-line" />
           </RuleLink>
         </Box>
@@ -64,7 +70,12 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
       <RuleTooltip title={key}>
         <Box textWrap="nowrap">
           {value} {unit}{' '}
-          <RuleLink variant="tertiaryNoOutline" href={`http://localhost:5173/doc/${utils.encodeRuleName(key)}`} isExternal px="1w">
+          <RuleLink
+            variant="tertiaryNoOutline"
+            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}`}
+            isExternal
+            px="1w"
+          >
             <Icon name="fr-icon-article-line" />
           </RuleLink>
         </Box>
@@ -76,7 +87,12 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
       <RuleTooltip title={key}>
         <Box textWrap="nowrap">
           {engine.getField(key) ? 'oui' : 'non'}{' '}
-          <RuleLink variant="tertiaryNoOutline" href={`http://localhost:5173/doc/${utils.encodeRuleName(key)}`} isExternal px="1w">
+          <RuleLink
+            variant="tertiaryNoOutline"
+            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}`}
+            isExternal
+            px="1w"
+          >
             <Icon name="fr-icon-article-line" />
           </RuleLink>
         </Box>
