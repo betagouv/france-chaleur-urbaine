@@ -99,7 +99,7 @@ const getCodesINSEE = async () => {
 };
 
 const upsertDepartments = async (departmentData: any) => {
-  for (const dept of departmentData.filter((d) => d['Code département'] !== undefined)) {
+  for (const dept of departmentData.filter((d: any) => d['Code département'] !== undefined)) {
     const departement_id = `${dept['Code département']}`.padStart(2, '0');
     const dataToInsert = {
       nom_departement: dept['Nom département'],
