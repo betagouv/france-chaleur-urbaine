@@ -12,7 +12,7 @@ import { fetchBaseSchema } from './airtable/dump-schema';
 import { downloadNetwork } from './networks/download-network';
 import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 import { importMvtDirectory } from './networks/import-mvt-directory';
-import { importAndFixSimulateurData, updateSimulateurData } from './simulateur/import';
+import { upsertFixedSimulateurData } from './simulateur/import';
 import { fillTiles } from './utils/tiles';
 
 const program = createCommand();
@@ -130,13 +130,8 @@ program
   .command('update-simulateur')
   .description('Take AMORCE file and either create records in database or update them.')
   .argument('<filepath>', 'Path to the Amorce file')
-  .option('--create', 'Create records in database as Insee code being wrong, it needs to be fetched elsewhere')
-  .action(async (filepath, options) => {
-    if (options.create) {
-      await importAndFixSimulateurData(filepath);
-    } else {
-      await updateSimulateurData(filepath);
-    }
+  .action(async (filepath) => {
+    await upsertFixedSimulateurData(filepath);
   });
 
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
