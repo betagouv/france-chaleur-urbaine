@@ -49,7 +49,7 @@ export default class AmorceFileReader {
     const data = rawData.slice(rowIndex + 1).map((row) => {
       const lineData: any = {};
       headers.forEach((header: string, index: number) => {
-        lineData[header] = row[index] || null;
+        lineData[header] = row[index];
       });
       return lineData as T;
     });
