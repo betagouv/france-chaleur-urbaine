@@ -1,13 +1,25 @@
+import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import React from 'react';
 import Chart from 'react-google-charts';
+import styled from 'styled-components';
 
+import Accordion from '@components/ui/Accordion';
+import Icon from '@components/ui/Icon';
+import useArrayQueryState from '@hooks/useArrayQueryState';
 import cx from '@utils/cx';
 
 import { ChartPlaceholder } from './SimulatorPublicodes.style';
 import { type SimulatorEngine } from './useSimulatorEngine';
+
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
 };
+
+const FilterLabel = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
 
 const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   title: 'Décomposition du coût global chauffage & ECS',
@@ -130,20 +142,24 @@ const typesInstallation = [
 ] as const;
 
 const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
+  const { has, toggle, items: removedCompared } = useArrayQueryState('remove-compared');
+
   const coutGraphData = [
     ['Mode de chauffage', 'P1 abo', 'P1 conso', "P1'", 'P1 ECS', 'P2', 'P3', 'P4 moins aides', 'aides'],
-    ...typesInstallation.map((typeInstallation) => [
-      typeInstallation.label,
-      engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible abonnement`),
-      engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible consommation`),
-      engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût électricité auxiliaire`),
-      engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût combustible pour ballon ECS à accumulation`),
-      engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . petit entretien P2`),
-      engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . gros entretien P3`),
-      // TODO manque les différents types d'installation avec élec ou solaire
-      engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`),
-      engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`),
-    ]),
+    ...typesInstallation
+      .filter((typeInstallation) => !has(typeInstallation.coutPublicodeKey))
+      .map((typeInstallation) => [
+        typeInstallation.label,
+        engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible abonnement`),
+        engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible consommation`),
+        engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût électricité auxiliaire`),
+        engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût combustible pour ballon ECS à accumulation`),
+        engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . petit entretien P2`),
+        engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . gros entretien P3`),
+        // TODO manque les différents types d'installation avec élec ou solaire
+        engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`),
+        engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`),
+      ]),
   ];
   const emissionsCO2GraphData = [
     [
@@ -152,17 +168,42 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
       "Scope 2 : Production indirecte d'énergie",
       'Scope 3 : Émissions indirectes',
     ],
-    ...typesInstallation.map((typeInstallation) => [
-      typeInstallation.label,
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
-      engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
-    ]),
+    ...typesInstallation
+      .filter((typeInstallation) => !has(typeInstallation.coutPublicodeKey))
+      .map((typeInstallation) => [
+        typeInstallation.label,
+        engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
+        engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
+        engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
+      ]),
   ];
 
   return (
     <div className={cx(className)} {...props}>
+      <Accordion
+        label={
+          <FilterLabel>
+            <Icon name="ri-filter-2-fill" className="fr-mr-2" />
+            <span>Comparaison</span>
+            {removedCompared.length > 0 && <strong className="fr-badge fr-mr-2">{removedCompared.length}</strong>}
+          </FilterLabel>
+        }
+      >
+        <Checkbox
+          orientation="horizontal"
+          options={typesInstallation.map((typeInstallation) => ({
+            label: typeInstallation.label,
+            nativeInputProps: {
+              onClick: () => toggle(typeInstallation.coutPublicodeKey),
+              checked: !has(typeInstallation.coutPublicodeKey),
+            },
+          }))}
+          small
+        />
+      </Accordion>
+
       <Chart
+        legendToggle
         height="600px"
         width="100%"
         chartType="BarChart"

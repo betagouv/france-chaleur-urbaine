@@ -204,7 +204,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                 />
               )}
 
-              {/* {results} */}
+              {results}
             </Results>
             <FloatingButton onClick={() => setGraphDrawerOpen(true)} iconId="ri-arrow-up-fill">
               Voir les résultats
