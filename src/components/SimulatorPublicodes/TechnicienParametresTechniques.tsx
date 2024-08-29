@@ -1,36 +1,11 @@
-import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import React from 'react';
 
-import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import Input from '@components/form/publicodes/Input';
 import RadioInput from '@components/form/publicodes/Radio';
 import Select from '@components/form/publicodes/Select';
 import { UrlStateAccordion as Accordion } from '@components/ui/Accordion';
-import { postFetchJSON } from '@utils/network';
-import { ObjectEntries } from '@utils/typescript';
 
 import { type SimulatorEngine } from './useSimulatorEngine';
-
-const addresseToPublicodesRules = {
-  'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur['contenu CO2'],
-  'caractéristique réseau de chaleur . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur['contenu CO2 ACV'],
-  'caractéristique réseau de chaleur . coût résidentiel': (infos) => infos.nearestReseauDeChaleur['PM_L'],
-  'caractéristique réseau de chaleur . coût tertiaire': (infos) => infos.nearestReseauDeChaleur['PM_T'],
-  'caractéristique réseau de chaleur . livraisons totales': (infos) => infos.nearestReseauDeChaleur['livraisons_totale_MWh'],
-  'caractéristique réseau de chaleur . part fixe': (infos) => infos.nearestReseauDeChaleur['PF%'],
-  'caractéristique réseau de chaleur . part variable': (infos) => infos.nearestReseauDeChaleur['PV%'],
-  'caractéristique réseau de chaleur . prix moyen': (infos) => infos.nearestReseauDeChaleur['PM'],
-  'caractéristique réseau de chaleur . production totale': (infos) => infos.nearestReseauDeChaleur['production_totale_MWh'],
-  'caractéristique réseau de chaleur . taux EnRR': (infos) => infos.nearestReseauDeChaleur['Taux EnR&R'],
-
-  'caractéristique réseau de froid . contenu CO2': (infos) => infos.nearestReseauDeFroid['contenu CO2'],
-  'caractéristique réseau de froid . contenu CO2 ACV': (infos) => infos.nearestReseauDeFroid['contenu CO2 ACV'],
-  'caractéristique réseau de froid . livraisons totales': (infos) => infos.nearestReseauDeFroid['livraisons_totale_MWh'],
-  'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid['production_totale_MWh'],
-
-  'code département': (infos) => `'${infos.infosVilles.departement_id}'`,
-  'température de référence chaud': (infos) => +infos.infosVilles.temperature_ref_altitude_moyenne,
-} as const satisfies Partial<Record<DottedName, (infos: any) => any>>;
 
 type TechnicienBatimentFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
@@ -38,32 +13,10 @@ type TechnicienBatimentFormProps = React.HTMLAttributes<HTMLDivElement> & {
 
 const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ children, className, engine, ...props }) => {
   const typeBatiment = engine.getField('type de bâtiment');
+
   return (
     <div {...props}>
       <Accordion label="Généraux">
-        <AddressAutocomplete
-          label="Adresse"
-          onSelect={async (address) => {
-            const infos = await postFetchJSON('/api/location-infos', {
-              lon: address.geometry.coordinates[0],
-              lat: address.geometry.coordinates[1],
-              city: address.properties.city,
-              cityCode: address.properties.citycode,
-            });
-
-            console.debug('locations-infos', infos);
-
-            engine.setSituation(
-              ObjectEntries(addresseToPublicodesRules).reduce(
-                (acc, [key, infoGetter]) => ({
-                  ...acc,
-                  [key]: infoGetter(infos),
-                }),
-                {}
-              )
-            );
-          }}
-        />
         <Input name="degré jours unifié spécifique chaud" label="degré jours unifié spécifique chaud" iconId="fr-icon-temp-cold-fill" />
         <Input name="degré jours unifié spécifique froid" label="degré jours unifié spécifique froid" iconId="fr-icon-temp-cold-fill" />
         <Input name="température de référence chaud" label="température de référence chaud" iconId="fr-icon-temp-cold-fill" />
