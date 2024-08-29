@@ -228,11 +228,11 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="ratios . RAD ELEC INDIV Durée de vie" label="Durée de vie" />
       </Accordion>
       <Accordion label="Calcul ECS">
-        <Accordion label="Chauffe-eau éléctrique à accumulation">
+        <Accordion label="Chauffe-eau électrique à accumulation">
           <Input name="ratios . CHAUF EAU ELEC Rendement stockage ballon" label="Rendement stockage ballon" />
           <Input name="ratios . CHAUF EAU ELEC Durée de vie" label="Durée de vie" />
         </Accordion>
-        <Accordion label="Chauffe-eau solaire avec appoint éléctrique">
+        <Accordion label="Chauffe-eau solaire avec appoint électrique">
           <Input name="ratios . CHAUF EAU SOLAIRE Rendement stockage ballon" label="Rendement stockage ballon" />
           <Input name="ratios . CHAUF EAU SOLAIRE Durée de vie" label="Durée de vie" />
           <Input
