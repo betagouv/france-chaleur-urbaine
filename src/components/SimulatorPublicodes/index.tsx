@@ -35,21 +35,21 @@ type PublicodesSimulatorProps = React.HTMLAttributes<HTMLDivElement> & {
 export type TabId = 'batiment' | 'modes';
 
 const addresseToPublicodesRules = {
-  'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur['contenu CO2'],
-  'caractéristique réseau de chaleur . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur['contenu CO2 ACV'],
-  'caractéristique réseau de chaleur . coût résidentiel': (infos) => infos.nearestReseauDeChaleur['PM_L'],
-  'caractéristique réseau de chaleur . coût tertiaire': (infos) => infos.nearestReseauDeChaleur['PM_T'],
-  'caractéristique réseau de chaleur . livraisons totales': (infos) => infos.nearestReseauDeChaleur['livraisons_totale_MWh'],
-  'caractéristique réseau de chaleur . part fixe': (infos) => infos.nearestReseauDeChaleur['PF%'],
-  'caractéristique réseau de chaleur . part variable': (infos) => infos.nearestReseauDeChaleur['PV%'],
-  'caractéristique réseau de chaleur . prix moyen': (infos) => infos.nearestReseauDeChaleur['PM'],
-  'caractéristique réseau de chaleur . production totale': (infos) => infos.nearestReseauDeChaleur['production_totale_MWh'],
-  'caractéristique réseau de chaleur . taux EnRR': (infos) => infos.nearestReseauDeChaleur['Taux EnR&R'],
+  'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2'],
+  'caractéristique réseau de chaleur . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2 ACV'],
+  'caractéristique réseau de chaleur . coût résidentiel': (infos) => infos.nearestReseauDeChaleur?.['PM_L'],
+  'caractéristique réseau de chaleur . coût tertiaire': (infos) => infos.nearestReseauDeChaleur?.['PM_T'],
+  'caractéristique réseau de chaleur . livraisons totales': (infos) => infos.nearestReseauDeChaleur?.['livraisons_totale_MWh'],
+  'caractéristique réseau de chaleur . part fixe': (infos) => infos.nearestReseauDeChaleur?.['PF%'],
+  'caractéristique réseau de chaleur . part variable': (infos) => infos.nearestReseauDeChaleur?.['PV%'],
+  'caractéristique réseau de chaleur . prix moyen': (infos) => infos.nearestReseauDeChaleur?.['PM'],
+  'caractéristique réseau de chaleur . production totale': (infos) => infos.nearestReseauDeChaleur?.['production_totale_MWh'],
+  'caractéristique réseau de chaleur . taux EnRR': (infos) => infos.nearestReseauDeChaleur?.['Taux EnR&R'],
 
-  'caractéristique réseau de froid . contenu CO2': (infos) => infos.nearestReseauDeFroid['contenu CO2'],
-  'caractéristique réseau de froid . contenu CO2 ACV': (infos) => infos.nearestReseauDeFroid['contenu CO2 ACV'],
-  'caractéristique réseau de froid . livraisons totales': (infos) => infos.nearestReseauDeFroid['livraisons_totale_MWh'],
-  'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid['production_totale_MWh'],
+  'caractéristique réseau de froid . contenu CO2': (infos) => infos.nearestReseauDeFroid?.['contenu CO2'],
+  'caractéristique réseau de froid . contenu CO2 ACV': (infos) => infos.nearestReseauDeFroid?.['contenu CO2 ACV'],
+  'caractéristique réseau de froid . livraisons totales': (infos) => infos.nearestReseauDeFroid?.['livraisons_totale_MWh'],
+  'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid?.['production_totale_MWh'],
 
   'code département': (infos) => `'${infos.infosVilles.departement_id}'`,
   'température de référence chaud': (infos) => +infos.infosVilles.temperature_ref_altitude_moyenne,
@@ -131,7 +131,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                     ObjectEntries(addresseToPublicodesRules).reduce(
                       (acc, [key, infoGetter]) => ({
                         ...acc,
-                        [key]: infoGetter(infos),
+                        [key]: infoGetter(infos) ?? null,
                       }),
                       {}
                     )
