@@ -185,7 +185,7 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
           <FilterLabel>
             <Icon name="ri-filter-2-fill" className="fr-mr-2" />
             <span>Comparaison</span>
-            {removedCompared.length > 0 && <strong className="fr-badge fr-mr-2">{removedCompared.length}</strong>}
+            <strong className="fr-badge fr-mr-2">{typesInstallation.length - removedCompared.length}</strong>
           </FilterLabel>
         }
       >
