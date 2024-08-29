@@ -40,6 +40,11 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     rerender({});
   };
 
+  const setSituation = (situation: Partial<Record<DottedName, any>>) => {
+    engine.setSituation(situation);
+    rerender({});
+  };
+
   const setStringField = (key: DottedName, value: any) => {
     setField(key, value === '' ? null : `'${value}'`);
   };
@@ -89,6 +94,7 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     getField,
     getRule: getParsedRule,
     setField,
+    setSituation,
     setStringField,
     getNode,
     getUnit,
