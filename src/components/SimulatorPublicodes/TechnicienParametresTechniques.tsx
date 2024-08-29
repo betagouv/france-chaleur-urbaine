@@ -49,7 +49,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
             engine.setField('caractéristique réseau de froid . livraisons totales', infos.nearestReseauDeFroid['livraisons_totale_MWh']);
             engine.setField('caractéristique réseau de froid . production totale', infos.nearestReseauDeFroid['production_totale_MWh']);
 
-            engine.setField('code département', infos.infosVilles.departement_id);
+            engine.setField('code département', `'${infos.infosVilles.departement_id}'`);
             engine.setField('température de référence chaud', +infos.infosVilles.temperature_ref_altitude_moyenne);
           }}
         />
