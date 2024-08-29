@@ -8,7 +8,7 @@ type UrlStateAccordionProps = Omit<DsfrAccordionProps, 'defaultExpanded' | 'expa
 };
 
 type AccordionProps = Omit<UrlStateAccordionProps | (DsfrAccordionProps & { useUrlState?: false }), 'label' | 'id'> &
-  ({ label: string; id?: string } | { label: React.ReactNode; id: string });
+  (Pick<DsfrAccordionProps, 'label' | 'id'> | { label: React.ReactNode; id: string; useUrlState: true });
 
 const Accordion: React.FC<AccordionProps> = ({ children, useUrlState, ...props }) => {
   const { add, remove, has } = useArrayQueryState('accordions');
