@@ -1,3 +1,4 @@
+import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
@@ -6,8 +7,30 @@ import RadioInput from '@components/form/publicodes/Radio';
 import Select from '@components/form/publicodes/Select';
 import { UrlStateAccordion as Accordion } from '@components/ui/Accordion';
 import { postFetchJSON } from '@utils/network';
+import { ObjectEntries } from '@utils/typescript';
 
 import { type SimulatorEngine } from './useSimulatorEngine';
+
+const addresseToPublicodesRules = {
+  'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur['contenu CO2'],
+  'caractéristique réseau de chaleur . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur['contenu CO2 ACV'],
+  'caractéristique réseau de chaleur . coût résidentiel': (infos) => infos.nearestReseauDeChaleur['PM_L'],
+  'caractéristique réseau de chaleur . coût tertiaire': (infos) => infos.nearestReseauDeChaleur['PM_T'],
+  'caractéristique réseau de chaleur . livraisons totales': (infos) => infos.nearestReseauDeChaleur['livraisons_totale_MWh'],
+  'caractéristique réseau de chaleur . part fixe': (infos) => infos.nearestReseauDeChaleur['PF%'],
+  'caractéristique réseau de chaleur . part variable': (infos) => infos.nearestReseauDeChaleur['PV%'],
+  'caractéristique réseau de chaleur . prix moyen': (infos) => infos.nearestReseauDeChaleur['PM'],
+  'caractéristique réseau de chaleur . production totale': (infos) => infos.nearestReseauDeChaleur['production_totale_MWh'],
+  'caractéristique réseau de chaleur . taux EnRR': (infos) => infos.nearestReseauDeChaleur['Taux EnR&R'],
+
+  'caractéristique réseau de froid . contenu CO2': (infos) => infos.nearestReseauDeFroid['contenu CO2'],
+  'caractéristique réseau de froid . contenu CO2 ACV': (infos) => infos.nearestReseauDeFroid['contenu CO2 ACV'],
+  'caractéristique réseau de froid . livraisons totales': (infos) => infos.nearestReseauDeFroid['livraisons_totale_MWh'],
+  'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid['production_totale_MWh'],
+
+  'code département': (infos) => `'${infos.infosVilles.departement_id}'`,
+  'température de référence chaud': (infos) => +infos.infosVilles.temperature_ref_altitude_moyenne,
+} as const satisfies Partial<Record<DottedName, (infos: any) => any>>;
 
 type TechnicienBatimentFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
@@ -30,27 +53,15 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
             console.debug('locations-infos', infos);
 
-            engine.setField('caractéristique réseau de chaleur . contenu CO2', infos.nearestReseauDeChaleur['contenu CO2']);
-            engine.setField('caractéristique réseau de chaleur . contenu CO2 ACV', infos.nearestReseauDeChaleur['contenu CO2 ACV']);
-            engine.setField('caractéristique réseau de chaleur . coût résidentiel', infos.nearestReseauDeChaleur['PM_L']);
-            engine.setField('caractéristique réseau de chaleur . coût tertiaire', infos.nearestReseauDeChaleur['PM_T']);
-            engine.setField(
-              'caractéristique réseau de chaleur . livraisons totales',
-              infos.nearestReseauDeChaleur['livraisons_totale_MWh']
+            engine.setSituation(
+              ObjectEntries(addresseToPublicodesRules).reduce(
+                (acc, [key, infoGetter]) => ({
+                  ...acc,
+                  [key]: infoGetter(infos),
+                }),
+                {}
+              )
             );
-            engine.setField('caractéristique réseau de chaleur . part fixe', infos.nearestReseauDeChaleur['PF%']);
-            engine.setField('caractéristique réseau de chaleur . part variable', infos.nearestReseauDeChaleur['PV%']);
-            engine.setField('caractéristique réseau de chaleur . prix moyen', infos.nearestReseauDeChaleur['PM']);
-            engine.setField('caractéristique réseau de chaleur . production totale', infos.nearestReseauDeChaleur['production_totale_MWh']);
-            engine.setField('caractéristique réseau de chaleur . taux EnRR', infos.nearestReseauDeChaleur['Taux EnR&R']);
-
-            engine.setField('caractéristique réseau de froid . contenu CO2', infos.nearestReseauDeFroid['contenu CO2']);
-            engine.setField('caractéristique réseau de froid . contenu CO2 ACV', infos.nearestReseauDeFroid['contenu CO2 ACV']);
-            engine.setField('caractéristique réseau de froid . livraisons totales', infos.nearestReseauDeFroid['livraisons_totale_MWh']);
-            engine.setField('caractéristique réseau de froid . production totale', infos.nearestReseauDeFroid['production_totale_MWh']);
-
-            engine.setField('code département', `'${infos.infosVilles.departement_id}'`);
-            engine.setField('température de référence chaud', +infos.infosVilles.temperature_ref_altitude_moyenne);
           }}
         />
         <Input name="degré jours unifié spécifique chaud" label="degré jours unifié spécifique chaud" iconId="fr-icon-temp-cold-fill" />
