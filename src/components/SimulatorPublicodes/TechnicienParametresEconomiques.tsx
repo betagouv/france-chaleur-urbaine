@@ -145,6 +145,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           <Input
             name="ratios économiques . Coût des combustibles x Electricité . Heure pleine x Heure creuse . Part de la consommation en HC"
             label="Part de la consommation en HC"
+            disabled
           />
           <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x CTA" label="Part Fixe x CTA" />
           <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x TVA" label="Part Fixe x TVA" />
@@ -167,12 +168,12 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Accordion label="Réseaux de chaleur RCU">
           <Input name="Paramètres économiques . Réseaux chaleur . Coût" label="Coût" />
           <Input name="Paramètres économiques . Réseaux chaleur . Part fixe" label="Part fixe" />
-          <Input name="Paramètres économiques . Réseaux chaleur . Part variable" label="Part variable" />
+          <Input name="Paramètres économiques . Réseaux chaleur . Part variable" label="Part variable" disabled />
         </Accordion>
         <Accordion label="Réseaux de froid RFU">
           <Input name="Paramètres économiques . Réseaux froid . Coût" label="Coût" />
           <Input name="Paramètres économiques . Réseaux froid . Part fixe" label="Part fixe" />
-          <Input name="Paramètres économiques . Réseaux froid . Part variable" label="Part variable" />
+          <Input name="Paramètres économiques . Réseaux froid . Part variable" label="Part variable" disabled />
         </Accordion>
       </Accordion>
 
