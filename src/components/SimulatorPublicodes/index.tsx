@@ -5,7 +5,6 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import Drawer from '@mui/material/Drawer';
-import Link from 'next/link';
 import { useQueryState } from 'nuqs';
 import React from 'react';
 
@@ -13,6 +12,7 @@ import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput'
 import { FormProvider } from '@components/form/publicodes/FormProvider';
 import Loader from '@components/Loader';
 import Heading from '@components/ui/Heading';
+import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
 import cx from '@utils/cx';
@@ -178,7 +178,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                   description={
                     <>
                       Le réseau de chaleur{' '}
-                      <Link href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}`}>
+                      <Link href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}`} isExternal>
                         <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
                       </Link>{' '}
                       est à <strong>{nearestReseauDeChaleur.distance}</strong>m de votre adresse.
@@ -193,7 +193,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                   description={
                     <>
                       Le réseau de froid{' '}
-                      <Link href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}`}>
+                      <Link href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}`} isExternal>
                         <strong>{nearestReseauDeFroid.nom_reseau}</strong>
                       </Link>{' '}
                       est à <strong>{nearestReseauDeFroid.distance}</strong>m de votre adresse.
