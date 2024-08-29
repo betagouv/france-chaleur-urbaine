@@ -11,6 +11,8 @@ const zLocationInfos = {
   cityCode: z.string(),
 };
 
+const maxDistanceThreshold = 1000;
+
 export interface LocationInfoResponse {
   nearestReseauDeChaleur: NearestReseauDeChaleur;
   nearestReseauDeFroid: NearestReseauDeFroid;
@@ -78,6 +80,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       )
       .where('has_trace', true)
       .whereNotNull('nom_reseau')
+      .whereRaw(`${distanceSubQuery} <= ${maxDistanceThreshold}`)
       .orderByRaw(distanceSubQuery)
       .first(),
     db('reseaux_de_froid')
@@ -93,6 +96,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       )
       .where('has_trace', true)
       .whereNotNull('nom_reseau')
+      .whereRaw(`${distanceSubQuery} <= ${maxDistanceThreshold}`)
       .orderByRaw(distanceSubQuery)
       .first(),
     db('communes').where('id', cityCode).orWhere('commune', city.toUpperCase()).first(),
