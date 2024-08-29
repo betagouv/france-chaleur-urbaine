@@ -79,7 +79,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
     }
   }, [displayMode, engineDisplayMode]);
 
-  const results = <PublicodesSimulatorResults className="" engine={engine} />;
+  const results = <PublicodesSimulatorResults engine={engine} />;
 
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
