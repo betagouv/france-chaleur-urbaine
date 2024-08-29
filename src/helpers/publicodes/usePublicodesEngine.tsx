@@ -28,8 +28,15 @@ export const formatUnit = ({ numerators, denominators }: Unit): string => {
 
 const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: Options) => {
   const [, rerender] = React.useState({});
+  const [loading, setLoading] = React.useState(true);
 
-  const engine = React.useMemo(() => new Engine(rules, options), []);
+  const engine = React.useMemo(() => {
+    console.time('engine');
+    const e = new Engine(rules, options);
+    console.timeEnd('engine');
+    setLoading(false);
+    return e;
+  }, []);
 
   const parsedRules = engine.getParsedRules();
   const setField = (key: DottedName, value: any) => {
@@ -90,6 +97,7 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
   };
 
   return {
+    loading,
     internalEngine: engine,
     getField,
     getRule: getParsedRule,
