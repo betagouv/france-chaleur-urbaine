@@ -11,6 +11,7 @@ import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@components/form/publicodes/FormProvider';
+import Loader from '@components/Loader';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
@@ -84,6 +85,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
       <FormProvider engine={engine}>
         <Section>
+          {engine.loading && <Loader show />}
           <header>
             <div>
               <Heading as="h2">Simulateur de prix et d'émissions de CO2</Heading>
