@@ -1,9 +1,11 @@
 import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { fr } from '@codegouvfr/react-dsfr';
+import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@codegouvfr/react-dsfr/Button';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import Drawer from '@mui/material/Drawer';
+import Link from 'next/link';
 import { useQueryState } from 'nuqs';
 import React from 'react';
 
@@ -11,6 +13,7 @@ import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput'
 import { FormProvider } from '@components/form/publicodes/FormProvider';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
+import { type LocationInfoResponse } from '@pages/api/location-infos';
 import cx from '@utils/cx';
 import { postFetchJSON } from '@utils/network';
 import { ObjectEntries } from '@utils/typescript';
@@ -63,6 +66,8 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
   const engineDisplayMode = engine.getField('mode affichage');
   const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: defaultDisplayMode || (engineDisplayMode as string) });
+  const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
+  const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
 
   const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: defaultTabId || 'techniques' });
 
@@ -104,13 +109,19 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
             <div>
               <AddressAutocomplete
                 label="Adresse"
+                onClear={() => {
+                  setNearestReseauDeChaleur(undefined);
+                  setNearestReseauDeFroid(undefined);
+                }}
                 onSelect={async (address) => {
-                  const infos = await postFetchJSON('/api/location-infos', {
+                  const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
                     lon: address.geometry.coordinates[0],
                     lat: address.geometry.coordinates[1],
                     city: address.properties.city,
                     cityCode: address.properties.citycode,
                   });
+                  setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
+                  setNearestReseauDeFroid(infos.nearestReseauDeFroid);
 
                   console.debug('locations-infos', infos);
 
@@ -159,7 +170,40 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                 </Tabs>
               )}
             </div>
-            <Results>{results}</Results>
+            <Results>
+              {nearestReseauDeChaleur && (
+                <Alert
+                  description={
+                    <>
+                      Le réseau de chaleur{' '}
+                      <Link href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}`}>
+                        <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
+                      </Link>{' '}
+                      est à <strong>{nearestReseauDeChaleur.distance}</strong>m de votre adresse.
+                    </>
+                  }
+                  severity="info"
+                  small
+                />
+              )}
+              {nearestReseauDeFroid && (
+                <Alert
+                  description={
+                    <>
+                      Le réseau de froid{' '}
+                      <Link href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}`}>
+                        <strong>{nearestReseauDeFroid.nom_reseau}</strong>
+                      </Link>{' '}
+                      est à <strong>{nearestReseauDeFroid.distance}</strong>m de votre adresse.
+                    </>
+                  }
+                  severity="info"
+                  small
+                />
+              )}
+
+              {/* {results} */}
+            </Results>
             <FloatingButton onClick={() => setGraphDrawerOpen(true)} iconId="ri-arrow-up-fill">
               Voir les résultats
             </FloatingButton>

@@ -11,6 +11,49 @@ const zLocationInfos = {
   cityCode: z.string(),
 };
 
+export interface LocationInfoResponse {
+  nearestReseauDeChaleur: NearestReseauDeChaleur;
+  nearestReseauDeFroid: NearestReseauDeFroid;
+  infosVilles: InfosVilles;
+}
+
+export interface NearestReseauDeChaleur {
+  'Identifiant reseau': string;
+  nom_reseau: string;
+  distance: number;
+  'contenu CO2': number;
+  'contenu CO2 ACV': number;
+  'Taux EnR&R': number;
+  livraisons_totale_MWh: number;
+  production_totale_MWh: number;
+  PM: number;
+  PM_L: number;
+  PM_T: number;
+  'PF%': number;
+  'PV%': number;
+}
+
+export interface NearestReseauDeFroid {
+  'Identifiant reseau': string;
+  nom_reseau: string;
+  distance: number;
+  'contenu CO2': number;
+  'contenu CO2 ACV': number;
+  livraisons_totale_MWh: number;
+  production_totale_MWh: number;
+}
+
+export interface InfosVilles {
+  id: string;
+  code_postal: string;
+  commune: string;
+  departement_id: string;
+  altitude_moyenne: number;
+  temperature_ref_altitude_moyenne: string;
+  source: string;
+  sous_zones_climatiques: string;
+}
+
 export default handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);
   const { lon, lat, cityCode, city } = await validateObjectSchema(req.body, zLocationInfos);
@@ -49,6 +92,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
         // les autres valeurs sont manquantes
       )
       .where('has_trace', true)
+      .whereNotNull('nom_reseau')
       .orderByRaw(distanceSubQuery)
       .first(),
     db('communes').where('id', cityCode).orWhere('commune', city.toUpperCase()).first(),
