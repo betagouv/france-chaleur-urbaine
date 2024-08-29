@@ -7,24 +7,18 @@ type UrlStateAccordionProps = Omit<DsfrAccordionProps, 'defaultExpanded' | 'expa
   useUrlState: true;
 };
 
-type AccordionProps = UrlStateAccordionProps | (DsfrAccordionProps & { useUrlState?: false });
+type AccordionProps = Omit<UrlStateAccordionProps | (DsfrAccordionProps & { useUrlState?: false }), 'label' | 'id'> &
+  ({ label: string; id?: string } | { label: React.ReactNode; id: string });
 
-const Accordion: React.FC<AccordionProps> = ({ children, label, useUrlState, ...props }) => {
+const Accordion: React.FC<AccordionProps> = ({ children, useUrlState, ...props }) => {
   const { add, remove, has } = useArrayQueryState('accordions');
 
-  const isLabelObject = typeof label === 'object';
+  const isLabelObject = typeof props.label === 'object';
 
-  const id = isLabelObject ? (props.id as string) : (label as string);
-  const shouldHaveId = useUrlState && !id;
+  const id = isLabelObject ? (props.id as string) : (props.label as string);
 
   return (
     <DsfrAccordion
-      label={
-        <>
-          {shouldHaveId && <span title="As label is an object, an id is required to be able to store it in the url">⚠️</span>}
-          {label}
-        </>
-      }
       {...(useUrlState
         ? {
             expanded: has(id),
