@@ -30,6 +30,7 @@ const Autocomplete = <Option extends DefaultOption>({
   ...props
 }: AutocompleteProps<Option>) => {
   const [inputValue, setInputValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState('');
   const [options, setOptions] = useState<Option[]>([]);
   const [loading, setLoading] = useState(false);
   const generatedId = useId();
@@ -51,21 +52,24 @@ const Autocomplete = <Option extends DefaultOption>({
   );
 
   useEffect(() => {
-    if (inputValue?.length >= minCharThreshold) {
+    if (inputValue?.length >= minCharThreshold && !selectedValue) {
       debouncedFetch(inputValue);
     } else {
       setOptions([]);
       onClear?.();
     }
-  }, [inputValue, debouncedFetch]);
+  }, [inputValue, debouncedFetch, selectedValue]);
 
   return (
     <Combobox {...props}>
       <div style={{ position: 'relative' }}>
         <ComboboxInput
           id={generatedId}
-          value={inputValue}
-          onChange={(event) => setInputValue(event.target.value)}
+          value={selectedValue || inputValue}
+          onChange={(event) => {
+            setSelectedValue('');
+            setInputValue(event.target.value);
+          }}
           {...nativeInputProps}
           style={{
             ...nativeInputProps?.style,
@@ -102,11 +106,13 @@ const Autocomplete = <Option extends DefaultOption>({
           }}
           name={inputValue ? 'fr-icon-close-line' : 'fr-icon-search-line'}
           onClick={() => {
+            setSelectedValue('');
             inputValue ? setInputValue('') : undefined;
             onClear?.();
           }}
         />
       </div>
+
       {options.length > 0 && (
         <ComboboxPopover>
           <ComboboxList>
@@ -118,7 +124,8 @@ const Autocomplete = <Option extends DefaultOption>({
                   key={`${optionValue}_${index}`}
                   value={optionValue}
                   onClick={() => {
-                    setInputValue(optionValue);
+                    setSelectedValue(optionValue);
+                    setOptions([]);
                     onSelect?.(option);
                   }}
                 >
