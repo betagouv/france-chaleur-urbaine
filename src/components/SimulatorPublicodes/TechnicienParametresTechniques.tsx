@@ -1,10 +1,10 @@
-import Accordion from '@codegouvfr/react-dsfr/Accordion';
 import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import Input from '@components/form/publicodes/Input';
 import RadioInput from '@components/form/publicodes/Radio';
 import Select from '@components/form/publicodes/Select';
+import { UrlStateAccordion as Accordion } from '@components/ui/Accordion';
 import { postFetchJSON } from '@utils/network';
 
 import { type SimulatorEngine } from './useSimulatorEngine';

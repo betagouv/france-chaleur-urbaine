@@ -1,5 +1,6 @@
-import Accordion from '@codegouvfr/react-dsfr/Accordion';
 import React from 'react';
+
+import Accordion from '@components/ui/Accordion';
 
 import Debug from './Debug';
 import Graph from './Graph';
