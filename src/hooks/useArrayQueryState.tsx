@@ -19,7 +19,11 @@ const useArrayQueryState = (name: string) => {
 
   const has = (name: string) => items.includes(name);
 
-  return { add, remove, has };
+  const toggle = (name: string) => (has(name) ? remove(name) : add(name));
+
+  const hasAndExists: typeof has = (name) => has(name) || items.length === 0;
+
+  return { add, remove, has, toggle, hasAndExists, items };
 };
 
 export default useArrayQueryState;
