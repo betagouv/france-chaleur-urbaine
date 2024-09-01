@@ -232,7 +232,7 @@ export const getExport = (addresses: any[]) => {
         address.address,
         address.label,
         address.score,
-        address.isEligible && !address.futurNetwork ? 'Oui' : 'Non',
+        address.isEligible && !address.futurNetwork ? 'Oui' : address.hasNoTraceNetwork ? 'A confirmer' : 'Non',
         address.distance,
         address.inPDP ? 'Oui' : 'Non',
         address.isEligible && address.futurNetwork ? 'Oui' : 'Non',
