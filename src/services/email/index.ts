@@ -122,7 +122,7 @@ export const sendRelanceMail = async (demand: Demand, id: string): Promise<void>
     link: `${process.env.NEXTAUTH_URL}/satisfaction?id=${id}&satisfaction=`,
     calendarLink:
       demand.Structure === 'Copropriété' || demand.Structure === 'Maison individuelle'
-        ? 'https://calendly.com/erwan-gravez-beta/30min'
+        ? 'https://cal.com/erwangravez/15min'
         : 'https://app.calendso.incubateur.net/camillefwok/15min',
   });
 
