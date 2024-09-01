@@ -1,9 +1,8 @@
-import Link from 'next/link';
-
-import WrappedText from '@components/WrappedText/WrappedText';
+import Box, { ResponsiveRow } from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
+import Link from '@components/ui/Link';
 
 import { Image } from './City.styles';
-import { DispositifsContainer, DispositifsColumn, Title } from './Dispositifs.styles';
 
 export type DispositifsData = {
   title?: string;
@@ -31,29 +30,33 @@ const Dispositifs = ({
   return (
     <>
       {dispositifs.length > 0 ? (
-        <>
-          {dispositifsTitle && <Title>{dispositifsTitle}</Title>}
-          <DispositifsContainer>
+        <Box className="fr-container" mb="4w">
+          {dispositifsTitle && (
+            <Heading as="h3" legacyColor="white">
+              {dispositifsTitle}
+            </Heading>
+          )}
+          <ResponsiveRow>
             {dispositifs.map((dispositif: any, i) => (
-              <DispositifsColumn className="fr-col-md-6 fr-col-12" key={`${city}'-'+${i}`}>
-                {dispositif.title && <h4>{dispositif.title}</h4>}
+              <Box flex key={`${city}'-'+${i}`}>
+                {dispositif.title && (
+                  <Heading as="h4" legacyColor="white">
+                    {dispositif.title}
+                  </Heading>
+                )}
                 {dispositif.img && <Image src={dispositif.img.src} alt={dispositif.img.alt} />}
-                <WrappedText body={dispositif.description} />
+                <Box flexDirection="column">{dispositif.description}</Box>
                 {dispositif.link && (
-                  <div className="fr-btn fr-mt-2w fr-ml-4w">
-                    <Link
-                      href={dispositif.link.href}
-                      target={dispositif.link.target}
-                      rel={dispositif.link.target === '_blank' ? 'noopener noreferrer' : undefined}
-                    >
+                  <Box className="fr-btn fr-mt-2w fr-ml-4w">
+                    <Link href={dispositif.link.href} isExternal={dispositif.link.target === '_blank' ? true : false}>
                       {dispositif.link.title}
                     </Link>
-                  </div>
+                  </Box>
                 )}
-              </DispositifsColumn>
+              </Box>
             ))}
-          </DispositifsContainer>
-        </>
+          </ResponsiveRow>
+        </Box>
       ) : (
         ''
       )}

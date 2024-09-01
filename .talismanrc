@@ -1,0 +1,6 @@
+fileignoreconfig:
+- filename: next.config.js
+  checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
+scopeconfig:
+- scope: node
+version: "1.0"
