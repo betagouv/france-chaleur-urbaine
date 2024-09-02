@@ -54,9 +54,6 @@ const Autocomplete = <Option extends DefaultOption>({
   useEffect(() => {
     if (inputValue?.length >= minCharThreshold && !selectedValue) {
       debouncedFetch(inputValue);
-    } else {
-      setOptions([]);
-      onClear?.();
     }
   }, [inputValue, debouncedFetch, selectedValue]);
 
@@ -108,6 +105,7 @@ const Autocomplete = <Option extends DefaultOption>({
           onClick={() => {
             setSelectedValue('');
             inputValue ? setInputValue('') : undefined;
+            setOptions([]);
             onClear?.();
           }}
         />
