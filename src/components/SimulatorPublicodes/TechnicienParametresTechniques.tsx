@@ -307,12 +307,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
       </Accordion>
 
       <Accordion label="Aides">
-        <RadioInput
-          name="Paramètres économiques . Aides . Éligibilité x Prise en compte des aides"
-          label="Prise en compte des aides"
-          small
-          orientation="horizontal"
-        />
+        <Select name="Paramètres économiques . Aides . Éligibilité x Prise en compte des aides" label="Prise en compte des aides" />
         <RadioInput
           name="Paramètres économiques . Aides . Éligibilité x Je suis un particulier"
           label="Je suis un particulier"
@@ -326,9 +321,9 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           small
           orientation="horizontal"
         />
-        <Input name="Paramètres économiques . Aides . Aides x Éligible Ma prime renov'" label="Éligible Ma prime renov'" />
-        <Input name="Paramètres économiques . Aides . Aides x Éligible Coup de pouce chauffage" label="Éligible Coup de pouce chauffage" />
-        <Input name="Paramètres économiques . Aides . Aides x Éligible CEE" label="Éligible CEE" />
+        <Select name="Paramètres économiques . Aides . Aides x Éligible Ma prime renov'" label="Éligible Ma prime renov'" />
+        <Select name="Paramètres économiques . Aides . Aides x Éligible Coup de pouce chauffage" label="Éligible Coup de pouce chauffage" />
+        <Select name="Paramètres économiques . Aides . Aides x Éligible CEE" label="Éligible CEE" />
         <Input name="Paramètres économiques . Aides . Valeur CEE" label="Valeur CEE" />
       </Accordion>
     </div>
