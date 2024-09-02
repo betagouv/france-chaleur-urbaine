@@ -12,7 +12,6 @@ import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput'
 import { FormProvider } from '@components/form/publicodes/FormProvider';
 import Loader from '@components/Loader';
 import Heading from '@components/ui/Heading';
-import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
@@ -85,7 +84,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
     <PublicodesSimulatorResults engine={engine} />
   ) : (
     <ResultsPlaceholder>
-      <Icon name="ri-bar-chart-horizontal-fill" size="lg" riSize="10x" />
+      <img src="/img/simulateur_placeholder.svg" alt="" />
       <div>Les résultats s’afficheront ici une fois le formulaire rempli</div>
     </ResultsPlaceholder>
   );

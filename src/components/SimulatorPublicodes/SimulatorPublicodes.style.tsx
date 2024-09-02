@@ -32,7 +32,7 @@ export const Results = styled.div`
 `;
 
 export const ResultsPlaceholder = styled.div`
-  background-color: var(--background-disabled-grey);
+  background-color: var(--background-alt-grey);
   flex: 1;
   height: 100%;
   display: flex;
@@ -41,7 +41,7 @@ export const ResultsPlaceholder = styled.div`
   justify-content: center;
   color: var(--text-disabled-grey);
   gap: 56px;
-  padding: 32px;
+  padding: 64px 32px;
 `;
 
 export const Simulator = styled.div<{ $noResults?: boolean }>`
@@ -49,15 +49,7 @@ export const Simulator = styled.div<{ $noResults?: boolean }>`
   flex-direction: column;
   gap: 16px;
   margin: 32px 0;
-
-  ${({ $noResults }) =>
-    $noResults
-      ? css`
-          align-items: stretch;
-        `
-      : css`
-          align-items: flex-start;
-        `}
+  align-items: flex-start;
 
   ${({ theme, $noResults }) => theme.media.lg`
     flex-direction: row;
@@ -65,6 +57,8 @@ export const Simulator = styled.div<{ $noResults?: boolean }>`
 
     > div:nth-child(2) {
       flex: 2;
+      position: sticky;
+              top: 0;
       ${
         $noResults
           ? css`
@@ -72,10 +66,7 @@ export const Simulator = styled.div<{ $noResults?: boolean }>`
               align-items: center;
               justify-content: center;
             `
-          : css`
-              position: sticky;
-              top: 0;
-            `
+          : css``
       }
     }
 
