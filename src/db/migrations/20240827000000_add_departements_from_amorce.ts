@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.createTable('departements', (table) => {
+  await knex.schema.createTableIfNotExists('departements', (table) => {
     table.string('id').primary();
     table.string('nom_departement').notNullable();
     table.decimal('dju_chaud_moyen').nullable();
