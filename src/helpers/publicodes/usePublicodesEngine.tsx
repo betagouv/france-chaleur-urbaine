@@ -64,7 +64,7 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     const result = engine.evaluate(key as any);
 
     if (result === null || result === undefined) {
-      console.warn(`${key} cannot be evaluated`);
+      // console.warn(`${key} cannot be evaluated`);
       return {} as typeof result;
     }
     return result;
@@ -74,7 +74,7 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     const result = getNode(key as any).nodeValue;
 
     if (result === null || result === undefined) {
-      console.warn(`${key} cannot be evaluated`);
+      // console.warn(`${key} cannot be evaluated`);
       return result;
     }
     return result;
