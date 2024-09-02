@@ -5,7 +5,7 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import Drawer from '@mui/material/Drawer';
-import { useQueryState } from 'nuqs';
+import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
@@ -27,10 +27,20 @@ import useSimulatorEngine from './useSimulatorEngine';
 
 type PublicodesSimulatorProps = React.HTMLAttributes<HTMLDivElement> & {
   displayMode: string;
-  tabId: string;
+  tabId: TabId;
 };
 
-export type TabId = 'batiment' | 'modes';
+const simulatorTabs = [
+  {
+    tabId: 'batiment',
+    label: 'Bâtiment',
+  },
+  {
+    tabId: 'modes-de-chauffage',
+    label: 'Modes de chauffage et de refroidissement',
+  },
+] as const;
+export type TabId = (typeof simulatorTabs)[number]['tabId'];
 
 const addresseToPublicodesRules = {
   'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2'],
@@ -72,7 +82,10 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   const [addressError, setAddressError] = React.useState<boolean>(false);
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
 
-  const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: defaultTabId || 'techniques' });
+  const [selectedTabId, setSelectedTabId] = useQueryState(
+    'tabId',
+    parseAsStringLiteral(simulatorTabs.map((tab) => tab.tabId)).withDefault(defaultTabId ?? 'batiment')
+  );
 
   React.useEffect(() => {
     if (engine.loaded) {
@@ -211,32 +224,15 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
               ) : (
                 <Tabs
                   selectedTabId={selectedTabId}
-                  tabs={[
-                    {
-                      tabId: 'techniques',
-                      label: (
-                        <small>
-                          Paramètres
-                          <br />
-                          techniques
-                        </small>
-                      ),
-                    },
-                    {
-                      tabId: 'economiques',
-                      label: (
-                        <small>
-                          Paramètres
-                          <br />
-                          économiques
-                        </small>
-                      ),
-                    },
-                  ]}
+                  tabs={simulatorTabs.map((tab) => ({
+                    tabId: tab.tabId,
+                    label: <small>{tab.label}</small>,
+                  }))}
                   onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}
                 >
-                  {selectedTabId === 'techniques' && <TechnicienParametresTechniques engine={engine} />}
-                  {selectedTabId === 'economiques' && <TechnicienParametresEconomiques engine={engine} />}
+                  {/* TODO rename components later after reorganizing fields */}
+                  {selectedTabId === 'batiment' && <TechnicienParametresTechniques engine={engine} />}
+                  {selectedTabId === 'modes-de-chauffage' && <TechnicienParametresEconomiques engine={engine} />}
                 </Tabs>
               )}
             </div>
