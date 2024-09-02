@@ -12,6 +12,7 @@ import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput'
 import { FormProvider } from '@components/form/publicodes/FormProvider';
 import Loader from '@components/Loader';
 import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
@@ -22,7 +23,7 @@ import { ObjectEntries } from '@utils/typescript';
 import DebugDrawer from './DebugDrawer';
 import GrandPublicForm from './GrandPublicForm';
 import PublicodesSimulatorResults from './Results';
-import { FloatingButton, Results, Section, Simulator } from './SimulatorPublicodes.style';
+import { FloatingButton, Results, ResultsPlaceholder, Section, Simulator } from './SimulatorPublicodes.style';
 import TechnicienParametresEconomiques from './TechnicienParametresEconomiques';
 import TechnicienParametresTechniques from './TechnicienParametresTechniques';
 import useSimulatorEngine from './useSimulatorEngine';
@@ -79,7 +80,15 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
     }
   }, [displayMode, engineDisplayMode]);
 
-  const results = <PublicodesSimulatorResults engine={engine} />;
+  const isAddressSelected = engine.getField('code département') !== undefined;
+  const results = isAddressSelected ? (
+    <PublicodesSimulatorResults engine={engine} />
+  ) : (
+    <ResultsPlaceholder>
+      <Icon name="ri-bar-chart-horizontal-fill" size="lg" riSize="10x" />
+      <div>Les résultats s’afficheront ici une fois le formulaire rempli</div>
+    </ResultsPlaceholder>
+  );
 
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
@@ -107,7 +116,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
               }}
             />
           </header>
-          <Simulator>
+          <Simulator $noResults={!isAddressSelected}>
             <div>
               <AddressAutocomplete
                 label="Adresse"
@@ -203,7 +212,6 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                   small
                 />
               )}
-
               {results}
             </Results>
             <FloatingButton onClick={() => setGraphDrawerOpen(true)} iconId="ri-arrow-up-fill">
