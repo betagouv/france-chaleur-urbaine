@@ -89,6 +89,17 @@ Note : Il se peut qu'un problème de permissions survienne sur le dossier .next 
 Dans ce cas, la commande `sudo chown -R $USER: .next` corrige le problème.
 
 
+## Hook pre-commit
+
+Un hook pre-commit Git permet de vérifier que le code est correctement linté avec [lint-staged](https://github.com/lint-staged/lint-staged), et [talisman](https://github.com/thoughtworks/talisman/) est un outil qui permet de détecter les fuites de secrets dans les commits.
+À noter que [GitGuardian](https://www.gitguardian.com/) est configuré sur l'organisation beta.gouv et fait la même chose, mais le secret a alors été rendu public et il faut alors l'invalider.
+
+
+Si talisman détecte une erreur au moment d'un commit, 2 options sont possibles :
+- soit corriger l'erreur pour supprimer l'alerte ;
+- soit ajouter une exception via la commande `yarn talisman:add-exception`.
+
+
 # Licence
 
 Le code de ce logiciel est soumis à la licence [Etalab 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/).
