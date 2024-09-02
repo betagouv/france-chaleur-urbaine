@@ -68,6 +68,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   const engineDisplayMode = engine.getField('mode affichage');
   const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: defaultDisplayMode || (engineDisplayMode as string) });
   const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
+  const [addressError, setAddressError] = React.useState<boolean>(false);
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
 
   const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: defaultTabId || 'techniques' });
@@ -119,9 +120,14 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
             <div>
               <AddressAutocomplete
                 label="Adresse"
+                state={addressError ? 'error' : undefined}
+                stateRelatedMessage={
+                  addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
+                }
                 onClear={() => {
                   setNearestReseauDeChaleur(undefined);
                   setNearestReseauDeFroid(undefined);
+                  setAddressError(false);
                   engine.setSituation(
                     ObjectEntries(addresseToPublicodesRules).reduce(
                       (acc, [key]) => ({
@@ -133,6 +139,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                   );
                 }}
                 onSelect={async (address) => {
+                  setAddressError(false);
                   const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
                     lon: address.geometry.coordinates[0],
                     lat: address.geometry.coordinates[1],
@@ -141,6 +148,12 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                   });
                   setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
                   setNearestReseauDeFroid(infos.nearestReseauDeFroid);
+
+                  if (!infos.infosVilles) {
+                    setAddressError(true);
+
+                    return;
+                  }
 
                   console.debug('locations-infos', infos);
 
