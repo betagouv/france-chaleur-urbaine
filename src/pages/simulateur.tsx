@@ -7,7 +7,8 @@ import PublicodesSimulator from '@components/SimulatorPublicodes';
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {
   return (
     <SimplePage title="Simulateur : France Chaleur Urbaine">
-      <PublicodesSimulator tabId={query.tabId} displayMode={query.displayMode} />
+      {/* don't load all publicodes on the server */}
+      {typeof window !== 'undefined' ? <PublicodesSimulator tabId={query.tabId} displayMode={query.displayMode} /> : <></>}
     </SimplePage>
   );
 };
