@@ -1,5 +1,5 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import Box from '@components/ui/Box';
 
@@ -25,26 +25,58 @@ export const Section = styled(Box).attrs({ as: 'section' })`
 
 export const Results = styled.div`
   display: none;
+
   ${({ theme }) => theme.media.lg`
-    display: block;
+    display: flex;
   `}
 `;
 
-export const Simulator = styled.div`
+export const ResultsPlaceholder = styled.div`
+  background-color: var(--background-disabled-grey);
+  flex: 1;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-disabled-grey);
+  gap: 56px;
+  padding: 32px;
+`;
+
+export const Simulator = styled.div<{ $noResults?: boolean }>`
+  display: flex;
+  flex-direction: column;
   gap: 16px;
   margin: 32px 0;
 
-  ${({ theme }) => theme.media.lg`
+  ${({ $noResults }) =>
+    $noResults
+      ? css`
+          align-items: stretch;
+        `
+      : css`
+          align-items: flex-start;
+        `}
+
+  ${({ theme, $noResults }) => theme.media.lg`
     flex-direction: row;
     gap: 32px;
 
     > div:nth-child(2) {
       flex: 2;
-      position: sticky;
-      top: 0;
+      ${
+        $noResults
+          ? css`
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            `
+          : css`
+              position: sticky;
+              top: 0;
+            `
+      }
     }
 
     > div:nth-child(1) {
