@@ -1,9 +1,12 @@
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
+import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
+import { useQueryState } from 'nuqs';
 import React from 'react';
 import Chart from 'react-google-charts';
 import styled from 'styled-components';
 
 import Accordion from '@components/ui/Accordion';
+import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import cx from '@utils/cx';
@@ -143,6 +146,7 @@ const typesInstallation = [
 
 const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
   const { has, toggle, items: removedCompared } = useArrayQueryState('remove-compared');
+  const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
 
   const coutGraphData = [
     ['Mode de chauffage', 'P1 abo', 'P1 conso', "P1'", 'P1 ECS', 'P2', 'P3', 'P4 moins aides', 'aides'],
@@ -181,6 +185,7 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
   return (
     <div className={cx(className)} {...props}>
       <Accordion
+        className="fr-mb-2w"
         label={
           <FilterLabel>
             <Icon name="ri-filter-2-fill" className="fr-mr-2" />
@@ -201,38 +206,63 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
           small
         />
       </Accordion>
+      <Box textAlign="right">
+        <SegmentedControl
+          hideLegend
+          segments={[
+            {
+              label: 'Coûts du chauffage',
+              nativeInputProps: {
+                checked: graphType === 'couts',
+                onChange: () => setGraphType('couts'),
+              },
+            },
+            {
+              label: 'Émissions de CO2',
+              nativeInputProps: {
+                checked: graphType === 'emissions',
+                onChange: () => setGraphType('emissions'),
+              },
+            },
+          ]}
+        />
+      </Box>
 
-      <Chart
-        legendToggle
-        height="600px"
-        width="100%"
-        chartType="BarChart"
-        chartLanguage="FR-fr"
-        loader={
-          <ChartPlaceholder>
-            Chargement du graphe...
-            <br />
-            <strong>{coutGraphOptions.title}</strong>
-          </ChartPlaceholder>
-        }
-        data={coutGraphData}
-        options={coutGraphOptions}
-      />
-      <Chart
-        height="600px"
-        width="100%"
-        chartType="BarChart"
-        chartLanguage="FR-fr"
-        loader={
-          <ChartPlaceholder>
-            Chargement du graphe...
-            <br />
-            <strong>{emissionsCO2GraphOptions.title}</strong>
-          </ChartPlaceholder>
-        }
-        data={emissionsCO2GraphData}
-        options={emissionsCO2GraphOptions}
-      />
+      {graphType === 'couts' && (
+        <Chart
+          legendToggle
+          height="600px"
+          width="100%"
+          chartType="BarChart"
+          chartLanguage="FR-fr"
+          loader={
+            <ChartPlaceholder>
+              Chargement du graphe...
+              <br />
+              <strong>{coutGraphOptions.title}</strong>
+            </ChartPlaceholder>
+          }
+          data={coutGraphData}
+          options={coutGraphOptions}
+        />
+      )}
+      {graphType === 'emissions' && (
+        <Chart
+          height="600px"
+          width="100%"
+          chartType="BarChart"
+          chartLanguage="FR-fr"
+          loader={
+            <ChartPlaceholder>
+              Chargement du graphe...
+              <br />
+              <strong>{emissionsCO2GraphOptions.title}</strong>
+            </ChartPlaceholder>
+          }
+          data={emissionsCO2GraphData}
+          options={emissionsCO2GraphOptions}
+        />
+      )}
     </div>
   );
 };
