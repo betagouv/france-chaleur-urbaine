@@ -39,9 +39,11 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
   }, []);
 
   const parsedRules = engine.getParsedRules();
+
   const setField = (key: DottedName, value: any) => {
     engine.setSituation({
       ...engine.getSituation(),
+      [key as any]: value === '' || value === undefined ? null : value,
     });
     rerender({});
   };
