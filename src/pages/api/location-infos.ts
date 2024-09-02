@@ -101,7 +101,11 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       .whereRaw(`${distanceSubQuery} <= ${maxDistanceThreshold}`)
       .orderByRaw(distanceSubQuery)
       .first(),
-    db('communes').where('id', cityCode).orWhere('commune', city.toUpperCase()).first(),
+    db('communes')
+      .where('id', cityCode)
+      .orWhere('commune', city.toUpperCase())
+      .orWhere('commune', 'like', `${city.toUpperCase()}-%-ARRONDISSEMENT`)
+      .first(),
   ]);
 
   if (!infosVilles) {
