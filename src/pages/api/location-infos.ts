@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import { NextApiRequest } from 'next';
 import { z } from 'zod';
 
@@ -61,6 +62,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   const { lon, lat, cityCode, city } = await validateObjectSchema(req.body, zLocationInfos);
 
   const distanceSubQuery = `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154))`;
+
   const [nearestReseauDeChaleur, nearestReseauDeFroid, infosVilles] = await Promise.all([
     db('reseaux_de_chaleur')
       .select(
@@ -101,6 +103,12 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       .first(),
     db('communes').where('id', cityCode).orWhere('commune', city.toUpperCase()).first(),
   ]);
+
+  if (!infosVilles) {
+    const errorMessage = `/api/location-infos. Impossible de trouver la ville: cityCode:"${cityCode}",  city:"${city}"`;
+    console.error(errorMessage);
+    Sentry.captureException(new Error(errorMessage));
+  }
 
   return {
     nearestReseauDeChaleur,
