@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/node';
+
 import db from 'src/db';
 import base from 'src/db/airtable';
 import { bulkFetchRangeFromMatomo } from 'src/services/matomo';
@@ -181,24 +183,29 @@ const saveDataCountBulkContactStats = async (startDate: string, endDate: string)
   }
 };
 
-const saveDataStats = async () => {
-  const startDate = new Date();
-  startDate.setMonth(startDate.getMonth() - 1);
-  startDate.setDate(1);
-  const stringStartDate = startDate.toISOString().slice(0, 10);
-  const endDate = new Date();
-  endDate.setDate(0);
-  const stringEndDate = endDate.toISOString().slice(0, 10);
+export const saveDataStats = async () => {
+  console.log(`CRON JOB START: saveDataStats`);
+  try {
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 1);
+    startDate.setDate(1);
+    const stringStartDate = startDate.toISOString().slice(0, 10);
+    const endDate = new Date();
+    endDate.setDate(0);
+    const stringEndDate = endDate.toISOString().slice(0, 10);
 
-  const endAirtableDate = new Date();
-  endAirtableDate.setDate(1);
-  const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
+    const endAirtableDate = new Date();
+    endAirtableDate.setDate(1);
+    const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
 
-  await saveDataCountContactStats(stringStartDate, stringEndAirtableDate);
-  await saveDataActionsStats(stringStartDate, stringEndDate);
-  await saveDataVisitsStats(stringStartDate, stringEndDate);
-  await saveDataVisitsMapStats(stringStartDate, stringEndDate);
-  await saveDataCountBulkContactStats(stringStartDate, stringEndDate);
+    await saveDataCountContactStats(stringStartDate, stringEndAirtableDate);
+    await saveDataActionsStats(stringStartDate, stringEndDate);
+    await saveDataVisitsStats(stringStartDate, stringEndDate);
+    await saveDataVisitsMapStats(stringStartDate, stringEndDate);
+    await saveDataCountBulkContactStats(stringStartDate, stringEndDate);
+  } catch (e) {
+    Sentry.captureException(e);
+    console.log(`CRON JOB ERROR: saveDataStats`, e);
+  }
+  console.log('CRON JOB STOP: saveDataStats');
 };
-
-saveDataStats();
