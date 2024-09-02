@@ -286,13 +286,13 @@ export const getNetworkEligilityStatus = async (networkId: string, lat: number, 
 };
 
 export const getEligilityStatus = async (lat: number, lon: number, city?: string): Promise<HeatNetwork> => {
-  const [inPDP, inFuturNetwork, futurNetwork, network] = await Promise.all([
+  const [inPDP, inFuturNetwork, futurNetwork, network, noTraceNetwork] = await Promise.all([
     isInPDP(lat, lon),
     closestInFuturNetwork(lat, lon),
     closestFuturNetwork(lat, lon),
     closestNetwork(lat, lon),
+    city ? await getNoTraceNetworkInCity(city) : null,
   ]);
-  const noTraceNetwork = city ? await getNoTraceNetworkInCity(city) : null;
 
   const eligibilityDistances = getNetworkEligibilityDistances(network['Identifiant reseau']);
   const futurEligibilityDistances = getNetworkEligibilityDistances(''); // gets the default distances

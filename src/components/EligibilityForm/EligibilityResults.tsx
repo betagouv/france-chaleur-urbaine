@@ -395,7 +395,6 @@ Votre situation n’est pas favorable **pour un raccordement, mais si vous souha
 };
 
 const noTraceCollectif = {
-  eligibility: true,
   body: (gestionnaire: string | null, tauxENRR: number | null, isClasse: boolean | null, city: string) => `
 ::arrow-item[Il existe un réseau de chaleur sur cette commune, mais nous ne disposons d’aucune information sur sa localisation.]
 ${
@@ -447,11 +446,11 @@ type EligibilityResultState =
   // pas proche
   | 'farCollectifInPDP'
   | 'farCollectifOutPDP'
-  | 'unknown'
 
   // réseau sans tracé
   | 'noTraceCollectif'
-  | 'noTraceIndividual';
+  | 'noTraceIndividual'
+  | 'unknown';
 
 export const getEligibilityResultState = (heatingType: AvailableHeating, eligibility?: HeatNetworksResponse): EligibilityResultState => {
   if (eligibility && heatingType) {
