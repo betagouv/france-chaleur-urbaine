@@ -123,6 +123,15 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                 onClear={() => {
                   setNearestReseauDeChaleur(undefined);
                   setNearestReseauDeFroid(undefined);
+                  engine.setSituation(
+                    ObjectEntries(addresseToPublicodesRules).reduce(
+                      (acc, [key]) => ({
+                        ...acc,
+                        [key]: null,
+                      }),
+                      {}
+                    )
+                  );
                 }}
                 onSelect={async (address) => {
                   const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
