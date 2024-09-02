@@ -115,7 +115,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
               }}
             />
           </header>
-          <Simulator $noResults={!isAddressSelected}>
+          <Simulator>
             <div>
               <AddressAutocomplete
                 label="Adresse"
@@ -192,6 +192,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
             <Results>
               {nearestReseauDeChaleur && (
                 <Alert
+                  className="fr-mb-2w"
                   description={
                     <>
                       Le réseau de chaleur{' '}
@@ -207,6 +208,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
               )}
               {nearestReseauDeFroid && (
                 <Alert
+                  className="fr-mb-2w"
                   description={
                     <>
                       Le réseau de froid{' '}
