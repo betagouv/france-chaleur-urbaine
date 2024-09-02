@@ -61,7 +61,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           label="Surface"
           nativeInputProps={{
             inputMode: 'numeric',
-            maxLength: 6, // a l'air de ne pas fonctionner
+            maxLength: 6,
             type: 'number',
           }}
         />
@@ -72,7 +72,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
               label="nombre de logement dans l'immeuble concerné"
               nativeInputProps={{
                 inputMode: 'numeric',
-                maxLength: 5, // a l'air de ne pas fonctionner
+                maxLength: 5,
                 type: 'number',
               }}
             />
@@ -81,7 +81,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
               label="Nombre d'habitants moyen par appartement"
               nativeInputProps={{
                 inputMode: 'numeric',
-                maxLength: 2, // a l'air de ne pas fonctionner
+                maxLength: 2,
                 type: 'number',
               }}
             />
