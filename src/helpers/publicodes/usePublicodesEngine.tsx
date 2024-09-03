@@ -72,13 +72,16 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
   };
 
   const getField = (key: DottedName) => {
-    const result = getNode(key as any).nodeValue;
+    return getNode(key as any).nodeValue;
+  };
 
-    if (result === null || result === undefined) {
-      // console.warn(`${key} cannot be evaluated`);
-      return result;
-    }
-    return result;
+  const getFieldDefaultValue = (key: DottedName) => {
+    return engine.evaluate({
+      valeur: key,
+      contexte: {
+        [key]: 'non défini', // règle spéciale qui n'a pas de valeur
+      },
+    })?.nodeValue;
   };
 
   const getFieldAsNumber = (key: DottedName) => {
@@ -102,6 +105,7 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
     internalEngine: engine,
     getField,
     getRule: getParsedRule,
+    getFieldDefaultValue,
     setField,
     setSituation,
     setStringField,

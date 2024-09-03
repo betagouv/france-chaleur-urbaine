@@ -24,7 +24,7 @@ const Input = ({
     label: string;
   }) => {
   const { engine } = usePublicodesFormContext();
-  const placeholder = engine.getField(name) as number | null | undefined;
+  const placeholder = engine.getFieldDefaultValue(name) as number | null | undefined;
   const unit = engine.getUnit(name);
   const [value, setValue] = React.useState(engine.getSituation()[name]);
 
