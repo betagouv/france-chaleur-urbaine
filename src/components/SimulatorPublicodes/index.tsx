@@ -75,16 +75,19 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: defaultTabId || 'techniques' });
 
   React.useEffect(() => {
-    if (!engine.loading) {
+    if (engine.loaded) {
       if (address) {
+        // if address is set, engine will need to compute the result
+        // so we wait a bit to make sure the result is ready
+        // FIXME this is a hack, we should use a proper state from the engine
         setTimeout(() => {
           setLoading(false);
-        }, 1000);
+        }, 2000);
       } else {
         setLoading(false);
       }
     }
-  }, [engine.loading, address]);
+  }, [engine.loaded, address]);
 
   React.useEffect(() => {
     // In case displayMode is set through url query param, we need to update the engine
@@ -172,9 +175,13 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                 }}
                 onSelect={async (selectedAddress) => {
                   setAddressError(false);
-                  setAddress(null);
                   setLngLat(undefined);
+
                   const [lon, lat] = selectedAddress.geometry.coordinates;
+                  const addressLabel = selectedAddress.properties.label;
+                  if (addressLabel !== address) {
+                    setAddress(null);
+                  }
 
                   const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
                     lon,
@@ -191,7 +198,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                     return;
                   }
 
-                  setAddress(selectedAddress.properties.label);
+                  setAddress(addressLabel);
 
                   if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
                     setLngLat(selectedAddress.geometry.coordinates);
