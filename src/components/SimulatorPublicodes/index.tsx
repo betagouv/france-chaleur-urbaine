@@ -13,7 +13,6 @@ import { FormProvider } from '@components/form/publicodes/FormProvider';
 import Loader from '@components/Loader';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
 import cx from '@utils/cx';
 import { postFetchJSON } from '@utils/network';
@@ -98,9 +97,15 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
           <header>
             <div>
               <Heading as="h2">Simulateur de prix et d'émissions de CO2</Heading>
-              <Text size="sm" fontStyle="italic">
-                Année de référence : 2022 pour les réseaux de chaleur, 2024 pour les autres modes de chauffage
-              </Text>
+              <ol>
+                <li>
+                  Renseignez les données de votre bâtiment dans <strong>l’onglet “Bâtiment”</strong>
+                </li>
+                <li>
+                  Selectionnez les modes de chauffages et de refroidissement que vous souhaitez comparer dans{' '}
+                  <strong>l’onglet “Modes de chauffage et de refroidissement”</strong>
+                </li>
+              </ol>
             </div>
             <ToggleSwitch
               label="Mode pro"
