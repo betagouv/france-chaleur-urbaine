@@ -1,5 +1,5 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import Box from '@components/ui/Box';
 
@@ -44,7 +44,30 @@ export const ResultsPlaceholder = styled.div`
   padding: 64px 32px;
 `;
 
-export const Simulator = styled.div`
+export const Simulator = styled.div<{ $loading?: boolean }>`
+  ${({ $loading }) =>
+    $loading &&
+    css`
+      position: relative;
+      &:after {
+        content: 'Chargement en cours...';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: flex-start;
+        padding-top: 100px;
+        justify-content: center;
+        color: black;
+        font-size: 30px;
+        font-weight: bold;
+        background: rgba(255, 255, 255, 0.7);
+        z-index: 1000;
+      }
+    `}
+
   display: flex;
   flex-direction: column;
   gap: 16px;

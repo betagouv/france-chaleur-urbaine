@@ -10,7 +10,6 @@ import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@components/form/publicodes/FormProvider';
-import Loader from '@components/Loader';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
@@ -62,6 +61,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   ...props
 }) => {
   const engine = useSimulatorEngine();
+  const [loading, setLoading] = React.useState(true);
 
   const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
   const engineDisplayMode = engine.getField('mode affichage');
@@ -73,6 +73,18 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
 
   const [selectedTabId, setSelectedTabId] = useQueryState('tabId', { defaultValue: defaultTabId || 'techniques' });
+
+  React.useEffect(() => {
+    if (!engine.loading) {
+      if (address) {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [engine.loading, address]);
 
   React.useEffect(() => {
     // In case displayMode is set through url query param, we need to update the engine
@@ -95,7 +107,6 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
       <FormProvider engine={engine}>
         <Section>
-          {engine.loading && <Loader show />}
           <header>
             <div>
               <Heading as="h2">Simulateur de prix et d'émissions de CO2</Heading>
@@ -123,7 +134,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
               }}
             />
           </header>
-          <Simulator>
+          <Simulator $loading={loading}>
             <div>
               <AddressAutocomplete
                 label="Adresse"
