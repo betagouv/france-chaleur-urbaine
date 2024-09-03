@@ -28,10 +28,6 @@ const FilterLabel = styled.div`
 const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   chartArea: { width: '100%', top: 0, bottom: 100 },
   isStacked: true,
-  // allows pan and zoom
-  explorer: {
-    keepInBounds: true,
-  },
   vAxis: {
     // cache les modes de chauffage
     textPosition: 'none',
