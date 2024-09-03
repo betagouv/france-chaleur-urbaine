@@ -25,8 +25,9 @@ const Select = ({
   const { engine } = usePublicodesFormContext();
 
   const options = getOptions(engine, name);
-  const valueInEngine = fixupBooleanEngineValue(engine.getField(name));
-  console.log(name, valueInEngine);
+  const defaultValue = fixupBooleanEngineValue(engine.getFieldDefaultValue(name) as string | null | undefined);
+  const value = withDefaultOption ? engine.getSituation()[name] : engine.getField(name);
+
   return (
     <DSFRSelect
       nativeSelectProps={{
@@ -45,7 +46,7 @@ const Select = ({
         ...(withDefaultOption
           ? [
               {
-                label: `Par défaut (${valueInEngine})`,
+                label: `Par défaut (${defaultValue})`,
                 value: '',
               },
             ]
@@ -53,7 +54,7 @@ const Select = ({
         ...options.map((option) => ({
           label: option,
           value: option,
-          selected: option === valueInEngine,
+          selected: option === value,
         })),
       ]}
       hint={hint}
