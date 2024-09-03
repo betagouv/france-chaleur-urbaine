@@ -28,13 +28,13 @@ export const formatUnit = ({ numerators, denominators }: Unit): string => {
 
 const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: Options) => {
   const [, rerender] = React.useState({});
-  const [loading, setLoading] = React.useState(true);
+  const [loaded, setLoaded] = React.useState(false);
 
   const engine = React.useMemo(() => {
     console.time('engine');
     const e = new Engine(rules, options);
     console.timeEnd('engine');
-    setLoading(false);
+    setLoaded(true);
     return e;
   }, []);
 
@@ -98,7 +98,7 @@ const usePublicodesEngine = <DottedName extends string>(rules: Rules, options?: 
   };
 
   return {
-    loading,
+    loaded,
     internalEngine: engine,
     getField,
     getRule: getParsedRule,
