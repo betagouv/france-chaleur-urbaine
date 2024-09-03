@@ -27,9 +27,11 @@ const Autocomplete = <Option extends DefaultOption>({
   getOptionValue,
   onSelect,
   onClear,
+  defaultValue,
   ...props
 }: AutocompleteProps<Option>) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(defaultValue ? `${defaultValue}` : '');
+  const [defaultValueSet, setDefaultValueSet] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
   const [options, setOptions] = useState<Option[]>([]);
   const [loading, setLoading] = useState(false);
@@ -41,14 +43,23 @@ const Autocomplete = <Option extends DefaultOption>({
         setLoading(true);
         try {
           const results = await fetchFn(query);
-          setOptions(results);
+          if (results.length > 0 && defaultValue && !defaultValueSet) {
+            // a default value is present so fetch the result and select it
+            setDefaultValueSet(true);
+            const option = results[0];
+            const optionValue = getOptionValue(option);
+            setSelectedValue(optionValue);
+            onSelect?.(option);
+          } else {
+            setOptions(results);
+          }
         } catch (error) {
           console.error('Error fetching data:', error);
         } finally {
           setLoading(false);
         }
       }, debounceTime),
-    [fetchFn]
+    [fetchFn, defaultValue, defaultValueSet, setDefaultValueSet]
   );
 
   useEffect(() => {
