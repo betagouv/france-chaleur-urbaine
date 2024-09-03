@@ -67,6 +67,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   const engineDisplayMode = engine.getField('mode affichage');
   const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: defaultDisplayMode || (engineDisplayMode as string) });
   const [address, setAddress] = useQueryState('address');
+  const [lngLat, setLngLat] = React.useState<[number, number]>();
   const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
   const [addressError, setAddressError] = React.useState<boolean>(false);
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
@@ -130,12 +131,23 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                 stateRelatedMessage={
                   addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
                 }
+                hintText={
+                  lngLat && (
+                    <Link
+                      isExternal
+                      href={`/carte?coord=${lngLat.join(',')}&zoom=17&proMode=${displayMode === 'technicien' ? 'true' : 'false'}`}
+                    >
+                      Voir les réseaux à proximité sur la carte
+                    </Link>
+                  )
+                }
                 defaultValue={address || ''}
                 onClear={() => {
                   setNearestReseauDeChaleur(undefined);
                   setNearestReseauDeFroid(undefined);
                   setAddressError(false);
                   setAddress(undefined);
+                  setLngLat(undefined);
                   engine.setSituation(
                     ObjectEntries(addresseToPublicodesRules).reduce(
                       (acc, [key]) => ({
@@ -149,6 +161,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                 onSelect={async (selectedAddress) => {
                   setAddressError(false);
                   setAddress(null);
+                  setLngLat(undefined);
                   const [lon, lat] = selectedAddress.geometry.coordinates;
 
                   const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
@@ -167,6 +180,10 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                   }
 
                   setAddress(selectedAddress.properties.label);
+
+                  if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
+                    setLngLat(selectedAddress.geometry.coordinates);
+                  }
 
                   console.debug('locations-infos', infos);
 
