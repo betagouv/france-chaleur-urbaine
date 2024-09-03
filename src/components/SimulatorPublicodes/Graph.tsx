@@ -25,14 +25,21 @@ const FilterLabel = styled.div`
   gap: 8px;
 `;
 
+const estimatedRowHeightPx = 56;
+const estimatedBaseGraphHeightPx = 150;
+
 const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
-  chartArea: { width: '100%', top: 0, bottom: 100 },
+  chartArea: {
+    width: '100%',
+    top: 80, // espace pour afficher la légende
+    bottom: 60, // espace pour afficher les abscisses
+  },
   isStacked: true,
   vAxis: {
     // cache les modes de chauffage
     textPosition: 'none',
   },
-  legend: { position: 'bottom' },
+  legend: { position: 'top', maxLines: 3 },
 };
 
 const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
@@ -191,7 +198,7 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
   ];
 
   const comparisonCount = typesInstallation.length - removedCompared.length;
-  const chartHeight = comparisonCount * 60 + 100;
+  const chartHeight = comparisonCount * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
   return (
     <div className={cx(className)} {...props}>
