@@ -146,8 +146,9 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                   setNearestReseauDeChaleur(undefined);
                   setNearestReseauDeFroid(undefined);
                   setAddressError(false);
-                  setAddress(undefined);
+                  setAddress(null);
                   setLngLat(undefined);
+
                   engine.setSituation(
                     ObjectEntries(addresseToPublicodesRules).reduce(
                       (acc, [key]) => ({
