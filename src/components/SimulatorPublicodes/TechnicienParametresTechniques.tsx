@@ -25,11 +25,6 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Select name="zone climatique" label="Zone climatique" />
         <Select name="sous zone climatique" label="Sous-zone climatique" />
       </Accordion>
-      {/* Pas besoin car seront définis via l'adresse en externe */}
-      {/* <Accordion label="Réseaux de chaleur et de froid">
-        <Select name="choix du réseau de chaleur" label="choix du réseau de chaleur" />
-        <Select name="choix du réseau de froid" label="choix du réseau de froid" />
-      </Accordion> */}
 
       <Accordion label="Choix du bâtiment">
         <RadioInput name="type de bâtiment" small orientation="horizontal" />
