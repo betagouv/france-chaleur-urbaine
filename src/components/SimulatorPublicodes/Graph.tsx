@@ -81,12 +81,12 @@ const typesInstallation = [
     coutPublicodeKey: 'Chaudière à granulés coll',
   },
   {
-    label: 'Gaz indiv avec condensateur',
+    label: 'Gaz individuel avec condensateur',
     emissionsCO2PublicodesKey: 'Gaz indiv avec cond x Individuel',
     coutPublicodeKey: 'Gaz indiv avec cond',
   },
   {
-    label: 'Gaz indiv sans condensateur',
+    label: 'Gaz individuel sans condensateur',
     emissionsCO2PublicodesKey: 'Gaz indiv sans cond x Individuel',
     coutPublicodeKey: 'Gaz indiv sans cond',
   },
