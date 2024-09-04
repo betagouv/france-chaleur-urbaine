@@ -10,7 +10,6 @@ import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@components/form/publicodes/FormProvider';
-import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
 import cx from '@utils/cx';
@@ -19,6 +18,7 @@ import { ObjectEntries } from '@utils/typescript';
 
 import DebugDrawer from './DebugDrawer';
 import GrandPublicForm from './GrandPublicForm';
+import { PublicodesSimulatorTitle } from './Placeholder';
 import PublicodesSimulatorResults from './Results';
 import { FloatingButton, Results, ResultsPlaceholder, Section, Simulator } from './SimulatorPublicodes.style';
 import TechnicienParametresEconomiques from './TechnicienParametresEconomiques';
@@ -111,18 +111,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
       <FormProvider engine={engine}>
         <Section>
           <header>
-            <div>
-              <Heading as="h2">Simulateur de prix et d'émissions de CO2</Heading>
-              <ol>
-                <li>
-                  Renseignez les données de votre bâtiment dans <strong>l’onglet “Bâtiment”</strong>
-                </li>
-                <li>
-                  Selectionnez les modes de chauffages et de refroidissement que vous souhaitez comparer dans{' '}
-                  <strong>l’onglet “Modes de chauffage et de refroidissement”</strong>
-                </li>
-              </ol>
-            </div>
+            <PublicodesSimulatorTitle />
             <ToggleSwitch
               label="Mode pro"
               labelPosition="left"

@@ -1,8 +1,14 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import dynamic from 'next/dynamic';
 import React from 'react';
 
 import SimplePage from '@components/shared/page/SimplePage';
-import PublicodesSimulator from '@components/SimulatorPublicodes';
+import Placeholder from '@components/SimulatorPublicodes/Placeholder';
+
+const PublicodesSimulator = dynamic(() => import('@components/SimulatorPublicodes'), {
+  ssr: false,
+  loading: () => <Placeholder />,
+});
 
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {
   return (
