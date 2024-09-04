@@ -6,6 +6,7 @@ import Chart from 'react-google-charts';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import useArrayQueryState from '@hooks/useArrayQueryState';
+import { deepMergeObjects } from '@utils/core';
 import cx from '@utils/cx';
 
 import { modesDeChauffage } from './modes-de-chauffage';
@@ -25,7 +26,6 @@ const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
     width: '100%',
     top: 80, // espace pour afficher la légende
     bottom: 60, // espace pour afficher les abscisses
-    right: 20, // to display the total price without being cut
   },
   annotations: {
     textStyle: {
@@ -52,22 +52,24 @@ const colorP3 = '#EA8C65';
 const colorP4SansAides = '#D1B781';
 const colorP4Aides = '#D5B781';
 
-const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = {
-  ...commonGraphOptions,
+const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
+  chartArea: {
+    right: 120, // to display the total without being cut
+  },
   colors: ['#2a7777', '#e30613', '#898989'],
   hAxis: {
     title: 'Émissions (kgCO2 équ.)',
     minValue: 0,
     // format: '# kgCO2 équ.',
   },
-};
+});
 
 const getBarStyle = (color: string) => `color: ${color}; stroke-color: ${color}; stroke-opacity: 1; stroke-width: 1;`;
 
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
 
-  const columns = proMode
+  const coutGraphColumns = proMode
     ? [
         'P1 abo',
         { role: 'style' },
@@ -99,23 +101,25 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
         { role: 'style' },
       ];
 
-  const colors = proMode
+  const coutGraphColors = proMode
     ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP2, colorP3, colorP4SansAides, colorP4Aides]
     : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
-  const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
-    ...commonGraphOptions,
+  const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
+    chartArea: {
+      right: 20, // to display the total price without being cut
+    },
     hAxis: {
       title: 'Coût €TTC/logement par an',
       minValue: 0,
       format: '# €',
     },
-    colors,
-  };
+    colors: coutGraphColors,
+  });
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
 
   const coutGraphData = [
-    ['Mode de chauffage', { role: 'annotation' }, ...columns, { role: 'annotation' }],
+    ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
     ...modesDeChauffage
       .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
       .flatMap((typeInstallation) => {
@@ -186,6 +190,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       "Scope 1 : Production directe d'énergie",
       "Scope 2 : Production indirecte d'énergie",
       'Scope 3 : Émissions indirectes',
+      { type: 'string', role: 'annotation' },
     ],
     ...modesDeChauffage
       .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
@@ -196,13 +201,11 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
         ];
 
-        const totalAmount = amounts
-          .reduce((acc, amount) => acc + amount, 0)
-          .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+        const totalAmount = Math.round(amounts.reduce((acc, amount) => acc + amount, 0));
 
         return [
-          ['', `${typeInstallation.label} (${totalAmount})`, 0, 0, 0],
-          [typeInstallation.label, '', ...amounts],
+          ['', `${typeInstallation.label}`, 0, 0, 0, ''],
+          [typeInstallation.label, '', ...amounts, `${totalAmount} kgCO2 équ.`],
         ];
       }),
   ];
