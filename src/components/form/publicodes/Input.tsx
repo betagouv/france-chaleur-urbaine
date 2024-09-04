@@ -2,6 +2,7 @@ import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { useDebouncedEffect } from '@react-hookz/web';
 import React from 'react';
 
+import useInViewport from '@hooks/useInViewport';
 import { isDefined } from '@utils/core';
 import { upperCaseFirstChar } from '@utils/strings';
 
@@ -23,10 +24,17 @@ const Input = ({
     name: DottedName;
     label: string;
   }) => {
+  const [ref, isInView] = useInViewport<HTMLDivElement>();
   const { engine } = usePublicodesFormContext();
-  const placeholder = engine.getFieldDefaultValue(name) as number | null | undefined;
-  const unit = engine.getUnit(name);
-  const [value, setValue] = React.useState(engine.getSituation()[name]);
+  const placeholder = isInView ? (engine.getFieldDefaultValue(name) as number | null | undefined) : '';
+  const unit = isInView ? engine.getUnit(name) : '';
+  const [value, setValue] = React.useState<any>();
+
+  React.useEffect(() => {
+    if (isInView) {
+      setValue(engine.getSituation()[name]);
+    }
+  }, [isInView]);
 
   useDebouncedEffect(
     () => {
@@ -40,6 +48,7 @@ const Input = ({
 
   return (
     <DSFRInput
+      ref={ref}
       textArea={false}
       label={
         <>
@@ -52,7 +61,9 @@ const Input = ({
         ...nativeInputProps,
         type: 'number',
         value: value ?? '',
-        placeholder: isDefined(placeholder) ? `${placeholderPrecision ? placeholder.toFixed(placeholderPrecision) : placeholder}` : '',
+        placeholder: isDefined(placeholder)
+          ? `${placeholderPrecision && typeof placeholder === 'number' ? placeholder.toFixed(placeholderPrecision) : placeholder}`
+          : '',
         onChange: (e) => {
           e.stopPropagation();
           const newValue = e.target.value;
