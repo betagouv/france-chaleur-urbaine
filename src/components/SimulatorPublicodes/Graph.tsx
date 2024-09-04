@@ -62,11 +62,8 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
     ['Mode de chauffage', { role: 'annotation' }, 'P1 abo', 'P1 conso', "P1'", 'P1 ECS', 'P2', 'P3', 'P4 moins aides', 'aides'],
     ...modesDeChauffage
       .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
-      .flatMap((typeInstallation) => [
-        ['', typeInstallation.label, 0, 0, 0, 0, 0, 0, 0, 0],
-        [
-          typeInstallation.label,
-          '',
+      .flatMap((typeInstallation) => {
+        const amounts = [
           engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible abonnement`),
           engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible consommation`),
           engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût électricité auxiliaire`),
@@ -76,8 +73,17 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
           // TODO manque les différents types d'installation avec élec ou solaire
           engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`),
           engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`),
-        ],
-      ]),
+        ];
+
+        const totalAmount = amounts
+          .reduce((acc, amount) => acc + amount, 0)
+          .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+        return [
+          ['', `${typeInstallation.label} (${totalAmount})`, 0, 0, 0, 0, 0, 0, 0, 0],
+          [typeInstallation.label, '', ...amounts],
+        ];
+      }),
   ];
   const emissionsCO2GraphData = [
     [
@@ -89,16 +95,22 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
     ],
     ...modesDeChauffage
       .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
-      .flatMap((typeInstallation) => [
-        ['', typeInstallation.label, 0, 0, 0],
-        [
-          typeInstallation.label,
-          '',
+      .flatMap((typeInstallation) => {
+        const amounts = [
           engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
           engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
           engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
-        ],
-      ]),
+        ];
+
+        const totalAmount = amounts
+          .reduce((acc, amount) => acc + amount, 0)
+          .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
+        return [
+          ['', `${typeInstallation.label} (${totalAmount})`, 0, 0, 0],
+          [typeInstallation.label, '', ...amounts],
+        ];
+      }),
   ];
 
   const chartHeight = selectedModesDeChauffage.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
