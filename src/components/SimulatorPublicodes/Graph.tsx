@@ -14,6 +14,7 @@ import { type SimulatorEngine } from './useSimulatorEngine';
 
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
+  proMode?: boolean;
 };
 
 const estimatedRowHeightPx = 56;
@@ -63,8 +64,44 @@ const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = 
 
 const getBarStyle = (color: string) => `color: ${color}; stroke-color: ${color}; stroke-opacity: 1; stroke-width: 1;`;
 
-const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
+const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+
+  const columns = proMode
+    ? [
+        'P1 abo',
+        { role: 'style' },
+        'P1 conso',
+        { role: 'style' },
+        'P1 ECS',
+        { role: 'style' },
+        "P1'",
+        { role: 'style' },
+        'P2',
+        { role: 'style' },
+        'P3',
+        { role: 'style' },
+        'P4 moins aides',
+        { role: 'style' },
+        'aides',
+        { role: 'style' },
+      ]
+    : [
+        'Abonnement',
+        { role: 'style' },
+        'Consommation',
+        { role: 'style' },
+        'Maintenance',
+        { role: 'style' },
+        'Investissement',
+        { role: 'style' },
+        'Aides',
+        { role: 'style' },
+      ];
+
+  const colors = proMode
+    ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP2, colorP3, colorP4SansAides, colorP4Aides]
+    : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
   const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
     ...commonGraphOptions,
@@ -73,61 +110,70 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
       minValue: 0,
       format: '# €',
     },
-    colors: [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP2, colorP3, colorP4SansAides, colorP4Aides],
+    colors,
   };
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
 
   const coutGraphData = [
-    [
-      'Mode de chauffage',
-      { role: 'annotation' },
-      'P1 abo',
-      { role: 'style' },
-      'P1 conso',
-      { role: 'style' },
-      'P1 ECS',
-      { role: 'style' },
-      "P1'",
-      { role: 'style' },
-      'P2',
-      { role: 'style' },
-      'P3',
-      { role: 'style' },
-      'P4 moins aides',
-      { role: 'style' },
-      'aides',
-      { role: 'style' },
-      { role: 'annotation' },
-    ],
+    ['Mode de chauffage', { role: 'annotation' }, ...columns, { role: 'annotation' }],
     ...modesDeChauffage
       .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
       .flatMap((typeInstallation) => {
-        const amounts = [
-          engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible abonnement`),
-          getBarStyle(colorP1Abo),
-          engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible consommation`),
-          getBarStyle(colorP1Conso),
-          engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût électricité auxiliaire`),
-          getBarStyle(colorP1ECS),
-          engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût combustible pour ballon ECS à accumulation`),
-          getBarStyle(colorP1prime),
-          engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . petit entretien P2`),
-          getBarStyle(colorP2),
-          engine.getFieldAsNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . gros entretien P3`),
-          // TODO manque les différents types d'installation avec élec ou solaire
-          getBarStyle(colorP3),
-          engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`),
-          getBarStyle(colorP4SansAides),
-          engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`),
-          `${getBarStyle(colorP4Aides)};fill-opacity: 0.1;`,
-        ];
+        const amountP1Abo = engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible abonnement`);
+        const amountP1Conso = engine.getFieldAsNumber(
+          `Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible consommation`
+        );
+        const amountP1ECS = engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût électricité auxiliaire`);
+        const amountP1prime = engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût électricité auxiliaire`);
+        const amountP2 = engine.getFieldAsNumber(
+          `Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . petit entretien P2`
+        );
+        // TODO manque les différents types d'installation avec élec ou solaire
+        const amountP3 = engine.getFieldAsNumber(
+          `Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . gros entretien P3`
+        );
+        const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
+        const amountAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`);
+
+        const amounts = proMode
+          ? [
+              amountP1Abo,
+              getBarStyle(colorP1Abo),
+              amountP1Conso,
+              getBarStyle(colorP1Conso),
+              amountP1ECS,
+              getBarStyle(colorP1ECS),
+              amountP1prime,
+              getBarStyle(colorP1prime),
+              amountP2,
+              getBarStyle(colorP2),
+              amountP3,
+              // TODO manque les différents types d'installation avec élec ou solaire
+              getBarStyle(colorP3),
+              amountP4SansAides,
+              getBarStyle(colorP4SansAides),
+              amountAides,
+              `${getBarStyle(colorP4Aides)};fill-opacity: 0.1;`,
+            ]
+          : [
+              amountP1Abo,
+              getBarStyle(colorP1Abo),
+              amountP1Conso + amountP1ECS,
+              getBarStyle(colorP1Conso),
+              amountP1prime + amountP2 + amountP3,
+              getBarStyle(colorP3),
+              amountP4SansAides,
+              getBarStyle(colorP4SansAides),
+              amountAides,
+              `${getBarStyle(colorP4Aides)};fill-opacity: 0.1;`,
+            ];
 
         const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
           .reduce((acc, amount) => acc + amount, 0)
           .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
 
         return [
-          [' ', typeInstallation.label, 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', 0, '', ''],
+          [' ', typeInstallation.label, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
           [typeInstallation.label, '', ...amounts, totalAmount],
         ];
       }),
