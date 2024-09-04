@@ -39,6 +39,15 @@ export const simulatorTabs = [
   },
 ] as const;
 
+export const ResultsNotAvailable = () => (
+  <ResultsPlaceholder>
+    <img src="/img/simulateur_placeholder.svg" alt="" />
+    <div>
+      Les résultats s’afficheront ici une fois <strong>une adresse</strong> et <strong>au moins un mode de chauffage</strong> sélectionnés
+    </div>
+  </ResultsPlaceholder>
+);
+
 const PublicodesSimulatorPlaceholder: React.FC<PublicodesSimulatorPlaceholderProps> = ({ children, className, ...props }) => {
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
@@ -57,10 +66,7 @@ const PublicodesSimulatorPlaceholder: React.FC<PublicodesSimulatorPlaceholderPro
             />
           </div>
           <Results>
-            <ResultsPlaceholder>
-              <img src="/img/simulateur_placeholder.svg" alt="" />
-              <div>Les résultats s’afficheront ici une fois le formulaire rempli</div>
-            </ResultsPlaceholder>
+            <ResultsNotAvailable />
           </Results>
         </Simulator>
       </Section>
