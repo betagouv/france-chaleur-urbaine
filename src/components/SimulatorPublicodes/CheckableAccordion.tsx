@@ -13,6 +13,7 @@ import { Parameters } from 'tsafe/Parameters';
 import { symToStr } from 'tsafe/symToStr';
 
 import Box from '@components/ui/Box';
+import useArrayQueryState from '@hooks/useArrayQueryState';
 import cx from '@utils/cx';
 
 // import { useConstCallback } from "./tools/powerhooks/useConstCallback";
@@ -56,7 +57,7 @@ const StyledToggleButton = styled.button`
   flex: 0;
 `;
 
-export type CheckableAccordionProps = CheckableAccordionProps.Controlled | CheckableAccordionProps.Uncontrolled;
+export type CheckableAccordionProps = CheckableAccordionProps.Controlled;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CheckableAccordionProps {
@@ -68,12 +69,6 @@ export namespace CheckableAccordionProps {
     classes?: Partial<Record<'root' | 'accordion' | 'title' | 'collapse', string>>;
     style?: CSSProperties;
     children: NonNullable<ReactNode>;
-  };
-
-  export type Uncontrolled = Common & {
-    defaultExpanded?: boolean;
-    expanded?: never;
-    onExpandedChange?: (expanded: boolean, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   };
 
   export type Controlled = Common & {
@@ -166,5 +161,17 @@ export const CheckableAccordion = memo(
 );
 
 CheckableAccordion.displayName = symToStr({ CheckableAccordion });
+
+export const UrlStateCheckableAccordion = (props: Omit<CheckableAccordionProps, 'expanded' | 'onExpandedChange'>) => {
+  const { add, remove, has } = useArrayQueryState('accordions');
+
+  return (
+    <CheckableAccordion
+      expanded={has(props.label)}
+      onExpandedChange={(expanded) => (expanded ? add(props.label) : remove(props.label))}
+      {...props}
+    />
+  );
+};
 
 export default CheckableAccordion;
