@@ -1,5 +1,7 @@
 import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 
+import useInViewport from '@hooks/useInViewport';
+
 import { usePublicodesFormContext } from './FormProvider';
 import { fixupBooleanEngineValue, getOptions } from './helpers';
 
@@ -14,13 +16,15 @@ const RadioInput = ({
   name: string;
   label?: RadioButtonsProps['legend']; // harmonize with Input
 }) => {
+  const [ref, isInView] = useInViewport<HTMLFieldSetElement>();
   const { engine } = usePublicodesFormContext();
 
-  const options = getOptions(engine, name);
-  const valueInEngine = fixupBooleanEngineValue(engine.getField(name));
+  const options = isInView ? getOptions(engine, name) : [];
+  const valueInEngine = isInView ? fixupBooleanEngineValue(engine.getField(name)) : '';
 
   return (
     <RadioButtons
+      ref={ref}
       name={name}
       options={options.map((optionValue) => ({
         label: optionValue,

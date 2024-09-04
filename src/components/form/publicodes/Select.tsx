@@ -2,6 +2,8 @@ import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { Select as DSFRSelect } from '@codegouvfr/react-dsfr/SelectNext';
 import React from 'react';
 
+import useInViewport from '@hooks/useInViewport';
+
 import { usePublicodesFormContext } from './FormProvider';
 import { fixupBooleanEngineValue, getOptions } from './helpers';
 
@@ -22,14 +24,16 @@ const Select = ({
   hintText?: DSFRSelectProps['hint']; // harmonize with Input
   onChange?: (option?: string) => void;
 }) => {
+  const [ref, isInView] = useInViewport<HTMLDivElement>();
   const { engine } = usePublicodesFormContext();
 
-  const options = getOptions(engine, name);
-  const defaultValue = fixupBooleanEngineValue(engine.getFieldDefaultValue(name) as string | null | undefined);
-  const value = withDefaultOption ? engine.getSituation()[name] : engine.getField(name);
+  const options = isInView ? getOptions(engine, name) : [];
+  const defaultValue = isInView ? fixupBooleanEngineValue(engine.getFieldDefaultValue(name) as string | null | undefined) : '';
+  const value = isInView ? (withDefaultOption ? engine.getSituation()[name] : engine.getField(name)) : undefined;
 
   return (
     <DSFRSelect
+      ref={ref}
       nativeSelectProps={{
         ...nativeSelectProps,
         onChange: (e) => {
