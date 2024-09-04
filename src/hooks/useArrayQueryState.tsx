@@ -1,29 +1,27 @@
 import { useQueryState } from 'nuqs';
 
-const useArrayQueryState = (name: string) => {
-  const [items, setItems] = useQueryState(name, {
+const useArrayQueryState = <Type extends string>(name: string) => {
+  const [items, setItems] = useQueryState<Type[]>(name, {
     defaultValue: [],
-    parse: (value) => (value ? value.split(',') : []),
+    parse: (value) => (value ? (value.split(',') as Type[]) : []),
     serialize: (value) => value.join(','),
   });
 
-  const add = (name: string) => {
+  const add = (name: Type) => {
     if (!items.includes(name)) {
       setItems((prevItems) => [...prevItems, name].filter(Boolean));
     }
   };
 
-  const remove = (name: string) => {
+  const remove = (name: Type) => {
     setItems((prevItems) => prevItems.filter((accordion) => accordion !== name).filter(Boolean));
   };
 
-  const has = (name: string) => items.includes(name);
+  const has = (name: Type) => items.includes(name);
 
-  const toggle = (name: string) => (has(name) ? remove(name) : add(name));
+  const toggle = (name: Type) => (has(name) ? remove(name) : add(name));
 
-  const hasAndExists: typeof has = (name) => has(name) || items.length === 0;
-
-  return { add, remove, has, toggle, hasAndExists, items };
+  return { add, remove, has, toggle, items };
 };
 
 export default useArrayQueryState;
