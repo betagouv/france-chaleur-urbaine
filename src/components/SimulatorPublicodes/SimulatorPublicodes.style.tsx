@@ -39,6 +39,7 @@ export const ResultsPlaceholder = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   color: var(--text-disabled-grey);
   gap: 56px;
   padding: 64px 32px;
