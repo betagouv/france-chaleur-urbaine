@@ -6,6 +6,7 @@ import SimplePage from '@components/shared/page/SimplePage';
 import Placeholder from '@components/SimulatorPublicodes/Placeholder';
 
 const PublicodesSimulator = dynamic(() => import('@components/SimulatorPublicodes'), {
+  // Publicode engine takes 2s to load and is unnecessary on the server side
   ssr: false,
   loading: () => <Placeholder />,
 });
