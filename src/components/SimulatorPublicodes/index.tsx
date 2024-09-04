@@ -18,8 +18,8 @@ import { ObjectEntries } from '@utils/typescript';
 
 import DebugDrawer from './DebugDrawer';
 import GrandPublicForm from './GrandPublicForm';
+import Graph from './Graph';
 import { PublicodesSimulatorTitle, simulatorTabs } from './Placeholder';
-import PublicodesSimulatorResults from './Results';
 import { FloatingButton, Results, ResultsPlaceholder, Section, Simulator } from './SimulatorPublicodes.style';
 import TechnicienParametresEconomiques from './TechnicienParametresEconomiques';
 import TechnicienParametresTechniques from './TechnicienParametresTechniques';
@@ -101,7 +101,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
 
   const isAddressSelected = engine.getField('code département') !== undefined;
   const results = isAddressSelected ? (
-    <PublicodesSimulatorResults engine={engine} />
+    <Graph engine={engine} />
   ) : (
     <ResultsPlaceholder>
       <img src="/img/simulateur_placeholder.svg" alt="" />
