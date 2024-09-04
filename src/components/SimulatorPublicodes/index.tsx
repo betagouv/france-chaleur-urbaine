@@ -10,6 +10,7 @@ import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@components/form/publicodes/FormProvider';
+import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
 import cx from '@utils/cx';
@@ -130,7 +131,15 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                 selectedTabId={selectedTabId}
                 tabs={simulatorTabs.map((tab) => ({
                   tabId: tab.tabId,
-                  label: <small>{tab.label}</small>,
+                  label: (
+                    <small>
+                      {tab.label}{' '}
+                      {((tab.tabId === 'modes-de-chauffage' && !modesDeChauffage && selectedTabId !== 'modes-de-chauffage') ||
+                        (tab.tabId === 'batiment' && !address && selectedTabId !== 'batiment')) && (
+                        <Icon name="ri-alert-line" size="sm" color="var(--text-default-error)" />
+                      )}
+                    </small>
+                  ),
                 }))}
                 onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}
               >
