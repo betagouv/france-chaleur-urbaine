@@ -20,22 +20,22 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Chaudière à granulés coll',
   },
   {
-    label: 'Gaz individuel avec condensateur',
+    label: 'Gaz à condensation individuel',
     emissionsCO2PublicodesKey: 'Gaz indiv avec cond x Individuel',
     coutPublicodeKey: 'Gaz indiv avec cond',
   },
   {
-    label: 'Gaz individuel sans condensateur',
+    label: 'Gaz sans condensation individuel',
     emissionsCO2PublicodesKey: 'Gaz indiv sans cond x Individuel',
     coutPublicodeKey: 'Gaz indiv sans cond',
   },
   {
-    label: 'Gaz collectif avec condensateur',
+    label: 'Gaz à condensation collectif',
     emissionsCO2PublicodesKey: 'Gaz coll avec cond x Collectif',
     coutPublicodeKey: 'Gaz coll avec cond',
   },
   {
-    label: 'Gaz collectif sans condensateur',
+    label: 'Gaz sans condensation collectif',
     emissionsCO2PublicodesKey: 'Gaz coll sans cond x Collectif',
     coutPublicodeKey: 'Gaz coll sans cond',
   },

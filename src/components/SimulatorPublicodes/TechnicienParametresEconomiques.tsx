@@ -61,7 +61,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="Investissement x Chaudière à granulés coll" label="Coût investissement" />
       </UrlStateCheckableAccordion>
 
-      <UrlStateCheckableAccordion label="Gaz individuel avec condensateur">
+      <UrlStateCheckableAccordion label="Gaz à condensation individuel">
         <Input name="ratios . GAZ IND COND Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
         <Input name="ratios . GAZ IND COND Rendement chaudière ECS" label="Rendement chaudière ECS" />
         <Input name="ratios . GAZ IND COND Conso combustible" label="Consommation combustible" />
@@ -73,7 +73,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . Gaz x indiv avec cond" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="Gaz individuel sans condensateur">
+      <UrlStateCheckableAccordion label="Gaz sans condensation individuel">
         <Input name="ratios . GAZ IND SCOND Rendement chaudière" label="Rendement chaudière" />
         <Input name="ratios . GAZ IND SCOND Conso combustible" label="Consommation combustible" />
         <Input name="ratios . GAZ IND SCOND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
@@ -84,7 +84,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . Gaz x indiv sans cond" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="Gaz collectif avec condensateur">
+      <UrlStateCheckableAccordion label="Gaz à condensation collectif">
         <Input name="ratios . GAZ COLL COND Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
         <Input name="ratios . GAZ COLL COND Rendement chaudière ECS" label="Rendement chaudière ECS" />
         <Input name="ratios . GAZ COLL COND Conso combustible" label="Consommation combustible" />
@@ -96,7 +96,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . Gaz x coll avec cond" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="Gaz collectif sans condensateur">
+      <UrlStateCheckableAccordion label="Gaz sans condensation collectif">
         <Input name="ratios . GAZ COLL SCOND Rendement chaudière" label="Rendement chaudière" />
         <Input name="ratios . GAZ COLL SCOND Conso combustible" label="Consommation combustible" />
         <Input name="ratios . GAZ COLL SCOND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
