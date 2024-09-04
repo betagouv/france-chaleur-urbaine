@@ -30,16 +30,6 @@ type PublicodesSimulatorProps = React.HTMLAttributes<HTMLDivElement> & {
   tabId: TabId;
 };
 
-const simulatorTabs = [
-  {
-    tabId: 'batiment',
-    label: 'Bâtiment',
-  },
-  {
-    tabId: 'modes-de-chauffage',
-    label: 'Modes de chauffage et de refroidissement',
-  },
-] as const;
 export type TabId = (typeof simulatorTabs)[number]['tabId'];
 
 const addresseToPublicodesRules = {
@@ -141,84 +131,6 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
           </header>
           <Simulator $loading={loading}>
             <div>
-              <AddressAutocomplete
-                label="Adresse"
-                state={addressError ? 'error' : undefined}
-                stateRelatedMessage={
-                  addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
-                }
-                hintText={
-                  lngLat && (
-                    <Link
-                      isExternal
-                      href={`/carte?coord=${lngLat.join(',')}&zoom=17&proMode=${displayMode === 'technicien' ? 'true' : 'false'}`}
-                    >
-                      Voir les réseaux à proximité sur la carte
-                    </Link>
-                  )
-                }
-                defaultValue={address || ''}
-                onClear={() => {
-                  setNearestReseauDeChaleur(undefined);
-                  setNearestReseauDeFroid(undefined);
-                  setAddressError(false);
-                  setAddress(null);
-                  setLngLat(undefined);
-
-                  engine.setSituation(
-                    ObjectEntries(addresseToPublicodesRules).reduce(
-                      (acc, [key]) => ({
-                        ...acc,
-                        [key]: null,
-                      }),
-                      {}
-                    )
-                  );
-                }}
-                onSelect={async (selectedAddress) => {
-                  setAddressError(false);
-                  setLngLat(undefined);
-
-                  const [lon, lat] = selectedAddress.geometry.coordinates;
-                  const addressLabel = selectedAddress.properties.label;
-                  if (addressLabel !== address) {
-                    setAddress(null);
-                  }
-
-                  const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
-                    lon,
-                    lat,
-                    city: selectedAddress.properties.city,
-                    cityCode: selectedAddress.properties.citycode,
-                  });
-                  setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
-                  setNearestReseauDeFroid(infos.nearestReseauDeFroid);
-
-                  if (!infos.infosVilles) {
-                    setAddressError(true);
-
-                    return;
-                  }
-
-                  setAddress(addressLabel);
-
-                  if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
-                    setLngLat(selectedAddress.geometry.coordinates);
-                  }
-
-                  console.debug('locations-infos', infos);
-
-                  engine.setSituation(
-                    ObjectEntries(addresseToPublicodesRules).reduce(
-                      (acc, [key, infoGetter]) => ({
-                        ...acc,
-                        [key]: infoGetter(infos) ?? null,
-                      }),
-                      {}
-                    )
-                  );
-                }}
-              />
               {displayMode === 'grand public' ? (
                 <GrandPublicForm engine={engine} />
               ) : (
@@ -231,8 +143,83 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                   onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}
                 >
                   {/* TODO rename components later after reorganizing fields */}
-                  {selectedTabId === 'batiment' && <TechnicienParametresTechniques engine={engine} />}
-                  {selectedTabId === 'modes-de-chauffage' && <TechnicienParametresEconomiques engine={engine} />}
+                  <div className={fr.cx(selectedTabId === 'batiment' ? undefined : 'fr-hidden')}>
+                    <AddressAutocomplete
+                      label="Adresse"
+                      state={addressError ? 'error' : undefined}
+                      stateRelatedMessage={
+                        addressError
+                          ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre'
+                          : undefined
+                      }
+                      defaultValue={address || ''}
+                      onClear={() => {
+                        setNearestReseauDeChaleur(undefined);
+                        setNearestReseauDeFroid(undefined);
+                        setAddressError(false);
+                        setAddress(null);
+                        setLngLat(undefined);
+
+                        engine.setSituation(
+                          ObjectEntries(addresseToPublicodesRules).reduce(
+                            (acc, [key]) => ({
+                              ...acc,
+                              [key]: null,
+                            }),
+                            {}
+                          )
+                        );
+                      }}
+                      onSelect={async (selectedAddress) => {
+                        setAddressError(false);
+                        setLngLat(undefined);
+
+                        const [lon, lat] = selectedAddress.geometry.coordinates;
+                        const addressLabel = selectedAddress.properties.label;
+                        if (addressLabel !== address) {
+                          setAddress(null);
+                        }
+
+                        const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
+                          lon,
+                          lat,
+                          city: selectedAddress.properties.city,
+                          cityCode: selectedAddress.properties.citycode,
+                        });
+                        setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
+                        setNearestReseauDeFroid(infos.nearestReseauDeFroid);
+
+                        if (!infos.infosVilles) {
+                          setAddressError(true);
+
+                          return;
+                        }
+
+                        setAddress(addressLabel);
+
+                        if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
+                          setLngLat(selectedAddress.geometry.coordinates);
+                        }
+
+                        console.debug('locations-infos', infos);
+
+                        engine.setSituation(
+                          ObjectEntries(addresseToPublicodesRules).reduce(
+                            (acc, [key, infoGetter]) => ({
+                              ...acc,
+                              [key]: infoGetter(infos) ?? null,
+                            }),
+                            {}
+                          )
+                        );
+                      }}
+                    />
+                    <TechnicienParametresTechniques engine={engine} />
+                  </div>
+                  <TechnicienParametresEconomiques
+                    className={fr.cx(selectedTabId === 'modes-de-chauffage' ? undefined : 'fr-hidden')}
+                    engine={engine}
+                  />
                 </Tabs>
               )}
             </div>
@@ -246,7 +233,18 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       <Link href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}`} isExternal>
                         <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
                       </Link>{' '}
-                      est à <strong>{nearestReseauDeChaleur.distance}</strong>m de votre adresse.
+                      est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
+                      {lngLat && (
+                        <small>
+                          {' '}
+                          <Link
+                            isExternal
+                            href={`/carte?coord=${lngLat.join(',')}&zoom=17&proMode=${displayMode === 'technicien' ? 'true' : 'false'}`}
+                          >
+                            <strong>Visualiser sur la carte</strong>
+                          </Link>
+                        </small>
+                      )}
                     </>
                   }
                   severity="info"
@@ -262,7 +260,18 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       <Link href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}`} isExternal>
                         <strong>{nearestReseauDeFroid.nom_reseau}</strong>
                       </Link>{' '}
-                      est à <strong>{nearestReseauDeFroid.distance}</strong>m de votre adresse.
+                      est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
+                      {lngLat && (
+                        <small>
+                          {' '}
+                          <Link
+                            isExternal
+                            href={`/carte?coord=${lngLat.join(',')}&zoom=17&proMode=${displayMode === 'technicien' ? 'true' : 'false'}`}
+                          >
+                            <strong>Visualiser sur la carte</strong>
+                          </Link>
+                        </small>
+                      )}
                     </>
                   }
                   severity="info"
