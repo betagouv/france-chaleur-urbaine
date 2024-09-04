@@ -16,6 +16,8 @@ import Box from '@components/ui/Box';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import cx from '@utils/cx';
 
+import { ModeDeChauffage } from './modes-de-chauffage';
+
 // import { useConstCallback } from "./tools/powerhooks/useConstCallback";
 /** https://stackoverflow.com/questions/65890278/why-cant-usecallback-always-return-the-same-ref */
 export function useConstCallback<T extends ((...args: any[]) => unknown) | undefined | null>(callback: NonNullable<T>): T {
@@ -65,7 +67,7 @@ export namespace CheckableAccordionProps {
     className?: string;
     id?: string;
     titleAs?: `h${2 | 3 | 4 | 5 | 6}`;
-    label: string;
+    label: ModeDeChauffage;
     classes?: Partial<Record<'root' | 'accordion' | 'title' | 'collapse', string>>;
     style?: CSSProperties;
     children: NonNullable<ReactNode>;
@@ -96,6 +98,8 @@ export const CheckableAccordion = memo(
     } = props;
 
     assert<Equals<keyof typeof rest, never>>();
+
+    const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
 
     const id = useAnalyticsId({
       defaultIdPrefix: 'fr-accordion',
@@ -132,10 +136,8 @@ export const CheckableAccordion = memo(
               {
                 label: <HtmlTitleTag className={cx(fr.cx('fr-accordion__title'), classes.title)}>{label}</HtmlTitleTag>,
                 nativeInputProps: {
-                  value: label,
-                  onChange: (event) => {
-                    console.log('checked', event.target.checked);
-                  },
+                  checked: hasModeDeChauffage(label),
+                  onChange: () => toggleModeDeChauffage(label),
                 },
               },
             ]}
