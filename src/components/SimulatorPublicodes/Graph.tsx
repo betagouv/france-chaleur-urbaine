@@ -1,29 +1,20 @@
-import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
 import { useQueryState } from 'nuqs';
 import React from 'react';
 import Chart from 'react-google-charts';
-import styled from 'styled-components';
 
-import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
-import Icon from '@components/ui/Icon';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import cx from '@utils/cx';
 
+import { modesDeChauffage } from './modes-de-chauffage';
 import { ChartPlaceholder } from './SimulatorPublicodes.style';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
 };
-
-const FilterLabel = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
 
 const estimatedRowHeightPx = 56;
 const estimatedBaseGraphHeightPx = 150;
@@ -62,102 +53,15 @@ const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = 
   },
 };
 
-const typesInstallation = [
-  {
-    label: 'Réseaux de chaleur',
-    emissionsCO2PublicodesKey: 'Réseaux de chaleur x Collectif',
-    coutPublicodeKey: 'Réseaux de chaleur',
-  },
-  {
-    label: 'Réseaux de froid',
-    emissionsCO2PublicodesKey: 'Réseaux de froid x Collectif',
-    coutPublicodeKey: 'Réseaux de froid',
-  },
-  {
-    label: 'Poêle à granulés individuel',
-    emissionsCO2PublicodesKey: 'Poêle à granulés indiv x Individuel',
-    coutPublicodeKey: 'Poêle à granulés indiv',
-  },
-  {
-    label: 'Chaudière à granulés collectif',
-    emissionsCO2PublicodesKey: 'Chaudière à granulés coll x Collectif',
-    coutPublicodeKey: 'Chaudière à granulés coll',
-  },
-  {
-    label: 'Gaz individuel avec condensateur',
-    emissionsCO2PublicodesKey: 'Gaz indiv avec cond x Individuel',
-    coutPublicodeKey: 'Gaz indiv avec cond',
-  },
-  {
-    label: 'Gaz individuel sans condensateur',
-    emissionsCO2PublicodesKey: 'Gaz indiv sans cond x Individuel',
-    coutPublicodeKey: 'Gaz indiv sans cond',
-  },
-  {
-    label: 'Gaz collectif avec condensateur',
-    emissionsCO2PublicodesKey: 'Gaz coll avec cond x Collectif',
-    coutPublicodeKey: 'Gaz coll avec cond',
-  },
-  {
-    label: 'Gaz collectif sans condensateur',
-    emissionsCO2PublicodesKey: 'Gaz coll sans cond x Collectif',
-    coutPublicodeKey: 'Gaz coll sans cond',
-  },
-  {
-    label: 'Fioul individuel',
-    emissionsCO2PublicodesKey: 'Fioul indiv x Individuel',
-    coutPublicodeKey: 'Fioul indiv',
-  },
-  {
-    label: 'Fioul collectif',
-    emissionsCO2PublicodesKey: 'Fioul coll x Collectif',
-    coutPublicodeKey: 'Fioul coll',
-  },
-  {
-    label: 'PAC air-air individuel',
-    emissionsCO2PublicodesKey: 'PAC air-air x Individuel',
-    coutPublicodeKey: 'PAC air-air indiv',
-  },
-  {
-    label: 'PAC air-air collectif / tertiaire',
-    emissionsCO2PublicodesKey: 'PAC air-air x Collectif',
-    coutPublicodeKey: 'PAC eau-eau indiv',
-  },
-  {
-    label: 'PAC eau-eau individuel',
-    emissionsCO2PublicodesKey: 'PAC eau-eau x Individuel',
-    coutPublicodeKey: 'PAC air-eau indiv',
-  },
-  {
-    label: 'PAC eau-eau collectif / tertiaire',
-    emissionsCO2PublicodesKey: 'PAC eau-eau x Collectif',
-    coutPublicodeKey: 'PAC air-air coll',
-  },
-  {
-    label: 'PAC air-eau individuel',
-    emissionsCO2PublicodesKey: 'PAC air-eau x Individuel',
-    coutPublicodeKey: 'PAC eau-eau coll',
-  },
-  {
-    label: 'PAC air-eau collectif / tertiaire',
-    emissionsCO2PublicodesKey: 'PAC air-eau x Collectif',
-    coutPublicodeKey: 'PAC air-eau coll',
-  },
-  {
-    label: 'Radiateur électrique',
-    emissionsCO2PublicodesKey: 'Radiateur électrique x Individuel',
-    coutPublicodeKey: 'Radiateur électrique',
-  },
-] as const;
-
 const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
-  const { has, toggle, items: removedCompared } = useArrayQueryState('remove-compared');
+  const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
 
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, 'P1 abo', 'P1 conso', "P1'", 'P1 ECS', 'P2', 'P3', 'P4 moins aides', 'aides'],
-    ...typesInstallation
-      .filter((typeInstallation) => !has(typeInstallation.coutPublicodeKey))
+    ...modesDeChauffage
+      .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
       .flatMap((typeInstallation) => [
         ['', typeInstallation.label, 0, 0, 0, 0, 0, 0, 0, 0],
         [
@@ -183,8 +87,8 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
       "Scope 2 : Production indirecte d'énergie",
       'Scope 3 : Émissions indirectes',
     ],
-    ...typesInstallation
-      .filter((typeInstallation) => !has(typeInstallation.coutPublicodeKey))
+    ...modesDeChauffage
+      .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
       .flatMap((typeInstallation) => [
         ['', typeInstallation.label, 0, 0, 0],
         [
@@ -197,33 +101,10 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
       ]),
   ];
 
-  const comparisonCount = typesInstallation.length - removedCompared.length;
-  const chartHeight = comparisonCount * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
+  const chartHeight = selectedModesDeChauffage.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
   return (
     <div className={cx(className)} {...props}>
-      <Accordion
-        className="fr-mb-2w"
-        label={
-          <FilterLabel>
-            <Icon name="ri-filter-2-fill" className="fr-mr-2" />
-            <span>Comparaison</span>
-            <strong className="fr-badge fr-mr-2">{comparisonCount}</strong>
-          </FilterLabel>
-        }
-      >
-        <Checkbox
-          orientation="horizontal"
-          options={typesInstallation.map((typeInstallation) => ({
-            label: typeInstallation.label,
-            nativeInputProps: {
-              onClick: () => toggle(typeInstallation.coutPublicodeKey),
-              checked: !has(typeInstallation.coutPublicodeKey),
-            },
-          }))}
-          small
-        />
-      </Accordion>
       <Box textAlign="right" mb="1w">
         <SegmentedControl
           hideLegend
