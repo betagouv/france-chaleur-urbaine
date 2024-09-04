@@ -250,10 +250,18 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
         <>
           <Heading as="h6">Coût global annuel chauffage</Heading>
           <Chart
-            legendToggle
             chartType="BarChart"
             height="100%"
             chartLanguage="FR-fr"
+            // désactive le clic sur la légende qui masque les barres + le style sélection
+            chartEvents={[
+              {
+                eventName: 'select',
+                callback: ({ chartWrapper }) => {
+                  (chartWrapper.getChart() as any).setSelection();
+                },
+              },
+            ]}
             loader={<ChartPlaceholder>Chargement du graphe...</ChartPlaceholder>}
             data={coutGraphData}
             options={{
@@ -270,6 +278,15 @@ const Graph: React.FC<GraphProps> = ({ engine, className, ...props }) => {
             chartType="BarChart"
             height="100%"
             chartLanguage="FR-fr"
+            // désactive le clic sur la légende qui masque les barres + le style sélection
+            chartEvents={[
+              {
+                eventName: 'select',
+                callback: ({ chartWrapper }) => {
+                  (chartWrapper.getChart() as any).setSelection();
+                },
+              },
+            ]}
             loader={<ChartPlaceholder>Chargement du graphe...</ChartPlaceholder>}
             data={emissionsCO2GraphData}
             options={{
