@@ -19,8 +19,8 @@ import { ObjectEntries } from '@utils/typescript';
 import DebugDrawer from './DebugDrawer';
 import GrandPublicForm from './GrandPublicForm';
 import Graph from './Graph';
-import { PublicodesSimulatorTitle, simulatorTabs } from './Placeholder';
-import { FloatingButton, Results, ResultsPlaceholder, Section, Simulator } from './SimulatorPublicodes.style';
+import { PublicodesSimulatorTitle, ResultsNotAvailable, simulatorTabs } from './Placeholder';
+import { FloatingButton, Results, Section, Simulator } from './SimulatorPublicodes.style';
 import TechnicienParametresEconomiques from './TechnicienParametresEconomiques';
 import TechnicienParametresTechniques from './TechnicienParametresTechniques';
 import useSimulatorEngine from './useSimulatorEngine';
@@ -102,15 +102,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
 
   const isAddressSelected = engine.getField('code département') !== undefined;
 
-  const results =
-    isAddressSelected && !!modesDeChauffage ? (
-      <Graph engine={engine} />
-    ) : (
-      <ResultsPlaceholder>
-        <img src="/img/simulateur_placeholder.svg" alt="" />
-        <div>Les résultats s’afficheront ici une fois le formulaire rempli</div>
-      </ResultsPlaceholder>
-    );
+  const results = isAddressSelected && !!modesDeChauffage ? <Graph engine={engine} /> : <ResultsNotAvailable />;
 
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
