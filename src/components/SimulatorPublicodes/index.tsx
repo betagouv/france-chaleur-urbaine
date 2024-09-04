@@ -103,7 +103,8 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
 
   const isAddressSelected = engine.getField('code département') !== undefined;
 
-  const results = isAddressSelected && !!modesDeChauffage ? <Graph engine={engine} /> : <ResultsNotAvailable />;
+  const results =
+    isAddressSelected && !!modesDeChauffage ? <Graph engine={engine} proMode={displayMode === 'technicien'} /> : <ResultsNotAvailable />;
 
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
