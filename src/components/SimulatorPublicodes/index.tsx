@@ -67,6 +67,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   const engineDisplayMode = engine.getField('mode affichage');
   const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: defaultDisplayMode || (engineDisplayMode as string) });
   const [address, setAddress] = useQueryState('address');
+  const [modesDeChauffage] = useQueryState('modes-de-chauffage');
   const [lngLat, setLngLat] = React.useState<[number, number]>();
   const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
   const [addressError, setAddressError] = React.useState<boolean>(false);
@@ -100,14 +101,16 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   }, [displayMode, engineDisplayMode]);
 
   const isAddressSelected = engine.getField('code département') !== undefined;
-  const results = isAddressSelected ? (
-    <Graph engine={engine} />
-  ) : (
-    <ResultsPlaceholder>
-      <img src="/img/simulateur_placeholder.svg" alt="" />
-      <div>Les résultats s’afficheront ici une fois le formulaire rempli</div>
-    </ResultsPlaceholder>
-  );
+
+  const results =
+    isAddressSelected && !!modesDeChauffage ? (
+      <Graph engine={engine} />
+    ) : (
+      <ResultsPlaceholder>
+        <img src="/img/simulateur_placeholder.svg" alt="" />
+        <div>Les résultats s’afficheront ici une fois le formulaire rempli</div>
+      </ResultsPlaceholder>
+    );
 
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
