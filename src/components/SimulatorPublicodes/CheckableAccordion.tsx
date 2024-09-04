@@ -9,6 +9,7 @@ import React, { forwardRef, memo, useState, useEffect, type ReactNode, type CSSP
 import styled from 'styled-components';
 import type { Equals } from 'tsafe';
 import { assert } from 'tsafe/assert';
+import { Parameters } from 'tsafe/Parameters';
 import { symToStr } from 'tsafe/symToStr';
 
 import Box from '@components/ui/Box';
