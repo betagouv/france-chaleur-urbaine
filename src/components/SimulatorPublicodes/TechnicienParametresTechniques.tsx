@@ -13,6 +13,7 @@ type TechnicienBatimentFormProps = React.HTMLAttributes<HTMLDivElement> & {
 
 const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ children, className, engine, ...props }) => {
   const typeBatiment = engine.getField('type de bâtiment');
+  const productionECS = engine.getField('Production eau chaude sanitaire');
 
   return (
     <div {...props}>
@@ -81,7 +82,8 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           />
         )}
         <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
-        <Select name="type de production ECS" label="type de production ECS" />
+
+        {productionECS && <Select name="type de production ECS" label="type de production ECS" />}
         <Input
           name="Part de la surface à climatiser"
           label="Part de la surface à climatiser"
