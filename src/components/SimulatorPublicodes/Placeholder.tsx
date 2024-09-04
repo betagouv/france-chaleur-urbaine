@@ -28,6 +28,17 @@ export const PublicodesSimulatorTitle = () => {
   );
 };
 
+export const simulatorTabs = [
+  {
+    tabId: 'batiment',
+    label: 'Bâtiment',
+  },
+  {
+    tabId: 'modes-de-chauffage',
+    label: 'Modes de chauffage et de refroidissement',
+  },
+] as const;
+
 const PublicodesSimulatorPlaceholder: React.FC<PublicodesSimulatorPlaceholderProps> = ({ children, className, ...props }) => {
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
@@ -38,28 +49,11 @@ const PublicodesSimulatorPlaceholder: React.FC<PublicodesSimulatorPlaceholderPro
         <Simulator $loading={true}>
           <div>
             <Tabs
-              tabs={[
-                {
-                  label: (
-                    <small>
-                      Paramètres
-                      <br />
-                      techniques
-                    </small>
-                  ),
-                  content: <p>Chargement...</p>,
-                },
-                {
-                  label: (
-                    <small>
-                      Paramètres
-                      <br />
-                      économiques
-                    </small>
-                  ),
-                  content: <p>Chargement...</p>,
-                },
-              ]}
+              tabs={simulatorTabs.map((tab) => ({
+                tabId: tab.tabId,
+                label: <small>{tab.label}</small>,
+                content: <p>Chargement...</p>,
+              }))}
             />
           </div>
           <Results>
