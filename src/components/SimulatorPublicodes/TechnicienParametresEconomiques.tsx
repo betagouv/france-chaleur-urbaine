@@ -7,12 +7,13 @@ import { type SimulatorEngine } from './useSimulatorEngine';
 
 type TechnicienBatimentFormProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
+  showToggles?: boolean;
 };
 
-const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ children, className, engine, ...props }) => {
+const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ children, className, engine, showToggles, ...props }) => {
   return (
     <div {...props}>
-      <UrlStateCheckableAccordion label="Réseaux de chaleur">
+      <UrlStateCheckableAccordion label="Réseaux de chaleur" showToggle={showToggles}>
         <Input name="ratios . RCU Rendement sous station chauffage" label="Rendement sous-station chauffage" />
         <Input name="ratios . RCU Rendement sous station ECS" label="Rendement sous station ECS" />
         <Input name="ratios . RCU Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
@@ -27,7 +28,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="Investissement x frais de raccordement au réseaux x RCU" label="Frais de raccordement au réseaux" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="Réseaux de froid">
+      <UrlStateCheckableAccordion label="Réseaux de froid" showToggle={showToggles}>
         <Input name="ratios . RFU Rendement sous station" label="Rendement sous station" />
         <Input name="ratios . RFU Conso auxiliaire" label="Consommation auxiliaire" />
         <Input name="ratios . RFU Durée de vie" label="Durée de vie" />
@@ -41,7 +42,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="Investissement x frais de raccordement au réseaux x RFU" label="Frais de raccordement au réseaux" />
       </UrlStateCheckableAccordion>
 
-      <UrlStateCheckableAccordion label="Poêle à granulés individuel">
+      <UrlStateCheckableAccordion label="Poêle à granulés individuel" showToggle={showToggles}>
         <Input name="ratios . GRA POELE Rendement poêle chauffage" label="Rendement poêle chauffage" />
         <Input name="ratios . GRA POELE Conso combustible" label="Consommation combustible" placeholderPrecision={4} />
         <Input name="ratios . GRA POELE Durée de vie" label="Durée de vie" />
@@ -50,7 +51,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="Investissement x Poêle à granulés indiv" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="Chaudière à granulés collective">
+      <UrlStateCheckableAccordion label="Chaudière à granulés collective" showToggle={showToggles}>
         <Input name="ratios . GRA CHAUD Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
         <Input name="ratios . GRA CHAUD Conso combustible" label="Consommation combustible" placeholderPrecision={4} />
         <Input name="ratios . GRA CHAUD Conso auxiliaire" label="Consommation auxiliaire" />
@@ -61,7 +62,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="Investissement x Chaudière à granulés coll" label="Coût investissement" />
       </UrlStateCheckableAccordion>
 
-      <UrlStateCheckableAccordion label="Gaz à condensation individuel">
+      <UrlStateCheckableAccordion label="Gaz à condensation individuel" showToggle={showToggles}>
         <Input name="ratios . GAZ IND COND Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
         <Input name="ratios . GAZ IND COND Rendement chaudière ECS" label="Rendement chaudière ECS" />
         <Input name="ratios . GAZ IND COND Conso combustible" label="Consommation combustible" />
@@ -73,7 +74,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . Gaz x indiv avec cond" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="Gaz sans condensation individuel">
+      <UrlStateCheckableAccordion label="Gaz sans condensation individuel" showToggle={showToggles}>
         <Input name="ratios . GAZ IND SCOND Rendement chaudière" label="Rendement chaudière" />
         <Input name="ratios . GAZ IND SCOND Conso combustible" label="Consommation combustible" />
         <Input name="ratios . GAZ IND SCOND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
@@ -84,7 +85,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . Gaz x indiv sans cond" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="Gaz à condensation collectif">
+      <UrlStateCheckableAccordion label="Gaz à condensation collectif" showToggle={showToggles}>
         <Input name="ratios . GAZ COLL COND Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
         <Input name="ratios . GAZ COLL COND Rendement chaudière ECS" label="Rendement chaudière ECS" />
         <Input name="ratios . GAZ COLL COND Conso combustible" label="Consommation combustible" />
@@ -96,7 +97,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . Gaz x coll avec cond" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="Gaz sans condensation collectif">
+      <UrlStateCheckableAccordion label="Gaz sans condensation collectif" showToggle={showToggles}>
         <Input name="ratios . GAZ COLL SCOND Rendement chaudière" label="Rendement chaudière" />
         <Input name="ratios . GAZ COLL SCOND Conso combustible" label="Consommation combustible" />
         <Input name="ratios . GAZ COLL SCOND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
@@ -108,7 +109,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="ratios économiques . Gaz x coll sans cond" label="Coût investissement" />
       </UrlStateCheckableAccordion>
 
-      <UrlStateCheckableAccordion label="Fioul individuel">
+      <UrlStateCheckableAccordion label="Fioul individuel" showToggle={showToggles}>
         <Input name="ratios . FIOUL IND Rendement chaudière" label="Rendement chaudière" />
         <Input name="ratios . FIOUL IND Conso combustible" label="Consommation combustible" />
         <Input name="ratios . FIOUL IND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
@@ -123,7 +124,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . Fioul x indiv" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="Fioul collectif">
+      <UrlStateCheckableAccordion label="Fioul collectif" showToggle={showToggles}>
         <Input name="ratios . FIOUL COLL Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
         <Input name="ratios . FIOUL COLL Rendement chaudière ECS" label="Rendement chaudière ECS" />
         <Input name="ratios . FIOUL COLL Conso combustible" label="Consommation combustible" />
@@ -140,7 +141,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="ratios économiques . Fioul x collectif" label="Coût investissement" />
       </UrlStateCheckableAccordion>
 
-      <UrlStateCheckableAccordion label="PAC air/air individuelle">
+      <UrlStateCheckableAccordion label="PAC air/air individuelle" showToggle={showToggles}>
         <Input name="ratios . PAC AIR AIR SCOP indiv" label="SCOP" />
         <Input name="ratios . PAC AIR AIR SEER indiv" label="SEER" />
         <Input name="ratios . PAC AIR AIR Durée de vie indiv" label="Durée de vie" />
@@ -149,7 +150,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . PAC x air-air réversible x Individuel" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="PAC air/air collective / tertiaire">
+      <UrlStateCheckableAccordion label="PAC air/air collective / tertiaire" showToggle={showToggles}>
         <Input name="ratios . PAC AIR AIR SCOP coll" label="SCOP" />
         <Input name="ratios . PAC AIR AIR SEER coll" label="SEER" />
         <Input name="ratios . PAC AIR AIR Durée de vie coll" label="Durée de vie" />
@@ -159,7 +160,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="ratios économiques . PAC x air-air réversible x Collectif" label="Coût investissement" />
       </UrlStateCheckableAccordion>
 
-      <UrlStateCheckableAccordion label="PAC eau/eau individuelle">
+      <UrlStateCheckableAccordion label="PAC eau/eau individuelle" showToggle={showToggles}>
         <Input name="ratios . PAC EAU EAU SCOP indiv capteurs horizontaux" label="SCOP" />
         <Input name="ratios . PAC EAU EAU Durée de vie" label="Durée de vie" />
 
@@ -167,7 +168,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . PAC x eau-eau non réversible x Individuel" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="PAC eau/eau collective / tertiaire">
+      <UrlStateCheckableAccordion label="PAC eau/eau collective / tertiaire" showToggle={showToggles}>
         <Input name="ratios . PAC EAU EAU SCOP coll champ de sondes" label="SCOP" />
         <Input name="ratios . PAC EAU EAU Durée de vie" label="Durée de vie" />
         {/* FIXME vérifier si même durée de vie que PAC eau/eau indiv */}
@@ -183,7 +184,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         />
       </UrlStateCheckableAccordion>
 
-      <UrlStateCheckableAccordion label="PAC air/eau individuelle">
+      <UrlStateCheckableAccordion label="PAC air/eau individuelle" showToggle={showToggles}>
         <Input name="ratios . PAC AIR EAU SCOP indiv" label="SCOP" />
         <Input name="ratios . PAC AIR EAU SEER indiv" label="SEER" />
         <Input name="ratios . PAC AIR EAU Durée de vie indiv" label="Durée de vie" />
@@ -192,7 +193,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
 
         <Input name="ratios économiques . PAC x air-eau réversible x Individuel" label="Coût investissement" />
       </UrlStateCheckableAccordion>
-      <UrlStateCheckableAccordion label="PAC air/eau collective / tertiaire">
+      <UrlStateCheckableAccordion label="PAC air/eau collective / tertiaire" showToggle={showToggles}>
         <Input name="ratios . PAC AIR EAU SCOP coll" label="SCOP" />
         <Input name="ratios . PAC AIR EAU SEER coll" label="SEER" />
         <Input name="ratios . PAC AIR EAU Durée de vie coll" label="Durée de vie" />
@@ -202,7 +203,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="ratios économiques . PAC x air-eau réversible x Collectif" label="Coût investissement" />
       </UrlStateCheckableAccordion>
 
-      <UrlStateCheckableAccordion label="Radiateur électrique individuel">
+      <UrlStateCheckableAccordion label="Radiateur électrique individuel" showToggle={showToggles}>
         <Input name="ratios . RAD ELEC INDIV Rendement" label="Rendement" />
         <Input name="ratios . RAD ELEC INDIV Conso combustible" label="Consommation combustible" />
         <Input name="ratios . RAD ELEC INDIV Durée de vie" label="Durée de vie" />

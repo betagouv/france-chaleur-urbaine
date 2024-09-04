@@ -221,7 +221,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                   )}
                 </div>
                 <div className={fr.cx(selectedTabId === 'modes-de-chauffage' ? undefined : 'fr-hidden')}>
-                  {displayMode === 'grand public' ? <div>TODO</div> : <TechnicienParametresEconomiques engine={engine} />}
+                  <TechnicienParametresEconomiques engine={engine} showToggles={displayMode === 'technicien'} />
                 </div>
               </Tabs>
             </div>
