@@ -18,7 +18,7 @@ import { ObjectEntries } from '@utils/typescript';
 
 import DebugDrawer from './DebugDrawer';
 import GrandPublicForm from './GrandPublicForm';
-import { PublicodesSimulatorTitle } from './Placeholder';
+import { PublicodesSimulatorTitle, simulatorTabs } from './Placeholder';
 import PublicodesSimulatorResults from './Results';
 import { FloatingButton, Results, ResultsPlaceholder, Section, Simulator } from './SimulatorPublicodes.style';
 import TechnicienParametresEconomiques from './TechnicienParametresEconomiques';
