@@ -71,6 +71,7 @@ export namespace CheckableAccordionProps {
     classes?: Partial<Record<'root' | 'accordion' | 'title' | 'collapse', string>>;
     style?: CSSProperties;
     children: NonNullable<ReactNode>;
+    showToggle?: boolean;
   };
 
   export type Controlled = Common & {
@@ -94,6 +95,7 @@ export const CheckableAccordion = memo(
       expanded: expanded_props,
       defaultExpanded = false,
       onExpandedChange,
+      showToggle,
       ...rest
     } = props;
 
@@ -143,20 +145,24 @@ export const CheckableAccordion = memo(
             ]}
           />
 
-          <StyledToggleButton
-            className={fr.cx('fr-accordion__btn')}
-            aria-expanded={isExpanded}
-            aria-controls={collapseElementId}
-            onClick={onExtendButtonClick}
-            title="Déplier/replier la section"
-            type="button"
-            id={`${id}__toggle-btn`}
-          ></StyledToggleButton>
+          {showToggle && (
+            <StyledToggleButton
+              className={fr.cx('fr-accordion__btn')}
+              aria-expanded={isExpanded}
+              aria-controls={collapseElementId}
+              onClick={onExtendButtonClick}
+              title="Déplier/replier la section"
+              type="button"
+              id={`${id}__toggle-btn`}
+            ></StyledToggleButton>
+          )}
         </Box>
 
-        <div className={cx(fr.cx('fr-collapse'), classes.collapse)} id={collapseElementId}>
-          {children}
-        </div>
+        {showToggle && (
+          <div className={cx(fr.cx('fr-collapse'), classes.collapse)} id={collapseElementId}>
+            {children}
+          </div>
+        )}
       </section>
     );
   })
