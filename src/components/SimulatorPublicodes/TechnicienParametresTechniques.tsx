@@ -50,15 +50,6 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
               hintText="méthode tertiaire"
             />
             <Select name="normes thermiques tertiaire" label="normes thermiques tertiaire" />
-            <Input
-              name="nombre de logement dans l'immeuble concerné"
-              label="nombre de logement dans l'immeuble concerné"
-              nativeInputProps={{
-                inputMode: 'numeric',
-                maxLength: 5,
-                type: 'number',
-              }}
-            />
           </>
         )}
         <Input
@@ -71,15 +62,26 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           }}
         />
         {typeBatiment === 'résidentiel' && (
-          <Input
-            name="Nombre d'habitants moyen par appartement"
-            label="Nombre d'habitants moyen par appartement"
-            nativeInputProps={{
-              inputMode: 'numeric',
-              maxLength: 2,
-              type: 'number',
-            }}
-          />
+          <>
+            <Input
+              name="Nombre d'habitants moyen par appartement"
+              label="Nombre d'habitants moyen par appartement"
+              nativeInputProps={{
+                inputMode: 'numeric',
+                maxLength: 2,
+                type: 'number',
+              }}
+            />
+            <Input
+              name="nombre de logement dans l'immeuble concerné"
+              label="nombre de logement dans l'immeuble concerné"
+              nativeInputProps={{
+                inputMode: 'numeric',
+                maxLength: 5,
+                type: 'number',
+              }}
+            />
+          </>
         )}
         <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
 
