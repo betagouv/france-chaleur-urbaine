@@ -34,6 +34,9 @@ const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
       bold: true,
     },
     alwaysOutside: false,
+    stem: {
+      color: 'transparent',
+    },
   },
   isStacked: true,
   vAxis: {
