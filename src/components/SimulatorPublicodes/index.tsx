@@ -131,97 +131,98 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
           </header>
           <Simulator $loading={loading}>
             <div>
-              {displayMode === 'grand public' ? (
-                <GrandPublicForm engine={engine} />
-              ) : (
-                <Tabs
-                  selectedTabId={selectedTabId}
-                  tabs={simulatorTabs.map((tab) => ({
-                    tabId: tab.tabId,
-                    label: <small>{tab.label}</small>,
-                  }))}
-                  onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}
-                >
+              <Tabs
+                selectedTabId={selectedTabId}
+                tabs={simulatorTabs.map((tab) => ({
+                  tabId: tab.tabId,
+                  label: <small>{tab.label}</small>,
+                }))}
+                onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}
+              >
+                <div className={fr.cx(selectedTabId === 'batiment' ? undefined : 'fr-hidden')}>
                   {/* TODO rename components later after reorganizing fields */}
-                  <div className={fr.cx(selectedTabId === 'batiment' ? undefined : 'fr-hidden')}>
-                    <AddressAutocomplete
-                      label="Adresse"
-                      state={addressError ? 'error' : undefined}
-                      stateRelatedMessage={
-                        addressError
-                          ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre'
-                          : undefined
-                      }
-                      defaultValue={address || ''}
-                      onClear={() => {
-                        setNearestReseauDeChaleur(undefined);
-                        setNearestReseauDeFroid(undefined);
-                        setAddressError(false);
+                  <AddressAutocomplete
+                    label="Adresse"
+                    state={addressError ? 'error' : undefined}
+                    stateRelatedMessage={
+                      addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
+                    }
+                    defaultValue={address || ''}
+                    onClear={() => {
+                      setNearestReseauDeChaleur(undefined);
+                      setNearestReseauDeFroid(undefined);
+                      setAddressError(false);
+                      setAddress(null);
+                      setLngLat(undefined);
+
+                      engine.setSituation(
+                        ObjectEntries(addresseToPublicodesRules).reduce(
+                          (acc, [key]) => ({
+                            ...acc,
+                            [key]: null,
+                          }),
+                          {}
+                        )
+                      );
+                    }}
+                    onSelect={async (selectedAddress) => {
+                      setAddressError(false);
+                      setLngLat(undefined);
+
+                      const [lon, lat] = selectedAddress.geometry.coordinates;
+                      const addressLabel = selectedAddress.properties.label;
+                      if (addressLabel !== address) {
                         setAddress(null);
-                        setLngLat(undefined);
+                      }
 
-                        engine.setSituation(
-                          ObjectEntries(addresseToPublicodesRules).reduce(
-                            (acc, [key]) => ({
-                              ...acc,
-                              [key]: null,
-                            }),
-                            {}
-                          )
-                        );
-                      }}
-                      onSelect={async (selectedAddress) => {
-                        setAddressError(false);
-                        setLngLat(undefined);
+                      const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
+                        lon,
+                        lat,
+                        city: selectedAddress.properties.city,
+                        cityCode: selectedAddress.properties.citycode,
+                      });
+                      setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
+                      setNearestReseauDeFroid(infos.nearestReseauDeFroid);
 
-                        const [lon, lat] = selectedAddress.geometry.coordinates;
-                        const addressLabel = selectedAddress.properties.label;
-                        if (addressLabel !== address) {
-                          setAddress(null);
-                        }
+                      if (!infos.infosVilles) {
+                        setAddressError(true);
 
-                        const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
-                          lon,
-                          lat,
-                          city: selectedAddress.properties.city,
-                          cityCode: selectedAddress.properties.citycode,
-                        });
-                        setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
-                        setNearestReseauDeFroid(infos.nearestReseauDeFroid);
+                        return;
+                      }
 
-                        if (!infos.infosVilles) {
-                          setAddressError(true);
+                      setAddress(addressLabel);
 
-                          return;
-                        }
+                      if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
+                        setLngLat(selectedAddress.geometry.coordinates);
+                      }
 
-                        setAddress(addressLabel);
+                      console.debug('locations-infos', infos);
 
-                        if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
-                          setLngLat(selectedAddress.geometry.coordinates);
-                        }
-
-                        console.debug('locations-infos', infos);
-
-                        engine.setSituation(
-                          ObjectEntries(addresseToPublicodesRules).reduce(
-                            (acc, [key, infoGetter]) => ({
-                              ...acc,
-                              [key]: infoGetter(infos) ?? null,
-                            }),
-                            {}
-                          )
-                        );
-                      }}
-                    />
-                    <TechnicienParametresTechniques engine={engine} />
-                  </div>
-                  <TechnicienParametresEconomiques
-                    className={fr.cx(selectedTabId === 'modes-de-chauffage' ? undefined : 'fr-hidden')}
-                    engine={engine}
+                      engine.setSituation(
+                        ObjectEntries(addresseToPublicodesRules).reduce(
+                          (acc, [key, infoGetter]) => ({
+                            ...acc,
+                            [key]: infoGetter(infos) ?? null,
+                          }),
+                          {}
+                        )
+                      );
+                    }}
                   />
-                </Tabs>
-              )}
+                  {displayMode === 'grand public' ? (
+                    <GrandPublicForm engine={engine} />
+                  ) : (
+                    <TechnicienParametresTechniques engine={engine} />
+                  )}
+                </div>
+                <div className={fr.cx(selectedTabId === 'modes-de-chauffage' ? undefined : 'fr-hidden')}>
+                  {displayMode === 'grand public' ? (
+                    <GrandPublicForm engine={engine} />
+                  ) : (
+                    <TechnicienParametresEconomiques engine={engine} />
+                  )}
+                </div>
+              </Tabs>
             </div>
             <Results>
               {nearestReseauDeChaleur && (
