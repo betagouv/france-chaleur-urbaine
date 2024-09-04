@@ -20,7 +20,7 @@ export const PublicodesSimulatorTitle = () => {
           Renseignez les données de votre bâtiment dans <strong>l’onglet “Bâtiment”</strong>
         </li>
         <li>
-          Selectionnez les modes de chauffages et de refroidissement que vous souhaitez comparer dans{' '}
+          Sélectionnez les modes de chauffages et de refroidissement que vous souhaitez comparer dans{' '}
           <strong>l’onglet “Modes de chauffage et de refroidissement”</strong>
         </li>
       </ol>
