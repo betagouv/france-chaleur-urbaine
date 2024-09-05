@@ -9,7 +9,7 @@ export const clientConfig = {
     hotjarSv: process.env.NEXT_PUBLIC_HOTJAR_SV,
   },
   publicodesDocumentationURL:
-    process.env.NEXT_PUBLIC_PUBLICODES_DOCUMENTATION_URL ?? 'https://betagouv.github.io/france-chaleur-urbaine-publicodes/#',
+    process.env.NEXT_PUBLIC_PUBLICODES_DOCUMENTATION_URL ?? 'https://betagouv.github.io/france-chaleur-urbaine-publicodes/',
   summaryAreaSizeLimit: 5, // km²
   networkInfoFieldMaxCharacters: 700,
   networkSearchMinimumCharactersThreshold: 3,
