@@ -371,12 +371,12 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
-"@codegouvfr/react-dsfr@^1.9.31":
-  version "1.9.31"
-  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.9.31.tgz#b8747a20344766fbf2692c82d4fe77f26923cf99"
-  integrity sha512-rE6SfshC/NmqkX6vbQiHtej5VhLkzAovDJmrqNY4CByF6ROkoUNmmphJJsQ6lUmttQ2QH2pAeesgdhjEqnsdgA==
+"@codegouvfr/react-dsfr@^1.11.7":
+  version "1.11.7"
+  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.11.7.tgz#935dd3ae9f32e47dcc9b34b25580a448ec3a43f0"
+  integrity sha512-dvg93duyo1+55Z+x3xREfPnPCQL+cBzkxwQakjJlqkmmxBxeYmbwxlrIMUuCQLXU6RSYVFF0XKEn4W+lhAIZtA==
   dependencies:
-    tsafe "^1.6.3"
+    tsafe "^1.7.2"
     yargs-parser "^21.1.1"
 
 "@colors/colors@1.6.0", "@colors/colors@^1.6.0":
@@ -8097,10 +8097,10 @@ ts-node@^10.9.2:
     v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
-tsafe@^1.6.3:
-  version "1.6.6"
-  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.6.6.tgz#fd93e64d6eb13ef83ed1650669cc24bad4f5df9f"
-  integrity sha512-gzkapsdbMNwBnTIjgO758GujLCj031IgHK/PKr2mrmkCSJMhSOR5FeOuSxKLMUoYc0vAA4RGEYYbjt/v6afD3g==
+tsafe@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.7.2.tgz#0f63d414876287ad01b135f832722f93e22da374"
+  integrity sha512-dAPfQLhCfCRre5qs+Z5Q2a7s2CV7RxffZUmvj7puGaePYjECzWREJFd3w4XSFe/T5tbxgowfItA/JSSZ6Ma3dA==
 
 tsconfig-paths@^3.15.0:
   version "3.15.0"
