@@ -59,13 +59,12 @@ const colorP4Aides = '#D5B781';
 
 const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
   chartArea: {
-    right: 120, // to display the total without being cut
+    right: 60, // to display the total without being cut (4 digits + unit)
   },
   colors: ['#99C221', '#426429', '#4EC8AE'],
   hAxis: {
-    title: 'Émissions (kgCO2 équ.)',
+    title: 'Émissions (kgCO2e)',
     minValue: 0,
-    // format: '# kgCO2 équ.',
   },
 });
 
@@ -104,7 +103,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
   const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
     chartArea: {
-      right: 20, // to display the total price without being cut
+      right: 50, // to display the total price without being cut (4 digits + unit)
     },
     hAxis: {
       title: 'Coût €TTC/logement par an',
@@ -189,7 +188,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
         return [
           ['', `${typeInstallation.label}`, 0, 0, 0, ''],
-          [typeInstallation.label, '', ...amounts, `${totalAmount} kgCO2 équ.`],
+          [typeInstallation.label, '', ...amounts, `${totalAmount} kgCO2e`],
         ];
       }),
   ];
