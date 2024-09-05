@@ -42,6 +42,8 @@ const DebugTable = styled(Table)`
 const DebugDrawer = ({ engine }: DebugDrawerProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const serializedSituation = encodeURIComponent(JSON.stringify(engine.getSituation()));
+
   const roundNumber = (key: DottedName) => {
     const node = engine.getNode(key);
     const value = Math.round(node.nodeValue as number);
@@ -52,7 +54,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
           {value} {unit}{' '}
           <RuleLink
             variant="tertiaryNoOutline"
-            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}`}
+            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
             isExternal
             px="1w"
           >
@@ -72,7 +74,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
           {value} {unit}{' '}
           <RuleLink
             variant="tertiaryNoOutline"
-            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}`}
+            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
             isExternal
             px="1w"
           >
@@ -89,7 +91,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
           {engine.getField(key) ? 'oui' : 'non'}{' '}
           <RuleLink
             variant="tertiaryNoOutline"
-            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}`}
+            href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
             isExternal
             px="1w"
           >
