@@ -1,6 +1,7 @@
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
 import { useQueryState } from 'nuqs';
 import React from 'react';
+import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
 
 import Box from '@components/ui/Box';
@@ -10,7 +11,7 @@ import { deepMergeObjects } from '@utils/core';
 import cx from '@utils/cx';
 
 import { modesDeChauffage } from './modes-de-chauffage';
-import { ChartPlaceholder } from './SimulatorPublicodes.style';
+import { ChartPlaceholder, GraphTooltip } from './SimulatorPublicodes.style';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -43,6 +44,7 @@ const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
     // cache les modes de chauffage
     textPosition: 'none',
   },
+  tooltip: { isHtml: true },
   legend: { position: 'top', maxLines: 3 },
 };
 
@@ -67,42 +69,34 @@ const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = 
   },
 });
 
-const getBarStyle = (color: string) => `color: ${color}; stroke-color: ${color}; stroke-opacity: 1; stroke-width: 1;`;
+const getBarStyle = (color: string, { bordered }: { bordered?: boolean } = {}) =>
+  `color: ${color}; stroke-color: ${color}; stroke-opacity: 1; stroke-width: 1;${bordered ? 'fill-opacity: 0.1;' : ''}`;
+
+const getTooltip = ({ title, amount, color, bordered }: { title: string; color: string; amount: number; bordered?: boolean }) =>
+  ReactDOMServer.renderToString(
+    <GraphTooltip>
+      <span style={bordered ? { border: `2px solid ${color}` } : { backgroundColor: color }}></span>
+      <span>{title}</span>
+      <strong>{amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</strong>
+    </GraphTooltip>
+  );
+
+const getColumn = (title: string) => [title, { role: 'style' }, { type: 'string', role: 'tooltip', p: { html: true } }];
+
+const getRow = ({ title, amount, color, bordered }: { title: string; amount: number; color: string; bordered?: boolean }) => [
+  amount,
+  getBarStyle(color, { bordered }),
+  getTooltip({ title, amount, color, bordered }),
+];
 
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
 
-  const coutGraphColumns = proMode
-    ? [
-        'P1 abo',
-        { role: 'style' },
-        'P1 conso',
-        { role: 'style' },
-        'P1 ECS',
-        { role: 'style' },
-        "P1'",
-        { role: 'style' },
-        'P2',
-        { role: 'style' },
-        'P3',
-        { role: 'style' },
-        'P4 moins aides',
-        { role: 'style' },
-        'aides',
-        { role: 'style' },
-      ]
-    : [
-        'Abonnement',
-        { role: 'style' },
-        'Consommation',
-        { role: 'style' },
-        'Maintenance',
-        { role: 'style' },
-        'Investissement',
-        { role: 'style' },
-        'Aides',
-        { role: 'style' },
-      ];
+  const coutGraphColumnNames = proMode
+    ? ['P1 abo', 'P1 conso', 'P1 ECS', "P1'", 'P2', 'P3', 'P4 moins aides', 'aides']
+    : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', 'Aides'];
+
+  const coutGraphColumns = coutGraphColumnNames.map(getColumn).flat();
 
   const coutGraphColors = proMode
     ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP2, colorP3, colorP4SansAides, colorP4Aides]
@@ -144,35 +138,22 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
         const amounts = proMode
           ? [
-              amountP1Abo,
-              getBarStyle(colorP1Abo),
-              amountP1Conso,
-              getBarStyle(colorP1Conso),
-              amountP1ECS,
-              getBarStyle(colorP1ECS),
-              amountP1prime,
-              getBarStyle(colorP1prime),
-              amountP2,
-              getBarStyle(colorP2),
-              amountP3,
+              ...getRow({ title: 'P1 abo', amount: amountP1Abo, color: colorP1Abo }),
+              ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso }),
+              ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS }),
+              ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime }),
+              ...getRow({ title: 'P2', amount: amountP2, color: colorP2 }),
               // TODO manque les différents types d'installation avec élec ou solaire
-              getBarStyle(colorP3),
-              amountP4SansAides,
-              getBarStyle(colorP4SansAides),
-              amountAides,
-              `${getBarStyle(colorP4Aides)};fill-opacity: 0.1;`,
+              ...getRow({ title: 'P3', amount: amountP3, color: colorP3 }),
+              ...getRow({ title: 'P4 moins aides', amount: amountP4SansAides, color: colorP4SansAides }),
+              ...getRow({ title: 'aides', amount: amountAides, color: colorP4Aides, bordered: true }),
             ]
           : [
-              amountP1Abo,
-              getBarStyle(colorP1Abo),
-              amountP1Conso + amountP1ECS,
-              getBarStyle(colorP1Conso),
-              amountP1prime + amountP2 + amountP3,
-              getBarStyle(colorP3),
-              amountP4SansAides,
-              getBarStyle(colorP4SansAides),
-              amountAides,
-              `${getBarStyle(colorP4Aides)};fill-opacity: 0.1;`,
+              ...getRow({ title: 'Abonnement', amount: amountP1Abo, color: colorP1Abo }),
+              ...getRow({ title: 'Consommation', amount: amountP1Conso + amountP1ECS, color: colorP1Conso }),
+              ...getRow({ title: 'Maintenance', amount: amountP1prime + amountP2 + amountP3, color: colorP3 }),
+              ...getRow({ title: 'Investissement', amount: amountP4SansAides, color: colorP4SansAides }),
+              ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true }),
             ];
 
         const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
