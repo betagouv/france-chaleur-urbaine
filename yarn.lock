@@ -6947,11 +6947,6 @@ react-is@^18.0.0, react-is@^18.2.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
-react-json-view-lite@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/react-json-view-lite/-/react-json-view-lite-1.4.0.tgz#0ff493245f4550abe5e1f1836f170fa70bb95914"
-  integrity sha512-wh6F6uJyYAmQ4fK0e8dSQMEWuvTs2Wr3el3sLD9bambX1+pSWUVXIz1RFaoy3TI1mZ0FqdpKq9YgbgTTgyrmXA==
-
 react-loader-spinner@^6.1.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/react-loader-spinner/-/react-loader-spinner-6.1.0.tgz#8682cb0d4079ec5d4573fcbd3a34da59934d4e85"
