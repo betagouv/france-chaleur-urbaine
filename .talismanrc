@@ -1,8 +1,11 @@
 fileignoreconfig:
-- filename: next.config.js
-  checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
-- filename: src/components/SimulatorPublicodes/DebugDrawer.tsx
-  checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
+  - filename: next.config.js
+    checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
+  - filename: src/components/SimulatorPublicodes/DebugDrawer.tsx
+    checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
+  - filename: src/components/Map/components/SimpleMapLegend.tsx
+    checksum: 3488b253451bc04a5ff824da628677409eff81d11849a4e6abb184b6cdba810e
+
 scopeconfig:
-- scope: node
-version: "1.0"
+  - scope: node
+version: '1.0'
