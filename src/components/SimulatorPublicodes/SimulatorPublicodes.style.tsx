@@ -116,3 +116,22 @@ export const ChartPlaceholder = styled.div`
   text-align: center;
   align-items: center;
 `;
+
+export const GraphTooltip = styled.div`
+  display: flex;
+  gap: 8px;
+  height: 100%;
+  font-size: 14px;
+  margin-right: 8px;
+  align-items: center;
+
+  span {
+    white-space: nowrap;
+  }
+
+  span:first-child {
+    width: 50px;
+    display: block;
+    height: 100%;
+  }
+`;
