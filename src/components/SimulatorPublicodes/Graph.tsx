@@ -61,7 +61,7 @@ const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = 
   chartArea: {
     right: 120, // to display the total without being cut
   },
-  colors: ['#2a7777', '#e30613', '#898989'],
+  colors: ['#99C221', '#426429', '#4EC8AE'],
   hAxis: {
     title: 'Émissions (kgCO2 équ.)',
     minValue: 0,
