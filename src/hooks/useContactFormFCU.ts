@@ -69,8 +69,19 @@ const useContactFormFCU = () => {
 
   const handleOnSubmitContact = useCallback(
     async (data?: AddressDataType, fromMap?: boolean) => {
-      if (data && data.structure !== 'Tertiaire') {
-        data.company = '';
+      if (data) {
+        if (data.structure !== 'Tertiaire') {
+          data.company = '';
+          data.companyType = '';
+        }
+        if (data.structure !== 'Copropriété') {
+          data.nbLogements = undefined;
+        }
+        if (data.companyType !== "Bureau d'études ou AMO" && data.companyType === 'Mandataire / délégataire CEE') {
+          data.demandCompanyType = '';
+          data.demandCompanyName = '';
+          data.demandArea = undefined;
+        }
       }
       const response = await submitToAirtable(
         formatDataToAirtable({

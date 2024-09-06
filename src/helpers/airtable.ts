@@ -35,16 +35,21 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     firstName,
     lastName,
     company,
+    companyType,
     email,
     city,
     postcode,
     department,
     region,
     phone,
+    demandCompanyType,
+    demandCompanyName,
     mtm_campaign,
     mtm_kwd,
     mtm_source,
     networkId,
+    demandArea,
+    nbLogements,
   } = values;
 
   return {
@@ -52,6 +57,7 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     Prénom: firstName,
     Structure: structure,
     Établissement: company,
+    "Type d'établissement": companyType,
     Éligibilité: eligibility.isEligible,
     Adresse: address,
     Latitude: coords.lat,
@@ -69,6 +75,10 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     'Campagne matomo': mtm_campaign,
     'Campagne keywords': mtm_kwd,
     'Campagne source': mtm_source,
+    Logement: nbLogements || undefined,
+    'La demande concerne': demandCompanyType,
+    'Nom de la structure accompagnée': demandCompanyName,
+    'Surface en m2': demandArea || undefined,
     networkId,
   };
 };

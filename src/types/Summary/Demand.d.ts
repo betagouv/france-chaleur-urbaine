@@ -51,9 +51,14 @@ export type ContactFormInfos = {
   lastName: string;
   firstName: string;
   company: string;
+  companyType: string;
   email: string;
   phone: string;
   termOfUse: boolean;
+  demandCompanyType: string;
+  demandCompanyName: string;
+  demandArea?: number;
+  nbLogements?: number;
 };
 
 export type FormDemandCreation = ContactFormInfos & {
@@ -80,6 +85,7 @@ export type AirtableDemandCreation = {
   Prénom: string;
   Structure: string;
   Établissement: string;
+  "Type d'établissement": string;
   Éligibilité: boolean;
   Adresse: string;
   Latitude: number;
@@ -94,4 +100,8 @@ export type AirtableDemandCreation = {
   'Code Postal': string;
   Departement: string;
   Region: string;
+  'La demande concerne': string;
+  'Nom de la structure accompagnée': string;
+  'Surface en m2'?: number;
+  Logement?: number;
 };
