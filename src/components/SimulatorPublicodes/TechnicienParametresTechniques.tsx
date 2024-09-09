@@ -23,8 +23,8 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="température de référence chaud" label="température de référence chaud" iconId="fr-icon-temp-cold-fill" />
         <Input name="augmenter la température de chauffe" label="augmenter la température de chauffe" iconId="fr-icon-temp-cold-fill" />
 
-        <Select name="zone climatique" label="Zone climatique" />
-        <Select name="sous zone climatique" label="Sous-zone climatique" />
+        <Select name="zone climatique" label="Zone climatique" withDefaultOption={false} />
+        <Select name="sous zone climatique" label="Sous-zone climatique" withDefaultOption={false} />
       </Accordion>
 
       <Accordion label="Choix du bâtiment">
