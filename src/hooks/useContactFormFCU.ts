@@ -77,10 +77,12 @@ const useContactFormFCU = () => {
         if (data.structure !== 'Copropriété') {
           data.nbLogements = undefined;
         }
-        if (data.companyType !== "Bureau d'études ou AMO" && data.companyType === 'Mandataire / délégataire CEE') {
+        if (data.companyType !== "Bureau d'études ou AMO" && data.companyType !== 'Mandataire / délégataire CEE') {
           data.demandCompanyType = '';
           data.demandCompanyName = '';
           data.demandArea = undefined;
+        } else if (data.demandCompanyType === 'Copropriété' || data.demandCompanyType === 'Maison individuelle') {
+          data.demandCompanyName = '';
         }
       }
       const response = await submitToAirtable(

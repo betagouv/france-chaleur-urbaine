@@ -23,6 +23,44 @@ const formatHeatingTypeToAirtable: (heatingType?: string) => string = (heatingTy
       return 'Autre / Je ne sais pas';
   }
 };
+const formatStructureToAirtable: (structure: string, companyType?: string, demandCompanyType?: string) => string = (
+  structure,
+  companyType,
+  demandCompanyType
+) => {
+  if (structure === 'Tertiaire') {
+    switch (companyType) {
+      case 'Bailleur social':
+        return 'Logement social';
+      case 'Syndic de copropriété':
+        return 'Copropriété';
+      case "Bureau d'études ou AMO":
+      case 'Mandataire / délégataire CEE':
+        switch (demandCompanyType) {
+          case 'Copropriété':
+          case 'Maison individuelle':
+            return demandCompanyType;
+          case 'Bailleur social':
+            return 'Logement social';
+        }
+        break;
+      default:
+        return structure;
+    }
+  }
+  return structure;
+};
+const formatEtablissementToAirtable: (
+  structure: string,
+  company: string,
+  companyType?: string,
+  demandCompanyName?: string
+) => string | undefined = (structure, company, companyType, demandCompanyName) => {
+  if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
+    return demandCompanyName;
+  }
+  return company;
+};
 
 export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDemandCreation = (values) => {
   const {
@@ -55,9 +93,8 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
   return {
     Nom: lastName,
     Prénom: firstName,
-    Structure: structure,
-    Établissement: company,
-    "Type d'établissement": companyType,
+    Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),
+    Établissement: formatEtablissementToAirtable(company, structure, companyType, demandCompanyName),
     Éligibilité: eligibility.isEligible,
     Adresse: address,
     Latitude: coords.lat,
@@ -76,8 +113,6 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     'Campagne keywords': mtm_kwd,
     'Campagne source': mtm_source,
     Logement: nbLogements || undefined,
-    'La demande concerne': demandCompanyType,
-    'Nom de la structure accompagnée': demandCompanyName,
     'Surface en m2': demandArea || undefined,
     networkId,
   };

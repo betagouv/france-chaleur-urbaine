@@ -136,12 +136,14 @@ const ContactInformation = ({
 }) => {
   const { values }: any = useFormikContext();
   const [companyType, setCompanyType] = useState('');
+  const [demandCompanyType, setDemandCompanyType] = useState('');
 
   const setCompanyTypeValue = (value: any) => {
     setCompanyType(value);
     values.companyType = value;
   };
   const setDemandCompanyTypeValue = (value: any) => {
+    setDemandCompanyType(value);
     values.demandCompanyType = value;
   };
   return (
@@ -229,9 +231,11 @@ const ContactInformation = ({
               }}
             ></Select>
           </InputWraper>
-          <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-            <Field name="demandCompanyName" label={fieldLabelInformation.demandCompanyName} component={Input} />
-          </InputWraper>
+          {demandCompanyType !== 'Copropriété' && demandCompanyType !== 'Maison individuelle' && (
+            <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
+              <Field name="demandCompanyName" label={fieldLabelInformation.demandCompanyName} component={Input} />
+            </InputWraper>
+          )}
           <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
             <Field name="demandArea" type="number" label={fieldLabelInformation.demandArea} component={Input} />
           </InputWraper>
