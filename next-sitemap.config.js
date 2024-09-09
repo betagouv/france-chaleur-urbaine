@@ -19,14 +19,7 @@ const ressources = [
 ];
 
 // Category pages, homepage, top landing pages
-const highPriorityPages = [
-  '/',
-  '/professionnels',
-  '/collectivites-et-exploitants',
-  '/carte',
-  '/actus',
-  '/ressources/articles',
-];
+const highPriorityPages = ['/', '/professionnels', '/collectivites-et-exploitants', '/carte', '/actus', '/ressources/articles'];
 
 // Pages that are not as important like outdated content or utility-type pages
 const lowPriorityPages = [
@@ -42,11 +35,7 @@ const lowPriorityPages = [
 ];
 
 function getPagePriority(/** @type {string} */ path) {
-  return highPriorityPages.includes(path)
-    ? 1
-    : lowPriorityPages.includes(path)
-    ? 0.3
-    : 0.7;
+  return highPriorityPages.includes(path) ? 1 : lowPriorityPages.includes(path) ? 0.3 : 0.7;
 }
 
 // Page that should not be indexed by Google because there is no point
