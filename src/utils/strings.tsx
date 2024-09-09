@@ -65,3 +65,10 @@ export function formatMWhString(value: number): string {
 
   return `${value.toPrecision(3)} ${unit}`;
 }
+
+/**
+ * Upper case the first character of a string.
+ */
+export function upperCaseFirstChar(string: string): string {
+  return `${(string[0] ?? '').toUpperCase()}${string.substring(1)}`;
+}

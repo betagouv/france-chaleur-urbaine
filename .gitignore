@@ -63,3 +63,9 @@ public/sitemap.xml
 
 # direnv
 .envrc
+
+# typescript
+tsconfig.tsbuildinfo
+
+# Scripts
+scripts/simulateur/codes-insee.json
