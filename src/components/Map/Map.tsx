@@ -800,7 +800,7 @@ const Map = ({
         )}
         {withDrawing && mapRef.current && (
           <MapControlWrapper legendCollapsed={legendCollapsed}>
-            <ZoneInfos map={mapRef.current} draw={draw} setDrawing={setDrawing} />
+            <ZoneInfos map={mapRef.current} draw={draw} setDrawing={setDrawing} drawing={drawing} />
           </MapControlWrapper>
         )}
         {(setProMode || withHideLegendSwitch) && (

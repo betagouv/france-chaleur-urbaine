@@ -43,7 +43,17 @@ const getDensite = (size: number, densite: GasSummary[]) => {
   return `${value.toFixed(2)} MWh/m`;
 };
 
-const SummaryBoxes = ({ map, draw, setDrawing }: { map: MapRef; draw: MapboxDraw; setDrawing: Dispatch<SetStateAction<boolean>> }) => {
+const SummaryBoxes = ({
+  map,
+  draw,
+  setDrawing,
+  drawing,
+}: {
+  map: MapRef;
+  draw: MapboxDraw;
+  setDrawing: Dispatch<SetStateAction<boolean>>;
+  drawing: boolean;
+}) => {
   const { heatNetworkService } = useServices();
 
   const zoneIndex = useRef(0);
@@ -351,6 +361,7 @@ const SummaryBoxes = ({ map, draw, setDrawing }: { map: MapRef; draw: MapboxDraw
               <DrawButton
                 size="small"
                 iconId="fr-icon-edit-line"
+                disabled={drawing}
                 onClick={() => {
                   draw.deleteAll();
                   setBounds(undefined);
