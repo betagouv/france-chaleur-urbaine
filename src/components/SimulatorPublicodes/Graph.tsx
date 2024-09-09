@@ -59,7 +59,7 @@ const colorP4Aides = '#7B467C';
 
 const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
   chartArea: {
-    right: 60, // to display the total without being cut (4 digits + unit)
+    right: 100, // to display the total without being cut (4 digits + unit)
   },
   colors: ['#99C221', '#426429', '#4EC8AE'],
   hAxis: {
