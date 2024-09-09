@@ -13,7 +13,7 @@ const PublicodesSimulator = dynamic(() => import('@components/SimulatorPublicode
 
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {
   return (
-    <SimplePage title="Simulateur : France Chaleur Urbaine">
+    <SimplePage title="Comparateur des performances des modes de chauffage et de refroidissement : France Chaleur Urbaine">
       <PublicodesSimulator tabId={query.tabId} displayMode={query.displayMode} />
     </SimplePage>
   );
