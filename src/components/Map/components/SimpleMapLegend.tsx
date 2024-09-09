@@ -19,6 +19,7 @@ import {
 import { LegendSeparator } from '@components/Map/Map.style';
 import Box from '@components/ui/Box';
 import CollapsibleBox from '@components/ui/CollapsibleBox';
+import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
@@ -106,7 +107,7 @@ const tabs: TabsProps.Controlled['tabs'] = [
 
 const Tabs = styled(DsfrTabs)`
   .fr-tabs__panel {
-    padding: 0.5rem 0.25rem;
+    padding: 0.5rem 0.5rem;
   }
 `;
 
@@ -152,14 +153,56 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
       <Tabs selectedTabId={selectedTabId} tabs={tabs} onTabChange={(newTabId) => setSelectedTabId(newTabId)}>
         {selectedTabId === 'reseaux' && (
           <div>
-            <Text fontSize="14px" lineHeight="18px" fontWeight="bold" ml="1w" className="fr-col">
+            <Heading as="h2" size="h6" mb="1w">
               {legendTitle || 'Réseaux de chaleur et de froid'}
-            </Text>
-            <Text fontSize="13px" lineHeight="18px" fontWeight="lightbold" fontStyle="italic" mx="1w">
+            </Heading>
+            <Text fontSize="13px" lineHeight="18px" mb="2w">
               Cliquez sur un réseau pour connaître ses caractéristiques
             </Text>
+            {enabledFeatures.includes('zonesDeDeveloppementPrioritaire') && (
+              <Box display="flex" mb="2w">
+                <SingleCheckbox
+                  name="zonesDeDeveloppementPrioritaire"
+                  checked={mapConfiguration.zonesDeDeveloppementPrioritaire}
+                  onChange={() => toggleLayer('zonesDeDeveloppementPrioritaire')}
+                  trackingEvent="Carto|Périmètres de développement prioritaire"
+                />
+
+                <Box
+                  backgroundColor={themeDefZoneDP.fill.color}
+                  opacity={themeDefZoneDP.fill.opacity}
+                  height="16px"
+                  minWidth="32px"
+                  mt="1v"
+                />
+
+                <Text
+                  as="label"
+                  htmlFor="zonesDeDeveloppementPrioritaire"
+                  fontSize="14px"
+                  lineHeight="18px"
+                  className="fr-col"
+                  fontWeight="bold"
+                  cursor="pointer"
+                  pt="1v"
+                  px="1v"
+                >
+                  Périmètres de développement prioritaire des réseaux classés
+                </Text>
+
+                <InfoIcon>
+                  <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
+
+                  <Hoverable position="bottom">
+                    Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage
+                    au-dessus d'une certaine puissance est obligatoire.
+                  </Hoverable>
+                </InfoIcon>
+              </Box>
+            )}
+
             {enabledFeatures.includes('reseauxDeChaleur') && (
-              <Box display="flex">
+              <Box display="flex" mb="2w">
                 <SingleCheckbox
                   name="reseauxDeChaleur"
                   checked={mapConfiguration.reseauxDeChaleur.show}
@@ -214,49 +257,29 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 </InfoIcon>
               </Box>
             )}
-            {enabledFeatures.includes('zonesDeDeveloppementPrioritaire') && (
-              <Box display="flex">
+            {enabledFeatures.includes('reseauxDeFroid') && (
+              <Box display="flex" mb="2w">
                 <SingleCheckbox
-                  name="zonesDeDeveloppementPrioritaire"
-                  checked={mapConfiguration.zonesDeDeveloppementPrioritaire}
-                  onChange={() => toggleLayer('zonesDeDeveloppementPrioritaire')}
-                  trackingEvent="Carto|Périmètres de développement prioritaire"
+                  name="reseauxDeFroid"
+                  checked={mapConfiguration.reseauxDeFroid}
+                  onChange={() => toggleLayer('reseauxDeFroid')}
+                  trackingEvent="Carto|Réseaux de froid"
                 />
 
-                <Box
-                  backgroundColor={themeDefZoneDP.fill.color}
-                  opacity={themeDefZoneDP.fill.opacity}
-                  height="16px"
-                  minWidth="32px"
-                  mt="1v"
-                />
+                <Box backgroundColor={themeDefHeatNetwork.cold.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
 
-                <Text
-                  as="label"
-                  htmlFor="zonesDeDeveloppementPrioritaire"
-                  fontSize="14px"
-                  lineHeight="18px"
-                  className="fr-col"
-                  fontWeight="bold"
-                  cursor="pointer"
-                  pt="1v"
-                  px="1v"
-                >
-                  Périmètres de développement prioritaire des réseaux classés
-                </Text>
-
-                <InfoIcon>
-                  <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
-
-                  <Hoverable position="bottom">
-                    Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage
-                    au-dessus d'une certaine puissance est obligatoire.
-                  </Hoverable>
-                </InfoIcon>
+                <Box flex px="1v">
+                  <Text as="label" htmlFor="reseauxDeFroid" fontSize="14px" lineHeight="18px" fontWeight="bold" cursor="pointer">
+                    Réseaux de froid
+                  </Text>
+                  <Text fontSize="12px" lineHeight="14px">
+                    (tracé ou cercle au centre de la commune si tracé non disponible)
+                  </Text>
+                </Box>
               </Box>
             )}
             {enabledFeatures.includes('reseauxEnConstruction') && (
-              <Box display="flex">
+              <Box display="flex" mb="2w">
                 <SingleCheckbox
                   name="reseauxEnConstruction"
                   checked={mapConfiguration.reseauxEnConstruction}
@@ -306,27 +329,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 </InfoIcon>
               </Box>
             )}
-            {enabledFeatures.includes('reseauxDeFroid') && (
-              <Box display="flex">
-                <SingleCheckbox
-                  name="reseauxDeFroid"
-                  checked={mapConfiguration.reseauxDeFroid}
-                  onChange={() => toggleLayer('reseauxDeFroid')}
-                  trackingEvent="Carto|Réseaux de froid"
-                />
 
-                <Box backgroundColor={themeDefHeatNetwork.cold.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
-
-                <Box flex px="1v">
-                  <Text as="label" htmlFor="reseauxDeFroid" fontSize="14px" lineHeight="18px" fontWeight="bold" cursor="pointer">
-                    Réseaux de froid
-                  </Text>
-                  <Text fontSize="12px" lineHeight="14px">
-                    (tracé ou cercle au centre de la commune si tracé non disponible)
-                  </Text>
-                </Box>
-              </Box>
-            )}
             {enabledFeatures.includes('proModeLegend') && (
               <>
                 <LegendSeparator />
