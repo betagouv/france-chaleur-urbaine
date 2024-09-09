@@ -48,6 +48,7 @@ const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   legend: { position: 'top', maxLines: 3 },
 };
 
+// graph coûts
 const colorP1Abo = '#FCC63A';
 const colorP1Conso = '#FC8162';
 const colorP1ECS = '#F2535E';
@@ -57,11 +58,16 @@ const colorP3 = '#99C221';
 const colorP4SansAides = '#7B467C';
 const colorP4Aides = '#7B467C';
 
+// graph émissions CO2
+const colorScope1 = '#99C221';
+const colorScope2 = '#426429';
+const colorScope3 = '#4EC8AE';
+
 const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
   chartArea: {
     right: 100, // to display the total without being cut (4 digits + unit)
   },
-  colors: ['#99C221', '#426429', '#4EC8AE'],
+  colors: [colorScope1, colorScope2, colorScope3],
   hAxis: {
     title: 'Émissions (kgCO2e)',
     minValue: 0,
@@ -87,6 +93,13 @@ const getRow = ({ title, amount, color, bordered }: { title: string; amount: num
   getBarStyle(color, { bordered }),
   getTooltip({ title, amount, color, bordered }),
 ];
+
+const emissionsCO2GraphColumnNames = [
+  "Scope 1 : Production directe d'énergie",
+  "Scope 2 : Production indirecte d'énergie",
+  'Scope 3 : Émissions indirectes',
+];
+const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.map(getColumn).flat();
 
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
@@ -167,27 +180,34 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
   ];
 
   const emissionsCO2GraphData = [
-    [
-      'Mode de chauffage',
-      { role: 'annotation' },
-      "Scope 1 : Production directe d'énergie",
-      "Scope 2 : Production indirecte d'énergie",
-      'Scope 3 : Émissions indirectes',
-      { type: 'string', role: 'annotation' },
-    ],
+    ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
     ...modesDeChauffage
       .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
       .flatMap((typeInstallation) => {
         const amounts = [
-          engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
-          engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
-          engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
+          ...getRow({
+            title: "Scope 1 : Production directe d'énergie",
+            amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
+            color: colorScope1,
+          }),
+          ...getRow({
+            title: "Scope 2 : Production indirecte d'énergie",
+            amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
+            color: colorScope2,
+          }),
+          ...getRow({
+            title: 'Scope 3 : Émissions indirectes',
+            amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
+            color: colorScope3,
+          }),
         ];
 
-        const totalAmount = Math.round(amounts.reduce((acc, amount) => acc + amount, 0));
+        const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
+          .reduce((acc, amount) => acc + amount, 0)
+          .toLocaleString('fr-FR', { maximumFractionDigits: 0 });
 
         return [
-          ['', `${typeInstallation.label}`, 0, 0, 0, ''],
+          ['', `${typeInstallation.label}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
           [typeInstallation.label, '', ...amounts, `${totalAmount} kgCO2e`],
         ];
       }),
