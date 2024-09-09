@@ -1,6 +1,6 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import DsfrTabs from '@codegouvfr/react-dsfr/Tabs';
+import DsfrTabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
 import Image from 'next/image';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useMemo, useState } from 'react';
@@ -98,7 +98,7 @@ const expansions = [
 ] as const;
 type Expansion = (typeof expansions)[number];
 
-const tabs = [
+const tabs: TabsProps.Controlled['tabs'] = [
   { tabId: 'reseaux', label: 'Réseaux' },
   { tabId: 'filtres', label: 'Filtres' },
   { tabId: 'potentiel', label: 'Potentiel' },
