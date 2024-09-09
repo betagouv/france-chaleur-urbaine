@@ -300,7 +300,7 @@ const Manager = () => {
                 rows={filteredDemands}
                 disableColumnMenu
                 columnHeaderHeight={100}
-                rowHeight={96}
+                rowHeight={120}
                 onRowSelectionModelChange={onRowSelection}
                 hideFooterSelectedRowCount
                 initialState={{

@@ -29,6 +29,8 @@ export type Demand = DemandSummary &
     'en PDP': string;
     'Date demandes': string;
     Établissement: string;
+    "Type d'établissement"?: string[];
+    'Nom de la structure accompagnée'?: string;
     Ville: string;
     Departement: string;
     Conso: number;
@@ -85,6 +87,7 @@ export type AirtableDemandCreation = {
   Prénom: string;
   Structure: string;
   Établissement?: string;
+  "Type d'établissement": string;
   Éligibilité: boolean;
   Adresse: string;
   Latitude: number;
@@ -99,6 +102,8 @@ export type AirtableDemandCreation = {
   'Code Postal': string;
   Departement: string;
   Region: string;
+  'La demande concerne': string;
+  'Nom de la structure accompagnée': string;
   'Surface en m2'?: number;
   Logement?: number;
 };

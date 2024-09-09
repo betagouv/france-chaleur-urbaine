@@ -21,7 +21,14 @@ const Contact = ({
         <Name>
           {demand.Prénom ?? ''} {demand.Nom}
         </Name>
-        {demand.Établissement && <div>{demand.Établissement}</div>}
+        {demand.Établissement && (
+          <div>
+            {demand.Établissement}
+            {demand["Type d'établissement"] &&
+              (demand["Type d'établissement"].includes("Bureau d'études ou AMO") ||
+                demand["Type d'établissement"].includes('Mandataire / délégataire CEE')) && <>&nbsp;({demand["Type d'établissement"]})</>}
+          </div>
+        )}
         {demand.Mail && (
           <EmailInfo
             onClick={() => {
@@ -42,6 +49,8 @@ const Contact = ({
           onClose={() => setShowEmailsModal(false)}
         />
       )}
+      {demand.Structure === 'Tertiaire' ||
+        (demand.Structure === 'Logement social' && <div>Pour le compte de : {demand['Nom de la structure accompagnée']}</div>)}
     </ContactInfos>
   );
 };
