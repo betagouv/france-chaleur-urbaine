@@ -48,14 +48,14 @@ const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
   legend: { position: 'top', maxLines: 3 },
 };
 
-const colorP1Abo = '#A558A0';
-const colorP1Conso = '#465F9D';
-const colorP1ECS = '#465FBD';
-const colorP1prime = '#C08C65';
-const colorP2 = '#DA8C65';
-const colorP3 = '#EA8C65';
-const colorP4SansAides = '#D1B781';
-const colorP4Aides = '#D5B781';
+const colorP1Abo = '#FCC63A';
+const colorP1Conso = '#FC8162';
+const colorP1ECS = '#F2535E';
+const colorP1prime = '#51D1DC';
+const colorP2 = '#475DA1';
+const colorP3 = '#99C221';
+const colorP4SansAides = '#7B467C';
+const colorP4Aides = '#7B467C';
 
 const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
   chartArea: {
@@ -150,7 +150,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           : [
               ...getRow({ title: 'Abonnement', amount: amountP1Abo, color: colorP1Abo }),
               ...getRow({ title: 'Consommation', amount: amountP1Conso + amountP1ECS, color: colorP1Conso }),
-              ...getRow({ title: 'Maintenance', amount: amountP1prime + amountP2 + amountP3, color: colorP3 }),
+              ...getRow({ title: 'Maintenance', amount: amountP1prime + amountP2 + amountP3, color: colorP1prime }),
               ...getRow({ title: 'Investissement', amount: amountP4SansAides, color: colorP4SansAides }),
               ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true }),
             ];
