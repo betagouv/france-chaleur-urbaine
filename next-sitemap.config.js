@@ -58,6 +58,9 @@ const excludedPages = [
   // misc pages
   '/stats-v1',
   '/satisfaction',
+
+  // TODO pas encore public, supprimer quand prêt à être indexé
+  '/outils/comparateur-performances',
 ];
 
 /** @type {import('next-sitemap').IConfig} */
