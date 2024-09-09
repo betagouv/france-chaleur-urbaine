@@ -182,7 +182,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                   fontSize="14px"
                   lineHeight="18px"
                   className="fr-col"
-                  fontWeight="bold"
                   cursor="pointer"
                   pt="1v"
                   px="1v"
@@ -214,16 +213,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                   <Box display="flex">
                     <Box backgroundColor={themeDefHeatNetwork.classed.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
 
-                    <Text
-                      as="label"
-                      htmlFor="reseauxDeChaleur"
-                      fontSize="14px"
-                      lineHeight="18px"
-                      fontWeight="bold"
-                      cursor="pointer"
-                      pt="1v"
-                      px="1v"
-                    >
+                    <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer" pt="1v" px="1v">
                       Réseaux de chaleur classés
                     </Text>
                   </Box>
@@ -236,7 +226,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                         Réseaux de chaleur non classés
                       </Text>
 
-                      <Text fontSize="12px" lineHeight="14px">
+                      <Text fontSize="12px" lineHeight="14px" color="grey">
                         (tracé ou cercle au centre de la commune si tracé non disponible)
                       </Text>
                     </Box>
@@ -269,10 +259,10 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 <Box backgroundColor={themeDefHeatNetwork.cold.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
 
                 <Box flex px="1v">
-                  <Text as="label" htmlFor="reseauxDeFroid" fontSize="14px" lineHeight="18px" fontWeight="bold" cursor="pointer">
+                  <Text as="label" htmlFor="reseauxDeFroid" fontSize="14px" lineHeight="18px" cursor="pointer">
                     Réseaux de froid
                   </Text>
-                  <Text fontSize="12px" lineHeight="14px">
+                  <Text fontSize="12px" lineHeight="14px" color="grey">
                     (tracé ou cercle au centre de la commune si tracé non disponible)
                   </Text>
                 </Box>
@@ -308,14 +298,13 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                         display="inline-block"
                         fontSize="14px"
                         lineHeight="18px"
-                        fontWeight="bold"
                         cursor="pointer"
                         pt="1v"
                       >
                         Réseaux de chaleur en construction
                       </Text>
 
-                      <Text fontSize="12px" lineHeight="14px">
+                      <Text fontSize="12px" lineHeight="14px" color="grey">
                         (tracé ou zone si tracé non disponible)
                       </Text>
                     </Box>
@@ -340,23 +329,22 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
               </>
             )}
             {enabledFeatures.includes('contributeButton') && (
-              <>
-                <Link variant="primary" href="/contribution" className="fr-btn--sm d-block" mx="auto" mt="1w">
-                  <Icon name="ri-upload-2-line" size="sm" mr="1w" />
+              <Box display="flex" alignItems="center" justifyContent="stretch" gap={'4px'} mt="1w">
+                <Link variant="primary" href="/contribution" className="fr-btn--sm fr-btn--secondary d-flex">
+                  <Icon name="ri-lightbulb-line" size="sm" mr="1v" />
                   Contribuer
                 </Link>
                 <Link
                   variant="primary"
                   href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
-                  isExternal
                   eventKey="Téléchargement|Tracés|carte"
-                  className="fr-btn--sm d-flex"
+                  className="fr-btn--sm fr-btn--secondary d-flex"
                   mx="auto"
-                  mt="1w"
                 >
+                  <Icon name="ri-download-line" size="sm" mr="1v" />
                   Télécharger les tracés
                 </Link>
-              </>
+              </Box>
             )}
             {enabledFeatures.includes('demandesEligibilite') && (
               <>
@@ -385,10 +373,9 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
-                    fontWeight="bold"
                     cursor="pointer"
-                    pt="1v"
-                    px="1v"
+                    pl="1w"
+                    style={{ marginTop: '2px' }}
                   >
                     Demandes de raccordement sur France Chaleur Urbaine
                   </Text>
@@ -421,10 +408,9 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
-                    fontWeight="bold"
                     cursor="pointer"
-                    pt="1v"
-                    px="1v"
+                    pl="1w"
+                    style={{ marginTop: '2px' }}
                   >
                     Bâtiments raccordés à un réseau de chaleur
                   </Text>
