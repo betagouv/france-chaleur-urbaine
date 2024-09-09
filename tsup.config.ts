@@ -23,7 +23,7 @@ export default defineConfig(() => {
     clean: true,
     minify: true,
     env: {
-      KNEX_MIGRATIONS_DIR: './migrations',
+      KNEX_MIGRATIONS_DIR: './.next/cli/migrations',
     },
 
     // include node_modules dependencies
