@@ -106,7 +106,7 @@ const tabs: TabsProps.Controlled['tabs'] = [
 
 const Tabs = styled(DsfrTabs)`
   .fr-tabs__panel {
-    padding: 5px;
+    padding: 0.5rem 0.25rem;
   }
 `;
 
