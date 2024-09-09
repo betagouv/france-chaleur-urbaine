@@ -50,7 +50,7 @@ const Contact = ({
         />
       )}
       {demand.Structure === 'Tertiaire' ||
-        (demand.Structure === 'Logement social' && <div>Pour le compte de : {demand['Nom de la structure accompagnée']}</div>)}
+        (demand.Structure === 'Logement social' && <div>Pour le compte de : {demand['Nom de la structure accompagnante']}</div>)}
     </ContactInfos>
   );
 };

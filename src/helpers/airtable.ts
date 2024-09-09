@@ -50,16 +50,26 @@ const formatStructureToAirtable: (structure: string, companyType?: string, deman
   }
   return structure;
 };
-const formatEtablissementToAirtable: (
-  structure: string,
-  company: string,
-  companyType?: string,
-  demandCompanyName?: string
-) => string | undefined = (structure, company, companyType, demandCompanyName) => {
+const formatEtablissementToAirtable: (structure: string, company: string, companyType?: string, demandCompanyName?: string) => string = (
+  structure,
+  company,
+  companyType,
+  demandCompanyName
+) => {
   if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
-    return demandCompanyName;
+    return demandCompanyName || '';
   }
   return company;
+};
+const formatStructureAccompagnanteToAirtable: (structure: string, company: string, companyType?: string) => string = (
+  structure,
+  company,
+  companyType
+) => {
+  if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
+    return company;
+  }
+  return '';
 };
 
 export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDemandCreation = (values) => {
@@ -113,8 +123,7 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     'Campagne matomo': mtm_campaign,
     'Campagne keywords': mtm_kwd,
     'Campagne source': mtm_source,
-    'La demande concerne': demandCompanyType,
-    'Nom de la structure accompagnée': demandCompanyName,
+    'Nom de la structure accompagnante': formatStructureAccompagnanteToAirtable(structure, company, companyType),
     'Surface en m2': demandArea || undefined,
     Logement: nbLogements || undefined,
     networkId,

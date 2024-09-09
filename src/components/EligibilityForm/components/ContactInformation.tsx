@@ -213,11 +213,6 @@ const ContactInformation = ({
         <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
           <Field name="phone" placeholder="0605040302" label={fieldLabelInformation.phone} component={Input} />
         </InputWraper>
-        {values.structure === 'Copropriété' && (
-          <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-            <Field name="nbLogements" type="number" label={fieldLabelInformation.nbLogements} component={Input} />
-          </InputWraper>
-        )}
       </fieldset>
       {values.structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') && (
         <fieldset className={fr.cx('fr-fieldset')}>
@@ -236,8 +231,18 @@ const ContactInformation = ({
               <Field name="demandCompanyName" label={fieldLabelInformation.demandCompanyName} component={Input} />
             </InputWraper>
           )}
-          <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-            <Field name="demandArea" type="number" label={fieldLabelInformation.demandArea} component={Input} />
+          {demandCompanyType === 'Bâtiment tertiaire' && (
+            <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
+              <Field name="demandArea" type="number" label={fieldLabelInformation.demandArea} component={Input} />
+            </InputWraper>
+          )}
+        </fieldset>
+      )}
+      {(values.structure === 'Copropriété' ||
+        (values.structure === 'Tertiaire' && (demandCompanyType === 'Copropriété' || demandCompanyType === 'Bailleur social'))) && (
+        <fieldset className={fr.cx('fr-fieldset')}>
+          <InputWraper className={fr.cx('fr-fieldset__element')} mb="1w">
+            <Field name="nbLogements" type="number" label={fieldLabelInformation.nbLogements} component={Input} />
           </InputWraper>
         </fieldset>
       )}
