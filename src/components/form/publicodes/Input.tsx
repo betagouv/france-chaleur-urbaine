@@ -30,7 +30,7 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
     if (isInView) {
       setValue(engine.getSituation()[name]);
     }
-  }, [isInView]);
+  }, [isInView, engine.getSituation()[name]]);
 
   useDebouncedEffect(
     () => {
