@@ -1,3 +1,4 @@
+import Accordion from '@codegouvfr/react-dsfr/Accordion';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import DsfrTabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
@@ -85,7 +86,6 @@ interface SimpleMapLegendProps {
 
 const expansions = [
   'reseauxDeChaleur',
-  'reseauxDeChaleurEnergies',
   'consommationsGaz',
   'batimentsGazCollectif',
   'batimentsFioulCollectif',
@@ -463,50 +463,21 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 ]}
               />
             </Box>
+            <Accordion label="Filtres avancés" style={{ margin: '1rem 0' }}>
+              <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
+                {filtresEnergies.map((filtreEnergie) => (
+                  <RangeFilter
+                    key={filtreEnergie.confKey}
+                    label={filtreEnergie.label}
+                    domain={percentageMaxInterval}
+                    value={mapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`]}
+                    onChange={(values) => updateScaleInterval(`reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`, values)}
+                    unit="%"
+                  />
+                ))}
+              </DeactivatableBox>
+            </Accordion>
 
-            {!sectionsExpansions['reseauxDeChaleurEnergies'] && (
-              <Button
-                className="d-block fr-ml-auto fr-mr-1w fr-px-1w"
-                priority="tertiary no outline"
-                size="small"
-                onClick={() => toggleSectionExpansion('reseauxDeChaleurEnergies')}
-                aria-expanded={!!sectionsExpansions['reseauxDeChaleurEnergies']}
-                aria-controls={'reseauxDeChaleurEnergies'}
-                title="Afficher plus de détail"
-              >
-                Plus d'options
-              </Button>
-            )}
-
-            <CollapsibleBox id="reseauxDeChaleurEnergies" expand={!!sectionsExpansions['reseauxDeChaleurEnergies']}>
-              <Box backgroundColor="grey-975-75" borderRadius="10px" mt="1w" mx="1w" pt="1w">
-                <Button
-                  className="d-block fr-ml-auto"
-                  priority="tertiary no outline"
-                  size="small"
-                  onClick={() => toggleSectionExpansion('reseauxDeChaleurEnergies')}
-                  aria-expanded={!!sectionsExpansions['reseauxDeChaleurEnergies']}
-                  aria-controls={'reseauxDeChaleurEnergies'}
-                  title="Masquer le détail"
-                >
-                  <Icon name="ri-close-line" />
-                </Button>
-                <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
-                  {filtresEnergies.map((filtreEnergie) => (
-                    <RangeFilter
-                      key={filtreEnergie.confKey}
-                      label={filtreEnergie.label}
-                      domain={percentageMaxInterval}
-                      value={mapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`]}
-                      onChange={(values) => updateScaleInterval(`reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`, values)}
-                      unit="%"
-                    />
-                  ))}
-                </DeactivatableBox>
-              </Box>
-            </CollapsibleBox>
-
-            <LegendSeparator />
             <RangeFilter
               label="Taux d’EnR&R"
               domain={percentageMaxInterval}

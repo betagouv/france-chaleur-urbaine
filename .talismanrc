@@ -4,7 +4,7 @@ fileignoreconfig:
   - filename: src/components/SimulatorPublicodes/DebugDrawer.tsx
     checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
   - filename: src/components/Map/components/SimpleMapLegend.tsx
-    checksum: 3488b253451bc04a5ff824da628677409eff81d11849a4e6abb184b6cdba810e
+    checksum: 36e2f3c121868d28ffff0473e242fca13c8702104f88191aa17459f0f3cea527
 
 scopeconfig:
   - scope: node
