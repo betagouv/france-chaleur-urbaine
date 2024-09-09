@@ -10,24 +10,20 @@ import DSFRInput from '../dsfr/Input';
 import { usePublicodesFormContext } from '../publicodes/FormProvider';
 export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
 
-const Input = ({
-  name,
-  placeholderPrecision,
-  textArea,
-  nativeInputProps,
-  label,
-  ...props
-}: DSFRInputProps &
+type InputProps = DSFRInputProps &
   Omit<DSFRInputProps, 'nativeTextAreaProps'> & {
     textArea?: false;
     placeholderPrecision?: number;
     name: DottedName;
     label: string;
-  }) => {
+    hideUnit?: boolean;
+  };
+
+const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, hideUnit = false, ...props }: InputProps) => {
   const [ref, isInView] = useInViewport<HTMLDivElement>();
   const { engine } = usePublicodesFormContext();
   const placeholder = isInView ? (engine.getFieldDefaultValue(name) as number | null | undefined) : '';
-  const unit = isInView ? engine.getUnit(name) : '';
+  const unit = !hideUnit && isInView ? engine.getUnit(name) : '';
   const [value, setValue] = React.useState<any>();
 
   React.useEffect(() => {
@@ -53,7 +49,7 @@ const Input = ({
       label={
         <>
           {upperCaseFirstChar(label)}
-          {unit ? <small> ({unit})</small> : ''}
+          {!hideUnit && unit ? <small> ({unit})</small> : ''}
         </>
       }
       hideOptionalLabel
