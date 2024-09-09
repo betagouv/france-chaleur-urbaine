@@ -38,8 +38,8 @@
     "talisman:add-exception": "node-talisman -i -g pre-commit"
   },
   "dependencies": {
-    "@codegouvfr/react-dsfr": "^1.11.7",
     "@betagouv/france-chaleur-urbaine-publicodes": "^0.13.0",
+    "@codegouvfr/react-dsfr": "^1.11.7",
     "@commander-js/extra-typings": "^11.1.0",
     "@emotion/react": "^11.11.4",
     "@emotion/server": "^11.11.0",
@@ -160,6 +160,7 @@
     "raw-loader": "^4.0.2",
     "sinon": "^15.2.0",
     "ts-node": "^10.9.2",
+    "tsup": "^8.2.4",
     "tsx": "^4.7.0",
     "typescript": "5.1.6",
     "vitest": "^1.0.4"
