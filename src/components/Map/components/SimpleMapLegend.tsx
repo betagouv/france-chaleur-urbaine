@@ -149,7 +149,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
 
   return (
     <>
-      <Tabs selectedTabId={selectedTabId} tabs={tabs} onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}>
+      <Tabs selectedTabId={selectedTabId} tabs={tabs} onTabChange={(newTabId) => setSelectedTabId(newTabId)}>
         {selectedTabId === 'reseaux' && (
           <div>
             <Text fontSize="14px" lineHeight="18px" fontWeight="bold" ml="1w" className="fr-col">
@@ -432,7 +432,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
         )}
         {selectedTabId === 'filtres' && (
           <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
-            <LegendSeparator />
             <Text size="xs" lineHeight="15px" fontStyle="italic" mx="1w">
               Filtres uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
             </Text>
@@ -558,16 +557,14 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
           <div>
             {enabledFeatures.includes('cartePotentielsRaccordements') && (
               <>
-                <LegendSeparator />
                 <Box textAlign="center">
                   <ModalCarteFrance />
                 </Box>
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('consommationsGaz') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="consommationsGaz"
@@ -704,12 +701,11 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     />
                   </DeactivatableBox>
                 </CollapsibleBox>
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('batimentsGazCollectif') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="batimentsGazCollectif"
@@ -764,12 +760,11 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     />
                   </DeactivatableBox>
                 </CollapsibleBox>
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('batimentsFioulCollectif') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="batimentsFioulCollectif"
@@ -824,12 +819,11 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     />
                   </DeactivatableBox>
                 </CollapsibleBox>
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('zonesOpportunite') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="zonesOpportunite"
@@ -952,12 +946,11 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     </Box>
                   </DeactivatableBox>
                 </CollapsibleBox>
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('enrrMobilisables') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="enrrMobilisables"
@@ -1198,12 +1191,11 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     </Box>
                   </DeactivatableBox>
                 </CollapsibleBox>
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('caracteristiquesBatiments') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="caracteristiquesBatiments"
@@ -1296,12 +1288,11 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
                   </Text>
                 )}
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('besoinsEnChaleur') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="besoinsEnChaleur"
@@ -1389,12 +1380,11 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
                   </Text>
                 )}
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('besoinsEnFroid') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="besoinsEnFroid"
@@ -1482,12 +1472,11 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
                   </Text>
                 )}
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('besoinsEnChaleurIndustrieCommunes') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="besoinsEnChaleurIndustrieCommunes"
@@ -1571,11 +1560,11 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     </Box>
                   </DeactivatableBox>
                 </CollapsibleBox>
+                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('sources') && (
               <>
-                <LegendSeparator />
                 <Box mt="n2w" mx="2w" mb="2w" display="flex" alignItems="center" gap="16px">
                   <Link href="/documentation/carto_sources.pdf" isExternal eventKey="Téléchargement|Carto sources">
                     <Text as="span" size="xs">
@@ -1584,6 +1573,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                   </Link>
                   <DevModeIcon />
                 </Box>
+                <LegendSeparator />
               </>
             )}
           </div>
