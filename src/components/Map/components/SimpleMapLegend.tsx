@@ -91,14 +91,45 @@ const expansions = [
 type Expansion = (typeof expansions)[number];
 
 const tabs: TabsProps.Controlled['tabs'] = [
-  { tabId: 'reseaux', label: 'Réseaux' },
-  { tabId: 'potentiel', label: 'Potentiel' },
+  {
+    tabId: 'reseaux',
+    label: (
+      <>
+        <Image src="/icons/reseaux.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        Réseaux
+      </>
+    ),
+  },
+  {
+    tabId: 'potentiel',
+    label: (
+      <>
+        <Image src="/icons/potentiel.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        Potentiel
+      </>
+    ),
+  },
 ];
 
 const Tabs = styled(DsfrTabs)`
   box-shadow: none;
+
   .fr-tabs__panel {
     padding: 0.5rem 0.5rem;
+  }
+
+  .fr-tabs__tab {
+    display: flex;
+    flex-direction: column;
+    font-weight: normal;
+    font-size: 13px;
+
+    svg {
+      font-size: 3rem;
+    }
+    &[aria-selected='true'] {
+      font-weight: bold;
+    }
   }
 `;
 
