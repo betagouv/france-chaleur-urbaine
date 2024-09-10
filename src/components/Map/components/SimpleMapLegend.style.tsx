@@ -102,7 +102,7 @@ const StyledCheckableAccordion = styled(CheckableAccordion)`
   }
 `;
 
-export const tabs: TabsProps.Controlled['tabs'] = [
+const tabsDefinition = [
   {
     tabId: 'reseaux',
     label: (
@@ -139,9 +139,12 @@ export const tabs: TabsProps.Controlled['tabs'] = [
       </>
     ),
   },
-] as const satisfies TabsProps.Controlled['tabs'];
+] as const satisfies ReadonlyArray<TabsProps.Controlled['tabs'][number]>;
 
-export type TabId = (typeof tabs)[number]['tabId'];
+export type TabId = (typeof tabsDefinition)[number]['tabId'];
+
+// the Tabs component takes a mutable array
+export const tabs = [...tabsDefinition];
 
 export const Tabs = styled(DsfrTabs)`
 box-shadow: none;
