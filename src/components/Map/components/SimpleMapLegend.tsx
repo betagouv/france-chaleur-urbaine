@@ -1,9 +1,7 @@
-import Accordion from '@codegouvfr/react-dsfr/Accordion';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import DsfrTabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
 import Image from 'next/image';
-import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -35,19 +33,12 @@ import {
 } from 'src/services/Map/businessRules';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
-import {
-  FiltreEnergieConfKey,
-  MapConfiguration,
-  MapConfigurationProperty,
-  defaultMapConfiguration,
-  filtresEnergies,
-  percentageMaxInterval,
-} from 'src/services/Map/map-configuration';
+import { MapConfiguration, MapConfigurationProperty, defaultMapConfiguration } from 'src/services/Map/map-configuration';
 
 import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
 import ModalCarteFrance from './ModalCarteFrance';
-import RangeFilter from './RangeFilter';
+import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
 import ScaleLegend from './ScaleLegend';
 import { DeactivatableBox, InfoIcon, SingleCheckbox } from './SimpleMapLegend.style';
 
@@ -101,11 +92,11 @@ type Expansion = (typeof expansions)[number];
 
 const tabs: TabsProps.Controlled['tabs'] = [
   { tabId: 'reseaux', label: 'Réseaux' },
-  { tabId: 'filtres', label: 'Filtres' },
   { tabId: 'potentiel', label: 'Potentiel' },
 ];
 
 const Tabs = styled(DsfrTabs)`
+  box-shadow: none;
   .fr-tabs__panel {
     padding: 0.5rem 0.5rem;
   }
@@ -120,6 +111,8 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
     'tabId',
     parseAsStringLiteral(tabs.map((tab) => tab.tabId)).withDefault(tabs[0].tabId)
   );
+  const [filtersVisible, setFiltersVisible] = useQueryState('showFilters', parseAsBoolean);
+
   const [sectionsExpansions, setSectionsExpansions] = useState<Partial<{ [key in Expansion]: boolean }>>({});
 
   function toggleSectionExpansion(section: Expansion) {
@@ -138,10 +131,10 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
     onMapConfigurationChange({ ...mapConfiguration });
   }
 
-  function updateScaleInterval(property: MapConfigurationProperty<Interval>, interval: Interval) {
+  const updateScaleInterval = (property: MapConfigurationProperty<Interval>) => (interval: Interval) => {
     setProperty(mapConfiguration, property, interval);
     onMapConfigurationChange({ ...mapConfiguration });
-  }
+  };
 
   const nbCouchesFondBatiments =
     (mapConfiguration.caracteristiquesBatiments ? 1 : 0) +
@@ -152,204 +145,312 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
     <>
       <Tabs selectedTabId={selectedTabId} tabs={tabs} onTabChange={(newTabId) => setSelectedTabId(newTabId)}>
         {selectedTabId === 'reseaux' && (
-          <div>
-            <Heading as="h2" size="h6" mb="1w">
-              {legendTitle || 'Réseaux de chaleur et de froid'}
-            </Heading>
-            <Text fontSize="13px" lineHeight="18px" mb="2w">
-              Cliquez sur un réseau pour connaître ses caractéristiques
-            </Text>
-            {enabledFeatures.includes('zonesDeDeveloppementPrioritaire') && (
-              <Box display="flex" mb="2w">
-                <SingleCheckbox
-                  name="zonesDeDeveloppementPrioritaire"
-                  checked={mapConfiguration.zonesDeDeveloppementPrioritaire}
-                  onChange={() => toggleLayer('zonesDeDeveloppementPrioritaire')}
-                  trackingEvent="Carto|Périmètres de développement prioritaire"
-                />
-
-                <Box
-                  backgroundColor={themeDefZoneDP.fill.color}
-                  opacity={themeDefZoneDP.fill.opacity}
-                  height="16px"
-                  minWidth="32px"
-                  mt="1v"
-                />
-
-                <Text
-                  as="label"
-                  htmlFor="zonesDeDeveloppementPrioritaire"
-                  fontSize="14px"
-                  lineHeight="18px"
-                  className="fr-col"
-                  cursor="pointer"
-                  pt="1v"
-                  px="1v"
+          <>
+            {filtersVisible ? (
+              <Box mt="2v">
+                <Button
+                  onClick={() => setFiltersVisible(false)}
+                  priority="secondary"
+                  size="small"
+                  iconId="fr-icon-arrow-go-back-line"
+                  className="fr-mb-2w"
                 >
-                  Périmètres de développement prioritaire des réseaux classés
+                  Retour
+                </Button>
+                <Heading as="h2" size="h6" mb="1w">
+                  Filtres
+                </Heading>
+                <Text fontSize="13px" lineHeight="18px" mb="2w">
+                  Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
+                </Text>
+                <ReseauxDeChaleurFilters
+                  mapConfiguration={mapConfiguration}
+                  updateScaleInterval={updateScaleInterval}
+                  onMapConfigurationChange={onMapConfigurationChange}
+                  disabled={!mapConfiguration.reseauxDeChaleur.show}
+                />
+              </Box>
+            ) : (
+              <Box mt="2v">
+                <Heading as="h2" size="h6" mb="1w">
+                  {legendTitle || 'Réseaux de chaleur et de froid'}
+                </Heading>
+                <Text fontSize="13px" lineHeight="18px" mb="2w">
+                  Cliquez sur un réseau pour connaître ses caractéristiques
                 </Text>
 
-                <InfoIcon>
-                  <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
+                {enabledFeatures.includes('reseauxDeChaleur') && (
+                  <>
+                    <Box display="flex" mb="2w">
+                      <SingleCheckbox
+                        name="reseauxDeChaleur"
+                        checked={mapConfiguration.reseauxDeChaleur.show}
+                        onChange={() => toggleLayer('reseauxDeChaleur.show')}
+                        trackingEvent="Carto|Réseaux chaleur"
+                      />
 
-                  <Hoverable position="bottom">
-                    Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage
-                    au-dessus d'une certaine puissance est obligatoire.
-                  </Hoverable>
-                </InfoIcon>
-              </Box>
-            )}
+                      <Box flex>
+                        <Box display="flex">
+                          <Box
+                            backgroundColor={themeDefHeatNetwork.classed.color}
+                            height="8px"
+                            minWidth="32px"
+                            borderRadius="4px"
+                            mt="1w"
+                          />
 
-            {enabledFeatures.includes('reseauxDeChaleur') && (
-              <Box display="flex" mb="2w">
-                <SingleCheckbox
-                  name="reseauxDeChaleur"
-                  checked={mapConfiguration.reseauxDeChaleur.show}
-                  onChange={() => toggleLayer('reseauxDeChaleur.show')}
-                  trackingEvent="Carto|Réseaux chaleur"
-                />
+                          <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer" pt="1v" px="1v">
+                            Réseaux de chaleur classés
+                          </Text>
+                        </Box>
 
-                <Box flex>
-                  <Box display="flex">
-                    <Box backgroundColor={themeDefHeatNetwork.classed.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
+                        <Box display="flex">
+                          <Box
+                            backgroundColor={themeDefHeatNetwork.outline.color}
+                            height="8px"
+                            minWidth="32px"
+                            borderRadius="4px"
+                            mt="1w"
+                          />
 
-                    <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer" pt="1v" px="1v">
-                      Réseaux de chaleur classés
-                    </Text>
-                  </Box>
+                          <Box px="1v">
+                            <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer">
+                              Réseaux de chaleur non classés
+                            </Text>
 
-                  <Box display="flex">
-                    <Box backgroundColor={themeDefHeatNetwork.outline.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
+                            <Text fontSize="12px" lineHeight="14px" color="grey">
+                              (tracé ou cercle au centre de la commune si tracé non disponible)
+                            </Text>
+                          </Box>
+                        </Box>
+                      </Box>
 
-                    <Box px="1v">
-                      <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" fontWeight="bold" cursor="pointer">
-                        Réseaux de chaleur non classés
-                      </Text>
+                      <InfoIcon>
+                        <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
 
-                      <Text fontSize="12px" lineHeight="14px" color="grey">
-                        (tracé ou cercle au centre de la commune si tracé non disponible)
-                      </Text>
+                        <Hoverable position="bottom">
+                          Pour les réseaux classés, le raccordement des bâtiments neufs ou renouvelant leur installation de chauffage
+                          au-dessus d'une certaine puissance est obligatoire dès lors qu'ils sont situés dans le périmètre de développement
+                          prioritaire (sauf dérogation).
+                          <br />
+                          Les réseaux affichés comme classés sont ceux listés par arrêté du 22 décembre 2023. Collectivités : pour signaler
+                          un dé-classement, cliquez sur Contribuer.
+                        </Hoverable>
+                      </InfoIcon>
                     </Box>
+                    <Button
+                      onClick={() => setFiltersVisible(true)}
+                      priority="secondary"
+                      className="fr-mb-2w"
+                      iconId="ri-filter-line"
+                      style={{ width: '100%', justifyContent: 'center' }}
+                      size="small"
+                      disabled={!mapConfiguration.reseauxDeChaleur.show}
+                    >
+                      Filtres
+                    </Button>
+                  </>
+                )}
+
+                {enabledFeatures.includes('zonesDeDeveloppementPrioritaire') && (
+                  <Box display="flex" mb="2w">
+                    <SingleCheckbox
+                      name="zonesDeDeveloppementPrioritaire"
+                      checked={mapConfiguration.zonesDeDeveloppementPrioritaire}
+                      onChange={() => toggleLayer('zonesDeDeveloppementPrioritaire')}
+                      trackingEvent="Carto|Périmètres de développement prioritaire"
+                    />
+
+                    <Box
+                      backgroundColor={themeDefZoneDP.fill.color}
+                      opacity={themeDefZoneDP.fill.opacity}
+                      height="16px"
+                      minWidth="32px"
+                      mt="1v"
+                    />
+
+                    <Text
+                      as="label"
+                      htmlFor="zonesDeDeveloppementPrioritaire"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Périmètres de développement prioritaire des réseaux classés
+                    </Text>
+
+                    <InfoIcon>
+                      <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
+
+                      <Hoverable position="bottom">
+                        Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de
+                        chauffage au-dessus d'une certaine puissance est obligatoire.
+                      </Hoverable>
+                    </InfoIcon>
                   </Box>
-                </Box>
+                )}
 
-                <InfoIcon>
-                  <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
+                {enabledFeatures.includes('reseauxEnConstruction') && (
+                  <Box display="flex" mb="2w">
+                    <SingleCheckbox
+                      name="reseauxEnConstruction"
+                      checked={mapConfiguration.reseauxEnConstruction}
+                      onChange={() => toggleLayer('reseauxEnConstruction')}
+                      trackingEvent="Carto|Réseaux en construction"
+                    />
 
-                  <Hoverable position="bottom">
-                    Pour les réseaux classés, le raccordement des bâtiments neufs ou renouvelant leur installation de chauffage au-dessus
-                    d'une certaine puissance est obligatoire dès lors qu'ils sont situés dans le périmètre de développement prioritaire
-                    (sauf dérogation).
-                    <br />
-                    Les réseaux affichés comme classés sont ceux listés par arrêté du 22 décembre 2023. Collectivités : pour signaler un
-                    dé-classement, cliquez sur Contribuer.
-                  </Hoverable>
-                </InfoIcon>
-              </Box>
-            )}
-            {enabledFeatures.includes('reseauxDeFroid') && (
-              <Box display="flex" mb="2w">
-                <SingleCheckbox
-                  name="reseauxDeFroid"
-                  checked={mapConfiguration.reseauxDeFroid}
-                  onChange={() => toggleLayer('reseauxDeFroid')}
-                  trackingEvent="Carto|Réseaux de froid"
-                />
+                    <Box flex>
+                      <Box display="flex">
+                        <Box>
+                          <Box backgroundColor={themeDefHeatNetwork.futur.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
 
-                <Box backgroundColor={themeDefHeatNetwork.cold.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
+                          <Box
+                            backgroundColor={themeDefHeatNetwork.futur.color}
+                            opacity={themeDefHeatNetwork.futur.opacity}
+                            height="16px"
+                            minWidth="32px"
+                            mt="1w"
+                          />
+                        </Box>
 
-                <Box flex px="1v">
-                  <Text as="label" htmlFor="reseauxDeFroid" fontSize="14px" lineHeight="18px" cursor="pointer">
-                    Réseaux de froid
-                  </Text>
-                  <Text fontSize="12px" lineHeight="14px" color="grey">
-                    (tracé ou cercle au centre de la commune si tracé non disponible)
-                  </Text>
-                </Box>
-              </Box>
-            )}
-            {enabledFeatures.includes('reseauxEnConstruction') && (
-              <Box display="flex" mb="2w">
-                <SingleCheckbox
-                  name="reseauxEnConstruction"
-                  checked={mapConfiguration.reseauxEnConstruction}
-                  onChange={() => toggleLayer('reseauxEnConstruction')}
-                  trackingEvent="Carto|Réseaux en construction"
-                />
+                        <Box flex px="1v">
+                          <Text
+                            as="label"
+                            htmlFor="reseauxEnConstruction"
+                            display="inline-block"
+                            fontSize="14px"
+                            lineHeight="18px"
+                            cursor="pointer"
+                            pt="1v"
+                          >
+                            Réseaux de chaleur en construction
+                          </Text>
 
-                <Box flex>
-                  <Box display="flex">
-                    <Box>
-                      <Box backgroundColor={themeDefHeatNetwork.futur.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
+                          <Text fontSize="12px" lineHeight="14px" color="grey">
+                            (tracé ou zone si tracé non disponible)
+                          </Text>
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    <InfoIcon>
+                      <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
+
+                      <Hoverable position="bottom">
+                        Projets financés par l'ADEME ou signalés par les collectivités et exploitants.
+                      </Hoverable>
+                    </InfoIcon>
+                  </Box>
+                )}
+
+                {enabledFeatures.includes('batimentsRaccordes') && (
+                  <>
+                    <Box display="flex">
+                      <SingleCheckbox
+                        name="batimentsRaccordes"
+                        checked={mapConfiguration.batimentsRaccordes}
+                        onChange={() => toggleLayer('batimentsRaccordes')}
+                        trackingEvent="Carto|Bâtiments raccordés"
+                      />
 
                       <Box
-                        backgroundColor={themeDefHeatNetwork.futur.color}
-                        opacity={themeDefHeatNetwork.futur.opacity}
+                        backgroundColor={themeDefHeatNetwork.classed.color}
+                        opacity={batimentsRaccordesLayerMaxOpacity}
                         height="16px"
-                        minWidth="32px"
-                        mt="1w"
+                        width="16px"
+                        mt="1v"
+                        mr="3v"
                       />
-                    </Box>
 
-                    <Box flex px="1v">
                       <Text
                         as="label"
-                        htmlFor="reseauxEnConstruction"
-                        display="inline-block"
+                        htmlFor="batimentsRaccordes"
                         fontSize="14px"
                         lineHeight="18px"
+                        className="fr-col"
                         cursor="pointer"
-                        pt="1v"
+                        pl="1w"
+                        style={{ marginTop: '2px' }}
                       >
-                        Réseaux de chaleur en construction
-                      </Text>
-
-                      <Text fontSize="12px" lineHeight="14px" color="grey">
-                        (tracé ou zone si tracé non disponible)
+                        Bâtiments raccordés à un réseau de chaleur
                       </Text>
                     </Box>
+                  </>
+                )}
+
+                {enabledFeatures.includes('reseauxDeFroid') && (
+                  <>
+                    <LegendSeparator />
+                    <Box display="flex" mb="2w">
+                      <SingleCheckbox
+                        name="reseauxDeFroid"
+                        checked={mapConfiguration.reseauxDeFroid}
+                        onChange={() => toggleLayer('reseauxDeFroid')}
+                        trackingEvent="Carto|Réseaux de froid"
+                      />
+
+                      <Box backgroundColor={themeDefHeatNetwork.cold.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
+
+                      <Box flex px="1v">
+                        <Text as="label" htmlFor="reseauxDeFroid" fontSize="14px" lineHeight="18px" cursor="pointer">
+                          Réseaux de froid
+                        </Text>
+                        <Text fontSize="12px" lineHeight="14px" color="grey">
+                          (tracé ou cercle au centre de la commune si tracé non disponible)
+                        </Text>
+                      </Box>
+                    </Box>
+                  </>
+                )}
+
+                {enabledFeatures.includes('proModeLegend') && (
+                  <>
+                    <LegendSeparator />
+                    <Text fontSize="13px" lineHeight="18px" fontWeight="lightbold" fontStyle="italic" mt="2w" mx="2w">
+                      Pour voir plus de données, contribuer à la carte ou télécharger les tracés, activez le "Mode professionnel" en haut de
+                      la carte.
+                    </Text>
+                  </>
+                )}
+
+                {enabledFeatures.includes('contributeButton') && (
+                  <Box mt="4w" mb="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
+                    <Link
+                      variant="primary"
+                      href="/contribution"
+                      className="fr-btn--tertiary d-flex"
+                      style={{ width: '100%', justifyContent: 'center' }}
+                    >
+                      <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
+                      Contribuer
+                    </Link>
+                    <Link
+                      variant="primary"
+                      href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
+                      eventKey="Téléchargement|Tracés|carte"
+                      className="fr-btn--tertiary d-flex"
+                      mx="auto"
+                      style={{ width: '100%', justifyContent: 'center' }}
+                    >
+                      <Icon name="ri-download-line" size="sm" mr="1v" />
+                      Télécharger les tracés
+                    </Link>
                   </Box>
-                </Box>
-
-                <InfoIcon>
-                  <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
-
-                  <Hoverable position="bottom">Projets financés par l'ADEME ou signalés par les collectivités et exploitants.</Hoverable>
-                </InfoIcon>
+                )}
               </Box>
             )}
-
-            {enabledFeatures.includes('proModeLegend') && (
-              <>
-                <LegendSeparator />
-                <Text fontSize="13px" lineHeight="18px" fontWeight="lightbold" fontStyle="italic" mt="2w" mx="2w">
-                  Pour voir plus de données, contribuer à la carte ou télécharger les tracés, activez le "Mode professionnel" en haut de la
-                  carte.
-                </Text>
-              </>
-            )}
-            {enabledFeatures.includes('contributeButton') && (
-              <Box display="flex" alignItems="center" justifyContent="stretch" gap={'4px'} mt="1w">
-                <Link variant="primary" href="/contribution" className="fr-btn--sm fr-btn--secondary d-flex">
-                  <Icon name="ri-lightbulb-line" size="sm" mr="1v" />
-                  Contribuer
-                </Link>
-                <Link
-                  variant="primary"
-                  href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
-                  eventKey="Téléchargement|Tracés|carte"
-                  className="fr-btn--sm fr-btn--secondary d-flex"
-                  mx="auto"
-                >
-                  <Icon name="ri-download-line" size="sm" mr="1v" />
-                  Télécharger les tracés
-                </Link>
-              </Box>
-            )}
+          </>
+        )}
+        {selectedTabId === 'potentiel' && (
+          <Box mt="2v">
+            <Heading as="h2" size="h6" mb="1w">
+              {'Potentiel'}
+            </Heading>
             {enabledFeatures.includes('demandesEligibilite') && (
               <>
-                <LegendSeparator />
-
                 <Box display="flex">
                   <SingleCheckbox
                     name="demandesEligibilite"
@@ -380,141 +481,9 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     Demandes de raccordement sur France Chaleur Urbaine
                   </Text>
                 </Box>
-              </>
-            )}
-            {enabledFeatures.includes('batimentsRaccordes') && (
-              <>
                 <LegendSeparator />
-
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="batimentsRaccordes"
-                    checked={mapConfiguration.batimentsRaccordes}
-                    onChange={() => toggleLayer('batimentsRaccordes')}
-                    trackingEvent="Carto|Bâtiments raccordés"
-                  />
-
-                  <Box
-                    backgroundColor={themeDefHeatNetwork.classed.color}
-                    opacity={batimentsRaccordesLayerMaxOpacity}
-                    height="16px"
-                    width="16px"
-                    mt="1v"
-                  />
-
-                  <Text
-                    as="label"
-                    htmlFor="batimentsRaccordes"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    cursor="pointer"
-                    pl="1w"
-                    style={{ marginTop: '2px' }}
-                  >
-                    Bâtiments raccordés à un réseau de chaleur
-                  </Text>
-                </Box>
               </>
             )}
-          </div>
-        )}
-        {selectedTabId === 'filtres' && (
-          <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
-            <Text size="xs" lineHeight="15px" fontStyle="italic" mx="1w">
-              Filtres uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
-            </Text>
-
-            <Box mx="1w">
-              <Text size="sm" lineHeight="18px" fontWeight="bold" my="1w">
-                Énergie majoritaire
-              </Text>
-
-              <Select
-                label=""
-                nativeSelectProps={{
-                  value: mapConfiguration.reseauxDeChaleur.energieMajoritaire,
-                  onChange: (e) => {
-                    mapConfiguration.reseauxDeChaleur.energieMajoritaire =
-                      e.target.value === '' ? undefined : (e.target.value as FiltreEnergieConfKey);
-                    onMapConfigurationChange({ ...mapConfiguration });
-                  },
-                }}
-                options={[
-                  {
-                    label: "Type d'énergie",
-                    value: '',
-                  },
-                  ...filtresEnergies.map(({ label, confKey }) => ({
-                    label,
-                    value: confKey,
-                  })),
-                ]}
-              />
-            </Box>
-            <Accordion label="Filtres avancés" style={{ margin: '1rem 0' }}>
-              <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
-                {filtresEnergies.map((filtreEnergie) => (
-                  <RangeFilter
-                    key={filtreEnergie.confKey}
-                    label={filtreEnergie.label}
-                    domain={percentageMaxInterval}
-                    value={mapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`]}
-                    onChange={(values) => updateScaleInterval(`reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`, values)}
-                    unit="%"
-                  />
-                ))}
-              </DeactivatableBox>
-            </Accordion>
-
-            <RangeFilter
-              label="Taux d’EnR&R"
-              domain={percentageMaxInterval}
-              value={mapConfiguration.reseauxDeChaleur.tauxENRR}
-              onChange={(values) => updateScaleInterval('reseauxDeChaleur.tauxENRR', values)}
-              unit="%"
-            />
-            <LegendSeparator />
-            <RangeFilter
-              label="Émissions de CO2"
-              domain={mapConfiguration.reseauxDeChaleur.limits.emissionsCO2}
-              value={mapConfiguration.reseauxDeChaleur.emissionsCO2}
-              onChange={(values) => updateScaleInterval('reseauxDeChaleur.emissionsCO2', values)}
-              unit="gCO2/kWh"
-              tooltip="Émissions en analyse du cycle de vie (directes et indirectes)"
-            />
-            <LegendSeparator />
-            <RangeFilter
-              label="Prix moyen de la chaleur"
-              domain={mapConfiguration.reseauxDeChaleur.limits.prixMoyen}
-              value={mapConfiguration.reseauxDeChaleur.prixMoyen}
-              onChange={(values) => updateScaleInterval('reseauxDeChaleur.prixMoyen', values)}
-              unit="€TTC/MWh"
-              tooltip="La comparaison avec le prix d'autres modes de chauffage n’est pertinente qu’en coût global annuel, en intégrant les coûts d’exploitation, de maintenance et d’investissement, amortis sur la durée de vie des installations."
-            />
-            <LegendSeparator />
-            <RangeFilter
-              label="Livraisons annuelles de chaleur"
-              domain={mapConfiguration.reseauxDeChaleur.limits.livraisonsAnnuelles}
-              value={mapConfiguration.reseauxDeChaleur.livraisonsAnnuelles}
-              onChange={(values) => updateScaleInterval('reseauxDeChaleur.livraisonsAnnuelles', values)}
-              domainTransform={{
-                percentToValue: (v) => roundNumberProgressively(getLivraisonsAnnuellesFromPercentage(v)),
-                valueToPercent: (v) => roundNumberProgressively(getPercentageFromLivraisonsAnnuelles(v)),
-              }}
-              unit="GWh"
-            />
-            <LegendSeparator />
-            <RangeFilter
-              label="Année de construction"
-              domain={mapConfiguration.reseauxDeChaleur.limits.anneeConstruction}
-              value={mapConfiguration.reseauxDeChaleur.anneeConstruction}
-              onChange={(values) => updateScaleInterval('reseauxDeChaleur.anneeConstruction', values)}
-            />
-          </DeactivatableBox>
-        )}
-        {selectedTabId === 'potentiel' && (
-          <div>
             {enabledFeatures.includes('cartePotentielsRaccordements') && (
               <>
                 <Box textAlign="center">
@@ -657,7 +626,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                       color={consommationsGazLegendColor}
                       defaultValues={defaultMapConfiguration.consommationsGaz.interval}
                       domain={[LegendDeskData.gasUsage.min, LegendDeskData.gasUsage.max]}
-                      onChange={(values) => updateScaleInterval('consommationsGaz.interval', values)}
+                      onChange={updateScaleInterval('consommationsGaz.interval')}
                     />
                   </DeactivatableBox>
                 </CollapsibleBox>
@@ -716,7 +685,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                       color={themeDefEnergy.gas.color}
                       domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
                       defaultValues={defaultMapConfiguration.batimentsGazCollectif.interval}
-                      onChange={(values) => updateScaleInterval('batimentsGazCollectif.interval', values)}
+                      onChange={updateScaleInterval('batimentsGazCollectif.interval')}
                     />
                   </DeactivatableBox>
                 </CollapsibleBox>
@@ -775,7 +744,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                       color={themeDefEnergy.fuelOil.color}
                       domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
                       defaultValues={defaultMapConfiguration.batimentsFioulCollectif.interval}
-                      onChange={(values) => updateScaleInterval('batimentsFioulCollectif.interval', values)}
+                      onChange={updateScaleInterval('batimentsFioulCollectif.interval')}
                     />
                   </DeactivatableBox>
                 </CollapsibleBox>
@@ -1536,7 +1505,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 <LegendSeparator />
               </>
             )}
-          </div>
+          </Box>
         )}
       </Tabs>
       {/* <Box display="flex" alignItems="center">
@@ -1564,33 +1533,3 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
 }
 
 export default SimpleMapLegend;
-
-function getLivraisonsAnnuellesFromPercentage(v: number): number {
-  if (v < 25) {
-    return 0.06 * v;
-  }
-  if (v < 50) {
-    return 0.54 * v - 12;
-  }
-  if (v < 75) {
-    return 3.4 * v - 155;
-  }
-  return 149.48 * v - 11111;
-}
-
-function getPercentageFromLivraisonsAnnuelles(v: number): number {
-  if (v < 1.5) {
-    return v / 0.06;
-  }
-  if (v < 15) {
-    return (v + 12) / 0.54;
-  }
-  if (v < 100) {
-    return (v + 155) / 3.4;
-  }
-  return (v + 11111) / 149.48;
-}
-
-function roundNumberProgressively(v: number): number {
-  return v > 2 ? Math.round(v) : v > 1 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100;
-}
