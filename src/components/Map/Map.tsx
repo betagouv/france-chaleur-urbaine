@@ -5,6 +5,7 @@ import { useLocalStorageValue } from '@react-hookz/web';
 import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
+import { parseAsBoolean, parseAsString, useQueryStates } from 'nuqs';
 import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapLayerMouseEvent } from 'react-map-gl';
 import MapReactGL, {
@@ -654,22 +655,28 @@ const Map = ({
 
   // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
   // also store the proMode
+  const [query, setQuery] = useQueryStates({
+    coord: parseAsString,
+    zoom: parseAsString,
+    proMode: parseAsBoolean.withDefault(false),
+  });
+
   const updateLocationURL = useMemo(
     () =>
       debounce((viewState: ViewState, proMode: boolean) => {
-        router.replace(
+        // Update the query state with new values
+        setQuery(
           {
-            search: `coord=${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}&zoom=${viewState.zoom.toFixed(
-              2
-            )}&proMode=${proMode}`,
+            coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
+            zoom: viewState.zoom.toFixed(2),
+            proMode: proMode,
           },
-          undefined,
           {
             shallow: true,
           }
         );
       }, 500),
-    []
+    [query, setQuery]
   );
 
   useEffect(() => {
