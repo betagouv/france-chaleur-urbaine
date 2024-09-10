@@ -5,7 +5,7 @@
 
 import { fr } from '@codegouvfr/react-dsfr';
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
-import React, { forwardRef, memo, useState, useEffect, type ReactNode, type CSSProperties, useId, useRef } from 'react';
+import React, { forwardRef, memo, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import styled from 'styled-components';
 import type { Equals } from 'tsafe';
 import { assert } from 'tsafe/assert';
@@ -15,8 +15,6 @@ import { symToStr } from 'tsafe/symToStr';
 import Box from '@components/ui/Box';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import cx from '@utils/cx';
-
-import { ModeDeChauffage } from './modes-de-chauffage';
 
 // import { useConstCallback } from "./tools/powerhooks/useConstCallback";
 /** https://stackoverflow.com/questions/65890278/why-cant-usecallback-always-return-the-same-ref */
@@ -59,22 +57,23 @@ const StyledToggleButton = styled.button`
   flex: 0;
 `;
 
-export type CheckableAccordionProps = CheckableAccordionProps.Controlled;
+export type CheckableAccordionProps<T extends string> = CheckableAccordionProps.Controlled<T>;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CheckableAccordionProps {
-  export type Common = {
+  export type Common<AuthorizedLabel extends string> = {
     className?: string;
     id?: string;
     titleAs?: `h${2 | 3 | 4 | 5 | 6}`;
-    label: ModeDeChauffage;
+    label: AuthorizedLabel;
     classes?: Partial<Record<'root' | 'accordion' | 'title' | 'collapse', string>>;
     style?: CSSProperties;
     children: NonNullable<ReactNode>;
     showToggle?: boolean;
   };
 
-  export type Controlled = Common & {
+  export type Controlled<AuthorizedLabel extends string> = Common<AuthorizedLabel> & {
+    queryParamName: string;
     defaultExpanded?: never;
     expanded: boolean;
     onExpandedChange: (expanded: boolean, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -83,8 +82,9 @@ export namespace CheckableAccordionProps {
 
 /** @see <https://components.react-dsfr.codegouv.studio/?path=/docs/components-accordion>  */
 export const CheckableAccordion = memo(
-  forwardRef<HTMLDivElement, CheckableAccordionProps>((props, ref) => {
+  forwardRef<HTMLDivElement, CheckableAccordionProps<string>>((props, ref) => {
     const {
+      queryParamName,
       className,
       id: id_props,
       titleAs: HtmlTitleTag = 'h3',
@@ -101,7 +101,7 @@ export const CheckableAccordion = memo(
 
     assert<Equals<keyof typeof rest, never>>();
 
-    const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
+    const { has, toggle } = useArrayQueryState<string>(queryParamName);
 
     const id = useAnalyticsId({
       defaultIdPrefix: 'fr-accordion',
@@ -121,12 +121,12 @@ export const CheckableAccordion = memo(
     }, [expanded_props]);
 
     const onExtendButtonClick = useConstCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const isExpended_newValue = !isExpanded;
+      const isExpandedNewValue = !isExpanded;
 
-      onExpandedChange?.(isExpended_newValue, event);
+      onExpandedChange?.(isExpandedNewValue, event);
 
       if (expanded_props === undefined) {
-        setIsExpanded(isExpended_newValue);
+        setIsExpanded(isExpandedNewValue);
       }
     });
 
@@ -138,8 +138,8 @@ export const CheckableAccordion = memo(
               {
                 label: <HtmlTitleTag className={cx(fr.cx('fr-accordion__title'), classes.title)}>{label}</HtmlTitleTag>,
                 nativeInputProps: {
-                  checked: hasModeDeChauffage(label),
-                  onChange: () => toggleModeDeChauffage(label),
+                  checked: has(label),
+                  onChange: () => toggle(label),
                 },
               },
             ]}
@@ -170,7 +170,9 @@ export const CheckableAccordion = memo(
 
 CheckableAccordion.displayName = symToStr({ CheckableAccordion });
 
-export const UrlStateCheckableAccordion = (props: Omit<CheckableAccordionProps, 'expanded' | 'onExpandedChange'>) => {
+export const UrlStateCheckableAccordion = <AuthorizedLabel extends string>(
+  props: Omit<CheckableAccordionProps<AuthorizedLabel>, 'expanded' | 'onExpandedChange'>
+) => {
   const { add, remove, has } = useArrayQueryState('accordions');
 
   return (
