@@ -90,7 +90,7 @@ const expansions = [
 ] as const;
 type Expansion = (typeof expansions)[number];
 
-const tabs: TabsProps.Controlled['tabs'] = [
+const tabs = [
   {
     tabId: 'reseaux',
     label: (
@@ -127,7 +127,9 @@ const tabs: TabsProps.Controlled['tabs'] = [
       </>
     ),
   },
-];
+] as const satisfies TabsProps.Controlled['tabs'];
+
+type TabId = (typeof tabs)[number]['tabId'];
 
 const Tabs = styled(DsfrTabs)`
   box-shadow: none;
@@ -158,7 +160,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
     return props.enabledFeatures ?? mapLegendFeatures;
   }, [props.enabledFeatures]);
 
-  const [selectedTabId, setSelectedTabId] = useQueryState(
+  const [selectedTabId, setSelectedTabId] = useQueryState<TabId>(
     'tabId',
     parseAsStringLiteral(tabs.map((tab) => tab.tabId)).withDefault(tabs[0].tabId)
   );
@@ -194,7 +196,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
 
   return (
     <>
-      <Tabs selectedTabId={selectedTabId} tabs={tabs} onTabChange={(newTabId) => setSelectedTabId(newTabId)}>
+      <Tabs selectedTabId={selectedTabId} tabs={tabs} onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}>
         {selectedTabId === 'reseaux' && (
           <>
             {filtersVisible ? (
