@@ -3,11 +3,11 @@ import React from 'react';
 
 import useArrayQueryState from '@hooks/useArrayQueryState';
 
-type UrlStateAccordionProps = Omit<DsfrAccordionProps, 'defaultExpanded' | 'expanded' | 'onExpandedChange'> & {
+export type UrlStateAccordionProps = Omit<DsfrAccordionProps, 'defaultExpanded' | 'expanded' | 'onExpandedChange'> & {
   useUrlState: true;
 };
 
-type AccordionProps = Omit<UrlStateAccordionProps | (DsfrAccordionProps & { useUrlState?: false }), 'label' | 'id'> &
+export type AccordionProps = Omit<UrlStateAccordionProps | (DsfrAccordionProps & { useUrlState?: false }), 'label' | 'id'> &
   (Pick<DsfrAccordionProps, 'label' | 'id'> | { label: React.ReactNode; id: string; useUrlState: true });
 
 const Accordion: React.FC<AccordionProps> = ({ children, useUrlState, ...props }) => {
