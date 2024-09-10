@@ -109,6 +109,8 @@ const securityHeadersIFramable = [
 module.exports = withBundleAnalyzer(
   withSentryConfig(
     {
+      // reduce Scalingo image size (see https://doc.scalingo.com/languages/nodejs/nextjs-standalone)
+      output: 'standalone',
       compiler: {
         styledComponents: true,
       },

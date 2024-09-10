@@ -10,7 +10,7 @@ export default {
   acquireConnectionTimeout: 10000,
   migrations: {
     tableName: 'knex_migrations',
-    directory: './src/db/migrations',
+    directory: process.env.KNEX_MIGRATIONS_DIR ?? './src/db/migrations',
   },
   pool: {
     idleTimeoutMillis: 10000,
@@ -19,12 +19,8 @@ export default {
   },
 } satisfies Knex.Config;
 
-function addApplicationName(
-  connectionString: string | undefined
-): string | undefined {
+function addApplicationName(connectionString: string | undefined): string | undefined {
   return connectionString === undefined
     ? undefined
-    : `${connectionString}${
-        connectionString.includes('?') ? '&' : '?'
-      }application_name=FCU-API`;
+    : `${connectionString}${connectionString.includes('?') ? '&' : '?'}application_name=FCU-API`;
 }

@@ -1,8 +1,11 @@
 import { readFile } from 'fs/promises';
 
 import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
+import { knex } from 'knex';
 
 import { logger } from '@helpers/logger';
+import knexConfig from 'knexfile';
+import { startCronJobs } from 'src/cron_jobs/cron';
 import db from 'src/db';
 import { DatabaseTileInfo, SourceId, tilesInfo, zSourceId } from 'src/services/tiles.config';
 
@@ -23,6 +26,19 @@ program
   .hook('postAction', async () => {
     await db.destroy();
   });
+
+program.command('db:migrate').action(async () => {
+  const db = knex(knexConfig);
+  const [batchNo, log] = await db.migrate.latest();
+  if (log.length === 0) {
+    console.info('Already up to date');
+  }
+  console.info(`Batch ${batchNo} run: ${log.length} migrations`);
+});
+
+program.command('cronjobs:start').action(async () => {
+  startCronJobs();
+});
 
 program
   .command('create-modifications-reseau')

@@ -1,0 +1,9 @@
+.husky
+.github
+.vscode
+docker
+docs
+node_modules
+public
+scripts
+src
