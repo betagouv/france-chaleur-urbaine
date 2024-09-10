@@ -17,7 +17,7 @@
   "homepage": "https://github.com/betagouv/france-chaleur-urbaine#readme",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node copy-assets.mjs",
+    "build": "tsup && next build && node copy-assets.mjs",
     "build:analyze": "ANALYZE=true yarn build",
     "start": "node .next/standalone/server.js",
     "prepare": "husky",
