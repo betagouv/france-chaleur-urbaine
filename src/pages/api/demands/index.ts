@@ -51,7 +51,7 @@ const demandsExportColumns: ExportColumn<Demand>[] = [
   },
   {
     header: 'Surface en m2',
-    value: (demand) => demand['Surface en m2'],
+    value: 'Surface en m2',
   },
   {
     header: 'Conso gaz (MWh)',
