@@ -17,7 +17,7 @@
   "homepage": "https://github.com/betagouv/france-chaleur-urbaine#readme",
   "scripts": {
     "dev": "next dev",
-    "build": "tsup && next build && node copy-assets.mjs",
+    "build": "next build",
     "build:analyze": "ANALYZE=true yarn build",
     "start": "node .next/standalone/server.js",
     "prepare": "husky",
@@ -32,7 +32,7 @@
     "db:new": "knex migrate:make",
     "db:revert": "knex migrate:rollback",
     "db:revert:one": "knex migrate:down",
-    "scalingo-postbuild": "yarn build && next-sitemap",
+    "scalingo-postbuild": "tsup && yarn build && node copy-assets.mjs && next-sitemap",
     "predev": "only-include-used-icons",
     "prebuild": "only-include-used-icons",
     "talisman:add-exception": "node-talisman -i -g pre-commit"
