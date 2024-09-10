@@ -1,9 +1,7 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import DsfrTabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
 import Image from 'next/image';
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs';
-import { useMemo, useState } from 'react';
-import styled from 'styled-components';
+import { useMemo } from 'react';
 
 import Hoverable from '@components/Hoverable';
 import {
@@ -16,7 +14,6 @@ import {
 } from '@components/Map/map-layers';
 import { LegendSeparator } from '@components/Map/Map.style';
 import Box from '@components/ui/Box';
-import CollapsibleBox from '@components/ui/CollapsibleBox';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
@@ -40,7 +37,7 @@ import IconPolygon from './IconPolygon';
 import ModalCarteFrance from './ModalCarteFrance';
 import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
 import ScaleLegend from './ScaleLegend';
-import { DeactivatableBox, InfoIcon, SingleCheckbox } from './SimpleMapLegend.style';
+import { DeactivatableBox, InfoIcon, SingleCheckbox, Tabs, TrackableCheckableAccordion, tabs, type TabId } from './SimpleMapLegend.style';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -76,85 +73,6 @@ interface SimpleMapLegendProps {
   legendTitle?: string;
 }
 
-const expansions = [
-  'reseauxDeChaleur',
-  'consommationsGaz',
-  'batimentsGazCollectif',
-  'batimentsFioulCollectif',
-  'enrrMobilisables',
-  'zonesOpportunite',
-  'caracteristiquesBatiments',
-  'besoinsEnChaleur',
-  'besoinsEnFroid',
-  'besoinsEnChaleurIndustrieCommunes',
-] as const;
-type Expansion = (typeof expansions)[number];
-
-const tabs = [
-  {
-    tabId: 'reseaux',
-    label: (
-      <>
-        <Image src="/icons/reseaux.svg" alt="" height="22" width="22" className="fr-mb-1v" />
-        Réseaux
-      </>
-    ),
-  },
-  {
-    tabId: 'potentiel',
-    label: (
-      <>
-        <Image src="/icons/potentiel.svg" alt="" height="22" width="22" className="fr-mb-1v" />
-        Potentiel
-      </>
-    ),
-  },
-  {
-    tabId: 'enrr',
-    label: (
-      <>
-        <Image src="/icons/enrr.svg" alt="" height="22" width="22" className="fr-mb-1v" />
-        EnR&R
-      </>
-    ),
-  },
-  {
-    tabId: 'outils',
-    label: (
-      <>
-        <Image src="/icons/outils.svg" alt="" height="22" width="22" className="fr-mb-1v" />
-        Outils
-      </>
-    ),
-  },
-] as const satisfies TabsProps.Controlled['tabs'];
-
-type TabId = (typeof tabs)[number]['tabId'];
-
-const Tabs = styled(DsfrTabs)`
-  box-shadow: none;
-
-  .fr-tabs__panel {
-    padding: 0.5rem 0.5rem;
-  }
-
-  .fr-tabs__tab {
-    display: flex;
-    flex-direction: column;
-    font-weight: normal;
-    font-size: 13px;
-    margin= 0 2px;
-    padding: 8px 8px;
-
-    svg {
-      font-size: 3rem;
-    }
-    &[aria-selected='true'] {
-      font-weight: bold;
-    }
-  }
-`;
-
 function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTitle, ...props }: SimpleMapLegendProps) {
   const enabledFeatures = useMemo(() => {
     return props.enabledFeatures ?? mapLegendFeatures;
@@ -165,19 +83,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
     parseAsStringLiteral(tabs.map((tab) => tab.tabId)).withDefault(tabs[0].tabId)
   );
   const [filtersVisible, setFiltersVisible] = useQueryState('showFilters', parseAsBoolean);
-
-  const [sectionsExpansions, setSectionsExpansions] = useState<Partial<{ [key in Expansion]: boolean }>>({});
-
-  function toggleSectionExpansion(section: Expansion) {
-    setSectionExpansion(section, !sectionsExpansions[section]);
-  }
-
-  function setSectionExpansion(section: Expansion, expanded: boolean) {
-    setSectionsExpansions({
-      ...sectionsExpansions,
-      [section]: expanded,
-    });
-  }
 
   function toggleLayer(property: MapConfigurationProperty<boolean>) {
     toggleBoolean(mapConfiguration, property);
@@ -546,346 +451,39 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
               </>
             )}
             {enabledFeatures.includes('consommationsGaz') && (
-              <>
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="consommationsGaz"
-                    checked={mapConfiguration.consommationsGaz.show}
-                    onChange={(checked) => {
-                      toggleLayer('consommationsGaz.show');
-                      if (checked) {
-                        setSectionExpansion('consommationsGaz', true);
-                      }
-                    }}
-                    trackingEvent="Carto|Consommations globales de gaz"
-                  />
-
-                  <Box
-                    backgroundColor={consommationsGazLegendColor}
-                    opacity={consommationsGazUsageLegendOpacity}
-                    height="16px"
-                    width="16px"
-                    borderRadius="50%"
-                    mt="1v"
-                  />
-
-                  <Text
-                    as="label"
-                    htmlFor="consommationsGaz"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
-                    Consommations globales de gaz
-                  </Text>
-
-                  <Button
-                    className="fr-px-1w"
-                    priority="tertiary no outline"
-                    size="small"
-                    onClick={() => toggleSectionExpansion('consommationsGaz')}
-                    aria-expanded={!!sectionsExpansions['consommationsGaz']}
-                    aria-controls={'consommationsGaz'}
-                    title="Afficher/Masquer le détail"
-                  >
-                    <Icon riSize="1x" name="ri-arrow-down-s-line" flip={!!sectionsExpansions['consommationsGaz']} />
-                  </Button>
-                </Box>
-
-                <CollapsibleBox id="consommationsGaz" expand={!!sectionsExpansions['consommationsGaz']}>
-                  <DeactivatableBox disabled={!mapConfiguration.consommationsGaz.show}>
-                    <Box display="flex" flexWrap="wrap" px="3w">
-                      <Box display="flex">
-                        <SingleCheckbox
-                          name="consommationsGazLogements"
-                          checked={mapConfiguration.consommationsGaz.logements}
-                          onChange={() => toggleLayer('consommationsGaz.logements')}
-                        />
-
-                        <Box backgroundColor={themeDefTypeGas.R.color} height="10px" width="10px" borderRadius="50%" mt="2v" />
-
-                        <Text
-                          as="label"
-                          htmlFor="consommationsGazLogements"
-                          fontSize="14px"
-                          lineHeight="18px"
-                          className="fr-col"
-                          fontWeight="bold"
-                          cursor="pointer"
-                          pt="1v"
-                          px="1v"
-                        >
-                          Logements (tous types)
-                        </Text>
-                      </Box>
-
-                      <Box display="flex">
-                        <SingleCheckbox
-                          name="consommationsGazTertiaire"
-                          checked={mapConfiguration.consommationsGaz.tertiaire}
-                          onChange={() => toggleLayer('consommationsGaz.tertiaire')}
-                        />
-
-                        <Box backgroundColor={themeDefTypeGas.T.color} height="10px" width="10px" borderRadius="50%" mt="2v" />
-
-                        <Text
-                          as="label"
-                          htmlFor="consommationsGazTertiaire"
-                          fontSize="14px"
-                          lineHeight="18px"
-                          className="fr-col"
-                          fontWeight="bold"
-                          cursor="pointer"
-                          pt="1v"
-                          px="1v"
-                        >
-                          Tertiaire
-                        </Text>
-                      </Box>
-
-                      <Box display="flex">
-                        <SingleCheckbox
-                          name="consommationsGazIndustrie"
-                          checked={mapConfiguration.consommationsGaz.industrie}
-                          onChange={() => toggleLayer('consommationsGaz.industrie')}
-                        />
-
-                        <Box backgroundColor={themeDefTypeGas.I.color} height="10px" width="10px" borderRadius="50%" mt="2v" />
-
-                        <Text
-                          as="label"
-                          htmlFor="consommationsGazIndustrie"
-                          fontSize="14px"
-                          lineHeight="18px"
-                          className="fr-col"
-                          fontWeight="bold"
-                          cursor="pointer"
-                          pt="1v"
-                          px="1v"
-                        >
-                          Industrie
-                        </Text>
-                      </Box>
-                    </Box>
-
-                    <ScaleLegend
-                      className="fr-ml-3w fr-mr-1w"
-                      circle
-                      label="Niveau de consommation de gaz (MWh/an)"
-                      color={consommationsGazLegendColor}
-                      defaultValues={defaultMapConfiguration.consommationsGaz.interval}
-                      domain={[LegendDeskData.gasUsage.min, LegendDeskData.gasUsage.max]}
-                      onChange={updateScaleInterval('consommationsGaz.interval')}
+              <TrackableCheckableAccordion
+                mapConfiguration={mapConfiguration}
+                toggleLayer={toggleLayer}
+                name="consommationsGaz"
+                trackingEvent="Carto|Consommations globales de gaz"
+                label={
+                  <>
+                    <Box
+                      backgroundColor={consommationsGazLegendColor}
+                      opacity={consommationsGazUsageLegendOpacity}
+                      height="16px"
+                      width="16px"
+                      borderRadius="50%"
+                      mt="1v"
                     />
-                  </DeactivatableBox>
-                </CollapsibleBox>
-                <LegendSeparator />
-              </>
-            )}
-            {enabledFeatures.includes('batimentsGazCollectif') && (
-              <>
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="batimentsGazCollectif"
-                    checked={mapConfiguration.batimentsGazCollectif.show}
-                    onChange={(checked) => {
-                      toggleLayer('batimentsGazCollectif.show');
-                      if (checked) {
-                        setSectionExpansion('batimentsGazCollectif', true);
-                      }
-                    }}
-                    trackingEvent="Carto|Bâtiments au gaz collectif"
-                  />
-
-                  <Box backgroundColor={themeDefEnergy.gas.color} opacity={energyLayerMaxOpacity} height="16px" width="16px" mt="1v" />
-
-                  <Text
-                    as="label"
-                    htmlFor="batimentsGazCollectif"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
-                    Bâtiments chauffés au gaz collectif
-                  </Text>
-
-                  <Button
-                    className="fr-px-1w"
-                    priority="tertiary no outline"
-                    size="small"
-                    onClick={() => toggleSectionExpansion('batimentsGazCollectif')}
-                    aria-expanded={!!sectionsExpansions['batimentsGazCollectif']}
-                    aria-controls={'batimentsGazCollectif'}
-                    title="Afficher/Masquer le détail"
-                  >
-                    <Icon riSize="1x" name="ri-arrow-down-s-line" flip={!!sectionsExpansions['batimentsGazCollectif']} />
-                  </Button>
-                </Box>
-
-                <CollapsibleBox id="batimentsGazCollectif" expand={!!sectionsExpansions['batimentsGazCollectif']}>
-                  <DeactivatableBox disabled={!mapConfiguration.batimentsGazCollectif.show}>
-                    <ScaleLegend
-                      className="fr-ml-3w fr-mr-1w"
-                      label="Nombre de lots d'habitation"
-                      color={themeDefEnergy.gas.color}
-                      domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
-                      defaultValues={defaultMapConfiguration.batimentsGazCollectif.interval}
-                      onChange={updateScaleInterval('batimentsGazCollectif.interval')}
-                    />
-                  </DeactivatableBox>
-                </CollapsibleBox>
-                <LegendSeparator />
-              </>
-            )}
-            {enabledFeatures.includes('batimentsFioulCollectif') && (
-              <>
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="batimentsFioulCollectif"
-                    checked={mapConfiguration.batimentsFioulCollectif.show}
-                    onChange={(checked) => {
-                      toggleLayer('batimentsFioulCollectif.show');
-                      if (checked) {
-                        setSectionExpansion('batimentsFioulCollectif', true);
-                      }
-                    }}
-                    trackingEvent="Carto|Bâtiments au fioul collectif"
-                  />
-
-                  <Box backgroundColor={themeDefEnergy.fuelOil.color} opacity={energyLayerMaxOpacity} height="16px" width="16px" mt="1v" />
-
-                  <Text
-                    as="label"
-                    htmlFor="batimentsFioulCollectif"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
-                    Bâtiments chauffés au fioul collectif
-                  </Text>
-
-                  <Button
-                    className="fr-px-1w"
-                    priority="tertiary no outline"
-                    size="small"
-                    onClick={() => toggleSectionExpansion('batimentsFioulCollectif')}
-                    aria-expanded={!!sectionsExpansions['batimentsFioulCollectif']}
-                    aria-controls={'batimentsFioulCollectif'}
-                    title="Afficher/Masquer le détail"
-                  >
-                    <Icon riSize="1x" name="ri-arrow-down-s-line" flip={!!sectionsExpansions['batimentsFioulCollectif']} />
-                  </Button>
-                </Box>
-
-                <CollapsibleBox id="batimentsFioulCollectif" expand={!!sectionsExpansions['batimentsFioulCollectif']}>
-                  <DeactivatableBox disabled={!mapConfiguration.batimentsFioulCollectif.show}>
-                    <ScaleLegend
-                      className="fr-ml-3w fr-mr-1w"
-                      label="Nombre de lots d'habitation"
-                      color={themeDefEnergy.fuelOil.color}
-                      domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
-                      defaultValues={defaultMapConfiguration.batimentsFioulCollectif.interval}
-                      onChange={updateScaleInterval('batimentsFioulCollectif.interval')}
-                    />
-                  </DeactivatableBox>
-                </CollapsibleBox>
-                <LegendSeparator />
-              </>
-            )}
-            {enabledFeatures.includes('zonesOpportunite') && (
-              <>
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="zonesOpportunite"
-                    checked={mapConfiguration.zonesOpportunite.show}
-                    onChange={(checked) => {
-                      toggleLayer('zonesOpportunite.show');
-                      if (checked) {
-                        setSectionExpansion('zonesOpportunite', true);
-                      }
-                    }}
-                    trackingEvent="Carto|Zones d'opportunité"
-                  />
-
-                  <IconPolygon
-                    stroke={themeDefZonePotentielFortChaud.fill.color}
-                    fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
-                    mt="1v"
-                  />
-
-                  <Text
-                    as="label"
-                    htmlFor="zonesOpportunite"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
-                    Zones d'opportunité pour la création de réseaux de chaleur
-                  </Text>
-
-                  <InfoIcon>
-                    <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                    <Hoverable position="bottom">
-                      Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                      <br />
-                      <Link
-                        href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/01/Methodologie_zones_opportunite_VF.pdf"
-                        isExternal
-                      >
-                        Accéder à la méthodologie
-                      </Link>
-                    </Hoverable>
-                  </InfoIcon>
-
-                  <Button
-                    className="fr-px-1w"
-                    priority="tertiary no outline"
-                    size="small"
-                    onClick={() => toggleSectionExpansion('zonesOpportunite')}
-                    aria-expanded={!!sectionsExpansions['zonesOpportunite']}
-                    aria-controls={'zonesOpportunite'}
-                    title="Afficher/Masquer le détail"
-                  >
-                    <Icon riSize="1x" name="ri-arrow-down-s-line" flip={!!sectionsExpansions['zonesOpportunite']} />
-                  </Button>
-                </Box>
-
-                <CollapsibleBox id="zonesOpportunite" expand={!!sectionsExpansions['zonesOpportunite']}>
-                  <DeactivatableBox disabled={!mapConfiguration.zonesOpportunite.show} display="flex" flexWrap="wrap" ml="3w" mr="1w">
+                    <span>Consommations globales de gaz</span>
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.consommationsGaz.show}>
+                  <Box display="flex" flexWrap="wrap" px="3w">
                     <Box display="flex">
                       <SingleCheckbox
-                        name="zonesPotentielChaud"
-                        checked={mapConfiguration.zonesOpportunite.zonesPotentielChaud}
-                        onChange={() => toggleLayer('zonesOpportunite.zonesPotentielChaud')}
-                        trackingEvent="Carto|Zones à potentiel chaud"
+                        name="consommationsGazLogements"
+                        checked={mapConfiguration.consommationsGaz.logements}
+                        onChange={() => toggleLayer('consommationsGaz.logements')}
                       />
 
-                      <IconPolygon
-                        stroke={themeDefZonePotentielChaud.fill.color}
-                        fillOpacity={themeDefZonePotentielChaud.fill.opacity}
-                        mt="1v"
-                      />
+                      <Box backgroundColor={themeDefTypeGas.R.color} height="10px" width="10px" borderRadius="50%" mt="2v" />
 
                       <Text
                         as="label"
-                        htmlFor="zonesPotentielChaud"
+                        htmlFor="consommationsGazLogements"
                         fontSize="14px"
                         lineHeight="18px"
                         className="fr-col"
@@ -894,27 +492,22 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                         pt="1v"
                         px="1v"
                       >
-                        Zones à potentiel
+                        Logements (tous types)
                       </Text>
                     </Box>
 
                     <Box display="flex">
                       <SingleCheckbox
-                        name="zonesPotentielFortChaud"
-                        checked={mapConfiguration.zonesOpportunite.zonesPotentielFortChaud}
-                        onChange={() => toggleLayer('zonesOpportunite.zonesPotentielFortChaud')}
-                        trackingEvent="Carto|Zones à potentiel fort chaud"
+                        name="consommationsGazTertiaire"
+                        checked={mapConfiguration.consommationsGaz.tertiaire}
+                        onChange={() => toggleLayer('consommationsGaz.tertiaire')}
                       />
 
-                      <IconPolygon
-                        stroke={themeDefZonePotentielFortChaud.fill.color}
-                        fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
-                        mt="1v"
-                      />
+                      <Box backgroundColor={themeDefTypeGas.T.color} height="10px" width="10px" borderRadius="50%" mt="2v" />
 
                       <Text
                         as="label"
-                        htmlFor="zonesPotentielFortChaud"
+                        htmlFor="consommationsGazTertiaire"
                         fontSize="14px"
                         lineHeight="18px"
                         className="fr-col"
@@ -923,107 +516,22 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                         pt="1v"
                         px="1v"
                       >
-                        Zones à fort potentiel
+                        Tertiaire
                       </Text>
                     </Box>
-                  </DeactivatableBox>
-                </CollapsibleBox>
-                <LegendSeparator />
-              </>
-            )}
-            {enabledFeatures.includes('enrrMobilisables') && (
-              <>
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="enrrMobilisables"
-                    checked={mapConfiguration.enrrMobilisables.show}
-                    onChange={(checked) => {
-                      toggleLayer('enrrMobilisables.show');
-                      if (checked) {
-                        setSectionExpansion('enrrMobilisables', true);
-                      }
-                    }}
-                    trackingEvent="Carto|ENR&R Mobilisables"
-                  />
 
-                  <Text
-                    as="label"
-                    htmlFor="enrrMobilisables"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
-                    ENR&R mobilisables
-                  </Text>
-
-                  <InfoIcon>
-                    <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                    <Hoverable position="bottom">
-                      Données du projet{' '}
-                      <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" isExternal>
-                        EnRezo
-                      </Link>{' '}
-                      du Cerema.
-                    </Hoverable>
-                  </InfoIcon>
-
-                  <Button
-                    className="fr-px-1w"
-                    priority="tertiary no outline"
-                    size="small"
-                    onClick={() => toggleSectionExpansion('enrrMobilisables')}
-                    aria-expanded={!!sectionsExpansions['enrrMobilisables']}
-                    aria-controls={'enrrMobilisables'}
-                    title="Afficher/Masquer le détail"
-                  >
-                    <Icon riSize="1x" name="ri-arrow-down-s-line" flip={!!sectionsExpansions['enrrMobilisables']} />
-                  </Button>
-                </Box>
-
-                <CollapsibleBox id="enrrMobilisables" expand={!!sectionsExpansions['enrrMobilisables']}>
-                  <DeactivatableBox disabled={!mapConfiguration.enrrMobilisables.show} ml="3w" mr="1w">
                     <Box display="flex">
                       <SingleCheckbox
-                        name="showUnitesDIncineration"
-                        checked={mapConfiguration.enrrMobilisables.showUnitesDIncineration}
-                        onChange={() => toggleLayer('enrrMobilisables.showUnitesDIncineration')}
-                        trackingEvent="Carto|Unités d'incinération"
+                        name="consommationsGazIndustrie"
+                        checked={mapConfiguration.consommationsGaz.industrie}
+                        onChange={() => toggleLayer('consommationsGaz.industrie')}
                       />
 
-                      <Image src="/icons/enrr_mobilisables_unites_incineration.png" alt="" height="16" width="16" className="fr-mt-1v" />
+                      <Box backgroundColor={themeDefTypeGas.I.color} height="10px" width="10px" borderRadius="50%" mt="2v" />
 
                       <Text
                         as="label"
-                        htmlFor="showUnitesDIncineration"
-                        fontSize="14px"
-                        lineHeight="18px"
-                        className="fr-col"
-                        fontWeight="bold"
-                        cursor="pointer"
-                        pt="1v"
-                        px="1v"
-                      >
-                        Unités d’incinération
-                      </Text>
-                    </Box>
-                    <Box display="flex">
-                      <SingleCheckbox
-                        name="showIndustrie"
-                        checked={mapConfiguration.enrrMobilisables.showIndustrie}
-                        onChange={() => toggleLayer('enrrMobilisables.showIndustrie')}
-                        trackingEvent="Carto|Industrie"
-                      />
-
-                      <Image src="/icons/enrr_mobilisables_industrie.png" alt="" height="16" width="16" className="fr-mt-1v" />
-
-                      <Text
-                        as="label"
-                        htmlFor="showIndustrie"
+                        htmlFor="consommationsGazIndustrie"
                         fontSize="14px"
                         lineHeight="18px"
                         className="fr-col"
@@ -1035,212 +543,414 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                         Industrie
                       </Text>
                     </Box>
-                    <Box display="flex">
-                      <SingleCheckbox
-                        name="showStationsDEpuration"
-                        checked={mapConfiguration.enrrMobilisables.showStationsDEpuration}
-                        onChange={() => toggleLayer('enrrMobilisables.showStationsDEpuration')}
-                        trackingEvent="Carto|Stations d'épuration"
-                      />
+                  </Box>
 
-                      <Image src="/icons/enrr_mobilisables_stations_epuration.png" alt="" height="16" width="16" className="fr-mt-1v" />
+                  <ScaleLegend
+                    className="fr-ml-3w fr-mr-1w"
+                    circle
+                    label="Niveau de consommation de gaz (MWh/an)"
+                    color={consommationsGazLegendColor}
+                    defaultValues={defaultMapConfiguration.consommationsGaz.interval}
+                    domain={[LegendDeskData.gasUsage.min, LegendDeskData.gasUsage.max]}
+                    onChange={updateScaleInterval('consommationsGaz.interval')}
+                  />
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
+            )}
+            {enabledFeatures.includes('batimentsGazCollectif') && (
+              <TrackableCheckableAccordion
+                mapConfiguration={mapConfiguration}
+                toggleLayer={toggleLayer}
+                name="batimentsGazCollectif"
+                trackingEvent="Carto|Bâtiments au gaz collectif"
+                label={
+                  <>
+                    <Box backgroundColor={themeDefEnergy.gas.color} opacity={energyLayerMaxOpacity} height="16px" width="16px" mt="1v" />
+                    <span>Bâtiments chauffés au gaz collectif</span>
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.batimentsGazCollectif.show}>
+                  <ScaleLegend
+                    className="fr-ml-3w fr-mr-1w"
+                    label="Nombre de lots d'habitation"
+                    color={themeDefEnergy.gas.color}
+                    domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
+                    defaultValues={defaultMapConfiguration.batimentsGazCollectif.interval}
+                    onChange={updateScaleInterval('batimentsGazCollectif.interval')}
+                  />
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
+            )}
+            {enabledFeatures.includes('batimentsFioulCollectif') && (
+              <TrackableCheckableAccordion
+                mapConfiguration={mapConfiguration}
+                toggleLayer={toggleLayer}
+                name="batimentsFioulCollectif"
+                trackingEvent="Carto|Bâtiments au fioul collectif"
+                label={
+                  <>
+                    <Box
+                      backgroundColor={themeDefEnergy.fuelOil.color}
+                      opacity={energyLayerMaxOpacity}
+                      height="16px"
+                      width="16px"
+                      mt="1v"
+                    />
+                    <span>Bâtiments chauffés au fioul collectif</span>
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.batimentsFioulCollectif.show}>
+                  <ScaleLegend
+                    className="fr-ml-3w fr-mr-1w"
+                    label="Nombre de lots d'habitation"
+                    color={themeDefEnergy.fuelOil.color}
+                    domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
+                    defaultValues={defaultMapConfiguration.batimentsFioulCollectif.interval}
+                    onChange={updateScaleInterval('batimentsFioulCollectif.interval')}
+                  />
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
+            )}
+            {enabledFeatures.includes('zonesOpportunite') && (
+              <TrackableCheckableAccordion
+                mapConfiguration={mapConfiguration}
+                toggleLayer={toggleLayer}
+                name="zonesOpportunite"
+                trackingEvent="Carto|Zones d'opportunité"
+                label={
+                  <>
+                    <IconPolygon
+                      stroke={themeDefZonePotentielFortChaud.fill.color}
+                      fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
+                      mt="1v"
+                    />
+                    <span>Zones d'opportunité pour la création de réseaux de chaleur</span>
+                    <InfoIcon>
+                      <Icon size="sm" name="ri-information-fill" cursor="help" />
 
-                      <Text
-                        as="label"
-                        htmlFor="showStationsDEpuration"
-                        fontSize="14px"
-                        lineHeight="18px"
-                        className="fr-col"
-                        fontWeight="bold"
-                        cursor="pointer"
-                        pt="1v"
-                        px="1v"
-                      >
-                        Stations d'épuration
-                      </Text>
-                    </Box>
-                    <Box display="flex">
-                      <SingleCheckbox
-                        name="showDatacenters"
-                        checked={mapConfiguration.enrrMobilisables.showDatacenters}
-                        onChange={() => toggleLayer('enrrMobilisables.showDatacenters')}
-                        trackingEvent="Carto|Datacenters"
-                      />
+                      <Hoverable position="bottom">
+                        Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                        <br />
+                        <Link
+                          href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/01/Methodologie_zones_opportunite_VF.pdf"
+                          isExternal
+                        >
+                          Accéder à la méthodologie
+                        </Link>
+                      </Hoverable>
+                    </InfoIcon>
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.zonesOpportunite.show} display="flex" flexWrap="wrap" ml="3w" mr="1w">
+                  <Box display="flex">
+                    <SingleCheckbox
+                      name="zonesPotentielChaud"
+                      checked={mapConfiguration.zonesOpportunite.zonesPotentielChaud}
+                      onChange={() => toggleLayer('zonesOpportunite.zonesPotentielChaud')}
+                      trackingEvent="Carto|Zones à potentiel chaud"
+                    />
 
-                      <Image src="/icons/enrr_mobilisables_datacenter.png" alt="" height="16" width="16" className="fr-mt-1v" />
+                    <IconPolygon
+                      stroke={themeDefZonePotentielChaud.fill.color}
+                      fillOpacity={themeDefZonePotentielChaud.fill.opacity}
+                      mt="1v"
+                    />
 
-                      <Text
-                        as="label"
-                        htmlFor="showDatacenters"
-                        fontSize="14px"
-                        lineHeight="18px"
-                        className="fr-col"
-                        fontWeight="bold"
-                        cursor="pointer"
-                        pt="1v"
-                        px="1v"
-                      >
-                        Datacenters
-                      </Text>
-                    </Box>
-                    <Box display="flex">
-                      <SingleCheckbox
-                        name="showInstallationsElectrogenes"
-                        checked={mapConfiguration.enrrMobilisables.showInstallationsElectrogenes}
-                        onChange={() => toggleLayer('enrrMobilisables.showInstallationsElectrogenes')}
-                        trackingEvent="Carto|Installations électrogènes"
-                      />
+                    <Text
+                      as="label"
+                      htmlFor="zonesPotentielChaud"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      fontWeight="bold"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Zones à potentiel
+                    </Text>
+                  </Box>
 
-                      <Image
-                        src="/icons/enrr_mobilisables_installations_electrogenes.png"
-                        alt=""
-                        height="16"
-                        width="16"
-                        className="fr-mt-1v"
-                      />
+                  <Box display="flex">
+                    <SingleCheckbox
+                      name="zonesPotentielFortChaud"
+                      checked={mapConfiguration.zonesOpportunite.zonesPotentielFortChaud}
+                      onChange={() => toggleLayer('zonesOpportunite.zonesPotentielFortChaud')}
+                      trackingEvent="Carto|Zones à potentiel fort chaud"
+                    />
 
-                      <Text
-                        as="label"
-                        htmlFor="showInstallationsElectrogenes"
-                        fontSize="14px"
-                        lineHeight="18px"
-                        className="fr-col"
-                        fontWeight="bold"
-                        cursor="pointer"
-                        pt="1v"
-                        px="1v"
-                      >
-                        Installations électrogènes
-                      </Text>
-                    </Box>
+                    <IconPolygon
+                      stroke={themeDefZonePotentielFortChaud.fill.color}
+                      fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
+                      mt="1v"
+                    />
 
-                    <Box display="flex">
-                      <SingleCheckbox
-                        name="friches"
-                        checked={mapConfiguration.enrrMobilisables.showSolaireThermiqueFriches}
-                        onChange={() => toggleLayer('enrrMobilisables.showSolaireThermiqueFriches')}
-                        trackingEvent="Carto|Solaire thermique - friches"
-                      />
+                    <Text
+                      as="label"
+                      htmlFor="zonesPotentielFortChaud"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      fontWeight="bold"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Zones à fort potentiel
+                    </Text>
+                  </Box>
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
+            )}
+            {enabledFeatures.includes('enrrMobilisables') && (
+              <TrackableCheckableAccordion
+                mapConfiguration={mapConfiguration}
+                toggleLayer={toggleLayer}
+                name="enrrMobilisables"
+                trackingEvent="Carto|ENR&R Mobilisables"
+                label={
+                  <>
+                    <span>ENR&R mobilisables</span>
+                    <InfoIcon>
+                      <Icon size="sm" name="ri-information-fill" cursor="help" />
 
-                      <IconPolygon
-                        stroke={themeDefSolaireThermiqueFriches.color}
-                        fillOpacity={themeDefSolaireThermiqueFriches.opacity}
-                        mt="1v"
-                      />
+                      <Hoverable position="bottom">
+                        Données du projet{' '}
+                        <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" isExternal>
+                          EnRezo
+                        </Link>{' '}
+                        du Cerema.
+                      </Hoverable>
+                    </InfoIcon>
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.enrrMobilisables.show} ml="3w" mr="1w">
+                  <Box display="flex">
+                    <SingleCheckbox
+                      name="showUnitesDIncineration"
+                      checked={mapConfiguration.enrrMobilisables.showUnitesDIncineration}
+                      onChange={() => toggleLayer('enrrMobilisables.showUnitesDIncineration')}
+                      trackingEvent="Carto|Unités d'incinération"
+                    />
 
-                      <Text
-                        as="label"
-                        htmlFor="friches"
-                        fontSize="14px"
-                        lineHeight="18px"
-                        className="fr-col"
-                        fontWeight="bold"
-                        cursor="pointer"
-                        pt="1v"
-                        px="1v"
-                      >
-                        Solaire thermique - friches
-                      </Text>
-                    </Box>
+                    <Image src="/icons/enrr_mobilisables_unites_incineration.png" alt="" height="16" width="16" className="fr-mt-1v" />
 
-                    <Box display="flex">
-                      <SingleCheckbox
-                        name="parkings"
-                        checked={mapConfiguration.enrrMobilisables.showSolaireThermiqueParkings}
-                        onChange={() => toggleLayer('enrrMobilisables.showSolaireThermiqueParkings')}
-                        trackingEvent="Carto|Solaire thermique - parkings"
-                      />
+                    <Text
+                      as="label"
+                      htmlFor="showUnitesDIncineration"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      fontWeight="bold"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Unités d’incinération
+                    </Text>
+                  </Box>
+                  <Box display="flex">
+                    <SingleCheckbox
+                      name="showIndustrie"
+                      checked={mapConfiguration.enrrMobilisables.showIndustrie}
+                      onChange={() => toggleLayer('enrrMobilisables.showIndustrie')}
+                      trackingEvent="Carto|Industrie"
+                    />
 
-                      <IconPolygon
-                        stroke={themeDefSolaireThermiqueParkings.color}
-                        fillOpacity={themeDefSolaireThermiqueParkings.opacity}
-                        mt="1v"
-                      />
+                    <Image src="/icons/enrr_mobilisables_industrie.png" alt="" height="16" width="16" className="fr-mt-1v" />
 
-                      <Text
-                        as="label"
-                        htmlFor="parkings"
-                        fontSize="14px"
-                        lineHeight="18px"
-                        className="fr-col"
-                        fontWeight="bold"
-                        cursor="pointer"
-                        pt="1v"
-                        px="1v"
-                      >
-                        Solaire thermique - parkings
-                      </Text>
-                    </Box>
-                  </DeactivatableBox>
-                </CollapsibleBox>
-                <LegendSeparator />
-              </>
+                    <Text
+                      as="label"
+                      htmlFor="showIndustrie"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      fontWeight="bold"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Industrie
+                    </Text>
+                  </Box>
+                  <Box display="flex">
+                    <SingleCheckbox
+                      name="showStationsDEpuration"
+                      checked={mapConfiguration.enrrMobilisables.showStationsDEpuration}
+                      onChange={() => toggleLayer('enrrMobilisables.showStationsDEpuration')}
+                      trackingEvent="Carto|Stations d'épuration"
+                    />
+
+                    <Image src="/icons/enrr_mobilisables_stations_epuration.png" alt="" height="16" width="16" className="fr-mt-1v" />
+
+                    <Text
+                      as="label"
+                      htmlFor="showStationsDEpuration"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      fontWeight="bold"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Stations d'épuration
+                    </Text>
+                  </Box>
+                  <Box display="flex">
+                    <SingleCheckbox
+                      name="showDatacenters"
+                      checked={mapConfiguration.enrrMobilisables.showDatacenters}
+                      onChange={() => toggleLayer('enrrMobilisables.showDatacenters')}
+                      trackingEvent="Carto|Datacenters"
+                    />
+
+                    <Image src="/icons/enrr_mobilisables_datacenter.png" alt="" height="16" width="16" className="fr-mt-1v" />
+
+                    <Text
+                      as="label"
+                      htmlFor="showDatacenters"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      fontWeight="bold"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Datacenters
+                    </Text>
+                  </Box>
+                  <Box display="flex">
+                    <SingleCheckbox
+                      name="showInstallationsElectrogenes"
+                      checked={mapConfiguration.enrrMobilisables.showInstallationsElectrogenes}
+                      onChange={() => toggleLayer('enrrMobilisables.showInstallationsElectrogenes')}
+                      trackingEvent="Carto|Installations électrogènes"
+                    />
+
+                    <Image
+                      src="/icons/enrr_mobilisables_installations_electrogenes.png"
+                      alt=""
+                      height="16"
+                      width="16"
+                      className="fr-mt-1v"
+                    />
+
+                    <Text
+                      as="label"
+                      htmlFor="showInstallationsElectrogenes"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      fontWeight="bold"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Installations électrogènes
+                    </Text>
+                  </Box>
+
+                  <Box display="flex">
+                    <SingleCheckbox
+                      name="friches"
+                      checked={mapConfiguration.enrrMobilisables.showSolaireThermiqueFriches}
+                      onChange={() => toggleLayer('enrrMobilisables.showSolaireThermiqueFriches')}
+                      trackingEvent="Carto|Solaire thermique - friches"
+                    />
+
+                    <IconPolygon
+                      stroke={themeDefSolaireThermiqueFriches.color}
+                      fillOpacity={themeDefSolaireThermiqueFriches.opacity}
+                      mt="1v"
+                    />
+
+                    <Text
+                      as="label"
+                      htmlFor="friches"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      fontWeight="bold"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Solaire thermique - friches
+                    </Text>
+                  </Box>
+
+                  <Box display="flex">
+                    <SingleCheckbox
+                      name="parkings"
+                      checked={mapConfiguration.enrrMobilisables.showSolaireThermiqueParkings}
+                      onChange={() => toggleLayer('enrrMobilisables.showSolaireThermiqueParkings')}
+                      trackingEvent="Carto|Solaire thermique - parkings"
+                    />
+
+                    <IconPolygon
+                      stroke={themeDefSolaireThermiqueParkings.color}
+                      fillOpacity={themeDefSolaireThermiqueParkings.opacity}
+                      mt="1v"
+                    />
+
+                    <Text
+                      as="label"
+                      htmlFor="parkings"
+                      fontSize="14px"
+                      lineHeight="18px"
+                      className="fr-col"
+                      fontWeight="bold"
+                      cursor="pointer"
+                      pt="1v"
+                      px="1v"
+                    >
+                      Solaire thermique - parkings
+                    </Text>
+                  </Box>
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
             )}
             {enabledFeatures.includes('caracteristiquesBatiments') && (
               <>
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="caracteristiquesBatiments"
-                    checked={mapConfiguration.caracteristiquesBatiments}
-                    onChange={(checked) => {
-                      toggleLayer('caracteristiquesBatiments');
-                      if (checked) {
-                        setSectionExpansion('caracteristiquesBatiments', true);
-                      }
-                    }}
-                    trackingEvent="Carto|DPE"
-                  />
+                <TrackableCheckableAccordion
+                  mapConfiguration={mapConfiguration}
+                  toggleLayer={toggleLayer}
+                  name="caracteristiquesBatiments"
+                  checked={mapConfiguration.caracteristiquesBatiments}
+                  layerName={''}
+                  trackingEvent="Carto|DPE"
+                  label={
+                    <>
+                      <Box
+                        backgroundColor={themeDefBuildings.colors.c.color}
+                        height="16px"
+                        width="16px"
+                        mt="1v"
+                        display="grid"
+                        placeContent="center"
+                        fontSize="12px"
+                        textColor="white"
+                      >
+                        C
+                      </Box>
+                      <span>Caractéristiques des bâtiments</span>
+                      <InfoIcon>
+                        <Icon size="sm" name="ri-information-fill" cursor="help" />
 
-                  <Box
-                    backgroundColor={themeDefBuildings.colors.c.color}
-                    height="16px"
-                    width="16px"
-                    mt="1v"
-                    display="grid"
-                    placeContent="center"
-                    fontSize="12px"
-                    textColor="white"
-                  >
-                    C
-                  </Box>
-
-                  <Text
-                    as="label"
-                    htmlFor="caracteristiquesBatiments"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
-                    Caractéristiques des bâtiments
-                  </Text>
-
-                  <InfoIcon>
-                    <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                    <Hoverable position="bottom">
-                      Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont donnés à
-                      titre informatif et non-officiel, sans aucune valeur légale.
-                    </Hoverable>
-                  </InfoIcon>
-
-                  <Button
-                    className="fr-px-1w"
-                    priority="tertiary no outline"
-                    size="small"
-                    onClick={() => toggleSectionExpansion('caracteristiquesBatiments')}
-                    aria-expanded={!!sectionsExpansions['caracteristiquesBatiments']}
-                    aria-controls={'caracteristiquesBatiments'}
-                    title="Afficher/Masquer le détail"
-                  >
-                    <Icon riSize="1x" name="ri-arrow-down-s-line" flip={!!sectionsExpansions['caracteristiquesBatiments']} />
-                  </Button>
-                </Box>
-
-                <CollapsibleBox id="caracteristiquesBatiments" expand={!!sectionsExpansions['caracteristiquesBatiments']}>
+                        <Hoverable position="bottom">
+                          Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont
+                          donnés à titre informatif et non-officiel, sans aucune valeur légale.
+                        </Hoverable>
+                      </InfoIcon>
+                    </>
+                  }
+                >
                   <DeactivatableBox disabled={!mapConfiguration.caracteristiquesBatiments} ml="3w" mr="1w">
                     <Text fontSize="13px" lineHeight="18px" fontWeight="lightbold" fontStyle="italic">
                       Cliquer sur le bâtiment souhaité
@@ -1264,80 +974,49 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                         ))}
                     </Box>
                   </DeactivatableBox>
-                </CollapsibleBox>
+                </TrackableCheckableAccordion>
                 {mapConfiguration.caracteristiquesBatiments && nbCouchesFondBatiments >= 2 && (
                   <Text color="error" size="xs" m="1w">
                     Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
                   </Text>
                 )}
-                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('besoinsEnChaleur') && (
               <>
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="besoinsEnChaleur"
-                    checked={mapConfiguration.besoinsEnChaleur}
-                    onChange={(checked) => {
-                      toggleLayer('besoinsEnChaleur');
-                      if (checked) {
-                        setSectionExpansion('besoinsEnChaleur', true);
-                      }
-                    }}
-                    trackingEvent="Carto|Besoins en chaleur"
-                  />
+                <TrackableCheckableAccordion
+                  mapConfiguration={mapConfiguration}
+                  toggleLayer={toggleLayer}
+                  name="besoinsEnChaleur"
+                  checked={mapConfiguration.besoinsEnChaleur}
+                  layerName={''}
+                  trackingEvent="Carto|Besoins en chaleur"
+                  label={
+                    <>
+                      <IconPolygon
+                        stroke={
+                          besoinsEnChaleurIntervals[
+                            besoinsEnChaleurIntervals.length - 3 // lighter color
+                          ].color
+                        }
+                        fillOpacity={0.7}
+                        mt="1v"
+                      />
+                      <span>Besoins en chaleur</span>
+                      <InfoIcon>
+                        <Icon size="sm" name="ri-information-fill" cursor="help" />
 
-                  <IconPolygon
-                    stroke={
-                      besoinsEnChaleurIntervals[
-                        besoinsEnChaleurIntervals.length - 3 // lighter color
-                      ].color
-                    }
-                    fillOpacity={0.7}
-                    mt="1v"
-                  />
-
-                  <Text
-                    as="label"
-                    htmlFor="besoinsEnChaleur"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
-                    Besoins en chaleur
-                  </Text>
-
-                  <InfoIcon>
-                    <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                    <Hoverable position="bottom">
-                      Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                      <br />
-                      <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
-                        Accéder à la méthodologie
-                      </Link>
-                    </Hoverable>
-                  </InfoIcon>
-
-                  <Button
-                    className="fr-px-1w"
-                    priority="tertiary no outline"
-                    size="small"
-                    onClick={() => toggleSectionExpansion('besoinsEnChaleur')}
-                    aria-expanded={!!sectionsExpansions['besoinsEnChaleur']}
-                    aria-controls={'besoinsEnChaleur'}
-                    title="Afficher/Masquer le détail"
-                  >
-                    <Icon riSize="1x" name="ri-arrow-down-s-line" flip={!!sectionsExpansions['besoinsEnChaleur']} />
-                  </Button>
-                </Box>
-
-                <CollapsibleBox id="besoinsEnChaleur" expand={!!sectionsExpansions['besoinsEnChaleur']}>
+                        <Hoverable position="bottom">
+                          Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                          <br />
+                          <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
+                            Accéder à la méthodologie
+                          </Link>
+                        </Hoverable>
+                      </InfoIcon>
+                    </>
+                  }
+                >
                   <DeactivatableBox disabled={!mapConfiguration.besoinsEnChaleur} mx="1w">
                     <Box display="flex" border="1px solid #777" my="1w">
                       {besoinsEnChaleurIntervals.map((interval, index) => (
@@ -1356,80 +1035,51 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                       <Text size="xs">{besoinsEnChaleurIntervals[besoinsEnChaleurIntervals.length - 1].max}</Text>
                     </Box>
                   </DeactivatableBox>
-                </CollapsibleBox>
+                </TrackableCheckableAccordion>
+
                 {mapConfiguration.besoinsEnChaleur && nbCouchesFondBatiments >= 2 && (
                   <Text color="error" size="xs" m="1w">
                     Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
                   </Text>
                 )}
-                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('besoinsEnFroid') && (
               <>
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="besoinsEnFroid"
-                    checked={mapConfiguration.besoinsEnFroid}
-                    onChange={(checked) => {
-                      toggleLayer('besoinsEnFroid');
-                      if (checked) {
-                        setSectionExpansion('besoinsEnFroid', true);
-                      }
-                    }}
-                    trackingEvent="Carto|Besoins en froid"
-                  />
+                <TrackableCheckableAccordion
+                  mapConfiguration={mapConfiguration}
+                  toggleLayer={toggleLayer}
+                  name="besoinsEnFroid"
+                  checked={mapConfiguration.besoinsEnFroid}
+                  layerName={''}
+                  trackingEvent="Carto|Besoins en froid"
+                  label={
+                    <>
+                      <IconPolygon
+                        stroke={
+                          besoinsEnFroidIntervals[
+                            besoinsEnFroidIntervals.length - 3 // lighter color
+                          ].color
+                        }
+                        fillOpacity={0.7}
+                        mt="1v"
+                      />
 
-                  <IconPolygon
-                    stroke={
-                      besoinsEnFroidIntervals[
-                        besoinsEnFroidIntervals.length - 3 // lighter color
-                      ].color
-                    }
-                    fillOpacity={0.7}
-                    mt="1v"
-                  />
+                      <span>Besoins en froid</span>
+                      <InfoIcon>
+                        <Icon size="sm" name="ri-information-fill" cursor="help" />
 
-                  <Text
-                    as="label"
-                    htmlFor="besoinsEnFroid"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
-                    Besoins en froid
-                  </Text>
-
-                  <InfoIcon>
-                    <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                    <Hoverable position="bottom">
-                      Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                      <br />
-                      <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
-                        Accéder à la méthodologie
-                      </Link>
-                    </Hoverable>
-                  </InfoIcon>
-
-                  <Button
-                    className="fr-px-1w"
-                    priority="tertiary no outline"
-                    size="small"
-                    onClick={() => toggleSectionExpansion('besoinsEnFroid')}
-                    aria-expanded={!!sectionsExpansions['besoinsEnFroid']}
-                    aria-controls={'besoinsEnFroid'}
-                    title="Afficher/Masquer le détail"
-                  >
-                    <Icon riSize="1x" name="ri-arrow-down-s-line" flip={!!sectionsExpansions['besoinsEnFroid']} />
-                  </Button>
-                </Box>
-
-                <CollapsibleBox id="besoinsEnFroid" expand={!!sectionsExpansions['besoinsEnFroid']}>
+                        <Hoverable position="bottom">
+                          Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                          <br />
+                          <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
+                            Accéder à la méthodologie
+                          </Link>
+                        </Hoverable>
+                      </InfoIcon>
+                    </>
+                  }
+                >
                   <DeactivatableBox disabled={!mapConfiguration.besoinsEnFroid} mx="1w">
                     <Box display="flex" border="1px solid #777" my="1w">
                       {besoinsEnFroidIntervals.map((interval, index) => (
@@ -1448,106 +1098,72 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                       <Text size="xs">{besoinsEnFroidIntervals[besoinsEnFroidIntervals.length - 1].max}</Text>
                     </Box>
                   </DeactivatableBox>
-                </CollapsibleBox>
+                </TrackableCheckableAccordion>
                 {mapConfiguration.besoinsEnFroid && nbCouchesFondBatiments >= 2 && (
                   <Text color="error" size="xs" m="1w">
                     Les caractéristiques des bâtiments et besoins en chaleur et froid ne peuvent être affichés simultanément.
                   </Text>
                 )}
-                <LegendSeparator />
               </>
             )}
             {enabledFeatures.includes('besoinsEnChaleurIndustrieCommunes') && (
-              <>
-                <Box display="flex">
-                  <SingleCheckbox
-                    name="besoinsEnChaleurIndustrieCommunes"
-                    checked={mapConfiguration.besoinsEnChaleurIndustrieCommunes}
-                    onChange={(checked) => {
-                      toggleLayer('besoinsEnChaleurIndustrieCommunes');
-                      if (checked) {
-                        setSectionExpansion('besoinsEnChaleurIndustrieCommunes', true);
-                      }
-                    }}
-                    trackingEvent="Carto|Besoins en chaleur secteur industriel"
-                  />
+              <TrackableCheckableAccordion
+                mapConfiguration={mapConfiguration}
+                toggleLayer={toggleLayer}
+                name="besoinsEnChaleurIndustrieCommunes"
+                checked={mapConfiguration.besoinsEnChaleurIndustrieCommunes}
+                layerName={''}
+                trackingEvent="Carto|Besoins en chaleur secteur industriel"
+                label={
+                  <>
+                    <IconPolygon
+                      stroke={besoinsEnChaleurIndustrieCommunesIntervals[besoinsEnChaleurIndustrieCommunesIntervals.length - 1].color}
+                      fillOpacity={0.7}
+                      mt="1v"
+                    />
+                    <span>Besoins en chaleur du secteur industriel</span>
+                    <InfoIcon>
+                      <Icon size="sm" name="ri-information-fill" cursor="help" />
 
-                  <IconPolygon
-                    stroke={besoinsEnChaleurIndustrieCommunesIntervals[besoinsEnChaleurIndustrieCommunesIntervals.length - 1].color}
-                    fillOpacity={0.7}
-                    mt="1v"
-                  />
-
-                  <Text
-                    as="label"
-                    htmlFor="besoinsEnChaleurIndustrieCommunes"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    fontWeight="bold"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
-                    Besoins en chaleur du secteur industriel
-                  </Text>
-
-                  <InfoIcon>
-                    <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                    <Hoverable position="bottom">
-                      Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                      <br />
-                      <Link
-                        href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
-                        isExternal
-                      >
-                        Accéder à la méthodologie
-                      </Link>
-                    </Hoverable>
-                  </InfoIcon>
-
-                  <Button
-                    className="fr-px-1w"
-                    priority="tertiary no outline"
-                    size="small"
-                    onClick={() => toggleSectionExpansion('besoinsEnChaleurIndustrieCommunes')}
-                    aria-expanded={!!sectionsExpansions['besoinsEnChaleurIndustrieCommunes']}
-                    aria-controls={'besoinsEnChaleurIndustrieCommunes'}
-                    title="Afficher/Masquer le détail"
-                  >
-                    <Icon riSize="1x" name="ri-arrow-down-s-line" flip={!!sectionsExpansions['besoinsEnChaleurIndustrieCommunes']} />
-                  </Button>
-                </Box>
-
-                <CollapsibleBox id="besoinsEnChaleurIndustrieCommunes" expand={!!sectionsExpansions['besoinsEnChaleurIndustrieCommunes']}>
-                  <DeactivatableBox disabled={!mapConfiguration.besoinsEnChaleurIndustrieCommunes} mx="1w">
-                    <Box display="flex" border="1px solid #777" my="1w">
-                      {besoinsEnChaleurIndustrieCommunesIntervals.map((interval, index) => (
-                        <Box
-                          key={index}
-                          height="10px"
-                          flex
-                          cursor="help"
-                          backgroundColor={interval.color}
-                          title={`${interval.min} - ${interval.max}`}
-                        />
-                      ))}
-                    </Box>
-                    <Box display="flex" justifyContent="space-between">
-                      <Text size="xs">{besoinsEnChaleurIndustrieCommunesIntervals[0].min}</Text>
-                      <Text size="xs">
-                        {besoinsEnChaleurIndustrieCommunesIntervals[besoinsEnChaleurIndustrieCommunesIntervals.length - 1].max}
-                      </Text>
-                    </Box>
-                  </DeactivatableBox>
-                </CollapsibleBox>
-                <LegendSeparator />
-              </>
+                      <Hoverable position="bottom">
+                        Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                        <br />
+                        <Link
+                          href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
+                          isExternal
+                        >
+                          Accéder à la méthodologie
+                        </Link>
+                      </Hoverable>
+                    </InfoIcon>
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.besoinsEnChaleurIndustrieCommunes} mx="1w">
+                  <Box display="flex" border="1px solid #777" my="1w">
+                    {besoinsEnChaleurIndustrieCommunesIntervals.map((interval, index) => (
+                      <Box
+                        key={index}
+                        height="10px"
+                        flex
+                        cursor="help"
+                        backgroundColor={interval.color}
+                        title={`${interval.min} - ${interval.max}`}
+                      />
+                    ))}
+                  </Box>
+                  <Box display="flex" justifyContent="space-between">
+                    <Text size="xs">{besoinsEnChaleurIndustrieCommunesIntervals[0].min}</Text>
+                    <Text size="xs">
+                      {besoinsEnChaleurIndustrieCommunesIntervals[besoinsEnChaleurIndustrieCommunesIntervals.length - 1].max}
+                    </Text>
+                  </Box>
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
             )}
             {enabledFeatures.includes('sources') && (
               <>
-                <Box mt="n2w" mx="2w" mb="2w" display="flex" alignItems="center" gap="16px">
+                <Box mt="2w" mx="2w" mb="2w" display="flex" alignItems="center" gap="16px">
                   <Link href="/documentation/carto_sources.pdf" isExternal eventKey="Téléchargement|Carto sources">
                     <Text as="span" size="xs">
                       Sources
@@ -1555,7 +1171,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                   </Link>
                   <DevModeIcon />
                 </Box>
-                <LegendSeparator />
               </>
             )}
           </Box>

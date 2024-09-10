@@ -1,7 +1,14 @@
+import { fr } from '@codegouvfr/react-dsfr';
+import DsfrTabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
+import Image from 'next/image';
+import React from 'react';
 import styled, { css } from 'styled-components';
 
 import Box from '@components/ui/Box';
-import { TrackingEvent, trackEvent } from 'src/services/analytics';
+import CheckableAccordion, { type CheckableAccordionProps } from '@components/ui/CheckableAccordion';
+import cx from '@utils/cx';
+import { LegendTrackingEvent, trackEvent } from 'src/services/analytics';
+import { type MapConfiguration, type MapConfigurationProperty } from 'src/services/Map/map-configuration';
 
 const StyledDSFRCheckbox = styled.div<{
   checked: boolean;
@@ -89,9 +96,76 @@ const StyledCheckboxInput = styled.input`
   width: 1rem !important;
 `;
 
-type ExtractSuffix<T extends string, S extends string> = T extends `${infer Prefix}${S}` ? Prefix : never;
+const StyledCheckableAccordion = styled(CheckableAccordion)`
+  .fr-accordion__title {
+    width: 100%;
+  }
+`;
 
-type LegendTrackingEvent = ExtractSuffix<TrackingEvent, '|Active'>;
+export const tabs: TabsProps.Controlled['tabs'] = [
+  {
+    tabId: 'reseaux',
+    label: (
+      <>
+        <Image src="/icons/reseaux.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        Réseaux
+      </>
+    ),
+  },
+  {
+    tabId: 'potentiel',
+    label: (
+      <>
+        <Image src="/icons/potentiel.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        Potentiel
+      </>
+    ),
+  },
+  {
+    tabId: 'enrr',
+    label: (
+      <>
+        <Image src="/icons/enrr.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        EnR&R
+      </>
+    ),
+  },
+  {
+    tabId: 'outils',
+    label: (
+      <>
+        <Image src="/icons/outils.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        Outils
+      </>
+    ),
+  },
+] as const satisfies TabsProps.Controlled['tabs'];
+
+export type TabId = (typeof tabs)[number]['tabId'];
+
+export const Tabs = styled(DsfrTabs)`
+box-shadow: none;
+
+.fr-tabs__panel {
+  padding: 0.5rem 0.5rem;
+}
+
+.fr-tabs__tab {
+  display: flex;
+  flex-direction: column;
+  font-weight: normal;
+  font-size: 13px;
+  margin= 0 2px;
+  padding: 8px 8px;
+
+  svg {
+    font-size: 3rem;
+  }
+  &[aria-selected='true'] {
+    font-weight: bold;
+  }
+}
+`;
 
 interface SingleCheckboxProps {
   name: string;
@@ -99,6 +173,43 @@ interface SingleCheckboxProps {
   onChange: (checked: boolean) => void;
   trackingEvent?: LegendTrackingEvent;
 }
+type TrackableCheckableAccordionProps = Omit<
+  CheckableAccordionProps.Uncontrolled<React.ReactNode>,
+  'small' | 'classes' | 'checked' | 'onCheck' | 'showToggle'
+> & {
+  mapConfiguration: MapConfiguration;
+  name: keyof MapConfiguration;
+  checked?: CheckableAccordionProps.Uncontrolled<React.ReactNode>['checked'];
+  layerName?: string;
+  trackingEvent: LegendTrackingEvent;
+  toggleLayer: (property: MapConfigurationProperty<boolean>) => void;
+};
+
+export const TrackableCheckableAccordion = ({
+  children,
+  mapConfiguration,
+  name,
+  checked,
+  trackingEvent,
+  toggleLayer,
+  layerName = 'show',
+  ...props
+}: TrackableCheckableAccordionProps) => (
+  <StyledCheckableAccordion
+    small
+    classes={{ title: cx('d-flex', 'fr-gap--sm', fr.cx('fr-text--sm')) }}
+    checked={checked || (mapConfiguration[name] as any)?.[layerName]}
+    onCheck={(isChecked) => {
+      trackEvent(`${trackingEvent}|${isChecked ? 'Active' : 'Désactive'}`);
+      toggleLayer([name, layerName].filter(Boolean).join('.') as any);
+    }}
+    expandOnCheck
+    showToggle
+    {...props}
+  >
+    {children}
+  </StyledCheckableAccordion>
+);
 
 /**
  * Offre une checkbox DSFR fonctionnant de manière séparée de son label.
@@ -125,6 +236,7 @@ export function SingleCheckbox({ name, checked, onChange, trackingEvent }: Singl
 export const InfoIcon = styled.div`
   position: relative;
   align-self: flex-start;
+  margin-left: auto;
 
   & > .hover-info {
     width: 270px;
