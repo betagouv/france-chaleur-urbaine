@@ -65,7 +65,7 @@ export const fieldLabelInformation = {
   firstName: 'Prénom',
   email: 'Email',
   phone: 'Téléphone (optionnel)',
-  nbLogements: 'Nombre de logements',
+  nbLogements: 'Nombre de logements (optionnel)',
   demandCompanyType: {
     label: 'Votre demande concerne',
     inputs: [
@@ -77,7 +77,7 @@ export const fieldLabelInformation = {
     ],
   },
   demandCompanyName: 'Nom de la structure accompagnée',
-  demandArea: 'Surface en m2',
+  demandArea: 'Surface en m2 (optionnel)',
   heatingEnergy: {
     label: 'Mode de chauffage',
     inputs: [
@@ -181,9 +181,6 @@ const ContactInformation = ({
             </Text>
           </InputWraper>
           <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-            <Field name="company" label={fieldLabelInformation.company} component={Input} required />
-          </InputWraper>
-          <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
             <Select
               label={fieldLabelInformation.companyType.label}
               options={fieldLabelInformation.companyType.inputs}
@@ -192,6 +189,9 @@ const ContactInformation = ({
                 onChange: (e) => setCompanyTypeValue(e.target.value),
               }}
             ></Select>
+          </InputWraper>
+          <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
+            <Field name="company" label={fieldLabelInformation.company} component={Input} required />
           </InputWraper>
         </fieldset>
       )}

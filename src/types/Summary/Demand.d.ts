@@ -36,6 +36,7 @@ export type Demand = DemandSummary &
     Conso: number;
     'Gestionnaire Conso': number;
     Logement: number;
+    'Surface en m2': number;
     'Gestionnaire Logement': number;
     'Relance envoyée': string;
     'Affecté à': string;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import Icon from '@components/ui/Icon';
 import { Demand } from 'src/types/Summary/Demand';
@@ -15,20 +15,39 @@ const Contact = ({
 }) => {
   const [showEmailsModal, setShowEmailsModal] = useState(false);
 
+  const getNomStructure = useCallback(() => {
+    if (
+      demand["Type d'établissement"] &&
+      (demand["Type d'établissement"].includes("Bureau d'études ou AMO") ||
+        demand["Type d'établissement"].includes('Mandataire / délégataire CEE'))
+    ) {
+      return demand['Nom de la structure accompagnante'] + ' (' + demand["Type d'établissement"] + ')';
+    }
+    return demand.Établissement;
+  }, [demand]);
+  const nomStructure = getNomStructure();
+
+  const getNomStructureAccompagnante = useCallback(() => {
+    if (demand.Structure === 'Tertiaire' || demand.Structure === 'Logement social') {
+      if (
+        demand["Type d'établissement"] &&
+        !demand["Type d'établissement"].includes("Bureau d'études ou AMO") &&
+        !demand["Type d'établissement"].includes('Mandataire / délégataire CEE')
+      ) {
+        return demand['Nom de la structure accompagnante'];
+      }
+    }
+    return '';
+  }, [demand]);
+  const nomStructureAccompagnante = getNomStructureAccompagnante();
+
   return (
     <ContactInfos className="fr-m-1w">
       <>
         <Name>
           {demand.Prénom ?? ''} {demand.Nom}
         </Name>
-        {demand.Établissement && (
-          <div>
-            {demand.Établissement}
-            {demand["Type d'établissement"] &&
-              (demand["Type d'établissement"].includes("Bureau d'études ou AMO") ||
-                demand["Type d'établissement"].includes('Mandataire / délégataire CEE')) && <>&nbsp;({demand["Type d'établissement"]})</>}
-          </div>
-        )}
+        {nomStructure && <div>{nomStructure}</div>}
         {demand.Mail && (
           <EmailInfo
             onClick={() => {
@@ -49,8 +68,7 @@ const Contact = ({
           onClose={() => setShowEmailsModal(false)}
         />
       )}
-      {demand.Structure === 'Tertiaire' ||
-        (demand.Structure === 'Logement social' && <div>Pour le compte de : {demand['Nom de la structure accompagnante']}</div>)}
+      {nomStructureAccompagnante && <div>Pour le compte de : {nomStructureAccompagnante}</div>}
     </ContactInfos>
   );
 };

@@ -14,7 +14,7 @@ const AdditionalInformation = ({
   width,
 }: {
   demand: Demand;
-  field: 'Conso' | 'Logement' | 'Distance au réseau' | 'Affecté à';
+  field: 'Conso' | 'Logement' | 'Surface en m2' | 'Distance au réseau' | 'Affecté à';
   updateDemand: (demandId: string, demand: Partial<Demand>) => void;
   type: 'number' | 'text';
   width?: number;
@@ -22,7 +22,7 @@ const AdditionalInformation = ({
   const [value, setValue] = useState('');
   useEffect(() => {
     if (demand && value === '') {
-      if (demand[`Gestionnaire ${field}`] !== undefined) {
+      if (field !== 'Surface en m2' && demand[`Gestionnaire ${field}`] !== undefined) {
         setValue(demand[`Gestionnaire ${field}`].toString());
       } else if (demand[field]) {
         setValue(demand[field].toString());

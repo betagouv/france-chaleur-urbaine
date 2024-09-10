@@ -251,6 +251,15 @@ const Manager = () => {
         renderCell: (params) => <AdditionalInformation demand={params.row} field="Logement" updateDemand={updateDemand} type="number" />,
       },
       {
+        field: 'Surface en m2',
+        sortable: false,
+        width: 120,
+        headerName: 'Surface en m2',
+        renderCell: (params) => (
+          <AdditionalInformation demand={params.row} field="Surface en m2" updateDemand={updateDemand} type="number" />
+        ),
+      },
+      {
         field: 'Conso gaz',
         sortable: false,
         width: 120,
