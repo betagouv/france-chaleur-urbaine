@@ -75,6 +75,7 @@ export namespace CheckableAccordionProps {
     children: NonNullable<ReactNode>;
     showToggle?: boolean;
     checked: boolean;
+    expandOnCheck?: boolean;
     onCheck: (checked: boolean) => any;
     small?: CheckboxProps['small'];
   };
@@ -82,13 +83,13 @@ export namespace CheckableAccordionProps {
   export type Uncontrolled<AuthorizedLabel extends React.ReactNode> = Common<AuthorizedLabel> & {
     defaultExpanded?: boolean;
     expanded?: never;
-    onExpandedChange?: (expanded: boolean, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    onExpandedChange?: (expanded: boolean) => void;
   };
 
   export type Controlled<AuthorizedLabel extends React.ReactNode> = Common<AuthorizedLabel> & {
     defaultExpanded?: never;
     expanded: boolean;
-    onExpandedChange: (expanded: boolean, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    onExpandedChange: (expanded: boolean) => void;
   };
 }
 
@@ -105,6 +106,7 @@ export const CheckableAccordion = memo(
       style,
       children,
       expanded: expanded_props,
+      expandOnCheck = false,
       defaultExpanded = false,
       onExpandedChange,
       checked,
@@ -133,10 +135,10 @@ export const CheckableAccordion = memo(
       setIsExpanded(expanded_props);
     }, [expanded_props]);
 
-    const onExtendButtonClick = useConstCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const onExtendButtonClick = useConstCallback(() => {
       const isExpandedNewValue = !isExpanded;
 
-      onExpandedChange?.(isExpandedNewValue, event);
+      onExpandedChange?.(isExpandedNewValue);
 
       if (expanded_props === undefined) {
         setIsExpanded(isExpandedNewValue);
@@ -155,6 +157,10 @@ export const CheckableAccordion = memo(
                   checked,
                   onChange: (e) => {
                     const isChecked = e.target.checked;
+                    if (isChecked && expandOnCheck) {
+                      onExpandedChange?.(true);
+                      setIsExpanded(true);
+                    }
                     return onCheck(isChecked);
                   },
                 },
