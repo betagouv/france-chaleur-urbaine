@@ -4,7 +4,7 @@
 'use client';
 
 import { fr } from '@codegouvfr/react-dsfr';
-import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
+import Checkbox, { CheckboxProps } from '@codegouvfr/react-dsfr/Checkbox';
 import React, { forwardRef, memo, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import styled from 'styled-components';
 import type { Equals } from 'tsafe';
@@ -55,13 +55,16 @@ const StyledCheckbox = styled(Checkbox)`
 
 const StyledToggleButton = styled.button`
   flex: 0;
+  transition: transform 0.3s ease;
 `;
 
-export type CheckableAccordionProps<T extends string> = CheckableAccordionProps.Controlled<T>;
+export type CheckableAccordionProps<T extends React.ReactNode> =
+  | CheckableAccordionProps.Controlled<T>
+  | CheckableAccordionProps.Uncontrolled<T>;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CheckableAccordionProps {
-  export type Common<AuthorizedLabel extends string> = {
+  export type Common<AuthorizedLabel extends React.ReactNode> = {
     className?: string;
     id?: string;
     titleAs?: `h${2 | 3 | 4 | 5 | 6}`;
@@ -72,9 +75,16 @@ export namespace CheckableAccordionProps {
     showToggle?: boolean;
     checked: boolean;
     onCheck: (checked: boolean) => any;
+    small?: CheckboxProps['small'];
   };
 
-  export type Controlled<AuthorizedLabel extends string> = Common<AuthorizedLabel> & {
+  export type Uncontrolled<AuthorizedLabel extends React.ReactNode> = Common<AuthorizedLabel> & {
+    defaultExpanded?: boolean;
+    expanded?: never;
+    onExpandedChange?: (expanded: boolean, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  };
+
+  export type Controlled<AuthorizedLabel extends React.ReactNode> = Common<AuthorizedLabel> & {
     defaultExpanded?: never;
     expanded: boolean;
     onExpandedChange: (expanded: boolean, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -83,7 +93,7 @@ export namespace CheckableAccordionProps {
 
 /** @see <https://components.react-dsfr.codegouv.studio/?path=/docs/components-accordion>  */
 export const CheckableAccordion = memo(
-  forwardRef<HTMLDivElement, CheckableAccordionProps<string>>((props, ref) => {
+  forwardRef<HTMLDivElement, CheckableAccordionProps<React.ReactNode>>((props, ref) => {
     const {
       // queryParamName,
       className,
@@ -99,6 +109,7 @@ export const CheckableAccordion = memo(
       checked,
       onCheck,
       showToggle,
+      small,
       ...rest
     } = props;
 
@@ -135,6 +146,7 @@ export const CheckableAccordion = memo(
       <section className={cx(fr.cx('fr-accordion'), className)} style={style} ref={ref} {...rest}>
         <Box display="flex">
           <StyledCheckbox
+            small={small}
             options={[
               {
                 label: <HtmlTitleTag className={cx(fr.cx('fr-accordion__title'), classes.title)}>{label}</HtmlTitleTag>,
@@ -174,7 +186,7 @@ CheckableAccordion.displayName = symToStr({ CheckableAccordion });
 export const UrlStateCheckableAccordion = <AuthorizedLabel extends string>({
   queryParamName,
   ...props
-}: Omit<CheckableAccordionProps<AuthorizedLabel>, 'expanded' | 'onExpandedChange' | 'checked' | 'onCheck'> & {
+}: Omit<CheckableAccordionProps.Controlled<AuthorizedLabel>, 'expanded' | 'onExpandedChange' | 'checked' | 'onCheck'> & {
   queryParamName: string;
 }) => {
   const { add: addAccordion, remove: removeAccordion, has: hasAccordion } = useArrayQueryState('accordions');
