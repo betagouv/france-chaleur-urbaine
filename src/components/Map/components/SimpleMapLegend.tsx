@@ -109,6 +109,24 @@ const tabs: TabsProps.Controlled['tabs'] = [
       </>
     ),
   },
+  {
+    tabId: 'enrr',
+    label: (
+      <>
+        <Image src="/icons/enrr.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        EnR&R
+      </>
+    ),
+  },
+  {
+    tabId: 'outils',
+    label: (
+      <>
+        <Image src="/icons/outils.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        Outils
+      </>
+    ),
+  },
 ];
 
 const Tabs = styled(DsfrTabs)`
@@ -123,6 +141,8 @@ const Tabs = styled(DsfrTabs)`
     flex-direction: column;
     font-weight: normal;
     font-size: 13px;
+    margin= 0 2px;
+    padding: 8px 8px;
 
     svg {
       font-size: 3rem;
@@ -1538,6 +1558,8 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
             )}
           </Box>
         )}
+        {selectedTabId === 'outils' && <>TODO</>}
+        {selectedTabId === 'enrr' && <>TODO</>}
       </Tabs>
       {/* <Box display="flex" alignItems="center">
         <Text fontSize="14px" lineHeight="18px" fontWeight="bold" ml="1w" className="fr-col">
