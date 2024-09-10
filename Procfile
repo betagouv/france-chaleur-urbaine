@@ -1,2 +1,2 @@
-clock: tsx src/cron_jobs/cron.ts
-postdeploy: ./scripts/migrate.sh
+clock: node cli/cli.js cronjobs:start
+postdeploy: node cli/cli.js db:migrate
