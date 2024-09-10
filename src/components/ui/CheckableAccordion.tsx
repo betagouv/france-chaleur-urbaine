@@ -53,9 +53,10 @@ const StyledCheckbox = styled(Checkbox)`
   }
 `;
 
-const StyledToggleButton = styled.button`
+const StyledToggleButton = styled.button<{ $small?: boolean }>`
   flex: 0;
   transition: transform 0.3s ease;
+  ${({ $small }) => $small && `padding: 0.75rem 0.5rem;`}
 `;
 
 export type CheckableAccordionProps<T extends React.ReactNode> =
@@ -152,7 +153,10 @@ export const CheckableAccordion = memo(
                 label: <HtmlTitleTag className={cx(fr.cx('fr-accordion__title'), classes.title)}>{label}</HtmlTitleTag>,
                 nativeInputProps: {
                   checked,
-                  onChange: (e) => onCheck(e.target.checked),
+                  onChange: (e) => {
+                    const isChecked = e.target.checked;
+                    return onCheck(isChecked);
+                  },
                 },
               },
             ]}
@@ -160,6 +164,7 @@ export const CheckableAccordion = memo(
 
           {showToggle && (
             <StyledToggleButton
+              $small={small}
               className={fr.cx('fr-accordion__btn')}
               aria-expanded={isExpanded}
               aria-controls={collapseElementId}
