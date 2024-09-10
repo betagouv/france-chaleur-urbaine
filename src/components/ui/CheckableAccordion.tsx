@@ -70,10 +70,11 @@ export namespace CheckableAccordionProps {
     style?: CSSProperties;
     children: NonNullable<ReactNode>;
     showToggle?: boolean;
+    checked: boolean;
+    onCheck: (checked: boolean) => any;
   };
 
   export type Controlled<AuthorizedLabel extends string> = Common<AuthorizedLabel> & {
-    queryParamName: string;
     defaultExpanded?: never;
     expanded: boolean;
     onExpandedChange: (expanded: boolean, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -84,7 +85,7 @@ export namespace CheckableAccordionProps {
 export const CheckableAccordion = memo(
   forwardRef<HTMLDivElement, CheckableAccordionProps<string>>((props, ref) => {
     const {
-      queryParamName,
+      // queryParamName,
       className,
       id: id_props,
       titleAs: HtmlTitleTag = 'h3',
@@ -95,13 +96,13 @@ export const CheckableAccordion = memo(
       expanded: expanded_props,
       defaultExpanded = false,
       onExpandedChange,
+      checked,
+      onCheck,
       showToggle,
       ...rest
     } = props;
 
     assert<Equals<keyof typeof rest, never>>();
-
-    const { has, toggle } = useArrayQueryState<string>(queryParamName);
 
     const id = useAnalyticsId({
       defaultIdPrefix: 'fr-accordion',
@@ -138,8 +139,8 @@ export const CheckableAccordion = memo(
               {
                 label: <HtmlTitleTag className={cx(fr.cx('fr-accordion__title'), classes.title)}>{label}</HtmlTitleTag>,
                 nativeInputProps: {
-                  checked: has(label),
-                  onChange: () => toggle(label),
+                  checked,
+                  onChange: (e) => onCheck(e.target.checked),
                 },
               },
             ]}
@@ -170,15 +171,21 @@ export const CheckableAccordion = memo(
 
 CheckableAccordion.displayName = symToStr({ CheckableAccordion });
 
-export const UrlStateCheckableAccordion = <AuthorizedLabel extends string>(
-  props: Omit<CheckableAccordionProps<AuthorizedLabel>, 'expanded' | 'onExpandedChange'>
-) => {
-  const { add, remove, has } = useArrayQueryState('accordions');
+export const UrlStateCheckableAccordion = <AuthorizedLabel extends string>({
+  queryParamName,
+  ...props
+}: Omit<CheckableAccordionProps<AuthorizedLabel>, 'expanded' | 'onExpandedChange' | 'checked' | 'onCheck'> & {
+  queryParamName: string;
+}) => {
+  const { add: addAccordion, remove: removeAccordion, has: hasAccordion } = useArrayQueryState('accordions');
+  const { has: hasChecked, add: addChecked, remove: removeChecked } = useArrayQueryState<string>(queryParamName);
 
   return (
     <CheckableAccordion
-      expanded={has(props.label)}
-      onExpandedChange={(expanded) => (expanded ? add(props.label) : remove(props.label))}
+      expanded={hasAccordion(props.label)}
+      onExpandedChange={(expanded) => (expanded ? addAccordion(props.label) : removeAccordion(props.label))}
+      checked={hasChecked(props.label)}
+      onCheck={(checked) => (checked ? addChecked(props.label) : removeChecked(props.label))}
       {...props}
     />
   );

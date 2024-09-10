@@ -1,8 +1,8 @@
 import React from 'react';
 
 import Input from '@components/form/publicodes/Input';
+import { UrlStateCheckableAccordion } from '@components/ui/CheckableAccordion';
 
-import { UrlStateCheckableAccordion } from './CheckableAccordion';
 import { ModeDeChauffage } from './modes-de-chauffage';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
