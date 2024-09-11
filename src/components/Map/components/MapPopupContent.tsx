@@ -143,7 +143,7 @@ const MapPopupContent = ({
             {conso_raccordement === 's' || conso_raccordement === 'nd' ? (
               <>Non disponible</>
             ) : (
-              `${parseFloat(conso_raccordement).toFixed(2)} MWh/an`
+              <>{parseFloat(conso_raccordement).toFixed(2)}&nbsp;MWh/an</>
             )}
             <br />
           </>
