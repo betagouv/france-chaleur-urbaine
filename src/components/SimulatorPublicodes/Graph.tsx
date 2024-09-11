@@ -132,19 +132,12 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     ...modesDeChauffage
       .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
       .flatMap((typeInstallation) => {
-        const amountP1Abo = engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible abonnement`);
-        const amountP1Conso = engine.getFieldAsNumber(
-          `Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût du combustible consommation`
-        );
-        const amountP1ECS = engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût électricité auxiliaire`);
-        const amountP1prime = engine.getFieldAsNumber(`Calcul Eco . ${typeInstallation.coutPublicodeKey} . Coût électricité auxiliaire`);
-        const amountP2 = engine.getFieldAsNumber(
-          `Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . petit entretien P2`
-        );
-        // TODO manque les différents types d'installation avec élec ou solaire
-        const amountP3 = engine.getFieldAsNumber(
-          `Calcul Eco . P2 P3 Coût de l'entretien . ${typeInstallation.coutPublicodeKey} . gros entretien P3`
-        );
+        const amountP1Abo = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1abo`);
+        const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
+        const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
+        const amountP1prime = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1prime`);
+        const amountP2 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P2`);
+        const amountP3 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P3`);
         const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
         const amountAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`);
 
