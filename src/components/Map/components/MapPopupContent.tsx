@@ -83,7 +83,7 @@ const MapPopupContent = ({
 
   return (
     <>
-      {textAddress && (
+      {textAddress && textAddress !== 'pb' && (
         <header>
           <h6>{textAddress}</h6>
         </header>
@@ -140,8 +140,11 @@ const MapPopupContent = ({
         {conso_raccordement && conso_raccordement !== 'secret' && (
           <>
             <strong>Consommation de chaleur&nbsp;:</strong>&nbsp;
-            {conso_raccordement}
-            &nbsp;MWh/an
+            {conso_raccordement === 's' || conso_raccordement === 'nd' ? (
+              <>Non disponible</>
+            ) : (
+              <>{parseFloat(conso_raccordement).toFixed(2)}&nbsp;MWh/an</>
+            )}
             <br />
           </>
         )}
