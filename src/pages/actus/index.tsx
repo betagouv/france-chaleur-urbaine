@@ -88,6 +88,9 @@ const ActualitesPage = () => {
                   linkProps={{
                     href: `/actus/${article.slug}`,
                   }}
+                  nativeImgProps={{
+                    loading: 'lazy',
+                  }}
                   size="medium"
                   start={
                     <ul className="fr-tags-group">

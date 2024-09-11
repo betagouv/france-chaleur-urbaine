@@ -4,7 +4,7 @@ import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useState } from 'react';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice';
 import { submitToAirtable } from '@helpers/airtable';

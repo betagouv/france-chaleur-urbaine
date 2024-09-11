@@ -8,11 +8,12 @@ import { withCors } from 'src/services/api/cors';
 const eligibilityStatus = handleRouteErrors(async (req: NextApiRequest) => {
   requireGetMethod(req);
 
-  const { lat, lon } = await validateObjectSchema(req.query, {
+  const { lat, lon, city } = await validateObjectSchema(req.query, {
     lat: z.coerce.number(),
     lon: z.coerce.number(),
+    city: z.string(),
   });
-  return await getEligilityStatus(lat, lon);
+  return await getEligilityStatus(lat, lon, city);
 });
 
 export default withCors(eligibilityStatus);

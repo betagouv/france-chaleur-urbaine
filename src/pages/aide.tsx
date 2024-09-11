@@ -1,9 +1,9 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { Accordion } from '@codegouvfr/react-dsfr/Accordion';
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
 import SimplePage from '@components/shared/page/SimplePage';
+import Accordion from '@components/ui/Accordion';
 
 type FaqItem = {
   title: string;

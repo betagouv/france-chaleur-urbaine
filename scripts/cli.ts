@@ -1,22 +1,18 @@
-import {
-  InvalidArgumentError,
-  createCommand,
-} from '@commander-js/extra-typings';
-import { logger } from '@helpers/logger';
 import { readFile } from 'fs/promises';
+
+import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
+
+import { logger } from '@helpers/logger';
 import db from 'src/db';
-import {
-  DatabaseTileInfo,
-  SourceId,
-  tilesInfo,
-  zSourceId,
-} from 'src/services/tiles.config';
+import { DatabaseTileInfo, SourceId, tilesInfo, zSourceId } from 'src/services/tiles.config';
+
 import { KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
 import { downloadNetwork } from './networks/download-network';
 import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 import { importMvtDirectory } from './networks/import-mvt-directory';
+import { upsertFixedSimulateurData } from './simulateur/import';
 import { fillTiles } from './utils/tiles';
 
 const program = createCommand();
@@ -130,6 +126,14 @@ program
     await fillTiles(table, zoomMin, zoomMax, withIndex);
   });
 
+program
+  .command('update-simulateur')
+  .description('Take AMORCE file and either create records in database or update them.')
+  .argument('<filepath>', 'Path to the Amorce file')
+  .action(async (filepath) => {
+    await upsertFixedSimulateurData(filepath);
+  });
+
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
   process.on(signal, async () => {
     logger.warn('Received stop signal');
@@ -141,11 +145,7 @@ program.parse();
 
 function validateKnownAirtableBase(value: string): KnownAirtableBase {
   if (!(value in knownAirtableBases)) {
-    throw new InvalidArgumentError(
-      `invalid base "${value}", expected any of ${Object.keys(
-        knownAirtableBases
-      )}.`
-    );
+    throw new InvalidArgumentError(`invalid base "${value}", expected any of ${Object.keys(knownAirtableBases)}.`);
   }
   return value as KnownAirtableBase;
 }

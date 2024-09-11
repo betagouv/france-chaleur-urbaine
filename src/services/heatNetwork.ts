@@ -28,7 +28,10 @@ export class HeatNetworkService {
         return await this.httpClient.get<HeatNetworksResponse>(`/api/map/cityNetwork?&city=${geoAddress.properties.city}`);
       } else {
         const [lon, lat] = geoAddress.geometry.coordinates;
-        return await this.httpClient.get<HeatNetworksResponse>(`/api/map/eligibilityStatus?lat=${lat}&lon=${lon}`);
+        const heatNetwork: HeatNetworksResponse = await this.httpClient.get<HeatNetworksResponse>(
+          `/api/map/eligibilityStatus?lat=${lat}&lon=${lon}&city=${geoAddress.properties.city}`
+        );
+        return heatNetwork;
       }
     } catch (e) {
       throw new ServiceError(e);

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import Input from '@components/form/Input';
+import Input from '@components/form/dsfr/Input';
 
 export const Container = styled.form`
   display: flex;

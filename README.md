@@ -60,6 +60,31 @@ Une partie des données est stockées dans [Airtable](https://airtable.com/), l'
 2. Récupérer les API Keys et les modifier dans le fichier `.env.local`
 
 
+## Développement avec Publicodes
+
+Les commandes ci-dessous sont à réaliser une fois pour lier la dépendance [@betagouv/france-chaleur-urbaine-publicodes](https://github.com/betagouv/france-chaleur-urbaine-publicodes) directement au répertoire local `france-chaleur-urbaine-publicodes` pour faciliter le développement sans avoir besoin de publier une version sur le registre NPM.
+
+```sh
+# rend disponible le paquet @betagouv/france-chaleur-urbaine-publicodes globalement en local
+(cd france-chaleur-urbaine-publicodes && yarn link)
+
+# utilise le paquet local @betagouv/france-chaleur-urbaine-publicodes plutôt que celui du registre
+(cd france-chaleur-urbaine && yarn link @betagouv/france-chaleur-urbaine-publicodes)
+```
+
+Note : Le lien créé est un lien symbolique, il ne fonctionne pas quand le serveur est lancé dans un conteneur Docker.
+Il faut donc lancer le serveur en dehors du conteneur Docker.
+
+```sh
+# arrêter le conteneur du serveur
+docker compose stop web
+# corriger les permissions (root dans le conteneur != de l'utilisateur local)
+sudo chown -R $USER: .next node_modules
+# lancer le serveur
+yarn dev
+```
+
+
 ## Lint
 
 - [Prettier](https://prettier.io/) est utilisé comme formatteur de code.

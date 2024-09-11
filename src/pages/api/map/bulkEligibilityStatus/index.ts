@@ -205,7 +205,7 @@ const bulkEligibilitygibilityStatus = async (
       const lat = informations[informations.length - 5];
       const address = informations.slice(0, informations.length - 5).join(',');
 
-      const result = label ? await getEligilityStatus(Number(lat), Number(lon)) : { isEligible: null };
+      const result = label ? await getEligilityStatus(Number(lat), Number(lon), city) : { isEligible: null };
       results.push({
         ...result,
         city,

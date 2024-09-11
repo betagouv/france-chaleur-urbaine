@@ -1,7 +1,7 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import styled, { css } from 'styled-components';
 
-import DSFRInput from '@components/form/Input';
+import DSFRInput from '@components/form/dsfr/Input';
 import { Cartridge } from '@components/MarkdownWrapper/MarkdownWrapper.style';
 
 export const BoxSimulator = styled(Cartridge)`
