@@ -86,15 +86,18 @@ export type MapConfiguration = {
     interval: Interval;
   };
   batimentsRaccordes: boolean;
-  enrrMobilisables: {
+  enrrMobilisablesChaleurFatale: {
     show: boolean;
-    showDatacenters: boolean;
-    showIndustrie: boolean;
-    showInstallationsElectrogenes: boolean;
-    showStationsDEpuration: boolean;
     showUnitesDIncineration: boolean;
-    showSolaireThermiqueFriches: boolean;
-    showSolaireThermiqueParkings: boolean;
+    showIndustrie: boolean;
+    showStationsDEpuration: boolean;
+    showDatacenters: boolean;
+    showInstallationsElectrogenes: boolean;
+  };
+  enrrMobilisablesSolaireThermique: {
+    show: boolean;
+    showFriches: boolean;
+    showParkings: boolean;
   };
   zonesOpportunite: {
     show: boolean;
@@ -170,15 +173,18 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
     interval: [50, Number.MAX_VALUE],
   },
   batimentsRaccordes: false,
-  enrrMobilisables: {
+  enrrMobilisablesChaleurFatale: {
     show: false,
     showDatacenters: true,
     showIndustrie: true,
     showInstallationsElectrogenes: true,
     showStationsDEpuration: true,
     showUnitesDIncineration: true,
-    showSolaireThermiqueFriches: true,
-    showSolaireThermiqueParkings: true,
+  },
+  enrrMobilisablesSolaireThermique: {
+    show: false,
+    showFriches: true,
+    showParkings: true,
   },
   zonesOpportunite: {
     show: false,

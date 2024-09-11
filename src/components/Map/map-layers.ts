@@ -1122,36 +1122,39 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   setLayerVisibility('zonesDeDeveloppementPrioritaire', config.zonesDeDeveloppementPrioritaire);
   setLayerVisibility(
     'enrrMobilisables-datacenter',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showDatacenters
+    config.proMode && config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showDatacenters
   );
-  setLayerVisibility('enrrMobilisables-industrie', config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showIndustrie);
+  setLayerVisibility(
+    'enrrMobilisables-industrie',
+    config.proMode && config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showIndustrie
+  );
   setLayerVisibility(
     'enrrMobilisables-installations-electrogenes',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showInstallationsElectrogenes
+    config.proMode && config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showInstallationsElectrogenes
   );
   setLayerVisibility(
     'enrrMobilisables-stations-d-epuration',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showStationsDEpuration
+    config.proMode && config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showStationsDEpuration
   );
   setLayerVisibility(
     'enrrMobilisables-unites-d-incineration',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showUnitesDIncineration
+    config.proMode && config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showUnitesDIncineration
   );
   setLayerVisibility(
     'enrrMobilisables-friches',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueFriches
+    config.proMode && config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches
   );
   setLayerVisibility(
     'enrrMobilisables-friches-contour',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueFriches
+    config.proMode && config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches
   );
   setLayerVisibility(
     'enrrMobilisables-parkings',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueParkings
+    config.proMode && config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings
   );
   setLayerVisibility(
     'enrrMobilisables-parkings-contour',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueParkings
+    config.proMode && config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings
   );
   setLayerVisibility('zonesPotentielChaud', config.proMode && config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud);
   setLayerVisibility(
