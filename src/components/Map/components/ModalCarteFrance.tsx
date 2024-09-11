@@ -140,7 +140,7 @@ function ModalCarteFrance() {
         }}
       >
         <Image src="/img/icon-france.png" alt="" width="19" height="19" />
-        Voir les potentiels de raccordement
+        Potentiel de densification
       </PotentielsRaccordementButton>
 
       <Modal>

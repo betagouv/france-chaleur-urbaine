@@ -106,7 +106,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
         {selectedTabId === 'reseaux' && (
           <>
             {filtersVisible ? (
-              <Box mt="2v">
+              <Box mt="2v" mx="1w">
                 <Button
                   onClick={() => setFiltersVisible(false)}
                   priority="secondary"
@@ -130,7 +130,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 />
               </Box>
             ) : (
-              <Box mt="2v">
+              <Box mt="2v" mx="1w">
                 <Heading as="h2" size="h6" mb="1w">
                   {legendTitle || 'Réseaux de chaleur et de froid'}
                 </Heading>
@@ -404,7 +404,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
           </>
         )}
         {selectedTabId === 'potentiel' && (
-          <Box mt="2v">
+          <Box mt="2v" mx="1w">
             <Heading as="h2" size="h6" mb="1w">
               {'Potentiel'}
             </Heading>
