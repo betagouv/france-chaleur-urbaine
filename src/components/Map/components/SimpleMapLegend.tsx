@@ -410,7 +410,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
             </Heading>
             {enabledFeatures.includes('demandesEligibilite') && (
               <>
-                <Box display="flex">
+                <Box display="flex" mb="2w">
                   <SingleCheckbox
                     name="demandesEligibilite"
                     checked={mapConfiguration.demandesEligibilite}
@@ -440,7 +440,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     Demandes de raccordement sur France Chaleur Urbaine
                   </Text>
                 </Box>
-                <LegendSeparator />
               </>
             )}
             {(enabledFeatures.includes('consommationsGaz') ||
@@ -815,7 +814,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
               </UrlStateAccordion>
             )}
             {(enabledFeatures.includes('zonesOpportunite') || enabledFeatures.includes('besoinsEnChaleurIndustrieCommunes')) && (
-              <UrlStateAccordion label="Zones d'opportunité pour le développement de réseaux" small>
+              <UrlStateAccordion label="Potentiel par territoire" small>
                 {enabledFeatures.includes('zonesOpportunite') && (
                   <TrackableCheckableAccordion
                     mapConfiguration={mapConfiguration}
@@ -963,12 +962,12 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     </DeactivatableBox>
                   </TrackableCheckableAccordion>
                 )}
+                {enabledFeatures.includes('cartePotentielsRaccordements') && (
+                  <Box textAlign="center" mt="5w">
+                    <ModalCarteFrance />
+                  </Box>
+                )}
               </UrlStateAccordion>
-            )}
-            {enabledFeatures.includes('cartePotentielsRaccordements') && (
-              <Box textAlign="center" mt="5w">
-                <ModalCarteFrance />
-              </Box>
             )}
           </Box>
         )}
