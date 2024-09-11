@@ -26,6 +26,7 @@ import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux, { type MapLegendFeature } from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
+import OutilMesureDistances from './outils/OutilMesureDistances';
 import ScaleLegend from './ScaleLegend';
 import { DeactivatableBox, InfoIcon, SingleCheckbox, Tabs, TrackableCheckableAccordion, tabs, type TabId } from './SimpleMapLegend.style';
 
@@ -653,6 +654,8 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
             <Heading as="h2" size="h6" mb="1w">
               Outils
             </Heading>
+            {/* TODO gérer l'affichage d'un outil à la fois + état dans l'URL (avec tabId ?) */}
+            <OutilMesureDistances />
             <Box mt="2w" mx="2w" mb="2w" display="flex" alignItems="center" gap="16px">
               <Link href="/documentation/carto_sources.pdf" isExternal eventKey="Téléchargement|Carto sources">
                 <Text as="span" size="xs">

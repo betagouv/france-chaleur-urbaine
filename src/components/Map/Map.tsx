@@ -23,6 +23,7 @@ import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { useContactFormFCU } from '@hooks';
+import useFCUMap from '@hooks/useFCUMap';
 import useRouterReady from '@hooks/useRouterReady';
 import debounce from '@utils/debounce';
 import { fetchJSON } from '@utils/network';
@@ -177,13 +178,13 @@ const Map = ({
   mapRef?: MutableRefObject<MapRef>;
 }) => {
   const router = useRouter();
+  const { setMapRef, mapDraw, setMapDraw } = useFCUMap();
 
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
   const [mapConfiguration, setMapConfiguration] = useState<MaybeEmptyMapConfiguration>(initialMapConfiguration ?? defaultMapConfiguration);
 
-  const [draw, setDraw] = useState<any>();
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
   const [drawing, setDrawing] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
@@ -225,6 +226,7 @@ const Map = ({
     if (mapRefParam && mapRef.current) {
       mapRefParam.current = mapRef.current;
     }
+    setMapRef(mapRef?.current);
   }, [mapRef.current]);
 
   const { value: soughtAddresses, set: setSoughtAddresses } = useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
@@ -327,12 +329,48 @@ const Map = ({
   );
 
   const onMapLoad = async (e: MapLibreEvent) => {
+    console.log('onMapLoad');
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
+      userProperties: true,
+      styles: [
+        {
+          id: 'gl-draw-line',
+          type: 'line',
+          filter: ['all', ['==', '$type', 'LineString']],
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round',
+          },
+          paint: {
+            'line-color': '#f00',
+            'line-width': 2,
+            'line-dasharray': [4, 4],
+          },
+        },
+        {
+          id: 'gl-draw-mesures-distances-labels',
+          type: 'symbol',
+          filter: ['all', ['==', '$type', 'LineString']],
+          layout: {
+            'symbol-placement': 'line-center',
+            'text-field': ['get', 'distance'],
+            'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+            'text-size': 16,
+            'text-anchor': 'bottom',
+            'text-overlap': 'always',
+          },
+          paint: {
+            'text-color': ['get', 'color'],
+            'text-halo-color': '#ff00ff',
+            'text-halo-width': 2,
+          },
+        },
+      ],
     });
 
     e.target.addControl(drawControl as any);
-    setDraw(drawControl);
+    setMapDraw(drawControl);
     e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
         defaultStyle: 'Carte',
@@ -753,9 +791,10 @@ const Map = ({
             )}
           </>
         )}
-        {withDrawing && mapRef.current && (
+        {withDrawing && mapRef.current && mapDraw && (
           <MapControlWrapper legendCollapsed={legendCollapsed}>
-            <ZoneInfos map={mapRef.current} draw={draw} setDrawing={setDrawing} drawing={drawing} />
+            {/* FIXME: à supprimer et déplacer dans le menu */}
+            <ZoneInfos map={mapRef.current} draw={mapDraw} setDrawing={setDrawing} drawing={drawing} />
           </MapControlWrapper>
         )}
         <MapProvider>
