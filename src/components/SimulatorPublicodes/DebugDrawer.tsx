@@ -37,6 +37,18 @@ const ScrollDrawer = styled(Drawer)`
 const DebugTable = styled(Table)`
   max-width: 100%;
   overflow-x: auto;
+
+  th:first-child,
+  td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: var(--background-alt-grey);
+  }
+
+  tbody tr:nth-child(odd) td:first-child {
+    background-color: white;
+  }
 `;
 
 const DebugDrawer = ({ engine }: DebugDrawerProps) => {
