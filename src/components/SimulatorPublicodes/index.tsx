@@ -50,9 +50,11 @@ const addresseToPublicodesRules = {
   'caractéristique réseau de froid . livraisons totales': (infos) => infos.nearestReseauDeFroid?.['livraisons_totale_MWh'],
   'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid?.['production_totale_MWh'],
 
-  'code département': (infos) => `'${infos.infosVilles.departement_id}'`,
-  'température de référence chaud': (infos) => +infos.infosVilles.temperature_ref_altitude_moyenne,
-} as const satisfies Partial<Record<DottedName, (infos: any) => any>>;
+  'code département': (infos) => `'${infos.infosVille.departement_id}'`,
+  'température de référence chaud': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
+  'zone climatique': (infos) => `'${infos.infosVille.zone_climatique}'`,
+  'sous zone climatique': (infos) => `'${infos.infosVille.sous_zone_climatique}'`,
+} as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;
 
 const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   children,
@@ -189,7 +191,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
                       setNearestReseauDeFroid(infos.nearestReseauDeFroid);
 
-                      if (!infos.infosVilles) {
+                      if (!infos.infosVille) {
                         setAddressError(true);
 
                         return;

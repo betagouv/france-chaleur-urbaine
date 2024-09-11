@@ -29,13 +29,16 @@ const Select = ({
 
   const options = isInView ? getOptions(engine, name) : [];
   const defaultValue = isInView ? fixupBooleanEngineValue(engine.getFieldDefaultValue(name) as string | null | undefined) : '';
-  const value = isInView ? (withDefaultOption ? engine.getSituation()[name] : engine.getField(name)) : undefined;
+  const value = isInView
+    ? `${(withDefaultOption ? engine.getSituation()[name] : fixupBooleanEngineValue(engine.getField(name))) ?? ''}`
+    : '';
 
   return (
     <DSFRSelect
       ref={ref}
       nativeSelectProps={{
         ...nativeSelectProps,
+        value,
         onChange: (e) => {
           const value = e.target.value;
           if (['oui', 'non'].includes(value)) {
@@ -58,7 +61,6 @@ const Select = ({
         ...options.map((option) => ({
           label: option,
           value: option,
-          selected: option === value,
         })),
       ]}
       hint={hint}

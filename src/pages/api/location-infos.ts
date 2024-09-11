@@ -17,7 +17,7 @@ const maxDistanceThreshold = 1000;
 export interface LocationInfoResponse {
   nearestReseauDeChaleur: NearestReseauDeChaleur;
   nearestReseauDeFroid: NearestReseauDeFroid;
-  infosVilles: InfosVilles;
+  infosVille: InfosVille;
 }
 
 export interface NearestReseauDeChaleur {
@@ -46,7 +46,7 @@ export interface NearestReseauDeFroid {
   production_totale_MWh: number;
 }
 
-export interface InfosVilles {
+export interface InfosVille {
   id: string;
   code_postal: string;
   commune: string;
@@ -54,7 +54,8 @@ export interface InfosVilles {
   altitude_moyenne: number;
   temperature_ref_altitude_moyenne: string;
   source: string;
-  sous_zones_climatiques: string;
+  zone_climatique: string;
+  sous_zone_climatique: string;
 }
 
 export default handleRouteErrors(async (req: NextApiRequest) => {
@@ -63,7 +64,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
 
   const distanceSubQuery = `round(geom <-> ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154))`;
 
-  const [nearestReseauDeChaleur, nearestReseauDeFroid, infosVilles] = await Promise.all([
+  const [nearestReseauDeChaleur, nearestReseauDeFroid, infosVille] = await Promise.all([
     db('reseaux_de_chaleur')
       .select(
         'Identifiant reseau',
@@ -102,13 +103,20 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       .orderByRaw(distanceSubQuery)
       .first(),
     db('communes')
-      .where('id', cityCode)
-      .orWhere('commune', city.toUpperCase())
-      .orWhere('commune', 'like', `${city.toUpperCase()}-%-ARRONDISSEMENT`)
+      .select(
+        'communes.departement_id as departement_id',
+        'communes.temperature_ref_altitude_moyenne as temperature_ref_altitude_moyenne',
+        'departements.zone_climatique as zone_climatique',
+        'departements.sous_zone_climatique as sous_zone_climatique'
+      )
+      .leftJoin('departements', 'communes.departement_id', '=', 'departements.id')
+      .where('communes.id', cityCode)
+      .orWhere('communes.commune', city.toUpperCase())
+      .orWhere('communes.commune', 'like', `${city.toUpperCase()}-%-ARRONDISSEMENT`)
       .first(),
   ]);
 
-  if (!infosVilles) {
+  if (!infosVille) {
     const errorMessage = `/api/location-infos. Impossible de trouver la ville: cityCode:"${cityCode}",  city:"${city}"`;
     console.error(errorMessage);
     Sentry.captureException(new Error(errorMessage));
@@ -117,6 +125,6 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
   return {
     nearestReseauDeChaleur,
     nearestReseauDeFroid,
-    infosVilles,
+    infosVille,
   };
 });
