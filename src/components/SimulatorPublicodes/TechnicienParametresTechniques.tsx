@@ -321,22 +321,41 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
           label="Je suis un particulier"
           small
           orientation="horizontal"
+          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
         />
         <Select
           name="Paramètres économiques . Aides . Éligibilité x Ressources du ménage"
           label="Ressources du ménage"
           withDefaultOption={false}
+          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
         />
         <RadioInput
           name="Paramètres économiques . Aides . Éligibilité x Je dispose actuellement d'une chaudière gaz ou fioul"
           label="Je dispose actuellement d'une chaudière gaz ou fioul"
           small
           orientation="horizontal"
+          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
         />
-        <Select name="Paramètres économiques . Aides . Aides x Éligible Ma prime renov'" label="Éligible Ma prime renov'" />
-        <Select name="Paramètres économiques . Aides . Aides x Éligible Coup de pouce chauffage" label="Éligible Coup de pouce chauffage" />
-        <Select name="Paramètres économiques . Aides . Aides x Éligible CEE" label="Éligible CEE" />
-        <Input name="Paramètres économiques . Aides . Valeur CEE" label="Valeur CEE" />
+        <Select
+          name="Paramètres économiques . Aides . Aides x Éligible Ma prime renov'"
+          label="Éligible Ma prime renov'"
+          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
+        />
+        <Select
+          name="Paramètres économiques . Aides . Aides x Éligible Coup de pouce chauffage"
+          label="Éligible Coup de pouce chauffage"
+          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
+        />
+        <Select
+          name="Paramètres économiques . Aides . Aides x Éligible CEE"
+          label="Éligible CEE"
+          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
+        />
+        <Input
+          name="Paramètres économiques . Aides . Valeur CEE"
+          label="Valeur CEE"
+          disabled={!engine.getField('Paramètres économiques . Aides . Éligibilité x Prise en compte des aides')}
+        />
       </Accordion>
     </div>
   );
