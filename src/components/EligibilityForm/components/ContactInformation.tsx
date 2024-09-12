@@ -238,15 +238,17 @@ const ContactInformation = ({
                 )}
               </>
             )}
-          {values.structure === 'Tertiaire' && demandCompanyType === 'Bâtiment tertiaire' && (
-            <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-              <Field name="demandArea" type="number" label={fieldLabelInformation.demandArea} component={Input} />
-            </InputWraper>
-          )}
+          {values.structure === 'Tertiaire' &&
+            (companyType === 'Gestionnaire de parc tertiaire' || demandCompanyType === 'Bâtiment tertiaire') && (
+              <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
+                <Field name="demandArea" type="number" label={fieldLabelInformation.demandArea} component={Input} />
+              </InputWraper>
+            )}
           {(values.structure === 'Copropriété' ||
             (values.structure === 'Tertiaire' &&
               (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
-              (demandCompanyType === 'Copropriété' || demandCompanyType === 'Bailleur social'))) && (
+              (demandCompanyType === 'Copropriété' || demandCompanyType === 'Bailleur social')) ||
+            (values.structure === 'Tertiaire' && (companyType === 'Syndic de copropriété' || companyType === 'Bailleur social'))) && (
             <InputWraper className={fr.cx('fr-fieldset__element')} mb="1w">
               <Field name="nbLogements" type="number" label={fieldLabelInformation.nbLogements} component={Input} />
             </InputWraper>

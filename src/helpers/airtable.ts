@@ -39,9 +39,12 @@ const formatStructureToAirtable: (structure: string, companyType?: string, deman
         switch (demandCompanyType) {
           case 'Copropriété':
           case 'Maison individuelle':
+          case 'Autre':
             return demandCompanyType;
           case 'Bailleur social':
             return 'Logement social';
+          default:
+            return structure;
         }
         break;
       default:
@@ -60,16 +63,6 @@ const formatEtablissementToAirtable: (structure: string, company: string, compan
     return demandCompanyName || '';
   }
   return company;
-};
-const formatStructureAccompagnanteToAirtable: (structure: string, company: string, companyType?: string) => string = (
-  structure,
-  company,
-  companyType
-) => {
-  if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
-    return company;
-  }
-  return '';
 };
 
 export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDemandCreation = (values) => {
@@ -105,7 +98,10 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     Prénom: firstName,
     Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),
     Établissement: formatEtablissementToAirtable(structure, company, companyType, demandCompanyName),
-    'Structure accompagnante': companyType,
+    'Structure accompagnante':
+      structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')
+        ? companyType
+        : '',
     Éligibilité: eligibility.isEligible,
     Adresse: address,
     Latitude: coords.lat,
@@ -123,7 +119,10 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     'Campagne matomo': mtm_campaign,
     'Campagne keywords': mtm_kwd,
     'Campagne source': mtm_source,
-    'Nom de la structure accompagnante': formatStructureAccompagnanteToAirtable(structure, company, companyType),
+    'Nom de la structure accompagnante':
+      structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')
+        ? company
+        : '',
     'Surface en m2': demandArea || undefined,
     Logement: nbLogements || undefined,
     networkId,
