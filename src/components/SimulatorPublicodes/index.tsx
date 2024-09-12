@@ -51,7 +51,7 @@ const addresseToPublicodesRules = {
   'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid?.['production_totale_MWh'],
 
   'code département': (infos) => `'${infos.infosVille.departement_id}'`,
-  'température de référence chaud': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
+  'température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
 } as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;
 
 const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
