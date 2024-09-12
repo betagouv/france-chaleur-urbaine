@@ -214,36 +214,44 @@ const ContactInformation = ({
           <Field name="phone" placeholder="0605040302" label={fieldLabelInformation.phone} component={Input} />
         </InputWraper>
       </fieldset>
-      {values.structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') && (
+
+      {(values.structure === 'Copropriété' || (values.structure === 'Tertiaire' && companyType !== 'Autre')) && (
         <fieldset className={fr.cx('fr-fieldset')}>
-          <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-            <Select
-              label={fieldLabelInformation.demandCompanyType.label}
-              options={fieldLabelInformation.demandCompanyType.inputs}
-              nativeSelectProps={{
-                required: true,
-                onChange: (e) => setDemandCompanyTypeValue(e.target.value),
-              }}
-            ></Select>
-          </InputWraper>
-          {demandCompanyType !== 'Copropriété' && demandCompanyType !== 'Maison individuelle' && (
-            <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-              <Field name="demandCompanyName" label={fieldLabelInformation.demandCompanyName} component={Input} />
-            </InputWraper>
-          )}
-          {demandCompanyType === 'Bâtiment tertiaire' && (
+          {values.structure === 'Tertiaire' &&
+            (companyType === "Bureau d'études ou AMO" ||
+              companyType === 'Mandataire / délégataire CEE' ||
+              companyType === 'Gestionnaire de parc tertiaire') && (
+              <>
+                <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
+                  <Select
+                    label={fieldLabelInformation.demandCompanyType.label}
+                    options={fieldLabelInformation.demandCompanyType.inputs}
+                    nativeSelectProps={{
+                      required: true,
+                      onChange: (e) => setDemandCompanyTypeValue(e.target.value),
+                    }}
+                  ></Select>
+                </InputWraper>
+                {(demandCompanyType === 'Bâtiment tertiaire' ||
+                  demandCompanyType === 'Bailleur social' ||
+                  demandCompanyType === 'Autre') && (
+                  <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
+                    <Field name="demandCompanyName" label={fieldLabelInformation.demandCompanyName} component={Input} />
+                  </InputWraper>
+                )}
+              </>
+            )}
+          {values.structure === 'Tertiaire' && companyType === 'Gestionnaire de parc tertiaire' && (
             <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
               <Field name="demandArea" type="number" label={fieldLabelInformation.demandArea} component={Input} />
             </InputWraper>
           )}
-        </fieldset>
-      )}
-      {(values.structure === 'Copropriété' ||
-        (values.structure === 'Tertiaire' && (demandCompanyType === 'Copropriété' || demandCompanyType === 'Bailleur social'))) && (
-        <fieldset className={fr.cx('fr-fieldset')}>
-          <InputWraper className={fr.cx('fr-fieldset__element')} mb="1w">
-            <Field name="nbLogements" type="number" label={fieldLabelInformation.nbLogements} component={Input} />
-          </InputWraper>
+          {(values.structure === 'Copropriété' ||
+            (values.structure === 'Tertiaire' && (companyType === 'Syndic de copropriété' || companyType === 'Bailleur social'))) && (
+            <InputWraper className={fr.cx('fr-fieldset__element')} mb="1w">
+              <Field name="nbLogements" type="number" label={fieldLabelInformation.nbLogements} component={Input} />
+            </InputWraper>
+          )}
         </fieldset>
       )}
       <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
