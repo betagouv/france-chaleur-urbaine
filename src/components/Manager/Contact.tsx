@@ -17,30 +17,29 @@ const Contact = ({
 
   const getNomStructure = useCallback(() => {
     if (
-      demand.Structure === 'Tertiaire' &&
       demand['Structure accompagnante'] &&
       (demand['Structure accompagnante'].includes("Bureau d'études ou AMO") ||
-        demand['Structure accompagnante'].includes('Mandataire / délégataire CEE'))
+        demand['Structure accompagnante'].includes('Mandataire / délégataire CEE')) &&
+      (demand.Structure === 'Logement social' || demand.Structure === 'Tertiaire')
     ) {
-      return demand['Nom de la structure accompagnante'] + ' (' + demand['Structure accompagnante'] + ')';
+      return demand['Nom de la structure accompagnante']
+        ? demand['Nom de la structure accompagnante'] + ' (' + demand['Structure accompagnante'] + ')'
+        : '';
     }
     return demand.Établissement;
   }, [demand]);
   const nomStructure = getNomStructure();
 
   const getNomStructureAccompagnante = useCallback(() => {
-    if (demand.Structure === 'Tertiaire' || demand.Structure === 'Logement social') {
-      if (
-        demand['Structure accompagnante'] &&
-        demand['Structure accompagnante'].includes("Bureau d'études ou AMO") &&
-        demand['Structure accompagnante'].includes('Mandataire / délégataire CEE')
-      ) {
-        return demand.Établissement;
-      } else {
-        return demand['Nom de la structure accompagnante'];
-      }
+    if (
+      demand['Structure accompagnante'] &&
+      (demand['Structure accompagnante'].includes("Bureau d'études ou AMO") ||
+        demand['Structure accompagnante'].includes('Mandataire / délégataire CEE')) &&
+      (demand.Structure === 'Logement social' || demand.Structure === 'Tertiaire')
+    ) {
+      return demand.Établissement;
     }
-    return '';
+    return demand['Nom de la structure accompagnante'];
   }, [demand]);
   const nomStructureAccompagnante = getNomStructureAccompagnante();
 
