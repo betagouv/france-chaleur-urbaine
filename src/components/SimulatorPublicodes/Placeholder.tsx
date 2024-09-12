@@ -1,4 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
 import React from 'react';
 
@@ -14,7 +15,9 @@ export type TabId = 'batiment' | 'modes';
 export const PublicodesSimulatorTitle = () => {
   return (
     <div>
-      <Heading as="h2">Simulateur de prix et d'émissions de CO2</Heading>
+      <Heading as="h2">
+        Simulateur de prix et d'émissions de CO2 <Badge severity="warning">Beta</Badge>
+      </Heading>
       <ol>
         <li>
           Renseignez les données de votre bâtiment dans <strong>l’onglet “Bâtiment”</strong>
