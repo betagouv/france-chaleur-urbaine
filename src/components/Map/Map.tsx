@@ -42,10 +42,11 @@ import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
 import CardSearchDetails from './components/CardSearchDetails';
 import { isDevModeEnabled } from './components/DevModeIcon';
 import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
+import { type MapLegendFeature } from './components/MapLegendReseaux';
 import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
-import SimpleMapLegend, { MapLegendFeature } from './components/SimpleMapLegend';
+import SimpleMapLegend from './components/SimpleMapLegend';
 import ZoneInfos from './components/SummaryBoxes';
 import { LayerId, ReseauxDeChaleurLimits, applyMapConfigurationToLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {

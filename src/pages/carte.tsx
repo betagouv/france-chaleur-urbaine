@@ -57,13 +57,7 @@ const Carte = () => {
   return (
     <SimplePage title="Carte des réseaux : France Chaleur Urbaine" mode="public-fullscreen">
       <MapWrapper>
-        <Map
-          withoutLogo
-          withLegend
-          initialMapConfiguration={initialMapConfiguration}
-          enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
-          persistViewStateInURL
-        />
+        <Map withoutLogo withLegend initialMapConfiguration={initialMapConfiguration} persistViewStateInURL />
       </MapWrapper>
     </SimplePage>
   );

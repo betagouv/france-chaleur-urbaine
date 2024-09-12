@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 
 import IframeWrapper from '@components/IframeWrapper';
-import { MapLegendFeature } from '@components/Map/components/SimpleMapLegend';
+import { type MapLegendFeature } from '@components/Map/components/MapLegendReseaux';
 import Map from '@components/Map/Map';
 import useRouterReady from '@hooks/useRouterReady';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
