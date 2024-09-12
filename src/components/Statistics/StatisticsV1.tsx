@@ -6,6 +6,7 @@ import Slice from '@components/Slice';
 import TextList from '@components/TextList';
 import { dataNumberFcu } from '@data';
 import { fetchJSON } from '@utils/network';
+import { STAT_LABEL } from 'src/types/enum/MatomoStats';
 
 import Band from './Band';
 import { Container, GraphsWrapper } from './StatisticsV1.style';
@@ -32,19 +33,10 @@ const monthToString = [
   'decembre',
 ];
 
-const today = new Date();
-
 const Statistics = () => {
-  const { data: rawDataActions, error: errorDataActions } = useSWR<any>('/api/statistiques/actions', fetchJSON, {
+  const { data: dataActions, error: errorDataActions } = useSWR<any>('/api/statistiques/actions', fetchJSON, {
     onError: (err) => console.warn('errorDataActions >>', err),
   });
-
-  const dataActions = useMemo(() => {
-    if (!rawDataActions || rawDataActions?.results?.error || rawDataActions?.result === 'error') {
-      return null;
-    }
-    return rawDataActions.results;
-  }, [rawDataActions]);
 
   const formatedDataEligibilityTest = [
     ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
@@ -53,32 +45,25 @@ const Statistics = () => {
       const label = `${!isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month} ${year}`;
       return [
         label,
-        (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0)(entry['Formulaire de test - Adresse Éligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
-          (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0),
-        (entry['Formulaire de test - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Inéligible'] ?? 0) +
-          (entry['Formulaire de test - Fiche réseau - Adresse Inéligible'] ?? 0),
-        (entry['Formulaire de test - Adresse Éligible'] ?? 0) +
-          (entry['Formulaire de test - Carte - Adresse Éligible'] ?? 0) +
-          (entry['Formulaire de test - Fiche réseau - Adresse Éligible'] ?? 0),
+        (entry[STAT_LABEL.FORM_TEST_UNELIGIBLE] ?? 0) +
+          (entry[STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE] ?? 0) +
+          (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE] ?? 0) +
+          (entry[STAT_LABEL.FORM_TEST_ELIGIBLE] ?? 0) +
+          (entry[STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE] ?? 0) +
+          (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0),
+        (entry[STAT_LABEL.FORM_TEST_UNELIGIBLE] ?? 0) +
+          (entry[STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE] ?? 0) +
+          (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE] ?? 0),
+        (entry[STAT_LABEL.FORM_TEST_ELIGIBLE] ?? 0) +
+          (entry[STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE] ?? 0) +
+          (entry[STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE] ?? 0),
       ];
     }),
   ];
 
-  const { data: rawDataVisits, error: errorVisits } = useSWR<any>('/api/statistiques/visits', fetchJSON, {
+  const { data: dataVisits, error: errorVisits } = useSWR<any>('/api/statistiques/visits', fetchJSON, {
     onError: (err) => console.warn('errorVisits >>', err),
   });
-
-  const dataVisits = useMemo(() => {
-    if (!rawDataVisits || rawDataVisits?.results?.error || rawDataVisits?.result === 'error') {
-      return null;
-    }
-
-    return rawDataVisits.results;
-  }, [rawDataVisits]);
 
   const formatedDataVisits = [
     ['x', 'Visiteurs'],
@@ -92,31 +77,17 @@ const Statistics = () => {
   ];
 
   //From Airtable
-  const { data: rawDataMonthContact, error: errorMonthContact } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
+  const { data: dataMonthContact, error: errorMonthContact } = useSWR<any>('/api/statistiques/contacts?group=monthly', fetchJSON, {
     onError: (err) => console.warn('errorMonthContact >>', err),
   });
-
-  const dataMonthContact = useMemo(
-    () =>
-      rawDataMonthContact
-        ? Object.entries((rawDataMonthContact as Record<string, ReturnApiStatAirtable>) || {})
-            .filter(([key]) => key !== `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`)
-            .map(([key, value]) => {
-              return {
-                period: new Date(key),
-                ...value,
-              };
-            })
-        : undefined,
-    [rawDataMonthContact]
-  );
 
   const formatedDataMonthContact = [
     ['x', 'Total des prises de contact', 'Contact pour adresses non éligibles', 'Contact pour adresses éligibles'],
     ...(dataMonthContact
-      ? dataMonthContact.map((val) => {
-          const { period, nbTotal, nbEligible, nbUneligible } = val;
-          const label = `${monthToString[period.getMonth()]} ${period.getFullYear()}`;
+      ? dataMonthContact.map((val: any) => {
+          const { date, nbTotal, nbEligible, nbUneligible } = val;
+          const [year, month] = date.split('-') || ['YYYY', 'MM'];
+          const label = `${!isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month} ${year}`;
 
           return [label, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
         })
@@ -156,31 +127,17 @@ const Statistics = () => {
       : []),
   ];
 
-  const { data: rawDataCountBulkContact, error: errorCountBulkContact } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
+  const { data: dataCountBulkContact, error: errorCountBulkContact } = useSWR<any>('/api/statistiques/bulk', fetchJSON, {
     onError: (err) => console.warn('errorCountContact >>', err),
   });
-
-  const dataCountBulkContact = useMemo(
-    () =>
-      rawDataCountBulkContact
-        ? Object.entries((rawDataCountBulkContact as Record<string, ReturnApiStatAirtable>) || {})
-            .filter(([key]) => key !== `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`)
-            .map(([key, value]) => {
-              return {
-                period: new Date(key),
-                ...value,
-              };
-            })
-        : undefined,
-    [rawDataCountBulkContact]
-  );
 
   const formatedDataCountBulkContact = [
     ['x', 'Total des tests', 'Adresses non éligibles', 'Adresses éligibles'],
     ...(dataCountBulkContact
-      ? dataCountBulkContact.map((val) => {
-          const { period, nbTotal, nbEligible, nbUneligible } = val;
-          const label = `${monthToString[period.getMonth()]} ${period.getFullYear()}`;
+      ? dataCountBulkContact.map((val: any) => {
+          const { date, nbTotal, nbEligible, nbUneligible } = val;
+          const [year, month] = date.split('-') || ['YYYY', 'MM'];
+          const label = `${!isNaN(Number(month)) ? monthToString[parseInt(month) - 1] : month} ${year}`;
 
           return [label, nbTotal || 0, nbUneligible || 0, nbEligible || 0];
         })

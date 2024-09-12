@@ -33,12 +33,12 @@ export const bulkFetchRangeFromMatomo = async <Result>(
   config: ConfigType,
   reducer?: (entry: Result) => object
 ): Promise<(Result & { date: string })[]> => {
-  const months = generateMonthsToNow();
+  const period: string[] = config.date ? [config.date as string] : generateMonthsToNow();
 
   const response = await fetch(
     buildMatomoURL(
       config,
-      months.map((date) => ({
+      period.map((date) => ({
         date,
       }))
     )
@@ -54,7 +54,7 @@ export const bulkFetchRangeFromMatomo = async <Result>(
   }
 
   return bulkResults.map((bulkResult, i) => ({
-    date: months[i],
+    date: period[i],
     ...(reducer
       ? bulkResult.reduce((acc, entry) => {
           return {

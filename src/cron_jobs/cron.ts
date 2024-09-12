@@ -1,6 +1,7 @@
 import cron from 'cron';
 
 import { launchJob } from './launch';
+import { saveStatsInDB } from './saveStatsInDB';
 
 new cron.CronJob({
   cronTime: '00 10 * * 1-5', // du lundi au vendredi à 10:00
@@ -26,6 +27,13 @@ new cron.CronJob({
 new cron.CronJob({
   cronTime: '00 * * * *', // toutes les heures
   onTick: () => launchJob('updateUsers'),
+  start: true,
+  timeZone: 'Europe/Paris',
+});
+
+new cron.CronJob({
+  cronTime: '50 08 12 * *', // le 1er du mois à 08:15 -- exception septembre
+  onTick: () => saveStatsInDB(),
   start: true,
   timeZone: 'Europe/Paris',
 });
