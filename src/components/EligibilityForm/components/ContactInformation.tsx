@@ -57,7 +57,6 @@ export const fieldLabelInformation = {
       { value: 'Gestionnaire de parc tertiaire', label: 'Gestionnaire de parc tertiaire', id: 'gestionnaire' },
       { value: "Bureau d'études ou AMO", label: "Bureau d'études ou AMO", id: 'bureau' },
       { value: 'Mandataire / délégataire CEE', label: 'Mandataire / délégataire CEE', id: 'mandataire' },
-      { value: 'Autre', label: 'Autre', id: 'autre' },
     ],
   },
   contactDetailsTitle: 'Vos coordonnées',
@@ -218,9 +217,7 @@ const ContactInformation = ({
       {(values.structure === 'Copropriété' || (values.structure === 'Tertiaire' && companyType !== 'Autre')) && (
         <fieldset className={fr.cx('fr-fieldset')}>
           {values.structure === 'Tertiaire' &&
-            (companyType === "Bureau d'études ou AMO" ||
-              companyType === 'Mandataire / délégataire CEE' ||
-              companyType === 'Gestionnaire de parc tertiaire') && (
+            (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') && (
               <>
                 <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
                   <Select
@@ -241,13 +238,15 @@ const ContactInformation = ({
                 )}
               </>
             )}
-          {values.structure === 'Tertiaire' && companyType === 'Gestionnaire de parc tertiaire' && (
+          {values.structure === 'Tertiaire' && demandCompanyType === 'Bâtiment tertiaire' && (
             <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
               <Field name="demandArea" type="number" label={fieldLabelInformation.demandArea} component={Input} />
             </InputWraper>
           )}
           {(values.structure === 'Copropriété' ||
-            (values.structure === 'Tertiaire' && (companyType === 'Syndic de copropriété' || companyType === 'Bailleur social'))) && (
+            (values.structure === 'Tertiaire' &&
+              (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
+              (demandCompanyType === 'Copropriété' || demandCompanyType === 'Bailleur social'))) && (
             <InputWraper className={fr.cx('fr-fieldset__element')} mb="1w">
               <Field name="nbLogements" type="number" label={fieldLabelInformation.nbLogements} component={Input} />
             </InputWraper>
