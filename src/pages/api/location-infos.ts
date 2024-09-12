@@ -54,8 +54,6 @@ export interface InfosVille {
   altitude_moyenne: number;
   temperature_ref_altitude_moyenne: string;
   source: string;
-  zone_climatique: string;
-  sous_zone_climatique: string;
 }
 
 export default handleRouteErrors(async (req: NextApiRequest) => {
@@ -103,16 +101,10 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
       .orderByRaw(distanceSubQuery)
       .first(),
     db('communes')
-      .select(
-        'communes.departement_id as departement_id',
-        'communes.temperature_ref_altitude_moyenne as temperature_ref_altitude_moyenne',
-        'departements.zone_climatique as zone_climatique',
-        'departements.sous_zone_climatique as sous_zone_climatique'
-      )
-      .leftJoin('departements', 'communes.departement_id', '=', 'departements.id')
-      .where('communes.id', cityCode)
-      .orWhere('communes.commune', city.toUpperCase())
-      .orWhere('communes.commune', 'like', `${city.toUpperCase()}-%-ARRONDISSEMENT`)
+      .select('departement_id', 'temperature_ref_altitude_moyenne')
+      .where('id', cityCode)
+      .orWhere('commune', city.toUpperCase())
+      .orWhere('commune', 'like', `${city.toUpperCase()}-%-ARRONDISSEMENT`)
       .first(),
   ]);
 

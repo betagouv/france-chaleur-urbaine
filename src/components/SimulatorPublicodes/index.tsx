@@ -52,8 +52,6 @@ const addresseToPublicodesRules = {
 
   'code département': (infos) => `'${infos.infosVille.departement_id}'`,
   'température de référence chaud': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
-  'zone climatique': (infos) => `'${infos.infosVille.zone_climatique}'`,
-  'sous zone climatique': (infos) => `'${infos.infosVille.sous_zone_climatique}'`,
 } as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;
 
 const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
