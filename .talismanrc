@@ -6,7 +6,7 @@ fileignoreconfig:
   - filename: src/components/Map/components/ReseauxDeChaleurFilters.tsx
     checksum: 5a669dfc71e206ae9f06160c38764e5fc12313a3d222245978a3e872ee8f4c02
   - filename: src/components/Map/components/SimpleMapLegend.tsx
-    checksum: a79aac30137cd6174a8cd5aeb95d4cc966b8f97e7a0da250aa74071a14d8133d
+    checksum: 3e93384a6ad412d710aad370cb744c46a374f54e79e9f34d0d83c9f36217f1a2
 
 scopeconfig:
   - scope: node

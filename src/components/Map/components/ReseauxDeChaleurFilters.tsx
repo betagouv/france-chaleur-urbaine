@@ -9,30 +9,6 @@ import { FiltreEnergieConfKey, MapConfiguration, filtresEnergies, percentageMaxI
 import RangeFilter from './RangeFilter';
 import { DeactivatableBox } from './SimpleMapLegend.style';
 
-export const mapLegendFeatures = [
-  'reseauxDeChaleur',
-  'reseauxDeFroid',
-  'reseauxEnConstruction',
-  'zonesDeDeveloppementPrioritaire',
-  'demandesEligibilite',
-  'consommationsGaz',
-  'batimentsGazCollectif',
-  'batimentsFioulCollectif',
-  'batimentsRaccordes',
-  'enrrMobilisables',
-  'zonesOpportunite',
-  'caracteristiquesBatiments',
-  'besoinsEnChaleur',
-  'besoinsEnFroid',
-  'besoinsEnChaleurIndustrieCommunes',
-  'proModeLegend', // texte incitant à activer le mode pro
-  'contributeButton', // boutons contribuer et télécharger les tracés
-  'cartePotentielsRaccordements', // lien d'ouverture de la carte des potentiels de raccordement
-  'sources', // lien vers le PDF d'explication des sources
-] as const;
-
-export type MapLegendFeature = (typeof mapLegendFeatures)[number];
-
 interface ReseauxDeChaleurFiltersProps {
   mapConfiguration: MapConfiguration;
   updateScaleInterval: any;

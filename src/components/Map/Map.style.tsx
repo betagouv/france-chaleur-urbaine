@@ -10,7 +10,6 @@ export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
   drawing: boolean;
   withTopLegend: boolean;
-  withProMode: boolean;
   withHideLegendSwitch: boolean;
   withBorder: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
@@ -28,8 +27,7 @@ export const MapStyle: any = createGlobalStyle<{
       ${({ withTopLegend }) => withTopLegend && 'top: 41px;'}
       width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth}) !important`)};
       height: ${({ withTopLegend }) => (withTopLegend ? 'calc(100% - 41px) !important' : '100%')};
-      ${({ withProMode, withHideLegendSwitch, legendCollapsed }) =>
-        withProMode &&
+      ${({ withHideLegendSwitch, legendCollapsed }) =>
         withHideLegendSwitch &&
         (legendCollapsed
           ? `@media (max-width: 600px) {

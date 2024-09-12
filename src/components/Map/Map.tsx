@@ -5,7 +5,7 @@ import { useLocalStorageValue } from '@react-hookz/web';
 import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import { parseAsBoolean, parseAsString, useQueryStates } from 'nuqs';
+import { parseAsString, useQueryStates } from 'nuqs';
 import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapLayerMouseEvent } from 'react-map-gl';
 import MapReactGL, {
@@ -26,7 +26,6 @@ import useRouterReady from '@hooks/useRouterReady';
 import debounce from '@utils/debounce';
 import { fetchJSON } from '@utils/network';
 import { useServices } from 'src/services';
-import { trackEvent } from 'src/services/analytics';
 import {
   MapConfiguration,
   MaybeEmptyMapConfiguration,
@@ -146,8 +145,6 @@ const Map = ({
   withCenterPin,
   noPopup,
   legendLogoOpt,
-  proMode,
-  setProMode,
   popupType = MapPopupType.DEFAULT,
   pinsList,
   initialCenter,
@@ -168,8 +165,6 @@ const Map = ({
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
   noPopup?: boolean;
-  proMode?: boolean;
-  setProMode?: (proMode: boolean) => void;
   popupType?: MapPopupType;
   pinsList?: MapMarkerInfos[];
   initialCenter?: Point;
@@ -228,20 +223,6 @@ const Map = ({
       mapRefParam.current = mapRef.current;
     }
   }, [mapRef.current]);
-
-  useEffect(() => {
-    if (setProMode) {
-      if (proMode) {
-        mapConfiguration.consommationsGaz.show = true;
-        mapConfiguration.batimentsGazCollectif.show = true;
-        mapConfiguration.batimentsFioulCollectif.show = true;
-      }
-      setMapConfiguration({
-        ...mapConfiguration,
-        proMode: !!proMode,
-      });
-    }
-  }, [proMode, setMapConfiguration]);
 
   const { value: soughtAddresses, set: setSoughtAddresses } = useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
     'mapSoughtAddresses',
@@ -654,22 +635,19 @@ const Map = ({
   }, []);
 
   // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
-  // also store the proMode
   const [query, setQuery] = useQueryStates({
     coord: parseAsString,
     zoom: parseAsString,
-    proMode: parseAsBoolean.withDefault(false),
   });
 
   const updateLocationURL = useMemo(
     () =>
-      debounce((viewState: ViewState, proMode: boolean) => {
+      debounce((viewState: ViewState) => {
         // Update the query state with new values
         setQuery(
           {
             coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
             zoom: viewState.zoom.toFixed(2),
-            proMode: proMode,
           },
           {
             shallow: true,
@@ -681,9 +659,9 @@ const Map = ({
 
   useEffect(() => {
     if (viewState) {
-      updateLocationURL(viewState, !!proMode);
+      updateLocationURL(viewState);
     }
-  }, [updateLocationURL, viewState, proMode]);
+  }, [updateLocationURL, viewState]);
 
   const isRouterReady = useRouterReady();
   if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {
@@ -716,8 +694,7 @@ const Map = ({
     const headerWithProModeHeight = 106; // px
     const headerHeight = 56; // px
     const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? sideBarWidth : 0) - mapViewportFitPadding;
-    const mapViewportHeight =
-      window.innerHeight - (setProMode || withHideLegendSwitch ? headerWithProModeHeight : headerHeight) - mapViewportFitPadding;
+    const mapViewportHeight = window.innerHeight - (withHideLegendSwitch ? headerWithProModeHeight : headerHeight) - mapViewportFitPadding;
 
     const { center, zoom } = geoViewport.viewport(
       bbox, // bounds
@@ -738,8 +715,7 @@ const Map = ({
       <MapStyle
         legendCollapsed={!withLegend || legendCollapsed}
         drawing={drawing}
-        withTopLegend={!!setProMode || withHideLegendSwitch}
-        withProMode={!!setProMode}
+        withTopLegend={withHideLegendSwitch}
         withHideLegendSwitch={withHideLegendSwitch}
         withBorder={withBorder}
       />
@@ -810,55 +786,29 @@ const Map = ({
             <ZoneInfos map={mapRef.current} draw={draw} setDrawing={setDrawing} drawing={drawing} />
           </MapControlWrapper>
         )}
-        {(setProMode || withHideLegendSwitch) && (
+        {withHideLegendSwitch && (
           <TopLegend legendCollapsed={!withLegend || legendCollapsed}>
-            {setProMode && (
-              <TopLegendSwitch legendCollapsed={legendCollapsed} isProMode={true}>
-                <div className="fr-toggle fr-toggle--label-left">
-                  <input
-                    type="checkbox"
-                    checked={proMode}
-                    id="mode-pro-toggle"
-                    onChange={(e) => {
-                      setProMode(e.target.checked);
-                      e.target.checked && trackEvent('Carto|Active Pro Mode');
-                    }}
-                    className="fr-toggle__input"
-                  />
-                  <label
-                    className="fr-toggle__label"
-                    htmlFor={'mode-pro-toggle'}
-                    data-fr-checked-label="Activé"
-                    data-fr-unchecked-label="Désactivé"
-                  >
-                    Mode professionnel
-                  </label>
-                </div>
-              </TopLegendSwitch>
-            )}
-            {withHideLegendSwitch && (
-              <TopLegendSwitch legendCollapsed={legendCollapsed}>
-                <div className="fr-toggle fr-toggle--label-left">
-                  <input
-                    type="checkbox"
-                    checked={!legendCollapsed}
-                    id="top-switch-legend-toggle"
-                    onChange={(e) => {
-                      setLegendCollapsed(!e.target.checked);
-                    }}
-                    className="fr-toggle__input"
-                  />
-                  <label
-                    className="fr-toggle__label"
-                    htmlFor={'top-switch-legend-toggle'}
-                    data-fr-checked-label="Activé"
-                    data-fr-unchecked-label="Désactivé"
-                  >
-                    {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
-                  </label>
-                </div>
-              </TopLegendSwitch>
-            )}
+            <TopLegendSwitch legendCollapsed={legendCollapsed}>
+              <div className="fr-toggle fr-toggle--label-left">
+                <input
+                  type="checkbox"
+                  checked={!legendCollapsed}
+                  id="top-switch-legend-toggle"
+                  onChange={(e) => {
+                    setLegendCollapsed(!e.target.checked);
+                  }}
+                  className="fr-toggle__input"
+                />
+                <label
+                  className="fr-toggle__label"
+                  htmlFor={'top-switch-legend-toggle'}
+                  data-fr-checked-label="Activé"
+                  data-fr-unchecked-label="Désactivé"
+                >
+                  {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
+                </label>
+              </div>
+            </TopLegendSwitch>
           </TopLegend>
         )}
         <MapProvider>

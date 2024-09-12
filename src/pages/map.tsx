@@ -32,13 +32,7 @@ const legendURLKeyToLegendFeature: Record<LegendURLKey | string, MapLegendFeatur
   futur_reseau: 'reseauxEnConstruction',
   reseau_froid: 'reseauxDeFroid',
   pdp: 'zonesDeDeveloppementPrioritaire',
-  demandes: 'demandesEligibilite',
-  gaz: 'consommationsGaz',
-  conso_gaz: 'batimentsGazCollectif',
-  conso_fioul: 'batimentsFioulCollectif',
   raccordements: 'batimentsRaccordes',
-  zones_opportunite: 'zonesOpportunite',
-  dpe: 'caracteristiquesBatiments',
 };
 
 const MapPage = () => {

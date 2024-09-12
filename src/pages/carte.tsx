@@ -1,11 +1,9 @@
 import styled from 'styled-components';
 
 import Map from '@components/Map';
-import { mapLegendFeatures } from '@components/Map/components/SimpleMapLegend';
 import { fullscreenHeaderHeight, tabHeaderHeight } from '@components/shared/layout/MainLayout.data';
 import SimplePage from '@components/shared/page/SimplePage';
 import useInitialSearchParam from '@hooks/useInitialSearchParam';
-import useURLParamOrLocalStorage, { parseAsBoolean } from '@hooks/useURLParamOrLocalStorage'; // parseAsBoolean,
 import { setProperty } from '@utils/core';
 import { MapConfigurationProperty, createMapConfiguration, defaultMapConfiguration } from 'src/services/Map/map-configuration';
 
@@ -43,9 +41,6 @@ export type LayerURLKey = keyof typeof layerURLKeysToMapConfigPath;
 export const layerURLKeys = Object.keys(layerURLKeysToMapConfigPath) as ReadonlyArray<LayerURLKey>;
 
 const Carte = () => {
-  // read the pro mode from the URL or get the local storage value
-  const [proMode, setProMode] = useURLParamOrLocalStorage('proMode', 'mapProMode', false, parseAsBoolean);
-
   // amend the initial map configuration with additional layers
   const additionalLayersQuery = useInitialSearchParam('additionalLayers');
   const additionalLayers = additionalLayersQuery
@@ -62,22 +57,13 @@ const Carte = () => {
   return (
     <SimplePage title="Carte des réseaux : France Chaleur Urbaine" mode="public-fullscreen">
       <MapWrapper>
-        {proMode !== null && (
-          <Map
-            withoutLogo
-            withDrawing={proMode}
-            withLegend
-            proMode={proMode}
-            setProMode={setProMode}
-            initialMapConfiguration={initialMapConfiguration}
-            enabledLegendFeatures={
-              proMode
-                ? mapLegendFeatures.filter((f) => f !== 'proModeLegend')
-                : ['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire', 'proModeLegend']
-            }
-            persistViewStateInURL
-          />
-        )}
+        <Map
+          withoutLogo
+          withLegend
+          initialMapConfiguration={initialMapConfiguration}
+          enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
+          persistViewStateInURL
+        />
       </MapWrapper>
     </SimplePage>
   );
