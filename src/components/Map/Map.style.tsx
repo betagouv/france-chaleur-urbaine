@@ -4,6 +4,8 @@ export const mapControlZindex = 110;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
 
+const legendWidth = '333px';
+
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
   drawing: boolean;
@@ -22,9 +24,9 @@ export const MapStyle: any = createGlobalStyle<{
 
     .map, .maplibregl-map {
       position: absolute !important;
-      left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : '333px')};
+      left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : `${legendWidth}`)};
       ${({ withTopLegend }) => withTopLegend && 'top: 41px;'}
-      width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : 'calc(100% - 333px) !important')};
+      width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth}) !important`)};
       height: ${({ withTopLegend }) => (withTopLegend ? 'calc(100% - 41px) !important' : '100%')};
       ${({ withProMode, withHideLegendSwitch, legendCollapsed }) =>
         withProMode &&
@@ -128,11 +130,11 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   position: absolute;
   z-index: ${mapControlZindex};
 
-  max-width: calc(100vw - 333px - 40px);
+  max-width: calc(100vw - ${legendWidth} - 40px);
   width: 1100px;
   padding: 32px;
   bottom: 0;
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '50vw' : 'calc((100vw - 333px)/2 + 333px)')};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '50vw' : `calc((100vw - ${legendWidth})/2 + ${legendWidth})`)};
   transform: translateX(-50%);
 
   ${mapMediumMedia} {
@@ -154,8 +156,8 @@ export const LegendSideBar = styled.div<{
       position: absolute;
       left: -150%;
     `}
-  width: 333px;
-  min-width: 333px;
+  width: ${legendWidth};
+  min-width: ${legendWidth};
   background: var(--background-default-grey);
   border: 1px solid #dddddd;
   box-shadow:
@@ -245,7 +247,7 @@ export const TopLegend = styled.div<{
   legendCollapsed: boolean;
 }>`
   background-color: var(--background-default-grey);
-  width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : 'calc(100% - 333px)')};
+  width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth})`)};
   @media (max-width: 600px) {
     width: 100%;
     display: block;
