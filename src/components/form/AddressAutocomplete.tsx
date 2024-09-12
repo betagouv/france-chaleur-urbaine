@@ -1,10 +1,14 @@
 import React from 'react';
 
 import { useServices } from 'src/services';
+import { SuggestionItem } from 'src/types/Suggestions';
 
 import Autocomplete from './Autocomplete';
 
-export type AddressAutocompleteProps = Omit<React.ComponentProps<typeof Autocomplete>, 'children' | 'getOptionValue' | 'fetchFn'>;
+export type AddressAutocompleteProps = Omit<
+  React.ComponentProps<typeof Autocomplete>,
+  'children' | 'getOptionValue' | 'fetchFn' | 'onSelect'
+> & { onSelect: (option: SuggestionItem) => void };
 
 const AddressAutocomplete = ({ nativeInputProps, onSelect, onClear, ...props }: AddressAutocompleteProps) => {
   // const [address, setAddress] = React.useState<Awaited<ReturnType<typeof fetchOptions>>[number]>();
