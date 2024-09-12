@@ -21,12 +21,12 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
         <>
           <Select
             name="méthode résidentiel"
-            label="méthode de calcul pour les besoins en chauffage et refroidissement"
+            label="Méthode de calcul pour les besoins en chauffage et refroidissement"
             hintText="méthode résidentiel"
           />
           {engine.getField('méthode résidentiel') === 'DPE' && <Select name="DPE" label="DPE" />}
           {engine.getField('méthode résidentiel') === 'Normes thermiques et âge du bâtiment' && (
-            <Select name="normes thermiques et âge du bâtiment" label="normes thermiques et âge du bâtiment" />
+            <Select name="normes thermiques et âge du bâtiment" label="Normes thermiques et âge du bâtiment" />
           )}
         </>
       )}
@@ -34,10 +34,10 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
         <>
           <Select
             name="méthode tertiaire"
-            label="méthode de calcul pour les besoins en chauffage et refroidissement"
+            label="Méthode de calcul pour les besoins en chauffage et refroidissement"
             hintText="méthode tertiaire"
           />
-          <Select name="normes thermiques tertiaire" label="normes thermiques tertiaire" />
+          <Select name="normes thermiques tertiaire" label="Normes thermiques tertiaire" />
         </>
       )}
       <Input
@@ -62,7 +62,7 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
           />
           <Input
             name="nombre de logement dans l'immeuble concerné"
-            label="nombre de logement dans l'immeuble concerné"
+            label="Nombre de logement dans l'immeuble concerné"
             nativeInputProps={{
               inputMode: 'numeric',
               maxLength: 5,
@@ -72,7 +72,7 @@ const GrandPublicForm: React.FC<GrandPublicFormProps> = ({ children, className, 
         </>
       )}
       <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
-      {productionECS && <Select name="type de production ECS" label="type de production ECS" />}
+      {productionECS && <Select name="type de production ECS" label="Type de production ECS" />}
       <Input
         name="Part de la surface à climatiser"
         label="Part de la surface à climatiser"
