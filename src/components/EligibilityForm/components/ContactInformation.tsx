@@ -84,7 +84,7 @@ export const fieldLabelInformation = {
       { value: 'électricité', label: 'Électricité', id: 'electricite' },
       { value: 'gaz', label: 'Gaz', id: 'gaz' },
       { value: 'fioul', label: 'Fioul', id: 'fioul' },
-      { value: 'autre', label: 'Autres', id: 'autre' },
+      { value: 'autre', label: 'Autre / Je ne sais pas', id: 'autre' },
     ],
   },
 };

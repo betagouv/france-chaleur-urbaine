@@ -105,7 +105,7 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     Prénom: firstName,
     Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),
     Établissement: formatEtablissementToAirtable(structure, company, companyType, demandCompanyName),
-    "Type d'établissement": companyType,
+    'Structure accompagnante': companyType,
     Éligibilité: eligibility.isEligible,
     Adresse: address,
     Latitude: coords.lat,

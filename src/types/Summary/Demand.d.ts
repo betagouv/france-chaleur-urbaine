@@ -29,7 +29,7 @@ export type Demand = DemandSummary &
     'en PDP': string;
     'Date demandes': string;
     Établissement: string;
-    "Type d'établissement"?: string[];
+    'Structure accompagnante'?: string[];
     'Nom de la structure accompagnante'?: string;
     Ville: string;
     Departement: string;
@@ -88,7 +88,7 @@ export type AirtableDemandCreation = {
   Prénom: string;
   Structure: string;
   Établissement: string;
-  "Type d'établissement": string;
+  'Structure accompagnante': string;
   Éligibilité: boolean;
   Adresse: string;
   Latitude: number;
