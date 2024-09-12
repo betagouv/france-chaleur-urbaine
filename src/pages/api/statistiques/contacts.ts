@@ -92,7 +92,6 @@ export default handleRouteErrors(async function demands(req: NextApiRequest) {
       .andWhere('s.period', STAT_PERIOD.MONTHLY)
       .orderBy('s.date', 'ASC')
       .groupBy('s.date');
-    console.log(results);
     return results;
   }
 });

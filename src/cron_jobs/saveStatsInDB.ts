@@ -17,7 +17,8 @@ const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.TRACES,
 ];
 
-const saveDataCountContactStats = async (startDate: string, endDate: string) => {
+//From Airtable - demandes : éligibles / non éligibles / totales
+const saveDemandsStats = async (startDate: string, endDate: string) => {
   const records = await base(Airtable.UTILISATEURS)
     .select({
       filterByFormula: `AND(
@@ -40,33 +41,36 @@ const saveDataCountContactStats = async (startDate: string, endDate: string) => 
       monthValue.nbUneligible++;
     }
   });
-  await db('matomo_stats').insert({
-    method: STAT_METHOD.AIRTABLE,
-    stat_key: STAT_KEY.NB_CONTACTS,
-    date: startDate,
-    period: STAT_PERIOD.MONTHLY,
-    value: monthValue.nbEligible,
-    stat_label: STAT_LABEL.NB_ELIGIBLE,
-  });
-  await db('matomo_stats').insert({
-    method: STAT_METHOD.AIRTABLE,
-    stat_key: STAT_KEY.NB_CONTACTS,
-    date: startDate,
-    period: STAT_PERIOD.MONTHLY,
-    value: monthValue.nbUneligible,
-    stat_label: STAT_LABEL.NB_UNELIGIBLE,
-  });
-  await db('matomo_stats').insert({
-    method: STAT_METHOD.AIRTABLE,
-    stat_key: STAT_KEY.NB_CONTACTS,
-    date: startDate,
-    period: STAT_PERIOD.MONTHLY,
-    value: monthValue.nbTotal,
-    stat_label: STAT_LABEL.NB_TOTAL,
-  });
+  await Promise.all([
+    db('matomo_stats').insert({
+      method: STAT_METHOD.AIRTABLE,
+      stat_key: STAT_KEY.NB_CONTACTS,
+      date: startDate,
+      period: STAT_PERIOD.MONTHLY,
+      value: monthValue.nbEligible,
+      stat_label: STAT_LABEL.NB_ELIGIBLE,
+    }),
+    db('matomo_stats').insert({
+      method: STAT_METHOD.AIRTABLE,
+      stat_key: STAT_KEY.NB_CONTACTS,
+      date: startDate,
+      period: STAT_PERIOD.MONTHLY,
+      value: monthValue.nbUneligible,
+      stat_label: STAT_LABEL.NB_UNELIGIBLE,
+    }),
+    db('matomo_stats').insert({
+      method: STAT_METHOD.AIRTABLE,
+      stat_key: STAT_KEY.NB_CONTACTS,
+      date: startDate,
+      period: STAT_PERIOD.MONTHLY,
+      value: monthValue.nbTotal,
+      stat_label: STAT_LABEL.NB_TOTAL,
+    }),
+  ]);
 };
 
-const saveDataActionsStats = async (startDate: string, endDate: string) => {
+//From Matomo - actions sur le site
+const saveActionsStats = async (startDate: string, endDate: string) => {
   const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
     {
       method: 'Events.getAction',
@@ -77,22 +81,25 @@ const saveDataActionsStats = async (startDate: string, endDate: string) => {
   );
   if (results[0]) {
     const data: any = results[0];
-    await DATA_ACTION_STATS.forEach(async (action: any) => {
-      if (data[action]) {
-        await db('matomo_stats').insert({
-          method: STAT_METHOD.ACTIONS,
-          stat_key: STAT_KEY.NB_EVENTS,
-          date: startDate,
-          period: STAT_PERIOD.MONTHLY,
-          value: data[action],
-          stat_label: action,
-        });
-      }
-    });
+    await Promise.all(
+      DATA_ACTION_STATS.map(async (action: any) => {
+        if (data[action]) {
+          await db('matomo_stats').insert({
+            method: STAT_METHOD.ACTIONS,
+            stat_key: STAT_KEY.NB_EVENTS,
+            date: startDate,
+            period: STAT_PERIOD.MONTHLY,
+            value: data[action],
+            stat_label: action,
+          });
+        }
+      })
+    );
   }
 };
 
-const saveDataVisitsStats = async (startDate: string, endDate: string) => {
+//From Matomo - visites sur le site
+const saveVisitsStats = async (startDate: string, endDate: string) => {
   const results = await bulkFetchRangeFromMatomo<MatomoUniqueVisitorsMetrics>({
     method: 'VisitsSummary.getUniqueVisitors',
     period: 'range',
@@ -109,7 +116,8 @@ const saveDataVisitsStats = async (startDate: string, endDate: string) => {
   }
 };
 
-const saveDataVisitsMapStats = async (startDate: string, endDate: string) => {
+//From Matomo - visites sur la page de la carte (/carte)
+const saveVisitsMapStats = async (startDate: string, endDate: string) => {
   const results = await bulkFetchRangeFromMatomo<MatomoPageMetrics>(
     {
       method: 'Actions.getPageUrl',
@@ -134,7 +142,8 @@ const saveDataVisitsMapStats = async (startDate: string, endDate: string) => {
   }
 };
 
-const saveDataCountBulkContactStats = async (startDate: string, endDate: string) => {
+//From Database - demandes en masse : éligibles / non éligibles / totales
+const saveBulkContactStats = async (startDate: string, endDate: string) => {
   const start = new Date(startDate);
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
@@ -156,56 +165,64 @@ const saveDataCountBulkContactStats = async (startDate: string, endDate: string)
       monthValue.nbEligible += value.eligibile_count;
       monthValue.nbUneligible = monthValue.nbTotal - monthValue.nbEligible;
     });
-    await db('matomo_stats').insert({
-      method: STAT_METHOD.DATABASE,
-      stat_key: STAT_KEY.BULK_CONTACTS,
-      date: startDate,
-      period: STAT_PERIOD.MONTHLY,
-      value: monthValue.nbEligible,
-      stat_label: STAT_LABEL.NB_ELIGIBLE,
-    });
-    await db('matomo_stats').insert({
-      method: STAT_METHOD.DATABASE,
-      stat_key: STAT_KEY.BULK_CONTACTS,
-      date: startDate,
-      period: STAT_PERIOD.MONTHLY,
-      value: monthValue.nbUneligible,
-      stat_label: STAT_LABEL.NB_UNELIGIBLE,
-    });
-    await db('matomo_stats').insert({
-      method: STAT_METHOD.DATABASE,
-      stat_key: STAT_KEY.BULK_CONTACTS,
-      date: startDate,
-      period: STAT_PERIOD.MONTHLY,
-      value: monthValue.nbTotal,
-      stat_label: STAT_LABEL.NB_TOTAL,
-    });
+    await Promise.all([
+      db('matomo_stats').insert({
+        method: STAT_METHOD.DATABASE,
+        stat_key: STAT_KEY.BULK_CONTACTS,
+        date: startDate,
+        period: STAT_PERIOD.MONTHLY,
+        value: monthValue.nbEligible,
+        stat_label: STAT_LABEL.NB_ELIGIBLE,
+      }),
+      db('matomo_stats').insert({
+        method: STAT_METHOD.DATABASE,
+        stat_key: STAT_KEY.BULK_CONTACTS,
+        date: startDate,
+        period: STAT_PERIOD.MONTHLY,
+        value: monthValue.nbUneligible,
+        stat_label: STAT_LABEL.NB_UNELIGIBLE,
+      }),
+      db('matomo_stats').insert({
+        method: STAT_METHOD.DATABASE,
+        stat_key: STAT_KEY.BULK_CONTACTS,
+        date: startDate,
+        period: STAT_PERIOD.MONTHLY,
+        value: monthValue.nbTotal,
+        stat_label: STAT_LABEL.NB_TOTAL,
+      }),
+    ]);
   }
 };
 
-export const saveDataStats = async () => {
-  console.log(`CRON JOB START: saveDataStats`);
+export const saveStatsInDB = async (start?: string, end?: string) => {
+  console.log(`CRON JOB START: saveStatsInDB`);
   try {
-    const startDate = new Date();
-    startDate.setMonth(startDate.getMonth() - 1);
-    startDate.setDate(1);
+    const startDate = start ? new Date(start) : new Date();
+    if (!start) {
+      startDate.setMonth(startDate.getMonth() - 1);
+      startDate.setDate(1);
+    }
     const stringStartDate = startDate.toISOString().slice(0, 10);
-    const endDate = new Date();
-    endDate.setDate(0);
+    const endDate = end ? new Date(end) : new Date();
+    if (!end) {
+      endDate.setDate(0);
+    }
     const stringEndDate = endDate.toISOString().slice(0, 10);
 
-    const endAirtableDate = new Date();
-    endAirtableDate.setDate(1);
+    const endAirtableDate = endDate;
+    endAirtableDate.setDate(endAirtableDate.getDate() + 1);
     const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
 
-    await saveDataCountContactStats(stringStartDate, stringEndAirtableDate);
-    await saveDataActionsStats(stringStartDate, stringEndDate);
-    await saveDataVisitsStats(stringStartDate, stringEndDate);
-    await saveDataVisitsMapStats(stringStartDate, stringEndDate);
-    await saveDataCountBulkContactStats(stringStartDate, stringEndDate);
+    await Promise.all([
+      saveDemandsStats(stringStartDate, stringEndAirtableDate),
+      saveActionsStats(stringStartDate, stringEndDate),
+      saveVisitsStats(stringStartDate, stringEndDate),
+      saveVisitsMapStats(stringStartDate, stringEndDate),
+      saveBulkContactStats(stringStartDate, stringEndDate),
+    ]);
   } catch (e) {
     Sentry.captureException(e);
-    console.log(`CRON JOB ERROR: saveDataStats`, e);
+    console.log(`CRON JOB ERROR: saveStatsInDB`, e);
   }
-  console.log('CRON JOB STOP: saveDataStats');
+  console.log('CRON JOB STOP: saveStatsInDB');
 };

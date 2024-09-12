@@ -1,7 +1,7 @@
 import cron from 'cron';
 
 import { launchJob } from './launch';
-import { saveDataStats } from './saveStatsInDB';
+import { saveStatsInDB } from './saveStatsInDB';
 
 new cron.CronJob({
   cronTime: '00 10 * * 1-5', // du lundi au vendredi à 10:00
@@ -31,10 +31,9 @@ new cron.CronJob({
   timeZone: 'Europe/Paris',
 });
 
-//Pour septembre - le 3 du mois, à modifier quand ok
 new cron.CronJob({
-  cronTime: '05 08 3 * *', // le 3 du mois à 08:15 -- après septembre à passer le 1er
-  onTick: () => saveDataStats(),
+  cronTime: '50 08 12 * *', // le 1er du mois à 08:15 -- exception septembre
+  onTick: () => saveStatsInDB(),
   start: true,
   timeZone: 'Europe/Paris',
 });
