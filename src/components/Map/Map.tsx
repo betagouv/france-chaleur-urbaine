@@ -824,7 +824,6 @@ const Map = ({
             ref={mapRef}
           >
             {!geolocDisabled && <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />}
-            <NavigationControl showZoom={true} visualizePitch={true} position="top-left" />
             <AttributionControl
               compact={false}
               position="bottom-right"
@@ -834,6 +833,7 @@ const Map = ({
                   : undefined
               }
             />
+            <NavigationControl showZoom={true} visualizePitch={true} position="bottom-right" />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
             {popupInfos && (
               <MapPopup latitude={popupInfos.latitude} longitude={popupInfos.longitude} content={popupInfos.content} type={popupType} />
