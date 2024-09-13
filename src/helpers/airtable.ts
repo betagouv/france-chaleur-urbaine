@@ -60,27 +60,22 @@ const formatEtablissementToAirtable: (
   demandCompanyType?: string,
   demandCompanyName?: string
 ) => string = (structure, company, companyType, demandCompanyType, demandCompanyName) => {
-  if (
-    structure === 'Tertiaire' &&
-    (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
-    (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre')
-  ) {
-    return demandCompanyName || '';
+  if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
+    if (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre') {
+      return demandCompanyName || '';
+    } else {
+      return '';
+    }
   }
   return company;
 };
-const formatNomStructureAccompagnanteToAirtable: (
-  structure: string,
-  company: string,
-  companyType?: string,
-  demandCompanyType?: string
-) => string = (structure, company, companyType, demandCompanyType) => {
-  if (
-    structure === 'Tertiaire' &&
-    (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
-    (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre')
-  ) {
-    return company;
+const formatNomStructureAccompagnanteToAirtable: (structure: string, company: string, companyType?: string) => string = (
+  structure,
+  company,
+  companyType
+) => {
+  if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
+    return company || '';
   }
   return '';
 };
@@ -142,7 +137,7 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     'Campagne matomo': mtm_campaign,
     'Campagne keywords': mtm_kwd,
     'Campagne source': mtm_source,
-    'Nom de la structure accompagnante': formatNomStructureAccompagnanteToAirtable(structure, company, companyType, demandCompanyType),
+    'Nom de la structure accompagnante': formatNomStructureAccompagnanteToAirtable(structure, company, companyType),
     'Surface en m2': demandArea,
     Logement: nbLogements,
     networkId,
