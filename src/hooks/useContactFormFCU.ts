@@ -73,16 +73,34 @@ const useContactFormFCU = () => {
         if (data.structure !== 'Tertiaire') {
           data.company = '';
           data.companyType = '';
-        }
-        if (data.structure !== 'Copropriété') {
-          data.nbLogements = undefined;
-        }
-        if (data.companyType !== "Bureau d'études ou AMO" && data.companyType !== 'Mandataire / délégataire CEE') {
           data.demandCompanyType = '';
           data.demandCompanyName = '';
           data.demandArea = undefined;
-        } else if (data.demandCompanyType === 'Copropriété' || data.demandCompanyType === 'Maison individuelle') {
-          data.demandCompanyName = '';
+          if (data.structure !== 'Copropriété') {
+            data.nbLogements = undefined;
+          }
+        } else {
+          if (data.companyType !== "Bureau d'études ou AMO" && data.companyType !== 'Mandataire / délégataire CEE') {
+            data.demandCompanyType = '';
+            data.nbLogements = undefined;
+            if (data.companyType !== 'Gestionnaire de parc tertiaire') {
+              data.demandArea = undefined;
+            }
+          } else {
+            if (
+              data.demandCompanyType !== 'Bâtiment tertiaire' &&
+              data.demandCompanyType !== 'Bailleur social' &&
+              data.demandCompanyType !== 'Autre'
+            ) {
+              data.demandCompanyName = '';
+              if (data.demandCompanyType !== 'Bâtiment tertiaire') {
+                data.demandArea = undefined;
+              }
+            }
+          }
+          if (data.demandCompanyType !== 'Copropriété' && data.demandCompanyType !== 'Bailleur social') {
+            data.nbLogements = undefined;
+          }
         }
       }
       const response = await submitToAirtable(

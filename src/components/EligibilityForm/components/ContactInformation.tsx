@@ -71,7 +71,7 @@ export const fieldLabelInformation = {
       { value: 'Copropriété', label: 'une copropriété', id: 'copro' },
       { value: 'Maison individuelle', label: 'une maison individuelle', id: 'maison' },
       { value: 'Bâtiment tertiaire', label: 'un bâtiment tertiaire', id: 'batiment' },
-      { value: 'Bailleur social', label: 'un bailleur social', id: 'bailleur' },
+      { value: 'Bailleur social', label: 'du logement social', id: 'bailleur' },
       { value: 'Autre', label: 'autre', id: 'autre' },
     ],
   },
