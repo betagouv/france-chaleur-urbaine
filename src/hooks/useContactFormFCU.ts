@@ -80,38 +80,51 @@ const useContactFormFCU = () => {
             data.nbLogements = undefined;
           }
         } else {
-          if (data.companyType !== "Bureau d'études ou AMO" && data.companyType !== 'Mandataire / délégataire CEE') {
+          if (
+            data.companyType === 'Syndic de copropriété' ||
+            data.companyType === 'Bailleur social' ||
+            data.companyType === 'Gestionnaire de parc tertiaire'
+          ) {
             data.demandCompanyType = '';
-            data.nbLogements = undefined;
-            if (data.companyType !== 'Gestionnaire de parc tertiaire') {
+            data.demandCompanyName = '';
+            if (data.companyType === 'Gestionnaire de parc tertiaire') {
+              data.nbLogements = undefined;
+            } else {
               data.demandArea = undefined;
             }
           } else {
-            if (
-              data.demandCompanyType !== 'Bâtiment tertiaire' &&
-              data.demandCompanyType !== 'Bailleur social' &&
-              data.demandCompanyType !== 'Autre'
-            ) {
-              data.demandCompanyName = '';
-              if (data.demandCompanyType !== 'Bâtiment tertiaire') {
+            switch (data.demandCompanyType) {
+              case 'Copropriété':
                 data.demandArea = undefined;
-              }
+                data.demandCompanyName = '';
+                break;
+              case 'Bâtiment tertiaire':
+                console.log('Je suis là');
+                data.nbLogements = undefined;
+                break;
+              case 'Bailleur social':
+                data.demandArea = undefined;
+                break;
+              case 'Autre':
+                data.demandArea = undefined;
+                data.nbLogements = undefined;
+                break;
+              default:
+                data.demandArea = undefined;
+                data.demandCompanyName = '';
+                data.nbLogements = undefined;
+                break;
             }
-          }
-          if (data.demandCompanyType !== 'Copropriété' && data.demandCompanyType !== 'Bailleur social') {
-            data.nbLogements = undefined;
           }
         }
       }
-      const response = await submitToAirtable(
-        formatDataToAirtable({
-          ...data,
-          mtm_campaign,
-          mtm_kwd,
-          mtm_source,
-        } as FormDemandCreation),
-        Airtable.UTILISATEURS
-      );
+      const formatData = formatDataToAirtable({
+        ...data,
+        mtm_campaign,
+        mtm_kwd,
+        mtm_source,
+      } as FormDemandCreation);
+      const response = await submitToAirtable(formatData, Airtable.UTILISATEURS);
       const { id } = await response.json();
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};

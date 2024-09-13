@@ -88,7 +88,7 @@ export type AirtableDemandCreation = {
   Prénom: string;
   Structure: string;
   Établissement: string;
-  'Structure accompagnante': string;
+  'Structure accompagnante'?: string;
   Éligibilité: boolean;
   Adresse: string;
   Latitude: number;

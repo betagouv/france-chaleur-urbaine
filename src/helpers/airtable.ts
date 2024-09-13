@@ -104,7 +104,7 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
         companyType === 'Mandataire / délégataire CEE' ||
         companyType === 'Syndic de copropriété')
         ? companyType
-        : '',
+        : undefined,
     Éligibilité: eligibility.isEligible,
     Adresse: address,
     Latitude: coords.lat,
@@ -126,8 +126,8 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
       structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')
         ? company
         : '',
-    'Surface en m2': demandArea || undefined,
-    Logement: nbLogements || undefined,
+    'Surface en m2': demandArea,
+    Logement: nbLogements,
     networkId,
   };
 };
