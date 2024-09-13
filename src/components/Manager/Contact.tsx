@@ -20,7 +20,7 @@ const Contact = ({
       demand['Structure accompagnante'] &&
       (demand['Structure accompagnante'].includes("Bureau d'études ou AMO") ||
         demand['Structure accompagnante'].includes('Mandataire / délégataire CEE')) &&
-      (demand.Structure === 'Logement social' || demand.Structure === 'Tertiaire')
+      (demand.Structure === 'Logement social' || demand.Structure === 'Tertiaire' || demand.Structure === 'Autre')
     ) {
       return demand['Nom de la structure accompagnante']
         ? demand['Nom de la structure accompagnante'] + ' (' + demand['Structure accompagnante'] + ')'
@@ -44,11 +44,11 @@ const Contact = ({
       demand['Structure accompagnante'] &&
       (demand['Structure accompagnante'].includes("Bureau d'études ou AMO") ||
         demand['Structure accompagnante'].includes('Mandataire / délégataire CEE')) &&
-      (demand.Structure === 'Logement social' || demand.Structure === 'Tertiaire')
+      (demand.Structure === 'Logement social' || demand.Structure === 'Tertiaire' || demand.Structure === 'Autre')
     ) {
       return demand.Établissement;
     }
-    return demand['Nom de la structure accompagnante'];
+    return '';
   }, [demand]);
   const nomStructureAccompagnante = getNomStructureAccompagnante();
 

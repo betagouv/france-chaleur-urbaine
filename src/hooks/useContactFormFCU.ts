@@ -99,7 +99,6 @@ const useContactFormFCU = () => {
                 data.demandCompanyName = '';
                 break;
               case 'Bâtiment tertiaire':
-                console.log('Je suis là');
                 data.nbLogements = undefined;
                 break;
               case 'Bailleur social':

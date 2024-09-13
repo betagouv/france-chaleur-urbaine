@@ -53,16 +53,36 @@ const formatStructureToAirtable: (structure: string, companyType?: string, deman
   }
   return structure;
 };
-const formatEtablissementToAirtable: (structure: string, company: string, companyType?: string, demandCompanyName?: string) => string = (
-  structure,
-  company,
-  companyType,
-  demandCompanyName
-) => {
-  if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
+const formatEtablissementToAirtable: (
+  structure: string,
+  company: string,
+  companyType?: string,
+  demandCompanyType?: string,
+  demandCompanyName?: string
+) => string = (structure, company, companyType, demandCompanyType, demandCompanyName) => {
+  if (
+    structure === 'Tertiaire' &&
+    (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
+    (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre')
+  ) {
     return demandCompanyName || '';
   }
   return company;
+};
+const formatNomStructureAccompagnanteToAirtable: (
+  structure: string,
+  company: string,
+  companyType?: string,
+  demandCompanyType?: string
+) => string = (structure, company, companyType, demandCompanyType) => {
+  if (
+    structure === 'Tertiaire' &&
+    (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
+    (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre')
+  ) {
+    return company;
+  }
+  return '';
 };
 
 export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDemandCreation = (values) => {
@@ -97,7 +117,7 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     Nom: lastName,
     Prénom: firstName,
     Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),
-    Établissement: formatEtablissementToAirtable(structure, company, companyType, demandCompanyName),
+    Établissement: formatEtablissementToAirtable(structure, company, companyType, demandCompanyType, demandCompanyName),
     'Structure accompagnante':
       structure === 'Tertiaire' &&
       (companyType === "Bureau d'études ou AMO" ||
@@ -122,10 +142,7 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     'Campagne matomo': mtm_campaign,
     'Campagne keywords': mtm_kwd,
     'Campagne source': mtm_source,
-    'Nom de la structure accompagnante':
-      structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')
-        ? company
-        : '',
+    'Nom de la structure accompagnante': formatNomStructureAccompagnanteToAirtable(structure, company, companyType, demandCompanyType),
     'Surface en m2': demandArea,
     Logement: nbLogements,
     networkId,
