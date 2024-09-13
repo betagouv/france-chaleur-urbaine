@@ -99,7 +99,10 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),
     Établissement: formatEtablissementToAirtable(structure, company, companyType, demandCompanyName),
     'Structure accompagnante':
-      structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')
+      structure === 'Tertiaire' &&
+      (companyType === "Bureau d'études ou AMO" ||
+        companyType === 'Mandataire / délégataire CEE' ||
+        companyType === 'Syndic de copropriété')
         ? companyType
         : '',
     Éligibilité: eligibility.isEligible,
