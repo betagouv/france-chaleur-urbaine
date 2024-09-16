@@ -327,6 +327,11 @@ export const MapSearchWrapper = styled.div<{
   font-size: 13px;
   line-height: 2;
   outline: none;
+
+  > .fr-input-group {
+    margin-bottom: 0.5rem;
+  }
+
   ${({ theme }) => theme.media.lg`
     width: 320px;
     margin: 20px;
