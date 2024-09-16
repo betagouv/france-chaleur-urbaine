@@ -1,5 +1,7 @@
 import styled, { css } from 'styled-components';
 
+import Accordion from '@components/ui/Accordion';
+
 const eligibleStyle = {
   color: '#000000',
   bgColor: '#78EB7B',
@@ -116,6 +118,7 @@ export const ContactFormWrapper = styled.div`
   margin-bottom: 8px;
 
   header {
+    font-weight: bold;
     margin-bottom: 32px;
   }
 `;
@@ -132,4 +135,10 @@ export const MessageConfirmBox = styled.div`
   justify-content: center;
   margin: 8px 0 0;
   padding: 0 8px 0 0;
+`;
+
+export const SearchedAddress = styled(Accordion)`
+  button.fr-accordion__btn {
+    align-items: flex-start;
+  }
 `;

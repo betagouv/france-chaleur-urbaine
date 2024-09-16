@@ -1,19 +1,14 @@
+import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useCallback, useMemo, useState } from 'react';
 
+import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 
-import {
-  ContactFormButtonWrapper,
-  ContactFormWrapper,
-  EligibilityResult,
-  HeaderButtons,
-  MapCard,
-  MessageConfirmBox,
-} from './CardSearchDetails.style';
+import { ContactFormButtonWrapper, ContactFormWrapper, MessageConfirmBox, SearchedAddress } from './CardSearchDetails.style';
 import CardSearchDetailsForm from './CardSearchDetailsForm';
 
 type CardSearchDetailsProps = {
@@ -21,8 +16,8 @@ type CardSearchDetailsProps = {
   onClick: (result: StoredAddress) => void;
   onClickClose: (result: { coordinates?: Point }) => void;
   onContacted: (result: { coordinates?: Point }) => void;
-  collapsed: boolean;
-  setCollapsed: (collapsed: boolean) => void;
+  expanded: boolean;
+  setExpanded: (expanded: boolean) => void;
 };
 
 const CardSearchDetails = ({
@@ -30,8 +25,8 @@ const CardSearchDetails = ({
   onClick,
   onClickClose,
   onContacted,
-  collapsed,
-  setCollapsed,
+  expanded,
+  setExpanded,
 }: CardSearchDetailsProps) => {
   const { basedOnCity, distance, isEligible, futurNetwork, inPDP, cityHasNetwork, cityHasFuturNetwork, hasNoTraceNetwork } =
     storedAddress.addressDetails?.network || {};
@@ -102,11 +97,7 @@ const CardSearchDetails = ({
   }, [basedOnCity, cityHasNetwork, cityHasFuturNetwork, distance, isEligible, futurNetwork, inPDP]);
 
   const onClickHandler = useCallback(
-    (evt: React.MouseEvent<HTMLElement>) => {
-      evt.stopPropagation();
-      const returnVal = (typeof onClick === 'function' && onClick(storedAddress)) || undefined;
-      return returnVal;
-    },
+    () => (typeof onClick === 'function' && onClick(storedAddress)) || undefined,
     [onClick, storedAddress]
   );
 
@@ -122,58 +113,72 @@ const CardSearchDetails = ({
 
   const displayContactForm = useCallback(() => setContactFormVisible(true), []);
 
+  const isReseauClose = basedOnCity ? cityHasFuturNetwork || cityHasNetwork : isEligible;
+
   return (
-    <MapCard isEligible={basedOnCity ? cityHasFuturNetwork || cityHasNetwork : isEligible} collapsed={collapsed}>
-      <header onClick={onClickHandler}>{storedAddress.address}</header>
-      <HeaderButtons>
-        <button type="button" title={collapsed ? 'Agrandir' : 'Reduire'} onClick={() => setCollapsed(!collapsed)}>
-          <Icon name={collapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-down-s-fill'} size="sm" />
-        </button>
-        <button type="button" title="Fermer" onClick={onCloseHandler}>
-          <Icon name="ri-close-line" size="sm" />
-        </button>
-      </HeaderButtons>
-      {!collapsed && (
-        <section>
-          {basedOnCity ? (
-            eligibilityWording
+    <SearchedAddress
+      expanded={expanded}
+      onExpandedChange={(newExpanded) => {
+        setExpanded(newExpanded);
+        onClickHandler();
+      }}
+      onClose={onCloseHandler}
+      small
+      bordered
+      label={
+        <Box display="flex" alignItems="flex-start" flexDirection="column" gap={'2px'}>
+          {isReseauClose ? (
+            <Badge small severity="success">
+              Réseau proche
+            </Badge>
           ) : (
-            <>
-              <EligibilityResult isEligible={basedOnCity ? cityHasFuturNetwork || cityHasNetwork : isEligible}>
-                {eligibilityWording}
-                <div>
-                  <strong>{readableDistance && `Le réseau ${futurNetwork ? 'passera' : 'passe'} à ${readableDistance}`}</strong>
-                </div>
-              </EligibilityResult>
-              {!contactFormVisible && storedAddress.contacted ? (
-                <MessageConfirmBox>
-                  <Icon name="fr-icon-success-fill" size="lg" color="#78EB7B" />
-                  Demande envoyée
-                </MessageConfirmBox>
-              ) : (
-                <ContactFormWrapper>
-                  {!storedAddress.contacted && (
-                    <header>
-                      {isEligible
-                        ? 'Vous souhaitez en savoir plus ?'
-                        : 'Vous souhaitez faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
-                    </header>
-                  )}
-                  {!contactFormVisible && !storedAddress.contacted && (
-                    <ContactFormButtonWrapper>
-                      <Button onClick={displayContactForm}>
-                        {isEligible ? 'Etre mis en relation avec le gestionnaire du réseau' : 'Laissez vos coordonnées'}
-                      </Button>
-                    </ContactFormButtonWrapper>
-                  )}
-                  {contactFormVisible && <CardSearchDetailsForm fullAddress={storedAddress} onSubmit={markAddressAsContacted} />}
-                </ContactFormWrapper>
-              )}
-            </>
+            <Badge small severity="error">
+              Pas de réseau connu
+            </Badge>
           )}
-        </section>
-      )}
-    </MapCard>
+          <strong>{storedAddress.address}</strong>
+        </Box>
+      }
+    >
+      <section>
+        {basedOnCity ? (
+          eligibilityWording
+        ) : (
+          <>
+            <div>
+              {eligibilityWording}
+              <Box className="fr-my-2w" color="blue-france">
+                {readableDistance && `Le réseau ${futurNetwork ? 'passera' : 'passe'} à ${readableDistance}`}
+              </Box>
+            </div>
+            {!contactFormVisible && storedAddress.contacted ? (
+              <MessageConfirmBox>
+                <Icon name="fr-icon-success-fill" size="lg" color="#78EB7B" />
+                Demande envoyée
+              </MessageConfirmBox>
+            ) : (
+              <ContactFormWrapper>
+                {!storedAddress.contacted && (
+                  <header>
+                    {isEligible
+                      ? 'Vous souhaitez en savoir plus ?'
+                      : 'Vous souhaitez faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
+                  </header>
+                )}
+                {!contactFormVisible && !storedAddress.contacted && (
+                  <ContactFormButtonWrapper>
+                    <Button onClick={displayContactForm}>
+                      {isEligible ? 'Etre mis en relation avec le gestionnaire du réseau' : 'Laissez vos coordonnées'}
+                    </Button>
+                  </ContactFormButtonWrapper>
+                )}
+                {contactFormVisible && <CardSearchDetailsForm fullAddress={storedAddress} onSubmit={markAddressAsContacted} />}
+              </ContactFormWrapper>
+            )}
+          </>
+        )}
+      </section>
+    </SearchedAddress>
   );
 };
 

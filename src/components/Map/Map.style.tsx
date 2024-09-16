@@ -309,3 +309,23 @@ export const PopupType = styled.div`
   font-weight: bold;
   text-transform: uppercase;
 `;
+
+export const MapSearchWrapper = styled.div<{
+  legendCollapsed?: boolean;
+}>`
+  position: absolute;
+  background: var(--background-default-grey);
+  padding: 10px;
+  top: 0;
+  top: 0;
+  max-width: 320px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  padding: 12px 24px;
+  margin: 20px;
+  font-size: 13px;
+  line-height: 2;
+  outline: none;
+
+  ${({ legendCollapsed }) => !legendCollapsed && `left: ${legendWidth};`}
+`;

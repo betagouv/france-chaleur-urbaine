@@ -19,6 +19,7 @@ import MapReactGL, {
 } from 'react-map-gl/maplibre';
 
 import Hoverable from '@components/Hoverable';
+import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { useContactFormFCU } from '@hooks';
@@ -55,9 +56,9 @@ import {
   LegendLogo,
   LegendLogoLink,
   LegendLogoList,
-  LegendSeparator,
   LegendSideBar,
   MapControlWrapper,
+  MapSearchWrapper,
   MapStyle,
   TopLegend,
   TopLegendSwitch,
@@ -183,8 +184,9 @@ const Map = ({
   const [mapConfiguration, setMapConfiguration] = useState<MaybeEmptyMapConfiguration>(initialMapConfiguration ?? defaultMapConfiguration);
 
   const [draw, setDraw] = useState<any>();
+  const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
   const [drawing, setDrawing] = useState(false);
-  const [collapsedCardIndex, setCollapsedCardIndex] = useState(0);
+  const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
   const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
@@ -274,9 +276,9 @@ const Map = ({
         date: Date.now(),
       };
       const id = getAddressId(coordinates);
-      const existingAddress = soughtAddresses.findIndex(({ id: soughtAddressesId }) => soughtAddressesId === id);
+      const existingAddressIndex = soughtAddresses.findIndex(({ id: soughtAddressesId }) => soughtAddressesId === id);
 
-      if (existingAddress === -1) {
+      if (existingAddressIndex === -1) {
         const newAddress = {
           id,
           coordinates,
@@ -294,10 +296,11 @@ const Map = ({
           true
         );
         setSoughtAddresses([...soughtAddresses, newAddress]);
-        setCollapsedCardIndex(0);
+        setSelectedCardIndex(0);
       } else {
-        setCollapsedCardIndex(soughtAddresses.length - 1 - existingAddress);
+        setSelectedCardIndex(existingAddressIndex);
       }
+      setSoughtAddressesVisible(true);
 
       jumpTo({ coordinates });
     },
@@ -313,16 +316,15 @@ const Map = ({
       const id = getAddressId(result.coordinates);
       const addressIndex = soughtAddresses.findIndex(({ coordinates }) => getAddressId(coordinates) === id);
 
-      if (collapsedCardIndex === soughtAddresses.length - 1 - addressIndex) {
-        setCollapsedCardIndex(-1);
-      }
+      setSelectedCardIndex(-1);
 
       soughtAddresses.splice(addressIndex, 1);
       setSoughtAddresses([...soughtAddresses]);
+      setSoughtAddressesVisible(false);
 
       setMarkersList((current) => current.filter((marker) => marker.id !== id));
     },
-    [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
+    [setSoughtAddresses, soughtAddresses, selectedCardIndex]
   );
 
   const onMapLoad = async (e: MapLibreEvent) => {
@@ -731,35 +733,6 @@ const Map = ({
             )}
             <LegendSideBar legendCollapsed={legendCollapsed} withHideLegendSwitch={withHideLegendSwitch}>
               <LegendContainer withoutLogo={withoutLogo}>
-                <Box m="2w">
-                  <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-                </Box>
-                <LegendSeparator />
-                {soughtAddresses.length > 0 && (
-                  <>
-                    {soughtAddresses
-                      .map((soughtAddress, index) => (
-                        <Box mx="2w" key={soughtAddress.id}>
-                          <CardSearchDetails
-                            address={soughtAddress}
-                            onClick={jumpTo}
-                            onClickClose={removeSoughtAddresses}
-                            onContacted={markAddressAsContacted}
-                            collapsed={collapsedCardIndex !== soughtAddresses.length - 1 - index}
-                            setCollapsed={(collapsed) => {
-                              if (collapsed) {
-                                setCollapsedCardIndex(-1);
-                              } else {
-                                setCollapsedCardIndex(soughtAddresses.length - 1 - index);
-                              }
-                            }}
-                          />
-                        </Box>
-                      ))
-                      .reverse()}
-                    <LegendSeparator />
-                  </>
-                )}
                 <SimpleMapLegend
                   mapConfiguration={mapConfiguration}
                   legendTitle={legendTitle}
@@ -852,6 +825,40 @@ const Map = ({
                 />
               ))}
           </MapReactGL>
+          <MapSearchWrapper legendCollapsed={legendCollapsed}>
+            <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+
+            {soughtAddresses.length > 0 && (
+              <Accordion
+                label={
+                  <>
+                    {soughtAddresses.length} adresse{soughtAddresses.length > 1 ? 's' : ''} recherchée
+                    {soughtAddresses.length > 1 ? 's' : ''}
+                  </>
+                }
+                simple
+                small
+                expanded={soughtAddressesVisible}
+                onExpandedChange={setSoughtAddressesVisible}
+              >
+                <Box display="flex" flexDirection="column" gap={'8px'}>
+                  {soughtAddresses
+                    .map((soughtAddress, index) => (
+                      <CardSearchDetails
+                        key={soughtAddress.id}
+                        address={soughtAddress}
+                        onClick={jumpTo}
+                        onClickClose={removeSoughtAddresses}
+                        onContacted={markAddressAsContacted}
+                        expanded={selectedCardIndex === index}
+                        setExpanded={(expanded) => setSelectedCardIndex(expanded ? index : -1)}
+                      />
+                    ))
+                    .reverse()}
+                </Box>
+              </Accordion>
+            )}
+          </MapSearchWrapper>
         </MapProvider>
       </div>
     </>
