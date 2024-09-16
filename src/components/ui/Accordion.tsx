@@ -5,14 +5,8 @@ import useArrayQueryState from '@hooks/useArrayQueryState';
 
 import Icon from './Icon';
 
-const StyledAccordion = styled(DsfrAccordion)<{ $small?: boolean; $simple?: boolean; $bordered?: boolean }>`
-  ${({ $small, $simple, $bordered }) => css`
-    .fr-icon-close-line {
-      padding: 0.25rem 0.5rem;
-      &:hover {
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
-      }
-    }
+const StyledAccordion = styled(DsfrAccordion)<{ $small?: boolean; $simple?: boolean; $bordered?: boolean; $closeable?: boolean }>`
+  ${({ $small, $simple, $bordered, $closeable }) => css`
     ${$small &&
     css`
       .fr-accordion__btn {
@@ -31,6 +25,21 @@ const StyledAccordion = styled(DsfrAccordion)<{ $small?: boolean; $simple?: bool
       }
       border: 1px solid var(--border-default-grey);
       padding: 0.75rem 0.5rem;
+    `}
+    ${$closeable &&
+    css`
+      .fr-icon-close-line {
+        padding: 0.25rem 0.5rem;
+        margin-left: auto;
+        &:hover {
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+        }
+      }
+      .fr-accordion__btn {
+        &:after {
+          margin-left: 0;
+        }
+      }
     `}
     ${$simple &&
     css`
@@ -65,6 +74,7 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, simple, b
       $small={small}
       $simple={simple}
       $bordered={bordered}
+      $closeable={!!onClose}
       label={
         <>
           {label}

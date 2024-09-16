@@ -317,15 +317,20 @@ export const MapSearchWrapper = styled.div<{
   background: var(--background-default-grey);
   padding: 10px;
   top: 0;
-  top: 0;
-  max-width: 320px;
+  left: 0;
+  right: 0;
+  border-radius: 8px 8px 0 0;
   background: #fff;
+  margin: 20px 10vw;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  padding: 12px 24px;
-  margin: 20px;
+  padding: 12px;
   font-size: 13px;
   line-height: 2;
   outline: none;
+  ${({ theme }) => theme.media.lg`
+    width: 320px;
+    margin: 20px;
+  `}
 
-  ${({ legendCollapsed }) => !legendCollapsed && `left: ${legendWidth};`}
+  ${({ legendCollapsed, theme }) => !legendCollapsed && theme.media.lg`left: ${legendWidth};`}
 `;
