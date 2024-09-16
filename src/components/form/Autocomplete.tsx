@@ -33,6 +33,7 @@ const Autocomplete = <Option extends DefaultOption>({
   const [inputValue, setInputValue] = useState(defaultValue ? `${defaultValue}` : '');
   const [defaultValueSet, setDefaultValueSet] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
+  const [error, setError] = useState<string>();
   const [options, setOptions] = useState<Option[]>([]);
   const [loading, setLoading] = useState(false);
   const generatedId = useId();
@@ -40,6 +41,7 @@ const Autocomplete = <Option extends DefaultOption>({
   const debouncedFetch = useMemo(
     () =>
       debounce(async (query: string) => {
+        setError(undefined);
         setLoading(true);
         try {
           const results = await fetchFn(query);
@@ -53,8 +55,9 @@ const Autocomplete = <Option extends DefaultOption>({
           } else {
             setOptions(results);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error fetching data:', error);
+          setError(error.toString());
         } finally {
           setLoading(false);
         }
@@ -63,10 +66,10 @@ const Autocomplete = <Option extends DefaultOption>({
   );
 
   useEffect(() => {
-    if (inputValue?.length >= minCharThreshold && !selectedValue) {
+    if (inputValue?.length >= minCharThreshold && !selectedValue && !error) {
       debouncedFetch(inputValue);
     }
-  }, [inputValue, debouncedFetch, selectedValue]);
+  }, [inputValue, debouncedFetch, selectedValue, error]);
 
   return (
     <Combobox {...props}>
@@ -76,6 +79,7 @@ const Autocomplete = <Option extends DefaultOption>({
           value={selectedValue || inputValue}
           onChange={(event) => {
             setSelectedValue('');
+            setError(undefined);
             setInputValue(event.target.value);
           }}
           {...nativeInputProps}
@@ -94,6 +98,21 @@ const Autocomplete = <Option extends DefaultOption>({
             wrapperStyle={{
               position: 'absolute',
               color: 'var(--text-default-grey)',
+              top: '0.75rem',
+              bottom: '0.75rem',
+              margin: 'auto',
+              right: 'calc(16px + 1.5rem)',
+            }}
+          />
+        )}
+        {error && (
+          <Icon
+            name="ri-alert-line"
+            size="sm"
+            color="var(--text-default-error)"
+            title={error}
+            style={{
+              position: 'absolute',
               top: '0.75rem',
               bottom: '0.75rem',
               margin: 'auto',
