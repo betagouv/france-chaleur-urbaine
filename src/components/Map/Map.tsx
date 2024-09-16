@@ -320,7 +320,6 @@ const Map = ({
 
       soughtAddresses.splice(addressIndex, 1);
       setSoughtAddresses([...soughtAddresses]);
-      setSoughtAddressesVisible(false);
 
       setMarkersList((current) => current.filter((marker) => marker.id !== id));
     },
