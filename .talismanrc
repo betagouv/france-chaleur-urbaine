@@ -10,7 +10,7 @@ fileignoreconfig:
   - filename: src/components/Map/Map.tsx
     checksum: 93fae6af570cf4ccb9a564ff8f9547914726460d6a9d12abd645160cbff450f8
   - filename: src/components/Map/components/CardSearchDetails.tsx
-    checksum: 3806379028e9fa4090de96baf1317a1020491ee1aaf0b98fce9fef4ebdf581d2
+    checksum: b38379dc9f00f39438db0412acb0ab8bec591480adebabb0fc5d973beeca79ab
 
 scopeconfig:
   - scope: node

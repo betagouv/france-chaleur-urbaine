@@ -1,5 +1,6 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Button } from '@codegouvfr/react-dsfr/Button';
+import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 
 import Box from '@components/ui/Box';
@@ -147,9 +148,16 @@ const CardSearchDetails = ({
           <>
             <div>
               {eligibilityWording}
-              <Box className="fr-my-2w" color="blue-france">
-                {readableDistance && `Le réseau ${futurNetwork ? 'passera' : 'passe'} à ${readableDistance}`}
-              </Box>
+              {readableDistance && (
+                <Box className="fr-my-2w" textColor="text-label-blue-france" display="flex" alignItems="center" gap={'2px'}>
+                  <Image src="/icons/grid-line.svg" alt="" height="16" width="16" />
+                  {readableDistance && (
+                    <span>
+                      {futurNetwork ? 'passera' : ''} {readableDistance}
+                    </span>
+                  )}
+                </Box>
+              )}
             </div>
             {!contactFormVisible && storedAddress.contacted ? (
               <MessageConfirmBox>
