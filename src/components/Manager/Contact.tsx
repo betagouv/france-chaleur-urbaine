@@ -19,13 +19,12 @@ const Contact = ({
     if (
       demand['Structure accompagnante'] &&
       (demand['Structure accompagnante'].includes("Bureau d'études ou AMO") ||
-        demand['Structure accompagnante'].includes('Mandataire / délégataire CEE'))
+        demand['Structure accompagnante'].includes('Mandataire / délégataire CEE') ||
+        demand['Structure accompagnante'].includes('Syndic de copropriété'))
     ) {
       return demand['Nom de la structure accompagnante']
         ? demand['Nom de la structure accompagnante'] + ' (' + demand['Structure accompagnante'] + ')'
         : '';
-    } else if (demand['Structure accompagnante'] && demand['Structure accompagnante'].includes('Syndic de copropriété')) {
-      return demand.Établissement ? demand.Établissement + ' (' + demand['Structure accompagnante'] + ')' : '';
     }
     return demand.Établissement;
   }, [demand]);

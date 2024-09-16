@@ -63,9 +63,10 @@ const formatEtablissementToAirtable: (
   if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
     if (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre') {
       return demandCompanyName || '';
-    } else {
-      return '';
     }
+    return '';
+  } else if (structure === 'Tertiaire' && companyType === 'Syndic de copropriété') {
+    return '';
   }
   return company;
 };
@@ -74,7 +75,10 @@ const formatNomStructureAccompagnanteToAirtable: (structure: string, company: st
   company,
   companyType
 ) => {
-  if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
+  if (
+    structure === 'Tertiaire' &&
+    (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE' || companyType === 'Syndic de copropriété')
+  ) {
     return company || '';
   }
   return '';
