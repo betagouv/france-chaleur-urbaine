@@ -29,11 +29,14 @@ export type Demand = DemandSummary &
     'en PDP': string;
     'Date demandes': string;
     Établissement: string;
+    'Structure accompagnante'?: string[];
+    'Nom de la structure accompagnante'?: string;
     Ville: string;
     Departement: string;
     Conso: number;
     'Gestionnaire Conso': number;
     Logement: number;
+    'Surface en m2': number;
     'Gestionnaire Logement': number;
     'Relance envoyée': string;
     'Affecté à': string;
@@ -51,9 +54,14 @@ export type ContactFormInfos = {
   lastName: string;
   firstName: string;
   company: string;
+  companyType: string;
   email: string;
   phone: string;
   termOfUse: boolean;
+  demandCompanyType: string;
+  demandCompanyName: string;
+  demandArea?: number;
+  nbLogements?: number;
 };
 
 export type FormDemandCreation = ContactFormInfos & {
@@ -80,6 +88,7 @@ export type AirtableDemandCreation = {
   Prénom: string;
   Structure: string;
   Établissement: string;
+  'Structure accompagnante'?: string;
   Éligibilité: boolean;
   Adresse: string;
   Latitude: number;
@@ -94,4 +103,7 @@ export type AirtableDemandCreation = {
   'Code Postal': string;
   Departement: string;
   Region: string;
+  'Nom de la structure accompagnante': string;
+  'Surface en m2'?: number;
+  Logement?: number;
 };

@@ -251,6 +251,15 @@ const Manager = () => {
         renderCell: (params) => <AdditionalInformation demand={params.row} field="Logement" updateDemand={updateDemand} type="number" />,
       },
       {
+        field: 'Surface en m2',
+        sortable: false,
+        width: 120,
+        headerName: 'Surface en m2',
+        renderCell: (params) => (
+          <AdditionalInformation demand={params.row} field="Surface en m2" updateDemand={updateDemand} type="number" />
+        ),
+      },
+      {
         field: 'Conso gaz',
         sortable: false,
         width: 120,
@@ -300,7 +309,7 @@ const Manager = () => {
                 rows={filteredDemands}
                 disableColumnMenu
                 columnHeaderHeight={100}
-                rowHeight={96}
+                getRowHeight={() => 'auto'}
                 onRowSelectionModelChange={onRowSelection}
                 hideFooterSelectedRowCount
                 initialState={{

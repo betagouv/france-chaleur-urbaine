@@ -44,7 +44,7 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
       });
       const [conso, nbLogement, network] = await Promise.all([
         getConso(values.Latitude, values.Longitude),
-        getNbLogement(values.Latitude, values.Longitude),
+        values.Logement ? values.Logement : getNbLogement(values.Latitude, values.Longitude),
         networkId ? getDistanceToNetwork(networkId, values.Latitude, values.Longitude) : closestNetwork(values.Latitude, values.Longitude),
       ]);
 
