@@ -18,7 +18,7 @@ const AddressAutocompleteInput = ({
   return (
     <FieldWrapper
       fieldId={fieldId}
-      label={label || 'Adresse'}
+      label={typeof label === 'undefined' ? 'Adresse' : label}
       hintText={hintText}
       state={state}
       stateRelatedMessage={stateRelatedMessage}
