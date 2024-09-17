@@ -201,6 +201,10 @@ module.exports = withBundleAnalyzer(
           test: /\.woff2$/,
           type: 'asset/resource',
         });
+        config.module.rules.push({
+          test: /\.svg$/,
+          use: ['@svgr/webpack'],
+        });
         return config;
       },
       transpilePackages: ['@codegouvfr/react-dsfr'],
