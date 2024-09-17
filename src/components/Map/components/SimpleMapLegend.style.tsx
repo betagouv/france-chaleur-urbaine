@@ -242,7 +242,7 @@ export const InfoIcon = styled.div`
   margin-left: auto;
 
   & > .hover-info {
-    width: 270px;
+    width: 250px;
   }
   &:hover {
     & > .hover-info {
