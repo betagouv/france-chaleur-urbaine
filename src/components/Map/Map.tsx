@@ -361,22 +361,12 @@ const Map = ({
     const map = e.target;
     // load layers symbols
     await Promise.all(
-      layerSymbolsImagesURLs.map(
-        (spec) =>
-          new Promise<void>((resolve, reject) => {
-            map.loadImage(spec.url, (error, image) => {
-              if (error) {
-                reject(error);
-              }
-              if (image) {
-                map.addImage(spec.key, image, {
-                  sdf: 'sdf' in spec && spec.sdf,
-                });
-              }
-              resolve();
-            });
-          })
-      )
+      layerSymbolsImagesURLs.map(async (spec) => {
+        const response = await map.loadImage(spec.url);
+        map.addImage(spec.key, response.data, {
+          sdf: 'sdf' in spec && spec.sdf,
+        });
+      })
     );
     setMapState('loaded');
 
