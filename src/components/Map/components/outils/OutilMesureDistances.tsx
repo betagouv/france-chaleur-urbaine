@@ -184,6 +184,8 @@ const OutilMesureDistances: React.FC = () => {
     mapDraw?.deleteAll();
     mapDraw?.changeMode('simple_select');
     setIsDrawing(false);
+    // remove the last feature (sketch)
+    setFeatures(features.slice(0, -1));
   }
   function deleteMeasurement(featureId: string) {
     setFeatures(features.filter((feature) => feature.id !== featureId));
@@ -212,6 +214,7 @@ const OutilMesureDistances: React.FC = () => {
             key={feature.id}
             onColorUpdate={(color) => updateMeasurementColor(feature.id, color)}
             onDelete={() => deleteMeasurement(feature.id)}
+            disableDeleteButton={isDrawing}
           />
         ))}
 

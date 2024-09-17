@@ -12,9 +12,10 @@ type MesureFeatureListItemProps = {
   feature: MesureFeature;
   onColorUpdate: (color: string) => void;
   onDelete: () => void;
+  disableDeleteButton: boolean;
 };
 
-const MesureFeatureListItem: React.FC<MesureFeatureListItemProps> = ({ feature, onColorUpdate, onDelete }) => {
+const MesureFeatureListItem: React.FC<MesureFeatureListItemProps> = ({ feature, onColorUpdate, onDelete, disableDeleteButton }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   return (
@@ -50,6 +51,7 @@ const MesureFeatureListItem: React.FC<MesureFeatureListItemProps> = ({ feature, 
         iconId="fr-icon-delete-bin-line"
         onClick={() => onDelete()}
         title="Supprimer le tracé"
+        disabled={disableDeleteButton}
       />
     </Box>
   );
