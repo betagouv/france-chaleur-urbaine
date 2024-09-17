@@ -2,7 +2,7 @@ import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useLocalStorageValue } from '@react-hookz/web';
-import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
+import { LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsString, useQueryStates } from 'nuqs';
@@ -331,7 +331,17 @@ const Map = ({
   const onMapLoad = async (e: MapLibreEvent) => {
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
-      styles: [], // disable all styles, they are handled externally using draw.render events
+      styles: [
+        // disable all mapbox draw styles, they are handled externally using draw.render events
+        // we must define an empty layer otherwise the library tries to add its own layers
+        {
+          id: 'draw-empty-layer',
+          type: 'background',
+          paint: {
+            'background-opacity': 0,
+          },
+        } satisfies LayerSpecification,
+      ],
     });
 
     e.target.addControl(drawControl as any);
