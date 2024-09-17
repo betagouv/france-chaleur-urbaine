@@ -1,6 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import DsfrTabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
-import Image from 'next/image';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -9,6 +8,11 @@ import CheckableAccordion, { type CheckableAccordionProps } from '@components/ui
 import cx from '@utils/cx';
 import { LegendTrackingEvent, trackEvent } from 'src/services/analytics';
 import { type MapConfiguration, type MapConfigurationProperty } from 'src/services/Map/map-configuration';
+
+import IconEnrr from '../../../../public/icons/enrr.svg';
+import IconOutils from '../../../../public/icons/outils.svg';
+import IconPotentiel from '../../../../public/icons/potentiel.svg';
+import IconReseaux from '../../../../public/icons/reseaux.svg';
 
 const StyledDSFRCheckbox = styled.div<{
   checked: boolean;
@@ -107,7 +111,7 @@ const tabsDefinition = [
     tabId: 'reseaux',
     label: (
       <>
-        <Image src="/icons/reseaux.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        <IconReseaux height="22" width="22" className="fr-mb-1v" />
         Réseaux
       </>
     ),
@@ -116,7 +120,7 @@ const tabsDefinition = [
     tabId: 'potentiel',
     label: (
       <>
-        <Image src="/icons/potentiel.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        <IconPotentiel height="22" width="22" className="fr-mb-1v" />
         Potentiel
       </>
     ),
@@ -125,7 +129,7 @@ const tabsDefinition = [
     tabId: 'enrr',
     label: (
       <>
-        <Image src="/icons/enrr.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        <IconEnrr height="22" width="22" className="fr-mb-1v" />
         EnR&R
       </>
     ),
@@ -134,7 +138,7 @@ const tabsDefinition = [
     tabId: 'outils',
     label: (
       <>
-        <Image src="/icons/outils.svg" alt="" height="22" width="22" className="fr-mb-1v" />
+        <IconOutils height="22" width="22" className="fr-mb-1v" />
         Outils
       </>
     ),
@@ -147,27 +151,32 @@ export type TabId = (typeof tabsDefinition)[number]['tabId'];
 export const tabs = [...tabsDefinition];
 
 export const Tabs = styled(DsfrTabs)`
-box-shadow: none;
+  box-shadow: none;
 
-.fr-tabs__panel {
-  padding: 0.5rem 0.5rem;
-}
-
-.fr-tabs__tab {
-  display: flex;
-  flex-direction: column;
-  font-weight: normal;
-  font-size: 13px;
-  margin= 0 2px;
-  padding: 8px 8px;
-
-  svg {
-    font-size: 3rem;
+  .fr-tabs__panel {
+    padding: 0.5rem 0.5rem;
   }
-  &[aria-selected='true'] {
-    font-weight: bold;
+
+  .fr-tabs__tab {
+    display: flex;
+    flex-direction: column;
+    font-weight: normal;
+    font-size: 13px;
+    margin: 0 2px;
+    padding: 8px 8px;
+    width: 66px;
+
+    svg {
+      font-size: 3rem;
+    }
+
+    &[aria-selected='true'] {
+      font-weight: bold;
+      svg {
+        fill: var(--text-active-blue-france);
+      }
+    }
   }
-}
 `;
 
 interface SingleCheckboxProps {
