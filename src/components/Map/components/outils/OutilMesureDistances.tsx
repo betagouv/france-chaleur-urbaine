@@ -274,6 +274,7 @@ function configureSourceAndLayers(map: Map) {
       'text-size': 16,
       'text-anchor': 'center',
       'text-allow-overlap': true,
+      'text-offset': ['case', ['==', ['get', 'terminaison'], true], ['literal', [0, -1]], ['literal', [0, 0]]],
     },
     paint: {
       'text-color': ['get', 'color'],
