@@ -5,3 +5,12 @@ export type MesureFeature = GeoJSON.Feature<GeoJSON.LineString> & {
     distance: number;
   };
 };
+
+export type MesureLabelFeature = GeoJSON.Feature<GeoJSON.Point> & {
+  id: string;
+  properties: {
+    color: string;
+    distanceLabel: string;
+    terminaison?: boolean;
+  };
+};

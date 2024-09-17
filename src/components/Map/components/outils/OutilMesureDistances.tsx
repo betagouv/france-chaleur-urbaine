@@ -12,7 +12,7 @@ import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
 import { formatDistance } from '@utils/geo';
 
-import { MesureFeature } from './mesure';
+import { MesureFeature, MesureLabelFeature } from './mesure';
 import MesureFeatureListItem from './MesureFeatureListItem';
 
 const linesSourceId = 'mesures-distances';
@@ -115,13 +115,13 @@ const OutilMesureDistances: React.FC = () => {
       return;
     }
 
-    (mapRef.getMap().getSource(linesSourceId) as GeoJSONSource).setData({
+    (mapRef.getSource(linesSourceId) as GeoJSONSource).setData({
       type: 'FeatureCollection',
       features: features,
     });
 
     // build the labels source with points at the center of each segment and another at the end point
-    (mapRef.getMap().getSource(labelsSourceId) as GeoJSONSource).setData({
+    (mapRef.getSource(labelsSourceId) as GeoJSONSource).setData({
       type: 'FeatureCollection',
       features: features.flatMap((feature) => {
         return [
@@ -140,7 +140,7 @@ const OutilMesureDistances: React.FC = () => {
                     length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
                   ),
                 },
-              }) satisfies GeoJSON.Feature
+              }) satisfies MesureLabelFeature
           ),
           {
             id: `${feature.id}-total`,
@@ -152,9 +152,10 @@ const OutilMesureDistances: React.FC = () => {
             properties: {
               color: feature.properties.color,
               distanceLabel: `Total : ${formatDistance(feature.properties.distance)}`,
+              terminaison: true,
             },
           },
-        ] satisfies GeoJSON.Feature[];
+        ] satisfies MesureLabelFeature[];
       }),
     });
   }, [mapLoaded, features]);
