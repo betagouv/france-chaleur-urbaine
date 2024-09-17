@@ -160,21 +160,21 @@ const OutilMesureDistances: React.FC = () => {
   }, [mapLoaded, features]);
 
   function updateMeasurementColor(featureId: string, newColor: string) {
-    const featureIndex = features.findIndex((feature) => feature.id === featureId);
-    if (featureIndex === -1) {
-      console.error(`feature not found ${featureId}`);
-      return;
-    }
-    const feature = features[featureIndex];
-    setFeatures(
-      features.toSpliced(featureIndex, 1, {
+    setFeatures((features) => {
+      const featureIndex = features.findIndex((feature) => feature.id === featureId);
+      if (featureIndex === -1) {
+        console.error(`feature not found ${featureId}`);
+        return features;
+      }
+      const feature = features[featureIndex];
+      return features.toSpliced(featureIndex, 1, {
         ...feature,
         properties: {
           ...feature.properties,
           color: newColor,
         },
-      })
-    );
+      });
+    });
   }
   function startMeasurement() {
     mapDraw?.changeMode('draw_line_string');

@@ -250,9 +250,9 @@ const Map = ({
     setPopupInfos({
       latitude: e.lngLat.lat,
       longitude: e.lngLat.lng,
-      content: layersWithDynamicContentPopup.includes(selectedFeature.layer.id as any)
+      content: layersWithDynamicContentPopup.includes(selectedFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
         ? {
-            type: selectedFeature.layer.id,
+            type: selectedFeature.layer?.id,
             properties: selectedFeature.properties,
           }
         : { [key]: selectedFeature.properties },
