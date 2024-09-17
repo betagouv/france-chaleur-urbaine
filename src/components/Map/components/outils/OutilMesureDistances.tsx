@@ -17,7 +17,7 @@ import MesureFeatureListItem from './MesureFeatureListItem';
 
 const linesSourceId = 'mesures-distances';
 const labelsSourceId = 'mesures-distances-labels';
-const defaultFeatureColor = '#000';
+const defaultFeatureColor = '#000001'; // not full black allows the picker to select other hues directly
 
 const OutilMesureDistances: React.FC = () => {
   const { mapLoaded, mapRef, mapDraw } = useFCUMap();
