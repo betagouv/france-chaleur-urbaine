@@ -24,24 +24,28 @@ const OutilMesureDistances: React.FC = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [features, setFeatures] = useState<MesureFeature[]>([]);
 
-  const onDrawCreate = ({ features }: DrawCreateEvent) => {
+  const onDrawCreate = ({ features: drawFeatures }: DrawCreateEvent) => {
     if (!mapDraw) {
       return;
     }
     // always only 1 feature
-    const feature = features[0] as MesureFeature;
+    const feature = drawFeatures[0] as MesureFeature;
     mapDraw.delete(feature.id);
     setIsDrawing(false);
-    setFeatures((features) => [
-      ...features,
-      {
-        ...feature,
-        properties: {
-          ...feature.properties,
-          color: defaultFeatureColor,
+
+    // update the last feature keeping its color
+    setFeatures((features) => {
+      return [
+        ...features.slice(0, -1),
+        {
+          ...feature,
+          properties: {
+            ...features.at(-1)!.properties,
+            distance: length(feature, { units: 'meters' }),
+          },
         },
-      },
-    ]);
+      ];
+    });
   };
 
   const onDrawRender = () => {
@@ -50,9 +54,35 @@ const OutilMesureDistances: React.FC = () => {
     }
     const drawMode = mapDraw.getMode();
     if (drawMode === 'draw_line_string') {
-      const featureBeingDrawn = mapDraw.getAll().features.at(-1) as MesureFeature | null;
+      const featureBeingDrawn = mapDraw.getAll().features.at(-1) as MesureFeature | undefined;
       if (featureBeingDrawn) {
-        mapDraw.setFeatureProperty(featureBeingDrawn.id, 'distance', length(featureBeingDrawn, { units: 'meters' }));
+        setFeatures((features) => {
+          // check if the feature being draw has been copied into the features state
+          if (features.at(-1)?.id !== featureBeingDrawn.id) {
+            return [
+              ...features,
+              {
+                ...featureBeingDrawn,
+                properties: {
+                  color: defaultFeatureColor,
+                  distance: length(featureBeingDrawn, { units: 'meters' }),
+                },
+              },
+            ];
+          } else {
+            return [
+              // update the geometry and the distance, keeping the previous color
+              ...features.slice(0, -1),
+              {
+                ...featureBeingDrawn,
+                properties: {
+                  color: features.at(-1)!.properties.color,
+                  distance: length(featureBeingDrawn, { units: 'meters' }),
+                },
+              },
+            ];
+          }
+        });
       }
     }
   };
@@ -239,6 +269,7 @@ function configureSourceAndLayers(map: Map) {
       'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
       'text-size': 16,
       'text-anchor': 'center',
+      'text-allow-overlap': true,
     },
     paint: {
       'text-color': ['get', 'color'],

@@ -331,18 +331,7 @@ const Map = ({
   const onMapLoad = async (e: MapLibreEvent) => {
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
-      styles: [
-        {
-          id: 'gl-draw-mesures-distances-lines',
-          type: 'line',
-          filter: ['all', ['==', '$type', 'LineString']],
-          paint: {
-            'line-color': '#000',
-            'line-width': 2,
-            'line-dasharray': [4, 4],
-          },
-        },
-      ],
+      styles: [], // disable all styles, they are handled externally using draw.render events
     });
 
     e.target.addControl(drawControl as any);
