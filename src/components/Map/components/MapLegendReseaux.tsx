@@ -58,7 +58,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           onClick={() => setFiltersVisible(false)}
           priority="secondary"
           size="small"
-          iconId="fr-icon-arrow-go-back-line"
+          iconId="fr-icon-arrow-left-line"
           className="fr-mb-2w"
         >
           Retour
