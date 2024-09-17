@@ -1,7 +1,7 @@
-import Accordion from '@codegouvfr/react-dsfr/Accordion';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 
 import { LegendSeparator } from '@components/Map/Map.style';
+import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Text from '@components/ui/Text';
 import { FiltreEnergieConfKey, MapConfiguration, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
@@ -51,7 +51,7 @@ function ReseauxDeChaleurFilters({
             })),
           ]}
         />
-        <Accordion label="Filtres avancés" style={{ margin: '0.25rem 0' }}>
+        <Accordion label="Filtres avancés" style={{ margin: '0.25rem 0' }} simple>
           <DeactivatableBox disabled={disabled}>
             {filtresEnergies.map((filtreEnergie) => (
               <RangeFilter
