@@ -327,14 +327,24 @@ export const MapSearchWrapper = styled.div<{
   font-size: 13px;
   line-height: 2;
   outline: none;
+  overflow: auto;
+  z-index: 2;
 
   > .fr-input-group {
     margin-bottom: 0.5rem;
   }
 
+  > .fr-accordion > .fr-collapse {
+    max-height: 50dvh; /* HACK as it's difficult to measure */
+    overflow: auto;
+  }
+
   ${({ theme }) => theme.media.lg`
     width: 320px;
     margin: 20px;
+    > .fr-accordion > .fr-collapse {
+      max-height: 70dvh; /* HACK as it's difficult to measure */
+    }
   `}
 
   ${({ legendCollapsed, theme }) => !legendCollapsed && theme.media.lg`left: ${legendWidth};`}
