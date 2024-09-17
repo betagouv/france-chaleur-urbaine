@@ -100,7 +100,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
 
             <Box flex>
               <Box display="flex">
-                <Box backgroundColor={themeDefHeatNetwork.classed.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
+                <Box backgroundColor={themeDefHeatNetwork.classed.color} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
 
                 <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer" pt="1v" px="1v">
                   Réseaux de chaleur classés
@@ -108,7 +108,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               </Box>
 
               <Box display="flex">
-                <Box backgroundColor={themeDefHeatNetwork.outline.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
+                <Box backgroundColor={themeDefHeatNetwork.outline.color} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
 
                 <Box px="1v">
                   <Text as="label" htmlFor="reseauxDeChaleur" fontSize="14px" lineHeight="18px" cursor="pointer">
@@ -123,7 +123,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
             </Box>
 
             <InfoIcon>
-              <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
+              <Icon size="sm" name="ri-information-fill" cursor="help" />
 
               <Hoverable position="bottom">
                 Pour les réseaux classés, le raccordement des bâtiments neufs ou renouvelant leur installation de chauffage au-dessus d'une
@@ -158,7 +158,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
             trackingEvent="Carto|Périmètres de développement prioritaire"
           />
 
-          <Box backgroundColor={themeDefZoneDP.fill.color} opacity={themeDefZoneDP.fill.opacity} height="16px" minWidth="32px" mt="1v" />
+          <Box backgroundColor={themeDefZoneDP.fill.color} opacity={themeDefZoneDP.fill.opacity} height="16px" minWidth="25px" mt="1v" />
 
           <Text
             as="label"
@@ -174,7 +174,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           </Text>
 
           <InfoIcon>
-            <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
+            <Icon size="sm" name="ri-information-fill" cursor="help" />
 
             <Hoverable position="bottom">
               Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage
@@ -196,13 +196,13 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           <Box flex>
             <Box display="flex">
               <Box>
-                <Box backgroundColor={themeDefHeatNetwork.futur.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
+                <Box backgroundColor={themeDefHeatNetwork.futur.color} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
 
                 <Box
                   backgroundColor={themeDefHeatNetwork.futur.color}
                   opacity={themeDefHeatNetwork.futur.opacity}
                   height="16px"
-                  minWidth="32px"
+                  minWidth="25px"
                   mt="1w"
                 />
               </Box>
@@ -228,7 +228,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
           </Box>
 
           <InfoIcon>
-            <Icon size="sm" name="ri-information-fill" cursor="help" mr="1w" />
+            <Icon size="sm" name="ri-information-fill" cursor="help" />
 
             <Hoverable position="bottom">Projets financés par l'ADEME ou signalés par les collectivités et exploitants.</Hoverable>
           </InfoIcon>
@@ -261,7 +261,6 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               lineHeight="18px"
               className="fr-col"
               cursor="pointer"
-              pl="1w"
               style={{ marginTop: '2px' }}
             >
               Bâtiments raccordés à un réseau de chaleur
@@ -281,7 +280,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
               trackingEvent="Carto|Réseaux de froid"
             />
 
-            <Box backgroundColor={themeDefHeatNetwork.cold.color} height="8px" minWidth="32px" borderRadius="4px" mt="1w" />
+            <Box backgroundColor={themeDefHeatNetwork.cold.color} height="8px" minWidth="25px" borderRadius="4px" mt="1w" />
 
             <Box flex px="1v">
               <Text as="label" htmlFor="reseauxDeFroid" fontSize="14px" lineHeight="18px" cursor="pointer">

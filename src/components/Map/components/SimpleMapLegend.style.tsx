@@ -219,7 +219,7 @@ export const TrackableCheckableAccordion = ({
  */
 export function SingleCheckbox({ name, checked, onChange, trackingEvent }: SingleCheckboxProps) {
   return (
-    <Box position="relative" px="1w" py="1v">
+    <Box position="relative" pr="1w" py="1v">
       <StyledCheckboxInput
         type="checkbox"
         name={name}

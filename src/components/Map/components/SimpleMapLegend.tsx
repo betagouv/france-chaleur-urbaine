@@ -827,7 +827,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 trackingEvent="Carto|ENR&R Mobilisables"
                 label={
                   <>
-                    <span>Solaire Thermique</span>
+                    <span>Solaire thermique</span>
                     <InfoIcon>
                       <Icon size="sm" name="ri-information-fill" cursor="help" />
 
