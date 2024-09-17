@@ -1,5 +1,6 @@
 import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
 import '@reach/combobox/styles.css';
+import { useLocalStorageValue } from '@react-hookz/web';
 import Link from 'next/link';
 import React from 'react';
 import { createGlobalStyle, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
@@ -7,6 +8,7 @@ import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
 
 import { MuiDsfrThemeProvider } from './MuiDsfrThemeProvider';
 import theme from './theme';
+
 import './theme.d';
 
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
@@ -17,6 +19,7 @@ declare module '@codegouvfr/react-dsfr/next-pagesdir' {
 
 const { withDsfr, dsfrDocumentApi } = createNextDsfrIntegrationApi({
   defaultColorScheme: 'light',
+  doPersistDarkModePreferenceWithCookie: false,
   Link,
   preloadFonts: [
     //"Marianne-Light",
@@ -128,7 +131,21 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
   }
 `;
 
+const useLightTheme = () => {
+  // React DSFR is forcing by default scheme in local storage
+  // When support for dark mode was removed, those who already had this preference are still in dark mode
+  // This resets it
+  const { value: currentTheme, set } = useLocalStorageValue<'light' | 'dark'>('scheme');
+  React.useEffect(() => {
+    if (currentTheme !== 'light') {
+      set('light');
+    }
+  }, [set, currentTheme]);
+};
+
 function ThemeProvider({ children }: { children: React.ReactNode }) {
+  useLightTheme();
+
   return (
     <StyledComponentsThemeProvider theme={theme}>
       <MuiDsfrThemeProvider>
