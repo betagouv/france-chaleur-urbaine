@@ -41,7 +41,6 @@ const Autocomplete = <Option extends DefaultOption>({
   const debouncedFetch = useMemo(
     () =>
       debounce(async (query: string) => {
-        setError(undefined);
         setLoading(true);
         try {
           const results = await fetchFn(query);
