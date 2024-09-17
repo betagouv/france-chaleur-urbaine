@@ -20,8 +20,7 @@ const labelsSourceId = 'mesures-distances-labels';
 const defaultFeatureColor = '#000001'; // not full black allows the picker to select other hues directly
 
 const OutilMesureDistances: React.FC = () => {
-  const { mapLoaded, mapRef, mapDraw } = useFCUMap();
-  const [isDrawing, setIsDrawing] = useState(false);
+  const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useState<MesureFeature[]>([]);
 
   const onDrawCreate = ({ features: drawFeatures }: DrawCreateEvent) => {

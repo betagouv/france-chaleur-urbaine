@@ -42,7 +42,7 @@ const MapPage = () => {
     return null;
   }
 
-  const { legend, drawing, displayLegend } = router.query;
+  const { legend, displayLegend } = router.query;
 
   const legendFeatures = displayLegend
     ? decodeURI(displayLegend as string)
@@ -64,7 +64,6 @@ const MapPage = () => {
       <Map
         withLegend={legend === 'true'}
         withHideLegendSwitch={legend === 'true'}
-        withDrawing={drawing === 'true'}
         withBorder
         enabledLegendFeatures={legendFeatures}
         initialMapConfiguration={initialMapConfiguration}

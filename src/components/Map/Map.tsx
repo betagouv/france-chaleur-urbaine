@@ -49,7 +49,8 @@ import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
-import ZoneInfos from './components/SummaryBoxes';
+// FIXME supprimer composant après intégration à la sidebar
+// import ZoneInfos from './components/SummaryBoxes';
 import { LayerId, ReseauxDeChaleurLimits, applyMapConfigurationToLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
@@ -58,7 +59,6 @@ import {
   LegendLogoLink,
   LegendLogoList,
   LegendSideBar,
-  MapControlWrapper,
   MapSearchInputWrapper,
   MapSearchWrapper,
   MapStyle,
@@ -140,7 +140,6 @@ const Map = ({
   withoutLogo,
   withLegend,
   withHideLegendSwitch,
-  withDrawing,
   withBorder,
   legendTitle,
   initialMapConfiguration,
@@ -162,7 +161,6 @@ const Map = ({
   enabledLegendFeatures?: MapLegendFeature[];
   withLegend?: boolean;
   withHideLegendSwitch?: boolean;
-  withDrawing?: boolean;
   withBorder?: boolean;
   legendTitle?: string;
   legendLogoOpt?: TypeLegendLogo;
@@ -178,7 +176,7 @@ const Map = ({
   mapRef?: MutableRefObject<MapRef>;
 }) => {
   const router = useRouter();
-  const { setMapRef, mapDraw, setMapDraw } = useFCUMap();
+  const { setMapRef, setMapDraw, isDrawing } = useFCUMap();
 
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -186,7 +184,6 @@ const Map = ({
   const [mapConfiguration, setMapConfiguration] = useState<MaybeEmptyMapConfiguration>(initialMapConfiguration ?? defaultMapConfiguration);
 
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
-  const [drawing, setDrawing] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
   const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
@@ -718,7 +715,7 @@ const Map = ({
     <>
       <MapStyle
         legendCollapsed={!withLegend || legendCollapsed}
-        drawing={drawing}
+        isDrawing={isDrawing}
         withTopLegend={withHideLegendSwitch}
         withHideLegendSwitch={withHideLegendSwitch}
         withBorder={withBorder}
@@ -756,12 +753,12 @@ const Map = ({
             )}
           </>
         )}
-        {withDrawing && mapRef.current && mapDraw && (
+        {/* FIXME: à supprimer et déplacer dans le menu */}
+        {/* {withDrawing && mapRef.current && mapDraw && (
           <MapControlWrapper legendCollapsed={legendCollapsed}>
-            {/* FIXME: à supprimer et déplacer dans le menu */}
             <ZoneInfos map={mapRef.current} draw={mapDraw} setDrawing={setDrawing} drawing={drawing} />
           </MapControlWrapper>
-        )}
+        )} */}
         <MapProvider>
           <MapReactGL
             initialViewState={initialViewState}
