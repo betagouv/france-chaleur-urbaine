@@ -329,41 +329,17 @@ const Map = ({
   );
 
   const onMapLoad = async (e: MapLibreEvent) => {
-    console.log('onMapLoad');
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
-      userProperties: true,
       styles: [
         {
-          id: 'gl-draw-line',
+          id: 'gl-draw-mesures-distances-lines',
           type: 'line',
           filter: ['all', ['==', '$type', 'LineString']],
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round',
-          },
           paint: {
-            'line-color': '#f00',
+            'line-color': '#000',
             'line-width': 2,
             'line-dasharray': [4, 4],
-          },
-        },
-        {
-          id: 'gl-draw-mesures-distances-labels',
-          type: 'symbol',
-          filter: ['all', ['==', '$type', 'LineString']],
-          layout: {
-            'symbol-placement': 'line-center',
-            'text-field': ['get', 'distance'],
-            'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-            'text-size': 16,
-            'text-anchor': 'bottom',
-            'text-overlap': 'always',
-          },
-          paint: {
-            'text-color': ['get', 'color'],
-            'text-halo-color': '#ff00ff',
-            'text-halo-width': 2,
           },
         },
       ],

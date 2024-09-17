@@ -1,5 +1,7 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import center from '@turf/center';
+import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
 import { GeoJSONSource, Map } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
@@ -8,6 +10,7 @@ import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
+import { formatDistance } from '@utils/geo';
 
 import { MesureFeature } from './mesure';
 import MesureFeatureListItem from './MesureFeatureListItem';
@@ -85,6 +88,44 @@ const OutilMesureDistances: React.FC = () => {
     (mapRef.getMap().getSource(linesSourceId) as GeoJSONSource).setData({
       type: 'FeatureCollection',
       features: features,
+    });
+
+    // build the labels source with points at the center of each segment and another at the end point
+    (mapRef.getMap().getSource(labelsSourceId) as GeoJSONSource).setData({
+      type: 'FeatureCollection',
+      features: features.flatMap((feature) => {
+        return [
+          ...feature.geometry.coordinates.slice(0, -1).map(
+            (coordinates, index) =>
+              ({
+                id: `${feature.id}-${index}`,
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
+                },
+                properties: {
+                  color: feature.properties.color,
+                  distanceLabel: formatDistance(
+                    length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
+                  ),
+                },
+              }) satisfies GeoJSON.Feature
+          ),
+          {
+            id: `${feature.id}-total`,
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: feature.geometry.coordinates.at(-1) as GeoJSON.Position,
+            },
+            properties: {
+              color: feature.properties.color,
+              distanceLabel: `Total : ${formatDistance(feature.properties.distance)}`,
+            },
+          },
+        ] satisfies GeoJSON.Feature[];
+      }),
     });
   }, [mapLoaded, features]);
 
@@ -193,15 +234,11 @@ function configureSourceAndLayers(map: Map) {
     id: 'mesures-distances-labels',
     type: 'symbol',
     layout: {
-      // 'symbol-placement': 'line-center',
-      'text-field': 'ma distance',
+      'symbol-placement': 'point',
+      'text-field': ['get', 'distanceLabel'],
       'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
       'text-size': 16,
-      // 'text-anchor': 'bottom',
-      // 'text-overlap': 'always',
-      'text-anchor': 'bottom',
-      'text-offset': [0, -0.4],
-      // 'text-rotate': ['get', 'rotation'],
+      'text-anchor': 'center',
     },
     paint: {
       'text-color': ['get', 'color'],
