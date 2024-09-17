@@ -1,5 +1,5 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import { DrawCreateEvent, DrawModeChangeEvent } from '@mapbox/mapbox-gl-draw';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
@@ -29,7 +29,7 @@ const OutilMesureDistances: React.FC = () => {
     }
     // always only 1 feature
     const feature = drawFeatures[0] as MesureFeature;
-    mapDraw.delete(feature.id);
+    mapDraw.deleteAll();
     setIsDrawing(false);
 
     // update the last feature keeping its color
@@ -86,6 +86,17 @@ const OutilMesureDistances: React.FC = () => {
     }
   };
 
+  // handle the esc key to quit drawing mode
+  const onDrawModeChange = ({ mode }: DrawModeChangeEvent) => {
+    if (!mapDraw) {
+      return;
+    }
+    if (mode === 'simple_select') {
+      mapDraw.deleteAll();
+      setIsDrawing(false);
+    }
+  };
+
   useEffect(() => {
     if (!mapLoaded) {
       return;
@@ -95,10 +106,12 @@ const OutilMesureDistances: React.FC = () => {
     configureSourceAndLayers(map);
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
+    map.on('draw.modechange', onDrawModeChange);
 
     return () => {
       map.off('draw.create', onDrawCreate);
       map.off('draw.render', onDrawRender);
+      map.off('draw.modechange', onDrawModeChange);
 
       // clear the feature being drawn
       mapDraw.deleteAll();
