@@ -5,14 +5,13 @@ import styled, { css } from 'styled-components';
 
 import Box from '@components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@components/ui/CheckableAccordion';
+import IconEnrr from '@public/icons/enrr.svg';
+import IconOutils from '@public/icons/outils.svg';
+import IconPotentiel from '@public/icons/potentiel.svg';
+import IconReseaux from '@public/icons/reseaux.svg';
 import cx from '@utils/cx';
 import { LegendTrackingEvent, trackEvent } from 'src/services/analytics';
 import { type MapConfiguration, type MapConfigurationProperty } from 'src/services/Map/map-configuration';
-
-import IconEnrr from '../../../../public/icons/enrr.svg';
-import IconOutils from '../../../../public/icons/outils.svg';
-import IconPotentiel from '../../../../public/icons/potentiel.svg';
-import IconReseaux from '../../../../public/icons/reseaux.svg';
 
 const StyledDSFRCheckbox = styled.div<{
   checked: boolean;
