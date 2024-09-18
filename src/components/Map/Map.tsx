@@ -62,6 +62,7 @@ import {
   MapStyle,
   TopLegend,
   TopLegendSwitch,
+  legendWidth,
 } from './Map.style';
 import satelliteConfig from './satellite.config.json';
 import { MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
@@ -692,10 +693,9 @@ const Map = ({
     const bbox = (router.query.bbox as string).split(',').map((n) => Number.parseFloat(n)) as [number, number, number, number];
 
     const mapViewportFitPadding = 50; // px
-    const sideBarWidth = 345; // px
     const headerWithProModeHeight = 106; // px
     const headerHeight = 56; // px
-    const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? sideBarWidth : 0) - mapViewportFitPadding;
+    const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? legendWidth : 0) - mapViewportFitPadding;
     const mapViewportHeight = window.innerHeight - (withHideLegendSwitch ? headerWithProModeHeight : headerHeight) - mapViewportFitPadding;
 
     const { center, zoom } = geoViewport.viewport(

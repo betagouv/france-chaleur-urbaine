@@ -4,7 +4,7 @@ export const mapControlZindex = 110;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
 
-const legendWidth = '333px';
+export const legendWidth = 345;
 
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
@@ -23,9 +23,7 @@ export const MapStyle: any = createGlobalStyle<{
 
     .map, .maplibregl-map {
       position: absolute !important;
-      left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : `${legendWidth}`)};
       ${({ withTopLegend }) => withTopLegend && 'top: 41px;'}
-      width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth}) !important`)};
       height: ${({ withTopLegend }) => (withTopLegend ? 'calc(100% - 41px) !important' : '100%')};
       ${({ withHideLegendSwitch, legendCollapsed }) =>
         withHideLegendSwitch &&
@@ -38,6 +36,8 @@ export const MapStyle: any = createGlobalStyle<{
               top: 41px;
               height: calc(100% - 41px) !important;
             }`)}
+      left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : `${legendWidth}px`)};
+      width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth}px) !important`)};
 
       ${({ drawing }) =>
         drawing &&
@@ -132,7 +132,7 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
   width: 1100px;
   padding: 32px;
   bottom: 0;
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '50vw' : `calc((100vw - ${legendWidth})/2 + ${legendWidth})`)};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '50vw' : `calc((100vw - ${legendWidth}px)/2 + ${legendWidth}px)`)};
   transform: translateX(-50%);
 
   ${mapMediumMedia} {
@@ -154,8 +154,8 @@ export const LegendSideBar = styled.div<{
       position: absolute;
       left: -150%;
     `}
-  width: ${legendWidth};
-  min-width: ${legendWidth};
+  width: ${legendWidth}px;
+  min-width: ${legendWidth}px;
   background: var(--background-default-grey);
   border: 1px solid #dddddd;
   box-shadow:
@@ -187,7 +187,7 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
   padding: 0 0 0 22px;
   z-index: ${mapControlZindex + 1};
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '-23px' : '310px')};
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '-23px' : `calc(${legendWidth}px - 23px)`)};
   top: 50%;
   border-radius: 10px;
   background-color: var(--background-default-grey);
@@ -208,17 +208,21 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
 export const LegendLogoList = styled.div<{
   legendCollapsed: boolean;
 }>`
-  width: 332px;
+  width: calc(${legendWidth}px - 10px);
   position: absolute;
-  bottom: 0px;
+  bottom: 0;
+  left: 5px;
   z-index: 9999;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
   background: var(--background-default-grey);
   ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
   height:100px;
 `;
 
 export const LegendLogoLink = styled.a`
-  width: 166px;
+  flex: 1;
   background-color: var(--background-default-grey);
   img {
     width: 100%;
@@ -232,7 +236,7 @@ export const LegendLogoLink = styled.a`
 `;
 
 export const LegendLogo = styled.div`
-  width: 166px;
+  flex: 1;
   background-color: var(--background-default-grey);
   img {
     width: 100%;
@@ -347,5 +351,5 @@ export const MapSearchWrapper = styled.div<{
     }
   `}
 
-  ${({ legendCollapsed, theme }) => !legendCollapsed && theme.media.lg`left: ${legendWidth};`}
+  ${({ legendCollapsed, theme }) => !legendCollapsed && theme.media.lg`left: ${legendWidth}px;`}
 `;
