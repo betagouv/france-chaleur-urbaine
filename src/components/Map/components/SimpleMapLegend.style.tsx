@@ -160,7 +160,6 @@ type GenerateTabUrls<T extends readonly UrlTabDef[]> = {
     : never;
 }[number];
 
-// export type TabUrlId = 'reseaux' | 'reseaux/filtre' | 'potentiel' | 'enrr' | 'outils' | 'outils/mesure' | 'outils/zone' | 'outils/lineaire';
 type TabUrlId = GenerateTabUrls<typeof tabsDefinition>;
 
 type GenerateTabsObjects<T extends readonly UrlTabDef[]> = {
