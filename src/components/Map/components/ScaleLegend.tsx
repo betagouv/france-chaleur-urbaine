@@ -4,7 +4,7 @@ import React from 'react';
 
 import Box from '@components/ui/Box';
 
-import { ScaleLabelLegend, ScaleLegendBody, ScaleLegendHeader, ScaleLegendWrapper, ScaleSlider } from './ScaleLegend.style';
+import { ScaleLabelLegend, ScaleLegendBody, ScaleLegendHeader, ScaleLegendWrapper, ScaleSlider } from '../components/ScaleLegend.style';
 import { maxIconSize, minIconSize } from '../map-layers';
 
 interface ScaleLegendProps {

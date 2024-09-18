@@ -88,7 +88,6 @@
     "prettier": "3.0.2",
     "publicodes": "npm:@totak/publicodes@1.5.1-fcu6",
     "react": "^18.2.0",
-    "react-compound-slider": "^3.4.0",
     "react-dom": "^18.2.0",
     "react-google-charts": "^4.0.1",
     "react-loader-spinner": "^6.1.0",
