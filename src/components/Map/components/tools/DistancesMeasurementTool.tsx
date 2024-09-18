@@ -15,8 +15,8 @@ import { formatDistance } from '@utils/geo';
 import { MesureFeature, MesureLabelFeature } from './mesure';
 import MesureFeatureListItem from './MesureFeatureListItem';
 
-const linesSourceId = 'mesures-distances';
-const labelsSourceId = 'mesures-distances-labels';
+const linesSourceId = 'distance-measurements';
+const labelsSourceId = 'distance-measurements-labels';
 const featureColorPalette = ['#2c3e50', '#8e44ad', '#2980b9', '#27ae60', '#c0392b', '#d35400', '#7f8c8d', '#34495e', '#16a085', '#e67e22'];
 
 const DistancesMeasurementTool: React.FC = () => {
@@ -255,7 +255,7 @@ function configureSourcesAndLayers(map: Map) {
 
   map.addLayer({
     source: linesSourceId,
-    id: 'mesures-distances-lines',
+    id: 'distance-measurements-lines',
     type: 'line',
     paint: {
       'line-color': ['get', 'color'],
@@ -274,7 +274,7 @@ function configureSourcesAndLayers(map: Map) {
 
   map.addLayer({
     source: labelsSourceId,
-    id: 'mesures-distances-labels',
+    id: 'distance-measurements-labels',
     type: 'symbol',
     layout: {
       'symbol-placement': 'point',
@@ -294,8 +294,8 @@ function configureSourcesAndLayers(map: Map) {
 }
 
 function clearSourcesAndLayers(map: Map) {
-  map.removeLayer('mesures-distances-lines');
-  map.removeLayer('mesures-distances-labels');
+  map.removeLayer('distance-measurements-lines');
+  map.removeLayer('distance-measurements-labels');
   map.removeSource(linesSourceId);
   map.removeSource(labelsSourceId);
 }
