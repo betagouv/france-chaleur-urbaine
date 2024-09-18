@@ -1,6 +1,6 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
-import { parseAsBoolean, useQueryState } from 'nuqs';
+import { useQueryState } from 'nuqs';
 
 import Hoverable from '@components/Hoverable';
 import {
@@ -55,7 +55,8 @@ const defaultURL: TabObject = { tabId: 'reseaux', subTabId: null };
 
 function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTitle, enabledFeatures }: SimpleMapLegendProps) {
   const [selectedTabId, setSelectedTabId] = useQueryState<TabObject>('tabId', parseURLTabs(tabs).withDefault(defaultURL));
-  const [filtersVisible, setFiltersVisible] = useQueryState('showFilters', parseAsBoolean);
+
+  const setReseauxFiltersVisible = (visible: boolean) => setSelectedTabId({ tabId: 'reseaux', subTabId: visible ? 'filtres' : null });
 
   function toggleLayer(property: MapConfigurationProperty<boolean>) {
     toggleBoolean(mapConfiguration, property);
@@ -81,9 +82,9 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
           mapConfiguration={mapConfiguration}
           onMapConfigurationChange={onMapConfigurationChange}
           legendTitle={legendTitle}
-          filtersVisible={!!filtersVisible}
+          filtersVisible={selectedTabId.subTabId === 'filtres'}
           updateScaleInterval={updateScaleInterval}
-          setFiltersVisible={setFiltersVisible}
+          setFiltersVisible={setReseauxFiltersVisible}
           toggleLayer={toggleLayer}
         />
       </Box>
@@ -104,9 +105,9 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
               mapConfiguration={mapConfiguration}
               onMapConfigurationChange={onMapConfigurationChange}
               legendTitle={legendTitle}
-              filtersVisible={!!filtersVisible}
+              filtersVisible={selectedTabId.subTabId === 'filtres'}
               updateScaleInterval={updateScaleInterval}
-              setFiltersVisible={setFiltersVisible}
+              setFiltersVisible={setReseauxFiltersVisible}
               toggleLayer={toggleLayer}
             />
             <Box mt="4w" mb="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
