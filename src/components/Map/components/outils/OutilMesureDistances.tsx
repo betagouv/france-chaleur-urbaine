@@ -103,7 +103,7 @@ const OutilMesureDistances: React.FC = () => {
     }
     const map = mapRef.getMap();
 
-    configureSourceAndLayers(map);
+    configureSourcesAndLayers(map);
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
     map.on('draw.modechange', onDrawModeChange);
@@ -243,7 +243,7 @@ const OutilMesureDistances: React.FC = () => {
 
 export default OutilMesureDistances;
 
-function configureSourceAndLayers(map: Map) {
+function configureSourcesAndLayers(map: Map) {
   map.addSource(linesSourceId, {
     type: 'geojson',
     data: {
