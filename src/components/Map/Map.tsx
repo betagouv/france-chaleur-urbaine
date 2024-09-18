@@ -58,10 +58,9 @@ import {
   LegendLogoList,
   LegendSideBar,
   MapControlWrapper,
+  MapSearchInputWrapper,
   MapSearchWrapper,
   MapStyle,
-  TopLegend,
-  TopLegendSwitch,
   legendWidth,
 } from './Map.style';
 import satelliteConfig from './satellite.config.json';
@@ -730,7 +729,7 @@ const Map = ({
                 <Icon size="lg" name={legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'} />
               </CollapseLegend>
             )}
-            <LegendSideBar legendCollapsed={legendCollapsed} withHideLegendSwitch={withHideLegendSwitch}>
+            <LegendSideBar legendCollapsed={legendCollapsed}>
               <LegendContainer withoutLogo={withoutLogo}>
                 <SimpleMapLegend
                   mapConfiguration={mapConfiguration}
@@ -758,31 +757,6 @@ const Map = ({
           <MapControlWrapper legendCollapsed={legendCollapsed}>
             <ZoneInfos map={mapRef.current} draw={draw} setDrawing={setDrawing} drawing={drawing} />
           </MapControlWrapper>
-        )}
-        {withHideLegendSwitch && (
-          <TopLegend legendCollapsed={!withLegend || legendCollapsed}>
-            <TopLegendSwitch legendCollapsed={legendCollapsed}>
-              <div className="fr-toggle fr-toggle--label-left">
-                <input
-                  type="checkbox"
-                  checked={!legendCollapsed}
-                  id="top-switch-legend-toggle"
-                  onChange={(e) => {
-                    setLegendCollapsed(!e.target.checked);
-                  }}
-                  className="fr-toggle__input"
-                />
-                <label
-                  className="fr-toggle__label"
-                  htmlFor={'top-switch-legend-toggle'}
-                  data-fr-checked-label="Activé"
-                  data-fr-unchecked-label="Désactivé"
-                >
-                  {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
-                </label>
-              </div>
-            </TopLegendSwitch>
-          </TopLegend>
         )}
         <MapProvider>
           <MapReactGL
@@ -825,7 +799,10 @@ const Map = ({
               ))}
           </MapReactGL>
           <MapSearchWrapper legendCollapsed={legendCollapsed}>
-            <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+            <MapSearchInputWrapper>
+              {withHideLegendSwitch && <Icon size="md" name="fr-icon-menu-fill" onClick={() => setLegendCollapsed(!legendCollapsed)} />}
+              <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+            </MapSearchInputWrapper>
 
             {soughtAddresses.length > 0 && (
               <Accordion

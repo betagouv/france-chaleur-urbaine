@@ -1,5 +1,7 @@
 import styled, { createGlobalStyle, css } from 'styled-components';
 
+import Box from '@components/ui/Box';
+
 export const mapControlZindex = 110;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
@@ -9,8 +11,6 @@ export const legendWidth = 345;
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
   drawing: boolean;
-  withTopLegend: boolean;
-  withHideLegendSwitch: boolean;
   withBorder: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
@@ -23,19 +23,6 @@ export const MapStyle: any = createGlobalStyle<{
 
     .map, .maplibregl-map {
       position: absolute !important;
-      ${({ withTopLegend }) => withTopLegend && 'top: 41px;'}
-      height: ${({ withTopLegend }) => (withTopLegend ? 'calc(100% - 41px) !important' : '100%')};
-      ${({ withHideLegendSwitch, legendCollapsed }) =>
-        withHideLegendSwitch &&
-        (legendCollapsed
-          ? `@media (max-width: 600px) {
-              top: 65px;
-              height: calc(100% - 65px) !important;
-            }`
-          : `@media (max-width: 600px) {
-              top: 41px;
-              height: calc(100% - 41px) !important;
-            }`)}
       left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : `${legendWidth}px`)};
       width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth}px) !important`)};
 
@@ -143,7 +130,6 @@ export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
 
 export const LegendSideBar = styled.div<{
   legendCollapsed: boolean;
-  withHideLegendSwitch?: boolean;
 }>`
   z-index: ${mapControlZindex + 2};
   overflow: auto;
@@ -161,15 +147,6 @@ export const LegendSideBar = styled.div<{
   box-shadow:
     0px 16px 16px -16px rgba(0, 0, 0, 0.32),
     0px 8px 16px rgba(0, 0, 0, 0.1);
-  ${({ withHideLegendSwitch, legendCollapsed }) =>
-    withHideLegendSwitch &&
-    !legendCollapsed &&
-    css`
-      top: 41px;
-      position: absolute;
-      height: calc(100% - 41px);
-    `}
-  }
 `;
 
 export const LegendContainer = styled.div<{
@@ -245,62 +222,6 @@ export const LegendLogo = styled.div`
   display: inline-block;
 `;
 
-export const TopLegend = styled.div<{
-  legendCollapsed: boolean;
-}>`
-  background-color: var(--background-default-grey);
-  width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth})`)};
-  @media (max-width: 600px) {
-    width: 100%;
-    display: block;
-  }
-  @media (max-width: 1251px) {
-    display: flex;
-  }
-  height: fit-content;
-  border-bottom: solid 1px #dddddd;
-
-  .fr-toggle {
-    width: fit-content;
-    padding: 8px 16px;
-  }
-
-  .fr-toggle__label {
-    color: var(--bf500);
-    font-weight: bold;
-
-    &::before {
-      margin-top: 0;
-      content: '' !important;
-    }
-
-    &::after {
-      top: 8px;
-      right: 32px !important;
-    }
-  }
-`;
-
-export const TopLegendSwitch = styled.div<{
-  legendCollapsed?: boolean;
-  isProMode?: boolean;
-}>`
-  margin-left: 24px;
-  @media (max-width: 600px) {
-    width: 100%;
-    display: block;
-  }
-  .fr-toggle__label {
-    color: var(--blue-france-113);
-  }
-  ${({ legendCollapsed, isProMode }) =>
-    !legendCollapsed &&
-    isProMode &&
-    `@media (max-width: 600px) {
-      display: none;
-    }`}
-`;
-
 export const PopupTitle = styled.h3`
   font-size: 1.1rem;
   line-height: 1.5rem;
@@ -312,6 +233,12 @@ export const PopupType = styled.div`
   font-size: 0.75rem;
   font-weight: bold;
   text-transform: uppercase;
+`;
+
+export const MapSearchInputWrapper = styled(Box).attrs({ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px' })`
+  > div {
+    flex: 1;
+  }
 `;
 
 export const MapSearchWrapper = styled.div<{
