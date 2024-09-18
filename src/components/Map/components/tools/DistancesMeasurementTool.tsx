@@ -12,8 +12,8 @@ import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
 import { formatDistance } from '@utils/geo';
 
+import MesureFeatureListItem from './MeasureFeatureListItem';
 import { MesureFeature, MesureLabelFeature } from './mesure';
-import MesureFeatureListItem from './MesureFeatureListItem';
 
 const linesSourceId = 'distance-measurements';
 const labelsSourceId = 'distance-measurements-labels';

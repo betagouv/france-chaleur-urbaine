@@ -27,7 +27,6 @@ import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux, { type MapLegendFeature } from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
-import DistancesMeasurementTool from './outils/DistancesMeasurementTool';
 import ScaleLegend from './ScaleLegend';
 import {
   DeactivatableBox,
@@ -40,6 +39,7 @@ import {
   parseURLTabs,
   tabs,
 } from './SimpleMapLegend.style';
+import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
