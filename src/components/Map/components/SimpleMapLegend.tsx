@@ -174,7 +174,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 }
               >
                 <DeactivatableBox disabled={!mapConfiguration.consommationsGaz.show}>
-                  <Box display="flex" flexWrap="wrap" px="3w">
+                  <Box display="flex" flexWrap="wrap" px="1w">
                     <Box display="flex">
                       <SingleCheckbox
                         name="consommationsGazLogements"
@@ -249,7 +249,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                   </Box>
 
                   <ScaleLegend
-                    className="fr-ml-3w fr-mr-1w"
+                    className="fr-ml-1w fr-mr-1w"
                     circle
                     label="Niveau de consommation de gaz (MWh/an)"
                     color={consommationsGazLegendColor}
@@ -273,7 +273,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
               >
                 <DeactivatableBox disabled={!mapConfiguration.batimentsGazCollectif.show}>
                   <ScaleLegend
-                    className="fr-ml-3w fr-mr-1w"
+                    className="fr-ml-1w fr-mr-1w"
                     label="Nombre de lots d'habitation"
                     color={themeDefEnergy.gas.color}
                     domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
@@ -302,7 +302,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
               >
                 <DeactivatableBox disabled={!mapConfiguration.batimentsFioulCollectif.show}>
                   <ScaleLegend
-                    className="fr-ml-3w fr-mr-1w"
+                    className="fr-ml-1w fr-mr-1w"
                     label="Nombre de lots d'habitation"
                     color={themeDefEnergy.fuelOil.color}
                     domain={[LegendDeskData.energy.min, LegendDeskData.energy.max]}
@@ -467,7 +467,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                     </>
                   }
                 >
-                  <DeactivatableBox disabled={!mapConfiguration.caracteristiquesBatiments} ml="3w" mr="1w">
+                  <DeactivatableBox disabled={!mapConfiguration.caracteristiquesBatiments} ml="1w" mr="1w">
                     <Text fontSize="13px" lineHeight="18px" fontWeight="lightbold" fontStyle="italic">
                       Cliquer sur le bâtiment souhaité
                     </Text>
@@ -529,7 +529,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                   </>
                 }
               >
-                <DeactivatableBox disabled={!mapConfiguration.zonesOpportunite.show} display="flex" flexWrap="wrap" ml="3w" mr="1w">
+                <DeactivatableBox disabled={!mapConfiguration.zonesOpportunite.show} display="flex" flexWrap="wrap" ml="1w" mr="1w">
                   <Box display="flex">
                     <SingleCheckbox
                       name="zonesPotentielChaud"
@@ -691,7 +691,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                   </>
                 }
               >
-                <DeactivatableBox disabled={!mapConfiguration.enrrMobilisablesChaleurFatale.show} ml="3w" mr="1w">
+                <DeactivatableBox disabled={!mapConfiguration.enrrMobilisablesChaleurFatale.show} ml="1w" mr="1w">
                   <Box display="flex">
                     <SingleCheckbox
                       name="showUnitesDIncineration"
@@ -842,7 +842,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                   </>
                 }
               >
-                <DeactivatableBox disabled={!mapConfiguration.enrrMobilisablesSolaireThermique.show} ml="3w" mr="1w">
+                <DeactivatableBox disabled={!mapConfiguration.enrrMobilisablesSolaireThermique.show} ml="1w" mr="1w">
                   <Box display="flex">
                     <SingleCheckbox
                       name="friches"

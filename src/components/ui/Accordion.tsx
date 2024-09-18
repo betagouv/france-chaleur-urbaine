@@ -9,6 +9,9 @@ const StyledAccordion = styled(DsfrAccordion)<{ $small?: boolean; $simple?: bool
   ${({ $small, $simple, $bordered, $closeable }) => css`
     ${$small &&
     css`
+      .fr-collapse--expanded {
+        padding: 0.5rem;
+      }
       .fr-accordion__btn {
         font-size: 0.875rem;
         line-height: 1.5rem;
