@@ -118,7 +118,7 @@ const DistancesMeasurementTool: React.FC = () => {
       mapDraw.deleteAll();
 
       // clear existing features
-      clearSourceAndLayers(map);
+      clearSourcesAndLayers(map);
     };
   }, [mapLoaded]);
 
@@ -293,7 +293,7 @@ function configureSourcesAndLayers(map: Map) {
   });
 }
 
-function clearSourceAndLayers(map: Map) {
+function clearSourcesAndLayers(map: Map) {
   map.removeLayer('mesures-distances-lines');
   map.removeLayer('mesures-distances-labels');
   map.removeSource(linesSourceId);
