@@ -265,7 +265,7 @@ export const MapSearchWrapper = styled.div<{
     margin-bottom: 0.5rem;
   }
 
-  > .fr-accordion > .fr-collapse {
+  > .fr-accordion > .fr-collapse--expanded {
     max-height: 50dvh; /* HACK as it's difficult to measure */
     overflow: auto;
   }
@@ -273,7 +273,7 @@ export const MapSearchWrapper = styled.div<{
   ${({ theme }) => theme.media.lg`
     width: 320px;
     margin: 20px;
-    > .fr-accordion > .fr-collapse {
+    > .fr-accordion > .fr-collapse--expanded {
       max-height: 70dvh; /* HACK as it's difficult to measure */
     }
   `}
