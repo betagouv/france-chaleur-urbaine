@@ -19,7 +19,7 @@ const linesSourceId = 'mesures-distances';
 const labelsSourceId = 'mesures-distances-labels';
 const featureColorPalette = ['#2c3e50', '#8e44ad', '#2980b9', '#27ae60', '#c0392b', '#d35400', '#7f8c8d', '#34495e', '#16a085', '#e67e22'];
 
-const OutilMesureDistances: React.FC = () => {
+const DistancesMeasurementTool: React.FC = () => {
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useState<MesureFeature[]>([]);
 
@@ -242,7 +242,7 @@ const OutilMesureDistances: React.FC = () => {
   );
 };
 
-export default OutilMesureDistances;
+export default DistancesMeasurementTool;
 
 function configureSourcesAndLayers(map: Map) {
   map.addSource(linesSourceId, {

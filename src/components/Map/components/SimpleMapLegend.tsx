@@ -27,7 +27,7 @@ import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux, { type MapLegendFeature } from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
-import OutilMesureDistances from './outils/OutilMesureDistances';
+import DistancesMeasurementTool from './outils/DistancesMeasurementTool';
 import ScaleLegend from './ScaleLegend';
 import {
   DeactivatableBox,
@@ -718,7 +718,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 Retour
               </Button>
             )}
-            {selectedTabId.subTabId === 'mesure-distance' && <OutilMesureDistances />}
+            {selectedTabId.subTabId === 'mesure-distance' && <DistancesMeasurementTool />}
             {selectedTabId.subTabId === 'extraire-données-batiment' && <Box>Extraire des données sur les bâtiments</Box>}
             {selectedTabId.subTabId === 'densité-thermique-linéaire' && <Box>Calculer une densité thermique linéaire</Box>}
           </Box>
