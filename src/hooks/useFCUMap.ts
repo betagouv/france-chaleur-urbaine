@@ -1,5 +1,5 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { atom, useAtom, useSetAtom } from 'jotai';
+import { atom, useAtom, useSetAtom, WritableAtom } from 'jotai';
 import { MapRef } from 'react-map-gl/maplibre';
 
 import { isDefined } from '@utils/core';
@@ -8,10 +8,12 @@ export const mapRefAtom = atom<MapRef | null>(null);
 export const mapDrawAtom = atom<MapboxDraw | null>(null);
 export const isDrawingAtom = atom<boolean>(false);
 
+type SetAtom<T extends WritableAtom<unknown, never[], unknown>> = ReturnType<typeof useSetAtom<T>>;
+
 type UseFCUMapResult = {
-  setMapRef: ReturnType<typeof useSetAtom<typeof mapRefAtom>>;
-  setMapDraw: ReturnType<typeof useSetAtom<typeof mapDrawAtom>>;
-  setIsDrawing: ReturnType<typeof useSetAtom<typeof isDrawingAtom>>;
+  setMapRef: SetAtom<typeof mapRefAtom>;
+  setMapDraw: SetAtom<typeof mapDrawAtom>;
+  setIsDrawing: SetAtom<typeof isDrawingAtom>;
 } & (
   | { mapLoaded: false; mapRef: null; mapDraw: null; isDrawing: false }
   | {
