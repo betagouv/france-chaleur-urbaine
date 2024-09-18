@@ -206,10 +206,6 @@ const OutilMesureDistances: React.FC = () => {
 
   return (
     <>
-      <Button onClick={() => alert('TOTO')} priority="secondary" size="small" iconId="fr-icon-arrow-left-line" className="fr-mb-2w">
-        Retour
-      </Button>
-
       <Box display="flex" flexDirection="column" gap="16px">
         <Box>
           <Heading as="h6" mb="1w">

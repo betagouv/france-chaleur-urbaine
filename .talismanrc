@@ -7,12 +7,12 @@ fileignoreconfig:
   checksum: 133b59ccdafbc92d757c6a4108db7118353acaf20dbc8f2d3fab01455b4356ad
 - filename: src/components/Map/components/ReseauxDeChaleurFilters.tsx
   checksum: 5a669dfc71e206ae9f06160c38764e5fc12313a3d222245978a3e872ee8f4c02
+- filename: src/components/Map/components/SimpleMapLegend.style.tsx
+  checksum: d5ef84573f5bd387f8a44fcd09fd063683fb7caeecd5f7deab992cf76cc0d18e
 - filename: src/components/Map/components/SimpleMapLegend.tsx
-  checksum: 2d354b404900e425ab00e2305a97add9f652dbb3cb2b5a7bb7486ff36dd01953
+  checksum: 43be49746d8d8a133cbe473acaa0ed78dfae34e84b10b1afc83f9f879eddabdf
 - filename: src/components/SimulatorPublicodes/DebugDrawer.tsx
   checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 scopeconfig:
 - scope: node
 version: "1.0"
-scope: node
-version: '1.0'
