@@ -259,7 +259,7 @@ function configureSourcesAndLayers(map: Map) {
     type: 'line',
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': 2,
+      'line-width': 3,
       'line-dasharray': [4, 4],
     },
   });
