@@ -45,28 +45,28 @@ export const ScaleLabelLegend = styled.span<{
   size: number;
   circle?: boolean;
 }>`
-  ${({ size }) => css`
+  ${({ size, bgColor, circle }) => css`
     width: ${size}px;
     height: ${size}px;
-  `};
-  display: inline-flex;
-  vertical-align: middle;
-  justify-content: center;
-  align-items: center;
-  margin-right: 0.2em;
 
-  ::before {
-    content: '';
-    display: block;
-    position: relative;
+    display: inline-flex;
+    vertical-align: middle;
+    justify-content: center;
+    align-items: center;
+    margin-right: 0.2em;
 
-    width: 100%;
-    height: 100%;
-    background-color: ${({ bgColor }) => bgColor || 'grey'};
-    ${({ circle }) =>
-      circle &&
+    ::before {
+      content: '';
+      display: block;
+      position: relative;
+
+      width: ${size}px;
+      height: ${size}px;
+      background-color: ${bgColor || 'grey'};
+      ${circle &&
       css`
         border-radius: 50%;
       `}
-  }
+    }
+  `};
 `;
