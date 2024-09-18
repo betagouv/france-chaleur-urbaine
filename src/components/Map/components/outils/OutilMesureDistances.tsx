@@ -52,38 +52,39 @@ const OutilMesureDistances: React.FC = () => {
       return;
     }
     const drawMode = mapDraw.getMode();
-    if (drawMode === 'draw_line_string') {
-      const featureBeingDrawn = mapDraw.getAll().features.at(-1) as MesureFeature | undefined;
-      if (featureBeingDrawn) {
-        setFeatures((features) => {
-          // check if the feature being draw has been copied into the features state
-          if (features.at(-1)?.id !== featureBeingDrawn.id) {
-            return [
-              ...features,
-              {
-                ...featureBeingDrawn,
-                properties: {
-                  color: featureColorPalette[features.length % featureColorPalette.length],
-                  distance: length(featureBeingDrawn, { units: 'meters' }),
-                },
-              },
-            ];
-          } else {
-            return [
-              // update the geometry and the distance, keeping the previous color
-              ...features.slice(0, -1),
-              {
-                ...featureBeingDrawn,
-                properties: {
-                  color: features.at(-1)!.properties.color,
-                  distance: length(featureBeingDrawn, { units: 'meters' }),
-                },
-              },
-            ];
-          }
-        });
-      }
+    if (drawMode !== 'draw_line_string') {
+      return;
     }
+    const featureBeingDrawn = mapDraw.getAll().features.at(-1) as MesureFeature | undefined;
+    if (!featureBeingDrawn) {
+      return;
+    }
+    setFeatures((features) => {
+      // check if the feature being draw has been copied into the features state
+      if (features.at(-1)?.id !== featureBeingDrawn.id) {
+        return [
+          ...features,
+          {
+            ...featureBeingDrawn,
+            properties: {
+              color: featureColorPalette[features.length % featureColorPalette.length],
+              distance: length(featureBeingDrawn, { units: 'meters' }),
+            },
+          },
+        ];
+      }
+      return [
+        // update the geometry and the distance, keeping the previous color
+        ...features.slice(0, -1),
+        {
+          ...featureBeingDrawn,
+          properties: {
+            color: features.at(-1)!.properties.color,
+            distance: length(featureBeingDrawn, { units: 'meters' }),
+          },
+        },
+      ];
+    });
   };
 
   // handle the esc key to quit drawing mode
