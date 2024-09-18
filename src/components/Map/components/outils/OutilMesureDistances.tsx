@@ -17,7 +17,7 @@ import MesureFeatureListItem from './MesureFeatureListItem';
 
 const linesSourceId = 'mesures-distances';
 const labelsSourceId = 'mesures-distances-labels';
-const defaultFeatureColor = '#000001'; // not full black allows the picker to select other hues directly
+const featureColorPalette = ['#2c3e50', '#8e44ad', '#2980b9', '#27ae60', '#c0392b', '#d35400', '#7f8c8d', '#34495e', '#16a085', '#e67e22'];
 
 const OutilMesureDistances: React.FC = () => {
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
@@ -63,7 +63,7 @@ const OutilMesureDistances: React.FC = () => {
               {
                 ...featureBeingDrawn,
                 properties: {
-                  color: defaultFeatureColor,
+                  color: featureColorPalette[features.length % featureColorPalette.length],
                   distance: length(featureBeingDrawn, { units: 'meters' }),
                 },
               },
