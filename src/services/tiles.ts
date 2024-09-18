@@ -67,7 +67,7 @@ const cacheAirtableTiles = () => {
   });
 };
 
-// cacheAirtableTiles();
+cacheAirtableTiles();
 
 const getTile = async (type: SourceId, x: number, y: number, z: number): Promise<{ data: any; compressed: boolean } | null> => {
   const tileInfo = tilesInfo[type];
