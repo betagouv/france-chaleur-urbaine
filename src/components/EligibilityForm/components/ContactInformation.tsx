@@ -105,8 +105,14 @@ export const validationSchemasContactInformation = {
   structure: Yup.string().required('Veuillez renseigner votre type de bâtiment'),
   lastName: Yup.string().required('Veuillez renseigner votre nom'),
   firstName: Yup.string().required('Veuillez renseigner votre prénom'),
-  company: Yup.string(),
-  companyType: Yup.string(),
+  company: Yup.string().when('structure', ([structure], schema) => {
+    if (structure === 'Tertiaire') return schema.required('Veuillez renseigner le nom de votre structure');
+    return schema;
+  }),
+  companyType: Yup.string().when('structure', ([structure], schema) => {
+    if (structure === 'Tertiaire') return schema.required('Veuillez sélectionner le type de votre structure');
+    return schema;
+  }),
   phone: Yup.string().matches(
     /^(?:(?:\+|00)33|0)\s*[1-9]\d{8}$/,
     'Veuillez renseigner votre numéro de téléphone sous le format 0605040302'
@@ -119,8 +125,23 @@ export const validationSchemasContactInformation = {
       'Ce champ est requis'
     ),
   nbLogements: Yup.number(),
-  demandCompanyType: Yup.string(),
-  demandCompanyName: Yup.string(),
+  demandCompanyType: Yup.string().when(['structure', 'companyType'], ([structure, companyType], schema) => {
+    if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE'))
+      return schema.required('Veuillez sélectionner le type de la structure accompagnée');
+    return schema;
+  }),
+  demandCompanyName: Yup.string().when(
+    ['structure', 'companyType', 'demandCompanyType'],
+    ([structure, companyType, demandCompanyType], schema) => {
+      if (
+        structure === 'Tertiaire' &&
+        (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE') &&
+        (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre')
+      )
+        return schema.required('Veuillez renseigner le nom de la structure accompagnée');
+      return schema;
+    }
+  ),
   demandArea: Yup.number(),
 };
 
@@ -233,7 +254,7 @@ const ContactInformation = ({
                   demandCompanyType === 'Bailleur social' ||
                   demandCompanyType === 'Autre') && (
                   <InputWraper className={fr.cx('fr-fieldset__element')} my="1w">
-                    <Field name="demandCompanyName" label={fieldLabelInformation.demandCompanyName} component={Input} />
+                    <Field name="demandCompanyName" label={fieldLabelInformation.demandCompanyName} component={Input} required />
                   </InputWraper>
                 )}
               </>
