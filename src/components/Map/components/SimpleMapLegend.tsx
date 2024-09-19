@@ -660,15 +660,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 >
                   Calculer une densité thermique linéaire
                 </Button>
-
-                <Box display="flex" alignItems="center" gap="16px">
-                  <Link href="/documentation/carto_sources.pdf" isExternal eventKey="Téléchargement|Carto sources">
-                    <Text as="span" size="xs">
-                      Sources
-                    </Text>
-                  </Link>
-                  <DevModeIcon />
-                </Box>
               </Box>
             ) : (
               <Button
@@ -931,6 +922,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
             </UrlStateAccordion>
           </Box>
         )}
+        <DevModeIcon />
       </Tabs>
       {/* <Box display="flex" alignItems="center">
         <Text fontSize="14px" lineHeight="18px" fontWeight="bold" ml="1w" className="fr-col">

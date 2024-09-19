@@ -2,7 +2,7 @@ fileignoreconfig:
   - filename: next.config.js
     checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
   - filename: src/components/Map/Map.tsx
-    checksum: 229b86481613ff77de8801ebb11fad6905cd327893461904fe06d3a896360396
+    checksum: fd1b8bd14f7bdeeb2b2a89bbc368cca61df55b0fe97a5f4512c9e9522d8b8ca7
   - filename: src/components/Map/components/CardSearchDetails.tsx
     checksum: 133b59ccdafbc92d757c6a4108db7118353acaf20dbc8f2d3fab01455b4356ad
   - filename: src/components/Map/components/ReseauxDeChaleurFilters.tsx

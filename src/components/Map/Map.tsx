@@ -7,6 +7,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsString, useQueryStates } from 'nuqs';
 import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ReactDOMServer from 'react-dom/server';
 import { MapLayerMouseEvent } from 'react-map-gl';
 import MapReactGL, {
   AttributionControl,
@@ -22,6 +23,7 @@ import Hoverable from '@components/Hoverable';
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
+import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
 import useFCUMap from '@hooks/useFCUMap';
 import useRouterReady from '@hooks/useRouterReady';
@@ -688,6 +690,12 @@ const Map = ({
     initialViewState.zoom = zoom;
   }
 
+  const sourcesLink = ReactDOMServer.renderToString(
+    <Link href="/documentation/carto_sources.pdf" isExternal eventKey="Téléchargement|Carto sources">
+      Sources
+    </Link>
+  );
+
   return (
     <>
       <MapStyle
@@ -746,11 +754,11 @@ const Map = ({
             <AttributionControl
               compact={false}
               position="bottom-right"
-              customAttribution={
+              customAttribution={`${sourcesLink}${
                 withFCUAttribution
                   ? "<a href='https://france-chaleur-urbaine.beta.gouv.fr/' target='_blank' rel='noopener noreferrer'>France Chaleur Urbaine</a>"
-                  : undefined
-              }
+                  : ''
+              }`}
             />
             <NavigationControl showZoom={true} visualizePitch={true} position="bottom-right" />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
