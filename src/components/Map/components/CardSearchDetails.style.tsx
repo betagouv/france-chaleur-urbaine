@@ -141,4 +141,7 @@ export const SearchedAddress = styled(Accordion)`
   button.fr-accordion__btn {
     align-items: flex-start;
   }
+  section {
+    line-height: 1.5rem;
+  }
 `;
