@@ -10,15 +10,11 @@ import { FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'sr
 import RangeFilter from './RangeFilter';
 import { DeactivatableBox } from './SimpleMapLegend.style';
 
-interface ReseauxDeChaleurFiltersProps {
-  disabled?: boolean;
-}
-
-function ReseauxDeChaleurFilters({ disabled }: ReseauxDeChaleurFiltersProps) {
+function ReseauxDeChaleurFilters() {
   const { mapConfiguration, setMapConfiguration, updateScaleInterval } = useFCUMap();
   return (
-    <DeactivatableBox disabled={disabled}>
-      <Box mx="1w" mb="4w">
+    <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
+      <Box mb="4w">
         <Text size="sm" lineHeight="18px" fontWeight="bold" my="1w">
           Énergie majoritaire
         </Text>
@@ -46,7 +42,7 @@ function ReseauxDeChaleurFilters({ disabled }: ReseauxDeChaleurFiltersProps) {
           ]}
         />
         <Accordion label="Filtres avancés" style={{ margin: '0.25rem 0' }} simple>
-          <DeactivatableBox disabled={disabled}>
+          <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
             {filtresEnergies.map((filtreEnergie) => (
               <RangeFilter
                 key={filtreEnergie.confKey}

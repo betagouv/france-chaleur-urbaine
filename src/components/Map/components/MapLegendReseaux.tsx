@@ -57,7 +57,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
         <Text fontSize="13px" lineHeight="18px" mb="2w">
           Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
         </Text>
-        <ReseauxDeChaleurFilters disabled={!mapConfiguration.reseauxDeChaleur.show} />
+        <ReseauxDeChaleurFilters />
       </Box>
     );
   }
