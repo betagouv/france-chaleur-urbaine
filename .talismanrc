@@ -13,6 +13,8 @@ fileignoreconfig:
     checksum: 43be49746d8d8a133cbe473acaa0ed78dfae34e84b10b1afc83f9f879eddabdf
   - filename: src/components/SimulatorPublicodes/DebugDrawer.tsx
     checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
+allowed_patterns:
+  - eventKey
 scopeconfig:
   - scope: node
 version: '1.0'
