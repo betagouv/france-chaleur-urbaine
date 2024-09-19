@@ -31,7 +31,7 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
 
   return (
     <AddressAutocomplete
-      label=""
+      label="Rechercher une adresse"
       state={eligibilityError ? 'error' : undefined}
       stateRelatedMessage={
         eligibilityError ? (
@@ -44,6 +44,7 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
       onClear={() => {
         setEligibilityError(false);
       }}
+      nativeInputProps={{ placeholder: 'Ex: 5 Rue Censier 75005 Paris' }}
       onSelect={handleAddressSelected}
     />
   );

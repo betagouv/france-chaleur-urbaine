@@ -779,6 +779,7 @@ const Map = ({
 
             {soughtAddresses.length > 0 && (
               <Accordion
+                className="fr-mt-1v"
                 label={
                   <>
                     {soughtAddresses.length} adresse{soughtAddresses.length > 1 ? 's' : ''} recherchée
