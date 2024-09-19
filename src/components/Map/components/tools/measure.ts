@@ -1,4 +1,4 @@
-export type MesureFeature = GeoJSON.Feature<GeoJSON.LineString> & {
+export type MeasureFeature = GeoJSON.Feature<GeoJSON.LineString> & {
   id: string;
   properties: {
     color: string;
@@ -6,7 +6,7 @@ export type MesureFeature = GeoJSON.Feature<GeoJSON.LineString> & {
   };
 };
 
-export type MesureLabelFeature = GeoJSON.Feature<GeoJSON.Point> & {
+export type MeasureLabelFeature = GeoJSON.Feature<GeoJSON.Point> & {
   id: string;
   properties: {
     color: string;

@@ -11,8 +11,8 @@ import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
 import { formatDistance } from '@utils/geo';
 
+import { MeasureFeature, MeasureLabelFeature } from './measure';
 import MesureFeatureListItem from './MeasureFeatureListItem';
-import { MesureFeature, MesureLabelFeature } from './mesure';
 import { Title } from '../SimpleMapLegend.style';
 
 const linesSourceId = 'distance-measurements';
@@ -21,14 +21,14 @@ const featureColorPalette = ['#2c3e50', '#8e44ad', '#2980b9', '#27ae60', '#c0392
 
 const DistancesMeasurementTool: React.FC = () => {
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
-  const [features, setFeatures] = useState<MesureFeature[]>([]);
+  const [features, setFeatures] = useState<MeasureFeature[]>([]);
 
   const onDrawCreate = ({ features: drawFeatures }: DrawCreateEvent) => {
     if (!mapDraw) {
       return;
     }
     // always only 1 feature
-    const feature = drawFeatures[0] as MesureFeature;
+    const feature = drawFeatures[0] as MeasureFeature;
     mapDraw.deleteAll();
     setIsDrawing(false);
 
@@ -55,7 +55,7 @@ const DistancesMeasurementTool: React.FC = () => {
     if (drawMode !== 'draw_line_string') {
       return;
     }
-    const featureBeingDrawn = mapDraw.getAll().features.at(-1) as MesureFeature | undefined;
+    const featureBeingDrawn = mapDraw.getAll().features.at(-1) as MeasureFeature | undefined;
     if (!featureBeingDrawn) {
       return;
     }
@@ -152,7 +152,7 @@ const DistancesMeasurementTool: React.FC = () => {
                   length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
                 ),
               },
-            }) satisfies MesureLabelFeature
+            }) satisfies MeasureLabelFeature
         );
       }),
     });

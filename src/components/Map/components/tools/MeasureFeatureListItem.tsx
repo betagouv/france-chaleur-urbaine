@@ -6,10 +6,10 @@ import { useState } from 'react';
 import Box from '@components/ui/Box';
 import { formatDistance } from '@utils/geo';
 
-import { MesureFeature } from './mesure';
+import { MeasureFeature } from './measure';
 
 type MesureFeatureListItemProps = {
-  feature: MesureFeature;
+  feature: MeasureFeature;
   onColorUpdate: (color: string) => void;
   onDelete: () => void;
   disableDeleteButton: boolean;
