@@ -255,7 +255,7 @@ export const MapSearchWrapper = styled.div<{
 
   ${({ theme }) => theme.media.lg`
     width: 320px;
-    margin: 20px;
+    margin: 20px 30px;
     > .fr-accordion > .fr-collapse--expanded {
       max-height: 70dvh; /* HACK as it's difficult to measure */
     }
