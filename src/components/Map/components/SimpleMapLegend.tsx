@@ -12,7 +12,6 @@ import {
 } from '@components/Map/map-layers';
 import { UrlStateAccordion } from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
@@ -34,6 +33,7 @@ import {
   TabId,
   TabObject,
   Tabs,
+  Title,
   TrackableCheckableAccordion,
   parseURLTabs,
   tabs,
@@ -115,9 +115,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
         )}
         {selectedTabId.tabId === 'potentiel' && (
           <Box mt="2v" mx="1w">
-            <Heading as="h2" size="h6" mb="1w">
-              {'Potentiel'}
-            </Heading>
+            <Title>Potentiel</Title>
             <Box display="flex" mb="2w">
               <SingleCheckbox
                 name="demandesEligibilite"
@@ -639,9 +637,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
           <Box mt="2v" mx="1w">
             {selectedTabId.subTabId === null ? (
               <Box display="flex" flexDirection="column" gap="16px">
-                <Heading as="h2" size="h6" mb="1w">
-                  Outils
-                </Heading>
+                <Title>Outils</Title>
 
                 <Button
                   priority="secondary"
@@ -697,9 +693,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
         )}
         {selectedTabId.tabId === 'enrr' && (
           <Box mt="2v" mx="1w">
-            <Heading as="h2" size="h6" mb="1w">
-              Énergies renouvelables et de récupération
-            </Heading>
+            <Title>Énergies renouvelables et de récupération</Title>
             <UrlStateAccordion label="Mobilisables" small>
               <TrackableCheckableAccordion
                 name="enrrMobilisablesChaleurFatale"

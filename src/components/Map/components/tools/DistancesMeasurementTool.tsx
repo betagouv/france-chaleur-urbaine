@@ -7,13 +7,13 @@ import { GeoJSONSource, Map } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
 
 import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
 import { formatDistance } from '@utils/geo';
 
 import MesureFeatureListItem from './MeasureFeatureListItem';
 import { MesureFeature, MesureLabelFeature } from './mesure';
+import { Title } from '../SimpleMapLegend.style';
 
 const linesSourceId = 'distance-measurements';
 const labelsSourceId = 'distance-measurements-labels';
@@ -209,9 +209,7 @@ const DistancesMeasurementTool: React.FC = () => {
     <>
       <Box display="flex" flexDirection="column" gap="16px">
         <Box>
-          <Heading as="h6" mb="1w">
-            Calculer une distance
-          </Heading>
+          <Title>Calculer une distance</Title>
 
           <Text size="xs" fontStyle="italic">
             Cliquez sur au moins 2 points de la cartes afin d’en connaitre la distance à vol d’oiseau.

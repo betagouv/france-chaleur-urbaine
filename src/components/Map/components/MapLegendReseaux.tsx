@@ -5,14 +5,13 @@ import Hoverable from '@components/Hoverable';
 import { batimentsRaccordesLayerMaxOpacity } from '@components/Map/map-layers';
 import { LegendSeparator } from '@components/Map/Map.style';
 import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
 import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
 
 import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
-import { InfoIcon, SingleCheckbox } from './SimpleMapLegend.style';
+import { InfoIcon, SingleCheckbox, Title } from './SimpleMapLegend.style';
 
 export const mapLegendFeatures = [
   'reseauxDeChaleur',
@@ -51,9 +50,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
         >
           Retour
         </Button>
-        <Heading as="h2" size="h6" mb="1w">
-          Filtres
-        </Heading>
+        <Title>Filtres</Title>
         <Text fontSize="13px" lineHeight="18px" mb="2w">
           Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
         </Text>
@@ -64,9 +61,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
 
   return (
     <Box mt="2v" mx="1w">
-      <Heading as="h2" size="h6" mb="1w">
-        {legendTitle || 'Réseaux de chaleur et de froid'}
-      </Heading>
+      <Title>{legendTitle || 'Réseaux de chaleur et de froid'}</Title>
       <Text fontSize="13px" lineHeight="18px" mb="2w">
         Cliquez sur un réseau pour connaître ses caractéristiques
       </Text>

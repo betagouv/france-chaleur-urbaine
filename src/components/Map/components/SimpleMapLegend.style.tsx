@@ -6,6 +6,7 @@ import styled, { css } from 'styled-components';
 
 import Box from '@components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@components/ui/CheckableAccordion';
+import Heading from '@components/ui/Heading';
 import useFCUMap from '@hooks/useFCUMap';
 import IconEnrr from '@public/icons/enrr.svg';
 import IconOutils from '@public/icons/outils.svg';
@@ -249,6 +250,12 @@ type TrackableCheckableAccordionProps = Omit<
   trackingEvent: LegendTrackingEvent;
   layerName: MapConfigurationProperty<boolean>;
 };
+
+export const Title = styled(Heading).attrs({ as: 'h2', mb: '1w' })`
+  font-size: 1.1rem;
+  line-height: 1.5rem;
+  margin-bottom: 1rem;
+`;
 
 export const TrackableCheckableAccordion = ({ children, layerName, name, trackingEvent, ...props }: TrackableCheckableAccordionProps) => {
   const { toggleLayer } = useFCUMap();
