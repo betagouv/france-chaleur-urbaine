@@ -232,7 +232,7 @@ const DistancesMeasurementTool: React.FC = () => {
           </Button>
         ) : (
           <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLoaded}>
-            Démarrer un tracé
+            Ajouter un tracé
           </Button>
         )}
       </Box>
