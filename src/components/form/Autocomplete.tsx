@@ -41,7 +41,6 @@ const Autocomplete = <Option extends DefaultOption>({
   const debouncedFetch = useMemo(
     () =>
       debounce(async (query: string) => {
-        setLoading(true);
         try {
           const results = await fetchFn(query);
           if (results.length > 0 && defaultValue && !defaultValueSet) {
@@ -79,6 +78,7 @@ const Autocomplete = <Option extends DefaultOption>({
           onChange={(event) => {
             setSelectedValue('');
             setError(undefined);
+            setLoading(true);
             setInputValue(event.target.value);
           }}
           {...nativeInputProps}
