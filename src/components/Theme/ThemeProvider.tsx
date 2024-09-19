@@ -63,6 +63,10 @@ export const AppGlobalStyle = createGlobalStyle`
   .d-flex {
     display: flex !important;
   }
+  .btn-full-width {
+    width: 100%;
+    justify-content: center;
+  }
   // custom: not DSFR
   .fr-text--lightbold {
     font-weight: 500 !important;

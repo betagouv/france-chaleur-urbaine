@@ -38,6 +38,7 @@ import {
   parseURLTabs,
   tabs,
 } from './SimpleMapLegend.style';
+import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
 import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 
 const consommationsGazLegendColor = '#D9D9D9';
@@ -678,7 +679,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               </Button>
             )}
             {selectedTabId.subTabId === 'mesure-distance' && <DistancesMeasurementTool />}
-            {selectedTabId.subTabId === 'extraire-données-batiment' && <Box>Extraire des données sur les bâtiments</Box>}
+            {selectedTabId.subTabId === 'extraire-données-batiment' && <BuildingsDataExtractionTool />}
             {selectedTabId.subTabId === 'densité-thermique-linéaire' && <Box>Calculer une densité thermique linéaire</Box>}
           </Box>
         )}
