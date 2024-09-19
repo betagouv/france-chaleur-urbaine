@@ -118,7 +118,7 @@ const tabsDefinition = [
     tabId: 'reseaux',
     label: (
       <>
-        <IconReseaux height="22" width="22" className="fr-mb-1v" />
+        <IconReseaux height="22" width="22" />
         Réseaux
       </>
     ),
@@ -128,7 +128,7 @@ const tabsDefinition = [
     tabId: 'potentiel',
     label: (
       <>
-        <IconPotentiel height="22" width="22" className="fr-mb-1v" />
+        <IconPotentiel height="22" width="22" />
         Potentiel
       </>
     ),
@@ -137,7 +137,7 @@ const tabsDefinition = [
     tabId: 'enrr',
     label: (
       <>
-        <IconEnrr height="22" width="22" className="fr-mb-1v" />
+        <IconEnrr height="22" width="22" />
         EnR&R
       </>
     ),
@@ -146,7 +146,7 @@ const tabsDefinition = [
     tabId: 'outils',
     label: (
       <>
-        <IconOutils height="22" width="22" className="fr-mb-1v" />
+        <IconOutils height="22" width="22" />
         Outils
       </>
     ),
@@ -219,11 +219,12 @@ export const Tabs = styled(DsfrTabs)`
     font-weight: normal;
     font-size: 13px;
     margin: 0 2px;
-    padding: 8px 8px;
+    padding: 8px 8px 4px 8px;
     width: 66px;
 
     svg {
       font-size: 3rem;
+      margin-bottom: 0;
     }
 
     &[aria-selected='true'] {
