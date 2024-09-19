@@ -10,7 +10,7 @@ export const legendWidth = 345;
 
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
-  drawing: boolean;
+  isDrawing: boolean;
   withBorder: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
@@ -26,8 +26,8 @@ export const MapStyle: any = createGlobalStyle<{
       left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : `${legendWidth}px`)};
       width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth}px) !important`)};
 
-      ${({ drawing }) =>
-        drawing &&
+      ${({ isDrawing }) =>
+        isDrawing &&
         `
       .maplibregl-canvas {
         cursor: crosshair;
@@ -110,23 +110,6 @@ export const MapStyle: any = createGlobalStyle<{
 // --------------------------
 // --- Tooling components ---
 // --------------------------
-
-export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
-  position: absolute;
-  z-index: ${mapControlZindex};
-
-  max-width: calc(100vw - ${legendWidth} - 40px);
-  width: 1100px;
-  padding: 32px;
-  bottom: 0;
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '50vw' : `calc((100vw - ${legendWidth}px)/2 + ${legendWidth}px)`)};
-  transform: translateX(-50%);
-
-  ${mapMediumMedia} {
-    left: 50vw;
-    max-width: 100%;
-  }
-`;
 
 export const LegendSideBar = styled.div<{
   legendCollapsed: boolean;

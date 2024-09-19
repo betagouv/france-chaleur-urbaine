@@ -1,5 +1,6 @@
+import Button from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
-import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs';
+import { useQueryState } from 'nuqs';
 
 import Hoverable from '@components/Hoverable';
 import {
@@ -27,7 +28,18 @@ import IconPolygon from './IconPolygon';
 import MapLegendReseaux, { type MapLegendFeature } from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
 import ScaleLegend from './ScaleLegend';
-import { DeactivatableBox, InfoIcon, SingleCheckbox, Tabs, TrackableCheckableAccordion, tabs, type TabId } from './SimpleMapLegend.style';
+import {
+  DeactivatableBox,
+  InfoIcon,
+  SingleCheckbox,
+  TabId,
+  TabObject,
+  Tabs,
+  TrackableCheckableAccordion,
+  parseURLTabs,
+  tabs,
+} from './SimpleMapLegend.style';
+import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -39,12 +51,12 @@ interface SimpleMapLegendProps {
   legendTitle?: string;
 }
 
+const defaultURL: TabObject = { tabId: 'reseaux', subTabId: null };
+
 function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTitle, enabledFeatures }: SimpleMapLegendProps) {
-  const [selectedTabId, setSelectedTabId] = useQueryState<TabId>(
-    'tabId',
-    parseAsStringLiteral(tabs.map((tab) => tab.tabId)).withDefault(tabs[0].tabId)
-  );
-  const [filtersVisible, setFiltersVisible] = useQueryState('showFilters', parseAsBoolean);
+  const [selectedTabId, setSelectedTabId] = useQueryState<TabObject>('tabId', parseURLTabs(tabs).withDefault(defaultURL));
+
+  const setReseauxFiltersVisible = (visible: boolean) => setSelectedTabId({ tabId: 'reseaux', subTabId: visible ? 'filtres' : null });
 
   function toggleLayer(property: MapConfigurationProperty<boolean>) {
     toggleBoolean(mapConfiguration, property);
@@ -70,9 +82,9 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
           mapConfiguration={mapConfiguration}
           onMapConfigurationChange={onMapConfigurationChange}
           legendTitle={legendTitle}
-          filtersVisible={!!filtersVisible}
+          filtersVisible={selectedTabId.subTabId === 'filtres'}
           updateScaleInterval={updateScaleInterval}
-          setFiltersVisible={setFiltersVisible}
+          setFiltersVisible={setReseauxFiltersVisible}
           toggleLayer={toggleLayer}
         />
       </Box>
@@ -81,17 +93,21 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
 
   return (
     <Box my="2w">
-      <Tabs selectedTabId={selectedTabId} tabs={tabs} onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}>
-        {selectedTabId === 'reseaux' && (
+      <Tabs
+        selectedTabId={selectedTabId.tabId}
+        tabs={tabs}
+        onTabChange={(newTabId) => setSelectedTabId({ tabId: newTabId as TabId, subTabId: null })}
+      >
+        {selectedTabId.tabId === 'reseaux' && (
           <>
             <MapLegendReseaux
               enabledFeatures={enabledFeatures}
               mapConfiguration={mapConfiguration}
               onMapConfigurationChange={onMapConfigurationChange}
               legendTitle={legendTitle}
-              filtersVisible={!!filtersVisible}
+              filtersVisible={selectedTabId.subTabId === 'filtres'}
               updateScaleInterval={updateScaleInterval}
-              setFiltersVisible={setFiltersVisible}
+              setFiltersVisible={setReseauxFiltersVisible}
               toggleLayer={toggleLayer}
             />
             <Box mt="4w" mb="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
@@ -118,7 +134,7 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
             </Box>
           </>
         )}
-        {selectedTabId === 'potentiel' && (
+        {selectedTabId.tabId === 'potentiel' && (
           <Box mt="2v" mx="1w">
             <Heading as="h2" size="h6" mb="1w">
               {'Potentiel'}
@@ -648,22 +664,67 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
             </UrlStateAccordion>
           </Box>
         )}
-        {selectedTabId === 'outils' && (
+        {selectedTabId.tabId === 'outils' && (
           <Box mt="2v" mx="1w">
-            <Heading as="h2" size="h6" mb="1w">
-              Outils
-            </Heading>
-            <Box mt="2w" mx="2w" mb="2w" display="flex" alignItems="center" gap="16px">
-              <Link href="/documentation/carto_sources.pdf" isExternal eventKey="Téléchargement|Carto sources">
-                <Text as="span" size="xs">
-                  Sources
-                </Text>
-              </Link>
-              <DevModeIcon />
-            </Box>
+            {selectedTabId.subTabId === null ? (
+              <Box display="flex" flexDirection="column" gap="16px">
+                <Heading as="h2" size="h6" mb="1w">
+                  Outils
+                </Heading>
+
+                <Button
+                  priority="secondary"
+                  size="small"
+                  onClick={() => setSelectedTabId({ tabId: 'outils', subTabId: 'mesure-distance' })}
+                >
+                  Calculer une distance
+                </Button>
+                <Button
+                  priority="secondary"
+                  size="small"
+                  onClick={() => setSelectedTabId({ tabId: 'outils', subTabId: 'extraire-données-batiment' })}
+                >
+                  Extraire des données sur les bâtiments
+                </Button>
+                <Button
+                  priority="secondary"
+                  size="small"
+                  onClick={() => setSelectedTabId({ tabId: 'outils', subTabId: 'densité-thermique-linéaire' })}
+                >
+                  Calculer une densité thermique linéaire
+                </Button>
+
+                <Box display="flex" alignItems="center" gap="16px">
+                  <Link href="/documentation/carto_sources.pdf" isExternal eventKey="Téléchargement|Carto sources">
+                    <Text as="span" size="xs">
+                      Sources
+                    </Text>
+                  </Link>
+                  <DevModeIcon />
+                </Box>
+              </Box>
+            ) : (
+              <Button
+                priority="secondary"
+                size="small"
+                iconId="fr-icon-arrow-left-line"
+                className="fr-mb-2w"
+                onClick={() =>
+                  setSelectedTabId({
+                    tabId: 'outils',
+                    subTabId: null,
+                  })
+                }
+              >
+                Retour
+              </Button>
+            )}
+            {selectedTabId.subTabId === 'mesure-distance' && <DistancesMeasurementTool />}
+            {selectedTabId.subTabId === 'extraire-données-batiment' && <Box>Extraire des données sur les bâtiments</Box>}
+            {selectedTabId.subTabId === 'densité-thermique-linéaire' && <Box>Calculer une densité thermique linéaire</Box>}
           </Box>
         )}
-        {selectedTabId === 'enrr' && (
+        {selectedTabId.tabId === 'enrr' && (
           <Box mt="2v" mx="1w">
             <Heading as="h2" size="h6" mb="1w">
               Énergies renouvelables et de récupération

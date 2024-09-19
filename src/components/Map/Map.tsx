@@ -2,7 +2,7 @@ import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useLocalStorageValue } from '@react-hookz/web';
-import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
+import { LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsString, useQueryStates } from 'nuqs';
@@ -23,6 +23,7 @@ import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { useContactFormFCU } from '@hooks';
+import useFCUMap from '@hooks/useFCUMap';
 import useRouterReady from '@hooks/useRouterReady';
 import debounce from '@utils/debounce';
 import { fetchJSON } from '@utils/network';
@@ -48,7 +49,8 @@ import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
-import ZoneInfos from './components/SummaryBoxes';
+// FIXME supprimer composant après intégration à la sidebar
+// import ZoneInfos from './components/SummaryBoxes';
 import { LayerId, ReseauxDeChaleurLimits, applyMapConfigurationToLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
@@ -57,7 +59,6 @@ import {
   LegendLogoLink,
   LegendLogoList,
   LegendSideBar,
-  MapControlWrapper,
   MapSearchInputWrapper,
   MapSearchWrapper,
   MapStyle,
@@ -139,7 +140,6 @@ const Map = ({
   withoutLogo,
   withLegend,
   withHideLegendSwitch,
-  withDrawing,
   withBorder,
   legendTitle,
   initialMapConfiguration,
@@ -161,7 +161,6 @@ const Map = ({
   enabledLegendFeatures?: MapLegendFeature[];
   withLegend?: boolean;
   withHideLegendSwitch?: boolean;
-  withDrawing?: boolean;
   withBorder?: boolean;
   legendTitle?: string;
   legendLogoOpt?: TypeLegendLogo;
@@ -177,15 +176,14 @@ const Map = ({
   mapRef?: MutableRefObject<MapRef>;
 }) => {
   const router = useRouter();
+  const { setMapRef, setMapDraw, isDrawing } = useFCUMap();
 
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
   const [mapConfiguration, setMapConfiguration] = useState<MaybeEmptyMapConfiguration>(initialMapConfiguration ?? defaultMapConfiguration);
 
-  const [draw, setDraw] = useState<any>();
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
-  const [drawing, setDrawing] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
   const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
@@ -225,6 +223,7 @@ const Map = ({
     if (mapRefParam && mapRef.current) {
       mapRefParam.current = mapRef.current;
     }
+    setMapRef(mapRef?.current);
   }, [mapRef.current]);
 
   const { value: soughtAddresses, set: setSoughtAddresses } = useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
@@ -248,9 +247,9 @@ const Map = ({
     setPopupInfos({
       latitude: e.lngLat.lat,
       longitude: e.lngLat.lng,
-      content: layersWithDynamicContentPopup.includes(selectedFeature.layer.id as any)
+      content: layersWithDynamicContentPopup.includes(selectedFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
         ? {
-            type: selectedFeature.layer.id,
+            type: selectedFeature.layer?.id,
             properties: selectedFeature.properties,
           }
         : { [key]: selectedFeature.properties },
@@ -329,10 +328,21 @@ const Map = ({
   const onMapLoad = async (e: MapLibreEvent) => {
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
+      styles: [
+        // disable all mapbox draw styles, they are handled externally using draw.render events
+        // we must define an empty layer otherwise the library tries to add its own layers
+        {
+          id: 'draw-empty-layer',
+          type: 'background',
+          paint: {
+            'background-opacity': 0,
+          },
+        } satisfies LayerSpecification,
+      ],
     });
 
     e.target.addControl(drawControl as any);
-    setDraw(drawControl);
+    setMapDraw(drawControl);
     e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
         defaultStyle: 'Carte',
@@ -348,22 +358,12 @@ const Map = ({
     const map = e.target;
     // load layers symbols
     await Promise.all(
-      layerSymbolsImagesURLs.map(
-        (spec) =>
-          new Promise<void>((resolve, reject) => {
-            map.loadImage(spec.url, (error, image) => {
-              if (error) {
-                reject(error);
-              }
-              if (image) {
-                map.addImage(spec.key, image, {
-                  sdf: 'sdf' in spec && spec.sdf,
-                });
-              }
-              resolve();
-            });
-          })
-      )
+      layerSymbolsImagesURLs.map(async (spec) => {
+        const response = await map.loadImage(spec.url);
+        map.addImage(spec.key, response.data, {
+          sdf: 'sdf' in spec && spec.sdf,
+        });
+      })
     );
     setMapState('loaded');
 
@@ -715,7 +715,7 @@ const Map = ({
     <>
       <MapStyle
         legendCollapsed={!withLegend || legendCollapsed}
-        drawing={drawing}
+        isDrawing={isDrawing}
         withTopLegend={withHideLegendSwitch}
         withHideLegendSwitch={withHideLegendSwitch}
         withBorder={withBorder}
@@ -753,11 +753,12 @@ const Map = ({
             )}
           </>
         )}
-        {withDrawing && mapRef.current && (
+        {/* FIXME: à supprimer et déplacer dans le menu */}
+        {/* {withDrawing && mapRef.current && mapDraw && (
           <MapControlWrapper legendCollapsed={legendCollapsed}>
-            <ZoneInfos map={mapRef.current} draw={draw} setDrawing={setDrawing} drawing={drawing} />
+            <ZoneInfos map={mapRef.current} draw={mapDraw} setDrawing={setDrawing} drawing={drawing} />
           </MapControlWrapper>
-        )}
+        )} */}
         <MapProvider>
           <MapReactGL
             initialViewState={initialViewState}

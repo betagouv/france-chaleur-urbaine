@@ -1,5 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import DsfrTabs, { type TabsProps } from '@codegouvfr/react-dsfr/Tabs';
+import { createParser } from 'nuqs';
 import React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -105,6 +106,11 @@ const StyledCheckableAccordion = styled(CheckableAccordion)`
   }
 `;
 
+type UrlTabDef = {
+  tabId: string;
+  subTabs?: string[];
+};
+
 const tabsDefinition = [
   {
     tabId: 'reseaux',
@@ -114,6 +120,7 @@ const tabsDefinition = [
         Réseaux
       </>
     ),
+    subTabs: ['filtres'],
   },
   {
     tabId: 'potentiel',
@@ -141,8 +148,56 @@ const tabsDefinition = [
         Outils
       </>
     ),
+    subTabs: ['mesure-distance', 'extraire-données-batiment', 'densité-thermique-linéaire'],
   },
-] as const satisfies ReadonlyArray<TabsProps.Controlled['tabs'][number]>;
+] as const satisfies ReadonlyArray<TabsProps.Controlled['tabs'][number] & UrlTabDef>;
+
+type GenerateTabUrls<T extends readonly UrlTabDef[]> = {
+  [K in keyof T]: T[K] extends { tabId: infer TabId; subTabs?: infer SubTabs }
+    ? SubTabs extends readonly string[]
+      ? `${TabId & string}/${SubTabs[number]}` | TabId
+      : TabId
+    : never;
+}[number];
+
+type TabUrlId = GenerateTabUrls<typeof tabsDefinition>;
+
+type GenerateTabsObjects<T extends readonly UrlTabDef[]> = {
+  [K in keyof T]: T[K] extends { tabId: infer TabId; subTabs?: infer SubTabs }
+    ? { tabId: TabId; subTabId: SubTabs extends readonly string[] ? SubTabs[number] | null : null }
+    : never;
+}[number];
+
+export type TabObject = GenerateTabsObjects<typeof tabsDefinition>;
+
+export function parseURLTabs(validValues: readonly UrlTabDef[]) {
+  return createParser({
+    parse: (query: string) => {
+      const [urlTabId, urlSubTabId] = query.split('/');
+
+      const tab = validValues.find((tab) => tab.tabId === urlTabId);
+      if (!tab) {
+        return null;
+      }
+      if (urlSubTabId) {
+        const subTabId = tab.subTabs?.find((subTabId) => subTabId === urlSubTabId);
+        if (!subTabId) {
+          return null;
+        }
+        return {
+          tabId: urlTabId,
+          subTabId: urlSubTabId,
+        } as TabObject;
+      }
+      return {
+        tabId: urlTabId,
+        subTabId: null,
+      } as TabObject;
+    },
+    serialize: ({ tabId, subTabId }: TabObject) => `${tabId}${subTabId ? `/${subTabId}` : ''}` as TabUrlId,
+    eq: (a, b) => a === b || JSON.stringify(a) === JSON.stringify(b),
+  });
+}
 
 export type TabId = (typeof tabsDefinition)[number]['tabId'];
 

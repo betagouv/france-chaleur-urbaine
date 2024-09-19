@@ -56,7 +56,7 @@ const modal = createModal({
 
 function ModalCarteFrance() {
   // Ouvre la modale de la carte quand potentiels-de-raccordement est dans l'URL
-  const shouldOpenModalAtStart = useInitialSearchParam('potentiels-de-raccordement') !== null ?? false;
+  const shouldOpenModalAtStart = useInitialSearchParam('potentiels-de-raccordement') !== null;
   useEffect(() => {
     if (shouldOpenModalAtStart) {
       // timeout needed to make it work
