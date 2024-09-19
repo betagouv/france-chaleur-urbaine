@@ -13,7 +13,7 @@ import IconPotentiel from '@public/icons/potentiel.svg';
 import IconReseaux from '@public/icons/reseaux.svg';
 import cx from '@utils/cx';
 import { LegendTrackingEvent, trackEvent } from 'src/services/analytics';
-import { type MapConfiguration } from 'src/services/Map/map-configuration';
+import { MapConfigurationProperty, type MapConfiguration } from 'src/services/Map/map-configuration';
 
 const StyledDSFRCheckbox = styled.div<{
   checked: boolean;
@@ -246,27 +246,19 @@ type TrackableCheckableAccordionProps = Omit<
 > & {
   name: keyof MapConfiguration;
   checked?: CheckableAccordionProps.Uncontrolled<React.ReactNode>['checked'];
-  layerName?: string;
   trackingEvent: LegendTrackingEvent;
+  layerName: MapConfigurationProperty<boolean>;
 };
 
-export const TrackableCheckableAccordion = ({
-  children,
-  name,
-  checked,
-  trackingEvent,
-  layerName = 'show',
-  ...props
-}: TrackableCheckableAccordionProps) => {
-  const { mapConfiguration, toggleLayer } = useFCUMap();
+export const TrackableCheckableAccordion = ({ children, layerName, name, trackingEvent, ...props }: TrackableCheckableAccordionProps) => {
+  const { toggleLayer } = useFCUMap();
   return (
     <StyledCheckableAccordion
       small
       classes={{ title: cx('d-flex', 'fr-gap--sm', fr.cx('fr-text--sm')) }}
-      checked={checked || (mapConfiguration[name] as any)?.[layerName]}
       onCheck={(isChecked) => {
         trackEvent(`${trackingEvent}|${isChecked ? 'Active' : 'Désactive'}`);
-        toggleLayer([name, layerName].filter(Boolean).join('.') as any);
+        toggleLayer(layerName);
       }}
       expandOnCheck
       showToggle

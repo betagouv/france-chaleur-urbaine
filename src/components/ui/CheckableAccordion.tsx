@@ -74,7 +74,7 @@ export namespace CheckableAccordionProps {
     style?: CSSProperties;
     children: NonNullable<ReactNode>;
     showToggle?: boolean;
-    checked: boolean;
+    checked?: boolean;
     expandOnCheck?: boolean;
     onCheck: (checked: boolean) => any;
     small?: CheckboxProps['small'];

@@ -151,6 +151,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
             <UrlStateAccordion label="Bâtiments consommateurs gaz et fioul" small>
               <TrackableCheckableAccordion
                 name="consommationsGaz"
+                checked={mapConfiguration.consommationsGaz.show}
+                layerName="consommationsGaz.show"
                 trackingEvent="Carto|Consommations globales de gaz"
                 label={
                   <>
@@ -254,6 +256,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               </TrackableCheckableAccordion>
               <TrackableCheckableAccordion
                 name="batimentsGazCollectif"
+                layerName="batimentsGazCollectif.show"
+                checked={mapConfiguration.batimentsGazCollectif.show}
                 trackingEvent="Carto|Bâtiments au gaz collectif"
                 label={
                   <>
@@ -275,6 +279,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               </TrackableCheckableAccordion>
               <TrackableCheckableAccordion
                 name="batimentsFioulCollectif"
+                checked={mapConfiguration.batimentsFioulCollectif.show}
+                layerName="batimentsFioulCollectif.show"
                 trackingEvent="Carto|Bâtiments au fioul collectif"
                 label={
                   <>
@@ -306,7 +312,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <TrackableCheckableAccordion
                   name="besoinsEnChaleur"
                   checked={mapConfiguration.besoinsEnChaleur}
-                  layerName={''}
+                  layerName="besoinsEnChaleur"
                   trackingEvent="Carto|Besoins en chaleur"
                   label={
                     <>
@@ -364,7 +370,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <TrackableCheckableAccordion
                   name="besoinsEnFroid"
                   checked={mapConfiguration.besoinsEnFroid}
-                  layerName={''}
+                  layerName="besoinsEnFroid"
                   trackingEvent="Carto|Besoins en froid"
                   label={
                     <>
@@ -422,7 +428,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <TrackableCheckableAccordion
                   name="caracteristiquesBatiments"
                   checked={mapConfiguration.caracteristiquesBatiments}
-                  layerName={''}
+                  layerName="caracteristiquesBatiments"
                   trackingEvent="Carto|DPE"
                   label={
                     <>
@@ -484,6 +490,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
             <UrlStateAccordion label="Potentiel par territoire" small>
               <TrackableCheckableAccordion
                 name="zonesOpportunite"
+                checked={mapConfiguration.zonesOpportunite.show}
+                layerName="zonesOpportunite.show"
                 trackingEvent="Carto|Zones d'opportunité"
                 label={
                   <>
@@ -573,7 +581,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               <TrackableCheckableAccordion
                 name="besoinsEnChaleurIndustrieCommunes"
                 checked={mapConfiguration.besoinsEnChaleurIndustrieCommunes}
-                layerName={''}
+                layerName="besoinsEnChaleurIndustrieCommunes"
                 trackingEvent="Carto|Besoins en chaleur secteur industriel"
                 label={
                   <>
@@ -695,6 +703,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
             <UrlStateAccordion label="Mobilisables" small>
               <TrackableCheckableAccordion
                 name="enrrMobilisablesChaleurFatale"
+                checked={mapConfiguration.enrrMobilisablesChaleurFatale.show}
+                layerName="enrrMobilisablesChaleurFatale.show"
                 trackingEvent="Carto|ENR&R Mobilisables"
                 label={
                   <>
@@ -844,6 +854,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               </TrackableCheckableAccordion>
               <TrackableCheckableAccordion
                 name="enrrMobilisablesSolaireThermique"
+                checked={mapConfiguration.enrrMobilisablesSolaireThermique.show}
+                layerName="enrrMobilisablesSolaireThermique.show"
                 trackingEvent="Carto|ENR&R Mobilisables"
                 label={
                   <>
