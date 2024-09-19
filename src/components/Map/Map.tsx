@@ -754,11 +754,11 @@ const Map = ({
             <AttributionControl
               compact={false}
               position="bottom-right"
-              customAttribution={`${sourcesLink}${
+              customAttribution={
                 withFCUAttribution
                   ? "<a href='https://france-chaleur-urbaine.beta.gouv.fr/' target='_blank' rel='noopener noreferrer'>France Chaleur Urbaine</a>"
-                  : ''
-              }`}
+                  : sourcesLink
+              }
             />
             <NavigationControl showZoom={true} visualizePitch={true} position="bottom-right" />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
