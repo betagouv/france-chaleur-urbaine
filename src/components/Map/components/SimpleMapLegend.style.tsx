@@ -6,13 +6,14 @@ import styled, { css } from 'styled-components';
 
 import Box from '@components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@components/ui/CheckableAccordion';
+import useFCUMap from '@hooks/useFCUMap';
 import IconEnrr from '@public/icons/enrr.svg';
 import IconOutils from '@public/icons/outils.svg';
 import IconPotentiel from '@public/icons/potentiel.svg';
 import IconReseaux from '@public/icons/reseaux.svg';
 import cx from '@utils/cx';
 import { LegendTrackingEvent, trackEvent } from 'src/services/analytics';
-import { type MapConfiguration, type MapConfigurationProperty } from 'src/services/Map/map-configuration';
+import { type MapConfiguration } from 'src/services/Map/map-configuration';
 
 const StyledDSFRCheckbox = styled.div<{
   checked: boolean;
@@ -243,39 +244,38 @@ type TrackableCheckableAccordionProps = Omit<
   CheckableAccordionProps.Uncontrolled<React.ReactNode>,
   'small' | 'classes' | 'checked' | 'onCheck' | 'showToggle'
 > & {
-  mapConfiguration: MapConfiguration;
   name: keyof MapConfiguration;
   checked?: CheckableAccordionProps.Uncontrolled<React.ReactNode>['checked'];
   layerName?: string;
   trackingEvent: LegendTrackingEvent;
-  toggleLayer: (property: MapConfigurationProperty<boolean>) => void;
 };
 
 export const TrackableCheckableAccordion = ({
   children,
-  mapConfiguration,
   name,
   checked,
   trackingEvent,
-  toggleLayer,
   layerName = 'show',
   ...props
-}: TrackableCheckableAccordionProps) => (
-  <StyledCheckableAccordion
-    small
-    classes={{ title: cx('d-flex', 'fr-gap--sm', fr.cx('fr-text--sm')) }}
-    checked={checked || (mapConfiguration[name] as any)?.[layerName]}
-    onCheck={(isChecked) => {
-      trackEvent(`${trackingEvent}|${isChecked ? 'Active' : 'Désactive'}`);
-      toggleLayer([name, layerName].filter(Boolean).join('.') as any);
-    }}
-    expandOnCheck
-    showToggle
-    {...props}
-  >
-    {children}
-  </StyledCheckableAccordion>
-);
+}: TrackableCheckableAccordionProps) => {
+  const { mapConfiguration, toggleLayer } = useFCUMap();
+  return (
+    <StyledCheckableAccordion
+      small
+      classes={{ title: cx('d-flex', 'fr-gap--sm', fr.cx('fr-text--sm')) }}
+      checked={checked || (mapConfiguration[name] as any)?.[layerName]}
+      onCheck={(isChecked) => {
+        trackEvent(`${trackingEvent}|${isChecked ? 'Active' : 'Désactive'}`);
+        toggleLayer([name, layerName].filter(Boolean).join('.') as any);
+      }}
+      expandOnCheck
+      showToggle
+      {...props}
+    >
+      {children}
+    </StyledCheckableAccordion>
+  );
+};
 
 /**
  * Offre une checkbox DSFR fonctionnant de manière séparée de son label.

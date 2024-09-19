@@ -26,14 +26,8 @@ import { useContactFormFCU } from '@hooks';
 import useFCUMap from '@hooks/useFCUMap';
 import useRouterReady from '@hooks/useRouterReady';
 import debounce from '@utils/debounce';
-import { fetchJSON } from '@utils/network';
 import { useServices } from 'src/services';
-import {
-  MapConfiguration,
-  MaybeEmptyMapConfiguration,
-  defaultMapConfiguration,
-  isMapConfigurationInitialized,
-} from 'src/services/Map/map-configuration';
+import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
 import { SourceId } from 'src/services/tiles.config';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
 import { MapMarkerInfos, MapPopupInfos, MapPopupType } from 'src/types/MapComponentsInfos';
@@ -51,7 +45,7 @@ import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
 // FIXME supprimer composant après intégration à la sidebar
 // import ZoneInfos from './components/SummaryBoxes';
-import { LayerId, ReseauxDeChaleurLimits, applyMapConfigurationToLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
+import { LayerId, applyMapConfigurationToLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
   LegendContainer,
@@ -176,12 +170,10 @@ const Map = ({
   mapRef?: MutableRefObject<MapRef>;
 }) => {
   const router = useRouter();
-  const { setMapRef, setMapDraw, isDrawing } = useFCUMap();
+  const { setMapRef, setMapDraw, isDrawing, mapConfiguration } = useFCUMap(initialMapConfiguration);
 
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
-
-  const [mapConfiguration, setMapConfiguration] = useState<MaybeEmptyMapConfiguration>(initialMapConfiguration ?? defaultMapConfiguration);
 
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
@@ -192,21 +184,6 @@ const Map = ({
   const [legendCollapsed, setLegendCollapsed] = useState(true);
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 992);
-
-    // amend the configuration with metadata limits of networks
-    fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then((limits) => {
-      mapConfiguration.reseauxDeChaleur.limits = limits;
-
-      // apply the limits to the filters
-      mapConfiguration.reseauxDeChaleur.anneeConstruction = limits.anneeConstruction;
-      mapConfiguration.reseauxDeChaleur.emissionsCO2 = limits.emissionsCO2;
-      mapConfiguration.reseauxDeChaleur.livraisonsAnnuelles = limits.livraisonsAnnuelles;
-      mapConfiguration.reseauxDeChaleur.prixMoyen = limits.prixMoyen;
-
-      setMapConfiguration({
-        ...mapConfiguration,
-      });
-    });
   }, []);
 
   // resize the map when the container renders
@@ -731,12 +708,7 @@ const Map = ({
             )}
             <LegendSideBar legendCollapsed={legendCollapsed}>
               <LegendContainer withoutLogo={withoutLogo}>
-                <SimpleMapLegend
-                  mapConfiguration={mapConfiguration}
-                  legendTitle={legendTitle}
-                  enabledFeatures={enabledLegendFeatures}
-                  onMapConfigurationChange={(config) => setMapConfiguration(config)}
-                />
+                <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
               </LegendContainer>
             </LegendSideBar>
             {!withoutLogo && (

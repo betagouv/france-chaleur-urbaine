@@ -16,12 +16,11 @@ import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import { setProperty, toggleBoolean } from '@utils/core';
-import { Interval } from '@utils/interval';
+import useFCUMap from '@hooks/useFCUMap';
 import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from 'src/services/Map/businessRules';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
-import { MapConfiguration, MapConfigurationProperty, defaultMapConfiguration } from 'src/services/Map/map-configuration';
+import { defaultMapConfiguration } from 'src/services/Map/map-configuration';
 
 import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
@@ -46,27 +45,15 @@ const consommationsGazUsageLegendOpacity = 0.53;
 
 interface SimpleMapLegendProps {
   enabledFeatures?: MapLegendFeature[];
-  mapConfiguration: MapConfiguration;
-  onMapConfigurationChange: (config: MapConfiguration) => void;
   legendTitle?: string;
 }
 
 const defaultURL: TabObject = { tabId: 'reseaux', subTabId: null };
 
-function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTitle, enabledFeatures }: SimpleMapLegendProps) {
+function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps) {
   const [selectedTabId, setSelectedTabId] = useQueryState<TabObject>('tabId', parseURLTabs(tabs).withDefault(defaultURL));
-
+  const { mapConfiguration, toggleLayer, updateScaleInterval } = useFCUMap();
   const setReseauxFiltersVisible = (visible: boolean) => setSelectedTabId({ tabId: 'reseaux', subTabId: visible ? 'filtres' : null });
-
-  function toggleLayer(property: MapConfigurationProperty<boolean>) {
-    toggleBoolean(mapConfiguration, property);
-    onMapConfigurationChange({ ...mapConfiguration });
-  }
-
-  const updateScaleInterval = (property: MapConfigurationProperty<Interval>) => (interval: Interval) => {
-    setProperty(mapConfiguration, property, interval);
-    onMapConfigurationChange({ ...mapConfiguration });
-  };
 
   const nbCouchesFondBatiments =
     (mapConfiguration.caracteristiquesBatiments ? 1 : 0) +
@@ -79,13 +66,9 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
       <Box my="2w">
         <MapLegendReseaux
           enabledFeatures={enabledFeatures}
-          mapConfiguration={mapConfiguration}
-          onMapConfigurationChange={onMapConfigurationChange}
           legendTitle={legendTitle}
           filtersVisible={selectedTabId.subTabId === 'filtres'}
-          updateScaleInterval={updateScaleInterval}
           setFiltersVisible={setReseauxFiltersVisible}
-          toggleLayer={toggleLayer}
         />
       </Box>
     );
@@ -102,13 +85,9 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
           <>
             <MapLegendReseaux
               enabledFeatures={enabledFeatures}
-              mapConfiguration={mapConfiguration}
-              onMapConfigurationChange={onMapConfigurationChange}
               legendTitle={legendTitle}
               filtersVisible={selectedTabId.subTabId === 'filtres'}
-              updateScaleInterval={updateScaleInterval}
               setFiltersVisible={setReseauxFiltersVisible}
-              toggleLayer={toggleLayer}
             />
             <Box mt="4w" mb="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
               <Link
@@ -171,8 +150,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
             </Box>
             <UrlStateAccordion label="Bâtiments consommateurs gaz et fioul" small>
               <TrackableCheckableAccordion
-                mapConfiguration={mapConfiguration}
-                toggleLayer={toggleLayer}
                 name="consommationsGaz"
                 trackingEvent="Carto|Consommations globales de gaz"
                 label={
@@ -276,8 +253,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
               <TrackableCheckableAccordion
-                mapConfiguration={mapConfiguration}
-                toggleLayer={toggleLayer}
                 name="batimentsGazCollectif"
                 trackingEvent="Carto|Bâtiments au gaz collectif"
                 label={
@@ -299,8 +274,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
               <TrackableCheckableAccordion
-                mapConfiguration={mapConfiguration}
-                toggleLayer={toggleLayer}
                 name="batimentsFioulCollectif"
                 trackingEvent="Carto|Bâtiments au fioul collectif"
                 label={
@@ -331,8 +304,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
             <UrlStateAccordion label="Caractéristiques des bâtiments et besoins en chaleur et en froid" small>
               <>
                 <TrackableCheckableAccordion
-                  mapConfiguration={mapConfiguration}
-                  toggleLayer={toggleLayer}
                   name="besoinsEnChaleur"
                   checked={mapConfiguration.besoinsEnChaleur}
                   layerName={''}
@@ -391,8 +362,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
               </>
               <>
                 <TrackableCheckableAccordion
-                  mapConfiguration={mapConfiguration}
-                  toggleLayer={toggleLayer}
                   name="besoinsEnFroid"
                   checked={mapConfiguration.besoinsEnFroid}
                   layerName={''}
@@ -451,8 +420,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
               </>
               <>
                 <TrackableCheckableAccordion
-                  mapConfiguration={mapConfiguration}
-                  toggleLayer={toggleLayer}
                   name="caracteristiquesBatiments"
                   checked={mapConfiguration.caracteristiquesBatiments}
                   layerName={''}
@@ -516,8 +483,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
             </UrlStateAccordion>
             <UrlStateAccordion label="Potentiel par territoire" small>
               <TrackableCheckableAccordion
-                mapConfiguration={mapConfiguration}
-                toggleLayer={toggleLayer}
                 name="zonesOpportunite"
                 trackingEvent="Carto|Zones d'opportunité"
                 label={
@@ -606,8 +571,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
               <TrackableCheckableAccordion
-                mapConfiguration={mapConfiguration}
-                toggleLayer={toggleLayer}
                 name="besoinsEnChaleurIndustrieCommunes"
                 checked={mapConfiguration.besoinsEnChaleurIndustrieCommunes}
                 layerName={''}
@@ -731,8 +694,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
             </Heading>
             <UrlStateAccordion label="Mobilisables" small>
               <TrackableCheckableAccordion
-                mapConfiguration={mapConfiguration}
-                toggleLayer={toggleLayer}
                 name="enrrMobilisablesChaleurFatale"
                 trackingEvent="Carto|ENR&R Mobilisables"
                 label={
@@ -882,8 +843,6 @@ function SimpleMapLegend({ mapConfiguration, onMapConfigurationChange, legendTit
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
               <TrackableCheckableAccordion
-                mapConfiguration={mapConfiguration}
-                toggleLayer={toggleLayer}
                 name="enrrMobilisablesSolaireThermique"
                 trackingEvent="Carto|ENR&R Mobilisables"
                 label={

@@ -4,24 +4,18 @@ import { LegendSeparator } from '@components/Map/Map.style';
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Text from '@components/ui/Text';
-import { FiltreEnergieConfKey, MapConfiguration, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
+import useFCUMap from '@hooks/useFCUMap';
+import { FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
 import RangeFilter from './RangeFilter';
 import { DeactivatableBox } from './SimpleMapLegend.style';
 
 interface ReseauxDeChaleurFiltersProps {
-  mapConfiguration: MapConfiguration;
-  updateScaleInterval: any;
-  onMapConfigurationChange: (config: MapConfiguration) => void;
   disabled?: boolean;
 }
 
-function ReseauxDeChaleurFilters({
-  mapConfiguration,
-  onMapConfigurationChange,
-  updateScaleInterval,
-  disabled,
-}: ReseauxDeChaleurFiltersProps) {
+function ReseauxDeChaleurFilters({ disabled }: ReseauxDeChaleurFiltersProps) {
+  const { mapConfiguration, setMapConfiguration, updateScaleInterval } = useFCUMap();
   return (
     <DeactivatableBox disabled={disabled}>
       <Box mx="1w" mb="4w">
@@ -36,7 +30,7 @@ function ReseauxDeChaleurFilters({
             onChange: (e) => {
               mapConfiguration.reseauxDeChaleur.energieMajoritaire =
                 e.target.value === '' ? undefined : (e.target.value as FiltreEnergieConfKey);
-              onMapConfigurationChange({ ...mapConfiguration });
+              setMapConfiguration({ ...mapConfiguration });
             },
           }}
           className="fr-mb-1v"

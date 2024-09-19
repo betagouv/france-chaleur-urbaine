@@ -8,8 +8,8 @@ import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
+import useFCUMap from '@hooks/useFCUMap';
 import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
-import { MapConfiguration, type MapConfigurationProperty } from 'src/services/Map/map-configuration';
 
 import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
 import { InfoIcon, SingleCheckbox } from './SimpleMapLegend.style';
@@ -28,25 +28,13 @@ export type MapLegendFeature = (typeof mapLegendFeatures)[number];
 // but for now it's enough
 interface SimpleMapLegendProps {
   enabledFeatures?: MapLegendFeature[];
-  mapConfiguration: MapConfiguration;
-  onMapConfigurationChange: (config: MapConfiguration) => void;
   legendTitle?: string;
   filtersVisible: boolean;
-  updateScaleInterval: any;
   setFiltersVisible: (visible: boolean) => void;
-  toggleLayer: (property: MapConfigurationProperty<boolean>) => void;
 }
 
-const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
-  filtersVisible,
-  updateScaleInterval,
-  setFiltersVisible,
-  mapConfiguration,
-  toggleLayer,
-  onMapConfigurationChange,
-  legendTitle,
-  ...props
-}) => {
+const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setFiltersVisible, legendTitle, ...props }) => {
+  const { mapConfiguration, toggleLayer } = useFCUMap();
   const enabledFeatures = useMemo(() => {
     return props.enabledFeatures ?? mapLegendFeatures;
   }, [props.enabledFeatures]);
@@ -69,12 +57,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
         <Text fontSize="13px" lineHeight="18px" mb="2w">
           Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
         </Text>
-        <ReseauxDeChaleurFilters
-          mapConfiguration={mapConfiguration}
-          updateScaleInterval={updateScaleInterval}
-          onMapConfigurationChange={onMapConfigurationChange}
-          disabled={!mapConfiguration.reseauxDeChaleur.show}
-        />
+        <ReseauxDeChaleurFilters disabled={!mapConfiguration.reseauxDeChaleur.show} />
       </Box>
     );
   }
