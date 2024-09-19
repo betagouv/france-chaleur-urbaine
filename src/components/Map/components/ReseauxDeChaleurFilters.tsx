@@ -2,8 +2,6 @@ import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 
 import { LegendSeparator } from '@components/Map/Map.style';
 import Accordion from '@components/ui/Accordion';
-import Box from '@components/ui/Box';
-import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
 import { FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
@@ -14,48 +12,43 @@ function ReseauxDeChaleurFilters() {
   const { mapConfiguration, setMapConfiguration, updateScaleInterval } = useFCUMap();
   return (
     <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
-      <Box mb="4w">
-        <Text size="sm" lineHeight="18px" fontWeight="bold" my="1w">
-          Énergie majoritaire
-        </Text>
-
-        <Select
-          label=""
-          nativeSelectProps={{
-            value: mapConfiguration.reseauxDeChaleur.energieMajoritaire,
-            onChange: (e) => {
-              mapConfiguration.reseauxDeChaleur.energieMajoritaire =
-                e.target.value === '' ? undefined : (e.target.value as FiltreEnergieConfKey);
-              setMapConfiguration({ ...mapConfiguration });
-            },
-          }}
-          className="fr-mb-1v"
-          options={[
-            {
-              label: "Type d'énergie",
-              value: '',
-            },
-            ...filtresEnergies.map(({ label, confKey }) => ({
-              label,
-              value: confKey,
-            })),
-          ]}
-        />
-        <Accordion label="Filtres avancés" style={{ margin: '0.25rem 0' }} simple>
-          <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
-            {filtresEnergies.map((filtreEnergie) => (
-              <RangeFilter
-                key={filtreEnergie.confKey}
-                label={filtreEnergie.label}
-                domain={percentageMaxInterval}
-                value={mapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`]}
-                onChange={updateScaleInterval(`reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`)}
-                unit="%"
-              />
-            ))}
-          </DeactivatableBox>
-        </Accordion>
-      </Box>
+      <Select
+        label="Énergie majoritaire"
+        nativeSelectProps={{
+          value: mapConfiguration.reseauxDeChaleur.energieMajoritaire,
+          onChange: (e) => {
+            mapConfiguration.reseauxDeChaleur.energieMajoritaire =
+              e.target.value === '' ? undefined : (e.target.value as FiltreEnergieConfKey);
+            setMapConfiguration({ ...mapConfiguration });
+          },
+        }}
+        className="fr-mb-1v"
+        options={[
+          {
+            label: "Type d'énergie",
+            value: '',
+          },
+          ...filtresEnergies.map(({ label, confKey }) => ({
+            label,
+            value: confKey,
+          })),
+        ]}
+      />
+      <Accordion label="Plus d'options" style={{ margin: '0.25rem 0' }} simple small>
+        <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
+          {filtresEnergies.map((filtreEnergie) => (
+            <RangeFilter
+              key={filtreEnergie.confKey}
+              label={filtreEnergie.label}
+              domain={percentageMaxInterval}
+              value={mapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`]}
+              onChange={updateScaleInterval(`reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`)}
+              unit="%"
+            />
+          ))}
+        </DeactivatableBox>
+      </Accordion>
+      <LegendSeparator />
 
       <RangeFilter
         label="Taux d’EnR&R"
