@@ -133,42 +133,27 @@ const DistancesMeasurementTool: React.FC = () => {
       features: features,
     });
 
-    // build the labels source with points at the center of each segment and another at the end point
+    // build the labels source with points at the center of each segment
     (mapRef.getSource(labelsSourceId) as GeoJSONSource).setData({
       type: 'FeatureCollection',
       features: features.flatMap((feature) => {
-        return [
-          ...feature.geometry.coordinates.slice(0, -1).map(
-            (coordinates, index) =>
-              ({
-                id: `${feature.id}-${index}`,
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
-                },
-                properties: {
-                  color: feature.properties.color,
-                  distanceLabel: formatDistance(
-                    length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
-                  ),
-                },
-              }) satisfies MesureLabelFeature
-          ),
-          {
-            id: `${feature.id}-total`,
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: feature.geometry.coordinates.at(-1) as GeoJSON.Position,
-            },
-            properties: {
-              color: feature.properties.color,
-              distanceLabel: `Total : ${formatDistance(feature.properties.distance)}`,
-              terminaison: true,
-            },
-          },
-        ] satisfies MesureLabelFeature[];
+        return feature.geometry.coordinates.slice(0, -1).map(
+          (coordinates, index) =>
+            ({
+              id: `${feature.id}-${index}`,
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
+              },
+              properties: {
+                color: feature.properties.color,
+                distanceLabel: formatDistance(
+                  length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
+                ),
+              },
+            }) satisfies MesureLabelFeature
+        );
       }),
     });
   }, [mapLoaded, features]);
@@ -280,7 +265,7 @@ function configureSourcesAndLayers(map: Map) {
       'text-size': 16,
       'text-anchor': 'center',
       'text-allow-overlap': true,
-      'text-offset': ['case', ['==', ['get', 'terminaison'], true], ['literal', [0, -1]], ['literal', [0, 0]]],
+      'text-offset': [0, 0],
     },
     paint: {
       'text-color': ['get', 'color'],

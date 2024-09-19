@@ -11,6 +11,5 @@ export type MesureLabelFeature = GeoJSON.Feature<GeoJSON.Point> & {
   properties: {
     color: string;
     distanceLabel: string;
-    terminaison?: boolean;
   };
 };
