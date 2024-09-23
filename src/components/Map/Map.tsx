@@ -318,6 +318,8 @@ const Map = ({
           },
         } satisfies LayerSpecification,
       ],
+      // makes the properties of each feature accessible with the prefix user_.
+      userProperties: true,
     });
 
     e.target.addControl(drawControl as any);

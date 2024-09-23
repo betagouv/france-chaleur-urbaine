@@ -58,6 +58,7 @@
     "@turf/area": "^7.1.0",
     "@turf/center": "^7.1.0",
     "@turf/helpers": "^7.1.0",
+    "@turf/kinks": "^7.1.0",
     "@turf/length": "^7.1.0",
     "@uiw/react-color-colorful": "^2.3.0",
     "airtable": "^0.12.2",

@@ -6,14 +6,18 @@ import { z } from 'zod';
 
 import { exportPolygonSummary, getLineSummary, getPolygonSummary } from '@core/infrastructure/repository/dataSummary';
 import { handleRouteErrors, invalidRouteError, requireGetMethod, validateObjectSchema } from '@helpers/server';
+import { validatePolygonGeometry } from '@utils/geo';
 import { clientConfig } from 'src/client-config';
 import { withCors } from 'src/services/api/cors';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 
-const polygonSummary = async (coordinates: number[][], req: NextApiRequest, res: NextApiResponse) => {
+const polygonSummary = async (coordinates: GeoJSON.Position[], req: NextApiRequest, res: NextApiResponse) => {
   const size = turfArea(polygon([coordinates])) / 1_000_000;
   if (size > clientConfig.summaryAreaSizeLimit) {
     return res.status(400).send(`Cannot compute stats on area bigger than ${clientConfig.summaryAreaSizeLimit} km²`);
+  }
+  if (!validatePolygonGeometry(coordinates)) {
+    return res.status(400).send('Geometry not valid');
   }
   if (req.method === 'GET') {
     const summary = await getPolygonSummary(coordinates);

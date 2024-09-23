@@ -2866,6 +2866,15 @@
     "@types/geojson" "^7946.0.10"
     tslib "^2.6.2"
 
+"@turf/kinks@^7.1.0":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/@turf/kinks/-/kinks-7.1.0.tgz#9511cbf2b51443acb0c38236ff24f19e18275de9"
+  integrity sha512-KKLYUsyJPU17fODwA81mhHzFYGQYocdbk9NxDPCcdRHvxzM8t95lptkGx/2k/9rXBs1DK7NmyzI4m7zDO0DK7g==
+  dependencies:
+    "@turf/helpers" "^7.1.0"
+    "@types/geojson" "^7946.0.10"
+    tslib "^2.6.2"
+
 "@turf/length@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@turf/length/-/length-7.1.0.tgz#bd04f024e1dfa8c4d767175ebbe6411bb8c52c82"
