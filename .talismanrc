@@ -16,6 +16,7 @@ fileignoreconfig:
 allowed_patterns:
   - eventKey
   - \/codegouvfr\/react-dsfr\/blob\/.*
+  - key\=\{
 scopeconfig:
   - scope: node
 version: '1.0'

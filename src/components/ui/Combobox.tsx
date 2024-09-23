@@ -14,4 +14,8 @@ export const ComboboxPopover = styled(ReachComboboxPopover)`
   [data-reach-combobox-option]:hover {
     background-color: var(--background-contrast-grey-hover);
   }
+  [data-reach-combobox-option][aria-selected='true'] {
+    background-color: var(--background-active-blue-france);
+    color: white;
+  }
 `;
