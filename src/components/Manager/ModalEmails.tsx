@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 import Input from '@components/form/dsfr/Input';
 import Heading from '@components/ui/Heading';
-import Modal from '@components/ui/Modal';
+import ModalPortal from '@components/ui/ModalPortal';
 import emailsContentList from '@data/manager/manager-emails-content';
 import emailsList from '@data/manager/manager-emails-list';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
@@ -170,7 +170,7 @@ function ModalEmails(props: Props) {
   };
 
   return (
-    <Modal>
+    <ModalPortal>
       <emailModal.Component title="" size="large">
         <ModalContentWrapper>
           <Heading as="h2" center>
@@ -299,7 +299,7 @@ function ModalEmails(props: Props) {
           )}
         </ModalContentWrapper>
       </emailModal.Component>
-    </Modal>
+    </ModalPortal>
   );
 }
 

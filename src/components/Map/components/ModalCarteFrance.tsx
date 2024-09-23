@@ -7,7 +7,7 @@ import { Oval } from 'react-loader-spinner';
 
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
-import Modal from '@components/ui/Modal';
+import ModalPortal from '@components/ui/ModalPortal';
 import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
 import useInitialSearchParam from '@hooks/useInitialSearchParam';
@@ -143,7 +143,7 @@ function ModalCarteFrance() {
         Potentiel de densification
       </PotentielsRaccordementButton>
 
-      <Modal>
+      <ModalPortal>
         <StyledModal>
           <modal.Component title="">
             {!statsData || !mapSourceData || !dataByArea ? (
@@ -359,7 +359,7 @@ function ModalCarteFrance() {
             )}
           </modal.Component>
         </StyledModal>
-      </Modal>
+      </ModalPortal>
     </>
   );
 }
