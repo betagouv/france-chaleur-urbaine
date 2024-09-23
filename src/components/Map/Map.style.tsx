@@ -2,7 +2,7 @@ import styled, { createGlobalStyle, css } from 'styled-components';
 
 import Box from '@components/ui/Box';
 
-export const mapControlZindex = 110;
+export const mapControlZindex = 0;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
 

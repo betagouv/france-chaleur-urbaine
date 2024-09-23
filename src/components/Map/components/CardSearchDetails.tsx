@@ -1,12 +1,11 @@
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { createModal } from '@codegouvfr/react-dsfr/Modal';
-import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
 
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
+import Modal, { createModal, useIsModalOpen } from '@components/ui/Modal';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
@@ -124,9 +123,9 @@ const CardSearchDetails = ({
 
   return (
     <>
-      <modal.Component title="Etre mis en relation">
+      <Modal modal={modal} title="Être mis en relation">
         <CardSearchDetailsForm fullAddress={storedAddress} onSubmit={markAddressAsContacted} />
-      </modal.Component>
+      </Modal>
       <SearchedAddress
         expanded={expanded}
         onExpandedChange={(newExpanded) => {
@@ -183,10 +182,10 @@ const CardSearchDetails = ({
                         : 'Vous souhaitez faire connaître votre demande au gestionnaire du réseau le plus proche ou à la collectivité ?'}
                     </header>
                   )}
-                  {!contactFormVisible && !storedAddress.contacted && (
+                  {!storedAddress.contacted && (
                     <ContactFormButtonWrapper>
                       <Button onClick={displayContactForm}>
-                        {isEligible ? 'Etre mis en relation avec le gestionnaire du réseau' : 'Laissez vos coordonnées'}
+                        {isEligible ? 'Être mis en relation avec le gestionnaire du réseau' : 'Laissez vos coordonnées'}
                       </Button>
                     </ContactFormButtonWrapper>
                   )}

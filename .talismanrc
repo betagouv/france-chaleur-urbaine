@@ -15,6 +15,7 @@ fileignoreconfig:
     checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 allowed_patterns:
   - eventKey
+  - \/codegouvfr\/react-dsfr\/blob\/.*
 scopeconfig:
   - scope: node
 version: '1.0'
