@@ -189,7 +189,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
           </Heading>
 
           <Text size="xs" fontStyle="italic">
-            Cliquez sur au moins 3 points de la cartes afin d’extraire les données des bâtiments se trouvant dans la zone
+            Cliquez sur au moins 3 points de la carte afin d’extraire les données des bâtiments se trouvant dans la zone.
           </Text>
         </Box>
 
