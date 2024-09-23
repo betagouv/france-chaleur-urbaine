@@ -1,5 +1,5 @@
 import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
-import { CSSProperties, HTMLAttributes } from 'react';
+import { CSSProperties, forwardRef, HTMLAttributes, Ref } from 'react';
 import styled from 'styled-components';
 
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
@@ -33,15 +33,19 @@ type IconProps = StyledIconProps & {
 /**
  * Renders an Icon with UI helpers and that can rotate.
  */
-function Icon({ name, size, riSize, className, ...props }: IconProps & SpacingProperties & HTMLAttributes<HTMLDivElement>) {
+const Icon = forwardRef(function Icon(
+  { name, size, riSize, className, ...props }: IconProps & SpacingProperties & HTMLAttributes<HTMLDivElement>,
+  ref
+) {
   return (
     <StyledIcon
       className={`${name ?? ''} ${size ? `fr-icon--${size}` : ''} ${riSize ? `ri-${riSize}` : ''} ${className ?? ''} ${spacingsToClasses(
         props
       )}`}
       aria-hidden
+      ref={ref as Ref<HTMLSpanElement>}
       {...props}
     />
   );
-}
+});
 export default Icon;

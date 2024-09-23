@@ -40,6 +40,7 @@ import {
 } from './SimpleMapLegend.style';
 import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
 import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
+import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -680,7 +681,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
             )}
             {selectedTabId.subTabId === 'mesure-distance' && <DistancesMeasurementTool />}
             {selectedTabId.subTabId === 'extraire-données-batiment' && <BuildingsDataExtractionTool />}
-            {selectedTabId.subTabId === 'densité-thermique-linéaire' && <Box>Calculer une densité thermique linéaire</Box>}
+            {selectedTabId.subTabId === 'densité-thermique-linéaire' && <LinearHeatDensityTool />}
           </Box>
         )}
         {selectedTabId.tabId === 'enrr' && (
