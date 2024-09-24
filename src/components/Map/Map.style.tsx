@@ -6,7 +6,7 @@ export const mapControlZindex = 0;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
 
-export const legendWidth = 345;
+export const legendWidth = 350;
 
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;

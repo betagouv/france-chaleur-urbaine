@@ -4,7 +4,7 @@ import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings
 
 import { logger } from '@helpers/logger';
 import db from 'src/db';
-import { DatabaseTileInfo, SourceId, tilesInfo, zSourceId } from 'src/services/tiles.config';
+import { DatabaseTileInfo, DatabaseSourceId, tilesInfo, zDatabaseSourceId } from 'src/services/tiles.config';
 
 import { KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
@@ -47,7 +47,7 @@ program
 
 program
   .command('fill-tiles')
-  .argument('<network-id>', 'Network id', (v) => zSourceId.parse(v))
+  .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
   .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
   .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
   .argument('[withIndex]', 'With index', (v) => !!v, false)
@@ -116,7 +116,7 @@ program
 
 program
   .command('update-networks')
-  .argument('<network-id>', 'Network id', (v) => zSourceId.parse(v))
+  .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
   .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
   .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
   .argument('[withIndex]', 'With index', (v) => !!v, false)
@@ -150,8 +150,8 @@ function validateKnownAirtableBase(value: string): KnownAirtableBase {
   return value as KnownAirtableBase;
 }
 
-function validateNetworkId(value: string): SourceId {
-  const tileInfo = tilesInfo[value as SourceId];
+function validateNetworkId(value: string): DatabaseSourceId {
+  const tileInfo = tilesInfo[value as DatabaseSourceId];
   if (!tileInfo || !(tileInfo as any).airtable) {
     throw new InvalidArgumentError(
       `invalid network id "${value}", expected any of ${Object.keys(
@@ -159,5 +159,5 @@ function validateNetworkId(value: string): SourceId {
       )}.`
     );
   }
-  return value as SourceId;
+  return value as DatabaseSourceId;
 }

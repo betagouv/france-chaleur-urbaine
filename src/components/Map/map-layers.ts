@@ -29,6 +29,9 @@ import { SourceId } from 'src/services/tiles.config';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import { Network } from 'src/types/Summary/Network';
 
+import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
+import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+
 export const tileSourcesMaxZoom = 17;
 
 export const tileLayersMinZoom = 0;
@@ -368,17 +371,13 @@ export type LayerId =
   | 'besoinsEnChaleurFroid-contour'
   | 'besoinsEnChaleurIndustrieCommunes'
   | 'besoinsEnChaleurIndustrieCommunes-contour'
-  | 'caracteristiquesBatiments';
+  | 'caracteristiquesBatiments'
+  | 'distance-measurements-lines'
+  | 'distance-measurements-labels'
+  | 'linear-heat-density-lines'
+  | 'linear-heat-density-labels';
 
-const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
-  'interpolate',
-  ['linear'],
-  ['zoom'],
-  10 + 0.2,
-  0,
-  10 + 0.2 + 1,
-  1,
-];
+const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = ['interpolate', ['linear'], 10 + 0.2, 0, 10 + 0.2 + 1, 1];
 
 // besoin d'une fonction dynamique pour avoir location.origin disponible côté client et aussi
 // pouvoir construire les layers selon les filtres
@@ -1081,6 +1080,9 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       ],
     },
   ];
+}
+export function buildInternalMapLayers(): MapSourceLayersSpecification[] {
+  return [...distancesMeasurementLayers, ...linearHeatDensityLayers];
 }
 
 // extends the Map type to get fully typed layer and source ids

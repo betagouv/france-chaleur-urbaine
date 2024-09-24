@@ -3,9 +3,11 @@ import { DrawCreateEvent, DrawModeChangeEvent } from '@mapbox/mapbox-gl-draw';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
-import { GeoJSONSource, Map } from 'maplibre-gl';
-import { Fragment, useEffect, useState } from 'react';
+import { atom, useAtom } from 'jotai';
+import { GeoJSONSource } from 'maplibre-gl';
+import { Fragment, useEffect } from 'react';
 
+import { MapSourceLayersSpecification } from '@components/Map/map-layers';
 import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
 import Text from '@components/ui/Text';
@@ -16,13 +18,15 @@ import { MeasureFeature, MeasureLabelFeature } from './measure';
 import MesureFeatureListItem from './MeasureFeatureListItem';
 import { Title } from '../SimpleMapLegend.style';
 
-const linesSourceId = 'distance-measurements';
-const labelsSourceId = 'distance-measurements-labels';
+export const distancesMeasurementLinesSourceId = 'distance-measurements-lines';
+export const distancesMeasurementLabelsSourceId = 'distance-measurements-labels';
 const featureColorPalette = ['#000091', '#8e44ad', '#2980b9', '#27ae60', '#c0392b', '#d35400', '#7f8c8d', '#34495e', '#16a085', '#e67e22'];
+
+const featuresAtom = atom<MeasureFeature[]>([]);
 
 const DistancesMeasurementTool: React.FC = () => {
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
-  const [features, setFeatures] = useState<MeasureFeature[]>([]);
+  const [features, setFeatures] = useAtom(featuresAtom);
 
   const onDrawCreate = ({ features: drawFeatures }: DrawCreateEvent) => {
     if (!mapDraw) {
@@ -105,7 +109,6 @@ const DistancesMeasurementTool: React.FC = () => {
     }
     const map = mapRef.getMap();
 
-    configureSourcesAndLayers(map);
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
     map.on('draw.modechange', onDrawModeChange);
@@ -117,9 +120,6 @@ const DistancesMeasurementTool: React.FC = () => {
 
       // clear the feature being drawn
       mapDraw.deleteAll();
-
-      // clear existing features
-      clearSourcesAndLayers(map);
     };
   }, [mapLoaded]);
 
@@ -129,13 +129,13 @@ const DistancesMeasurementTool: React.FC = () => {
       return;
     }
 
-    (mapRef.getSource(linesSourceId) as GeoJSONSource).setData({
+    (mapRef.getSource(distancesMeasurementLinesSourceId) as GeoJSONSource).setData({
       type: 'FeatureCollection',
       features: features,
     });
 
     // build the labels source with points at the center of each segment
-    (mapRef.getSource(labelsSourceId) as GeoJSONSource).setData({
+    (mapRef.getSource(distancesMeasurementLabelsSourceId) as GeoJSONSource).setData({
       type: 'FeatureCollection',
       features: features.flatMap((feature) => {
         return feature.geometry.coordinates.slice(0, -1).map(
@@ -231,57 +231,57 @@ const DistancesMeasurementTool: React.FC = () => {
 
 export default DistancesMeasurementTool;
 
-function configureSourcesAndLayers(map: Map) {
-  map.addSource(linesSourceId, {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: [],
+export const distancesMeasurementLayers: MapSourceLayersSpecification[] = [
+  {
+    sourceId: distancesMeasurementLinesSourceId,
+    source: {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [],
+      },
     },
-  });
-
-  map.addLayer({
-    source: linesSourceId,
-    id: 'distance-measurements-lines',
-    type: 'line',
-    paint: {
-      'line-color': ['get', 'color'],
-      'line-width': 3,
+    layers: [
+      {
+        source: distancesMeasurementLinesSourceId,
+        id: 'distance-measurements-lines',
+        type: 'line',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 3,
+        },
+      },
+    ],
+  },
+  {
+    sourceId: distancesMeasurementLabelsSourceId,
+    source: {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [],
+      },
     },
-  });
-
-  map.addSource(labelsSourceId, {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: [],
-    },
-  });
-
-  map.addLayer({
-    source: labelsSourceId,
-    id: 'distance-measurements-labels',
-    type: 'symbol',
-    layout: {
-      'symbol-placement': 'point',
-      'text-field': ['get', 'distanceLabel'],
-      'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-      'text-size': 16,
-      'text-anchor': 'center',
-      'text-allow-overlap': true,
-      'text-offset': [0, 0],
-    },
-    paint: {
-      'text-color': ['get', 'color'],
-      'text-halo-color': '#ffffff',
-      'text-halo-width': 2,
-    },
-  });
-}
-
-function clearSourcesAndLayers(map: Map) {
-  map.removeLayer('distance-measurements-lines');
-  map.removeLayer('distance-measurements-labels');
-  map.removeSource(linesSourceId);
-  map.removeSource(labelsSourceId);
-}
+    layers: [
+      {
+        source: distancesMeasurementLabelsSourceId,
+        id: 'distance-measurements-labels',
+        type: 'symbol',
+        layout: {
+          'symbol-placement': 'point',
+          'text-field': ['get', 'distanceLabel'],
+          'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+          'text-size': 16,
+          'text-anchor': 'center',
+          'text-allow-overlap': true,
+          'text-offset': [0, 0],
+        },
+        paint: {
+          'text-color': ['get', 'color'],
+          'text-halo-color': '#ffffff',
+          'text-halo-width': 2,
+        },
+      },
+    ],
+  },
+];

@@ -46,7 +46,7 @@ import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
 // FIXME supprimer composant après intégration à la sidebar
 // import ZoneInfos from './components/SummaryBoxes';
-import { LayerId, applyMapConfigurationToLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
+import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
   LegendContainer,
@@ -480,6 +480,18 @@ const Map = ({
           }
           // hide all layers by default to prevent loading them
           layer.layout.visibility = 'none';
+          map.addLayer(layer);
+        });
+      });
+
+      // other sources: distances measurement, linear heat density
+      buildInternalMapLayers().forEach((spec) => {
+        if (map.getSource(spec.sourceId)) {
+          return;
+        }
+
+        map.addSource(spec.sourceId, spec.source);
+        spec.layers.forEach((layer) => {
           map.addLayer(layer);
         });
       });
