@@ -1,12 +1,8 @@
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
+
 import db from 'src/db';
-import {
-  DatabaseTileInfo,
-  SourceId,
-  preTable,
-  tilesInfo,
-} from 'src/services/tiles.config';
+import { DatabaseTileInfo, DatabaseSourceId, preTable, tilesInfo } from 'src/services/tiles.config';
 
 const geoJSONQuery = (properties: string[], id: string) =>
   db.raw(
@@ -17,9 +13,7 @@ const geoJSONQuery = (properties: string[], id: string) =>
       'type', 'Feature',
       'geometry', ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom,4326)))::json,
       'properties', json_build_object(
-        ${properties
-          .flatMap((property) => [`'${property}'`, `"${property}"`])
-          .join(',')}
+        ${properties.flatMap((property) => [`'${property}'`, `"${property}"`]).join(',')}
       )
     ))
   )`
@@ -82,12 +76,7 @@ const tileToEnvelope = (x: number, y: number, z: number) => {
   };
 };
 
-export const fillTiles = async (
-  table: SourceId,
-  zoomMin: number,
-  zoomMax: number,
-  withIndex: boolean
-) => {
+export const fillTiles = async (table: DatabaseSourceId, zoomMin: number, zoomMax: number, withIndex: boolean) => {
   for (let index = 0; index < (withIndex ? 320 : 1); index++) {
     let x13Min = globalX13Min;
     let x13Max = globalX13Max;
@@ -134,16 +123,9 @@ export const fillTiles = async (
           console.info('Part', i);
           const tempGeoJSON = await tileInfo
             .extraWhere(
-              dbTable(
-                tileInfo.table,
-                region,
-                i,
-                i + 250000 - 1,
-                xmin,
-                xmax,
-                ymin,
-                ymax
-              ).first(geoJSONQuery(tileInfo.properties, tileInfo.id))
+              dbTable(tileInfo.table, region, i, i + 250000 - 1, xmin, xmax, ymin, ymax).first(
+                geoJSONQuery(tileInfo.properties, tileInfo.id)
+              )
             )
             .whereNotNull('geom');
           const newList = tempGeoJSON.json_build_object.features;
@@ -163,11 +145,7 @@ export const fillTiles = async (
       };
     } else {
       geoJSON = await tileInfo
-        .extraWhere(
-          dbTable(tileInfo.table).first(
-            geoJSONQuery(tileInfo.properties, tileInfo.id)
-          )
-        )
+        .extraWhere(dbTable(tileInfo.table).first(geoJSONQuery(tileInfo.properties, tileInfo.id)))
         .whereNotNull('geom');
     }
     console.timeEnd('geojson');
@@ -195,12 +173,7 @@ export const fillTiles = async (
                 x,
                 y,
                 z,
-                tile: Buffer.from(
-                  vtpbf.fromGeojsonVt(
-                    { [tileInfo.sourceLayer]: tile },
-                    { version: 2 }
-                  )
-                ),
+                tile: Buffer.from(vtpbf.fromGeojsonVt({ [tileInfo.sourceLayer]: tile }, { version: 2 })),
               })
               .onConflict(['x', 'y', 'z'])
               .ignore();

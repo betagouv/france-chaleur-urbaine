@@ -3,6 +3,8 @@ fileignoreconfig:
   checksum: 640fb3e8208508d5b81c07241fb4d0619b5e31d58c33a80bb72e04248bfed8eb
 - filename: next.config.js
   checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
+- filename: scripts/addUser.ts
+  checksum: 0a177922ce629d11306b8137997bbd761a547af145dedacd98d9ecc883d763d8
 - filename: src/components/Map/Map.tsx
   checksum: fd1b8bd14f7bdeeb2b2a89bbc368cca61df55b0fe97a5f4512c9e9522d8b8ca7
 - filename: src/components/Map/components/CardSearchDetails.tsx
