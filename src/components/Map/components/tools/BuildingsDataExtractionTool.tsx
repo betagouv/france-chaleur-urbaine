@@ -3,7 +3,7 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import { DrawCreateEvent, DrawModeChangeEvent } from '@mapbox/mapbox-gl-draw';
 import turfArea from '@turf/area';
 import { Map } from 'maplibre-gl';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import Box from '@components/ui/Box';
@@ -51,12 +51,17 @@ const BuildingsDataExtractionTool: React.FC = () => {
   const { mapLoaded, mapRef, mapDraw, setIsDrawing } = useFCUMap();
   const [area, setArea] = useState<GeoJSON.Position[] | null>(null);
   const [areaSize, setAreaSize] = useState<number>(0);
+  const areaSizeRef = useRef(areaSize);
   const [areaHasSelfIntersections, setAreaHasSelfIntersections] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [summary, setSummary] = useState<BuildingsDataExtractSummary | null>(null);
 
+  useEffect(() => {
+    areaSizeRef.current = areaSize;
+  }, [areaSize]);
+
   const onDrawCreate = async ({ features: drawFeatures }: DrawCreateEvent) => {
-    if (!mapDraw || areaSize > clientConfig.summaryAreaSizeLimit) {
+    if (!mapDraw) {
       return;
     }
     setIsDrawing(false);
@@ -64,7 +69,8 @@ const BuildingsDataExtractionTool: React.FC = () => {
     // always only 1 feature
     const feature = drawFeatures[0] as GeoJSON.Feature<GeoJSON.Polygon>;
     const area = feature.geometry.coordinates[0];
-    if (areaSize > clientConfig.summaryAreaSizeLimit || !validatePolygonGeometry(area)) {
+    // get latest area size as the ref keeps the up-to-date value
+    if (areaSizeRef.current > clientConfig.summaryAreaSizeLimit || !validatePolygonGeometry(area)) {
       return;
     }
 

@@ -6,7 +6,7 @@ import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
 import { atom, useAtom } from 'jotai';
 import { GeoJSONSource } from 'maplibre-gl';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { MapSourceLayersSpecification } from '@components/Map/map-layers';
@@ -60,8 +60,13 @@ const LinearHeatDensityTool: React.FC = () => {
   const { heatNetworkService } = useServices();
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
+  const featuresRef = useRef(features);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [densite, setDensite] = useAtom(densiteAtom);
+
+  useEffect(() => {
+    featuresRef.current = features;
+  }, [features]);
 
   const onDrawCreate = async ({ features: drawFeatures }: DrawCreateEvent) => {
     if (!mapDraw) {
@@ -72,60 +77,50 @@ const LinearHeatDensityTool: React.FC = () => {
     mapDraw.deleteAll();
     setIsDrawing(false);
 
+    const features = featuresRef.current; // get latest features as the ref keeps the up-to-date value
     // update the last feature keeping its color
-    setFeatures((features) => {
-      const newFeatures = [
-        ...features.slice(0, -1),
-        {
-          ...feature,
-          properties: {
-            ...features.at(-1)!.properties,
-            distance: length(feature, { units: 'meters' }),
+    setFeatures([
+      ...features.slice(0, -1),
+      {
+        ...feature,
+        properties: {
+          ...features.at(-1)!.properties,
+          distance: length(feature, { units: 'meters' }),
+        },
+      },
+    ]);
+
+    try {
+      setIsLoading(true);
+      const rawDensite = await heatNetworkService.densite(features.map((feature) => feature.geometry.coordinates));
+      const densite: LinearHeatDensity = {
+        distanceTotale: Math.round(rawDensite.size * 1000),
+        consommationGaz: {
+          cumul: {
+            '10m': getConso(rawDensite.data[10]),
+            '50m': getConso(rawDensite.data[50]),
+          },
+          densitéThermiqueLinéaire: {
+            '10m': getDensite(rawDensite.size, rawDensite.data[10]),
+            '50m': getDensite(rawDensite.size, rawDensite.data[50]),
           },
         },
-      ];
-
-      return newFeatures;
-    });
-
-    // use the setter to get the up-to-date features object
-    setFeatures((features) => {
-      (async () => {
-        try {
-          setIsLoading(true);
-          const rawDensite = await heatNetworkService.densite(features.map((feature) => feature.geometry.coordinates));
-          const densite: LinearHeatDensity = {
-            distanceTotale: Math.round(rawDensite.size * 1000),
-            consommationGaz: {
-              cumul: {
-                '10m': getConso(rawDensite.data[10]),
-                '50m': getConso(rawDensite.data[50]),
-              },
-              densitéThermiqueLinéaire: {
-                '10m': getDensite(rawDensite.size, rawDensite.data[10]),
-                '50m': getDensite(rawDensite.size, rawDensite.data[50]),
-              },
-            },
-            // TODO à venir avec la nouvelle couche
-            besoinsEnChaleur: {
-              cumul: {
-                '10m': '',
-                '50m': '',
-              },
-              densitéThermiqueLinéaire: {
-                '10m': '',
-                '50m': '',
-              },
-            },
-          };
-          setDensite(densite);
-        } finally {
-          setIsLoading(false);
-        }
-      })();
-
-      return features;
-    });
+        // TODO à venir avec la nouvelle couche
+        besoinsEnChaleur: {
+          cumul: {
+            '10m': '',
+            '50m': '',
+          },
+          densitéThermiqueLinéaire: {
+            '10m': '',
+            '50m': '',
+          },
+        },
+      };
+      setDensite(densite);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const onDrawRender = () => {
