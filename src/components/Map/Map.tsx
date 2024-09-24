@@ -1,12 +1,12 @@
 import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import { useLocalStorageValue } from '@react-hookz/web';
+import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
 import { LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsString, useQueryStates } from 'nuqs';
-import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { MapLayerMouseEvent } from 'react-map-gl';
 import MapReactGL, {
@@ -27,7 +27,6 @@ import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
 import useFCUMap from '@hooks/useFCUMap';
 import useRouterReady from '@hooks/useRouterReady';
-import debounce from '@utils/debounce';
 import { useServices } from 'src/services';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
 import { SourceId } from 'src/services/tiles.config';
@@ -617,34 +616,30 @@ const Map = ({
     }
   }, []);
 
-  // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
-  const [query, setQuery] = useQueryStates({
+  const [, setQuery] = useQueryStates({
     coord: parseAsString,
     zoom: parseAsString,
   });
 
-  const updateLocationURL = useMemo(
-    () =>
-      debounce((viewState: ViewState) => {
-        // Update the query state with new values
-        setQuery(
-          {
-            coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
-            zoom: viewState.zoom.toFixed(2),
-          },
-          {
-            shallow: true,
-          }
-        );
-      }, 500),
-    [query, setQuery]
+  // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
+  useDebouncedEffect(
+    () => {
+      if (!viewState) {
+        return;
+      }
+      setQuery(
+        {
+          coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
+          zoom: viewState.zoom.toFixed(2),
+        },
+        {
+          shallow: true,
+        }
+      );
+    },
+    [viewState],
+    500
   );
-
-  useEffect(() => {
-    if (viewState) {
-      updateLocationURL(viewState);
-    }
-  }, [updateLocationURL, viewState]);
 
   const isRouterReady = useRouterReady();
   if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {
