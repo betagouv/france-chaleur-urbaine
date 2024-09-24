@@ -4,9 +4,10 @@ import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
 import { GeoJSONSource, Map } from 'maplibre-gl';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 import Box from '@components/ui/Box';
+import Divider from '@components/ui/Divider';
 import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
 import { formatDistance } from '@utils/geo';
@@ -201,14 +202,17 @@ const DistancesMeasurementTool: React.FC = () => {
           </Text>
         </Box>
 
+        {features.length > 0 && <Divider my="1v" />}
         {features.map((feature) => (
-          <MesureFeatureListItem
-            feature={feature}
-            key={feature.id}
-            onColorUpdate={(color) => updateMeasurementColor(feature.id, color)}
-            onDelete={() => deleteMeasurement(feature.id)}
-            disableDeleteButton={isDrawing}
-          />
+          <Fragment key={feature.id}>
+            <MesureFeatureListItem
+              feature={feature}
+              onColorUpdate={(color) => updateMeasurementColor(feature.id, color)}
+              onDelete={() => deleteMeasurement(feature.id)}
+              disableDeleteButton={isDrawing}
+            />
+            <Divider my="1v" />
+          </Fragment>
         ))}
 
         {isDrawing ? (

@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import Box from '@components/ui/Box';
+import Divider from '@components/ui/Divider';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
@@ -275,6 +276,7 @@ const LinearHeatDensityTool: React.FC = () => {
             Définissez un tracé en cliquant sur deux points ou plus.
           </Text>
         </Box>
+        <Divider />
 
         {isLoading && (
           <Box display="grid" placeContent="center">
