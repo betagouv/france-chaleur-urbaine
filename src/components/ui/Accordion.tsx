@@ -1,4 +1,5 @@
 import DsfrAccordion, { type AccordionProps as DsfrAccordionProps } from '@codegouvfr/react-dsfr/Accordion';
+import { useQueryState } from 'nuqs';
 import styled, { css } from 'styled-components';
 
 import useArrayQueryState from '@hooks/useArrayQueryState';
@@ -92,16 +93,33 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, simple, b
 };
 
 export type UrlStateAccordionProps = Omit<AccordionProps, 'label' | 'id' | 'onExpandedChange' | 'expanded' | 'defaultExpanded'> &
-  (Pick<AccordionProps, 'label' | 'id'> | { label: React.ReactNode; id: string });
+  (Pick<AccordionProps, 'label' | 'id'> | { label: React.ReactNode; id: string }) &
+  (
+    | {
+        queryParamName?: string;
+        id: string;
+        multi: false;
+      }
+    | {
+        queryParamName?: string;
+        multi?: true;
+      }
+  );
 
-export const UrlStateAccordion = (props: UrlStateAccordionProps) => {
-  const { add, remove, has } = useArrayQueryState('accordions');
+export const UrlStateAccordion = ({ multi = true, queryParamName = 'accordions', ...props }: UrlStateAccordionProps) => {
+  const { add, remove, has } = useArrayQueryState(queryParamName);
+  const [value, setValue] = useQueryState(queryParamName);
 
   const isLabelObject = typeof props.label === 'object';
 
-  const id = isLabelObject ? (props.id as string) : (props.label as string);
+  const id = isLabelObject || props.id ? (props.id as string) : (props.label as string);
 
-  return <Accordion {...props} expanded={has(id)} onExpandedChange={(expanded) => (expanded ? add(id) : remove(id))} />;
+  const expanded = multi ? has(id) : value === id;
+  const onExpandedChange = multi
+    ? (expanded: boolean) => (expanded ? add(id) : remove(id))
+    : (expanded: boolean) => (expanded ? setValue(id) : setValue(null));
+
+  return <Accordion {...props} expanded={expanded} onExpandedChange={onExpandedChange} />;
 };
 
 export default Accordion;

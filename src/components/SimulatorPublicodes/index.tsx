@@ -10,6 +10,7 @@ import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@components/form/publicodes/FormProvider';
+import Accordion from '@components/ui/Accordion';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
@@ -125,6 +126,12 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
             />
           </header>
           <Simulator $loading={loading}>
+            <Accordion
+              label="Paramètres du bâtiment"
+              expanded={selectedTabId === 'batiment'}
+              onExpandedChange={(expanded) => setSelectedTabId(expanded ? 'batiment' : null)}
+            ></Accordion>
+
             <div>
               <Tabs
                 selectedTabId={selectedTabId}
