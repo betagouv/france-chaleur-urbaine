@@ -16,7 +16,7 @@ export const PublicodesSimulatorTitle = () => {
   return (
     <div>
       <Heading as="h2">
-        Simulateur de prix et d'émissions de CO2 <Badge severity="warning">Beta</Badge>
+        Comparateur de performances et d'émissions de CO2 <Badge severity="warning">Beta</Badge>
       </Heading>
       <ol>
         <li>
