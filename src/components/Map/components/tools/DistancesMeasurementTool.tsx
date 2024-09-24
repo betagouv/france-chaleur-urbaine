@@ -24,8 +24,15 @@ const featureColorPalette = ['#000091', '#8e44ad', '#2980b9', '#27ae60', '#c0392
 
 const featuresAtom = atom<MeasureFeature[]>([]);
 
+/**
+ * This flag allows us to know if the user pressed the escape key.
+ * In that case, only the callback onDrawModeChange is called, otherwise onDrawCreate is called juste before.
+ * We use it to detect if we must clear the draw.
+ */
+let mayHaveClearedTheDrawWithEscape = true;
+
 const DistancesMeasurementTool: React.FC = () => {
-  const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
+  const { mapLayersLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
 
   const onDrawCreate = ({ features: drawFeatures }: DrawCreateEvent) => {
@@ -36,6 +43,7 @@ const DistancesMeasurementTool: React.FC = () => {
     const feature = drawFeatures[0] as MeasureFeature;
     mapDraw.deleteAll();
     setIsDrawing(false);
+    mayHaveClearedTheDrawWithEscape = false;
 
     // update the last feature keeping its color
     setFeatures((features) => {
@@ -99,12 +107,16 @@ const DistancesMeasurementTool: React.FC = () => {
     }
     if (mode === 'simple_select') {
       mapDraw.deleteAll();
+      if (mayHaveClearedTheDrawWithEscape) {
+        cancelMeasurement();
+      }
       setIsDrawing(false);
+      mayHaveClearedTheDrawWithEscape = true;
     }
   };
 
   useEffect(() => {
-    if (!mapLoaded) {
+    if (!mapLayersLoaded) {
       return;
     }
     const map = mapRef.getMap();
@@ -120,44 +132,16 @@ const DistancesMeasurementTool: React.FC = () => {
 
       // clear the feature being drawn
       mapDraw.deleteAll();
+
+      // handle exit via routing
+      setIsDrawing((isDrawing) => {
+        if (isDrawing) {
+          cancelMeasurement();
+        }
+        return false;
+      });
     };
-  }, [mapLoaded]);
-
-  // synchronise the features with the map
-  useEffect(() => {
-    if (!mapLoaded) {
-      return;
-    }
-
-    (mapRef.getSource(distancesMeasurementLinesSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
-      features: features,
-    });
-
-    // build the labels source with points at the center of each segment
-    (mapRef.getSource(distancesMeasurementLabelsSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
-      features: features.flatMap((feature) => {
-        return feature.geometry.coordinates.slice(0, -1).map(
-          (coordinates, index) =>
-            ({
-              id: `${feature.id}-${index}`,
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
-              },
-              properties: {
-                color: feature.properties.color,
-                distanceLabel: formatDistance(
-                  length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
-                ),
-              },
-            }) satisfies MeasureLabelFeature
-        );
-      }),
-    });
-  }, [mapLoaded, features]);
+  }, [mapLayersLoaded]);
 
   function updateMeasurementColor(featureId: string, newColor: string) {
     setFeatures((features) => {
@@ -179,13 +163,14 @@ const DistancesMeasurementTool: React.FC = () => {
   function startMeasurement() {
     mapDraw?.changeMode('draw_line_string');
     setIsDrawing(true);
+    mayHaveClearedTheDrawWithEscape = true;
   }
   function cancelMeasurement() {
     mapDraw?.deleteAll();
     mapDraw?.changeMode('simple_select');
     setIsDrawing(false);
     // remove the last feature (sketch)
-    setFeatures(features.slice(0, -1));
+    setFeatures((features) => features.slice(0, -1));
   }
   function deleteMeasurement(featureId: string) {
     setFeatures(features.filter((feature) => feature.id !== featureId));
@@ -220,7 +205,7 @@ const DistancesMeasurementTool: React.FC = () => {
             Annuler le tracé
           </Button>
         ) : (
-          <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLoaded}>
+          <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLayersLoaded}>
             Ajouter un tracé
           </Button>
         )}
@@ -230,6 +215,49 @@ const DistancesMeasurementTool: React.FC = () => {
 };
 
 export default DistancesMeasurementTool;
+
+/**
+ * Synchronise the features with the map
+ */
+export function useDistancesMeasurementLayers() {
+  const { mapLayersLoaded, mapRef } = useFCUMap();
+  const [features] = useAtom(featuresAtom);
+
+  useEffect(() => {
+    if (!mapLayersLoaded) {
+      return;
+    }
+
+    (mapRef.getSource(distancesMeasurementLinesSourceId) as GeoJSONSource).setData({
+      type: 'FeatureCollection',
+      features: features,
+    });
+
+    // build the labels source with points at the center of each segment
+    (mapRef.getSource(distancesMeasurementLabelsSourceId) as GeoJSONSource).setData({
+      type: 'FeatureCollection',
+      features: features.flatMap((feature) => {
+        return feature.geometry.coordinates.slice(0, -1).map(
+          (coordinates, index) =>
+            ({
+              id: `${feature.id}-${index}`,
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
+              },
+              properties: {
+                color: feature.properties.color,
+                distanceLabel: formatDistance(
+                  length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
+                ),
+              },
+            }) satisfies MeasureLabelFeature
+        );
+      }),
+    });
+  }, [mapLayersLoaded, features]);
+}
 
 export const distancesMeasurementLayers: MapSourceLayersSpecification[] = [
   {

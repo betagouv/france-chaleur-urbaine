@@ -17,6 +17,7 @@ import {
 export const mapRefAtom = atom<MapRef | null>(null);
 export const mapDrawAtom = atom<MapboxDraw | null>(null);
 export const isDrawingAtom = atom<boolean>(false);
+export const mapLayersLoadedAtom = atom<boolean>(false);
 export const mapConfigurationAtom = atom<MapConfiguration>(defaultMapConfiguration);
 
 type SetAtom<T extends WritableAtom<unknown, never[], unknown>> = ReturnType<typeof useSetAtom<T>>;
@@ -25,14 +26,16 @@ type UseFCUMapResult = {
   setMapRef: SetAtom<typeof mapRefAtom>;
   setMapDraw: SetAtom<typeof mapDrawAtom>;
   setIsDrawing: SetAtom<typeof isDrawingAtom>;
+  setMapLayersLoaded: SetAtom<typeof mapLayersLoadedAtom>;
   setMapConfiguration: SetAtom<typeof mapConfigurationAtom>;
   mapConfiguration: MapConfiguration;
   toggleLayer: (property: MapConfigurationProperty<boolean>) => void;
   updateScaleInterval: (property: MapConfigurationProperty<Interval>) => (interval: Interval) => void;
 } & (
-  | { mapLoaded: false; mapRef: null; mapDraw: null; isDrawing: false }
+  | { mapLoaded: false; mapLayersLoaded: false; mapRef: null; mapDraw: null; isDrawing: false }
   | {
       mapLoaded: true;
+      mapLayersLoaded: boolean;
       mapRef: MapRef;
       mapDraw: MapboxDraw;
       isDrawing: boolean;
@@ -45,6 +48,7 @@ const useFCUMap = (initialMapConfiguration?: MaybeEmptyMapConfiguration): UseFCU
   const [mapRef, setMapRef] = useAtom(mapRefAtom);
   const [mapDraw, setMapDraw] = useAtom(mapDrawAtom);
   const [isDrawing, setIsDrawing] = useAtom(isDrawingAtom);
+  const [mapLayersLoaded, setMapLayersLoaded] = useAtom(mapLayersLoadedAtom);
   const [mapConfiguration, setMapConfiguration] = useAtom(mapConfigurationAtom);
 
   React.useEffect(() => {
@@ -81,6 +85,7 @@ const useFCUMap = (initialMapConfiguration?: MaybeEmptyMapConfiguration): UseFCU
     setMapRef,
     setMapDraw,
     setIsDrawing,
+    setMapLayersLoaded,
     mapConfiguration,
     setMapConfiguration,
     toggleLayer,
@@ -91,6 +96,7 @@ const useFCUMap = (initialMapConfiguration?: MaybeEmptyMapConfiguration): UseFCU
     return {
       ...commonValues,
       mapLoaded: false,
+      mapLayersLoaded: false,
       mapRef: null,
       mapDraw: null,
       isDrawing: false,
@@ -100,6 +106,7 @@ const useFCUMap = (initialMapConfiguration?: MaybeEmptyMapConfiguration): UseFCU
   return {
     ...commonValues,
     mapLoaded: true,
+    mapLayersLoaded,
     mapRef,
     mapDraw,
     isDrawing,

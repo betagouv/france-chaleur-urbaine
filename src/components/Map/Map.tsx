@@ -46,6 +46,8 @@ import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
 // FIXME supprimer composant après intégration à la sidebar
 // import ZoneInfos from './components/SummaryBoxes';
+import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
+import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
@@ -171,7 +173,7 @@ const Map = ({
   mapRef?: MutableRefObject<MapRef>;
 }) => {
   const router = useRouter();
-  const { setMapRef, setMapDraw, isDrawing, mapConfiguration } = useFCUMap(initialMapConfiguration);
+  const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap(initialMapConfiguration);
 
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
@@ -185,6 +187,11 @@ const Map = ({
   const [legendCollapsed, setLegendCollapsed] = useState(true);
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 992);
+    return () => {
+      setMapRef(null);
+      setMapDraw(null);
+      setMapLayersLoaded(false);
+    };
   }, []);
 
   // resize the map when the container renders
@@ -193,8 +200,6 @@ const Map = ({
       mapRef.current.getMap().resize();
     }
   }, [mapRef.current, legendCollapsed]);
-
-  const [mapState, setMapState] = useState<'pending' | 'loaded'>('pending');
 
   // exports the mapRef
   useEffect(() => {
@@ -326,12 +331,6 @@ const Map = ({
     e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
         defaultStyle: 'Carte',
-        eventListeners: {
-          onChange: () => {
-            setMapState('pending');
-            return true;
-          },
-        },
       })
     );
 
@@ -345,7 +344,6 @@ const Map = ({
         });
       })
     );
-    setMapState('loaded');
 
     const clickEvents: {
       layer: LayerId;
@@ -463,7 +461,7 @@ const Map = ({
 
   const onMapSourceData = (e: MapSourceDataEvent) => {
     const map = mapRef.current?.getMap();
-    if (mapState === 'loaded' || !map || !isMapConfigurationInitialized(mapConfiguration)) {
+    if (mapLayersLoaded || !map || !isMapConfigurationInitialized(mapConfiguration)) {
       return;
     }
 
@@ -496,7 +494,7 @@ const Map = ({
         });
       });
 
-      setMapState('loaded');
+      setMapLayersLoaded(true);
     }
   };
 
@@ -599,7 +597,7 @@ const Map = ({
   }, [markersList, setMarkersList, setSoughtAddresses, soughtAddresses]);
 
   useEffect(() => {
-    if (mapState === 'pending') {
+    if (!mapLayersLoaded) {
       return;
     }
 
@@ -607,7 +605,10 @@ const Map = ({
     if (map && isMapConfigurationInitialized(mapConfiguration)) {
       applyMapConfigurationToLayers(map, mapConfiguration);
     }
-  }, [mapState, mapRef, mapConfiguration]);
+  }, [mapLayersLoaded, mapRef, mapConfiguration]);
+
+  useDistancesMeasurementLayers();
+  useLinearHeatDensityLayers();
 
   // FIXME pourquoi on doit passer par un setState ici ?
   useEffect(() => {

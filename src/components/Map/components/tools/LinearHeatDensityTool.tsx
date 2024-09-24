@@ -56,9 +56,16 @@ type LinearHeatDensity = {
 const featuresAtom = atom<MeasureFeature[]>([]);
 const densiteAtom = atom<LinearHeatDensity | null>(null);
 
+/**
+ * This flag allows us to know if the user pressed the escape key.
+ * In that case, only the callback onDrawModeChange is called, otherwise onDrawCreate is called juste before.
+ * We use it to detect if we must clear the draw.
+ */
+let mayHaveClearedTheDrawWithEscape = true;
+
 const LinearHeatDensityTool: React.FC = () => {
   const { heatNetworkService } = useServices();
-  const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
+  const { mapLayersLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
   const featuresRef = useRef(features);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -76,6 +83,7 @@ const LinearHeatDensityTool: React.FC = () => {
     const feature = drawFeatures[0] as MeasureFeature;
     mapDraw.deleteAll();
     setIsDrawing(false);
+    mayHaveClearedTheDrawWithEscape = false;
 
     const features = featuresRef.current; // get latest features as the ref keeps the up-to-date value
     // update the last feature keeping its color
@@ -170,12 +178,16 @@ const LinearHeatDensityTool: React.FC = () => {
     }
     if (mode === 'simple_select') {
       mapDraw.deleteAll();
+      if (mayHaveClearedTheDrawWithEscape) {
+        cancelMeasurement();
+      }
       setIsDrawing(false);
+      mayHaveClearedTheDrawWithEscape = true;
     }
   };
 
   useEffect(() => {
-    if (!mapLoaded) {
+    if (!mapLayersLoaded) {
       return;
     }
     const map = mapRef.getMap();
@@ -191,55 +203,32 @@ const LinearHeatDensityTool: React.FC = () => {
 
       // clear the feature being drawn
       mapDraw.deleteAll();
+
+      // handle exit via routing
+      setIsDrawing((isDrawing) => {
+        if (isDrawing) {
+          cancelMeasurement();
+        }
+        return false;
+      });
     };
-  }, [mapLoaded]);
-
-  // synchronise the features with the map
-  useEffect(() => {
-    if (!mapLoaded) {
-      return;
-    }
-
-    (mapRef.getSource(linearHeatDensityLinesSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
-      features: features,
-    });
-
-    // build the labels source with points at the center of each segment
-    (mapRef.getSource(linearHeatDensityLabelsSourceId) as GeoJSONSource).setData({
-      type: 'FeatureCollection',
-      features: features.flatMap((feature) => {
-        return feature.geometry.coordinates.slice(0, -1).map(
-          (coordinates, index) =>
-            ({
-              id: `${feature.id}-${index}`,
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
-              },
-              properties: {
-                color: feature.properties.color,
-                distanceLabel: formatDistance(
-                  length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
-                ),
-              },
-            }) satisfies MeasureLabelFeature
-        );
-      }),
-    });
-  }, [mapLoaded, features]);
+  }, [mapLayersLoaded]);
 
   function startMeasurement() {
     mapDraw?.changeMode('draw_line_string');
     setIsDrawing(true);
+    mayHaveClearedTheDrawWithEscape = true;
   }
   function cancelMeasurement() {
     mapDraw?.deleteAll();
     mapDraw?.changeMode('simple_select');
-    setIsDrawing(false);
-    // remove the last feature (sketch)
-    setFeatures(features.slice(0, -1));
+    setIsDrawing((isDrawing) => {
+      // remove the last feature (sketch)
+      if (isDrawing) {
+        setFeatures((features) => features.slice(0, -1));
+      }
+      return false;
+    });
   }
   const clearDensity = () => {
     if (!mapDraw) {
@@ -317,7 +306,7 @@ const LinearHeatDensityTool: React.FC = () => {
             Annuler le {densite ? 'segment' : 'tracé'}
           </Button>
         ) : (
-          <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLoaded || isLoading}>
+          <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLayersLoaded || isLoading}>
             Ajouter un {isLoading || densite ? 'segment' : 'tracé'}
           </Button>
         )}
@@ -364,6 +353,49 @@ const getDensite = (size: number, densite: GasSummary[]) => {
 
   return `${value.toFixed(2)} MWh/m`;
 };
+
+/**
+ * Synchronise the features with the map
+ */
+export function useLinearHeatDensityLayers() {
+  const { mapLayersLoaded, mapRef } = useFCUMap();
+  const [features] = useAtom(featuresAtom);
+
+  useEffect(() => {
+    if (!mapLayersLoaded) {
+      return;
+    }
+
+    (mapRef.getSource(linearHeatDensityLinesSourceId) as GeoJSONSource).setData({
+      type: 'FeatureCollection',
+      features: features,
+    });
+
+    // build the labels source with points at the center of each segment
+    (mapRef.getSource(linearHeatDensityLabelsSourceId) as GeoJSONSource).setData({
+      type: 'FeatureCollection',
+      features: features.flatMap((feature) => {
+        return feature.geometry.coordinates.slice(0, -1).map(
+          (coordinates, index) =>
+            ({
+              id: `${feature.id}-${index}`,
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: center(points([coordinates, feature.geometry.coordinates[index + 1]])).geometry.coordinates,
+              },
+              properties: {
+                color: feature.properties.color,
+                distanceLabel: formatDistance(
+                  length(lineString([coordinates, feature.geometry.coordinates[index + 1]]), { units: 'meters' })
+                ),
+              },
+            }) satisfies MeasureLabelFeature
+        );
+      }),
+    });
+  }, [mapLayersLoaded, features]);
+}
 
 export const linearHeatDensityLayers: MapSourceLayersSpecification[] = [
   {

@@ -146,7 +146,8 @@ module.exports = withBundleAnalyzer(
       eslint: {
         ignoreDuringBuilds: true,
       },
-      reactStrictMode: true,
+      // too many conflicts with map draw listeners
+      // reactStrictMode: true,
       swcMinify: true,
       async redirects() {
         return [
