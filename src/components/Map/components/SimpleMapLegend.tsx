@@ -644,6 +644,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <Button
                   priority="secondary"
                   size="small"
+                  iconId="ri-ruler-line"
                   onClick={() => setSelectedTabId({ tabId: 'outils', subTabId: 'mesure-distance' })}
                 >
                   Calculer une distance
@@ -651,6 +652,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <Button
                   priority="secondary"
                   size="small"
+                  iconId="ri-shape-line"
                   onClick={() => setSelectedTabId({ tabId: 'outils', subTabId: 'extraire-données-batiment' })}
                 >
                   Extraire des données sur les bâtiments
@@ -658,6 +660,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 <Button
                   priority="secondary"
                   size="small"
+                  iconId="ri-bar-chart-line"
                   onClick={() => setSelectedTabId({ tabId: 'outils', subTabId: 'densité-thermique-linéaire' })}
                 >
                   Calculer une densité thermique linéaire
