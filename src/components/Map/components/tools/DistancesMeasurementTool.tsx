@@ -18,7 +18,7 @@ import { Title } from '../SimpleMapLegend.style';
 
 const linesSourceId = 'distance-measurements';
 const labelsSourceId = 'distance-measurements-labels';
-const featureColorPalette = ['#2c3e50', '#8e44ad', '#2980b9', '#27ae60', '#c0392b', '#d35400', '#7f8c8d', '#34495e', '#16a085', '#e67e22'];
+const featureColorPalette = ['#000091', '#8e44ad', '#2980b9', '#27ae60', '#c0392b', '#d35400', '#7f8c8d', '#34495e', '#16a085', '#e67e22'];
 
 const DistancesMeasurementTool: React.FC = () => {
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();

@@ -20,12 +20,11 @@ import { useServices } from 'src/services';
 import { GasSummary } from 'src/types/Summary/Gas';
 
 import { MeasureFeature, MeasureLabelFeature } from './measure';
-import MesureFeatureListItem from './MeasureFeatureListItem';
 import { Title } from '../SimpleMapLegend.style';
 
 const linesSourceId = 'distance-measurements';
 const labelsSourceId = 'distance-measurements-labels';
-const featureColorPalette = ['#2c3e50', '#8e44ad', '#2980b9', '#27ae60', '#c0392b', '#d35400', '#7f8c8d', '#34495e', '#16a085', '#e67e22'];
+const defaultColor = '#000091';
 
 type LinearHeatDensity = {
   distanceTotale: number;
@@ -84,37 +83,44 @@ const LinearHeatDensityTool: React.FC = () => {
       return newFeatures;
     });
 
-    try {
-      setIsLoading(true);
-      const rawDensite = await heatNetworkService.densite([feature.geometry.coordinates]); // FIXME use all features
-      const densite: LinearHeatDensity = {
-        distanceTotale: Math.round(rawDensite.size * 1000),
-        consommationGaz: {
-          cumul: {
-            '10m': getConso(rawDensite.data[10]),
-            '50m': getConso(rawDensite.data[50]),
-          },
-          densitéThermiqueLinéaire: {
-            '10m': getDensite(rawDensite.size, rawDensite.data[10]),
-            '50m': getDensite(rawDensite.size, rawDensite.data[50]),
-          },
-        },
-        // TODO à venir avec la nouvelle couche
-        besoinsEnChaleur: {
-          cumul: {
-            '10m': '',
-            '50m': '',
-          },
-          densitéThermiqueLinéaire: {
-            '10m': '',
-            '50m': '',
-          },
-        },
-      };
-      setDensite(densite);
-    } finally {
-      setIsLoading(false);
-    }
+    // use the setter to get the up-to-date features object
+    setFeatures((features) => {
+      (async () => {
+        try {
+          setIsLoading(true);
+          const rawDensite = await heatNetworkService.densite(features.map((feature) => feature.geometry.coordinates));
+          const densite: LinearHeatDensity = {
+            distanceTotale: Math.round(rawDensite.size * 1000),
+            consommationGaz: {
+              cumul: {
+                '10m': getConso(rawDensite.data[10]),
+                '50m': getConso(rawDensite.data[50]),
+              },
+              densitéThermiqueLinéaire: {
+                '10m': getDensite(rawDensite.size, rawDensite.data[10]),
+                '50m': getDensite(rawDensite.size, rawDensite.data[50]),
+              },
+            },
+            // TODO à venir avec la nouvelle couche
+            besoinsEnChaleur: {
+              cumul: {
+                '10m': '',
+                '50m': '',
+              },
+              densitéThermiqueLinéaire: {
+                '10m': '',
+                '50m': '',
+              },
+            },
+          };
+          setDensite(densite);
+        } finally {
+          setIsLoading(false);
+        }
+      })();
+
+      return features;
+    });
   };
 
   const onDrawRender = () => {
@@ -137,7 +143,7 @@ const LinearHeatDensityTool: React.FC = () => {
           {
             ...featureBeingDrawn,
             properties: {
-              color: featureColorPalette[features.length % featureColorPalette.length],
+              color: defaultColor,
               distance: length(featureBeingDrawn, { units: 'meters' }),
             },
           },
@@ -228,23 +234,6 @@ const LinearHeatDensityTool: React.FC = () => {
     });
   }, [mapLoaded, features]);
 
-  function updateMeasurementColor(featureId: string, newColor: string) {
-    setFeatures((features) => {
-      const featureIndex = features.findIndex((feature) => feature.id === featureId);
-      if (featureIndex === -1) {
-        console.error(`feature not found ${featureId}`);
-        return features;
-      }
-      const feature = features[featureIndex];
-      return features.toSpliced(featureIndex, 1, {
-        ...feature,
-        properties: {
-          ...feature.properties,
-          color: newColor,
-        },
-      });
-    });
-  }
   function startMeasurement() {
     mapDraw?.changeMode('draw_line_string');
     setIsDrawing(true);
@@ -256,9 +245,16 @@ const LinearHeatDensityTool: React.FC = () => {
     // remove the last feature (sketch)
     setFeatures(features.slice(0, -1));
   }
-  function deleteMeasurement(featureId: string) {
-    setFeatures(features.filter((feature) => feature.id !== featureId));
-  }
+  const clearDensity = () => {
+    if (!mapDraw) {
+      return;
+    }
+    setDensite(null);
+    mapDraw.deleteAll();
+    mapDraw.changeMode('simple_select');
+    setIsDrawing(false);
+    setFeatures([]);
+  };
   function exportDrawing() {
     if (!mapDraw) {
       return;
@@ -283,15 +279,6 @@ const LinearHeatDensityTool: React.FC = () => {
             <Oval height={60} width={60} color="#000091" secondaryColor="#0000ee" />
           </Box>
         )}
-        {features.map((feature) => (
-          <MesureFeatureListItem
-            feature={feature}
-            key={feature.id}
-            onColorUpdate={(color) => updateMeasurementColor(feature.id, color)}
-            onDelete={() => deleteMeasurement(feature.id)}
-            disableDeleteButton={isDrawing}
-          />
-        ))}
 
         {densite && (
           <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
@@ -331,17 +318,28 @@ const LinearHeatDensityTool: React.FC = () => {
 
         {isDrawing ? (
           <Button priority="secondary" iconId="fr-icon-close-line" onClick={cancelMeasurement}>
-            Annuler le tracé
+            Annuler le {densite ? 'segment' : 'tracé'}
           </Button>
         ) : (
-          <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLoaded}>
-            Ajouter un tracé
+          <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLoaded || isLoading}>
+            Ajouter un {isLoading || densite ? 'segment' : 'tracé'}
           </Button>
         )}
         {densite && (
-          <Button priority="secondary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportDrawing}>
-            Exporter le tracé
-          </Button>
+          <>
+            <Button
+              priority="secondary"
+              iconId="fr-icon-delete-bin-line"
+              className="btn-full-width"
+              onClick={clearDensity}
+              disabled={isLoading}
+            >
+              Effacer
+            </Button>
+            <Button priority="secondary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportDrawing}>
+              Exporter le tracé
+            </Button>
+          </>
         )}
       </Box>
     </>
