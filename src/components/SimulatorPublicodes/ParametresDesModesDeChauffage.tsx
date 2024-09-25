@@ -46,6 +46,11 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       <Accordion label="Combustibles (P1)">
         {hasModeDeChauffage('Réseaux de chaleur') && (
           <Accordion label="Réseaux de chaleur">
+            <Input name="Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part abonnement" label="Tarification R2 (Part fixe)" />
+            <Input
+              name="Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part consommation"
+              label="Tarification R1 (Part variable)"
+            />
             <Input name="Paramètres économiques . Réseaux chaleur . Coût" label="Coût" />
             <Input name="Paramètres économiques . Réseaux chaleur . Part fixe" label="Part fixe" />
             <Input name="Paramètres économiques . Réseaux chaleur . Part variable" label="Part variable" disabled />
