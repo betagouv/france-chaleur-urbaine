@@ -53,7 +53,12 @@ interface SimpleMapLegendProps {
 const defaultURL: TabObject = { tabId: 'reseaux', subTabId: null };
 
 function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps) {
-  const [selectedTabId, setSelectedTabId] = useQueryState<TabObject>('tabId', parseURLTabs(tabs).withDefault(defaultURL));
+  const [selectedTabId, setSelectedTabId] = useQueryState<TabObject>(
+    'tabId',
+    parseURLTabs(tabs).withDefault(defaultURL).withOptions({
+      history: 'push',
+    })
+  );
   const { mapConfiguration, toggleLayer, updateScaleInterval } = useFCUMap();
   const setReseauxFiltersVisible = (visible: boolean) => setSelectedTabId({ tabId: 'reseaux', subTabId: visible ? 'filtres' : null });
 
