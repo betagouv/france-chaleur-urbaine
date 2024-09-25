@@ -24,3 +24,4 @@ allowed_patterns:
 - \/codegouvfr\/react-dsfr\/blob\/.*
 - key\=\{
 version: "1.0"
+- K in keyof T
