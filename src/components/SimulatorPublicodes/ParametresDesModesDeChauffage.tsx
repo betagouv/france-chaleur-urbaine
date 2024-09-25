@@ -17,6 +17,14 @@ type ParametresDesModesDeChauffageFormProps = React.HTMLAttributes<HTMLDivElemen
 const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageFormProps> = ({ children, className, engine, ...props }) => {
   const { has: hasModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
 
+  const hasGaz =
+    hasModeDeChauffage('Gaz à condensation individuel') ||
+    hasModeDeChauffage('Gaz à condensation collectif') ||
+    hasModeDeChauffage('Gaz sans condensation individuel') ||
+    hasModeDeChauffage('Gaz sans condensation collectif');
+  const hasFioul = hasModeDeChauffage('Fioul individuel') || hasModeDeChauffage('Fioul collectif');
+  const hasGranules = hasModeDeChauffage('Chaudière à granulés collective') || hasModeDeChauffage('Poêle à granulés individuel');
+
   return (
     <div {...props}>
       <p>Les valeurs proposées sont des valeurs par défaut. Vous pouvez les modifier ci-dessous.</p>
@@ -36,43 +44,52 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       </Accordion>
 
       <Accordion label="Combustibles (P1)">
-        <Accordion label="Gaz">
-          <Input
-            name="Paramètres économiques . Gaz x Puissance souscrite pour calcul installation collective ou tertiaire"
-            label="Puissance souscrite pour calcul installation collective ou tertiaire"
-          />
-          <Input
-            name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC collectif ou tertiaire"
-            label="Abonnement x Part Fixe TTC collectif ou tertiaire"
-          />
-          <Input
-            name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel"
-            label="Abonnement x Part Fixe TTC individuel"
-          />
-          <Input
-            name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel x Coût distribution HT"
-            label="Abonnement x Part Fixe TTC individuel x Coût distribution HT"
-          />
-          <Input
-            name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel x Coût commerciaux hors CEE HT"
-            label="Abonnement x Part Fixe TTC individuel x Coût commerciaux hors CEE HT"
-          />
-          <Input name="Paramètres économiques . Gaz x Consommation x Part Variable TTC" label="Consommation x Part Variable TTC" />
-          <Input name="Paramètres économiques . Gaz x Coût de la molécule HT" label="Coût de la molécule HT" />
-          <Input name="Paramètres économiques . Gaz x Coût de transport HT" label="Coût de transport HT" />
-          <Input name="Paramètres économiques . Gaz x Coût distribution HT" label="Coût distribution HT" />
-          <Input name="Paramètres économiques . Gaz x Coût des CEE HT" label="Coût des CEE HT" />
-          <Input
-            name="Paramètres économiques . Gaz x Taxe x Part fixe x Contribution tarifaire d'acheminement CTA"
-            label="Taxe x Part fixe x Contribution tarifaire d'acheminement CTA"
-          />
-          <Input name="Paramètres économiques . Gaz x Taxe x Part fixe x TVA" label="Taxe x Part fixe x TVA" />
-          <Input
-            name="Paramètres économiques . Gaz x Taxe x Part variable x Taxe intérieure de consommation sur le gaz naturel TICGN"
-            label="Taxe x Part variable x Taxe intérieure de consommation sur le gaz naturel TICGN"
-          />
-          <Input name="Paramètres économiques . Gaz x Taxe x Part variable x TVA" label="Taxe x Part variable x TVA" />
-        </Accordion>
+        {hasModeDeChauffage('Réseaux de chaleur') && (
+          <Accordion label="Réseaux de chaleur">
+            <Input name="Paramètres économiques . Réseaux chaleur . Coût" label="Coût" />
+            <Input name="Paramètres économiques . Réseaux chaleur . Part fixe" label="Part fixe" />
+            <Input name="Paramètres économiques . Réseaux chaleur . Part variable" label="Part variable" disabled />
+          </Accordion>
+        )}
+        {hasGaz && (
+          <Accordion label="Gaz">
+            <Input
+              name="Paramètres économiques . Gaz x Puissance souscrite pour calcul installation collective ou tertiaire"
+              label="Puissance souscrite pour calcul installation collective ou tertiaire"
+            />
+            <Input
+              name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC collectif ou tertiaire"
+              label="Abonnement x Part Fixe TTC collectif ou tertiaire"
+            />
+            <Input
+              name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel"
+              label="Abonnement x Part Fixe TTC individuel"
+            />
+            <Input
+              name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel x Coût distribution HT"
+              label="Abonnement x Part Fixe TTC individuel x Coût distribution HT"
+            />
+            <Input
+              name="Paramètres économiques . Gaz x Abonnement x Part Fixe TTC individuel x Coût commerciaux hors CEE HT"
+              label="Abonnement x Part Fixe TTC individuel x Coût commerciaux hors CEE HT"
+            />
+            <Input name="Paramètres économiques . Gaz x Consommation x Part Variable TTC" label="Consommation x Part Variable TTC" />
+            <Input name="Paramètres économiques . Gaz x Coût de la molécule HT" label="Coût de la molécule HT" />
+            <Input name="Paramètres économiques . Gaz x Coût de transport HT" label="Coût de transport HT" />
+            <Input name="Paramètres économiques . Gaz x Coût distribution HT" label="Coût distribution HT" />
+            <Input name="Paramètres économiques . Gaz x Coût des CEE HT" label="Coût des CEE HT" />
+            <Input
+              name="Paramètres économiques . Gaz x Taxe x Part fixe x Contribution tarifaire d'acheminement CTA"
+              label="Taxe x Part fixe x Contribution tarifaire d'acheminement CTA"
+            />
+            <Input name="Paramètres économiques . Gaz x Taxe x Part fixe x TVA" label="Taxe x Part fixe x TVA" />
+            <Input
+              name="Paramètres économiques . Gaz x Taxe x Part variable x Taxe intérieure de consommation sur le gaz naturel TICGN"
+              label="Taxe x Part variable x Taxe intérieure de consommation sur le gaz naturel TICGN"
+            />
+            <Input name="Paramètres économiques . Gaz x Taxe x Part variable x TVA" label="Taxe x Part variable x TVA" />
+          </Accordion>
+        )}
         <Accordion label="Électricité">
           <Select name="Paramètres économiques . Electricité x Option tarifaire" label="Option tarifaire" />
           <Input name="Paramètres économiques . Electricité x Puissance souscrite indiv" label="Puissance souscrite indiv" />
@@ -104,26 +121,27 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
           />
           <Input name="Paramètres économiques . Electricité x Taxe . Part Variable x TVA" label="Part variable - TVA" />
         </Accordion>
-        <Accordion label="Granulés">
-          <Select name="Paramètres économiques . Granulés . Type de conditionnement" label="Type de conditionnement" />
-          <Input name="Paramètres économiques . Granulés . Prix pour les granulés" label="Prix pour les granulés" />
-          <Input name="Paramètres économiques . Granulés . TVA" label="TVA" />
-        </Accordion>
-        <Accordion label="Fioul">
-          <Input name="Paramètres économiques . Fioul . Prix livraison incluse" label="Prix livraison incluse" />
-          <Input name="Paramètres économiques . Fioul . TVA" label="TVA" />
-          <Input name="Paramètres économiques . Fioul . TICPE" label="TICPE" />
-        </Accordion>
-        <Accordion label="Réseaux de chaleur RCU">
-          <Input name="Paramètres économiques . Réseaux chaleur . Coût" label="Coût" />
-          <Input name="Paramètres économiques . Réseaux chaleur . Part fixe" label="Part fixe" />
-          <Input name="Paramètres économiques . Réseaux chaleur . Part variable" label="Part variable" disabled />
-        </Accordion>
-        <Accordion label="Réseaux de froid RFU">
-          <Input name="Paramètres économiques . Réseaux froid . Coût" label="Coût" />
-          <Input name="Paramètres économiques . Réseaux froid . Part fixe" label="Part fixe" />
-          <Input name="Paramètres économiques . Réseaux froid . Part variable" label="Part variable" disabled />
-        </Accordion>
+        {hasGranules && (
+          <Accordion label="Granulés">
+            <Select name="Paramètres économiques . Granulés . Type de conditionnement" label="Type de conditionnement" />
+            <Input name="Paramètres économiques . Granulés . Prix pour les granulés" label="Prix pour les granulés" />
+            <Input name="Paramètres économiques . Granulés . TVA" label="TVA" />
+          </Accordion>
+        )}
+        {hasFioul && (
+          <Accordion label="Fioul">
+            <Input name="Paramètres économiques . Fioul . Prix livraison incluse" label="Prix livraison incluse" />
+            <Input name="Paramètres économiques . Fioul . TVA" label="TVA" />
+            <Input name="Paramètres économiques . Fioul . TICPE" label="TICPE" />
+          </Accordion>
+        )}
+        {hasModeDeChauffage('Réseaux de froid') && (
+          <Accordion label="Réseaux de froid">
+            <Input name="Paramètres économiques . Réseaux froid . Coût" label="Coût" />
+            <Input name="Paramètres économiques . Réseaux froid . Part fixe" label="Part fixe" />
+            <Input name="Paramètres économiques . Réseaux froid . Part variable" label="Part variable" disabled />
+          </Accordion>
+        )}
       </Accordion>
 
       <Accordion label="Petit entretien (P2)">
