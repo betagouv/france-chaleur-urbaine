@@ -183,7 +183,11 @@ const BuildingsDataExtractionTool: React.FC = () => {
           <Title>Extraire des données sur les bâtiments</Title>
 
           <Text size="xs" fontStyle="italic">
-            Cliquez sur au moins 3 points de la carte afin d’extraire les données des bâtiments se trouvant dans la zone.
+            Vous pouvez extraire les adresses et nombre de logements des bâtiments à chauffage collectif gaz ou fioul, ainsi que les
+            consommations de gaz à l'adresse, sur la zone de votre choix.
+            <br />
+            Pour définir une zone, cliquez sur au moins 3 points sur la carte. Double-cliquez sur le dernier point ou appuyez sur la touche
+            entrée pour finaliser la zone.
           </Text>
         </Box>
 
