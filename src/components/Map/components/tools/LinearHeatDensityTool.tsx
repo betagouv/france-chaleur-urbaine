@@ -244,7 +244,7 @@ const LinearHeatDensityTool: React.FC = () => {
             Définissez un tracé en cliquant sur deux points ou plus.
           </Text>
         </Box>
-        <Divider />
+        <Divider my="1v" />
 
         {isLoading && (
           <Box display="grid" placeContent="center">

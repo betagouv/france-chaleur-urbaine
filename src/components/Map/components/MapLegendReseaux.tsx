@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 
 import Hoverable from '@components/Hoverable';
 import { batimentsRaccordesLayerMaxOpacity } from '@components/Map/map-layers';
-import { LegendSeparator } from '@components/Map/Map.style';
 import Box from '@components/ui/Box';
+import Divider from '@components/ui/Divider';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
@@ -249,7 +249,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
 
       {enabledFeatures.includes('reseauxDeFroid') && (
         <>
-          <LegendSeparator />
+          <Divider />
           <Box display="flex" mb="2w">
             <SingleCheckbox
               name="reseauxDeFroid"

@@ -1,7 +1,7 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 
-import { LegendSeparator } from '@components/Map/Map.style';
 import Accordion from '@components/ui/Accordion';
+import Divider from '@components/ui/Divider';
 import useFCUMap from '@hooks/useFCUMap';
 import { FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
@@ -48,7 +48,7 @@ function ReseauxDeChaleurFilters() {
           ))}
         </DeactivatableBox>
       </Accordion>
-      <LegendSeparator />
+      <Divider />
 
       <RangeFilter
         label="Taux d’EnR&R"
@@ -57,7 +57,7 @@ function ReseauxDeChaleurFilters() {
         onChange={updateScaleInterval('reseauxDeChaleur.tauxENRR')}
         unit="%"
       />
-      <LegendSeparator />
+      <Divider />
       <RangeFilter
         label="Émissions de CO2"
         domain={mapConfiguration.reseauxDeChaleur.limits.emissionsCO2}
@@ -66,7 +66,7 @@ function ReseauxDeChaleurFilters() {
         unit="gCO2/kWh"
         tooltip="Émissions en analyse du cycle de vie (directes et indirectes)"
       />
-      <LegendSeparator />
+      <Divider />
       <RangeFilter
         label="Prix moyen de la chaleur"
         domain={mapConfiguration.reseauxDeChaleur.limits.prixMoyen}
@@ -75,7 +75,7 @@ function ReseauxDeChaleurFilters() {
         unit="€TTC/MWh"
         tooltip="La comparaison avec le prix d'autres modes de chauffage n’est pertinente qu’en coût global annuel, en intégrant les coûts d’exploitation, de maintenance et d’investissement, amortis sur la durée de vie des installations."
       />
-      <LegendSeparator />
+      <Divider />
       <RangeFilter
         label="Livraisons annuelles de chaleur"
         domain={mapConfiguration.reseauxDeChaleur.limits.livraisonsAnnuelles}
@@ -87,7 +87,7 @@ function ReseauxDeChaleurFilters() {
         }}
         unit="GWh"
       />
-      <LegendSeparator />
+      <Divider />
       <RangeFilter
         label="Année de construction"
         domain={mapConfiguration.reseauxDeChaleur.limits.anneeConstruction}

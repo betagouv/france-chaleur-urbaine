@@ -138,11 +138,6 @@ export const LegendContainer = styled.div<{
   ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
 `;
 
-export const LegendSeparator = styled.div`
-  border: 1px solid #e1e1e1;
-  margin: 16px 8px;
-`;
-
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
   padding: 0 0 0 22px;
