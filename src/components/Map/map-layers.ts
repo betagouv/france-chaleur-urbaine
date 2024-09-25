@@ -1244,6 +1244,11 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
     ['==', ['get', 'is_zone'], false],
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
   ]);
+
+  setLayerVisibility('distance-measurements-labels', config.mesureDistance);
+  setLayerVisibility('distance-measurements-lines', config.mesureDistance);
+  setLayerVisibility('linear-heat-density-labels', config.densiteThermiqueLineaire);
+  setLayerVisibility('linear-heat-density-lines', config.densiteThermiqueLineaire);
 }
 
 type ReseauxDeChaleurFilter = {

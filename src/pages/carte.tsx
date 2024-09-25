@@ -49,7 +49,11 @@ const Carte = () => {
         .filter((key) => layerURLKeys.includes(key as LayerURLKey))
         .map((key) => layerURLKeysToMapConfigPath[key as LayerURLKey])
     : [];
-  const initialMapConfiguration = createMapConfiguration(defaultMapConfiguration);
+  const initialMapConfiguration = createMapConfiguration({
+    ...defaultMapConfiguration,
+    densiteThermiqueLineaire: true,
+    mesureDistance: true,
+  });
   additionalLayers.forEach((updateKey) => {
     setProperty(initialMapConfiguration, updateKey, true);
   });
