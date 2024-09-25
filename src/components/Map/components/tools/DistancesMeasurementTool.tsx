@@ -167,7 +167,7 @@ const DistancesMeasurementTool: React.FC = () => {
     <>
       <Box display="flex" flexDirection="column" gap="16px">
         <Box>
-          <Title>Calculer une distance</Title>
+          <Title>Mesurer une distance</Title>
 
           <Text size="xs" fontStyle="italic">
             Cliquez sur au moins 2 points de la carte afin d’en connaitre la distance à vol d’oiseau.

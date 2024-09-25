@@ -652,7 +652,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   iconId="ri-ruler-line"
                   onClick={() => setSelectedTabId({ tabId: 'outils', subTabId: 'mesure-distance' })}
                 >
-                  Calculer une distance
+                  Mesurer une distance
                 </Button>
                 <Button
                   priority="secondary"
