@@ -1,6 +1,7 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import { DrawCreateEvent, DrawModeChangeEvent } from '@mapbox/mapbox-gl-draw';
+import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
 import { Tooltip } from '@mui/material';
+import { useKeyboardEvent } from '@react-hookz/web';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
@@ -56,13 +57,6 @@ type LinearHeatDensity = {
 const featuresAtom = atom<MeasureFeature[]>([]);
 const densiteAtom = atom<LinearHeatDensity | null>(null);
 
-/**
- * This flag allows us to know if the user pressed the escape key.
- * In that case, only the callback onDrawModeChange is called, otherwise onDrawCreate is called juste before.
- * We use it to detect if we must clear the draw.
- */
-let mayHaveClearedTheDrawWithEscape = true;
-
 const LinearHeatDensityTool: React.FC = () => {
   const { heatNetworkService } = useServices();
   const { mapLayersLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
@@ -83,7 +77,6 @@ const LinearHeatDensityTool: React.FC = () => {
     const feature = drawFeatures[0] as MeasureFeature;
     mapDraw.deleteAll();
     setIsDrawing(false);
-    mayHaveClearedTheDrawWithEscape = false;
 
     const features = featuresRef.current; // get latest features as the ref keeps the up-to-date value
     // update the last feature keeping its color
@@ -171,20 +164,17 @@ const LinearHeatDensityTool: React.FC = () => {
     });
   };
 
-  // handle the esc key to quit drawing mode
-  const onDrawModeChange = ({ mode }: DrawModeChangeEvent) => {
-    if (!mapDraw) {
-      return;
-    }
-    if (mode === 'simple_select') {
-      mapDraw.deleteAll();
-      if (mayHaveClearedTheDrawWithEscape) {
+  // handle the esc key to quit drawing mode (run after the draw.modechange event)
+  useKeyboardEvent(
+    'Escape',
+    () => {
+      if (isDrawing) {
         cancelMeasurement();
       }
-      setIsDrawing(false);
-      mayHaveClearedTheDrawWithEscape = true;
-    }
-  };
+    },
+    [],
+    { event: 'keyup' }
+  );
 
   useEffect(() => {
     if (!mapLayersLoaded) {
@@ -194,12 +184,10 @@ const LinearHeatDensityTool: React.FC = () => {
 
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
-    map.on('draw.modechange', onDrawModeChange);
 
     return () => {
       map.off('draw.create', onDrawCreate);
       map.off('draw.render', onDrawRender);
-      map.off('draw.modechange', onDrawModeChange);
 
       // clear the feature being drawn
       mapDraw.deleteAll();
@@ -217,7 +205,6 @@ const LinearHeatDensityTool: React.FC = () => {
   function startMeasurement() {
     mapDraw?.changeMode('draw_line_string');
     setIsDrawing(true);
-    mayHaveClearedTheDrawWithEscape = true;
   }
   function cancelMeasurement() {
     mapDraw?.deleteAll();

@@ -1,5 +1,6 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import { DrawCreateEvent, DrawModeChangeEvent } from '@mapbox/mapbox-gl-draw';
+import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import { useKeyboardEvent } from '@react-hookz/web';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
@@ -24,13 +25,6 @@ const featureColorPalette = ['#000091', '#8e44ad', '#2980b9', '#27ae60', '#c0392
 
 const featuresAtom = atom<MeasureFeature[]>([]);
 
-/**
- * This flag allows us to know if the user pressed the escape key.
- * In that case, only the callback onDrawModeChange is called, otherwise onDrawCreate is called juste before.
- * We use it to detect if we must clear the draw.
- */
-let mayHaveClearedTheDrawWithEscape = true;
-
 const DistancesMeasurementTool: React.FC = () => {
   const { mapLayersLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
@@ -43,7 +37,6 @@ const DistancesMeasurementTool: React.FC = () => {
     const feature = drawFeatures[0] as MeasureFeature;
     mapDraw.deleteAll();
     setIsDrawing(false);
-    mayHaveClearedTheDrawWithEscape = false;
 
     // update the last feature keeping its color
     setFeatures((features) => {
@@ -100,20 +93,17 @@ const DistancesMeasurementTool: React.FC = () => {
     });
   };
 
-  // handle the esc key to quit drawing mode
-  const onDrawModeChange = ({ mode }: DrawModeChangeEvent) => {
-    if (!mapDraw) {
-      return;
-    }
-    if (mode === 'simple_select') {
-      mapDraw.deleteAll();
-      if (mayHaveClearedTheDrawWithEscape) {
+  // handle the esc key to quit drawing mode (run after the draw.modechange event)
+  useKeyboardEvent(
+    'Escape',
+    () => {
+      if (isDrawing) {
         cancelMeasurement();
       }
-      setIsDrawing(false);
-      mayHaveClearedTheDrawWithEscape = true;
-    }
-  };
+    },
+    [],
+    { event: 'keyup' }
+  );
 
   useEffect(() => {
     if (!mapLayersLoaded) {
@@ -123,12 +113,10 @@ const DistancesMeasurementTool: React.FC = () => {
 
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
-    map.on('draw.modechange', onDrawModeChange);
 
     return () => {
       map.off('draw.create', onDrawCreate);
       map.off('draw.render', onDrawRender);
-      map.off('draw.modechange', onDrawModeChange);
 
       // clear the feature being drawn
       mapDraw.deleteAll();
@@ -163,7 +151,6 @@ const DistancesMeasurementTool: React.FC = () => {
   function startMeasurement() {
     mapDraw?.changeMode('draw_line_string');
     setIsDrawing(true);
-    mayHaveClearedTheDrawWithEscape = true;
   }
   function cancelMeasurement() {
     mapDraw?.deleteAll();

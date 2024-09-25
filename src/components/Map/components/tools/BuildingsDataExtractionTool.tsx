@@ -1,6 +1,7 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@codegouvfr/react-dsfr/Button';
-import { DrawCreateEvent, DrawModeChangeEvent } from '@mapbox/mapbox-gl-draw';
+import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import { useKeyboardEvent } from '@react-hookz/web';
 import turfArea from '@turf/area';
 import { Map } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
@@ -39,16 +40,9 @@ type BuildingsDataExtractSummary = {
   longueurRéseauxDeChaleur: number;
 };
 
-/**
- * This flag allows us to know if the user pressed the escape key.
- * In that case, only the callback onDrawModeChange is called, otherwise onDrawCreate is called juste before.
- * We use it to detect if we must clear the draw.
- */
-let mayHaveClearedTheDrawWithEscape = true;
-
 const BuildingsDataExtractionTool: React.FC = () => {
   const { heatNetworkService } = useServices();
-  const { mapLoaded, mapRef, mapDraw, setIsDrawing } = useFCUMap();
+  const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [area, setArea] = useState<GeoJSON.Position[] | null>(null);
   const [areaSize, setAreaSize] = useState<number>(0);
   const areaSizeRef = useRef(areaSize);
@@ -65,7 +59,6 @@ const BuildingsDataExtractionTool: React.FC = () => {
       return;
     }
     setIsDrawing(false);
-    mayHaveClearedTheDrawWithEscape = false;
     // always only 1 feature
     const feature = drawFeatures[0] as GeoJSON.Feature<GeoJSON.Polygon>;
     const area = feature.geometry.coordinates[0];
@@ -127,18 +120,17 @@ const BuildingsDataExtractionTool: React.FC = () => {
     mapDraw.setFeatureProperty(featureBeingDrawn.id as string, 'isValid', isPolygonValid);
   };
 
-  // handle the esc key to quit drawing mode
-  const onDrawModeChange = ({ mode }: DrawModeChangeEvent) => {
-    if (!mapDraw) {
-      return;
-    }
-    if (mode === 'simple_select') {
-      setIsDrawing(false);
-    }
-    if (mayHaveClearedTheDrawWithEscape) {
-      clearSummary();
-    }
-  };
+  // handle the esc key to quit drawing mode (run after the draw.modechange event)
+  useKeyboardEvent(
+    'Escape',
+    () => {
+      if (isDrawing) {
+        clearSummary();
+      }
+    },
+    [],
+    { event: 'keyup' }
+  );
 
   const clearSummary = () => {
     if (!mapDraw) {
@@ -149,7 +141,6 @@ const BuildingsDataExtractionTool: React.FC = () => {
     mapDraw.changeMode('draw_polygon');
     setIsDrawing(true);
     setArea(null);
-    mayHaveClearedTheDrawWithEscape = true;
   };
 
   const exportSummary = async () => {
@@ -168,14 +159,12 @@ const BuildingsDataExtractionTool: React.FC = () => {
     configureSourcesAndLayers(map);
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
-    map.on('draw.modechange', onDrawModeChange);
     mapDraw.changeMode('draw_polygon');
     setIsDrawing(true);
 
     return () => {
       map.off('draw.create', onDrawCreate);
       map.off('draw.render', onDrawRender);
-      map.off('draw.modechange', onDrawModeChange);
 
       // clear the feature being drawn
       mapDraw.deleteAll();
