@@ -44,8 +44,6 @@ import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
-// FIXME supprimer composant après intégration à la sidebar
-// import ZoneInfos from './components/SummaryBoxes';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
@@ -743,12 +741,6 @@ const Map = ({
             )}
           </>
         )}
-        {/* FIXME: à supprimer et déplacer dans le menu */}
-        {/* {withDrawing && mapRef.current && mapDraw && (
-          <MapControlWrapper legendCollapsed={legendCollapsed}>
-            <ZoneInfos map={mapRef.current} draw={mapDraw} setDrawing={setDrawing} drawing={drawing} />
-          </MapControlWrapper>
-        )} */}
         <MapProvider>
           <MapReactGL
             initialViewState={initialViewState}

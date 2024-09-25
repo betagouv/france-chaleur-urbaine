@@ -929,26 +929,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
         )}
         <DevModeIcon />
       </Tabs>
-      {/* <Box display="flex" alignItems="center">
-        <Text fontSize="14px" lineHeight="18px" fontWeight="bold" ml="1w" className="fr-col">
-          {legendTitle || 'Réseaux de chaleur et de froid'}
-        </Text>
-
-        <Button
-          className="fr-px-1w"
-          priority="tertiary no outline"
-          size="small"
-          onClick={() => toggleSectionExpansion('reseauxDeChaleur')}
-          aria-expanded={!!sectionsExpansions['reseauxDeChaleur']}
-          aria-controls={'reseauxDeChaleur'}
-          title="Afficher/Masquer le détail"
-        >
-          <Icon riSize="1x" name="ri-equalizer-line" />
-        </Button>
-      </Box> */}
-      {/* <CollapsibleBox id="reseauxDeChaleur" expand={!!sectionsExpansions['reseauxDeChaleur']}>
-        <LegendSeparator />
-      </CollapsibleBox> */}
     </Box>
   );
 }
