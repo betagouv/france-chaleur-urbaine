@@ -64,7 +64,7 @@ const PublicodesSimulatorPlaceholder: React.FC<PublicodesSimulatorPlaceholderPro
         <header>
           <PublicodesSimulatorTitle />
           <ToggleSwitch
-            label="Mode&nbsp;pro"
+            label="Mode&nbsp;avancé"
             labelPosition="left"
             inputTitle="Mode Pro"
             showCheckedHint={false}
