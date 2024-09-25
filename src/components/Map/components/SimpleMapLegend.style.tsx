@@ -252,7 +252,7 @@ type TrackableCheckableAccordionProps = Omit<
   layerName: MapConfigurationProperty<boolean>;
 };
 
-export const Title = styled(Heading).attrs({ as: 'h2', mb: '1w' })`
+export const Title = styled(Heading).attrs({ as: 'h2' })`
   font-size: 1.1rem;
   line-height: 1.5rem;
   margin-bottom: 1rem;

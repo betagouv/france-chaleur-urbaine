@@ -8,7 +8,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 import useFCUMap from '@hooks/useFCUMap';
 import { validatePolygonGeometry } from '@utils/geo';
@@ -16,6 +15,8 @@ import { clientConfig } from 'src/client-config';
 import { useServices } from 'src/services';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { GasSummary } from 'src/types/Summary/Gas';
+
+import { Title } from '../SimpleMapLegend.style';
 
 export type AreaSummaryFeature = GeoJSON.Feature<GeoJSON.Polygon> & {
   id: string;
@@ -179,9 +180,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
     <>
       <Box display="flex" flexDirection="column" gap="16px">
         <Box>
-          <Heading as="h6" mb="1w">
-            Extraire des données sur les bâtiments
-          </Heading>
+          <Title>Extraire des données sur les bâtiments</Title>
 
           <Text size="xs" fontStyle="italic">
             Cliquez sur au moins 3 points de la carte afin d’extraire les données des bâtiments se trouvant dans la zone.
