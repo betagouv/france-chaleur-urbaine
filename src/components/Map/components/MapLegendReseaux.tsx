@@ -7,11 +7,11 @@ import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
-import useFCUMap from '@hooks/useFCUMap';
 import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
 
 import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
 import { InfoIcon, SingleCheckbox, Title } from './SimpleMapLegend.style';
+import useFCUMap from '../MapProvider';
 
 export const mapLegendFeatures = [
   'reseauxDeChaleur',

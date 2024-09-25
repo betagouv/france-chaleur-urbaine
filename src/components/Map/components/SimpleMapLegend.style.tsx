@@ -7,7 +7,6 @@ import styled, { css } from 'styled-components';
 import Box from '@components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@components/ui/CheckableAccordion';
 import Heading from '@components/ui/Heading';
-import useFCUMap from '@hooks/useFCUMap';
 import IconEnrr from '@public/icons/enrr.svg';
 import IconOutils from '@public/icons/outils.svg';
 import IconPotentiel from '@public/icons/potentiel.svg';
@@ -15,6 +14,8 @@ import IconReseaux from '@public/icons/reseaux.svg';
 import cx from '@utils/cx';
 import { LegendTrackingEvent, trackEvent } from 'src/services/analytics';
 import { MapConfigurationProperty, type MapConfiguration } from 'src/services/Map/map-configuration';
+
+import useFCUMap from '../MapProvider';
 
 const StyledDSFRCheckbox = styled.div<{
   checked: boolean;

@@ -7,9 +7,9 @@ import { Map } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
+import useFCUMap from '@components/Map/MapProvider';
 import Box from '@components/ui/Box';
 import Text from '@components/ui/Text';
-import useFCUMap from '@hooks/useFCUMap';
 import { validatePolygonGeometry } from '@utils/geo';
 import { clientConfig } from 'src/client-config';
 import { useServices } from 'src/services';

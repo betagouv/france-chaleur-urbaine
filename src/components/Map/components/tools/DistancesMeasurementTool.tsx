@@ -9,10 +9,10 @@ import { GeoJSONSource } from 'maplibre-gl';
 import { Fragment, useEffect } from 'react';
 
 import { MapSourceLayersSpecification } from '@components/Map/map-layers';
+import useFCUMap from '@components/Map/MapProvider';
 import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
 import Text from '@components/ui/Text';
-import useFCUMap from '@hooks/useFCUMap';
 import { formatDistance } from '@utils/geo';
 
 import { MeasureFeature, MeasureLabelFeature } from './measure';

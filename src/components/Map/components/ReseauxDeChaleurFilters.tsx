@@ -2,11 +2,11 @@ import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 
 import Accordion from '@components/ui/Accordion';
 import Divider from '@components/ui/Divider';
-import useFCUMap from '@hooks/useFCUMap';
 import { FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
 import RangeFilter from './RangeFilter';
 import { DeactivatableBox } from './SimpleMapLegend.style';
+import useFCUMap from '../MapProvider';
 
 function ReseauxDeChaleurFilters() {
   const { mapConfiguration, setMapConfiguration, updateScaleInterval } = useFCUMap();

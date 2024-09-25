@@ -25,7 +25,6 @@ import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
-import useFCUMap from '@hooks/useFCUMap';
 import useRouterReady from '@hooks/useRouterReady';
 import { useServices } from 'src/services';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
@@ -59,6 +58,7 @@ import {
   MapStyle,
   legendWidth,
 } from './Map.style';
+import useFCUMap, { FCUMapContextProvider } from './MapProvider';
 import satelliteConfig from './satellite.config.json';
 import { MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
 
@@ -131,26 +131,7 @@ type ViewState = {
   zoom: number;
 };
 
-const Map = ({
-  withoutLogo,
-  withLegend,
-  withHideLegendSwitch,
-  withBorder,
-  legendTitle,
-  initialMapConfiguration,
-  enabledLegendFeatures,
-  withCenterPin,
-  noPopup,
-  legendLogoOpt,
-  popupType = MapPopupType.DEFAULT,
-  pinsList,
-  initialCenter,
-  initialZoom,
-  geolocDisabled,
-  withFCUAttribution,
-  persistViewStateInURL,
-  mapRef: mapRefParam,
-}: {
+type MapProps = {
   withoutLogo?: boolean;
   initialMapConfiguration?: MapConfiguration;
   enabledLegendFeatures?: MapLegendFeature[];
@@ -169,9 +150,37 @@ const Map = ({
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
   mapRef?: MutableRefObject<MapRef>;
-}) => {
+};
+
+const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
+  return (
+    <FCUMapContextProvider initialMapConfiguration={initialMapConfiguration}>
+      <InternalMap {...props} />
+    </FCUMapContextProvider>
+  );
+};
+
+const InternalMap = ({
+  withoutLogo,
+  withLegend,
+  withHideLegendSwitch,
+  withBorder,
+  legendTitle,
+  enabledLegendFeatures,
+  withCenterPin,
+  noPopup,
+  legendLogoOpt,
+  popupType = MapPopupType.DEFAULT,
+  pinsList,
+  initialCenter,
+  initialZoom,
+  geolocDisabled,
+  withFCUAttribution,
+  persistViewStateInURL,
+  mapRef: mapRefParam,
+}: MapProps) => {
   const router = useRouter();
-  const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap(initialMapConfiguration);
+  const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap();
 
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();

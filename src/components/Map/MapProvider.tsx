@@ -1,6 +1,5 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { atom, useAtom, useSetAtom, WritableAtom } from 'jotai';
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { MapRef } from 'react-map-gl/maplibre';
 
 import { type ReseauxDeChaleurLimits } from '@components/Map/map-layers';
@@ -14,20 +13,12 @@ import {
   MaybeEmptyMapConfiguration,
 } from 'src/services/Map/map-configuration';
 
-export const mapRefAtom = atom<MapRef | null>(null);
-export const mapDrawAtom = atom<MapboxDraw | null>(null);
-export const isDrawingAtom = atom<boolean>(false);
-export const mapLayersLoadedAtom = atom<boolean>(false);
-export const mapConfigurationAtom = atom<MapConfiguration>(defaultMapConfiguration);
-
-type SetAtom<T extends WritableAtom<unknown, never[], unknown>> = ReturnType<typeof useSetAtom<T>>;
-
 type UseFCUMapResult = {
-  setMapRef: SetAtom<typeof mapRefAtom>;
-  setMapDraw: SetAtom<typeof mapDrawAtom>;
-  setIsDrawing: SetAtom<typeof isDrawingAtom>;
-  setMapLayersLoaded: SetAtom<typeof mapLayersLoadedAtom>;
-  setMapConfiguration: SetAtom<typeof mapConfigurationAtom>;
+  setMapRef: React.Dispatch<React.SetStateAction<MapRef | null>>;
+  setMapDraw: React.Dispatch<React.SetStateAction<MapboxDraw | null>>;
+  setIsDrawing: React.Dispatch<React.SetStateAction<boolean>>;
+  setMapLayersLoaded: React.Dispatch<React.SetStateAction<boolean>>;
+  setMapConfiguration: React.Dispatch<React.SetStateAction<MapConfiguration>>;
   mapConfiguration: MapConfiguration;
   toggleLayer: (property: MapConfigurationProperty<boolean>) => void;
   updateScaleInterval: (property: MapConfigurationProperty<Interval>) => (interval: Interval) => void;
@@ -41,15 +32,21 @@ type UseFCUMapResult = {
       isDrawing: boolean;
     }
 );
+
+const MapContext = createContext<UseFCUMapResult | undefined>(undefined);
+
 /**
- * This hooks waits for the map to be initialized before returning non-null values.
+ * This context provider waits for the map to be initialized before returning non-null values.
  */
-const useFCUMap = (initialMapConfiguration?: MaybeEmptyMapConfiguration): UseFCUMapResult => {
-  const [mapRef, setMapRef] = useAtom(mapRefAtom);
-  const [mapDraw, setMapDraw] = useAtom(mapDrawAtom);
-  const [isDrawing, setIsDrawing] = useAtom(isDrawingAtom);
-  const [mapLayersLoaded, setMapLayersLoaded] = useAtom(mapLayersLoadedAtom);
-  const [mapConfiguration, setMapConfiguration] = useAtom(mapConfigurationAtom);
+export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMapConfiguration?: MaybeEmptyMapConfiguration }>> = ({
+  children,
+  initialMapConfiguration,
+}) => {
+  const [mapRef, setMapRef] = React.useState<MapRef | null>(null);
+  const [mapDraw, setMapDraw] = React.useState<MapboxDraw | null>(null);
+  const [isDrawing, setIsDrawing] = React.useState(false);
+  const [mapLayersLoaded, setMapLayersLoaded] = React.useState(false);
+  const [mapConfiguration, setMapConfiguration] = React.useState<MapConfiguration>(defaultMapConfiguration);
 
   React.useEffect(() => {
     if (!initialMapConfiguration) {
@@ -92,25 +89,34 @@ const useFCUMap = (initialMapConfiguration?: MaybeEmptyMapConfiguration): UseFCU
     updateScaleInterval,
   };
 
-  if (!isDefined(mapRef) || !isDefined(mapDraw)) {
-    return {
-      ...commonValues,
-      mapLoaded: false,
-      mapLayersLoaded: false,
-      mapRef: null,
-      mapDraw: null,
-      isDrawing: false,
-    };
-  }
+  const contextValue: UseFCUMapResult =
+    !isDefined(mapRef) || !isDefined(mapDraw)
+      ? {
+          ...commonValues,
+          mapLoaded: false,
+          mapLayersLoaded: false,
+          mapRef: null,
+          mapDraw: null,
+          isDrawing: false,
+        }
+      : {
+          ...commonValues,
+          mapLoaded: true,
+          mapLayersLoaded,
+          mapRef,
+          mapDraw,
+          isDrawing,
+        };
 
-  return {
-    ...commonValues,
-    mapLoaded: true,
-    mapLayersLoaded,
-    mapRef,
-    mapDraw,
-    isDrawing,
-  };
+  return <MapContext.Provider value={contextValue}>{children}</MapContext.Provider>;
+};
+
+export const useFCUMap = (): UseFCUMapResult => {
+  const context = useContext(MapContext);
+  if (context === undefined) {
+    throw new Error('useFCUMap must be used within a MapProvider');
+  }
+  return context;
 };
 
 export default useFCUMap;

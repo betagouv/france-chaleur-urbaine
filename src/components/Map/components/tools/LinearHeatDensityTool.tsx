@@ -11,11 +11,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { MapSourceLayersSpecification } from '@components/Map/map-layers';
+import useFCUMap from '@components/Map/MapProvider';
 import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
-import useFCUMap from '@hooks/useFCUMap';
 import { downloadObject } from '@utils/browser';
 import { formatAsISODate } from '@utils/date';
 import { formatDistance } from '@utils/geo';

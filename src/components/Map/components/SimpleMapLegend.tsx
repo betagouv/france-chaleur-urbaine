@@ -15,7 +15,6 @@ import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
-import useFCUMap from '@hooks/useFCUMap';
 import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from 'src/services/Map/businessRules';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
@@ -41,6 +40,7 @@ import {
 import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
 import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
+import useFCUMap from '../MapProvider';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
