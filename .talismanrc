@@ -26,4 +26,7 @@ allowed_patterns:
 - \/codegouvfr\/react-dsfr\/blob\/.*
 - key\=\{
 - K in keyof T
-version: "1.0"
+- key=
+- key,
+- \[key\]
+version: '1.0'

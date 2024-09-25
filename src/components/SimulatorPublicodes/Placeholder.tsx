@@ -1,8 +1,10 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import Badge from '@codegouvfr/react-dsfr/Badge';
-import { Tabs } from '@codegouvfr/react-dsfr/Tabs';
+import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import React from 'react';
 
+import Accordion from '@components/ui/Accordion';
+import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import cx from '@utils/cx';
 
@@ -34,11 +36,15 @@ export const PublicodesSimulatorTitle = () => {
 export const simulatorTabs = [
   {
     tabId: 'batiment',
-    label: 'Bâtiment',
+    label: '1. Paramètres du bâtiment',
   },
   {
     tabId: 'modes-de-chauffage',
-    label: 'Modes de chauffage et de refroidissement',
+    label: '2. Modes de chauffage et de refroidissement à comparer',
+  },
+  {
+    tabId: 'parametres-modes-de-chauffage',
+    label: '3. Paramètres des modes de chauffage et de refroidissement',
   },
 ] as const;
 
@@ -57,17 +63,27 @@ const PublicodesSimulatorPlaceholder: React.FC<PublicodesSimulatorPlaceholderPro
       <Section>
         <header>
           <PublicodesSimulatorTitle />
+          <ToggleSwitch
+            label="Mode&nbsp;pro"
+            labelPosition="left"
+            inputTitle="Mode Pro"
+            showCheckedHint={false}
+            checked={false}
+            disabled
+            className={fr.cx('fr-mt-0')}
+            onChange={() => {
+              // Nothing to do as it's for loading state only
+            }}
+          />
         </header>
         <Simulator $loading={true}>
-          <div>
-            <Tabs
-              tabs={simulatorTabs.map((tab) => ({
-                tabId: tab.tabId,
-                label: <small>{tab.label}</small>,
-                content: <p>Chargement...</p>,
-              }))}
-            />
-          </div>
+          <Box display="flex" gap="16px" flexDirection="column">
+            {simulatorTabs.map((tab) => (
+              <Accordion key={tab.tabId} bordered label={tab.label}>
+                Chargement...
+              </Accordion>
+            ))}
+          </Box>
           <Results>
             <ResultsNotAvailable />
           </Results>
