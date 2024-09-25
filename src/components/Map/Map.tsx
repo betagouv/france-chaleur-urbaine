@@ -716,12 +716,10 @@ const Map = ({
       <div className="map-wrap">
         {withLegend && (
           <>
-            {!withHideLegendSwitch && (
-              <CollapseLegend legendCollapsed={legendCollapsed} onClick={() => setLegendCollapsed(!legendCollapsed)}>
-                <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-                <Icon size="lg" name={legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'} />
-              </CollapseLegend>
-            )}
+            <CollapseLegend legendCollapsed={legendCollapsed} onClick={() => setLegendCollapsed(!legendCollapsed)}>
+              <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
+              <Icon size="lg" name={legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'} />
+            </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
               <LegendContainer withoutLogo={withoutLogo}>
                 <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
@@ -781,42 +779,44 @@ const Map = ({
                 />
               ))}
           </MapReactGL>
-          <MapSearchWrapper legendCollapsed={legendCollapsed}>
-            <MapSearchInputWrapper>
-              {withHideLegendSwitch && <Icon size="md" name="fr-icon-menu-fill" onClick={() => setLegendCollapsed(!legendCollapsed)} />}
-              <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-            </MapSearchInputWrapper>
+          {withLegend && (
+            <MapSearchWrapper legendCollapsed={legendCollapsed}>
+              <MapSearchInputWrapper>
+                {withHideLegendSwitch && <Icon size="md" name="fr-icon-menu-fill" onClick={() => setLegendCollapsed(!legendCollapsed)} />}
+                <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+              </MapSearchInputWrapper>
 
-            {soughtAddresses.length > 0 && (
-              <Accordion
-                className="fr-mt-1v"
-                label={
-                  <>
-                    {soughtAddresses.length} adresse{soughtAddresses.length > 1 ? 's' : ''} recherchée
-                    {soughtAddresses.length > 1 ? 's' : ''}
-                  </>
-                }
-                simple
-                small
-                expanded={soughtAddressesVisible}
-                onExpandedChange={setSoughtAddressesVisible}
-              >
-                <Box display="flex" flexDirection="column" gap={'8px'}>
-                  {soughtAddresses.map((soughtAddress, index) => (
-                    <CardSearchDetails
-                      key={soughtAddress.id}
-                      address={soughtAddress}
-                      onClick={jumpTo}
-                      onClickClose={removeSoughtAddresses}
-                      onContacted={markAddressAsContacted}
-                      expanded={selectedCardIndex === index}
-                      setExpanded={(expanded) => setSelectedCardIndex(expanded ? index : -1)}
-                    />
-                  ))}
-                </Box>
-              </Accordion>
-            )}
-          </MapSearchWrapper>
+              {soughtAddresses.length > 0 && (
+                <Accordion
+                  className="fr-mt-1v"
+                  label={
+                    <>
+                      {soughtAddresses.length} adresse{soughtAddresses.length > 1 ? 's' : ''} recherchée
+                      {soughtAddresses.length > 1 ? 's' : ''}
+                    </>
+                  }
+                  simple
+                  small
+                  expanded={soughtAddressesVisible}
+                  onExpandedChange={setSoughtAddressesVisible}
+                >
+                  <Box display="flex" flexDirection="column" gap={'8px'}>
+                    {soughtAddresses.map((soughtAddress, index) => (
+                      <CardSearchDetails
+                        key={soughtAddress.id}
+                        address={soughtAddress}
+                        onClick={jumpTo}
+                        onClickClose={removeSoughtAddresses}
+                        onContacted={markAddressAsContacted}
+                        expanded={selectedCardIndex === index}
+                        setExpanded={(expanded) => setSelectedCardIndex(expanded ? index : -1)}
+                      />
+                    ))}
+                  </Box>
+                </Accordion>
+              )}
+            </MapSearchWrapper>
+          )}
         </MapProvider>
       </div>
     </>

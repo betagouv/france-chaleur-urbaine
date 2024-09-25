@@ -237,7 +237,7 @@ export const MapSearchWrapper = styled.div<{
   line-height: 2;
   outline: none;
   overflow: auto;
-  z-index: 2;
+  z-index: ${mapControlZindex};
 
   > .fr-input-group {
     margin-bottom: 0.5rem;
