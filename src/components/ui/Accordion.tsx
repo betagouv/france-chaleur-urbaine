@@ -6,8 +6,19 @@ import useArrayQueryState from '@hooks/useArrayQueryState';
 
 import Icon from './Icon';
 
-const StyledAccordion = styled(DsfrAccordion)<{ $small?: boolean; $simple?: boolean; $bordered?: boolean; $closeable?: boolean }>`
-  ${({ $small, $simple, $bordered, $closeable }) => css`
+const StyledAccordion = styled(DsfrAccordion)<{
+  $small?: boolean;
+  $simple?: boolean;
+  $bordered?: boolean;
+  $closeable?: boolean;
+  $disabled?: boolean;
+}>`
+  ${({ $small, $simple, $bordered, $closeable, $disabled }) => css`
+    ${$disabled &&
+    css`
+      opacity: 0.5;
+      pointer-events: none;
+    `}
     ${$small &&
     css`
       .fr-collapse--expanded {
@@ -69,14 +80,16 @@ export type AccordionProps = DsfrAccordionProps & {
   small?: boolean;
   simple?: boolean;
   bordered?: boolean;
+  disabled?: boolean;
   onClose?: (evt: React.MouseEvent<HTMLElement>) => void;
 };
 
-const Accordion: React.FC<AccordionProps> = ({ children, small, label, simple, bordered, onClose, ...props }) => {
+const Accordion: React.FC<AccordionProps> = ({ children, small, label, simple, bordered, onClose, disabled, ...props }) => {
   return (
     <StyledAccordion
       $small={small}
       $simple={simple}
+      $disabled={disabled}
       $bordered={bordered}
       $closeable={!!onClose}
       label={
