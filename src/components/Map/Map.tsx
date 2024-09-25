@@ -275,7 +275,7 @@ const Map = ({
           },
           true
         );
-        setSoughtAddresses([...soughtAddresses, newAddress]);
+        setSoughtAddresses([newAddress, ...soughtAddresses]);
         setSelectedCardIndex(0);
       } else {
         setSelectedCardIndex(existingAddressIndex);
@@ -802,19 +802,17 @@ const Map = ({
                 onExpandedChange={setSoughtAddressesVisible}
               >
                 <Box display="flex" flexDirection="column" gap={'8px'}>
-                  {soughtAddresses
-                    .map((soughtAddress, index) => (
-                      <CardSearchDetails
-                        key={soughtAddress.id}
-                        address={soughtAddress}
-                        onClick={jumpTo}
-                        onClickClose={removeSoughtAddresses}
-                        onContacted={markAddressAsContacted}
-                        expanded={selectedCardIndex === index}
-                        setExpanded={(expanded) => setSelectedCardIndex(expanded ? index : -1)}
-                      />
-                    ))
-                    .reverse()}
+                  {soughtAddresses.map((soughtAddress, index) => (
+                    <CardSearchDetails
+                      key={soughtAddress.id}
+                      address={soughtAddress}
+                      onClick={jumpTo}
+                      onClickClose={removeSoughtAddresses}
+                      onContacted={markAddressAsContacted}
+                      expanded={selectedCardIndex === index}
+                      setExpanded={(expanded) => setSelectedCardIndex(expanded ? index : -1)}
+                    />
+                  ))}
                 </Box>
               </Accordion>
             )}
