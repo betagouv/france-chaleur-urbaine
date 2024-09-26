@@ -44,7 +44,7 @@ export const filtresEnergies = [
 
 export type FiltreEnergieConfKey = (typeof filtresEnergies)[number]['confKey'];
 
-type EnergieRatioConfKey = `energie_ratio_${FiltreEnergieConfKey}`;
+export type EnergieRatioConfKey = `energie_ratio_${FiltreEnergieConfKey}`;
 
 export type MapConfiguration = {
   proMode: boolean;
