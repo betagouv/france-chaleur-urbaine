@@ -48,7 +48,6 @@ import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasu
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
-  CloseButton,
   CollapseLegend,
   LegendContainer,
   LegendLogo,
@@ -732,14 +731,6 @@ const InternalMap = ({
               <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
-              {!legendCollapsed && (
-                <CloseButton
-                  priority="tertiary no outline"
-                  onClick={() => setLegendCollapsed(!legendCollapsed)}
-                  iconId="fr-icon-close-line"
-                  title="Masquer la légende"
-                ></CloseButton>
-              )}
               <LegendContainer withoutLogo={withoutLogo}>
                 <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
               </LegendContainer>
