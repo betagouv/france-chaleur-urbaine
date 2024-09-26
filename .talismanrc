@@ -23,5 +23,5 @@ allowed_patterns:
 - eventKey
 - \/codegouvfr\/react-dsfr\/blob\/.*
 - key\=\{
-version: "1.0"
 - K in keyof T
+version: "1.0"
