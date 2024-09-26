@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import Icon from '@components/ui/Icon';
 import { Demand } from 'src/types/Summary/Demand';
@@ -15,13 +15,41 @@ const Contact = ({
 }) => {
   const [showEmailsModal, setShowEmailsModal] = useState(false);
 
+  const getNomStructure = useCallback(() => {
+    if (
+      demand['Structure accompagnante'] &&
+      (demand['Structure accompagnante'].includes("Bureau d'études ou AMO") ||
+        demand['Structure accompagnante'].includes('Mandataire / délégataire CEE') ||
+        demand['Structure accompagnante'].includes('Syndic de copropriété'))
+    ) {
+      return demand['Nom de la structure accompagnante']
+        ? demand['Nom de la structure accompagnante'] + ' (' + demand['Structure accompagnante'] + ')'
+        : '';
+    }
+    return demand.Établissement;
+  }, [demand]);
+  const nomStructure = getNomStructure();
+
+  const getNomStructureAccompagnante = useCallback(() => {
+    if (
+      demand['Structure accompagnante'] &&
+      (demand['Structure accompagnante'].includes("Bureau d'études ou AMO") ||
+        demand['Structure accompagnante'].includes('Mandataire / délégataire CEE')) &&
+      (demand.Structure === 'Logement social' || demand.Structure === 'Tertiaire' || demand.Structure === 'Autre')
+    ) {
+      return demand.Établissement;
+    }
+    return '';
+  }, [demand]);
+  const nomStructureAccompagnante = getNomStructureAccompagnante();
+
   return (
     <ContactInfos className="fr-m-1w">
       <>
         <Name>
           {demand.Prénom ?? ''} {demand.Nom}
         </Name>
-        {demand.Établissement && <div>{demand.Établissement}</div>}
+        {nomStructure && <div>{nomStructure}</div>}
         {demand.Mail && (
           <EmailInfo
             onClick={() => {
@@ -42,6 +70,7 @@ const Contact = ({
           onClose={() => setShowEmailsModal(false)}
         />
       )}
+      {nomStructureAccompagnante && <div>Pour le compte de : {nomStructureAccompagnante}</div>}
     </ContactInfos>
   );
 };

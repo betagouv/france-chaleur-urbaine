@@ -7,7 +7,7 @@ import { Oval } from 'react-loader-spinner';
 
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
-import Modal from '@components/ui/Modal';
+import ModalPortal from '@components/ui/ModalPortal';
 import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
 import useInitialSearchParam from '@hooks/useInitialSearchParam';
@@ -56,7 +56,7 @@ const modal = createModal({
 
 function ModalCarteFrance() {
   // Ouvre la modale de la carte quand potentiels-de-raccordement est dans l'URL
-  const shouldOpenModalAtStart = useInitialSearchParam('potentiels-de-raccordement') !== null ?? false;
+  const shouldOpenModalAtStart = useInitialSearchParam('potentiels-de-raccordement') !== null;
   useEffect(() => {
     if (shouldOpenModalAtStart) {
       // timeout needed to make it work
@@ -140,10 +140,10 @@ function ModalCarteFrance() {
         }}
       >
         <Image src="/img/icon-france.png" alt="" width="19" height="19" />
-        Voir les potentiels de raccordement
+        Potentiel de densification
       </PotentielsRaccordementButton>
 
-      <Modal>
+      <ModalPortal>
         <StyledModal>
           <modal.Component title="">
             {!statsData || !mapSourceData || !dataByArea ? (
@@ -359,7 +359,7 @@ function ModalCarteFrance() {
             )}
           </modal.Component>
         </StyledModal>
-      </Modal>
+      </ModalPortal>
     </>
   );
 }

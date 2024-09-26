@@ -29,6 +29,9 @@ import { SourceId } from 'src/services/tiles.config';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import { Network } from 'src/types/Summary/Network';
 
+import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
+import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+
 export const tileSourcesMaxZoom = 17;
 
 export const tileLayersMinZoom = 0;
@@ -368,7 +371,11 @@ export type LayerId =
   | 'besoinsEnChaleurFroid-contour'
   | 'besoinsEnChaleurIndustrieCommunes'
   | 'besoinsEnChaleurIndustrieCommunes-contour'
-  | 'caracteristiquesBatiments';
+  | 'caracteristiquesBatiments'
+  | 'distance-measurements-lines'
+  | 'distance-measurements-labels'
+  | 'linear-heat-density-lines'
+  | 'linear-heat-density-labels';
 
 const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
   'interpolate',
@@ -1082,6 +1089,9 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
     },
   ];
 }
+export function buildInternalMapLayers(): MapSourceLayersSpecification[] {
+  return [...distancesMeasurementLayers, ...linearHeatDensityLayers];
+}
 
 // extends the Map type to get fully typed layer and source ids
 interface FCUMap extends Map {
@@ -1103,69 +1113,63 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
     map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
   }
 
-  setLayerVisibility('caracteristiquesBatiments', config.proMode && config.caracteristiquesBatiments);
-  setLayerVisibility('besoinsEnChaleur', config.proMode && config.besoinsEnChaleur);
-  setLayerVisibility('besoinsEnFroid', config.proMode && config.besoinsEnFroid);
-  setLayerVisibility('besoinsEnChaleurFroid-contour', config.proMode && (config.besoinsEnChaleur || config.besoinsEnFroid));
-  setLayerVisibility('besoinsEnChaleurIndustrieCommunes', config.proMode && config.besoinsEnChaleurIndustrieCommunes);
-  setLayerVisibility('besoinsEnChaleurIndustrieCommunes-contour', config.proMode && config.besoinsEnChaleurIndustrieCommunes);
+  setLayerVisibility('caracteristiquesBatiments', config.caracteristiquesBatiments);
+  setLayerVisibility('besoinsEnChaleur', config.besoinsEnChaleur);
+  setLayerVisibility('besoinsEnFroid', config.besoinsEnFroid);
+  setLayerVisibility('besoinsEnChaleurFroid-contour', config.besoinsEnChaleur || config.besoinsEnFroid);
+  setLayerVisibility('besoinsEnChaleurIndustrieCommunes', config.besoinsEnChaleurIndustrieCommunes);
+  setLayerVisibility('besoinsEnChaleurIndustrieCommunes-contour', config.besoinsEnChaleurIndustrieCommunes);
   setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
   setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);
-  setLayerVisibility('demandesEligibilite', config.proMode && config.demandesEligibilite);
-  setLayerVisibility('energy', config.proMode && (config.batimentsFioulCollectif.show || config.batimentsGazCollectif.show));
+  setLayerVisibility('demandesEligibilite', config.demandesEligibilite);
+  setLayerVisibility('energy', config.batimentsFioulCollectif.show || config.batimentsGazCollectif.show);
   setLayerVisibility('reseauxEnConstruction-trace', config.reseauxEnConstruction);
   setLayerVisibility('reseauxEnConstruction-zone', config.reseauxEnConstruction);
-  setLayerVisibility('consommationsGaz', config.proMode && config.consommationsGaz.show);
+  setLayerVisibility('consommationsGaz', config.consommationsGaz.show);
   setLayerVisibility('reseauxDeChaleur-avec-trace', config.reseauxDeChaleur.show);
   setLayerVisibility('reseauxDeChaleur-sans-trace', config.reseauxDeChaleur.show);
-  setLayerVisibility('batimentsRaccordes', config.proMode && config.batimentsRaccordes);
+  setLayerVisibility('batimentsRaccordes', config.batimentsRaccordes);
   setLayerVisibility('zonesDeDeveloppementPrioritaire', config.zonesDeDeveloppementPrioritaire);
   setLayerVisibility(
     'enrrMobilisables-datacenter',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showDatacenters
+    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showDatacenters
   );
-  setLayerVisibility('enrrMobilisables-industrie', config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showIndustrie);
+  setLayerVisibility(
+    'enrrMobilisables-industrie',
+    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showIndustrie
+  );
   setLayerVisibility(
     'enrrMobilisables-installations-electrogenes',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showInstallationsElectrogenes
+    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showInstallationsElectrogenes
   );
   setLayerVisibility(
     'enrrMobilisables-stations-d-epuration',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showStationsDEpuration
+    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showStationsDEpuration
   );
   setLayerVisibility(
     'enrrMobilisables-unites-d-incineration',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showUnitesDIncineration
+    config.enrrMobilisablesChaleurFatale.show && config.enrrMobilisablesChaleurFatale.showUnitesDIncineration
   );
   setLayerVisibility(
     'enrrMobilisables-friches',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueFriches
+    config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches
   );
   setLayerVisibility(
     'enrrMobilisables-friches-contour',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueFriches
+    config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showFriches
   );
   setLayerVisibility(
     'enrrMobilisables-parkings',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueParkings
+    config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings
   );
   setLayerVisibility(
     'enrrMobilisables-parkings-contour',
-    config.proMode && config.enrrMobilisables.show && config.enrrMobilisables.showSolaireThermiqueParkings
+    config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings
   );
-  setLayerVisibility('zonesPotentielChaud', config.proMode && config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud);
-  setLayerVisibility(
-    'zonesPotentielChaud-contour',
-    config.proMode && config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud
-  );
-  setLayerVisibility(
-    'zonesPotentielFortChaud',
-    config.proMode && config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud
-  );
-  setLayerVisibility(
-    'zonesPotentielFortChaud-contour',
-    config.proMode && config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud
-  );
+  setLayerVisibility('zonesPotentielChaud', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud);
+  setLayerVisibility('zonesPotentielChaud-contour', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud);
+  setLayerVisibility('zonesPotentielFortChaud', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud);
+  setLayerVisibility('zonesPotentielFortChaud-contour', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud);
 
   // custom filters for energy and consommationsGaz
 
@@ -1248,6 +1252,11 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
     ['==', ['get', 'is_zone'], false],
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
   ]);
+
+  setLayerVisibility('distance-measurements-labels', config.mesureDistance);
+  setLayerVisibility('distance-measurements-lines', config.mesureDistance);
+  setLayerVisibility('linear-heat-density-labels', config.densiteThermiqueLineaire);
+  setLayerVisibility('linear-heat-density-lines', config.densiteThermiqueLineaire);
 }
 
 type ReseauxDeChaleurFilter = {

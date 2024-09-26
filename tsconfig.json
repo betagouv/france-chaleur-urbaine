@@ -26,6 +26,7 @@
       "@data/*": ["src/data/*"],
       "@constants": ["src/constants"],
       "@pages/*": ["src/pages/*"],
+      "@public/*": ["public/*"],
       "@libs/*": ["src/libs/*"],
       "@styles/*": ["src/styles/*"],
       "@core/*": ["src/core/*"]

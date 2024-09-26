@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Handles, Rail, Slider, Tracks } from 'react-compound-slider';
+import { fr } from '@codegouvfr/react-dsfr';
+import { Range } from '@codegouvfr/react-dsfr/Range';
+import React from 'react';
 
-import { ScaleLabelLegend, ScaleLegendBody, ScaleLegendHeader, ScaleLegendWrapper, ScaleSlider } from './ScaleLegend.style';
-import { Handle, SliderRail, Track } from '../../Slider/Components';
-import { ScaleMaxLabel, ScaleMinLabel } from '../../Slider/Components.styles';
+import Box from '@components/ui/Box';
+
+import { ScaleLabelLegend, ScaleLegendBody, ScaleLegendHeader, ScaleLegendWrapper, ScaleSlider } from '../components/ScaleLegend.style';
 import { maxIconSize, minIconSize } from '../map-layers';
 
 interface ScaleLegendProps {
@@ -23,14 +24,18 @@ const ScaleLegend = ({
   color: defaultColor,
   showColor = true,
   circle,
-  domain,
+  domain: bounds,
   onChange,
   defaultValues,
   className,
+  ...props
 }: ScaleLegendProps) => {
-  const [values, setValues] = useState(defaultValues || domain);
-  const minLabel = `${values[0] === domain[0] && domain[0] !== 0 ? '< ' : ''}${values[0]}`;
-  const maxLabel = `${values[1] === domain[1] ? '> ' : ''}${values[1]}`;
+  const values = defaultValues || bounds;
+  const [valueMin, setValueMin] = React.useState(values[0]);
+  const [valueMax, setValueMax] = React.useState(values[1] > bounds[1] ? bounds[1] : values[1]);
+  const minLabel = `${valueMin === bounds[0] && bounds[0] !== 0 ? '< ' : ''}${bounds[0]}`;
+  const maxLabel = `${valueMax === bounds[1] ? '> ' : ''}${bounds[1]}`;
+  const [min, max] = bounds;
 
   return (
     <ScaleLegendWrapper framed={framed} className={className ?? ''}>
@@ -40,42 +45,42 @@ const ScaleLegend = ({
         {showColor && <ScaleLabelLegend bgColor={defaultColor + '88'} size={minIconSize} circle={circle} />}
 
         <ScaleSlider>
-          <Slider
-            mode={2}
+          <Range
+            label={''}
+            small
+            double
+            max={max}
+            min={min}
             step={1}
-            domain={domain}
-            values={values}
-            onChange={(newValues) => {
-              setValues(newValues as [number, number]);
-              onChange([newValues[0] === domain[0] ? -1 : newValues[0], newValues[1] === domain[1] ? Number.MAX_VALUE : newValues[1]]);
-            }}
-          >
-            <Rail>{({ getRailProps }) => <SliderRail getRailProps={getRailProps} />}</Rail>
-            <Handles>
-              {({ handles, getHandleProps }) => (
-                <div>
-                  {handles.map((handle) => (
-                    <Handle key={handle.id} handle={handle} domain={domain} getHandleProps={getHandleProps} />
-                  ))}
-                </div>
-              )}
-            </Handles>
-            <Tracks left={false} right={false}>
-              {({ tracks, getTrackProps }) => (
-                <div>
-                  {tracks.map(({ id, source, target }) => (
-                    <Track key={id} source={source} target={target} getTrackProps={getTrackProps} />
-                  ))}
-                </div>
-              )}
-            </Tracks>
-          </Slider>
-          <ScaleMinLabel>
-            min : <b>{minLabel}</b>
-          </ScaleMinLabel>
-          <ScaleMaxLabel>
-            max : <b>{maxLabel}</b>
-          </ScaleMaxLabel>
+            hideMinMax
+            nativeInputProps={[
+              {
+                value: valueMin,
+                onChange: (e) => {
+                  const newValueMin = +e.target.value;
+                  setValueMin(newValueMin);
+                  onChange([newValueMin, valueMax]);
+                },
+              },
+              {
+                value: valueMax,
+                onChange: (e) => {
+                  const newValueMax = +e.target.value;
+                  setValueMax(newValueMax);
+                  onChange([valueMin, newValueMax]);
+                },
+              },
+            ]}
+            {...props}
+          />
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <span className={fr.cx('fr-range__min')} aria-hidden>
+              {minLabel}
+            </span>
+            <span className={fr.cx('fr-range__max')} aria-hidden>
+              {maxLabel}
+            </span>
+          </Box>
         </ScaleSlider>
         {showColor && <ScaleLabelLegend bgColor={defaultColor + '88'} size={maxIconSize} circle={circle} />}
       </ScaleLegendBody>

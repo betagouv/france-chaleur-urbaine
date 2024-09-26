@@ -5,12 +5,12 @@ import { tileSourcesMaxZoom } from '@components/Map/map-layers';
 import db from 'src/db';
 import base from 'src/db/airtable';
 
-import { AirtableTileInfo, SourceId, tilesInfo } from './tiles.config';
+import { AirtableTileInfo, DatabaseSourceId, tilesInfo } from './tiles.config';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 
 let airtableDayCached = 0;
-const airtableTiles: Partial<Record<SourceId, any>> = {
+const airtableTiles: Partial<Record<DatabaseSourceId, any>> = {
   demands: null,
 };
 
@@ -59,7 +59,7 @@ const cacheAirtableTiles = () => {
       debug && console.info(`Indexing tiles for ${type} from airtable ${tileInfo.table}...`);
       getObjectIndexFromAirtable(tileInfo)
         .then((result) => {
-          airtableTiles[type as SourceId] = result;
+          airtableTiles[type as DatabaseSourceId] = result;
           debug && console.info(`Indexing tiles for ${type} from airtable ${tileInfo.table} done`);
         })
         .catch((e) => debug && console.error(`Indexing tiles for ${type} from airtable ${tileInfo.table} failed`, e));
@@ -69,7 +69,7 @@ const cacheAirtableTiles = () => {
 
 cacheAirtableTiles();
 
-const getTile = async (type: SourceId, x: number, y: number, z: number): Promise<{ data: any; compressed: boolean } | null> => {
+const getTile = async (type: DatabaseSourceId, x: number, y: number, z: number): Promise<{ data: any; compressed: boolean } | null> => {
   const tileInfo = tilesInfo[type];
   if (tileInfo.source === 'database') {
     const result = await db(tileInfo.tiles).where('x', x).andWhere('y', y).andWhere('z', z).first();

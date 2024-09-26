@@ -17,6 +17,7 @@ export default class MyDocument extends Document {
         });
 
       const initialProps = await Document.getInitialProps(ctx);
+
       return {
         ...initialProps,
         styles: (
@@ -33,7 +34,7 @@ export default class MyDocument extends Document {
 
   render() {
     return (
-      <Html lang="fr" data-fr-scheme="light" prefix="og: http://ogp.me/ns#">
+      <Html lang="fr" data-fr-scheme="light" data-fr-theme="light" prefix="og: http://ogp.me/ns#">
         <Head />
         <body>
           <Main />

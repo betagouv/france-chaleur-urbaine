@@ -1,10 +1,9 @@
-import React, { useEffect, useId, useMemo, useState } from 'react';
+import { useDebouncedEffect } from '@react-hookz/web';
+import React, { useId, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { Combobox, ComboboxInput, ComboboxList, ComboboxOption, ComboboxOptionText, ComboboxPopover } from '@components/ui/Combobox';
 import Icon from '@components/ui/Icon';
-import debounce from '@utils/debounce';
-
 type DefaultOption = Record<string, any>;
 
 export type AutocompleteProps<Option extends DefaultOption> = Omit<React.ComponentProps<typeof Combobox>, 'children' | 'onSelect'> & {
@@ -33,16 +32,19 @@ const Autocomplete = <Option extends DefaultOption>({
   const [inputValue, setInputValue] = useState(defaultValue ? `${defaultValue}` : '');
   const [defaultValueSet, setDefaultValueSet] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
+  const [error, setError] = useState<string>();
   const [options, setOptions] = useState<Option[]>([]);
   const [loading, setLoading] = useState(false);
   const generatedId = useId();
 
-  const debouncedFetch = useMemo(
-    () =>
-      debounce(async (query: string) => {
-        setLoading(true);
+  useDebouncedEffect(
+    () => {
+      (async () => {
+        if (!(inputValue?.length >= minCharThreshold && !selectedValue && !error)) {
+          return;
+        }
         try {
-          const results = await fetchFn(query);
+          const results = await fetchFn(inputValue);
           if (results.length > 0 && defaultValue && !defaultValueSet) {
             // a default value is present so fetch the result and select it
             setDefaultValueSet(true);
@@ -53,29 +55,40 @@ const Autocomplete = <Option extends DefaultOption>({
           } else {
             setOptions(results);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error fetching data:', error);
+          setError(error.toString());
         } finally {
           setLoading(false);
         }
-      }, debounceTime),
-    [fetchFn, defaultValue, defaultValueSet, setDefaultValueSet]
+      })();
+    },
+    [inputValue, selectedValue, error],
+    debounceTime
   );
 
-  useEffect(() => {
-    if (inputValue?.length >= minCharThreshold && !selectedValue) {
-      debouncedFetch(inputValue);
-    }
-  }, [inputValue, debouncedFetch, selectedValue]);
-
   return (
-    <Combobox {...props}>
+    <Combobox
+      onSelect={(optionValue) => {
+        const option = options.find((option) => getOptionValue(option) === optionValue);
+        if (!option) {
+          return;
+        }
+
+        setSelectedValue(optionValue);
+        setOptions([]);
+        onSelect?.(option);
+      }}
+      {...props}
+    >
       <div style={{ position: 'relative' }}>
         <ComboboxInput
           id={generatedId}
           value={selectedValue || inputValue}
           onChange={(event) => {
             setSelectedValue('');
+            setError(undefined);
+            setLoading(true);
             setInputValue(event.target.value);
           }}
           {...nativeInputProps}
@@ -94,6 +107,21 @@ const Autocomplete = <Option extends DefaultOption>({
             wrapperStyle={{
               position: 'absolute',
               color: 'var(--text-default-grey)',
+              top: '0.75rem',
+              bottom: '0.75rem',
+              margin: 'auto',
+              right: 'calc(16px + 1.5rem)',
+            }}
+          />
+        )}
+        {error && (
+          <Icon
+            name="ri-alert-line"
+            size="sm"
+            color="var(--text-default-error)"
+            title={error}
+            style={{
+              position: 'absolute',
               top: '0.75rem',
               bottom: '0.75rem',
               margin: 'auto',
@@ -129,15 +157,7 @@ const Autocomplete = <Option extends DefaultOption>({
               const optionValue = getOptionValue(option);
               const optionLabel = getOptionLabel ? getOptionLabel({ option, result: <ComboboxOptionText /> }) : <ComboboxOptionText />;
               return (
-                <ComboboxOption
-                  key={`${optionValue}_${index}`}
-                  value={optionValue}
-                  onClick={() => {
-                    setSelectedValue(optionValue);
-                    setOptions([]);
-                    onSelect?.(option);
-                  }}
-                >
+                <ComboboxOption key={`${optionValue}_${index}`} value={optionValue}>
                   {optionLabel}
                 </ComboboxOption>
               );

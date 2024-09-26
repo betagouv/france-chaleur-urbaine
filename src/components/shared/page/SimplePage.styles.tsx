@@ -12,6 +12,25 @@ export const StyledHeader = styled(Header)<{ $isFullScreenMode: boolean }>`
               display: none;
             }
           `}
+          @media (min-width: 992px) and (max-width: 1241px) {
+            .fr-nav__btn,
+            .fr-nav__link {
+              padding: 0.5rem !important;
+              display: flex;
+              font-size: 0.8rem;
+              white-space: nowrap;
+              align-items: center;
+              &:after {
+                margin-left: 0.25rem;
+              }
+            }
+            .fr-btns-group .fr-btn {
+              font-size: 0.8rem !important;
+              &:before {
+                margin-right: 0.5rem;
+              }
+            }
+          }
 
           // In fullscreen mode, hide the service row
           .fr-header__service {

@@ -23,6 +23,7 @@ interface LinkProps extends SpacingProperties {
   variant?: keyof typeof linkVariantToClass;
   isExternal?: boolean;
   title?: string;
+  style?: React.CSSProperties;
 }
 
 /**

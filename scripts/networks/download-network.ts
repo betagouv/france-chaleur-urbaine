@@ -1,13 +1,10 @@
-import { FieldSet } from 'airtable/lib/field_set';
 import { Record } from 'airtable';
+import { FieldSet } from 'airtable/lib/field_set';
+
+import { parentLogger } from '@helpers/logger';
 import db from 'src/db';
 import base from 'src/db/airtable';
-import {
-  SourceId,
-  DatabaseTileInfo,
-  tilesInfo,
-} from 'src/services/tiles.config';
-import { parentLogger } from '@helpers/logger';
+import { DatabaseTileInfo, tilesInfo, DatabaseSourceId } from 'src/services/tiles.config';
 
 const TypeArray: unique symbol = Symbol('array');
 const TypeBool: unique symbol = Symbol('bool');
@@ -133,7 +130,7 @@ const conversionConfigAutres = {
 /**
  * Synchronise les données d'une table réseau dans Airtable vers la table correspondante dans Postgres.
  */
-export const downloadNetwork = async (table: SourceId) => {
+export const downloadNetwork = async (table: DatabaseSourceId) => {
   const tileInfo = tilesInfo[table] as DatabaseTileInfo;
   if (!tileInfo || !tileInfo.airtable) {
     throw new Error(`${table} not managed`);
@@ -151,22 +148,12 @@ export const downloadNetwork = async (table: SourceId) => {
     const addIds: number[] = [];
     let updateCount = 0;
 
-    const networksDB = await db(tileInfo.table).select(
-      'id_fcu',
-      'communes',
-      'Identifiant reseau',
-      'has_trace'
-    );
+    const networksDB = await db(tileInfo.table).select('id_fcu', 'communes', 'Identifiant reseau', 'has_trace');
     await Promise.all(
       networksDB.map(async (network) => {
-        const networkAirtable = networksAirtable.find(
-          (row) => row.get('id_fcu') === network['id_fcu']
-        );
+        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network['id_fcu']);
         if (networkAirtable) {
-          if (
-            network['has_trace'] !==
-            convertAirtableValue(networkAirtable.get('has_trace'), TypeBool)
-          ) {
+          if (network['has_trace'] !== convertAirtableValue(networkAirtable.get('has_trace'), TypeBool)) {
             updateCount++;
             await base(tileInfo.airtable as string).update(networkAirtable.id, {
               has_trace: network['has_trace'],
@@ -180,8 +167,7 @@ export const downloadNetwork = async (table: SourceId) => {
                 fields: {
                   id_fcu: network['id_fcu'],
                   'Identifiant reseau': network['Identifiant reseau'],
-                  communes:
-                    network['communes'] && network['communes'].toString(),
+                  communes: network['communes'] && network['communes'].toString(),
                   has_trace: network['has_trace'],
                 },
               },
@@ -203,9 +189,7 @@ export const downloadNetwork = async (table: SourceId) => {
     const networksDB = await db(tileInfo.table).select('id_fcu');
     await Promise.all(
       networksDB.map(async (network) => {
-        const networkAirtable = networksAirtable.find(
-          (row) => row.get('id_fcu') === network['id_fcu']
-        );
+        const networkAirtable = networksAirtable.find((row) => row.get('id_fcu') === network['id_fcu']);
         if (!networkAirtable) {
           addIds.push(network['id_fcu']);
           await base(tileInfo.airtable as string).create(
@@ -233,9 +217,7 @@ export const downloadNetwork = async (table: SourceId) => {
   await Promise.all(
     networksAirtable.map(async (network) => {
       if (network.get('id_fcu')) {
-        await db(tileInfo.table)
-          .update(convertEntityFromAirtableToPostgres(table, network))
-          .where('id_fcu', network.get('id_fcu'));
+        await db(tileInfo.table).update(convertEntityFromAirtableToPostgres(table, network)).where('id_fcu', network.get('id_fcu'));
       }
     })
   );
@@ -248,10 +230,7 @@ export const downloadNetwork = async (table: SourceId) => {
  * Convertit un réseau Airtable au format Postgres.
  * Les noms de colonne sont identiques, seuls les types sont corrigés et nettoyés.
  */
-function convertEntityFromAirtableToPostgres(
-  type: SourceId,
-  airtableNetwork: Record<FieldSet>
-) {
+function convertEntityFromAirtableToPostgres(type: DatabaseSourceId, airtableNetwork: Record<FieldSet>) {
   const conversionConfig =
     type === 'network'
       ? conversionConfigReseauxDeChaleur
@@ -275,24 +254,16 @@ function convertAirtableValue(value: any, type: Type) {
     case TypeBool:
       return value !== undefined && value !== null ? !!value : false;
     case TypeJSONArray:
-      return value !== undefined && value !== null
-        ? JSON.stringify(value)
-        : '[]';
+      return value !== undefined && value !== null ? JSON.stringify(value) : '[]';
     case TypeNumber:
-      return value !== undefined && value !== null && value !== 'NULL'
-        ? value
-        : null;
+      return value !== undefined && value !== null && value !== 'NULL' ? value : null;
     case TypePercentage:
       return value !== undefined && value !== null && value !== 'NULL'
         ? value * 100 // be compatible with number and text
         : null;
     case TypeString:
-      return value !== undefined && value !== null && value !== 'NULL'
-        ? value
-        : null;
+      return value !== undefined && value !== null && value !== 'NULL' ? value : null;
     case TypeStringToArray:
-      return value !== undefined && value !== null && value !== 'NULL'
-        ? value.split(',')
-        : [];
+      return value !== undefined && value !== null && value !== 'NULL' ? value.split(',') : [];
   }
 }

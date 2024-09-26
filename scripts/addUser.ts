@@ -1,14 +1,11 @@
 import bcrypt from 'bcryptjs';
+
 import { USER_ROLE } from 'src/types/enum/UserRole';
+
 import db from '../src/db';
 
 const roles = Object.values(USER_ROLE);
-const addUser = async (
-  email: string,
-  password: string,
-  role: USER_ROLE,
-  gestionnaire: string
-) => {
+const addUser = async (email: string, password: string, role: USER_ROLE, gestionnaire: string) => {
   if (!roles.includes(role)) {
     console.error(`${role} does not exist`);
     process.exit(1);
@@ -33,9 +30,7 @@ const addUser = async (
 };
 
 if (process.argv.length !== 5 && process.argv.length !== 6) {
-  console.info(
-    'Usage: npx tsx scripts/addUser.ts email password role [gestionnaire]'
-  );
+  console.info('Usage: npx tsx scripts/addUser.ts email password role [gestionnaire]');
   process.exit(1);
 }
 

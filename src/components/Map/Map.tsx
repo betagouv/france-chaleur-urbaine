@@ -1,11 +1,13 @@
 import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import { useLocalStorageValue } from '@react-hookz/web';
-import { MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
+import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
+import { LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { parseAsString, useQueryStates } from 'nuqs';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import ReactDOMServer from 'react-dom/server';
 import { MapLayerMouseEvent } from 'react-map-gl';
 import MapReactGL, {
   AttributionControl,
@@ -18,20 +20,14 @@ import MapReactGL, {
 } from 'react-map-gl/maplibre';
 
 import Hoverable from '@components/Hoverable';
+import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
+import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
-import debounce from '@utils/debounce';
-import { fetchJSON } from '@utils/network';
 import { useServices } from 'src/services';
-import { trackEvent } from 'src/services/analytics';
-import {
-  MapConfiguration,
-  MaybeEmptyMapConfiguration,
-  defaultMapConfiguration,
-  isMapConfigurationInitialized,
-} from 'src/services/Map/map-configuration';
+import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
 import { SourceId } from 'src/services/tiles.config';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
 import { MapMarkerInfos, MapPopupInfos, MapPopupType } from 'src/types/MapComponentsInfos';
@@ -42,25 +38,27 @@ import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
 import CardSearchDetails from './components/CardSearchDetails';
 import { isDevModeEnabled } from './components/DevModeIcon';
 import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
+import { type MapLegendFeature } from './components/MapLegendReseaux';
 import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
-import SimpleMapLegend, { MapLegendFeature } from './components/SimpleMapLegend';
-import ZoneInfos from './components/SummaryBoxes';
-import { LayerId, ReseauxDeChaleurLimits, applyMapConfigurationToLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
+import SimpleMapLegend from './components/SimpleMapLegend';
+import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
+import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
   LegendContainer,
   LegendLogo,
   LegendLogoLink,
   LegendLogoList,
-  LegendSeparator,
   LegendSideBar,
-  MapControlWrapper,
+  MapSearchInputWrapper,
+  MapSearchWrapper,
   MapStyle,
-  TopLegend,
-  TopLegendSwitch,
+  legendWidth,
 } from './Map.style';
+import useFCUMap, { FCUMapContextProvider } from './MapProvider';
 import satelliteConfig from './satellite.config.json';
 import { MapboxStyleDefinition, MapboxStyleSwitcherControl } from './StyleSwitcher';
 
@@ -133,42 +131,17 @@ type ViewState = {
   zoom: number;
 };
 
-const Map = ({
-  withoutLogo,
-  withLegend,
-  withHideLegendSwitch,
-  withDrawing,
-  withBorder,
-  legendTitle,
-  initialMapConfiguration,
-  enabledLegendFeatures,
-  withCenterPin,
-  noPopup,
-  legendLogoOpt,
-  proMode,
-  setProMode,
-  popupType = MapPopupType.DEFAULT,
-  pinsList,
-  initialCenter,
-  initialZoom,
-  geolocDisabled,
-  withFCUAttribution,
-  persistViewStateInURL,
-  mapRef: mapRefParam,
-}: {
+type MapProps = {
   withoutLogo?: boolean;
   initialMapConfiguration?: MapConfiguration;
   enabledLegendFeatures?: MapLegendFeature[];
   withLegend?: boolean;
   withHideLegendSwitch?: boolean;
-  withDrawing?: boolean;
   withBorder?: boolean;
   legendTitle?: string;
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
   noPopup?: boolean;
-  proMode?: boolean;
-  setProMode?: (proMode: boolean) => void;
   popupType?: MapPopupType;
   pinsList?: MapMarkerInfos[];
   initialCenter?: Point;
@@ -177,17 +150,43 @@ const Map = ({
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
   mapRef?: MutableRefObject<MapRef>;
-}) => {
+};
+
+const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
+  return (
+    <FCUMapContextProvider initialMapConfiguration={initialMapConfiguration}>
+      <InternalMap {...props} />
+    </FCUMapContextProvider>
+  );
+};
+
+const InternalMap = ({
+  withoutLogo,
+  withLegend,
+  withHideLegendSwitch,
+  withBorder,
+  legendTitle,
+  enabledLegendFeatures,
+  withCenterPin,
+  noPopup,
+  legendLogoOpt,
+  popupType = MapPopupType.DEFAULT,
+  pinsList,
+  initialCenter,
+  initialZoom,
+  geolocDisabled,
+  withFCUAttribution,
+  persistViewStateInURL,
+  mapRef: mapRefParam,
+}: MapProps) => {
   const router = useRouter();
+  const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap();
 
   const { heatNetworkService } = useServices();
   const { handleOnFetchAddress, handleOnSuccessAddress } = useContactFormFCU();
 
-  const [mapConfiguration, setMapConfiguration] = useState<MaybeEmptyMapConfiguration>(initialMapConfiguration ?? defaultMapConfiguration);
-
-  const [draw, setDraw] = useState<any>();
-  const [drawing, setDrawing] = useState(false);
-  const [collapsedCardIndex, setCollapsedCardIndex] = useState(0);
+  const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
+  const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
   const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
@@ -195,21 +194,11 @@ const Map = ({
   const [legendCollapsed, setLegendCollapsed] = useState(true);
   useEffect(() => {
     setLegendCollapsed(window.innerWidth < 992);
-
-    // amend the configuration with metadata limits of networks
-    fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then((limits) => {
-      mapConfiguration.reseauxDeChaleur.limits = limits;
-
-      // apply the limits to the filters
-      mapConfiguration.reseauxDeChaleur.anneeConstruction = limits.anneeConstruction;
-      mapConfiguration.reseauxDeChaleur.emissionsCO2 = limits.emissionsCO2;
-      mapConfiguration.reseauxDeChaleur.livraisonsAnnuelles = limits.livraisonsAnnuelles;
-      mapConfiguration.reseauxDeChaleur.prixMoyen = limits.prixMoyen;
-
-      setMapConfiguration({
-        ...mapConfiguration,
-      });
-    });
+    return () => {
+      setMapRef(null);
+      setMapDraw(null);
+      setMapLayersLoaded(false);
+    };
   }, []);
 
   // resize the map when the container renders
@@ -219,28 +208,13 @@ const Map = ({
     }
   }, [mapRef.current, legendCollapsed]);
 
-  const [mapState, setMapState] = useState<'pending' | 'loaded'>('pending');
-
   // exports the mapRef
   useEffect(() => {
     if (mapRefParam && mapRef.current) {
       mapRefParam.current = mapRef.current;
     }
+    setMapRef(mapRef?.current);
   }, [mapRef.current]);
-
-  useEffect(() => {
-    if (setProMode) {
-      if (proMode) {
-        mapConfiguration.consommationsGaz.show = true;
-        mapConfiguration.batimentsGazCollectif.show = true;
-        mapConfiguration.batimentsFioulCollectif.show = true;
-      }
-      setMapConfiguration({
-        ...mapConfiguration,
-        proMode: !!proMode,
-      });
-    }
-  }, [proMode, setMapConfiguration]);
 
   const { value: soughtAddresses, set: setSoughtAddresses } = useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
     'mapSoughtAddresses',
@@ -263,9 +237,9 @@ const Map = ({
     setPopupInfos({
       latitude: e.lngLat.lat,
       longitude: e.lngLat.lng,
-      content: layersWithDynamicContentPopup.includes(selectedFeature.layer.id as any)
+      content: layersWithDynamicContentPopup.includes(selectedFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
         ? {
-            type: selectedFeature.layer.id,
+            type: selectedFeature.layer?.id,
             properties: selectedFeature.properties,
           }
         : { [key]: selectedFeature.properties },
@@ -291,9 +265,9 @@ const Map = ({
         date: Date.now(),
       };
       const id = getAddressId(coordinates);
-      const existingAddress = soughtAddresses.findIndex(({ id: soughtAddressesId }) => soughtAddressesId === id);
+      const existingAddressIndex = soughtAddresses.findIndex(({ id: soughtAddressesId }) => soughtAddressesId === id);
 
-      if (existingAddress === -1) {
+      if (existingAddressIndex === -1) {
         const newAddress = {
           id,
           coordinates,
@@ -310,11 +284,12 @@ const Map = ({
           },
           true
         );
-        setSoughtAddresses([...soughtAddresses, newAddress]);
-        setCollapsedCardIndex(0);
+        setSoughtAddresses([newAddress, ...soughtAddresses]);
+        setSelectedCardIndex(0);
       } else {
-        setCollapsedCardIndex(soughtAddresses.length - 1 - existingAddress);
+        setSelectedCardIndex(existingAddressIndex);
       }
+      setSoughtAddressesVisible(true);
 
       jumpTo({ coordinates });
     },
@@ -330,58 +305,52 @@ const Map = ({
       const id = getAddressId(result.coordinates);
       const addressIndex = soughtAddresses.findIndex(({ coordinates }) => getAddressId(coordinates) === id);
 
-      if (collapsedCardIndex === soughtAddresses.length - 1 - addressIndex) {
-        setCollapsedCardIndex(-1);
-      }
+      setSelectedCardIndex(-1);
 
       soughtAddresses.splice(addressIndex, 1);
       setSoughtAddresses([...soughtAddresses]);
 
       setMarkersList((current) => current.filter((marker) => marker.id !== id));
     },
-    [setSoughtAddresses, soughtAddresses, collapsedCardIndex]
+    [setSoughtAddresses, soughtAddresses, selectedCardIndex]
   );
 
   const onMapLoad = async (e: MapLibreEvent) => {
     const drawControl = new MapboxDraw({
       displayControlsDefault: false,
+      styles: [
+        // disable all mapbox draw styles, they are handled externally using draw.render events
+        // we must define an empty layer otherwise the library tries to add its own layers
+        {
+          id: 'draw-empty-layer',
+          type: 'background',
+          paint: {
+            'background-opacity': 0,
+          },
+        } satisfies LayerSpecification,
+      ],
+      // makes the properties of each feature accessible with the prefix user_.
+      userProperties: true,
     });
 
     e.target.addControl(drawControl as any);
-    setDraw(drawControl);
+    setMapDraw(drawControl);
     e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
         defaultStyle: 'Carte',
-        eventListeners: {
-          onChange: () => {
-            setMapState('pending');
-            return true;
-          },
-        },
       })
     );
 
     const map = e.target;
     // load layers symbols
     await Promise.all(
-      layerSymbolsImagesURLs.map(
-        (spec) =>
-          new Promise<void>((resolve, reject) => {
-            map.loadImage(spec.url, (error, image) => {
-              if (error) {
-                reject(error);
-              }
-              if (image) {
-                map.addImage(spec.key, image, {
-                  sdf: 'sdf' in spec && spec.sdf,
-                });
-              }
-              resolve();
-            });
-          })
-      )
+      layerSymbolsImagesURLs.map(async (spec) => {
+        const response = await map.loadImage(spec.url);
+        map.addImage(spec.key, response.data, {
+          sdf: 'sdf' in spec && spec.sdf,
+        });
+      })
     );
-    setMapState('loaded');
 
     const clickEvents: {
       layer: LayerId;
@@ -499,7 +468,7 @@ const Map = ({
 
   const onMapSourceData = (e: MapSourceDataEvent) => {
     const map = mapRef.current?.getMap();
-    if (mapState === 'loaded' || !map || !isMapConfigurationInitialized(mapConfiguration)) {
+    if (mapLayersLoaded || !map || !isMapConfigurationInitialized(mapConfiguration)) {
       return;
     }
 
@@ -520,7 +489,19 @@ const Map = ({
         });
       });
 
-      setMapState('loaded');
+      // other sources: distances measurement, linear heat density
+      buildInternalMapLayers().forEach((spec) => {
+        if (map.getSource(spec.sourceId)) {
+          return;
+        }
+
+        map.addSource(spec.sourceId, spec.source);
+        spec.layers.forEach((layer) => {
+          map.addLayer(layer);
+        });
+      });
+
+      setMapLayersLoaded(true);
     }
   };
 
@@ -623,7 +604,7 @@ const Map = ({
   }, [markersList, setMarkersList, setSoughtAddresses, soughtAddresses]);
 
   useEffect(() => {
-    if (mapState === 'pending') {
+    if (!mapLayersLoaded) {
       return;
     }
 
@@ -631,7 +612,10 @@ const Map = ({
     if (map && isMapConfigurationInitialized(mapConfiguration)) {
       applyMapConfigurationToLayers(map, mapConfiguration);
     }
-  }, [mapState, mapRef, mapConfiguration]);
+  }, [mapLayersLoaded, mapRef, mapConfiguration]);
+
+  useDistancesMeasurementLayers();
+  useLinearHeatDensityLayers();
 
   // FIXME pourquoi on doit passer par un setState ici ?
   useEffect(() => {
@@ -652,31 +636,30 @@ const Map = ({
     }
   }, []);
 
-  // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
-  // also store the proMode
-  const updateLocationURL = useMemo(
-    () =>
-      debounce((viewState: ViewState, proMode: boolean) => {
-        router.replace(
-          {
-            search: `coord=${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}&zoom=${viewState.zoom.toFixed(
-              2
-            )}&proMode=${proMode}`,
-          },
-          undefined,
-          {
-            shallow: true,
-          }
-        );
-      }, 500),
-    []
-  );
+  const [, setQuery] = useQueryStates({
+    coord: parseAsString,
+    zoom: parseAsString,
+  });
 
-  useEffect(() => {
-    if (viewState) {
-      updateLocationURL(viewState, !!proMode);
-    }
-  }, [updateLocationURL, viewState, proMode]);
+  // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
+  useDebouncedEffect(
+    () => {
+      if (!viewState) {
+        return;
+      }
+      setQuery(
+        {
+          coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
+          zoom: viewState.zoom.toFixed(2),
+        },
+        {
+          shallow: true,
+        }
+      );
+    },
+    [viewState],
+    500
+  );
 
   const isRouterReady = useRouterReady();
   if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {
@@ -705,12 +688,10 @@ const Map = ({
     const bbox = (router.query.bbox as string).split(',').map((n) => Number.parseFloat(n)) as [number, number, number, number];
 
     const mapViewportFitPadding = 50; // px
-    const sideBarWidth = 345; // px
     const headerWithProModeHeight = 106; // px
     const headerHeight = 56; // px
-    const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? sideBarWidth : 0) - mapViewportFitPadding;
-    const mapViewportHeight =
-      window.innerHeight - (setProMode || withHideLegendSwitch ? headerWithProModeHeight : headerHeight) - mapViewportFitPadding;
+    const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? legendWidth : 0) - mapViewportFitPadding;
+    const mapViewportHeight = window.innerHeight - (withHideLegendSwitch ? headerWithProModeHeight : headerHeight) - mapViewportFitPadding;
 
     const { center, zoom } = geoViewport.viewport(
       bbox, // bounds
@@ -726,62 +707,31 @@ const Map = ({
     initialViewState.zoom = zoom;
   }
 
+  const sourcesLink = ReactDOMServer.renderToString(
+    <Link href="/documentation/carto_sources.pdf" isExternal eventKey="Téléchargement|Carto sources">
+      Sources
+    </Link>
+  );
+
   return (
     <>
       <MapStyle
         legendCollapsed={!withLegend || legendCollapsed}
-        drawing={drawing}
-        withTopLegend={!!setProMode || withHideLegendSwitch}
-        withProMode={!!setProMode}
+        isDrawing={isDrawing}
+        withTopLegend={withHideLegendSwitch}
         withHideLegendSwitch={withHideLegendSwitch}
         withBorder={withBorder}
       />
       <div className="map-wrap">
         {withLegend && (
           <>
-            {!withHideLegendSwitch && (
-              <CollapseLegend legendCollapsed={legendCollapsed} onClick={() => setLegendCollapsed(!legendCollapsed)}>
-                <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-                <Icon size="lg" name={legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'} />
-              </CollapseLegend>
-            )}
-            <LegendSideBar legendCollapsed={legendCollapsed} withHideLegendSwitch={withHideLegendSwitch}>
+            <CollapseLegend legendCollapsed={legendCollapsed} onClick={() => setLegendCollapsed(!legendCollapsed)}>
+              <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
+              <Icon size="lg" name={legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'} />
+            </CollapseLegend>
+            <LegendSideBar legendCollapsed={legendCollapsed}>
               <LegendContainer withoutLogo={withoutLogo}>
-                <Box m="2w">
-                  <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-                </Box>
-                <LegendSeparator />
-                {soughtAddresses.length > 0 && (
-                  <>
-                    {soughtAddresses
-                      .map((soughtAddress, index) => (
-                        <Box mx="2w" key={soughtAddress.id}>
-                          <CardSearchDetails
-                            address={soughtAddress}
-                            onClick={jumpTo}
-                            onClickClose={removeSoughtAddresses}
-                            onContacted={markAddressAsContacted}
-                            collapsed={collapsedCardIndex !== soughtAddresses.length - 1 - index}
-                            setCollapsed={(collapsed) => {
-                              if (collapsed) {
-                                setCollapsedCardIndex(-1);
-                              } else {
-                                setCollapsedCardIndex(soughtAddresses.length - 1 - index);
-                              }
-                            }}
-                          />
-                        </Box>
-                      ))
-                      .reverse()}
-                    <LegendSeparator />
-                  </>
-                )}
-                <SimpleMapLegend
-                  mapConfiguration={mapConfiguration}
-                  legendTitle={legendTitle}
-                  enabledFeatures={enabledLegendFeatures}
-                  onMapConfigurationChange={(config) => setMapConfiguration(config)}
-                />
+                <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
               </LegendContainer>
             </LegendSideBar>
             {!withoutLogo && (
@@ -798,62 +748,6 @@ const Map = ({
             )}
           </>
         )}
-        {withDrawing && mapRef.current && (
-          <MapControlWrapper legendCollapsed={legendCollapsed}>
-            <ZoneInfos map={mapRef.current} draw={draw} setDrawing={setDrawing} />
-          </MapControlWrapper>
-        )}
-        {(setProMode || withHideLegendSwitch) && (
-          <TopLegend legendCollapsed={!withLegend || legendCollapsed}>
-            {setProMode && (
-              <TopLegendSwitch legendCollapsed={legendCollapsed} isProMode={true}>
-                <div className="fr-toggle fr-toggle--label-left">
-                  <input
-                    type="checkbox"
-                    checked={proMode}
-                    id="mode-pro-toggle"
-                    onChange={(e) => {
-                      setProMode(e.target.checked);
-                      e.target.checked && trackEvent('Carto|Active Pro Mode');
-                    }}
-                    className="fr-toggle__input"
-                  />
-                  <label
-                    className="fr-toggle__label"
-                    htmlFor={'mode-pro-toggle'}
-                    data-fr-checked-label="Activé"
-                    data-fr-unchecked-label="Désactivé"
-                  >
-                    Mode professionnel
-                  </label>
-                </div>
-              </TopLegendSwitch>
-            )}
-            {withHideLegendSwitch && (
-              <TopLegendSwitch legendCollapsed={legendCollapsed}>
-                <div className="fr-toggle fr-toggle--label-left">
-                  <input
-                    type="checkbox"
-                    checked={!legendCollapsed}
-                    id="top-switch-legend-toggle"
-                    onChange={(e) => {
-                      setLegendCollapsed(!e.target.checked);
-                    }}
-                    className="fr-toggle__input"
-                  />
-                  <label
-                    className="fr-toggle__label"
-                    htmlFor={'top-switch-legend-toggle'}
-                    data-fr-checked-label="Activé"
-                    data-fr-unchecked-label="Désactivé"
-                  >
-                    {legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}
-                  </label>
-                </div>
-              </TopLegendSwitch>
-            )}
-          </TopLegend>
-        )}
         <MapProvider>
           <MapReactGL
             initialViewState={initialViewState}
@@ -866,16 +760,16 @@ const Map = ({
             ref={mapRef}
           >
             {!geolocDisabled && <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />}
-            <NavigationControl showZoom={true} visualizePitch={true} position="top-left" />
             <AttributionControl
               compact={false}
               position="bottom-right"
               customAttribution={
                 withFCUAttribution
                   ? "<a href='https://france-chaleur-urbaine.beta.gouv.fr/' target='_blank' rel='noopener noreferrer'>France Chaleur Urbaine</a>"
-                  : undefined
+                  : sourcesLink
               }
             />
+            <NavigationControl showZoom={true} visualizePitch={true} position="bottom-right" />
             <ScaleControl maxWidth={100} unit="metric" position="bottom-left" />
             {popupInfos && (
               <MapPopup latitude={popupInfos.latitude} longitude={popupInfos.longitude} content={popupInfos.content} type={popupType} />
@@ -894,6 +788,44 @@ const Map = ({
                 />
               ))}
           </MapReactGL>
+          {withLegend && (
+            <MapSearchWrapper legendCollapsed={legendCollapsed}>
+              <MapSearchInputWrapper>
+                {withHideLegendSwitch && <Icon size="md" name="fr-icon-menu-fill" onClick={() => setLegendCollapsed(!legendCollapsed)} />}
+                <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+              </MapSearchInputWrapper>
+
+              {soughtAddresses.length > 0 && (
+                <Accordion
+                  className="fr-mt-1v"
+                  label={
+                    <>
+                      {soughtAddresses.length} adresse{soughtAddresses.length > 1 ? 's' : ''} recherchée
+                      {soughtAddresses.length > 1 ? 's' : ''}
+                    </>
+                  }
+                  simple
+                  small
+                  expanded={soughtAddressesVisible}
+                  onExpandedChange={setSoughtAddressesVisible}
+                >
+                  <Box display="flex" flexDirection="column" gap={'8px'}>
+                    {soughtAddresses.map((soughtAddress, index) => (
+                      <CardSearchDetails
+                        key={soughtAddress.id}
+                        address={soughtAddress}
+                        onClick={jumpTo}
+                        onClickClose={removeSoughtAddresses}
+                        onContacted={markAddressAsContacted}
+                        expanded={selectedCardIndex === index}
+                        setExpanded={(expanded) => setSelectedCardIndex(expanded ? index : -1)}
+                      />
+                    ))}
+                  </Box>
+                </Accordion>
+              )}
+            </MapSearchWrapper>
+          )}
         </MapProvider>
       </div>
     </>
