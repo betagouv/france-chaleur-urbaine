@@ -16,7 +16,7 @@ import { percentageMaxInterval } from 'src/services/Map/map-configuration';
 import { NetworkToCompare } from 'src/types/Summary/Network';
 
 import NetworkName from './NetworkName';
-import NetworksFilter, { intervalFilters, FilterLimits, FilterValues, energyFilters } from './NetworksFilters';
+import NetworksFilter, { intervalFilters, FilterLimits, FilterValues, energiesFilters } from './NetworksFilters';
 
 type DataToDisplay = 'general' | 'mix_energetique';
 
@@ -124,10 +124,15 @@ const NetworksList = () => {
           (network: NetworkToCompare) => network.Gestionnaire && network.Gestionnaire.includes(newFilterValues.gestionnaire)
         );
       }
+      if (newFilterValues.energieMajoritaire) {
+        newFilteredNetworks = newFilteredNetworks.filter(
+          (network: NetworkToCompare) => network.energie_max_ratio && network.energie_max_ratio === newFilterValues.energieMajoritaire
+        );
+      }
       if (newFilterValues.isClassed) {
         newFilteredNetworks = newFilteredNetworks.filter((network: NetworkToCompare) => network['reseaux classes']);
       }
-      energyFilters.map((filterConf) => {
+      energiesFilters.map((filterConf) => {
         const minValue = newFilterValues[filterConf.confKey as keyof FilterValues]
           ? (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[0]
           : (filterLimits[filterConf.confKey as keyof FilterLimits] as Interval)[0];

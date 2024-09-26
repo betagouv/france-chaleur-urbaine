@@ -3,12 +3,14 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { Range } from '@codegouvfr/react-dsfr/Range';
+import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { useState } from 'react';
 import styled from 'styled-components';
 
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
+import Text from '@components/ui/Text';
 import { Interval } from '@utils/interval';
 import { defaultInterval, EnergieRatioConfKey, FiltreEnergieConfKey, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
@@ -101,7 +103,7 @@ export const intervalFilters = [
   },
 ];
 
-export const energyFilters = [
+export const energiesFilters = [
   {
     label: 'Biomasse',
     confKey: 'energie_ratio_biomasse',
@@ -147,7 +149,7 @@ function NetworksFilter({
 }) {
   const [newFilterValues, setNewFilterValues] = useState<FilterValues>(filterValues);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isOpenEnergyFilters, setIsOpenEnergyFilters] = useState<boolean>(false);
+  const [isOpenEnergiesFilters, setIsOpenEnergiesFilters] = useState<boolean>(false);
 
   function applyFilters() {
     setIsOpen(false);
@@ -182,6 +184,29 @@ function NetworksFilter({
               </button>
             </Box>
             <FiltersSeparator />
+            <Box m="2w">
+              <Text size="sm">Type d'énergie majoritaire</Text>
+              <Select
+                label=""
+                nativeSelectProps={{
+                  value: newFilterValues.energieMajoritaire,
+                  onChange: (e) => {
+                    newFilterValues.energieMajoritaire = e.target.value === '' ? undefined : (e.target.value as FiltreEnergieConfKey);
+                    setNewFilterValues({ ...newFilterValues });
+                  },
+                }}
+                options={[
+                  {
+                    label: "Type d'énergie",
+                    value: '',
+                  },
+                  ...energiesFilters.map(({ label, confKey }) => ({
+                    label,
+                    value: confKey,
+                  })),
+                ]}
+              />
+            </Box>
             <Box m="2w">
               <Input
                 label="Gestionnaire"
@@ -259,8 +284,12 @@ function NetworksFilter({
                 ]}
               />
             </Box>
-            <Accordion label="Filtres avancés" onExpandedChange={(value) => setIsOpenEnergyFilters(!value)} expanded={isOpenEnergyFilters}>
-              {energyFilters.map(
+            <Accordion
+              label="Filtres avancés"
+              onExpandedChange={(value) => setIsOpenEnergiesFilters(!value)}
+              expanded={isOpenEnergiesFilters}
+            >
+              {energiesFilters.map(
                 (filterConf) =>
                   newFilterValues[filterConf.confKey as keyof FilterValues] && (
                     <Box m="2w" key={`box_${filterConf.confKey}`}>

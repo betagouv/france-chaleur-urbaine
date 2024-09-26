@@ -79,6 +79,25 @@ export const getNetworks = async (): Promise<NetworkToCompare[]> => {
     db.raw('"prod_MWh_biogaz" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_biogaz"')
   );
   return networks.map((network) => {
-    return { id: network.id_fcu, ...network } as NetworkToCompare;
+    const energies = [
+      { label: 'energie_ratio_biomasse', value: network.energie_ratio_biomasse },
+      { label: 'energie_ratio_geothermie', value: network.energie_ratio_geothermie },
+      { label: 'energie_ratio_uve', value: network.energie_ratio_uve },
+      { label: 'energie_ratio_chaleurIndustrielle', value: network.energie_ratio_chaleurIndustrielle },
+      { label: 'energie_ratio_solaireThermique', value: network.energie_ratio_solaireThermique },
+      { label: 'energie_ratio_pompeAChaleur', value: network.energie_ratio_pompeAChaleur },
+      { label: 'energie_ratio_gaz', value: network.energie_ratio_gaz },
+      { label: 'energie_ratio_fioul', value: network.energie_ratio_fioul },
+      { label: 'energie_ratio_autresEnr', value: network.energie_ratio_autresEnr },
+      { label: 'energie_ratio_chaufferiesElectriques', value: network.energie_ratio_chaufferiesElectriques },
+      { label: 'energie_ratio_charbon', value: network.energie_ratio_charbon },
+      { label: 'energie_ratio_gpl', value: network.energie_ratio_gpl },
+      { label: 'energie_ratio_autreChaleurRecuperee', value: network.energie_ratio_autreChaleurRecuperee },
+      { label: 'energie_ratio_biogaz', value: network.energie_ratio_biogaz },
+    ];
+    const max = energies.reduce(function (prev, current) {
+      return prev && prev.value > current.value ? prev : current;
+    });
+    return { id: network.id_fcu, energie_max_ratio: max.label, ...network } as NetworkToCompare;
   });
 };
