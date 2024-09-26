@@ -730,7 +730,7 @@ const InternalMap = ({
           <>
             <CollapseLegend legendCollapsed={legendCollapsed} onClick={() => setLegendCollapsed(!legendCollapsed)}>
               <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-              <Icon size="lg" name={legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'} />
+              <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
               {!legendCollapsed && (
