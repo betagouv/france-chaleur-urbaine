@@ -1,6 +1,7 @@
 import styled, { createGlobalStyle, css } from 'styled-components';
 
 import Box from '@components/ui/Box';
+import Button from '@components/ui/Button';
 
 export const mapControlZindex = 0;
 
@@ -114,6 +115,7 @@ export const MapStyle: any = createGlobalStyle<{
 export const LegendSideBar = styled.div<{
   legendCollapsed: boolean;
 }>`
+  position: relative;
   z-index: ${mapControlZindex + 2};
   overflow: auto;
   ${({ legendCollapsed }) =>
@@ -231,6 +233,17 @@ export const MapSearchInputWrapper = styled(Box)`
       flex: 1;
     }
   }
+`;
+
+export const CloseButton = styled(Button)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px;
+
+  ${({ theme }) => theme.media.xl`
+    display: none;
+  `}
 `;
 
 export const MapSearchWrapper = styled.div<{
