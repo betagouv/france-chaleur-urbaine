@@ -377,7 +377,15 @@ export type LayerId =
   | 'linear-heat-density-lines'
   | 'linear-heat-density-labels';
 
-const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = ['interpolate', ['linear'], 10 + 0.2, 0, 10 + 0.2 + 1, 1];
+const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  10 + 0.2,
+  0,
+  10 + 0.2 + 1,
+  1,
+];
 
 // besoin d'une fonction dynamique pour avoir location.origin disponible côté client et aussi
 // pouvoir construire les layers selon les filtres
