@@ -239,10 +239,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       {lngLat && (
                         <small>
                           {' '}
-                          <Link
-                            isExternal
-                            href={`/carte?coord=${lngLat.join(',')}&zoom=17&proMode=${displayMode === 'technicien' ? 'true' : 'false'}`}
-                          >
+                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`}>
                             <strong>Visualiser sur la carte</strong>
                           </Link>
                         </small>
@@ -266,10 +263,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       {lngLat && (
                         <small>
                           {' '}
-                          <Link
-                            isExternal
-                            href={`/carte?coord=${lngLat.join(',')}&zoom=17&proMode=${displayMode === 'technicien' ? 'true' : 'false'}`}
-                          >
+                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`}>
                             <strong>Visualiser sur la carte</strong>
                           </Link>
                         </small>

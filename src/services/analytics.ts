@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { isDevModeEnabled } from '@components/Map/components/DevModeIcon';
 import { clientConfig } from 'src/client-config';
 
+type ExtractSuffix<T extends string, S extends string> = T extends `${infer Prefix}${S}` ? Prefix : never;
+
 // globally accessible atom (state)
 type MatomoAnalyticsLoadingState = 'pending' | 'loaded' | 'error';
 
@@ -540,7 +542,7 @@ const trackingEvents = {
 } as const satisfies Record<string, TrackingConfiguration>;
 
 export type TrackingEvent = keyof typeof trackingEvents;
-
+export type LegendTrackingEvent = ExtractSuffix<TrackingEvent, '|Active'>;
 /**
  * Track an custom event.
  *

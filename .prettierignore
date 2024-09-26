@@ -7,3 +7,5 @@ public/css/*.min.*
 # Data files
 *.geojson
 *.md
+
+.talismanrc

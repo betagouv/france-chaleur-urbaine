@@ -4,8 +4,8 @@
 'use client';
 
 import { fr } from '@codegouvfr/react-dsfr';
-import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
-import React, { forwardRef, memo, useState, useEffect, type ReactNode, type CSSProperties, useId, useRef } from 'react';
+import Checkbox, { CheckboxProps } from '@codegouvfr/react-dsfr/Checkbox';
+import React, { forwardRef, memo, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import styled from 'styled-components';
 import type { Equals } from 'tsafe';
 import { assert } from 'tsafe/assert';
@@ -15,8 +15,6 @@ import { symToStr } from 'tsafe/symToStr';
 import Box from '@components/ui/Box';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import cx from '@utils/cx';
-
-import { ModeDeChauffage } from './modes-de-chauffage';
 
 // import { useConstCallback } from "./tools/powerhooks/useConstCallback";
 /** https://stackoverflow.com/questions/65890278/why-cant-usecallback-always-return-the-same-ref */
@@ -55,36 +53,51 @@ const StyledCheckbox = styled(Checkbox)`
   }
 `;
 
-const StyledToggleButton = styled.button`
+const StyledToggleButton = styled.button<{ $small?: boolean }>`
   flex: 0;
+  transition: transform 0.3s ease;
+  ${({ $small }) => $small && `padding: 0.75rem 0.5rem;`}
 `;
 
-export type CheckableAccordionProps = CheckableAccordionProps.Controlled;
+export type CheckableAccordionProps<T extends React.ReactNode> =
+  | CheckableAccordionProps.Controlled<T>
+  | CheckableAccordionProps.Uncontrolled<T>;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace CheckableAccordionProps {
-  export type Common = {
+  export type Common<AuthorizedLabel extends React.ReactNode> = {
     className?: string;
     id?: string;
     titleAs?: `h${2 | 3 | 4 | 5 | 6}`;
-    label: ModeDeChauffage;
+    label: AuthorizedLabel;
     classes?: Partial<Record<'root' | 'accordion' | 'title' | 'collapse', string>>;
     style?: CSSProperties;
     children: NonNullable<ReactNode>;
     showToggle?: boolean;
+    checked?: boolean;
+    expandOnCheck?: boolean;
+    onCheck: (checked: boolean) => any;
+    small?: CheckboxProps['small'];
   };
 
-  export type Controlled = Common & {
+  export type Uncontrolled<AuthorizedLabel extends React.ReactNode> = Common<AuthorizedLabel> & {
+    defaultExpanded?: boolean;
+    expanded?: never;
+    onExpandedChange?: (expanded: boolean) => void;
+  };
+
+  export type Controlled<AuthorizedLabel extends React.ReactNode> = Common<AuthorizedLabel> & {
     defaultExpanded?: never;
     expanded: boolean;
-    onExpandedChange: (expanded: boolean, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    onExpandedChange: (expanded: boolean) => void;
   };
 }
 
 /** @see <https://components.react-dsfr.codegouv.studio/?path=/docs/components-accordion>  */
 export const CheckableAccordion = memo(
-  forwardRef<HTMLDivElement, CheckableAccordionProps>((props, ref) => {
+  forwardRef<HTMLDivElement, CheckableAccordionProps<React.ReactNode>>((props, ref) => {
     const {
+      // queryParamName,
       className,
       id: id_props,
       titleAs: HtmlTitleTag = 'h3',
@@ -93,15 +106,17 @@ export const CheckableAccordion = memo(
       style,
       children,
       expanded: expanded_props,
+      expandOnCheck = false,
       defaultExpanded = false,
       onExpandedChange,
+      checked,
+      onCheck,
       showToggle,
+      small,
       ...rest
     } = props;
 
     assert<Equals<keyof typeof rest, never>>();
-
-    const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
 
     const id = useAnalyticsId({
       defaultIdPrefix: 'fr-accordion',
@@ -120,13 +135,13 @@ export const CheckableAccordion = memo(
       setIsExpanded(expanded_props);
     }, [expanded_props]);
 
-    const onExtendButtonClick = useConstCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      const isExpended_newValue = !isExpanded;
+    const onExtendButtonClick = useConstCallback(() => {
+      const isExpandedNewValue = !isExpanded;
 
-      onExpandedChange?.(isExpended_newValue, event);
+      onExpandedChange?.(isExpandedNewValue);
 
       if (expanded_props === undefined) {
-        setIsExpanded(isExpended_newValue);
+        setIsExpanded(isExpandedNewValue);
       }
     });
 
@@ -134,12 +149,20 @@ export const CheckableAccordion = memo(
       <section className={cx(fr.cx('fr-accordion'), className)} style={style} ref={ref} {...rest}>
         <Box display="flex">
           <StyledCheckbox
+            small={small}
             options={[
               {
                 label: <HtmlTitleTag className={cx(fr.cx('fr-accordion__title'), classes.title)}>{label}</HtmlTitleTag>,
                 nativeInputProps: {
-                  checked: hasModeDeChauffage(label),
-                  onChange: () => toggleModeDeChauffage(label),
+                  checked,
+                  onChange: (e) => {
+                    const isChecked = e.target.checked;
+                    if (isChecked && expandOnCheck) {
+                      onExpandedChange?.(true);
+                      setIsExpanded(true);
+                    }
+                    return onCheck(isChecked);
+                  },
                 },
               },
             ]}
@@ -147,6 +170,7 @@ export const CheckableAccordion = memo(
 
           {showToggle && (
             <StyledToggleButton
+              $small={small}
               className={fr.cx('fr-accordion__btn')}
               aria-expanded={isExpanded}
               aria-controls={collapseElementId}
@@ -170,13 +194,21 @@ export const CheckableAccordion = memo(
 
 CheckableAccordion.displayName = symToStr({ CheckableAccordion });
 
-export const UrlStateCheckableAccordion = (props: Omit<CheckableAccordionProps, 'expanded' | 'onExpandedChange'>) => {
-  const { add, remove, has } = useArrayQueryState('accordions');
+export const UrlStateCheckableAccordion = <AuthorizedLabel extends string>({
+  queryParamName,
+  ...props
+}: Omit<CheckableAccordionProps.Controlled<AuthorizedLabel>, 'expanded' | 'onExpandedChange' | 'checked' | 'onCheck'> & {
+  queryParamName: string;
+}) => {
+  const { add: addAccordion, remove: removeAccordion, has: hasAccordion } = useArrayQueryState('accordions');
+  const { has: hasChecked, add: addChecked, remove: removeChecked } = useArrayQueryState<string>(queryParamName);
 
   return (
     <CheckableAccordion
-      expanded={has(props.label)}
-      onExpandedChange={(expanded) => (expanded ? add(props.label) : remove(props.label))}
+      expanded={hasAccordion(props.label)}
+      onExpandedChange={(expanded) => (expanded ? addAccordion(props.label) : removeAccordion(props.label))}
+      checked={hasChecked(props.label)}
+      onCheck={(checked) => (checked ? addChecked(props.label) : removeChecked(props.label))}
       {...props}
     />
   );

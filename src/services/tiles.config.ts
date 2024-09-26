@@ -1,6 +1,11 @@
 import { Knex } from 'knex';
 import { z } from 'zod';
 
+import {
+  distancesMeasurementLabelsSourceId,
+  distancesMeasurementLinesSourceId,
+} from '@components/Map/components/tools/DistancesMeasurementTool';
+import { linearHeatDensityLabelsSourceId, linearHeatDensityLinesSourceId } from '@components/Map/components/tools/LinearHeatDensityTool';
 import { Airtable } from 'src/types/enum/Airtable';
 
 type BasicTileInfo = {
@@ -25,7 +30,7 @@ export type DatabaseTileInfo = BasicTileInfo & {
 export type TileInfo = AirtableTileInfo | DatabaseTileInfo;
 
 // = id passé en URL de l'API
-export const sourceIds = [
+export const databaseSourceIds = [
   'network', // réseaux de chaud
   'zoneDP', // zones de développement prioritaire
   'futurNetwork', // réseaux de chaleur en construction
@@ -44,8 +49,15 @@ export const sourceIds = [
   'buildings', // caractéristiques des bâtiments
 ] as const;
 
-export const zSourceId = z.enum(sourceIds);
-export type SourceId = z.infer<typeof zSourceId>;
+export const zDatabaseSourceId = z.enum(databaseSourceIds);
+export type DatabaseSourceId = z.infer<typeof zDatabaseSourceId>;
+
+export type InternalSourceId =
+  | typeof distancesMeasurementLinesSourceId
+  | typeof distancesMeasurementLabelsSourceId
+  | typeof linearHeatDensityLinesSourceId
+  | typeof linearHeatDensityLabelsSourceId;
+export type SourceId = DatabaseSourceId | InternalSourceId;
 
 const bnbFields = `
   id as id,
@@ -76,7 +88,7 @@ export const preTable: (region: string) => Record<string, string> = (region) => 
     `,
 });
 
-export const tilesInfo: Record<SourceId, TileInfo> = {
+export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   demands: {
     source: 'airtable',
     table: Airtable.UTILISATEURS,

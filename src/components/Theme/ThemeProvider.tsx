@@ -63,6 +63,10 @@ export const AppGlobalStyle = createGlobalStyle`
   .d-flex {
     display: flex !important;
   }
+  .btn-full-width {
+    width: 100%;
+    justify-content: center;
+  }
   // custom: not DSFR
   .fr-text--lightbold {
     font-weight: 500 !important;
@@ -128,6 +132,19 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
 
   .fr-btn[target=_blank]:after {
     content: "\\ecaf" !important;
+  }
+
+  .fr-gap--xs {
+    gap: 2px;
+  }
+  .fr-gap--sm {
+    gap: 4px;
+  }
+  .fr-gap--md {
+    gap: 8px;
+  }
+  .fr-gap--lg {
+    gap: 16px;
   }
 `;
 
