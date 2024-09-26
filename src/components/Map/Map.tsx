@@ -22,7 +22,6 @@ import MapReactGL, {
 import Hoverable from '@components/Hoverable';
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
-import Button from '@components/ui/Button';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
@@ -803,14 +802,7 @@ const InternalMap = ({
             <MapSearchWrapper legendCollapsed={legendCollapsed}>
               <MapSearchInputWrapper>
                 <Title>Rechercher une adresse</Title>
-                <div>
-                  {withHideLegendSwitch && (
-                    <Button priority="tertiary no outline" onClick={() => setLegendCollapsed(!legendCollapsed)}>
-                      <Icon size="md" name="fr-icon-menu-fill" />
-                    </Button>
-                  )}
-                  <MapSearchForm onAddressSelect={onAddressSelectHandle} />
-                </div>
+                <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               </MapSearchInputWrapper>
 
               {soughtAddresses.length > 0 && (

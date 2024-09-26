@@ -232,19 +232,8 @@ export const MapSearchInputWrapper = styled(Box)`
   > h2 {
     margin-bottom: 4px;
   }
-  > div {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-bottom: 0.5rem;
-    button {
-      padding-left: 8px;
-      padding-right: 8px;
-      margin-left: -8px;
-    }
-    > .fr-input-group {
-      flex: 1;
-    }
+  > .fr-input-group {
+    flex: 1;
   }
 `;
 
