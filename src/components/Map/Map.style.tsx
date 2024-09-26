@@ -213,9 +213,23 @@ export const PopupType = styled.div`
   text-transform: uppercase;
 `;
 
-export const MapSearchInputWrapper = styled(Box).attrs({ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px' })`
+export const MapSearchInputWrapper = styled(Box)`
+  > h2 {
+    margin-bottom: 4px;
+  }
   > div {
-    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 0.5rem;
+    button {
+      padding-left: 8px;
+      padding-right: 8px;
+      margin-left: -8px;
+    }
+    > .fr-input-group {
+      flex: 1;
+    }
   }
 `;
 
@@ -238,10 +252,6 @@ export const MapSearchWrapper = styled.div<{
   outline: none;
   overflow: auto;
   z-index: ${mapControlZindex};
-
-  > .fr-input-group {
-    margin-bottom: 0.5rem;
-  }
 
   > .fr-accordion > .fr-collapse--expanded {
     max-height: 50dvh; /* HACK as it's difficult to measure */

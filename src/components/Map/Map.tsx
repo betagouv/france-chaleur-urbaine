@@ -22,6 +22,7 @@ import MapReactGL, {
 import Hoverable from '@components/Hoverable';
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
+import Button from '@components/ui/Button';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
@@ -43,6 +44,7 @@ import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
+import { Title } from './components/SimpleMapLegend.style';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
@@ -791,8 +793,15 @@ const InternalMap = ({
           {withLegend && (
             <MapSearchWrapper legendCollapsed={legendCollapsed}>
               <MapSearchInputWrapper>
-                {withHideLegendSwitch && <Icon size="md" name="fr-icon-menu-fill" onClick={() => setLegendCollapsed(!legendCollapsed)} />}
-                <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+                <Title>Rechercher une adresse</Title>
+                <div>
+                  {withHideLegendSwitch && (
+                    <Button priority="tertiary no outline" onClick={() => setLegendCollapsed(!legendCollapsed)}>
+                      <Icon size="md" name="fr-icon-menu-fill" />
+                    </Button>
+                  )}
+                  <MapSearchForm onAddressSelect={onAddressSelectHandle} />
+                </div>
               </MapSearchInputWrapper>
 
               {soughtAddresses.length > 0 && (
