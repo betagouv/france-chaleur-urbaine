@@ -48,11 +48,11 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Checkbox
         small
         options={(['Réseaux de chaleur'] as ModeDeChauffage[]).map(createOptionProps)}
-        state={nearestReseauDeChaleur ? 'success' : 'default'}
+        state={nearestReseauDeChaleur ? 'info' : 'default'}
         stateRelatedMessage={
           nearestReseauDeChaleur ? (
             <span>
-              Souvent moins cher et disponible à <strong>{nearestReseauDeChaleur.distance}</strong>m du bâtiment
+              Disponible à <strong>{nearestReseauDeChaleur.distance}</strong>m du bâtiment
             </span>
           ) : undefined
         }
@@ -96,11 +96,11 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Checkbox
         small
         options={(['Réseaux de froid'] as ModeDeChauffage[]).map(createOptionProps)}
-        state={nearestReseauDeFroid ? 'success' : 'default'}
+        state={nearestReseauDeFroid ? 'info' : 'default'}
         stateRelatedMessage={
           nearestReseauDeFroid ? (
             <span>
-              Souvent moins cher et disponible à <strong>{nearestReseauDeFroid.distance}</strong>m du bâtiment
+              Disponible à <strong>{nearestReseauDeFroid.distance}</strong>m du bâtiment
             </span>
           ) : undefined
         }

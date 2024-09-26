@@ -1362,10 +1362,10 @@
   resolved "https://registry.yarnpkg.com/@betagouv/france-chaleur-urbaine-publicodes/-/france-chaleur-urbaine-publicodes-0.15.0.tgz#f028af0057958ec26b3aa13d5813e70013d2aa8e"
   integrity sha512-sxWqYojVgl/97w4R1BZzIFmUNkWFFxC+Ks0aSkEytC3lmq0rxaeLu9IzJx8cdjEwf9CFrXEkeZZbcCvRATlerA==
 
-"@codegouvfr/react-dsfr@^1.13.1":
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.13.1.tgz#3f9d9fabd1b73c91847f0e9fcde0499574e1593e"
-  integrity sha512-zV3L7VpaWR+ED0Lw6PSUQwqpaYLY3e+rFmFNhGyiN8FAETrI8OY7LYNngwKGTWy3HpOgZ7Wkt6ryGoUC+g0CSA==
+"@codegouvfr/react-dsfr@^1.13.6":
+  version "1.13.6"
+  resolved "https://registry.yarnpkg.com/@codegouvfr/react-dsfr/-/react-dsfr-1.13.6.tgz#49f2a54b469df3b94a3b22f76bac580b34198c71"
+  integrity sha512-/ERzY5MhgZ8X8uz40qfBAx6wNjsqHk2BqjPbcrLNtsj5o3DIGYL6HBF7hRA3fRGq+l8CrFfLgE9xOIQRtTVfvA==
   dependencies:
     tsafe "^1.7.2"
     yargs-parser "^21.1.1"
