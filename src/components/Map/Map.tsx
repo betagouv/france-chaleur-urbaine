@@ -43,6 +43,7 @@ import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
+import { Title } from './components/SimpleMapLegend.style';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
@@ -727,7 +728,7 @@ const InternalMap = ({
           <>
             <CollapseLegend legendCollapsed={legendCollapsed} onClick={() => setLegendCollapsed(!legendCollapsed)}>
               <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-              <Icon size="lg" name={legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'} />
+              <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
               <LegendContainer withoutLogo={withoutLogo}>
@@ -791,7 +792,7 @@ const InternalMap = ({
           {withLegend && (
             <MapSearchWrapper legendCollapsed={legendCollapsed}>
               <MapSearchInputWrapper>
-                {withHideLegendSwitch && <Icon size="md" name="fr-icon-menu-fill" onClick={() => setLegendCollapsed(!legendCollapsed)} />}
+                <Title>Rechercher une adresse</Title>
                 <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               </MapSearchInputWrapper>
 
