@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Box from '@components/ui/Box';
 import Text from '@components/ui/Text';
 
-const IsClassedTag = styled(Box)`
+const IsClassedTag = styled(Text)`
   color: var(--text-default-info);
   background-color: var(--info-950-100);
   border-radius: 4px;
@@ -21,7 +21,7 @@ const Name = styled(Text)`
 const NetworkName = ({ name, isClassed }: { name: string; isClassed: boolean }) => {
   return (
     <Box className="fr-m-1w">
-      {isClassed && <IsClassedTag>RÉSEAU CLASSÉ</IsClassedTag>}
+      {isClassed && <IsClassedTag size="xs">RÉSEAU CLASSÉ</IsClassedTag>}
       <Name>{name}</Name>
     </Box>
   );

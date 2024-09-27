@@ -7,6 +7,7 @@ import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { useState } from 'react';
 import styled from 'styled-components';
 
+import { ReseauxDeChaleurLimits } from '@components/Map/map-layers';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
@@ -61,47 +62,54 @@ const FiltersSeparator = styled.div`
 `;
 
 export type FilterLimits = {
-  tauxENRR: Interval;
-  emissionsCO2: Interval;
-  prixMoyen: Interval;
-  livraisonsAnnuelles: Interval;
-  anneeConstruction: Interval;
+  livraisons_totale_MWh: Interval;
+  'Taux EnR&R': Interval;
+  'contenu CO2 ACV': Interval;
+  PM: Interval;
+  annee_creation: Interval;
 } & Record<EnergieRatioConfKey, Interval>;
 
-export type FilterValues = {
-  energieMajoritaire?: FiltreEnergieConfKey;
+export type FilterValues = FilterLimits & {
+  energieMajoritaire: FiltreEnergieConfKey | string;
   gestionnaire: string;
-  tauxENRR: Interval;
-  emissionsCO2: Interval;
-  prixMoyen: Interval;
-  livraisonsAnnuelles: Interval;
-  anneeConstruction: Interval;
   isClassed: boolean;
-  test?: string;
-} & Record<EnergieRatioConfKey, Interval>;
+};
+
+export type IntervalAndEnergiesFilters = {
+  label: string;
+  confKey: keyof FilterLimits;
+  rdcLimitKey?: keyof ReseauxDeChaleurLimits;
+};
 
 export const intervalFilters = [
   {
-    label: 'Livraison de chaleur (GWh)',
-    confKey: 'livraisonsAnnuelles',
+    label: 'Livraison de chaleur (MWh)',
+    confKey: 'livraisons_totale_MWh',
+    rdcLimitKey: 'livraisonsAnnuelles',
   },
   {
     label: "Taux d'EnR&R",
-    confKey: 'tauxENRR',
+    confKey: 'Taux EnR&R',
+    rdcLimitKey: 'tauxENRR',
   },
   {
     label: 'Emission de CO2 (C02/kWh)',
-    confKey: 'emissionsCO2',
+    confKey: 'contenu CO2 ACV',
+    rdcLimitKey: 'emissionsCO2',
   },
   {
     label: 'Prix moyen de la chaleur (€TTC/MWh)',
-    confKey: 'prixMoyen',
+    confKey: 'PM',
+    rdcLimitKey: 'prixMoyen',
   },
   {
     label: 'Année de construction',
-    confKey: 'anneeConstruction',
+    confKey: 'annee_creation',
+    rdcLimitKey: 'anneeConstruction',
   },
-];
+] as const satisfies ReadonlyArray<IntervalAndEnergiesFilters>;
+
+export type IntervalFiltersConfKey = (typeof intervalFilters)[number]['confKey'];
 
 export const energiesFilters = [
   {
@@ -136,7 +144,7 @@ export const energiesFilters = [
     label: 'Fioul',
     confKey: 'energie_ratio_fioul',
   },
-];
+] as const satisfies ReadonlyArray<IntervalAndEnergiesFilters>;
 
 function NetworksFilter({
   filterLimits,
@@ -191,13 +199,13 @@ function NetworksFilter({
                 nativeSelectProps={{
                   value: newFilterValues.energieMajoritaire,
                   onChange: (e) => {
-                    newFilterValues.energieMajoritaire = e.target.value === '' ? undefined : (e.target.value as FiltreEnergieConfKey);
+                    newFilterValues.energieMajoritaire = e.target.value === '' ? '' : (e.target.value as FiltreEnergieConfKey);
                     setNewFilterValues({ ...newFilterValues });
                   },
                 }}
                 options={[
                   {
-                    label: "Type d'énergie",
+                    label: 'Sélectionner une option',
                     value: '',
                   },
                   ...energiesFilters.map(({ label, confKey }) => ({
@@ -222,43 +230,29 @@ function NetworksFilter({
             </Box>
             {intervalFilters.map(
               (filterConf) =>
-                newFilterValues[filterConf.confKey as keyof FilterValues] && (
+                newFilterValues[filterConf.confKey] && (
                   <Box m="2w" key={`box_${filterConf.confKey}`}>
                     <Range
                       key={filterConf.confKey}
                       double
                       label={filterConf.label}
-                      min={
-                        filterLimits[filterConf.confKey as keyof FilterLimits]
-                          ? filterLimits[filterConf.confKey as keyof FilterLimits][0]
-                          : defaultInterval[0]
-                      }
-                      max={
-                        filterLimits[filterConf.confKey as keyof FilterLimits]
-                          ? filterLimits[filterConf.confKey as keyof FilterLimits][1]
-                          : defaultInterval[1]
-                      }
+                      min={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][0] : defaultInterval[0]}
+                      max={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][1] : defaultInterval[1]}
                       nativeInputProps={[
                         {
-                          value: (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[0],
+                          value: newFilterValues[filterConf.confKey][0],
                           onChange: (e: any) =>
                             setNewFilterValues({
                               ...newFilterValues,
-                              [filterConf.confKey as keyof FilterValues]: [
-                                e.target.value,
-                                (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[1],
-                              ],
+                              [filterConf.confKey]: [e.target.value, newFilterValues[filterConf.confKey][1]],
                             }),
                         },
                         {
-                          value: (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[1],
+                          value: newFilterValues[filterConf.confKey][1],
                           onChange: (e: any) =>
                             setNewFilterValues({
                               ...newFilterValues,
-                              [filterConf.confKey as keyof FilterValues]: [
-                                (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[0],
-                                e.target.value,
-                              ],
+                              [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], e.target.value],
                             }),
                         },
                       ]}
@@ -268,6 +262,7 @@ function NetworksFilter({
             )}
             <Box m="2w">
               <Checkbox
+                small
                 options={[
                   {
                     label: 'Réseaux classés',
@@ -291,43 +286,29 @@ function NetworksFilter({
             >
               {energiesFilters.map(
                 (filterConf) =>
-                  newFilterValues[filterConf.confKey as keyof FilterValues] && (
+                  newFilterValues[filterConf.confKey] && (
                     <Box m="2w" key={`box_${filterConf.confKey}`}>
                       <Range
                         key={filterConf.confKey}
                         double
                         label={filterConf.label}
-                        min={
-                          filterLimits[filterConf.confKey as keyof FilterLimits]
-                            ? filterLimits[filterConf.confKey as keyof FilterLimits][0]
-                            : percentageMaxInterval[0]
-                        }
-                        max={
-                          filterLimits[filterConf.confKey as keyof FilterLimits]
-                            ? filterLimits[filterConf.confKey as keyof FilterLimits][1]
-                            : percentageMaxInterval[1]
-                        }
+                        min={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][0] : percentageMaxInterval[0]}
+                        max={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][1] : percentageMaxInterval[1]}
                         nativeInputProps={[
                           {
-                            value: (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[0],
+                            value: newFilterValues[filterConf.confKey][0],
                             onChange: (e: any) =>
                               setNewFilterValues({
                                 ...newFilterValues,
-                                [filterConf.confKey as keyof FilterValues]: [
-                                  e.target.value,
-                                  (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[1],
-                                ],
+                                [filterConf.confKey]: [e.target.value, newFilterValues[filterConf.confKey][1]],
                               }),
                           },
                           {
-                            value: (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[1],
+                            value: newFilterValues[filterConf.confKey][1],
                             onChange: (e: any) =>
                               setNewFilterValues({
                                 ...newFilterValues,
-                                [filterConf.confKey as keyof FilterValues]: [
-                                  (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[0],
-                                  e.target.value,
-                                ],
+                                [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], e.target.value],
                               }),
                           },
                         ]}

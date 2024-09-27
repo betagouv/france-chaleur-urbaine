@@ -1,10 +1,11 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { useGridApiRef } from '@mui/x-data-grid';
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-import { reseauxDeChaleurFilters, ReseauxDeChaleurLimits } from '@components/Map/map-layers';
+import { ReseauxDeChaleurLimits } from '@components/Map/map-layers';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { ColumnDef, Table } from '@components/ui/Table';
@@ -34,6 +35,7 @@ const GeneralFieldsList: string[] = [
   'Gestionnaire',
   'Taux EnR&R',
   'contenu CO2 ACV',
+  'contenu CO2',
   'PM',
   'annee_creation',
   'livraisons_totale_MWh',
@@ -52,11 +54,11 @@ const MixEnergetiqueFieldsList: string[] = [
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 
 const emptyFilterLimits: FilterLimits = {
-  tauxENRR: defaultInterval,
-  emissionsCO2: defaultInterval,
-  prixMoyen: defaultInterval,
-  livraisonsAnnuelles: defaultInterval,
-  anneeConstruction: defaultInterval,
+  'Taux EnR&R': defaultInterval,
+  'contenu CO2 ACV': defaultInterval,
+  PM: defaultInterval,
+  livraisons_totale_MWh: defaultInterval,
+  annee_creation: defaultInterval,
   energie_ratio_biomasse: percentageMaxInterval,
   energie_ratio_geothermie: percentageMaxInterval,
   energie_ratio_uve: percentageMaxInterval,
@@ -68,7 +70,7 @@ const emptyFilterLimits: FilterLimits = {
 };
 const emptyFilterMinValues: FilterValues = {
   ...emptyFilterLimits,
-  energieMajoritaire: undefined,
+  energieMajoritaire: '',
   gestionnaire: '',
   isClassed: false,
 };
@@ -105,51 +107,63 @@ const NetworksList = () => {
     }
   }, [allNetworks, searchValue]);
 
+  const onApplyIntervalOrEnergiesFilters = useCallback(
+    (filtersType: 'interval' | 'energies', newFilteredNetworks: NetworkToCompare[], newFilterValues: FilterValues) => {
+      const filters = filtersType === 'interval' ? intervalFilters : energiesFilters;
+      filters.map((filterConf) => {
+        const minValue: number = newFilterValues[filterConf.confKey]
+          ? newFilterValues[filterConf.confKey][0]
+          : filterLimits[filterConf.confKey][0];
+        const maxValue: number = newFilterValues[filterConf.confKey]
+          ? newFilterValues[filterConf.confKey][1]
+          : filterLimits[filterConf.confKey][1];
+
+        if (minValue !== filterLimits[filterConf.confKey][0] || maxValue !== filterLimits[filterConf.confKey][1]) {
+          newFilteredNetworks = newFilteredNetworks.filter(
+            (network: NetworkToCompare) =>
+              ((minValue !== filterLimits[filterConf.confKey][0] && (network[filterConf.confKey] as number) >= minValue) ||
+                minValue === filterLimits[filterConf.confKey][0]) &&
+              ((maxValue !== filterLimits[filterConf.confKey][1] && (network[filterConf.confKey] as number) <= maxValue) ||
+                maxValue === filterLimits[filterConf.confKey][1])
+          );
+        }
+      });
+      return newFilteredNetworks;
+    },
+    [intervalFilters, energiesFilters, filterLimits]
+  );
+
   const onApplyFilters = useCallback(
     (newFilterValues: FilterValues) => {
       let newFilteredNetworks = allNetworks;
-      reseauxDeChaleurFilters.flatMap((filter) => {
-        const minValue = filter.filterPreprocess
-          ? filter.filterPreprocess(newFilterValues[filter.confKey][0])
-          : newFilterValues[filter.confKey][0];
-        const maxValue = filter.filterPreprocess
-          ? filter.filterPreprocess(newFilterValues[filter.confKey][1])
-          : newFilterValues[filter.confKey][1];
-        newFilteredNetworks = newFilteredNetworks.filter(
-          (network) => network[filter.valueKey] >= minValue && network[filter.valueKey] <= maxValue
-        );
-      });
+      newFilteredNetworks = onApplyIntervalOrEnergiesFilters('interval', newFilteredNetworks, newFilterValues);
+
       if (newFilterValues.gestionnaire && newFilterValues.gestionnaire !== '') {
         newFilteredNetworks = newFilteredNetworks.filter(
-          (network: NetworkToCompare) => network.Gestionnaire && network.Gestionnaire.includes(newFilterValues.gestionnaire)
+          (network: NetworkToCompare) =>
+            network.Gestionnaire && network.Gestionnaire.toLowerCase().includes(newFilterValues.gestionnaire.trim().toLowerCase())
         );
       }
+
       if (newFilterValues.energieMajoritaire) {
         newFilteredNetworks = newFilteredNetworks.filter(
-          (network: NetworkToCompare) => network.energie_max_ratio && network.energie_max_ratio === newFilterValues.energieMajoritaire
+          (network: NetworkToCompare) =>
+            network.energie_max_ratio &&
+            network.energie_max_ratio !== '' &&
+            network.energie_max_ratio === newFilterValues.energieMajoritaire
         );
       }
+
       if (newFilterValues.isClassed) {
         newFilteredNetworks = newFilteredNetworks.filter((network: NetworkToCompare) => network['reseaux classes']);
       }
-      energiesFilters.map((filterConf) => {
-        const minValue = newFilterValues[filterConf.confKey as keyof FilterValues]
-          ? (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[0]
-          : (filterLimits[filterConf.confKey as keyof FilterLimits] as Interval)[0];
-        const maxValue = newFilterValues[filterConf.confKey as keyof FilterValues]
-          ? (newFilterValues[filterConf.confKey as keyof FilterValues] as Interval)[1]
-          : (filterLimits[filterConf.confKey as keyof FilterLimits] as Interval)[1];
 
-        newFilteredNetworks = newFilteredNetworks.filter(
-          (network) =>
-            (network[filterConf.confKey as keyof NetworkToCompare] as number) >= minValue &&
-            (network[filterConf.confKey as keyof NetworkToCompare] as number) <= maxValue
-        );
-      });
+      newFilteredNetworks = onApplyIntervalOrEnergiesFilters('energies', newFilteredNetworks, newFilterValues);
+
       setFilteredNetworks(newFilteredNetworks);
       setFilterValues(newFilterValues);
     },
-    [allNetworks, reseauxDeChaleurFilters]
+    [allNetworks, intervalFilters, energiesFilters, filterLimits]
   );
 
   const networkGeneralRowsParams: ColumnDef<NetworkToCompare>[] = useMemo(
@@ -158,7 +172,15 @@ const NetworksList = () => {
         field: 'nom_reseau',
         headerName: 'Nom du réseau',
         minWidth: 250,
+        sortable: true,
         renderCell: (params) => <NetworkName name={params.row.nom_reseau} isClassed={params.row['reseaux classes']} />,
+      },
+      {
+        field: 'Identifiant reseau',
+        headerName: 'Identifiant du réseau',
+        minWidth: 200,
+        sortable: true,
+        renderCell: (params) => <Link href={`/reseaux/${params.row['Identifiant reseau']}`}>{params.row['Identifiant reseau']}</Link>,
       },
       {
         field: 'communes',
@@ -177,13 +199,26 @@ const NetworksList = () => {
         headerName: 'Taux EnR&R',
         minWidth: 150,
         sortable: true,
-        renderCell: (params) => <Text>{params.row['Taux EnR&R']}%</Text>,
+        renderCell: (params) => <Text>{params.row['Taux EnR&R'] ? `${params.row['Taux EnR&R']}%` : undefined}</Text>,
       },
       {
         field: 'contenu CO2 ACV',
         renderHeader: () => (
           <Box>
             Contenu CO2 ACV
+            <Text fontWeight="regular" mt="1w">
+              (gCO<sub>2</sub>/kWh)
+            </Text>
+          </Box>
+        ),
+        minWidth: 200,
+        sortable: true,
+      },
+      {
+        field: 'contenu CO2',
+        renderHeader: () => (
+          <Box>
+            Contenu CO2
             <Text fontWeight="regular" mt="1w">
               (gCO<sub>2</sub>/kWh)
             </Text>
@@ -217,12 +252,15 @@ const NetworksList = () => {
           <Box>
             Livraison de chaleur annuelle
             <Text fontWeight="regular" mt="1w">
-              (gWh)
+              (MWh)
             </Text>
           </Box>
         ),
         minWidth: 250,
         sortable: true,
+        renderCell: (params) => (
+          <Text>{params.row.livraisons_totale_MWh ? params.row.livraisons_totale_MWh.toLocaleString('fr-FR') : ''}</Text>
+        ),
       },
       {
         field: 'energie_ratio_biomasse',
@@ -318,9 +356,14 @@ const NetworksList = () => {
           fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then((limits) => {
             // apply the limits to the filters
             intervalFilters.forEach((filter) => {
-              if (limits[filter.confKey as keyof ReseauxDeChaleurLimits]) {
-                filterValues[filter.confKey as keyof FilterLimits] = limits[filter.confKey as keyof ReseauxDeChaleurLimits];
-                filterLimits[filter.confKey as keyof FilterLimits] = limits[filter.confKey as keyof ReseauxDeChaleurLimits];
+              if (limits[filter.rdcLimitKey]) {
+                const limitValues =
+                  filter.confKey !== 'livraisons_totale_MWh'
+                    ? limits[filter.rdcLimitKey]
+                    : ([limits[filter.rdcLimitKey][0] * 1000, limits[filter.rdcLimitKey][1] * 1000] as Interval);
+
+                filterValues[filter.confKey] = limitValues;
+                filterLimits[filter.confKey] = limitValues;
               }
             });
             setFilterValues(filterValues);
@@ -407,7 +450,7 @@ const NetworksList = () => {
               rows={filteredNetworks}
               disableColumnMenu
               columnHeaderHeight={100}
-              rowHeight={96}
+              getRowHeight={() => 'auto'}
               hideFooterSelectedRowCount
               loading={!loaded}
               initialState={{
