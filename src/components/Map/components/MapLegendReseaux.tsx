@@ -116,9 +116,8 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
           <Button
             onClick={() => setFiltersVisible(true)}
             priority="secondary"
-            className="fr-mb-2w"
+            className="fr-mb-2w fr-ml-3w"
             iconId="ri-filter-line"
-            style={{ width: '100%', justifyContent: 'center' }}
             size="small"
             disabled={!mapConfiguration.reseauxDeChaleur.show}
           >
