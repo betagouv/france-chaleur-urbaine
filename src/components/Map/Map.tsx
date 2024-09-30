@@ -27,6 +27,7 @@ import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
 import { useServices } from 'src/services';
+import { trackEvent } from 'src/services/analytics';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
 import { SourceId } from 'src/services/tiles.config';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
@@ -726,7 +727,13 @@ const InternalMap = ({
       <div className="map-wrap">
         {withLegend && (
           <>
-            <CollapseLegend legendCollapsed={legendCollapsed} onClick={() => setLegendCollapsed(!legendCollapsed)}>
+            <CollapseLegend
+              legendCollapsed={legendCollapsed}
+              onClick={() => {
+                trackEvent(`Carto|Légende|${legendCollapsed ? 'Ouvre' : 'Ferme'}`);
+                setLegendCollapsed(!legendCollapsed);
+              }}
+            >
               <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
               <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
             </CollapseLegend>

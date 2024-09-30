@@ -146,6 +146,12 @@ const trackingEvents = {
   'Carto|Définir une zone': {
     matomo: ['Carto', 'Définir une zone'],
   },
+  'Carto|Légende|Ouvre': {
+    matomo: ['Carto', 'Légende', 'Ouvre'],
+  },
+  'Carto|Légende|Ferme': {
+    matomo: ['Carto', 'Légende', 'Ferme'],
+  },
   'Carto|Supprimer un segment': {
     matomo: ['Carto', 'Supprimer un segment'],
   },
