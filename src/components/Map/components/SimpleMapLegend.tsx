@@ -107,6 +107,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 Contribuer
               </Link>
               <Link
+                isExternal
                 variant="primary"
                 href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
                 eventKey="Téléchargement|Tracés|carte"
@@ -114,7 +115,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 mx="auto"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                <Icon name="ri-download-line" size="sm" mr="1v" />
                 Télécharger les tracés
               </Link>
             </Box>
