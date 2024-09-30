@@ -188,6 +188,18 @@ const trackingEvents = {
   'Carto|Réseaux de froid|Désactive': {
     matomo: ['Carto', 'Réseaux de froid', 'Désactive'],
   },
+  'Carto|Tabs|reseaux': {
+    matomo: ['Carto', 'Tabs', 'reseaux'],
+  },
+  'Carto|Tabs|potentiel': {
+    matomo: ['Carto', 'Tabs', 'potentiel'],
+  },
+  'Carto|Tabs|enrr': {
+    matomo: ['Carto', 'Tabs', 'enrr'],
+  },
+  'Carto|Tabs|outils': {
+    matomo: ['Carto', 'Tabs', 'outils'],
+  },
   'Carto|Active Pro Mode': {
     matomo: ['Carto', 'Active Pro Mode'],
   },
