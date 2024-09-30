@@ -73,6 +73,7 @@ const emptyFilterMinValues: FilterValues = {
   energieMajoritaire: '',
   gestionnaire: '',
   isClassed: false,
+  region: '',
 };
 
 const NetworksList = () => {
@@ -82,6 +83,7 @@ const NetworksList = () => {
   const [allNetworks, setAllNetworks] = useState<NetworkToCompare[]>([]);
   const [filteredNetworks, setFilteredNetworks] = useState<NetworkToCompare[]>([]);
 
+  const [regionsList, setRegionsList] = useState<string[]>([]);
   const [filterValues, setFilterValues] = useState<FilterValues>(emptyFilterMinValues);
   const [filterLimits, setFilterLimits] = useState<FilterLimits>(emptyFilterLimits);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -138,10 +140,10 @@ const NetworksList = () => {
       let newFilteredNetworks = allNetworks;
       newFilteredNetworks = onApplyIntervalOrEnergiesFilters('interval', newFilteredNetworks, newFilterValues);
 
-      if (newFilterValues.gestionnaire && newFilterValues.gestionnaire !== '') {
+      if (newFilterValues.region && newFilterValues.region !== '') {
         newFilteredNetworks = newFilteredNetworks.filter(
           (network: NetworkToCompare) =>
-            network.Gestionnaire && network.Gestionnaire.toLowerCase().includes(newFilterValues.gestionnaire.trim().toLowerCase())
+            network.region && network.region.toLowerCase().includes(newFilterValues.region.trim().toLowerCase())
         );
       }
 
@@ -151,6 +153,13 @@ const NetworksList = () => {
             network.energie_max_ratio &&
             network.energie_max_ratio !== '' &&
             network.energie_max_ratio === newFilterValues.energieMajoritaire
+        );
+      }
+
+      if (newFilterValues.gestionnaire && newFilterValues.gestionnaire !== '') {
+        newFilteredNetworks = newFilteredNetworks.filter(
+          (network: NetworkToCompare) =>
+            network.Gestionnaire && network.Gestionnaire.toLowerCase().includes(newFilterValues.gestionnaire.trim().toLowerCase())
         );
       }
 
@@ -330,17 +339,19 @@ const NetworksList = () => {
 
   const onChangeDataToDisplay = useCallback(
     (newDataToDisplay: DataToDisplay) => {
-      GeneralFieldsList.forEach((fieldName: string) =>
-        tableApiRef.current.setColumnVisibility(fieldName, newDataToDisplay === 'general' ? true : false)
-      );
-      MixEnergetiqueFieldsList.forEach((fieldName: string) =>
-        tableApiRef.current.setColumnVisibility(fieldName, newDataToDisplay === 'general' ? false : true)
-      );
-      setDataToDisplay(newDataToDisplay);
-      if (tableApiRef.current?.setPage) {
-        tableApiRef.current.setPage(0);
+      if (tableApiRef) {
+        GeneralFieldsList.forEach((fieldName: string) =>
+          tableApiRef.current.setColumnVisibility(fieldName, newDataToDisplay === 'general' ? true : false)
+        );
+        MixEnergetiqueFieldsList.forEach((fieldName: string) =>
+          tableApiRef.current.setColumnVisibility(fieldName, newDataToDisplay === 'general' ? false : true)
+        );
+        setDataToDisplay(newDataToDisplay);
+        if (tableApiRef.current?.setPage) {
+          tableApiRef.current.setPage(0);
+        }
+        setDataToDisplay(newDataToDisplay);
       }
-      setDataToDisplay(newDataToDisplay);
     },
     [tableApiRef, GeneralFieldsList, MixEnergetiqueFieldsList, setDataToDisplay]
   );
@@ -352,6 +363,14 @@ const NetworksList = () => {
           const networks: NetworkToCompare[] = await networksService.fetch();
           setAllNetworks(networks);
           setFilteredNetworks(networks);
+
+          const newRegionsList: string[] = [];
+          networks.forEach((network) => {
+            !newRegionsList.includes(network.region.trim()) && newRegionsList.push(network.region.trim());
+          });
+          newRegionsList.sort();
+          setRegionsList(newRegionsList);
+
           // amend the configuration with metadata limits of networks
           fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then((limits) => {
             // apply the limits to the filters
@@ -391,6 +410,7 @@ const NetworksList = () => {
               <NetworksFilter
                 filterLimits={filterLimits}
                 filterValues={filterValues}
+                regionsList={regionsList}
                 onApplyFilters={(minConfig) => onApplyFilters(minConfig)}
               ></NetworksFilter>
               <Input

@@ -73,6 +73,7 @@ export type FilterValues = FilterLimits & {
   energieMajoritaire: FiltreEnergieConfKey | string;
   gestionnaire: string;
   isClassed: boolean;
+  region: string;
 };
 
 export type IntervalAndEnergiesFilters = {
@@ -149,10 +150,12 @@ export const energiesFilters = [
 function NetworksFilter({
   filterLimits,
   filterValues,
+  regionsList,
   onApplyFilters,
 }: {
   filterLimits: FilterLimits;
   filterValues: FilterValues;
+  regionsList: string[];
   onApplyFilters: (minConfig: FilterValues) => void;
 }) {
   const [newFilterValues, setNewFilterValues] = useState<FilterValues>(filterValues);
@@ -199,7 +202,7 @@ function NetworksFilter({
                 nativeSelectProps={{
                   value: newFilterValues.energieMajoritaire,
                   onChange: (e) => {
-                    newFilterValues.energieMajoritaire = e.target.value === '' ? '' : (e.target.value as FiltreEnergieConfKey);
+                    newFilterValues.energieMajoritaire = e.target.value !== '' ? (e.target.value as FiltreEnergieConfKey) : '';
                     setNewFilterValues({ ...newFilterValues });
                   },
                 }}
@@ -211,6 +214,29 @@ function NetworksFilter({
                   ...energiesFilters.map(({ label, confKey }) => ({
                     label,
                     value: confKey,
+                  })),
+                ]}
+              />
+            </Box>
+            <Box m="2w">
+              <Text size="sm">Région</Text>
+              <Select
+                label=""
+                nativeSelectProps={{
+                  value: newFilterValues.region,
+                  onChange: (e) => {
+                    newFilterValues.region = e.target.value;
+                    setNewFilterValues({ ...newFilterValues });
+                  },
+                }}
+                options={[
+                  {
+                    label: 'Sélectionner une région',
+                    value: '',
+                  },
+                  ...regionsList.map((region: string) => ({
+                    label: region,
+                    value: region,
                   })),
                 ]}
               />

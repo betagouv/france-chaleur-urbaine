@@ -55,6 +55,7 @@ export const getNetworks = async (): Promise<NetworkToCompare[]> => {
       'reseaux classes',
       'informationsComplementaires',
       'fichiers',
+      'region',
       'communes',
       db.raw('"prod_MWh_biomasse_solide" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_biomasse"'),
       db.raw('"prod_MWh_geothermie" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_geothermie"'),

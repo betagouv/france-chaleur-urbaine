@@ -50,6 +50,7 @@ export interface Network {
   'reseaux classes': boolean;
   informationsComplementaires: string;
   fichiers: NetworkAttachment[];
+  region: string;
 }
 
 export interface NetworkAttachment {
