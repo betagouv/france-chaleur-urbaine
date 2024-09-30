@@ -138,13 +138,25 @@ export const LegendContainer = styled.div<{
   ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
 `;
 
+export const CollapseLegendLabel = styled.label<{ legendCollapsed: boolean }>`
+  transform: rotate(90deg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  span[class*='Icon'] {
+    transition: transform 0.5s ease;
+    transform: rotate(${({ legendCollapsed }) => (legendCollapsed ? '-90deg' : '90deg')});
+  }
+`;
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
   left: ${({ legendCollapsed }) => (legendCollapsed ? '-1px' : `calc(${legendWidth}px - 1px)`)};
   animation: slide-in-left 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-  top: calc(50% - 16px);
+  top: calc(50% - 50px);
   background-color: var(--background-flat-blue-france);
-  height: 32px;
+  height: 140px;
   width: 32px;
   overflow: visible;
   display: flex;
@@ -154,11 +166,6 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
 
   &:hover {
     background-color: var(--background-active-blue-france-hover) !important;
-  }
-
-  span {
-    transition: transform 0.5s ease;
-    transform: rotate(${({ legendCollapsed }) => (legendCollapsed ? '0' : '180deg')});
   }
 
   z-index: ${mapControlZindex + 1};

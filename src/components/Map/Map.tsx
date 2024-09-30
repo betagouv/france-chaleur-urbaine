@@ -50,6 +50,7 @@ import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensity
 import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
+  CollapseLegendLabel,
   LegendContainer,
   LegendLogo,
   LegendLogoLink,
@@ -735,7 +736,11 @@ const InternalMap = ({
               }}
             >
               <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-              <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
+              <CollapseLegendLabel legendCollapsed={legendCollapsed}>
+                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
+                <span>Légende</span>
+                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
+              </CollapseLegendLabel>
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
               <LegendContainer withoutLogo={withoutLogo}>
