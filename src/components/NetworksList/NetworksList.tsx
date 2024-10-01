@@ -13,11 +13,11 @@ import Text from '@components/ui/Text';
 import { Interval } from '@utils/interval';
 import { fetchJSON } from '@utils/network';
 import { useServices } from 'src/services';
-import { percentageMaxInterval } from 'src/services/Map/map-configuration';
+import { emptyFilterLimits, emptyFilterValues, FilterLimits, FilterValues } from 'src/types/NetworksFilters';
 import { NetworkToCompare } from 'src/types/Summary/Network';
 
 import NetworkName from './NetworkName';
-import NetworksFilter, { intervalFilters, FilterLimits, FilterValues, energiesFilters } from './NetworksFilters';
+import NetworksFilter, { intervalFilters, energiesFilters } from './NetworksFilters';
 
 type DataToDisplay = 'general' | 'mix_energetique';
 
@@ -53,29 +53,6 @@ const MixEnergetiqueFieldsList: string[] = [
 
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 
-const emptyFilterLimits: FilterLimits = {
-  'Taux EnR&R': defaultInterval,
-  'contenu CO2 ACV': defaultInterval,
-  PM: defaultInterval,
-  livraisons_totale_MWh: defaultInterval,
-  annee_creation: defaultInterval,
-  energie_ratio_biomasse: percentageMaxInterval,
-  energie_ratio_geothermie: percentageMaxInterval,
-  energie_ratio_uve: percentageMaxInterval,
-  energie_ratio_chaleurIndustrielle: percentageMaxInterval,
-  energie_ratio_solaireThermique: percentageMaxInterval,
-  energie_ratio_pompeAChaleur: percentageMaxInterval,
-  energie_ratio_gaz: percentageMaxInterval,
-  energie_ratio_fioul: percentageMaxInterval,
-};
-const emptyFilterMinValues: FilterValues = {
-  ...emptyFilterLimits,
-  energieMajoritaire: '',
-  gestionnaire: '',
-  isClassed: false,
-  region: '',
-};
-
 const NetworksList = () => {
   const { networksService } = useServices();
   const tableApiRef = useGridApiRef();
@@ -84,8 +61,8 @@ const NetworksList = () => {
   const [filteredNetworks, setFilteredNetworks] = useState<NetworkToCompare[]>([]);
 
   const [regionsList, setRegionsList] = useState<string[]>([]);
-  const [filterValues, setFilterValues] = useState<FilterValues>(emptyFilterMinValues);
   const [filterLimits, setFilterLimits] = useState<FilterLimits>(emptyFilterLimits);
+  const [filterValues, setFilterValues] = useState<FilterValues>(emptyFilterValues);
   const [searchValue, setSearchValue] = useState<string>('');
 
   const [dataToDisplay, setDataToDisplay] = useState<DataToDisplay>('general');

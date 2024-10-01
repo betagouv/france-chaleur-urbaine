@@ -4,16 +4,15 @@ import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { Range } from '@codegouvfr/react-dsfr/Range';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { ReseauxDeChaleurLimits } from '@components/Map/map-layers';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
-import { Interval } from '@utils/interval';
-import { defaultInterval, EnergieRatioConfKey, FiltreEnergieConfKey, percentageMaxInterval } from 'src/services/Map/map-configuration';
+import { defaultInterval, FiltreEnergieConfKey, percentageMaxInterval } from 'src/services/Map/map-configuration';
+import { emptyFilterNoLimits, FilterLimits, FilterNoLimits, FilterValues, IntervalAndEnergiesFilters } from 'src/types/NetworksFilters';
 
 const FiltersContainer = styled.div<{
   isOpen: boolean;
@@ -60,27 +59,6 @@ const FiltersSeparator = styled.div`
   border: 1px solid #e1e1e1;
   margin: 16px 0px;
 `;
-
-export type FilterLimits = {
-  livraisons_totale_MWh: Interval;
-  'Taux EnR&R': Interval;
-  'contenu CO2 ACV': Interval;
-  PM: Interval;
-  annee_creation: Interval;
-} & Record<EnergieRatioConfKey, Interval>;
-
-export type FilterValues = FilterLimits & {
-  energieMajoritaire: FiltreEnergieConfKey | string;
-  gestionnaire: string;
-  isClassed: boolean;
-  region: string;
-};
-
-export type IntervalAndEnergiesFilters = {
-  label: string;
-  confKey: keyof FilterLimits;
-  rdcLimitKey?: keyof ReseauxDeChaleurLimits;
-};
 
 export const intervalFilters = [
   {
@@ -159,6 +137,7 @@ function NetworksFilter({
   onApplyFilters: (minConfig: FilterValues) => void;
 }) {
   const [newFilterValues, setNewFilterValues] = useState<FilterValues>(filterValues);
+  const [filterCount, setFilterCount] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isOpenEnergiesFilters, setIsOpenEnergiesFilters] = useState<boolean>(false);
 
@@ -168,10 +147,24 @@ function NetworksFilter({
     setEmpty(false);
   }, [empty]);
 
-  function applyFilters() {
+  const applyFilters = useCallback(() => {
+    let nbFilters = 0;
+    Object.keys(filterLimits).forEach((key) => {
+      if (filterLimits[key as keyof FilterLimits][0] !== newFilterValues[key as keyof FilterLimits][0]) {
+        nbFilters++;
+      } else if (filterLimits[key as keyof FilterLimits][1] !== newFilterValues[key as keyof FilterLimits][1]) {
+        nbFilters++;
+      }
+    });
+    Object.keys(emptyFilterNoLimits).forEach((key) => {
+      if (emptyFilterNoLimits[key as keyof FilterNoLimits] !== newFilterValues[key as keyof FilterNoLimits]) {
+        nbFilters++;
+      }
+    });
+    setFilterCount(nbFilters);
     setIsOpen(false);
     onApplyFilters(newFilterValues);
-  }
+  }, [filterLimits, emptyFilterNoLimits, newFilterValues]);
 
   function emptyFilters() {
     const emptyFilterValues: FilterValues = {
@@ -196,7 +189,7 @@ function NetworksFilter({
         }}
       >
         <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
-        Tous les filtres
+        Tous les filtres ({filterCount})
       </Button>
       {isOpen && !empty && (
         <FiltersContainer isOpen={isOpen}>
@@ -307,7 +300,7 @@ function NetworksFilter({
                           onChange: (e: any) =>
                             setNewFilterValues({
                               ...newFilterValues,
-                              [filterConf.confKey]: [e.target.value, newFilterValues[filterConf.confKey][1]],
+                              [filterConf.confKey]: [+e.target.value, newFilterValues[filterConf.confKey][1]],
                             }),
                         },
                         {
@@ -315,7 +308,7 @@ function NetworksFilter({
                           onChange: (e: any) =>
                             setNewFilterValues({
                               ...newFilterValues,
-                              [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], e.target.value],
+                              [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], +e.target.value],
                             }),
                         },
                       ]}
@@ -344,7 +337,7 @@ function NetworksFilter({
                             onChange: (e: any) =>
                               setNewFilterValues({
                                 ...newFilterValues,
-                                [filterConf.confKey]: [e.target.value, newFilterValues[filterConf.confKey][1]],
+                                [filterConf.confKey]: [+e.target.value, newFilterValues[filterConf.confKey][1]],
                               }),
                           },
                           {
@@ -352,7 +345,7 @@ function NetworksFilter({
                             onChange: (e: any) =>
                               setNewFilterValues({
                                 ...newFilterValues,
-                                [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], e.target.value],
+                                [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], +e.target.value],
                               }),
                           },
                         ]}
