@@ -7,6 +7,8 @@ import { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } f
 import { Airtable } from 'src/types/enum/Airtable';
 import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from 'src/types/enum/MatomoStats';
 
+import '../../sentry.node.config';
+
 const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE,
   STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE,
