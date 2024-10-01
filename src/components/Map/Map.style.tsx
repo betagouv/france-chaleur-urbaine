@@ -138,17 +138,12 @@ export const LegendContainer = styled.div<{
   ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
 `;
 
-export const CollapseLegendLabel = styled.label<{ legendCollapsed: boolean }>`
+export const CollapseLegendLabel = styled.label`
   transform: rotate(90deg);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
-
-  span[class*='Icon'] {
-    transition: transform 0.5s ease;
-    transform: rotate(${({ legendCollapsed }) => (legendCollapsed ? '-90deg' : '90deg')});
-  }
 `;
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;

@@ -736,10 +736,10 @@ const InternalMap = ({
               }}
             >
               <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-              <CollapseLegendLabel legendCollapsed={legendCollapsed}>
-                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
+              <CollapseLegendLabel>
+                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} rotate={legendCollapsed ? -90 : 90} />
                 <span>Légende</span>
-                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
+                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} rotate={legendCollapsed ? -90 : 90} />
               </CollapseLegendLabel>
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>

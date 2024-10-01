@@ -6,12 +6,12 @@ import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type StyledIconProps = {
   cursor?: CSSProperties['cursor'];
-  flip?: boolean;
+  rotate?: number;
   color?: string;
 };
 
 const StyledIcon = styled.span<StyledIconProps>`
-  transform: ${({ flip }) => (flip ? 'rotate(-180deg)' : undefined)};
+  transform: ${({ rotate }) => (rotate ? `rotate(${rotate}deg)` : undefined)};
   transition: 0.3s;
   cursor: ${({ cursor }) => cursor};
   color: ${({ color }) => color};
