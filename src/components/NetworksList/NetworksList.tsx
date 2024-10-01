@@ -369,13 +369,8 @@ const NetworksList = () => {
             // apply the limits to the filters
             intervalFilters.forEach((filter) => {
               if (limits[filter.rdcLimitKey]) {
-                const limitValues =
-                  filter.confKey !== 'livraisons_totale_MWh'
-                    ? limits[filter.rdcLimitKey]
-                    : ([limits[filter.rdcLimitKey][0] * 1000, limits[filter.rdcLimitKey][1] * 1000] as Interval);
-
-                filterValues[filter.confKey] = limitValues;
-                filterLimits[filter.confKey] = limitValues;
+                filterValues[filter.confKey] = limits[filter.rdcLimitKey];
+                filterLimits[filter.confKey] = limits[filter.rdcLimitKey];
               }
             });
             setFilterValues(filterValues);
