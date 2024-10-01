@@ -32,7 +32,7 @@ new cron.CronJob({
 });
 
 new cron.CronJob({
-  cronTime: '45 14 1 * *', // le 1er du mois à 08:15 -- TEMP 14h45
+  cronTime: '15 8 1 * *', // le 1er du mois à 08:15
   onTick: () => saveStatsInDB(),
   start: true,
   timeZone: 'Europe/Paris',
