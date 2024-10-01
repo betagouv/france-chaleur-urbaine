@@ -4,7 +4,7 @@ import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { Range } from '@codegouvfr/react-dsfr/Range';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { ReseauxDeChaleurLimits } from '@components/Map/map-layers';
@@ -162,9 +162,27 @@ function NetworksFilter({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isOpenEnergiesFilters, setIsOpenEnergiesFilters] = useState<boolean>(false);
 
+  const [empty, setEmpty] = useState<boolean>(false);
+
+  useEffect(() => {
+    setEmpty(false);
+  }, [empty]);
+
   function applyFilters() {
     setIsOpen(false);
     onApplyFilters(newFilterValues);
+  }
+
+  function emptyFilters() {
+    const emptyFilterValues: FilterValues = {
+      ...filterLimits,
+      energieMajoritaire: '',
+      gestionnaire: '',
+      isClassed: false,
+      region: '',
+    };
+    setNewFilterValues(emptyFilterValues);
+    setEmpty(true);
   }
 
   return (
@@ -180,7 +198,7 @@ function NetworksFilter({
         <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
         Tous les filtres
       </Button>
-      {isOpen && (
+      {isOpen && !empty && (
         <FiltersContainer isOpen={isOpen}>
           <FiltersBox backgroundColor="#fff">
             <Box display="flex" justifyContent="space-between" alignItems="flex-start">
@@ -344,9 +362,14 @@ function NetworksFilter({
               )}
             </Accordion>
             <FiltersSeparator />
-            <Button className="network-filters-submit-button" onClick={() => applyFilters()}>
-              Appliquer
-            </Button>
+            <Box>
+              <Button className="network-filters-submit-button" priority="tertiary" onClick={() => emptyFilters()}>
+                Effacer les filtres
+              </Button>
+              <Button className="network-filters-submit-button" onClick={() => applyFilters()}>
+                Appliquer
+              </Button>
+            </Box>
           </FiltersBox>
         </FiltersContainer>
       )}
