@@ -158,7 +158,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
       },
       'buildings-data-extraction-outline'
     );
-    if (!summary) {
+    if (features.length === 0 && !summary) {
       mapDraw.changeMode('draw_polygon');
       setIsDrawing(true);
     }
@@ -205,11 +205,10 @@ const BuildingsDataExtractionTool: React.FC = () => {
   };
 
   const exportSummary = async () => {
-    if (areaSize === 0) {
-      return;
-    }
     await heatNetworkService.downloadSummary(features[0].geometry.coordinates[0], EXPORT_FORMAT.CSV);
   };
+
+  const canClear = features[0]?.geometry.coordinates[0]?.length > 2 && !isLoading;
 
   return (
     <>
@@ -311,7 +310,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
           </Box>
         )}
 
-        {areaSize > 0 && !isLoading && (
+        {canClear && (
           <Button priority="secondary" iconId="fr-icon-delete-bin-line" className="btn-full-width" onClick={clearSummary}>
             Effacer
           </Button>
