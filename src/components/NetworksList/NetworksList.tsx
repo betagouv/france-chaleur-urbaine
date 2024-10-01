@@ -177,6 +177,7 @@ const NetworksList = () => {
         headerName: 'Nom de la ville',
         minWidth: 250,
         sortable: true,
+        renderCell: (params) => <Text>{params.row.communes ? params.row.communes.join(', ') : undefined}</Text>,
       },
       {
         field: 'Gestionnaire',
