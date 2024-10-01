@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import styled from 'styled-components';
 
 import Box from '@components/ui/Box';
@@ -18,11 +19,13 @@ const Name = styled(Text)`
   margin-top: 16px;
 `;
 
-const NetworkName = ({ name, isClassed }: { name: string; isClassed: boolean }) => {
+const NetworkName = ({ name, isClassed, identifiant }: { name: string; isClassed: boolean; identifiant: string }) => {
   return (
     <Box className="fr-m-1w">
       {isClassed && <IsClassedTag size="xs">RÉSEAU CLASSÉ</IsClassedTag>}
-      <Name>{name}</Name>
+      <Name>
+        <Link href={`/reseaux/${identifiant}`}>{name}</Link>
+      </Name>
     </Box>
   );
 };

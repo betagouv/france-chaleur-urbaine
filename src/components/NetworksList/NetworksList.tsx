@@ -1,7 +1,6 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import Input from '@codegouvfr/react-dsfr/Input';
 import { useGridApiRef } from '@mui/x-data-grid';
-import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -159,14 +158,19 @@ const NetworksList = () => {
         headerName: 'Nom du réseau',
         minWidth: 250,
         sortable: true,
-        renderCell: (params) => <NetworkName name={params.row.nom_reseau} isClassed={params.row['reseaux classes']} />,
+        renderCell: (params) => (
+          <NetworkName
+            name={params.row.nom_reseau}
+            isClassed={params.row['reseaux classes']}
+            identifiant={params.row['Identifiant reseau']}
+          />
+        ),
       },
       {
         field: 'Identifiant reseau',
         headerName: 'Identifiant du réseau',
         minWidth: 200,
         sortable: true,
-        renderCell: (params) => <Link href={`/reseaux/${params.row['Identifiant reseau']}`}>{params.row['Identifiant reseau']}</Link>,
       },
       {
         field: 'communes',
