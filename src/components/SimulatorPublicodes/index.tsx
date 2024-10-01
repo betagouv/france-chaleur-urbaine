@@ -23,7 +23,7 @@ import ModesDeChauffageAComparer from './ModesDeChauffageAComparer';
 import ParametresDesModesDeChauffage from './ParametresDesModesDeChauffage';
 import ParametresDuBatimentGrandPublic from './ParametresDuBatimentGrandPublic';
 import ParametresDuBatimentTechnicien from './ParametresDuBatimentTechnicien';
-import { PublicodesSimulatorTitle, ResultsNotAvailable, simulatorTabs } from './Placeholder';
+import { Disclaimer, PublicodesSimulatorTitle, ResultsNotAvailable, simulatorTabs } from './Placeholder';
 import { FloatingButton, Results, Section, Simulator } from './SimulatorPublicodes.style';
 import useSimulatorEngine from './useSimulatorEngine';
 
@@ -111,6 +111,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
       <FormProvider engine={engine}>
+        <Disclaimer />
         <Section>
           <header>
             <PublicodesSimulatorTitle />

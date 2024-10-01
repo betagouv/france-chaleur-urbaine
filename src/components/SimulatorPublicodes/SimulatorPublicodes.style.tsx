@@ -1,4 +1,5 @@
 import Button from '@codegouvfr/react-dsfr/Button';
+import { Notice as DSFRNotice } from '@codegouvfr/react-dsfr/Notice';
 import styled, { css } from 'styled-components';
 
 import Box from '@components/ui/Box';
@@ -105,6 +106,15 @@ export const FloatingButton = styled(Button)`
   ${({ theme }) => theme.media.lg`
     display: none;
   `}
+`;
+
+export const Notice = styled(DSFRNotice)`
+  .fr-notice__title {
+    font-size: 0.85rem;
+  }
+  .fr-notice__body {
+    padding: 0; /* To be removed once DSFR have been patched as it should not have a padding when no close button is present */
+  }
 `;
 
 export const ChartPlaceholder = styled.div`
