@@ -300,7 +300,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
           </Button>
         )}
         {summary && (
-          <Button priority="secondary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportSummary}>
+          <Button priority="tertiary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportSummary}>
             Exporter les données
           </Button>
         )}

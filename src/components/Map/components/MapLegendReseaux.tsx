@@ -115,7 +115,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
           </Box>
           <Button
             onClick={() => setFiltersVisible(true)}
-            priority="secondary"
+            priority="tertiary"
             className="fr-mb-2w fr-ml-3w"
             iconId="ri-filter-line"
             size="small"

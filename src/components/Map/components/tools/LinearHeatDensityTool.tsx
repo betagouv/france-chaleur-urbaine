@@ -311,7 +311,7 @@ const LinearHeatDensityTool: React.FC = () => {
             >
               Effacer
             </Button>
-            <Button priority="secondary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportDrawing}>
+            <Button priority="tertiary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportDrawing}>
               Exporter le tracé
             </Button>
           </>
