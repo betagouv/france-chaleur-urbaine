@@ -45,6 +45,7 @@ import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
 import { Title } from './components/SimpleMapLegend.style';
+import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
@@ -619,6 +620,7 @@ const InternalMap = ({
 
   useDistancesMeasurementLayers();
   useLinearHeatDensityLayers();
+  useBuildingsDataExtractionLayers();
 
   // FIXME pourquoi on doit passer par un setState ici ?
   useEffect(() => {

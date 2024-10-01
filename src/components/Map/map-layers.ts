@@ -29,6 +29,7 @@ import { SourceId } from 'src/services/tiles.config';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import { Network } from 'src/types/Summary/Network';
 
+import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 
@@ -375,7 +376,9 @@ export type LayerId =
   | 'distance-measurements-lines'
   | 'distance-measurements-labels'
   | 'linear-heat-density-lines'
-  | 'linear-heat-density-labels';
+  | 'linear-heat-density-labels'
+  | 'buildings-data-extraction-fill'
+  | 'buildings-data-extraction-outline';
 
 const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
   'interpolate',
@@ -1090,7 +1093,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
   ];
 }
 export function buildInternalMapLayers(): MapSourceLayersSpecification[] {
-  return [...distancesMeasurementLayers, ...linearHeatDensityLayers];
+  return [...distancesMeasurementLayers, ...linearHeatDensityLayers, ...buildingsDataExtractionLayers];
 }
 
 // extends the Map type to get fully typed layer and source ids

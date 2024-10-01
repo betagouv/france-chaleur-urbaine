@@ -3,10 +3,12 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
 import { useKeyboardEvent } from '@react-hookz/web';
 import turfArea from '@turf/area';
-import { Map } from 'maplibre-gl';
+import { atom, useAtom } from 'jotai';
+import { GeoJSONSource } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
+import { MapSourceLayersSpecification } from '@components/Map/map-layers';
 import useFCUMap from '@components/Map/MapProvider';
 import Box from '@components/ui/Box';
 import Text from '@components/ui/Text';
@@ -18,10 +20,14 @@ import { GasSummary } from 'src/types/Summary/Gas';
 
 import { Title } from '../SimpleMapLegend.style';
 
+export const buildingsDataExtractionPolygonsSourceId = 'buildings-data-extraction-polygons';
+
 export type AreaSummaryFeature = GeoJSON.Feature<GeoJSON.Polygon> & {
   id: string;
   properties: {
-    isValid: string;
+    isValid: boolean;
+    areaSize: number;
+    areaHasSelfIntersections: boolean;
   };
 };
 
@@ -41,27 +47,29 @@ type BuildingsDataExtractSummary = {
   longueurRéseauxDeChaleur: number;
 };
 
+const featuresAtom = atom<AreaSummaryFeature[]>([]);
+const summaryAtom = atom<BuildingsDataExtractSummary | null>(null);
+
 const BuildingsDataExtractionTool: React.FC = () => {
   const { heatNetworkService } = useServices();
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
-  const [area, setArea] = useState<GeoJSON.Position[] | null>(null);
-  const [areaSize, setAreaSize] = useState<number>(0);
-  const areaSizeRef = useRef(areaSize);
-  const [areaHasSelfIntersections, setAreaHasSelfIntersections] = useState<boolean>(false);
+  const [features, setFeatures] = useAtom(featuresAtom);
+  const areaSizeRef = useRef(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [summary, setSummary] = useState<BuildingsDataExtractSummary | null>(null);
+  const [summary, setSummary] = useAtom(summaryAtom);
 
-  useEffect(() => {
-    areaSizeRef.current = areaSize;
-  }, [areaSize]);
+  const areaSize = features[0]?.properties.areaSize ?? 0;
+  const areaHasSelfIntersections = features[0]?.properties.areaHasSelfIntersections ?? false;
 
   const onDrawCreate = async ({ features: drawFeatures }: DrawCreateEvent) => {
     if (!mapDraw) {
       return;
     }
-    setIsDrawing(false);
     // always only 1 feature
     const feature = drawFeatures[0] as GeoJSON.Feature<GeoJSON.Polygon>;
+    mapDraw.deleteAll();
+    setIsDrawing(false);
+
     const area = feature.geometry.coordinates[0];
     // get latest area size as the ref keeps the up-to-date value
     if (areaSizeRef.current > clientConfig.summaryAreaSizeLimit || !validatePolygonGeometry(area)) {
@@ -70,7 +78,6 @@ const BuildingsDataExtractionTool: React.FC = () => {
 
     try {
       setIsLoading(true);
-      setArea(area);
       const rawSummary = await heatNetworkService.summary(area);
       const summary: BuildingsDataExtractSummary = {
         batimentsChauffageCollectifFioul: {
@@ -105,21 +112,57 @@ const BuildingsDataExtractionTool: React.FC = () => {
     if (drawMode !== 'draw_polygon') {
       return;
     }
-    const featureBeingDrawn = mapDraw.getAll().features.at(-1) as AreaSummaryFeature;
+    const featureBeingDrawn = mapDraw.getAll().features.at(-1) as AreaSummaryFeature | undefined;
     if (!featureBeingDrawn) {
       return;
     }
 
-    const areaSize = turfArea(featureBeingDrawn) / 1_000_000;
-    setAreaSize(areaSize); // in km²
+    const areaSize = turfArea(featureBeingDrawn) / 1_000_000; // in km²
 
     // Validate the polygon for self-intersections
     const isGeometryValid = validatePolygonGeometry(featureBeingDrawn.geometry.coordinates[0]);
-    setAreaHasSelfIntersections(!isGeometryValid);
 
-    const isPolygonValid = areaSize <= clientConfig.summaryAreaSizeLimit && isGeometryValid;
-    mapDraw.setFeatureProperty(featureBeingDrawn.id as string, 'isValid', isPolygonValid);
+    setFeatures([
+      {
+        ...featureBeingDrawn,
+        properties: {
+          isValid: areaSize <= clientConfig.summaryAreaSizeLimit && isGeometryValid,
+          areaSize,
+          areaHasSelfIntersections: !isGeometryValid,
+        },
+      },
+    ]);
   };
+
+  useEffect(() => {
+    if (!mapLoaded) {
+      return;
+    }
+    const map = mapRef.getMap();
+
+    map.on('draw.create', onDrawCreate);
+    map.on('draw.render', onDrawRender);
+    if (!summary) {
+      mapDraw.changeMode('draw_polygon');
+      setIsDrawing(true);
+    }
+
+    return () => {
+      map.off('draw.create', onDrawCreate);
+      map.off('draw.render', onDrawRender);
+
+      // clear the feature being drawn
+      mapDraw.deleteAll();
+
+      // handle exit via routing
+      setIsDrawing((isDrawing) => {
+        if (isDrawing) {
+          clearSummary();
+        }
+        return false;
+      });
+    };
+  }, [mapLoaded]);
 
   // handle the esc key to quit drawing mode (run after the draw.modechange event)
   useKeyboardEvent(
@@ -141,40 +184,15 @@ const BuildingsDataExtractionTool: React.FC = () => {
     mapDraw.deleteAll();
     mapDraw.changeMode('draw_polygon');
     setIsDrawing(true);
-    setArea(null);
+    setFeatures([]);
   };
 
   const exportSummary = async () => {
-    if (!area) {
+    if (areaSize === 0) {
       return;
     }
-    await heatNetworkService.downloadSummary(area, EXPORT_FORMAT.CSV);
+    await heatNetworkService.downloadSummary(features[0].geometry.coordinates[0], EXPORT_FORMAT.CSV);
   };
-
-  useEffect(() => {
-    if (!mapLoaded) {
-      return;
-    }
-    const map = mapRef.getMap();
-
-    configureSourcesAndLayers(map);
-    map.on('draw.create', onDrawCreate);
-    map.on('draw.render', onDrawRender);
-    mapDraw.changeMode('draw_polygon');
-    setIsDrawing(true);
-
-    return () => {
-      map.off('draw.create', onDrawCreate);
-      map.off('draw.render', onDrawRender);
-
-      // clear the feature being drawn
-      mapDraw.deleteAll();
-      setIsDrawing(false);
-
-      // clear existing features
-      clearSourcesAndLayers(map);
-    };
-  }, [mapLoaded]);
 
   return (
     <>
@@ -302,32 +320,53 @@ const getConso = (consos: GasSummary[]) => {
   return `${sum.toFixed(2)} MWh`;
 };
 
-function configureSourcesAndLayers(map: Map) {
-  ['mapbox-gl-draw-hot', 'mapbox-gl-draw-cold'].forEach((sourceId) => {
-    map.addLayer({
-      source: sourceId,
-      id: `buildings-data-extraction-fill-${sourceId}`,
-      type: 'fill',
-      paint: {
-        'fill-color': ['case', ['get', 'user_isValid'], '#0000911A', '#f538381A'],
-      },
+/**
+ * Synchronise the features with the map
+ */
+export function useBuildingsDataExtractionLayers() {
+  const { mapLayersLoaded, mapRef } = useFCUMap();
+  const [features] = useAtom(featuresAtom);
+
+  useEffect(() => {
+    if (!mapLayersLoaded) {
+      return;
+    }
+
+    (mapRef.getSource(buildingsDataExtractionPolygonsSourceId) as GeoJSONSource).setData({
+      type: 'FeatureCollection',
+      features: features,
     });
-    map.addLayer({
-      source: sourceId,
-      id: `buildings-data-extraction-outline-${sourceId}`,
-      type: 'line',
-      paint: {
-        'line-color': ['case', ['get', 'user_isValid'], '#000091', '#f53838'],
-        'line-width': 4,
-      },
-    });
-  });
+  }, [mapLayersLoaded, features]);
 }
 
-function clearSourcesAndLayers(map: Map) {
-  ['mapbox-gl-draw-hot', 'mapbox-gl-draw-cold'].forEach((sourceId) => {
-    map.removeLayer(`buildings-data-extraction-fill-${sourceId}`);
-    map.removeLayer(`buildings-data-extraction-outline-${sourceId}`);
-    map.removeLayer(`buildings-data-extraction-label-${sourceId}`);
-  });
-}
+export const buildingsDataExtractionLayers: MapSourceLayersSpecification[] = [
+  {
+    sourceId: buildingsDataExtractionPolygonsSourceId,
+    source: {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [],
+      },
+    },
+    layers: [
+      {
+        source: buildingsDataExtractionPolygonsSourceId,
+        id: 'buildings-data-extraction-fill',
+        type: 'fill',
+        paint: {
+          'fill-color': ['case', ['get', 'isValid'], '#0000911A', '#f538381A'],
+        },
+      },
+      {
+        source: buildingsDataExtractionPolygonsSourceId,
+        id: 'buildings-data-extraction-outline',
+        type: 'line',
+        paint: {
+          'line-color': ['case', ['get', 'isValid'], '#000091', '#f53838'],
+          'line-width': 4,
+        },
+      },
+    ],
+  },
+];
