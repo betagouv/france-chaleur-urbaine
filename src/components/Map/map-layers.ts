@@ -1260,6 +1260,8 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   setLayerVisibility('distance-measurements-lines', config.mesureDistance);
   setLayerVisibility('linear-heat-density-labels', config.densiteThermiqueLineaire);
   setLayerVisibility('linear-heat-density-lines', config.densiteThermiqueLineaire);
+  setLayerVisibility('buildings-data-extraction-fill', config.extractionDonneesBatiment);
+  setLayerVisibility('buildings-data-extraction-outline', config.extractionDonneesBatiment);
 }
 
 type ReseauxDeChaleurFilter = {

@@ -333,8 +333,6 @@ const InternalMap = ({
           },
         } satisfies LayerSpecification,
       ],
-      // makes the properties of each feature accessible with the prefix user_.
-      userProperties: true,
     });
 
     e.target.addControl(drawControl as any);
@@ -493,7 +491,7 @@ const InternalMap = ({
         });
       });
 
-      // other sources: distances measurement, linear heat density
+      // other sources: distances measurement, linear heat density, buildings data extraction
       buildInternalMapLayers().forEach((spec) => {
         if (map.getSource(spec.sourceId)) {
           return;

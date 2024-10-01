@@ -5,7 +5,7 @@ import { useKeyboardEvent } from '@react-hookz/web';
 import turfArea from '@turf/area';
 import { atom, useAtom } from 'jotai';
 import { GeoJSONSource } from 'maplibre-gl';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import { MapSourceLayersSpecification } from '@components/Map/map-layers';
@@ -21,6 +21,7 @@ import { GasSummary } from 'src/types/Summary/Gas';
 import { Title } from '../SimpleMapLegend.style';
 
 export const buildingsDataExtractionPolygonsSourceId = 'buildings-data-extraction-polygons';
+const buildingsDataExtractionDrawHotSourceLayerId = 'buildings-data-extraction-first-linestring';
 
 export type AreaSummaryFeature = GeoJSON.Feature<GeoJSON.Polygon> & {
   id: string;
@@ -54,7 +55,6 @@ const BuildingsDataExtractionTool: React.FC = () => {
   const { heatNetworkService } = useServices();
   const { mapLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
-  const areaSizeRef = useRef(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [summary, setSummary] = useAtom(summaryAtom);
 
@@ -71,8 +71,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
     setIsDrawing(false);
 
     const area = feature.geometry.coordinates[0];
-    // get latest area size as the ref keeps the up-to-date value
-    if (areaSizeRef.current > clientConfig.summaryAreaSizeLimit || !validatePolygonGeometry(area)) {
+    if (turfArea(feature) / 1_000_000 > clientConfig.summaryAreaSizeLimit || !validatePolygonGeometry(area)) {
       return;
     }
 
@@ -142,6 +141,23 @@ const BuildingsDataExtractionTool: React.FC = () => {
 
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
+
+    // adapted from gl-draw-line-active.hot
+    // in https://github.com/mapbox/mapbox-gl-draw/blob/f4b3f861efa9c69b0c1d64764b855e5d5274186c/src/modes/draw_polygon.js#L113-L131
+    // because the polygon with 2 points is not rendered
+    map.addLayer(
+      {
+        source: 'mapbox-gl-draw-hot',
+        id: buildingsDataExtractionDrawHotSourceLayerId,
+        type: 'line',
+        filter: ['==', '$type', 'LineString'],
+        paint: {
+          'line-color': '#000091',
+          'line-width': 4,
+        },
+      },
+      'buildings-data-extraction-outline'
+    );
     if (!summary) {
       mapDraw.changeMode('draw_polygon');
       setIsDrawing(true);
@@ -150,6 +166,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
     return () => {
       map.off('draw.create', onDrawCreate);
       map.off('draw.render', onDrawRender);
+      map.removeLayer(buildingsDataExtractionDrawHotSourceLayerId);
 
       // clear the feature being drawn
       mapDraw.deleteAll();
