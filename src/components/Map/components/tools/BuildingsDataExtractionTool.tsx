@@ -208,7 +208,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
     await heatNetworkService.downloadSummary(features[0].geometry.coordinates[0], EXPORT_FORMAT.CSV);
   };
 
-  const canClear = features[0]?.geometry.coordinates[0]?.length > 2 && !isLoading;
+  const showClearButton = features[0]?.geometry.coordinates[0]?.length > 2 && !isLoading;
 
   return (
     <>
@@ -310,7 +310,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
           </Box>
         )}
 
-        {canClear && (
+        {showClearButton && (
           <Button priority="secondary" iconId="fr-icon-delete-bin-line" className="btn-full-width" onClick={clearSummary}>
             Effacer
           </Button>
