@@ -105,6 +105,7 @@ export const getNetworks = async (): Promise<NetworkToCompare[]> => {
       id: network.id_fcu,
       ...network,
       energie_max_ratio: max.label,
+      livraisons_totale_MWh: network['livraisons_totale_MWh'] / 1000,
       'contenu CO2 ACV': network['contenu CO2 ACV'] * 1000,
       'contenu CO2': network['contenu CO2'] * 1000,
     } as NetworkToCompare;

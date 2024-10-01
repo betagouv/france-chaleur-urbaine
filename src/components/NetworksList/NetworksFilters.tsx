@@ -84,7 +84,7 @@ export type IntervalAndEnergiesFilters = {
 
 export const intervalFilters = [
   {
-    label: 'Livraison de chaleur (MWh)',
+    label: 'Livraisons de chaleur annuelles (GWh)',
     confKey: 'livraisons_totale_MWh',
     rdcLimitKey: 'livraisonsAnnuelles',
   },
@@ -94,7 +94,7 @@ export const intervalFilters = [
     rdcLimitKey: 'tauxENRR',
   },
   {
-    label: 'Emission de CO2 (C02/kWh)',
+    label: 'Emission de CO2 (gC02/kWh)',
     confKey: 'contenu CO2 ACV',
     rdcLimitKey: 'emissionsCO2',
   },
@@ -214,6 +214,25 @@ function NetworksFilter({
             </Box>
             <FiltersSeparator />
             <Box m="2w">
+              <Checkbox
+                small
+                options={[
+                  {
+                    label: 'Réseaux classés',
+                    nativeInputProps: {
+                      name: 'classed-network',
+                      checked: newFilterValues.isClassed,
+                      onChange: (e: any) =>
+                        setNewFilterValues({
+                          ...newFilterValues,
+                          isClassed: e.target.checked,
+                        }),
+                    },
+                  },
+                ]}
+              />
+            </Box>
+            <Box m="2w">
               <Text size="sm">Type d'énergie majoritaire</Text>
               <Select
                 label=""
@@ -304,25 +323,6 @@ function NetworksFilter({
                   </Box>
                 )
             )}
-            <Box m="2w">
-              <Checkbox
-                small
-                options={[
-                  {
-                    label: 'Réseaux classés',
-                    nativeInputProps: {
-                      name: 'classed-network',
-                      checked: newFilterValues.isClassed,
-                      onChange: (e: any) =>
-                        setNewFilterValues({
-                          ...newFilterValues,
-                          isClassed: e.target.checked,
-                        }),
-                    },
-                  },
-                ]}
-              />
-            </Box>
             <Accordion
               label="Filtres avancés"
               onExpandedChange={(value) => setIsOpenEnergiesFilters(!value)}

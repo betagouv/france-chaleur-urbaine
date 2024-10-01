@@ -208,6 +208,7 @@ const NetworksList = () => {
         headerName: 'Taux EnR&R',
         minWidth: 150,
         sortable: true,
+        align: 'right',
         renderCell: (params) => <Text>{params.row['Taux EnR&R'] ? `${params.row['Taux EnR&R']}%` : undefined}</Text>,
       },
       {
@@ -222,6 +223,7 @@ const NetworksList = () => {
         ),
         minWidth: 200,
         sortable: true,
+        align: 'right',
       },
       {
         field: 'contenu CO2',
@@ -235,6 +237,7 @@ const NetworksList = () => {
         ),
         minWidth: 200,
         sortable: true,
+        align: 'right',
       },
       {
         field: 'PM',
@@ -248,34 +251,36 @@ const NetworksList = () => {
         ),
         minWidth: 150,
         sortable: true,
+        align: 'right',
       },
       {
         field: 'annee_creation',
         headerName: 'Année de construction',
         minWidth: 150,
         sortable: true,
+        align: 'right',
       },
       {
         field: 'livraisons_totale_MWh',
         renderHeader: () => (
           <Box>
-            Livraison de chaleur annuelle
+            Livraisons de chaleur annuelles
             <Text fontWeight="regular" mt="1w">
-              (MWh)
+              (GWh)
             </Text>
           </Box>
         ),
         minWidth: 250,
         sortable: true,
-        renderCell: (params) => (
-          <Text>{params.row.livraisons_totale_MWh ? params.row.livraisons_totale_MWh.toLocaleString('fr-FR') : ''}</Text>
-        ),
+        align: 'right',
+        renderCell: (params) => <Text>{params.row.livraisons_totale_MWh ? params.row.livraisons_totale_MWh.toFixed(2) : ''}</Text>,
       },
       {
         field: 'energie_ratio_biomasse',
         headerName: 'Biomasse',
         minWidth: 200,
         sortable: true,
+        align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_biomasse ? params.row.energie_ratio_biomasse.toFixed(2) : 0}%</Text>,
       },
       {
@@ -283,6 +288,7 @@ const NetworksList = () => {
         headerName: 'Géothermie',
         minWidth: 200,
         sortable: true,
+        align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_geothermie ? params.row.energie_ratio_geothermie.toFixed(2) : 0}%</Text>,
       },
       {
@@ -290,6 +296,7 @@ const NetworksList = () => {
         headerName: 'UVE',
         minWidth: 200,
         sortable: true,
+        align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_uve ? params.row.energie_ratio_uve.toFixed(2) : 0}%</Text>,
       },
       {
@@ -297,6 +304,7 @@ const NetworksList = () => {
         headerName: 'Chaleur industrielle',
         minWidth: 200,
         sortable: true,
+        align: 'right',
         renderCell: (params) => (
           <Text>{params.row.energie_ratio_chaleurIndustrielle ? params.row.energie_ratio_chaleurIndustrielle.toFixed(2) : 0}%</Text>
         ),
@@ -306,6 +314,7 @@ const NetworksList = () => {
         headerName: 'Solaire thermique',
         minWidth: 200,
         sortable: true,
+        align: 'right',
         renderCell: (params) => (
           <Text>{params.row.energie_ratio_solaireThermique ? params.row.energie_ratio_solaireThermique.toFixed(2) : 0}%</Text>
         ),
@@ -315,6 +324,7 @@ const NetworksList = () => {
         headerName: 'Pompe à chaleur',
         minWidth: 200,
         sortable: true,
+        align: 'right',
         renderCell: (params) => (
           <Text>{params.row.energie_ratio_pompeAChaleur ? params.row.energie_ratio_pompeAChaleur.toFixed(2) : 0}%</Text>
         ),
@@ -324,6 +334,7 @@ const NetworksList = () => {
         headerName: 'Gaz',
         minWidth: 200,
         sortable: true,
+        align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_gaz ? params.row.energie_ratio_gaz.toFixed(2) : 0}%</Text>,
       },
       {
@@ -331,6 +342,7 @@ const NetworksList = () => {
         headerName: 'Fioul',
         minWidth: 200,
         sortable: true,
+        align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_fioul ? params.row.energie_ratio_fioul.toFixed(2) : 0}%</Text>,
       },
     ],
