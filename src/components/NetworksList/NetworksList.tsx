@@ -188,7 +188,7 @@ const NetworksList = () => {
       {
         field: 'Taux EnR&R',
         headerName: 'Taux EnR&R',
-        minWidth: 150,
+        minWidth: 110,
         sortable: true,
         align: 'right',
         renderCell: (params) => <Text>{params.row['Taux EnR&R'] ? `${params.row['Taux EnR&R']}%` : undefined}</Text>,
@@ -203,7 +203,7 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
-        minWidth: 200,
+        minWidth: 175,
         sortable: true,
         align: 'right',
       },
@@ -217,7 +217,7 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
-        minWidth: 200,
+        minWidth: 140,
         sortable: true,
         align: 'right',
       },
@@ -231,14 +231,14 @@ const NetworksList = () => {
             </Text>
           </Box>
         ),
-        minWidth: 150,
+        minWidth: 130,
         sortable: true,
         align: 'right',
       },
       {
         field: 'annee_creation',
         headerName: 'Année de construction',
-        minWidth: 150,
+        minWidth: 130,
         sortable: true,
         align: 'right',
       },
@@ -246,13 +246,15 @@ const NetworksList = () => {
         field: 'livraisons_totale_MWh',
         renderHeader: () => (
           <Box>
-            Livraisons de chaleur annuelles
+            Livraisons de chaleur
+            <br />
+            annuelles
             <Text fontWeight="regular" mt="1w">
               (GWh)
             </Text>
           </Box>
         ),
-        minWidth: 250,
+        minWidth: 180,
         sortable: true,
         align: 'right',
         renderCell: (params) => <Text>{params.row.livraisons_totale_MWh ? params.row.livraisons_totale_MWh.toFixed(2) : ''}</Text>,
@@ -260,7 +262,7 @@ const NetworksList = () => {
       {
         field: 'energie_ratio_biomasse',
         headerName: 'Biomasse',
-        minWidth: 200,
+        minWidth: 110,
         sortable: true,
         align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_biomasse ? params.row.energie_ratio_biomasse.toFixed(2) : 0}%</Text>,
@@ -268,7 +270,7 @@ const NetworksList = () => {
       {
         field: 'energie_ratio_geothermie',
         headerName: 'Géothermie',
-        minWidth: 200,
+        minWidth: 110,
         sortable: true,
         align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_geothermie ? params.row.energie_ratio_geothermie.toFixed(2) : 0}%</Text>,
@@ -276,7 +278,7 @@ const NetworksList = () => {
       {
         field: 'energie_ratio_uve',
         headerName: 'UVE',
-        minWidth: 200,
+        minWidth: 110,
         sortable: true,
         align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_uve ? params.row.energie_ratio_uve.toFixed(2) : 0}%</Text>,
@@ -284,7 +286,7 @@ const NetworksList = () => {
       {
         field: 'energie_ratio_chaleurIndustrielle',
         headerName: 'Chaleur industrielle',
-        minWidth: 200,
+        minWidth: 110,
         sortable: true,
         align: 'right',
         renderCell: (params) => (
@@ -294,7 +296,7 @@ const NetworksList = () => {
       {
         field: 'energie_ratio_solaireThermique',
         headerName: 'Solaire thermique',
-        minWidth: 200,
+        minWidth: 110,
         sortable: true,
         align: 'right',
         renderCell: (params) => (
@@ -304,7 +306,7 @@ const NetworksList = () => {
       {
         field: 'energie_ratio_pompeAChaleur',
         headerName: 'Pompe à chaleur',
-        minWidth: 200,
+        minWidth: 110,
         sortable: true,
         align: 'right',
         renderCell: (params) => (
@@ -314,7 +316,7 @@ const NetworksList = () => {
       {
         field: 'energie_ratio_gaz',
         headerName: 'Gaz',
-        minWidth: 200,
+        minWidth: 110,
         sortable: true,
         align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_gaz ? params.row.energie_ratio_gaz.toFixed(2) : 0}%</Text>,
@@ -322,7 +324,7 @@ const NetworksList = () => {
       {
         field: 'energie_ratio_fioul',
         headerName: 'Fioul',
-        minWidth: 200,
+        minWidth: 110,
         sortable: true,
         align: 'right',
         renderCell: (params) => <Text>{params.row.energie_ratio_fioul ? params.row.energie_ratio_fioul.toFixed(2) : 0}%</Text>,
@@ -362,7 +364,7 @@ const NetworksList = () => {
           networks.forEach((network) => {
             !newRegionsList.includes(network.region.trim()) && newRegionsList.push(network.region.trim());
           });
-          newRegionsList.sort();
+          newRegionsList.sort((a, b) => a.localeCompare(b));
           setRegionsList(newRegionsList);
 
           // amend the configuration with metadata limits of networks
