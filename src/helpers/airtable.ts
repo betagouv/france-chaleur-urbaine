@@ -23,6 +23,66 @@ const formatHeatingTypeToAirtable: (heatingType?: string) => string = (heatingTy
       return 'Autre / Je ne sais pas';
   }
 };
+const formatStructureToAirtable: (structure: string, companyType?: string, demandCompanyType?: string) => string = (
+  structure,
+  companyType,
+  demandCompanyType
+) => {
+  if (structure === 'Tertiaire') {
+    switch (companyType) {
+      case 'Bailleur social':
+        return 'Logement social';
+      case 'Syndic de copropriété':
+        return 'Copropriété';
+      case "Bureau d'études ou AMO":
+      case 'Mandataire / délégataire CEE':
+        switch (demandCompanyType) {
+          case 'Copropriété':
+          case 'Maison individuelle':
+          case 'Autre':
+            return demandCompanyType;
+          case 'Bailleur social':
+            return 'Logement social';
+          default:
+            return structure;
+        }
+        break;
+      default:
+        return structure;
+    }
+  }
+  return structure;
+};
+const formatEtablissementToAirtable: (
+  structure: string,
+  company: string,
+  companyType?: string,
+  demandCompanyType?: string,
+  demandCompanyName?: string
+) => string = (structure, company, companyType, demandCompanyType, demandCompanyName) => {
+  if (structure === 'Tertiaire' && (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE')) {
+    if (demandCompanyType === 'Bâtiment tertiaire' || demandCompanyType === 'Bailleur social' || demandCompanyType === 'Autre') {
+      return demandCompanyName || '';
+    }
+    return '';
+  } else if (structure === 'Tertiaire' && companyType === 'Syndic de copropriété') {
+    return '';
+  }
+  return company;
+};
+const formatNomStructureAccompagnanteToAirtable: (structure: string, company: string, companyType?: string) => string = (
+  structure,
+  company,
+  companyType
+) => {
+  if (
+    structure === 'Tertiaire' &&
+    (companyType === "Bureau d'études ou AMO" || companyType === 'Mandataire / délégataire CEE' || companyType === 'Syndic de copropriété')
+  ) {
+    return company || '';
+  }
+  return '';
+};
 
 export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDemandCreation = (values) => {
   const {
@@ -35,23 +95,35 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     firstName,
     lastName,
     company,
+    companyType,
     email,
     city,
     postcode,
     department,
     region,
     phone,
+    demandCompanyType,
+    demandCompanyName,
     mtm_campaign,
     mtm_kwd,
     mtm_source,
     networkId,
+    demandArea,
+    nbLogements,
   } = values;
 
   return {
     Nom: lastName,
     Prénom: firstName,
-    Structure: structure,
-    Établissement: company,
+    Structure: formatStructureToAirtable(structure, companyType, demandCompanyType),
+    Établissement: formatEtablissementToAirtable(structure, company, companyType, demandCompanyType, demandCompanyName),
+    'Structure accompagnante':
+      structure === 'Tertiaire' &&
+      (companyType === "Bureau d'études ou AMO" ||
+        companyType === 'Mandataire / délégataire CEE' ||
+        companyType === 'Syndic de copropriété')
+        ? companyType
+        : undefined,
     Éligibilité: eligibility.isEligible,
     Adresse: address,
     Latitude: coords.lat,
@@ -69,6 +141,9 @@ export const formatDataToAirtable: (values: FormDemandCreation) => AirtableDeman
     'Campagne matomo': mtm_campaign,
     'Campagne keywords': mtm_kwd,
     'Campagne source': mtm_source,
+    'Nom de la structure accompagnante': formatNomStructureAccompagnanteToAirtable(structure, company, companyType),
+    'Surface en m2': demandArea,
+    Logement: nbLogements,
     networkId,
   };
 };

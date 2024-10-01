@@ -1,8 +1,27 @@
 fileignoreconfig:
+- filename: .env
+  checksum: 640fb3e8208508d5b81c07241fb4d0619b5e31d58c33a80bb72e04248bfed8eb
 - filename: next.config.js
   checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
+- filename: scripts/addUser.ts
+  checksum: 0a177922ce629d11306b8137997bbd761a547af145dedacd98d9ecc883d763d8
+- filename: src/components/Map/Map.tsx
+  checksum: fd1b8bd14f7bdeeb2b2a89bbc368cca61df55b0fe97a5f4512c9e9522d8b8ca7
+- filename: src/components/Map/components/CardSearchDetails.tsx
+  checksum: 133b59ccdafbc92d757c6a4108db7118353acaf20dbc8f2d3fab01455b4356ad
+- filename: src/components/Map/components/ReseauxDeChaleurFilters.tsx
+  checksum: 5c1ddc91aa6d1b82f0606e8aad85fc18b296f4f93fe3b26f6a50f46e6f92fe9f
+- filename: src/components/Map/components/SimpleMapLegend.style.tsx
+  checksum: d5ef84573f5bd387f8a44fcd09fd063683fb7caeecd5f7deab992cf76cc0d18e
+- filename: src/components/Map/components/SimpleMapLegend.tsx
+  checksum: 43be49746d8d8a133cbe473acaa0ed78dfae34e84b10b1afc83f9f879eddabdf
 - filename: src/components/SimulatorPublicodes/DebugDrawer.tsx
   checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 scopeconfig:
 - scope: node
+allowed_patterns:
+- eventKey
+- \/codegouvfr\/react-dsfr\/blob\/.*
+- key\=\{
+- K in keyof T
 version: "1.0"

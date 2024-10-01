@@ -3,7 +3,7 @@ import zod from 'zod';
 
 import { handleRouteErrors, validateObjectSchema } from '@helpers/server';
 import getTile from 'src/services/tiles';
-import { zSourceId } from 'src/services/tiles.config';
+import { zDatabaseSourceId } from 'src/services/tiles.config';
 
 // disable the warning for this route as many tiles are bigger than the default 4MB threshold
 export const config = {
@@ -18,7 +18,7 @@ export default handleRouteErrors(
       type,
       tileCoordinates: [z, x, y],
     } = await validateObjectSchema(req.query, {
-      type: zSourceId,
+      type: zDatabaseSourceId,
       tileCoordinates: zod.array(zod.coerce.number()).length(3),
     });
     const tile = await getTile(type, x, y, z);

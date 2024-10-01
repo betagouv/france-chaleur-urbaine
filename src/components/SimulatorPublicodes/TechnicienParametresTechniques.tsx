@@ -23,8 +23,8 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="température de référence chaud" label="température de référence chaud" iconId="fr-icon-temp-cold-fill" />
         <Input name="augmenter la température de chauffe" label="augmenter la température de chauffe" iconId="fr-icon-temp-cold-fill" />
 
-        <Select name="zone climatique" label="Zone climatique" withDefaultOption={false} />
-        <Select name="sous zone climatique" label="Sous-zone climatique" withDefaultOption={false} />
+        <Select name="zone climatique" label="Zone climatique" />
+        <Select name="sous zone climatique" label="Sous-zone climatique" />
       </Accordion>
 
       <Accordion label="Choix du bâtiment">
@@ -38,7 +38,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
             />
             {engine.getField('méthode résidentiel') === 'DPE' && <Select name="DPE" label="DPE" />}
             {engine.getField('méthode résidentiel') === 'Normes thermiques et âge du bâtiment' && (
-              <Select name="normes thermiques et âge du bâtiment" label="normes thermiques et âge du bâtiment" />
+              <Select name="normes thermiques et âge du bâtiment" label="Normes thermiques et âge du bâtiment" />
             )}
           </>
         )}
@@ -49,7 +49,7 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
               label="Méthode de calcul pour les besoins en chauffage et refroidissement"
               hintText="méthode tertiaire"
             />
-            <Select name="normes thermiques tertiaire" label="normes thermiques tertiaire" />
+            <Select name="normes thermiques tertiaire" label="Normes thermiques tertiaire" />
           </>
         )}
         <Input
@@ -107,9 +107,13 @@ const TechnicienBatimentForm: React.FC<TechnicienBatimentFormProps> = ({ childre
         <Input name="consommation spécifique chauffage" label="consommation spécifique chauffage" />
         <Input name="consommation spécifique ECS" label="consommation spécifique ECS" />
         <Input name="consommation spécifique climatisation" label="consommation spécifique climatisation par habitant" />
-        <Input name="besoins chauffage par appartement" label="besoins chauffage par appartement" placeholderPrecision={2} />
-        <Input name="besoins eau chaude sanitaire par appartement" label="besoins eau chaude sanitaire par appartement" />
-        <Input name="besoins en climatisation par appartement" label="besoins en climatisation par appartement" />
+        <Input name="besoins chauffage par appartement" label="besoins chauffage par appartement" placeholderPrecision={0} />
+        <Input
+          name="besoins eau chaude sanitaire par appartement"
+          label="besoins eau chaude sanitaire par appartement"
+          placeholderPrecision={0}
+        />
+        <Input name="besoins en climatisation par appartement" label="besoins en climatisation par appartement" placeholderPrecision={0} />
       </Accordion>
 
       <Accordion label="Calcul puissance">

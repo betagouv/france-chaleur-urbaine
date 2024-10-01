@@ -1,19 +1,15 @@
 import { useState } from 'react';
 
-import AddressAutocomplete from '@components/addressAutocomplete';
-import Box from '@components/ui/Box';
+import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@components/form/dsfr/AddressAutocompleteInput';
 import Link from '@components/ui/Link';
 import { useServices } from 'src/services';
 import { HandleAddressSelect } from 'src/types/HeatNetworksResponse';
-import { SuggestionItem } from 'src/types/Suggestions';
-
-import { MapSearchFormGlobalStyle } from './MapSearchForm.style';
 
 const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSelect }) => {
   const [eligibilityError, setEligibilityError] = useState(false);
   const { heatNetworkService } = useServices();
 
-  const handleAddressSelected = async (address: string, geoAddress?: SuggestionItem): Promise<void> => {
+  const handleAddressSelected: AddressAutocompleteInputProps['onSelect'] = async (geoAddress) => {
     if (!geoAddress) {
       return;
     }
@@ -26,7 +22,7 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
       };
 
       if (onAddressSelect) {
-        onAddressSelect(address, geoAddress.geometry.coordinates, addressDetail);
+        onAddressSelect(geoAddress.properties.label, geoAddress.geometry.coordinates, addressDetail);
       }
     } catch (err) {
       setEligibilityError(true);
@@ -34,15 +30,23 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
   };
 
   return (
-    <>
-      <MapSearchFormGlobalStyle />
-      <AddressAutocomplete placeholder="Rechercher une adresse" onAddressSelected={handleAddressSelected} className="map-search-form" />
-      {eligibilityError && (
-        <Box textColor="#c00" mt="1w">
-          Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
-        </Box>
-      )}
-    </>
+    <AddressAutocomplete
+      label={''}
+      state={eligibilityError ? 'error' : undefined}
+      stateRelatedMessage={
+        eligibilityError ? (
+          <>
+            Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
+          </>
+        ) : undefined
+      }
+      defaultValue={''}
+      onClear={() => {
+        setEligibilityError(false);
+      }}
+      nativeInputProps={{ placeholder: 'Ex: 5 Rue Censier 75005 Paris' }}
+      onSelect={handleAddressSelected}
+    />
   );
 };
 export default MapSearchForm;

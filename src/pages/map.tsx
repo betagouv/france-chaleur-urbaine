@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 
 import IframeWrapper from '@components/IframeWrapper';
-import { MapLegendFeature } from '@components/Map/components/SimpleMapLegend';
+import { type MapLegendFeature } from '@components/Map/components/MapLegendReseaux';
 import Map from '@components/Map/Map';
 import useRouterReady from '@hooks/useRouterReady';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
@@ -32,13 +32,7 @@ const legendURLKeyToLegendFeature: Record<LegendURLKey | string, MapLegendFeatur
   futur_reseau: 'reseauxEnConstruction',
   reseau_froid: 'reseauxDeFroid',
   pdp: 'zonesDeDeveloppementPrioritaire',
-  demandes: 'demandesEligibilite',
-  gaz: 'consommationsGaz',
-  conso_gaz: 'batimentsGazCollectif',
-  conso_fioul: 'batimentsFioulCollectif',
   raccordements: 'batimentsRaccordes',
-  zones_opportunite: 'zonesOpportunite',
-  dpe: 'caracteristiquesBatiments',
 };
 
 const MapPage = () => {
@@ -48,7 +42,7 @@ const MapPage = () => {
     return null;
   }
 
-  const { legend, drawing, displayLegend } = router.query;
+  const { legend, displayLegend } = router.query;
 
   const legendFeatures = displayLegend
     ? decodeURI(displayLegend as string)
@@ -70,7 +64,6 @@ const MapPage = () => {
       <Map
         withLegend={legend === 'true'}
         withHideLegendSwitch={legend === 'true'}
-        withDrawing={drawing === 'true'}
         withBorder
         enabledLegendFeatures={legendFeatures}
         initialMapConfiguration={initialMapConfiguration}

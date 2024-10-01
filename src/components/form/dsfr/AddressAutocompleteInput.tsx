@@ -3,7 +3,7 @@ import { fr } from '@codegouvfr/react-dsfr';
 import Autocomplete, { type AddressAutocompleteProps } from '../AddressAutocomplete';
 import FieldWrapper, { type FieldWrapperProps } from '../dsfr/FieldWrapper';
 
-type AddressAutocompleteInputProps = Omit<FieldWrapperProps, 'onSelect' | 'children'> & AddressAutocompleteProps;
+export type AddressAutocompleteInputProps = Omit<FieldWrapperProps, 'onSelect' | 'children'> & AddressAutocompleteProps;
 
 const AddressAutocompleteInput = ({
   fieldId,
@@ -18,7 +18,7 @@ const AddressAutocompleteInput = ({
   return (
     <FieldWrapper
       fieldId={fieldId}
-      label={label || 'Adresse'}
+      label={typeof label === 'undefined' ? 'Adresse' : label}
       hintText={hintText}
       state={state}
       stateRelatedMessage={stateRelatedMessage}

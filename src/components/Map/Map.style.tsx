@@ -1,15 +1,16 @@
 import styled, { createGlobalStyle, css } from 'styled-components';
 
-export const mapControlZindex = 110;
+import Box from '@components/ui/Box';
+
+export const mapControlZindex = 0;
 
 export const mapMediumMedia = '@media (max-width: 1250px) ';
 
+export const legendWidth = 350;
+
 export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
-  drawing: boolean;
-  withTopLegend: boolean;
-  withProMode: boolean;
-  withHideLegendSwitch: boolean;
+  isDrawing: boolean;
   withBorder: boolean;
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
@@ -22,25 +23,11 @@ export const MapStyle: any = createGlobalStyle<{
 
     .map, .maplibregl-map {
       position: absolute !important;
-      left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : '333px')};
-      ${({ withTopLegend }) => withTopLegend && 'top: 41px;'}
-      width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : 'calc(100% - 333px) !important')};
-      height: ${({ withTopLegend }) => (withTopLegend ? 'calc(100% - 41px) !important' : '100%')};
-      ${({ withProMode, withHideLegendSwitch, legendCollapsed }) =>
-        withProMode &&
-        withHideLegendSwitch &&
-        (legendCollapsed
-          ? `@media (max-width: 600px) {
-              top: 65px;
-              height: calc(100% - 65px) !important;
-            }`
-          : `@media (max-width: 600px) {
-              top: 41px;
-              height: calc(100% - 41px) !important;
-            }`)}
+      left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : `${legendWidth}px`)};
+      width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth}px) !important`)};
 
-      ${({ drawing }) =>
-        drawing &&
+      ${({ isDrawing }) =>
+        isDrawing &&
         `
       .maplibregl-canvas {
         cursor: crosshair;
@@ -124,26 +111,8 @@ export const MapStyle: any = createGlobalStyle<{
 // --- Tooling components ---
 // --------------------------
 
-export const MapControlWrapper = styled.div<{ legendCollapsed: boolean }>`
-  position: absolute;
-  z-index: ${mapControlZindex};
-
-  max-width: calc(100vw - 333px - 40px);
-  width: 1100px;
-  padding: 32px;
-  bottom: 0;
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '50vw' : 'calc((100vw - 333px)/2 + 333px)')};
-  transform: translateX(-50%);
-
-  ${mapMediumMedia} {
-    left: 50vw;
-    max-width: 100%;
-  }
-`;
-
 export const LegendSideBar = styled.div<{
   legendCollapsed: boolean;
-  withHideLegendSwitch?: boolean;
 }>`
   z-index: ${mapControlZindex + 2};
   overflow: auto;
@@ -154,22 +123,13 @@ export const LegendSideBar = styled.div<{
       position: absolute;
       left: -150%;
     `}
-  width: 333px;
-  min-width: 333px;
+  width: ${legendWidth}px;
+  min-width: ${legendWidth}px;
   background: var(--background-default-grey);
   border: 1px solid #dddddd;
   box-shadow:
     0px 16px 16px -16px rgba(0, 0, 0, 0.32),
     0px 8px 16px rgba(0, 0, 0, 0.1);
-  ${({ withHideLegendSwitch, legendCollapsed }) =>
-    withHideLegendSwitch &&
-    !legendCollapsed &&
-    css`
-      top: 41px;
-      position: absolute;
-      height: calc(100% - 41px);
-    `}
-  }
 `;
 
 export const LegendContainer = styled.div<{
@@ -178,23 +138,31 @@ export const LegendContainer = styled.div<{
   ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
 `;
 
-export const LegendSeparator = styled.div`
-  border: 1px solid #e1e1e1;
-  margin: 16px;
-`;
-
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
-  padding: 0 0 0 22px;
-  z-index: ${mapControlZindex + 1};
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '-23px' : '310px')};
-  top: 50%;
-  border-radius: 10px;
-  background-color: var(--background-default-grey);
-  border: solid 1px #dddddd;
-  height: 60px;
-  width: 51px;
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '-1px' : `calc(${legendWidth}px - 1px)`)};
+  animation: slide-in-left 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  top: calc(50% - 16px);
+  background-color: var(--background-flat-blue-france);
+  height: 32px;
+  width: 32px;
   overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+
+  &:hover {
+    background-color: var(--background-active-blue-france-hover) !important;
+  }
+
+  span {
+    transition: transform 0.5s ease;
+    transform: rotate(${({ legendCollapsed }) => (legendCollapsed ? '0' : '180deg')});
+  }
+
+  z-index: ${mapControlZindex + 1};
+
   // ugly hack => hover create issue in mobile
   @media (min-width: 520px) {
     &:hover {
@@ -208,17 +176,21 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
 export const LegendLogoList = styled.div<{
   legendCollapsed: boolean;
 }>`
-  width: 332px;
+  width: calc(${legendWidth}px - 10px);
   position: absolute;
-  bottom: 0px;
-  z-index: 9999;
+  bottom: 0;
+  left: 5px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
   background: var(--background-default-grey);
   ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
   height:100px;
 `;
 
 export const LegendLogoLink = styled.a`
-  width: 166px;
+  flex: 1;
   background-color: var(--background-default-grey);
   img {
     width: 100%;
@@ -232,69 +204,13 @@ export const LegendLogoLink = styled.a`
 `;
 
 export const LegendLogo = styled.div`
-  width: 166px;
+  flex: 1;
   background-color: var(--background-default-grey);
   img {
     width: 100%;
     vertical-align: middle;
   }
   display: inline-block;
-`;
-
-export const TopLegend = styled.div<{
-  legendCollapsed: boolean;
-}>`
-  background-color: var(--background-default-grey);
-  width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : 'calc(100% - 333px)')};
-  @media (max-width: 600px) {
-    width: 100%;
-    display: block;
-  }
-  @media (max-width: 1251px) {
-    display: flex;
-  }
-  height: fit-content;
-  border-bottom: solid 1px #dddddd;
-
-  .fr-toggle {
-    width: fit-content;
-    padding: 8px 16px;
-  }
-
-  .fr-toggle__label {
-    color: var(--bf500);
-    font-weight: bold;
-
-    &::before {
-      margin-top: 0;
-      content: '' !important;
-    }
-
-    &::after {
-      top: 8px;
-      right: 32px !important;
-    }
-  }
-`;
-
-export const TopLegendSwitch = styled.div<{
-  legendCollapsed?: boolean;
-  isProMode?: boolean;
-}>`
-  margin-left: 24px;
-  @media (max-width: 600px) {
-    width: 100%;
-    display: block;
-  }
-  .fr-toggle__label {
-    color: var(--blue-france-113);
-  }
-  ${({ legendCollapsed, isProMode }) =>
-    !legendCollapsed &&
-    isProMode &&
-    `@media (max-width: 600px) {
-      display: none;
-    }`}
 `;
 
 export const PopupTitle = styled.h3`
@@ -308,4 +224,49 @@ export const PopupType = styled.div`
   font-size: 0.75rem;
   font-weight: bold;
   text-transform: uppercase;
+`;
+
+export const MapSearchInputWrapper = styled(Box)`
+  > h2 {
+    margin-bottom: 4px;
+  }
+  > .fr-input-group {
+    flex: 1;
+  }
+`;
+
+export const MapSearchWrapper = styled.div<{
+  legendCollapsed?: boolean;
+}>`
+  position: absolute;
+  background: var(--background-default-grey);
+  padding: 10px;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-radius: 8px 8px 0 0;
+  background: #fff;
+  margin: 20px 10vw;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  padding: 12px;
+  font-size: 13px;
+  line-height: 2;
+  outline: none;
+  overflow: auto;
+  z-index: ${mapControlZindex};
+
+  > .fr-accordion > .fr-collapse--expanded {
+    max-height: 50dvh; /* HACK as it's difficult to measure */
+    overflow: auto;
+  }
+
+  ${({ theme }) => theme.media.lg`
+    width: 320px;
+    margin: 20px 30px;
+    > .fr-accordion > .fr-collapse--expanded {
+      max-height: 70dvh; /* HACK as it's difficult to measure */
+    }
+  `}
+
+  ${({ legendCollapsed, theme }) => !legendCollapsed && theme.media.lg`left: ${legendWidth}px;`}
 `;

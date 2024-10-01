@@ -13,7 +13,16 @@ export const getOptions = (engine: ReturnType<typeof usePublicodesFormContext>['
   return [];
 };
 
-// Convertit les booléen de nodeValue en oui ou non pour correspondre au formulaire.
+/**
+ * Convertit les booléen de nodeValue en oui ou non pour correspondre au formulaire.
+ */
 export const fixupBooleanEngineValue = (value: any): any => {
   return typeof value === 'boolean' ? (value ? 'oui' : 'non') : value;
+};
+
+/**
+ * Enlève les apostrophes des string constantes de la situation pour correspondre au formulaire.
+ */
+export const fixupSituationStringValue = (value: any): any => {
+  return typeof value === 'string' && value.at(0) === "'" && value.at(-1) === "'" ? value.substring(1, value.length - 1) : value;
 };

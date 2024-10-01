@@ -50,6 +50,10 @@ const demandsExportColumns: ExportColumn<Demand>[] = [
     value: (demand) => (demand['Gestionnaire Logement'] === undefined ? demand['Logement'] : demand['Gestionnaire Logement']),
   },
   {
+    header: 'Surface en m2',
+    value: 'Surface en m2',
+  },
+  {
     header: 'Conso gaz (MWh)',
     value: (demand) => (demand['Gestionnaire Conso'] === undefined ? demand['Conso'] : demand['Gestionnaire Conso']),
   },

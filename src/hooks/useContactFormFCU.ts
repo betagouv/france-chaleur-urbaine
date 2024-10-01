@@ -69,18 +69,61 @@ const useContactFormFCU = () => {
 
   const handleOnSubmitContact = useCallback(
     async (data?: AddressDataType, fromMap?: boolean) => {
-      if (data && data.structure !== 'Tertiaire') {
-        data.company = '';
+      if (data) {
+        if (data.structure !== 'Tertiaire') {
+          data.company = '';
+          data.companyType = '';
+          data.demandCompanyType = '';
+          data.demandCompanyName = '';
+          data.demandArea = undefined;
+          if (data.structure !== 'Copropriété') {
+            data.nbLogements = undefined;
+          }
+        } else {
+          if (
+            data.companyType === 'Syndic de copropriété' ||
+            data.companyType === 'Bailleur social' ||
+            data.companyType === 'Gestionnaire de parc tertiaire'
+          ) {
+            data.demandCompanyType = '';
+            data.demandCompanyName = '';
+            if (data.companyType === 'Gestionnaire de parc tertiaire') {
+              data.nbLogements = undefined;
+            } else {
+              data.demandArea = undefined;
+            }
+          } else {
+            switch (data.demandCompanyType) {
+              case 'Copropriété':
+                data.demandArea = undefined;
+                data.demandCompanyName = '';
+                break;
+              case 'Bâtiment tertiaire':
+                data.nbLogements = undefined;
+                break;
+              case 'Bailleur social':
+                data.demandArea = undefined;
+                break;
+              case 'Autre':
+                data.demandArea = undefined;
+                data.nbLogements = undefined;
+                break;
+              default:
+                data.demandArea = undefined;
+                data.demandCompanyName = '';
+                data.nbLogements = undefined;
+                break;
+            }
+          }
+        }
       }
-      const response = await submitToAirtable(
-        formatDataToAirtable({
-          ...data,
-          mtm_campaign,
-          mtm_kwd,
-          mtm_source,
-        } as FormDemandCreation),
-        Airtable.UTILISATEURS
-      );
+      const formatData = formatDataToAirtable({
+        ...data,
+        mtm_campaign,
+        mtm_kwd,
+        mtm_source,
+      } as FormDemandCreation);
+      const response = await submitToAirtable(formatData, Airtable.UTILISATEURS);
       const { id } = await response.json();
       setMessageSent(true);
       const { eligibility, address = '' } = (data as AddressDataType) || {};

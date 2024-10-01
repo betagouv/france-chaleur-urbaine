@@ -58,7 +58,9 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
         type: 'number',
         value: value ?? '',
         placeholder: isDefined(placeholder)
-          ? `${placeholderPrecision && typeof placeholder === 'number' ? placeholder.toFixed(placeholderPrecision) : placeholder}`
+          ? `${
+              isDefined(placeholderPrecision) && typeof placeholder === 'number' ? placeholder.toFixed(placeholderPrecision) : placeholder
+            }`
           : '',
         onChange: (e) => {
           e.stopPropagation();

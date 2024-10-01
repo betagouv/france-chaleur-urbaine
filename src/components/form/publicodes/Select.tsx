@@ -3,9 +3,10 @@ import { Select as DSFRSelect } from '@codegouvfr/react-dsfr/SelectNext';
 import React from 'react';
 
 import useInViewport from '@hooks/useInViewport';
+import { isDefined } from '@utils/core';
 
 import { usePublicodesFormContext } from './FormProvider';
-import { fixupBooleanEngineValue, getOptions } from './helpers';
+import { fixupBooleanEngineValue, fixupSituationStringValue, getOptions } from './helpers';
 
 export type DSFRSelectProps = React.ComponentProps<typeof DSFRSelect> & {
   withDefaultOption?: boolean;
@@ -29,13 +30,18 @@ const Select = ({
 
   const options = isInView ? getOptions(engine, name) : [];
   const defaultValue = isInView ? fixupBooleanEngineValue(engine.getFieldDefaultValue(name) as string | null | undefined) : '';
-  const value = isInView ? (withDefaultOption ? engine.getSituation()[name] : engine.getField(name)) : undefined;
+  const value = isInView
+    ? `${
+        (withDefaultOption ? fixupSituationStringValue(engine.getSituation()[name]) : fixupBooleanEngineValue(engine.getField(name))) ?? ''
+      }`
+    : '';
 
   return (
     <DSFRSelect
       ref={ref}
       nativeSelectProps={{
         ...nativeSelectProps,
+        value,
         onChange: (e) => {
           const value = e.target.value;
           if (['oui', 'non'].includes(value)) {
@@ -50,7 +56,7 @@ const Select = ({
         ...(withDefaultOption
           ? [
               {
-                label: `Par défaut (${defaultValue})`,
+                label: `Par défaut${isDefined(defaultValue) ? ` (${defaultValue})` : ''}`,
                 value: '',
               },
             ]
@@ -58,7 +64,6 @@ const Select = ({
         ...options.map((option) => ({
           label: option,
           value: option,
-          selected: option === value,
         })),
       ]}
       hint={hint}

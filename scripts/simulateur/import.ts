@@ -74,7 +74,6 @@ const upsertAndFixCity = async (city: any, { codesINSEE }: { codesINSEE: any }) 
     altitude_moyenne,
     temperature_ref_altitude_moyenne, // recalculé à la place de "T°C réf / altitude_moyenne" qui semble être faux
     source: city['Source '],
-    sous_zones_climatiques: city['Sous-zones climatiques'],
   };
 
   try {
@@ -107,7 +106,7 @@ const upsertDepartments = async (departmentData: any) => {
       dju_chaud_moyen: dept['DJU chaud moyen'],
       dju_froid_moyen: dept['DJU froid moyen'],
       zone_climatique: dept['Zone climatique'],
-      sous_zones_climatiques: sousZoneClimatiques[departement_id as keyof typeof sousZoneClimatiques],
+      sous_zone_climatique: sousZoneClimatiques[departement_id as keyof typeof sousZoneClimatiques],
       source: dept['Source '],
       annee: dept['Année'],
     };

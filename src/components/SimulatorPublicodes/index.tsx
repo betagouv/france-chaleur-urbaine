@@ -50,9 +50,9 @@ const addresseToPublicodesRules = {
   'caractéristique réseau de froid . livraisons totales': (infos) => infos.nearestReseauDeFroid?.['livraisons_totale_MWh'],
   'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid?.['production_totale_MWh'],
 
-  'code département': (infos) => `'${infos.infosVilles.departement_id}'`,
-  'température de référence chaud': (infos) => +infos.infosVilles.temperature_ref_altitude_moyenne,
-} as const satisfies Partial<Record<DottedName, (infos: any) => any>>;
+  'code département': (infos) => `'${infos.infosVille.departement_id}'`,
+  'température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
+} as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;
 
 const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   children,
@@ -189,7 +189,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
                       setNearestReseauDeFroid(infos.nearestReseauDeFroid);
 
-                      if (!infos.infosVilles) {
+                      if (!infos.infosVille) {
                         setAddressError(true);
 
                         return;
@@ -239,10 +239,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       {lngLat && (
                         <small>
                           {' '}
-                          <Link
-                            isExternal
-                            href={`/carte?coord=${lngLat.join(',')}&zoom=17&proMode=${displayMode === 'technicien' ? 'true' : 'false'}`}
-                          >
+                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`}>
                             <strong>Visualiser sur la carte</strong>
                           </Link>
                         </small>
@@ -266,10 +263,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       {lngLat && (
                         <small>
                           {' '}
-                          <Link
-                            isExternal
-                            href={`/carte?coord=${lngLat.join(',')}&zoom=17&proMode=${displayMode === 'technicien' ? 'true' : 'false'}`}
-                          >
+                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`}>
                             <strong>Visualiser sur la carte</strong>
                           </Link>
                         </small>
