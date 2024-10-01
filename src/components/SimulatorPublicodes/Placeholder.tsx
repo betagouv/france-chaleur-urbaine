@@ -1,16 +1,16 @@
 import { fr } from '@codegouvfr/react-dsfr';
+import Alert from '@codegouvfr/react-dsfr/Alert';
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import React from 'react';
 
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
-import Button from '@components/ui/Button';
 import Heading from '@components/ui/Heading';
 import Modal, { createModal } from '@components/ui/Modal';
 import cx from '@utils/cx';
 
-import { Notice, Results, ResultsPlaceholder, Section, Simulator } from './SimulatorPublicodes.style';
+import { Results, ResultsPlaceholder, Section, Simulator } from './SimulatorPublicodes.style';
 
 type PublicodesSimulatorPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & {};
 
@@ -112,19 +112,20 @@ export const Disclaimer = () => {
           expertise technique à sa réalisation.
         </p>
       </Modal>
-      <Notice
-        isClosable={false}
+      <Alert
+        severity="info"
         className="fr-mt-2w"
-        title={
-          <>
+        small
+        description={
+          <span className="fr-text--xs">
             Cet outil de comparaison de modes de chauffage et de refroidissement a pour objectif de comparer en quelques minutes des
             configurations de chauffage et de refroidissement sur les plans techniques, économiques et environnementaux. Il ne remplace en
             aucun cas une étude de faisabilité technico-économique et ne peut s'adapter aux situations particulières avec les hypothèses
-            préconfigurées. Ces hypothèses représentent des configurations types, elles sont donc sujets à des incertitudes importantes.
-            <Button size="small" onClick={() => modal.open()} priority="primary" className="fr-mt-3v">
+            préconfigurées. Ces hypothèses représentent des configurations types, elles sont donc sujets à des incertitudes importantes.{' '}
+            <a href="#" onClick={() => modal.open()} className="fr-link fr-text--xs">
               Voir l’explication détaillée
-            </Button>
-          </>
+            </a>
+          </span>
         }
       />
     </>
