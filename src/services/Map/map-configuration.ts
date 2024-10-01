@@ -110,6 +110,7 @@ export type MapConfiguration = {
   besoinsEnChaleurIndustrieCommunes: boolean;
   densiteThermiqueLineaire: boolean;
   mesureDistance: boolean;
+  extractionDonneesBatiment: boolean;
 };
 
 /**
@@ -199,6 +200,7 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
   besoinsEnChaleurIndustrieCommunes: false,
   densiteThermiqueLineaire: false,
   mesureDistance: false,
+  extractionDonneesBatiment: false,
 };
 
 export const defaultMapConfiguration = createMapConfiguration({

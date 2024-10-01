@@ -15,6 +15,8 @@ fileignoreconfig:
   checksum: d5ef84573f5bd387f8a44fcd09fd063683fb7caeecd5f7deab992cf76cc0d18e
 - filename: src/components/Map/components/SimpleMapLegend.tsx
   checksum: 43be49746d8d8a133cbe473acaa0ed78dfae34e84b10b1afc83f9f879eddabdf
+- filename: src/components/Map/components/tools/BuildingsDataExtractionTool.tsx
+  checksum: 2b20c4585ec9f8ae7a457383e7d0e87cd731200d09d4372567ba9cce3ea0628d
 - filename: src/components/SimulatorPublicodes/DebugDrawer.tsx
   checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 scopeconfig:

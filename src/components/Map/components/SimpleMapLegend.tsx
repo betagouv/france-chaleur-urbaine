@@ -15,6 +15,7 @@ import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
+import { trackEvent } from 'src/services/analytics';
 import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from 'src/services/Map/businessRules';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
@@ -86,7 +87,10 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
       <Tabs
         selectedTabId={selectedTabId.tabId}
         tabs={tabs}
-        onTabChange={(newTabId) => setSelectedTabId({ tabId: newTabId as TabId, subTabId: null })}
+        onTabChange={(newTabId) => {
+          trackEvent(`Carto|Tabs|${newTabId as TabId}`);
+          setSelectedTabId({ tabId: newTabId as TabId, subTabId: null });
+        }}
       >
         {selectedTabId.tabId === 'reseaux' && (
           <>
@@ -107,6 +111,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 Contribuer
               </Link>
               <Link
+                isExternal
                 variant="primary"
                 href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
                 eventKey="Téléchargement|Tracés|carte"
@@ -114,7 +119,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 mx="auto"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                <Icon name="ri-download-line" size="sm" mr="1v" />
                 Télécharger les tracés
               </Link>
             </Box>
