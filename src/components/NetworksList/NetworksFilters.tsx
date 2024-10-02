@@ -305,6 +305,7 @@ function NetworksFilter({
                       label={filterConf.label}
                       min={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][0] : defaultInterval[0]}
                       max={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][1] : defaultInterval[1]}
+                      suffix={filterConf.confKey === 'Taux EnR&R' ? '%' : ''}
                       nativeInputProps={[
                         {
                           value: newFilterValues[filterConf.confKey][0],
@@ -342,6 +343,7 @@ function NetworksFilter({
                         label={filterConf.label}
                         min={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][0] : percentageMaxInterval[0]}
                         max={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][1] : percentageMaxInterval[1]}
+                        suffix="%"
                         nativeInputProps={[
                           {
                             value: newFilterValues[filterConf.confKey][0],

@@ -183,8 +183,8 @@ const NetworksList = () => {
       },
       {
         field: 'Identifiant reseau',
-        headerName: 'Identifiant du réseau',
-        minWidth: 200,
+        headerName: 'Identifiant',
+        minWidth: 120,
         sortable: true,
       },
       {
