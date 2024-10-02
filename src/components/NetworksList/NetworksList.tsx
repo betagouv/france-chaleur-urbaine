@@ -67,17 +67,25 @@ const NetworksList = () => {
   const [dataToDisplay, setDataToDisplay] = useState<DataToDisplay>('general');
   const [loaded, setLoaded] = useState(false);
 
+  const onApplySearchValueFilter = useCallback(
+    (newFilteredNetworks: NetworkToCompare[]) => {
+      if (searchValue) {
+        newFilteredNetworks = newFilteredNetworks.filter(
+          (network: NetworkToCompare) =>
+            (network.nom_reseau && network.nom_reseau.includes(searchValue)) ||
+            (network.Gestionnaire && network.Gestionnaire.includes(searchValue)) ||
+            (network.MO && network.MO.includes(searchValue)) ||
+            (network.communes && network.communes.includes(searchValue))
+        );
+      }
+      return newFilteredNetworks;
+    },
+    [allNetworks, searchValue]
+  );
+
   const onSearchValueFilter = useCallback(() => {
-    let newFilteredNetworks: NetworkToCompare[] = [];
-    if (searchValue) {
-      newFilteredNetworks = allNetworks.filter(
-        (network: NetworkToCompare) =>
-          (network.nom_reseau && network.nom_reseau.includes(searchValue)) ||
-          (network.Gestionnaire && network.Gestionnaire.includes(searchValue)) ||
-          (network.MO && network.MO.includes(searchValue)) ||
-          (network.communes && network.communes.includes(searchValue))
-      );
-    }
+    //Search on networks already filtered
+    const newFilteredNetworks = onApplySearchValueFilter(filteredNetworks);
     setFilteredNetworks(newFilteredNetworks);
 
     if (tableApiRef.current?.setPage) {
@@ -145,8 +153,15 @@ const NetworksList = () => {
 
       newFilteredNetworks = onApplyIntervalOrEnergiesFilters('energies', newFilteredNetworks, newFilterValues);
 
+      //Apply search value
+      newFilteredNetworks = onApplySearchValueFilter(newFilteredNetworks);
+
       setFilteredNetworks(newFilteredNetworks);
       setFilterValues(newFilterValues);
+
+      if (tableApiRef.current?.setPage) {
+        tableApiRef.current.setPage(0);
+      }
     },
     [allNetworks, intervalFilters, energiesFilters, filterLimits]
   );
@@ -421,6 +436,11 @@ const NetworksList = () => {
                   placeholder: 'Rechercher',
                   value: searchValue,
                   onChange: (e) => setSearchValue(e.target.value),
+                  onKeyDown: (e) => {
+                    if (e.key === 'Enter') {
+                      onSearchValueFilter();
+                    }
+                  },
                 }}
               />
             </Box>
