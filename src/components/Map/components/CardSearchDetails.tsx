@@ -3,20 +3,17 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
 
-import EligibilityContactForm from '@components/EligibilityForm/EligibilityContactForm';
+import EligibilityContactFormModal, {
+  modal as eligibilityContactFormModal,
+  useIsModalOpen,
+} from '@components/EligibilityForm/EligibilityContactFormModal';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
-import Modal, { createModal, useIsModalOpen } from '@components/ui/Modal';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 
 import { ContactFormButtonWrapper, ContactFormWrapper, MessageConfirmBox, SearchedAddress } from './CardSearchDetails.style';
-
-const modal = createModal({
-  id: 'contact-form-modal',
-  isOpenedByDefault: false,
-});
 
 type CardSearchDetailsProps = {
   address: StoredAddress;
@@ -37,7 +34,7 @@ const CardSearchDetails = ({
 }: CardSearchDetailsProps) => {
   const { basedOnCity, distance, isEligible, futurNetwork, inPDP, cityHasNetwork, cityHasFuturNetwork, hasNoTraceNetwork } =
     storedAddress.addressDetails?.network || {};
-  const contactFormVisible = useIsModalOpen(modal);
+  const contactFormVisible = useIsModalOpen(eligibilityContactFormModal);
 
   const readableDistance = useMemo(() => getReadableDistance(distance), [distance]);
 
@@ -117,15 +114,13 @@ const CardSearchDetails = ({
 
   const markAddressAsContacted = useCallback(() => onContacted(storedAddress), [onContacted, storedAddress]);
 
-  const displayContactForm = useCallback(() => modal.open(), []);
+  const displayContactForm = useCallback(() => eligibilityContactFormModal.open(), []);
 
   const isReseauClose = basedOnCity ? cityHasFuturNetwork || cityHasNetwork : isEligible;
 
   return (
     <>
-      <Modal modal={modal} title="Être mis en relation">
-        <EligibilityContactForm fullAddress={storedAddress} onSubmit={markAddressAsContacted} />
-      </Modal>
+      <EligibilityContactFormModal fullAddress={storedAddress} onSubmit={markAddressAsContacted} />
       <SearchedAddress
         expanded={expanded}
         onExpandedChange={(newExpanded) => {
