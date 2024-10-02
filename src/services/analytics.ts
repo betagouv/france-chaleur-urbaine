@@ -634,8 +634,9 @@ const emptyActivateMethod = () => {
 };
 
 const matomoABTestingExperiments = [
+  // placeholder to make types work
   {
-    name: 'TestMessagesFormulaireContact',
+    name: '_internal',
     percentage: 100,
     includedTargets: [],
     excludedTargets: [],
@@ -644,20 +645,9 @@ const matomoABTestingExperiments = [
         name: 'original',
         activate: emptyActivateMethod,
       },
-      {
-        name: 'AmeliorationA',
-        activate: emptyActivateMethod,
-      },
-      {
-        name: 'AmeliorationB',
-        activate: emptyActivateMethod,
-      },
-      {
-        name: 'AmeliorationA+B',
-        activate: emptyActivateMethod,
-      },
     ],
   },
+  // add the experiments below
 ] as const satisfies ReadonlyArray<MatomoABTestingExperiment>;
 
 type MatomoABTestingExperimentName = (typeof matomoABTestingExperiments)[number]['name'];
