@@ -263,12 +263,11 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                       </Link>{' '}
                       est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
                       {lngLat && (
-                        <small>
-                          {' '}
-                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`}>
+                        <div className="fr-text--xs">
+                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
                             <strong>Visualiser sur la carte</strong>
                           </Link>
-                        </small>
+                        </div>
                       )}
                     </>
                   }
@@ -287,12 +286,11 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                       </Link>{' '}
                       est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
                       {lngLat && (
-                        <small>
-                          {' '}
-                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`}>
+                        <div className="fr-text--xs">
+                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
                             <strong>Visualiser sur la carte</strong>
                           </Link>
-                        </small>
+                        </div>
                       )}
                     </>
                   }
