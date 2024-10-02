@@ -629,35 +629,13 @@ type MatomoABTestingExperiment = {
   }>;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emptyActivateMethod = () => {
   // code changes are executed using the variation name, not this callback method
 };
 
 const matomoABTestingExperiments = [
-  {
-    name: 'TestMessagesFormulaireContact',
-    percentage: 100,
-    includedTargets: [],
-    excludedTargets: [],
-    variations: [
-      {
-        name: 'original',
-        activate: emptyActivateMethod,
-      },
-      {
-        name: 'AmeliorationA',
-        activate: emptyActivateMethod,
-      },
-      {
-        name: 'AmeliorationB',
-        activate: emptyActivateMethod,
-      },
-      {
-        name: 'AmeliorationA+B',
-        activate: emptyActivateMethod,
-      },
-    ],
-  },
+  // nothing at the moment
 ] as const satisfies ReadonlyArray<MatomoABTestingExperiment>;
 
 type MatomoABTestingExperimentName = (typeof matomoABTestingExperiments)[number]['name'];
