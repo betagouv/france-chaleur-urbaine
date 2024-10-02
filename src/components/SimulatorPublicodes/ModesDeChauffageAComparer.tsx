@@ -82,11 +82,11 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
         options={(
           [
             'PAC air/air individuelle',
-            'PAC air/air collective / tertiaire',
+            'PAC air/air collective',
             'PAC eau/eau individuelle',
-            'PAC eau/eau collective / tertiaire',
+            'PAC eau/eau collective',
             'PAC air/eau individuelle',
-            'PAC air/eau collective / tertiaire',
+            'PAC air/eau collective',
           ] as ModeDeChauffage[]
         ).map(createOptionProps)}
       />

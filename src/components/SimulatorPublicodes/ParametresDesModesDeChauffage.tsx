@@ -409,8 +409,8 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
           <Input name="ratios économiques . PAC x air-air réversible x Individuel" label="Coût investissement" />
         </UrlStateAccordion>
       )}
-      {hasModeDeChauffage('PAC air/air collective / tertiaire') && (
-        <UrlStateAccordion label="PAC air/air collective / tertiaire">
+      {hasModeDeChauffage('PAC air/air collective') && (
+        <UrlStateAccordion label="PAC air/air collective">
           <Input name="ratios . PAC AIR AIR SCOP coll" label="SCOP" />
           <Input name="ratios . PAC AIR AIR SEER coll" label="SEER" />
           <Input name="ratios . PAC AIR AIR Durée de vie coll" label="Durée de vie" />
@@ -431,8 +431,8 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
           <Input name="ratios économiques . PAC x eau-eau non réversible x Individuel" label="Coût investissement" />
         </UrlStateAccordion>
       )}
-      {hasModeDeChauffage('PAC eau/eau collective / tertiaire') && (
-        <UrlStateAccordion label="PAC eau/eau collective / tertiaire">
+      {hasModeDeChauffage('PAC eau/eau collective') && (
+        <UrlStateAccordion label="PAC eau/eau collective">
           <Input name="ratios . PAC EAU EAU SCOP coll champ de sondes" label="SCOP" />
           <Input name="ratios . PAC EAU EAU Durée de vie" label="Durée de vie" />
           {/* FIXME vérifier si même durée de vie que PAC eau/eau indiv */}
@@ -463,8 +463,8 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
           <Input name="ratios économiques . PAC x air-eau réversible x Individuel" label="Coût investissement" />
         </UrlStateAccordion>
       )}
-      {hasModeDeChauffage('PAC air/eau collective / tertiaire') && (
-        <UrlStateAccordion label="PAC air/eau collective / tertiaire">
+      {hasModeDeChauffage('PAC air/eau collective') && (
+        <UrlStateAccordion label="PAC air/eau collective">
           <Input name="ratios . PAC AIR EAU SCOP coll" label="SCOP" />
           <Input name="ratios . PAC AIR EAU SEER coll" label="SEER" />
           <Input name="ratios . PAC AIR EAU Durée de vie coll" label="Durée de vie" />

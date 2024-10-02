@@ -55,7 +55,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-air indiv',
   },
   {
-    label: 'PAC air/air collective / tertiaire',
+    label: 'PAC air/air collective',
     emissionsCO2PublicodesKey: 'PAC air-air x Collectif',
     coutPublicodeKey: 'PAC eau-eau indiv',
   },
@@ -65,7 +65,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-eau indiv',
   },
   {
-    label: 'PAC eau/eau collective / tertiaire',
+    label: 'PAC eau/eau collective',
     emissionsCO2PublicodesKey: 'PAC eau-eau x Collectif',
     coutPublicodeKey: 'PAC air-air coll',
   },
@@ -75,7 +75,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC eau-eau coll',
   },
   {
-    label: 'PAC air/eau collective / tertiaire',
+    label: 'PAC air/eau collective',
     emissionsCO2PublicodesKey: 'PAC air-eau x Collectif',
     coutPublicodeKey: 'PAC air-eau coll',
   },
