@@ -27,6 +27,7 @@ import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
 import { useServices } from 'src/services';
+import { trackEvent } from 'src/services/analytics';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
 import { SourceId } from 'src/services/tiles.config';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
@@ -43,11 +44,14 @@ import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
 import SimpleMapLegend from './components/SimpleMapLegend';
+import { Title } from './components/SimpleMapLegend.style';
+import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
+  CollapseLegendLabel,
   LegendContainer,
   LegendLogo,
   LegendLogoLink,
@@ -329,8 +333,6 @@ const InternalMap = ({
           },
         } satisfies LayerSpecification,
       ],
-      // makes the properties of each feature accessible with the prefix user_.
-      userProperties: true,
     });
 
     e.target.addControl(drawControl as any);
@@ -489,7 +491,7 @@ const InternalMap = ({
         });
       });
 
-      // other sources: distances measurement, linear heat density
+      // other sources: distances measurement, linear heat density, buildings data extraction
       buildInternalMapLayers().forEach((spec) => {
         if (map.getSource(spec.sourceId)) {
           return;
@@ -616,6 +618,7 @@ const InternalMap = ({
 
   useDistancesMeasurementLayers();
   useLinearHeatDensityLayers();
+  useBuildingsDataExtractionLayers();
 
   // FIXME pourquoi on doit passer par un setState ici ?
   useEffect(() => {
@@ -725,9 +728,19 @@ const InternalMap = ({
       <div className="map-wrap">
         {withLegend && (
           <>
-            <CollapseLegend legendCollapsed={legendCollapsed} onClick={() => setLegendCollapsed(!legendCollapsed)}>
+            <CollapseLegend
+              legendCollapsed={legendCollapsed}
+              onClick={() => {
+                trackEvent(`Carto|Légende|${legendCollapsed ? 'Ouvre' : 'Ferme'}`);
+                setLegendCollapsed(!legendCollapsed);
+              }}
+            >
               <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-              <Icon size="lg" name={legendCollapsed ? 'ri-arrow-right-s-fill' : 'ri-arrow-left-s-fill'} />
+              <CollapseLegendLabel legendCollapsed={legendCollapsed}>
+                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
+                <span>Légende</span>
+                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
+              </CollapseLegendLabel>
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
               <LegendContainer withoutLogo={withoutLogo}>
@@ -791,7 +804,7 @@ const InternalMap = ({
           {withLegend && (
             <MapSearchWrapper legendCollapsed={legendCollapsed}>
               <MapSearchInputWrapper>
-                {withHideLegendSwitch && <Icon size="md" name="fr-icon-menu-fill" onClick={() => setLegendCollapsed(!legendCollapsed)} />}
+                <Title>Rechercher une adresse</Title>
                 <MapSearchForm onAddressSelect={onAddressSelectHandle} />
               </MapSearchInputWrapper>
 

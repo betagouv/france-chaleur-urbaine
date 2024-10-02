@@ -5,8 +5,6 @@ import Link from '@components/ui/Link';
 import { useServices } from 'src/services';
 import { HandleAddressSelect } from 'src/types/HeatNetworksResponse';
 
-import { Title } from './SimpleMapLegend.style';
-
 const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSelect }) => {
   const [eligibilityError, setEligibilityError] = useState(false);
   const { heatNetworkService } = useServices();
@@ -33,7 +31,7 @@ const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSel
 
   return (
     <AddressAutocomplete
-      label={<Title>Rechercher une adresse</Title>}
+      label={''}
       state={eligibilityError ? 'error' : undefined}
       stateRelatedMessage={
         eligibilityError ? (

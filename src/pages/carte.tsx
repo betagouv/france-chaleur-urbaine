@@ -53,6 +53,7 @@ const Carte = () => {
     ...defaultMapConfiguration,
     densiteThermiqueLineaire: true,
     mesureDistance: true,
+    extractionDonneesBatiment: true,
   });
   additionalLayers.forEach((updateKey) => {
     setProperty(initialMapConfiguration, updateKey, true);

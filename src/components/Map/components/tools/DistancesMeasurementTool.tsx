@@ -6,7 +6,7 @@ import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
 import { atom, useAtom } from 'jotai';
 import { GeoJSONSource } from 'maplibre-gl';
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 
 import { MapSourceLayersSpecification } from '@components/Map/map-layers';
 import useFCUMap from '@components/Map/MapProvider';
@@ -28,6 +28,11 @@ const featuresAtom = atom<MeasureFeature[]>([]);
 const DistancesMeasurementTool: React.FC = () => {
   const { mapLayersLoaded, mapRef, mapDraw, isDrawing, setIsDrawing } = useFCUMap();
   const [features, setFeatures] = useAtom(featuresAtom);
+  const featuresRef = useRef(features);
+
+  useEffect(() => {
+    featuresRef.current = features;
+  }, [features]);
 
   const onDrawCreate = ({ features: drawFeatures }: DrawCreateEvent) => {
     if (!mapDraw) {
@@ -113,6 +118,9 @@ const DistancesMeasurementTool: React.FC = () => {
 
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
+    if (features.length === 0) {
+      startMeasurement();
+    }
 
     return () => {
       map.off('draw.create', onDrawCreate);
@@ -154,14 +162,31 @@ const DistancesMeasurementTool: React.FC = () => {
   }
   function cancelMeasurement() {
     mapDraw?.deleteAll();
-    mapDraw?.changeMode('simple_select');
-    setIsDrawing(false);
-    // remove the last feature (sketch)
-    setFeatures((features) => features.slice(0, -1));
+    setIsDrawing((isDrawing) => {
+      const shouldDrawAgain = featuresRef.current.length === 1;
+      if (isDrawing) {
+        mapDraw?.changeMode(shouldDrawAgain ? 'draw_line_string' : ('simple_select' as any));
+        // remove the last feature (sketch)
+        setFeatures(featuresRef.current.slice(0, -1));
+      }
+      return shouldDrawAgain;
+    });
   }
   function deleteMeasurement(featureId: string) {
-    setFeatures(features.filter((feature) => feature.id !== featureId));
+    setFeatures((features) => {
+      const updatedFeatures = features.filter((feature) => feature.id !== featureId);
+      if (updatedFeatures.length === 0) {
+        startMeasurement();
+      }
+      return updatedFeatures;
+    });
   }
+
+  const drawingFeaturePointCounts = (mapDraw?.getAll().features[0] as MeasureFeature)?.geometry.coordinates.length ?? 0;
+  const showCancelButton = isDrawing && drawingFeaturePointCounts >= 2;
+  const showAddButton = features.length > 0 && !isDrawing;
+
+  const displayedFeatures = features.filter((f) => f.geometry.coordinates.length > 1);
 
   return (
     <>
@@ -175,8 +200,8 @@ const DistancesMeasurementTool: React.FC = () => {
           </Text>
         </Box>
 
-        {features.length > 0 && <Divider my="1v" />}
-        {features.map((feature) => (
+        {displayedFeatures.length > 0 && <Divider my="1v" />}
+        {displayedFeatures.map((feature) => (
           <Fragment key={feature.id}>
             <MesureFeatureListItem
               feature={feature}
@@ -188,11 +213,12 @@ const DistancesMeasurementTool: React.FC = () => {
           </Fragment>
         ))}
 
-        {isDrawing ? (
+        {showCancelButton && (
           <Button priority="secondary" iconId="fr-icon-close-line" onClick={cancelMeasurement}>
             Annuler le tracé
           </Button>
-        ) : (
+        )}
+        {showAddButton && (
           <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLayersLoaded}>
             Ajouter un tracé
           </Button>

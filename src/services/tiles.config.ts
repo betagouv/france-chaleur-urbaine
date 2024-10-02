@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { z } from 'zod';
 
+import { buildingsDataExtractionPolygonsSourceId } from '@components/Map/components/tools/BuildingsDataExtractionTool';
 import {
   distancesMeasurementLabelsSourceId,
   distancesMeasurementLinesSourceId,
@@ -56,7 +57,8 @@ export type InternalSourceId =
   | typeof distancesMeasurementLinesSourceId
   | typeof distancesMeasurementLabelsSourceId
   | typeof linearHeatDensityLinesSourceId
-  | typeof linearHeatDensityLabelsSourceId;
+  | typeof linearHeatDensityLabelsSourceId
+  | typeof buildingsDataExtractionPolygonsSourceId;
 export type SourceId = DatabaseSourceId | InternalSourceId;
 
 const bnbFields = `

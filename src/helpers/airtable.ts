@@ -31,7 +31,7 @@ const formatStructureToAirtable: (structure: string, companyType?: string, deman
   if (structure === 'Tertiaire') {
     switch (companyType) {
       case 'Bailleur social':
-        return 'Logement social';
+        return companyType;
       case 'Syndic de copropriété':
         return 'Copropriété';
       case "Bureau d'études ou AMO":
@@ -39,10 +39,9 @@ const formatStructureToAirtable: (structure: string, companyType?: string, deman
         switch (demandCompanyType) {
           case 'Copropriété':
           case 'Maison individuelle':
+          case 'Bailleur social':
           case 'Autre':
             return demandCompanyType;
-          case 'Bailleur social':
-            return 'Logement social';
           default:
             return structure;
         }

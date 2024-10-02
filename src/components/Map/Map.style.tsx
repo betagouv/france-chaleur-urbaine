@@ -138,18 +138,38 @@ export const LegendContainer = styled.div<{
   ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
 `;
 
+export const CollapseLegendLabel = styled.label<{ legendCollapsed: boolean }>`
+  transform: rotate(90deg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  span[class*='Icon'] {
+    transition: transform 0.5s ease;
+    transform: rotate(${({ legendCollapsed }) => (legendCollapsed ? '-90deg' : '90deg')});
+  }
+`;
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
-  padding: 0 0 0 22px;
-  z-index: ${mapControlZindex + 1};
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '-23px' : `calc(${legendWidth}px - 23px)`)};
-  top: 50%;
-  border-radius: 10px;
-  background-color: var(--background-default-grey);
-  border: solid 1px #dddddd;
-  height: 60px;
-  width: 51px;
+  left: ${({ legendCollapsed }) => (legendCollapsed ? '-1px' : `calc(${legendWidth}px - 1px)`)};
+  animation: slide-in-left 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  top: calc(50% - 50px);
+  background-color: var(--background-flat-blue-france);
+  height: 140px;
+  width: 32px;
   overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+
+  &:hover {
+    background-color: var(--background-active-blue-france-hover) !important;
+  }
+
+  z-index: ${mapControlZindex + 1};
+
   // ugly hack => hover create issue in mobile
   @media (min-width: 520px) {
     &:hover {
@@ -167,7 +187,7 @@ export const LegendLogoList = styled.div<{
   position: absolute;
   bottom: 0;
   left: 5px;
-  z-index: 9999;
+  z-index: 3;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -213,8 +233,11 @@ export const PopupType = styled.div`
   text-transform: uppercase;
 `;
 
-export const MapSearchInputWrapper = styled(Box).attrs({ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px' })`
-  > div {
+export const MapSearchInputWrapper = styled(Box)`
+  > h2 {
+    margin-bottom: 4px;
+  }
+  > .fr-input-group {
     flex: 1;
   }
 `;
@@ -238,10 +261,6 @@ export const MapSearchWrapper = styled.div<{
   outline: none;
   overflow: auto;
   z-index: ${mapControlZindex};
-
-  > .fr-input-group {
-    margin-bottom: 0.5rem;
-  }
 
   > .fr-accordion > .fr-collapse--expanded {
     max-height: 50dvh; /* HACK as it's difficult to measure */
