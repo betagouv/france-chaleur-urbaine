@@ -1,7 +1,6 @@
 import Accordion from '@codegouvfr/react-dsfr/Accordion';
 import Button from '@codegouvfr/react-dsfr/Button';
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
-import Input from '@codegouvfr/react-dsfr/Input';
 import { Range } from '@codegouvfr/react-dsfr/Range';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { useCallback, useEffect, useState } from 'react';
@@ -124,6 +123,8 @@ export const energiesFilters = [
     confKey: 'energie_ratio_fioul',
   },
 ] as const satisfies ReadonlyArray<IntervalAndEnergiesFilters>;
+
+const gestionnairesFilters: string[] = ['Coriance', 'Dalkia', 'IDEX', 'Engie Solutions'];
 
 function NetworksFilter({
   filterLimits,
@@ -261,7 +262,7 @@ function NetworksFilter({
                 }}
                 options={[
                   {
-                    label: 'Sélectionner une région',
+                    label: '',
                     value: '',
                   },
                   ...regionsList.map((region: string) => ({
@@ -272,16 +273,26 @@ function NetworksFilter({
               />
             </Box>
             <Box m="2w">
-              <Input
-                label="Gestionnaire"
-                nativeInputProps={{
+              <Text size="sm">Gestionnaire</Text>
+              <Select
+                label=""
+                nativeSelectProps={{
                   value: newFilterValues.gestionnaire,
-                  onChange: (e) =>
-                    setNewFilterValues({
-                      ...newFilterValues,
-                      gestionnaire: e.target.value,
-                    }),
+                  onChange: (e) => {
+                    newFilterValues.gestionnaire = e.target.value;
+                    setNewFilterValues({ ...newFilterValues });
+                  },
                 }}
+                options={[
+                  {
+                    label: '',
+                    value: '',
+                  },
+                  ...gestionnairesFilters.map((gestionnaire: string) => ({
+                    label: gestionnaire,
+                    value: gestionnaire,
+                  })),
+                ]}
               />
             </Box>
             {intervalFilters.map(
