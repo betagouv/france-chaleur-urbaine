@@ -5,9 +5,9 @@ import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import { useContactFormFCU } from '@hooks';
 
-import { CardSearchDetailsFormStyle, ContactFormWrapper } from './CardSearchDetailsForm.style';
+import { ContactFormWrapper, EligibilityContactFormStyle } from './EligibilityContactForm.style';
 
-const CardSearchDetailsForm: React.FC<{
+const EligibilityContactForm: React.FC<{
   fullAddress: any;
   onSubmit?: (data?: Record<string, any>) => void;
 }> = ({ fullAddress, onSubmit }) => {
@@ -54,7 +54,7 @@ const CardSearchDetailsForm: React.FC<{
         />
       </ContactFormWrapper>
 
-      <CardSearchDetailsFormStyle />
+      <EligibilityContactFormStyle />
       <div ref={EligibilityFormContactRef}>
         <ContactFormWrapper active={contactReady && !messageReceived}>
           <EligibilityFormContact addressData={addressData} onSubmit={handleSubmitForm} cardMode />
@@ -73,4 +73,4 @@ const CardSearchDetailsForm: React.FC<{
   );
 };
 
-export default CardSearchDetailsForm;
+export default EligibilityContactForm;
