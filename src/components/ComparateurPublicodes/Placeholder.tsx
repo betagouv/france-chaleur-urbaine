@@ -10,7 +10,7 @@ import Heading from '@components/ui/Heading';
 import Modal, { createModal } from '@components/ui/Modal';
 import cx from '@utils/cx';
 
-import { Results, ResultsPlaceholder, Section, Simulator } from './SimulatorPublicodes.style';
+import { Results, ResultsPlaceholder, Section, Simulator } from './ComparateurPublicodes.style';
 
 type PublicodesSimulatorPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & {};
 

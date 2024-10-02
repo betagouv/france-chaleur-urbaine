@@ -5,8 +5,8 @@ import Checkbox from '@components/ui/Checkbox';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import { LocationInfoResponse } from '@pages/api/location-infos';
 
+import { Separator, Title } from './ComparateurPublicodes.style';
 import { ModeDeChauffage, modesDeChauffage } from './modes-de-chauffage';
-import { Separator, Title } from './SimulatorPublicodes.style';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ModesDeChauffageAComparerFormProps = React.HTMLAttributes<HTMLDivElement> & {

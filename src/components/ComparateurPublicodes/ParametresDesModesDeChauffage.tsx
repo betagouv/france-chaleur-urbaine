@@ -6,8 +6,8 @@ import Select from '@components/form/publicodes/Select';
 import { UrlStateAccordion as Accordion, UrlStateAccordion } from '@components/ui/Accordion';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 
+import { Title } from './ComparateurPublicodes.style';
 import { ModeDeChauffage } from './modes-de-chauffage';
-import { Title } from './SimulatorPublicodes.style';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDesModesDeChauffageFormProps = React.HTMLAttributes<HTMLDivElement> & {

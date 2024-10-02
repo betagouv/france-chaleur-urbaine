@@ -10,8 +10,8 @@ import useArrayQueryState from '@hooks/useArrayQueryState';
 import { deepMergeObjects } from '@utils/core';
 import cx from '@utils/cx';
 
+import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
-import { ChartPlaceholder, GraphTooltip } from './SimulatorPublicodes.style';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {

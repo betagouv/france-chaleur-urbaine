@@ -17,6 +17,7 @@ import cx from '@utils/cx';
 import { postFetchJSON } from '@utils/network';
 import { ObjectEntries } from '@utils/typescript';
 
+import { FloatingButton, Results, Section, Simulator } from './ComparateurPublicodes.style';
 import DebugDrawer from './DebugDrawer';
 import Graph from './Graph';
 import ModesDeChauffageAComparer from './ModesDeChauffageAComparer';
@@ -24,7 +25,6 @@ import ParametresDesModesDeChauffage from './ParametresDesModesDeChauffage';
 import ParametresDuBatimentGrandPublic from './ParametresDuBatimentGrandPublic';
 import ParametresDuBatimentTechnicien from './ParametresDuBatimentTechnicien';
 import { Disclaimer, PublicodesSimulatorTitle, ResultsNotAvailable, simulatorTabs } from './Placeholder';
-import { FloatingButton, Results, Section, Simulator } from './SimulatorPublicodes.style';
 import useSimulatorEngine from './useSimulatorEngine';
 
 type PublicodesSimulatorProps = React.HTMLAttributes<HTMLDivElement> & {
