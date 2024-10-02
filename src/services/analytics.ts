@@ -629,13 +629,25 @@ type MatomoABTestingExperiment = {
   }>;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const emptyActivateMethod = () => {
   // code changes are executed using the variation name, not this callback method
 };
 
 const matomoABTestingExperiments = [
-  // nothing at the moment
+  // placeholder to make types work
+  {
+    name: '_internal',
+    percentage: 100,
+    includedTargets: [],
+    excludedTargets: [],
+    variations: [
+      {
+        name: 'original',
+        activate: emptyActivateMethod,
+      },
+    ],
+  },
+  // add the experiments below
 ] as const satisfies ReadonlyArray<MatomoABTestingExperiment>;
 
 type MatomoABTestingExperimentName = (typeof matomoABTestingExperiments)[number]['name'];
