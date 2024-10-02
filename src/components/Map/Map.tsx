@@ -2,7 +2,7 @@ import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
-import { LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
+import { LayerSpecification, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsString, useQueryStates } from 'nuqs';
@@ -29,7 +29,6 @@ import useRouterReady from '@hooks/useRouterReady';
 import { useServices } from 'src/services';
 import { trackEvent } from 'src/services/analytics';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
-import { SourceId } from 'src/services/tiles.config';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
 import { MapMarkerInfos, MapPopupInfos, MapPopupType } from 'src/types/MapComponentsInfos';
 import { Point } from 'src/types/Point';
@@ -48,6 +47,7 @@ import { Title } from './components/SimpleMapLegend.style';
 import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+import { useMapHoverEffects } from './map-hover';
 import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
@@ -72,47 +72,6 @@ const mapSettings = {
   defaultZoom: 5,
   minZoom: 5,
   maxZoom: 20,
-};
-
-let hoveredStateId: MapGeoJSONFeature['id'] | null = null;
-
-/**
- * The hover state is used in the layers to change the style of the feature using ['feature-state', 'hover']
- */
-const setFeatureHoveringState = (map: MapRef, hover: boolean, source: SourceId, sourceLayer: string) => {
-  if (hoveredStateId) {
-    map.setFeatureState(
-      {
-        source,
-        id: hoveredStateId,
-        sourceLayer,
-      },
-      { hover }
-    );
-    if (!hover) {
-      hoveredStateId = null;
-    }
-  }
-};
-
-type HoverConfig = {
-  source: SourceId;
-  sourceLayer: string;
-  layer: LayerId;
-};
-
-const addLayerHoverListeners = (map: MapRef, config: HoverConfig) => {
-  map.on('mouseenter', config.layer, function (e) {
-    if (e.features && e.features.length > 0) {
-      setFeatureHoveringState(map, false, config.source, config.sourceLayer);
-      hoveredStateId = e.features[0].id;
-      setFeatureHoveringState(map, true, config.source, config.sourceLayer);
-    }
-  });
-
-  map.on('mouseleave', config.layer, function () {
-    setFeatureHoveringState(map, false, config.source, config.sourceLayer);
-  });
 };
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
@@ -448,22 +407,6 @@ const InternalMap = ({
             }
           });
         }
-
-        addLayerHoverListeners(map, {
-          layer: 'reseauxDeChaleur-avec-trace',
-          source: 'network',
-          sourceLayer: 'layer',
-        });
-        addLayerHoverListeners(map, {
-          layer: 'reseauxEnConstruction-trace',
-          source: 'futurNetwork',
-          sourceLayer: 'futurOutline',
-        });
-        addLayerHoverListeners(map, {
-          layer: 'reseauxDeFroid-avec-trace',
-          source: 'coldNetwork',
-          sourceLayer: 'coldOutline',
-        });
       }
     }
   };
@@ -506,6 +449,8 @@ const InternalMap = ({
       setMapLayersLoaded(true);
     }
   };
+
+  useMapHoverEffects({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
 
   useEffect(() => {
     const { id } = router.query;
