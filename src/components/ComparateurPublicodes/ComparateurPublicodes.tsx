@@ -24,10 +24,10 @@ import ModesDeChauffageAComparer from './ModesDeChauffageAComparer';
 import ParametresDesModesDeChauffage from './ParametresDesModesDeChauffage';
 import ParametresDuBatimentGrandPublic from './ParametresDuBatimentGrandPublic';
 import ParametresDuBatimentTechnicien from './ParametresDuBatimentTechnicien';
-import { Disclaimer, PublicodesSimulatorTitle, ResultsNotAvailable, simulatorTabs } from './Placeholder';
+import { ComparateurPublicodesTitle, Disclaimer, ResultsNotAvailable, simulatorTabs } from './Placeholder';
 import useSimulatorEngine from './useSimulatorEngine';
 
-type PublicodesSimulatorProps = React.HTMLAttributes<HTMLDivElement> & {
+type ComparateurPublicodesProps = React.HTMLAttributes<HTMLDivElement> & {
   displayMode: string;
   tabId: TabId;
 };
@@ -53,7 +53,7 @@ const addresseToPublicodesRules = {
   'température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
 } as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;
 
-const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
+const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   children,
   className,
   displayMode: defaultDisplayMode,
@@ -114,7 +114,7 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
         <Disclaimer />
         <Section>
           <header>
-            <PublicodesSimulatorTitle />
+            <ComparateurPublicodesTitle />
             <ToggleSwitch
               label="Mode&nbsp;avancé"
               labelPosition="left"
@@ -317,4 +317,4 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   );
 };
 
-export default PublicodesSimulator;
+export default ComparateurPublicodes;

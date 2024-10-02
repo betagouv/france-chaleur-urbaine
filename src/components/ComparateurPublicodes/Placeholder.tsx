@@ -12,10 +12,10 @@ import cx from '@utils/cx';
 
 import { Results, ResultsPlaceholder, Section, Simulator } from './ComparateurPublicodes.style';
 
-type PublicodesSimulatorPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & {};
+type ComparateurPublicodesPlaceholderProps = React.HTMLAttributes<HTMLDivElement> & {};
 
 export type TabId = 'batiment' | 'modes';
-export const PublicodesSimulatorTitle = () => {
+export const ComparateurPublicodesTitle = () => {
   return (
     <div>
       <Heading as="h2">
@@ -117,7 +117,7 @@ export const Disclaimer = () => {
         className="fr-mt-2w"
         small
         description={
-          <span className="fr-text--xs">
+          <div className="fr-text--xs">
             Cet outil de comparaison de modes de chauffage et de refroidissement a pour objectif de comparer en quelques minutes des
             configurations de chauffage et de refroidissement sur les plans techniques, économiques et environnementaux. Il ne remplace en
             aucun cas une étude de faisabilité technico-économique et ne peut s'adapter aux situations particulières avec les hypothèses
@@ -125,20 +125,20 @@ export const Disclaimer = () => {
             <a href="#" onClick={() => modal.open()} className="fr-link fr-text--xs">
               Voir l’explication détaillée
             </a>
-          </span>
+          </div>
         }
       />
     </>
   );
 };
 
-const PublicodesSimulatorPlaceholder: React.FC<PublicodesSimulatorPlaceholderProps> = ({ children, className, ...props }) => {
+const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholderProps> = ({ children, className, ...props }) => {
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
       <Disclaimer />
       <Section>
         <header>
-          <PublicodesSimulatorTitle />
+          <ComparateurPublicodesTitle />
           <ToggleSwitch
             label="Mode&nbsp;avancé"
             labelPosition="left"
@@ -169,4 +169,4 @@ const PublicodesSimulatorPlaceholder: React.FC<PublicodesSimulatorPlaceholderPro
   );
 };
 
-export default PublicodesSimulatorPlaceholder;
+export default ComparateurPublicodesPlaceholder;
