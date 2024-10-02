@@ -1,11 +1,11 @@
 import * as Sentry from '@sentry/node';
 
 import db from 'src/db';
-//import base from 'src/db/airtable';
-import { bulkFetchRangeFromMatomo } from 'src/services/matomo';
-import { /*MatomoActionMetrics,*/ MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from 'src/services/matomo_types';
-//import { Airtable } from 'src/types/enum/Airtable';
-import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from 'src/types/enum/MatomoStats';
+import base from 'src/db/airtable';
+//import { bulkFetchRangeFromMatomo } from 'src/services/matomo';
+//import { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from 'src/services/matomo_types';
+import { Airtable } from 'src/types/enum/Airtable';
+import { STAT_KEY, STAT_LABEL, STAT_METHOD, /*STAT_PARAMS, */ STAT_PERIOD } from 'src/types/enum/MatomoStats';
 
 import '../../sentry.node.config';
 
@@ -20,7 +20,7 @@ import '../../sentry.node.config';
 ];*/
 
 //From Airtable - demandes : éligibles / non éligibles / totales
-/*const saveDemandsStats = async (startDate: string, endDate: string) => {
+const saveDemandsStats = async (startDate: string, endDate: string) => {
   console.log(`saveStatsInDB START : saveDemandsStats`);
   const records = await base(Airtable.UTILISATEURS)
     .select({
@@ -71,7 +71,7 @@ import '../../sentry.node.config';
     }),
   ]);
   console.log(`saveStatsInDB END : saveDemandsStats`);
-};*/
+};
 
 //From Matomo - actions sur le site
 /*const saveActionsStats = async (startDate: string, endDate: string) => {
@@ -102,7 +102,7 @@ import '../../sentry.node.config';
     );
   }
   console.log(`saveStatsInDB END : saveActionsStats`);
-};*/
+};
 
 //From Matomo - visites sur le site
 const saveVisitsStats = async (startDate: string, endDate: string) => {
@@ -150,7 +150,7 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
     }
   }
   console.log(`saveStatsInDB END : saveVisitsMapStats`);
-};
+};*/
 
 //From Database - demandes en masse : éligibles / non éligibles / totales
 const saveBulkContactStats = async (startDate: string, endDate: string) => {
@@ -223,12 +223,12 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
 
     const endAirtableDate = endDate;
     endAirtableDate.setDate(endAirtableDate.getDate() + 1);
-    //const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
+    const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
 
-    //await saveDemandsStats(stringStartDate, stringEndAirtableDate);
+    await saveDemandsStats(stringStartDate, stringEndAirtableDate);
     //await saveActionsStats(stringStartDate, stringEndDate);
-    await saveVisitsStats(stringStartDate, stringEndDate);
-    await saveVisitsMapStats(stringStartDate, stringEndDate);
+    //await saveVisitsStats(stringStartDate, stringEndDate);
+    //await saveVisitsMapStats(stringStartDate, stringEndDate);
     await saveBulkContactStats(stringStartDate, stringEndDate);
   } catch (e) {
     Sentry.captureException(e);
