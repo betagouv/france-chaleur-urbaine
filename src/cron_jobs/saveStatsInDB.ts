@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/node';
+//import * as Sentry from '@sentry/node';
 
 import db from 'src/db';
 //import base from 'src/db/airtable';
@@ -231,7 +231,7 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
     await saveVisitsMapStats(stringStartDate, stringEndDate);
     //await saveBulkContactStats(stringStartDate, stringEndDate);
   } catch (e) {
-    Sentry.captureException(e);
+    //Sentry.captureException(e);
     console.log(`CRON JOB ERROR: saveStatsInDB`, e);
   }
   console.log('CRON JOB STOP: saveStatsInDB');
