@@ -8,7 +8,6 @@ import { useRouter } from 'next/router';
 import { parseAsString, useQueryStates } from 'nuqs';
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { MapLayerMouseEvent } from 'react-map-gl';
 import MapReactGL, {
   AttributionControl,
   GeolocateControl,
@@ -30,14 +29,12 @@ import { useServices } from 'src/services';
 import { trackEvent } from 'src/services/analytics';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
-import { MapMarkerInfos, MapPopupInfos, MapPopupType } from 'src/types/MapComponentsInfos';
+import { MapMarkerInfos, MapPopupType } from 'src/types/MapComponentsInfos';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
 
 import CardSearchDetails from './components/CardSearchDetails';
-import { isDevModeEnabled } from './components/DevModeIcon';
-import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
 import { type MapLegendFeature } from './components/MapLegendReseaux';
 import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
@@ -47,8 +44,8 @@ import { Title } from './components/SimpleMapLegend.style';
 import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
-import { useMapHoverEffects } from './map-hover';
-import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
+import { useMapClickHandlers, useMapHoverEffects } from './map-hover';
+import { applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
   CollapseLegendLabel,
@@ -151,7 +148,6 @@ const InternalMap = ({
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
-  const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
@@ -186,28 +182,6 @@ const InternalMap = ({
       initializeWithValue: true,
     }
   );
-
-  const onMapClick = (e: MapLayerMouseEvent, key: string) => {
-    const selectedFeature = e.features?.[0];
-    if (!selectedFeature) {
-      return;
-    }
-    if (isDevModeEnabled()) {
-      console.log('map-click', selectedFeature); // eslint-disable-line no-console
-    }
-
-    // depending on the feature type, we force the popup type to help building the popup content more easily
-    setPopupInfos({
-      latitude: e.lngLat.lat,
-      longitude: e.lngLat.lng,
-      content: layersWithDynamicContentPopup.includes(selectedFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
-        ? {
-            type: selectedFeature.layer?.id,
-            properties: selectedFeature.properties,
-          }
-        : { [key]: selectedFeature.properties },
-    });
-  };
 
   const jumpTo = useCallback(({ coordinates, zoom }: { coordinates: [number, number]; zoom?: number }) => {
     if (mapRef.current) {
@@ -313,80 +287,6 @@ const InternalMap = ({
       })
     );
 
-    const clickEvents: {
-      layer: LayerId;
-      key: string;
-    }[] = [
-      { layer: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
-      { layer: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
-      { layer: 'reseauxDeChaleur-avec-trace', key: 'network' },
-      { layer: 'reseauxDeChaleur-sans-trace', key: 'network' },
-      { layer: 'reseauxDeFroid-avec-trace', key: 'coldNetwork' },
-      { layer: 'reseauxDeFroid-sans-trace', key: 'coldNetwork' },
-      { layer: 'reseauxEnConstruction-trace', key: 'futurNetwork' },
-      { layer: 'reseauxEnConstruction-zone', key: 'futurNetwork' },
-      {
-        layer: 'demandesEligibilite',
-        key: 'demands',
-      },
-      { layer: 'caracteristiquesBatiments', key: 'buildings' },
-      { layer: 'besoinsEnChaleur', key: '*' },
-      { layer: 'besoinsEnFroid', key: '*' },
-      { layer: 'besoinsEnChaleurIndustrieCommunes', key: '*' },
-      { layer: 'consommationsGaz', key: 'consommation' },
-      { layer: 'energy', key: 'energy' },
-      { layer: 'batimentsRaccordes', key: 'raccordement' },
-      {
-        layer: 'enrrMobilisables-friches',
-        key: 'enrrMobilisables-friche',
-      },
-      {
-        layer: 'enrrMobilisables-parkings',
-        key: 'enrrMobilisables-parking',
-      },
-      {
-        layer: 'enrrMobilisables-datacenter',
-        key: 'enrrMobilisables-datacenter',
-      },
-      {
-        layer: 'enrrMobilisables-industrie',
-        key: 'enrrMobilisables-industrie',
-      },
-      {
-        layer: 'enrrMobilisables-installations-electrogenes',
-        key: 'enrrMobilisables-installations-electrogenes',
-      },
-      {
-        layer: 'enrrMobilisables-stations-d-epuration',
-        key: 'enrrMobilisables-stations-d-epuration',
-      },
-      {
-        layer: 'enrrMobilisables-unites-d-incineration',
-        key: 'enrrMobilisables-unites-d-incineration',
-      },
-    ];
-
-    // register click event handlers
-    if (!noPopup) {
-      clickEvents.map(({ layer, key }) => {
-        map.on('click', layer, (e: any) => {
-          onMapClick(e, key);
-        });
-
-        map.on('touchend', layer, (e: any) => {
-          onMapClick(e, key);
-        });
-
-        map.on('mouseenter', layer, function () {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-
-        map.on('mouseleave', layer, function () {
-          map.getCanvas().style.cursor = '';
-        });
-      });
-    }
-
     // register move and hover event handlers
     {
       const map = mapRef.current;
@@ -451,6 +351,7 @@ const InternalMap = ({
   };
 
   useMapHoverEffects({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
+  const { popupInfos } = useMapClickHandlers({ mapLayersLoaded, isDrawing, mapRef: mapRef.current, noPopup });
 
   useEffect(() => {
     const { id } = router.query;
