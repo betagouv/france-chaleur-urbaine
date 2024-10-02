@@ -23,6 +23,7 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
   return (
     <div {...props}>
       <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
+      <RadioInput name="Inclure la climatisation" label="Inclure la climatisation" small orientation="horizontal" />
 
       <Accordion label="Informations générales">
         <Input name="degré jours unifié spécifique chaud" label="degré jours unifié spécifique chaud" iconId="fr-icon-temp-cold-fill" />

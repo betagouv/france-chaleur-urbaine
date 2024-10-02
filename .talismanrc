@@ -29,4 +29,6 @@ allowed_patterns:
 - key=
 - key,
 - \[key\]
+- coutPublicodeKey
+- emissionsCO2PublicodesKey
 version: '1.0'

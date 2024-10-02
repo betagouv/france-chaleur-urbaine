@@ -68,6 +68,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
         </>
       )}
       <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
+      <RadioInput name="Inclure la climatisation" label="Inclure la climatisation" small orientation="horizontal" />
     </div>
   );
 };

@@ -1,11 +1,11 @@
-import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import React from 'react';
 
 import Select from '@components/form/publicodes/Select';
+import Checkbox from '@components/ui/Checkbox';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import { LocationInfoResponse } from '@pages/api/location-infos';
 
-import { ModeDeChauffage } from './modes-de-chauffage';
+import { ModeDeChauffage, modesDeChauffage } from './modes-de-chauffage';
 import { Separator, Title } from './SimulatorPublicodes.style';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
@@ -24,10 +24,12 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   ...props
 }) => {
   const productionECS = engine.getField('Production eau chaude sanitaire');
+  const inclusClimatisation = engine.getField('Inclure la climatisation');
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
 
   const createOptionProps = (label: ModeDeChauffage) => ({
-    label,
+    label:
+      modesDeChauffage.find((mode) => mode.label === label)?.reversible && inclusClimatisation ? `${label} (chauffage + froid)` : label,
     nativeInputProps: {
       checked: hasModeDeChauffage(label),
       onChange: () => toggleModeDeChauffage(label),
@@ -48,7 +50,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Checkbox
         small
         options={(['Réseaux de chaleur'] as ModeDeChauffage[]).map(createOptionProps)}
-        state={nearestReseauDeChaleur ? 'info' : 'default'}
+        state={nearestReseauDeChaleur ? 'success' : 'default'}
         stateRelatedMessage={
           nearestReseauDeChaleur ? (
             <span>
@@ -92,19 +94,24 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       />
       <Separator />
       <Checkbox small options={(['Radiateur électrique individuel'] as ModeDeChauffage[]).map(createOptionProps)} />
-      <Separator />
-      <Checkbox
-        small
-        options={(['Réseaux de froid'] as ModeDeChauffage[]).map(createOptionProps)}
-        state={nearestReseauDeFroid ? 'info' : 'default'}
-        stateRelatedMessage={
-          nearestReseauDeFroid ? (
-            <span>
-              Disponible à <strong>{nearestReseauDeFroid.distance}</strong>m du bâtiment
-            </span>
-          ) : undefined
-        }
-      />
+      {inclusClimatisation && (
+        <>
+          <Separator />
+          <Checkbox
+            small
+            options={(['Réseaux de froid'] as ModeDeChauffage[]).map(createOptionProps)}
+            state={nearestReseauDeFroid ? 'success' : 'default'}
+            stateRelatedMessage={
+              nearestReseauDeFroid ? (
+                <span>
+                  Disponible à <strong>{nearestReseauDeFroid.distance}</strong>m du bâtiment
+                </span>
+              ) : undefined
+            }
+          />
+          <Checkbox small options={(['Groupe froid'] as ModeDeChauffage[]).map(createOptionProps)} />
+        </>
+      )}
     </div>
   );
 };
