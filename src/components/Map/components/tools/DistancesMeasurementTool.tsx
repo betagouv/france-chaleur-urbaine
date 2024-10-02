@@ -182,7 +182,7 @@ const DistancesMeasurementTool: React.FC = () => {
     });
   }
 
-  const drawingFeaturePointCounts = (mapDraw?.getAll().features.at(0) as MeasureFeature)?.geometry.coordinates.length ?? 0;
+  const drawingFeaturePointCounts = (mapDraw?.getAll().features[0] as MeasureFeature)?.geometry.coordinates.length ?? 0;
   const showCancelButton = isDrawing && drawingFeaturePointCounts >= 2;
   const showAddButton = features.length > 0 && !isDrawing;
 
