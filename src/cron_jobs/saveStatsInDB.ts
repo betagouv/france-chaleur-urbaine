@@ -3,13 +3,13 @@ import * as Sentry from '@sentry/node';
 import db from 'src/db';
 //import base from 'src/db/airtable';
 import { bulkFetchRangeFromMatomo } from 'src/services/matomo';
-import { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from 'src/services/matomo_types';
+import { /*MatomoActionMetrics,*/ MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from 'src/services/matomo_types';
 //import { Airtable } from 'src/types/enum/Airtable';
 import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from 'src/types/enum/MatomoStats';
 
 import '../../sentry.node.config';
 
-const DATA_ACTION_STATS: string[] = [
+/*const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE,
   STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE,
   STAT_LABEL.FORM_TEST_UNELIGIBLE,
@@ -17,7 +17,7 @@ const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE,
   STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE,
   STAT_LABEL.TRACES,
-];
+];*/
 
 //From Airtable - demandes : éligibles / non éligibles / totales
 /*const saveDemandsStats = async (startDate: string, endDate: string) => {
@@ -74,7 +74,7 @@ const DATA_ACTION_STATS: string[] = [
 };*/
 
 //From Matomo - actions sur le site
-const saveActionsStats = async (startDate: string, endDate: string) => {
+/*const saveActionsStats = async (startDate: string, endDate: string) => {
   console.log(`saveStatsInDB START : saveActionsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
     {
@@ -102,7 +102,7 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
     );
   }
   console.log(`saveStatsInDB END : saveActionsStats`);
-};
+};*/
 
 //From Matomo - visites sur le site
 const saveVisitsStats = async (startDate: string, endDate: string) => {
@@ -226,7 +226,7 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
     //const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
 
     //await saveDemandsStats(stringStartDate, stringEndAirtableDate);
-    await saveActionsStats(stringStartDate, stringEndDate);
+    //await saveActionsStats(stringStartDate, stringEndDate);
     await saveVisitsStats(stringStartDate, stringEndDate);
     await saveVisitsMapStats(stringStartDate, stringEndDate);
     await saveBulkContactStats(stringStartDate, stringEndDate);
