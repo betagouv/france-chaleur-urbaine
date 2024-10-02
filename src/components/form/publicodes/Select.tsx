@@ -14,7 +14,6 @@ export type DSFRSelectProps = React.ComponentProps<typeof DSFRSelect> & {
 
 const Select = ({
   name,
-  disabled,
   onChange: onExternalChange,
   hintText: hint,
   nativeSelectProps,

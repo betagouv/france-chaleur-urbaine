@@ -1,8 +1,6 @@
 import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { fr } from '@codegouvfr/react-dsfr';
 import Alert from '@codegouvfr/react-dsfr/Alert';
-import Button from '@codegouvfr/react-dsfr/Button';
-import Tabs from '@codegouvfr/react-dsfr/Tabs';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import Drawer from '@mui/material/Drawer';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
@@ -10,23 +8,26 @@ import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@components/form/publicodes/FormProvider';
-import Icon from '@components/ui/Icon';
+import Accordion from '@components/ui/Accordion';
+import Box from '@components/ui/Box';
+import Button from '@components/ui/Button';
 import Link from '@components/ui/Link';
 import { type LocationInfoResponse } from '@pages/api/location-infos';
 import cx from '@utils/cx';
 import { postFetchJSON } from '@utils/network';
 import { ObjectEntries } from '@utils/typescript';
 
+import { FloatingButton, Results, Section, Simulator } from './ComparateurPublicodes.style';
 import DebugDrawer from './DebugDrawer';
-import GrandPublicForm from './GrandPublicForm';
 import Graph from './Graph';
-import { PublicodesSimulatorTitle, ResultsNotAvailable, simulatorTabs } from './Placeholder';
-import { FloatingButton, Results, Section, Simulator } from './SimulatorPublicodes.style';
-import TechnicienParametresEconomiques from './TechnicienParametresEconomiques';
-import TechnicienParametresTechniques from './TechnicienParametresTechniques';
+import ModesDeChauffageAComparer from './ModesDeChauffageAComparer';
+import ParametresDesModesDeChauffage from './ParametresDesModesDeChauffage';
+import ParametresDuBatimentGrandPublic from './ParametresDuBatimentGrandPublic';
+import ParametresDuBatimentTechnicien from './ParametresDuBatimentTechnicien';
+import { ComparateurPublicodesTitle, Disclaimer, ResultsNotAvailable, simulatorTabs } from './Placeholder';
 import useSimulatorEngine from './useSimulatorEngine';
 
-type PublicodesSimulatorProps = React.HTMLAttributes<HTMLDivElement> & {
+type ComparateurPublicodesProps = React.HTMLAttributes<HTMLDivElement> & {
   displayMode: string;
   tabId: TabId;
 };
@@ -36,8 +37,6 @@ export type TabId = (typeof simulatorTabs)[number]['tabId'];
 const addresseToPublicodesRules = {
   'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2'],
   'caractéristique réseau de chaleur . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2 ACV'],
-  'caractéristique réseau de chaleur . coût résidentiel': (infos) => infos.nearestReseauDeChaleur?.['PM_L'],
-  'caractéristique réseau de chaleur . coût tertiaire': (infos) => infos.nearestReseauDeChaleur?.['PM_T'],
   'caractéristique réseau de chaleur . livraisons totales': (infos) => infos.nearestReseauDeChaleur?.['livraisons_totale_MWh'],
   'caractéristique réseau de chaleur . part fixe': (infos) => infos.nearestReseauDeChaleur?.['PF%'],
   'caractéristique réseau de chaleur . part variable': (infos) => infos.nearestReseauDeChaleur?.['PV%'],
@@ -54,7 +53,7 @@ const addresseToPublicodesRules = {
   'température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
 } as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;
 
-const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
+const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   children,
   className,
   displayMode: defaultDisplayMode,
@@ -66,7 +65,10 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
 
   const [graphDrawerOpen, setGraphDrawerOpen] = React.useState(false);
   const engineDisplayMode = engine.getField('mode affichage');
-  const [displayMode, setDisplayMode] = useQueryState('displayMode', { defaultValue: defaultDisplayMode || (engineDisplayMode as string) });
+  const [displayMode, setDisplayMode] = useQueryState('displayMode', {
+    defaultValue: defaultDisplayMode || (engineDisplayMode as string),
+  });
+
   const [address, setAddress] = useQueryState('address');
   const [modesDeChauffage] = useQueryState('modes-de-chauffage');
   const [lngLat, setLngLat] = React.useState<[number, number]>();
@@ -111,9 +113,9 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
       <FormProvider engine={engine}>
         <Section>
           <header>
-            <PublicodesSimulatorTitle />
+            <ComparateurPublicodesTitle />
             <ToggleSwitch
-              label="Mode pro"
+              label="Mode&nbsp;avancé"
               labelPosition="left"
               inputTitle="Mode Pro"
               showCheckedHint={false}
@@ -126,105 +128,129 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
               }}
             />
           </header>
+          <Disclaimer />
           <Simulator $loading={loading}>
-            <div>
-              <Tabs
-                selectedTabId={selectedTabId}
-                tabs={simulatorTabs.map((tab) => ({
-                  tabId: tab.tabId,
-                  label: (
-                    <small>
-                      {tab.label}{' '}
-                      {((tab.tabId === 'modes-de-chauffage' && !modesDeChauffage && selectedTabId !== 'modes-de-chauffage') ||
-                        (tab.tabId === 'batiment' && !address && selectedTabId !== 'batiment')) && (
-                        <Icon name="ri-alert-line" size="sm" color="var(--text-default-error)" />
-                      )}
-                    </small>
-                  ),
-                }))}
-                onTabChange={(newTabId) => setSelectedTabId(newTabId as TabId)}
+            <Box display="flex" gap="16px" flexDirection="column">
+              <Accordion
+                expanded={selectedTabId === simulatorTabs[0].tabId}
+                onExpandedChange={(expanded) => (expanded ? setSelectedTabId(simulatorTabs[0].tabId) : setSelectedTabId(null))}
+                bordered
+                label={
+                  <div>
+                    {simulatorTabs[0].label}
+                    {address && selectedTabId !== simulatorTabs[0].tabId && (
+                      <div className={fr.cx('fr-text--xs', 'fr-text--light')}>{address}</div>
+                    )}
+                  </div>
+                }
               >
-                <div className={fr.cx(selectedTabId === 'batiment' ? undefined : 'fr-hidden')}>
-                  {/* TODO rename components later after reorganizing fields */}
-                  <AddressAutocomplete
-                    label="Adresse"
-                    state={addressError ? 'error' : undefined}
-                    stateRelatedMessage={
-                      addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
-                    }
-                    defaultValue={address || ''}
-                    onClear={() => {
-                      setNearestReseauDeChaleur(undefined);
-                      setNearestReseauDeFroid(undefined);
-                      setAddressError(false);
+                <AddressAutocomplete
+                  label="Adresse"
+                  state={addressError ? 'error' : undefined}
+                  stateRelatedMessage={
+                    addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
+                  }
+                  defaultValue={address || ''}
+                  onClear={() => {
+                    setNearestReseauDeChaleur(undefined);
+                    setNearestReseauDeFroid(undefined);
+                    setAddressError(false);
+                    setAddress(null);
+                    setLngLat(undefined);
+
+                    engine.setSituation(
+                      ObjectEntries(addresseToPublicodesRules).reduce(
+                        (acc, [key]) => ({
+                          ...acc,
+                          [key]: null,
+                        }),
+                        {}
+                      )
+                    );
+                  }}
+                  onSelect={async (selectedAddress) => {
+                    setAddressError(false);
+                    setLngLat(undefined);
+
+                    const [lon, lat] = selectedAddress.geometry.coordinates;
+                    const addressLabel = selectedAddress.properties.label;
+                    if (addressLabel !== address) {
                       setAddress(null);
-                      setLngLat(undefined);
+                    }
 
-                      engine.setSituation(
-                        ObjectEntries(addresseToPublicodesRules).reduce(
-                          (acc, [key]) => ({
-                            ...acc,
-                            [key]: null,
-                          }),
-                          {}
-                        )
-                      );
-                    }}
-                    onSelect={async (selectedAddress) => {
-                      setAddressError(false);
-                      setLngLat(undefined);
+                    const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
+                      lon,
+                      lat,
+                      city: selectedAddress.properties.city,
+                      cityCode: selectedAddress.properties.citycode,
+                    });
+                    setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
+                    setNearestReseauDeFroid(infos.nearestReseauDeFroid);
 
-                      const [lon, lat] = selectedAddress.geometry.coordinates;
-                      const addressLabel = selectedAddress.properties.label;
-                      if (addressLabel !== address) {
-                        setAddress(null);
-                      }
+                    if (!infos.infosVille) {
+                      setAddressError(true);
 
-                      const infos: LocationInfoResponse = await postFetchJSON('/api/location-infos', {
-                        lon,
-                        lat,
-                        city: selectedAddress.properties.city,
-                        cityCode: selectedAddress.properties.citycode,
-                      });
-                      setNearestReseauDeChaleur(infos.nearestReseauDeChaleur);
-                      setNearestReseauDeFroid(infos.nearestReseauDeFroid);
+                      return;
+                    }
 
-                      if (!infos.infosVille) {
-                        setAddressError(true);
+                    setAddress(addressLabel);
 
-                        return;
-                      }
+                    if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
+                      setLngLat(selectedAddress.geometry.coordinates);
+                    }
 
-                      setAddress(addressLabel);
+                    console.debug('locations-infos', infos);
 
-                      if (infos.nearestReseauDeChaleur || infos.nearestReseauDeFroid) {
-                        setLngLat(selectedAddress.geometry.coordinates);
-                      }
-
-                      console.debug('locations-infos', infos);
-
-                      engine.setSituation(
-                        ObjectEntries(addresseToPublicodesRules).reduce(
-                          (acc, [key, infoGetter]) => ({
-                            ...acc,
-                            [key]: infoGetter(infos) ?? null,
-                          }),
-                          {}
-                        )
-                      );
-                    }}
-                  />
-                  {displayMode === 'grand public' ? (
-                    <GrandPublicForm engine={engine} />
-                  ) : (
-                    <TechnicienParametresTechniques engine={engine} />
-                  )}
-                </div>
-                <div className={fr.cx(selectedTabId === 'modes-de-chauffage' ? undefined : 'fr-hidden')}>
-                  <TechnicienParametresEconomiques engine={engine} showToggles={displayMode === 'technicien'} />
-                </div>
-              </Tabs>
-            </div>
+                    engine.setSituation(
+                      ObjectEntries(addresseToPublicodesRules).reduce(
+                        (acc, [key, infoGetter]) => ({
+                          ...acc,
+                          [key]: infoGetter(infos) ?? null,
+                        }),
+                        {}
+                      )
+                    );
+                  }}
+                />
+                {displayMode === 'grand public' ? (
+                  <ParametresDuBatimentGrandPublic engine={engine} />
+                ) : (
+                  <ParametresDuBatimentTechnicien engine={engine} />
+                )}
+                <Button onClick={() => setSelectedTabId(simulatorTabs[1].tabId)} full disabled={!isAddressSelected} className="fr-mt-2w">
+                  Continuer
+                </Button>
+              </Accordion>
+              <Accordion
+                expanded={selectedTabId === simulatorTabs[1].tabId}
+                onExpandedChange={(expanded) => (expanded ? setSelectedTabId(simulatorTabs[1].tabId) : setSelectedTabId(null))}
+                disabled={!isAddressSelected}
+                bordered
+                label={simulatorTabs[1].label}
+              >
+                <ModesDeChauffageAComparer
+                  engine={engine}
+                  nearestReseauDeChaleur={nearestReseauDeChaleur}
+                  nearestReseauDeFroid={nearestReseauDeFroid}
+                />
+                {displayMode === 'technicien' && (
+                  <Button onClick={() => setSelectedTabId(simulatorTabs[2].tabId)} full disabled={!modesDeChauffage} className="fr-mt-2w">
+                    Continuer
+                  </Button>
+                )}
+              </Accordion>
+              {displayMode === 'technicien' && (
+                <Accordion
+                  expanded={selectedTabId === simulatorTabs[2].tabId}
+                  onExpandedChange={(expanded) => (expanded ? setSelectedTabId(simulatorTabs[2].tabId) : setSelectedTabId(null))}
+                  disabled={!isAddressSelected}
+                  bordered
+                  label={simulatorTabs[2].label}
+                >
+                  <ParametresDesModesDeChauffage engine={engine} />
+                </Accordion>
+              )}
+            </Box>
             <Results>
               {nearestReseauDeChaleur && (
                 <Alert
@@ -237,12 +263,11 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       </Link>{' '}
                       est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
                       {lngLat && (
-                        <small>
-                          {' '}
-                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`}>
+                        <div className="fr-text--xs">
+                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
                             <strong>Visualiser sur la carte</strong>
                           </Link>
-                        </small>
+                        </div>
                       )}
                     </>
                   }
@@ -261,12 +286,11 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
                       </Link>{' '}
                       est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
                       {lngLat && (
-                        <small>
-                          {' '}
-                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`}>
+                        <div className="fr-text--xs">
+                          <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
                             <strong>Visualiser sur la carte</strong>
                           </Link>
-                        </small>
+                        </div>
                       )}
                     </>
                   }
@@ -291,4 +315,4 @@ const PublicodesSimulator: React.FC<PublicodesSimulatorProps> = ({
   );
 };
 
-export default PublicodesSimulator;
+export default ComparateurPublicodes;

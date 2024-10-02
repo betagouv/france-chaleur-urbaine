@@ -1,4 +1,5 @@
 import { createModal as createdDSFRModal } from '@codegouvfr/react-dsfr/Modal';
+import dynamic from 'next/dynamic';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
@@ -21,14 +22,18 @@ export const StyledModal = styled.div`
 `;
 
 export const createModal = createdDSFRModal;
+
 /**
  * Create a modal within a portal that is rendered outside the components tree.
  */
-export default function Modal({ modal, ...props }: { modal: CreateModal } & React.ComponentProps<CreateModal['Component']>) {
+const Modal = ({ modal, ...props }: { modal: CreateModal } & React.ComponentProps<CreateModal['Component']>) => {
   return createPortal(
     <StyledModal>
       <modal.Component {...props} />
     </StyledModal>,
     document.body
   );
-}
+};
+
+// Dynamically import Modal to optimize loading
+export default dynamic(() => Promise.resolve(Modal), { ssr: false });
