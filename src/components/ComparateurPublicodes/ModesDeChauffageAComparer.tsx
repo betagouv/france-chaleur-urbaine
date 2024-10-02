@@ -49,7 +49,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
 
       <Checkbox
         small
-        options={(['Réseaux de chaleur'] as ModeDeChauffage[]).map(createOptionProps)}
+        options={(['Réseaux de chaleur'] satisfies ModeDeChauffage[]).map(createOptionProps)}
         state={nearestReseauDeChaleur ? 'success' : 'default'}
         stateRelatedMessage={
           nearestReseauDeChaleur ? (
@@ -62,7 +62,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Separator />
       <Checkbox
         small
-        options={(['Poêle à granulés individuel', 'Chaudière à granulés collective'] as ModeDeChauffage[]).map(createOptionProps)}
+        options={(['Poêle à granulés individuel', 'Chaudière à granulés collective'] satisfies ModeDeChauffage[]).map(createOptionProps)}
       />
       <Separator />
       <Checkbox
@@ -73,11 +73,11 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             'Gaz sans condensation individuel',
             'Gaz à condensation collectif',
             'Gaz sans condensation collectif',
-          ] as ModeDeChauffage[]
+          ] satisfies ModeDeChauffage[]
         ).map(createOptionProps)}
       />
       <Separator />
-      <Checkbox small options={(['Fioul individuel', 'Fioul collectif'] as ModeDeChauffage[]).map(createOptionProps)} />
+      <Checkbox small options={(['Fioul individuel', 'Fioul collectif'] satisfies ModeDeChauffage[]).map(createOptionProps)} />
       <Separator />
       <Checkbox
         small
@@ -89,17 +89,17 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             'PAC eau/eau collective',
             'PAC air/eau individuelle',
             'PAC air/eau collective',
-          ] as ModeDeChauffage[]
+          ] satisfies ModeDeChauffage[]
         ).map(createOptionProps)}
       />
       <Separator />
-      <Checkbox small options={(['Radiateur électrique individuel'] as ModeDeChauffage[]).map(createOptionProps)} />
+      <Checkbox small options={(['Radiateur électrique individuel'] satisfies ModeDeChauffage[]).map(createOptionProps)} />
       {inclusClimatisation && (
         <>
           <Separator />
           <Checkbox
             small
-            options={(['Réseaux de froid'] as ModeDeChauffage[]).map(createOptionProps)}
+            options={(['Réseaux de froid'] satisfies ModeDeChauffage[]).map(createOptionProps)}
             state={nearestReseauDeFroid ? 'success' : 'default'}
             stateRelatedMessage={
               nearestReseauDeFroid ? (
@@ -109,7 +109,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
               ) : undefined
             }
           />
-          <Checkbox small options={(['Groupe froid'] as ModeDeChauffage[]).map(createOptionProps)} />
+          <Checkbox small options={(['Groupe froid'] satisfies ModeDeChauffage[]).map(createOptionProps)} />
         </>
       )}
     </div>
