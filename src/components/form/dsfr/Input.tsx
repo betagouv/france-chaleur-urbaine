@@ -7,8 +7,8 @@ export type InputProps = React.ComponentProps<typeof StyledDSFRInput> & {
   hideOptionalLabel?: boolean;
 };
 
-const Input = forwardRef<HTMLDivElement, InputProps>(({ label, size, hideOptionalLabel, ...props }, ref) => {
-  const optional = !hideOptionalLabel && !props?.nativeInputProps?.required && !props?.nativeTextAreaProps?.required;
+const Input = forwardRef<HTMLDivElement, InputProps>(({ label, size, hideOptionalLabel, nativeInputProps, ...props }, ref) => {
+  const optional = !hideOptionalLabel && !nativeInputProps?.required && !props?.nativeTextAreaProps?.required;
 
   return (
     <StyledDSFRInput
@@ -25,6 +25,14 @@ const Input = forwardRef<HTMLDivElement, InputProps>(({ label, size, hideOptiona
           label
         )
       }
+      nativeInputProps={{
+        ...nativeInputProps,
+        onWheel: (e) => {
+          // https://stackoverflow.com/a/38589039
+          (document?.activeElement as HTMLInputElement)?.blur();
+          nativeInputProps?.onWheel?.(e);
+        },
+      }}
       {...props}
     />
   );
