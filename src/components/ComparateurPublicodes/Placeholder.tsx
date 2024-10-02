@@ -19,7 +19,7 @@ export const ComparateurPublicodesTitle = () => {
   return (
     <div>
       <Heading as="h2">
-        Comparateur de performances et d'émissions de CO2 <Badge severity="warning">Beta</Badge>
+        Comparateur de coûts et d’émissions de CO2 <Badge severity="warning">Beta</Badge>
       </Heading>
       <ol>
         <li>
@@ -108,13 +108,16 @@ export const Disclaimer = () => {
         <p>
           Cet outil prend la suite d'RCE33, outil développé par l'association AMORCE. Cette nouvelle version est financée par le programme
           européen Heat&Cool LIFE, piloté par la Région Sud, qui vise à développer des outils dans l'objectif de développer les réseaux de
-          chaleur et de froid vertueux. L'association AMORCE pilote le projet, tandis que France Chaleur Urbaine et Elcimaï ont apporté leur
-          expertise technique à sa réalisation.
+          chaleur et de froid vertueux. L'association AMORCE pilote le projet, le bureau d’études Elcimaï y a apporté son expertise
+          technique et France Chaleur Urbaine a mis en place la version disponible en ligne.
         </p>
+        <Box display="flex" gap="16px" flexDirection="row" alignItems="center">
+          <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height="80px" className="fr-mr-2w" />
+          <img src="/logo-amorce.svg" alt="logo amorce" height="50px" />
+        </Box>
       </Modal>
       <Alert
         severity="info"
-        className="fr-mt-2w"
         small
         description={
           <div className="fr-text--xs">
@@ -135,7 +138,6 @@ export const Disclaimer = () => {
 const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholderProps> = ({ children, className, ...props }) => {
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
-      <Disclaimer />
       <Section>
         <header>
           <ComparateurPublicodesTitle />
@@ -152,6 +154,7 @@ const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholde
             }}
           />
         </header>
+        <Disclaimer />
         <Simulator $loading={true}>
           <Box display="flex" gap="16px" flexDirection="column">
             {simulatorTabs.map((tab) => (

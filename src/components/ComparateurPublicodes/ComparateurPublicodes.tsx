@@ -111,7 +111,6 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>
       <FormProvider engine={engine}>
-        <Disclaimer />
         <Section>
           <header>
             <ComparateurPublicodesTitle />
@@ -129,6 +128,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               }}
             />
           </header>
+          <Disclaimer />
           <Simulator $loading={loading}>
             <Box display="flex" gap="16px" flexDirection="column">
               <Accordion
