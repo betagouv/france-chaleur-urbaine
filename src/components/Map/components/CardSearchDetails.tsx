@@ -3,6 +3,7 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { useCallback, useMemo } from 'react';
 
+import EligibilityContactForm from '@components/EligibilityForm/EligibilityContactForm';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import Modal, { createModal, useIsModalOpen } from '@components/ui/Modal';
@@ -11,7 +12,6 @@ import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 
 import { ContactFormButtonWrapper, ContactFormWrapper, MessageConfirmBox, SearchedAddress } from './CardSearchDetails.style';
-import CardSearchDetailsForm from './CardSearchDetailsForm';
 
 const modal = createModal({
   id: 'contact-form-modal',
@@ -124,7 +124,7 @@ const CardSearchDetails = ({
   return (
     <>
       <Modal modal={modal} title="Être mis en relation">
-        <CardSearchDetailsForm fullAddress={storedAddress} onSubmit={markAddressAsContacted} />
+        <EligibilityContactForm fullAddress={storedAddress} onSubmit={markAddressAsContacted} />
       </Modal>
       <SearchedAddress
         expanded={expanded}
