@@ -1,11 +1,11 @@
 //import * as Sentry from '@sentry/node';
 
-import db from 'src/db';
+//import db from 'src/db';
 //import base from 'src/db/airtable';
 import { bulkFetchRangeFromMatomo } from 'src/services/matomo';
 import { /*MatomoActionMetrics,*/ MatomoPageMetrics /*, MatomoUniqueVisitorsMetrics*/ } from 'src/services/matomo_types';
 //import { Airtable } from 'src/types/enum/Airtable';
-import { STAT_KEY, /*STAT_LABEL, */ STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from 'src/types/enum/MatomoStats';
+//import { STAT_KEY, /*STAT_LABEL, */ STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from 'src/types/enum/MatomoStats';
 
 import '../../sentry.node.config';
 
@@ -136,7 +136,8 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
     },
     (entry) => ({ value: entry.nb_visits })
   );
-  if (results[0]) {
+  console.log(results);
+  /*if (results[0]) {
     const data: any = results[0];
     if (data.value) {
       await db('matomo_stats').insert({
@@ -148,7 +149,7 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
         value: data.value,
       });
     }
-  }
+  }*/
   console.log(`saveStatsInDB END : saveVisitsMapStats`);
 };
 
