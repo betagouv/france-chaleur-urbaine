@@ -1,5 +1,7 @@
 {
   "version": 8,
+  "sprite": "https://openmaptiles.data.gouv.fr/sprites/sprite",
+  "glyphs": "https://openmaptiles.data.gouv.fr/fonts/{fontstack}/{range}.pbf",
   "sources": {
     "raster-tiles": {
       "type": "raster",
