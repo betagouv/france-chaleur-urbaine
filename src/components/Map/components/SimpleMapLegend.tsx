@@ -19,7 +19,7 @@ import { trackEvent } from 'src/services/analytics';
 import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from 'src/services/Map/businessRules';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
-import { defaultMapConfiguration } from 'src/services/Map/map-configuration';
+import { defaultMapConfiguration, potentielCreationParCommuneSansReseauInterval } from 'src/services/Map/map-configuration';
 
 import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
@@ -41,6 +41,7 @@ import {
 import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
 import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
+import { communesSansReseauAvecZoneOpportuniteLayerColor } from '../map-styles';
 import useFCUMap from '../MapProvider';
 
 const consommationsGazLegendColor = '#D9D9D9';
@@ -127,7 +128,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
         {selectedTabId.tabId === 'potentiel' && (
           <Box mt="2v" mx="1w">
             <Title>Potentiel</Title>
-            <Box display="flex" mb="2w">
+            <Box display="flex" alignItems="start" mb="2w">
               <SingleCheckbox
                 name="demandesEligibilite"
                 checked={mapConfiguration.demandesEligibilite}
@@ -139,8 +140,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 backgroundColor={themeDefDemands.fill.color}
                 border={`2px solid ${themeDefDemands.stroke.color}`}
                 borderRadius="50%"
-                height="16px"
-                width="16px"
+                minHeight="16px"
+                minWidth="16px"
                 mt="1v"
               />
 
@@ -587,6 +588,38 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   </Box>
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
+
+              <TrackableCheckableAccordion
+                name="potentielCreationParCommuneSansReseau"
+                layerName="potentielCreationParCommuneSansReseau.show"
+                checked={mapConfiguration.potentielCreationParCommuneSansReseau.show}
+                trackingEvent="Carto|Potentiel de création par commune sans réseau"
+                label={
+                  <>
+                    <Box
+                      backgroundColor={communesSansReseauAvecZoneOpportuniteLayerColor}
+                      borderRadius="50%"
+                      minHeight="16px"
+                      minWidth="16px"
+                      mt="1v"
+                    />
+                    <span>Potentiel de création par commune sans réseau</span>
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.potentielCreationParCommuneSansReseau.show}>
+                  <ScaleLegend
+                    className="fr-ml-1w fr-mr-1w"
+                    circle
+                    label="Nombre d'habitants"
+                    color={communesSansReseauAvecZoneOpportuniteLayerColor}
+                    domain={potentielCreationParCommuneSansReseauInterval}
+                    defaultValues={defaultMapConfiguration.potentielCreationParCommuneSansReseau.interval}
+                    onChange={updateScaleInterval('potentielCreationParCommuneSansReseau.interval')}
+                  />
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
+
               <TrackableCheckableAccordion
                 name="besoinsEnChaleurIndustrieCommunes"
                 checked={mapConfiguration.besoinsEnChaleurIndustrieCommunes}

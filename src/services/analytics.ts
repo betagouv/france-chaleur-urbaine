@@ -251,6 +251,12 @@ const trackingEvents = {
   'Carto|Besoins en chaleur secteur industriel|Désactive': {
     matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Désactive'],
   },
+  'Carto|Potentiel de création par commune sans réseau|Active': {
+    matomo: ['Carto', 'Potentiel de création par commune sans réseau', 'Active'],
+  },
+  'Carto|Potentiel de création par commune sans réseau|Désactive': {
+    matomo: ['Carto', 'Potentiel de création par commune sans réseau', 'Désactive'],
+  },
   'Carto|Besoins en froid|Active': {
     matomo: ['Carto', 'Besoins en froid', 'Active'],
   },

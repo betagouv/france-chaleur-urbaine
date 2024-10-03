@@ -264,7 +264,7 @@ export const TrackableCheckableAccordion = ({ children, layerName, name, trackin
   return (
     <StyledCheckableAccordion
       small
-      classes={{ title: cx('d-flex', 'fr-gap--sm', fr.cx('fr-text--sm')) }}
+      classes={{ title: cx('d-flex', 'items-start', 'fr-gap--sm', fr.cx('fr-text--sm')) }}
       onCheck={(isChecked) => {
         trackEvent(`${trackingEvent}|${isChecked ? 'Active' : 'Désactive'}`);
         toggleLayer(layerName);

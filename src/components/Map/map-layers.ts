@@ -32,6 +32,7 @@ import { Network } from 'src/types/Summary/Network';
 import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+import { communesSansReseauAvecZoneOpportuniteLayerColor } from './map-styles';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -57,8 +58,13 @@ type LayerSymbolSpecification = {
  */
 export const layerSymbolsImagesURLs = [
   {
-    key: 'energy-picto',
-    url: '/icons/rect.png',
+    key: 'square',
+    url: '/icons/square.png',
+    sdf: true,
+  },
+  {
+    key: 'circle',
+    url: '/icons/circle.png',
     sdf: true,
   },
   {
@@ -93,6 +99,10 @@ export const LegendDeskData = {
   gasUsage: {
     min: 50,
     max: 2000,
+  },
+  potentielCreationParCommuneSansReseauNbHabitants: {
+    min: 0,
+    max: 100000,
   },
 };
 
@@ -372,6 +382,7 @@ export type LayerId =
   | 'besoinsEnChaleurFroid-contour'
   | 'besoinsEnChaleurIndustrieCommunes'
   | 'besoinsEnChaleurIndustrieCommunes-contour'
+  | 'communesSansReseauAvecZoneOpportunite'
   | 'caracteristiquesBatiments'
   | 'distance-measurements-lines'
   | 'distance-measurements-labels'
@@ -760,7 +771,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           minzoom: intermediateTileLayersMinZoom,
           type: 'symbol',
           layout: {
-            'icon-image': 'energy-picto',
+            'icon-image': 'square',
             'icon-overlap': 'always',
             'icon-size': 0.5,
           },
@@ -798,7 +809,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           minzoom: intermediateTileLayersMinZoom,
           type: 'symbol',
           layout: {
-            'icon-image': 'energy-picto',
+            'icon-image': 'square',
             'icon-overlap': 'always',
             'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
             'icon-size': [
@@ -1090,6 +1101,39 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         },
       ],
     },
+
+    {
+      sourceId: 'communesSansReseauAvecZoneOpportunite',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/communesSansReseauAvecZoneOpportunite/{z}/{x}/{y}`],
+        minzoom: 5,
+        maxzoom: 6,
+        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
+      },
+      layers: [
+        {
+          id: 'communesSansReseauAvecZoneOpportunite',
+          source: 'communesSansReseauAvecZoneOpportunite',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'circle',
+          layout: {
+            'circle-sort-key': ['-', ['get', 'population']],
+          },
+          paint: {
+            'circle-color': communesSansReseauAvecZoneOpportuniteLayerColor,
+            'circle-radius': ['interpolate', ['linear'], ['get', 'population'], 2000, 2, 50_000, 16],
+            'circle-opacity': 0.7,
+          },
+          filter: [
+            'all',
+            ['>=', ['get', 'population'], config.potentielCreationParCommuneSansReseau.interval[0]],
+            ['<=', ['get', 'population'], config.potentielCreationParCommuneSansReseau.interval[1]],
+          ],
+        },
+      ],
+    },
   ];
 }
 export function buildInternalMapLayers(): MapSourceLayersSpecification[] {
@@ -1122,6 +1166,7 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   setLayerVisibility('besoinsEnChaleurFroid-contour', config.besoinsEnChaleur || config.besoinsEnFroid);
   setLayerVisibility('besoinsEnChaleurIndustrieCommunes', config.besoinsEnChaleurIndustrieCommunes);
   setLayerVisibility('besoinsEnChaleurIndustrieCommunes-contour', config.besoinsEnChaleurIndustrieCommunes);
+  setLayerVisibility('communesSansReseauAvecZoneOpportunite', config.potentielCreationParCommuneSansReseau.show);
   setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
   setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);
   setLayerVisibility('demandesEligibilite', config.demandesEligibilite);
@@ -1254,6 +1299,11 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
     'all',
     ['==', ['get', 'is_zone'], false],
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
+  ]);
+  map.setFilter('communesSansReseauAvecZoneOpportunite', [
+    'all',
+    ['>=', ['get', 'population'], config.potentielCreationParCommuneSansReseau.interval[0]],
+    ['<=', ['get', 'population'], config.potentielCreationParCommuneSansReseau.interval[1]],
   ]);
 
   setLayerVisibility('distance-measurements-labels', config.mesureDistance);
