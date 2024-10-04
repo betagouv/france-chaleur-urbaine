@@ -482,7 +482,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
           <Input name="Installation x Radiateur électrique x Individuel . gamme de puissance existante" label="Gamme de puissance" />
 
-          <Input name="ratios économiques . Radiateur électrique x Individuel" label="Coût investissement" />
+          <Input name="ratios économiques . Radiateur électrique x Individuel x investissement total" label="Coût investissement" />
         </UrlStateAccordion>
       )}
     </div>
