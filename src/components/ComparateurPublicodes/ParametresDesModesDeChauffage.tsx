@@ -118,7 +118,6 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
             label="Part de la consommation en HC"
             disabled
           />
-          <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x CTA" label="Part Fixe x CTA" />
           <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x TVA" label="Part Fixe x TVA" />
           <Input
             name="Paramètres économiques . Electricité x Taxe . Part Variable x Accise sur l'électricité ex TIPCSE CSPE"
