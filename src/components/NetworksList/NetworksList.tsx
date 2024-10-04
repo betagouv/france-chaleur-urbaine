@@ -27,6 +27,17 @@ const NetworksListContainer = styled.div`
       color: var(--grey-50-1000);
     }
   }
+  .MuiDataGrid-row {
+    &.even,
+    &.odd {
+      background-color: #fff;
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+    &:not(.MuiDataGrid-row--firstVisible) {
+      --rowBorderColor: var(--border-contrast-grey);
+    }
+  }
 `;
 
 const GeneralFieldsList: string[] = [

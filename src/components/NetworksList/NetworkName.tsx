@@ -16,13 +16,17 @@ const IsClassedTag = styled(Text)`
 const Name = styled(Text)`
   color: var(--text-action-high-blue-france);
   font-weight: bold;
-  margin-top: 16px;
+  margin-top: 8px;
 `;
 
 const NetworkName = ({ name, isClassed, identifiant }: { name: string; isClassed: boolean; identifiant: string }) => {
   return (
     <Box className="fr-m-1w">
-      {isClassed && <IsClassedTag size="xs">RÉSEAU CLASSÉ</IsClassedTag>}
+      {isClassed && (
+        <IsClassedTag size="xs" mt="1w">
+          RÉSEAU CLASSÉ
+        </IsClassedTag>
+      )}
       <Name>
         <Link href={`/reseaux/${identifiant}`}>{name}</Link>
       </Name>
