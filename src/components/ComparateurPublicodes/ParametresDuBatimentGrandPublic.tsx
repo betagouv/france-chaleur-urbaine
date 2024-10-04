@@ -57,8 +57,8 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
             }}
           />
           <Input
-            name="nombre de logement dans l'immeuble concerné"
-            label="Nombre de logement dans l'immeuble concerné"
+            name="nombre de logements dans l'immeuble concerné"
+            label="Nombre de logements dans l'immeuble concerné"
             nativeInputProps={{
               inputMode: 'numeric',
               maxLength: 5,
