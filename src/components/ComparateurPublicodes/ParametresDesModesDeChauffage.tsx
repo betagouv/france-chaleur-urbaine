@@ -36,9 +36,15 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         />
         <Input name="ratios économiques . Investissement x TVA" label="TVA" />
 
-        <Input name="ratios économiques . Chauffe-eau x électrique à accumulation" label="Chauffe-eau x électrique à accumulation" />
-        <Input name="ratios économiques . Chauffe-eau x solaire" label="Chauffe-eau x solaire" />
-        <Input name="ratios économiques . Chauffe-eau x solaire prix panneaux" label="Chauffe-eau x solaire prix panneaux" />
+        <Input
+          name="ratios économiques . Chauffe-eau x électrique à accumulation x coût investissement"
+          label="Chauffe-eau x électrique à accumulation"
+        />
+        <Input name="ratios économiques . Chauffe-eau x solaire x coût investissement" label="Chauffe-eau x solaire" />
+        <Input
+          name="ratios économiques . Chauffe-eau x panneaux solaire thermique x coût investissement"
+          label="Chauffe-eau x solaire prix panneaux"
+        />
 
         <Input name="ratios économiques . Amortissement x Taux actualisation" label="Taux actualisation" />
       </Accordion>
