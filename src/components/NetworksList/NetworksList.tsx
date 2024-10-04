@@ -484,9 +484,10 @@ const NetworksList = () => {
               getRowHeight={() => 'auto'}
               hideFooterSelectedRowCount
               loading={!loaded}
+              sortingOrder={['desc', 'asc']}
               initialState={{
                 sorting: {
-                  sortModel: [{ field: 'Nom', sort: 'asc' }],
+                  sortModel: [{ field: 'nom_reseau', sort: 'asc' }],
                 },
               }}
             />

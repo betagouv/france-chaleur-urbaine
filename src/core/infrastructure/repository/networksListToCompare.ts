@@ -81,6 +81,7 @@ export const getNetworks = async (): Promise<NetworkToCompare[]> => {
       db.raw('"prod_MWh_biogaz" / COALESCE(NULLIF("production_totale_MWh", 0), 1) * 100 as "energie_ratio_biogaz"')
     )
     .whereNotNull('Identifiant reseau')
+    .and.whereNotNull('nom_reseau')
     .andWhereRaw('LENGTH("Identifiant reseau") <= 5');
   return networks.map((network: NetworkToCompare) => {
     const energies = [
