@@ -3,7 +3,7 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import Checkbox from '@codegouvfr/react-dsfr/Checkbox';
 import { Range } from '@codegouvfr/react-dsfr/Range';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Box from '@components/ui/Box';
@@ -139,7 +139,6 @@ function NetworksFilter({
 }) {
   const [newFilterValues, setNewFilterValues] = useState<FilterValues>(filterValues);
   const [filterCount, setFilterCount] = useState<number>(0);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isOpenEnergiesFilters, setIsOpenEnergiesFilters] = useState<boolean>(false);
 
   const [empty, setEmpty] = useState<boolean>(false);
@@ -147,6 +146,40 @@ function NetworksFilter({
   useEffect(() => {
     setEmpty(false);
   }, [empty]);
+
+  function emptyFilters() {
+    const emptyFilterValues: FilterValues = {
+      ...filterLimits,
+      energieMajoritaire: '',
+      gestionnaire: '',
+      isClassed: false,
+      region: '',
+    };
+    setNewFilterValues(emptyFilterValues);
+    setEmpty(true);
+  }
+
+  function useComponentVisible(initialIsVisible: boolean) {
+    const [isOpen, setIsOpen] = useState<boolean>(initialIsVisible);
+    const ref = useRef<HTMLDivElement>(null);
+
+    const handleClickOutside = (event: any) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        emptyFilters();
+        setIsOpen(false);
+      }
+    };
+
+    useEffect(() => {
+      document.addEventListener('click', handleClickOutside, true);
+      return () => {
+        document.removeEventListener('click', handleClickOutside, true);
+      };
+    }, []);
+
+    return { ref, isOpen, setIsOpen };
+  }
+  const { ref, isOpen, setIsOpen } = useComponentVisible(false);
 
   const applyFilters = useCallback(() => {
     let nbFilters = 0;
@@ -167,18 +200,6 @@ function NetworksFilter({
     onApplyFilters(newFilterValues);
   }, [filterLimits, emptyFilterNoLimits, newFilterValues]);
 
-  function emptyFilters() {
-    const emptyFilterValues: FilterValues = {
-      ...filterLimits,
-      energieMajoritaire: '',
-      gestionnaire: '',
-      isClassed: false,
-      region: '',
-    };
-    setNewFilterValues(emptyFilterValues);
-    setEmpty(true);
-  }
-
   return (
     <>
       <Button
@@ -192,191 +213,204 @@ function NetworksFilter({
         <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
         Tous les filtres ({filterCount})
       </Button>
-      {isOpen && !empty && (
+      {isOpen && (
         <FiltersContainer isOpen={isOpen}>
-          <FiltersBox backgroundColor="#fff">
-            <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-              <Box display="flex">
-                <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
-                <Heading as="h5" color="grey" m="0">
-                  Filtres
-                </Heading>
-              </Box>
-              <button type="button" title="Fermer" onClick={() => setIsOpen(false)}>
-                <Icon name="ri-close-line" size="md" color="var(--text-action-high-blue-france)" />
-              </button>
-            </Box>
-            <FiltersSeparator />
-            <Box m="2w">
-              <Checkbox
-                small
-                options={[
-                  {
-                    label: 'Réseaux classés',
-                    nativeInputProps: {
-                      name: 'classed-network',
-                      checked: newFilterValues.isClassed,
-                      onChange: (e: any) =>
-                        setNewFilterValues({
-                          ...newFilterValues,
-                          isClassed: e.target.checked,
-                        }),
-                    },
-                  },
-                ]}
-              />
-            </Box>
-            <Box m="2w">
-              <Text size="sm">Type d'énergie majoritaire</Text>
-              <Select
-                label=""
-                nativeSelectProps={{
-                  value: newFilterValues.energieMajoritaire,
-                  onChange: (e) => {
-                    newFilterValues.energieMajoritaire = e.target.value !== '' ? (e.target.value as FiltreEnergieConfKey) : '';
-                    setNewFilterValues({ ...newFilterValues });
-                  },
-                }}
-                options={[
-                  {
-                    label: 'Sélectionner une option',
-                    value: '',
-                  },
-                  ...energiesFilters.map(({ label, confKey }) => ({
-                    label,
-                    value: confKey,
-                  })),
-                ]}
-              />
-            </Box>
-            <Box m="2w">
-              <Text size="sm">Région</Text>
-              <Select
-                label=""
-                nativeSelectProps={{
-                  value: newFilterValues.region,
-                  onChange: (e) => {
-                    newFilterValues.region = e.target.value;
-                    setNewFilterValues({ ...newFilterValues });
-                  },
-                }}
-                options={[
-                  {
-                    label: '',
-                    value: '',
-                  },
-                  ...regionsList.map((region: string) => ({
-                    label: region,
-                    value: region,
-                  })),
-                ]}
-              />
-            </Box>
-            <Box m="2w">
-              <Text size="sm">Gestionnaire</Text>
-              <Select
-                label=""
-                nativeSelectProps={{
-                  value: newFilterValues.gestionnaire,
-                  onChange: (e) => {
-                    newFilterValues.gestionnaire = e.target.value;
-                    setNewFilterValues({ ...newFilterValues });
-                  },
-                }}
-                options={[
-                  {
-                    label: '',
-                    value: '',
-                  },
-                  ...gestionnairesFilters.map((gestionnaire: string) => ({
-                    label: gestionnaire,
-                    value: gestionnaire,
-                  })),
-                ]}
-              />
-            </Box>
-            {intervalFilters.map(
-              (filterConf) =>
-                newFilterValues[filterConf.confKey] && (
-                  <Box m="2w" key={`box_${filterConf.confKey}`}>
-                    <Range
-                      key={filterConf.confKey}
-                      double
-                      label={filterConf.label}
-                      min={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][0] : defaultInterval[0]}
-                      max={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][1] : defaultInterval[1]}
-                      suffix={filterConf.confKey === 'Taux EnR&R' ? '%' : ''}
-                      nativeInputProps={[
+          <div ref={ref}>
+            <FiltersBox backgroundColor="#fff">
+              {!empty && (
+                <>
+                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                    <Box display="flex">
+                      <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
+                      <Heading as="h5" color="grey" m="0">
+                        Filtres
+                      </Heading>
+                    </Box>
+                    <button
+                      type="button"
+                      title="Fermer"
+                      onClick={() => {
+                        emptyFilters();
+                        setIsOpen(false);
+                      }}
+                    >
+                      <Icon name="ri-close-line" size="md" color="var(--text-action-high-blue-france)" />
+                    </button>
+                  </Box>
+                  <FiltersSeparator />
+                  <Box m="2w">
+                    <Checkbox
+                      small
+                      options={[
                         {
-                          value: newFilterValues[filterConf.confKey][0],
-                          onChange: (e: any) =>
-                            setNewFilterValues({
-                              ...newFilterValues,
-                              [filterConf.confKey]: [+e.target.value, newFilterValues[filterConf.confKey][1]],
-                            }),
-                        },
-                        {
-                          value: newFilterValues[filterConf.confKey][1],
-                          onChange: (e: any) =>
-                            setNewFilterValues({
-                              ...newFilterValues,
-                              [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], +e.target.value],
-                            }),
+                          label: 'Réseaux classés',
+                          nativeInputProps: {
+                            name: 'classed-network',
+                            checked: newFilterValues.isClassed,
+                            onChange: (e: any) =>
+                              setNewFilterValues({
+                                ...newFilterValues,
+                                isClassed: e.target.checked,
+                              }),
+                          },
                         },
                       ]}
                     />
                   </Box>
-                )
-            )}
-            <Accordion
-              label="Filtres avancés"
-              onExpandedChange={(value) => setIsOpenEnergiesFilters(!value)}
-              expanded={isOpenEnergiesFilters}
-            >
-              {energiesFilters.map(
-                (filterConf) =>
-                  newFilterValues[filterConf.confKey] && (
-                    <Box m="2w" key={`box_${filterConf.confKey}`}>
-                      <Range
-                        key={filterConf.confKey}
-                        double
-                        label={filterConf.label}
-                        min={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][0] : percentageMaxInterval[0]}
-                        max={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][1] : percentageMaxInterval[1]}
-                        suffix="%"
-                        nativeInputProps={[
-                          {
-                            value: newFilterValues[filterConf.confKey][0],
-                            onChange: (e: any) =>
-                              setNewFilterValues({
-                                ...newFilterValues,
-                                [filterConf.confKey]: [+e.target.value, newFilterValues[filterConf.confKey][1]],
-                              }),
-                          },
-                          {
-                            value: newFilterValues[filterConf.confKey][1],
-                            onChange: (e: any) =>
-                              setNewFilterValues({
-                                ...newFilterValues,
-                                [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], +e.target.value],
-                              }),
-                          },
-                        ]}
-                      />
-                    </Box>
-                  )
+                  <Box m="2w">
+                    <Text size="sm">Type d'énergie majoritaire</Text>
+                    <Select
+                      label=""
+                      nativeSelectProps={{
+                        value: newFilterValues.energieMajoritaire,
+                        onChange: (e) => {
+                          newFilterValues.energieMajoritaire = e.target.value !== '' ? (e.target.value as FiltreEnergieConfKey) : '';
+                          setNewFilterValues({ ...newFilterValues });
+                        },
+                      }}
+                      options={[
+                        {
+                          label: 'Sélectionner une option',
+                          value: '',
+                        },
+                        ...energiesFilters.map(({ label, confKey }) => ({
+                          label,
+                          value: confKey,
+                        })),
+                      ]}
+                    />
+                  </Box>
+                  <Box m="2w">
+                    <Text size="sm">Région</Text>
+                    <Select
+                      label=""
+                      nativeSelectProps={{
+                        value: newFilterValues.region,
+                        onChange: (e) => {
+                          newFilterValues.region = e.target.value;
+                          setNewFilterValues({ ...newFilterValues });
+                        },
+                      }}
+                      options={[
+                        {
+                          label: '',
+                          value: '',
+                        },
+                        ...regionsList.map((region: string) => ({
+                          label: region,
+                          value: region,
+                        })),
+                      ]}
+                    />
+                  </Box>
+                  <Box m="2w">
+                    <Text size="sm">Gestionnaire</Text>
+                    <Select
+                      label=""
+                      nativeSelectProps={{
+                        value: newFilterValues.gestionnaire,
+                        onChange: (e) => {
+                          newFilterValues.gestionnaire = e.target.value;
+                          setNewFilterValues({ ...newFilterValues });
+                        },
+                      }}
+                      options={[
+                        {
+                          label: '',
+                          value: '',
+                        },
+                        ...gestionnairesFilters.map((gestionnaire: string) => ({
+                          label: gestionnaire,
+                          value: gestionnaire,
+                        })),
+                      ]}
+                    />
+                  </Box>
+                  {intervalFilters.map(
+                    (filterConf) =>
+                      newFilterValues[filterConf.confKey] && (
+                        <Box m="2w" key={`box_${filterConf.confKey}`}>
+                          <Range
+                            key={filterConf.confKey}
+                            double
+                            label={filterConf.label}
+                            min={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][0] : defaultInterval[0]}
+                            max={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][1] : defaultInterval[1]}
+                            suffix={filterConf.confKey === 'Taux EnR&R' ? '%' : ''}
+                            nativeInputProps={[
+                              {
+                                value: newFilterValues[filterConf.confKey][0],
+                                onChange: (e: any) =>
+                                  setNewFilterValues({
+                                    ...newFilterValues,
+                                    [filterConf.confKey]: [+e.target.value, newFilterValues[filterConf.confKey][1]],
+                                  }),
+                              },
+                              {
+                                value: newFilterValues[filterConf.confKey][1],
+                                onChange: (e: any) =>
+                                  setNewFilterValues({
+                                    ...newFilterValues,
+                                    [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], +e.target.value],
+                                  }),
+                              },
+                            ]}
+                          />
+                        </Box>
+                      )
+                  )}
+                  <Accordion
+                    label="Filtres avancés"
+                    onExpandedChange={(value) => setIsOpenEnergiesFilters(!value)}
+                    expanded={isOpenEnergiesFilters}
+                  >
+                    {energiesFilters.map(
+                      (filterConf) =>
+                        newFilterValues[filterConf.confKey] && (
+                          <Box m="2w" key={`box_${filterConf.confKey}`}>
+                            <Range
+                              key={filterConf.confKey}
+                              double
+                              label={filterConf.label}
+                              min={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][0] : percentageMaxInterval[0]}
+                              max={filterLimits[filterConf.confKey] ? filterLimits[filterConf.confKey][1] : percentageMaxInterval[1]}
+                              suffix="%"
+                              nativeInputProps={[
+                                {
+                                  value: newFilterValues[filterConf.confKey][0],
+                                  onChange: (e: any) =>
+                                    setNewFilterValues({
+                                      ...newFilterValues,
+                                      [filterConf.confKey]: [+e.target.value, newFilterValues[filterConf.confKey][1]],
+                                    }),
+                                },
+                                {
+                                  value: newFilterValues[filterConf.confKey][1],
+                                  onChange: (e: any) =>
+                                    setNewFilterValues({
+                                      ...newFilterValues,
+                                      [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], +e.target.value],
+                                    }),
+                                },
+                              ]}
+                            />
+                          </Box>
+                        )
+                    )}
+                  </Accordion>
+                  <FiltersSeparator />
+                  <Box>
+                    <Button className="network-filters-submit-button" priority="tertiary" onClick={() => emptyFilters()}>
+                      Effacer les filtres
+                    </Button>
+                    <Button className="network-filters-submit-button" onClick={() => applyFilters()}>
+                      Appliquer
+                    </Button>
+                  </Box>
+                </>
               )}
-            </Accordion>
-            <FiltersSeparator />
-            <Box>
-              <Button className="network-filters-submit-button" priority="tertiary" onClick={() => emptyFilters()}>
-                Effacer les filtres
-              </Button>
-              <Button className="network-filters-submit-button" onClick={() => applyFilters()}>
-                Appliquer
-              </Button>
-            </Box>
-          </FiltersBox>
+            </FiltersBox>
+          </div>
         </FiltersContainer>
       )}
     </>
