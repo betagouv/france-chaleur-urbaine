@@ -192,6 +192,7 @@ const NetworksList = () => {
         headerName: 'Nom de la ville',
         minWidth: 250,
         sortable: true,
+        sortComparator: (v1, v2, param1, param2) => `${param1.value.join(', ')}`.localeCompare(param2.value.join(', ')),
         renderCell: (params) => <Text>{params.row.communes ? params.row.communes.join(', ') : undefined}</Text>,
       },
       {
