@@ -89,6 +89,28 @@ function NetworksFilter({
     setEmpty(false);
   }, [empty]);
 
+  function useComponentVisible(initialIsVisible: boolean) {
+    const [isOpen, setIsOpen] = useState<boolean>(initialIsVisible);
+    const ref = useRef<HTMLDivElement>(null);
+
+    const handleClickOutside = (event: any) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setNewFilterValues(filterValues);
+        setIsOpen(false);
+      }
+    };
+
+    useEffect(() => {
+      document.addEventListener('click', handleClickOutside, true);
+      return () => {
+        document.removeEventListener('click', handleClickOutside, true);
+      };
+    }, [filterValues]);
+
+    return { ref, isOpen, setIsOpen };
+  }
+  const { ref, isOpen, setIsOpen } = useComponentVisible(false);
+
   function emptyFilters() {
     const emptyFilterValues: FilterValues = {
       ...filterLimits,
@@ -100,28 +122,6 @@ function NetworksFilter({
     setNewFilterValues(emptyFilterValues);
     setEmpty(true);
   }
-
-  function useComponentVisible(initialIsVisible: boolean) {
-    const [isOpen, setIsOpen] = useState<boolean>(initialIsVisible);
-    const ref = useRef<HTMLDivElement>(null);
-
-    const handleClickOutside = (event: any) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        emptyFilters();
-        setIsOpen(false);
-      }
-    };
-
-    useEffect(() => {
-      document.addEventListener('click', handleClickOutside, true);
-      return () => {
-        document.removeEventListener('click', handleClickOutside, true);
-      };
-    }, []);
-
-    return { ref, isOpen, setIsOpen };
-  }
-  const { ref, isOpen, setIsOpen } = useComponentVisible(false);
 
   const applyFilters = useCallback(() => {
     let nbFilters = 0;
@@ -172,7 +172,7 @@ function NetworksFilter({
                       type="button"
                       title="Fermer"
                       onClick={() => {
-                        emptyFilters();
+                        setNewFilterValues(filterValues);
                         setIsOpen(false);
                       }}
                     >
