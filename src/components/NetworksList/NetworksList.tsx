@@ -4,7 +4,6 @@ import { useGridApiRef } from '@mui/x-data-grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-import { ReseauxDeChaleurLimits } from '@components/Map/map-layers';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { ColumnDef, Table } from '@components/ui/Table';
@@ -12,11 +11,19 @@ import Text from '@components/ui/Text';
 import { Interval } from '@utils/interval';
 import { fetchJSON } from '@utils/network';
 import { useServices } from 'src/services';
-import { emptyFilterLimits, emptyFilterValues, FilterLimits, FilterValues } from 'src/types/NetworksFilters';
+import {
+  emptyFilterLimits,
+  emptyFilterValues,
+  energiesFilters,
+  FilterLimits,
+  FilterValues,
+  intervalFilters,
+  IntervalFiltersLimitKey,
+} from 'src/types/NetworksFilters';
 import { NetworkToCompare } from 'src/types/Summary/Network';
 
 import NetworkName from './NetworkName';
-import NetworksFilter, { intervalFilters, energiesFilters } from './NetworksFilters';
+import NetworksFilter from './NetworksFilters';
 
 type DataToDisplay = 'general' | 'mix_energetique';
 
@@ -399,12 +406,12 @@ const NetworksList = () => {
           setRegionsList(newRegionsList);
 
           // amend the configuration with metadata limits of networks
-          fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then((limits) => {
+          fetchJSON<IntervalFiltersLimitKey>('/api/networks/list-to-compare-limits').then((limits) => {
             // apply the limits to the filters
             intervalFilters.forEach((filter) => {
-              if (limits[filter.rdcLimitKey]) {
-                filterValues[filter.confKey] = limits[filter.rdcLimitKey];
-                filterLimits[filter.confKey] = limits[filter.rdcLimitKey];
+              if (limits[filter.limitKey]) {
+                filterValues[filter.confKey] = limits[filter.limitKey];
+                filterLimits[filter.confKey] = limits[filter.limitKey];
               }
             });
             setFilterValues(filterValues);

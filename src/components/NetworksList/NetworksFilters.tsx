@@ -11,7 +11,14 @@ import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
 import { defaultInterval, FiltreEnergieConfKey, percentageMaxInterval } from 'src/services/Map/map-configuration';
-import { emptyFilterNoLimits, FilterLimits, FilterNoLimits, FilterValues, IntervalAndEnergiesFilters } from 'src/types/NetworksFilters';
+import {
+  emptyFilterNoLimits,
+  energiesFilters,
+  FilterLimits,
+  FilterNoLimits,
+  FilterValues,
+  intervalFilters,
+} from 'src/types/NetworksFilters';
 
 const FiltersContainer = styled.div<{
   isOpen: boolean;
@@ -58,71 +65,6 @@ const FiltersSeparator = styled.div`
   border: 1px solid #e1e1e1;
   margin: 16px 0px;
 `;
-
-export const intervalFilters = [
-  {
-    label: 'Livraisons de chaleur annuelles (GWh)',
-    confKey: 'livraisons_totale_MWh',
-    rdcLimitKey: 'livraisonsAnnuelles',
-  },
-  {
-    label: "Taux d'EnR&R",
-    confKey: 'Taux EnR&R',
-    rdcLimitKey: 'tauxENRR',
-  },
-  {
-    label: 'Emission de CO2 (gC02/kWh)',
-    confKey: 'contenu CO2 ACV',
-    rdcLimitKey: 'emissionsCO2',
-  },
-  {
-    label: 'Prix moyen de la chaleur (€TTC/MWh)',
-    confKey: 'PM',
-    rdcLimitKey: 'prixMoyen',
-  },
-  {
-    label: 'Année de construction',
-    confKey: 'annee_creation',
-    rdcLimitKey: 'anneeConstruction',
-  },
-] as const satisfies ReadonlyArray<IntervalAndEnergiesFilters>;
-
-export type IntervalFiltersConfKey = (typeof intervalFilters)[number]['confKey'];
-
-export const energiesFilters = [
-  {
-    label: 'Biomasse',
-    confKey: 'energie_ratio_biomasse',
-  },
-  {
-    label: 'Géothermie',
-    confKey: 'energie_ratio_geothermie',
-  },
-  {
-    label: 'UVE',
-    confKey: 'energie_ratio_uve',
-  },
-  {
-    label: 'Chaleur industrielle',
-    confKey: 'energie_ratio_chaleurIndustrielle',
-  },
-  {
-    label: 'Solaire thermique',
-    confKey: 'energie_ratio_solaireThermique',
-  },
-  {
-    label: 'Pompe à chaleur',
-    confKey: 'energie_ratio_pompeAChaleur',
-  },
-  {
-    label: 'Gaz',
-    confKey: 'energie_ratio_gaz',
-  },
-  {
-    label: 'Fioul',
-    confKey: 'energie_ratio_fioul',
-  },
-] as const satisfies ReadonlyArray<IntervalAndEnergiesFilters>;
 
 const gestionnairesFilters: string[] = ['Coriance', 'Dalkia', 'IDEX', 'Engie Solutions'];
 
