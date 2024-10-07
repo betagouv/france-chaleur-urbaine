@@ -106,34 +106,6 @@ const securityHeadersIFramable = [
   },
 ];
 
-// Function to add SVG loading rules, preventing DSFR icons from not showing
-// See https://github.com/gregberge/svgr/issues/860#issuecomment-1531904399
-const addSvgLoadingToConfig = (config) => {
-  const fileLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
-
-  // Exclude *.svg from the existing file loader rule
-  fileLoaderRule.exclude = /\.svg$/i;
-
-  // Reapply the existing rule for *.svg?url
-  config.module.rules.push({
-    ...fileLoaderRule,
-    test: /\.svg$/i,
-    resourceQuery: /url/, // *.svg?url
-  });
-
-  // Convert all other *.svg imports to React components
-  config.module.rules.push({
-    test: /\.svg$/i,
-    issuer: { not: /\.(css|scss|sass)$/ },
-    resourceQuery: { not: /url/ }, // exclude if *.svg?url
-    loader: '@svgr/webpack',
-    options: {
-      dimensions: false,
-      titleProp: true,
-    },
-  });
-};
-
 module.exports = withBundleAnalyzer(
   withSentryConfig(
     {
@@ -230,7 +202,7 @@ module.exports = withBundleAnalyzer(
           test: /\.woff2$/,
           type: 'asset/resource',
         });
-        addSvgLoadingToConfig(config);
+        // addSvgLoadingToConfig(config);
         return config;
       },
       transpilePackages: ['@codegouvfr/react-dsfr'],
