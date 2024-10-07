@@ -514,6 +514,7 @@ const NetworksList = () => {
                   sortModel: [{ field: 'nom_reseau', sort: 'asc' }],
                 },
               }}
+              pageSize={20}
             />
           </Box>
         </Box>
