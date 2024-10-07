@@ -74,8 +74,8 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
               }}
             />
             <Input
-              name="nombre de logement dans l'immeuble concerné"
-              label="Nombre de logement dans l'immeuble concerné"
+              name="nombre de logements dans l'immeuble concerné"
+              label="Nombre de logements dans l'immeuble concerné"
               hideUnit
               nativeInputProps={{
                 inputMode: 'numeric',

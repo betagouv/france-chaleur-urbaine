@@ -6,14 +6,13 @@ import Map from '@components/Map/Map';
 import MarkdownWrapper from '@components/MarkdownWrapper';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
-import { useMatomoAbTestingExperiment } from 'src/services/analytics';
 import { getReadableDistance } from 'src/services/Map/distance';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { AddressDataType } from 'src/types/AddressData';
 import { ContactFormInfos } from 'src/types/Summary/Demand';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
-import { bordeauxMetropoleCityCodes, getEligibilityResult, getEligibilityResultState } from './EligibilityResults';
+import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';
 
 type EligibilityFormContactType = {
   addressData: AddressDataType;
@@ -25,12 +24,8 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
   const [contactFormLoading, setContactFormLoading] = useState(false);
   const [contactFormError, setContactFormError] = useState(false);
 
-  const { ready, variation } = useMatomoAbTestingExperiment('TestMessagesFormulaireContact', {
-    enable: getEligibilityResultState(addressData.heatingType, addressData.eligibility) === 'closeCollectif',
-  });
-
   const { body, computedEligibility, text } = useMemo(() => {
-    if (!addressData.eligibility || !variation) {
+    if (!addressData.eligibility) {
       return {};
     }
 
@@ -39,7 +34,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
       body,
       eligibility: computedEligibility,
       text,
-    }: any = getEligibilityResult(variation, addressData.heatingType, addressData.eligibility);
+    }: any = getEligibilityResult(addressData.heatingType, addressData.eligibility);
 
     const addBordeauxLink =
       addressData.geoAddress?.properties.citycode && bordeauxMetropoleCityCodes.includes(addressData.geoAddress?.properties.citycode);
@@ -66,7 +61,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
       computedEligibility,
       text,
     };
-  }, [addressData, variation]);
+  }, [addressData]);
 
   const handleSubmitForm = useCallback(
     async (values: ContactFormInfos) => {
@@ -98,9 +93,6 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
     [addressData, computedEligibility, onSubmit]
   );
 
-  if (!ready) {
-    return null;
-  }
   return (
     <ContactFormWrapper cardMode={cardMode}>
       {addressData.eligibility?.basedOnCity && !cardMode ? (

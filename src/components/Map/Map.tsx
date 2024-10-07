@@ -340,6 +340,13 @@ const InternalMap = ({
     e.target.addControl(
       new MapboxStyleSwitcherControl(styles, {
         defaultStyle: 'Carte',
+        eventListeners: {
+          onChange: () => {
+            // this switcher removes all sources and layers when used so we must configure them again
+            setMapLayersLoaded(false);
+            return true;
+          },
+        },
       })
     );
 
@@ -470,41 +477,46 @@ const InternalMap = ({
 
   const onMapSourceData = (e: MapSourceDataEvent) => {
     const map = mapRef.current?.getMap();
-    if (mapLayersLoaded || !map || !isMapConfigurationInitialized(mapConfiguration)) {
+    if (
+      mapLayersLoaded ||
+      !map ||
+      !isMapConfigurationInitialized(mapConfiguration) ||
+      (e.sourceId !== 'openmaptiles' && e.sourceId !== 'raster-tiles') ||
+      !e.isSourceLoaded ||
+      !e.tile
+    ) {
       return;
     }
 
-    if ((e.sourceId === 'openmaptiles' || e.sourceId === 'raster-tiles') && e.isSourceLoaded && e.tile) {
-      buildMapLayers(mapConfiguration).forEach((spec) => {
-        if (map.getSource(spec.sourceId)) {
-          return;
+    buildMapLayers(mapConfiguration).forEach((spec) => {
+      if (map.getSource(spec.sourceId)) {
+        return;
+      }
+
+      map.addSource(spec.sourceId, spec.source);
+      spec.layers.forEach((layer) => {
+        if (!layer.layout) {
+          layer.layout = {};
         }
-
-        map.addSource(spec.sourceId, spec.source);
-        spec.layers.forEach((layer) => {
-          if (!layer.layout) {
-            layer.layout = {};
-          }
-          // hide all layers by default to prevent loading them
-          layer.layout.visibility = 'none';
-          map.addLayer(layer);
-        });
+        // hide all layers by default to prevent loading them
+        layer.layout.visibility = 'none';
+        map.addLayer(layer);
       });
+    });
 
-      // other sources: distances measurement, linear heat density, buildings data extraction
-      buildInternalMapLayers().forEach((spec) => {
-        if (map.getSource(spec.sourceId)) {
-          return;
-        }
+    // other sources: distances measurement, linear heat density, buildings data extraction
+    buildInternalMapLayers().forEach((spec) => {
+      if (map.getSource(spec.sourceId)) {
+        return;
+      }
 
-        map.addSource(spec.sourceId, spec.source);
-        spec.layers.forEach((layer) => {
-          map.addLayer(layer);
-        });
+      map.addSource(spec.sourceId, spec.source);
+      spec.layers.forEach((layer) => {
+        map.addLayer(layer);
       });
+    });
 
-      setMapLayersLoaded(true);
-    }
+    setMapLayersLoaded(true);
   };
 
   useEffect(() => {
@@ -736,10 +748,10 @@ const InternalMap = ({
               }}
             >
               <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-              <CollapseLegendLabel legendCollapsed={legendCollapsed}>
-                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
+              <CollapseLegendLabel>
+                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} rotate={legendCollapsed ? -90 : 90} />
                 <span>Légende</span>
-                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} />
+                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} rotate={legendCollapsed ? -90 : 90} />
               </CollapseLegendLabel>
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
