@@ -183,6 +183,7 @@ const HeadSlice = ({
 
             <Buttons>
               <Button
+                type="button"
                 size="large"
                 disabled={!address || !geoAddress || !heatingType || (loadingStatus === 'loading' && !eligibilityError)}
                 onClick={testAddress}
@@ -194,6 +195,7 @@ const HeadSlice = ({
                 <>
                   <Separator />
                   <Button
+                    type="button"
                     size="large"
                     priority="secondary"
                     onClick={() => {
