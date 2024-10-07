@@ -1,6 +1,7 @@
 # Table of contents
 
-* [Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur](README.md)
+* [Les réseaux de chaleur en région : focus sur l'Occitanie](README.md)
+* [Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur](<README (31).md>)
 * [Actualisation des taux d'énergies renouvelables et contenu CO2 des réseaux](actualisation-des-taux-denergies-renouvelables-et-contenu-co2-des-reseaux.md)
 * [Les réseaux de chaleur en région : focus sur l'Auvergne-Rhône-Alpes](les-reseaux-de-chaleur-en-region-focus-sur-lauvergne-rhone-alpes.md)
 * [Identifier les besoins en chaleur des bâtiments](<README (30).md>)

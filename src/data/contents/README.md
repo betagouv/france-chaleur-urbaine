@@ -1,15 +1,7 @@
----
-cover: .gitbook/assets/15 (1).jpg
-coverY: 0
----
+# Les réseaux de chaleur en région : focus sur l'Occitanie
 
-# Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur
-
-🚴‍♂️ Pour la sixième étape de notre tour de France des réseaux de chaleur, nous partons en [Région Sud - Provence-Alpes-Côte d'Azur](https://www.maregionsud.fr/).\
+🚴‍♂️ Nous prolongeons le Tour de France, avec la septième étape de notre tour de France des réseaux de chaleur en région. Direction la [région Occitanie / Pyréenées-Méditerranée](https://www.laregion.fr/)  !\
 \
-🔎 La région compte 41 réseaux de chaleur, dont 5 assurent également la fourniture de froid. Ces derniers sont en réalité des boucles d'eau tempérée : un fluide à basse température circule dans le réseau, dont la température est rehaussée ou abaissée grâce à des pompes à chaleur en bas d'immeuble. Ces boucles mobilisent différentes sources d'énergie, notamment la géothermie de surface, mais aussi la thalassothermie, c'est-à-dire l'exploitation des calories de la mer. C'est par exemple le cas du réseau de la Seyne-sur-Mer ([Toulon Provence Méditerranée](https://metropoletpm.fr/)), qui fut le premier réseau français à valoriser l'énergie de la Méditerranée, ou encore du réseau aujourd'hui en cours de création à Port-de-Bouc.\
+🏆 Avec un taux moyen d'[hashtag#énergiesrenouvelables](https://www.linkedin.com/feed/hashtag/?keywords=%C3%A9nergiesrenouvelables\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7222126012073943040) et de récupération supérieur à 80% en 2022, la région occupe la plus haute marche du podium. Près de la moitié des réseaux occitans affichent même des taux supérieurs à 90% : c'est par exemple le cas des réseaux de la [Ville de Montauban](https://www.linkedin.com/company/ville-de-montauban/) ou de Toulouse Mirail, alimentés majoritairement par des unités de [hashtag#valorisationénergétique](https://www.linkedin.com/feed/hashtag/?keywords=valorisation%C3%A9nerg%C3%A9tique\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7222126012073943040), ou encore de 13 des 15 réseaux du [SYDED DU LOT](https://www.linkedin.com/company/sydeddulot/), pour lesquels le [hashtag#boisénergie](https://www.linkedin.com/feed/hashtag/?keywords=bois%C3%A9nergie\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7222126012073943040) représente jusqu'à 98% du mix énergétique.\
 \
-🤓 Quelques chiffres clés sur les réseaux de la région Provence-Alpes-Côte d'Azur ci-dessous !
-
-<figure><img src=".gitbook/assets/FCU_PACA.jpg" alt=""><figcaption></figcaption></figure>
-
+🔎 Les réseaux de chaleur de la région Occitanie en quelques chiffres clés et exemples, c'est ici 👇
