@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Page](README.md)
+* [Les réseaux de chaleur en région : focus sur les Pays de la Loire](README.md)
 * [Les réseaux de chaleur en région : focus sur la Nouvelle-Aquitaine](les-reseaux-de-chaleur-en-region-focus-sur-la-nouvelle-aquitaine.md)
 * [Les réseaux de chaleur en région : focus sur l'Occitanie](<README (32).md>)
 * [Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur](<README (31).md>)
