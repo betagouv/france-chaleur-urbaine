@@ -211,7 +211,7 @@ const NetworksList = () => {
       },
       {
         field: 'communes',
-        headerName: 'Nom de la ville',
+        headerName: 'Communes',
         minWidth: 250,
         sortable: true,
         sortComparator: (v1, v2, param1, param2) => `${param1.value.join(', ')}`.localeCompare(param2.value.join(', ')),
@@ -272,6 +272,7 @@ const NetworksList = () => {
         minWidth: 130,
         sortable: true,
         align: 'right',
+        renderCell: (params) => <Text>{params.row.PM ? Math.round(params.row.PM) : ''}</Text>,
       },
       {
         field: 'annee_creation',
@@ -295,7 +296,7 @@ const NetworksList = () => {
         minWidth: 180,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.livraisons_totale_MWh ? params.row.livraisons_totale_MWh.toFixed(2) : ''}</Text>,
+        renderCell: (params) => <Text>{params.row.livraisons_totale_MWh ? params.row.livraisons_totale_MWh.toFixed(1) : ''}</Text>,
       },
       {
         field: 'energie_ratio_biomasse',
@@ -303,7 +304,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_biomasse ? params.row.energie_ratio_biomasse.toFixed(2) : 0}%</Text>,
+        renderCell: (params) => <Text>{params.row.energie_ratio_biomasse ? params.row.energie_ratio_biomasse.toFixed(1) : 0}%</Text>,
       },
       {
         field: 'energie_ratio_geothermie',
@@ -311,7 +312,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_geothermie ? params.row.energie_ratio_geothermie.toFixed(2) : 0}%</Text>,
+        renderCell: (params) => <Text>{params.row.energie_ratio_geothermie ? params.row.energie_ratio_geothermie.toFixed(1) : 0}%</Text>,
       },
       {
         field: 'energie_ratio_uve',
@@ -319,7 +320,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_uve ? params.row.energie_ratio_uve.toFixed(2) : 0}%</Text>,
+        renderCell: (params) => <Text>{params.row.energie_ratio_uve ? params.row.energie_ratio_uve.toFixed(1) : 0}%</Text>,
       },
       {
         field: 'energie_ratio_chaleurIndustrielle',
@@ -328,7 +329,7 @@ const NetworksList = () => {
         sortable: true,
         align: 'right',
         renderCell: (params) => (
-          <Text>{params.row.energie_ratio_chaleurIndustrielle ? params.row.energie_ratio_chaleurIndustrielle.toFixed(2) : 0}%</Text>
+          <Text>{params.row.energie_ratio_chaleurIndustrielle ? params.row.energie_ratio_chaleurIndustrielle.toFixed(1) : 0}%</Text>
         ),
       },
       {
@@ -338,7 +339,7 @@ const NetworksList = () => {
         sortable: true,
         align: 'right',
         renderCell: (params) => (
-          <Text>{params.row.energie_ratio_solaireThermique ? params.row.energie_ratio_solaireThermique.toFixed(2) : 0}%</Text>
+          <Text>{params.row.energie_ratio_solaireThermique ? params.row.energie_ratio_solaireThermique.toFixed(1) : 0}%</Text>
         ),
       },
       {
@@ -348,7 +349,7 @@ const NetworksList = () => {
         sortable: true,
         align: 'right',
         renderCell: (params) => (
-          <Text>{params.row.energie_ratio_pompeAChaleur ? params.row.energie_ratio_pompeAChaleur.toFixed(2) : 0}%</Text>
+          <Text>{params.row.energie_ratio_pompeAChaleur ? params.row.energie_ratio_pompeAChaleur.toFixed(1) : 0}%</Text>
         ),
       },
       {
@@ -357,7 +358,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_gaz ? params.row.energie_ratio_gaz.toFixed(2) : 0}%</Text>,
+        renderCell: (params) => <Text>{params.row.energie_ratio_gaz ? params.row.energie_ratio_gaz.toFixed(1) : 0}%</Text>,
       },
       {
         field: 'energie_ratio_fioul',
@@ -365,7 +366,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_fioul ? params.row.energie_ratio_fioul.toFixed(2) : 0}%</Text>,
+        renderCell: (params) => <Text>{params.row.energie_ratio_fioul ? params.row.energie_ratio_fioul.toFixed(1) : 0}%</Text>,
       },
     ],
     []
