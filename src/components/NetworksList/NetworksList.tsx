@@ -21,6 +21,10 @@ import NetworksFilter, { intervalFilters, energiesFilters } from './NetworksFilt
 type DataToDisplay = 'general' | 'mix_energetique';
 
 const NetworksListContainer = styled.div`
+  .MuiDataGrid-root {
+    overflow-y: hidden;
+    --DataGrid-hasScrollY: 0;
+  }
   .networks-list-selector {
     font-weight: bold;
     &:not(.active) {
