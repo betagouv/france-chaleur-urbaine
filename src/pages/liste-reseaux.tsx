@@ -13,10 +13,10 @@ function ListeReseaux() {
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>
             <Heading size="h1" color="blue-france">
-              La liste des réseaux
+              Liste des réseaux de chaleur
             </Heading>
             <Text size="lg" mb="3w">
-              Retrouvez l'ensemble des fiches réseaux avec toutes leurs caractéristiques.
+              Retrouvez l'ensemble des réseaux de chaleur et filtrez-les en définissant les critères de votre choix
             </Text>
           </Box>
 

@@ -170,31 +170,37 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
     text: 'Ressources',
     menuLinks: [
       {
-        text: 'Nos actualités',
+        text: 'Liste des réseaux de chaleur',
+        linkProps: {
+          href: '/liste-reseaux',
+        },
+      },
+      {
+        text: 'Actualités',
         linkProps: {
           href: '/actus',
         },
       },
       {
-        text: 'Nos articles sur le chauffage urbain',
+        text: 'Articles sur le chauffage urbain',
         linkProps: {
           href: '/ressources/articles',
         },
       },
       {
-        text: 'Nos supports pédagogiques',
+        text: 'Supports pédagogiques',
         linkProps: {
           href: '/ressources/supports',
         },
       },
       {
-        text: 'Nos actions de communication',
+        text: 'Actions de communication',
         linkProps: {
           href: '/ressources/actions-de-communication',
         },
       },
       {
-        text: 'Nos outils',
+        text: 'Outils',
         linkProps: {
           href: '/ressources/outils',
         },
