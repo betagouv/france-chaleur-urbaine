@@ -14,6 +14,7 @@ import { defaultInterval, FiltreEnergieConfKey, percentageMaxInterval } from 'sr
 import {
   emptyFilterNoLimits,
   energiesFilters,
+  EnergiesFiltersConfKey,
   FilterLimits,
   FilterNoLimits,
   FilterValues,
@@ -95,6 +96,7 @@ function NetworksFilter({
 
     const handleClickOutside = (event: any) => {
       if (ref.current && !ref.current.contains(event.target)) {
+        onFilterCount();
         setNewFilterValues(filterValues);
         setIsOpen(false);
       }
@@ -111,6 +113,21 @@ function NetworksFilter({
   }
   const { ref, isOpen, setIsOpen } = useComponentVisible(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      let nbAdvancedFilters = 0;
+      energiesFilters.forEach((energieFilter: any) => {
+        const confKey = energieFilter.confKey as EnergiesFiltersConfKey;
+        if (filterLimits[confKey][0] !== newFilterValues[confKey][0] || filterLimits[confKey][1] !== newFilterValues[confKey][1]) {
+          nbAdvancedFilters++;
+        }
+      });
+      if (nbAdvancedFilters > 0) {
+        setIsOpenEnergiesFilters(true);
+      }
+    }
+  }, [isOpen]);
+
   function emptyFilters() {
     const emptyFilterValues: FilterValues = {
       ...filterLimits,
@@ -120,12 +137,13 @@ function NetworksFilter({
     setEmpty(true);
   }
 
-  const applyFilters = useCallback(() => {
+  const onFilterCount = useCallback(() => {
     let nbFilters = 0;
-    Object.keys(filterLimits).forEach((key) => {
-      if (filterLimits[key as keyof FilterLimits][0] !== newFilterValues[key as keyof FilterLimits][0]) {
-        nbFilters++;
-      } else if (filterLimits[key as keyof FilterLimits][1] !== newFilterValues[key as keyof FilterLimits][1]) {
+    Object.keys(filterLimits).forEach((key: any) => {
+      if (
+        filterLimits[key as keyof FilterLimits][0] !== newFilterValues[key as keyof FilterLimits][0] ||
+        filterLimits[key as keyof FilterLimits][1] !== newFilterValues[key as keyof FilterLimits][1]
+      ) {
         nbFilters++;
       }
     });
@@ -135,6 +153,10 @@ function NetworksFilter({
       }
     });
     setFilterCount(nbFilters);
+  }, [filterLimits, newFilterValues]);
+
+  const applyFilters = useCallback(() => {
+    onFilterCount();
     setIsOpen(false);
     onApplyFilters(newFilterValues);
   }, [filterLimits, emptyFilterNoLimits, newFilterValues]);
