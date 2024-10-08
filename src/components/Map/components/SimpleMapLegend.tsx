@@ -604,6 +604,21 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       mt="1v"
                     />
                     <span>Potentiel de création par commune sans réseau</span>
+                    <InfoIcon>
+                      <Icon size="sm" name="ri-information-fill" cursor="help" />
+
+                      <Hoverable position="bottom">
+                        Communes sans réseau de chaleur sur lesquelles au moins une zone d'opportunité à fort potentiel est identifiée par
+                        le Cerema dans le cadre du projet EnRezo
+                        <br />
+                        <Link
+                          href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
+                          isExternal
+                        >
+                          Accéder à la méthodologie
+                        </Link>
+                      </Hoverable>
+                    </InfoIcon>
                   </>
                 }
               >
