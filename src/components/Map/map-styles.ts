@@ -1,1 +1,1 @@
-export const communesSansReseauAvecZoneOpportuniteLayerColor = '#FF8329';
+export const communesFortPotentielPourCreationReseauxChaleurLayerColor = '#FF8329';

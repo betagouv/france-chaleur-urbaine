@@ -47,7 +47,7 @@ export const databaseSourceIds = [
   'zonesPotentielFortChaud',
   'besoinsEnChaleur',
   'besoinsEnChaleurIndustrieCommunes',
-  'communesSansReseauAvecZoneOpportunite',
+  'communesFortPotentielPourCreationReseauxChaleur',
   'buildings', // caractéristiques des bâtiments
 ] as const;
 
@@ -282,9 +282,9 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     id: '', // useless
     extraWhere: (query) => query, // useless
   },
-  communesSansReseauAvecZoneOpportunite: {
+  communesFortPotentielPourCreationReseauxChaleur: {
     source: 'database',
-    tiles: 'communes_sans_reseau_avec_zone_opportunite_tiles',
+    tiles: 'communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles',
     compressedTiles: true,
     table: '', // useless
     properties: [], // useless

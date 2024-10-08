@@ -19,7 +19,7 @@ import { trackEvent } from 'src/services/analytics';
 import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from 'src/services/Map/businessRules';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
-import { defaultMapConfiguration, potentielCreationParCommuneSansReseauInterval } from 'src/services/Map/map-configuration';
+import { defaultMapConfiguration, communesFortPotentielPourCreationReseauxChaleurInterval } from 'src/services/Map/map-configuration';
 
 import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
@@ -42,7 +42,7 @@ import {
 import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
 import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
-import { communesSansReseauAvecZoneOpportuniteLayerColor } from '../map-styles';
+import { communesFortPotentielPourCreationReseauxChaleurLayerColor } from '../map-styles';
 import useFCUMap from '../MapProvider';
 
 const consommationsGazLegendColor = '#D9D9D9';
@@ -591,21 +591,21 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               </TrackableCheckableAccordion>
 
               <TrackableCheckableAccordion
-                name="potentielCreationParCommuneSansReseau"
-                layerName="potentielCreationParCommuneSansReseau.show"
-                checked={mapConfiguration.potentielCreationParCommuneSansReseau.show}
-                trackingEvent="Carto|Potentiel de création par commune sans réseau"
+                name="communesFortPotentielPourCreationReseauxChaleur"
+                layerName="communesFortPotentielPourCreationReseauxChaleur.show"
+                checked={mapConfiguration.communesFortPotentielPourCreationReseauxChaleur.show}
+                trackingEvent="Carto|Communes à fort potentiel pour la création de réseaux de chaleur"
                 label={
                   <>
                     <Box
-                      backgroundColor={communesSansReseauAvecZoneOpportuniteLayerColor}
+                      backgroundColor={communesFortPotentielPourCreationReseauxChaleurLayerColor}
+                      opacity={0.7}
                       borderRadius="50%"
                       minHeight="16px"
-                      opacity={0.7}
                       minWidth="16px"
                       mt="1v"
                     />
-                    <span>Potentiel de création par commune sans réseau</span>
+                    <span>Communes à fort potentiel pour la création de réseaux de chaleur</span>
                     <InfoIcon>
                       <Icon size="sm" name="ri-information-fill" cursor="help" />
 
@@ -624,13 +624,13 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   </>
                 }
               >
-                <DeactivatableBox disabled={!mapConfiguration.potentielCreationParCommuneSansReseau.show}>
+                <DeactivatableBox disabled={!mapConfiguration.communesFortPotentielPourCreationReseauxChaleur.show}>
                   <Box mx="3w">
                     <RangeFilter
                       label={<Text size="sm">Nombre d'habitants</Text>}
-                      domain={potentielCreationParCommuneSansReseauInterval}
-                      value={mapConfiguration.potentielCreationParCommuneSansReseau.interval}
-                      onChange={updateScaleInterval('potentielCreationParCommuneSansReseau.interval')}
+                      domain={communesFortPotentielPourCreationReseauxChaleurInterval}
+                      value={mapConfiguration.communesFortPotentielPourCreationReseauxChaleur.population}
+                      onChange={updateScaleInterval('communesFortPotentielPourCreationReseauxChaleur.population')}
                     />
                   </Box>
                 </DeactivatableBox>

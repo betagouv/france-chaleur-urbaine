@@ -32,7 +32,7 @@ import { Network } from 'src/types/Summary/Network';
 import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
-import { communesSansReseauAvecZoneOpportuniteLayerColor } from './map-styles';
+import { communesFortPotentielPourCreationReseauxChaleurLayerColor } from './map-styles';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -95,7 +95,7 @@ export const LegendDeskData = {
     min: 50,
     max: 2000,
   },
-  potentielCreationParCommuneSansReseauNbHabitants: {
+  communesFortPotentielPourCreationReseauxChaleurNbHabitants: {
     min: 0,
     max: 100000,
   },
@@ -377,7 +377,7 @@ export type LayerId =
   | 'besoinsEnChaleurFroid-contour'
   | 'besoinsEnChaleurIndustrieCommunes'
   | 'besoinsEnChaleurIndustrieCommunes-contour'
-  | 'communesSansReseauAvecZoneOpportunite'
+  | 'communesFortPotentielPourCreationReseauxChaleur'
   | 'caracteristiquesBatiments'
   | 'distance-measurements-lines'
   | 'distance-measurements-labels'
@@ -1098,18 +1098,18 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
     },
 
     {
-      sourceId: 'communesSansReseauAvecZoneOpportunite',
+      sourceId: 'communesFortPotentielPourCreationReseauxChaleur',
       source: {
         type: 'vector',
-        tiles: [`${location.origin}/api/map/communesSansReseauAvecZoneOpportunite/{z}/{x}/{y}`],
+        tiles: [`${location.origin}/api/map/communesFortPotentielPourCreationReseauxChaleur/{z}/{x}/{y}`],
         minzoom: 5,
         maxzoom: 6,
         attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
-          id: 'communesSansReseauAvecZoneOpportunite',
-          source: 'communesSansReseauAvecZoneOpportunite',
+          id: 'communesFortPotentielPourCreationReseauxChaleur',
+          source: 'communesFortPotentielPourCreationReseauxChaleur',
           'source-layer': 'layer',
           minzoom: tileLayersMinZoom,
           type: 'circle',
@@ -1117,7 +1117,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
             'circle-sort-key': ['-', ['get', 'population']],
           },
           paint: {
-            'circle-color': communesSansReseauAvecZoneOpportuniteLayerColor,
+            'circle-color': communesFortPotentielPourCreationReseauxChaleurLayerColor,
             'circle-radius': [
               'interpolate',
               ['linear'],
@@ -1131,8 +1131,8 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           },
           filter: [
             'all',
-            ['>=', ['get', 'population'], config.potentielCreationParCommuneSansReseau.interval[0]],
-            ['<=', ['get', 'population'], config.potentielCreationParCommuneSansReseau.interval[1]],
+            ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
+            ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
           ],
         },
       ],
@@ -1169,7 +1169,7 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   setLayerVisibility('besoinsEnChaleurFroid-contour', config.besoinsEnChaleur || config.besoinsEnFroid);
   setLayerVisibility('besoinsEnChaleurIndustrieCommunes', config.besoinsEnChaleurIndustrieCommunes);
   setLayerVisibility('besoinsEnChaleurIndustrieCommunes-contour', config.besoinsEnChaleurIndustrieCommunes);
-  setLayerVisibility('communesSansReseauAvecZoneOpportunite', config.potentielCreationParCommuneSansReseau.show);
+  setLayerVisibility('communesFortPotentielPourCreationReseauxChaleur', config.communesFortPotentielPourCreationReseauxChaleur.show);
   setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
   setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);
   setLayerVisibility('demandesEligibilite', config.demandesEligibilite);
@@ -1303,10 +1303,10 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
     ['==', ['get', 'is_zone'], false],
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
   ]);
-  map.setFilter('communesSansReseauAvecZoneOpportunite', [
+  map.setFilter('communesFortPotentielPourCreationReseauxChaleur', [
     'all',
-    ['>=', ['get', 'population'], config.potentielCreationParCommuneSansReseau.interval[0]],
-    ['<=', ['get', 'population'], config.potentielCreationParCommuneSansReseau.interval[1]],
+    ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
+    ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
   ]);
 
   setLayerVisibility('distance-measurements-labels', config.mesureDistance);

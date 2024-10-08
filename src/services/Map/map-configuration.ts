@@ -108,9 +108,9 @@ export type MapConfiguration = {
   besoinsEnChaleur: boolean;
   besoinsEnFroid: boolean;
   besoinsEnChaleurIndustrieCommunes: boolean;
-  potentielCreationParCommuneSansReseau: {
+  communesFortPotentielPourCreationReseauxChaleur: {
     show: boolean;
-    interval: Interval;
+    population: Interval;
   };
   densiteThermiqueLineaire: boolean;
   mesureDistance: boolean;
@@ -137,7 +137,7 @@ export function isMapConfigurationInitialized(conf: MaybeEmptyMapConfiguration):
 
 export const percentageMaxInterval: Interval = [0, 100];
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
-export const potentielCreationParCommuneSansReseauInterval: Interval = [0, 100_000];
+export const communesFortPotentielPourCreationReseauxChaleurInterval: Interval = [0, 100_000];
 
 const emptyMapConfiguration: EmptyMapConfiguration = {
   proMode: false,
@@ -203,9 +203,9 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
   besoinsEnChaleur: false,
   besoinsEnFroid: false,
   besoinsEnChaleurIndustrieCommunes: false,
-  potentielCreationParCommuneSansReseau: {
+  communesFortPotentielPourCreationReseauxChaleur: {
     show: false,
-    interval: potentielCreationParCommuneSansReseauInterval,
+    population: communesFortPotentielPourCreationReseauxChaleurInterval,
   },
   densiteThermiqueLineaire: false,
   mesureDistance: false,

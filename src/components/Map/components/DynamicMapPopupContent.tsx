@@ -4,7 +4,7 @@ import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
 import { formatMWh, prettyFormatNumber } from '@utils/strings';
 import { BesoinsEnChaleur, BesoinsEnChaleurIndustrieCommunes } from 'src/types/layers/BesoinsEnChaleur';
-import { CommunesSansReseauAvecZoneOpportunite } from 'src/types/layers/CommunesSansReseauAvecZoneOpportunite';
+import { CommuneFortPotentielPourCreationReseauxChaleur } from 'src/types/layers/CommuneFortPotentielPourCreationReseauxChaleur';
 import {
   Datacenter,
   Industrie,
@@ -32,7 +32,7 @@ export const layersWithDynamicContentPopup = [
   'besoinsEnChaleur',
   'besoinsEnFroid',
   'besoinsEnChaleurIndustrieCommunes',
-  'communesSansReseauAvecZoneOpportunite',
+  'communesFortPotentielPourCreationReseauxChaleur',
 ] as const satisfies ReadonlyArray<LayerId>;
 
 export function isDynamicPopupContent(content: any): content is DynamicPopupContentType {
@@ -46,7 +46,7 @@ export type DynamicPopupContentType =
   | ENRRMobilisablePopupContentType
   | BesoinsEnChaleurPopupContentType
   | BesoinsEnChaleurIndustrieCommunesPopupContentType
-  | CommunesSansReseauAvecZoneOpportunitePopupContentType;
+  | CommuneFortPotentielPourCreationReseauxChaleurPopupContentType;
 
 type BesoinsEnChaleurPopupContentType = {
   type: 'besoinsEnChaleur' | 'besoinsEnFroid';
@@ -58,9 +58,9 @@ type BesoinsEnChaleurIndustrieCommunesPopupContentType = {
   properties: BesoinsEnChaleurIndustrieCommunes;
 };
 
-type CommunesSansReseauAvecZoneOpportunitePopupContentType = {
-  type: 'communesSansReseauAvecZoneOpportunite';
-  properties: CommunesSansReseauAvecZoneOpportunite;
+type CommuneFortPotentielPourCreationReseauxChaleurPopupContentType = {
+  type: 'communesFortPotentielPourCreationReseauxChaleur';
+  properties: CommuneFortPotentielPourCreationReseauxChaleur;
 };
 
 type ZonePotentielChaudPopupContentType = {
@@ -134,8 +134,10 @@ const DynamicPopupContent = ({ content }: { content: DynamicPopupContentType }) 
       return <BesoinsEnChaleurPopupContent besoinsEnChaleur={content.properties} />;
     case 'besoinsEnChaleurIndustrieCommunes':
       return <BesoinsEnChaleurIndustrieCommunesPopupContent besoinsEnChaleurIndustrieCommunes={content.properties} />;
-    case 'communesSansReseauAvecZoneOpportunite':
-      return <CommunesSansReseauAvecZoneOpportunitePopupContent communesSansReseauAvecZoneOpportunite={content.properties} />;
+    case 'communesFortPotentielPourCreationReseauxChaleur':
+      return (
+        <CommuneFortPotentielPourCreationReseauxChaleurPopupContent communeFortPotentielPourCreationReseauxChaleur={content.properties} />
+      );
     default:
       throw new Error('not implemented');
   }
@@ -341,28 +343,28 @@ const ENRRMobilisableSolaireThermiqueParkingPopupContent = ({ parking }: { parki
   );
 };
 
-const CommunesSansReseauAvecZoneOpportunitePopupContent = ({
-  communesSansReseauAvecZoneOpportunite,
+const CommuneFortPotentielPourCreationReseauxChaleurPopupContent = ({
+  communeFortPotentielPourCreationReseauxChaleur,
 }: {
-  communesSansReseauAvecZoneOpportunite: CommunesSansReseauAvecZoneOpportunite;
+  communeFortPotentielPourCreationReseauxChaleur: CommuneFortPotentielPourCreationReseauxChaleur;
 }) => {
   return (
     <section>
-      <PopupTitle className="fr-mr-3w">{communesSansReseauAvecZoneOpportunite.nom}</PopupTitle>
-      <PopupProperty label="Nombre d'habitants" value={communesSansReseauAvecZoneOpportunite.population} />
+      <PopupTitle className="fr-mr-3w">{communeFortPotentielPourCreationReseauxChaleur.nom}</PopupTitle>
+      <PopupProperty label="Nombre d'habitants" value={communeFortPotentielPourCreationReseauxChaleur.population} />
       <PopupProperty
         label="Besoins en chauffage sur les zones à fort potentiel (cumul)"
-        value={communesSansReseauAvecZoneOpportunite.zones_fort_potentiel_chauf_mwh}
+        value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_chauf_mwh}
         formatter={formatMWh}
       />
       <PopupProperty
         label="Besoins en ECS sur les zones à fort potentiel (cumul)"
-        value={communesSansReseauAvecZoneOpportunite.zones_fort_potentiel_ecs_mwh}
+        value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_ecs_mwh}
         formatter={formatMWh}
       />
       <PopupProperty
         label="Nombre de zones d’opportunité à fort potentiel"
-        value={communesSansReseauAvecZoneOpportunite.zones_fort_potentiel_total}
+        value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_total}
       />
       <PopupProperty label="Source" value="Cerema" />
     </section>

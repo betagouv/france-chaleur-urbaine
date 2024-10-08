@@ -1,4 +1,4 @@
-export type CommunesSansReseauAvecZoneOpportunite = {
+export type CommuneFortPotentielPourCreationReseauxChaleur = {
   id: number;
   insee_dep: string;
   insee_com: string;
