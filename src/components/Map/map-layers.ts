@@ -63,11 +63,6 @@ export const layerSymbolsImagesURLs = [
     sdf: true,
   },
   {
-    key: 'circle',
-    url: '/icons/circle.png',
-    sdf: true,
-  },
-  {
     key: 'enrr_mobilisables_datacenter',
     url: '/icons/enrr_mobilisables_datacenter.png',
   },
