@@ -105,28 +105,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               filtersVisible={selectedTabId.subTabId === 'filtres'}
               setFiltersVisible={setReseauxFiltersVisible}
             />
-            <Box mt="4w" mb="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
-              <Link
-                variant="primary"
-                href="/contribution"
-                className="fr-btn--tertiary d-flex"
-                style={{ width: '100%', justifyContent: 'center' }}
-              >
-                <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
-                Contribuer
-              </Link>
-              <Link
-                isExternal
-                variant="primary"
-                href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
-                eventKey="Téléchargement|Tracés|carte"
-                className="fr-btn--tertiary d-flex"
-                mx="auto"
-                style={{ width: '100%', justifyContent: 'center' }}
-              >
-                Télécharger les tracés
-              </Link>
-            </Box>
           </>
         )}
         {selectedTabId.tabId === 'potentiel' && (
