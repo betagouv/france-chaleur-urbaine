@@ -97,7 +97,8 @@ const NetworksList = () => {
             (network.nom_reseau && network.nom_reseau.includes(searchValue)) ||
             (network.Gestionnaire && network.Gestionnaire.includes(searchValue)) ||
             (network.MO && network.MO.includes(searchValue)) ||
-            (network.communes && network.communes.includes(searchValue))
+            (network.communes && network.communes.includes(searchValue)) ||
+            (network['Identifiant reseau'] && network['Identifiant reseau'].includes(searchValue))
         );
       }
       return newFilteredNetworks;
