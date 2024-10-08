@@ -6,10 +6,16 @@ import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import {
+  getLivraisonsAnnuellesFromPercentage,
+  getPercentageFromLivraisonsAnnuelles,
+  roundNumberProgressively,
+} from '@components/Map/components/ReseauxDeChaleurFilters';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
+import { Interval } from '@utils/interval';
 import { defaultInterval, FiltreEnergieConfKey, percentageMaxInterval } from 'src/services/Map/map-configuration';
 import {
   emptyFilterNoLimits,
@@ -20,6 +26,8 @@ import {
   FilterValues,
   intervalFilters,
 } from 'src/types/NetworksFilters';
+
+type MinOrMax = 'min' | 'max';
 
 const FiltersContainer = styled.div<{
   isOpen: boolean;
@@ -86,6 +94,13 @@ function NetworksFilter({
 
   const [empty, setEmpty] = useState<boolean>(false);
 
+  const [livraisonsChaleur, setLivraisonsChaleur] = useState<Interval>([
+    filterLimits['livraisons_totale_MWh'][0],
+    filterLimits['livraisons_totale_MWh'][1],
+  ]);
+  const refLivraisonsChaleur = useRef<HTMLDivElement>(null);
+  const livraisonsChaleurToPercent = 100 / filterLimits['livraisons_totale_MWh'][1];
+
   useEffect(() => {
     setEmpty(false);
   }, [empty]);
@@ -113,8 +128,32 @@ function NetworksFilter({
   }
   const { ref, isOpen, setIsOpen } = useComponentVisible(false);
 
+  const onLivraisonsChaleurTextContent = useCallback(
+    (minValue: string, maxValue: string) => {
+      const textToUpdate = refLivraisonsChaleur?.current?.querySelector('.fr-range__output');
+      if (textToUpdate) {
+        textToUpdate.textContent = minValue + ' - ' + maxValue;
+      }
+    },
+    [refLivraisonsChaleur]
+  );
+
   useEffect(() => {
     if (isOpen) {
+      //Convert livraisons annuelles de chaleur
+      const valueMin: number =
+        filterLimits.livraisons_totale_MWh[1] *
+        (roundNumberProgressively(getPercentageFromLivraisonsAnnuelles(newFilterValues.livraisons_totale_MWh[0])) / 100);
+      const valueMax: number =
+        filterLimits.livraisons_totale_MWh[1] *
+        (roundNumberProgressively(getPercentageFromLivraisonsAnnuelles(newFilterValues.livraisons_totale_MWh[1])) / 100);
+      setLivraisonsChaleur([valueMin, valueMax]);
+      onLivraisonsChaleurTextContent(
+        newFilterValues.livraisons_totale_MWh[0].toString(),
+        newFilterValues.livraisons_totale_MWh[1].toString()
+      );
+
+      //Count number of advanced filters to display them or not at the opening
       let nbAdvancedFilters = 0;
       energiesFilters.forEach((energieFilter: any) => {
         const confKey = energieFilter.confKey as EnergiesFiltersConfKey;
@@ -160,6 +199,34 @@ function NetworksFilter({
     setIsOpen(false);
     onApplyFilters(newFilterValues);
   }, [filterLimits, emptyFilterNoLimits, newFilterValues]);
+
+  const onChangeLivraisonsChaleur = useCallback(
+    (rangeValue: number, minOrMax: MinOrMax) => {
+      const textToUpdate = refLivraisonsChaleur?.current?.querySelector('.fr-range__output');
+      const newValue: number = roundNumberProgressively(getLivraisonsAnnuellesFromPercentage(rangeValue * livraisonsChaleurToPercent));
+      if (textToUpdate) {
+        const text: string =
+          minOrMax === 'min'
+            ? newValue.toString() + ' - ' + newFilterValues['livraisons_totale_MWh'][1].toString()
+            : newFilterValues['livraisons_totale_MWh'][0].toString() + ' - ' + newValue.toString();
+        textToUpdate.textContent = text;
+      }
+      if (minOrMax === 'min') {
+        setLivraisonsChaleur([rangeValue, livraisonsChaleur[1]]);
+        setNewFilterValues({
+          ...newFilterValues,
+          livraisons_totale_MWh: [newValue, newFilterValues['livraisons_totale_MWh'][1]],
+        });
+      } else {
+        setLivraisonsChaleur([livraisonsChaleur[0], rangeValue]);
+        setNewFilterValues({
+          ...newFilterValues,
+          livraisons_totale_MWh: [newFilterValues['livraisons_totale_MWh'][0], newValue],
+        });
+      }
+    },
+    [refLivraisonsChaleur, livraisonsChaleurToPercent, livraisonsChaleur, newFilterValues]
+  );
 
   return (
     <>
@@ -292,6 +359,7 @@ function NetworksFilter({
                       newFilterValues[filterConf.confKey] && (
                         <Box m="2w" key={`box_${filterConf.confKey}`}>
                           <Range
+                            ref={filterConf.confKey === 'livraisons_totale_MWh' ? refLivraisonsChaleur : null}
                             key={filterConf.confKey}
                             double
                             label={filterConf.label}
@@ -300,20 +368,36 @@ function NetworksFilter({
                             suffix={filterConf.confKey === 'Taux EnR&R' ? '%' : ''}
                             nativeInputProps={[
                               {
-                                value: newFilterValues[filterConf.confKey][0],
-                                onChange: (e: any) =>
-                                  setNewFilterValues({
-                                    ...newFilterValues,
-                                    [filterConf.confKey]: [+e.target.value, newFilterValues[filterConf.confKey][1]],
-                                  }),
+                                value:
+                                  filterConf.confKey === 'livraisons_totale_MWh'
+                                    ? livraisonsChaleur[0]
+                                    : newFilterValues[filterConf.confKey][0],
+                                onChange: (e: any) => {
+                                  if (filterConf.confKey === 'livraisons_totale_MWh') {
+                                    onChangeLivraisonsChaleur(+e.target.value, 'min');
+                                  } else {
+                                    setNewFilterValues({
+                                      ...newFilterValues,
+                                      [filterConf.confKey]: [+e.target.value, newFilterValues[filterConf.confKey][1]],
+                                    });
+                                  }
+                                },
                               },
                               {
-                                value: newFilterValues[filterConf.confKey][1],
-                                onChange: (e: any) =>
-                                  setNewFilterValues({
-                                    ...newFilterValues,
-                                    [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], +e.target.value],
-                                  }),
+                                value:
+                                  filterConf.confKey === 'livraisons_totale_MWh'
+                                    ? livraisonsChaleur[1]
+                                    : newFilterValues[filterConf.confKey][1],
+                                onChange: (e: any) => {
+                                  if (filterConf.confKey === 'livraisons_totale_MWh') {
+                                    onChangeLivraisonsChaleur(+e.target.value, 'max');
+                                  } else {
+                                    setNewFilterValues({
+                                      ...newFilterValues,
+                                      [filterConf.confKey]: [newFilterValues[filterConf.confKey][0], +e.target.value],
+                                    });
+                                  }
+                                },
                               },
                             ]}
                           />
@@ -328,7 +412,7 @@ function NetworksFilter({
                     {energiesFilters.map(
                       (filterConf) =>
                         newFilterValues[filterConf.confKey] && (
-                          <Box m="2w" key={`box_${filterConf.confKey}`}>
+                          <Box my="2w" key={`box_${filterConf.confKey}`}>
                             <Range
                               key={filterConf.confKey}
                               double
