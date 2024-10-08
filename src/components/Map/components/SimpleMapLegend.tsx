@@ -601,6 +601,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       backgroundColor={communesSansReseauAvecZoneOpportuniteLayerColor}
                       borderRadius="50%"
                       minHeight="16px"
+                      opacity={0.7}
                       minWidth="16px"
                       mt="1v"
                     />
