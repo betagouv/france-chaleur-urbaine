@@ -103,7 +103,7 @@ const NetworksList = () => {
       }
       return newFilteredNetworks;
     },
-    [allNetworks, searchValue]
+    [searchValue]
   );
 
   const onSearchValueFilter = useCallback(() => {
@@ -114,7 +114,7 @@ const NetworksList = () => {
     if (tableApiRef.current?.setPage) {
       tableApiRef.current.setPage(0);
     }
-  }, [allNetworks, searchValue]);
+  }, [filteredNetworks, tableApiRef, searchValue]);
 
   const onApplyIntervalOrEnergiesFilters = useCallback(
     (filtersType: 'interval' | 'energies', newFilteredNetworks: NetworkToCompare[], newFilterValues: FilterValues) => {
