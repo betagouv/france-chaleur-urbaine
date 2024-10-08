@@ -42,7 +42,10 @@ import {
 import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
 import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
-import { communesFortPotentielPourCreationReseauxChaleurLayerColor } from '../map-styles';
+import {
+  communesFortPotentielPourCreationReseauxChaleurLayerColor,
+  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+} from '../map-styles';
 import useFCUMap from '../MapProvider';
 
 const consommationsGazLegendColor = '#D9D9D9';
@@ -599,7 +602,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   <>
                     <Box
                       backgroundColor={communesFortPotentielPourCreationReseauxChaleurLayerColor}
-                      opacity={0.7}
+                      opacity={communesFortPotentielPourCreationReseauxChaleurLayerOpacity}
                       borderRadius="50%"
                       minHeight="16px"
                       minWidth="16px"

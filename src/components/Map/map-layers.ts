@@ -32,7 +32,10 @@ import { Network } from 'src/types/Summary/Network';
 import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
-import { communesFortPotentielPourCreationReseauxChaleurLayerColor } from './map-styles';
+import {
+  communesFortPotentielPourCreationReseauxChaleurLayerColor,
+  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+} from './map-styles';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -1127,7 +1130,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
               160_000, // ~ max value
               20,
             ],
-            'circle-opacity': 0.7,
+            'circle-opacity': communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
           },
           filter: [
             'all',
