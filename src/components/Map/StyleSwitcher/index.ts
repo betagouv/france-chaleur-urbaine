@@ -120,6 +120,13 @@ export class MapboxStyleSwitcherControl implements IControl {
     this.map = undefined;
   }
 
+  public enable(enable: boolean) {
+    if (!this.styleButton) {
+      return;
+    }
+    this.styleButton.disabled = !enable;
+  }
+
   private closeModal(): void {
     if (this.mapStyleContainer && this.styleButton) {
       this.mapStyleContainer.style.display = 'none';

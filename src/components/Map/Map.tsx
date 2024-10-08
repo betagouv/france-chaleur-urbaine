@@ -148,6 +148,7 @@ const InternalMap = ({
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
+  const switcherControlRef = useRef<MapboxStyleSwitcherControl>();
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
@@ -270,11 +271,11 @@ const InternalMap = ({
 
     e.target.addControl(drawControl as any);
     setMapDraw(drawControl);
-    e.target.addControl(
-      new MapboxStyleSwitcherControl(styles, {
-        defaultStyle: 'Carte',
-      })
-    );
+    const switcherControl = new MapboxStyleSwitcherControl(styles, {
+      defaultStyle: 'Carte',
+    });
+    e.target.addControl(switcherControl);
+    switcherControlRef.current = switcherControl;
 
     const map = e.target;
     // load layers symbols
@@ -352,6 +353,11 @@ const InternalMap = ({
 
   useMapHoverEffects({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
   const { popupInfos } = useMapClickHandlers({ mapLayersLoaded, isDrawing, mapRef: mapRef.current, noPopup });
+
+  // disable the switcher control as it conflicts with map layers and drawing interactions
+  useEffect(() => {
+    switcherControlRef.current?.enable(!isDrawing);
+  }, [isDrawing]);
 
   useEffect(() => {
     const { id } = router.query;
