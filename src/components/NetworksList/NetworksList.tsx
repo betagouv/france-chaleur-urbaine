@@ -511,7 +511,7 @@ const NetworksList = () => {
               sortingOrder={['desc', 'asc']}
               initialState={{
                 sorting: {
-                  sortModel: [{ field: 'nom_reseau', sort: 'asc' }],
+                  sortModel: [{ field: 'Identifiant reseau', sort: 'asc' }],
                 },
               }}
               pageSize={20}
