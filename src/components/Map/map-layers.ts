@@ -1118,7 +1118,15 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           },
           paint: {
             'circle-color': communesSansReseauAvecZoneOpportuniteLayerColor,
-            'circle-radius': ['interpolate', ['linear'], ['get', 'population'], 2000, 2, 50_000, 16],
+            'circle-radius': [
+              'interpolate',
+              ['linear'],
+              ['+', ['get', 'zones_fort_potentiel_chauf_mwh'], ['get', 'zones_fort_potentiel_ecs_mwh']],
+              0,
+              4,
+              160_000, // ~ max value
+              20,
+            ],
             'circle-opacity': 0.7,
           },
           filter: [
