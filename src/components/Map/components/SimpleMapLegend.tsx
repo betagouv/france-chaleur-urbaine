@@ -25,6 +25,7 @@ import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux, { type MapLegendFeature } from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
+import RangeFilter from './RangeFilter';
 import ScaleLegend from './ScaleLegend';
 import {
   DeactivatableBox,
@@ -623,15 +624,14 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 }
               >
                 <DeactivatableBox disabled={!mapConfiguration.potentielCreationParCommuneSansReseau.show}>
-                  <ScaleLegend
-                    className="fr-ml-1w fr-mr-1w"
-                    circle
-                    label="Nombre d'habitants"
-                    color={communesSansReseauAvecZoneOpportuniteLayerColor}
-                    domain={potentielCreationParCommuneSansReseauInterval}
-                    defaultValues={defaultMapConfiguration.potentielCreationParCommuneSansReseau.interval}
-                    onChange={updateScaleInterval('potentielCreationParCommuneSansReseau.interval')}
-                  />
+                  <Box mx="3w">
+                    <RangeFilter
+                      label={<Text size="sm">Nombre d'habitants</Text>}
+                      domain={potentielCreationParCommuneSansReseauInterval}
+                      value={mapConfiguration.potentielCreationParCommuneSansReseau.interval}
+                      onChange={updateScaleInterval('potentielCreationParCommuneSansReseau.interval')}
+                    />
+                  </Box>
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
 

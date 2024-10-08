@@ -6,7 +6,7 @@ import Icon from '@components/ui/Icon';
 import { SimpleTooltip } from '@components/ui/Tooltip';
 import { Interval } from '@utils/interval';
 interface RangeFilterProps {
-  label: string;
+  label: string | ReactNode;
   value: Interval;
   domain: Interval;
   onChange: (values: Interval) => void;
