@@ -114,10 +114,7 @@ function NetworksFilter({
   function emptyFilters() {
     const emptyFilterValues: FilterValues = {
       ...filterLimits,
-      energieMajoritaire: '',
-      gestionnaire: '',
-      isClassed: false,
-      region: '',
+      ...emptyFilterNoLimits,
     };
     setNewFilterValues(emptyFilterValues);
     setEmpty(true);
@@ -200,13 +197,13 @@ function NetworksFilter({
                     />
                   </Box>
                   <Box m="2w">
-                    <Text size="sm">Type d'énergie majoritaire</Text>
+                    <Text size="sm">Énergie mobilisée</Text>
                     <Select
                       label=""
                       nativeSelectProps={{
-                        value: newFilterValues.energieMajoritaire,
+                        value: newFilterValues.energieMobilisee,
                         onChange: (e) => {
-                          newFilterValues.energieMajoritaire = e.target.value !== '' ? (e.target.value as FiltreEnergieConfKey) : '';
+                          newFilterValues.energieMobilisee = e.target.value !== '' ? (e.target.value as FiltreEnergieConfKey) : '';
                           setNewFilterValues({ ...newFilterValues });
                         },
                       }}

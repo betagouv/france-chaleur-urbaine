@@ -154,12 +154,11 @@ const NetworksList = () => {
         );
       }
 
-      if (newFilterValues.energieMajoritaire) {
+      if (newFilterValues.energieMobilisee) {
         newFilteredNetworks = newFilteredNetworks.filter(
           (network: NetworkToCompare) =>
-            network.energie_max_ratio &&
-            network.energie_max_ratio !== '' &&
-            network.energie_max_ratio === newFilterValues.energieMajoritaire
+            network[newFilterValues.energieMobilisee as keyof NetworkToCompare] &&
+            (network[newFilterValues.energieMobilisee as keyof NetworkToCompare] as number) > 0
         );
       }
 

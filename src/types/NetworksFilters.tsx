@@ -14,7 +14,7 @@ export type FilterLimits = {
 } & Record<EnergieRatioConfKey, Interval>;
 
 export type FilterNoLimits = {
-  energieMajoritaire: FiltreEnergieConfKey | string;
+  energieMobilisee: FiltreEnergieConfKey | string;
   gestionnaire: string;
   isClassed: boolean;
   region: string;
@@ -46,7 +46,7 @@ export const emptyFilterLimits: FilterLimits = {
 };
 
 export const emptyFilterNoLimits: FilterNoLimits = {
-  energieMajoritaire: '',
+  energieMobilisee: '',
   gestionnaire: '',
   isClassed: false,
   region: '',
