@@ -92,29 +92,20 @@ const NetworksList = () => {
   const onApplySearchValueFilter = useCallback(
     (newFilteredNetworks: NetworkToCompare[]) => {
       if (searchValue) {
+        const searchValueLowerCase = searchValue.toLocaleLowerCase();
         newFilteredNetworks = newFilteredNetworks.filter(
           (network: NetworkToCompare) =>
-            (network.nom_reseau && network.nom_reseau.includes(searchValue)) ||
-            (network.Gestionnaire && network.Gestionnaire.includes(searchValue)) ||
-            (network.MO && network.MO.includes(searchValue)) ||
-            (network.communes && network.communes.includes(searchValue)) ||
-            (network['Identifiant reseau'] && network['Identifiant reseau'].includes(searchValue))
+            (network.nom_reseau && network.nom_reseau.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+            (network.Gestionnaire && network.Gestionnaire.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+            (network.MO && network.MO.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+            (network.communes && network.communes.join(', ').toLocaleLowerCase().includes(searchValueLowerCase)) ||
+            (network['Identifiant reseau'] && network['Identifiant reseau'].toLocaleLowerCase().includes(searchValueLowerCase))
         );
       }
       return newFilteredNetworks;
     },
     [searchValue]
   );
-
-  const onSearchValueFilter = useCallback(() => {
-    //Search on networks already filtered
-    const newFilteredNetworks = onApplySearchValueFilter(filteredNetworks);
-    setFilteredNetworks(newFilteredNetworks);
-
-    if (tableApiRef.current?.setPage) {
-      tableApiRef.current.setPage(0);
-    }
-  }, [filteredNetworks, tableApiRef, searchValue]);
 
   const onApplyIntervalOrEnergiesFilters = useCallback(
     (filtersType: 'interval' | 'energies', newFilteredNetworks: NetworkToCompare[], newFilterValues: FilterValues) => {
@@ -185,7 +176,7 @@ const NetworksList = () => {
         tableApiRef.current.setPage(0);
       }
     },
-    [allNetworks, intervalFilters, energiesFilters, filterLimits]
+    [allNetworks, intervalFilters, energiesFilters, filterLimits, searchValue]
   );
 
   const networkGeneralRowsParams: ColumnDef<NetworkToCompare>[] = useMemo(
@@ -450,7 +441,7 @@ const NetworksList = () => {
                   <Button
                     className="primary"
                     onClick={() => {
-                      onSearchValueFilter();
+                      onApplyFilters(filterValues);
                     }}
                   >
                     <Icon size="sm" name="fr-icon-search-line" />
@@ -462,7 +453,7 @@ const NetworksList = () => {
                   onChange: (e) => setSearchValue(e.target.value),
                   onKeyDown: (e) => {
                     if (e.key === 'Enter') {
-                      onSearchValueFilter();
+                      onApplyFilters(filterValues);
                     }
                   },
                 }}
