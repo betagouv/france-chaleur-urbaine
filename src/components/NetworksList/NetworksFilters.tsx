@@ -171,6 +171,7 @@ function NetworksFilter({
       ...emptyFilterNoLimits,
     };
     setNewFilterValues(emptyFilterValues);
+    setLivraisonsChaleur(filterLimits['livraisons_totale_MWh']);
     setEmpty(true);
   }
 
