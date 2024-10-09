@@ -1270,7 +1270,7 @@ type ReseauxDeChaleurFilter = {
   filterPreprocess?: (v: number) => number;
 };
 
-export const reseauxDeChaleurFilters = [
+const reseauxDeChaleurFilters = [
   {
     confKey: 'tauxENRR',
     valueKey: 'Taux EnR&R',
