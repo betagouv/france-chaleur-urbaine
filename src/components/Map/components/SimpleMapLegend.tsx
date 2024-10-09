@@ -668,7 +668,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   </Box>
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
-              <Box textAlign="center" mt="5w">
+              <Box textAlign="center" mt="1w">
                 <ModalCarteFrance />
               </Box>
             </UrlStateAccordion>
