@@ -366,7 +366,7 @@ const CommuneFortPotentielPourCreationReseauxChaleurPopupContent = ({
         label="Nombre de zones d’opportunité à fort potentiel"
         value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_total}
       />
-      <PopupProperty label="Source" value="Cerema" />
+      <PopupProperty label="Source" value="IGN - Cerema" />
     </section>
   );
 };
