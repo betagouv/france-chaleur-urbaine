@@ -13,11 +13,11 @@ function ReseauxDeChaleurFilters() {
   return (
     <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
       <Select
-        label="Énergie majoritaire"
+        label="Énergie mobilisée"
         nativeSelectProps={{
-          value: mapConfiguration.reseauxDeChaleur.energieMajoritaire,
+          value: mapConfiguration.reseauxDeChaleur.energieMobilisee,
           onChange: (e) => {
-            mapConfiguration.reseauxDeChaleur.energieMajoritaire =
+            mapConfiguration.reseauxDeChaleur.energieMobilisee =
               e.target.value === '' ? undefined : (e.target.value as FiltreEnergieConfKey);
             setMapConfiguration({ ...mapConfiguration });
           },
