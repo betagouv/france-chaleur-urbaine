@@ -1,13 +1,12 @@
 import { ButtonsGroup } from '@codegouvfr/react-dsfr/ButtonsGroup';
 import { createModal } from '@codegouvfr/react-dsfr/Modal';
-import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
-import ModalPortal from '@components/ui/ModalPortal';
+import Modal, { useIsModalOpen } from '@components/ui/Modal';
 import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
 import useInitialSearchParam from '@hooks/useInitialSearchParam';
@@ -38,7 +37,6 @@ import {
   PotentielsRaccordementButton,
   SecondColumn,
   SpinnerWrapper,
-  StyledModal,
 } from './ModalCarteFrance.style';
 
 const minFillColor = '#E2E3EE';
@@ -143,223 +141,218 @@ function ModalCarteFrance() {
         Potentiel de densification
       </PotentielsRaccordementButton>
 
-      <ModalPortal>
-        <StyledModal>
-          <modal.Component title="">
-            {!statsData || !mapSourceData || !dataByArea ? (
-              <SpinnerWrapper>
-                <Oval height={60} width={60} />
-              </SpinnerWrapper>
-            ) : (
-              <ModalContentWrapper>
+      <Modal modal={modal} title="" size="custom">
+        {!statsData || !mapSourceData || !dataByArea ? (
+          <SpinnerWrapper>
+            <Oval height={60} width={60} />
+          </SpinnerWrapper>
+        ) : (
+          <ModalContentWrapper>
+            <ButtonsGroup
+              buttonsSize="small"
+              inlineLayoutWhen="sm and up"
+              buttons={[
+                {
+                  children: 'National',
+                  priority: area !== 'national' ? 'secondary' : 'primary',
+                  onClick: () => {
+                    setArea('national');
+                    setSelectedData(statsData.national);
+                  },
+                },
+                {
+                  children: 'Régional',
+                  priority: area !== 'regional' ? 'secondary' : 'primary',
+                  onClick: () => {
+                    setArea('regional');
+
+                    // sélectionne la région si on vient d'un département
+                    if (area === 'departemental' && selectedData) {
+                      setSelectedData(
+                        statsData.regional.find((r) => r.region_code === (selectedData as BDNBStatsParDepartement).region_code)!
+                      );
+                    }
+                    // réinitialise la sélection si on vient de national
+                    if (area === 'national') {
+                      setSelectedData(null);
+                    }
+                  },
+                },
+                {
+                  children: 'Départemental',
+                  priority: area !== 'departemental' ? 'secondary' : 'primary',
+                  onClick: () => {
+                    setArea('departemental');
+
+                    // réinitialise la sélection si on vient de national ou régional
+                    if (area !== 'departemental') {
+                      setSelectedData(null);
+                    }
+                  },
+                },
+              ]}
+            />
+
+            <HorizontalSeparator />
+
+            <LayoutTwoColumns>
+              <FirstColumn>
+                <ExtraBigBlueText>
+                  {(area === 'departemental'
+                    ? (selectedData as any)?.departement_nom
+                    : area === 'regional'
+                    ? (selectedData as any)?.region_nom
+                    : 'France') ?? 'Cliquer sur la carte'}
+                </ExtraBigBlueText>
+                <BlackNumbersLine>
+                  <div>
+                    <BlackNumber>{prettyFormatNumber(selectedData?.nb_reseaux) ?? '--'}</BlackNumber>
+                    <BlackText>réseaux de chaleur</BlackText>
+                  </div>
+                  <div>
+                    <BlackNumber>{selectedData?.taux_enrr ? `${prettyFormatNumber(selectedData?.taux_enrr, 1)}%` : '--'}</BlackNumber>
+                    <BlackText>d'EnR&R en moyenne</BlackText>
+                  </div>
+                </BlackNumbersLine>
+                <HorizontalSeparator className="fr-mt-1w" />
+                <Box display="flex" mt="4w">
+                  <Text size="lg" fontWeight="lightbold" legacyColor="lightblue">
+                    Potentiel identifié
+                  </Text>
+                  <Tooltip icon={<Icon name="ri-information-fill" size="sm" color="#959DB0" ml="1v" />}>
+                    Sur la base des réseaux de chaleur recensés sur la carte France Chaleur Urbaine et des données bâtimentaires issues de
+                    la Base de données nationale des bâtiments du CSTB et du Registre national d'immatriculation des copropriétés de l'ANAH.
+                  </Tooltip>
+                </Box>
+                <DistanceLineText>Distance au réseau le plus proche&nbsp;:</DistanceLineText>
+
                 <ButtonsGroup
                   buttonsSize="small"
                   inlineLayoutWhen="sm and up"
                   buttons={[
                     {
-                      children: 'National',
-                      priority: area !== 'national' ? 'secondary' : 'primary',
-                      onClick: () => {
-                        setArea('national');
-                        setSelectedData(statsData.national);
-                      },
+                      children: '< 50 m',
+                      priority: distanceReseau !== '50m' ? 'secondary' : 'primary',
+                      onClick: () => setDistanceReseau('50m'),
                     },
                     {
-                      children: 'Régional',
-                      priority: area !== 'regional' ? 'secondary' : 'primary',
-                      onClick: () => {
-                        setArea('regional');
-
-                        // sélectionne la région si on vient d'un département
-                        if (area === 'departemental' && selectedData) {
-                          setSelectedData(
-                            statsData.regional.find((r) => r.region_code === (selectedData as BDNBStatsParDepartement).region_code)!
-                          );
-                        }
-                        // réinitialise la sélection si on vient de national
-                        if (area === 'national') {
-                          setSelectedData(null);
-                        }
-                      },
+                      children: '< 100 m',
+                      priority: distanceReseau !== '100m' ? 'secondary' : 'primary',
+                      onClick: () => setDistanceReseau('100m'),
                     },
                     {
-                      children: 'Départemental',
-                      priority: area !== 'departemental' ? 'secondary' : 'primary',
-                      onClick: () => {
-                        setArea('departemental');
-
-                        // réinitialise la sélection si on vient de national ou régional
-                        if (area !== 'departemental') {
-                          setSelectedData(null);
-                        }
-                      },
+                      children: '< 150 m',
+                      priority: distanceReseau !== '150m' ? 'secondary' : 'primary',
+                      onClick: () => setDistanceReseau('150m'),
                     },
                   ]}
                 />
 
-                <HorizontalSeparator />
+                <ButtonsGroup
+                  buttonsSize="small"
+                  inlineLayoutWhen="sm and up"
+                  buttons={[
+                    {
+                      children: 'Bâtiments',
+                      priority: modeBatimentLogement !== 'batiments' ? 'secondary' : 'primary',
+                      onClick: () => setModeBatimentLogement('batiments'),
+                    },
+                    {
+                      children: 'Logements',
+                      priority: modeBatimentLogement !== 'logements' ? 'secondary' : 'primary',
+                      onClick: () => setModeBatimentLogement('logements'),
+                    },
+                  ]}
+                />
 
-                <LayoutTwoColumns>
-                  <FirstColumn>
-                    <ExtraBigBlueText>
-                      {(area === 'departemental'
-                        ? (selectedData as any)?.departement_nom
-                        : area === 'regional'
-                        ? (selectedData as any)?.region_nom
-                        : 'France') ?? 'Cliquer sur la carte'}
-                    </ExtraBigBlueText>
-                    <BlackNumbersLine>
-                      <div>
-                        <BlackNumber>{prettyFormatNumber(selectedData?.nb_reseaux) ?? '--'}</BlackNumber>
-                        <BlackText>réseaux de chaleur</BlackText>
-                      </div>
-                      <div>
-                        <BlackNumber>{selectedData?.taux_enrr ? `${prettyFormatNumber(selectedData?.taux_enrr, 1)}%` : '--'}</BlackNumber>
-                        <BlackText>d'EnR&R en moyenne</BlackText>
-                      </div>
-                    </BlackNumbersLine>
-                    <HorizontalSeparator className="fr-mt-1w" />
-                    <Box display="flex" mt="4w">
-                      <Text size="lg" fontWeight="lightbold" legacyColor="lightblue">
-                        Potentiel identifié
-                      </Text>
-                      <Tooltip icon={<Icon name="ri-information-fill" size="sm" color="#959DB0" ml="1v" />}>
-                        Sur la base des réseaux de chaleur recensés sur la carte France Chaleur Urbaine et des données bâtimentaires issues
-                        de la Base de données nationale des bâtiments du CSTB et du Registre national d'immatriculation des copropriétés de
-                        l'ANAH.
-                      </Tooltip>
-                    </Box>
-                    <DistanceLineText>Distance au réseau le plus proche&nbsp;:</DistanceLineText>
-
-                    <ButtonsGroup
-                      buttonsSize="small"
-                      inlineLayoutWhen="sm and up"
-                      buttons={[
-                        {
-                          children: '< 50 m',
-                          priority: distanceReseau !== '50m' ? 'secondary' : 'primary',
-                          onClick: () => setDistanceReseau('50m'),
-                        },
-                        {
-                          children: '< 100 m',
-                          priority: distanceReseau !== '100m' ? 'secondary' : 'primary',
-                          onClick: () => setDistanceReseau('100m'),
-                        },
-                        {
-                          children: '< 150 m',
-                          priority: distanceReseau !== '150m' ? 'secondary' : 'primary',
-                          onClick: () => setDistanceReseau('150m'),
-                        },
-                      ]}
-                    />
-
-                    <ButtonsGroup
-                      buttonsSize="small"
-                      inlineLayoutWhen="sm and up"
-                      buttons={[
-                        {
-                          children: 'Bâtiments',
-                          priority: modeBatimentLogement !== 'batiments' ? 'secondary' : 'primary',
-                          onClick: () => setModeBatimentLogement('batiments'),
-                        },
-                        {
-                          children: 'Logements',
-                          priority: modeBatimentLogement !== 'logements' ? 'secondary' : 'primary',
-                          onClick: () => setModeBatimentLogement('logements'),
-                        },
-                      ]}
-                    />
-
-                    <BigBlueNumber className="fr-mt-2w">
-                      {prettyFormatNumber(selectedData?.[distanceReseau]?.[`nb_${modeBatimentLogement}`]) ?? '--'}
-                    </BigBlueNumber>
-                    <BlueText>
-                      {getBatimentLogementLabel(modeBatimentLogement)} raccordables identifiés
-                      {modeBatimentLogement === 'logements' && (
-                        <>
-                          , soit{' '}
-                          {selectedData
-                            ? prettyFormatNumber(
-                                getConsoAnnuelleGWhLogements(selectedData?.[distanceReseau]?.[`nb_${modeBatimentLogement}`] ?? 0)
-                              )
-                            : '--'}{' '}
-                          GWh
-                          <br />
-                          de consommation annuelle environ
-                        </>
-                      )}
-                    </BlueText>
-                    <BlueText className="fr-mt-1w">dont&nbsp;:</BlueText>
-                    <BlueNumber className="fr-mt-1w">
-                      {prettyFormatNumber(selectedData?.[distanceReseau]?.[modeBatimentLogement]?.collectif_gaz) ?? '--'}
-                    </BlueNumber>
-                    <BlueText>{getBatimentLogementLabel(modeBatimentLogement)} chauffés au gaz collectif</BlueText>
-                    <BlueNumber className="fr-mt-1w">
-                      {prettyFormatNumber(selectedData?.[distanceReseau]?.[modeBatimentLogement]?.collectif_fioul) ?? '--'}
-                    </BlueNumber>
-                    <BlueText>{getBatimentLogementLabel(modeBatimentLogement)} chauffés au fioul collectif</BlueText>
-                    <BigGreyNumber className="fr-mt-3w">
-                      {/* hack: nb_(batiments|logements) contient le total des collectifs gaz et fioul,
-                    et on veut inclure individuel gas en plus */}
+                <BigBlueNumber className="fr-mt-2w">
+                  {prettyFormatNumber(selectedData?.[distanceReseau]?.[`nb_${modeBatimentLogement}`]) ?? '--'}
+                </BigBlueNumber>
+                <BlueText>
+                  {getBatimentLogementLabel(modeBatimentLogement)} raccordables identifiés
+                  {modeBatimentLogement === 'logements' && (
+                    <>
+                      , soit{' '}
                       {selectedData
                         ? prettyFormatNumber(
-                            selectedData[distanceReseau][`nb_${modeBatimentLogement}`] +
-                              selectedData[distanceReseau][modeBatimentLogement].individuel_gaz
+                            getConsoAnnuelleGWhLogements(selectedData?.[distanceReseau]?.[`nb_${modeBatimentLogement}`] ?? 0)
                           )
-                        : '--'}
-                    </BigGreyNumber>
-                    <GreyText>
-                      {getBatimentLogementLabel(modeBatimentLogement)} raccordables en intégrant les logements à chauffage au gaz individuel
-                    </GreyText>
-                  </FirstColumn>
+                        : '--'}{' '}
+                      GWh
+                      <br />
+                      de consommation annuelle environ
+                    </>
+                  )}
+                </BlueText>
+                <BlueText className="fr-mt-1w">dont&nbsp;:</BlueText>
+                <BlueNumber className="fr-mt-1w">
+                  {prettyFormatNumber(selectedData?.[distanceReseau]?.[modeBatimentLogement]?.collectif_gaz) ?? '--'}
+                </BlueNumber>
+                <BlueText>{getBatimentLogementLabel(modeBatimentLogement)} chauffés au gaz collectif</BlueText>
+                <BlueNumber className="fr-mt-1w">
+                  {prettyFormatNumber(selectedData?.[distanceReseau]?.[modeBatimentLogement]?.collectif_fioul) ?? '--'}
+                </BlueNumber>
+                <BlueText>{getBatimentLogementLabel(modeBatimentLogement)} chauffés au fioul collectif</BlueText>
+                <BigGreyNumber className="fr-mt-3w">
+                  {/* hack: nb_(batiments|logements) contient le total des collectifs gaz et fioul,
+                    et on veut inclure individuel gas en plus */}
+                  {selectedData
+                    ? prettyFormatNumber(
+                        selectedData[distanceReseau][`nb_${modeBatimentLogement}`] +
+                          selectedData[distanceReseau][modeBatimentLogement].individuel_gaz
+                      )
+                    : '--'}
+                </BigGreyNumber>
+                <GreyText>
+                  {getBatimentLogementLabel(modeBatimentLogement)} raccordables en intégrant les logements à chauffage au gaz individuel
+                </GreyText>
+              </FirstColumn>
 
-                  <SecondColumn>
-                    <CarteFrance
-                      mode={areaMode}
-                      dataByArea={dataByArea}
-                      selectedAreaId={(selectedData as any)?.[areaIdPropertyName]}
-                      onAreaSelect={(selectedAreaId) => {
-                        // passe automatiquement en régional quand on sélectionne une région
-                        if (area === 'national') {
-                          setArea('regional');
-                        }
-                        setSelectedData(
-                          areaMode === 'regional'
-                            ? mapSourceData.find((area) => area[areaIdPropertyName] === selectedAreaId)!
-                            : mapSourceData.find((area) => area[areaIdPropertyName] === selectedAreaId)!
-                        );
-                      }}
-                      // because when the modal is closed, it is only hidden and hover effects remain active
-                      // thus we need to explicitly disable them when the modal is closed
-                      enableHover={isOpen}
-                    />
+              <SecondColumn>
+                <CarteFrance
+                  mode={areaMode}
+                  dataByArea={dataByArea}
+                  selectedAreaId={(selectedData as any)?.[areaIdPropertyName]}
+                  onAreaSelect={(selectedAreaId) => {
+                    // passe automatiquement en régional quand on sélectionne une région
+                    if (area === 'national') {
+                      setArea('regional');
+                    }
+                    setSelectedData(
+                      areaMode === 'regional'
+                        ? mapSourceData.find((area) => area[areaIdPropertyName] === selectedAreaId)!
+                        : mapSourceData.find((area) => area[areaIdPropertyName] === selectedAreaId)!
+                    );
+                  }}
+                  // because when the modal is closed, it is only hidden and hover effects remain active
+                  // thus we need to explicitly disable them when the modal is closed
+                  enableHover={isOpen}
+                />
 
-                    <LegendSourceLine>
-                      <div>
-                        <LegendTitle>
-                          Nombre de {getBatimentLogementLabel(modeBatimentLogement)}
-                          <br />
-                          raccordables
-                        </LegendTitle>
-                        {dataBins?.map((bin, i) => (
-                          <DataBin key={i} color={bin.color}>
-                            {i === 0
-                              ? `≥ ${prettyFormatNumber(bin.minValue)}`
-                              : `de ${prettyFormatNumber(bin.minValue)} à ${prettyFormatNumber(bin.maxValue)}`}
-                          </DataBin>
-                        ))}
-                      </div>
-                      <DataLink href="/data/potentiel_identifie_FCU.xlsx" isExternal>
-                        Données
-                      </DataLink>
-                    </LegendSourceLine>
-                  </SecondColumn>
-                </LayoutTwoColumns>
-              </ModalContentWrapper>
-            )}
-          </modal.Component>
-        </StyledModal>
-      </ModalPortal>
+                <LegendSourceLine>
+                  <div>
+                    <LegendTitle>
+                      Nombre de {getBatimentLogementLabel(modeBatimentLogement)}
+                      <br />
+                      raccordables
+                    </LegendTitle>
+                    {dataBins?.map((bin, i) => (
+                      <DataBin key={i} color={bin.color}>
+                        {i === 0
+                          ? `≥ ${prettyFormatNumber(bin.minValue)}`
+                          : `de ${prettyFormatNumber(bin.minValue)} à ${prettyFormatNumber(bin.maxValue)}`}
+                      </DataBin>
+                    ))}
+                  </div>
+                  <DataLink href="/data/potentiel_identifie_FCU.xlsx" isExternal>
+                    Données
+                  </DataLink>
+                </LegendSourceLine>
+              </SecondColumn>
+            </LayoutTwoColumns>
+          </ModalContentWrapper>
+        )}
+      </Modal>
     </>
   );
 }
