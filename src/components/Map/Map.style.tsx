@@ -164,15 +164,6 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   }
 
   z-index: ${mapControlZindex + 1};
-
-  // ugly hack => hover create issue in mobile
-  @media (min-width: 520px) {
-    &:hover {
-      & > .hover-info {
-        display: block;
-      }
-    }
-  }
 `;
 
 export const LegendLogoList = styled.div<{

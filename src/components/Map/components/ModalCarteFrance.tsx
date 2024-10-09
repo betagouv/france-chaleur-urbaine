@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import Box from '@components/ui/Box';
-import Icon from '@components/ui/Icon';
 import Modal, { useIsModalOpen } from '@components/ui/Modal';
 import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
@@ -219,9 +218,11 @@ function ModalCarteFrance() {
                   <Text size="lg" fontWeight="lightbold" legacyColor="lightblue">
                     Potentiel identifié
                   </Text>
-                  <Tooltip icon={<Icon name="ri-information-fill" size="sm" color="#959DB0" ml="1v" />}>
-                    Sur la base des réseaux de chaleur recensés sur la carte France Chaleur Urbaine et des données bâtimentaires issues de
-                    la Base de données nationale des bâtiments du CSTB et du Registre national d'immatriculation des copropriétés de l'ANAH.
+                  <Tooltip
+                    title="Sur la base des réseaux de chaleur recensés sur la carte France Chaleur Urbaine et des données bâtimentaires issues de
+                    la Base de données nationale des bâtiments du CSTB et du Registre national d'immatriculation des copropriétés de l'ANAH."
+                  >
+                    {/* <Icon name="ri-information-fill" size="sm" color="#959DB0" ml="1v" /> */}
                   </Tooltip>
                 </Box>
                 <DistanceLineText>Distance au réseau le plus proche&nbsp;:</DistanceLineText>
