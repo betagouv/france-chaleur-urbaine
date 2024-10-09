@@ -434,7 +434,7 @@ function NetworksFilter({
                     </Accordion>
                   </Box>
                   <Divider />
-                  <Box m="2w" gap="2w">
+                  <Box display="flex" flexDirection="column" m="2w" gap="16px">
                     <Button className="network-filters-submit-button" priority="tertiary" onClick={() => emptyFilters()}>
                       Effacer les filtres
                     </Button>
