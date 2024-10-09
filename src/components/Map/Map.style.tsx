@@ -152,7 +152,7 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   top: calc(50% - 50px);
   background-color: var(--background-flat-blue-france);
   height: 140px;
-  width: 32px;
+  width: 30px;
   overflow: visible;
   display: flex;
   align-items: center;
