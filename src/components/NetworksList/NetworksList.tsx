@@ -97,7 +97,7 @@ const NetworksList = () => {
           (network: NetworkToCompare) =>
             (network.nom_reseau && network.nom_reseau.toLocaleLowerCase().includes(searchValueLowerCase)) ||
             (network.Gestionnaire && network.Gestionnaire.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-            (network.MO && network.MO.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+            (network.region && network.region.toLocaleLowerCase().includes(searchValueLowerCase)) ||
             (network.communes && network.communes.join(', ').toLocaleLowerCase().includes(searchValueLowerCase)) ||
             (network['Identifiant reseau'] && network['Identifiant reseau'].toLocaleLowerCase().includes(searchValueLowerCase))
         );
@@ -505,7 +505,7 @@ const NetworksList = () => {
                   sortModel: [{ field: 'Identifiant reseau', sort: 'asc' }],
                 },
               }}
-              pageSize={20}
+              pageSize={15}
             />
           </Box>
         </Box>
