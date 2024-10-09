@@ -222,7 +222,6 @@ function NetworksFilter({
       <Button
         priority="secondary"
         size="medium"
-        className="fr-mx-auto"
         onClick={() => {
           setIsOpen(true);
         }}

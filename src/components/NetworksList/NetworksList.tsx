@@ -430,9 +430,9 @@ const NetworksList = () => {
     <NetworksListContainer>
       {loaded && (
         <Box py="10w" className="fr-container">
-          <Box display="flex" flexDirection="row" alignItems="center" justifyContent="space-between" pb="4w">
+          <Box display="flex" gap="16px" flexWrap="wrap" flexDirection="row" alignItems="center" justifyContent="space-between" pb="4w">
             <Text fontWeight="bold">{filteredNetworks.length}&nbsp;réseaux</Text>
-            <Box display="flex" flexDirection="row" alignItems="flex-end" gap="16px">
+            <Box display="flex" flexWrap="wrap" flexDirection="row" alignItems="flex-end" gap="16px">
               <NetworksFilter
                 filterLimits={filterLimits}
                 filterValues={filterValues}
