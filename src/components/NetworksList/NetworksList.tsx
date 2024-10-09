@@ -38,6 +38,9 @@ const NetworksListContainer = styled.div`
       color: var(--grey-50-1000);
     }
   }
+  .MuiDataGrid-virtualScroller {
+    overflow-y: hidden;
+  }
   .MuiDataGrid-row {
     &.even,
     &.odd {
