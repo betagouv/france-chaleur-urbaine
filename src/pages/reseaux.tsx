@@ -17,7 +17,7 @@ function ListeReseaux() {
             </Heading>
             <Box maxWidth="700px">
               <Text size="lg" mb="3w">
-                Retrouver l'ensemble des réseaux et les filtrer selon leurs caractéristiques
+                Retrouvez l'ensemble de réseaux et filtrez-les selon les caractéristiques de votre choix
               </Text>
             </Box>
           </Box>
