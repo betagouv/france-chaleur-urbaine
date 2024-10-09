@@ -97,6 +97,7 @@ function NetworksFilter({
   const refLivraisonsChaleur = useRef<HTMLDivElement>(null);
   const livraisonsChaleurToPercent = 100 / filterLimits['livraisons_totale_MWh'][1];
 
+  //HACK - force re-render Range components when empty filters
   useEffect(() => {
     setEmpty(false);
   }, [empty]);
@@ -124,6 +125,7 @@ function NetworksFilter({
   }
   const { ref, isOpen, setIsOpen } = useComponentVisible(false);
 
+  //HACK - for non linear Range filter
   const onLivraisonsChaleurTextContent = useCallback(
     (minValue: string, maxValue: string) => {
       const textToUpdate = refLivraisonsChaleur?.current?.querySelector('.fr-range__output');

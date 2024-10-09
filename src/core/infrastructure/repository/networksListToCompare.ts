@@ -82,7 +82,7 @@ export const getNetworks = async (): Promise<NetworkToCompare[]> => {
     )
     .whereNotNull('Identifiant reseau')
     .and.whereNotNull('nom_reseau')
-    .andWhereRaw('LENGTH("Identifiant reseau") <= 5');
+    .andWhereRaw('LENGTH("Identifiant reseau") <= 5'); //Some networks has format 84XXC_16 and are not ready to be displayed
   return networks.map((network: NetworkToCompare) => {
     return {
       id: network.id_fcu,
