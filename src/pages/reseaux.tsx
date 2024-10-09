@@ -17,7 +17,7 @@ function ListeReseaux() {
             </Heading>
             <Box maxWidth="700px">
               <Text size="lg" mb="3w">
-                Retrouvez l'ensemble des réseaux de chaleur et filtrez-les en définissant les critères de votre choix
+                Retrouver l'ensemble des réseaux et les filtrer selon leurs caractéristiques
               </Text>
             </Box>
           </Box>

@@ -93,5 +93,4 @@ export interface NetworkToCompare extends Network {
   energie_ratio_gpl: number;
   energie_ratio_autreChaleurRecuperee: number;
   energie_ratio_biogaz: number;
-  energie_max_ratio: string;
 }

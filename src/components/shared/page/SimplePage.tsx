@@ -172,7 +172,7 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
       {
         text: 'Liste des réseaux de chaleur',
         linkProps: {
-          href: '/liste-reseaux',
+          href: '/reseaux',
         },
       },
       {

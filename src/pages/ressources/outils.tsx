@@ -147,7 +147,7 @@ const OutilsPage = () => {
             Retrouver l'ensemble des réseaux et les filtrer en définissant les critères de son choix
           </Text>
         </Box>
-        <Link variant="secondary" href="/liste-reseaux">
+        <Link variant="secondary" href="/reseaux">
           Accéder
         </Link>
       </Box>

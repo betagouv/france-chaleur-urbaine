@@ -51,7 +51,7 @@ const NetworksListContainer = styled.div`
   }
 `;
 
-const GeneralFieldsList: string[] = [
+export const GeneralFieldsList = [
   'communes',
   'Gestionnaire',
   'Taux EnR&R',
@@ -60,8 +60,9 @@ const GeneralFieldsList: string[] = [
   'PM',
   'annee_creation',
   'livraisons_totale_MWh',
-];
-const MixEnergetiqueFieldsList: string[] = [
+] as const satisfies ReadonlyArray<keyof NetworkToCompare>;
+
+const MixEnergetiqueFieldsList = [
   'energie_ratio_biomasse',
   'energie_ratio_geothermie',
   'energie_ratio_uve',
@@ -70,7 +71,7 @@ const MixEnergetiqueFieldsList: string[] = [
   'energie_ratio_pompeAChaleur',
   'energie_ratio_gaz',
   'energie_ratio_fioul',
-];
+] as const satisfies ReadonlyArray<keyof NetworkToCompare>;
 
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 
@@ -365,7 +366,7 @@ const NetworksList = () => {
 
   const onChangeDataToDisplay = useCallback(
     (newDataToDisplay: DataToDisplay) => {
-      if (tableApiRef) {
+      if (tableApiRef && tableApiRef.current) {
         GeneralFieldsList.forEach((fieldName: string) =>
           tableApiRef.current.setColumnVisibility(fieldName, newDataToDisplay === 'general' ? true : false)
         );
@@ -383,6 +384,12 @@ const NetworksList = () => {
   );
 
   useEffect(() => {
+    if (loaded && tableApiRef && tableApiRef.current) {
+      onChangeDataToDisplay('general');
+    }
+  }, [loaded, tableApiRef]);
+
+  useEffect(() => {
     if (!loaded) {
       (async () => {
         try {
@@ -398,20 +405,18 @@ const NetworksList = () => {
           setRegionsList(newRegionsList);
 
           // amend the configuration with metadata limits of networks
-          fetchJSON<FiltersDBLimits>('/api/networks/list-to-compare-limits').then((limits) => {
-            // apply the limits to the filters
-            intervalFilters.forEach((filter) => {
-              if (limits[filter.confKey]) {
-                filterValues[filter.confKey] = limits[filter.confKey];
-                filterLimits[filter.confKey] = limits[filter.confKey];
-              }
-            });
-            setFilterValues(filterValues);
-            setFilterLimits(filterLimits);
-
-            onChangeDataToDisplay('general');
-            setLoaded(true);
+          const limits = await fetchJSON<FiltersDBLimits>('/api/networks/list-to-compare-limits');
+          // apply the limits to the filters
+          intervalFilters.forEach((filter) => {
+            if (limits[filter.confKey]) {
+              filterValues[filter.confKey] = limits[filter.confKey];
+              filterLimits[filter.confKey] = limits[filter.confKey];
+            }
           });
+          setFilterValues(filterValues);
+          setFilterLimits(filterLimits);
+
+          setLoaded(true);
         } finally {
           setTimeout(() => {
             setLoaded(true);

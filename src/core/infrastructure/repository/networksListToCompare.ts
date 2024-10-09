@@ -84,29 +84,9 @@ export const getNetworks = async (): Promise<NetworkToCompare[]> => {
     .and.whereNotNull('nom_reseau')
     .andWhereRaw('LENGTH("Identifiant reseau") <= 5');
   return networks.map((network: NetworkToCompare) => {
-    const energies = [
-      { label: 'energie_ratio_biomasse', value: network.energie_ratio_biomasse },
-      { label: 'energie_ratio_geothermie', value: network.energie_ratio_geothermie },
-      { label: 'energie_ratio_uve', value: network.energie_ratio_uve },
-      { label: 'energie_ratio_chaleurIndustrielle', value: network.energie_ratio_chaleurIndustrielle },
-      { label: 'energie_ratio_solaireThermique', value: network.energie_ratio_solaireThermique },
-      { label: 'energie_ratio_pompeAChaleur', value: network.energie_ratio_pompeAChaleur },
-      { label: 'energie_ratio_gaz', value: network.energie_ratio_gaz },
-      { label: 'energie_ratio_fioul', value: network.energie_ratio_fioul },
-      { label: 'energie_ratio_autresEnr', value: network.energie_ratio_autresEnr },
-      { label: 'energie_ratio_chaufferiesElectriques', value: network.energie_ratio_chaufferiesElectriques },
-      { label: 'energie_ratio_charbon', value: network.energie_ratio_charbon },
-      { label: 'energie_ratio_gpl', value: network.energie_ratio_gpl },
-      { label: 'energie_ratio_autreChaleurRecuperee', value: network.energie_ratio_autreChaleurRecuperee },
-      { label: 'energie_ratio_biogaz', value: network.energie_ratio_biogaz },
-    ];
-    const max = energies.reduce(function (prev, current) {
-      return prev && prev.value > current.value ? prev : current;
-    });
     return {
       id: network.id_fcu,
       ...network,
-      energie_max_ratio: max.label,
       livraisons_totale_MWh: network['livraisons_totale_MWh'] / 1000,
       'contenu CO2 ACV': network['contenu CO2 ACV'] * 1000,
       'contenu CO2': network['contenu CO2'] * 1000,
