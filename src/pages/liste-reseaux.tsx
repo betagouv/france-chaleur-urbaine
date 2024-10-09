@@ -15,9 +15,11 @@ function ListeReseaux() {
             <Heading size="h1" color="blue-france">
               Liste des réseaux de chaleur
             </Heading>
-            <Text size="lg" mb="3w">
-              Retrouvez l'ensemble des réseaux de chaleur et filtrez-les en définissant les critères de votre choix
-            </Text>
+            <Box maxWidth="700px">
+              <Text size="lg" mb="3w">
+                Retrouvez l'ensemble des réseaux de chaleur et filtrez-les en définissant les critères de votre choix
+              </Text>
+            </Box>
           </Box>
 
           <Box className="fr-hidden fr-unhidden-lg">
