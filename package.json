@@ -40,7 +40,7 @@
   "dependencies": {
     "@betagouv/france-chaleur-urbaine-publicodes": "^0.18.0",
     "@codegouvfr/react-dsfr": "^1.13.6",
-    "@commander-js/extra-typings": "^11.1.0",
+    "@commander-js/extra-typings": "^12.1.0",
     "@emotion/react": "^11.11.4",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.5",
@@ -66,6 +66,7 @@
     "axios": "^1.7.4",
     "base64-stream": "^1.0.0",
     "bcryptjs": "^2.4.3",
+    "commander": "^12.1.0",
     "cors": "^2.8.5",
     "cron": "^2.4.1",
     "deep-object-diff": "^1.1.9",

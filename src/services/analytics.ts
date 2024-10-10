@@ -251,6 +251,12 @@ const trackingEvents = {
   'Carto|Besoins en chaleur secteur industriel|Désactive': {
     matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Désactive'],
   },
+  'Carto|Communes à fort potentiel pour la création de réseaux de chaleur|Active': {
+    matomo: ['Carto', 'Communes à fort potentiel pour la création de réseaux de chaleur', 'Active'],
+  },
+  'Carto|Communes à fort potentiel pour la création de réseaux de chaleur|Désactive': {
+    matomo: ['Carto', 'Communes à fort potentiel pour la création de réseaux de chaleur', 'Désactive'],
+  },
   'Carto|Besoins en froid|Active': {
     matomo: ['Carto', 'Besoins en froid', 'Active'],
   },

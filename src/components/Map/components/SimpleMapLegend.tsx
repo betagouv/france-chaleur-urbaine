@@ -19,12 +19,13 @@ import { trackEvent } from 'src/services/analytics';
 import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from 'src/services/Map/businessRules';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
-import { defaultMapConfiguration } from 'src/services/Map/map-configuration';
+import { defaultMapConfiguration, communesFortPotentielPourCreationReseauxChaleurInterval } from 'src/services/Map/map-configuration';
 
 import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux, { type MapLegendFeature } from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
+import RangeFilter from './RangeFilter';
 import ScaleLegend from './ScaleLegend';
 import {
   DeactivatableBox,
@@ -41,6 +42,10 @@ import {
 import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
 import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
+import {
+  communesFortPotentielPourCreationReseauxChaleurLayerColor,
+  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+} from '../map-styles';
 import useFCUMap from '../MapProvider';
 
 const consommationsGazLegendColor = '#D9D9D9';
@@ -127,7 +132,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
         {selectedTabId.tabId === 'potentiel' && (
           <Box mt="2v" mx="1w">
             <Title>Potentiel</Title>
-            <Box display="flex" mb="2w">
+            <Box display="flex" alignItems="start" mb="2w">
               <SingleCheckbox
                 name="demandesEligibilite"
                 checked={mapConfiguration.demandesEligibilite}
@@ -139,8 +144,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 backgroundColor={themeDefDemands.fill.color}
                 border={`2px solid ${themeDefDemands.stroke.color}`}
                 borderRadius="50%"
-                height="16px"
-                width="16px"
+                minHeight="16px"
+                minWidth="16px"
                 mt="1v"
               />
 
@@ -587,6 +592,53 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   </Box>
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
+
+              <TrackableCheckableAccordion
+                name="communesFortPotentielPourCreationReseauxChaleur"
+                layerName="communesFortPotentielPourCreationReseauxChaleur.show"
+                checked={mapConfiguration.communesFortPotentielPourCreationReseauxChaleur.show}
+                trackingEvent="Carto|Communes à fort potentiel pour la création de réseaux de chaleur"
+                label={
+                  <>
+                    <Box
+                      backgroundColor={communesFortPotentielPourCreationReseauxChaleurLayerColor}
+                      opacity={communesFortPotentielPourCreationReseauxChaleurLayerOpacity}
+                      borderRadius="50%"
+                      minHeight="16px"
+                      minWidth="16px"
+                      mt="1v"
+                    />
+                    <span>Communes à fort potentiel pour la création de réseaux de chaleur</span>
+                    <InfoIcon>
+                      <Icon size="sm" name="ri-information-fill" cursor="help" />
+
+                      <Hoverable position="bottom">
+                        Communes sans réseau de chaleur sur lesquelles au moins une zone d'opportunité à fort potentiel est identifiée par
+                        le Cerema dans le cadre du projet EnRezo
+                        <br />
+                        <Link
+                          href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
+                          isExternal
+                        >
+                          Accéder à la méthodologie
+                        </Link>
+                      </Hoverable>
+                    </InfoIcon>
+                  </>
+                }
+              >
+                <DeactivatableBox disabled={!mapConfiguration.communesFortPotentielPourCreationReseauxChaleur.show}>
+                  <Box mx="3w">
+                    <RangeFilter
+                      label={<Text size="sm">Nombre d'habitants</Text>}
+                      domain={communesFortPotentielPourCreationReseauxChaleurInterval}
+                      value={mapConfiguration.communesFortPotentielPourCreationReseauxChaleur.population}
+                      onChange={updateScaleInterval('communesFortPotentielPourCreationReseauxChaleur.population')}
+                    />
+                  </Box>
+                </DeactivatableBox>
+              </TrackableCheckableAccordion>
+
               <TrackableCheckableAccordion
                 name="besoinsEnChaleurIndustrieCommunes"
                 checked={mapConfiguration.besoinsEnChaleurIndustrieCommunes}

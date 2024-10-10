@@ -4,6 +4,7 @@ import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
 import { formatMWh, prettyFormatNumber } from '@utils/strings';
 import { BesoinsEnChaleur, BesoinsEnChaleurIndustrieCommunes } from 'src/types/layers/BesoinsEnChaleur';
+import { CommuneFortPotentielPourCreationReseauxChaleur } from 'src/types/layers/CommuneFortPotentielPourCreationReseauxChaleur';
 import {
   Datacenter,
   Industrie,
@@ -31,6 +32,7 @@ export const layersWithDynamicContentPopup = [
   'besoinsEnChaleur',
   'besoinsEnFroid',
   'besoinsEnChaleurIndustrieCommunes',
+  'communesFortPotentielPourCreationReseauxChaleur',
 ] as const satisfies ReadonlyArray<LayerId>;
 
 export function isDynamicPopupContent(content: any): content is DynamicPopupContentType {
@@ -43,7 +45,8 @@ export type DynamicPopupContentType =
   | ZonePotentielChaudPopupContentType
   | ENRRMobilisablePopupContentType
   | BesoinsEnChaleurPopupContentType
-  | BesoinsEnChaleurIndustrieCommunesPopupContentType;
+  | BesoinsEnChaleurIndustrieCommunesPopupContentType
+  | CommuneFortPotentielPourCreationReseauxChaleurPopupContentType;
 
 type BesoinsEnChaleurPopupContentType = {
   type: 'besoinsEnChaleur' | 'besoinsEnFroid';
@@ -53,6 +56,11 @@ type BesoinsEnChaleurPopupContentType = {
 type BesoinsEnChaleurIndustrieCommunesPopupContentType = {
   type: 'besoinsEnChaleurIndustrieCommunes';
   properties: BesoinsEnChaleurIndustrieCommunes;
+};
+
+type CommuneFortPotentielPourCreationReseauxChaleurPopupContentType = {
+  type: 'communesFortPotentielPourCreationReseauxChaleur';
+  properties: CommuneFortPotentielPourCreationReseauxChaleur;
 };
 
 type ZonePotentielChaudPopupContentType = {
@@ -126,6 +134,10 @@ const DynamicPopupContent = ({ content }: { content: DynamicPopupContentType }) 
       return <BesoinsEnChaleurPopupContent besoinsEnChaleur={content.properties} />;
     case 'besoinsEnChaleurIndustrieCommunes':
       return <BesoinsEnChaleurIndustrieCommunesPopupContent besoinsEnChaleurIndustrieCommunes={content.properties} />;
+    case 'communesFortPotentielPourCreationReseauxChaleur':
+      return (
+        <CommuneFortPotentielPourCreationReseauxChaleurPopupContent communeFortPotentielPourCreationReseauxChaleur={content.properties} />
+      );
     default:
       throw new Error('not implemented');
   }
@@ -327,6 +339,34 @@ const ENRRMobilisableSolaireThermiqueParkingPopupContent = ({ parking }: { parki
       <PopupType className="fr-mr-3w">Parking</PopupType>
       <PopupProperty label="Surface" value={parking.surfm2} unit="m²" />
       <PopupProperty label="Source" value="Cerema" />
+    </section>
+  );
+};
+
+const CommuneFortPotentielPourCreationReseauxChaleurPopupContent = ({
+  communeFortPotentielPourCreationReseauxChaleur,
+}: {
+  communeFortPotentielPourCreationReseauxChaleur: CommuneFortPotentielPourCreationReseauxChaleur;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">{communeFortPotentielPourCreationReseauxChaleur.nom}</PopupTitle>
+      <PopupProperty label="Nombre d'habitants" value={communeFortPotentielPourCreationReseauxChaleur.population} />
+      <PopupProperty
+        label="Besoins en chauffage sur les zones à fort potentiel (cumul)"
+        value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_chauf_mwh}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Besoins en ECS sur les zones à fort potentiel (cumul)"
+        value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_ecs_mwh}
+        formatter={formatMWh}
+      />
+      <PopupProperty
+        label="Nombre de zones d’opportunité à fort potentiel"
+        value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_total}
+      />
+      <PopupProperty label="Source" value="IGN - Cerema" />
     </section>
   );
 };

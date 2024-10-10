@@ -63,6 +63,9 @@ export const AppGlobalStyle = createGlobalStyle`
   .d-flex {
     display: flex !important;
   }
+  .items-start {
+   align-items: start !important;
+  }
   .btn-full-width {
     width: 100%;
     justify-content: center;
