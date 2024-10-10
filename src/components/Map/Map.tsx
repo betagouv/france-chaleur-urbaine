@@ -2,13 +2,12 @@ import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
-import { LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
+import { LayerSpecification, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsString, useQueryStates } from 'nuqs';
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { MapLayerMouseEvent } from 'react-map-gl';
 import MapReactGL, {
   AttributionControl,
   GeolocateControl,
@@ -29,16 +28,13 @@ import useRouterReady from '@hooks/useRouterReady';
 import { useServices } from 'src/services';
 import { trackEvent } from 'src/services/analytics';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
-import { SourceId } from 'src/services/tiles.config';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
-import { MapMarkerInfos, MapPopupInfos, MapPopupType } from 'src/types/MapComponentsInfos';
+import { MapMarkerInfos, MapPopupType } from 'src/types/MapComponentsInfos';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
 
 import CardSearchDetails from './components/CardSearchDetails';
-import { isDevModeEnabled } from './components/DevModeIcon';
-import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
 import { type MapLegendFeature } from './components/MapLegendReseaux';
 import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
@@ -48,7 +44,8 @@ import { Title } from './components/SimpleMapLegend.style';
 import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
-import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
+import { useMapClickHandlers, useMapHoverEffects } from './map-hover';
+import { applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
   CollapseLegendLabel,
@@ -72,47 +69,6 @@ const mapSettings = {
   defaultZoom: 5,
   minZoom: 5,
   maxZoom: 20,
-};
-
-let hoveredStateId: MapGeoJSONFeature['id'] | null = null;
-
-/**
- * The hover state is used in the layers to change the style of the feature using ['feature-state', 'hover']
- */
-const setFeatureHoveringState = (map: MapRef, hover: boolean, source: SourceId, sourceLayer: string) => {
-  if (hoveredStateId) {
-    map.setFeatureState(
-      {
-        source,
-        id: hoveredStateId,
-        sourceLayer,
-      },
-      { hover }
-    );
-    if (!hover) {
-      hoveredStateId = null;
-    }
-  }
-};
-
-type HoverConfig = {
-  source: SourceId;
-  sourceLayer: string;
-  layer: LayerId;
-};
-
-const addLayerHoverListeners = (map: MapRef, config: HoverConfig) => {
-  map.on('mouseenter', config.layer, function (e) {
-    if (e.features && e.features.length > 0) {
-      setFeatureHoveringState(map, false, config.source, config.sourceLayer);
-      hoveredStateId = e.features[0].id;
-      setFeatureHoveringState(map, true, config.source, config.sourceLayer);
-    }
-  });
-
-  map.on('mouseleave', config.layer, function () {
-    setFeatureHoveringState(map, false, config.source, config.sourceLayer);
-  });
 };
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
@@ -192,7 +148,7 @@ const InternalMap = ({
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
-  const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
+  const switcherControlRef = useRef<MapboxStyleSwitcherControl>();
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
@@ -227,28 +183,6 @@ const InternalMap = ({
       initializeWithValue: true,
     }
   );
-
-  const onMapClick = (e: MapLayerMouseEvent, key: string) => {
-    const selectedFeature = e.features?.[0];
-    if (!selectedFeature) {
-      return;
-    }
-    if (isDevModeEnabled()) {
-      console.log('map-click', selectedFeature); // eslint-disable-line no-console
-    }
-
-    // depending on the feature type, we force the popup type to help building the popup content more easily
-    setPopupInfos({
-      latitude: e.lngLat.lat,
-      longitude: e.lngLat.lng,
-      content: layersWithDynamicContentPopup.includes(selectedFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
-        ? {
-            type: selectedFeature.layer?.id,
-            properties: selectedFeature.properties,
-          }
-        : { [key]: selectedFeature.properties },
-    });
-  };
 
   const jumpTo = useCallback(({ coordinates, zoom }: { coordinates: [number, number]; zoom?: number }) => {
     if (mapRef.current) {
@@ -337,18 +271,18 @@ const InternalMap = ({
 
     e.target.addControl(drawControl as any);
     setMapDraw(drawControl);
-    e.target.addControl(
-      new MapboxStyleSwitcherControl(styles, {
-        defaultStyle: 'Carte',
-        eventListeners: {
-          onChange: () => {
-            // this switcher removes all sources and layers when used so we must configure them again
-            setMapLayersLoaded(false);
-            return true;
-          },
+    const switcherControl = new MapboxStyleSwitcherControl(styles, {
+      defaultStyle: 'Carte',
+      eventListeners: {
+        onChange: () => {
+          // this switcher removes all sources and layers when used so we must configure them again
+          setMapLayersLoaded(false);
+          return true;
         },
-      })
-    );
+      },
+    });
+    e.target.addControl(switcherControl);
+    switcherControlRef.current = switcherControl;
 
     const map = e.target;
     // load layers symbols
@@ -360,81 +294,6 @@ const InternalMap = ({
         });
       })
     );
-
-    const clickEvents: {
-      layer: LayerId;
-      key: string;
-    }[] = [
-      { layer: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
-      { layer: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
-      { layer: 'reseauxDeChaleur-avec-trace', key: 'network' },
-      { layer: 'reseauxDeChaleur-sans-trace', key: 'network' },
-      { layer: 'reseauxDeFroid-avec-trace', key: 'coldNetwork' },
-      { layer: 'reseauxDeFroid-sans-trace', key: 'coldNetwork' },
-      { layer: 'reseauxEnConstruction-trace', key: 'futurNetwork' },
-      { layer: 'reseauxEnConstruction-zone', key: 'futurNetwork' },
-      {
-        layer: 'demandesEligibilite',
-        key: 'demands',
-      },
-      { layer: 'caracteristiquesBatiments', key: 'buildings' },
-      { layer: 'besoinsEnChaleur', key: '*' },
-      { layer: 'besoinsEnFroid', key: '*' },
-      { layer: 'besoinsEnChaleurIndustrieCommunes', key: '*' },
-      { layer: 'communesFortPotentielPourCreationReseauxChaleur', key: '*' },
-      { layer: 'consommationsGaz', key: 'consommation' },
-      { layer: 'energy', key: 'energy' },
-      { layer: 'batimentsRaccordes', key: 'raccordement' },
-      {
-        layer: 'enrrMobilisables-friches',
-        key: 'enrrMobilisables-friche',
-      },
-      {
-        layer: 'enrrMobilisables-parkings',
-        key: 'enrrMobilisables-parking',
-      },
-      {
-        layer: 'enrrMobilisables-datacenter',
-        key: 'enrrMobilisables-datacenter',
-      },
-      {
-        layer: 'enrrMobilisables-industrie',
-        key: 'enrrMobilisables-industrie',
-      },
-      {
-        layer: 'enrrMobilisables-installations-electrogenes',
-        key: 'enrrMobilisables-installations-electrogenes',
-      },
-      {
-        layer: 'enrrMobilisables-stations-d-epuration',
-        key: 'enrrMobilisables-stations-d-epuration',
-      },
-      {
-        layer: 'enrrMobilisables-unites-d-incineration',
-        key: 'enrrMobilisables-unites-d-incineration',
-      },
-    ];
-
-    // register click event handlers
-    if (!noPopup) {
-      clickEvents.map(({ layer, key }) => {
-        map.on('click', layer, (e: any) => {
-          onMapClick(e, key);
-        });
-
-        map.on('touchend', layer, (e: any) => {
-          onMapClick(e, key);
-        });
-
-        map.on('mouseenter', layer, function () {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-
-        map.on('mouseleave', layer, function () {
-          map.getCanvas().style.cursor = '';
-        });
-      });
-    }
 
     // register move and hover event handlers
     {
@@ -456,22 +315,6 @@ const InternalMap = ({
             }
           });
         }
-
-        addLayerHoverListeners(map, {
-          layer: 'reseauxDeChaleur-avec-trace',
-          source: 'network',
-          sourceLayer: 'layer',
-        });
-        addLayerHoverListeners(map, {
-          layer: 'reseauxEnConstruction-trace',
-          source: 'futurNetwork',
-          sourceLayer: 'futurOutline',
-        });
-        addLayerHoverListeners(map, {
-          layer: 'reseauxDeFroid-avec-trace',
-          source: 'coldNetwork',
-          sourceLayer: 'coldOutline',
-        });
       }
     }
   };
@@ -519,6 +362,14 @@ const InternalMap = ({
 
     setMapLayersLoaded(true);
   };
+
+  useMapHoverEffects({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
+  const { popupInfos } = useMapClickHandlers({ mapLayersLoaded, isDrawing, mapRef: mapRef.current, noPopup });
+
+  // disable the switcher control as it conflicts with map layers and drawing interactions
+  useEffect(() => {
+    switcherControlRef.current?.enable(!isDrawing);
+  }, [isDrawing]);
 
   useEffect(() => {
     const { id } = router.query;
