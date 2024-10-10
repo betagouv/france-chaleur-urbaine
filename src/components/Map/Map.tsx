@@ -273,10 +273,12 @@ const InternalMap = ({
     setMapDraw(drawControl);
     const switcherControl = new MapboxStyleSwitcherControl(styles, {
       defaultStyle: 'Carte',
-      onChange: () => {
-        // this switcher removes all sources and layers when used so we must configure them again
-        setMapLayersLoaded(false);
-        return true;
+      eventListeners: {
+        onChange: () => {
+          // this switcher removes all sources and layers when used so we must configure them again
+          setMapLayersLoaded(false);
+          return true;
+        },
       },
     });
     e.target.addControl(switcherControl);
