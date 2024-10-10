@@ -315,7 +315,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                         fillOpacity={0.7}
                         mt="1v"
                       />
-                      <span>Besoins en chaleur</span>
+                      <Box flex>Besoins en chaleur</Box>
                       <Tooltip
                         title={
                           <>
@@ -374,7 +374,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                         mt="1v"
                       />
 
-                      <span>Besoins en froid</span>
+                      <Box flex>Besoins en froid</Box>
                       <Tooltip
                         title={
                           <>
@@ -434,7 +434,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       >
                         C
                       </Box>
-                      <span>Caractéristiques des bâtiments</span>
+                      <Box flex>Caractéristiques des bâtiments</Box>
                       <Tooltip
                         title={
                           <>
@@ -490,7 +490,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
                       mt="1v"
                     />
-                    <span>Zones d'opportunité pour la création de réseaux de chaleur</span>
+                    <Box flex>Zones d'opportunité pour la création de réseaux de chaleur</Box>
                     <Tooltip
                       title={
                         <>
@@ -584,7 +584,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       minWidth="16px"
                       mt="1v"
                     />
-                    <span>Communes à fort potentiel pour la création de réseaux de chaleur</span>
+                    <Box flex>Communes à fort potentiel pour la création de réseaux de chaleur</Box>
                     <Tooltip
                       title={
                         <>
@@ -627,7 +627,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       fillOpacity={0.7}
                       mt="1v"
                     />
-                    <span>Besoins en chaleur du secteur industriel</span>
+                    <Box flex>Besoins en chaleur du secteur industriel</Box>
                     <Tooltip
                       title={
                         <>
@@ -735,7 +735,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 trackingEvent="Carto|ENR&R Mobilisables"
                 label={
                   <>
-                    <span>Chaleur fatale</span>
+                    <Box flex>Chaleur fatale</Box>
                     <Tooltip
                       title={
                         <>
@@ -886,7 +886,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 trackingEvent="Carto|ENR&R Mobilisables"
                 label={
                   <>
-                    <span>Solaire thermique</span>
+                    <Box flex>Solaire thermique</Box>
                     <Tooltip
                       title={
                         <>
