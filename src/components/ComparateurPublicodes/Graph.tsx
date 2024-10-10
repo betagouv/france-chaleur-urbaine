@@ -10,8 +10,8 @@ import useArrayQueryState from '@hooks/useArrayQueryState';
 import { deepMergeObjects } from '@utils/core';
 import cx from '@utils/cx';
 
+import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
-import { ChartPlaceholder, GraphTooltip } from './SimulatorPublicodes.style';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -126,84 +126,96 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     colors: coutGraphColors,
   });
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
+  const inclusClimatisation = engine.getField('Inclure la climatisation');
+
+  const filterDisplayableModesDeChauffage = (typeInstallation: (typeof modesDeChauffage)[number]) => {
+    if (!hasModeDeChauffage(typeInstallation.label)) {
+      return false;
+    }
+
+    if (!inclusClimatisation && typeInstallation.seulementFroid) {
+      return false;
+    }
+    return true;
+  };
+
+  const getLabel = (typeInstallation: (typeof modesDeChauffage)[number]) => {
+    return typeInstallation.reversible && inclusClimatisation ? `${typeInstallation.label} (chauffage + froid)` : typeInstallation.label;
+  };
 
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
-    ...modesDeChauffage
-      .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
-      .flatMap((typeInstallation) => {
-        const amountP1Abo = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1abo`);
-        const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
-        const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
-        const amountP1prime = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1prime`);
-        const amountP2 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P2`);
-        const amountP3 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P3`);
-        const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
-        const amountAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`);
+    ...modesDeChauffage.filter(filterDisplayableModesDeChauffage).flatMap((typeInstallation) => {
+      const amountP1Abo = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1abo`);
+      const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
+      const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
+      const amountP1prime = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1prime`);
+      const amountP2 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P2`);
+      const amountP3 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P3`);
+      const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
+      const amountAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`);
 
-        const amounts = proMode
-          ? [
-              ...getRow({ title: 'P1 abo', amount: amountP1Abo, color: colorP1Abo }),
-              ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso }),
-              ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS }),
-              ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime }),
-              ...getRow({ title: 'P2', amount: amountP2, color: colorP2 }),
-              // TODO manque les différents types d'installation avec élec ou solaire
-              ...getRow({ title: 'P3', amount: amountP3, color: colorP3 }),
-              ...getRow({ title: 'P4 moins aides', amount: amountP4SansAides, color: colorP4SansAides }),
-              ...getRow({ title: 'aides', amount: amountAides, color: colorP4Aides, bordered: true }),
-            ]
-          : [
-              ...getRow({ title: 'Abonnement', amount: amountP1Abo, color: colorP1Abo }),
-              ...getRow({ title: 'Consommation', amount: amountP1Conso + amountP1ECS, color: colorP1Conso }),
-              ...getRow({ title: 'Maintenance', amount: amountP1prime + amountP2 + amountP3, color: colorP1prime }),
-              ...getRow({ title: 'Investissement', amount: amountP4SansAides, color: colorP4SansAides }),
-              ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true }),
-            ];
+      const amounts = proMode
+        ? [
+            ...getRow({ title: 'P1 abo', amount: amountP1Abo, color: colorP1Abo }),
+            ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso }),
+            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS }),
+            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime }),
+            ...getRow({ title: 'P2', amount: amountP2, color: colorP2 }),
+            // TODO manque les différents types d'installation avec élec ou solaire
+            ...getRow({ title: 'P3', amount: amountP3, color: colorP3 }),
+            ...getRow({ title: 'P4 moins aides', amount: amountP4SansAides, color: colorP4SansAides }),
+            ...getRow({ title: 'aides', amount: amountAides, color: colorP4Aides, bordered: true }),
+          ]
+        : [
+            ...getRow({ title: 'Abonnement', amount: amountP1Abo, color: colorP1Abo }),
+            ...getRow({ title: 'Consommation', amount: amountP1Conso + amountP1ECS, color: colorP1Conso }),
+            ...getRow({ title: 'Maintenance', amount: amountP1prime + amountP2 + amountP3, color: colorP1prime }),
+            ...getRow({ title: 'Investissement', amount: amountP4SansAides, color: colorP4SansAides }),
+            ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true }),
+          ];
 
-        const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
-          .reduce((acc, amount) => acc + amount, 0)
-          .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
+        .reduce((acc, amount) => acc + amount, 0)
+        .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
 
-        return [
-          [' ', typeInstallation.label, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-          [typeInstallation.label, '', ...amounts, totalAmount],
-        ];
-      }),
+      return [
+        [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
+        [getLabel(typeInstallation), '', ...amounts, totalAmount],
+      ];
+    }),
   ];
 
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
-    ...modesDeChauffage
-      .filter((typeInstallation) => hasModeDeChauffage(typeInstallation.label))
-      .flatMap((typeInstallation) => {
-        const amounts = [
-          ...getRow({
-            title: "Scope 1 : Production directe d'énergie",
-            amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
-            color: colorScope1,
-          }),
-          ...getRow({
-            title: "Scope 2 : Production indirecte d'énergie",
-            amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
-            color: colorScope2,
-          }),
-          ...getRow({
-            title: 'Scope 3 : Émissions indirectes',
-            amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
-            color: colorScope3,
-          }),
-        ];
+    ...modesDeChauffage.filter(filterDisplayableModesDeChauffage).flatMap((typeInstallation) => {
+      const amounts = [
+        ...getRow({
+          title: "Scope 1 : Production directe d'énergie",
+          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
+          color: colorScope1,
+        }),
+        ...getRow({
+          title: "Scope 2 : Production indirecte d'énergie",
+          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
+          color: colorScope2,
+        }),
+        ...getRow({
+          title: 'Scope 3 : Émissions indirectes',
+          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
+          color: colorScope3,
+        }),
+      ];
 
-        const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
-          .reduce((acc, amount) => acc + amount, 0)
-          .toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
+        .reduce((acc, amount) => acc + amount, 0)
+        .toLocaleString('fr-FR', { maximumFractionDigits: 0 });
 
-        return [
-          ['', `${typeInstallation.label}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-          [typeInstallation.label, '', ...amounts, `${totalAmount} kgCO2e`],
-        ];
-      }),
+      return [
+        ['', `${getLabel(typeInstallation)}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
+        [getLabel(typeInstallation), '', ...amounts, `${totalAmount} kgCO2e`],
+      ];
+    }),
   ];
 
   const chartHeight = selectedModesDeChauffage.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
@@ -234,7 +246,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
       {graphType === 'couts' && (
         <>
-          <Heading as="h6">Coût global annuel chauffage</Heading>
+          <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'}</Heading>
           <Chart
             chartType="BarChart"
             height="100%"

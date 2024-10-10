@@ -5,6 +5,8 @@ fileignoreconfig:
   checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
 - filename: scripts/addUser.ts
   checksum: 0a177922ce629d11306b8137997bbd761a547af145dedacd98d9ecc883d763d8
+- filename: src/components/ComparateurPublicodes/DebugDrawer.tsx
+  checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 - filename: src/components/Map/Map.tsx
   checksum: fd1b8bd14f7bdeeb2b2a89bbc368cca61df55b0fe97a5f4512c9e9522d8b8ca7
 - filename: src/components/Map/components/CardSearchDetails.tsx
@@ -17,8 +19,8 @@ fileignoreconfig:
   checksum: 43be49746d8d8a133cbe473acaa0ed78dfae34e84b10b1afc83f9f879eddabdf
 - filename: src/components/Map/components/tools/BuildingsDataExtractionTool.tsx
   checksum: 2b20c4585ec9f8ae7a457383e7d0e87cd731200d09d4372567ba9cce3ea0628d
-- filename: src/components/SimulatorPublicodes/DebugDrawer.tsx
-  checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
+- filename: src/components/Map/map-layers.ts
+  checksum: 16e789ab1bc1176ccb8f5b6dae275ec6639232884fda51da6ffd7708908f281a
 scopeconfig:
 - scope: node
 allowed_patterns:
@@ -26,4 +28,9 @@ allowed_patterns:
 - \/codegouvfr\/react-dsfr\/blob\/.*
 - key\=\{
 - K in keyof T
+- key=
+- key,
+- \[key\]
+- coutPublicodeKey
+- emissionsCO2PublicodesKey
 version: "1.0"

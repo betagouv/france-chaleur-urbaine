@@ -1,12 +1,13 @@
 import { Range } from '@codegouvfr/react-dsfr/Range';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { SimpleTooltip } from '@components/ui/Tooltip';
 import { Interval } from '@utils/interval';
+
 interface RangeFilterProps {
-  label: string;
+  label: string | ReactNode;
   value: Interval;
   domain: Interval;
   onChange: (values: Interval) => void;
@@ -16,7 +17,10 @@ interface RangeFilterProps {
     percentToValue: (value: number) => number;
     valueToPercent: (value: number) => number;
   };
+  nonLinear?: boolean;
 }
+
+type MinOrMax = 'min' | 'max';
 
 const RangeFilter = ({
   label,
@@ -26,12 +30,55 @@ const RangeFilter = ({
   unit = '',
   tooltip,
   domainTransform: valueTransform,
+  nonLinear,
   ...props
 }: RangeFilterProps) => {
-  const getValue = (value: number) => (valueTransform ? valueTransform.percentToValue(value) : value);
-  const [valueMin, setValueMin] = React.useState(getValue(values[0]));
-  const [valueMax, setValueMax] = React.useState(getValue(values[1]));
+  const valueToPercent = 100 / bounds[1];
+  const getNonLinearTransformValue = (value: number) => (valueTransform ? valueTransform.percentToValue(value * valueToPercent) : value);
+  const initNonLinearValue = (value: number) => (valueTransform ? valueTransform.valueToPercent(value) / valueToPercent : value);
+
+  const [valueMinRaw, setValueMinRaw] = useState<number>(nonLinear ? initNonLinearValue(values[0]) : values[0]);
+  const [valueMaxRaw, setValueMaxRaw] = useState<number>(nonLinear ? initNonLinearValue(values[1]) : values[1]);
+  const [valueMinTransform, setValueMinTransform] = useState<number>(values[0]);
+  const [valueMaxTransform, setValueMaxTransform] = useState<number>(values[1]);
   const [min, max] = bounds;
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (nonLinear) {
+      const textToUpdate = ref?.current?.querySelector('.fr-range__output');
+      if (textToUpdate) {
+        textToUpdate.textContent = valueMinTransform.toString() + unit + ' - ' + valueMaxTransform.toString() + unit;
+      }
+    }
+  }, [ref]);
+
+  const onChangeValue = useCallback(
+    (rangeValue: number, minOrMax: MinOrMax) => {
+      const newValue: number = nonLinear ? getNonLinearTransformValue(rangeValue) : rangeValue;
+
+      if (nonLinear) {
+        const textToUpdate = ref?.current?.querySelector('.fr-range__output');
+        if (textToUpdate) {
+          const text: string =
+            minOrMax === 'min'
+              ? newValue.toString() + unit + ' - ' + valueMaxTransform.toString() + unit
+              : valueMinTransform.toString() + unit + ' - ' + newValue.toString() + unit;
+          textToUpdate.textContent = text;
+        }
+      }
+      if (minOrMax === 'min') {
+        setValueMinRaw(rangeValue);
+        setValueMinTransform(newValue);
+        onChange([newValue, valueMaxTransform]);
+      } else {
+        setValueMaxRaw(rangeValue);
+        setValueMaxTransform(newValue);
+        onChange([valueMinTransform, newValue]);
+      }
+    },
+    [ref, nonLinear, valueMaxTransform, valueMinTransform]
+  );
 
   return (
     <Range
@@ -41,26 +88,19 @@ const RangeFilter = ({
           {tooltip && <SimpleTooltip icon={<Icon size="sm" name="ri-information-fill" cursor="help" />}>{tooltip}</SimpleTooltip>}
         </Box>
       }
+      ref={ref}
       small
       double
       max={max}
       min={min}
       nativeInputProps={[
         {
-          value: valueMin,
-          onChange: (e) => {
-            const newValueMin = getValue(+e.target.value);
-            setValueMin(newValueMin);
-            onChange([newValueMin, valueMax]);
-          },
+          value: valueMinRaw,
+          onChange: (e) => onChangeValue(+e.target.value, 'min'),
         },
         {
-          value: valueMax,
-          onChange: (e) => {
-            const newValueMax = getValue(+e.target.value);
-            setValueMax(newValueMax);
-            onChange([valueMin, newValueMax]);
-          },
+          value: valueMaxRaw,
+          onChange: (e) => onChangeValue(+e.target.value, 'max'),
         },
       ]}
       suffix={unit}

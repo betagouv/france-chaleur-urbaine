@@ -251,6 +251,12 @@ const trackingEvents = {
   'Carto|Besoins en chaleur secteur industriel|Désactive': {
     matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Désactive'],
   },
+  'Carto|Communes à fort potentiel pour la création de réseaux de chaleur|Active': {
+    matomo: ['Carto', 'Communes à fort potentiel pour la création de réseaux de chaleur', 'Active'],
+  },
+  'Carto|Communes à fort potentiel pour la création de réseaux de chaleur|Désactive': {
+    matomo: ['Carto', 'Communes à fort potentiel pour la création de réseaux de chaleur', 'Désactive'],
+  },
   'Carto|Besoins en froid|Active': {
     matomo: ['Carto', 'Besoins en froid', 'Active'],
   },
@@ -634,8 +640,9 @@ const emptyActivateMethod = () => {
 };
 
 const matomoABTestingExperiments = [
+  // placeholder to make types work
   {
-    name: 'TestMessagesFormulaireContact',
+    name: '_internal',
     percentage: 100,
     includedTargets: [],
     excludedTargets: [],
@@ -644,20 +651,9 @@ const matomoABTestingExperiments = [
         name: 'original',
         activate: emptyActivateMethod,
       },
-      {
-        name: 'AmeliorationA',
-        activate: emptyActivateMethod,
-      },
-      {
-        name: 'AmeliorationB',
-        activate: emptyActivateMethod,
-      },
-      {
-        name: 'AmeliorationA+B',
-        activate: emptyActivateMethod,
-      },
     ],
   },
+  // add the experiments below
 ] as const satisfies ReadonlyArray<MatomoABTestingExperiment>;
 
 type MatomoABTestingExperimentName = (typeof matomoABTestingExperiments)[number]['name'];

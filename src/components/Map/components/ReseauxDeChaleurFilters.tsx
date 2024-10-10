@@ -13,11 +13,11 @@ function ReseauxDeChaleurFilters() {
   return (
     <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
       <Select
-        label="Énergie majoritaire"
+        label="Énergie mobilisée"
         nativeSelectProps={{
-          value: mapConfiguration.reseauxDeChaleur.energieMajoritaire,
+          value: mapConfiguration.reseauxDeChaleur.energieMobilisee,
           onChange: (e) => {
-            mapConfiguration.reseauxDeChaleur.energieMajoritaire =
+            mapConfiguration.reseauxDeChaleur.energieMobilisee =
               e.target.value === '' ? undefined : (e.target.value as FiltreEnergieConfKey);
             setMapConfiguration({ ...mapConfiguration });
           },
@@ -86,6 +86,7 @@ function ReseauxDeChaleurFilters() {
           valueToPercent: (v) => roundNumberProgressively(getPercentageFromLivraisonsAnnuelles(v)),
         }}
         unit="GWh"
+        nonLinear
       />
       <Divider />
       <RangeFilter
@@ -100,7 +101,7 @@ function ReseauxDeChaleurFilters() {
 
 export default ReseauxDeChaleurFilters;
 
-function getLivraisonsAnnuellesFromPercentage(v: number): number {
+export function getLivraisonsAnnuellesFromPercentage(v: number): number {
   if (v < 25) {
     return 0.06 * v;
   }
@@ -113,7 +114,7 @@ function getLivraisonsAnnuellesFromPercentage(v: number): number {
   return 149.48 * v - 11111;
 }
 
-function getPercentageFromLivraisonsAnnuelles(v: number): number {
+export function getPercentageFromLivraisonsAnnuelles(v: number): number {
   if (v < 1.5) {
     return v / 0.06;
   }
@@ -126,6 +127,6 @@ function getPercentageFromLivraisonsAnnuelles(v: number): number {
   return (v + 11111) / 149.48;
 }
 
-function roundNumberProgressively(v: number): number {
+export function roundNumberProgressively(v: number): number {
   return v > 2 ? Math.round(v) : v > 1 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100;
 }

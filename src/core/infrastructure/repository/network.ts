@@ -53,7 +53,8 @@ export const getNetwork = (id: string): Promise<Network> =>
       'website_gestionnaire',
       'reseaux classes',
       'informationsComplementaires',
-      'fichiers'
+      'fichiers',
+      'region'
     )
     .where('Identifiant reseau', id)
     .first();

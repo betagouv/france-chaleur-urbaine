@@ -22,15 +22,9 @@ const PageReseau = ({ network }: { network: Network }) => {
           }}
           segments={[
             {
-              label: 'Accueil',
+              label: 'Liste des réseaux',
               linkProps: {
-                href: '/',
-              },
-            },
-            {
-              label: 'Cartographie',
-              linkProps: {
-                href: '/carte',
+                href: '/reseaux',
               },
             },
           ]}

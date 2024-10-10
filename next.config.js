@@ -53,7 +53,7 @@ const csp = {
     'https://cdn.linkedin.oribi.io',
     'https://google.com/',
     'https://px.ads.linkedin.com',
-    'https://wxs.ign.fr',
+    'https://data.geopf.fr',
     'https://api.mapbox.com/',
     'https://sentry.incubateur.net',
     'https://*.hotjar.com https://*.hotjar.io wss://*.hotjar.com',

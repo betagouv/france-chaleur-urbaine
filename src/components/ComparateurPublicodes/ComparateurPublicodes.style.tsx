@@ -2,6 +2,7 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import styled, { css } from 'styled-components';
 
 import Box from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
 
 export const Section = styled(Box).attrs({ as: 'section' })`
   margin: 32px 0;
@@ -135,3 +136,12 @@ export const GraphTooltip = styled.div`
     height: 100%;
   }
 `;
+
+export const Title = styled(Heading).attrs({ as: 'h2', size: 'h6' })`
+  font-size: 1rem;
+  line-height: 1.5rem;
+  margin-top: 32px;
+  margin-bottom: 16px;
+`;
+
+export const Separator = styled.hr``;

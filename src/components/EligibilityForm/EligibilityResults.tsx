@@ -1,11 +1,8 @@
-import Box from '@components/ui/Box';
-import Text from '@components/ui/Text';
-import { MatomoABTestingExperimentVariations } from 'src/services/analytics';
 import { AvailableHeating } from 'src/types/AddressData';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 
 // 3 rue du petit bois 78370 Plaisir
-const closeCollectifOriginal = {
+const closeCollectif = {
   eligibility: true,
   body: (
     distance: string,
@@ -39,166 +36,6 @@ ${
 }
 ${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
 `,
-  text: `
-**France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
-#### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
-`,
-};
-
-const closeCollectifAmeliorationA = {
-  eligibility: true,
-  body: (
-    distance: string,
-    inPDP: boolean,
-    gestionnaire: string | null,
-    tauxENRR: number | null,
-    isClasse: boolean | null,
-    hasPDP: boolean | null,
-    city: string
-  ) => (
-    <Box display="flex" flexDirection="column" gap="32px">
-      <Box display="flex" gap="16px">
-        <img src="/img/reponses_tests_pouce_haut.webp" alt="" className="fr-col--top" />
-        <Box backgroundColor="#C1C1C1" width="1px" />
-        <Text>
-          Un réseau de chaleur <strong>passe à proximité immédiate</strong> de votre adresse{' '}
-          {distance
-            ? `
-          (${distance})`
-            : ''}
-          .
-        </Text>
-      </Box>
-      {(inPDP || (isClasse && !hasPDP)) && (
-        <Box display="flex" gap="16px">
-          <img src="/img/reponses_tests_réseau_classé.webp" alt="" className="fr-col--top" />
-          <Box backgroundColor="#C1C1C1" width="1px" />
-          <Text>
-            Votre bâtiment est situé à proximité d’un réseau classé&nbsp;: <strong>une obligation de raccordement peut exister</strong> en
-            cas de renouvellement de votre mode de chauffage. Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans
-            dérogation.
-          </Text>
-        </Box>
-      )}
-
-      <Box display="flex" gap="16px">
-        <img src="/img/reponses_tests_pouce_haut.webp" alt="" className="fr-col--top" />
-        <Box backgroundColor="#C1C1C1" width="1px" />
-        <Text>
-          Avec un chauffage collectif, <strong>votre immeuble dispose des équipements nécessaires&nbsp;!</strong>
-        </Text>
-      </Box>
-
-      <Box display="flex" gap="16px">
-        <img src="/img/reponses_tests_information.webp" alt="" className="fr-col--top" />
-        <Box backgroundColor="#C1C1C1" width="1px" />
-        <Text>
-          Le gestionnaire est {gestionnaire}. Le taux d’énergies renouvelables et de récupération du réseau est de{' '}
-          <strong>{tauxENRR}%</strong>.
-        </Text>
-      </Box>
-      {city === 'Paris' && <Text size="sm">A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</Text>}
-    </Box>
-  ),
-  text: `
-**France Chaleur Urbaine est un service public de mise en relation avec les gestionnaires des réseaux.**
-#### Bénéficiez d'une première étude de faisabilité gratuite et sans engagement.
-`,
-};
-
-const closeCollectifAmeliorationB = {
-  eligibility: true,
-  body: (
-    distance: string,
-    inPDP: boolean,
-    gestionnaire: string | null,
-    tauxENRR: number | null,
-    isClasse: boolean | null,
-    hasPDP: boolean | null,
-    city: string
-  ) => `
-### Bonne nouvelle !
-
-::arrow-item[**Un réseau de chaleur passe à proximité** immédiate de votre adresse ${distance ? `(${distance})` : ''}.]
-${
-  isClasse && !hasPDP && !inPDP
-    ? '::arrow-item[Ce réseau est classé, ce qui signifie qu’une obligation de raccordement peut exister (<a href="/ressources/reseau-classe#contenu" target="_blank">en savoir plus</a>).]'
-    : ''
-}
-${
-  inPDP
-    ? '::arrow-item[**Vous êtes dans le périmètre de développement prioritaire** du réseau. Une obligation de raccordement peut exister (<a href="/ressources/prioritaire#contenu" target="_blank">en savoir plus</a>). Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans dérogation.]'
-    : ''
-}
-::arrow-item[Avec un chauffage collectif, **votre immeuble dispose déjà des équipements nécessaires :** il s’agit du cas le plus favorable pour un raccordement !]
-${
-  gestionnaire
-    ? `::arrow-item[Le gestionnaire du réseau le plus proche est **${gestionnaire}**.${
-        tauxENRR ? ` Le taux d’énergies renouvelables et de récupération du réseau est de **${tauxENRR}%**.` : ''
-      }]`
-    : ''
-}
-${city === 'Paris' ? '::small[A noter: sur Paris, la puissance souscrite doit être d’au moins 100 kW.]' : ''}
-`,
-  text: '#### Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau',
-};
-
-const closeCollectifAmeliorationAB = {
-  eligibility: true,
-  body: (
-    distance: string,
-    inPDP: boolean,
-    gestionnaire: string | null,
-    tauxENRR: number | null,
-    isClasse: boolean | null,
-    hasPDP: boolean | null,
-    city: string
-  ) => (
-    <Box display="flex" flexDirection="column" gap="32px">
-      <Box display="flex" gap="16px">
-        <img src="/img/reponses_tests_pouce_haut.webp" alt="" className="fr-col--top" />
-        <Box backgroundColor="#C1C1C1" width="1px" />
-        <Text>
-          Un réseau de chaleur <strong>passe à proximité immédiate</strong> de votre adresse{' '}
-          {distance
-            ? `
-          (${distance})`
-            : ''}
-          .
-        </Text>
-      </Box>
-
-      {(inPDP || (isClasse && !hasPDP)) && (
-        <Box display="flex" gap="16px">
-          <img src="/img/reponses_tests_réseau_classé.webp" alt="" className="fr-col--top" />
-          <Box backgroundColor="#C1C1C1" width="1px" />
-          <Text>
-            Votre bâtiment est situé à proximité d’un réseau classé&nbsp;: <strong>une obligation de raccordement peut exister</strong> en
-            cas de renouvellement de votre mode de chauffage. Une amende de 300 000€ peut s’appliquer en cas de non-raccordement sans
-            dérogation.
-          </Text>
-        </Box>
-      )}
-
-      <Box display="flex" gap="16px">
-        <img src="/img/reponses_tests_pouce_haut.webp" alt="" className="fr-col--top" />
-        <Box backgroundColor="#C1C1C1" width="1px" />
-        <Text>
-          Avec un chauffage collectif, <strong>votre immeuble dispose des équipements nécessaires&nbsp;!</strong>
-        </Text>
-      </Box>
-
-      <Box display="flex" gap="16px">
-        <img src="/img/reponses_tests_information.webp" alt="" className="fr-col--top" />
-        <Box backgroundColor="#C1C1C1" width="1px" />
-        <Text>
-          Le gestionnaire est {gestionnaire}. Le taux d’énergies renouvelables et de récupération du réseau est de{' '}
-          <strong>{tauxENRR}%</strong>.
-        </Text>
-      </Box>
-      {city === 'Paris' && <Text size="sm">A noter&nbsp;: sur Paris, la puissance souscrite doit être d’au moins 100&nbsp;kW.</Text>}
-    </Box>
-  ),
   text: '#### Recevez plus d’informations adaptées à votre bâtiment de la part du gestionnaire du réseau',
 };
 
@@ -481,27 +318,14 @@ export const getEligibilityResultState = (heatingType: AvailableHeating, eligibi
   return 'unknown';
 };
 
-export const getEligibilityResult = (
-  variation: MatomoABTestingExperimentVariations<'TestMessagesFormulaireContact'>,
-  heatingType: AvailableHeating,
-  eligibility?: HeatNetworksResponse
-) => {
+export const getEligibilityResult = (heatingType: AvailableHeating, eligibility?: HeatNetworksResponse) => {
   const state = getEligibilityResultState(heatingType, eligibility);
   switch (state) {
     case 'closeFuturCollectif': {
       return closeFuturCollectif;
     }
     case 'closeCollectif': {
-      switch (variation) {
-        case 'original':
-          return closeCollectifOriginal;
-        case 'AmeliorationA':
-          return closeCollectifAmeliorationA;
-        case 'AmeliorationB':
-          return closeCollectifAmeliorationB;
-        case 'AmeliorationA+B':
-          return closeCollectifAmeliorationAB;
-      }
+      return closeCollectif;
     }
     // eslint-disable-next-line no-fallthrough -- règle eslint erronée
     case 'closeFuturIndividual': {
