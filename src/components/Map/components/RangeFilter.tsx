@@ -2,8 +2,7 @@ import { Range } from '@codegouvfr/react-dsfr/Range';
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import Box from '@components/ui/Box';
-import Icon from '@components/ui/Icon';
-import { SimpleTooltip } from '@components/ui/Tooltip';
+import Tooltip from '@components/ui/Tooltip';
 import { Interval } from '@utils/interval';
 
 interface RangeFilterProps {
@@ -85,7 +84,7 @@ const RangeFilter = ({
       label={
         <Box display="flex" alignItems="center" justifyContent="space-between">
           {label}
-          {tooltip && <SimpleTooltip icon={<Icon size="sm" name="ri-information-fill" cursor="help" />}>{tooltip}</SimpleTooltip>}
+          {tooltip && <Tooltip title={tooltip} />}
         </Box>
       }
       ref={ref}
