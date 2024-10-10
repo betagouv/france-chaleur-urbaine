@@ -22,7 +22,7 @@ const StyledIcon = styled.span<StyledIconProps>`
   }
 `;
 
-type IconProps = StyledIconProps & {
+export type IconProps = StyledIconProps & {
   name: FrIconClassName | RiIconClassName;
   // dsfr size
   size?: 'xs' | 'sm' | 'md' | 'lg';

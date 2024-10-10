@@ -300,21 +300,6 @@ export function SingleCheckbox({ name, checked, onChange, trackingEvent }: Singl
   );
 }
 
-export const InfoIcon = styled.div`
-  position: relative;
-  align-self: flex-start;
-  margin-left: auto;
-
-  & > .hover-info {
-    width: 250px;
-  }
-  &:hover {
-    & > .hover-info {
-      display: block;
-    }
-  }
-`;
-
 export const DeactivatableBox = styled(Box)<{ disabled?: boolean }>`
   transition: opacity 0.25s ease-in-out;
 

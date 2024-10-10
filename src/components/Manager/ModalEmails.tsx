@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 import Input from '@components/form/dsfr/Input';
 import Heading from '@components/ui/Heading';
-import ModalPortal from '@components/ui/ModalPortal';
+import Modal from '@components/ui/Modal';
 import emailsContentList from '@data/manager/manager-emails-content';
 import emailsList from '@data/manager/manager-emails-list';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
@@ -170,136 +170,134 @@ function ModalEmails(props: Props) {
   };
 
   return (
-    <ModalPortal>
-      <emailModal.Component title="" size="large">
-        <ModalContentWrapper>
-          <Heading as="h2" center>
-            Envoi d'un courriel à {emailContent?.to}
-          </Heading>
-          {!sent && !sentError ? (
-            <>
-              <HorizontalSeparator />
-              <div className="fr-mt-3w fr-mb-3w">
-                <b>Historique</b>
-                <br />
-                <ul className="fr-ml-3w">
-                  {sentHistory && sentHistory.length > 0 ? (
-                    sentHistory.map((item: any, index) => (
-                      <li key={index}>
-                        {getLabel(item.email_key)} envoyé le {item.date}
-                      </li>
-                    ))
-                  ) : (
-                    <li>Aucun courriel envoyé</li>
-                  )}
-                </ul>
-              </div>
-              <HorizontalSeparator className="fr-mb-3w" />
-              <Select
-                label="Choix de la réponse"
-                nativeSelectProps={{
+    <Modal modal={emailModal} title="" size="large">
+      <ModalContentWrapper>
+        <Heading as="h2" center>
+          Envoi d'un courriel à {emailContent?.to}
+        </Heading>
+        {!sent && !sentError ? (
+          <>
+            <HorizontalSeparator />
+            <div className="fr-mt-3w fr-mb-3w">
+              <b>Historique</b>
+              <br />
+              <ul className="fr-ml-3w">
+                {sentHistory && sentHistory.length > 0 ? (
+                  sentHistory.map((item: any, index) => (
+                    <li key={index}>
+                      {getLabel(item.email_key)} envoyé le {item.date}
+                    </li>
+                  ))
+                ) : (
+                  <li>Aucun courriel envoyé</li>
+                )}
+              </ul>
+            </div>
+            <HorizontalSeparator className="fr-mb-3w" />
+            <Select
+              label="Choix de la réponse"
+              nativeSelectProps={{
+                required: true,
+                onChange: (e) => onSelectedEmailChanged(e.target.value),
+                value: emailKey,
+              }}
+              options={[
+                {
+                  value: '',
+                  label: '- Sélectionner une réponse -',
+                  disabled: true,
+                  hidden: true,
+                },
+                ...emailsList.map((option) => {
+                  return {
+                    value: option.value,
+                    label: option.label,
+                    disabled:
+                      sentHistory &&
+                      option.value !== 'other' &&
+                      Array.isArray(sentHistory) &&
+                      sentHistory.some((email: any) => email.email_key === option.value),
+                  };
+                }),
+              ]}
+            />
+            <HorizontalSeparator className="fr-mb-3w" />
+            <form onSubmit={submit}>
+              <Input
+                label="À"
+                nativeInputProps={{
+                  type: 'email',
                   required: true,
-                  onChange: (e) => onSelectedEmailChanged(e.target.value),
-                  value: emailKey,
+                  disabled: true,
+                  defaultValue: emailContent.to,
                 }}
-                options={[
-                  {
-                    value: '',
-                    label: '- Sélectionner une réponse -',
-                    disabled: true,
-                    hidden: true,
-                  },
-                  ...emailsList.map((option) => {
-                    return {
-                      value: option.value,
-                      label: option.label,
-                      disabled:
-                        sentHistory &&
-                        option.value !== 'other' &&
-                        Array.isArray(sentHistory) &&
-                        sentHistory.some((email: any) => email.email_key === option.value),
-                    };
-                  }),
-                ]}
               />
-              <HorizontalSeparator className="fr-mb-3w" />
-              <form onSubmit={submit}>
-                <Input
-                  label="À"
-                  nativeInputProps={{
-                    type: 'email',
-                    required: true,
-                    disabled: true,
-                    defaultValue: emailContent.to,
-                  }}
-                />
-                <Input
-                  label="Répondre à"
-                  nativeInputProps={{
-                    type: 'email',
-                    required: true,
-                    value: emailContent.replyTo,
-                    onChange: (e) => setEmailContentValue('replyTo', e.target.value),
-                  }}
-                />
-                <Input
-                  label="Copie à"
-                  hintText="Les adresses emails doivent être séparées par des virgules"
-                  nativeInputProps={{
-                    type: 'email',
-                    value: emailContent.cc,
-                    onChange: (e) => setEmailContentValue('cc', e.target.value),
-                  }}
-                />
-                <Input
-                  label="Objet"
-                  nativeInputProps={{
-                    type: 'text',
-                    required: true,
-                    value: emailContent.object,
-                    onChange: (e) => setEmailContentValue('object', e.target.value),
-                  }}
-                />
-                <Input
-                  label="Corps"
-                  textArea
-                  nativeTextAreaProps={{
-                    required: true,
-                    rows: 10,
-                    value: emailContent.body,
-                    onChange: (e) => setEmailContentValue('body', e.target.value),
-                  }}
-                />
-                <Input
-                  label="Signature"
-                  hintText="La signature sera sauvegardée pour le prochain envoi"
-                  nativeInputProps={{
-                    required: true,
-                    value: emailContent.signature,
-                    onChange: (e) => setEmailContentValue('signature', e.target.value),
-                  }}
-                />
-                <Button className="fr-mt-2w" type="submit">
-                  Envoyer
-                </Button>
-              </form>
-            </>
-          ) : (
-            <>
-              {sentError ? (
-                <span>
-                  Il y a eu une erreur au cours de votre envoi.
-                  <br />
-                  Veuillez ré-essayer.
-                </span>
-              ) : (
-                <span>Votre courriel a bien été envoyé !</span>
-              )}
-            </>
-          )}
-        </ModalContentWrapper>
-      </emailModal.Component>
-    </ModalPortal>
+              <Input
+                label="Répondre à"
+                nativeInputProps={{
+                  type: 'email',
+                  required: true,
+                  value: emailContent.replyTo,
+                  onChange: (e) => setEmailContentValue('replyTo', e.target.value),
+                }}
+              />
+              <Input
+                label="Copie à"
+                hintText="Les adresses emails doivent être séparées par des virgules"
+                nativeInputProps={{
+                  type: 'email',
+                  value: emailContent.cc,
+                  onChange: (e) => setEmailContentValue('cc', e.target.value),
+                }}
+              />
+              <Input
+                label="Objet"
+                nativeInputProps={{
+                  type: 'text',
+                  required: true,
+                  value: emailContent.object,
+                  onChange: (e) => setEmailContentValue('object', e.target.value),
+                }}
+              />
+              <Input
+                label="Corps"
+                textArea
+                nativeTextAreaProps={{
+                  required: true,
+                  rows: 10,
+                  value: emailContent.body,
+                  onChange: (e) => setEmailContentValue('body', e.target.value),
+                }}
+              />
+              <Input
+                label="Signature"
+                hintText="La signature sera sauvegardée pour le prochain envoi"
+                nativeInputProps={{
+                  required: true,
+                  value: emailContent.signature,
+                  onChange: (e) => setEmailContentValue('signature', e.target.value),
+                }}
+              />
+              <Button className="fr-mt-2w" type="submit">
+                Envoyer
+              </Button>
+            </form>
+          </>
+        ) : (
+          <>
+            {sentError ? (
+              <span>
+                Il y a eu une erreur au cours de votre envoi.
+                <br />
+                Veuillez ré-essayer.
+              </span>
+            ) : (
+              <span>Votre courriel a bien été envoyé !</span>
+            )}
+          </>
+        )}
+      </ModalContentWrapper>
+    </Modal>
   );
 }
 

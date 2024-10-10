@@ -15,19 +15,6 @@ export const SpinnerWrapper = styled.div`
   justify-content: center;
 `;
 
-export const StyledModal = styled.div`
-  // Surcharge la disposition par défaut qui est prédéfinie et statique
-  // afin d'avoir plus de contrôle sur la largeur de la modal
-  // cf https://github.com/codegouvfr/react-dsfr/blob/35557b500126b4876737aeca8af1fd36e3a9e86b/src/Modal/Modal.tsx#L83-L90
-
-  // force la classe fr-col-12 plutôt que fr-col-md-6
-  & .fr-container-md .fr-col-12 {
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
-    width: 100% !important;
-  }
-`;
-
 export const ModalContentWrapper = styled.div`
   margin-top: -3em;
   margin-bottom: -48px; // diminue le padding de la modale

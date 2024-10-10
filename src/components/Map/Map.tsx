@@ -18,11 +18,11 @@ import MapReactGL, {
   ScaleControl,
 } from 'react-map-gl/maplibre';
 
-import Hoverable from '@components/Hoverable';
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
+import Tooltip from '@components/ui/Tooltip';
 import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
 import { useServices } from 'src/services';
@@ -599,12 +599,13 @@ const InternalMap = ({
                 setLegendCollapsed(!legendCollapsed);
               }}
             >
-              <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-              <CollapseLegendLabel>
-                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} rotate={legendCollapsed ? -90 : 90} />
-                <span>Légende</span>
-                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} rotate={legendCollapsed ? -90 : 90} />
-              </CollapseLegendLabel>
+              <Tooltip placement="right" title={legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}>
+                <CollapseLegendLabel>
+                  <Icon size="sm" name="fr-icon-arrow-right-s-line" rotate={legendCollapsed ? -90 : 90} />
+                  <span>Légende</span>
+                  <Icon size="sm" name="fr-icon-arrow-right-s-line" rotate={legendCollapsed ? -90 : 90} />
+                </CollapseLegendLabel>
+              </Tooltip>
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
               <LegendContainer withoutLogo={withoutLogo}>

@@ -252,8 +252,9 @@ const LinearHeatDensityTool: React.FC = () => {
             Vous pouvez calculer la densité thermique linéaire sur le tracé de votre choix.
           </Text>
           <Text size="xs" fontStyle="italic">
-            Pour définir un tracé, cliquez sur 2 points ou plus sur la carte, puis double-cliquez sur le dernier point ou appuyez sur la
-            touche entrée pour finaliser le tracé. Vous avez la possibilité d'ajouter des segments à ce tracé.
+            Pour définir un tracé, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point ou{' '}
+            <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé. Vous avez la possibilité d'ajouter des segments à ce
+            tracé.
           </Text>
         </Box>
         <Divider my="1v" />
