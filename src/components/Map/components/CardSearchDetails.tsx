@@ -158,7 +158,7 @@ const CardSearchDetails = ({
               <div>
                 {eligibilityWording}
                 {readableDistance && (
-                  <Box className="fr-my-2w" textColor="text-label-blue-france" display="flex" alignItems="center" gap={'2px'}>
+                  <Box className="fr-my-2w" textColor="text-label-blue-france" display="flex" alignItems="center" gap="4px">
                     <Image src="/icons/grid-line.svg" alt="" height="16" width="16" />
                     {readableDistance && (
                       <span>
