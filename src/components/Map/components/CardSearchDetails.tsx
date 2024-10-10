@@ -162,7 +162,7 @@ const CardSearchDetails = ({
                     <Image src="/icons/grid-line.svg" alt="" height="16" width="16" />
                     {readableDistance && (
                       <span>
-                        {futurNetwork ? 'passera' : ''} {readableDistance}
+                        {futurNetwork ? 'passera à' : ''} {readableDistance}
                       </span>
                     )}
                   </Box>
