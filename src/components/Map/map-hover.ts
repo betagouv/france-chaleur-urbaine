@@ -123,6 +123,7 @@ const clickEvents: {
   { layer: 'besoinsEnChaleur', key: '*' },
   { layer: 'besoinsEnFroid', key: '*' },
   { layer: 'besoinsEnChaleurIndustrieCommunes', key: '*' },
+  { layer: 'communesFortPotentielPourCreationReseauxChaleur', key: '*' },
   { layer: 'consommationsGaz', key: 'consommation' },
   { layer: 'energy', key: 'energy' },
   { layer: 'batimentsRaccordes', key: 'raccordement' },
