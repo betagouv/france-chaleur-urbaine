@@ -413,7 +413,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
         promoteId: 'id_zone',
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -451,7 +450,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
         promoteId: 'id_zone',
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -486,7 +484,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/besoinsEnChaleurIndustrieCommunes/{z}/{x}/{y}`],
         minzoom: 5,
         maxzoom: 11,
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -590,7 +587,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
         minzoom: 10,
         maxzoom: 14,
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -685,7 +681,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/enrrMobilisables-friches/{z}/{x}/{y}`],
         promoteId: 'GmlID',
         maxzoom: tileSourcesMaxZoom,
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -723,7 +718,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/enrrMobilisables-parkings/{z}/{x}/{y}`],
         promoteId: 'GmlID',
         maxzoom: tileSourcesMaxZoom,
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -1020,7 +1014,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/enrrMobilisables/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
         promoteId: 'GmlID',
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
 
       // the source contains one layer that contains all features
@@ -1107,7 +1100,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/communesFortPotentielPourCreationReseauxChaleur/{z}/{x}/{y}`],
         minzoom: 5,
         maxzoom: 6,
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
