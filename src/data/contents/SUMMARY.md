@@ -1,6 +1,9 @@
 # Table of contents
 
-* [Les réseaux de chaleur en région : focus sur les Pays de la Loire](README.md)
+* [La carte France Chaleur Urbaine se refait une beauté](README.md)
+* [Les réseaux de chaleur en région : focus sur la Bretagne](les-reseaux-de-chaleur-en-region-focus-sur-la-bretagne.md)
+* [La carte France Chaleur Urbaine s'enrichit !](la-carte-france-chaleur-urbaine-senrichit.md)
+* [Les réseaux de chaleur en région : focus sur les Pays de la Loire](<README (33).md>)
 * [Les réseaux de chaleur en région : focus sur la Nouvelle-Aquitaine](les-reseaux-de-chaleur-en-region-focus-sur-la-nouvelle-aquitaine.md)
 * [Les réseaux de chaleur en région : focus sur l'Occitanie](<README (32).md>)
 * [Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur](<README (31).md>)
