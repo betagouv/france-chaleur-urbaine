@@ -1,7 +1,15 @@
-# Les réseaux de chaleur en région : focus sur les Pays de la Loire
+# La carte France Chaleur Urbaine se refait une beauté
 
-🚴‍♂️ Aujourd'hui, notre tour de France des réseaux de chaleur en région nous emmène en [Région Pays de la Loire](https://www.paysdelaloire.fr/).\
+🗺 La carte France Chaleur Urbaine se refait une beauté ! Nous avons le plaisir de vous dévoiler aujourd'hui sa nouvelle version.\
 \
-🔎 Le nombre de réseaux de chaleur de la région a presque triplé en dix ans, passant de 12 réseaux de chaleur en 2012 à 35 en 2022. Leur taux d'énergies renouvelables et de récupération a aussi fortement progressé, augmentant de 34% en 2012 à 76% en 2022. Les grandes agglomérations de la région disposent déjà chacune de plusieurs réseaux, qu'elles continuent de développer, avec des projets ambitieux. C'est notamment le cas sur les territoires de [Nantes Métropole](https://metropole.nantes.fr/), [Angers Loire Métropole](https://www.angersloiremetropole.fr/) ou encore [Le Mans Ville et Métropole](https://www.lemansmetropole.fr/).\
+🎯 L'objectif de ce relooking ? Une meilleure structuration de l'information, pour la rendre plus lisible.\
 \
-Les réseaux de chaleur de la région Pays de la Loire en quelques chiffres clés, c'est ici ! 👇
+La légende comporte désormais 4 onglets :\
+✔ "réseaux de chaleur et de froid", pour afficher notamment les tracés des réseaux existants ou en construction et les périmètres de développement prioritaire ;\
+✔ "potentiel", pour retrouver les données sur les potentiels de raccordement à l'adresse et par territoire ;\
+✔ "EnR\&R", pour identifier les énergies renouvelables et de récupération thermiques mobilisables ;\
+✔ "Outils", pour mesurer une distance, extraire des données sur les bâtiments ou calculer une densité thermique linéaire.\
+\
+Sur cette nouvelle base, notre carte va pouvoir continuer à s'enrichir en données et fonctionnalités ces prochains mois, tout en restant accessible à tous.\
+\
+👉 N'hésitez pas à nous faire part de vos retours sur ces évolutions !
