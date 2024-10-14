@@ -112,6 +112,9 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
                   dé-classement, cliquez sur Contribuer.
                 </>
               }
+              iconProps={{
+                color: 'var(--text-action-high-blue-france)',
+              }}
             />
           </Box>
           <Button
@@ -158,6 +161,9 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
                 au-dessus d'une certaine puissance est obligatoire.
               </>
             }
+            iconProps={{
+              color: 'var(--text-action-high-blue-france)',
+            }}
           />
         </Box>
       )}
@@ -205,7 +211,12 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
             </Box>
           </Box>
 
-          <Tooltip title={<>Projets financés par l'ADEME ou signalés par les collectivités et exploitants.</>} />
+          <Tooltip
+            title={<>Projets financés par l'ADEME ou signalés par les collectivités et exploitants.</>}
+            iconProps={{
+              color: 'var(--text-action-high-blue-france)',
+            }}
+          />
         </Box>
       )}
 

@@ -5,7 +5,7 @@ import Icon, { IconProps } from './Icon';
 
 type TooltipProps = Omit<MUITooltipProps, 'children'> &
   Partial<Pick<MUITooltipProps, 'children'>> & {
-    iconProps?: IconProps;
+    iconProps?: Partial<IconProps>;
   };
 
 const StyledIcon = styled(Icon)`
