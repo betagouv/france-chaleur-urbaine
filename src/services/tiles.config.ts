@@ -296,7 +296,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
    * Pour tout ajout de nouvelles couches de données :
    * - bien noter les étapes dans notion https://www.notion.so/D-veloppement-e8399345919442748735de25865ebe4a pour que d'autres personnes puissent reconstruire les données
    * - ajouter une section ici pour faire le lien URL (SourceId) -> table contenant les tuiles
-   * - définir la couche et les layers dans map-layers.tsx
+   * - définir la couche et les layers dans map-layers.ts
    * - compléter layerURLKeysToMapConfigPath (carte.tsx) pour pouvoir afficher la couche directement via l'URL
    * - définir les comportements au survol et/ou au clic (en général popup) si besoin dans map-hover.tsx
    * - ajouter un type de popup (dynamique = propre à chaque entité) dans DynamicMapPopupContent
