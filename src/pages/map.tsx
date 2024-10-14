@@ -63,7 +63,6 @@ const MapPage = () => {
     <IframeWrapper>
       <Map
         withLegend={legend === 'true'}
-        withHideLegendSwitch={legend === 'true'}
         withBorder
         enabledLegendFeatures={legendFeatures}
         initialMapConfiguration={initialMapConfiguration}
