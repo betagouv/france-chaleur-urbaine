@@ -34,6 +34,7 @@ export const layerURLKeysToMapConfigPath = {
   besoinsEnChaleur: 'besoinsEnChaleur',
   besoinsEnFroid: 'besoinsEnFroid',
   besoinsEnChaleurIndustrieCommunes: 'besoinsEnChaleurIndustrieCommunes',
+  communesFortPotentielPourCreationReseauxChaleur: 'communesFortPotentielPourCreationReseauxChaleur.show',
 } as const satisfies { [key: string]: MapConfigurationProperty<boolean> };
 
 export type LayerURLKey = keyof typeof layerURLKeysToMapConfigPath;
