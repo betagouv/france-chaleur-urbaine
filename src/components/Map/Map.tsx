@@ -628,7 +628,8 @@ const InternalMap = ({
             onSourceData={onMapSourceData}
             ref={mapRef}
           >
-            {!geolocDisabled && <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />}
+            {/* trackUserLocation allows the user to disable the geolocation marker */}
+            {!geolocDisabled && <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} trackUserLocation />}
             <AttributionControl
               compact={false}
               position="bottom-right"
