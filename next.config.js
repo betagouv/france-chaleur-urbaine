@@ -4,7 +4,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 const { withSentryConfig } = require('@sentry/nextjs');
 const helmet = require('helmet');
-
 const isGithubCI = process.env.NODE_ENV === 'production' && process.env.CI;
 
 const csp = {
@@ -106,34 +105,6 @@ const securityHeadersIFramable = [
   },
 ];
 
-// Function to add SVG loading rules, preventing DSFR icons from not showing
-// See https://github.com/gregberge/svgr/issues/860#issuecomment-1531904399
-const addSvgLoadingToConfig = (config) => {
-  const fileLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
-
-  // Exclude *.svg from the existing file loader rule
-  fileLoaderRule.exclude = /\.svg$/i;
-
-  // Reapply the existing rule for *.svg?url
-  config.module.rules.push({
-    ...fileLoaderRule,
-    test: /\.svg$/i,
-    resourceQuery: /url/, // *.svg?url
-  });
-
-  // Convert all other *.svg imports to React components
-  config.module.rules.push({
-    test: /\.svg$/i,
-    issuer: { not: /\.(css|scss|sass)$/ },
-    resourceQuery: { not: /url/ }, // exclude if *.svg?url
-    loader: '@svgr/webpack',
-    options: {
-      dimensions: false,
-      titleProp: true,
-    },
-  });
-};
-
 module.exports = withBundleAnalyzer(
   withSentryConfig(
     {
@@ -230,7 +201,23 @@ module.exports = withBundleAnalyzer(
           test: /\.woff2$/,
           type: 'asset/resource',
         });
-        addSvgLoadingToConfig(config);
+
+        // https://github.com/gregberge/svgr/issues/860#issuecomment-1653928947
+        // This is done to prevent DSFR Display component to fail with undefined URL for SVG See https://github.com/betagouv/france-chaleur-urbaine/pull/882
+        // In order to load a SVG, you will need tos uffix it with ?icon
+        // example: `import IconPotentiel from '@public/icons/potentiel.svg?icon';`
+        const nextImageLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));
+
+        nextImageLoaderRule.resourceQuery = {
+          not: [...nextImageLoaderRule.resourceQuery.not, /icon/],
+        };
+
+        config.module.rules.push({
+          issuer: nextImageLoaderRule.issuer,
+          resourceQuery: /icon/, // *.svg?icon
+          use: ['@svgr/webpack'],
+        });
+
         return config;
       },
       transpilePackages: ['@codegouvfr/react-dsfr'],
