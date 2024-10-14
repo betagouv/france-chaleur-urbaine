@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/27.jpg
-coverY: 0
----
-
 # La carte France Chaleur Urbaine se refait une beauté
 
 🗺 La carte France Chaleur Urbaine se refait une beauté ! Nous avons le plaisir de vous dévoiler aujourd'hui sa nouvelle version.\

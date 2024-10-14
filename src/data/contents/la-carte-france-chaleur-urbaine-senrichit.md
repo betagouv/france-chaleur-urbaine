@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/26.jpg
-coverY: 0
----
-
 # La carte France Chaleur Urbaine s'enrichit !
 
 🗺 Chaque mois, la carte France Chaleur Urbaine s'enrichit !\

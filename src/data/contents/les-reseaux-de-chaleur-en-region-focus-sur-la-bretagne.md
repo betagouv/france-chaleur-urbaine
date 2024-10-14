@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/bretagne.jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur la Bretagne
 
 🚴‍♂️ Notre tour de France des réseaux de chaleur n'est pas fini ! Aujourd'hui, nous vous emmenons en [Région Bretagne](https://www.bretagne.bzh/).\
