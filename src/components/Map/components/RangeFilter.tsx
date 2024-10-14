@@ -1,5 +1,5 @@
 import { Range } from '@codegouvfr/react-dsfr/Range';
-import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
 
 import Box from '@components/ui/Box';
 import Tooltip from '@components/ui/Tooltip';
@@ -36,47 +36,38 @@ const RangeFilter = ({
   const getNonLinearTransformValue = (value: number) => (valueTransform ? valueTransform.percentToValue(value * valueToPercent) : value);
   const initNonLinearValue = (value: number) => (valueTransform ? valueTransform.valueToPercent(value) / valueToPercent : value);
 
-  const [valueMinRaw, setValueMinRaw] = useState<number>(nonLinear ? initNonLinearValue(values[0]) : values[0]);
-  const [valueMaxRaw, setValueMaxRaw] = useState<number>(nonLinear ? initNonLinearValue(values[1]) : values[1]);
-  const [valueMinTransform, setValueMinTransform] = useState<number>(values[0]);
-  const [valueMaxTransform, setValueMaxTransform] = useState<number>(values[1]);
   const [min, max] = bounds;
   const ref = useRef<HTMLDivElement>(null);
+
+  const valueMinRaw = nonLinear ? initNonLinearValue(values[0]) : values[0];
+  const valueMaxRaw = nonLinear ? initNonLinearValue(values[1]) : values[1];
 
   useEffect(() => {
     if (nonLinear) {
       const textToUpdate = ref?.current?.querySelector('.fr-range__output');
       if (textToUpdate) {
-        textToUpdate.textContent = valueMinTransform.toString() + unit + ' - ' + valueMaxTransform.toString() + unit;
+        textToUpdate.textContent = `${values[0]}${unit} - ${values[1]}${unit}`;
       }
     }
-  }, [ref]);
+  }, [values, nonLinear, unit]);
 
   const onChangeValue = useCallback(
     (rangeValue: number, minOrMax: MinOrMax) => {
-      const newValue: number = nonLinear ? getNonLinearTransformValue(rangeValue) : rangeValue;
+      const newValue = nonLinear ? getNonLinearTransformValue(rangeValue) : rangeValue;
 
       if (nonLinear) {
         const textToUpdate = ref?.current?.querySelector('.fr-range__output');
         if (textToUpdate) {
-          const text: string =
-            minOrMax === 'min'
-              ? newValue.toString() + unit + ' - ' + valueMaxTransform.toString() + unit
-              : valueMinTransform.toString() + unit + ' - ' + newValue.toString() + unit;
+          const text = minOrMax === 'min' ? `${newValue}${unit} - ${values[1]}${unit}` : `${values[0]}${unit} - ${newValue}${unit}`;
           textToUpdate.textContent = text;
         }
       }
-      if (minOrMax === 'min') {
-        setValueMinRaw(rangeValue);
-        setValueMinTransform(newValue);
-        onChange([newValue, valueMaxTransform]);
-      } else {
-        setValueMaxRaw(rangeValue);
-        setValueMaxTransform(newValue);
-        onChange([valueMinTransform, newValue]);
-      }
+
+      const updatedValues: Interval = minOrMax === 'min' ? [newValue, values[1]] : [values[0], newValue];
+
+      onChange(updatedValues);
     },
-    [ref, nonLinear, valueMaxTransform, valueMinTransform]
+    [nonLinear, values, unit, onChange]
   );
 
   return (
