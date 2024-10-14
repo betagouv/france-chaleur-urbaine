@@ -96,7 +96,6 @@ type MapProps = {
   initialMapConfiguration?: MapConfiguration;
   enabledLegendFeatures?: MapLegendFeature[];
   withLegend?: boolean;
-  withHideLegendSwitch?: boolean;
   withBorder?: boolean;
   legendTitle?: string;
   legendLogoOpt?: TypeLegendLogo;
@@ -123,7 +122,6 @@ const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
 const InternalMap = ({
   withoutLogo,
   withLegend,
-  withHideLegendSwitch,
   withBorder,
   legendTitle,
   enabledLegendFeatures,
@@ -555,10 +553,9 @@ const InternalMap = ({
     const bbox = (router.query.bbox as string).split(',').map((n) => Number.parseFloat(n)) as [number, number, number, number];
 
     const mapViewportFitPadding = 50; // px
-    const headerWithProModeHeight = 106; // px
     const headerHeight = 56; // px
     const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? legendWidth : 0) - mapViewportFitPadding;
-    const mapViewportHeight = window.innerHeight - (withHideLegendSwitch ? headerWithProModeHeight : headerHeight) - mapViewportFitPadding;
+    const mapViewportHeight = window.innerHeight - headerHeight - mapViewportFitPadding;
 
     const { center, zoom } = geoViewport.viewport(
       bbox, // bounds
@@ -582,13 +579,7 @@ const InternalMap = ({
 
   return (
     <>
-      <MapStyle
-        legendCollapsed={!withLegend || legendCollapsed}
-        isDrawing={isDrawing}
-        withTopLegend={withHideLegendSwitch}
-        withHideLegendSwitch={withHideLegendSwitch}
-        withBorder={withBorder}
-      />
+      <MapStyle legendCollapsed={!withLegend || legendCollapsed} isDrawing={isDrawing} withBorder={withBorder} />
       <div className="map-wrap">
         {withLegend && (
           <>

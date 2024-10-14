@@ -11,7 +11,6 @@ const ViasevaMap = () => {
         enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
-        withHideLegendSwitch
         legendLogoOpt={{
           src: '/logo-viaseva.svg',
           alt: 'logo viaseva',

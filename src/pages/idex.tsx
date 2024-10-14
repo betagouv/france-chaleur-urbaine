@@ -16,7 +16,6 @@ const IdexMap = () => {
         enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
-        withHideLegendSwitch
         legendLogoOpt={{
           src: '/logo-IDEX.jpg',
           alt: 'logo Idex',

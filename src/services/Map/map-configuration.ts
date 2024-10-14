@@ -47,7 +47,6 @@ export type FiltreEnergieConfKey = (typeof filtresEnergies)[number]['confKey'];
 type EnergieRatioConfKey = `energie_ratio_${FiltreEnergieConfKey}`;
 
 export type MapConfiguration = {
-  proMode: boolean;
   filtreIdentifiantReseau: string[];
   filtreGestionnaire: string[];
   reseauxDeChaleur: {
@@ -140,7 +139,6 @@ export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SA
 export const communesFortPotentielPourCreationReseauxChaleurInterval: Interval = [0, 100_000];
 
 const emptyMapConfiguration: EmptyMapConfiguration = {
-  proMode: false,
   filtreIdentifiantReseau: [],
   filtreGestionnaire: [],
   reseauxDeChaleur: {
@@ -213,20 +211,10 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
 };
 
 export const defaultMapConfiguration = createMapConfiguration({
-  proMode: true,
   reseauxDeChaleur: {
     show: true,
   },
   reseauxEnConstruction: true,
-  consommationsGaz: {
-    show: false,
-  },
-  batimentsGazCollectif: {
-    show: false,
-  },
-  batimentsFioulCollectif: {
-    show: false,
-  },
 });
 
 export const iframeSimpleMapConfiguration = createMapConfiguration({
