@@ -161,7 +161,7 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
     ],
   },
   {
-    text: 'Cartographie',
+    text: 'Carte',
     linkProps: {
       href: '/carte',
     },

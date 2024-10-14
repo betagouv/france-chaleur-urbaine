@@ -152,7 +152,7 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   top: calc(50% - 50px);
   background-color: var(--background-flat-blue-france);
   height: 140px;
-  width: 32px;
+  width: 30px;
   overflow: visible;
   display: flex;
   align-items: center;
@@ -164,15 +164,6 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   }
 
   z-index: ${mapControlZindex + 1};
-
-  // ugly hack => hover create issue in mobile
-  @media (min-width: 520px) {
-    &:hover {
-      & > .hover-info {
-        display: block;
-      }
-    }
-  }
 `;
 
 export const LegendLogoList = styled.div<{

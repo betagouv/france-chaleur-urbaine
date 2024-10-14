@@ -195,8 +195,8 @@ const DistancesMeasurementTool: React.FC = () => {
           <Title>Mesurer une distance</Title>
 
           <Text size="xs" fontStyle="italic">
-            Pour mesurer une distance, cliquez sur 2 points ou plus sur la carte, puis double-cliquez sur le dernier point ou appuyez sur la
-            touche entrée pour finaliser le tracé.
+            Pour mesurer une distance, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point
+            ou <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé.
           </Text>
         </Box>
 

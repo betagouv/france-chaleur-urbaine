@@ -2,7 +2,6 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { useQueryState } from 'nuqs';
 
-import Hoverable from '@components/Hoverable';
 import {
   LegendDeskData,
   besoinsEnChaleurIndustrieCommunesIntervals,
@@ -12,9 +11,9 @@ import {
 } from '@components/Map/map-layers';
 import { UrlStateAccordion } from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
-import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
+import Tooltip from '@components/ui/Tooltip';
 import { trackEvent } from 'src/services/analytics';
 import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from 'src/services/Map/businessRules';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
@@ -29,7 +28,6 @@ import RangeFilter from './RangeFilter';
 import ScaleLegend from './ScaleLegend';
 import {
   DeactivatableBox,
-  InfoIcon,
   SingleCheckbox,
   TabId,
   TabObject,
@@ -105,28 +103,6 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               filtersVisible={selectedTabId.subTabId === 'filtres'}
               setFiltersVisible={setReseauxFiltersVisible}
             />
-            <Box mt="4w" mb="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
-              <Link
-                variant="primary"
-                href="/contribution"
-                className="fr-btn--tertiary d-flex"
-                style={{ width: '100%', justifyContent: 'center' }}
-              >
-                <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
-                Contribuer
-              </Link>
-              <Link
-                isExternal
-                variant="primary"
-                href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
-                eventKey="Téléchargement|Tracés|carte"
-                className="fr-btn--tertiary d-flex"
-                mx="auto"
-                style={{ width: '100%', justifyContent: 'center' }}
-              >
-                Télécharger les tracés
-              </Link>
-            </Box>
           </>
         )}
         {selectedTabId.tabId === 'potentiel' && (
@@ -339,18 +315,18 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                         fillOpacity={0.7}
                         mt="1v"
                       />
-                      <span>Besoins en chaleur</span>
-                      <InfoIcon>
-                        <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                        <Hoverable position="bottom">
-                          Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                          <br />
-                          <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
-                            Accéder à la méthodologie
-                          </Link>
-                        </Hoverable>
-                      </InfoIcon>
+                      <Box flex>Besoins en chaleur</Box>
+                      <Tooltip
+                        title={
+                          <>
+                            Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                            <br />
+                            <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
+                              Accéder à la méthodologie
+                            </Link>
+                          </>
+                        }
+                      />
                     </>
                   }
                 >
@@ -398,18 +374,18 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                         mt="1v"
                       />
 
-                      <span>Besoins en froid</span>
-                      <InfoIcon>
-                        <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                        <Hoverable position="bottom">
-                          Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                          <br />
-                          <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
-                            Accéder à la méthodologie
-                          </Link>
-                        </Hoverable>
-                      </InfoIcon>
+                      <Box flex>Besoins en froid</Box>
+                      <Tooltip
+                        title={
+                          <>
+                            Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                            <br />
+                            <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
+                              Accéder à la méthodologie
+                            </Link>
+                          </>
+                        }
+                      />
                     </>
                   }
                 >
@@ -458,15 +434,15 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       >
                         C
                       </Box>
-                      <span>Caractéristiques des bâtiments</span>
-                      <InfoIcon>
-                        <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                        <Hoverable position="bottom">
-                          Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont
-                          donnés à titre informatif et non-officiel, sans aucune valeur légale.
-                        </Hoverable>
-                      </InfoIcon>
+                      <Box flex>Caractéristiques des bâtiments</Box>
+                      <Tooltip
+                        title={
+                          <>
+                            Les DPE affichés par bâtiment résultent d'un extrapolation des DPE par logement ancienne définition. Ils sont
+                            donnés à titre informatif et non-officiel, sans aucune valeur légale.
+                          </>
+                        }
+                      />
                     </>
                   }
                 >
@@ -514,21 +490,21 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
                       mt="1v"
                     />
-                    <span>Zones d'opportunité pour la création de réseaux de chaleur</span>
-                    <InfoIcon>
-                      <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                      <Hoverable position="bottom">
-                        Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                        <br />
-                        <Link
-                          href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/01/Methodologie_zones_opportunite_VF.pdf"
-                          isExternal
-                        >
-                          Accéder à la méthodologie
-                        </Link>
-                      </Hoverable>
-                    </InfoIcon>
+                    <Box flex>Zones d'opportunité pour la création de réseaux de chaleur</Box>
+                    <Tooltip
+                      title={
+                        <>
+                          Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                          <br />
+                          <Link
+                            href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/01/Methodologie_zones_opportunite_VF.pdf"
+                            isExternal
+                          >
+                            Accéder à la méthodologie
+                          </Link>
+                        </>
+                      }
+                    />
                   </>
                 }
               >
@@ -608,22 +584,22 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       minWidth="16px"
                       mt="1v"
                     />
-                    <span>Communes à fort potentiel pour la création de réseaux de chaleur</span>
-                    <InfoIcon>
-                      <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                      <Hoverable position="bottom">
-                        Communes sans réseau de chaleur sur lesquelles au moins une zone d'opportunité à fort potentiel est identifiée par
-                        le Cerema dans le cadre du projet EnRezo
-                        <br />
-                        <Link
-                          href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
-                          isExternal
-                        >
-                          Accéder à la méthodologie
-                        </Link>
-                      </Hoverable>
-                    </InfoIcon>
+                    <Box flex>Communes à fort potentiel pour la création de réseaux de chaleur</Box>
+                    <Tooltip
+                      title={
+                        <>
+                          Communes sans réseau de chaleur sur lesquelles au moins une zone d'opportunité à fort potentiel est identifiée par
+                          le Cerema dans le cadre du projet EnRezo
+                          <br />
+                          <Link
+                            href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
+                            isExternal
+                          >
+                            Accéder à la méthodologie
+                          </Link>
+                        </>
+                      }
+                    />
                   </>
                 }
               >
@@ -651,21 +627,21 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                       fillOpacity={0.7}
                       mt="1v"
                     />
-                    <span>Besoins en chaleur du secteur industriel</span>
-                    <InfoIcon>
-                      <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                      <Hoverable position="bottom">
-                        Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
-                        <br />
-                        <Link
-                          href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
-                          isExternal
-                        >
-                          Accéder à la méthodologie
-                        </Link>
-                      </Hoverable>
-                    </InfoIcon>
+                    <Box flex>Besoins en chaleur du secteur industriel</Box>
+                    <Tooltip
+                      title={
+                        <>
+                          Modélisation réalisée par le Cerema dans le cadre du projet EnRezo.
+                          <br />
+                          <Link
+                            href="https://reseaux-chaleur.cerema.fr/sites/reseaux-chaleur-v2/files/fichiers/2024/06/methodologie_besoin_industrie_2024.pdf"
+                            isExternal
+                          >
+                            Accéder à la méthodologie
+                          </Link>
+                        </>
+                      }
+                    />
                   </>
                 }
               >
@@ -690,7 +666,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   </Box>
                 </DeactivatableBox>
               </TrackableCheckableAccordion>
-              <Box textAlign="center" mt="5w">
+              <Box textAlign="center" mt="1w">
                 <ModalCarteFrance />
               </Box>
             </UrlStateAccordion>
@@ -759,18 +735,18 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 trackingEvent="Carto|ENR&R Mobilisables"
                 label={
                   <>
-                    <span>Chaleur fatale</span>
-                    <InfoIcon>
-                      <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                      <Hoverable position="bottom">
-                        Données du projet{' '}
-                        <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" isExternal>
-                          EnRezo
-                        </Link>{' '}
-                        du Cerema.
-                      </Hoverable>
-                    </InfoIcon>
+                    <Box flex>Chaleur fatale</Box>
+                    <Tooltip
+                      title={
+                        <>
+                          Données du projet{' '}
+                          <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" isExternal>
+                            EnRezo
+                          </Link>{' '}
+                          du Cerema.
+                        </>
+                      }
+                    />
                   </>
                 }
               >
@@ -910,18 +886,18 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 trackingEvent="Carto|ENR&R Mobilisables"
                 label={
                   <>
-                    <span>Solaire thermique</span>
-                    <InfoIcon>
-                      <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-                      <Hoverable position="bottom">
-                        Données du projet{' '}
-                        <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" isExternal>
-                          EnRezo
-                        </Link>{' '}
-                        du Cerema.
-                      </Hoverable>
-                    </InfoIcon>
+                    <Box flex>Solaire thermique</Box>
+                    <Tooltip
+                      title={
+                        <>
+                          Données du projet{' '}
+                          <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" isExternal>
+                            EnRezo
+                          </Link>{' '}
+                          du Cerema.
+                        </>
+                      }
+                    />
                   </>
                 }
               >

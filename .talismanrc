@@ -33,4 +33,6 @@ allowed_patterns:
 - \[key\]
 - coutPublicodeKey
 - emissionsCO2PublicodesKey
+- key
+- pass
 version: "1.0"
