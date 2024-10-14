@@ -1,5 +1,7 @@
+import { isDefined } from '@utils/core';
+
 export const getConso = (conso: number) => {
-  if (conso !== null && conso !== undefined) {
+  if (isDefined(conso)) {
     if (conso > 1000) {
       return `${(conso / 1000).toFixed(2)} GWh`;
     }
