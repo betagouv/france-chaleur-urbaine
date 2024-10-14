@@ -1220,38 +1220,50 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   // custom filters for energy and consommationsGaz
 
   const TYPE_ENERGY = 'energie_utilisee';
+  const batimentsFioulCollectifMin =
+    config.batimentsFioulCollectif.interval[0] === LegendDeskData.energy.min
+      ? Number.MIN_SAFE_INTEGER
+      : config.batimentsFioulCollectif.interval[0];
+  const batimentsFioulCollectifMax =
+    config.batimentsFioulCollectif.interval[1] === LegendDeskData.energy.max
+      ? Number.MAX_SAFE_INTEGER
+      : config.batimentsFioulCollectif.interval[1];
+  const batimentsGazCollectifMin =
+    config.batimentsGazCollectif.interval[0] === LegendDeskData.energy.min
+      ? Number.MIN_SAFE_INTEGER
+      : config.batimentsGazCollectif.interval[0];
+  const batimentsGazCollectifMax =
+    config.batimentsGazCollectif.interval[1] === LegendDeskData.energy.max
+      ? Number.MAX_SAFE_INTEGER
+      : config.batimentsGazCollectif.interval[1];
   map.setFilter('energy', [
     'any',
     config.batimentsFioulCollectif.show
       ? [
           'all',
           ['==', ['get', TYPE_ENERGY], 'fioul'],
-          [
-            'all',
-            ['>=', ['get', NB_LOT], config.batimentsFioulCollectif.interval[0]],
-            ['<=', ['get', NB_LOT], config.batimentsFioulCollectif.interval[1]],
-          ],
+          ['all', ['>=', ['get', NB_LOT], batimentsFioulCollectifMin], ['<=', ['get', NB_LOT], batimentsFioulCollectifMax]],
         ]
       : ['literal', false],
     config.batimentsGazCollectif.show
       ? [
           'all',
           ['==', ['get', TYPE_ENERGY], 'gaz'],
-          [
-            'all',
-            ['>=', ['get', NB_LOT], config.batimentsGazCollectif.interval[0]],
-            ['<=', ['get', NB_LOT], config.batimentsGazCollectif.interval[1]],
-          ],
+          ['all', ['>=', ['get', NB_LOT], batimentsGazCollectifMin], ['<=', ['get', NB_LOT], batimentsGazCollectifMax]],
         ]
       : ['literal', false],
   ]);
 
+  const consommationsGazIntervalMin =
+    config.consommationsGaz.interval[0] === LegendDeskData.gasUsage.min ? Number.MIN_SAFE_INTEGER : config.consommationsGaz.interval[0];
+  const consommationsGazIntervalMax =
+    config.consommationsGaz.interval[1] === LegendDeskData.gasUsage.max ? Number.MAX_SAFE_INTEGER : config.consommationsGaz.interval[1];
   map.setFilter(
     'consommationsGaz',
     config.consommationsGaz.show && [
       'all',
       config.consommationsGaz.interval
-        ? ['all', ['>=', ['get', CONSO], config.consommationsGaz.interval[0]], ['<=', ['get', CONSO], config.consommationsGaz.interval[1]]]
+        ? ['all', ['>=', ['get', CONSO], consommationsGazIntervalMin], ['<=', ['get', CONSO], consommationsGazIntervalMax]]
         : true,
       [
         'any',
