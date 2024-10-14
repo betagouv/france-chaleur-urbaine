@@ -21,6 +21,8 @@ fileignoreconfig:
   checksum: 2b20c4585ec9f8ae7a457383e7d0e87cd731200d09d4372567ba9cce3ea0628d
 - filename: src/components/Map/map-layers.ts
   checksum: 16e789ab1bc1176ccb8f5b6dae275ec6639232884fda51da6ffd7708908f281a
+- filename: src/services/tiles.config.ts
+  checksum: 9a3eb5c3465f7d564d23d60dc84a1dda12e64b9276da97c1d6bef070b19f128e
 scopeconfig:
 - scope: node
 allowed_patterns:
