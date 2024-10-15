@@ -6,7 +6,7 @@ import useFCUMap from '@components/Map/MapProvider';
 import Accordion from '@components/ui/Accordion';
 import Button from '@components/ui/Button';
 import Divider from '@components/ui/Divider';
-import { FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
+import { emptyMapConfiguration, FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
 import { DeactivatableBox } from './SimpleMapLegend.style';
 
@@ -25,6 +25,13 @@ function ReseauxDeChaleurFilters() {
       ...mapConfiguration,
       reseauxDeChaleur: {
         ...mapConfiguration.reseauxDeChaleur,
+        ...filtresEnergies.reduce(
+          (acc, filtreEnergie) => ({
+            ...acc,
+            [`energie_ratio_${filtreEnergie.confKey}`]: emptyMapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`],
+          }),
+          {}
+        ),
         ...mapConfiguration.reseauxDeChaleur.limits,
       },
     });

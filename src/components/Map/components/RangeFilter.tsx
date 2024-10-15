@@ -1,4 +1,5 @@
 import { Range } from '@codegouvfr/react-dsfr/Range';
+import { useCounter } from '@react-hookz/web';
 import { memo, ReactNode, useCallback, useEffect, useRef } from 'react';
 
 import Box from '@components/ui/Box';
@@ -37,12 +38,13 @@ const RangeFilter = memo(
   }: RangeFilterProps) => {
     const valueMin = domainTransform ? domainTransform.valueToPercent(values[0]) : values[0];
     const valueMax = domainTransform ? domainTransform.valueToPercent(values[1]) : values[1];
+    const [renderKey, { inc }] = useCounter(0);
 
     const [min, max] = domainTransform ? [0, 100] : domain;
     const ref = useRef<HTMLDivElement>(null);
 
     // This is needed because DSFR does not give ability to change it through a prop
-    const reformatRangeOutput = useCallback(
+    const reformatRangeOutputText = useCallback(
       (min: number, max: number) => {
         const updateRangeText = () => {
           const textToUpdate = ref.current?.querySelector('.fr-range__output');
@@ -61,21 +63,17 @@ const RangeFilter = memo(
 
     useEffect(() => {
       // Everytime value changes, reformat displayed values
-      reformatRangeOutput(values[0], values[1]);
+      reformatRangeOutputText(values[0], values[1]);
     }, [values[0], values[1]]);
 
     useEffect(() => {
-      // DSFR component does not redraw the full background when resetting values
+      // DSFR component does not redraw the full colored background when resetting values
       // This is an attempt to fix it
-      if (!ref.current) return;
-
-      const { style } = ref.current.querySelector('.fr-range') as HTMLElement;
 
       if (values[0] === domain[0] && values[1] === domain[1]) {
-        style.setProperty('--progress-left', '0%');
-        style.setProperty('--progress-right', '100%');
+        inc();
       }
-    }, [values, domain, ref.current]);
+    }, [values[0], values[1], domain[0], domain[1]]);
 
     const handleChangeMin = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,6 +96,7 @@ const RangeFilter = memo(
     return (
       <>
         <Range
+          key={renderKey}
           label={
             <Box display="flex" alignItems="center" justifyContent="space-between">
               {label}
