@@ -64,6 +64,19 @@ const RangeFilter = memo(
       reformatRangeOutput(values[0], values[1]);
     }, [values[0], values[1]]);
 
+    useEffect(() => {
+      // DSFR component does not redraw the full background when resetting values
+      // This is an attempt to fix it
+      if (!ref.current) return;
+
+      const { style } = ref.current.querySelector('.fr-range') as HTMLElement;
+
+      if (values[0] === domain[0] && values[1] === domain[1]) {
+        style.setProperty('--progress-left', '0%');
+        style.setProperty('--progress-right', '100%');
+      }
+    }, [values, domain, ref.current]);
+
     const handleChangeMin = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = +e.target.value;
