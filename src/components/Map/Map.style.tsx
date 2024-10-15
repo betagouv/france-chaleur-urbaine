@@ -135,6 +135,8 @@ export const LegendSideBar = styled.div<{
 export const LegendContainer = styled.div<{
   withoutLogo?: boolean;
 }>`
+  height: 100%;
+  overflow: hidden;
   ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
 `;
 

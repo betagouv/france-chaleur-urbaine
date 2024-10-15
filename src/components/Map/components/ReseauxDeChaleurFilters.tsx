@@ -8,7 +8,7 @@ import Button from '@components/ui/Button';
 import Divider from '@components/ui/Divider';
 import { emptyMapConfiguration, FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
-import { DeactivatableBox } from './SimpleMapLegend.style';
+import { DeactivatableBox, FilterResetButtonWrapper } from './SimpleMapLegend.style';
 
 function ReseauxDeChaleurFilters() {
   const { mapConfiguration, setMapConfiguration, updateScaleInterval } = useFCUMap();
@@ -124,17 +124,11 @@ function ReseauxDeChaleurFilters() {
         onChange={(interval) => filterAndUpdateScaleInterval('reseauxDeChaleur.anneeConstruction')(interval)}
       />
       {isFiltering && (
-        <Button
-          type="button"
-          onClick={resetFilters}
-          priority="secondary"
-          size="small"
-          iconId="fr-icon-arrow-go-back-line"
-          className="fr-mb-2w"
-          full
-        >
-          Réinitialiser les filtres
-        </Button>
+        <FilterResetButtonWrapper>
+          <Button type="button" onClick={resetFilters} priority="secondary" size="small" iconId="fr-icon-arrow-go-back-line" full>
+            Réinitialiser les filtres
+          </Button>
+        </FilterResetButtonWrapper>
       )}
     </DeactivatableBox>
   );

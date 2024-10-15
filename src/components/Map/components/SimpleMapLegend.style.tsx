@@ -209,9 +209,15 @@ export const tabs = [...tabsDefinition];
 
 export const Tabs = styled(DsfrTabs)`
   box-shadow: none;
+  max-height: 100%;
+  overflow: hidden;
+  height: 100%;
+  padding: 1rem 0;
 
   .fr-tabs__panel {
     padding: 0.5rem 0.5rem;
+    overflow: scroll;
+    height: calc(100% - 66px);
   }
 
   .fr-tabs__tab {
@@ -313,4 +319,12 @@ export const DeactivatableBox = styled(Box)<{ disabled?: boolean }>`
         user-select: none;
       }
     `}
+`;
+
+export const FilterResetButtonWrapper = styled.div`
+  position: sticky;
+  bottom: -1rem; /* to prevent scroll to be visible at the very bottom */
+  background: white;
+  z-index: 1;
+  padding: 1rem 0;
 `;
