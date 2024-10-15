@@ -108,7 +108,6 @@ function ReseauxDeChaleurFilters() {
           valueToPercent: (v) => roundNumberProgressively(getPercentageFromLivraisonsAnnuelles(v)),
         }}
         unit="GWh"
-        nonLinear
       />
       <Divider />
       <RangeFilter
