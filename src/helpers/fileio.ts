@@ -1,10 +1,14 @@
 import { readFile } from 'fs/promises';
 
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 
 import { logger } from './logger';
 
-export const FILEIO_API_URL = 'https://file.io/';
+export const FILEIO_API_URL = 'https://file.io';
+// don't patch the global client
+const httpClient = axios.create({ baseURL: FILEIO_API_URL });
+axiosRetry(httpClient);
 
 export class FileIOClient {
   constructor(
@@ -29,11 +33,16 @@ export class FileIOClient {
     formData.append('maxDownloads', '1');
     formData.append('autoDelete', 'true');
 
-    const result = await axios.post(this.apiURL, formData, {
+    const result = await httpClient.post('/', formData, {
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
       },
       timeout: 120 * 1000, // 2 minutes
+      'axios-retry': {
+        retries: 10,
+        retryDelay: axiosRetry.exponentialDelay,
+        retryCondition: () => true,
+      },
     });
 
     if (!result.data.success) {
