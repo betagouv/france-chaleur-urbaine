@@ -9,6 +9,11 @@ import {
   besoinsEnFroidIntervals,
   energyLayerMaxOpacity,
 } from '@components/Map/map-layers';
+import {
+  communesFortPotentielPourCreationReseauxChaleurLayerColor,
+  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+} from '@components/Map/map-styles';
+import useFCUMap from '@components/Map/MapProvider';
 import { UrlStateAccordion } from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
@@ -20,7 +25,6 @@ import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } fro
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
 import { communesFortPotentielPourCreationReseauxChaleurInterval, defaultMapConfiguration } from 'src/services/Map/map-configuration';
 
-import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux, { type MapLegendFeature } from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
@@ -31,6 +35,7 @@ import {
   SingleCheckbox,
   TabId,
   TabObject,
+  TabScrollablePart,
   Tabs,
   Title,
   TrackableCheckableAccordion,
@@ -40,11 +45,6 @@ import {
 import BuildingsDataExtractionTool from './tools/BuildingsDataExtractionTool';
 import DistancesMeasurementTool from './tools/DistancesMeasurementTool';
 import LinearHeatDensityTool from './tools/LinearHeatDensityTool';
-import {
-  communesFortPotentielPourCreationReseauxChaleurLayerColor,
-  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
-} from '../map-styles';
-import useFCUMap from '../MapProvider';
 
 const consommationsGazLegendColor = '#D9D9D9';
 const consommationsGazUsageLegendOpacity = 0.53;
@@ -101,7 +101,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
         />
       )}
       {selectedTabId.tabId === 'potentiel' && (
-        <Box mt="2v" mx="1w">
+        <TabScrollablePart>
           <Title>Potentiel</Title>
           <Box display="flex" alignItems="start" mb="2w">
             <SingleCheckbox
@@ -659,10 +659,10 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               <ModalCarteFrance />
             </Box>
           </UrlStateAccordion>
-        </Box>
+        </TabScrollablePart>
       )}
       {selectedTabId.tabId === 'outils' && (
-        <Box mt="2v" mx="1w">
+        <TabScrollablePart>
           {selectedTabId.subTabId === null ? (
             <Box display="flex" flexDirection="column" gap="16px">
               <Title>Outils</Title>
@@ -711,10 +711,10 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
           {selectedTabId.subTabId === 'mesure-distance' && <DistancesMeasurementTool />}
           {selectedTabId.subTabId === 'extraire-données-batiment' && <BuildingsDataExtractionTool />}
           {selectedTabId.subTabId === 'densité-thermique-linéaire' && <LinearHeatDensityTool />}
-        </Box>
+        </TabScrollablePart>
       )}
       {selectedTabId.tabId === 'enrr' && (
-        <Box mt="2v" mx="1w">
+        <TabScrollablePart>
           <Title>Énergies renouvelables et de récupération</Title>
           <UrlStateAccordion label="Mobilisables" small>
             <TrackableCheckableAccordion
@@ -945,9 +945,8 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               </DeactivatableBox>
             </TrackableCheckableAccordion>
           </UrlStateAccordion>
-        </Box>
+        </TabScrollablePart>
       )}
-      <DevModeIcon />
     </Tabs>
   );
 }
