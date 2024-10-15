@@ -41,13 +41,8 @@ const RangeFilter = memo(
     const [min, max] = domainTransform ? [0, 100] : domain;
     const ref = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-      if (domainTransform) {
-        updateRangeOutput(domain[0], domain[1]);
-      }
-    }, [domain, domainTransform]);
-
-    const updateRangeOutput = useCallback(
+    // This is needed because DSFR does not give ability to change it through a prop
+    const reformatRangeOutput = useCallback(
       (min: number, max: number) => {
         const updateRangeText = () => {
           const textToUpdate = ref.current?.querySelector('.fr-range__output');
@@ -63,14 +58,19 @@ const RangeFilter = memo(
       },
       [formatNumber, unit]
     );
+
+    useEffect(() => {
+      // Everytime value changes, reformat displayed values
+      reformatRangeOutput(values[0], values[1]);
+    }, [values[0], values[1]]);
+
     const handleChangeMin = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = +e.target.value;
         const newValueMin = domainTransform ? domainTransform.percentToValue(value) : value;
         onChange([newValueMin, values[1]]);
-        updateRangeOutput(newValueMin, values[1]);
       },
-      [domainTransform, onChange, updateRangeOutput, values]
+      [domainTransform, onChange, values]
     );
 
     const handleChangeMax = useCallback(
@@ -78,9 +78,8 @@ const RangeFilter = memo(
         const value = +e.target.value;
         const newValueMax = domainTransform ? domainTransform.percentToValue(value) : value;
         onChange([values[0], newValueMax]);
-        updateRangeOutput(values[0], newValueMax);
       },
-      [domainTransform, onChange, updateRangeOutput, values]
+      [domainTransform, onChange, values]
     );
 
     return (
