@@ -9,7 +9,7 @@ import { Interval } from '@utils/interval';
 import { roundNumberProgressively } from './ReseauxDeChaleurFilters';
 
 interface RangeFilterProps {
-  label: string;
+  label: React.ReactNode;
   value: Interval;
   domain: Interval;
   onChange: (values: Interval) => void;
