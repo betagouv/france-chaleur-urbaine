@@ -101,8 +101,6 @@ const importFile = (file: string) => {
   return file.replaceAll('.gitbook/assets/', '/contents/');
 };
 
-/* To commit / push */
-
 export const articles: Article[] = [
   {
     image: '/contents/27.jpg',
