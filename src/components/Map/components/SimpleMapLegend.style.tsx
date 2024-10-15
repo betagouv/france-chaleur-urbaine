@@ -207,6 +207,13 @@ export type TabId = (typeof tabsDefinition)[number]['tabId'];
 // the Tabs component takes a mutable array
 export const tabs = [...tabsDefinition];
 
+export const LegendFilters = styled.div`
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
 export const Tabs = styled(DsfrTabs)`
   box-shadow: none;
   max-height: 100%;
@@ -216,8 +223,13 @@ export const Tabs = styled(DsfrTabs)`
 
   .fr-tabs__panel {
     padding: 0.5rem 0.5rem;
-    overflow: scroll;
     height: calc(100% - 66px);
+    display: flex;
+    flex-direction: column;
+
+    ${LegendFilters} {
+      padding: 0.5rem;
+    }
   }
 
   .fr-tabs__tab {

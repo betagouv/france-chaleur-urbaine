@@ -11,7 +11,7 @@ import Tooltip from '@components/ui/Tooltip';
 import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
 
 import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
-import { SingleCheckbox, Title } from './SimpleMapLegend.style';
+import { LegendFilters, SingleCheckbox, Title } from './SimpleMapLegend.style';
 import useFCUMap from '../MapProvider';
 
 export const mapLegendFeatures = [
@@ -41,27 +41,30 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
 
   if (filtersVisible) {
     return (
-      <Box mt="2v" mx="1w">
+      <LegendFilters>
         <Button
           onClick={() => setFiltersVisible(false)}
           priority="secondary"
           size="small"
           iconId="fr-icon-arrow-left-line"
           className="fr-mb-2w"
+          style={{ position: 'sticky', top: '0', background: 'white' }}
         >
           Retour
         </Button>
-        <Title>Filtres</Title>
-        <Text fontSize="13px" lineHeight="18px" mb="2w">
-          Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
-        </Text>
-        <ReseauxDeChaleurFilters />
-      </Box>
+        <div style={{ overflow: 'auto', flex: 1 }}>
+          <Title>Filtres</Title>
+          <Text fontSize="13px" lineHeight="18px" mb="2w">
+            Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
+          </Text>
+          <ReseauxDeChaleurFilters />
+        </div>
+      </LegendFilters>
     );
   }
 
   return (
-    <Box mt="2v" mx="1w">
+    <Box mt="2v" px="1w" style={{ overflow: 'auto' }}>
       <Title>{legendTitle || 'Réseaux de chaleur et de froid'}</Title>
       <Text fontSize="13px" lineHeight="18px" mb="2w">
         Cliquez sur un réseau pour connaître ses caractéristiques

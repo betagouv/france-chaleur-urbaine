@@ -18,7 +18,7 @@ import { trackEvent } from 'src/services/analytics';
 import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from 'src/services/Map/businessRules';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
-import { defaultMapConfiguration, communesFortPotentielPourCreationReseauxChaleurInterval } from 'src/services/Map/map-configuration';
+import { communesFortPotentielPourCreationReseauxChaleurInterval, defaultMapConfiguration } from 'src/services/Map/map-configuration';
 
 import DevModeIcon from './DevModeIcon';
 import IconPolygon from './IconPolygon';
@@ -93,14 +93,12 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
       }}
     >
       {selectedTabId.tabId === 'reseaux' && (
-        <>
-          <MapLegendReseaux
-            enabledFeatures={enabledFeatures}
-            legendTitle={legendTitle}
-            filtersVisible={selectedTabId.subTabId === 'filtres'}
-            setFiltersVisible={setReseauxFiltersVisible}
-          />
-        </>
+        <MapLegendReseaux
+          enabledFeatures={enabledFeatures}
+          legendTitle={legendTitle}
+          filtersVisible={selectedTabId.subTabId === 'filtres'}
+          setFiltersVisible={setReseauxFiltersVisible}
+        />
       )}
       {selectedTabId.tabId === 'potentiel' && (
         <Box mt="2v" mx="1w">

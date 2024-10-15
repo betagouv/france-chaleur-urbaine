@@ -599,22 +599,22 @@ const InternalMap = ({
               </Tooltip>
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
-              <LegendContainer withoutLogo={withoutLogo}>
+              <LegendContainer>
                 <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
               </LegendContainer>
+              {!withoutLogo && (
+                <LegendLogoList>
+                  <LegendLogoLink href="https://france-chaleur-urbaine.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                    <img src="/logo-fcu-with-typo.jpg" alt="logo france chaleur urbaine" />
+                  </LegendLogoLink>
+                  {legendLogoOpt && (
+                    <LegendLogo>
+                      <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
+                    </LegendLogo>
+                  )}
+                </LegendLogoList>
+              )}
             </LegendSideBar>
-            {!withoutLogo && (
-              <LegendLogoList legendCollapsed={legendCollapsed}>
-                <LegendLogoLink href="https://france-chaleur-urbaine.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">
-                  <img src="/logo-fcu-with-typo.jpg" alt="logo france chaleur urbaine" />
-                </LegendLogoLink>
-                {legendLogoOpt && (
-                  <LegendLogo>
-                    <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
-                  </LegendLogo>
-                )}
-              </LegendLogoList>
-            )}
           </>
         )}
         <MapProvider>
