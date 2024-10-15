@@ -6,6 +6,7 @@ import useFCUMap from '@components/Map/MapProvider';
 import Accordion from '@components/ui/Accordion';
 import Button from '@components/ui/Button';
 import Divider from '@components/ui/Divider';
+import { deepMergeObjects } from '@utils/core';
 import { emptyMapConfiguration, FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
 import { DeactivatableBox, FilterResetButtonWrapper } from './SimpleMapLegend.style';
@@ -21,20 +22,20 @@ function ReseauxDeChaleurFilters() {
   };
 
   const resetFilters = () => {
-    setMapConfiguration({
-      ...mapConfiguration,
-      reseauxDeChaleur: {
-        ...mapConfiguration.reseauxDeChaleur,
-        ...filtresEnergies.reduce(
-          (acc, filtreEnergie) => ({
-            ...acc,
-            [`energie_ratio_${filtreEnergie.confKey}`]: emptyMapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`],
-          }),
-          {}
-        ),
-        ...mapConfiguration.reseauxDeChaleur.limits,
-      },
-    });
+    setMapConfiguration(
+      deepMergeObjects(mapConfiguration, {
+        reseauxDeChaleur: {
+          ...filtresEnergies.reduce(
+            (acc, filtreEnergie) => ({
+              ...acc,
+              [`energie_ratio_${filtreEnergie.confKey}`]: emptyMapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`],
+            }),
+            {}
+          ),
+          ...mapConfiguration.reseauxDeChaleur.limits,
+        },
+      })
+    );
     toggleFiltering(false);
   };
 
