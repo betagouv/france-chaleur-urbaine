@@ -516,6 +516,15 @@ const NetworksList = () => {
               pageSize={15}
             />
           </Box>
+          <Text size="xs" className="fr-hint-text" mt="2w">
+            Sources : Enquête annuelle des réseaux de chaleur et de froid (EARCF), édition 2023 portant sur l’année 2022, réalisée par la
+            Fedene Réseaux de chaleur et de froid avec le concours de l’association AMORCE, sous tutelle du service des données et études
+            statistiques (SDES) du ministère de la transition écologique. Excepté pour les taux EnR&R et contenus CO2 : la source est l’
+            <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" target="_blank" rel="noreferrer noopener">
+              Arrêté du 5 juillet 2024
+            </a>{' '}
+            (DPE) réalisé sur la base des données portant sur l'année 2022 ou sur une moyenne 2020-2021-2022.
+          </Text>
         </Box>
       )}
     </NetworksListContainer>
