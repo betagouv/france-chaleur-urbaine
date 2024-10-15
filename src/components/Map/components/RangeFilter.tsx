@@ -4,7 +4,7 @@ import { memo, ReactNode, useCallback, useEffect, useRef } from 'react';
 
 import Box from '@components/ui/Box';
 import Tooltip from '@components/ui/Tooltip';
-import { Interval } from '@utils/interval';
+import { Interval, intervalsEqual } from '@utils/interval';
 
 import { roundNumberProgressively } from './ReseauxDeChaleurFilters';
 
@@ -21,8 +21,6 @@ interface RangeFilterProps {
   };
   formatNumber?: (value: number) => string;
 }
-
-const areIntervalsEqual = (a: Interval, b: Interval) => a[0] === b[0] && a[1] === b[1];
 
 const RangeFilter = memo(
   ({
@@ -139,8 +137,8 @@ const RangeFilter = memo(
     );
   },
   (prevProps, nextProps) =>
-    areIntervalsEqual(prevProps.value, nextProps.value) &&
-    areIntervalsEqual(prevProps.domain, nextProps.domain) &&
+    intervalsEqual(prevProps.value, nextProps.value) &&
+    intervalsEqual(prevProps.domain, nextProps.domain) &&
     prevProps.tooltip === nextProps.tooltip &&
     prevProps.unit === nextProps.unit &&
     prevProps.label === nextProps.label
