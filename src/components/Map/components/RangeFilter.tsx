@@ -46,11 +46,17 @@ const RangeFilter = ({
 
   const updateRangeOutput = useCallback(
     (min: number, max: number) => {
-      const textToUpdate = ref.current?.querySelector('.fr-range__output');
-      if (textToUpdate) {
-        textToUpdate.textContent = `${formatNumber(min)}${unit} - ${formatNumber(max)}${unit}`;
-        return;
-      }
+      const updateRangeText = () => {
+        const textToUpdate = ref.current?.querySelector('.fr-range__output');
+        if (textToUpdate && textToUpdate.textContent !== '') {
+          textToUpdate.textContent = `${formatNumber(min)}${unit} - ${formatNumber(max)}${unit}`;
+          return;
+        }
+        // Retry after 50ms if the element is not found
+        setTimeout(updateRangeText, 50);
+      };
+
+      updateRangeText();
     },
     [formatNumber, unit]
   );
