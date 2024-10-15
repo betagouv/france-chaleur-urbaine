@@ -61,7 +61,7 @@ const RangeFilter = ({
   useEffect(() => {
     // Everytime value changes, reformat displayed values
     reformatRangeOutputText(values[0], values[1]);
-  }, [values[0], values[1]]);
+  }, [values[0], values[1], renderKey]);
 
   useEffect(() => {
     // DSFR component does not redraw the full colored background when resetting values
