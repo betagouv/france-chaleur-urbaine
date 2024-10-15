@@ -1,10 +1,10 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import React from 'react';
 
 import RangeFilter from '@components/Map/components/RangeFilter';
 import useFCUMap from '@components/Map/MapProvider';
 import Accordion from '@components/ui/Accordion';
+import Button from '@components/ui/Button';
 import Divider from '@components/ui/Divider';
 import { FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
@@ -117,7 +117,15 @@ function ReseauxDeChaleurFilters() {
         onChange={(interval) => filterAndUpdateScaleInterval('reseauxDeChaleur.anneeConstruction')(interval)}
       />
       {isFiltering && (
-        <Button type="button" onClick={resetFilters} priority="secondary" size="small" iconId="fr-icon-back-line" className="fr-mb-2w">
+        <Button
+          type="button"
+          onClick={resetFilters}
+          priority="secondary"
+          size="small"
+          iconId="fr-icon-arrow-go-back-line"
+          className="fr-mb-2w"
+          full
+        >
           Réinitialiser les filtres
         </Button>
       )}
