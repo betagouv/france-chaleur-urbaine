@@ -37,4 +37,7 @@ allowed_patterns:
 - emissionsCO2PublicodesKey
 - key
 - pass
+- renderKey
+- ConfKey
+- confKey
 version: "1.0"

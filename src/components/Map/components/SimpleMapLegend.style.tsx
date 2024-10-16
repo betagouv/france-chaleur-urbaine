@@ -207,11 +207,35 @@ export type TabId = (typeof tabsDefinition)[number]['tabId'];
 // the Tabs component takes a mutable array
 export const tabs = [...tabsDefinition];
 
+export const TabScrollablePart = styled.div`
+  overflow: auto;
+  max-height: 100%;
+  flex: 1;
+  padding: 0 1rem;
+`;
+
+export const LegendFilters = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  > button {
+    margin: 0.5rem 1rem;
+  }
+`;
+
+const tabsHeight = 66;
 export const Tabs = styled(DsfrTabs)`
   box-shadow: none;
+  max-height: 100%;
+  overflow: hidden;
+  height: 100%;
+  padding: 1rem 0 0;
 
   .fr-tabs__panel {
-    padding: 0.5rem 0.5rem;
+    padding: 0.5rem 0 0;
+    height: calc(100% - ${tabsHeight}px);
+    display: flex;
+    flex-direction: column;
   }
 
   .fr-tabs__tab {
@@ -313,4 +337,12 @@ export const DeactivatableBox = styled(Box)<{ disabled?: boolean }>`
         user-select: none;
       }
     `}
+`;
+
+export const FilterResetButtonWrapper = styled.div`
+  position: sticky;
+  bottom: -1rem; /* to prevent scroll to be visible at the very bottom */
+  background: white;
+  z-index: 1;
+  padding: 1rem 0;
 `;

@@ -115,7 +115,10 @@ export const LegendSideBar = styled.div<{
   legendCollapsed: boolean;
 }>`
   z-index: ${mapControlZindex + 2};
-  overflow: auto;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   ${({ legendCollapsed }) =>
     legendCollapsed &&
     css`
@@ -132,10 +135,11 @@ export const LegendSideBar = styled.div<{
     0px 8px 16px rgba(0, 0, 0, 0.1);
 `;
 
-export const LegendContainer = styled.div<{
-  withoutLogo?: boolean;
-}>`
-  ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
+export const LegendContainer = styled.div`
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const CollapseLegendLabel = styled.label`
@@ -166,20 +170,11 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   z-index: ${mapControlZindex + 1};
 `;
 
-export const LegendLogoList = styled.div<{
-  legendCollapsed: boolean;
-}>`
-  width: calc(${legendWidth}px - 10px);
-  position: absolute;
-  bottom: 0;
-  left: 5px;
-  z-index: 3;
+export const LegendLogoList = styled.div`
   display: flex;
   align-items: center;
-  overflow: hidden;
   background: var(--background-default-grey);
-  ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
-  height:100px;
+  height: 100px;
 `;
 
 export const LegendLogoLink = styled.a`

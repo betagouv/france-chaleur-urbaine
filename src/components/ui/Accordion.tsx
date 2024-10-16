@@ -110,7 +110,7 @@ export type UrlStateAccordionProps = Omit<AccordionProps, 'label' | 'id' | 'onEx
   (
     | {
         queryParamName?: string;
-        id: string;
+        id?: string;
         multi: false;
       }
     | {

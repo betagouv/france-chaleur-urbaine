@@ -138,7 +138,7 @@ export const percentageMaxInterval: Interval = [0, 100];
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 export const communesFortPotentielPourCreationReseauxChaleurInterval: Interval = [0, 100_000];
 
-const emptyMapConfiguration: EmptyMapConfiguration = {
+export const emptyMapConfiguration: EmptyMapConfiguration = {
   filtreIdentifiantReseau: [],
   filtreGestionnaire: [],
   reseauxDeChaleur: {
