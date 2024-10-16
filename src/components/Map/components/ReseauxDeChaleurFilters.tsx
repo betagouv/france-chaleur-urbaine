@@ -1,9 +1,9 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import React from 'react';
+import { parseAsBoolean, useQueryState } from 'nuqs';
 
 import RangeFilter from '@components/Map/components/RangeFilter';
 import useFCUMap from '@components/Map/MapProvider';
-import Accordion from '@components/ui/Accordion';
+import { UrlStateAccordion } from '@components/ui/Accordion';
 import Button from '@components/ui/Button';
 import Divider from '@components/ui/Divider';
 import { deepMergeObjects } from '@utils/core';
@@ -14,7 +14,7 @@ import { DeactivatableBox, FilterResetButtonWrapper } from './SimpleMapLegend.st
 function ReseauxDeChaleurFilters() {
   const { mapConfiguration, setMapConfiguration, updateScaleInterval } = useFCUMap();
 
-  const [isFiltering, toggleFiltering] = React.useState(false);
+  const [isFiltering, toggleFiltering] = useQueryState('rdc_isfiltering', parseAsBoolean.withDefault(false));
 
   const filterAndUpdateScaleInterval: typeof updateScaleInterval = (property) => {
     toggleFiltering(true);
@@ -64,7 +64,14 @@ function ReseauxDeChaleurFilters() {
           })),
         ]}
       />
-      <Accordion label="Plus d'options" style={{ margin: '0.25rem 0' }} simple small>
+      <UrlStateAccordion
+        queryParamName="rdc_filter_more_options"
+        multi={false}
+        label="Plus d'options"
+        style={{ margin: '0.25rem 0' }}
+        simple
+        small
+      >
         <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
           {filtresEnergies.map((filtreEnergie) => (
             <RangeFilter
@@ -77,7 +84,7 @@ function ReseauxDeChaleurFilters() {
             />
           ))}
         </DeactivatableBox>
-      </Accordion>
+      </UrlStateAccordion>
       <Divider />
 
       <RangeFilter
