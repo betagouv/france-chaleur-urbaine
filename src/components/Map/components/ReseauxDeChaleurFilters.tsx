@@ -1,6 +1,6 @@
 import { parseAsBoolean, useQueryState } from 'nuqs';
 
-import Checkbox from '@components/form/dsfr/Checkbox';
+import SelectCheckboxes from '@components/form/dsfr/SelectCheckboxes';
 import RangeFilter from '@components/Map/components/RangeFilter';
 import useFCUMap from '@components/Map/MapProvider';
 import { UrlStateAccordion } from '@components/ui/Accordion';
@@ -32,6 +32,7 @@ function ReseauxDeChaleurFilters() {
             }),
             {}
           ),
+          energieMobilisee: [],
           ...mapConfiguration.reseauxDeChaleur.limits,
         },
       })
@@ -41,8 +42,9 @@ function ReseauxDeChaleurFilters() {
 
   return (
     <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
-      <Checkbox
+      <SelectCheckboxes
         small
+        label="Type d'énergie majoritaire"
         className="fr-mb-1v"
         options={filtresEnergies.reduce(
           (acc, { label, confKey }) => {

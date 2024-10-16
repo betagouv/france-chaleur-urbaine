@@ -6,6 +6,7 @@ import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import SelectCheckboxes from '@components/form/dsfr/SelectCheckboxes';
 import {
   getLivraisonsAnnuellesFromPercentage,
   getPercentageFromLivraisonsAnnuelles,
@@ -277,7 +278,7 @@ function NetworksFilter({
                     </Box>
                     <Box m="2w">
                       <Text size="sm">Énergie mobilisée</Text>
-                      <Checkbox
+                      <SelectCheckboxes
                         small
                         className="fr-mb-1v"
                         options={energiesFilters.reduce(

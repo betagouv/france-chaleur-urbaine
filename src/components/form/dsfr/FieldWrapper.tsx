@@ -6,7 +6,7 @@ import cx from '@utils/cx';
 export type FieldWrapperProps = React.HTMLAttributes<HTMLDivElement> & {
   fieldId?: string;
   className?: string;
-  label: React.ReactNode;
+  label?: React.ReactNode;
   hintText?: React.ReactNode;
   disabled?: boolean;
   state?: 'success' | 'error' | 'default';
