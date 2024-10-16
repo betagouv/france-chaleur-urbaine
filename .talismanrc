@@ -40,4 +40,6 @@ allowed_patterns:
 - renderKey
 - ConfKey
 - confKey
+- onKeyDown
+- onKeyUp
 version: "1.0"
