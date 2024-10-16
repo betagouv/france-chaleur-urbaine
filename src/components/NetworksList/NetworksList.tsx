@@ -45,7 +45,7 @@ const NetworksListContainer = styled.div`
     &.even,
     &.odd {
       background-color: #fff;
-      padding-top: 8px;
+      padding-top: 0;
       padding-bottom: 8px;
     }
     &:not(.MuiDataGrid-row--firstVisible) {
@@ -431,102 +431,93 @@ const NetworksList = () => {
 
   return (
     <NetworksListContainer>
-      {loaded && (
-        <Box py="10w" className="fr-container">
-          <Box display="flex" gap="16px" flexWrap="wrap" flexDirection="row" alignItems="center" justifyContent="space-between" pb="4w">
-            <Text fontWeight="bold">{filteredNetworks.length}&nbsp;réseaux</Text>
-            <Box display="flex" flexWrap="wrap" flexDirection="row" alignItems="flex-end" gap="16px">
-              <NetworksFilter
-                filterLimits={filterLimits}
-                filterValues={filterValues}
-                regionsList={regionsList}
-                onApplyFilters={(minConfig) => onApplyFilters(minConfig)}
-              ></NetworksFilter>
-              <Input
-                label="Rechercher"
-                hideLabel
-                addon={
-                  <Button
-                    className="primary"
-                    onClick={() => {
-                      onApplyFilters(filterValues);
-                    }}
-                  >
-                    <Icon size="sm" name="fr-icon-search-line" />
-                  </Button>
-                }
-                nativeInputProps={{
-                  placeholder: 'Rechercher',
-                  value: searchValue,
-                  onChange: (e) => setSearchValue(e.target.value),
-                  onKeyDown: (e) => {
-                    if (e.key === 'Enter') {
-                      onApplyFilters(filterValues);
-                    }
-                  },
-                }}
-              />
-            </Box>
-          </Box>
-          <Box flex pb="4w">
-            <Button
-              priority={dataToDisplay === 'general' ? 'secondary' : 'tertiary'}
-              size="small"
-              className={`fr-mx-auto networks-list-selector ${dataToDisplay === 'general' ? 'active' : ''}`}
-              onClick={() => {
-                onChangeDataToDisplay('general');
-              }}
-            >
-              Général
-            </Button>
-            <Button
-              priority={dataToDisplay === 'mix_energetique' ? 'secondary' : 'tertiary'}
-              size="small"
-              className={`fr-mx-auto networks-list-selector ${dataToDisplay === 'mix_energetique' ? 'active' : ''}`}
-              onClick={() => {
-                onChangeDataToDisplay('mix_energetique');
-              }}
-            >
-              Mix énergétique
-            </Button>
-          </Box>
-          <Box
-            height="100%"
-            width="100%"
-            display="flex"
-            flexDirection="column"
-            justifyContent="space-between"
-            style={{ overflow: 'hidden' }}
-          >
-            <Table
-              apiRef={tableApiRef}
-              columns={networkGeneralRowsParams}
-              rows={filteredNetworks}
-              disableColumnMenu
-              columnHeaderHeight={100}
-              getRowHeight={() => 'auto'}
-              hideFooterSelectedRowCount
-              loading={!loaded}
-              sortingOrder={['desc', 'asc']}
-              initialState={{
-                sorting: {
-                  sortModel: [{ field: 'Identifiant reseau', sort: 'asc' }],
+      <Box py="10w" className="fr-container">
+        <Box display="flex" gap="16px" flexWrap="wrap" flexDirection="row" alignItems="center" justifyContent="space-between" pb="4w">
+          <Text fontWeight="bold">{filteredNetworks.length}&nbsp;réseaux</Text>
+          <Box display="flex" flexWrap="wrap" flexDirection="row" alignItems="flex-end" gap="16px">
+            <NetworksFilter
+              filterLimits={filterLimits}
+              filterValues={filterValues}
+              regionsList={regionsList}
+              onApplyFilters={(minConfig) => onApplyFilters(minConfig)}
+            ></NetworksFilter>
+            <Input
+              label="Rechercher"
+              hideLabel
+              addon={
+                <Button
+                  className="primary"
+                  onClick={() => {
+                    onApplyFilters(filterValues);
+                  }}
+                >
+                  <Icon size="sm" name="fr-icon-search-line" />
+                </Button>
+              }
+              nativeInputProps={{
+                placeholder: 'Rechercher',
+                value: searchValue,
+                onChange: (e) => setSearchValue(e.target.value),
+                onKeyDown: (e) => {
+                  if (e.key === 'Enter') {
+                    onApplyFilters(filterValues);
+                  }
                 },
               }}
-              pageSize={15}
             />
           </Box>
-          <Text size="xs" className="fr-hint-text" mt="2w">
-            Sources : Enquête annuelle des réseaux de chaleur et de froid (EARCF), édition 2023 portant sur l’année 2022, réalisée par la
-            Fedene Réseaux de chaleur et de froid avec le concours de l’association AMORCE, sous tutelle du service des données et études
-            statistiques (SDES) du ministère de la transition écologique. Excepté pour les taux EnR&R et contenus CO2 : la source est l’
-            <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" target="_blank" rel="noreferrer noopener">
-              Arrêté du 5 juillet 2024
-            </a>{' '}
-            (DPE) réalisé sur la base des données portant sur l'année 2022 ou sur une moyenne 2020-2021-2022.
-          </Text>
         </Box>
-      )}
+        <Box flex pb="4w">
+          <Button
+            priority={dataToDisplay === 'general' ? 'secondary' : 'tertiary'}
+            size="small"
+            className={`fr-mx-auto networks-list-selector ${dataToDisplay === 'general' ? 'active' : ''}`}
+            onClick={() => {
+              onChangeDataToDisplay('general');
+            }}
+          >
+            Général
+          </Button>
+          <Button
+            priority={dataToDisplay === 'mix_energetique' ? 'secondary' : 'tertiary'}
+            size="small"
+            className={`fr-mx-auto networks-list-selector ${dataToDisplay === 'mix_energetique' ? 'active' : ''}`}
+            onClick={() => {
+              onChangeDataToDisplay('mix_energetique');
+            }}
+          >
+            Mix énergétique
+          </Button>
+        </Box>
+        <Box height="100%" width="100%" display="flex" flexDirection="column" justifyContent="space-between" style={{ overflow: 'hidden' }}>
+          <Table
+            apiRef={tableApiRef}
+            columns={networkGeneralRowsParams}
+            rows={filteredNetworks}
+            disableColumnMenu
+            columnHeaderHeight={100}
+            getRowHeight={() => 'auto'}
+            hideFooterSelectedRowCount
+            loading={!loaded}
+            sortingOrder={['desc', 'asc']}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: 'Identifiant reseau', sort: 'asc' }],
+              },
+            }}
+            pageSize={15}
+          />
+        </Box>
+        <Text size="xs" className="fr-hint-text" mt="2w">
+          Sources : Enquête annuelle des réseaux de chaleur et de froid (EARCF), édition 2023 portant sur l’année 2022, réalisée par la
+          Fedene Réseaux de chaleur et de froid avec le concours de l’association AMORCE, sous tutelle du service des données et études
+          statistiques (SDES) du ministère de la transition écologique. Excepté pour les taux EnR&R et contenus CO2 : la source est l’
+          <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" target="_blank" rel="noreferrer noopener">
+            Arrêté du 5 juillet 2024
+          </a>{' '}
+          (DPE) réalisé sur la base des données portant sur l'année 2022 ou sur une moyenne 2020-2021-2022.
+        </Text>
+      </Box>
     </NetworksListContainer>
   );
 };

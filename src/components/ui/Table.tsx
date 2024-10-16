@@ -1,5 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Pagination, type PaginationProps } from '@codegouvfr/react-dsfr/Pagination';
+import LinearProgress from '@mui/material/LinearProgress';
 import {
   DataGrid,
   GridValidRowModel,
@@ -48,6 +49,7 @@ export const Table = <T extends GridValidRowModel>({
   paginationProps,
   columns,
   initialState,
+  slots,
   ...props
 }: DataGridProps<T> & AdditionalTableProps) => {
   return (
@@ -69,6 +71,8 @@ export const Table = <T extends GridValidRowModel>({
       }}
       slots={{
         pagination: () => <CustomPagination {...paginationProps} />,
+        loadingOverlay: () => <LinearProgress />,
+        ...slots,
       }}
       sx={{
         '&': {
