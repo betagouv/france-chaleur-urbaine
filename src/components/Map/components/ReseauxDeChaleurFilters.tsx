@@ -1,13 +1,13 @@
-import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { parseAsBoolean, useQueryState } from 'nuqs';
 
 import RangeFilter from '@components/Map/components/RangeFilter';
 import useFCUMap from '@components/Map/MapProvider';
 import { UrlStateAccordion } from '@components/ui/Accordion';
 import Button from '@components/ui/Button';
+import Checkbox from '@components/ui/Checkbox';
 import Divider from '@components/ui/Divider';
 import { deepMergeObjects } from '@utils/core';
-import { emptyMapConfiguration, FiltreEnergieConfKey, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
+import { emptyMapConfiguration, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
 import { DeactivatableBox, FilterResetButtonWrapper } from './SimpleMapLegend.style';
 
@@ -41,28 +41,33 @@ function ReseauxDeChaleurFilters() {
 
   return (
     <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
-      <Select
-        label="Énergie mobilisée"
-        nativeSelectProps={{
-          value: mapConfiguration.reseauxDeChaleur.energieMobilisee,
-          onChange: (e) => {
-            toggleFiltering(true);
-            mapConfiguration.reseauxDeChaleur.energieMobilisee =
-              e.target.value === '' ? undefined : (e.target.value as FiltreEnergieConfKey);
-            setMapConfiguration({ ...mapConfiguration });
-          },
-        }}
+      <Checkbox
+        small
         className="fr-mb-1v"
-        options={[
-          {
-            label: "Type d'énergie",
-            value: '',
+        options={filtresEnergies.reduce(
+          (acc, { label, confKey }) => {
+            acc.push({
+              label,
+              nativeInputProps: {
+                checked: mapConfiguration.reseauxDeChaleur.energieMobilisee?.includes(confKey) || false,
+                onChange: () => {
+                  const currentEnergies = mapConfiguration.reseauxDeChaleur.energieMobilisee || [];
+
+                  const newEnergies = currentEnergies.includes(confKey)
+                    ? currentEnergies.filter((key) => key !== confKey) // Remove if already selected
+                    : [...currentEnergies, confKey]; // Add if not selected
+
+                  mapConfiguration.reseauxDeChaleur.energieMobilisee = newEnergies.length ? newEnergies : undefined;
+
+                  toggleFiltering(true);
+                  setMapConfiguration({ ...mapConfiguration });
+                },
+              },
+            });
+            return acc;
           },
-          ...filtresEnergies.map(({ label, confKey }) => ({
-            label,
-            value: confKey,
-          })),
-        ]}
+          [] as Array<{ label: string; nativeInputProps: { checked: boolean; onChange: () => void } }>
+        )}
       />
       <UrlStateAccordion
         queryParamName="rdc_filter_more_options"
