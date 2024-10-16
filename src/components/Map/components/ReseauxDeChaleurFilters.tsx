@@ -1,10 +1,10 @@
 import { parseAsBoolean, useQueryState } from 'nuqs';
 
+import Checkbox from '@components/form/dsfr/Checkbox';
 import RangeFilter from '@components/Map/components/RangeFilter';
 import useFCUMap from '@components/Map/MapProvider';
 import { UrlStateAccordion } from '@components/ui/Accordion';
 import Button from '@components/ui/Button';
-import Checkbox from '@components/ui/Checkbox';
 import Divider from '@components/ui/Divider';
 import { deepMergeObjects } from '@utils/core';
 import { emptyMapConfiguration, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
