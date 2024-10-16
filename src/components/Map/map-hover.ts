@@ -132,7 +132,8 @@ const clickEvents: {
   { layer: 'communesFortPotentielPourCreationReseauxChaleur', key: '*' },
   { layer: 'consommationsGaz', key: 'consommation' },
   { layer: 'energy', key: 'energy' },
-  { layer: 'batimentsRaccordes', key: 'raccordement' },
+  { layer: 'batimentsRaccordesReseauxChaleur', key: '*' },
+  { layer: 'batimentsRaccordesReseauxFroid', key: '*' },
   {
     layer: 'enrrMobilisables-friches',
     key: 'enrrMobilisables-friche',

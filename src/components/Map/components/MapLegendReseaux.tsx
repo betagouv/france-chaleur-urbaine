@@ -19,7 +19,8 @@ export const mapLegendFeatures = [
   'reseauxDeFroid',
   'reseauxEnConstruction',
   'zonesDeDeveloppementPrioritaire',
-  'batimentsRaccordes',
+  'batimentsRaccordesReseauxChaleur',
+  'batimentsRaccordesReseauxFroid',
 ] as const;
 
 export type MapLegendFeature = (typeof mapLegendFeatures)[number];
@@ -225,14 +226,14 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
         </Box>
       )}
 
-      {enabledFeatures.includes('batimentsRaccordes') && (
+      {enabledFeatures.includes('batimentsRaccordesReseauxChaleur') && (
         <>
           <Box display="flex">
             <SingleCheckbox
-              name="batimentsRaccordes"
-              checked={mapConfiguration.batimentsRaccordes}
-              onChange={() => toggleLayer('batimentsRaccordes')}
-              trackingEvent="Carto|Bâtiments raccordés"
+              name="batimentsRaccordesReseauxChaleur"
+              checked={mapConfiguration.batimentsRaccordesReseauxChaleur}
+              onChange={() => toggleLayer('batimentsRaccordesReseauxChaleur')}
+              trackingEvent="Carto|Bâtiments raccordés réseau chaleur"
             />
 
             <Box
@@ -246,7 +247,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
 
             <Text
               as="label"
-              htmlFor="batimentsRaccordes"
+              htmlFor="batimentsRaccordesReseauxChaleur"
               fontSize="14px"
               lineHeight="18px"
               className="fr-col"
@@ -280,6 +281,39 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
                 (tracé ou cercle au centre de la commune si tracé non disponible)
               </Text>
             </Box>
+          </Box>
+        </>
+      )}
+      {enabledFeatures.includes('batimentsRaccordesReseauxFroid') && (
+        <>
+          <Box display="flex">
+            <SingleCheckbox
+              name="batimentsRaccordesReseauxFroid"
+              checked={mapConfiguration.batimentsRaccordesReseauxFroid}
+              onChange={() => toggleLayer('batimentsRaccordesReseauxFroid')}
+              trackingEvent="Carto|Bâtiments raccordés réseau froid"
+            />
+
+            <Box
+              backgroundColor={themeDefHeatNetwork.cold.color}
+              opacity={batimentsRaccordesLayerMaxOpacity}
+              height="16px"
+              width="16px"
+              mt="1v"
+              mr="3v"
+            />
+
+            <Text
+              as="label"
+              htmlFor="batimentsRaccordesReseauxFroid"
+              fontSize="14px"
+              lineHeight="18px"
+              className="fr-col"
+              cursor="pointer"
+              style={{ marginTop: '2px' }}
+            >
+              Bâtiments raccordés à un réseau de froid
+            </Text>
           </Box>
         </>
       )}
