@@ -84,7 +84,8 @@ export type MapConfiguration = {
     show: boolean;
     interval: Interval;
   };
-  batimentsRaccordes: boolean;
+  batimentsRaccordesReseauxChaleur: boolean;
+  batimentsRaccordesReseauxFroid: boolean;
   enrrMobilisablesChaleurFatale: {
     show: boolean;
     showUnitesDIncineration: boolean;
@@ -178,7 +179,8 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
     show: false,
     interval: [50, Number.MAX_VALUE],
   },
-  batimentsRaccordes: false,
+  batimentsRaccordesReseauxChaleur: false,
+  batimentsRaccordesReseauxFroid: false,
   enrrMobilisablesChaleurFatale: {
     show: false,
     showDatacenters: true,
