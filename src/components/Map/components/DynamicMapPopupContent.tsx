@@ -1,8 +1,10 @@
 import { ReactElement } from 'react';
 
+import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
 import { formatMWh, prettyFormatNumber } from '@utils/strings';
+import { BatimentRaccordeReseauxChaleurFroid } from 'src/types/layers/BatimentRaccordeReseauxChaleurFroid';
 import { BesoinsEnChaleur, BesoinsEnChaleurIndustrieCommunes } from 'src/types/layers/BesoinsEnChaleur';
 import { CommuneFortPotentielPourCreationReseauxChaleur } from 'src/types/layers/CommuneFortPotentielPourCreationReseauxChaleur';
 import {
@@ -33,6 +35,8 @@ export const layersWithDynamicContentPopup = [
   'besoinsEnFroid',
   'besoinsEnChaleurIndustrieCommunes',
   'communesFortPotentielPourCreationReseauxChaleur',
+  'batimentsRaccordesReseauxChaleur',
+  'batimentsRaccordesReseauxFroid',
 ] as const satisfies ReadonlyArray<LayerId>;
 
 export function isDynamicPopupContent(content: any): content is DynamicPopupContentType {
@@ -46,7 +50,8 @@ export type DynamicPopupContentType =
   | ENRRMobilisablePopupContentType
   | BesoinsEnChaleurPopupContentType
   | BesoinsEnChaleurIndustrieCommunesPopupContentType
-  | CommuneFortPotentielPourCreationReseauxChaleurPopupContentType;
+  | CommuneFortPotentielPourCreationReseauxChaleurPopupContentType
+  | BatimentRaccordeReseauxChaleurFroidPopupContentType;
 
 type BesoinsEnChaleurPopupContentType = {
   type: 'besoinsEnChaleur' | 'besoinsEnFroid';
@@ -61,6 +66,11 @@ type BesoinsEnChaleurIndustrieCommunesPopupContentType = {
 type CommuneFortPotentielPourCreationReseauxChaleurPopupContentType = {
   type: 'communesFortPotentielPourCreationReseauxChaleur';
   properties: CommuneFortPotentielPourCreationReseauxChaleur;
+};
+
+type BatimentRaccordeReseauxChaleurFroidPopupContentType = {
+  type: 'batimentsRaccordesReseauxChaleur' | 'batimentsRaccordesReseauxFroid';
+  properties: BatimentRaccordeReseauxChaleurFroid;
 };
 
 type ZonePotentielChaudPopupContentType = {
@@ -138,8 +148,11 @@ const DynamicPopupContent = ({ content }: { content: DynamicPopupContentType }) 
       return (
         <CommuneFortPotentielPourCreationReseauxChaleurPopupContent communeFortPotentielPourCreationReseauxChaleur={content.properties} />
       );
+    case 'batimentsRaccordesReseauxChaleur':
+    case 'batimentsRaccordesReseauxFroid':
+      return <BatimentRaccordeReseauxChaleurFroidPopupContent batimentRaccordeReseauxChaleurFroid={content.properties} />;
     default:
-      throw new Error('not implemented');
+      throw new Error(`popup type '${(content as any).type}' not implemented`);
   }
 };
 
@@ -294,7 +307,7 @@ const ENRRMobilisableUniteDIncinerationPopupContent = ({ uniteDIncineration }: {
 
 interface PopupPropertyProps<T> {
   label: string;
-  value: T;
+  value: T | undefined;
   unit?: string; // overridden by the formatter if present
   formatter?: (value: T) => string | ReactElement;
 }
@@ -367,6 +380,38 @@ const CommuneFortPotentielPourCreationReseauxChaleurPopupContent = ({
         value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_total}
       />
       <PopupProperty label="Source" value="IGN - Cerema" />
+    </section>
+  );
+};
+
+const secteurBatimentRaccordeToLabels = {
+  A: 'Agriculture',
+  I: 'Industrie',
+  R: 'Résidentiel',
+  T: 'Tertiaire',
+};
+
+const BatimentRaccordeReseauxChaleurFroidPopupContent = ({
+  batimentRaccordeReseauxChaleurFroid,
+}: {
+  batimentRaccordeReseauxChaleurFroid: BatimentRaccordeReseauxChaleurFroid;
+}) => {
+  return (
+    <section>
+      {/* TODO froid ou chaud selon filiere */}
+      <PopupTitle className="fr-mr-3w">{batimentRaccordeReseauxChaleurFroid.adresse}</PopupTitle>
+      <strong>Identifiant du réseau&nbsp;:</strong>&nbsp;
+      <Link href={`/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`} isExternal>
+        {batimentRaccordeReseauxChaleurFroid.id_reseau}
+      </Link>
+      <br />
+      <PopupProperty
+        label={`Consommation de ${batimentRaccordeReseauxChaleurFroid.filiere === 'C' ? 'chaleur' : 'froid'}`}
+        value={batimentRaccordeReseauxChaleurFroid.conso}
+        formatter={formatMWh}
+      />
+      <PopupProperty label="Secteur" value={secteurBatimentRaccordeToLabels[batimentRaccordeReseauxChaleurFroid.code_grand_secteur]} />
+      <PopupProperty label="Source" value="SDES pour 2023" />
     </section>
   );
 };

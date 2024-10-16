@@ -363,7 +363,8 @@ export type LayerId =
   | 'demandesEligibilite'
   | 'energy'
   | 'consommationsGaz'
-  | 'batimentsRaccordes'
+  | 'batimentsRaccordesReseauxChaleur'
+  | 'batimentsRaccordesReseauxFroid'
   | 'enrrMobilisables-datacenter'
   | 'enrrMobilisables-industrie'
   | 'enrrMobilisables-installations-electrogenes'
@@ -751,18 +752,19 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
     // --- Raccordements ---
     // ---------------------
     {
-      sourceId: 'raccordements',
+      sourceId: 'batimentsRaccordesReseauxChaleurFroid',
       source: {
         type: 'vector',
-        tiles: [`${location.origin}/api/map/raccordements/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
+        tiles: [`${location.origin}/api/map/batimentsRaccordesReseauxChaleurFroid/{z}/{x}/{y}`],
+        minzoom: 9,
+        maxzoom: 9,
       },
       layers: [
         {
-          id: 'batimentsRaccordes',
-          source: 'raccordements',
-          'source-layer': 'raccordements',
-          minzoom: intermediateTileLayersMinZoom,
+          id: 'batimentsRaccordesReseauxChaleur',
+          source: 'batimentsRaccordesReseauxChaleurFroid',
+          'source-layer': 'batiments_raccordes_reseaux_chaleur',
+          minzoom: 9,
           type: 'symbol',
           layout: {
             'icon-image': 'square',
@@ -771,19 +773,54 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           },
           paint: {
             'icon-color': themeDefHeatNetwork.classed.color,
-            'icon-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              intermediateTileLayersMinZoom + 0.2,
-              0,
-              intermediateTileLayersMinZoom + 0.5 + 1,
-              batimentsRaccordesLayerMaxOpacity,
-            ],
+            'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9 + 0.2, 0, 9 + 0.5 + 1, batimentsRaccordesLayerMaxOpacity],
+          },
+        },
+        {
+          id: 'batimentsRaccordesReseauxFroid',
+          source: 'batimentsRaccordesReseauxChaleurFroid',
+          'source-layer': 'batiments_raccordes_reseaux_froid',
+          minzoom: 9,
+          type: 'symbol',
+          layout: {
+            'icon-image': 'square',
+            'icon-overlap': 'always',
+            'icon-size': 0.5,
+          },
+          paint: {
+            'icon-color': themeDefHeatNetwork.cold.color,
+            'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9 + 0.2, 0, 9 + 0.5 + 1, batimentsRaccordesLayerMaxOpacity],
           },
         },
       ],
     },
+    // {
+    //   sourceId: 'batimentsRaccordesReseauxFroid',
+    //   source: {
+    //     type: 'vector',
+    //     tiles: [`${location.origin}/api/map/batimentsRaccordesReseauxFroid/{z}/{x}/{y}`],
+    //     minzoom: 9,
+    //     maxzoom: 12,
+    //   },
+    //   layers: [
+    //     {
+    //       id: 'batimentsRaccordesReseauxFroid',
+    //       source: 'batimentsRaccordesReseauxFroid',
+    //       'source-layer': 'layer',
+    //       minzoom: 9,
+    //       type: 'symbol',
+    //       layout: {
+    //         'icon-image': 'square',
+    //         'icon-overlap': 'always',
+    //         'icon-size': 0.5,
+    //       },
+    //       paint: {
+    //         'icon-color': themeDefHeatNetwork.classed.color,
+    //         'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9 + 0.2, 0, 9 + 0.5 + 1, batimentsRaccordesLayerMaxOpacity],
+    //       },
+    //     },
+    //   ],
+    // },
 
     // --------------
     // --- Energy ---
@@ -1193,7 +1230,8 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   setLayerVisibility('reseauxDeChaleur-avec-trace-classe', config.reseauxDeChaleur.show);
   setLayerVisibility('reseauxDeChaleur-avec-trace-nonclasse', !config.reseauxDeChaleur.isClassed && config.reseauxDeChaleur.show);
   setLayerVisibility('reseauxDeChaleur-sans-trace', config.reseauxDeChaleur.show);
-  setLayerVisibility('batimentsRaccordes', config.batimentsRaccordes);
+  setLayerVisibility('batimentsRaccordesReseauxChaleur', config.batimentsRaccordesReseauxChaleur);
+  setLayerVisibility('batimentsRaccordesReseauxFroid', config.batimentsRaccordesReseauxFroid);
   setLayerVisibility('zonesDeDeveloppementPrioritaire', config.zonesDeDeveloppementPrioritaire);
   setLayerVisibility(
     'enrrMobilisables-datacenter',
