@@ -155,11 +155,9 @@ const NetworksList = () => {
         newFilterValues.energieMobilisee.length > 0
       ) {
         newFilteredNetworks = newFilteredNetworks.filter((network: NetworkToCompare) => {
-          // Get the property value for the current network using the keys from energieMobilisee
-          const values = newFilterValues.energieMobilisee.map((key) => network[key as keyof NetworkToCompare]);
-
-          // Check if any value in the values array is greater than 0
-          return values.some((value) => value !== undefined && (value as number) > 0);
+          return newFilterValues.energieMobilisee
+            .map((key) => network[key as keyof NetworkToCompare])
+            .some((value) => value !== undefined && (value as number) > 0);
         });
       }
 
