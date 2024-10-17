@@ -1,5 +1,7 @@
 import { ReactElement } from 'react';
+import styled from 'styled-components';
 
+import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
@@ -398,8 +400,11 @@ const BatimentRaccordeReseauxChaleurFroidPopupContent = ({
 }) => {
   return (
     <section>
-      {/* TODO froid ou chaud selon filiere */}
-      <PopupTitle className="fr-mr-3w">{batimentRaccordeReseauxChaleurFroid.adresse}</PopupTitle>
+      {batimentRaccordeReseauxChaleurFroid.adresse && (
+        <PopupAddressHeader>
+          <Box mr="3w">{batimentRaccordeReseauxChaleurFroid.adresse}</Box>
+        </PopupAddressHeader>
+      )}
       <strong>Identifiant du réseau&nbsp;:</strong>&nbsp;
       <Link href={`/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`} isExternal>
         {batimentRaccordeReseauxChaleurFroid.id_reseau}
@@ -415,3 +420,11 @@ const BatimentRaccordeReseauxChaleurFroidPopupContent = ({
     </section>
   );
 };
+
+const PopupAddressHeader = styled.header`
+  background-color: #4550e5;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.75rem;
+  font-weight: bold;
+`;
