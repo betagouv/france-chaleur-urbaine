@@ -35,7 +35,7 @@ const Contact = ({
       demand['Structure accompagnante'] &&
       (demand['Structure accompagnante'].includes("Bureau d'études ou AMO") ||
         demand['Structure accompagnante'].includes('Mandataire / délégataire CEE')) &&
-      (demand.Structure === 'Logement social' || demand.Structure === 'Tertiaire' || demand.Structure === 'Autre')
+      (demand.Structure === 'Bailleur social' || demand.Structure === 'Tertiaire' || demand.Structure === 'Autre')
     ) {
       return demand.Établissement;
     }

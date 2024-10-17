@@ -16,7 +16,6 @@ const DalkiaMap = () => {
         enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
-        withHideLegendSwitch
         legendLogoOpt={{
           src: '/logo-DALKIA.png',
           alt: 'logo Dalkia',

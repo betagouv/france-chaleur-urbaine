@@ -74,8 +74,6 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
         'livraisons_totale_MWh',
         'production_totale_MWh',
         'PM',
-        'PM_L',
-        'PM_T',
         'PF%',
         'PV%'
       )

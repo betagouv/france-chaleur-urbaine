@@ -115,7 +115,10 @@ export const LegendSideBar = styled.div<{
   legendCollapsed: boolean;
 }>`
   z-index: ${mapControlZindex + 2};
-  overflow: auto;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   ${({ legendCollapsed }) =>
     legendCollapsed &&
     css`
@@ -132,20 +135,28 @@ export const LegendSideBar = styled.div<{
     0px 8px 16px rgba(0, 0, 0, 0.1);
 `;
 
-export const LegendContainer = styled.div<{
-  withoutLogo?: boolean;
-}>`
-  ${({ withoutLogo }) => !withoutLogo && 'margin-bottom: 99px;'}
+export const LegendContainer = styled.div`
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `;
 
+export const CollapseLegendLabel = styled.label`
+  transform: rotate(90deg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
 export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
   position: absolute;
   left: ${({ legendCollapsed }) => (legendCollapsed ? '-1px' : `calc(${legendWidth}px - 1px)`)};
   animation: slide-in-left 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-  top: calc(50% - 16px);
+  top: calc(50% - 50px);
   background-color: var(--background-flat-blue-france);
-  height: 32px;
-  width: 32px;
+  height: 140px;
+  width: 30px;
   overflow: visible;
   display: flex;
   align-items: center;
@@ -156,37 +167,14 @@ export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
     background-color: var(--background-active-blue-france-hover) !important;
   }
 
-  span {
-    transition: transform 0.5s ease;
-    transform: rotate(${({ legendCollapsed }) => (legendCollapsed ? '0' : '180deg')});
-  }
-
   z-index: ${mapControlZindex + 1};
-
-  // ugly hack => hover create issue in mobile
-  @media (min-width: 520px) {
-    &:hover {
-      & > .hover-info {
-        display: block;
-      }
-    }
-  }
 `;
 
-export const LegendLogoList = styled.div<{
-  legendCollapsed: boolean;
-}>`
-  width: calc(${legendWidth}px - 10px);
-  position: absolute;
-  bottom: 0;
-  left: 5px;
-  z-index: 3;
+export const LegendLogoList = styled.div`
   display: flex;
   align-items: center;
-  overflow: hidden;
   background: var(--background-default-grey);
-  ${({ legendCollapsed }) => legendCollapsed && 'display: none;'}
-  height:100px;
+  height: 100px;
 `;
 
 export const LegendLogoLink = styled.a`

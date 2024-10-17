@@ -47,12 +47,11 @@ export type FiltreEnergieConfKey = (typeof filtresEnergies)[number]['confKey'];
 type EnergieRatioConfKey = `energie_ratio_${FiltreEnergieConfKey}`;
 
 export type MapConfiguration = {
-  proMode: boolean;
   filtreIdentifiantReseau: string[];
   filtreGestionnaire: string[];
   reseauxDeChaleur: {
     show: boolean;
-    energieMajoritaire?: FiltreEnergieConfKey;
+    energieMobilisee?: FiltreEnergieConfKey[];
     tauxENRR: Interval;
     emissionsCO2: Interval;
     prixMoyen: Interval;
@@ -108,8 +107,13 @@ export type MapConfiguration = {
   besoinsEnChaleur: boolean;
   besoinsEnFroid: boolean;
   besoinsEnChaleurIndustrieCommunes: boolean;
+  communesFortPotentielPourCreationReseauxChaleur: {
+    show: boolean;
+    population: Interval;
+  };
   densiteThermiqueLineaire: boolean;
   mesureDistance: boolean;
+  extractionDonneesBatiment: boolean;
 };
 
 /**
@@ -132,14 +136,14 @@ export function isMapConfigurationInitialized(conf: MaybeEmptyMapConfiguration):
 
 export const percentageMaxInterval: Interval = [0, 100];
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
+export const communesFortPotentielPourCreationReseauxChaleurInterval: Interval = [0, 100_000];
 
-const emptyMapConfiguration: EmptyMapConfiguration = {
-  proMode: false,
+export const emptyMapConfiguration: EmptyMapConfiguration = {
   filtreIdentifiantReseau: [],
   filtreGestionnaire: [],
   reseauxDeChaleur: {
     show: false,
-    energieMajoritaire: undefined,
+    energieMobilisee: [],
     energie_ratio_biomasse: percentageMaxInterval,
     energie_ratio_geothermie: percentageMaxInterval,
     energie_ratio_uve: percentageMaxInterval,
@@ -197,25 +201,20 @@ const emptyMapConfiguration: EmptyMapConfiguration = {
   besoinsEnChaleur: false,
   besoinsEnFroid: false,
   besoinsEnChaleurIndustrieCommunes: false,
+  communesFortPotentielPourCreationReseauxChaleur: {
+    show: false,
+    population: communesFortPotentielPourCreationReseauxChaleurInterval,
+  },
   densiteThermiqueLineaire: false,
   mesureDistance: false,
+  extractionDonneesBatiment: false,
 };
 
 export const defaultMapConfiguration = createMapConfiguration({
-  proMode: true,
   reseauxDeChaleur: {
     show: true,
   },
   reseauxEnConstruction: true,
-  consommationsGaz: {
-    show: false,
-  },
-  batimentsGazCollectif: {
-    show: false,
-  },
-  batimentsFioulCollectif: {
-    show: false,
-  },
 });
 
 export const iframeSimpleMapConfiguration = createMapConfiguration({

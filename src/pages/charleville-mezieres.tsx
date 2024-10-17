@@ -15,7 +15,6 @@ const CharlevilleMezieresMap = () => {
         enabledLegendFeatures={['reseauxDeChaleur', 'reseauxEnConstruction']}
         withLegend
         withBorder
-        withHideLegendSwitch
         initialCenter={[4.717692, 49.767402]}
         initialZoom={12}
         legendTitle="Réseaux de chaleur"

@@ -146,6 +146,12 @@ const trackingEvents = {
   'Carto|Définir une zone': {
     matomo: ['Carto', 'Définir une zone'],
   },
+  'Carto|Légende|Ouvre': {
+    matomo: ['Carto', 'Légende', 'Ouvre'],
+  },
+  'Carto|Légende|Ferme': {
+    matomo: ['Carto', 'Légende', 'Ferme'],
+  },
   'Carto|Supprimer un segment': {
     matomo: ['Carto', 'Supprimer un segment'],
   },
@@ -187,6 +193,18 @@ const trackingEvents = {
   },
   'Carto|Réseaux de froid|Désactive': {
     matomo: ['Carto', 'Réseaux de froid', 'Désactive'],
+  },
+  'Carto|Tabs|reseaux': {
+    matomo: ['Carto', 'Tabs', 'reseaux'],
+  },
+  'Carto|Tabs|potentiel': {
+    matomo: ['Carto', 'Tabs', 'potentiel'],
+  },
+  'Carto|Tabs|enrr': {
+    matomo: ['Carto', 'Tabs', 'enrr'],
+  },
+  'Carto|Tabs|outils': {
+    matomo: ['Carto', 'Tabs', 'outils'],
   },
   'Carto|Active Pro Mode': {
     matomo: ['Carto', 'Active Pro Mode'],
@@ -232,6 +250,12 @@ const trackingEvents = {
   },
   'Carto|Besoins en chaleur secteur industriel|Désactive': {
     matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Désactive'],
+  },
+  'Carto|Communes à fort potentiel pour la création de réseaux de chaleur|Active': {
+    matomo: ['Carto', 'Communes à fort potentiel pour la création de réseaux de chaleur', 'Active'],
+  },
+  'Carto|Communes à fort potentiel pour la création de réseaux de chaleur|Désactive': {
+    matomo: ['Carto', 'Communes à fort potentiel pour la création de réseaux de chaleur', 'Désactive'],
   },
   'Carto|Besoins en froid|Active': {
     matomo: ['Carto', 'Besoins en froid', 'Active'],
@@ -616,8 +640,9 @@ const emptyActivateMethod = () => {
 };
 
 const matomoABTestingExperiments = [
+  // placeholder to make types work
   {
-    name: 'TestMessagesFormulaireContact',
+    name: '_internal',
     percentage: 100,
     includedTargets: [],
     excludedTargets: [],
@@ -626,20 +651,9 @@ const matomoABTestingExperiments = [
         name: 'original',
         activate: emptyActivateMethod,
       },
-      {
-        name: 'AmeliorationA',
-        activate: emptyActivateMethod,
-      },
-      {
-        name: 'AmeliorationB',
-        activate: emptyActivateMethod,
-      },
-      {
-        name: 'AmeliorationA+B',
-        activate: emptyActivateMethod,
-      },
     ],
   },
+  // add the experiments below
 ] as const satisfies ReadonlyArray<MatomoABTestingExperiment>;
 
 type MatomoABTestingExperimentName = (typeof matomoABTestingExperiments)[number]['name'];

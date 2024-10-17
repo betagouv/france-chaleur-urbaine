@@ -29,8 +29,13 @@ import { SourceId } from 'src/services/tiles.config';
 import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
 import { Network } from 'src/types/Summary/Network';
 
+import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
+import {
+  communesFortPotentielPourCreationReseauxChaleurLayerColor,
+  communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+} from './map-styles';
 
 export const tileSourcesMaxZoom = 17;
 
@@ -56,8 +61,8 @@ type LayerSymbolSpecification = {
  */
 export const layerSymbolsImagesURLs = [
   {
-    key: 'energy-picto',
-    url: '/icons/rect.png',
+    key: 'square',
+    url: '/icons/square.png',
     sdf: true,
   },
   {
@@ -92,6 +97,10 @@ export const LegendDeskData = {
   gasUsage: {
     min: 50,
     max: 2000,
+  },
+  communesFortPotentielPourCreationReseauxChaleurNbHabitants: {
+    min: 0,
+    max: 100000,
   },
 };
 
@@ -371,11 +380,14 @@ export type LayerId =
   | 'besoinsEnChaleurFroid-contour'
   | 'besoinsEnChaleurIndustrieCommunes'
   | 'besoinsEnChaleurIndustrieCommunes-contour'
+  | 'communesFortPotentielPourCreationReseauxChaleur'
   | 'caracteristiquesBatiments'
   | 'distance-measurements-lines'
   | 'distance-measurements-labels'
   | 'linear-heat-density-lines'
-  | 'linear-heat-density-labels';
+  | 'linear-heat-density-labels'
+  | 'buildings-data-extraction-fill'
+  | 'buildings-data-extraction-outline';
 
 const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = [
   'interpolate',
@@ -401,7 +413,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/zonesPotentielChaud/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
         promoteId: 'id_zone',
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -439,7 +450,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/zonesPotentielFortChaud/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
         promoteId: 'id_zone',
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -474,7 +484,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/besoinsEnChaleurIndustrieCommunes/{z}/{x}/{y}`],
         minzoom: 5,
         maxzoom: 11,
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -578,7 +587,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/besoinsEnChaleur/{z}/{x}/{y}`],
         minzoom: 10,
         maxzoom: 14,
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -673,7 +681,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/enrrMobilisables-friches/{z}/{x}/{y}`],
         promoteId: 'GmlID',
         maxzoom: tileSourcesMaxZoom,
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -711,7 +718,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/enrrMobilisables-parkings/{z}/{x}/{y}`],
         promoteId: 'GmlID',
         maxzoom: tileSourcesMaxZoom,
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
       layers: [
         {
@@ -757,7 +763,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           minzoom: intermediateTileLayersMinZoom,
           type: 'symbol',
           layout: {
-            'icon-image': 'energy-picto',
+            'icon-image': 'square',
             'icon-overlap': 'always',
             'icon-size': 0.5,
           },
@@ -795,7 +801,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           minzoom: intermediateTileLayersMinZoom,
           type: 'symbol',
           layout: {
-            'icon-image': 'energy-picto',
+            'icon-image': 'square',
             'icon-overlap': 'always',
             'symbol-sort-key': ['-', ['coalesce', ['get', NB_LOT], 0]],
             'icon-size': [
@@ -1008,7 +1014,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         tiles: [`${location.origin}/api/map/enrrMobilisables/{z}/{x}/{y}`],
         maxzoom: tileSourcesMaxZoom,
         promoteId: 'GmlID',
-        attribution: '<a href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" target="_blank">Cerema</a>',
       },
 
       // the source contains one layer that contains all features
@@ -1087,10 +1092,50 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         },
       ],
     },
+
+    {
+      sourceId: 'communesFortPotentielPourCreationReseauxChaleur',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/communesFortPotentielPourCreationReseauxChaleur/{z}/{x}/{y}`],
+        minzoom: 5,
+        maxzoom: 6,
+      },
+      layers: [
+        {
+          id: 'communesFortPotentielPourCreationReseauxChaleur',
+          source: 'communesFortPotentielPourCreationReseauxChaleur',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'circle',
+          layout: {
+            'circle-sort-key': ['-', ['get', 'population']],
+          },
+          paint: {
+            'circle-color': communesFortPotentielPourCreationReseauxChaleurLayerColor,
+            'circle-radius': [
+              'interpolate',
+              ['linear'],
+              ['+', ['get', 'zones_fort_potentiel_chauf_mwh'], ['get', 'zones_fort_potentiel_ecs_mwh']],
+              0,
+              4,
+              160_000, // ~ max value
+              20,
+            ],
+            'circle-opacity': communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+          },
+          filter: [
+            'all',
+            ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
+            ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
+          ],
+        },
+      ],
+    },
   ];
 }
 export function buildInternalMapLayers(): MapSourceLayersSpecification[] {
-  return [...distancesMeasurementLayers, ...linearHeatDensityLayers];
+  return [...distancesMeasurementLayers, ...linearHeatDensityLayers, ...buildingsDataExtractionLayers];
 }
 
 // extends the Map type to get fully typed layer and source ids
@@ -1119,6 +1164,7 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   setLayerVisibility('besoinsEnChaleurFroid-contour', config.besoinsEnChaleur || config.besoinsEnFroid);
   setLayerVisibility('besoinsEnChaleurIndustrieCommunes', config.besoinsEnChaleurIndustrieCommunes);
   setLayerVisibility('besoinsEnChaleurIndustrieCommunes-contour', config.besoinsEnChaleurIndustrieCommunes);
+  setLayerVisibility('communesFortPotentielPourCreationReseauxChaleur', config.communesFortPotentielPourCreationReseauxChaleur.show);
   setLayerVisibility('reseauxDeFroid-avec-trace', config.reseauxDeFroid);
   setLayerVisibility('reseauxDeFroid-sans-trace', config.reseauxDeFroid);
   setLayerVisibility('demandesEligibilite', config.demandesEligibilite);
@@ -1174,38 +1220,50 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   // custom filters for energy and consommationsGaz
 
   const TYPE_ENERGY = 'energie_utilisee';
+  const batimentsFioulCollectifMin =
+    config.batimentsFioulCollectif.interval[0] === LegendDeskData.energy.min
+      ? Number.MIN_SAFE_INTEGER
+      : config.batimentsFioulCollectif.interval[0];
+  const batimentsFioulCollectifMax =
+    config.batimentsFioulCollectif.interval[1] === LegendDeskData.energy.max
+      ? Number.MAX_SAFE_INTEGER
+      : config.batimentsFioulCollectif.interval[1];
+  const batimentsGazCollectifMin =
+    config.batimentsGazCollectif.interval[0] === LegendDeskData.energy.min
+      ? Number.MIN_SAFE_INTEGER
+      : config.batimentsGazCollectif.interval[0];
+  const batimentsGazCollectifMax =
+    config.batimentsGazCollectif.interval[1] === LegendDeskData.energy.max
+      ? Number.MAX_SAFE_INTEGER
+      : config.batimentsGazCollectif.interval[1];
   map.setFilter('energy', [
     'any',
     config.batimentsFioulCollectif.show
       ? [
           'all',
           ['==', ['get', TYPE_ENERGY], 'fioul'],
-          [
-            'all',
-            ['>=', ['get', NB_LOT], config.batimentsFioulCollectif.interval[0]],
-            ['<=', ['get', NB_LOT], config.batimentsFioulCollectif.interval[1]],
-          ],
+          ['all', ['>=', ['get', NB_LOT], batimentsFioulCollectifMin], ['<=', ['get', NB_LOT], batimentsFioulCollectifMax]],
         ]
       : ['literal', false],
     config.batimentsGazCollectif.show
       ? [
           'all',
           ['==', ['get', TYPE_ENERGY], 'gaz'],
-          [
-            'all',
-            ['>=', ['get', NB_LOT], config.batimentsGazCollectif.interval[0]],
-            ['<=', ['get', NB_LOT], config.batimentsGazCollectif.interval[1]],
-          ],
+          ['all', ['>=', ['get', NB_LOT], batimentsGazCollectifMin], ['<=', ['get', NB_LOT], batimentsGazCollectifMax]],
         ]
       : ['literal', false],
   ]);
 
+  const consommationsGazIntervalMin =
+    config.consommationsGaz.interval[0] === LegendDeskData.gasUsage.min ? Number.MIN_SAFE_INTEGER : config.consommationsGaz.interval[0];
+  const consommationsGazIntervalMax =
+    config.consommationsGaz.interval[1] === LegendDeskData.gasUsage.max ? Number.MAX_SAFE_INTEGER : config.consommationsGaz.interval[1];
   map.setFilter(
     'consommationsGaz',
     config.consommationsGaz.show && [
       'all',
       config.consommationsGaz.interval
-        ? ['all', ['>=', ['get', CONSO], config.consommationsGaz.interval[0]], ['<=', ['get', CONSO], config.consommationsGaz.interval[1]]]
+        ? ['all', ['>=', ['get', CONSO], consommationsGazIntervalMin], ['<=', ['get', CONSO], consommationsGazIntervalMax]]
         : true,
       [
         'any',
@@ -1252,11 +1310,18 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
     ['==', ['get', 'is_zone'], false],
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
   ]);
+  map.setFilter('communesFortPotentielPourCreationReseauxChaleur', [
+    'all',
+    ['>=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[0]],
+    ['<=', ['get', 'population'], config.communesFortPotentielPourCreationReseauxChaleur.population[1]],
+  ]);
 
   setLayerVisibility('distance-measurements-labels', config.mesureDistance);
   setLayerVisibility('distance-measurements-lines', config.mesureDistance);
   setLayerVisibility('linear-heat-density-labels', config.densiteThermiqueLineaire);
   setLayerVisibility('linear-heat-density-lines', config.densiteThermiqueLineaire);
+  setLayerVisibility('buildings-data-extraction-fill', config.extractionDonneesBatiment);
+  setLayerVisibility('buildings-data-extraction-outline', config.extractionDonneesBatiment);
 }
 
 type ReseauxDeChaleurFilter = {
@@ -1298,8 +1363,10 @@ export type ReseauxDeChaleurLimits = Record<(typeof reseauxDeChaleurFilters)[num
  */
 function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeChaleur']): ExpressionSpecification[] {
   return [
-    ...(conf.energieMajoritaire
-      ? ([['==', ['get', 'energie_majoritaire'], conf.energieMajoritaire]] satisfies ExpressionSpecification[])
+    ...(conf.energieMobilisee && conf.energieMobilisee.length > 0
+      ? conf.energieMobilisee.map(
+          (energie) => ['>', ['coalesce', ['get', `energie_ratio_${energie}`]], 0] satisfies ExpressionSpecification
+        )
       : []),
     ...reseauxDeChaleurFilters.flatMap((filtre) => {
       const minValue = filtre.filterPreprocess ? filtre.filterPreprocess(conf[filtre.confKey][0]) : conf[filtre.confKey][0];

@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { z } from 'zod';
 
+import { buildingsDataExtractionPolygonsSourceId } from '@components/Map/components/tools/BuildingsDataExtractionTool';
 import {
   distancesMeasurementLabelsSourceId,
   distancesMeasurementLinesSourceId,
@@ -46,6 +47,7 @@ export const databaseSourceIds = [
   'zonesPotentielFortChaud',
   'besoinsEnChaleur',
   'besoinsEnChaleurIndustrieCommunes',
+  'communesFortPotentielPourCreationReseauxChaleur',
   'buildings', // caractéristiques des bâtiments
 ] as const;
 
@@ -56,7 +58,8 @@ export type InternalSourceId =
   | typeof distancesMeasurementLinesSourceId
   | typeof distancesMeasurementLabelsSourceId
   | typeof linearHeatDensityLinesSourceId
-  | typeof linearHeatDensityLabelsSourceId;
+  | typeof linearHeatDensityLabelsSourceId
+  | typeof buildingsDataExtractionPolygonsSourceId;
 export type SourceId = DatabaseSourceId | InternalSourceId;
 
 const bnbFields = `
@@ -279,4 +282,23 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     id: '', // useless
     extraWhere: (query) => query, // useless
   },
+  communesFortPotentielPourCreationReseauxChaleur: {
+    source: 'database',
+    tiles: 'communes_fort_potentiel_pour_creation_reseaux_chaleur_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  /**
+   * Pour tout ajout de nouvelles couches de données :
+   * - bien noter les étapes dans notion https://www.notion.so/D-veloppement-e8399345919442748735de25865ebe4a pour que d'autres personnes puissent reconstruire les données
+   * - ajouter une section ici pour faire le lien URL (SourceId) -> table contenant les tuiles
+   * - définir la couche et les layers dans map-layers.ts
+   * - compléter layerURLKeysToMapConfigPath (carte.tsx) pour pouvoir afficher la couche directement via l'URL
+   * - définir les comportements au survol et/ou au clic (en général popup) si besoin dans map-hover.tsx
+   * - ajouter un type de popup (dynamique = propre à chaque entité) dans DynamicMapPopupContent
+   */
 };

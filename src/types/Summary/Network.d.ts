@@ -50,6 +50,7 @@ export interface Network {
   'reseaux classes': boolean;
   informationsComplementaires: string;
   fichiers: NetworkAttachment[];
+  region: string;
 }
 
 export interface NetworkAttachment {
@@ -74,4 +75,22 @@ export interface NetworkSummary {
   livraisons_totale_MWh: number;
   nb_pdl: number;
   isCold?: boolean;
+}
+
+export interface NetworkToCompare extends Network {
+  communes: string[];
+  energie_ratio_biomasse: number;
+  energie_ratio_geothermie: number;
+  energie_ratio_uve: number;
+  energie_ratio_chaleurIndustrielle: number;
+  energie_ratio_solaireThermique: number;
+  energie_ratio_pompeAChaleur: number;
+  energie_ratio_gaz: number;
+  energie_ratio_fioul: number;
+  energie_ratio_autresEnr: number;
+  energie_ratio_chaufferiesElectriques: number;
+  energie_ratio_charbon: number;
+  energie_ratio_gpl: number;
+  energie_ratio_autreChaleurRecuperee: number;
+  energie_ratio_biogaz: number;
 }

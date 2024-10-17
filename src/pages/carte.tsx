@@ -34,6 +34,7 @@ export const layerURLKeysToMapConfigPath = {
   besoinsEnChaleur: 'besoinsEnChaleur',
   besoinsEnFroid: 'besoinsEnFroid',
   besoinsEnChaleurIndustrieCommunes: 'besoinsEnChaleurIndustrieCommunes',
+  communesFortPotentielPourCreationReseauxChaleur: 'communesFortPotentielPourCreationReseauxChaleur.show',
 } as const satisfies { [key: string]: MapConfigurationProperty<boolean> };
 
 export type LayerURLKey = keyof typeof layerURLKeysToMapConfigPath;
@@ -53,6 +54,7 @@ const Carte = () => {
     ...defaultMapConfiguration,
     densiteThermiqueLineaire: true,
     mesureDistance: true,
+    extractionDonneesBatiment: true,
   });
   additionalLayers.forEach((updateKey) => {
     setProperty(initialMapConfiguration, updateKey, true);

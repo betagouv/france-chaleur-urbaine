@@ -184,6 +184,9 @@ const LinearHeatDensityTool: React.FC = () => {
 
     map.on('draw.create', onDrawCreate);
     map.on('draw.render', onDrawRender);
+    if (!densite) {
+      startMeasurement();
+    }
 
     return () => {
       map.off('draw.create', onDrawCreate);
@@ -208,13 +211,14 @@ const LinearHeatDensityTool: React.FC = () => {
   }
   function cancelMeasurement() {
     mapDraw?.deleteAll();
-    mapDraw?.changeMode('simple_select');
     setIsDrawing((isDrawing) => {
-      // remove the last feature (sketch)
+      const shouldDrawAgain = featuresRef.current.length === 1;
       if (isDrawing) {
-        setFeatures((features) => features.slice(0, -1));
+        mapDraw?.changeMode(shouldDrawAgain ? 'draw_line_string' : ('simple_select' as any));
+        // remove the last feature (sketch)
+        setFeatures(featuresRef.current.slice(0, -1));
       }
-      return false;
+      return shouldDrawAgain;
     });
   }
   const clearDensity = () => {
@@ -223,8 +227,8 @@ const LinearHeatDensityTool: React.FC = () => {
     }
     setDensite(null);
     mapDraw.deleteAll();
-    mapDraw.changeMode('simple_select');
-    setIsDrawing(false);
+    mapDraw.changeMode('draw_line_string');
+    setIsDrawing(true);
     setFeatures([]);
   };
   function exportDrawing() {
@@ -234,27 +238,31 @@ const LinearHeatDensityTool: React.FC = () => {
     downloadObject(features, `FCU_export_tracé_${formatAsISODate(new Date())}.geojson`, 'application/geo+json');
   }
 
+  const drawingFeaturePointCounts = (mapDraw?.getAll().features[0] as MeasureFeature)?.geometry.coordinates.length ?? 0;
+  const showCancelButton = isDrawing && drawingFeaturePointCounts >= 2;
+  const showAddButton = features.length > 0 && !isDrawing;
+
   return (
     <>
       <Box display="flex" flexDirection="column" gap="16px">
         <Box>
           <Title>Calculer une densité thermique linéaire</Title>
 
-          <Text size="xs" fontStyle="italic">
+          <Text size="xs" fontStyle="italic" mb="1w">
             Vous pouvez calculer la densité thermique linéaire sur le tracé de votre choix.
-            <br />
-            Pour définir un tracé, cliquez sur 2 points ou plus sur la carte, puis double-cliquez sur le dernier point ou appuyez sur la
-            touche entrée pour finaliser le tracé. Vous avez la possibilité d'ajouter des segments à ce tracé.
+          </Text>
+          <Text size="xs" fontStyle="italic">
+            Pour définir un tracé, cliquez sur 2 points ou plus sur la carte, puis <strong>double-cliquez</strong> sur le dernier point ou{' '}
+            <strong>appuyez sur la touche entrée</strong> pour finaliser le tracé. Vous avez la possibilité d'ajouter des segments à ce
+            tracé.
           </Text>
         </Box>
         <Divider my="1v" />
-
         {isLoading && (
           <Box display="grid" placeContent="center">
             <Oval height={60} width={60} color="#000091" secondaryColor="#0000ee" />
           </Box>
         )}
-
         {densite && (
           <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
             <Box display="flex" justifyContent="space-between">
@@ -291,15 +299,17 @@ const LinearHeatDensityTool: React.FC = () => {
           </Box>
         )}
 
-        {isDrawing ? (
+        {showCancelButton && (
           <Button priority="secondary" iconId="fr-icon-close-line" onClick={cancelMeasurement}>
             Annuler le {densite ? 'segment' : 'tracé'}
           </Button>
-        ) : (
+        )}
+        {showAddButton && (
           <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLayersLoaded || isLoading}>
-            Ajouter un {isLoading || densite ? 'segment' : 'tracé'}
+            Ajouter un segment
           </Button>
         )}
+
         {densite && (
           <>
             <Button
@@ -311,7 +321,7 @@ const LinearHeatDensityTool: React.FC = () => {
             >
               Effacer
             </Button>
-            <Button priority="secondary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportDrawing}>
+            <Button priority="tertiary" iconId="fr-icon-download-line" className="btn-full-width" onClick={exportDrawing}>
               Exporter le tracé
             </Button>
           </>

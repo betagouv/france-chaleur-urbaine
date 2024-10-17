@@ -16,7 +16,6 @@ const EngieMap = () => {
         enabledLegendFeatures={['reseauxDeChaleur', 'reseauxDeFroid', 'reseauxEnConstruction', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
-        withHideLegendSwitch
         legendLogoOpt={{
           src: '/logo-ENGIE.jpg',
           alt: 'logo ENGIE',

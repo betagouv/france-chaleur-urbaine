@@ -1,40 +1,38 @@
-import { ReactNode } from 'react';
+import { styled } from '@mui/material';
+import { default as MUITooltip, TooltipProps as MUITooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 
-import Hoverable from '@components/Hoverable';
+import Icon, { IconProps } from './Icon';
 
-import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
-import { StyledSimpleTooltip, StyledSimpleTooltipContent, StyledTooltip } from './Tooltip.style';
+type TooltipProps = Omit<MUITooltipProps, 'children'> &
+  Partial<Pick<MUITooltipProps, 'children'>> & {
+    iconProps?: Partial<IconProps>;
+  };
 
-interface TooltipProps {
-  children: ReactNode;
-  icon: ReactNode;
-}
+const StyledIcon = styled(Icon)`
+  align-self: start;
+`;
 
-function Tooltip(props: TooltipProps) {
+const DSFRLikeStyledTooltip = styled(({ className, ...props }: MUITooltipProps) => (
+  <MUITooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgb(58, 58, 58)',
+    boxShadow: theme.shadows[2],
+    lineHeight: '14px',
+    fontSize: '12px',
+    padding: '8px',
+  },
+  [`& .${tooltipClasses.tooltip} .${tooltipClasses.arrow}`]: {
+    color: theme.palette.common.white,
+  },
+}));
+
+export default function Tooltip({ children, iconProps, placement, ...props }: TooltipProps) {
   return (
-    <StyledTooltip>
-      {props.icon}
-      <Hoverable position="top-centered">{props.children}</Hoverable>
-    </StyledTooltip>
-  );
-}
-export default Tooltip;
-
-interface SimpleTooltipProps extends SpacingProperties {
-  children: ReactNode;
-  icon: ReactNode;
-  className?: string;
-}
-
-/**
- * Tooltip that extends its width to the parent container.
- * The tooltip appears on top.
- */
-export function SimpleTooltip(props: SimpleTooltipProps) {
-  return (
-    <>
-      <StyledSimpleTooltip className={`${spacingsToClasses(props)} ${props.className ?? ''}`}>{props.icon}</StyledSimpleTooltip>
-      <StyledSimpleTooltipContent>{props.children}</StyledSimpleTooltipContent>
-    </>
+    // Un composant react-dsfr devrait arriver bientôt https://github.com/codegouvfr/react-dsfr/pull/190)
+    <DSFRLikeStyledTooltip arrow placement={placement ?? 'top'} {...props}>
+      {children ?? <StyledIcon size="sm" name="ri-information-fill" cursor="help" {...iconProps} />}
+    </DSFRLikeStyledTooltip>
   );
 }

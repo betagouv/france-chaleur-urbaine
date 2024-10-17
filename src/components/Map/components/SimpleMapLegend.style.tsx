@@ -7,10 +7,10 @@ import styled, { css } from 'styled-components';
 import Box from '@components/ui/Box';
 import CheckableAccordion, { type CheckableAccordionProps } from '@components/ui/CheckableAccordion';
 import Heading from '@components/ui/Heading';
-import IconEnrr from '@public/icons/enrr.svg';
-import IconOutils from '@public/icons/outils.svg';
-import IconPotentiel from '@public/icons/potentiel.svg';
-import IconReseaux from '@public/icons/reseaux.svg';
+import IconEnrr from '@public/icons/enrr.svg?icon';
+import IconOutils from '@public/icons/outils.svg?icon';
+import IconPotentiel from '@public/icons/potentiel.svg?icon';
+import IconReseaux from '@public/icons/reseaux.svg?icon';
 import cx from '@utils/cx';
 import { LegendTrackingEvent, trackEvent } from 'src/services/analytics';
 import { MapConfigurationProperty, type MapConfiguration } from 'src/services/Map/map-configuration';
@@ -207,11 +207,35 @@ export type TabId = (typeof tabsDefinition)[number]['tabId'];
 // the Tabs component takes a mutable array
 export const tabs = [...tabsDefinition];
 
+export const TabScrollablePart = styled.div`
+  overflow: auto;
+  max-height: 100%;
+  flex: 1;
+  padding: 0 1rem;
+`;
+
+export const LegendFilters = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  > button {
+    margin: 0.5rem 1rem;
+  }
+`;
+
+const tabsHeight = 66;
 export const Tabs = styled(DsfrTabs)`
   box-shadow: none;
+  max-height: 100%;
+  overflow: hidden;
+  height: 100%;
+  padding: 1rem 0 0;
 
   .fr-tabs__panel {
-    padding: 0.5rem 0.5rem;
+    padding: 0.5rem 0 0;
+    height: calc(100% - ${tabsHeight}px);
+    display: flex;
+    flex-direction: column;
   }
 
   .fr-tabs__tab {
@@ -264,7 +288,7 @@ export const TrackableCheckableAccordion = ({ children, layerName, name, trackin
   return (
     <StyledCheckableAccordion
       small
-      classes={{ title: cx('d-flex', 'fr-gap--sm', fr.cx('fr-text--sm')) }}
+      classes={{ title: cx('d-flex', 'items-start', 'fr-gap--sm', fr.cx('fr-text--sm')) }}
       onCheck={(isChecked) => {
         trackEvent(`${trackingEvent}|${isChecked ? 'Active' : 'Désactive'}`);
         toggleLayer(layerName);
@@ -300,21 +324,6 @@ export function SingleCheckbox({ name, checked, onChange, trackingEvent }: Singl
   );
 }
 
-export const InfoIcon = styled.div`
-  position: relative;
-  align-self: flex-start;
-  margin-left: auto;
-
-  & > .hover-info {
-    width: 250px;
-  }
-  &:hover {
-    & > .hover-info {
-      display: block;
-    }
-  }
-`;
-
 export const DeactivatableBox = styled(Box)<{ disabled?: boolean }>`
   transition: opacity 0.25s ease-in-out;
 
@@ -328,4 +337,12 @@ export const DeactivatableBox = styled(Box)<{ disabled?: boolean }>`
         user-select: none;
       }
     `}
+`;
+
+export const FilterResetButtonWrapper = styled.div`
+  position: sticky;
+  bottom: -1rem; /* to prevent scroll to be visible at the very bottom */
+  background: white;
+  z-index: 1;
+  padding: 1rem 0;
 `;

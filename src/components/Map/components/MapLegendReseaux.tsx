@@ -1,17 +1,18 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useMemo } from 'react';
 
-import Hoverable from '@components/Hoverable';
 import { batimentsRaccordesLayerMaxOpacity } from '@components/Map/map-layers';
+import useFCUMap from '@components/Map/MapProvider';
 import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
 import Icon from '@components/ui/Icon';
+import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
+import Tooltip from '@components/ui/Tooltip';
 import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
 
 import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
-import { InfoIcon, SingleCheckbox, Title } from './SimpleMapLegend.style';
-import useFCUMap from '../MapProvider';
+import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 
 export const mapLegendFeatures = [
   'reseauxDeChaleur',
@@ -40,27 +41,30 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
 
   if (filtersVisible) {
     return (
-      <Box mt="2v" mx="1w">
+      <LegendFilters>
         <Button
           onClick={() => setFiltersVisible(false)}
           priority="secondary"
           size="small"
           iconId="fr-icon-arrow-left-line"
           className="fr-mb-2w"
+          style={{ position: 'sticky', top: '0', background: 'white' }}
         >
           Retour
         </Button>
-        <Title>Filtres</Title>
-        <Text fontSize="13px" lineHeight="18px" mb="2w">
-          Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
-        </Text>
-        <ReseauxDeChaleurFilters />
-      </Box>
+        <TabScrollablePart>
+          <Title>Filtres</Title>
+          <Text fontSize="13px" lineHeight="18px" mb="2w">
+            Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
+          </Text>
+          <ReseauxDeChaleurFilters />
+        </TabScrollablePart>
+      </LegendFilters>
     );
   }
 
   return (
-    <Box mt="2v" mx="1w">
+    <Box mt="2v" px="1w" style={{ overflow: 'auto' }}>
       <Title>{legendTitle || 'Réseaux de chaleur et de froid'}</Title>
       <Text fontSize="13px" lineHeight="18px" mb="2w">
         Cliquez sur un réseau pour connaître ses caractéristiques
@@ -100,25 +104,27 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
               </Box>
             </Box>
 
-            <InfoIcon>
-              <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-              <Hoverable position="bottom">
-                Pour les réseaux classés, le raccordement des bâtiments neufs ou renouvelant leur installation de chauffage au-dessus d'une
-                certaine puissance est obligatoire dès lors qu'ils sont situés dans le périmètre de développement prioritaire (sauf
-                dérogation).
-                <br />
-                Les réseaux affichés comme classés sont ceux listés par arrêté du 22 décembre 2023. Collectivités : pour signaler un
-                dé-classement, cliquez sur Contribuer.
-              </Hoverable>
-            </InfoIcon>
+            <Tooltip
+              title={
+                <>
+                  Pour les réseaux classés, le raccordement des bâtiments neufs ou renouvelant leur installation de chauffage au-dessus
+                  d'une certaine puissance est obligatoire dès lors qu'ils sont situés dans le périmètre de développement prioritaire (sauf
+                  dérogation).
+                  <br />
+                  Les réseaux affichés comme classés sont ceux listés par arrêté du 22 décembre 2023. Collectivités : pour signaler un
+                  dé-classement, cliquez sur Contribuer.
+                </>
+              }
+              iconProps={{
+                color: 'var(--text-action-high-blue-france)',
+              }}
+            />
           </Box>
           <Button
             onClick={() => setFiltersVisible(true)}
-            priority="secondary"
-            className="fr-mb-2w"
+            priority="tertiary"
+            className="fr-mb-2w fr-ml-3w"
             iconId="ri-filter-line"
-            style={{ width: '100%', justifyContent: 'center' }}
             size="small"
             disabled={!mapConfiguration.reseauxDeChaleur.show}
           >
@@ -151,14 +157,17 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
             Périmètres de développement prioritaire des réseaux classés
           </Text>
 
-          <InfoIcon>
-            <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-            <Hoverable position="bottom">
-              Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage
-              au-dessus d'une certaine puissance est obligatoire.
-            </Hoverable>
-          </InfoIcon>
+          <Tooltip
+            title={
+              <>
+                Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage
+                au-dessus d'une certaine puissance est obligatoire.
+              </>
+            }
+            iconProps={{
+              color: 'var(--text-action-high-blue-france)',
+            }}
+          />
         </Box>
       )}
 
@@ -205,11 +214,12 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
             </Box>
           </Box>
 
-          <InfoIcon>
-            <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-            <Hoverable position="bottom">Projets financés par l'ADEME ou signalés par les collectivités et exploitants.</Hoverable>
-          </InfoIcon>
+          <Tooltip
+            title={<>Projets financés par l'ADEME ou signalés par les collectivités et exploitants.</>}
+            iconProps={{
+              color: 'var(--text-action-high-blue-france)',
+            }}
+          />
         </Box>
       )}
 
@@ -271,6 +281,30 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
           </Box>
         </>
       )}
+
+      <Box mt="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
+        <Link
+          variant="primary"
+          href="/contribution"
+          className="fr-btn--tertiary d-flex"
+          style={{ width: '100%', justifyContent: 'center' }}
+        >
+          <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
+          Contribuer
+        </Link>
+
+        <Link
+          isExternal
+          variant="primary"
+          href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
+          eventKey="Téléchargement|Tracés|carte"
+          className="fr-btn--tertiary d-flex"
+          mx="auto"
+          style={{ width: '100%', justifyContent: 'center' }}
+        >
+          Télécharger les tracés
+        </Link>
+      </Box>
     </Box>
   );
 };

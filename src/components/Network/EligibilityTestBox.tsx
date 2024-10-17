@@ -133,7 +133,7 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
           Testez l'éligibilité d'une adresse pour ce réseau.
         </Text>
 
-        <AddressAutocomplete placeholder="Tapez ici votre adresse" onAddressSelected={onAddressSelected} />
+        <AddressAutocomplete placeholder="Tapez ici votre adresse" onAddressSelected={onAddressSelected} excludeCities />
 
         <Box display="flex" alignItems="center" justifyContent="end">
           {formState === 'eligibilitySubmissionError' && (
@@ -271,7 +271,7 @@ export const ResultsBox = styled(Box)`
       opacity: 0;
     }
     to {
-      max-height: 1200px; // needs to be greater than the height of the box
+      max-height: 1600px; // needs to be greater than the height of the box
       opacity: 1;
     }
   }

@@ -2,6 +2,7 @@ import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
+import { isDefined } from '@utils/core';
 import { getConso } from 'src/services/Map/conso';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { Network } from 'src/types/Summary/Network';
@@ -92,9 +93,7 @@ const NetworkPanel = ({
                     <div>
                       <b>Taux d’EnR&R</b>
                     </div>
-                    <div>
-                      {network['Taux EnR&R'] !== null && network['Taux EnR&R'] !== undefined ? `${network['Taux EnR&R']}%` : 'Non connu'}
-                    </div>
+                    <div>{isDefined(network['Taux EnR&R']) ? `${network['Taux EnR&R']}%` : 'Non connu'}</div>
                   </BoxContent>
                 )}
                 <BoxContent>
@@ -104,7 +103,7 @@ const NetworkPanel = ({
                       ACV : en analyse du cycle de vie (émissions directes et indirectes).
                     </HoverableIcon>
                   </div>
-                  <div>{network['contenu CO2 ACV'] ? `${network['contenu CO2 ACV'] * 1000} g CO2/kWh` : 'Non connu'}</div>
+                  <div>{isDefined(network['contenu CO2 ACV']) ? `${network['contenu CO2 ACV'] * 1000} g CO2/kWh` : 'Non connu'}</div>
                 </BoxContent>
                 <BoxContent>
                   <div>
@@ -113,7 +112,7 @@ const NetworkPanel = ({
                       Émissions directes
                     </HoverableIcon>
                   </div>
-                  <div>{network['contenu CO2'] ? `${network['contenu CO2'] * 1000} g CO2/kWh` : 'Non connu'}</div>
+                  <div>{isDefined(network['contenu CO2']) ? `${network['contenu CO2'] * 1000} g CO2/kWh` : 'Non connu'}</div>
                 </BoxContent>
               </BlueBox>
             )}

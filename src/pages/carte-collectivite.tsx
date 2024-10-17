@@ -15,7 +15,6 @@ const CollectivityMap = () => {
         enabledLegendFeatures={['reseauxDeChaleur', 'zonesDeDeveloppementPrioritaire']}
         withLegend
         withBorder
-        withHideLegendSwitch
         legendTitle="Réseaux de chaleur"
         withFCUAttribution
       />
