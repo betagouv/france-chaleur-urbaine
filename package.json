@@ -54,7 +54,7 @@
     "@reach/combobox": "^0.18.0",
     "@react-hookz/web": "^24.0.4",
     "@rivercode/facebook-conversion-api-nextjs": "^4.3.2",
-    "@sentry/nextjs": "^7.98.0",
+    "@sentry/nextjs": "^7.117.0",
     "@socialgouv/matomo-next": "^1.9.0",
     "@turf/area": "^7.1.0",
     "@turf/center": "^7.1.0",
