@@ -32,7 +32,7 @@ import { saveStatsInDB } from './saveStatsInDB';
 // });
 
 new cron.CronJob({
-  cronTime: '45 15 17 * *', // le 1er du mois à 08:15 - TEMP to change
+  cronTime: '30 16 17 * *', // le 1er du mois à 08:15 - TEMP to change
   onTick: () => saveStatsInDB(),
   start: true,
   timeZone: 'Europe/Paris',
