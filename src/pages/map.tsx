@@ -32,7 +32,8 @@ const legendURLKeyToLegendFeature: Record<LegendURLKey | string, MapLegendFeatur
   futur_reseau: 'reseauxEnConstruction',
   reseau_froid: 'reseauxDeFroid',
   pdp: 'zonesDeDeveloppementPrioritaire',
-  raccordements: 'batimentsRaccordes',
+  raccordementsChaud: 'batimentsRaccordesReseauxChaleur',
+  raccordementsFroid: 'batimentsRaccordesReseauxFroid',
 };
 
 const MapPage = () => {
