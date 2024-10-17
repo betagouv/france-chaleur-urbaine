@@ -405,17 +405,17 @@ const BatimentRaccordeReseauxChaleurFroidPopupContent = ({
           <Box mr="3w">{batimentRaccordeReseauxChaleurFroid.adresse}</Box>
         </PopupAddressHeader>
       )}
-      <strong>Identifiant du réseau&nbsp;:</strong>&nbsp;
-      <Link href={`/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`} isExternal>
-        {batimentRaccordeReseauxChaleurFroid.id_reseau}
-      </Link>
-      <br />
       <PopupProperty
         label={`Consommation de ${batimentRaccordeReseauxChaleurFroid.filiere === 'C' ? 'chaleur' : 'froid'}`}
         value={batimentRaccordeReseauxChaleurFroid.conso}
         formatter={formatMWh}
       />
       <PopupProperty label="Secteur" value={secteurBatimentRaccordeToLabels[batimentRaccordeReseauxChaleurFroid.code_grand_secteur]} />
+      <strong>Identifiant du réseau&nbsp;:</strong>&nbsp;
+      <Link href={`/reseaux/${batimentRaccordeReseauxChaleurFroid.id_reseau}`} isExternal>
+        {batimentRaccordeReseauxChaleurFroid.id_reseau}
+      </Link>
+      <br />
       <PopupProperty label="Source" value="SDES pour 2023" />
     </section>
   );
