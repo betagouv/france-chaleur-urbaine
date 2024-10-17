@@ -110,6 +110,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     properties: ['fid', 'ADRESSE', 'CONSO', 'PDL', 'ID'],
     sourceLayer: 'raccordements',
   },
+  // https://www.notion.so/D-veloppement-e8399345919442748735de25865ebe4a?pvs=4#122c2b5c414b80838207d4f930c68cd7
   batimentsRaccordesReseauxChaleurFroid: {
     source: 'database',
     tiles: 'batiments_raccordes_reseaux_chaleur_froid_tiles', // contient 2 layers batiments_raccordes_reseaux_chaleur et batiments_raccordes_reseaux_froid
