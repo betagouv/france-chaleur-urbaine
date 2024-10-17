@@ -12,14 +12,15 @@ enum Status {
   Error = 'error',
 }
 type ValueOf<Obj> = Obj[keyof Obj];
-type configProps = {
+type UseSuggestionsProps = {
   limit?: number;
   autocomplete?: boolean;
   debounceTime?: number;
   minCharactersLength?: number;
+  excludeCities?: boolean;
 };
 
-const useSuggestions = ({ limit = 5, debounceTime = 300, minCharactersLength = 3 }: configProps) => {
+const useSuggestions = ({ limit = 5, debounceTime = 300, minCharactersLength = 3, excludeCities }: UseSuggestionsProps) => {
   const [suggestions, setSuggestions] = useState<SuggestionItem[]>([]);
   const [status, setStatus] = useState<ValueOf<Status>>(Status.Idle);
   const isMounted = useIsMounted();
@@ -36,7 +37,10 @@ const useSuggestions = ({ limit = 5, debounceTime = 300, minCharactersLength = 3
         limit: limit.toString(),
       });
 
-      setSuggestions(fetchedSuggestions.features);
+      const features = excludeCities
+        ? fetchedSuggestions.features.filter((feature) => feature.properties.type !== 'municipality')
+        : fetchedSuggestions.features;
+      setSuggestions(features);
       setStatus(Status.Success);
     } catch (e) {
       setStatus(Status.Error);
