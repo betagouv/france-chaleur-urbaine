@@ -40,7 +40,12 @@ const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage
             </option>
           </select>
         </PopoverTrigger>
-        <PopoverContent className="fr-px-2w fr-py-1w">
+        <PopoverContent
+          className="fr-px-2w fr-py-1w"
+          side="bottom"
+          sideOffset={0} // Controls space between trigger and popover
+          avoidCollisions={false}
+        >
           <StyledCheckbox {...props} />
         </PopoverContent>
       </Popover>
