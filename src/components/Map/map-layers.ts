@@ -794,33 +794,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         },
       ],
     },
-    // {
-    //   sourceId: 'batimentsRaccordesReseauxFroid',
-    //   source: {
-    //     type: 'vector',
-    //     tiles: [`${location.origin}/api/map/batimentsRaccordesReseauxFroid/{z}/{x}/{y}`],
-    //     minzoom: 9,
-    //     maxzoom: 12,
-    //   },
-    //   layers: [
-    //     {
-    //       id: 'batimentsRaccordesReseauxFroid',
-    //       source: 'batimentsRaccordesReseauxFroid',
-    //       'source-layer': 'layer',
-    //       minzoom: 9,
-    //       type: 'symbol',
-    //       layout: {
-    //         'icon-image': 'square',
-    //         'icon-overlap': 'always',
-    //         'icon-size': 0.5,
-    //       },
-    //       paint: {
-    //         'icon-color': themeDefHeatNetwork.classed.color,
-    //         'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9 + 0.2, 0, 9 + 0.5 + 1, batimentsRaccordesLayerMaxOpacity],
-    //       },
-    //     },
-    //   ],
-    // },
 
     // --------------
     // --- Energy ---
