@@ -144,7 +144,7 @@ const OutilsPage = () => {
         <Box display="flex" my="2w">
           <FCUArrowIcon />
           <Text size="lg" ml="1w">
-            Retrouver l'ensemble des réseaux et les filtrer en définissant les critères de son choix
+            Retrouver l'ensemble des réseaux et les filtrer selon leurs caractéristiques
           </Text>
         </Box>
         <Link variant="secondary" href="/reseaux">
