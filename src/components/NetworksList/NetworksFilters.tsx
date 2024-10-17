@@ -6,6 +6,7 @@ import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import SelectCheckboxes from '@components/form/dsfr/SelectCheckboxes';
 import {
   getLivraisonsAnnuellesFromPercentage,
   getPercentageFromLivraisonsAnnuelles,
@@ -18,7 +19,7 @@ import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
 import { Interval } from '@utils/interval';
 import { ObjectKeys } from '@utils/typescript';
-import { defaultInterval, FiltreEnergieConfKey, percentageMaxInterval } from 'src/services/Map/map-configuration';
+import { defaultInterval, percentageMaxInterval } from 'src/services/Map/map-configuration';
 import {
   emptyFilterNoLimits,
   energiesFilters,
@@ -276,26 +277,32 @@ function NetworksFilter({
                       />
                     </Box>
                     <Box m="2w">
-                      <Text size="sm">Énergie mobilisée</Text>
-                      <Select
-                        label=""
-                        nativeSelectProps={{
-                          value: newFilterValues.energieMobilisee,
-                          onChange: (e) => {
-                            newFilterValues.energieMobilisee = e.target.value !== '' ? (e.target.value as FiltreEnergieConfKey) : '';
-                            setNewFilterValues({ ...newFilterValues });
+                      <Text size="sm">Énergies mobilisées</Text>
+                      <SelectCheckboxes
+                        small
+                        className="fr-mb-1v"
+                        options={energiesFilters.reduce(
+                          (acc, { label, confKey }) => {
+                            acc.push({
+                              label,
+                              nativeInputProps: {
+                                checked: newFilterValues.energieMobilisee?.includes(confKey) || false,
+                                onChange: () => {
+                                  const currentEnergies = newFilterValues.energieMobilisee || [];
+                                  const newEnergies = currentEnergies.includes(confKey)
+                                    ? currentEnergies.filter((key) => key !== confKey) // Remove if already selected
+                                    : [...currentEnergies, confKey]; // Add if not selected
+
+                                  newFilterValues.energieMobilisee = newEnergies.length ? newEnergies : [];
+
+                                  setNewFilterValues({ ...newFilterValues });
+                                },
+                              },
+                            });
+                            return acc;
                           },
-                        }}
-                        options={[
-                          {
-                            label: 'Sélectionner une option',
-                            value: '',
-                          },
-                          ...energiesFilters.map(({ label, confKey }) => ({
-                            label,
-                            value: confKey,
-                          })),
-                        ]}
+                          [] as Array<{ label: string; nativeInputProps: { checked: boolean; onChange: () => void } }>
+                        )}
                       />
                     </Box>
                     <Box m="2w">

@@ -1,7 +1,7 @@
 import React from 'react';
 
+import Checkbox from '@components/form/dsfr/Checkbox';
 import Select from '@components/form/publicodes/Select';
-import Checkbox from '@components/ui/Checkbox';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import { LocationInfoResponse } from '@pages/api/location-infos';
 

@@ -149,12 +149,16 @@ const NetworksList = () => {
         );
       }
 
-      if (newFilterValues.energieMobilisee) {
-        newFilteredNetworks = newFilteredNetworks.filter(
-          (network: NetworkToCompare) =>
-            network[newFilterValues.energieMobilisee as keyof NetworkToCompare] &&
-            (network[newFilterValues.energieMobilisee as keyof NetworkToCompare] as number) > 0
-        );
+      if (
+        newFilterValues.energieMobilisee &&
+        Array.isArray(newFilterValues.energieMobilisee) &&
+        newFilterValues.energieMobilisee.length > 0
+      ) {
+        newFilteredNetworks = newFilteredNetworks.filter((network: NetworkToCompare) => {
+          return newFilterValues.energieMobilisee
+            .map((key) => network[key as keyof NetworkToCompare])
+            .some((value) => value !== undefined && (value as number) > 0);
+        });
       }
 
       if (newFilterValues.gestionnaire && newFilterValues.gestionnaire !== '') {

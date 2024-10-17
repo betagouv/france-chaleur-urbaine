@@ -78,7 +78,7 @@ export type FiltersDBLimits = Record<(typeof intervalFilters)[number]['confKey']
 export type FilterLimits = FiltersDBLimits & Record<EnergiesFiltersConfKey, Interval>;
 
 export type FilterNoLimits = {
-  energieMobilisee: FiltreEnergieConfKey | string;
+  energieMobilisee: (FiltreEnergieConfKey | string)[];
   gestionnaire: string;
   isClassed: boolean;
   region: string;
@@ -104,7 +104,7 @@ export const emptyFilterLimits: FilterLimits = {
 };
 
 export const emptyFilterNoLimits: FilterNoLimits = {
-  energieMobilisee: '',
+  energieMobilisee: [],
   gestionnaire: '',
   isClassed: false,
   region: '',

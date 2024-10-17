@@ -1363,8 +1363,10 @@ export type ReseauxDeChaleurLimits = Record<(typeof reseauxDeChaleurFilters)[num
  */
 function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeChaleur']): ExpressionSpecification[] {
   return [
-    ...(conf.energieMobilisee
-      ? ([['>', ['coalesce', ['get', `energie_ratio_${conf.energieMobilisee}`]], 0]] satisfies ExpressionSpecification[])
+    ...(conf.energieMobilisee && conf.energieMobilisee.length > 0
+      ? conf.energieMobilisee.map(
+          (energie) => ['>', ['coalesce', ['get', `energie_ratio_${energie}`]], 0] satisfies ExpressionSpecification
+        )
       : []),
     ...reseauxDeChaleurFilters.flatMap((filtre) => {
       const minValue = filtre.filterPreprocess ? filtre.filterPreprocess(conf[filtre.confKey][0]) : conf[filtre.confKey][0];
