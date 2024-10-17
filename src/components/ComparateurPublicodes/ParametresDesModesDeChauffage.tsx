@@ -36,9 +36,15 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         />
         <Input name="ratios économiques . Investissement x TVA" label="TVA" />
 
-        <Input name="ratios économiques . Chauffe-eau x électrique à accumulation" label="Chauffe-eau x électrique à accumulation" />
-        <Input name="ratios économiques . Chauffe-eau x solaire" label="Chauffe-eau x solaire" />
-        <Input name="ratios économiques . Chauffe-eau x solaire prix panneaux" label="Chauffe-eau x solaire prix panneaux" />
+        <Input
+          name="ratios économiques . Chauffe-eau x électrique à accumulation x coût investissement"
+          label="Chauffe-eau x électrique à accumulation"
+        />
+        <Input name="ratios économiques . Chauffe-eau x solaire x coût investissement" label="Chauffe-eau x solaire" />
+        <Input
+          name="ratios économiques . Chauffe-eau x panneaux solaire thermique x coût investissement"
+          label="Chauffe-eau x solaire prix panneaux"
+        />
 
         <Input name="ratios économiques . Amortissement x Taux actualisation" label="Taux actualisation" />
       </Accordion>
@@ -118,7 +124,6 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
             label="Part de la consommation en HC"
             disabled
           />
-          <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x CTA" label="Part Fixe x CTA" />
           <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x TVA" label="Part Fixe x TVA" />
           <Input
             name="Paramètres économiques . Electricité x Taxe . Part Variable x Accise sur l'électricité ex TIPCSE CSPE"
@@ -483,7 +488,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
           <Input name="Installation x Radiateur électrique x Individuel . gamme de puissance existante" label="Gamme de puissance" />
 
-          <Input name="ratios économiques . Radiateur électrique x Individuel" label="Coût investissement" />
+          <Input name="ratios économiques . Radiateur électrique x Individuel x investissement total" label="Coût investissement" />
         </UrlStateAccordion>
       )}
     </div>

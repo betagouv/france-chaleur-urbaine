@@ -1,5 +1,4 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import Alert from '@codegouvfr/react-dsfr/Alert';
 import Badge from '@codegouvfr/react-dsfr/Badge';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import React from 'react';
@@ -21,16 +20,36 @@ export const ComparateurPublicodesTitle = () => {
       <Heading as="h2">
         Comparateur de coûts et d’émissions de CO2 <Badge severity="warning">Beta</Badge>
       </Heading>
-      <ol>
-        <li>
-          Renseignez les données de votre bâtiment dans <strong>l’onglet “Bâtiment”</strong>
-        </li>
-        <li>
-          Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer dans{' '}
-          <strong>l’onglet “Modes de chauffage et de refroidissement”</strong>
-        </li>
-      </ol>
+      <Logos size="sm" withFCU={false} />
+      <div className="fr-text--sm fr-mt-2w">
+        Cet outil de comparaison de modes de chauffage et de refroidissement a pour objectif de comparer en quelques minutes des
+        configurations de chauffage et de refroidissement sur les plans techniques, économiques et environnementaux. Il ne remplace en aucun
+        cas une étude de faisabilité technico-économique et ne peut s'adapter aux situations particulières avec les hypothèses
+        préconfigurées. Ces hypothèses représentent des configurations types, elles sont donc sujets à des incertitudes importantes.{' '}
+        <a href="#" onClick={() => modal.open()} className="fr-link">
+          Voir l’explication détaillée
+        </a>
+      </div>
     </div>
+  );
+};
+
+export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
+  return (
+    <Box display="flex" gap={size === 'sm' ? '8px' : '16px'} flexDirection="row" alignItems="center" {...props}>
+      <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={size === 'sm' ? '60px' : '80px'} className="fr-mr-2w" />
+      <img src="/logo-amorce.svg" alt="logo amorce" height={size === 'sm' ? '37px' : '50px'} />
+      {withFCU && (
+        <img
+          src="/logo-fcu.png"
+          alt="logo france chaleur urbaine"
+          height={size === 'sm' ? '60px' : '80px'}
+          style={{
+            margin: '0 0 0 20px', // Balance visually the logos
+          }}
+        />
+      )}
+    </Box>
   );
 };
 const modal = createModal({
@@ -58,6 +77,7 @@ export const ResultsNotAvailable = () => (
     <div>
       Les résultats s’afficheront ici une fois <strong>une adresse</strong> et <strong>au moins un mode de chauffage</strong> sélectionnés
     </div>
+    <Logos size="sm" withFCU />
   </ResultsPlaceholder>
 );
 
@@ -111,26 +131,8 @@ export const Disclaimer = () => {
           chaleur et de froid vertueux. L'association AMORCE pilote le projet, le bureau d’études Elcimaï y a apporté son expertise
           technique et France Chaleur Urbaine a mis en place la version disponible en ligne.
         </p>
-        <Box display="flex" gap="16px" flexDirection="row" alignItems="center">
-          <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height="80px" className="fr-mr-2w" />
-          <img src="/logo-amorce.svg" alt="logo amorce" height="50px" />
-        </Box>
+        <Logos />
       </Modal>
-      <Alert
-        severity="info"
-        small
-        description={
-          <div className="fr-text--xs">
-            Cet outil de comparaison de modes de chauffage et de refroidissement a pour objectif de comparer en quelques minutes des
-            configurations de chauffage et de refroidissement sur les plans techniques, économiques et environnementaux. Il ne remplace en
-            aucun cas une étude de faisabilité technico-économique et ne peut s'adapter aux situations particulières avec les hypothèses
-            préconfigurées. Ces hypothèses représentent des configurations types, elles sont donc sujets à des incertitudes importantes.{' '}
-            <a href="#" onClick={() => modal.open()} className="fr-link fr-text--xs">
-              Voir l’explication détaillée
-            </a>
-          </div>
-        }
-      />
     </>
   );
 };

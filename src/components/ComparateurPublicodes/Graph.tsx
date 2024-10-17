@@ -12,6 +12,7 @@ import cx from '@utils/cx';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
+import { Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -294,6 +295,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           />
         </>
       )}
+      <Logos size="sm" justifyContent="end" />
     </div>
   );
 };
