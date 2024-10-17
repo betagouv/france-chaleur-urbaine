@@ -7,36 +7,44 @@ const percentageMaxInterval: Interval = [0, 100];
 export type IntervalAndEnergiesFilters = {
   label: string;
   confKey: string;
+  limitKey?: string;
 };
 
 export const intervalFilters = [
   {
     label: "Taux d'EnR&R",
     confKey: 'Taux EnR&R',
+    limitKey: 'tauxENRR',
   },
   {
     label: 'Contenu CO2 ACV (gCO2/kWh)',
     confKey: 'contenu CO2 ACV',
+    limitKey: 'emissionsCO2',
   },
   {
     label: 'Contenu CO2 (gCO2/kWh)',
     confKey: 'contenu CO2',
+    limitKey: 'contenuCO2',
   },
   {
     label: 'Prix moyen de la chaleur (€TTC/MWh)',
     confKey: 'PM',
+    limitKey: 'prixMoyen',
   },
   {
     label: 'Année de construction',
     confKey: 'annee_creation',
+    limitKey: 'anneeConstruction',
   },
   {
     label: 'Livraisons de chaleur annuelles (GWh)',
     confKey: 'livraisons_totale_MWh',
+    limitKey: 'livraisonsAnnuelles',
   },
 ] as const satisfies ReadonlyArray<IntervalAndEnergiesFilters>;
 
 export type IntervalFiltersConfKey = (typeof intervalFilters)[number]['confKey'];
+export type IntervalFiltersLimitKey = Record<(typeof intervalFilters)[number]['limitKey'], [min: number, max: number]>;
 
 export const energiesFilters = [
   {
@@ -74,8 +82,7 @@ export const energiesFilters = [
 ] as const satisfies ReadonlyArray<IntervalAndEnergiesFilters>;
 export type EnergiesFiltersConfKey = (typeof energiesFilters)[number]['confKey'];
 
-export type FiltersDBLimits = Record<(typeof intervalFilters)[number]['confKey'], [min: number, max: number]>;
-export type FilterLimits = FiltersDBLimits & Record<EnergiesFiltersConfKey, Interval>;
+export type FilterLimits = Record<IntervalFiltersConfKey, Interval> & Record<EnergiesFiltersConfKey, Interval>;
 
 export type FilterNoLimits = {
   energieMobilisee: (FiltreEnergieConfKey | string)[];
