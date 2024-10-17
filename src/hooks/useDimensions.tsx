@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-// Use this hooks instead of useMeasure because the results were wrong
+// Use this hooks instead of react-hookz/web/useMeasure because the results were wrong
 // when used with the Popover component
 const useDimensions = (myRef: React.RefObject<HTMLElement>) => {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
