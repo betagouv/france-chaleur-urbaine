@@ -1,15 +1,15 @@
-//import * as Sentry from '@sentry/node';
+import * as Sentry from '@sentry/node';
 
-//import db from 'src/db';
-//import base from 'src/db/airtable';
+import db from 'src/db';
+import base from 'src/db/airtable';
 import { bulkFetchRangeFromMatomo } from 'src/services/matomo';
-import { /*MatomoActionMetrics,*/ MatomoPageMetrics /*, MatomoUniqueVisitorsMetrics*/ } from 'src/services/matomo_types';
-//import { Airtable } from 'src/types/enum/Airtable';
-//import { STAT_KEY, /*STAT_LABEL, */ STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from 'src/types/enum/MatomoStats';
+import { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from 'src/services/matomo_types';
+import { Airtable } from 'src/types/enum/Airtable';
+import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from 'src/types/enum/MatomoStats';
 
 import '../../sentry.node.config';
 
-/*const DATA_ACTION_STATS: string[] = [
+const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE,
   STAT_LABEL.FORM_TEST_CARTE_ELIGIBLE,
   STAT_LABEL.FORM_TEST_UNELIGIBLE,
@@ -17,10 +17,10 @@ import '../../sentry.node.config';
   STAT_LABEL.FORM_TEST_FICHE_RESEAU_UNELIGIBLE,
   STAT_LABEL.FORM_TEST_FICHE_RESEAU_ELIGIBLE,
   STAT_LABEL.TRACES,
-];*/
+];
 
 //From Airtable - demandes : éligibles / non éligibles / totales
-/*const saveDemandsStats = async (startDate: string, endDate: string) => {
+const saveDemandsStats = async (startDate: string, endDate: string) => {
   console.log(`saveStatsInDB START : saveDemandsStats`);
   const records = await base(Airtable.UTILISATEURS)
     .select({
@@ -71,10 +71,10 @@ import '../../sentry.node.config';
     }),
   ]);
   console.log(`saveStatsInDB END : saveDemandsStats`);
-};*/
+};
 
 //From Matomo - actions sur le site
-/*const saveActionsStats = async (startDate: string, endDate: string) => {
+const saveActionsStats = async (startDate: string, endDate: string) => {
   console.log(`saveStatsInDB START : saveActionsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
     {
@@ -122,7 +122,7 @@ const saveVisitsStats = async (startDate: string, endDate: string) => {
     });
   }
   console.log(`saveStatsInDB END : saveVisitsStats`);
-};*/
+};
 
 //From Matomo - visites sur la page de la carte (/carte)
 const saveVisitsMapStats = async (startDate: string, endDate: string) => {
@@ -136,8 +136,7 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
     },
     (entry) => ({ value: entry.nb_visits })
   );
-  console.log(results);
-  /*if (results[0]) {
+  if (results[0]) {
     const data: any = results[0];
     if (data.value) {
       await db('matomo_stats').insert({
@@ -149,12 +148,12 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
         value: data.value,
       });
     }
-  }*/
+  }
   console.log(`saveStatsInDB END : saveVisitsMapStats`);
 };
 
 //From Database - demandes en masse : éligibles / non éligibles / totales
-/*const saveBulkContactStats = async (startDate: string, endDate: string) => {
+const saveBulkContactStats = async (startDate: string, endDate: string) => {
   console.log(`saveStatsInDB START : saveBulkContactStats`);
   const start = new Date(startDate);
   start.setUTCHours(0, 0, 0);
@@ -205,7 +204,7 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
     ]);
   }
   console.log(`saveStatsInDB END : saveBulkContactStats`);
-};*/
+};
 
 export const saveStatsInDB = async (start?: string, end?: string) => {
   console.log(`CRON JOB START: saveStatsInDB`);
@@ -224,15 +223,17 @@ export const saveStatsInDB = async (start?: string, end?: string) => {
 
     const endAirtableDate = endDate;
     endAirtableDate.setDate(endAirtableDate.getDate() + 1);
-    //const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
+    const stringEndAirtableDate = endAirtableDate.toISOString().slice(0, 10);
 
-    //await saveDemandsStats(stringStartDate, stringEndAirtableDate);
-    //await saveActionsStats(stringStartDate, stringEndDate);
-    //await saveVisitsStats(stringStartDate, stringEndDate);
-    await saveVisitsMapStats(stringStartDate, stringEndDate);
-    //await saveBulkContactStats(stringStartDate, stringEndDate);
+    await Promise.all([
+      saveDemandsStats(stringStartDate, stringEndAirtableDate),
+      saveActionsStats(stringStartDate, stringEndDate),
+      saveVisitsStats(stringStartDate, stringEndDate),
+      saveVisitsMapStats(stringStartDate, stringEndDate),
+      saveBulkContactStats(stringStartDate, stringEndDate),
+    ]);
   } catch (e) {
-    //Sentry.captureException(e);
+    Sentry.captureException(e);
     console.log(`CRON JOB ERROR: saveStatsInDB`, e);
   }
   console.log('CRON JOB STOP: saveStatsInDB');
