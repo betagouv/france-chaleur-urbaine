@@ -7,7 +7,6 @@ import { EnergySummary } from 'src/types/Summary/Energy';
 import { FuturNetworkSummary } from 'src/types/Summary/FuturNetwork';
 import { GasSummary } from 'src/types/Summary/Gas';
 import { NetworkSummary } from 'src/types/Summary/Network';
-import { RaccordementSummary } from 'src/types/Summary/Raccordement';
 
 import { objTypeEnergy } from '../map-layers';
 import { PopupTitle } from '../Map.style';
@@ -45,7 +44,6 @@ const MapPopupContent = ({
   energy,
   network,
   futurNetwork,
-  raccordement,
 }: {
   buildings?: EnergySummary;
   consommation?: GasSummary;
@@ -53,7 +51,6 @@ const MapPopupContent = ({
   demands?: DemandSummary;
   network?: NetworkSummary;
   futurNetwork?: FuturNetworkSummary;
-  raccordement?: RaccordementSummary;
 }) => {
   const {
     nb_logements,
@@ -73,10 +70,9 @@ const MapPopupContent = ({
     'Type de chauffage': type_chauffage_demands,
     Structure: structure,
   } = demands || {};
-  const { ADRESSE: address_raccordement, CONSO: conso_raccordement, ID: id_raccordement } = raccordement || {};
 
   const energie_utilisee = energie_utilisee_buildings || mode_chauffage_demands;
-  const textAddress = addr_label_buildings || addr_label_consommation || addr_label_demands || address_raccordement;
+  const textAddress = addr_label_buildings || addr_label_consommation || addr_label_demands;
   const type_chauffage = type_chauffage_buildings || type_chauffage_demands;
 
   const displayNetwork = (network || futurNetwork) && !(buildings || consommation || demands || energy);
@@ -135,22 +131,6 @@ const MapPopupContent = ({
             {conso_nb.toFixed(2)}
             &nbsp;MWh/an
             <br />
-          </>
-        )}
-        {conso_raccordement && conso_raccordement !== 'secret' && (
-          <>
-            <strong>Consommation de chaleur&nbsp;:</strong>&nbsp;
-            {conso_raccordement === 's' || conso_raccordement === 'nd' ? (
-              <>Non disponible</>
-            ) : (
-              <>{parseFloat(conso_raccordement).toFixed(2)}&nbsp;MWh/an</>
-            )}
-            <br />
-          </>
-        )}
-        {id_raccordement && !displayNetwork && (
-          <>
-            <strong>Identifiant&nbsp;:</strong>&nbsp;{id_raccordement}
           </>
         )}
         {dpe_energie && (
