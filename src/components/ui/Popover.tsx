@@ -1,7 +1,7 @@
 'use client';
 
 // Based on https://ui.shadcn.com/docs/components/popover
-// WIth the added functionnality of the width of the content to be at least the width of the trigger
+// With the added functionnality of the width of the content to be at least the width of the trigger
 
 /* Usage example:
 <Popover>
@@ -103,15 +103,4 @@ const PopoverContent = forwardRef<
 });
 PopoverContent.displayName = 'PopoverContent';
 
-const PopoverContentPortaled = forwardRef<React.ElementRef<typeof PopoverContent>, React.ComponentPropsWithoutRef<typeof PopoverContent>>(
-  (props, ref) => {
-    return (
-      <PopoverPrimitive.Portal>
-        <PopoverContent ref={ref} {...props} />
-      </PopoverPrimitive.Portal>
-    );
-  }
-);
-PopoverContentPortaled.displayName = 'PopoverContentPortaled';
-
-export { Popover, PopoverContent, PopoverContentPortaled, PopoverTrigger };
+export { Popover, PopoverContent, PopoverTrigger };
