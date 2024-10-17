@@ -18,7 +18,7 @@ const StyledCheckbox = styled(Checkbox)`
 `;
 
 const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage, className, ...props }: SelectCheckboxesProps) => {
-  const nbChechedChecboxes = props.options.filter(({ nativeInputProps }: any) => nativeInputProps.checked).length;
+  const nbCheckedCheckboxes = props.options.filter(({ nativeInputProps }: any) => nativeInputProps.checked).length;
   return (
     <FieldWrapper
       fieldId={fieldId}
@@ -30,15 +30,13 @@ const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage
     >
       <Popover>
         <PopoverTrigger asChild>
-          <select className="fr-select" id="select-hint" name="select-hint">
-            <option value="" selected disabled hidden>
-              {nbChechedChecboxes === 0
-                ? 'Sélectionner une option'
-                : nbChechedChecboxes === 1
-                ? '1 option sélectionnée'
-                : `${nbChechedChecboxes} options sélectionnées`}
-            </option>
-          </select>
+          <button className="fr-select" style={{ cursor: 'pointer', textAlign: 'left' }} role="button" tabIndex={0}>
+            {nbCheckedCheckboxes === 0
+              ? 'Sélectionner une option'
+              : nbCheckedCheckboxes === 1
+              ? '1 option sélectionnée'
+              : `${nbCheckedCheckboxes} options sélectionnées`}
+          </button>
         </PopoverTrigger>
         <PopoverContent
           className="fr-px-2w fr-py-1w"
