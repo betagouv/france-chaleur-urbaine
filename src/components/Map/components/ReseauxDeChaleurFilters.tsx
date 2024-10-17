@@ -44,7 +44,7 @@ function ReseauxDeChaleurFilters() {
     <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
       <SelectCheckboxes
         small
-        label="Type d'énergie majoritaire"
+        label="Energies mobilisées"
         className="fr-mb-1v"
         options={filtresEnergies.reduce(
           (acc, { label, confKey }) => {
