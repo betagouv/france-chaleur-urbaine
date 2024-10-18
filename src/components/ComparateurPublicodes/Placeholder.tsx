@@ -26,7 +26,7 @@ export const ComparateurPublicodesTitle = () => {
         configurations de chauffage et de refroidissement sur les plans techniques, économiques et environnementaux. Il ne remplace en aucun
         cas une étude de faisabilité technico-économique et ne peut s'adapter aux situations particulières avec les hypothèses
         préconfigurées. Ces hypothèses représentent des configurations types, elles sont donc sujets à des incertitudes importantes.{' '}
-        <a href="#" onClick={() => modal.open()} className="fr-link">
+        <a href="#" onClick={() => modal.open()} className="fr-link fr-text--sm">
           Voir l’explication détaillée
         </a>
       </div>
