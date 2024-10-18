@@ -15,6 +15,7 @@ import { modesDeChauffage } from './modes-de-chauffage';
 import { Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
+const precisionDisplay = 10 / 100;
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   proMode?: boolean;
@@ -132,6 +133,15 @@ const useFixLegendOpacity = (coutsRef: React.RefObject<HTMLDivElement>) => {
   });
 };
 
+const formatPrecisionRange = (value: number) => {
+  // as calculations are approximations, give a +-10% range
+  const lowerBound = Math.round((value * (1 - precisionDisplay)) / 10) * 10;
+  const upperBound = Math.round((value * (1 + precisionDisplay)) / 10) * 10;
+  const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const upperBoundStr = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  return `${lowerBoundStr} - ${upperBoundStr}`;
+};
+
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
@@ -207,13 +217,12 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
             ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true }),
           ];
 
-      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
-        .reduce((acc, amount) => acc + amount, 0)
-        .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
+      const precisionRange = formatPrecisionRange(totalAmount);
 
       return [
         [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-        [getLabel(typeInstallation), '', ...amounts, totalAmount],
+        [getLabel(typeInstallation), '', ...amounts, precisionRange],
       ];
     }),
   ];
