@@ -157,16 +157,6 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP2, colorP3, colorP4SansAides, colorP4Aides]
     : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
-  const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
-    chartArea: {
-      right: 130, // to display the total price without being cut (4 digits + unit)
-    },
-    hAxis: {
-      title: 'Coût €TTC/logement par an',
-      minValue: 0,
-    },
-    colors: coutGraphColors,
-  });
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
   const inclusClimatisation = engine.getField('Inclure la climatisation');
 
@@ -185,6 +175,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     return typeInstallation.reversible && inclusClimatisation ? `${typeInstallation.label} (chauffage + froid)` : typeInstallation.label;
   };
 
+  let maxCoutValue = 3000;
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
     ...modesDeChauffage.filter(filterDisplayableModesDeChauffage).flatMap((typeInstallation) => {
@@ -219,13 +210,25 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
       const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
       const precisionRange = formatPrecisionRange(totalAmount);
-
+      maxCoutValue = Math.max(maxCoutValue, totalAmount);
       return [
         [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
         [getLabel(typeInstallation), '', ...amounts, precisionRange],
       ];
     }),
   ];
+
+  const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
+    chartArea: {
+      right: 130, // to display the total price without being cut (4 digits + unit)
+    },
+    hAxis: {
+      title: 'Coût €TTC/logement par an',
+      minValue: 0,
+      maxValue: maxCoutValue,
+    },
+    colors: coutGraphColors,
+  });
 
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
