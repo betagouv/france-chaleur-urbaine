@@ -80,6 +80,7 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
               nativeInputProps={{
                 inputMode: 'numeric',
                 maxLength: 5,
+                min: 1,
                 type: 'number',
               }}
             />
@@ -94,7 +95,7 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
             inputMode: 'numeric',
             maxLength: 3,
             type: 'number',
-            min: 0,
+            min: 1,
             max: 100,
             step: 1,
           }}
