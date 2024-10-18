@@ -1,6 +1,6 @@
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
 import { useQueryState } from 'nuqs';
-import React from 'react';
+import React, { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
 
@@ -102,8 +102,40 @@ const emissionsCO2GraphColumnNames = [
 ];
 const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.map(getColumn).flat();
 
+const useFixLegendOpacity = (coutsRef: React.RefObject<HTMLDivElement>) => {
+  React.useEffect(() => {
+    if (!coutsRef?.current) {
+      return;
+    }
+
+    const applyChanges = () => {
+      const legendBox = coutsRef?.current?.querySelector('g g:last-child rect:last-child');
+
+      if (legendBox) {
+        legendBox.setAttribute('fill-opacity', '0.1');
+
+        legendBox.setAttribute('stroke', colorP4Aides);
+        legendBox.setAttribute('stroke-width', '1');
+      }
+    };
+
+    applyChanges();
+
+    // HACK: reapply changes as they may be overriden
+    const intervalId = setInterval(() => applyChanges(), 20);
+    const timeoutId = setTimeout(() => clearInterval(intervalId), 1000);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  });
+};
+
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+  const coutsRef = useRef<HTMLDivElement>(null);
+  useFixLegendOpacity(coutsRef);
 
   const coutGraphColumnNames = proMode
     ? ['P1 abo', 'P1 conso', 'P1 ECS', "P1'", 'P2', 'P3', 'P4 moins aides', 'aides']
@@ -246,7 +278,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       </Box>
 
       {graphType === 'couts' && (
-        <>
+        <div ref={coutsRef}>
           <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'}</Heading>
           <Chart
             chartType="BarChart"
@@ -268,7 +300,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
               height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
             }}
           />
-        </>
+        </div>
       )}
       {graphType === 'emissions' && (
         <>
