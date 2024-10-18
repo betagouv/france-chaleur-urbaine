@@ -576,6 +576,9 @@ const trackingEvents = {
   'Téléchargement|Supports|Pays de la Loire': {
     matomo: ['Téléchargement', 'Supports', 'Pays de la Loire'],
   },
+  'Téléchargement|Supports|Centre-Val de Loire': {
+    matomo: ['Téléchargement', 'Supports', 'Centre-Val de Loire'],
+  },
   'Téléchargement|Supports|Bretagne': {
     matomo: ['Téléchargement', 'Supports', 'Bretagne'],
   },

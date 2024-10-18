@@ -165,6 +165,12 @@ const infographies: InfographieItemProps[] = [
     linkUrl: '/img/FCU_Infographie_Bretagne.jpg',
     eventKey: 'Téléchargement|Supports|Bretagne',
   },
+  {
+    label: 'Les réseaux de chaleur en région : le Centre-Val de Loire',
+    imgUrl: '/img/FCU_Infographie_Centre_Val_Loire.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Centre_Val_Loire.jpg',
+    eventKey: 'Téléchargement|Supports|Centre-Val de Loire',
+  },
 ];
 
 const reportages: InfographieItemProps[] = [
