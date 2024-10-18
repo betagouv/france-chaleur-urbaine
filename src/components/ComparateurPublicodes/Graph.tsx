@@ -159,7 +159,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
   const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
     chartArea: {
-      right: 50, // to display the total price without being cut (4 digits + unit)
+      right: 130, // to display the total price without being cut (4 digits + unit)
     },
     hAxis: {
       title: 'Coût €TTC/logement par an',
