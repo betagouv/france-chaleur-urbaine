@@ -549,6 +549,36 @@ const trackingEvents = {
   'Téléchargement|Supports|Idées reçues 5': {
     matomo: ['Téléchargement', 'Supports', 'Idées reçues 5'],
   },
+  'Téléchargement|Supports|Normandie': {
+    matomo: ['Téléchargement', 'Supports', 'Normandie'],
+  },
+  'Téléchargement|Supports|Hauts-de-France': {
+    matomo: ['Téléchargement', 'Supports', 'Hauts-de-France'],
+  },
+  'Téléchargement|Supports|Grand Est': {
+    matomo: ['Téléchargement', 'Supports', 'Grand Est'],
+  },
+  'Téléchargement|Supports|Bougogne-Franche-Comté': {
+    matomo: ['Téléchargement', 'Supports', 'Bougogne-Franche-Comté'],
+  },
+  'Téléchargement|Supports|Auvergne-Rhône-Alpes': {
+    matomo: ['Téléchargement', 'Supports', 'Auvergne-Rhône-Alpes'],
+  },
+  "Téléchargement|Supports|Provence-Alpes-Côte-d'Azur": {
+    matomo: ['Téléchargement', 'Supports', "Provence-Alpes-Côte-d'Azur"],
+  },
+  'Téléchargement|Supports|Occitanie': {
+    matomo: ['Téléchargement', 'Supports', 'Occitanie'],
+  },
+  'Téléchargement|Supports|Nouvelle-Aquitaine': {
+    matomo: ['Téléchargement', 'Supports', 'Nouvelle-Aquitaine'],
+  },
+  'Téléchargement|Supports|Pays de la Loire': {
+    matomo: ['Téléchargement', 'Supports', 'Pays de la Loire'],
+  },
+  'Téléchargement|Supports|Bretagne': {
+    matomo: ['Téléchargement', 'Supports', 'Bretagne'],
+  },
   'Téléchargement|Schéma directeur': {
     matomo: ['Téléchargement', 'Schéma directeur'],
   },
