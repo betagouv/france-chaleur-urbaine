@@ -25,6 +25,8 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
   const placeholder = isInView ? (engine.getFieldDefaultValue(name) as number | null | undefined) : '';
   const unit = !hideUnit && isInView ? engine.getUnit(name) : '';
   const [value, setValue] = React.useState<any>();
+  const [error, setError] = React.useState<string>();
+  const { min, max } = nativeInputProps || {};
 
   React.useEffect(() => {
     if (isInView) {
@@ -63,13 +65,25 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
             }`
           : '',
         onChange: (e) => {
+          setError(undefined);
           e.stopPropagation();
-          const newValue = e.target.value;
+          const newValue = +e.target.value;
+
+          const minString = unit === '%' && min ? min.toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 2 }) : min;
+          const maxString = unit === '%' && max ? max.toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 2 }) : max;
+
+          if (isDefined(min) && isDefined(max) && (newValue < +min || newValue > +max)) {
+            return setError(`Veuillez saisir une valeur comprise entre ${minString} et ${maxString}`);
+          } else if (isDefined(min) && newValue < +min) {
+            return setError(`Veuillez saisir une valeur supérieure ou égale à ${minString}`);
+          } else if (isDefined(max) && newValue > +max) {
+            return setError(`Veuillez saisir une valeur inférieure ou égale à ${maxString}`);
+          }
           setValue(newValue);
         },
       }}
-      // state={props.state ?? fieldState.error ? 'error' : 'default'}
-      stateRelatedMessage={props.stateRelatedMessage ?? 'Sélectionnez une valeur'}
+      state={props.state ?? error ? 'error' : 'default'}
+      stateRelatedMessage={props.stateRelatedMessage ?? (error || 'Sélectionnez une valeur')}
       {...props}
     />
   );

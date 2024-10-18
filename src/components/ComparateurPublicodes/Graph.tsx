@@ -1,6 +1,6 @@
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
 import { useQueryState } from 'nuqs';
-import React from 'react';
+import React, { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
 
@@ -12,8 +12,10 @@ import cx from '@utils/cx';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
+import { Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
+const precisionDisplay = 10 / 100;
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   proMode?: boolean;
@@ -101,8 +103,49 @@ const emissionsCO2GraphColumnNames = [
 ];
 const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.map(getColumn).flat();
 
+const useFixLegendOpacity = (coutsRef: React.RefObject<HTMLDivElement>) => {
+  React.useEffect(() => {
+    if (!coutsRef?.current) {
+      return;
+    }
+
+    const applyChanges = () => {
+      const legendBox = coutsRef?.current?.querySelector('g g:last-child rect:last-child');
+
+      if (legendBox) {
+        legendBox.setAttribute('fill-opacity', '0.1');
+
+        legendBox.setAttribute('stroke', colorP4Aides);
+        legendBox.setAttribute('stroke-width', '1');
+      }
+    };
+
+    applyChanges();
+
+    // HACK: reapply changes as they may be overriden
+    const intervalId = setInterval(() => applyChanges(), 20);
+    const timeoutId = setTimeout(() => clearInterval(intervalId), 1000);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  });
+};
+
+const formatPrecisionRange = (value: number) => {
+  // as calculations are approximations, give a +-10% range
+  const lowerBound = Math.round((value * (1 - precisionDisplay)) / 10) * 10;
+  const upperBound = Math.round((value * (1 + precisionDisplay)) / 10) * 10;
+  const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const upperBoundStr = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  return `${lowerBoundStr} - ${upperBoundStr}`;
+};
+
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+  const coutsRef = useRef<HTMLDivElement>(null);
+  useFixLegendOpacity(coutsRef);
 
   const coutGraphColumnNames = proMode
     ? ['P1 abo', 'P1 conso', 'P1 ECS', "P1'", 'P2', 'P3', 'P4 moins aides', 'aides']
@@ -116,12 +159,11 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
   const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
     chartArea: {
-      right: 50, // to display the total price without being cut (4 digits + unit)
+      right: 130, // to display the total price without being cut (4 digits + unit)
     },
     hAxis: {
       title: 'Coût €TTC/logement par an',
       minValue: 0,
-      format: '# €',
     },
     colors: coutGraphColors,
   });
@@ -175,13 +217,12 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
             ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true }),
           ];
 
-      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
-        .reduce((acc, amount) => acc + amount, 0)
-        .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
+      const precisionRange = formatPrecisionRange(totalAmount);
 
       return [
         [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-        [getLabel(typeInstallation), '', ...amounts, totalAmount],
+        [getLabel(typeInstallation), '', ...amounts, precisionRange],
       ];
     }),
   ];
@@ -245,7 +286,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       </Box>
 
       {graphType === 'couts' && (
-        <>
+        <div ref={coutsRef}>
           <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'}</Heading>
           <Chart
             chartType="BarChart"
@@ -267,7 +308,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
               height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
             }}
           />
-        </>
+        </div>
       )}
       {graphType === 'emissions' && (
         <>
@@ -294,6 +335,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           />
         </>
       )}
+      <Logos size="sm" justifyContent="end" />
     </div>
   );
 };

@@ -38,7 +38,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
 
   return (
     <div {...props}>
-      <p>Selectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer</p>
+      <p>Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer</p>
       {productionECS && (
         <>
           <Title>Eau Chaude Sanitaire</Title>
