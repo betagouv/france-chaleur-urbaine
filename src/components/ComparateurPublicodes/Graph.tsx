@@ -154,7 +154,6 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     hAxis: {
       title: 'Coût €TTC/logement par an',
       minValue: 0,
-      format: '# €',
     },
     colors: coutGraphColors,
   });
