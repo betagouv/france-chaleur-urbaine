@@ -153,6 +153,11 @@ module.exports = withBundleAnalyzer(
             destination: '/ressources/articles',
             permanent: true,
           },
+          {
+            source: '/evos',
+            destination: '/campagnes2024',
+            permanent: true,
+          },
         ];
       },
       async headers() {

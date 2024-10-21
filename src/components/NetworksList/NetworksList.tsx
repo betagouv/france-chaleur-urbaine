@@ -16,9 +16,9 @@ import {
   emptyFilterValues,
   energiesFilters,
   FilterLimits,
-  FiltersDBLimits,
   FilterValues,
   intervalFilters,
+  IntervalFiltersLimitKey,
 } from 'src/types/NetworksFilters';
 import { NetworkToCompare } from 'src/types/Summary/Network';
 
@@ -412,12 +412,12 @@ const NetworksList = () => {
           setRegionsList(newRegionsList);
 
           // amend the configuration with metadata limits of networks
-          const limits = await fetchJSON<FiltersDBLimits>('/api/networks/list-to-compare-limits');
+          const limits = await fetchJSON<IntervalFiltersLimitKey>('/api/map/network-limits');
           // apply the limits to the filters
           intervalFilters.forEach((filter) => {
-            if (limits[filter.confKey]) {
-              filterValues[filter.confKey] = limits[filter.confKey];
-              filterLimits[filter.confKey] = limits[filter.confKey];
+            if (limits[filter.limitKey]) {
+              filterValues[filter.confKey] = limits[filter.limitKey];
+              filterLimits[filter.confKey] = limits[filter.limitKey];
             }
           });
           setFilterValues(filterValues);

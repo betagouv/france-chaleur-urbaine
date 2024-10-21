@@ -18,7 +18,7 @@ export class NetworksService {
   }
   async fetch(): Promise<NetworkToCompare[]> {
     try {
-      return await this.httpClient.get<NetworkToCompare[]>(`/api/networks/list-to-compare`);
+      return await this.httpClient.get<NetworkToCompare[]>(`/api/networks/all`);
     } catch (e) {
       throw new ServiceError(e);
     }
