@@ -767,11 +767,11 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           layout: {
             'icon-image': 'square',
             'icon-overlap': 'always',
-            'icon-size': 0.5,
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 9, 0.1, 12, 0.5],
           },
           paint: {
             'icon-color': themeDefHeatNetwork.classed.color,
-            'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9 + 0.2, 0, 9 + 0.5 + 1, batimentsRaccordesLayerMaxOpacity],
+            'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9.2, 0, 10.5, batimentsRaccordesLayerMaxOpacity],
           },
         },
         {
@@ -783,11 +783,11 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           layout: {
             'icon-image': 'square',
             'icon-overlap': 'always',
-            'icon-size': 0.5,
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 9, 0.1, 12, 0.5],
           },
           paint: {
             'icon-color': themeDefHeatNetwork.cold.color,
-            'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9 + 0.2, 0, 9 + 0.5 + 1, batimentsRaccordesLayerMaxOpacity],
+            'icon-opacity': ['interpolate', ['linear'], ['zoom'], 9.2, 0, 10.5, batimentsRaccordesLayerMaxOpacity],
           },
         },
       ],
