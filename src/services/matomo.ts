@@ -1,9 +1,4 @@
-import dotenv from 'dotenv';
-
 import { MatomoErrorResult } from './matomo_types';
-
-dotenv.config({ path: '.env.local' });
-dotenv.config();
 
 const MATOMO_URL = process.env.NEXT_PUBLIC_MATOMO_URL;
 const MATOMO_TOKEN = process.env.MATOMO_TOKEN;
