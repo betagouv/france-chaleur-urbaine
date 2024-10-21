@@ -755,7 +755,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
         type: 'vector',
         tiles: [`${location.origin}/api/map/batimentsRaccordesReseauxChaleurFroid/{z}/{x}/{y}`],
         minzoom: 9,
-        maxzoom: 9,
+        maxzoom: 13, // 13 permet de cliquer jusqu'au zoom 20 inclus, sinon maplibre ne considère pas la feature comme cliquable
       },
       layers: [
         {
