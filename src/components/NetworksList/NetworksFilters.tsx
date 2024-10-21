@@ -285,7 +285,7 @@ function NetworksFilter({
                       />
                     </Box>
                     <Box m="2w">
-                      <Text size="sm">Énergies mobilisées</Text>
+                      <Text size="sm">Énergies mobilisées (au sein d'un même réseau)</Text>
                       <SelectCheckboxes
                         small
                         className="fr-mb-1v"

@@ -44,7 +44,7 @@ function ReseauxDeChaleurFilters() {
     <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
       <SelectCheckboxes
         small
-        label="Energies mobilisées"
+        label="Énergies mobilisées (au sein d'un même réseau)"
         className="fr-mb-1v"
         options={filtresEnergies.reduce(
           (acc, { label, confKey }) => {

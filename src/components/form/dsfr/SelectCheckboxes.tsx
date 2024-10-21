@@ -32,7 +32,7 @@ const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage
         <PopoverTrigger asChild>
           <button className="fr-select" style={{ cursor: 'pointer', textAlign: 'left' }} role="button" tabIndex={0}>
             {nbCheckedCheckboxes === 0
-              ? 'Sélectionner une option'
+              ? 'Sélectionner une ou des option(s)'
               : nbCheckedCheckboxes === 1
               ? '1 option sélectionnée'
               : `${nbCheckedCheckboxes} options sélectionnées`}
