@@ -11,7 +11,7 @@ import WrappedBlock from '@components/WrappedBlock';
 import WrappedText from '@components/WrappedText';
 import { comparatifRcu } from '@data/coproprietaire';
 
-export default function EvosPage() {
+export default function Campagnes2024Page() {
   return (
     <SimplePage
       title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique"
@@ -26,7 +26,7 @@ export default function EvosPage() {
 
       <GlobalStyle />
       <HeadSliceForm
-        bg="/img/banner_fresnes.jpg"
+        bg="/img/banner_campagnes2024.webp"
         pageBody={`**Vous êtes copropriétaire en ville ?**
 Améliorez votre confort et baissez vos factures !
 # Le chauffage urbain, une solution écologique et économique pour votre copropriété`}
