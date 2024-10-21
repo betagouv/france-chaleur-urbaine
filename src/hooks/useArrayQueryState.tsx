@@ -7,21 +7,34 @@ const useArrayQueryState = <Type extends string>(name: string) => {
     serialize: (value) => value.join(','),
   });
 
+  const set = (newItems: Type[]) => {
+    setItems(newItems.length > 0 ? newItems : null);
+  };
+
   const add = (name: Type) => {
     if (!items.includes(name)) {
-      setItems((prevItems) => [...prevItems, name].filter(Boolean));
+      setItems((prevItems) => {
+        const newItems = [...prevItems, name].filter(Boolean);
+
+        return newItems.length > 0 ? newItems : null;
+      });
     }
   };
 
   const remove = (name: Type) => {
-    setItems((prevItems) => prevItems.filter((accordion) => accordion !== name).filter(Boolean));
+    setItems((prevItems) => {
+      const newItems = prevItems.filter((accordion) => accordion !== name);
+
+      // If no items are left, remove the query param by setting null
+      return newItems.length > 0 ? newItems : null;
+    });
   };
 
   const has = (name: Type) => items.includes(name);
 
   const toggle = (name: Type) => (has(name) ? remove(name) : add(name));
 
-  return { add, remove, has, toggle, items };
+  return { add, remove, has, toggle, set, items };
 };
 
 export default useArrayQueryState;
