@@ -1,16 +1,15 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useMemo } from 'react';
 
-import Hoverable from '@components/Hoverable';
 import { batimentsRaccordesLayerMaxOpacity } from '@components/Map/map-layers';
 import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
-import Icon from '@components/ui/Icon';
+import Infobulle from '@components/ui/Infobulle';
 import Text from '@components/ui/Text';
 import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
 
 import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
-import { InfoIcon, SingleCheckbox, Title } from './SimpleMapLegend.style';
+import { SingleCheckbox, Title } from './SimpleMapLegend.style';
 import useFCUMap from '../MapProvider';
 
 export const mapLegendFeatures = [
@@ -100,18 +99,14 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
               </Box>
             </Box>
 
-            <InfoIcon>
-              <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-              <Hoverable position="bottom">
-                Pour les réseaux classés, le raccordement des bâtiments neufs ou renouvelant leur installation de chauffage au-dessus d'une
-                certaine puissance est obligatoire dès lors qu'ils sont situés dans le périmètre de développement prioritaire (sauf
-                dérogation).
-                <br />
-                Les réseaux affichés comme classés sont ceux listés par arrêté du 22 décembre 2023. Collectivités : pour signaler un
-                dé-classement, cliquez sur Contribuer.
-              </Hoverable>
-            </InfoIcon>
+            <Infobulle>
+              Pour les réseaux classés, le raccordement des bâtiments neufs ou renouvelant leur installation de chauffage au-dessus d'une
+              certaine puissance est obligatoire dès lors qu'ils sont situés dans le périmètre de développement prioritaire (sauf
+              dérogation).
+              <br />
+              Les réseaux affichés comme classés sont ceux listés par arrêté du 22 décembre 2023. Collectivités : pour signaler un
+              dé-classement, cliquez sur Contribuer.
+            </Infobulle>
           </Box>
           <Button
             onClick={() => setFiltersVisible(true)}
@@ -150,14 +145,10 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
             Périmètres de développement prioritaire des réseaux classés
           </Text>
 
-          <InfoIcon>
-            <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-            <Hoverable position="bottom">
-              Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage
-              au-dessus d'une certaine puissance est obligatoire.
-            </Hoverable>
-          </InfoIcon>
+          <Infobulle>
+            Dans cette zone, le raccordement des nouvelles constructions ou des bâtiments renouvelant leur installation de chauffage
+            au-dessus d'une certaine puissance est obligatoire.
+          </Infobulle>
         </Box>
       )}
 
@@ -204,11 +195,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
             </Box>
           </Box>
 
-          <InfoIcon>
-            <Icon size="sm" name="ri-information-fill" cursor="help" />
-
-            <Hoverable position="bottom">Projets financés par l'ADEME ou signalés par les collectivités et exploitants.</Hoverable>
-          </InfoIcon>
+          <Infobulle>Projets financés par l'ADEME ou signalés par les collectivités et exploitants.</Infobulle>
         </Box>
       )}
 
