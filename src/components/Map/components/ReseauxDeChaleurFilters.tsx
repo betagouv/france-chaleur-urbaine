@@ -1,44 +1,15 @@
-import { parseAsBoolean, useQueryState } from 'nuqs';
-
 import SelectCheckboxes from '@components/form/dsfr/SelectCheckboxes';
 import RangeFilter from '@components/Map/components/RangeFilter';
 import useFCUMap from '@components/Map/MapProvider';
 import { UrlStateAccordion } from '@components/ui/Accordion';
 import Button from '@components/ui/Button';
 import Divider from '@components/ui/Divider';
-import { deepMergeObjects } from '@utils/core';
-import { emptyMapConfiguration, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
+import { filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
 
 import { DeactivatableBox, FilterResetButtonWrapper } from './SimpleMapLegend.style';
 
 function ReseauxDeChaleurFilters() {
-  const { mapConfiguration, setMapConfiguration, updateScaleInterval } = useFCUMap();
-
-  const [isFiltering, toggleFiltering] = useQueryState('rdc_isfiltering', parseAsBoolean.withDefault(false));
-
-  const filterAndUpdateScaleInterval: typeof updateScaleInterval = (property) => {
-    toggleFiltering(true);
-    return updateScaleInterval(property);
-  };
-
-  const resetFilters = () => {
-    setMapConfiguration(
-      deepMergeObjects(mapConfiguration, {
-        reseauxDeChaleur: {
-          ...filtresEnergies.reduce(
-            (acc, filtreEnergie) => ({
-              ...acc,
-              [`energie_ratio_${filtreEnergie.confKey}`]: emptyMapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`],
-            }),
-            {}
-          ),
-          energieMobilisee: [],
-          ...mapConfiguration.reseauxDeChaleur.limits,
-        },
-      })
-    );
-    toggleFiltering(false);
-  };
+  const { mapConfiguration, resetFilters, updateFilter, nbFilters } = useFCUMap();
 
   return (
     <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
@@ -59,10 +30,7 @@ function ReseauxDeChaleurFilters() {
                     ? currentEnergies.filter((key) => key !== confKey) // Remove if already selected
                     : [...currentEnergies, confKey]; // Add if not selected
 
-                  mapConfiguration.reseauxDeChaleur.energieMobilisee = newEnergies.length ? newEnergies : undefined;
-
-                  toggleFiltering(true);
-                  setMapConfiguration({ ...mapConfiguration });
+                  updateFilter('reseauxDeChaleur.energieMobilisee', newEnergies.length ? newEnergies : undefined);
                 },
               },
             });
@@ -86,7 +54,7 @@ function ReseauxDeChaleurFilters() {
               label={filtreEnergie.label}
               domain={percentageMaxInterval}
               value={mapConfiguration.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`]}
-              onChange={(interval) => filterAndUpdateScaleInterval(`reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`)(interval)}
+              onChange={(interval) => updateFilter(`reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`, interval)}
               unit="%"
             />
           ))}
@@ -98,7 +66,7 @@ function ReseauxDeChaleurFilters() {
         label="Taux d’EnR&R"
         domain={percentageMaxInterval}
         value={mapConfiguration.reseauxDeChaleur.tauxENRR}
-        onChange={(interval) => filterAndUpdateScaleInterval('reseauxDeChaleur.tauxENRR')(interval)}
+        onChange={(interval) => updateFilter('reseauxDeChaleur.tauxENRR', interval)}
         unit="%"
       />
       <Divider />
@@ -106,7 +74,7 @@ function ReseauxDeChaleurFilters() {
         label="Émissions de CO2"
         domain={mapConfiguration.reseauxDeChaleur.limits.emissionsCO2}
         value={mapConfiguration.reseauxDeChaleur.emissionsCO2}
-        onChange={(interval) => filterAndUpdateScaleInterval('reseauxDeChaleur.emissionsCO2')(interval)}
+        onChange={(interval) => updateFilter('reseauxDeChaleur.emissionsCO2', interval)}
         unit="gCO2/kWh"
         tooltip="Émissions en analyse du cycle de vie (directes et indirectes)"
       />
@@ -115,7 +83,7 @@ function ReseauxDeChaleurFilters() {
         label="Prix moyen de la chaleur"
         domain={mapConfiguration.reseauxDeChaleur.limits.prixMoyen}
         value={mapConfiguration.reseauxDeChaleur.prixMoyen}
-        onChange={(interval) => filterAndUpdateScaleInterval('reseauxDeChaleur.prixMoyen')(interval)}
+        onChange={(interval) => updateFilter('reseauxDeChaleur.prixMoyen', interval)}
         unit="€TTC/MWh"
         tooltip="La comparaison avec le prix d'autres modes de chauffage n’est pertinente qu’en coût global annuel, en intégrant les coûts d’exploitation, de maintenance et d’investissement, amortis sur la durée de vie des installations."
       />
@@ -124,7 +92,7 @@ function ReseauxDeChaleurFilters() {
         label="Livraisons annuelles de chaleur"
         domain={mapConfiguration.reseauxDeChaleur.limits.livraisonsAnnuelles}
         value={mapConfiguration.reseauxDeChaleur.livraisonsAnnuelles}
-        onChange={(interval) => filterAndUpdateScaleInterval('reseauxDeChaleur.livraisonsAnnuelles')(interval)}
+        onChange={(interval) => updateFilter('reseauxDeChaleur.livraisonsAnnuelles', interval)}
         domainTransform={{
           percentToValue: (v) => roundNumberProgressively(getLivraisonsAnnuellesFromPercentage(v)),
           valueToPercent: (v) => roundNumberProgressively(getPercentageFromLivraisonsAnnuelles(v)),
@@ -136,9 +104,9 @@ function ReseauxDeChaleurFilters() {
         label="Année de construction"
         domain={mapConfiguration.reseauxDeChaleur.limits.anneeConstruction}
         value={mapConfiguration.reseauxDeChaleur.anneeConstruction}
-        onChange={(interval) => filterAndUpdateScaleInterval('reseauxDeChaleur.anneeConstruction')(interval)}
+        onChange={(interval) => updateFilter('reseauxDeChaleur.anneeConstruction', interval)}
       />
-      {isFiltering && (
+      {nbFilters > 0 && (
         <FilterResetButtonWrapper>
           <Button type="button" onClick={resetFilters} priority="secondary" size="small" iconId="fr-icon-arrow-go-back-line" full>
             Réinitialiser les filtres
