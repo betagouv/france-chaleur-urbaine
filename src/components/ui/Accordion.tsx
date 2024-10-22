@@ -99,22 +99,24 @@ const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, sim
       $simple={simple}
       $disabled={disabled}
       $bordered={bordered}
-      $closeable={!!onClose}
+      $closeable={!!onClose || !!help}
       label={
         <>
           {label}
-          <AccordionTitleHelp>
-            {help && (
-              <Infobulle
-                style={{
-                  marginTop: '-0.1rem', // icon is not well balanced and has a small margin on top
-                }}
-              >
-                {help}
-              </Infobulle>
-            )}
-            {onClose && <Icon name="fr-icon-close-line" size="sm" onClick={onClose} />}
-          </AccordionTitleHelp>
+          {(help || onClose) && (
+            <AccordionTitleHelp>
+              {help && (
+                <Infobulle
+                  style={{
+                    marginTop: '-0.1rem', // icon is not well balanced and has a small margin on top
+                  }}
+                >
+                  {help}
+                </Infobulle>
+              )}
+              {onClose && <Icon name="fr-icon-close-line" size="sm" onClick={onClose} />}
+            </AccordionTitleHelp>
+          )}
         </>
       }
       {...props}
