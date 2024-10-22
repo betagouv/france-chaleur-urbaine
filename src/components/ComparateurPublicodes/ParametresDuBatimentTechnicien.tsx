@@ -171,28 +171,54 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
         />
       </Accordion>
 
-      <Accordion label="Calcul puissance">
-        <Input name="ratios . PUIS Température de non chauffage" label="Température de non chauffage" />
-        <Input name="ratios . PUIS Facteur de surpuissance" label="Facteur de surpuissance" />
+      <Accordion label="Calcul puissance" help="Le calcul de la puissance permet de dimensionner les installations nécessaires.">
+        <Input
+          name="ratios . PUIS Température de non chauffage"
+          label="Température de non chauffage"
+          help="Température en dessous de laquelle le chauffage est déclenché. Elle influence uniquement les puissances de dimensionnement et non les besoins."
+        />
+        <Input
+          name="ratios . PUIS Facteur de surpuissance"
+          label="Facteur de surpuissance"
+          help="% de surpuissance appliqué en sécurité. Influence uniquement les puissances de dimensionnement."
+        />
         <Input
           name="ratios . PUIS Nombre heure de fonctionnement non climatique ECS"
           label="Nombre heure de fonctionnement non climatique ECS"
+          help="Nombre d'heures pendant lequel l'eau chaude sanitaire est produite. Influence uniquement la puissance de dimensionnement de l'ECS."
         />
         <Input name="ratios . PUIS Coefficient de foisonnement ECS" label="Coefficient de foisonnement ECS" />
         <Input
           name="ratios . PUIS Coefficient de foisonnement chauffage collectif"
           label="Coefficient de foisonnement chauffage collectif"
+          help="Coefficient permettant d'intégrer les décalages temporels de consommation entre les utilisateurs. Influence uniquement la puissance de dimensionnement."
         />
       </Accordion>
 
       <Accordion label="Calcul ECS">
         <Accordion label="Chauffe-eau électrique à accumulation">
-          <Input name="ratios . CHAUF EAU ELEC Rendement stockage ballon" label="Rendement stockage ballon" />
-          <Input name="ratios . CHAUF EAU ELEC Durée de vie" label="Durée de vie" />
+          <Input
+            name="ratios . CHAUF EAU ELEC Rendement stockage ballon"
+            label="Rendement stockage ballon"
+            help="Une partie de l'énergie stockée dans les ballons est perdue."
+          />
+          <Input
+            name="ratios . CHAUF EAU ELEC Durée de vie"
+            label="Durée de vie"
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
         </Accordion>
         <Accordion label="Chauffe-eau solaire avec appoint électrique">
-          <Input name="ratios . CHAUF EAU SOLAIRE Rendement stockage ballon" label="Rendement stockage ballon" />
-          <Input name="ratios . CHAUF EAU SOLAIRE Durée de vie" label="Durée de vie" />
+          <Input
+            name="ratios . CHAUF EAU SOLAIRE Rendement stockage ballon"
+            label="Rendement stockage ballon"
+            help="Une partie de l'énergie stockée dans les ballons est perdue."
+          />
+          <Input
+            name="ratios . CHAUF EAU SOLAIRE Durée de vie"
+            label="Durée de vie"
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
           <Input
             name="ratios . CHAUF EAU SOLAIRE Part du solaire dans la production d'ECS"
             label="Part du solaire dans la production d'ECS"
