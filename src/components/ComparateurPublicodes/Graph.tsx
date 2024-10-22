@@ -54,7 +54,7 @@ const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
 const colorP1Abo = '#FCC63A';
 const colorP1Conso = '#FC8162';
 const colorP1ECS = '#F2535E';
-const colorP1Froid = '#0077be';
+const colorP1Consofroid = '#0077be';
 const colorP1prime = '#51D1DC';
 const colorP2 = '#475DA1';
 const colorP3 = '#99C221';
@@ -155,7 +155,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
   const coutGraphColumns = coutGraphColumnNames.map(getColumn).flat();
 
   const coutGraphColors = proMode
-    ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP1Froid, colorP2, colorP3, colorP4SansAides, colorP4Aides]
+    ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP1Consofroid, colorP2, colorP3, colorP4SansAides, colorP4Aides]
     : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
@@ -184,7 +184,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
       const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
       const amountP1prime = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1prime`);
-      const amountP1froid = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1froid`);
+      const amountP1Consofroid = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1Consofroid`);
       const amountP2 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P2`);
       const amountP3 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P3`);
       const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
@@ -196,7 +196,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
             ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso }),
             ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS }),
             ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime }),
-            ...getRow({ title: "P1'", amount: amountP1froid, color: colorP1froid }),
+            ...getRow({ title: "P1'", amount: amountP1Consofroid, color: colorP1Consofroid }),
             ...getRow({ title: 'P2', amount: amountP2, color: colorP2 }),
             // TODO manque les différents types d'installation avec élec ou solaire
             ...getRow({ title: 'P3', amount: amountP3, color: colorP3 }),
