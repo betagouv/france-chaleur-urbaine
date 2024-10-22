@@ -7,15 +7,21 @@ import { isDefined } from '@utils/core';
 
 import { usePublicodesFormContext } from './FormProvider';
 import { fixupBooleanEngineValue, fixupSituationStringValue, getOptions } from './helpers';
+import Label from './Label';
 
 export type DSFRSelectProps = React.ComponentProps<typeof DSFRSelect> & {
   withDefaultOption?: boolean;
+  hideUnit?: boolean;
+  help?: React.ReactNode;
 };
 
 const Select = ({
   name,
   onChange: onExternalChange,
   hintText: hint,
+  label,
+  help,
+  hideUnit = false,
   nativeSelectProps,
   withDefaultOption = true,
   ...props
@@ -26,6 +32,7 @@ const Select = ({
 }) => {
   const [ref, isInView] = useInViewport<HTMLDivElement>();
   const { engine } = usePublicodesFormContext();
+  const unit = !hideUnit && isInView ? engine.getUnit(name) : '';
 
   const options = isInView ? getOptions(engine, name) : [];
   const defaultValue = isInView ? fixupBooleanEngineValue(engine.getFieldDefaultValue(name) as string | null | undefined) : '';
@@ -38,6 +45,7 @@ const Select = ({
   return (
     <DSFRSelect
       ref={ref}
+      label={<Label label={label} unit={!hideUnit ? unit : undefined} help={help} />}
       nativeSelectProps={{
         ...nativeSelectProps,
         value,

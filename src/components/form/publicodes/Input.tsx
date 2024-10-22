@@ -4,8 +4,8 @@ import React from 'react';
 
 import useInViewport from '@hooks/useInViewport';
 import { isDefined } from '@utils/core';
-import { upperCaseFirstChar } from '@utils/strings';
 
+import Label from './Label';
 import DSFRInput from '../dsfr/Input';
 import { usePublicodesFormContext } from '../publicodes/FormProvider';
 export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
@@ -17,9 +17,10 @@ type InputProps = DSFRInputProps &
     name: DottedName;
     label: string;
     hideUnit?: boolean;
+    help?: React.ReactNode;
   };
 
-const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, hideUnit = false, ...props }: InputProps) => {
+const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, help, hideUnit = false, ...props }: InputProps) => {
   const [ref, isInView] = useInViewport<HTMLDivElement>();
   const { engine } = usePublicodesFormContext();
   const placeholder = isInView ? (engine.getFieldDefaultValue(name) as number | null | undefined) : '';
@@ -55,12 +56,7 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
     <DSFRInput
       ref={ref}
       textArea={false}
-      label={
-        <>
-          {upperCaseFirstChar(label)}
-          {!hideUnit && unit ? <small> ({unit})</small> : ''}
-        </>
-      }
+      label={<Label label={label} unit={!hideUnit ? unit : undefined} help={help} />}
       hideOptionalLabel
       nativeInputProps={{
         ...nativeInputProps,

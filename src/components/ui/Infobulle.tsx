@@ -9,7 +9,7 @@ type InfobulleProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'size'> & {
   position?: HoverableProps['position'];
 };
 
-export const InfoIcon = styled.div`
+export const InfoIcon = styled.span`
   position: relative;
   align-self: flex-start;
   margin-left: auto;
