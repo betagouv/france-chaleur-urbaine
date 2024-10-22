@@ -39,7 +39,9 @@ export const databaseSourceIds = [
   'demands', // demandes d'éligibilité
   'gas', // consommations de gaz
   'energy', // batiments collectifs chauffés au fioul / gas
+  // TODO supprimer après déploiement en prod de batimentsRaccordesReseauxChaleurFroid
   'raccordements', // bâtiments raccordés
+  'batimentsRaccordesReseauxChaleurFroid',
   'enrrMobilisables',
   'enrrMobilisables-friches',
   'enrrMobilisables-parkings',
@@ -98,6 +100,7 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
     sourceLayer: 'demands',
   },
+  // TODO supprimer après déploiement en prod de batimentsRaccordesReseauxChaleurFroid
   raccordements: {
     source: 'database',
     table: 'batiments_raccordes_rdc',
@@ -106,6 +109,17 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     extraWhere: (query) => query.whereLike('ID', '%C'),
     properties: ['fid', 'ADRESSE', 'CONSO', 'PDL', 'ID'],
     sourceLayer: 'raccordements',
+  },
+  // https://www.notion.so/D-veloppement-e8399345919442748735de25865ebe4a?pvs=4#122c2b5c414b80838207d4f930c68cd7
+  batimentsRaccordesReseauxChaleurFroid: {
+    source: 'database',
+    tiles: 'batiments_raccordes_reseaux_chaleur_froid_tiles', // contient 2 layers batiments_raccordes_reseaux_chaleur et batiments_raccordes_reseaux_froid
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
   },
   network: {
     source: 'database',
