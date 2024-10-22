@@ -84,7 +84,7 @@ const getTooltip = ({ title, amount, color, bordered }: { title: string; color: 
     <GraphTooltip>
       <span style={bordered ? { border: `2px solid ${color}` } : { backgroundColor: color }}></span>
       <span>{title}</span>
-      <strong>{amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</strong>
+      <strong style={{ whiteSpace: 'nowrap' }}>{formatPrecisionRange(amount)}</strong>
     </GraphTooltip>
   );
 
