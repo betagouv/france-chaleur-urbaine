@@ -42,4 +42,6 @@ allowed_patterns:
 - confKey
 - onKeyDown
 - onKeyUp
+- FlattenKeys
+- startKey
 version: "1.0"

@@ -7,6 +7,7 @@ import useObjectFilters from '@hooks/useObjectFilters';
 import { isDefined, setProperty, toggleBoolean } from '@utils/core';
 import { Interval } from '@utils/interval';
 import { fetchJSON } from '@utils/network';
+import { FlattenKeys } from '@utils/typescript';
 import {
   defaultMapConfiguration,
   MapConfiguration,
@@ -23,8 +24,9 @@ type UseFCUMapResult = {
   mapConfiguration: MapConfiguration;
   toggleLayer: (property: MapConfigurationProperty<boolean>) => void;
   updateScaleInterval: (property: MapConfigurationProperty<Interval>) => (interval: Interval) => void;
-} & Omit<ReturnType<typeof useObjectFilters>, 'data'> &
-  (
+} & Omit<ReturnType<typeof useObjectFilters>, 'data' | 'countFilters'> & {
+    countFilters: (startKey?: FlattenKeys<MapConfiguration>) => number; // FIXME redeclare here to avoid typescrip from infering a string for startKey and causing error
+  } & (
     | { mapLoaded: false; mapLayersLoaded: false; mapRef: null; mapDraw: null; isDrawing: false }
     | {
         mapLoaded: true;
@@ -49,7 +51,7 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
   const [isDrawing, setIsDrawing] = React.useState(false);
   const [mapLayersLoaded, setMapLayersLoaded] = React.useState(false);
   const [originalMapConfiguration, setMapConfiguration] = React.useState<MapConfiguration>(defaultMapConfiguration);
-  const { resetFilters, updateFilter, nbFilters, data: mapConfiguration } = useObjectFilters(originalMapConfiguration);
+  const { data: mapConfiguration, ...filters } = useObjectFilters(originalMapConfiguration);
 
   React.useEffect(() => {
     if (!initialMapConfiguration) {
@@ -90,9 +92,7 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
     setMapConfiguration,
     toggleLayer,
     updateScaleInterval,
-    resetFilters,
-    updateFilter,
-    nbFilters,
+    ...filters,
   };
 
   const contextValue: UseFCUMapResult =

@@ -9,7 +9,8 @@ import { filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-con
 import { DeactivatableBox, FilterResetButtonWrapper } from './SimpleMapLegend.style';
 
 function ReseauxDeChaleurFilters() {
-  const { mapConfiguration, resetFilters, updateFilter, nbFilters } = useFCUMap();
+  const { mapConfiguration, resetFilters, updateFilter, countFilters } = useFCUMap();
+  const nbFilters = countFilters('reseauxDeChaleur');
 
   return (
     <DeactivatableBox disabled={!mapConfiguration.reseauxDeChaleur.show}>
