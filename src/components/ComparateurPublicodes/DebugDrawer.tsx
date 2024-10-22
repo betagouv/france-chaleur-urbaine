@@ -62,8 +62,10 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
     const unit = node.unit ? formatUnit(node.unit) : '';
     return (
       <RuleTooltip title={key}>
-        <Box textWrap="nowrap">
-          {value} {unit}{' '}
+        <Box textWrap="nowrap" justifyContent="space-between" display="flex" alignItems="center">
+          <span>
+            <strong>{value}</strong> <small style={{ color: 'grey' }}>{unit}</small>
+          </span>
           <RuleLink
             variant="tertiaryNoOutline"
             href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
@@ -82,8 +84,10 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
     const unit = node.unit ? formatUnit(node.unit) : '';
     return (
       <RuleTooltip title={key}>
-        <Box textWrap="nowrap">
-          {value} {unit}{' '}
+        <Box textWrap="nowrap" justifyContent="space-between" display="flex" alignItems="center">
+          <span>
+            <strong>{value}</strong> <small style={{ color: 'grey' }}>{unit}</small>
+          </span>
           <RuleLink
             variant="tertiaryNoOutline"
             href={`${clientConfig.publicodesDocumentationURL}/doc/${utils.encodeRuleName(key)}?situation=${serializedSituation}`}
