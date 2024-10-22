@@ -208,7 +208,11 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
             ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true }),
           ];
 
-      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
+      const totalAmountWithAides = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce(
+        (acc, amount) => acc + amount,
+        0
+      );
+      const totalAmount = totalAmountWithAides - amountAides;
       const precisionRange = formatPrecisionRange(totalAmount);
       maxCoutValue = Math.max(maxCoutValue, totalAmount);
       return [
