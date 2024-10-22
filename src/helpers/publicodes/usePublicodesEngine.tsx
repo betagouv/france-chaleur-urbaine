@@ -22,7 +22,7 @@ export const formatUnit = ({ numerators, denominators }: Unit): string => {
       .join(delimiter);
   };
   const nums = format(numerators);
-  const dens = format(denominators, ' / ');
+  const dens = format(denominators, '/');
   return nums + (dens ? ' / ' + dens : '');
 };
 
