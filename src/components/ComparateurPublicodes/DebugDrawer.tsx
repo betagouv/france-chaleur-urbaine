@@ -142,6 +142,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 'P1 conso',
                 "P1'",
                 'P1 ECS',
+                'P1 froid',
                 'P2',
                 'P3',
                 'P4',

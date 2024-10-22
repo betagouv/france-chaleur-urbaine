@@ -198,7 +198,6 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
             ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime }),
             ...getRow({ title: "P1'", amount: amountP1Consofroid, color: colorP1Consofroid }),
             ...getRow({ title: 'P2', amount: amountP2, color: colorP2 }),
-            // TODO manque les différents types d'installation avec élec ou solaire
             ...getRow({ title: 'P3', amount: amountP3, color: colorP3 }),
             ...getRow({ title: 'P4 moins aides', amount: amountP4SansAides, color: colorP4SansAides }),
             ...getRow({ title: 'aides', amount: amountAides, color: colorP4Aides, bordered: true }),
