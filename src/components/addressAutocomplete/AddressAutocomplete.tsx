@@ -24,6 +24,7 @@ type AddressProps = {
   popoverClassName?: string;
   onAddressSelected: (address: string, geoAddress?: SuggestionItem) => any;
   onChange?: (e: string) => void;
+  excludeCities?: boolean;
 };
 
 const findAddressInSuggestions = (address: string, suggestions: SuggestionItem[]): SuggestionItem | undefined => {
@@ -41,6 +42,7 @@ const AddressAutocomplete = ({
   centred,
   onAddressSelected,
   onChange,
+  excludeCities = false,
 }: AddressProps) => {
   const router = useRouter();
   const [address, setAddress] = useState('');
@@ -50,6 +52,7 @@ const AddressAutocomplete = ({
     debounceTime,
     limit: 5,
     minCharactersLength,
+    excludeCities,
   });
 
   const handleSelect = useCallback(

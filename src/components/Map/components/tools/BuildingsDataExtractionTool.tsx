@@ -221,8 +221,8 @@ const BuildingsDataExtractionTool: React.FC = () => {
             consommations de gaz à l'adresse, sur la zone de votre choix.
           </Text>
           <Text size="xs" fontStyle="italic" mt="1w">
-            Pour définir une zone, cliquez sur au moins 3 points sur la carte. Double-cliquez sur le dernier point ou appuyez sur la touche
-            entrée pour finaliser la zone.
+            Pour définir une zone, cliquez sur au moins 3 points sur la carte. <strong>Double-cliquez</strong> sur le dernier point ou{' '}
+            <strong>appuyez sur la touche entrée</strong> pour finaliser la zone.
           </Text>
         </Box>
 

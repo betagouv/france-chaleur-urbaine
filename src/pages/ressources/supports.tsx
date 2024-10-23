@@ -105,6 +105,72 @@ const infographies: InfographieItemProps[] = [
     linkUrl: '/img/FCU_Infographie_idees_recues_5.webp',
     eventKey: 'Téléchargement|Supports|Idées reçues 5',
   },
+  {
+    label: 'Les réseaux de chaleur en région : la Normandie',
+    imgUrl: '/img/FCU_Infographie_Normandie.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Normandie.webp',
+    eventKey: 'Téléchargement|Supports|Normandie',
+  },
+  {
+    label: 'Les réseaux de chaleur en région : les Hauts-de-France',
+    imgUrl: '/img/FCU_Infographie_Hauts_de_France.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Hauts_de_France.webp',
+    eventKey: 'Téléchargement|Supports|Hauts-de-France',
+  },
+  {
+    label: 'Les réseaux de chaleur en région : le Grand Est',
+    imgUrl: '/img/FCU_Infographie_Grand_Est.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Grand_Est.webp',
+    eventKey: 'Téléchargement|Supports|Grand Est',
+  },
+  {
+    label: 'Les réseaux de chaleur en région : la Bougogne-Franche-Comté',
+    imgUrl: '/img/FCU_Infographie_Bourgogne_Franche_Comte.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Bourgogne_Franche_Comte.webp',
+    eventKey: 'Téléchargement|Supports|Bougogne-Franche-Comté',
+  },
+  {
+    label: "Les réseaux de chaleur en région : l'Auvergne-Rhône-Alpes",
+    imgUrl: '/img/FCU_Infographie_Auvergne_Rhone_Alpes.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Auvergne_Rhone_Alpes.webp',
+    eventKey: 'Téléchargement|Supports|Auvergne-Rhône-Alpes',
+  },
+  {
+    label: "Les réseaux de chaleur en région : la Provence-Alpes-Côte-d'Azur",
+    imgUrl: '/img/FCU_Infographie_Provence_Alpes_Cote_Azur.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Provence_Alpes_Cote_Azur.webp',
+    eventKey: "Téléchargement|Supports|Provence-Alpes-Côte-d'Azur",
+  },
+  {
+    label: "Les réseaux de chaleur en région : l'Occitanie",
+    imgUrl: '/img/FCU_Infographie_Occitanie.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Occitanie.webp',
+    eventKey: 'Téléchargement|Supports|Occitanie',
+  },
+  {
+    label: 'Les réseaux de chaleur en région : la Nouvelle-Aquitaine',
+    imgUrl: '/img/FCU_Infographie_Nouvelle_Aquitaine.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Nouvelle_Aquitaine.webp',
+    eventKey: 'Téléchargement|Supports|Nouvelle-Aquitaine',
+  },
+  {
+    label: 'Les réseaux de chaleur en région : les Pays de la Loire',
+    imgUrl: '/img/FCU_Infographie_Pays_de_la_Loire.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Pays_de_la_Loire.webp',
+    eventKey: 'Téléchargement|Supports|Pays de la Loire',
+  },
+  {
+    label: 'Les réseaux de chaleur en région : la Bretagne',
+    imgUrl: '/img/FCU_Infographie_Bretagne.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Bretagne.webp',
+    eventKey: 'Téléchargement|Supports|Bretagne',
+  },
+  {
+    label: 'Les réseaux de chaleur en région : le Centre-Val de Loire',
+    imgUrl: '/img/FCU_Infographie_Centre_Val_Loire.preview.webp',
+    linkUrl: '/img/FCU_Infographie_Centre_Val_Loire.webp',
+    eventKey: 'Téléchargement|Supports|Centre-Val de Loire',
+  },
 ];
 
 const reportages: InfographieItemProps[] = [

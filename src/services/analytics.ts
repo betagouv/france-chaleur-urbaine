@@ -251,6 +251,12 @@ const trackingEvents = {
   'Carto|Besoins en chaleur secteur industriel|Désactive': {
     matomo: ['Carto', 'Besoins en chaleur secteur industriel', 'Désactive'],
   },
+  'Carto|Communes à fort potentiel pour la création de réseaux de chaleur|Active': {
+    matomo: ['Carto', 'Communes à fort potentiel pour la création de réseaux de chaleur', 'Active'],
+  },
+  'Carto|Communes à fort potentiel pour la création de réseaux de chaleur|Désactive': {
+    matomo: ['Carto', 'Communes à fort potentiel pour la création de réseaux de chaleur', 'Désactive'],
+  },
   'Carto|Besoins en froid|Active': {
     matomo: ['Carto', 'Besoins en froid', 'Active'],
   },
@@ -542,6 +548,39 @@ const trackingEvents = {
   },
   'Téléchargement|Supports|Idées reçues 5': {
     matomo: ['Téléchargement', 'Supports', 'Idées reçues 5'],
+  },
+  'Téléchargement|Supports|Normandie': {
+    matomo: ['Téléchargement', 'Supports', 'Normandie'],
+  },
+  'Téléchargement|Supports|Hauts-de-France': {
+    matomo: ['Téléchargement', 'Supports', 'Hauts-de-France'],
+  },
+  'Téléchargement|Supports|Grand Est': {
+    matomo: ['Téléchargement', 'Supports', 'Grand Est'],
+  },
+  'Téléchargement|Supports|Bougogne-Franche-Comté': {
+    matomo: ['Téléchargement', 'Supports', 'Bougogne-Franche-Comté'],
+  },
+  'Téléchargement|Supports|Auvergne-Rhône-Alpes': {
+    matomo: ['Téléchargement', 'Supports', 'Auvergne-Rhône-Alpes'],
+  },
+  "Téléchargement|Supports|Provence-Alpes-Côte-d'Azur": {
+    matomo: ['Téléchargement', 'Supports', "Provence-Alpes-Côte-d'Azur"],
+  },
+  'Téléchargement|Supports|Occitanie': {
+    matomo: ['Téléchargement', 'Supports', 'Occitanie'],
+  },
+  'Téléchargement|Supports|Nouvelle-Aquitaine': {
+    matomo: ['Téléchargement', 'Supports', 'Nouvelle-Aquitaine'],
+  },
+  'Téléchargement|Supports|Pays de la Loire': {
+    matomo: ['Téléchargement', 'Supports', 'Pays de la Loire'],
+  },
+  'Téléchargement|Supports|Centre-Val de Loire': {
+    matomo: ['Téléchargement', 'Supports', 'Centre-Val de Loire'],
+  },
+  'Téléchargement|Supports|Bretagne': {
+    matomo: ['Téléchargement', 'Supports', 'Bretagne'],
   },
   'Téléchargement|Schéma directeur': {
     matomo: ['Téléchargement', 'Schéma directeur'],

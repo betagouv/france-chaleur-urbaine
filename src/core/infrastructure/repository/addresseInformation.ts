@@ -305,6 +305,7 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
     veryEligibleDistance: futurEligibilityDistances.veryEligibleDistance,
   };
 
+  // Réseau existant à moins de 100m (60m sur Paris)
   if (eligibility.isEligible && Number(network.distance) < eligibility.veryEligibleDistance) {
     return {
       ...eligibility,
@@ -322,6 +323,7 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
       hasNoTraceNetwork: null,
     };
   }
+  // Réseau futur à moins de 100m (60 sur Paris)
   if (futurEligibility.isEligible && Number(futurNetwork.distance) < futurEligibility.veryEligibleDistance) {
     return {
       ...futurEligibility,
@@ -340,6 +342,7 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
     };
   }
 
+  // Dans zone futur réseau
   if (inFuturNetwork) {
     return {
       isEligible: true,
@@ -359,6 +362,45 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
     };
   }
 
+  // Réseau existant entre 100 et 200m (60 et 100 sur Paris)
+  if (eligibility.isEligible) {
+    return {
+      ...eligibility,
+      distance: Math.round(network.distance),
+      inPDP,
+      isBasedOnIris: false,
+      futurNetwork: false,
+      id: network['Identifiant reseau'],
+      name: network['nom_reseau'],
+      tauxENRR: network['Taux EnR&R'],
+      co2: network['contenu CO2 ACV'],
+      gestionnaire: network['Gestionnaire'],
+      isClasse: network['reseaux classes'],
+      hasPDP: network['has_PDP'],
+      hasNoTraceNetwork: null,
+    };
+  }
+
+  // Réseau futur entre 100 et 200m (60 et 100 sur Paris)
+  if (futurEligibility.isEligible) {
+    return {
+      ...futurEligibility,
+      distance: Math.round(futurNetwork.distance),
+      inPDP,
+      isBasedOnIris: false,
+      futurNetwork: true,
+      id: null,
+      name: null,
+      tauxENRR: null,
+      co2: null,
+      gestionnaire: futurNetwork.gestionnaire,
+      isClasse: null,
+      hasPDP: null,
+      hasNoTraceNetwork: null,
+    };
+  }
+
+  // Réseau existant entre 200 et 1000m
   if (Number(network.distance) < 1000) {
     return {
       ...eligibility,
@@ -377,6 +419,7 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
     };
   }
 
+  // Réseau futur entre 200 et 1000m
   if (Number(futurNetwork.distance) < 1000) {
     return {
       ...futurEligibility,
@@ -394,6 +437,8 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
       hasNoTraceNetwork: null,
     };
   }
+
+  // Pas de tracé sur la ville, mais ville où l’on sait qu’existe un réseau (repère)
   if (noTraceNetwork) {
     return {
       isEligible: false,
@@ -413,6 +458,7 @@ export const getEligilityStatus = async (lat: number, lon: number, city?: string
     };
   }
 
+  // Pas de tracé à moins de 1000m, ni repère réseau sur ville
   return {
     isEligible: false,
     distance: null,

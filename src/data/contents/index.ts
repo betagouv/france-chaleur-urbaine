@@ -16,6 +16,7 @@ import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-
 import franceChaleurUrbainePourBureauxEtudes from './france-chaleur-urbaine-pour-les-bureaux-detudes.md';
 import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urbaine-se-construit-avec-ses-usagers.md';
 import identifierZonesImplantationsSolaireThermique from './identifier-des-zones-dimplantation-pour-le-solaire-thermique.md';
+import laCarteFCUSEnrichit from './la-carte-france-chaleur-urbaine-senrichit.md';
 import lappelAProjets1Ville1ReseauDeLademeEstRelance from './lappel-a-projets-1-ville-1-reseau-de-lademe-est-relance.md';
 import leChauffageLePlusEconomiquePourLhabitatCollectif from './le-chauffage-le-plus-economique-pour-lhabitat-collectif.md';
 import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.md';
@@ -24,6 +25,8 @@ import leClassementDesReseauxBilan from './le-classement-des-reseaux-quel-bilan.
 import lesReseauxDeChaleurDesEnergiesVertes from './les-reseaux-de-chaleur-des-energies-vertes.md';
 import lesReseauxDeChaleurEnMoinsDe15Secondes from './les-reseaux-de-chaleur-en-moins-de-15-secondes.md';
 import lesReseauxDeChaleurRegionBourgogneFrancheComte from './les-reseaux-de-chaleur-en-region-focus-sur-la-bourgogne-franche-comte.md';
+import lesReseauxDeChaleurRegionBretagne from './les-reseaux-de-chaleur-en-region-focus-sur-la-bretagne.md';
+import lesReseauxDeChaleurRegionNouvelleAquitaine from './les-reseaux-de-chaleur-en-region-focus-sur-la-nouvelle-aquitaine.md';
 import lesReseauxDeChaleurRegionAuvergneRhoneAlpes from './les-reseaux-de-chaleur-en-region-focus-sur-lauvergne-rhone-alpes.md';
 import lesReseauxDeChaleurRegionGrandEst from './les-reseaux-de-chaleur-en-region-focus-sur-le-grand-est.md';
 import lesReseauxDeChaleurRegionHautsDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-les-hauts-de-france.md';
@@ -72,6 +75,9 @@ import readme_3_1_1 from './README (3) (1) (1).md';
 import readme_3_1 from './README (3) (1).md';
 import readme_3 from './README (3).md';
 import readme_30 from './README (30).md';
+import readme_31 from './README (31).md';
+import readme_32 from './README (32).md';
+import readme_33 from './README (33).md';
 import readme_4_1 from './README (4) (1).md';
 import readme_4 from './README (4).md';
 import readme_5 from './README (5).md';
@@ -97,10 +103,58 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/27.jpg',
+    title: 'La carte France Chaleur Urbaine se refait une beauté',
+    slug: 'la-carte-france-chaleur-urbaine-se-refait-une-beaute',
+    content: importFile(readme),
+    publishedDate: new Date('2024-10-03'),
+    themes: ['Cartographie et données', 'Réseaux de chaleur', 'Réseaux de froid'],
+  },
+  {
+    image: '/contents/bretagne.jpg',
+    title: 'Les réseaux de chaleur en région : focus sur la Bretagne',
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-la-bretagne',
+    content: importFile(lesReseauxDeChaleurRegionBretagne),
+    publishedDate: new Date('2024-09-24'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/26.jpg',
+    title: "La carte France Chaleur Urbaine s'enrichit !",
+    slug: 'la-carte-france-chaleur-urbaine-senrichit',
+    content: importFile(laCarteFCUSEnrichit),
+    publishedDate: new Date('2024-09-17'),
+    themes: ['Cartographie et données', 'Réseaux de chaleur', 'Réseaux de froid'],
+  },
+  {
+    image: '/contents/paysdelaloire.jpg',
+    title: 'Les réseaux de chaleur en région : focus sur les Pays de la Loire',
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-les-pays-de-la-loire',
+    content: importFile(readme_33),
+    publishedDate: new Date('2024-08-19'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/nouvelleaquitaine.jpg',
+    title: 'Les réseaux de chaleur en région : focus sur la Nouvelle-Aquitaine',
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-la-nouvelle-aquitaine',
+    content: importFile(lesReseauxDeChaleurRegionNouvelleAquitaine),
+    publishedDate: new Date('2024-08-08'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/occitanie.jpg',
+    title: "Les réseaux de chaleur en région : focus sur l'Occitanie",
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-l-occitanie',
+    content: importFile(readme_32),
+    publishedDate: new Date('2024-07-24'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
     image: '/contents/15 (1).jpg',
     title: "Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur",
     slug: 'les-reseaux-de-chaleur-en-region-focus-sur-la-provence-alpes-cote-d-azur',
-    content: importFile(readme),
+    content: importFile(readme_31),
     publishedDate: new Date('2024-07-16'),
     themes: ['Réseaux de chaleur', 'Infographie'],
   },

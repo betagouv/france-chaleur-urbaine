@@ -15,6 +15,7 @@ import { AdminService } from 'src/services/admin';
 import { useAnalytics } from 'src/services/analytics';
 import { DemandsService } from 'src/services/demands';
 import { axiosHttpClient } from 'src/services/http';
+import { NetworksService } from 'src/services/networks';
 import { PasswordService } from 'src/services/password';
 
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
@@ -75,6 +76,7 @@ function App({
           demandsService: new DemandsService(axiosHttpClient),
           passwordService: new PasswordService(axiosHttpClient),
           adminService: new AdminService(axiosHttpClient),
+          networksService: new NetworksService(axiosHttpClient),
         }}
       >
         <Head>

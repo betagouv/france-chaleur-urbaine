@@ -21,6 +21,7 @@ const DATA_ACTION_STATS: string[] = [
 
 //From Airtable - demandes : éligibles / non éligibles / totales
 const saveDemandsStats = async (startDate: string, endDate: string) => {
+  console.log(`saveStatsInDB START : saveDemandsStats`);
   const records = await base(Airtable.UTILISATEURS)
     .select({
       filterByFormula: `AND(
@@ -69,10 +70,12 @@ const saveDemandsStats = async (startDate: string, endDate: string) => {
       stat_label: STAT_LABEL.NB_TOTAL,
     }),
   ]);
+  console.log(`saveStatsInDB END : saveDemandsStats`);
 };
 
 //From Matomo - actions sur le site
 const saveActionsStats = async (startDate: string, endDate: string) => {
+  console.log(`saveStatsInDB START : saveActionsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoActionMetrics>(
     {
       method: 'Events.getAction',
@@ -98,10 +101,12 @@ const saveActionsStats = async (startDate: string, endDate: string) => {
       })
     );
   }
+  console.log(`saveStatsInDB END : saveActionsStats`);
 };
 
 //From Matomo - visites sur le site
 const saveVisitsStats = async (startDate: string, endDate: string) => {
+  console.log(`saveStatsInDB START : saveVisitsStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoUniqueVisitorsMetrics>({
     method: 'VisitsSummary.getUniqueVisitors',
     period: 'range',
@@ -116,10 +121,12 @@ const saveVisitsStats = async (startDate: string, endDate: string) => {
       value: results[0].value,
     });
   }
+  console.log(`saveStatsInDB END : saveVisitsStats`);
 };
 
 //From Matomo - visites sur la page de la carte (/carte)
 const saveVisitsMapStats = async (startDate: string, endDate: string) => {
+  console.log(`saveStatsInDB START : saveVisitsMapStats`);
   const results = await bulkFetchRangeFromMatomo<MatomoPageMetrics>(
     {
       method: 'Actions.getPageUrl',
@@ -142,10 +149,12 @@ const saveVisitsMapStats = async (startDate: string, endDate: string) => {
       });
     }
   }
+  console.log(`saveStatsInDB END : saveVisitsMapStats`);
 };
 
 //From Database - demandes en masse : éligibles / non éligibles / totales
 const saveBulkContactStats = async (startDate: string, endDate: string) => {
+  console.log(`saveStatsInDB START : saveBulkContactStats`);
   const start = new Date(startDate);
   start.setUTCHours(0, 0, 0);
   const end = new Date(endDate);
@@ -194,6 +203,7 @@ const saveBulkContactStats = async (startDate: string, endDate: string) => {
       }),
     ]);
   }
+  console.log(`saveStatsInDB END : saveBulkContactStats`);
 };
 
 export const saveStatsInDB = async (start?: string, end?: string) => {

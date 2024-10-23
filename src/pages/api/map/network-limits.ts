@@ -10,6 +10,7 @@ export default handleRouteErrors(async (req: NextApiRequest) => {
     .select(
       db.raw(`array[min("Taux EnR&R"), max("Taux EnR&R")] as "tauxENRR"`),
       db.raw(`array[min("contenu CO2 ACV") * 1000, max("contenu CO2 ACV") * 1000] as "emissionsCO2"`),
+      db.raw(`array[min("contenu CO2") * 1000, max("contenu CO2") * 1000] as "contenuCO2"`),
       db.raw(`array[floor(min("PM")), ceil(max("PM"))] as "prixMoyen"`),
       db.raw(`array[floor(min("livraisons_totale_MWh") / 1000), ceil(max("livraisons_totale_MWh") / 1000)] as "livraisonsAnnuelles"`),
       db.raw(

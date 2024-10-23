@@ -2,13 +2,12 @@ import geoViewport from '@mapbox/geo-viewport';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
-import { LayerSpecification, MapGeoJSONFeature, MapLibreEvent } from 'maplibre-gl';
+import { LayerSpecification, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsString, useQueryStates } from 'nuqs';
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { MapLayerMouseEvent } from 'react-map-gl';
 import MapReactGL, {
   AttributionControl,
   GeolocateControl,
@@ -19,26 +18,23 @@ import MapReactGL, {
   ScaleControl,
 } from 'react-map-gl/maplibre';
 
-import Hoverable from '@components/Hoverable';
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
+import Tooltip from '@components/ui/Tooltip';
 import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
 import { useServices } from 'src/services';
 import { trackEvent } from 'src/services/analytics';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
-import { SourceId } from 'src/services/tiles.config';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
-import { MapMarkerInfos, MapPopupInfos, MapPopupType } from 'src/types/MapComponentsInfos';
+import { MapMarkerInfos, MapPopupType } from 'src/types/MapComponentsInfos';
 import { Point } from 'src/types/Point';
 import { StoredAddress } from 'src/types/StoredAddress';
 import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
 
 import CardSearchDetails from './components/CardSearchDetails';
-import { isDevModeEnabled } from './components/DevModeIcon';
-import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
 import { type MapLegendFeature } from './components/MapLegendReseaux';
 import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
@@ -48,7 +44,8 @@ import { Title } from './components/SimpleMapLegend.style';
 import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
-import { LayerId, applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
+import { useMapClickHandlers, useMapHoverEffects } from './map-hover';
+import { applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
 import {
   CollapseLegend,
   CollapseLegendLabel,
@@ -72,47 +69,6 @@ const mapSettings = {
   defaultZoom: 5,
   minZoom: 5,
   maxZoom: 20,
-};
-
-let hoveredStateId: MapGeoJSONFeature['id'] | null = null;
-
-/**
- * The hover state is used in the layers to change the style of the feature using ['feature-state', 'hover']
- */
-const setFeatureHoveringState = (map: MapRef, hover: boolean, source: SourceId, sourceLayer: string) => {
-  if (hoveredStateId) {
-    map.setFeatureState(
-      {
-        source,
-        id: hoveredStateId,
-        sourceLayer,
-      },
-      { hover }
-    );
-    if (!hover) {
-      hoveredStateId = null;
-    }
-  }
-};
-
-type HoverConfig = {
-  source: SourceId;
-  sourceLayer: string;
-  layer: LayerId;
-};
-
-const addLayerHoverListeners = (map: MapRef, config: HoverConfig) => {
-  map.on('mouseenter', config.layer, function (e) {
-    if (e.features && e.features.length > 0) {
-      setFeatureHoveringState(map, false, config.source, config.sourceLayer);
-      hoveredStateId = e.features[0].id;
-      setFeatureHoveringState(map, true, config.source, config.sourceLayer);
-    }
-  });
-
-  map.on('mouseleave', config.layer, function () {
-    setFeatureHoveringState(map, false, config.source, config.sourceLayer);
-  });
 };
 
 const getAddressId = (LatLng: Point) => `${LatLng.join('--')}`;
@@ -140,7 +96,6 @@ type MapProps = {
   initialMapConfiguration?: MapConfiguration;
   enabledLegendFeatures?: MapLegendFeature[];
   withLegend?: boolean;
-  withHideLegendSwitch?: boolean;
   withBorder?: boolean;
   legendTitle?: string;
   legendLogoOpt?: TypeLegendLogo;
@@ -167,7 +122,6 @@ const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
 const InternalMap = ({
   withoutLogo,
   withLegend,
-  withHideLegendSwitch,
   withBorder,
   legendTitle,
   enabledLegendFeatures,
@@ -192,7 +146,7 @@ const InternalMap = ({
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
-  const [popupInfos, setPopupInfos] = useState<MapPopupInfos>();
+  const switcherControlRef = useRef<MapboxStyleSwitcherControl>();
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
@@ -227,28 +181,6 @@ const InternalMap = ({
       initializeWithValue: true,
     }
   );
-
-  const onMapClick = (e: MapLayerMouseEvent, key: string) => {
-    const selectedFeature = e.features?.[0];
-    if (!selectedFeature) {
-      return;
-    }
-    if (isDevModeEnabled()) {
-      console.log('map-click', selectedFeature); // eslint-disable-line no-console
-    }
-
-    // depending on the feature type, we force the popup type to help building the popup content more easily
-    setPopupInfos({
-      latitude: e.lngLat.lat,
-      longitude: e.lngLat.lng,
-      content: layersWithDynamicContentPopup.includes(selectedFeature.layer?.id as (typeof layersWithDynamicContentPopup)[number])
-        ? {
-            type: selectedFeature.layer?.id,
-            properties: selectedFeature.properties,
-          }
-        : { [key]: selectedFeature.properties },
-    });
-  };
 
   const jumpTo = useCallback(({ coordinates, zoom }: { coordinates: [number, number]; zoom?: number }) => {
     if (mapRef.current) {
@@ -337,18 +269,18 @@ const InternalMap = ({
 
     e.target.addControl(drawControl as any);
     setMapDraw(drawControl);
-    e.target.addControl(
-      new MapboxStyleSwitcherControl(styles, {
-        defaultStyle: 'Carte',
-        eventListeners: {
-          onChange: () => {
-            // this switcher removes all sources and layers when used so we must configure them again
-            setMapLayersLoaded(false);
-            return true;
-          },
+    const switcherControl = new MapboxStyleSwitcherControl(styles, {
+      defaultStyle: 'Carte',
+      eventListeners: {
+        onChange: () => {
+          // this switcher removes all sources and layers when used so we must configure them again
+          setMapLayersLoaded(false);
+          return true;
         },
-      })
-    );
+      },
+    });
+    e.target.addControl(switcherControl);
+    switcherControlRef.current = switcherControl;
 
     const map = e.target;
     // load layers symbols
@@ -360,80 +292,6 @@ const InternalMap = ({
         });
       })
     );
-
-    const clickEvents: {
-      layer: LayerId;
-      key: string;
-    }[] = [
-      { layer: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
-      { layer: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
-      { layer: 'reseauxDeChaleur-avec-trace', key: 'network' },
-      { layer: 'reseauxDeChaleur-sans-trace', key: 'network' },
-      { layer: 'reseauxDeFroid-avec-trace', key: 'coldNetwork' },
-      { layer: 'reseauxDeFroid-sans-trace', key: 'coldNetwork' },
-      { layer: 'reseauxEnConstruction-trace', key: 'futurNetwork' },
-      { layer: 'reseauxEnConstruction-zone', key: 'futurNetwork' },
-      {
-        layer: 'demandesEligibilite',
-        key: 'demands',
-      },
-      { layer: 'caracteristiquesBatiments', key: 'buildings' },
-      { layer: 'besoinsEnChaleur', key: '*' },
-      { layer: 'besoinsEnFroid', key: '*' },
-      { layer: 'besoinsEnChaleurIndustrieCommunes', key: '*' },
-      { layer: 'consommationsGaz', key: 'consommation' },
-      { layer: 'energy', key: 'energy' },
-      { layer: 'batimentsRaccordes', key: 'raccordement' },
-      {
-        layer: 'enrrMobilisables-friches',
-        key: 'enrrMobilisables-friche',
-      },
-      {
-        layer: 'enrrMobilisables-parkings',
-        key: 'enrrMobilisables-parking',
-      },
-      {
-        layer: 'enrrMobilisables-datacenter',
-        key: 'enrrMobilisables-datacenter',
-      },
-      {
-        layer: 'enrrMobilisables-industrie',
-        key: 'enrrMobilisables-industrie',
-      },
-      {
-        layer: 'enrrMobilisables-installations-electrogenes',
-        key: 'enrrMobilisables-installations-electrogenes',
-      },
-      {
-        layer: 'enrrMobilisables-stations-d-epuration',
-        key: 'enrrMobilisables-stations-d-epuration',
-      },
-      {
-        layer: 'enrrMobilisables-unites-d-incineration',
-        key: 'enrrMobilisables-unites-d-incineration',
-      },
-    ];
-
-    // register click event handlers
-    if (!noPopup) {
-      clickEvents.map(({ layer, key }) => {
-        map.on('click', layer, (e: any) => {
-          onMapClick(e, key);
-        });
-
-        map.on('touchend', layer, (e: any) => {
-          onMapClick(e, key);
-        });
-
-        map.on('mouseenter', layer, function () {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-
-        map.on('mouseleave', layer, function () {
-          map.getCanvas().style.cursor = '';
-        });
-      });
-    }
 
     // register move and hover event handlers
     {
@@ -455,22 +313,6 @@ const InternalMap = ({
             }
           });
         }
-
-        addLayerHoverListeners(map, {
-          layer: 'reseauxDeChaleur-avec-trace',
-          source: 'network',
-          sourceLayer: 'layer',
-        });
-        addLayerHoverListeners(map, {
-          layer: 'reseauxEnConstruction-trace',
-          source: 'futurNetwork',
-          sourceLayer: 'futurOutline',
-        });
-        addLayerHoverListeners(map, {
-          layer: 'reseauxDeFroid-avec-trace',
-          source: 'coldNetwork',
-          sourceLayer: 'coldOutline',
-        });
       }
     }
   };
@@ -518,6 +360,14 @@ const InternalMap = ({
 
     setMapLayersLoaded(true);
   };
+
+  useMapHoverEffects({ mapLayersLoaded, isDrawing, mapRef: mapRef.current });
+  const { popupInfos } = useMapClickHandlers({ mapLayersLoaded, isDrawing, mapRef: mapRef.current, noPopup });
+
+  // disable the switcher control as it conflicts with map layers and drawing interactions
+  useEffect(() => {
+    switcherControlRef.current?.enable(!isDrawing);
+  }, [isDrawing]);
 
   useEffect(() => {
     const { id } = router.query;
@@ -703,10 +553,9 @@ const InternalMap = ({
     const bbox = (router.query.bbox as string).split(',').map((n) => Number.parseFloat(n)) as [number, number, number, number];
 
     const mapViewportFitPadding = 50; // px
-    const headerWithProModeHeight = 106; // px
     const headerHeight = 56; // px
     const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? legendWidth : 0) - mapViewportFitPadding;
-    const mapViewportHeight = window.innerHeight - (withHideLegendSwitch ? headerWithProModeHeight : headerHeight) - mapViewportFitPadding;
+    const mapViewportHeight = window.innerHeight - headerHeight - mapViewportFitPadding;
 
     const { center, zoom } = geoViewport.viewport(
       bbox, // bounds
@@ -730,13 +579,7 @@ const InternalMap = ({
 
   return (
     <>
-      <MapStyle
-        legendCollapsed={!withLegend || legendCollapsed}
-        isDrawing={isDrawing}
-        withTopLegend={withHideLegendSwitch}
-        withHideLegendSwitch={withHideLegendSwitch}
-        withBorder={withBorder}
-      />
+      <MapStyle legendCollapsed={!withLegend || legendCollapsed} isDrawing={isDrawing} withBorder={withBorder} />
       <div className="map-wrap">
         {withLegend && (
           <>
@@ -747,30 +590,31 @@ const InternalMap = ({
                 setLegendCollapsed(!legendCollapsed);
               }}
             >
-              <Hoverable position="right">{legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}</Hoverable>
-              <CollapseLegendLabel>
-                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} rotate={legendCollapsed ? -90 : 90} />
-                <span>Légende</span>
-                <Icon size="sm" name={'fr-icon-arrow-right-s-line'} rotate={legendCollapsed ? -90 : 90} />
-              </CollapseLegendLabel>
+              <Tooltip placement="right" title={legendCollapsed ? 'Afficher la légende' : 'Masquer la légende'}>
+                <CollapseLegendLabel>
+                  <Icon size="sm" name="fr-icon-arrow-right-s-line" rotate={legendCollapsed ? -90 : 90} />
+                  <span>Légende</span>
+                  <Icon size="sm" name="fr-icon-arrow-right-s-line" rotate={legendCollapsed ? -90 : 90} />
+                </CollapseLegendLabel>
+              </Tooltip>
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
-              <LegendContainer withoutLogo={withoutLogo}>
+              <LegendContainer>
                 <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
               </LegendContainer>
+              {!withoutLogo && (
+                <LegendLogoList>
+                  <LegendLogoLink href="https://france-chaleur-urbaine.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                    <img src="/logo-fcu-with-typo.jpg" alt="logo france chaleur urbaine" />
+                  </LegendLogoLink>
+                  {legendLogoOpt && (
+                    <LegendLogo>
+                      <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
+                    </LegendLogo>
+                  )}
+                </LegendLogoList>
+              )}
             </LegendSideBar>
-            {!withoutLogo && (
-              <LegendLogoList legendCollapsed={legendCollapsed}>
-                <LegendLogoLink href="https://france-chaleur-urbaine.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">
-                  <img src="/logo-fcu-with-typo.jpg" alt="logo france chaleur urbaine" />
-                </LegendLogoLink>
-                {legendLogoOpt && (
-                  <LegendLogo>
-                    <img src={legendLogoOpt.src} alt={legendLogoOpt.alt} />
-                  </LegendLogo>
-                )}
-              </LegendLogoList>
-            )}
           </>
         )}
         <MapProvider>
@@ -784,7 +628,8 @@ const InternalMap = ({
             onSourceData={onMapSourceData}
             ref={mapRef}
           >
-            {!geolocDisabled && <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} />}
+            {/* trackUserLocation allows the user to disable the geolocation marker */}
+            {!geolocDisabled && <GeolocateControl fitBoundsOptions={{ maxZoom: 13 }} trackUserLocation />}
             <AttributionControl
               compact={false}
               position="bottom-right"

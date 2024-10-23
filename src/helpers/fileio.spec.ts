@@ -7,7 +7,7 @@ describe('uploadTempFile()', () => {
     await expect(
       new FileIOClient(FILEIO_API_URL, 'AAAAAAA.AAAAAAA-AAAAAAA-AAAAAAA-AAAAAAA').uploadTempFile('/etc/hostname', 'hostname.txt')
     ).resolves.toContain(FILEIO_API_URL);
-  });
+  }, 60_000);
 
   // there is no error when the API key is invalid
 });

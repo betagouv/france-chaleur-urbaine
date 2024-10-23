@@ -21,7 +21,7 @@ export interface SuggestionItem {
     score: number;
     housenumber: string;
     id: string;
-    type: string;
+    type: 'housenumber' | 'street' | 'locality' | 'municipality';
     name: string;
     postcode: string;
     citycode: string;
