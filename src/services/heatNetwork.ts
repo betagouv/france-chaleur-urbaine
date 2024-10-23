@@ -1,12 +1,12 @@
 import { AxiosResponse } from 'axios';
 
 import { NetworkEligibilityStatus } from '@core/infrastructure/repository/addresseInformation';
+import { RawLinearHeatDensity } from '@pages/api/linear-heat-density';
 import { HttpClient } from 'src/services/http';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
 import { SuggestionItem } from 'src/types/Suggestions';
 import { Summary } from 'src/types/Summary';
-import { Densite } from 'src/types/Summary/Densite';
 import { Network } from 'src/types/Summary/Network';
 
 import { ServiceError } from './errors';
@@ -82,9 +82,11 @@ export class HeatNetworkService {
     return this.httpClient.post(`/api/map/bulkEligibilityStatus/${id}`).then((response) => response.data);
   }
 
-  async densite(line: number[][][]): Promise<Densite> {
+  async getLinearHeatDensity(line: number[][][]): Promise<RawLinearHeatDensity> {
     try {
-      return await this.httpClient.get<Densite>(`/api/map/summary?type=line&coordinates=${encodeURIComponent(JSON.stringify(line))}`);
+      return await this.httpClient.get<RawLinearHeatDensity>(
+        `/api/linear-heat-density?coordinates=${encodeURIComponent(JSON.stringify(line))}`
+      );
     } catch (e) {
       throw new ServiceError(e);
     }
