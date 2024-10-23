@@ -4,6 +4,7 @@ import useInViewport from '@hooks/useInViewport';
 
 import { usePublicodesFormContext } from './FormProvider';
 import { fixupBooleanEngineValue, getOptions } from './helpers';
+import Label from './Label';
 
 export type RadioButtonsProps = React.ComponentProps<typeof RadioButtons>;
 export type RadioOption = { value: string | number; label?: string };
@@ -11,9 +12,11 @@ export type RadioOption = { value: string | number; label?: string };
 const RadioInput = ({
   name,
   label: legend,
+  help,
   ...props
 }: Omit<RadioButtonsProps, 'legend' | 'options' | 'name'> & {
   name: string;
+  help?: React.ReactNode;
   label?: RadioButtonsProps['legend']; // harmonize with Input
 }) => {
   const [ref, isInView] = useInViewport<HTMLFieldSetElement>();
@@ -42,7 +45,7 @@ const RadioInput = ({
           },
         },
       }))}
-      legend={legend}
+      legend={<Label label={legend} help={help} />}
       // state={props.state ?? fieldState.error ? 'error' : 'default'}
       // stateRelatedMessage={props.stateRelatedMessage ?? fieldState.error?.message}
       {...props}

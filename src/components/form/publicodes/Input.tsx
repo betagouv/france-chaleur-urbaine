@@ -4,8 +4,8 @@ import React from 'react';
 
 import useInViewport from '@hooks/useInViewport';
 import { isDefined } from '@utils/core';
-import { upperCaseFirstChar } from '@utils/strings';
 
+import Label from './Label';
 import DSFRInput from '../dsfr/Input';
 import { usePublicodesFormContext } from '../publicodes/FormProvider';
 export type DSFRInputProps = React.ComponentProps<typeof DSFRInput>;
@@ -17,14 +17,17 @@ type InputProps = DSFRInputProps &
     name: DottedName;
     label: string;
     hideUnit?: boolean;
+    help?: React.ReactNode;
   };
 
-const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, hideUnit = false, ...props }: InputProps) => {
+const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, help, hideUnit = false, ...props }: InputProps) => {
   const [ref, isInView] = useInViewport<HTMLDivElement>();
   const { engine } = usePublicodesFormContext();
   const placeholder = isInView ? (engine.getFieldDefaultValue(name) as number | null | undefined) : '';
   const unit = !hideUnit && isInView ? engine.getUnit(name) : '';
   const [value, setValue] = React.useState<any>();
+  const [error, setError] = React.useState<string>();
+  const { min, max } = nativeInputProps || {};
 
   React.useEffect(() => {
     if (isInView) {
@@ -34,9 +37,16 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
 
   useDebouncedEffect(
     () => {
-      if (typeof value !== 'undefined') {
-        engine.setField(name, value);
+      if (
+        (typeof value === 'undefined' ||
+          (isDefined(min) && isDefined(max) && (+value < +min || +value > +max)) ||
+          (isDefined(min) && +value < +min) ||
+          (isDefined(max) && +value > +max)) &&
+        value !== ''
+      ) {
+        return;
       }
+      engine.setField(name, value);
     },
     [name, value],
     500
@@ -46,12 +56,7 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
     <DSFRInput
       ref={ref}
       textArea={false}
-      label={
-        <>
-          {upperCaseFirstChar(label)}
-          {!hideUnit && unit ? <small> ({unit})</small> : ''}
-        </>
-      }
+      label={<Label label={label} unit={!hideUnit ? unit : undefined} help={help} />}
       hideOptionalLabel
       nativeInputProps={{
         ...nativeInputProps,
@@ -63,13 +68,30 @@ const Input = ({ name, placeholderPrecision, textArea, nativeInputProps, label, 
             }`
           : '',
         onChange: (e) => {
+          setError(undefined);
           e.stopPropagation();
           const newValue = e.target.value;
+
+          if (!newValue) {
+            setValue(newValue);
+            return;
+          }
+
+          const minString = unit === '%' && min ? min.toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 2 }) : min;
+          const maxString = unit === '%' && max ? max.toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 2 }) : max;
+
+          if (isDefined(min) && isDefined(max) && (+newValue < +min || +newValue > +max)) {
+            setError(`Veuillez saisir une valeur comprise entre ${minString} et ${maxString}`);
+          } else if (isDefined(min) && +newValue < +min) {
+            setError(`Veuillez saisir une valeur supérieure ou égale à ${minString}`);
+          } else if (isDefined(max) && +newValue > +max) {
+            setError(`Veuillez saisir une valeur inférieure ou égale à ${maxString}`);
+          }
           setValue(newValue);
         },
       }}
-      // state={props.state ?? fieldState.error ? 'error' : 'default'}
-      stateRelatedMessage={props.stateRelatedMessage ?? 'Sélectionnez une valeur'}
+      state={props.state ?? error ? 'error' : 'default'}
+      stateRelatedMessage={props.stateRelatedMessage ?? (error || 'Sélectionnez une valeur')}
       {...props}
     />
   );

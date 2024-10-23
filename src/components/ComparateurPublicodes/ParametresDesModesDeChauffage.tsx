@@ -36,9 +36,15 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
         />
         <Input name="ratios économiques . Investissement x TVA" label="TVA" />
 
-        <Input name="ratios économiques . Chauffe-eau x électrique à accumulation" label="Chauffe-eau x électrique à accumulation" />
-        <Input name="ratios économiques . Chauffe-eau x solaire" label="Chauffe-eau x solaire" />
-        <Input name="ratios économiques . Chauffe-eau x solaire prix panneaux" label="Chauffe-eau x solaire prix panneaux" />
+        <Input
+          name="ratios économiques . Chauffe-eau x électrique à accumulation x coût investissement"
+          label="Chauffe-eau x électrique à accumulation"
+        />
+        <Input name="ratios économiques . Chauffe-eau x solaire x coût investissement" label="Chauffe-eau x solaire" />
+        <Input
+          name="ratios économiques . Chauffe-eau x panneaux solaire thermique x coût investissement"
+          label="Chauffe-eau x solaire prix panneaux"
+        />
 
         <Input name="ratios économiques . Amortissement x Taux actualisation" label="Taux actualisation" />
       </Accordion>
@@ -118,7 +124,6 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
             label="Part de la consommation en HC"
             disabled
           />
-          <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x CTA" label="Part Fixe x CTA" />
           <Input name="Paramètres économiques . Electricité x Taxe . Part Fixe x TVA" label="Part Fixe x TVA" />
           <Input
             name="Paramètres économiques . Electricité x Taxe . Part Variable x Accise sur l'électricité ex TIPCSE CSPE"
@@ -252,11 +257,28 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       {hasModeDeChauffage('Réseaux de chaleur') && (
         <UrlStateAccordion label="Réseaux de chaleur">
-          <Input name="ratios . RCU Rendement sous station chauffage" label="Rendement sous-station chauffage" />
-          <Input name="ratios . RCU Rendement sous station ECS" label="Rendement sous station ECS" />
-          <Input name="ratios . RCU Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
-          <Input name="ratios . RCU Conso auxiliaire ECS" label="Consommation auxiliaire ECS" />
-          <Input name="ratios . RCU Durée avant renouvellement" label="Durée avant renouvellement" />
+          <Input
+            name="ratios . RCU Rendement sous station chauffage"
+            label="Rendement sous-station chauffage"
+            nativeInputProps={{ min: 0.001 }}
+          />
+          <Input name="ratios . RCU Rendement sous station ECS" label="Rendement sous station ECS" nativeInputProps={{ min: 0.001 }} />
+          <Input
+            name="ratios . RCU Conso auxiliaire chauffage"
+            label="Consommation auxiliaire chauffage"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . RCU Conso auxiliaire ECS"
+            label="Consommation auxiliaire ECS"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . RCU Durée avant renouvellement"
+            label="Durée avant renouvellement"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input
             name="Installation x Réseaux de chaleur x Collectif . gamme de puissance existante"
@@ -269,9 +291,14 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       )}
       {hasModeDeChauffage('Réseaux de froid') && (
         <UrlStateAccordion label="Réseaux de froid">
-          <Input name="ratios . RFU Rendement sous station" label="Rendement sous station" />
-          <Input name="ratios . RFU Conso auxiliaire" label="Consommation auxiliaire" />
-          <Input name="ratios . RFU Durée de vie" label="Durée de vie" />
+          <Input name="ratios . RFU Rendement sous station" label="Rendement sous station" nativeInputProps={{ min: 0.001 }} />
+          <Input name="ratios . RFU Conso auxiliaire" label="Consommation auxiliaire" help="Consommation des pompes de circulation." />
+          <Input
+            name="ratios . RFU Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input
             name="Installation x Réseaux de froid x Collectif . gamme de puissance existante"
@@ -285,9 +312,19 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       {hasModeDeChauffage('Poêle à granulés individuel') && (
         <UrlStateAccordion label="Poêle à granulés individuel">
-          <Input name="ratios . GRA POELE Rendement poêle chauffage" label="Rendement poêle chauffage" />
-          <Input name="ratios . GRA POELE Conso combustible" label="Consommation combustible" placeholderPrecision={4} />
-          <Input name="ratios . GRA POELE Durée de vie" label="Durée de vie" />
+          <Input name="ratios . GRA POELE Rendement poêle chauffage" label="Rendement poêle chauffage" nativeInputProps={{ min: 0.001 }} />
+          <Input
+            name="ratios . GRA POELE Conso combustible"
+            label="Consommation combustible"
+            placeholderPrecision={4}
+            nativeInputProps={{ min: 0.1 }}
+          />
+          <Input
+            name="ratios . GRA POELE Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x Poêle à granulés indiv x Individuel . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -296,10 +333,28 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       )}
       {hasModeDeChauffage('Chaudière à granulés collective') && (
         <UrlStateAccordion label="Chaudière à granulés collective">
-          <Input name="ratios . GRA CHAUD Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
-          <Input name="ratios . GRA CHAUD Conso combustible" label="Consommation combustible" placeholderPrecision={4} />
-          <Input name="ratios . GRA CHAUD Conso auxiliaire" label="Consommation auxiliaire" />
-          <Input name="ratios . GRA CHAUD Durée de vie" label="Durée de vie" />
+          <Input
+            name="ratios . GRA CHAUD Rendement chaudière chauffage"
+            label="Rendement chaudière chauffage"
+            nativeInputProps={{ min: 0.001 }}
+          />
+          <Input
+            name="ratios . GRA CHAUD Conso combustible"
+            label="Consommation combustible"
+            placeholderPrecision={4}
+            nativeInputProps={{ min: 0.1 }}
+          />
+          <Input
+            name="ratios . GRA CHAUD Conso auxiliaire"
+            label="Consommation auxiliaire"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . GRA CHAUD Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x Chaudière à granulés coll x Collectif . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -309,12 +364,29 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       {hasModeDeChauffage('Gaz à condensation individuel') && (
         <UrlStateAccordion label="Gaz à condensation individuel">
-          <Input name="ratios . GAZ IND COND Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
-          <Input name="ratios . GAZ IND COND Rendement chaudière ECS" label="Rendement chaudière ECS" />
-          <Input name="ratios . GAZ IND COND Conso combustible" label="Consommation combustible" />
-          <Input name="ratios . GAZ IND COND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
-          <Input name="ratios . GAZ IND COND Conso auxiliaire ECS" label="Consommation auxiliaire ECS" />
-          <Input name="ratios . GAZ IND COND Durée de vie" label="Durée de vie" />
+          <Input
+            name="ratios . GAZ IND COND Rendement chaudière chauffage"
+            label="Rendement chaudière chauffage"
+            nativeInputProps={{ min: 0.001 }}
+          />
+          <Input name="ratios . GAZ IND COND Rendement chaudière ECS" label="Rendement chaudière ECS" nativeInputProps={{ min: 0.001 }} />
+          <Input name="ratios . GAZ IND COND Conso combustible" label="Consommation combustible" nativeInputProps={{ min: 0.1 }} />
+          <Input
+            name="ratios . GAZ IND COND Conso auxiliaire chauffage"
+            label="Consommation auxiliaire chauffage"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . GAZ IND COND Conso auxiliaire ECS"
+            label="Consommation auxiliaire ECS"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . GAZ IND COND Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x Gaz indiv avec cond x Individuel . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -323,11 +395,24 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       )}
       {hasModeDeChauffage('Gaz sans condensation individuel') && (
         <UrlStateAccordion label="Gaz sans condensation individuel">
-          <Input name="ratios . GAZ IND SCOND Rendement chaudière" label="Rendement chaudière" />
-          <Input name="ratios . GAZ IND SCOND Conso combustible" label="Consommation combustible" />
-          <Input name="ratios . GAZ IND SCOND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
-          <Input name="ratios . GAZ IND SCOND Conso auxiliaire ECS" label="Consommation auxiliaire ECS" />
-          <Input name="ratios . GAZ IND SCOND Durée de vie" label="Durée de vie" />
+          <Input name="ratios . GAZ IND SCOND Rendement chaudière" label="Rendement chaudière" nativeInputProps={{ min: 0.001 }} />
+          <Input name="ratios . GAZ IND SCOND Conso combustible" label="Consommation combustible" nativeInputProps={{ min: 0.1 }} />
+          <Input
+            name="ratios . GAZ IND SCOND Conso auxiliaire chauffage"
+            label="Consommation auxiliaire chauffage"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . GAZ IND SCOND Conso auxiliaire ECS"
+            label="Consommation auxiliaire ECS"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . GAZ IND SCOND Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x Gaz indiv sans cond x Individuel . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -336,12 +421,29 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       )}
       {hasModeDeChauffage('Gaz à condensation collectif') && (
         <UrlStateAccordion label="Gaz à condensation collectif">
-          <Input name="ratios . GAZ COLL COND Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
-          <Input name="ratios . GAZ COLL COND Rendement chaudière ECS" label="Rendement chaudière ECS" />
-          <Input name="ratios . GAZ COLL COND Conso combustible" label="Consommation combustible" />
-          <Input name="ratios . GAZ COLL COND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
-          <Input name="ratios . GAZ COLL COND Conso auxiliaire ECS" label="Consommation auxiliaire ECS" />
-          <Input name="ratios . GAZ COLL COND Durée de vie" label="Durée de vie" />
+          <Input
+            name="ratios . GAZ COLL COND Rendement chaudière chauffage"
+            label="Rendement chaudière chauffage"
+            nativeInputProps={{ min: 0.001 }}
+          />
+          <Input name="ratios . GAZ COLL COND Rendement chaudière ECS" label="Rendement chaudière ECS" nativeInputProps={{ min: 0.001 }} />
+          <Input name="ratios . GAZ COLL COND Conso combustible" label="Consommation combustible" nativeInputProps={{ min: 0.1 }} />
+          <Input
+            name="ratios . GAZ COLL COND Conso auxiliaire chauffage"
+            label="Consommation auxiliaire chauffage"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . GAZ COLL COND Conso auxiliaire ECS"
+            label="Consommation auxiliaire ECS"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . GAZ COLL COND Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x Gaz coll avec cond x Collectif . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -350,11 +452,24 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       )}
       {hasModeDeChauffage('Gaz sans condensation collectif') && (
         <UrlStateAccordion label="Gaz sans condensation collectif">
-          <Input name="ratios . GAZ COLL SCOND Rendement chaudière" label="Rendement chaudière" />
-          <Input name="ratios . GAZ COLL SCOND Conso combustible" label="Consommation combustible" />
-          <Input name="ratios . GAZ COLL SCOND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
-          <Input name="ratios . GAZ COLL SCOND Conso auxiliaire ECS" label="Consommation auxiliaire ECS" />
-          <Input name="ratios . GAZ COLL SCOND Durée de vie" label="Durée de vie" />
+          <Input name="ratios . GAZ COLL SCOND Rendement chaudière" label="Rendement chaudière" nativeInputProps={{ min: 0.001 }} />
+          <Input name="ratios . GAZ COLL SCOND Conso combustible" label="Consommation combustible" nativeInputProps={{ min: 0.1 }} />
+          <Input
+            name="ratios . GAZ COLL SCOND Conso auxiliaire chauffage"
+            label="Consommation auxiliaire chauffage"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . GAZ COLL SCOND Conso auxiliaire ECS"
+            label="Consommation auxiliaire ECS"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . GAZ COLL SCOND Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x Gaz coll sans cond x Collectif . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -364,11 +479,24 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       {hasModeDeChauffage('Fioul individuel') && (
         <UrlStateAccordion label="Fioul individuel">
-          <Input name="ratios . FIOUL IND Rendement chaudière" label="Rendement chaudière" />
-          <Input name="ratios . FIOUL IND Conso combustible" label="Consommation combustible" />
-          <Input name="ratios . FIOUL IND Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
-          <Input name="ratios . FIOUL IND Conso auxiliaire ECS" label="Consommation auxiliaire ECS" />
-          <Input name="ratios . FIOUL IND Durée de vie" label="Durée de vie" />
+          <Input name="ratios . FIOUL IND Rendement chaudière" label="Rendement chaudière" nativeInputProps={{ min: 0.001 }} />
+          <Input name="ratios . FIOUL IND Conso combustible" label="Consommation combustible" nativeInputProps={{ min: 0.1 }} />
+          <Input
+            name="ratios . FIOUL IND Conso auxiliaire chauffage"
+            label="Consommation auxiliaire chauffage"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . FIOUL IND Conso auxiliaire ECS"
+            label="Consommation auxiliaire ECS"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . FIOUL IND Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input
             name="Installation x Fioul indiv x Individuel . gamme de puissance existante"
@@ -381,12 +509,29 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       )}
       {hasModeDeChauffage('Fioul collectif') && (
         <UrlStateAccordion label="Fioul collectif">
-          <Input name="ratios . FIOUL COLL Rendement chaudière chauffage" label="Rendement chaudière chauffage" />
-          <Input name="ratios . FIOUL COLL Rendement chaudière ECS" label="Rendement chaudière ECS" />
-          <Input name="ratios . FIOUL COLL Conso combustible" label="Consommation combustible" />
-          <Input name="ratios . FIOUL COLL Conso auxiliaire chauffage" label="Consommation auxiliaire chauffage" />
-          <Input name="ratios . FIOUL COLL Conso auxiliaire ECS" label="Consommation auxiliaire ECS" />
-          <Input name="ratios . FIOUL COLL Durée de vie" label="Durée de vie" />
+          <Input
+            name="ratios . FIOUL COLL Rendement chaudière chauffage"
+            label="Rendement chaudière chauffage"
+            nativeInputProps={{ min: 0.001 }}
+          />
+          <Input name="ratios . FIOUL COLL Rendement chaudière ECS" label="Rendement chaudière ECS" nativeInputProps={{ min: 0.001 }} />
+          <Input name="ratios . FIOUL COLL Conso combustible" label="Consommation combustible" nativeInputProps={{ min: 0.1 }} />
+          <Input
+            name="ratios . FIOUL COLL Conso auxiliaire chauffage"
+            label="Consommation auxiliaire chauffage"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . FIOUL COLL Conso auxiliaire ECS"
+            label="Consommation auxiliaire ECS"
+            help="Consommation des pompes de circulation."
+          />
+          <Input
+            name="ratios . FIOUL COLL Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input
             name="Installation x Fioul coll x Collectif . gamme de puissance existante"
@@ -400,9 +545,24 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       {hasModeDeChauffage('PAC air/air individuelle') && (
         <UrlStateAccordion label="PAC air/air individuelle">
-          <Input name="ratios . PAC AIR AIR SCOP indiv" label="SCOP" />
-          <Input name="ratios . PAC AIR AIR SEER indiv" label="SEER" />
-          <Input name="ratios . PAC AIR AIR Durée de vie indiv" label="Durée de vie" />
+          <Input
+            name="ratios . PAC AIR AIR SCOP indiv"
+            label="SCOP"
+            nativeInputProps={{ min: 0.1 }}
+            help="SCOP : coefficient de performance pour la production de chaleur. Un SCOP de 3 signifie que pour 1 kWh d'électricité consommée, 3 kWh de chaleur sont produits."
+          />
+          <Input
+            name="ratios . PAC AIR AIR SEER indiv"
+            label="SEER"
+            nativeInputProps={{ min: 0.1 }}
+            help="SEER : coefficient de performance pour la production de froid. Un SEER de 4 signifie que pour 1 kWh d'électricité consommée, 4 kWh de froid sont produits."
+          />
+          <Input
+            name="ratios . PAC AIR AIR Durée de vie indiv"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x PAC air-air x Individuel . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -411,9 +571,24 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       )}
       {hasModeDeChauffage('PAC air/air collective') && (
         <UrlStateAccordion label="PAC air/air collective">
-          <Input name="ratios . PAC AIR AIR SCOP coll" label="SCOP" />
-          <Input name="ratios . PAC AIR AIR SEER coll" label="SEER" />
-          <Input name="ratios . PAC AIR AIR Durée de vie coll" label="Durée de vie" />
+          <Input
+            name="ratios . PAC AIR AIR SCOP coll"
+            label="SCOP"
+            nativeInputProps={{ min: 0.1 }}
+            help="SCOP : coefficient de performance pour la production de chaleur. Un SCOP de 3 signifie que pour 1 kWh d'électricité consommée, 3 kWh de chaleur sont produits."
+          />
+          <Input
+            name="ratios . PAC AIR AIR SEER coll"
+            label="SEER"
+            nativeInputProps={{ min: 0.1 }}
+            help="SEER : coefficient de performance pour la production de froid. Un SEER de 4 signifie que pour 1 kWh d'électricité consommée, 4 kWh de froid sont produits."
+          />
+          <Input
+            name="ratios . PAC AIR AIR Durée de vie coll"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x PAC air-air x Collectif . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -423,8 +598,18 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       {hasModeDeChauffage('PAC eau/eau individuelle') && (
         <UrlStateAccordion label="PAC eau/eau individuelle">
-          <Input name="ratios . PAC EAU EAU SCOP indiv capteurs horizontaux" label="SCOP" />
-          <Input name="ratios . PAC EAU EAU Durée de vie" label="Durée de vie" />
+          <Input
+            name="ratios . PAC EAU EAU SCOP indiv capteurs horizontaux"
+            label="SCOP"
+            nativeInputProps={{ min: 0.1 }}
+            help="SCOP : coefficient de performance pour la production de chaleur. Un SCOP de 3 signifie que pour 1 kWh d'électricité consommée, 3 kWh de chaleur sont produits."
+          />
+          <Input
+            name="ratios . PAC EAU EAU Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x PAC eau-eau x Individuel . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -433,8 +618,18 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       )}
       {hasModeDeChauffage('PAC eau/eau collective') && (
         <UrlStateAccordion label="PAC eau/eau collective">
-          <Input name="ratios . PAC EAU EAU SCOP coll champ de sondes" label="SCOP" />
-          <Input name="ratios . PAC EAU EAU Durée de vie" label="Durée de vie" />
+          <Input
+            name="ratios . PAC EAU EAU SCOP coll champ de sondes"
+            label="SCOP"
+            nativeInputProps={{ min: 0.1 }}
+            help="SCOP : coefficient de performance pour la production de chaleur. Un SCOP de 3 signifie que pour 1 kWh d'électricité consommée, 3 kWh de chaleur sont produits."
+          />
+          <Input
+            name="ratios . PAC EAU EAU Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
           {/* FIXME vérifier si même durée de vie que PAC eau/eau indiv */}
           {/* <Input name="ratios . PAC EAU EAU Durée de vie puits géothermiques" label="Durée de vie puits géothermiques" /> */}
 
@@ -454,9 +649,24 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       {hasModeDeChauffage('PAC air/eau individuelle') && (
         <UrlStateAccordion label="PAC air/eau individuelle">
-          <Input name="ratios . PAC AIR EAU SCOP indiv" label="SCOP" />
-          <Input name="ratios . PAC AIR EAU SEER indiv" label="SEER" />
-          <Input name="ratios . PAC AIR EAU Durée de vie indiv" label="Durée de vie" />
+          <Input
+            name="ratios . PAC AIR EAU SCOP indiv"
+            label="SCOP"
+            nativeInputProps={{ min: 0.1 }}
+            help="SCOP : coefficient de performance pour la production de chaleur. Un SCOP de 3 signifie que pour 1 kWh d'électricité consommée, 3 kWh de chaleur sont produits."
+          />
+          <Input
+            name="ratios . PAC AIR EAU SEER indiv"
+            label="SEER"
+            nativeInputProps={{ min: 0.1 }}
+            help="SEER : coefficient de performance pour la production de froid. Un SEER de 4 signifie que pour 1 kWh d'électricité consommée, 4 kWh de froid sont produits."
+          />
+          <Input
+            name="ratios . PAC AIR EAU Durée de vie indiv"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x PAC air-eau x Individuel . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -465,9 +675,24 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       )}
       {hasModeDeChauffage('PAC air/eau collective') && (
         <UrlStateAccordion label="PAC air/eau collective">
-          <Input name="ratios . PAC AIR EAU SCOP coll" label="SCOP" />
-          <Input name="ratios . PAC AIR EAU SEER coll" label="SEER" />
-          <Input name="ratios . PAC AIR EAU Durée de vie coll" label="Durée de vie" />
+          <Input
+            name="ratios . PAC AIR EAU SCOP coll"
+            label="SCOP"
+            nativeInputProps={{ min: 0.1 }}
+            help="SCOP : coefficient de performance pour la production de chaleur. Un SCOP de 3 signifie que pour 1 kWh d'électricité consommée, 3 kWh de chaleur sont produits."
+          />
+          <Input
+            name="ratios . PAC AIR EAU SEER coll"
+            label="SEER"
+            nativeInputProps={{ min: 0.1 }}
+            help="SEER : coefficient de performance pour la production de froid. Un SEER de 4 signifie que pour 1 kWh d'électricité consommée, 4 kWh de froid sont produits."
+          />
+          <Input
+            name="ratios . PAC AIR EAU Durée de vie coll"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x PAC air-eau x Collectif . gamme de puissance existante" label="Gamme de puissance" />
 
@@ -477,13 +702,18 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       {hasModeDeChauffage('Radiateur électrique individuel') && (
         <UrlStateAccordion label="Radiateur électrique individuel">
-          <Input name="ratios . RAD ELEC INDIV Rendement" label="Rendement" />
-          <Input name="ratios . RAD ELEC INDIV Conso combustible" label="Consommation combustible" />
-          <Input name="ratios . RAD ELEC INDIV Durée de vie" label="Durée de vie" />
+          <Input name="ratios . RAD ELEC INDIV Rendement" label="Rendement" nativeInputProps={{ min: 0.001 }} />
+          <Input name="ratios . RAD ELEC INDIV Conso combustible" label="Consommation combustible" nativeInputProps={{ min: 0.1 }} />
+          <Input
+            name="ratios . RAD ELEC INDIV Durée de vie"
+            label="Durée de vie"
+            nativeInputProps={{ min: 1 }}
+            help="Durée de vie estimée des équipements de production de chaleur."
+          />
 
           <Input name="Installation x Radiateur électrique x Individuel . gamme de puissance existante" label="Gamme de puissance" />
 
-          <Input name="ratios économiques . Radiateur électrique x Individuel" label="Coût investissement" />
+          <Input name="ratios économiques . Radiateur électrique x Individuel x investissement total" label="Coût investissement" />
         </UrlStateAccordion>
       )}
     </div>

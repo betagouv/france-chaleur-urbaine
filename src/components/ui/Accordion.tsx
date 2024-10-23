@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 
 import Icon from './Icon';
+import Infobulle from './Infobulle';
 
 const StyledAccordion = styled(DsfrAccordion)<{
   $small?: boolean;
@@ -45,7 +46,7 @@ const StyledAccordion = styled(DsfrAccordion)<{
     css`
       .fr-icon-close-line {
         padding: 0.25rem 0.5rem;
-        margin-left: auto;
+
         &:hover {
           box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
         }
@@ -76,26 +77,46 @@ const StyledAccordion = styled(DsfrAccordion)<{
   `}
 `;
 
+const AccordionTitleHelp = styled.span`
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+`;
+
 export type AccordionProps = DsfrAccordionProps & {
   small?: boolean;
   simple?: boolean;
   bordered?: boolean;
   disabled?: boolean;
+  help?: React.ReactNode;
   onClose?: (evt: React.MouseEvent<HTMLElement>) => void;
 };
 
-const Accordion: React.FC<AccordionProps> = ({ children, small, label, simple, bordered, onClose, disabled, ...props }) => {
+const Accordion: React.FC<AccordionProps> = ({ children, small, label, help, simple, bordered, onClose, disabled, ...props }) => {
   return (
     <StyledAccordion
       $small={small}
       $simple={simple}
       $disabled={disabled}
       $bordered={bordered}
-      $closeable={!!onClose}
+      $closeable={!!onClose || !!help}
       label={
         <>
           {label}
-          {onClose && <Icon name="fr-icon-close-line" size="sm" onClick={onClose} />}
+          {(help || onClose) && (
+            <AccordionTitleHelp>
+              {help && (
+                <Infobulle
+                  style={{
+                    marginTop: '-0.1rem', // icon is not well balanced and has a small margin on top
+                  }}
+                >
+                  {help}
+                </Infobulle>
+              )}
+              {onClose && <Icon name="fr-icon-close-line" size="sm" onClick={onClose} />}
+            </AccordionTitleHelp>
+          )}
         </>
       }
       {...props}
