@@ -16,7 +16,7 @@ import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
 import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
-import { ConsommationGaz } from '@pages/api/linear-heat-density';
+import { PointDeConsommation } from '@pages/api/linear-heat-density';
 import { downloadObject } from '@utils/browser';
 import { formatAsISODate } from '@utils/date';
 import { formatDistance } from '@utils/geo';
@@ -29,9 +29,7 @@ export const linearHeatDensityLinesSourceId = 'linear-heat-density-lines';
 export const linearHeatDensityLabelsSourceId = 'linear-heat-density-labels';
 const defaultColor = '#000091';
 
-// FIXME déplacer ailleurs que dans le front peut-être
-// on peut garder le détail des conso pour pouvoir en supprimer certaines via la carte
-export type LinearHeatDensity = {
+type LinearHeatDensity = {
   longueurTotale: number;
   consommationGaz: {
     cumul: {
@@ -43,7 +41,6 @@ export type LinearHeatDensity = {
       '50m': string;
     };
   };
-  // TODO à venir avec la nouvelle couche
   besoinsEnChaleur: {
     cumul: {
       '10m': string;
@@ -267,7 +264,6 @@ const LinearHeatDensityTool: React.FC = () => {
         {densite && (
           <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
             <Box display="flex" justifyContent="space-between">
-              {/* FIXME faire valider le changement de nom distance => longueur */}
               <Box>Longueur totale</Box>
               <strong>{formatDistance(densite.longueurTotale)}</strong>
             </Box>
@@ -355,7 +351,7 @@ const LinearHeatDensityTool: React.FC = () => {
 
 export default LinearHeatDensityTool;
 
-const getConso = (consos: ConsommationGaz[]) => {
+const getConso = (consos: PointDeConsommation[]) => {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
   if (sum > 1000) {
     return `${(sum / 1000).toFixed(2)} GWh`;
@@ -364,7 +360,7 @@ const getConso = (consos: ConsommationGaz[]) => {
   return `${sum.toFixed(2)} MWh`;
 };
 
-const getDensite = (size: number, densite: ConsommationGaz[]) => {
+const getDensite = (size: number, densite: PointDeConsommation[]) => {
   if (densite.length === 0) {
     return '0 MWh/m';
   }
