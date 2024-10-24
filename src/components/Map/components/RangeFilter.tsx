@@ -10,7 +10,7 @@ import { roundNumberProgressively } from './ReseauxDeChaleurFilters';
 
 interface RangeFilterProps {
   label: React.ReactNode;
-  value: Interval;
+  value?: Interval;
   domain: Interval;
   onChange: (values: Interval) => void;
   unit?: string;
@@ -24,7 +24,7 @@ interface RangeFilterProps {
 
 const RangeFilter = ({
   label,
-  value: values,
+  value: defaultValues,
   domain,
   onChange,
   unit = '',
@@ -33,6 +33,8 @@ const RangeFilter = ({
   formatNumber = (v) => `${roundNumberProgressively(v)}`,
   ...props
 }: RangeFilterProps) => {
+  const values = defaultValues || domain;
+
   const valueMin = domainTransform ? domainTransform.valueToPercent(values[0]) : values[0];
   const valueMax = domainTransform ? domainTransform.valueToPercent(values[1]) : values[1];
   const [renderKey, { inc }] = useCounter(0);
