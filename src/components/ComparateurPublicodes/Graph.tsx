@@ -69,42 +69,30 @@ const colorScope3 = '#4EC8AE';
 const getBarStyle = (color: string, { bordered }: { bordered?: boolean } = {}) =>
   `color: ${color}; stroke-color: ${color}; stroke-opacity: 1; stroke-width: 1;${bordered ? 'fill-opacity: 0.1;' : ''}`;
 
-const getTooltip = ({
-  title,
-  amount,
-  color,
-  bordered,
-  unit,
-}: {
+interface TooltipProps {
   title: string;
   color: string;
   amount: number;
   bordered?: boolean;
-  unit?: string;
-}) =>
+  valueFormatter: (value: number) => React.ReactNode;
+}
+
+const getTooltip = ({ title, amount, color, bordered, valueFormatter }: TooltipProps) =>
   ReactDOMServer.renderToString(
     <GraphTooltip>
       <span style={bordered ? { border: `2px solid ${color}` } : { backgroundColor: color }}></span>
       <span>{title}</span>
-      <strong style={{ whiteSpace: 'nowrap' }}>{formatPrecisionRange(amount, unit)}</strong>
+      <strong style={{ whiteSpace: 'nowrap' }}>{valueFormatter(amount)}</strong>
     </GraphTooltip>
   );
 
 const getColumn = (title: string) => [title, { role: 'style' }, { type: 'string', role: 'tooltip', p: { html: true } }];
 
-const getRow = ({
-  title,
+const getRow = ({ title, amount, color, bordered, valueFormatter }: TooltipProps) => [
   amount,
-  color,
-  bordered,
-  unit,
-}: {
-  title: string;
-  amount: number;
-  color: string;
-  bordered?: boolean;
-  unit?: string;
-}) => [amount, getBarStyle(color, { bordered }), getTooltip({ title, amount, color, bordered, unit })];
+  getBarStyle(color, { bordered }),
+  getTooltip({ title, amount, color, bordered, valueFormatter }),
+];
 
 const emissionsCO2GraphColumnNames = [
   "Scope 1 : Production directe d'énergie",
@@ -143,21 +131,17 @@ const useFixLegendOpacity = (coutsRef: React.RefObject<HTMLDivElement>) => {
   });
 };
 
-const formatPrecisionRange = (value: number, unit = '€') => {
+const formatPrecisionRange = (value: number) => {
   // as calculations are approximations, give a +-10% range
   const lowerBound = Math.round((value * (1 - precisionDisplay)) / 10) * 10;
   const upperBound = Math.round((value * (1 + precisionDisplay)) / 10) * 10;
 
-  if (unit === '€') {
-    const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-    const upperBoundStr = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-    return `${lowerBoundStr} - ${upperBoundStr}`;
-  }
-  const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { maximumFractionDigits: 0 });
-  const upperBoundStr = upperBound.toLocaleString('fr-FR', { maximumFractionDigits: 0 });
-
-  return `${lowerBoundStr} - ${upperBoundStr} ${unit}`;
+  const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  const upperBoundStr = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  return `${lowerBoundStr} - ${upperBoundStr}`;
 };
+
+const formatEmissionsCO2 = (value: number) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
 
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
@@ -208,22 +192,42 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
       const amounts = proMode
         ? [
-            ...getRow({ title: 'P1 abo', amount: amountP1Abo, color: colorP1Abo }),
-            ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso }),
-            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS }),
-            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime }),
-            ...getRow({ title: "P1'", amount: amountP1Consofroid, color: colorP1Consofroid }),
-            ...getRow({ title: 'P2', amount: amountP2, color: colorP2 }),
-            ...getRow({ title: 'P3', amount: amountP3, color: colorP3 }),
-            ...getRow({ title: 'P4 moins aides', amount: amountP4SansAides, color: colorP4SansAides }),
-            ...getRow({ title: 'aides', amount: amountAides, color: colorP4Aides, bordered: true }),
+            ...getRow({ title: 'P1 abo', amount: amountP1Abo, color: colorP1Abo, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: "P1'", amount: amountP1Consofroid, color: colorP1Consofroid, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: 'P2', amount: amountP2, color: colorP2, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: 'P3', amount: amountP3, color: colorP3, valueFormatter: formatPrecisionRange }),
+            ...getRow({
+              title: 'P4 moins aides',
+              amount: amountP4SansAides,
+              color: colorP4SansAides,
+              valueFormatter: formatPrecisionRange,
+            }),
+            ...getRow({ title: 'aides', amount: amountAides, color: colorP4Aides, bordered: true, valueFormatter: formatPrecisionRange }),
           ]
         : [
-            ...getRow({ title: 'Abonnement', amount: amountP1Abo, color: colorP1Abo }),
-            ...getRow({ title: 'Consommation', amount: amountP1Conso + amountP1ECS, color: colorP1Conso }),
-            ...getRow({ title: 'Maintenance', amount: amountP1prime + amountP2 + amountP3, color: colorP1prime }),
-            ...getRow({ title: 'Investissement', amount: amountP4SansAides, color: colorP4SansAides }),
-            ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true }),
+            ...getRow({ title: 'Abonnement', amount: amountP1Abo, color: colorP1Abo, valueFormatter: formatPrecisionRange }),
+            ...getRow({
+              title: 'Consommation',
+              amount: amountP1Conso + amountP1ECS,
+              color: colorP1Conso,
+              valueFormatter: formatPrecisionRange,
+            }),
+            ...getRow({
+              title: 'Maintenance',
+              amount: amountP1prime + amountP2 + amountP3,
+              color: colorP1prime,
+              valueFormatter: formatPrecisionRange,
+            }),
+            ...getRow({
+              title: 'Investissement',
+              amount: amountP4SansAides,
+              color: colorP4SansAides,
+              valueFormatter: formatPrecisionRange,
+            }),
+            ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true, valueFormatter: formatPrecisionRange }),
           ];
 
       const totalAmountWithAides = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce(
@@ -262,29 +266,28 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           title: "Scope 1 : Production directe d'énergie",
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
           color: colorScope1,
-          unit: 'kgCO2e',
+          valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
           title: "Scope 2 : Production indirecte d'énergie",
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
           color: colorScope2,
-          unit: 'kgCO2e',
+          valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
           title: 'Scope 3 : Émissions indirectes',
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
           color: colorScope3,
-          unit: 'kgCO2e',
+          valueFormatter: formatEmissionsCO2,
         }),
       ];
 
       const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
-      const precisionRange = formatPrecisionRange(totalAmount, 'kgCO2e');
       maxEmissionsCO2Value = Math.max(maxEmissionsCO2Value, totalAmount);
 
       return [
         ['', `${getLabel(typeInstallation)}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-        [getLabel(typeInstallation), '', ...amounts, precisionRange],
+        [getLabel(typeInstallation), '', ...amounts, formatEmissionsCO2(totalAmount)],
       ];
     }),
   ];
