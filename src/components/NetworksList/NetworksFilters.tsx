@@ -26,7 +26,6 @@ import {
   EnergiesFiltersConfKey,
   FilterLimits,
   FilterValues,
-  GestionnaireFilterValue,
   intervalFilters,
 } from 'src/types/NetworksFilters';
 
@@ -73,7 +72,7 @@ const FiltersBox = styled(Box)`
   }
 `;
 
-const gestionnairesFilters: GestionnaireFilterValue[] = [
+const gestionnairesFilters = [
   {
     label: 'Coriance',
     value: 'coriance',
@@ -353,7 +352,7 @@ function NetworksFilter({
                             label: '',
                             value: '',
                           },
-                          ...gestionnairesFilters.map((gestionnaire: GestionnaireFilterValue) => ({
+                          ...gestionnairesFilters.map((gestionnaire) => ({
                             label: gestionnaire.label,
                             value: gestionnaire.value,
                           })),

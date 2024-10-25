@@ -4,11 +4,6 @@ import { FiltreEnergieConfKey } from 'src/services/Map/map-configuration';
 const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 const percentageMaxInterval: Interval = [0, 100];
 
-export type GestionnaireFilterValue = {
-  label: string;
-  value: string;
-};
-
 export type IntervalAndEnergiesFilters = {
   label: string;
   confKey: string;
