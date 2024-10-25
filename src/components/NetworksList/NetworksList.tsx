@@ -8,6 +8,7 @@ import { reseauxDeChaleurFilters } from '@components/Map/map-layers';
 import ReseauxDeChaleurFilters, { ReseauxDeChaleurFiltersProps } from '@components/ReseauxDeChaleurFilters';
 import Box from '@components/ui/Box';
 import Drawer from '@components/ui/Drawer';
+import ExportButton from '@components/ui/ExportButton';
 import Icon from '@components/ui/Icon';
 import { ColumnDef, Table } from '@components/ui/Table';
 import Text from '@components/ui/Text';
@@ -446,6 +447,15 @@ const NetworksList = () => {
               <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
               Tous les filtres ({countFilters('reseauxDeChaleur')})
             </Button>
+            <ExportButton
+              buttonText="Exporter"
+              onExport={async () => {
+                console.log(''); //eslint-disable-line
+                console.log('╔════START══"export"══════════════════════════════════════════════════'); //eslint-disable-line
+                console.log('export'); //eslint-disable-line
+                console.log('╚════END════"export"══════════════════════════════════════════════════'); //eslint-disable-line
+              }}
+            />
             <Input
               label="Rechercher"
               hideLabel

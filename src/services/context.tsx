@@ -2,6 +2,7 @@ import React from 'react';
 
 import { AdminService } from './admin';
 import { DemandsService } from './demands';
+import { ExportService } from './export';
 import { HeatNetworkService } from './heatNetwork';
 import { NetworksService } from './networks';
 import { PasswordService } from './password';
@@ -14,6 +15,7 @@ type ServiceContextProps = {
   passwordService: PasswordService;
   adminService: AdminService;
   networksService: NetworksService;
+  exportService: ExportService;
 };
 export const ServicesContext = React.createContext<ServiceContextProps | undefined>(undefined);
 

@@ -10,6 +10,7 @@ type StyleProps = {
   display?: CSSProperties['display'];
   flexDirection?: CSSProperties['flexDirection'];
   flexWrap?: CSSProperties['flexWrap'];
+  flexGrow?: CSSProperties['flexGrow'];
   alignItems?: CSSProperties['alignItems'];
   justifyContent?: CSSProperties['justifyContent'];
   placeContent?: CSSProperties['placeContent'];
@@ -42,6 +43,7 @@ const StyledBox = styled.div<StyleProps>`
   display: ${({ display }) => display};
   flex-direction: ${({ flexDirection }) => flexDirection};
   flex-wrap: ${({ flexWrap }) => flexWrap};
+  flex-grow: ${({ flexGrow }) => flexGrow};
   align-items: ${({ alignItems }) => alignItems};
   justify-content: ${({ justifyContent }) => justifyContent};
   place-content: ${({ placeContent }) => placeContent};
@@ -89,6 +91,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       display={props.display}
       flexDirection={props.flexDirection}
       flexWrap={props.flexWrap}
+      flexGrow={props.flexGrow}
       alignItems={props.alignItems}
       justifyContent={props.justifyContent}
       placeContent={props.placeContent}
