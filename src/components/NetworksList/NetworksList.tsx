@@ -4,26 +4,20 @@ import { useGridApiRef } from '@mui/x-data-grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
+import { reseauxDeChaleurFilters } from '@components/Map/map-layers';
 import Box from '@components/ui/Box';
+import Drawer from '@components/ui/Drawer';
 import Icon from '@components/ui/Icon';
 import { ColumnDef, Table } from '@components/ui/Table';
 import Text from '@components/ui/Text';
+import useReseauxDeChaleurFilters, { gestionnairesFilters, type Filters } from '@hooks/useReseauxDeChaleurFilters';
 import { Interval } from '@utils/interval';
-import { fetchJSON } from '@utils/network';
 import { useServices } from 'src/services';
-import {
-  emptyFilterLimits,
-  emptyFilterValues,
-  energiesFilters,
-  FilterLimits,
-  FilterValues,
-  intervalFilters,
-  IntervalFiltersLimitKey,
-} from 'src/types/NetworksFilters';
+import { filtresEnergies } from 'src/services/Map/map-configuration';
 import { NetworkToCompare } from 'src/types/Summary/Network';
 
 import NetworkName from './NetworkName';
-import NetworksFilter from './NetworksFilters';
+import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
 
 type DataToDisplay = 'general' | 'mix_energetique';
 
@@ -78,114 +72,94 @@ const MixEnergetiqueFieldsList = [
 
 export const defaultInterval: Interval = [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
 
+const FiltersBox = styled(Box)`
+  max-width: 400px;
+  padding: 16px;
+  overflow: auto;
+  .fr-label {
+    font-size: 0.9rem;
+  }
+`;
+export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], filters: Filters['reseauxDeChaleur']): NetworkToCompare[] {
+  const filterKeys = Object.keys(filters);
+
+  return reseauxDeChaleur.filter((reseau) => {
+    let showReseau = true;
+
+    reseauxDeChaleurFilters
+      .filter(({ confKey }) => filterKeys.includes(confKey))
+      .forEach((reseauxDeChaleurFilter) => {
+        const filter = filters[reseauxDeChaleurFilter.confKey];
+        const value = reseau[reseauxDeChaleurFilter?.valueKey];
+
+        if (value < filter[0] || value > filter[1]) {
+          showReseau = false;
+        }
+      });
+    filtresEnergies
+      .filter(({ confKey }) => filterKeys.includes(`energie_ratio_${confKey}`))
+      .forEach((filtreEnergie) => {
+        const filter = filters[`energie_ratio_${filtreEnergie.confKey}`];
+        const value = reseau[`energie_ratio_${filtreEnergie.confKey}`];
+        if (value < filter[0] || value > filter[1]) {
+          showReseau = false;
+        }
+      });
+    (filters.energieMobilisee || []).forEach((energieMobilisee) => {
+      if (reseau[`energie_ratio_${energieMobilisee}`] <= 0) {
+        showReseau = false;
+      }
+    });
+    if (filters.regions && !filters.regions.includes(reseau.region)) {
+      showReseau = false;
+    }
+
+    if (
+      filters.gestionnaires &&
+      !filters.gestionnaires
+        .map((gestionnaire) => gestionnairesFilters.find((gestionnaireFilter) => gestionnaireFilter.value === gestionnaire)?.label)
+        ?.some((gestionnaire) => gestionnaire?.toLowerCase().includes(reseau.Gestionnaire?.toLowerCase()))
+    ) {
+      showReseau = false;
+    }
+    if (filters.isClassed && !reseau['reseaux classes']) {
+      showReseau = false;
+    }
+
+    return showReseau;
+  });
+}
+
 const NetworksList = () => {
   const { networksService } = useServices();
   const tableApiRef = useGridApiRef();
-
-  const [allNetworks, setAllNetworks] = useState<NetworkToCompare[]>([]);
-  const [filteredNetworks, setFilteredNetworks] = useState<NetworkToCompare[]>([]);
-
+  const [isDrawerOpened, toggleDrawer] = useState<boolean>(false);
   const [regionsList, setRegionsList] = useState<string[]>([]);
-  const [filterLimits, setFilterLimits] = useState<FilterLimits>(emptyFilterLimits);
-  const [filterValues, setFilterValues] = useState<FilterValues>(emptyFilterValues);
+  const [allNetworks, setAllNetworks] = useState<NetworkToCompare[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
+  const { filters: objectFilters, countFilters } = useReseauxDeChaleurFilters();
+  const nbFilters = countFilters('reseauxDeChaleur');
+
+  let filteredNetworks = filterReseauxDeChaleur(
+    allNetworks,
+    objectFilters?.reseauxDeChaleur || ({} as NonNullable<typeof objectFilters.reseauxDeChaleur>)
+  );
+
+  if (searchValue) {
+    const searchValueLowerCase = searchValue.toLocaleLowerCase();
+
+    filteredNetworks = filteredNetworks.filter(
+      (network: NetworkToCompare) =>
+        (network.nom_reseau && network.nom_reseau.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+        (network.Gestionnaire && network.Gestionnaire.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+        (network.region && network.region.toLocaleLowerCase().includes(searchValueLowerCase)) ||
+        (network.communes && network.communes.join(', ').toLocaleLowerCase().includes(searchValueLowerCase)) ||
+        (network['Identifiant reseau'] && network['Identifiant reseau'].toLocaleLowerCase().includes(searchValueLowerCase))
+    );
+  }
 
   const [dataToDisplay, setDataToDisplay] = useState<DataToDisplay>('general');
   const [loaded, setLoaded] = useState(false);
-
-  const onApplySearchValueFilter = useCallback(
-    (newFilteredNetworks: NetworkToCompare[]) => {
-      if (searchValue) {
-        const searchValueLowerCase = searchValue.toLocaleLowerCase();
-        newFilteredNetworks = newFilteredNetworks.filter(
-          (network: NetworkToCompare) =>
-            (network.nom_reseau && network.nom_reseau.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-            (network.Gestionnaire && network.Gestionnaire.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-            (network.region && network.region.toLocaleLowerCase().includes(searchValueLowerCase)) ||
-            (network.communes && network.communes.join(', ').toLocaleLowerCase().includes(searchValueLowerCase)) ||
-            (network['Identifiant reseau'] && network['Identifiant reseau'].toLocaleLowerCase().includes(searchValueLowerCase))
-        );
-      }
-      return newFilteredNetworks;
-    },
-    [searchValue]
-  );
-
-  const onApplyIntervalOrEnergiesFilters = useCallback(
-    (filtersType: 'interval' | 'energies', newFilteredNetworks: NetworkToCompare[], newFilterValues: FilterValues) => {
-      const filters = filtersType === 'interval' ? intervalFilters : energiesFilters;
-      filters.map((filterConf) => {
-        const minValue: number = newFilterValues[filterConf.confKey]
-          ? newFilterValues[filterConf.confKey][0]
-          : filterLimits[filterConf.confKey][0];
-        const maxValue: number = newFilterValues[filterConf.confKey]
-          ? newFilterValues[filterConf.confKey][1]
-          : filterLimits[filterConf.confKey][1];
-
-        if (minValue !== filterLimits[filterConf.confKey][0] || maxValue !== filterLimits[filterConf.confKey][1]) {
-          newFilteredNetworks = newFilteredNetworks.filter(
-            (network: NetworkToCompare) =>
-              ((minValue !== filterLimits[filterConf.confKey][0] && (network[filterConf.confKey] as number) >= minValue) ||
-                minValue === filterLimits[filterConf.confKey][0]) &&
-              ((maxValue !== filterLimits[filterConf.confKey][1] && (network[filterConf.confKey] as number) <= maxValue) ||
-                maxValue === filterLimits[filterConf.confKey][1])
-          );
-        }
-      });
-      return newFilteredNetworks;
-    },
-    [intervalFilters, energiesFilters, filterLimits]
-  );
-
-  const onApplyFilters = useCallback(
-    (newFilterValues: FilterValues) => {
-      let newFilteredNetworks = allNetworks;
-      newFilteredNetworks = onApplyIntervalOrEnergiesFilters('interval', newFilteredNetworks, newFilterValues);
-
-      if (newFilterValues.region && newFilterValues.region !== '') {
-        newFilteredNetworks = newFilteredNetworks.filter(
-          (network: NetworkToCompare) =>
-            network.region && network.region.toLowerCase().includes(newFilterValues.region.trim().toLowerCase())
-        );
-      }
-
-      if (
-        newFilterValues.energieMobilisee &&
-        Array.isArray(newFilterValues.energieMobilisee) &&
-        newFilterValues.energieMobilisee.length > 0
-      ) {
-        newFilteredNetworks = newFilteredNetworks.filter((network: NetworkToCompare) => {
-          return newFilterValues.energieMobilisee
-            .map((key) => network[key as keyof NetworkToCompare])
-            .some((value) => value !== undefined && (value as number) > 0);
-        });
-      }
-
-      if (newFilterValues.gestionnaire && newFilterValues.gestionnaire !== '') {
-        newFilteredNetworks = newFilteredNetworks.filter(
-          (network: NetworkToCompare) =>
-            network.Gestionnaire && network.Gestionnaire.toLowerCase().includes(newFilterValues.gestionnaire.trim().toLowerCase())
-        );
-      }
-
-      if (newFilterValues.isClassed) {
-        newFilteredNetworks = newFilteredNetworks.filter((network: NetworkToCompare) => network['reseaux classes']);
-      }
-
-      newFilteredNetworks = onApplyIntervalOrEnergiesFilters('energies', newFilteredNetworks, newFilterValues);
-
-      //Apply search value
-      newFilteredNetworks = onApplySearchValueFilter(newFilteredNetworks);
-
-      setFilteredNetworks(newFilteredNetworks);
-      setFilterValues(newFilterValues);
-
-      if (tableApiRef.current?.setPage) {
-        tableApiRef.current.setPage(0);
-      }
-    },
-    [allNetworks, intervalFilters, energiesFilters, filterLimits, searchValue]
-  );
 
   const networkGeneralRowsParams: ColumnDef<NetworkToCompare>[] = useMemo(
     () => [
@@ -402,7 +376,6 @@ const NetworksList = () => {
         try {
           const networks: NetworkToCompare[] = await networksService.fetch();
           setAllNetworks(networks);
-          setFilteredNetworks(networks);
 
           const newRegionsList: string[] = [];
           networks.forEach((network) => {
@@ -410,18 +383,6 @@ const NetworksList = () => {
           });
           newRegionsList.sort((a, b) => a.localeCompare(b));
           setRegionsList(newRegionsList);
-
-          // amend the configuration with metadata limits of networks
-          const limits = await fetchJSON<IntervalFiltersLimitKey>('/api/map/network-limits');
-          // apply the limits to the filters
-          intervalFilters.forEach((filter) => {
-            if (limits[filter.limitKey]) {
-              filterValues[filter.confKey] = limits[filter.limitKey];
-              filterLimits[filter.confKey] = limits[filter.limitKey];
-            }
-          });
-          setFilterValues(filterValues);
-          setFilterLimits(filterLimits);
 
           setLoaded(true);
         } finally {
@@ -435,26 +396,34 @@ const NetworksList = () => {
 
   return (
     <NetworksListContainer>
+      <Drawer open={isDrawerOpened} onClose={() => toggleDrawer(false)} anchor="right">
+        <FiltersBox>
+          <h3>Filtres{nbFilters > 0 ? ` (${nbFilters})` : ''}</h3>
+          <Text fontSize="13px" lineHeight="18px" mb="2w">
+            Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
+          </Text>
+          <ReseauxDeChaleurFilters regionsList={regionsList} />
+        </FiltersBox>
+      </Drawer>
       <Box py="10w" className="fr-container">
         <Box display="flex" gap="16px" flexWrap="wrap" flexDirection="row" alignItems="center" justifyContent="space-between" pb="4w">
-          <Text fontWeight="bold">{filteredNetworks.length}&nbsp;réseaux</Text>
+          <Text fontWeight="bold">{loaded ? filteredNetworks.length : '-'}&nbsp;réseaux</Text>
           <Box display="flex" flexWrap="wrap" flexDirection="row" alignItems="flex-end" gap="16px">
-            <NetworksFilter
-              filterLimits={filterLimits}
-              filterValues={filterValues}
-              regionsList={regionsList}
-              onApplyFilters={(minConfig) => onApplyFilters(minConfig)}
-            ></NetworksFilter>
+            <Button
+              priority="secondary"
+              size="medium"
+              onClick={() => {
+                toggleDrawer(true);
+              }}
+            >
+              <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
+              Tous les filtres ({countFilters('reseauxDeChaleur')})
+            </Button>
             <Input
               label="Rechercher"
               hideLabel
               addon={
-                <Button
-                  className="primary"
-                  onClick={() => {
-                    onApplyFilters(filterValues);
-                  }}
-                >
+                <Button className="primary">
                   <Icon size="sm" name="fr-icon-search-line" />
                 </Button>
               }
@@ -462,11 +431,6 @@ const NetworksList = () => {
                 placeholder: 'Rechercher',
                 value: searchValue,
                 onChange: (e) => setSearchValue(e.target.value),
-                onKeyDown: (e) => {
-                  if (e.key === 'Enter') {
-                    onApplyFilters(filterValues);
-                  }
-                },
               }}
             />
           </Box>
