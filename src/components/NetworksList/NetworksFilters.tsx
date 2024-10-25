@@ -26,6 +26,7 @@ import {
   EnergiesFiltersConfKey,
   FilterLimits,
   FilterValues,
+  GestionnaireFilterValue,
   intervalFilters,
 } from 'src/types/NetworksFilters';
 
@@ -72,7 +73,15 @@ const FiltersBox = styled(Box)`
   }
 `;
 
-const gestionnairesFilters: string[] = ['Coriance', 'Dalkia', 'Engie Solutions', 'IDEX'];
+const gestionnairesFilters: GestionnaireFilterValue[] = [
+  {
+    label: 'Coriance',
+    value: 'coriance',
+  },
+  { label: 'Dalkia', value: 'dalkia' },
+  { label: 'Engie Solutions', value: 'engie' },
+  { label: 'IDEX', value: 'idex' },
+];
 
 function NetworksFilter({
   filterLimits,
@@ -344,9 +353,9 @@ function NetworksFilter({
                             label: '',
                             value: '',
                           },
-                          ...gestionnairesFilters.map((gestionnaire: string) => ({
-                            label: gestionnaire,
-                            value: gestionnaire,
+                          ...gestionnairesFilters.map((gestionnaire: GestionnaireFilterValue) => ({
+                            label: gestionnaire.label,
+                            value: gestionnaire.value,
                           })),
                         ]}
                       />
