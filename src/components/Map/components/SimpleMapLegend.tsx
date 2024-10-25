@@ -2,6 +2,7 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { useQueryState } from 'nuqs';
 
+import RangeFilter from '@components/form/dsfr/RangeFilter';
 import {
   LegendDeskData,
   besoinsEnChaleurIndustrieCommunesIntervals,
@@ -28,7 +29,6 @@ import { communesFortPotentielPourCreationReseauxChaleurInterval, defaultMapConf
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux, { type MapLegendFeature } from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
-import RangeFilter from './RangeFilter';
 import ScaleLegend from './ScaleLegend';
 import {
   DeactivatableBox,

@@ -1,7 +1,7 @@
 import { parseAsBoolean, useQueryState } from 'nuqs';
 
+import RangeFilter, { roundNumberProgressively } from '@components/form/dsfr/RangeFilter';
 import SelectCheckboxes from '@components/form/dsfr/SelectCheckboxes';
-import RangeFilter from '@components/Map/components/RangeFilter';
 import useFCUMap from '@components/Map/MapProvider';
 import { UrlStateAccordion } from '@components/ui/Accordion';
 import Button from '@components/ui/Button';
