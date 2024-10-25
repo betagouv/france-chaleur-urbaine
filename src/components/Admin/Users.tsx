@@ -1,9 +1,8 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useEffect, useMemo, useState } from 'react';
-import { Oval } from 'react-loader-spinner';
 
 import Input from '@components/form/dsfr/Input';
 import Box from '@components/ui/Box';
+import ExportButton from '@components/ui/ExportButton';
 import Heading from '@components/ui/Heading';
 import { Table, type ColumnDef } from '@components/ui/Table';
 import { useServices } from 'src/services';
@@ -34,11 +33,10 @@ const columns: ColumnDef<UserResponse>[] = [
 ];
 
 const Users = () => {
-  const { adminService } = useServices();
+  const { adminService, exportService } = useServices();
 
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [filter, setFilter] = useState('');
-  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     adminService.getUsers().then(setUsers);
@@ -68,20 +66,10 @@ const Users = () => {
       {filteredUsers.length === 0 && <p>Pas de résultat</p>}
 
       <Box mt="3w">
-        {exporting ? (
-          <Oval height={40} width={40} />
-        ) : (
-          <Button
-            onClick={() => {
-              setExporting(true);
-              adminService.exportObsoleteUsers().finally(() => {
-                setExporting(false);
-              });
-            }}
-          >
-            Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
-          </Button>
-        )}
+        <ExportButton
+          buttonText="Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)"
+          onExport={async () => exportService.exportXLSX('obsoleteUsers')}
+        />
       </Box>
     </TableContainer>
   );

@@ -14,6 +14,7 @@ import { HeatNetworkService, ServicesContext, SuggestionService } from 'src/serv
 import { AdminService } from 'src/services/admin';
 import { useAnalytics } from 'src/services/analytics';
 import { DemandsService } from 'src/services/demands';
+import { ExportService } from 'src/services/export';
 import { axiosHttpClient } from 'src/services/http';
 import { NetworksService } from 'src/services/networks';
 import { PasswordService } from 'src/services/password';
@@ -77,6 +78,7 @@ function App({
           passwordService: new PasswordService(axiosHttpClient),
           adminService: new AdminService(axiosHttpClient),
           networksService: new NetworksService(axiosHttpClient),
+          exportService: new ExportService(axiosHttpClient),
         }}
       >
         <Head>

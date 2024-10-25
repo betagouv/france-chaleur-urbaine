@@ -17,11 +17,3 @@ export const Filter = styled.div`
     font-size: 0.9rem;
   }
 `;
-
-export const ExportButton = styled.div`
-  flex-grow: 1;
-  width: fit-content;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-`;

@@ -1,14 +1,14 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { useEffect, useState } from 'react';
-import { Oval } from 'react-loader-spinner';
 
 import Input from '@components/form/dsfr/Input';
+import Box from '@components/ui/Box';
+import ExportButton from '@components/ui/ExportButton';
 import { useServices } from 'src/services';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import { Demand } from 'src/types/Summary/Demand';
 
-import { ExportButton, Filter, Filters } from './ManagerHeader.styles';
+import { Filter, Filters } from './ManagerHeader.styles';
 
 const typeDeChauffageOptions = [
   {
@@ -64,9 +64,7 @@ const matchFilter = (filter: string, value: string | undefined) => {
 };
 
 const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; setFilteredDemands: (demands: Demand[]) => void }) => {
-  const { demandsService } = useServices();
-
-  const [exporting, setExporting] = useState(false);
+  const { exportService } = useServices();
 
   const [gestionnaireOptions, setGestionnaireOptions] = useState<{ label: string; value: string }[]>([]);
 
@@ -190,22 +188,9 @@ const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; set
           />
         </Filter>
       )}
-      <ExportButton>
-        {exporting ? (
-          <Oval height={40} width={40} />
-        ) : (
-          <Button
-            onClick={() => {
-              setExporting(true);
-              demandsService.export().finally(() => {
-                setExporting(false);
-              });
-            }}
-          >
-            Exporter
-          </Button>
-        )}
-      </ExportButton>
+      <Box display="flex" flexGrow="1" width="fit-content" justifyContent="flex-end" alignItems="flex-end">
+        <ExportButton buttonText="Exporter" onExport={async () => exportService.exportXLSX('demands')} />
+      </Box>
     </Filters>
   );
 };
