@@ -72,14 +72,14 @@ export const modesDeChauffage = [
   {
     label: 'PAC air/air collective',
     emissionsCO2PublicodesKey: 'PAC air-air x Collectif',
-    coutPublicodeKey: 'PAC eau-eau indiv',
+    coutPublicodeKey: 'PAC air-air coll',
     reversible: true,
     seulementFroid: false,
   },
   {
     label: 'PAC air/eau individuelle',
     emissionsCO2PublicodesKey: 'PAC air-eau x Individuel',
-    coutPublicodeKey: 'PAC eau-eau coll',
+    coutPublicodeKey: 'PAC air-eau indiv',
     reversible: true,
     seulementFroid: false,
   },
@@ -93,14 +93,14 @@ export const modesDeChauffage = [
   {
     label: 'PAC eau/eau individuelle',
     emissionsCO2PublicodesKey: 'PAC eau-eau x Individuel',
-    coutPublicodeKey: 'PAC air-eau indiv',
+    coutPublicodeKey: 'PAC eau-eau indiv',
     reversible: false,
     seulementFroid: false,
   },
   {
     label: 'PAC eau/eau collective',
     emissionsCO2PublicodesKey: 'PAC eau-eau x Collectif',
-    coutPublicodeKey: 'PAC air-air coll',
+    coutPublicodeKey: 'PAC eau-eau coll',
     reversible: false,
     seulementFroid: false,
   },

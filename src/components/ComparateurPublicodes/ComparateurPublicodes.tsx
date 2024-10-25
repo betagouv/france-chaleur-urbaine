@@ -305,7 +305,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
             </FloatingButton>
             <Drawer open={graphDrawerOpen} onClose={() => setGraphDrawerOpen(false)} anchor="right">
               <Button onClick={() => setGraphDrawerOpen(false)}>Fermer</Button>
-              {results}
+              <div style={{ maxWidth: '100vw', overflow: 'auto' }}>{results}</div>
             </Drawer>
             <DebugDrawer engine={engine} />
           </Simulator>

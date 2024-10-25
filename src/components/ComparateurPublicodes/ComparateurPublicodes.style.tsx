@@ -99,6 +99,7 @@ export const FloatingButton = styled(Button)`
   justify-content: center;
   width: 200px;
   top: 60%;
+  z-index: 1;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
   transition: right 0.3s ease;
 

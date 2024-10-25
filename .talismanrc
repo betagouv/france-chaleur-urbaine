@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env
-  checksum: 640fb3e8208508d5b81c07241fb4d0619b5e31d58c33a80bb72e04248bfed8eb
+  checksum: e8f5d8f19f7b7ff64ad92a1644fd9c0039ab9e02eaa684c7c158002459286465
 - filename: next.config.js
   checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
 - filename: scripts/addUser.ts
@@ -22,24 +22,11 @@ fileignoreconfig:
 - filename: src/components/Map/map-layers.ts
   checksum: 16e789ab1bc1176ccb8f5b6dae275ec6639232884fda51da6ffd7708908f281a
 - filename: src/services/tiles.config.ts
-  checksum: 9a3eb5c3465f7d564d23d60dc84a1dda12e64b9276da97c1d6bef070b19f128e
+  checksum: 89f40d731f653c30750c61467b1d4727965805280e2d2888dd0cc29e8accf6cf
 scopeconfig:
 - scope: node
 allowed_patterns:
-- eventKey
 - \/codegouvfr\/react-dsfr\/blob\/.*
-- key\=\{
-- K in keyof T
-- key=
-- key,
-- \[key\]
-- coutPublicodeKey
-- emissionsCO2PublicodesKey
-- key
 - pass
-- renderKey
-- ConfKey
-- confKey
-- onKeyDown
-- onKeyUp
+- (?i).*key.*
 version: "1.0"

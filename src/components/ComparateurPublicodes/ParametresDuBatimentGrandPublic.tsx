@@ -62,6 +62,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
             nativeInputProps={{
               inputMode: 'numeric',
               maxLength: 5,
+              min: 1,
               type: 'number',
             }}
           />

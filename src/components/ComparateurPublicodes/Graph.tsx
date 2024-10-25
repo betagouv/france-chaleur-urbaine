@@ -1,6 +1,6 @@
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
 import { useQueryState } from 'nuqs';
-import React from 'react';
+import React, { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
 
@@ -12,8 +12,10 @@ import cx from '@utils/cx';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';
+import { Logos } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
+const precisionDisplay = 10 / 100;
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
   proMode?: boolean;
@@ -52,6 +54,7 @@ const commonGraphOptions: React.ComponentProps<typeof Chart>['options'] = {
 const colorP1Abo = '#FCC63A';
 const colorP1Conso = '#FC8162';
 const colorP1ECS = '#F2535E';
+const colorP1Consofroid = '#0077be';
 const colorP1prime = '#51D1DC';
 const colorP2 = '#475DA1';
 const colorP3 = '#99C221';
@@ -63,36 +66,45 @@ const colorScope1 = '#99C221';
 const colorScope2 = '#426429';
 const colorScope3 = '#4EC8AE';
 
-const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
-  chartArea: {
-    right: 100, // to display the total without being cut (4 digits + unit)
-  },
-  colors: [colorScope1, colorScope2, colorScope3],
-  hAxis: {
-    title: 'Émissions (kgCO2e)',
-    minValue: 0,
-  },
-});
-
 const getBarStyle = (color: string, { bordered }: { bordered?: boolean } = {}) =>
   `color: ${color}; stroke-color: ${color}; stroke-opacity: 1; stroke-width: 1;${bordered ? 'fill-opacity: 0.1;' : ''}`;
 
-const getTooltip = ({ title, amount, color, bordered }: { title: string; color: string; amount: number; bordered?: boolean }) =>
+const getTooltip = ({
+  title,
+  amount,
+  color,
+  bordered,
+  unit,
+}: {
+  title: string;
+  color: string;
+  amount: number;
+  bordered?: boolean;
+  unit?: string;
+}) =>
   ReactDOMServer.renderToString(
     <GraphTooltip>
       <span style={bordered ? { border: `2px solid ${color}` } : { backgroundColor: color }}></span>
       <span>{title}</span>
-      <strong>{amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</strong>
+      <strong style={{ whiteSpace: 'nowrap' }}>{formatPrecisionRange(amount, unit)}</strong>
     </GraphTooltip>
   );
 
 const getColumn = (title: string) => [title, { role: 'style' }, { type: 'string', role: 'tooltip', p: { html: true } }];
 
-const getRow = ({ title, amount, color, bordered }: { title: string; amount: number; color: string; bordered?: boolean }) => [
+const getRow = ({
+  title,
   amount,
-  getBarStyle(color, { bordered }),
-  getTooltip({ title, amount, color, bordered }),
-];
+  color,
+  bordered,
+  unit,
+}: {
+  title: string;
+  amount: number;
+  color: string;
+  bordered?: boolean;
+  unit?: string;
+}) => [amount, getBarStyle(color, { bordered }), getTooltip({ title, amount, color, bordered, unit })];
 
 const emissionsCO2GraphColumnNames = [
   "Scope 1 : Production directe d'énergie",
@@ -101,30 +113,67 @@ const emissionsCO2GraphColumnNames = [
 ];
 const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.map(getColumn).flat();
 
+const useFixLegendOpacity = (coutsRef: React.RefObject<HTMLDivElement>) => {
+  React.useEffect(() => {
+    if (!coutsRef?.current) {
+      return;
+    }
+
+    const applyChanges = () => {
+      const legendBox = coutsRef?.current?.querySelector('g g:last-child rect:last-child');
+
+      if (legendBox) {
+        legendBox.setAttribute('fill-opacity', '0.1');
+
+        legendBox.setAttribute('stroke', colorP4Aides);
+        legendBox.setAttribute('stroke-width', '1');
+      }
+    };
+
+    applyChanges();
+
+    // HACK: reapply changes as they may be overriden
+    const intervalId = setInterval(() => applyChanges(), 20);
+    const timeoutId = setTimeout(() => clearInterval(intervalId), 1000);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  });
+};
+
+const formatPrecisionRange = (value: number, unit = '€') => {
+  // as calculations are approximations, give a +-10% range
+  const lowerBound = Math.round((value * (1 - precisionDisplay)) / 10) * 10;
+  const upperBound = Math.round((value * (1 + precisionDisplay)) / 10) * 10;
+
+  if (unit === '€') {
+    const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    const upperBoundStr = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    return `${lowerBoundStr} - ${upperBoundStr}`;
+  }
+  const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+  const upperBoundStr = upperBound.toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+
+  return `${lowerBoundStr} - ${upperBoundStr} ${unit}`;
+};
+
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+  const coutsRef = useRef<HTMLDivElement>(null);
+  useFixLegendOpacity(coutsRef);
 
   const coutGraphColumnNames = proMode
-    ? ['P1 abo', 'P1 conso', 'P1 ECS', "P1'", 'P2', 'P3', 'P4 moins aides', 'aides']
+    ? ['P1 abo', 'P1 conso', 'P1 ECS', "P1'", 'P1 conso froid', 'P2', 'P3', 'P4 moins aides', 'aides']
     : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', 'Aides'];
 
   const coutGraphColumns = coutGraphColumnNames.map(getColumn).flat();
 
   const coutGraphColors = proMode
-    ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP2, colorP3, colorP4SansAides, colorP4Aides]
+    ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP1Consofroid, colorP2, colorP3, colorP4SansAides, colorP4Aides]
     : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
-  const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
-    chartArea: {
-      right: 50, // to display the total price without being cut (4 digits + unit)
-    },
-    hAxis: {
-      title: 'Coût €TTC/logement par an',
-      minValue: 0,
-      format: '# €',
-    },
-    colors: coutGraphColors,
-  });
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
   const inclusClimatisation = engine.getField('Inclure la climatisation');
 
@@ -143,6 +192,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     return typeInstallation.reversible && inclusClimatisation ? `${typeInstallation.label} (chauffage + froid)` : typeInstallation.label;
   };
 
+  let maxCoutValue = 3000;
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
     ...modesDeChauffage.filter(filterDisplayableModesDeChauffage).flatMap((typeInstallation) => {
@@ -150,6 +200,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
       const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
       const amountP1prime = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1prime`);
+      const amountP1Consofroid = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1Consofroid`);
       const amountP2 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P2`);
       const amountP3 = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P3`);
       const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
@@ -161,8 +212,8 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
             ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso }),
             ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS }),
             ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime }),
+            ...getRow({ title: "P1'", amount: amountP1Consofroid, color: colorP1Consofroid }),
             ...getRow({ title: 'P2', amount: amountP2, color: colorP2 }),
-            // TODO manque les différents types d'installation avec élec ou solaire
             ...getRow({ title: 'P3', amount: amountP3, color: colorP3 }),
             ...getRow({ title: 'P4 moins aides', amount: amountP4SansAides, color: colorP4SansAides }),
             ...getRow({ title: 'aides', amount: amountAides, color: colorP4Aides, bordered: true }),
@@ -175,16 +226,33 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
             ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true }),
           ];
 
-      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
-        .reduce((acc, amount) => acc + amount, 0)
-        .toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-
+      const totalAmountWithAides = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce(
+        (acc, amount) => acc + amount,
+        0
+      );
+      const totalAmount = totalAmountWithAides - amountAides;
+      const precisionRange = formatPrecisionRange(totalAmount);
+      maxCoutValue = Math.max(maxCoutValue, totalAmount);
       return [
         [' ', getLabel(typeInstallation), ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-        [getLabel(typeInstallation), '', ...amounts, totalAmount],
+        [getLabel(typeInstallation), '', ...amounts, precisionRange],
       ];
     }),
   ];
+
+  const coutGraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
+    chartArea: {
+      right: 130, // to display the total price without being cut (4 digits + unit)
+    },
+    hAxis: {
+      title: 'Coût €TTC/logement par an',
+      minValue: 0,
+      maxValue: maxCoutValue,
+    },
+    colors: coutGraphColors,
+  });
+
+  let maxEmissionsCO2Value = 5000;
 
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
@@ -194,29 +262,44 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           title: "Scope 1 : Production directe d'énergie",
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
           color: colorScope1,
+          unit: 'kgCO2e',
         }),
         ...getRow({
           title: "Scope 2 : Production indirecte d'énergie",
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
           color: colorScope2,
+          unit: 'kgCO2e',
         }),
         ...getRow({
           title: 'Scope 3 : Émissions indirectes',
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
           color: colorScope3,
+          unit: 'kgCO2e',
         }),
       ];
 
-      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
-        .reduce((acc, amount) => acc + amount, 0)
-        .toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
+      const precisionRange = formatPrecisionRange(totalAmount, 'kgCO2e');
+      maxEmissionsCO2Value = Math.max(maxEmissionsCO2Value, totalAmount);
 
       return [
         ['', `${getLabel(typeInstallation)}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-        [getLabel(typeInstallation), '', ...amounts, `${totalAmount} kgCO2e`],
+        [getLabel(typeInstallation), '', ...amounts, precisionRange],
       ];
     }),
   ];
+
+  const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
+    chartArea: {
+      right: 130, // to display the total price without being cut (4 digits + unit)
+    },
+    colors: [colorScope1, colorScope2, colorScope3],
+    hAxis: {
+      title: 'Émissions (kgCO2e)',
+      minValue: 0,
+      maxValue: maxEmissionsCO2Value,
+    },
+  });
 
   const chartHeight = selectedModesDeChauffage.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
@@ -245,7 +328,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       </Box>
 
       {graphType === 'couts' && (
-        <>
+        <div ref={coutsRef}>
           <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'}</Heading>
           <Chart
             chartType="BarChart"
@@ -267,7 +350,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
               height: chartHeight, // dynamic height https://github.com/rakannimer/react-google-charts/issues/385
             }}
           />
-        </>
+        </div>
       )}
       {graphType === 'emissions' && (
         <>
@@ -294,6 +377,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           />
         </>
       )}
+      <Logos size="sm" justifyContent="end" />
     </div>
   );
 };
