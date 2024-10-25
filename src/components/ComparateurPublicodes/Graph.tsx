@@ -66,36 +66,45 @@ const colorScope1 = '#99C221';
 const colorScope2 = '#426429';
 const colorScope3 = '#4EC8AE';
 
-const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
-  chartArea: {
-    right: 100, // to display the total without being cut (4 digits + unit)
-  },
-  colors: [colorScope1, colorScope2, colorScope3],
-  hAxis: {
-    title: 'Émissions (kgCO2e)',
-    minValue: 0,
-  },
-});
-
 const getBarStyle = (color: string, { bordered }: { bordered?: boolean } = {}) =>
   `color: ${color}; stroke-color: ${color}; stroke-opacity: 1; stroke-width: 1;${bordered ? 'fill-opacity: 0.1;' : ''}`;
 
-const getTooltip = ({ title, amount, color, bordered }: { title: string; color: string; amount: number; bordered?: boolean }) =>
+const getTooltip = ({
+  title,
+  amount,
+  color,
+  bordered,
+  unit,
+}: {
+  title: string;
+  color: string;
+  amount: number;
+  bordered?: boolean;
+  unit?: string;
+}) =>
   ReactDOMServer.renderToString(
     <GraphTooltip>
       <span style={bordered ? { border: `2px solid ${color}` } : { backgroundColor: color }}></span>
       <span>{title}</span>
-      <strong style={{ whiteSpace: 'nowrap' }}>{formatPrecisionRange(amount)}</strong>
+      <strong style={{ whiteSpace: 'nowrap' }}>{formatPrecisionRange(amount, unit)}</strong>
     </GraphTooltip>
   );
 
 const getColumn = (title: string) => [title, { role: 'style' }, { type: 'string', role: 'tooltip', p: { html: true } }];
 
-const getRow = ({ title, amount, color, bordered }: { title: string; amount: number; color: string; bordered?: boolean }) => [
+const getRow = ({
+  title,
   amount,
-  getBarStyle(color, { bordered }),
-  getTooltip({ title, amount, color, bordered }),
-];
+  color,
+  bordered,
+  unit,
+}: {
+  title: string;
+  amount: number;
+  color: string;
+  bordered?: boolean;
+  unit?: string;
+}) => [amount, getBarStyle(color, { bordered }), getTooltip({ title, amount, color, bordered, unit })];
 
 const emissionsCO2GraphColumnNames = [
   "Scope 1 : Production directe d'énergie",
@@ -134,13 +143,20 @@ const useFixLegendOpacity = (coutsRef: React.RefObject<HTMLDivElement>) => {
   });
 };
 
-const formatPrecisionRange = (value: number) => {
+const formatPrecisionRange = (value: number, unit = '€') => {
   // as calculations are approximations, give a +-10% range
   const lowerBound = Math.round((value * (1 - precisionDisplay)) / 10) * 10;
   const upperBound = Math.round((value * (1 + precisionDisplay)) / 10) * 10;
-  const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-  const upperBoundStr = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
-  return `${lowerBoundStr} - ${upperBoundStr}`;
+
+  if (unit === '€') {
+    const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    const upperBoundStr = upperBound.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    return `${lowerBoundStr} - ${upperBoundStr}`;
+  }
+  const lowerBoundStr = lowerBound.toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+  const upperBoundStr = upperBound.toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+
+  return `${lowerBoundStr} - ${upperBoundStr} ${unit}`;
 };
 
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
@@ -236,6 +252,8 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     colors: coutGraphColors,
   });
 
+  let maxEmissionsCO2Value = 5000;
+
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
     ...modesDeChauffage.filter(filterDisplayableModesDeChauffage).flatMap((typeInstallation) => {
@@ -244,29 +262,44 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           title: "Scope 1 : Production directe d'énergie",
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
           color: colorScope1,
+          unit: 'kgCO2e',
         }),
         ...getRow({
           title: "Scope 2 : Production indirecte d'énergie",
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
           color: colorScope2,
+          unit: 'kgCO2e',
         }),
         ...getRow({
           title: 'Scope 3 : Émissions indirectes',
           amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
           color: colorScope3,
+          unit: 'kgCO2e',
         }),
       ];
 
-      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[])
-        .reduce((acc, amount) => acc + amount, 0)
-        .toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+      const totalAmount = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce((acc, amount) => acc + amount, 0);
+      const precisionRange = formatPrecisionRange(totalAmount, 'kgCO2e');
+      maxEmissionsCO2Value = Math.max(maxEmissionsCO2Value, totalAmount);
 
       return [
         ['', `${getLabel(typeInstallation)}`, ...amounts.map((amount) => (Number.isNaN(+amount) ? '' : 0)), ''],
-        [getLabel(typeInstallation), '', ...amounts, `${totalAmount} kgCO2e`],
+        [getLabel(typeInstallation), '', ...amounts, precisionRange],
       ];
     }),
   ];
+
+  const emissionsCO2GraphOptions: React.ComponentProps<typeof Chart>['options'] = deepMergeObjects(commonGraphOptions, {
+    chartArea: {
+      right: 130, // to display the total price without being cut (4 digits + unit)
+    },
+    colors: [colorScope1, colorScope2, colorScope3],
+    hAxis: {
+      title: 'Émissions (kgCO2e)',
+      minValue: 0,
+      maxValue: maxEmissionsCO2Value,
+    },
+  });
 
   const chartHeight = selectedModesDeChauffage.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
