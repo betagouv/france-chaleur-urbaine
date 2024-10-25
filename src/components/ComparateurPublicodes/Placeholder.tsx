@@ -36,7 +36,7 @@ export const ComparateurPublicodesTitle = () => {
 
 export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
   return (
-    <Box display="flex" gap={size === 'sm' ? '8px' : '16px'} flexDirection="row" alignItems="center" {...props}>
+    <Box display="flex" gap={size === 'sm' ? '8px' : '16px'} flexDirection="row" alignItems="center" flexWrap="wrap" {...props}>
       <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={size === 'sm' ? '60px' : '80px'} className="fr-mr-2w" />
       <img src="/logo-amorce.svg" alt="logo amorce" height={size === 'sm' ? '37px' : '50px'} />
       {withFCU && (
