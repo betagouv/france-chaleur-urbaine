@@ -34,7 +34,9 @@ interface SimpleMapLegendProps {
 }
 
 const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setFiltersVisible, legendTitle, ...props }) => {
-  const { mapConfiguration, toggleLayer } = useFCUMap();
+  const { mapConfiguration, toggleLayer, countFilters } = useFCUMap();
+  const nbFilters = countFilters('reseauxDeChaleur');
+
   const enabledFeatures = useMemo(() => {
     return props.enabledFeatures ?? mapLegendFeatures;
   }, [props.enabledFeatures]);
@@ -53,7 +55,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
           Retour
         </Button>
         <TabScrollablePart>
-          <Title>Filtres</Title>
+          <Title>Filtres{nbFilters > 0 ? ` (${nbFilters})` : ''}</Title>
           <Text fontSize="13px" lineHeight="18px" mb="2w">
             Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
           </Text>
@@ -128,7 +130,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
             size="small"
             disabled={!mapConfiguration.reseauxDeChaleur.show}
           >
-            Filtres
+            Tous les filtres ({nbFilters})
           </Button>
         </>
       )}

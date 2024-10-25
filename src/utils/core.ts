@@ -22,6 +22,15 @@ export function toggleBoolean<Obj extends Record<string, any>>(obj: Obj, path: F
 }
 
 /**
+ * Deeply gets a property from an object by a dot-notated path.
+ */
+export function getProperty<Obj extends Record<string, any>, T = any>(obj: Obj, path?: FlattenKeys<Obj>): T | undefined {
+  return (path || '').split('.').reduce((current: any, key: string) => {
+    return current ? current[key] : undefined; // Safely access the property
+  }, obj);
+}
+
+/**
  * Deeply sets a property in an object.
  */
 export function setProperty<Obj extends Record<string, any>>(obj: Obj, path: FlattenKeys<Obj>, value: any) {

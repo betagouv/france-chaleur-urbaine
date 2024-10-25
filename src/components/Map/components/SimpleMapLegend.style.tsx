@@ -345,4 +345,7 @@ export const FilterResetButtonWrapper = styled.div`
   background: white;
   z-index: 1;
   padding: 1rem 0;
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
 `;

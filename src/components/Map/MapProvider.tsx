@@ -3,7 +3,8 @@ import React, { createContext, useContext } from 'react';
 import { MapRef } from 'react-map-gl/maplibre';
 
 import { type ReseauxDeChaleurLimits } from '@components/Map/map-layers';
-import { isDefined, setProperty, toggleBoolean } from '@utils/core';
+import useReseauxDeChaleurFilters from '@hooks/useReseauxDeChaleurFilters';
+import { deepMergeObjects, isDefined, setProperty, toggleBoolean } from '@utils/core';
 import { Interval } from '@utils/interval';
 import { fetchJSON } from '@utils/network';
 import {
@@ -22,16 +23,17 @@ type UseFCUMapResult = {
   mapConfiguration: MapConfiguration;
   toggleLayer: (property: MapConfigurationProperty<boolean>) => void;
   updateScaleInterval: (property: MapConfigurationProperty<Interval>) => (interval: Interval) => void;
-} & (
-  | { mapLoaded: false; mapLayersLoaded: false; mapRef: null; mapDraw: null; isDrawing: false }
-  | {
-      mapLoaded: true;
-      mapLayersLoaded: boolean;
-      mapRef: MapRef;
-      mapDraw: MapboxDraw;
-      isDrawing: boolean;
-    }
-);
+} & ReturnType<typeof useReseauxDeChaleurFilters> &
+  (
+    | { mapLoaded: false; mapLayersLoaded: false; mapRef: null; mapDraw: null; isDrawing: false }
+    | {
+        mapLoaded: true;
+        mapLayersLoaded: boolean;
+        mapRef: MapRef;
+        mapDraw: MapboxDraw;
+        isDrawing: boolean;
+      }
+  );
 
 const MapContext = createContext<UseFCUMapResult | undefined>(undefined);
 
@@ -46,7 +48,10 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
   const [mapDraw, setMapDraw] = React.useState<MapboxDraw | null>(null);
   const [isDrawing, setIsDrawing] = React.useState(false);
   const [mapLayersLoaded, setMapLayersLoaded] = React.useState(false);
-  const [mapConfiguration, setMapConfiguration] = React.useState<MapConfiguration>(defaultMapConfiguration);
+  const [originalMapConfiguration, setMapConfiguration] = React.useState<MapConfiguration>(defaultMapConfiguration);
+  const reseauxDeChaleurFilters = useReseauxDeChaleurFilters();
+
+  const mapConfiguration = deepMergeObjects(originalMapConfiguration, reseauxDeChaleurFilters.filters);
 
   React.useEffect(() => {
     if (!initialMapConfiguration) {
@@ -87,6 +92,7 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
     setMapConfiguration,
     toggleLayer,
     updateScaleInterval,
+    ...reseauxDeChaleurFilters,
   };
 
   const contextValue: UseFCUMapResult =
