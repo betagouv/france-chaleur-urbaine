@@ -58,14 +58,8 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
     if (!initialMapConfiguration) {
       return;
     }
-    const {
-      anneeConstruction,
-      // contenuCO2,
-      emissionsCO2,
-      livraisonsAnnuelles,
-      prixMoyen,
-      tauxENRR,
-    } = reseauxDeChaleurFilters.limits.reseauxDeChaleur;
+    const { anneeConstruction, contenuCO2, emissionsCO2, livraisonsAnnuelles, prixMoyen, tauxENRR } =
+      reseauxDeChaleurFilters.limits.reseauxDeChaleur;
 
     setMapConfiguration({
       ...initialMapConfiguration,
@@ -73,7 +67,7 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
         ...initialMapConfiguration.reseauxDeChaleur,
         limits: {
           anneeConstruction,
-          // contenuCO2,
+          contenuCO2,
           emissionsCO2,
           livraisonsAnnuelles,
           prixMoyen,

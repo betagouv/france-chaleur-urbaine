@@ -1341,6 +1341,11 @@ export const reseauxDeChaleurFilters = [
     filterPreprocess: (v: number) => v / 1000,
   },
   {
+    confKey: 'contenuCO2',
+    valueKey: 'contenu CO2',
+    filterPreprocess: (v: number) => v / 1000,
+  },
+  {
     confKey: 'prixMoyen',
     valueKey: 'PM',
   },
