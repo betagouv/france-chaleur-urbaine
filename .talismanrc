@@ -11,8 +11,6 @@ fileignoreconfig:
   checksum: fd1b8bd14f7bdeeb2b2a89bbc368cca61df55b0fe97a5f4512c9e9522d8b8ca7
 - filename: src/components/Map/components/CardSearchDetails.tsx
   checksum: 133b59ccdafbc92d757c6a4108db7118353acaf20dbc8f2d3fab01455b4356ad
-- filename: src/components/Map/components/ReseauxDeChaleurFilters.tsx
-  checksum: 5c1ddc91aa6d1b82f0606e8aad85fc18b296f4f93fe3b26f6a50f46e6f92fe9f
 - filename: src/components/Map/components/SimpleMapLegend.style.tsx
   checksum: d5ef84573f5bd387f8a44fcd09fd063683fb7caeecd5f7deab992cf76cc0d18e
 - filename: src/components/Map/components/SimpleMapLegend.tsx

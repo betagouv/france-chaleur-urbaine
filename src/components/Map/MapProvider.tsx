@@ -2,11 +2,9 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import React, { createContext, useContext } from 'react';
 import { MapRef } from 'react-map-gl/maplibre';
 
-import { type ReseauxDeChaleurLimits } from '@components/Map/map-layers';
 import useReseauxDeChaleurFilters from '@hooks/useReseauxDeChaleurFilters';
 import { deepMergeObjects, isDefined, setProperty, toggleBoolean } from '@utils/core';
 import { Interval } from '@utils/interval';
-import { fetchJSON } from '@utils/network';
 import {
   defaultMapConfiguration,
   MapConfiguration,
@@ -51,25 +49,37 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
   const [originalMapConfiguration, setMapConfiguration] = React.useState<MapConfiguration>(defaultMapConfiguration);
   const reseauxDeChaleurFilters = useReseauxDeChaleurFilters();
 
-  const mapConfiguration = deepMergeObjects(originalMapConfiguration, reseauxDeChaleurFilters.filters);
+  // FIXME deepMergeObjects should accept many parameters but I couldn't figure out how to do it with typescript
+  const mapConfiguration = deepMergeObjects(deepMergeObjects(originalMapConfiguration, reseauxDeChaleurFilters?.filters || ({} as any)), {
+    filtreGestionnaire: reseauxDeChaleurFilters.filters.reseauxDeChaleur?.gestionnaires,
+  });
 
   React.useEffect(() => {
     if (!initialMapConfiguration) {
       return;
     }
-    // amend the configuration with metadata limits of networks
-    fetchJSON<ReseauxDeChaleurLimits>('/api/map/network-limits').then((limits) => {
-      setMapConfiguration({
-        ...initialMapConfiguration,
-        reseauxDeChaleur: {
-          ...initialMapConfiguration.reseauxDeChaleur,
-          anneeConstruction: limits.anneeConstruction,
-          emissionsCO2: limits.emissionsCO2,
-          livraisonsAnnuelles: limits.livraisonsAnnuelles,
-          prixMoyen: limits.prixMoyen,
-          limits,
+    const {
+      anneeConstruction,
+      // contenuCO2,
+      emissionsCO2,
+      livraisonsAnnuelles,
+      prixMoyen,
+      tauxENRR,
+    } = reseauxDeChaleurFilters.limits.reseauxDeChaleur;
+
+    setMapConfiguration({
+      ...initialMapConfiguration,
+      reseauxDeChaleur: {
+        ...initialMapConfiguration.reseauxDeChaleur,
+        limits: {
+          anneeConstruction,
+          // contenuCO2,
+          emissionsCO2,
+          livraisonsAnnuelles,
+          prixMoyen,
+          tauxENRR,
         },
-      });
+      },
     });
   }, []);
 

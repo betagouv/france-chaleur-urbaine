@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { reseauxDeChaleurFilters } from '@components/Map/map-layers';
+import ReseauxDeChaleurFilters from '@components/ReseauxDeChaleurFilters';
 import Box from '@components/ui/Box';
 import Drawer from '@components/ui/Drawer';
 import Icon from '@components/ui/Icon';
@@ -17,7 +18,6 @@ import { filtresEnergies } from 'src/services/Map/map-configuration';
 import { NetworkToCompare } from 'src/types/Summary/Network';
 
 import NetworkName from './NetworkName';
-import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
 
 type DataToDisplay = 'general' | 'mix_energetique';
 
@@ -402,7 +402,7 @@ const NetworksList = () => {
           <Text fontSize="13px" lineHeight="18px" mb="2w">
             Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
           </Text>
-          <ReseauxDeChaleurFilters regionsList={regionsList} />
+          <ReseauxDeChaleurFilters regionsList={regionsList} linkTo="map" />
         </FiltersBox>
       </Drawer>
       <Box py="10w" className="fr-container">

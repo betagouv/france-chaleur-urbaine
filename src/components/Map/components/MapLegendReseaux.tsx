@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 
 import { batimentsRaccordesLayerMaxOpacity } from '@components/Map/map-layers';
 import useFCUMap from '@components/Map/MapProvider';
+import ReseauxDeChaleurFilters from '@components/ReseauxDeChaleurFilters';
 import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
 import Icon from '@components/ui/Icon';
@@ -11,7 +12,6 @@ import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
 import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
 
-import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
 import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 
 export const mapLegendFeatures = [
@@ -59,7 +59,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
           <Text fontSize="13px" lineHeight="18px" mb="2w">
             Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
           </Text>
-          <ReseauxDeChaleurFilters />
+          <ReseauxDeChaleurFilters linkTo="list" />
         </TabScrollablePart>
       </LegendFilters>
     );

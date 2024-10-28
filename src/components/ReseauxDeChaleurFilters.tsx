@@ -5,17 +5,14 @@ import styled from 'styled-components';
 import Checkbox from '@components/form/dsfr/Checkbox';
 import RangeFilter, { roundNumberProgressively } from '@components/form/dsfr/RangeFilter';
 import SelectCheckboxes from '@components/form/dsfr/SelectCheckboxes';
-import {
-  getLivraisonsAnnuellesFromPercentage,
-  getPercentageFromLivraisonsAnnuelles,
-} from '@components/Map/components/ReseauxDeChaleurFilters';
 import { UrlStateAccordion } from '@components/ui/Accordion';
 import Button from '@components/ui/Button';
 import useReseauxDeChaleurFilters, { gestionnairesFilters } from '@hooks/useReseauxDeChaleurFilters';
 import { filtresEnergies } from 'src/services/Map/map-configuration';
 
 type ReseauxDeChaleurFiltersProps = React.HTMLAttributes<HTMLDivElement> & {
-  regionsList: string[];
+  regionsList?: string[];
+  linkTo: 'map' | 'list';
 };
 export const FilterResetButtonWrapper = styled.div`
   position: sticky;
@@ -28,7 +25,7 @@ export const FilterResetButtonWrapper = styled.div`
   flex-direction: column;
 `;
 
-const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regionsList }) => {
+const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regionsList, linkTo }) => {
   const { filters, limits, updateFilter, nbFilters, resetFilters, filtersQueryParam } = useReseauxDeChaleurFilters();
   const router = useRouter();
 
@@ -213,20 +210,60 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
             Réinitialiser les filtres
           </Button>
         )}
-        <Button
-          type="button"
-          onClick={() => router.push(`/carte?rdc_filters=${filtersQueryParam}&tabId=reseaux/filtres`)}
-          priority="tertiary"
-          size="small"
-          iconId="fr-icon-arrow-right-line"
-          full
-          iconPosition="right"
-        >
-          Voir la carte
-        </Button>
+        {linkTo === 'map' ? (
+          <Button
+            type="button"
+            onClick={() => router.push(`/carte?rdc_filters=${filtersQueryParam}&tabId=reseaux/filtres`)}
+            priority="tertiary"
+            size="small"
+            iconId="fr-icon-arrow-right-line"
+            full
+            iconPosition="right"
+          >
+            Voir la carte
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            onClick={() => router.push(`/reseaux?rdc_filters=${filtersQueryParam}`)}
+            priority="tertiary"
+            size="small"
+            iconId="fr-icon-arrow-right-line"
+            full
+            iconPosition="right"
+          >
+            Voir la liste
+          </Button>
+        )}
       </FilterResetButtonWrapper>
     </>
   );
 };
 
 export default ReseauxDeChaleurFilters;
+
+export function getLivraisonsAnnuellesFromPercentage(v: number): number {
+  if (v < 25) {
+    return 0.06 * v;
+  }
+  if (v < 50) {
+    return 0.54 * v - 12;
+  }
+  if (v < 75) {
+    return 3.4 * v - 155;
+  }
+  return 149.48 * v - 11111;
+}
+
+export function getPercentageFromLivraisonsAnnuelles(v: number): number {
+  if (v < 1.5) {
+    return v / 0.06;
+  }
+  if (v < 15) {
+    return (v + 12) / 0.54;
+  }
+  if (v < 100) {
+    return (v + 155) / 3.4;
+  }
+  return (v + 11111) / 149.48;
+}

@@ -1396,7 +1396,7 @@ function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeChaleur']
 }
 
 function buildFiltreGestionnaire(filtreGestionnaire: MapConfiguration['filtreGestionnaire']): ExpressionSpecification[] {
-  return filtreGestionnaire.length > 0
+  return (filtreGestionnaire || []).length > 0
     ? [
         [
           'any',
