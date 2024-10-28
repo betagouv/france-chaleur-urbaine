@@ -79,6 +79,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       >
         {filtresEnergies.map((filtreEnergie) => (
           <RangeFilter
+            small
             key={filtreEnergie.confKey}
             label={filtreEnergie.label}
             domain={limits.reseauxDeChaleur[`energie_ratio_${filtreEnergie.confKey}`]}
@@ -152,6 +153,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       )}
       <br />
       <RangeFilter
+        small
         label="Taux d’EnR&R"
         domain={limits.reseauxDeChaleur.tauxENRR}
         value={filters?.reseauxDeChaleur?.tauxENRR}
@@ -160,6 +162,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        small
         label="Contenu CO2 ACV"
         domain={limits.reseauxDeChaleur.emissionsCO2}
         value={filters?.reseauxDeChaleur?.emissionsCO2}
@@ -169,6 +172,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        small
         label="Contenu CO2"
         domain={limits.reseauxDeChaleur.contenuCO2}
         value={filters?.reseauxDeChaleur?.contenuCO2}
@@ -178,6 +182,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        small
         label="Prix moyen de la chaleur"
         domain={limits.reseauxDeChaleur.prixMoyen}
         value={filters?.reseauxDeChaleur?.prixMoyen}
@@ -187,6 +192,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        small
         label="Livraisons annuelles de chaleur"
         domain={limits.reseauxDeChaleur.livraisonsAnnuelles}
         value={filters?.reseauxDeChaleur?.livraisonsAnnuelles}
@@ -199,6 +205,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        small
         label="Année de construction"
         domain={limits.reseauxDeChaleur.anneeConstruction}
         value={filters?.reseauxDeChaleur?.anneeConstruction}
