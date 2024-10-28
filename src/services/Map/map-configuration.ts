@@ -51,6 +51,7 @@ export type MapConfiguration = {
   filtreGestionnaire: string[];
   reseauxDeChaleur: {
     show: boolean;
+    isClassed?: boolean;
     energieMobilisee?: FiltreEnergieConfKey[];
     tauxENRR: Interval;
     emissionsCO2: Interval;
