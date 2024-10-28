@@ -3,8 +3,9 @@ import styled, { css } from 'styled-components';
 
 const StyledCheckbox = styled(DsfrCheckbox)<{
   small?: boolean;
+  $fullWidth?: boolean;
 }>`
-  ${({ small }) => css`
+  ${({ small, $fullWidth }) => css`
     ${small &&
     css`
       .fr-fieldset__content .fr-radio-group label,
@@ -19,13 +20,21 @@ const StyledCheckbox = styled(DsfrCheckbox)<{
         font-size: 0.875rem;
       }
     `}
+    ${!$fullWidth &&
+    css`
+      .fr-label {
+        display: inline-flex !important; /* Prevent label to be clickable on the whole line even when label is small */
+      }
+    `}
   `}
 `;
 
-export type CheckboxProps = DsfrCheckboxProps & {};
+export type CheckboxProps = DsfrCheckboxProps & {
+  fullWidth?: boolean;
+};
 
-const Checkbox: React.FC<CheckboxProps> = ({ ...props }) => {
-  return <StyledCheckbox {...props} />;
+const Checkbox: React.FC<CheckboxProps> = ({ fullWidth = true, ...props }) => {
+  return <StyledCheckbox $fullWidth={fullWidth} {...props} />;
 };
 
 export default Checkbox;

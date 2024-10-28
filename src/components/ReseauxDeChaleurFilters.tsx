@@ -33,6 +33,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
     <>
       <Checkbox
         small
+        fullWidth={false}
         options={[
           {
             label: 'Réseaux classés',
