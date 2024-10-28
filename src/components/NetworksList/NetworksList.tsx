@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { reseauxDeChaleurFilters } from '@components/Map/map-layers';
-import ReseauxDeChaleurFilters from '@components/ReseauxDeChaleurFilters';
+import ReseauxDeChaleurFilters, { ReseauxDeChaleurFiltersProps } from '@components/ReseauxDeChaleurFilters';
 import Box from '@components/ui/Box';
 import Drawer from '@components/ui/Drawer';
 import Icon from '@components/ui/Icon';
@@ -134,7 +134,7 @@ const NetworksList = () => {
   const { networksService } = useServices();
   const tableApiRef = useGridApiRef();
   const [isDrawerOpened, toggleDrawer] = useState<boolean>(false);
-  const [regionsList, setRegionsList] = useState<string[]>([]);
+  const [regionsList, setRegionsList] = useState<ReseauxDeChaleurFiltersProps['regionsList']>([]);
   const [allNetworks, setAllNetworks] = useState<NetworkToCompare[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
   const { filters: objectFilters, countFilters } = useReseauxDeChaleurFilters();
@@ -377,11 +377,21 @@ const NetworksList = () => {
           const networks: NetworkToCompare[] = await networksService.fetch();
           setAllNetworks(networks);
 
-          const newRegionsList: string[] = [];
+          const newRegionsList: ReseauxDeChaleurFiltersProps['regionsList'] = [];
           networks.forEach((network) => {
-            !newRegionsList.includes(network.region.trim()) && newRegionsList.push(network.region.trim());
+            if (!newRegionsList.find(({ name }) => name === network.region.trim())) {
+              newRegionsList.push({ name: network.region.trim(), coord: `${network.lon},${network.lat}` });
+            } else {
+              const index = newRegionsList.findIndex(({ name }) => name === network.region.trim());
+              const existingCoords = newRegionsList[index].coord.split(',');
+              // Calculate average position between existing and new coordinates
+              const avgLon = (parseFloat(existingCoords[0]) + network.lon) / 2;
+              const avgLat = (parseFloat(existingCoords[1]) + network.lat) / 2;
+              newRegionsList[index].coord = `${avgLon},${avgLat}`;
+            }
           });
-          newRegionsList.sort((a, b) => a.localeCompare(b));
+
+          newRegionsList.sort((a, b) => a.name.localeCompare(b.name));
           setRegionsList(newRegionsList);
 
           setLoaded(true);

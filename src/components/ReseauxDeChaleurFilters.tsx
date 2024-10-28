@@ -10,10 +10,13 @@ import Button from '@components/ui/Button';
 import useReseauxDeChaleurFilters, { gestionnairesFilters } from '@hooks/useReseauxDeChaleurFilters';
 import { filtresEnergies } from 'src/services/Map/map-configuration';
 
-type ReseauxDeChaleurFiltersProps = React.HTMLAttributes<HTMLDivElement> & {
-  regionsList?: string[];
+export type ReseauxDeChaleurFiltersProps = React.HTMLAttributes<HTMLDivElement> & {
+  regionsList?: { name: string; coord: string }[];
   linkTo: 'map' | 'list';
 };
+
+const bestZoomForRegions = 7;
+
 export const FilterResetButtonWrapper = styled.div`
   position: sticky;
   bottom: -1rem; /* to prevent scroll to be visible at the very bottom */
@@ -97,27 +100,29 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
             small
             label="Régions"
             className="fr-mb-1v"
-            options={regionsList.reduce(
-              (acc, regionName) => {
-                acc.push({
-                  label: regionName,
-                  nativeInputProps: {
-                    checked: filters?.reseauxDeChaleur?.regions?.includes(regionName) || false,
-                    onChange: () => {
-                      const currentItems = filters?.reseauxDeChaleur?.regions || [];
+            options={regionsList
+              .map(({ name }) => name)
+              .reduce(
+                (acc, regionName) => {
+                  acc.push({
+                    label: regionName,
+                    nativeInputProps: {
+                      checked: filters?.reseauxDeChaleur?.regions?.includes(regionName) || false,
+                      onChange: () => {
+                        const currentItems = filters?.reseauxDeChaleur?.regions || [];
 
-                      const newItems = currentItems.includes(regionName)
-                        ? currentItems.filter((key) => key !== regionName) // Remove if already selected
-                        : [...currentItems, regionName]; // Add if not selected
+                        const newItems = currentItems.includes(regionName)
+                          ? currentItems.filter((key) => key !== regionName) // Remove if already selected
+                          : [...currentItems, regionName]; // Add if not selected
 
-                      updateFilter('reseauxDeChaleur.regions', newItems.length ? newItems : undefined);
+                        updateFilter('reseauxDeChaleur.regions', newItems.length ? newItems : undefined);
+                      },
                     },
-                  },
-                });
-                return acc;
-              },
-              [] as Array<{ label: string; nativeInputProps: { checked: boolean; onChange: () => void } }>
-            )}
+                  });
+                  return acc;
+                },
+                [] as Array<{ label: string; nativeInputProps: { checked: boolean; onChange: () => void } }>
+              )}
           />
         </>
       )}
@@ -221,7 +226,16 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
         {linkTo === 'map' ? (
           <Button
             type="button"
-            onClick={() => router.push(`/carte?rdc_filters=${filtersQueryParam}&tabId=reseaux/filtres`)}
+            onClick={() =>
+              router.push(
+                `/carte?rdc_filters=${filtersQueryParam}&tabId=reseaux/filtres${
+                  filters?.reseauxDeChaleur?.regions?.length && regionsList
+                    ? `&zoom=${bestZoomForRegions}&coord=` +
+                      regionsList.find(({ name }) => name === filters?.reseauxDeChaleur?.regions[0])?.coord
+                    : ''
+                }`
+              )
+            }
             priority="tertiary"
             size="small"
             iconId="fr-icon-arrow-right-line"
