@@ -127,7 +127,7 @@ function ReseauxDeChaleurFilters() {
           onClick={() => router.push(`/reseaux?rdc_filters=${filtersQueryParam}`)}
           priority="tertiary"
           size="small"
-          iconId="fr-icon-arrow-go-forward-line"
+          iconId="fr-icon-arrow-right-line"
           full
           iconPosition="right"
         >

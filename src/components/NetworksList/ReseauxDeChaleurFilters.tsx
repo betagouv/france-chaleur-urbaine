@@ -218,7 +218,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
           onClick={() => router.push(`/carte?rdc_filters=${filtersQueryParam}&tabId=reseaux/filtres`)}
           priority="tertiary"
           size="small"
-          iconId="fr-icon-arrow-go-forward-line"
+          iconId="fr-icon-arrow-right-line"
           full
           iconPosition="right"
         >
