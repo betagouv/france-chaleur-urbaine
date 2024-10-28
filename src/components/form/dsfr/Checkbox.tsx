@@ -34,7 +34,9 @@ export type CheckboxProps = DsfrCheckboxProps & {
 };
 
 const Checkbox: React.FC<CheckboxProps> = ({ fullWidth = true, ...props }) => {
-  return <StyledCheckbox $fullWidth={fullWidth} {...props} />;
+  // HACK to force the checkbox to be re-rendered when the options change from outside
+  const key = props.options.map(({ nativeInputProps: { value } }) => value).join('_');
+  return <StyledCheckbox key={key} $fullWidth={fullWidth} {...props} />;
 };
 
 export default Checkbox;
