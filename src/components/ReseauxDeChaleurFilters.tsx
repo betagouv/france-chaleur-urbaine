@@ -29,7 +29,7 @@ export const FilterResetButtonWrapper = styled.div`
 `;
 
 const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regionsList, linkTo }) => {
-  const { filters, limits, updateFilter, nbFilters, resetFilters, filtersQueryParam } = useReseauxDeChaleurFilters();
+  const { filters, limits, updateFilter, nbFilters, resetFilters, filtersQueryParam, loading } = useReseauxDeChaleurFilters();
   const router = useRouter();
 
   return (
@@ -83,6 +83,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       >
         {filtresEnergies.map((filtreEnergie) => (
           <RangeFilter
+            loading={loading}
             small
             key={filtreEnergie.confKey}
             label={filtreEnergie.label}
@@ -159,6 +160,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       )}
       <br />
       <RangeFilter
+        loading={loading}
         small
         label="Taux d’EnR&R"
         domain={limits.reseauxDeChaleur.tauxENRR}
@@ -168,6 +170,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        loading={loading}
         small
         label="Contenu CO2 ACV"
         domain={limits.reseauxDeChaleur.emissionsCO2}
@@ -178,6 +181,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        loading={loading}
         small
         label="Contenu CO2"
         domain={limits.reseauxDeChaleur.contenuCO2}
@@ -188,6 +192,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        loading={loading}
         small
         label="Prix moyen de la chaleur"
         domain={limits.reseauxDeChaleur.prixMoyen}
@@ -198,6 +203,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        loading={loading}
         small
         label="Livraisons annuelles de chaleur"
         domain={limits.reseauxDeChaleur.livraisonsAnnuelles}
@@ -211,6 +217,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
       />
       <br />
       <RangeFilter
+        loading={loading}
         small
         label="Année de construction"
         domain={limits.reseauxDeChaleur.anneeConstruction}

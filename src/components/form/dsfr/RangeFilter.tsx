@@ -3,6 +3,7 @@ import { useCounter } from '@react-hookz/web';
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 
 import Box from '@components/ui/Box';
+import Loader from '@components/ui/Loader';
 import Tooltip from '@components/ui/Tooltip';
 import { Interval } from '@utils/interval';
 
@@ -21,6 +22,7 @@ type RangeFilterProps = Omit<RangeProps, 'min' | 'max' | 'nativeInputProps'> & {
     percentToValue: (value: number) => number;
     valueToPercent: (value: number) => number;
   };
+  loading?: boolean;
   formatNumber?: (value: number) => string;
 };
 
@@ -32,6 +34,7 @@ const RangeFilter = ({
   unit = '',
   double = true,
   tooltip,
+  loading,
   domainTransform,
   formatNumber = (v) => `${roundNumberProgressively(v)}`,
   ...props
@@ -77,6 +80,12 @@ const RangeFilter = ({
     }
   }, [values[0], values[1], domain[0], domain[1]]);
 
+  useEffect(() => {
+    // DSFR component does not redraw when changing loading
+    // This is an attempt to fix it
+    inc();
+  }, [loading]);
+
   const handleChangeMin = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = +e.target.value;
@@ -95,6 +104,8 @@ const RangeFilter = ({
     [domainTransform, onChange, values]
   );
 
+  const hideMinMax = !!domainTransform || loading;
+
   return (
     <>
       <Range
@@ -109,7 +120,7 @@ const RangeFilter = ({
         double={double}
         max={max}
         min={min}
-        hideMinMax={!!domainTransform}
+        hideMinMax={hideMinMax}
         nativeInputProps={[
           {
             value: valueMin,
@@ -124,15 +135,27 @@ const RangeFilter = ({
         {...props}
       />
 
-      {!!domainTransform && (
+      {hideMinMax && (
         <Box display="flex" justifyContent="space-between">
           <div className="fr-range__min">
-            {formatNumber(domain[0])}
-            {unit}
+            {loading ? (
+              <Loader size="sm" className="fr-mt-1v" />
+            ) : (
+              <>
+                {formatNumber(domain[0])}
+                {unit}
+              </>
+            )}
           </div>
           <div className="fr-range__max">
-            {formatNumber(domain[1])}
-            {unit}
+            {loading ? (
+              <Loader size="sm" className="fr-mt-1v" />
+            ) : (
+              <>
+                {formatNumber(domain[1])}
+                {unit}
+              </>
+            )}
           </div>
         </Box>
       )}

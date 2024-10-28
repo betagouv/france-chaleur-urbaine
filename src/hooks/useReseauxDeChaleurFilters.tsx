@@ -104,6 +104,7 @@ const useReseauxDeChaleurFilters = ({ queryParamName = 'rdc_filters' }: { queryP
     resetFilters,
     updateFilter,
     nbFilters: countFilters(),
+    loading: !loaded,
     countFilters,
     filtersQueryParam: searchParams.get(queryParamName),
   };
