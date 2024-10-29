@@ -51,15 +51,18 @@ export type MapConfiguration = {
   filtreGestionnaire: string[];
   reseauxDeChaleur: {
     show: boolean;
+    isClassed?: boolean;
     energieMobilisee?: FiltreEnergieConfKey[];
     tauxENRR: Interval;
     emissionsCO2: Interval;
+    contenuCO2: Interval;
     prixMoyen: Interval;
     livraisonsAnnuelles: Interval;
     anneeConstruction: Interval;
     limits: {
       tauxENRR: Interval;
       emissionsCO2: Interval;
+      contenuCO2: Interval;
       prixMoyen: Interval;
       livraisonsAnnuelles: Interval;
       anneeConstruction: Interval;
@@ -154,6 +157,7 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
     energie_ratio_fioul: percentageMaxInterval,
     tauxENRR: percentageMaxInterval,
     emissionsCO2: defaultInterval,
+    contenuCO2: defaultInterval,
     prixMoyen: defaultInterval,
     livraisonsAnnuelles: defaultInterval,
     anneeConstruction: defaultInterval,

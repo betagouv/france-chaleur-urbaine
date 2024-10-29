@@ -13,6 +13,7 @@ import {
 
 import { intervalsEqual } from '@utils/interval';
 import { formatMWhString } from '@utils/strings';
+import { gestionnairesFilters } from 'src/services';
 import {
   themeDefBuildings,
   themeDefDemands,
@@ -351,7 +352,8 @@ type CustomLayerSpecification = LayerSpecification & {
 };
 
 export type LayerId =
-  | 'reseauxDeChaleur-avec-trace'
+  | 'reseauxDeChaleur-avec-trace-classe'
+  | 'reseauxDeChaleur-avec-trace-nonclasse'
   | 'reseauxDeChaleur-sans-trace'
   | 'reseauxEnConstruction-zone'
   | 'reseauxEnConstruction-trace'
@@ -929,7 +931,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       },
       layers: [
         {
-          id: 'reseauxDeChaleur-avec-trace',
+          id: 'reseauxDeChaleur-avec-trace-classe',
           source: 'network',
           'source-layer': 'layer',
           minzoom: tileLayersMinZoom,
@@ -937,6 +939,22 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           filter: [
             'all',
             ['==', ['get', 'has_trace'], true],
+            ['==', ['get', 'reseaux classes'], true],
+            ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
+            ...buildFiltreGestionnaire(config.filtreGestionnaire),
+            ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
+          ],
+        },
+        {
+          id: 'reseauxDeChaleur-avec-trace-nonclasse',
+          source: 'network',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          ...outlineLayerStyle,
+          filter: [
+            'all',
+            ['==', ['get', 'has_trace'], true],
+            ['==', ['get', 'reseaux classes'], false],
             ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
             ...buildFiltreGestionnaire(config.filtreGestionnaire),
             ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
@@ -1172,7 +1190,8 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   setLayerVisibility('reseauxEnConstruction-trace', config.reseauxEnConstruction);
   setLayerVisibility('reseauxEnConstruction-zone', config.reseauxEnConstruction);
   setLayerVisibility('consommationsGaz', config.consommationsGaz.show);
-  setLayerVisibility('reseauxDeChaleur-avec-trace', config.reseauxDeChaleur.show);
+  setLayerVisibility('reseauxDeChaleur-avec-trace-classe', config.reseauxDeChaleur.show);
+  setLayerVisibility('reseauxDeChaleur-avec-trace-nonclasse', !config.reseauxDeChaleur.isClassed && config.reseauxDeChaleur.show);
   setLayerVisibility('reseauxDeChaleur-sans-trace', config.reseauxDeChaleur.show);
   setLayerVisibility('batimentsRaccordes', config.batimentsRaccordes);
   setLayerVisibility('zonesDeDeveloppementPrioritaire', config.zonesDeDeveloppementPrioritaire);
@@ -1274,9 +1293,18 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
     ]
   );
 
-  map.setFilter('reseauxDeChaleur-avec-trace', [
+  map.setFilter('reseauxDeChaleur-avec-trace-classe', [
     'all',
     ['==', ['get', 'has_trace'], true],
+    ['==', ['get', 'reseaux classes'], true],
+    ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
+    ...buildFiltreGestionnaire(config.filtreGestionnaire),
+    ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
+  ]);
+  map.setFilter('reseauxDeChaleur-avec-trace-nonclasse', [
+    'all',
+    ['==', ['get', 'has_trace'], true],
+    ['==', ['get', 'reseaux classes'], false],
     ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
     ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
@@ -1330,7 +1358,7 @@ type ReseauxDeChaleurFilter = {
   filterPreprocess?: (v: number) => number;
 };
 
-const reseauxDeChaleurFilters = [
+export const reseauxDeChaleurFilters = [
   {
     confKey: 'tauxENRR',
     valueKey: 'Taux EnR&R',
@@ -1338,6 +1366,11 @@ const reseauxDeChaleurFilters = [
   {
     confKey: 'emissionsCO2',
     valueKey: 'contenu CO2 ACV',
+    filterPreprocess: (v: number) => v / 1000,
+  },
+  {
+    confKey: 'contenuCO2',
+    valueKey: 'contenu CO2',
     filterPreprocess: (v: number) => v / 1000,
   },
   {
@@ -1396,7 +1429,44 @@ function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeChaleur']
 }
 
 function buildFiltreGestionnaire(filtreGestionnaire: MapConfiguration['filtreGestionnaire']): ExpressionSpecification[] {
-  return filtreGestionnaire.length > 0
+  if ((filtreGestionnaire || []).length === 0) {
+    return [];
+  }
+
+  if (filtreGestionnaire.includes('autre')) {
+    const gestionnairesToExclude = gestionnairesFilters
+      .filter(({ value }) => !filtreGestionnaire.includes(value))
+      .map(({ value }) => value);
+
+    return [
+      [
+        'all',
+        ...gestionnairesToExclude.flatMap(
+          (filtre) =>
+            [
+              [
+                '!',
+                [
+                  'in',
+                  filtre,
+                  ['downcase', ['coalesce', ['get', 'gestionnaire'], '']], // futurNetwork
+                ],
+              ],
+              [
+                '!',
+                [
+                  'in',
+                  filtre,
+                  ['downcase', ['coalesce', ['get', 'Gestionnaire'], '']], // coldNetwork and network,
+                ],
+              ],
+            ] satisfies ExpressionSpecification[]
+        ),
+      ],
+    ];
+  }
+
+  return (filtreGestionnaire || []).length > 0
     ? [
         [
           'any',

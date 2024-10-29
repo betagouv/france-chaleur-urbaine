@@ -1,16 +1,19 @@
-import { Range } from '@codegouvfr/react-dsfr/Range';
+import { Range, RangeProps } from '@codegouvfr/react-dsfr/Range';
 import { useCounter } from '@react-hookz/web';
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 
 import Box from '@components/ui/Box';
+import Loader from '@components/ui/Loader';
 import Tooltip from '@components/ui/Tooltip';
 import { Interval } from '@utils/interval';
 
-import { roundNumberProgressively } from './ReseauxDeChaleurFilters';
+export function roundNumberProgressively(v: number): number {
+  return v > 2 ? Math.round(v) : v > 1 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100;
+}
 
-interface RangeFilterProps {
+type RangeFilterProps = Omit<RangeProps, 'min' | 'max' | 'nativeInputProps'> & {
   label: React.ReactNode;
-  value: Interval;
+  value?: Interval;
   domain: Interval;
   onChange: (values: Interval) => void;
   unit?: string;
@@ -19,20 +22,26 @@ interface RangeFilterProps {
     percentToValue: (value: number) => number;
     valueToPercent: (value: number) => number;
   };
+  loading?: boolean;
   formatNumber?: (value: number) => string;
-}
+};
 
 const RangeFilter = ({
   label,
-  value: values,
+  value: defaultValues,
   domain,
   onChange,
   unit = '',
+  double = true,
   tooltip,
+  loading,
+  disabled,
   domainTransform,
   formatNumber = (v) => `${roundNumberProgressively(v)}`,
   ...props
 }: RangeFilterProps) => {
+  const values = defaultValues || domain;
+
   const valueMin = domainTransform ? domainTransform.valueToPercent(values[0]) : values[0];
   const valueMax = domainTransform ? domainTransform.valueToPercent(values[1]) : values[1];
   const [renderKey, { inc }] = useCounter(0);
@@ -46,7 +55,7 @@ const RangeFilter = ({
       const updateRangeText = () => {
         const textToUpdate = ref.current?.querySelector('.fr-range__output');
         if (textToUpdate && textToUpdate.textContent !== '') {
-          textToUpdate.textContent = `${formatNumber(min)}${unit} - ${formatNumber(max)}${unit}`;
+          textToUpdate.textContent = loading ? '...' : `${formatNumber(min)}${unit} - ${formatNumber(max)}${unit}`;
           return;
         }
         // Retry after 50ms if the element is not found
@@ -55,7 +64,7 @@ const RangeFilter = ({
 
       updateRangeText();
     },
-    [formatNumber, unit]
+    [formatNumber, unit, loading]
   );
 
   useEffect(() => {
@@ -71,6 +80,12 @@ const RangeFilter = ({
       inc();
     }
   }, [values[0], values[1], domain[0], domain[1]]);
+
+  useEffect(() => {
+    // DSFR component does not redraw when changing loading
+    // This is an attempt to fix it
+    inc();
+  }, [loading]);
 
   const handleChangeMin = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,10 +105,13 @@ const RangeFilter = ({
     [domainTransform, onChange, values]
   );
 
+  const hideMinMax = !!domainTransform || loading;
+
   return (
     <>
       <Range
         key={renderKey}
+        disabled={loading || disabled}
         label={
           <Box display="flex" alignItems="center" justifyContent="space-between">
             {label}
@@ -101,11 +119,10 @@ const RangeFilter = ({
           </Box>
         }
         ref={ref}
-        small
-        double
+        double={double}
         max={max}
         min={min}
-        hideMinMax={!!domainTransform}
+        hideMinMax={hideMinMax}
         nativeInputProps={[
           {
             value: valueMin,
@@ -120,15 +137,27 @@ const RangeFilter = ({
         {...props}
       />
 
-      {!!domainTransform && (
+      {hideMinMax && (
         <Box display="flex" justifyContent="space-between">
           <div className="fr-range__min">
-            {formatNumber(domain[0])}
-            {unit}
+            {loading ? (
+              <Loader size="sm" className="fr-mt-1v" />
+            ) : (
+              <>
+                {formatNumber(domain[0])}
+                {unit}
+              </>
+            )}
           </div>
           <div className="fr-range__max">
-            {formatNumber(domain[1])}
-            {unit}
+            {loading ? (
+              <Loader size="sm" className="fr-mt-1v" />
+            ) : (
+              <>
+                {formatNumber(domain[1])}
+                {unit}
+              </>
+            )}
           </div>
         </Box>
       )}

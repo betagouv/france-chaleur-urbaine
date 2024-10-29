@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 
 import { batimentsRaccordesLayerMaxOpacity } from '@components/Map/map-layers';
 import useFCUMap from '@components/Map/MapProvider';
+import ReseauxDeChaleurFilters from '@components/ReseauxDeChaleurFilters';
 import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
 import Icon from '@components/ui/Icon';
@@ -11,7 +12,6 @@ import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
 import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
 
-import ReseauxDeChaleurFilters from './ReseauxDeChaleurFilters';
 import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 
 export const mapLegendFeatures = [
@@ -34,7 +34,9 @@ interface SimpleMapLegendProps {
 }
 
 const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setFiltersVisible, legendTitle, ...props }) => {
-  const { mapConfiguration, toggleLayer } = useFCUMap();
+  const { mapConfiguration, toggleLayer, countFilters } = useFCUMap();
+  const nbFilters = countFilters('reseauxDeChaleur');
+
   const enabledFeatures = useMemo(() => {
     return props.enabledFeatures ?? mapLegendFeatures;
   }, [props.enabledFeatures]);
@@ -53,11 +55,11 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
           Retour
         </Button>
         <TabScrollablePart>
-          <Title>Filtres</Title>
+          <Title>Filtres{nbFilters > 0 ? ` (${nbFilters})` : ''}</Title>
           <Text fontSize="13px" lineHeight="18px" mb="2w">
             Filtre uniquement sur les réseaux de chaleur existants, pour lesquels les données sont disponibles.
           </Text>
-          <ReseauxDeChaleurFilters />
+          <ReseauxDeChaleurFilters linkTo="list" />
         </TabScrollablePart>
       </LegendFilters>
     );
@@ -128,7 +130,7 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
             size="small"
             disabled={!mapConfiguration.reseauxDeChaleur.show}
           >
-            Filtres
+            Tous les filtres ({nbFilters})
           </Button>
         </>
       )}

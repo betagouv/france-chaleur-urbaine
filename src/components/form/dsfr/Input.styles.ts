@@ -11,9 +11,8 @@ export const Input: typeof DSFRInput = styled(DSFRInput)<InputCustomProps>`
     css`
       input,
       textarea {
-        padding: 0.25rem 0.5rem;
+        padding: 0.35rem 0.5rem 0.35rem 0.5rem;
         font-size: 0.875rem;
-        font-size: 13px;
       }
     `}
   `}
