@@ -11,9 +11,9 @@ import Drawer from '@components/ui/Drawer';
 import Icon from '@components/ui/Icon';
 import { ColumnDef, Table } from '@components/ui/Table';
 import Text from '@components/ui/Text';
-import useReseauxDeChaleurFilters, { gestionnairesFilters, type Filters } from '@hooks/useReseauxDeChaleurFilters';
+import useReseauxDeChaleurFilters, { type Filters } from '@hooks/useReseauxDeChaleurFilters';
 import { Interval } from '@utils/interval';
-import { useServices } from 'src/services';
+import { gestionnairesFilters, useServices } from 'src/services';
 import { filtresEnergies } from 'src/services/Map/map-configuration';
 import { NetworkToCompare } from 'src/types/Summary/Network';
 
@@ -114,13 +114,30 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
       showReseau = false;
     }
 
-    if (
-      filters.gestionnaires &&
-      !filters.gestionnaires
-        .map((gestionnaire) => gestionnairesFilters.find((gestionnaireFilter) => gestionnaireFilter.value === gestionnaire)?.label)
-        ?.some((gestionnaire) => gestionnaire?.toLowerCase().includes(reseau.Gestionnaire?.toLowerCase()))
-    ) {
-      showReseau = false;
+    if (filters.gestionnaires) {
+      if (filters.gestionnaires.includes('autre')) {
+        // If 'autre' is selected, exclude networks whose gestionnaire matches any unselected filter
+        const gestionnairesToExclude = gestionnairesFilters
+          .filter(({ value }) => !filters.gestionnaires.includes(value))
+          .map(({ label }) => label?.toLowerCase());
+
+        if (gestionnairesToExclude.some((gestionnaireToExclude) => reseau.Gestionnaire?.toLowerCase().includes(gestionnaireToExclude))) {
+          showReseau = false;
+        }
+      } else {
+        // Otherwise only show networks whose gestionnaire matches one of the selected filters
+        const selectedGestionnaires = filters.gestionnaires.map(
+          (gestionnaire) => gestionnairesFilters.find(({ value }) => value === gestionnaire)?.label?.toLowerCase()
+        );
+
+        if (
+          !selectedGestionnaires.some(
+            (selectedGestionnaire) => selectedGestionnaire && reseau.Gestionnaire?.toLowerCase().includes(selectedGestionnaire)
+          )
+        ) {
+          showReseau = false;
+        }
+      }
     }
     if (filters.isClassed && !reseau['reseaux classes']) {
       showReseau = false;

@@ -11,6 +11,17 @@ import { Network } from 'src/types/Summary/Network';
 
 import { ServiceError } from './errors';
 
+export const gestionnairesFilters = [
+  {
+    label: 'Coriance',
+    value: 'coriance',
+  },
+  { label: 'Dalkia', value: 'dalkia' },
+  { label: 'Engie Solutions', value: 'engie' },
+  { label: 'IDEX', value: 'idex' },
+  { label: 'Autre', value: 'autre' },
+];
+
 export class HeatNetworkService {
   httpClient: HttpClient;
   constructor(http: HttpClient) {

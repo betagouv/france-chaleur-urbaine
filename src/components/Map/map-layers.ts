@@ -13,6 +13,7 @@ import {
 
 import { intervalsEqual } from '@utils/interval';
 import { formatMWhString } from '@utils/strings';
+import { gestionnairesFilters } from 'src/services';
 import {
   themeDefBuildings,
   themeDefDemands,
@@ -1428,6 +1429,43 @@ function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeChaleur']
 }
 
 function buildFiltreGestionnaire(filtreGestionnaire: MapConfiguration['filtreGestionnaire']): ExpressionSpecification[] {
+  if ((filtreGestionnaire || []).length === 0) {
+    return [];
+  }
+
+  if (filtreGestionnaire.includes('autre')) {
+    const gestionnairesToExclude = gestionnairesFilters
+      .filter(({ value }) => !filtreGestionnaire.includes(value))
+      .map(({ value }) => value);
+
+    return [
+      [
+        'all',
+        ...gestionnairesToExclude.flatMap(
+          (filtre) =>
+            [
+              [
+                '!',
+                [
+                  'in',
+                  filtre,
+                  ['downcase', ['coalesce', ['get', 'gestionnaire'], '']], // futurNetwork
+                ],
+              ],
+              [
+                '!',
+                [
+                  'in',
+                  filtre,
+                  ['downcase', ['coalesce', ['get', 'Gestionnaire'], '']], // coldNetwork and network,
+                ],
+              ],
+            ] satisfies ExpressionSpecification[]
+        ),
+      ],
+    ];
+  }
+
   return (filtreGestionnaire || []).length > 0
     ? [
         [

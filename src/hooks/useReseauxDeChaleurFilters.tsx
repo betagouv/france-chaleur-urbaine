@@ -35,16 +35,6 @@ export const emptyFilterLimits = {
   },
 };
 
-export const gestionnairesFilters = [
-  {
-    label: 'Coriance',
-    value: 'coriance',
-  },
-  { label: 'Dalkia', value: 'dalkia' },
-  { label: 'Engie Solutions', value: 'engie' },
-  { label: 'IDEX', value: 'idex' },
-];
-
 export type Filters = typeof emptyFilterLimits;
 export type FilterKeys = FlattenKeys<Filters>;
 

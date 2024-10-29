@@ -7,7 +7,8 @@ import RangeFilter, { roundNumberProgressively } from '@components/form/dsfr/Ran
 import SelectCheckboxes from '@components/form/dsfr/SelectCheckboxes';
 import { UrlStateAccordion } from '@components/ui/Accordion';
 import Button from '@components/ui/Button';
-import useReseauxDeChaleurFilters, { gestionnairesFilters } from '@hooks/useReseauxDeChaleurFilters';
+import useReseauxDeChaleurFilters from '@hooks/useReseauxDeChaleurFilters';
+import { gestionnairesFilters } from 'src/services';
 import { filtresEnergies } from 'src/services/Map/map-configuration';
 
 export type ReseauxDeChaleurFiltersProps = React.HTMLAttributes<HTMLDivElement> & {
