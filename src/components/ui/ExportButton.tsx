@@ -1,7 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Oval } from 'react-loader-spinner';
 
-import Box from './Box';
 import Button, { ButtonProps } from './Button';
 
 const ExportButton = ({
@@ -23,15 +21,9 @@ const ExportButton = ({
   }, [exporting]);
 
   return (
-    <Box>
-      {exporting ? (
-        <Oval height={40} width={40} />
-      ) : (
-        <Button {...buttonProps} onClick={onClickExport}>
-          {buttonText}
-        </Button>
-      )}
-    </Box>
+    <Button {...buttonProps} loading={exporting} onClick={onClickExport}>
+      {buttonText}
+    </Button>
   );
 };
 
