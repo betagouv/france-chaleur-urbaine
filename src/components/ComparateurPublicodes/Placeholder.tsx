@@ -137,6 +137,36 @@ export const DescriptionModal = () => {
   );
 };
 
+export const modalDisclaimer = createModal({
+  id: 'tool-disclaimer-modal',
+  isOpenedByDefault: false,
+});
+
+export const Disclaimer = () => {
+  return (
+    <Modal modal={modalDisclaimer} title="Note supplémentaire sur l'outil">
+      <p>L'outil ne préjuge pas de la possibilité de remplacer un mode de chauffage par un autre.</p>
+      <p>A noter en particulier que :</p>
+
+      <ul>
+        <li>
+          le raccordement à un réseau de chaleur est pertinent pour les bâtiments à chauffage collectif (gaz ou fioul), mais nécessite des
+          travaux conséquents et coûteux pour les bâtiment à chauffage individuel.
+        </li>
+        <li>
+          l'installation d'une pompe à chaleur (PAC) requiert qu'un certains nombre de critères soient satisfaits : bâtiment bien isolé avec
+          des besoins en chaleur limités, présence d'espaces extérieurs pour les PAC air-air et air-eau...
+        </li>
+      </ul>
+      <p>
+        Enfin, au-delà des émissions de CO2, certains modes de chauffage et de refroidissement peuvent avoir d'autres impacts
+        environnementaux. A titre d'exemple, les PAC air-air et air-eau amplifient les effets de chaleur urbains en période de forte chaleur
+        et peuvent être à l'origine de nuisances sonores, d'un degré variable selon les modèles.
+      </p>
+    </Modal>
+  );
+};
+
 const ComparateurPublicodesPlaceholder: React.FC<ComparateurPublicodesPlaceholderProps> = ({ children, className, ...props }) => {
   return (
     <div className={cx(fr.cx('fr-container'), className)} {...props}>

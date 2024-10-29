@@ -7,6 +7,7 @@ import { LocationInfoResponse } from '@pages/api/location-infos';
 
 import { Separator, Title } from './ComparateurPublicodes.style';
 import { ModeDeChauffage, modesDeChauffage } from './modes-de-chauffage';
+import { Disclaimer, modalDisclaimer } from './Placeholder';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ModesDeChauffageAComparerFormProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -38,7 +39,14 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
 
   return (
     <div {...props}>
-      <p>Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer</p>
+      <Disclaimer />
+      <p className="fr-text--sm">
+        Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer, en notant que{' '}
+        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--sm">
+          tous les modes de chauffage ne sont pas valables pour toutes les situations
+        </a>
+      </p>
+
       {productionECS && (
         <>
           <Title>Eau Chaude Sanitaire</Title>
