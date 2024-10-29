@@ -189,7 +189,7 @@ const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; set
         </Filter>
       )}
       <Box display="flex" flexGrow="1" width="fit-content" justifyContent="flex-end" alignItems="flex-end">
-        <ExportButton buttonText="Exporter" onExport={async () => exportService.exportXLSX('demands')} />
+        <ExportButton onExport={async () => exportService.exportXLSX('demands')}>Exporter</ExportButton>
       </Box>
     </Filters>
   );

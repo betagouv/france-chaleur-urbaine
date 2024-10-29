@@ -66,10 +66,9 @@ const Users = () => {
       {filteredUsers.length === 0 && <p>Pas de résultat</p>}
 
       <Box mt="3w">
-        <ExportButton
-          buttonText="Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)"
-          onExport={async () => exportService.exportXLSX('obsoleteUsers')}
-        />
+        <ExportButton onExport={async () => exportService.exportXLSX('obsoleteUsers')}>
+          Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
+        </ExportButton>
       </Box>
     </TableContainer>
   );
