@@ -1,16 +1,12 @@
 import { useCallback, useState } from 'react';
 
-import Button, { ButtonProps } from './Button';
+import Button, { type ButtonProps } from './Button';
 
-const ExportButton = ({
-  onExport,
-  buttonText,
-  buttonProps,
-}: {
+type ExportButtonProps = Omit<ButtonProps, 'onClick' | 'loading'> & {
   onExport: () => Promise<any>;
-  buttonText: string;
-  buttonProps?: React.FC<ButtonProps>;
-}) => {
+};
+
+const ExportButton = ({ children, onExport, ...props }: ExportButtonProps) => {
   const [exporting, setExporting] = useState(false);
 
   const onClickExport = useCallback(async () => {
@@ -21,8 +17,14 @@ const ExportButton = ({
   }, [exporting]);
 
   return (
-    <Button {...buttonProps} loading={exporting} onClick={onClickExport}>
-      {buttonText}
+    <Button
+      loading={exporting}
+      onClick={() => onClickExport()}
+      {
+        ...(props as any) /* FIXME don't manage to make it work with typescript */
+      }
+    >
+      {children}
     </Button>
   );
 };
