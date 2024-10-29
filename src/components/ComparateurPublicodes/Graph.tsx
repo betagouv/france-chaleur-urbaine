@@ -1,5 +1,5 @@
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
-import { useQueryState } from 'nuqs';
+import { parseAsBoolean, useQueryState } from 'nuqs';
 import React, { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
@@ -159,6 +159,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
+  const [perBuilding, setPerBuilding] = useQueryState('perBuilding', parseAsBoolean.withDefault(false));
   const inclusClimatisation = engine.getField('Inclure la climatisation');
 
   const filterDisplayableModesDeChauffage = (typeInstallation: (typeof modesDeChauffage)[number]) => {
@@ -256,7 +257,9 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     colors: coutGraphColors,
   });
 
-  let maxEmissionsCO2Value = 5000;
+  const nbAppartements = perBuilding ? engine.getFieldAsNumber(`nombre de logements dans l'immeuble concerné`) : 1;
+
+  let maxEmissionsCO2Value = 5000 * nbAppartements;
 
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
@@ -264,19 +267,19 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       const amounts = [
         ...getRow({
           title: "Scope 1 : Production directe d'énergie",
-          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
+          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`) * nbAppartements,
           color: colorScope1,
           valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
           title: "Scope 2 : Production indirecte d'énergie",
-          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
+          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`) * nbAppartements,
           color: colorScope2,
           valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
           title: 'Scope 3 : Émissions indirectes',
-          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
+          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`) * nbAppartements,
           color: colorScope3,
           valueFormatter: formatEmissionsCO2,
         }),
@@ -358,6 +361,26 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       {graphType === 'emissions' && (
         <>
           <Heading as="h6">Émissions annuelles de CO2</Heading>
+          <SegmentedControl
+            hideLegend
+            small
+            segments={[
+              {
+                label: 'Par appartement',
+                nativeInputProps: {
+                  checked: !perBuilding,
+                  onChange: () => setPerBuilding(false),
+                },
+              },
+              {
+                label: 'Par bâtiment',
+                nativeInputProps: {
+                  checked: perBuilding,
+                  onChange: () => setPerBuilding(true),
+                },
+              },
+            ]}
+          />
           <Chart
             chartType="BarChart"
             height="100%"
