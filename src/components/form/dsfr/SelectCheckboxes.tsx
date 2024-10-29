@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/Popover';
 
@@ -17,6 +17,16 @@ const StyledCheckbox = styled(Checkbox)`
   }
 `;
 
+const StyledButton = styled.button<{ $small?: boolean }>`
+  ${({ $small }) => css`
+    ${$small &&
+    css`
+      padding: 0.35rem 2rem 0.35rem 0.5rem;
+      font-size: 0.875rem;
+    `}
+  `}
+`;
+
 const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage, className, ...props }: SelectCheckboxesProps) => {
   const nbCheckedCheckboxes = props.options.filter(({ nativeInputProps }: any) => nativeInputProps.checked).length;
   return (
@@ -30,13 +40,19 @@ const SelectCheckboxes = ({ fieldId, label, hintText, state, stateRelatedMessage
     >
       <Popover>
         <PopoverTrigger asChild>
-          <button className="fr-select" style={{ cursor: 'pointer', textAlign: 'left' }} role="button" tabIndex={0}>
+          <StyledButton
+            $small={props.small}
+            className="fr-select"
+            style={{ cursor: 'pointer', textAlign: 'left' }}
+            role="button"
+            tabIndex={0}
+          >
             {nbCheckedCheckboxes === 0
-              ? 'Sélectionner une ou des option(s)'
+              ? 'Sélectionner une/des option(s)'
               : nbCheckedCheckboxes === 1
               ? '1 option sélectionnée'
               : `${nbCheckedCheckboxes} options sélectionnées`}
-          </button>
+          </StyledButton>
         </PopoverTrigger>
         <PopoverContent
           className="fr-px-2w fr-py-1w"

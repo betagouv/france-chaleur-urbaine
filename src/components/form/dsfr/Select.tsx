@@ -1,12 +1,24 @@
 import DSFRSelect, { type SelectProps as DSFRSelectProps } from '@codegouvfr/react-dsfr/SelectNext';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-const StyledDSFRSelect = styled(DSFRSelect)``;
+type AdditionalSelectProps = {
+  $small?: boolean;
+};
 
-export type SelectProps<Options extends DSFRSelectProps.Option[]> = DSFRSelectProps<Options>;
+const StyledDSFRSelect = styled(DSFRSelect)<AdditionalSelectProps>`
+  ${({ $small }) => css`
+    ${$small &&
+    css`
+      padding: 0.35rem 2rem 0.35rem 0.5rem;
+      font-size: 0.875rem;
+    `}
+  `}
+`;
 
-const Select = <Options extends DSFRSelectProps.Option[]>(props: SelectProps<Options>) => {
-  return <StyledDSFRSelect {...props} />;
+export type SelectProps<Options extends DSFRSelectProps.Option[]> = DSFRSelectProps<Options> & RemoveDollar<AdditionalSelectProps>;
+
+const Select = <Options extends DSFRSelectProps.Option[]>({ small, ...props }: SelectProps<Options>) => {
+  return <StyledDSFRSelect $small={small} {...props} />;
 };
 
 export default Select;
