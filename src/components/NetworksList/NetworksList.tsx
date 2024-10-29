@@ -3,6 +3,7 @@ import Input from '@codegouvfr/react-dsfr/Input';
 import { useGridApiRef } from '@mui/x-data-grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import XLSX from 'xlsx';
 
 import { reseauxDeChaleurFilters } from '@components/Map/map-layers';
 import ReseauxDeChaleurFilters, { ReseauxDeChaleurFiltersProps } from '@components/ReseauxDeChaleurFilters';
@@ -146,6 +147,23 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
     return showReseau;
   });
 }
+
+const downloadAsCsv = (filteredNetworks: NetworkToCompare[]) => {
+  const worksheet = XLSX.utils.json_to_sheet(filteredNetworks);
+  const csv = XLSX.utils.sheet_to_csv(worksheet);
+
+  // Create a Blob from the CSV string
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  // Create a temporary link element and trigger download
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.csv`;
+  link.click();
+
+  URL.revokeObjectURL(url);
+};
 
 const NetworksList = () => {
   const { networksService } = useServices();
@@ -445,6 +463,9 @@ const NetworksList = () => {
             >
               <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
               Tous les filtres ({countFilters('reseauxDeChaleur')})
+            </Button>
+            <Button disabled={!filteredNetworks.length} onClick={() => downloadAsCsv(filteredNetworks)}>
+              Exporter
             </Button>
             <Input
               label="Rechercher"
