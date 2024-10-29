@@ -24,7 +24,7 @@ import ModesDeChauffageAComparer from './ModesDeChauffageAComparer';
 import ParametresDesModesDeChauffage from './ParametresDesModesDeChauffage';
 import ParametresDuBatimentGrandPublic from './ParametresDuBatimentGrandPublic';
 import ParametresDuBatimentTechnicien from './ParametresDuBatimentTechnicien';
-import { ComparateurPublicodesTitle, Disclaimer, ResultsNotAvailable, simulatorTabs } from './Placeholder';
+import { ComparateurPublicodesTitle, ResultsNotAvailable, simulatorTabs } from './Placeholder';
 import useSimulatorEngine from './useSimulatorEngine';
 
 type ComparateurPublicodesProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -128,7 +128,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
               }}
             />
           </header>
-          <Disclaimer />
+
           <Simulator $loading={loading}>
             <Box display="flex" gap="16px" flexDirection="column">
               <Accordion
