@@ -35,6 +35,7 @@ const RangeFilter = ({
   double = true,
   tooltip,
   loading,
+  disabled,
   domainTransform,
   formatNumber = (v) => `${roundNumberProgressively(v)}`,
   ...props
@@ -54,7 +55,7 @@ const RangeFilter = ({
       const updateRangeText = () => {
         const textToUpdate = ref.current?.querySelector('.fr-range__output');
         if (textToUpdate && textToUpdate.textContent !== '') {
-          textToUpdate.textContent = `${formatNumber(min)}${unit} - ${formatNumber(max)}${unit}`;
+          textToUpdate.textContent = loading ? '...' : `${formatNumber(min)}${unit} - ${formatNumber(max)}${unit}`;
           return;
         }
         // Retry after 50ms if the element is not found
@@ -63,7 +64,7 @@ const RangeFilter = ({
 
       updateRangeText();
     },
-    [formatNumber, unit]
+    [formatNumber, unit, loading]
   );
 
   useEffect(() => {
@@ -110,6 +111,7 @@ const RangeFilter = ({
     <>
       <Range
         key={renderKey}
+        disabled={loading || disabled}
         label={
           <Box display="flex" alignItems="center" justifyContent="space-between">
             {label}
