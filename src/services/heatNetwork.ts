@@ -17,7 +17,7 @@ export const gestionnairesFilters = [
     value: 'coriance',
   },
   { label: 'Dalkia', value: 'dalkia' },
-  { label: 'Engie Solutions', value: 'engie' },
+  { label: 'ENGIE Solutions', value: 'engie' },
   { label: 'IDEX', value: 'idex' },
   { label: 'Autre', value: 'autre' },
 ];
