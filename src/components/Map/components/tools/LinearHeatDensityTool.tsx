@@ -305,7 +305,15 @@ const LinearHeatDensityTool: React.FC = () => {
               <Box>À 50 mètres</Box>
               <strong>{densite.besoinsEnChaleur.cumul['50m']}</strong>
             </Box>
-            <Text>Densité thermique linéaire</Text>
+            <Text>
+              Densité thermique linéaire
+              <Tooltip
+                title="Densité thermique calculée sur la base des consommations de gaz à l'adresse situées à une distance de 10 ou 50 m du tracé
+                  défini"
+              >
+                <Icon size="sm" name="ri-information-fill" ml="1w" />
+              </Tooltip>
+            </Text>
             <Box display="flex" justifyContent="space-between" pl="2w">
               <Box>À 10 mètres</Box>
               <strong>{densite.besoinsEnChaleur.densitéThermiqueLinéaire['10m']}</strong>
