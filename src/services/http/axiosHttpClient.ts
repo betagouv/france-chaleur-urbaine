@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 import { HttpClient } from './HttpClient';
 
@@ -8,8 +8,8 @@ class AxiosHttpClient implements HttpClient {
       return responseRaw.data as T;
     });
   }
-  async post(url: string, body: any): Promise<AxiosResponse> {
-    return axios.post(url, body);
+  async post(url: string, body: any, config?: AxiosRequestConfig): Promise<AxiosResponse> {
+    return axios.post(url, body, config);
   }
 
   async put(url: string, body: any): Promise<AxiosResponse> {
