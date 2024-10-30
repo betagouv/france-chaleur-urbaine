@@ -127,7 +127,7 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
       } else {
         // Otherwise only show networks whose gestionnaire matches one of the selected filters
         const selectedGestionnaires = filters.gestionnaires.map(
-          (gestionnaire) => gestionnairesFilters.find(({ value }) => value === gestionnaire)?.label?.toLowerCase()
+          (gestionnaire) => gestionnairesFilters.find(({ value }) => value === gestionnaire)?.value?.toLowerCase()
         );
 
         if (
