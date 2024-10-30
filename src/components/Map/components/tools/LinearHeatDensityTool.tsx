@@ -1,6 +1,5 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
-import { Tooltip } from '@mui/material';
 import { useKeyboardEvent } from '@react-hookz/web';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
@@ -14,13 +13,13 @@ import { MapSourceLayersSpecification } from '@components/Map/map-layers';
 import useFCUMap from '@components/Map/MapProvider';
 import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
-import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
+import Tooltip from '@components/ui/Tooltip';
+import { PointDeConsommation } from '@pages/api/linear-heat-density';
 import { downloadObject } from '@utils/browser';
 import { formatAsISODate } from '@utils/date';
 import { formatDistance } from '@utils/geo';
 import { useServices } from 'src/services';
-import { GasSummary } from 'src/types/Summary/Gas';
 
 import { MeasureFeature, MeasureLabelFeature } from './measure';
 import { Title } from '../SimpleMapLegend.style';
@@ -30,7 +29,7 @@ export const linearHeatDensityLabelsSourceId = 'linear-heat-density-labels';
 const defaultColor = '#000091';
 
 type LinearHeatDensity = {
-  distanceTotale: number;
+  longueurTotale: number;
   consommationGaz: {
     cumul: {
       '10m': string;
@@ -41,7 +40,6 @@ type LinearHeatDensity = {
       '50m': string;
     };
   };
-  // TODO à venir avec la nouvelle couche
   besoinsEnChaleur: {
     cumul: {
       '10m': string;
@@ -93,28 +91,27 @@ const LinearHeatDensityTool: React.FC = () => {
 
     try {
       setIsLoading(true);
-      const rawDensite = await heatNetworkService.densite(features.map((feature) => feature.geometry.coordinates));
+      const rawDensite = await heatNetworkService.getLinearHeatDensity(features.map((feature) => feature.geometry.coordinates));
       const densite: LinearHeatDensity = {
-        distanceTotale: Math.round(rawDensite.size * 1000),
+        longueurTotale: Math.round(rawDensite.longueurTotale * 1000),
         consommationGaz: {
           cumul: {
-            '10m': getConso(rawDensite.data[10]),
-            '50m': getConso(rawDensite.data[50]),
+            '10m': getConso(rawDensite.consommationGaz['10m']),
+            '50m': getConso(rawDensite.consommationGaz['50m']),
           },
           densitéThermiqueLinéaire: {
-            '10m': getDensite(rawDensite.size, rawDensite.data[10]),
-            '50m': getDensite(rawDensite.size, rawDensite.data[50]),
+            '10m': getDensite(rawDensite.longueurTotale, rawDensite.consommationGaz['10m']),
+            '50m': getDensite(rawDensite.longueurTotale, rawDensite.consommationGaz['50m']),
           },
         },
-        // TODO à venir avec la nouvelle couche
         besoinsEnChaleur: {
           cumul: {
-            '10m': '',
-            '50m': '',
+            '10m': getConso(rawDensite.besoinsEnChaleur['10m']),
+            '50m': getConso(rawDensite.besoinsEnChaleur['50m']),
           },
           densitéThermiqueLinéaire: {
-            '10m': '',
-            '50m': '',
+            '10m': getDensite(rawDensite.longueurTotale, rawDensite.besoinsEnChaleur['10m']),
+            '50m': getDensite(rawDensite.longueurTotale, rawDensite.besoinsEnChaleur['50m']),
           },
         },
       };
@@ -266,10 +263,10 @@ const LinearHeatDensityTool: React.FC = () => {
         {densite && (
           <Box fontSize="14px" display="flex" flexDirection="column" gap="12px">
             <Box display="flex" justifyContent="space-between">
-              <Box>Distance totale</Box>
-              <strong>{formatDistance(densite.distanceTotale)}</strong>
+              <Box>Longueur totale</Box>
+              <strong>{formatDistance(densite.longueurTotale)}</strong>
             </Box>
-            <Text fontWeight="bold">Sur la base des consommations de gaz :</Text>
+            <Text fontWeight="bold">Sur la base des consommations de gaz&nbsp;:</Text>
             <Text>Consommation de gaz</Text>
             <Box display="flex" justifyContent="space-between" pl="2w">
               <Box>À 10 mètres</Box>
@@ -284,9 +281,10 @@ const LinearHeatDensityTool: React.FC = () => {
               <Tooltip
                 title="Densité thermique calculée sur la base des consommations de gaz à l'adresse situées à une distance de 10 ou 50 m du tracé
                   défini"
-              >
-                <Icon size="sm" name="ri-information-fill" ml="1w" />
-              </Tooltip>
+                iconProps={{
+                  className: 'fr-ml-1w',
+                }}
+              />
             </Text>
             <Box display="flex" justifyContent="space-between" pl="2w">
               <Box>À 10 mètres</Box>
@@ -295,6 +293,35 @@ const LinearHeatDensityTool: React.FC = () => {
             <Box display="flex" justifyContent="space-between" pl="2w">
               <Box>À 50 mètres</Box>
               <strong>{densite.consommationGaz.densitéThermiqueLinéaire['50m']}</strong>
+            </Box>
+
+            <Text fontWeight="bold">Sur la base des besoins en chaleur (modélisés par le Cerema)&nbsp;:</Text>
+            <Text>Besoins en chaleur</Text>
+            <Box display="flex" justifyContent="space-between" pl="2w">
+              <Box>À 10 mètres</Box>
+              <strong>{densite.besoinsEnChaleur.cumul['10m']}</strong>
+            </Box>
+            <Box display="flex" justifyContent="space-between" pl="2w">
+              <Box>À 50 mètres</Box>
+              <strong>{densite.besoinsEnChaleur.cumul['50m']}</strong>
+            </Box>
+            <Text>
+              Densité thermique linéaire
+              <Tooltip
+                title="Densité thermique calculée sur la base des besoins en chaleur des bâtiments situés à une distance de 10 ou 50 m du tracé
+                  défini"
+                iconProps={{
+                  className: 'fr-ml-1w',
+                }}
+              />
+            </Text>
+            <Box display="flex" justifyContent="space-between" pl="2w">
+              <Box>À 10 mètres</Box>
+              <strong>{densite.besoinsEnChaleur.densitéThermiqueLinéaire['10m']}</strong>
+            </Box>
+            <Box display="flex" justifyContent="space-between" pl="2w">
+              <Box>À 50 mètres</Box>
+              <strong>{densite.besoinsEnChaleur.densitéThermiqueLinéaire['50m']}</strong>
             </Box>
           </Box>
         )}
@@ -333,7 +360,7 @@ const LinearHeatDensityTool: React.FC = () => {
 
 export default LinearHeatDensityTool;
 
-const getConso = (consos: GasSummary[]) => {
+const getConso = (consos: PointDeConsommation[]) => {
   const sum = consos.reduce((acc, current) => acc + current.conso_nb, 0);
   if (sum > 1000) {
     return `${(sum / 1000).toFixed(2)} GWh`;
@@ -342,7 +369,7 @@ const getConso = (consos: GasSummary[]) => {
   return `${sum.toFixed(2)} MWh`;
 };
 
-const getDensite = (size: number, densite: GasSummary[]) => {
+const getDensite = (size: number, densite: PointDeConsommation[]) => {
   if (densite.length === 0) {
     return '0 MWh/m';
   }
