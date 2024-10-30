@@ -582,11 +582,11 @@ const NetworksList = () => {
             </Button>
             <Button
               disabled={!filteredNetworks.length}
-              onClick={() => exportAsXLSX(allNetworks)}
+              onClick={() => exportAsXLSX(filteredNetworks)}
               iconId="fr-icon-file-download-line"
               iconPosition="right"
             >
-              Exporter toutes les données
+              Exporter
             </Button>
             <Input
               label="Rechercher"
