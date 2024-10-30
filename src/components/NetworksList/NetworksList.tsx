@@ -13,6 +13,7 @@ import Icon from '@components/ui/Icon';
 import { ColumnDef, Table } from '@components/ui/Table';
 import Text from '@components/ui/Text';
 import useReseauxDeChaleurFilters, { type Filters } from '@hooks/useReseauxDeChaleurFilters';
+import { downloadFile } from '@utils/browser';
 import { Interval } from '@utils/interval';
 import { gestionnairesFilters, useServices } from 'src/services';
 import { filtresEnergies } from 'src/services/Map/map-configuration';
@@ -248,7 +249,7 @@ const exportColumns: {
     precision: 1,
   },
 ];
-const downloadAsCsv = (allNetworks: NetworkToCompare[]) => {
+const exportAsXLSX = (allNetworks: NetworkToCompare[]) => {
   const workbook = XLSX.utils.book_new();
 
   const data: Record<string, any>[] = [];
@@ -283,13 +284,7 @@ const downloadAsCsv = (allNetworks: NetworkToCompare[]) => {
   const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const url = URL.createObjectURL(blob);
 
-  // Create a temporary link element and trigger download
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.xlsx`;
-  link.click();
-
-  URL.revokeObjectURL(url);
+  downloadFile(url, `${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.xlsx`);
 };
 
 const NetworksList = () => {
@@ -587,7 +582,7 @@ const NetworksList = () => {
             </Button>
             <Button
               disabled={!filteredNetworks.length}
-              onClick={() => downloadAsCsv(allNetworks)}
+              onClick={() => exportAsXLSX(allNetworks)}
               iconId="fr-icon-file-download-line"
               iconPosition="right"
             >
