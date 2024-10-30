@@ -295,7 +295,7 @@ const LinearHeatDensityTool: React.FC = () => {
               <strong>{densite.consommationGaz.densitéThermiqueLinéaire['50m']}</strong>
             </Box>
 
-            <Text fontWeight="bold">Sur la base des besoins en chaleur (modélisés)&nbsp;:</Text>
+            <Text fontWeight="bold">Sur la base des besoins en chaleur (modélisés par le Cerema)&nbsp;:</Text>
             <Text>Besoins en chaleur</Text>
             <Box display="flex" justifyContent="space-between" pl="2w">
               <Box>À 10 mètres</Box>
