@@ -1,6 +1,5 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
-import { Tooltip } from '@mui/material';
 import { useKeyboardEvent } from '@react-hookz/web';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
@@ -14,8 +13,8 @@ import { MapSourceLayersSpecification } from '@components/Map/map-layers';
 import useFCUMap from '@components/Map/MapProvider';
 import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
-import Icon from '@components/ui/Icon';
 import Text from '@components/ui/Text';
+import Tooltip from '@components/ui/Tooltip';
 import { PointDeConsommation } from '@pages/api/linear-heat-density';
 import { downloadObject } from '@utils/browser';
 import { formatAsISODate } from '@utils/date';
@@ -282,9 +281,10 @@ const LinearHeatDensityTool: React.FC = () => {
               <Tooltip
                 title="Densité thermique calculée sur la base des consommations de gaz à l'adresse situées à une distance de 10 ou 50 m du tracé
                   défini"
-              >
-                <Icon size="sm" name="ri-information-fill" ml="1w" />
-              </Tooltip>
+                iconProps={{
+                  className: 'fr-ml-1w',
+                }}
+              />
             </Text>
             <Box display="flex" justifyContent="space-between" pl="2w">
               <Box>À 10 mètres</Box>
@@ -308,11 +308,12 @@ const LinearHeatDensityTool: React.FC = () => {
             <Text>
               Densité thermique linéaire
               <Tooltip
-                title="Densité thermique calculée sur la base des consommations de gaz à l'adresse situées à une distance de 10 ou 50 m du tracé
+                title="Densité thermique calculée sur la base des besoins en chaleur des bâtiments situés à une distance de 10 ou 50 m du tracé
                   défini"
-              >
-                <Icon size="sm" name="ri-information-fill" ml="1w" />
-              </Tooltip>
+                iconProps={{
+                  className: 'fr-ml-1w',
+                }}
+              />
             </Text>
             <Box display="flex" justifyContent="space-between" pl="2w">
               <Box>À 10 mètres</Box>
