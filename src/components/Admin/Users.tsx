@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import Input from '@components/form/dsfr/Input';
+import AsyncButton from '@components/ui/AsyncButton';
 import Box from '@components/ui/Box';
-import ExportButton from '@components/ui/ExportButton';
 import Heading from '@components/ui/Heading';
 import { Table, type ColumnDef } from '@components/ui/Table';
 import { useServices } from 'src/services';
@@ -66,9 +66,9 @@ const Users = () => {
       {filteredUsers.length === 0 && <p>Pas de résultat</p>}
 
       <Box mt="3w">
-        <ExportButton onExport={async () => exportService.exportXLSX('obsoleteUsers')}>
+        <AsyncButton onClick={async () => exportService.exportXLSX('obsoleteUsers')}>
           Exporter la liste des comptes obsolètes (connexion de plus de 6 mois ou nulle)
-        </ExportButton>
+        </AsyncButton>
       </Box>
     </TableContainer>
   );
