@@ -12,17 +12,17 @@ export class ExportService {
 
   async exportXLSX(exportType: string, params?: any): Promise<any> {
     try {
-      return await this.httpClient.post('api/exportData', { exportType, params }).then(async (response) => {
-        const byteCharacters = window.atob(response.data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
+      const response = await this.httpClient.post('api/exportData', { exportType, params });
+      const byteCharacters = window.atob(response.data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
 
-        const url = URL.createObjectURL(new Blob([byteArray]));
-        downloadFile(url, `${exportsParams[exportType].filename}.xlsx`);
-      });
+      const url = URL.createObjectURL(new Blob([byteArray]));
+      downloadFile(url, `${exportsParams[exportType].filename}.xlsx`);
+      return response;
     } catch (e) {
       throw new ServiceError(e);
     }
