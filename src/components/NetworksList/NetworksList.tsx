@@ -159,6 +159,7 @@ const formatPrice = (value?: number | string) =>
 const exportColumns: {
   field: keyof NetworkToCompare;
   columnName: string;
+  precision?: number;
 }[] = [
   {
     field: 'nom_reseau',
@@ -183,6 +184,7 @@ const exportColumns: {
   {
     field: 'Taux EnR&R',
     columnName: 'Taux EnR&R (%)',
+    precision: 1,
   },
   {
     field: 'contenu CO2 ACV',
@@ -203,38 +205,47 @@ const exportColumns: {
   {
     field: 'livraisons_totale_MWh',
     columnName: 'Livraisons de chaleur annuelles (GWh)',
+    precision: 1,
   },
   {
     field: 'energie_ratio_biomasse',
     columnName: 'Biomasse (%)',
+    precision: 1,
   },
   {
     field: 'energie_ratio_geothermie',
     columnName: 'Géothermie (%)',
+    precision: 1,
   },
   {
     field: 'energie_ratio_uve',
     columnName: 'UVE (%)',
+    precision: 1,
   },
   {
     field: 'energie_ratio_chaleurIndustrielle',
     columnName: 'Chaleur industrielle (%)',
+    precision: 1,
   },
   {
     field: 'energie_ratio_solaireThermique',
     columnName: 'Solaire thermique (%)',
+    precision: 1,
   },
   {
     field: 'energie_ratio_pompeAChaleur',
     columnName: 'Pompe à chaleur (%)',
+    precision: 1,
   },
   {
     field: 'energie_ratio_gaz',
     columnName: 'Gaz (%)',
+    precision: 1,
   },
   {
     field: 'energie_ratio_fioul',
     columnName: 'Fioul (%)',
+    precision: 1,
   },
 ];
 const downloadAsCsv = (allNetworks: NetworkToCompare[]) => {
@@ -251,6 +262,8 @@ const downloadAsCsv = (allNetworks: NetworkToCompare[]) => {
         value = value.join(',');
       } else if (typeof value === 'boolean') {
         value = value ? 'Oui' : 'Non';
+      } else if (typeof value === 'number') {
+        value = parseFloat(value.toFixed(typeof col.precision === 'number' ? col.precision : 0));
       } else {
         value = value?.toString();
       }
