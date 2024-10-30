@@ -2,8 +2,8 @@ import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { useEffect, useState } from 'react';
 
 import Input from '@components/form/dsfr/Input';
+import AsyncButton from '@components/ui/AsyncButton';
 import Box from '@components/ui/Box';
-import ExportButton from '@components/ui/ExportButton';
 import { useServices } from 'src/services';
 import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
 import { Demand } from 'src/types/Summary/Demand';
@@ -189,7 +189,7 @@ const ManagerHeader = ({ demands, setFilteredDemands }: { demands: Demand[]; set
         </Filter>
       )}
       <Box display="flex" flexGrow="1" width="fit-content" justifyContent="flex-end" alignItems="flex-end">
-        <ExportButton onExport={async () => exportService.exportXLSX('demands')}>Exporter</ExportButton>
+        <AsyncButton onClick={async () => exportService.exportXLSX('demands')}>Exporter</AsyncButton>
       </Box>
     </Filters>
   );
