@@ -9,6 +9,7 @@ import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
+import { trackEvent } from 'src/services/analytics';
 
 import { prixSpotCEE } from './Simulator';
 
@@ -33,8 +34,13 @@ const SimulateurCoutRaccordement = (props: SimulateurCoutRaccordementProps) => {
   const [formState, setFormState] = useState<FormState>({
     typeBatiment: props.typeBatiment ?? 'residentiel',
   });
+  const [hasUsedFeature, setHasUsedFeature] = useState(false);
 
   function updateState<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
+    if (!hasUsedFeature) {
+      trackEvent('Outils|Simulation coût raccordement');
+    }
+    setHasUsedFeature(true);
     setFormState((state) => ({
       ...state,
       [key]: value,
