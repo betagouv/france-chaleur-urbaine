@@ -164,11 +164,11 @@ interface ExportConfListFormat {
 
 export const exportsParams: ExportConfListFormat = {
   networksToCompare: {
-    filename: 'networks_liste',
+    filename: 'liste_reseaux',
     columns: networksToCompareExportColumns,
   },
   demands: {
-    filename: 'demands_fcu',
+    filename: 'demandes_fcu',
     columns: demandsExportColumns,
   },
   obsoleteUsers: {
