@@ -44,5 +44,5 @@ export default handleRouteErrors(async (req: NextApiRequest, res: NextApiRespons
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', `attachment; filename=${exportsParams[exportType].filename}.xlsx`);
 
-  return res.status(200).send(xlsx);
+  res.status(200).send(xlsx);
 });
