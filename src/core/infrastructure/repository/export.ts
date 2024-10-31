@@ -19,7 +19,7 @@ export const getSpreadSheet = <T>(columns: ExportColumn<T>[], data: T[], format:
 
   return XLSX.write(wb, {
     bookType: format,
-    type: format === EXPORT_FORMAT.CSV ? 'string' : 'base64',
+    type: format === EXPORT_FORMAT.CSV ? 'string' : 'buffer',
   });
 };
 
