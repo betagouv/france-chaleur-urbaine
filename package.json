@@ -83,7 +83,7 @@
     "jsonwebtoken": "^9.0.1",
     "knex": "^2.5.1",
     "maplibre-gl": "^4.7.0",
-    "next": "^14.2.0",
+    "next": "^15.0.2",
     "next-auth": "^4.24.5",
     "next-sitemap": "^4.2.3",
     "nodemailer": "^6.9.9",
@@ -93,8 +93,8 @@
     "postcss": "^8.2.10",
     "prettier": "3.0.2",
     "publicodes": "npm:@totak/publicodes@1.5.1-fcu6",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.0.0-rc-603e6108-20241029",
+    "react-dom": "^19.0.0-rc-603e6108-20241029",
     "react-google-charts": "^4.0.1",
     "react-loader-spinner": "^6.1.0",
     "react-map-gl": "^7.1.7",
@@ -134,8 +134,8 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/mapbox__mapbox-gl-draw": "^1.4.7",
     "@types/node": "^20.5.0",
-    "@types/react": "18.2.45",
-    "@types/react-dom": "^18.2.17",
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc",
     "@types/sinon": "^10.0.16",
     "@types/styled-components": "^5.1.26",
     "@types/uuid": "^9.0.2",
@@ -144,7 +144,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "camelcase": "^8.0.0",
     "eslint": "^8.47.0",
-    "eslint-config-next": "^14.0.4",
+    "eslint-config-next": "^15.0.2",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-better-styled-components": "^1.1.2",
@@ -155,7 +155,6 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
     "husky": "^9.1.5",
     "jsdom": "^23.2.0",
     "lint-staged": "^14.0.0",
@@ -174,5 +173,9 @@
     "styled-components": "^5",
     "postcss": "^8.2.10",
     "glob-parent": "^6.0.1"
+  },
+  "overrides": {
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc"
   }
 }
