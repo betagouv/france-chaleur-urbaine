@@ -5,6 +5,7 @@ import RadioInput from '@components/form/publicodes/Radio';
 import Select from '@components/form/publicodes/Select';
 
 import SelectClimatisation from './SelectClimatisation';
+import SelectProductionECS from './SelectProductionECS';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDuBatimentGrandPublicFormProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -69,7 +70,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
           />
         </>
       )}
-      <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
+      <SelectProductionECS />
       <SelectClimatisation />
     </div>
   );

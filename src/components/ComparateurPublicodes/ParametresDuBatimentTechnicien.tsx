@@ -7,6 +7,7 @@ import { UrlStateAccordion as Accordion } from '@components/ui/Accordion';
 import Link from '@components/ui/Link';
 
 import SelectClimatisation from './SelectClimatisation';
+import SelectProductionECS from './SelectProductionECS';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDuBatimentTechnicienFormProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -20,18 +21,10 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
   ...props
 }) => {
   const typeBatiment = engine.getField('type de bâtiment');
-  const productionECS = engine.getField('Production eau chaude sanitaire');
 
   return (
     <div {...props}>
-      <RadioInput
-        name="Production eau chaude sanitaire"
-        label="Production eau chaude sanitaire"
-        small
-        orientation="horizontal"
-        help={`"Non" implique que la consommation d'eau chaude sanitaire n'est pas à inclure dans la simulation.`}
-      />
-
+      <SelectProductionECS />
       <SelectClimatisation />
 
       <Accordion label="Informations générales">
@@ -110,13 +103,6 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
           </>
         )}
 
-        {productionECS && (
-          <Select
-            name="type de production ECS"
-            label="Type de production ECS"
-            help={`"Avec équipement de chauffage" signifie que l'eau chaude sanitaire est produite à partir du même équipement que le chauffage. "chauffe-eau électrique" signifie que pour tous les modes de chauffage, l'eau chaude sanitaire sera produite avec un chauffe-eau électrique.`}
-          />
-        )}
         <Input
           name="Part de la surface à climatiser"
           label="Part de la surface à climatiser"
