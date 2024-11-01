@@ -1,12 +1,13 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@codegouvfr/react-dsfr/Button';
-import { useCallback, useRef, useState } from 'react';
+import { useQueryState } from 'nuqs';
+import { useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 import styled from 'styled-components';
 
-import AddressAutocomplete from '@components/addressAutocomplete';
 import { ContactForm, SelectEnergy } from '@components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
+import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
@@ -32,27 +33,12 @@ interface EligibilityTestBoxProps {
  */
 const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
   const { heatNetworkService } = useServices();
-
+  const [defaultAddress, setDefaultAddress] = useQueryState('address');
   const [selectedGeoAddress, setSelectedGeoAddress] = useState<SuggestionItem>();
   const [eligibilityStatus, setEligibilityStatus] = useState<NetworkEligibilityStatus>();
   const [heatingType, setHeatingType] = useState('');
   const [formState, setFormState] = useState<FormState>('idle');
   const resultsBoxRef = useRef<HTMLDivElement | null>(null);
-
-  // appelé quand une adresse a été sélectionnée dans la liste déroulante
-  const onAddressSelected = useCallback(
-    async (address: string, geoAddress?: SuggestionItem) => {
-      // beware, this function gets called every time the address changes
-      // and we only need the result when the address is complete
-      if (!geoAddress) {
-        return;
-      }
-      setSelectedGeoAddress(geoAddress);
-      setEligibilityStatus(undefined);
-      setHeatingType('');
-    },
-    [setSelectedGeoAddress]
-  );
 
   // appelé au clic sur Tester l'adresse, pour récupérer l'éligibilité et les informations du réseau
   const testAddressEligibility = async (geoAddress: SuggestionItem) => {
@@ -77,6 +63,19 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
     } catch (err) {
       setFormState('eligibilitySubmissionError');
     }
+  };
+
+  const onAddressSelected = (geoAddress?: SuggestionItem) => {
+    setDefaultAddress(null);
+    // beware, this function gets called every time the address changes
+    // and we only need the result when the address is complete
+    if (!geoAddress) {
+      return;
+    }
+    setSelectedGeoAddress(geoAddress);
+    setEligibilityStatus(undefined);
+    setHeatingType('');
+    testAddressEligibility(geoAddress);
   };
 
   // appelé quand on soumet le formulaire de contact (dernière étape), on crée la demande côté airtable
@@ -132,9 +131,16 @@ const EligibilityTestBox = ({ networkId }: EligibilityTestBoxProps) => {
         <Text size="xl" mb="2w" legacyColor="black">
           Testez l'éligibilité d'une adresse pour ce réseau.
         </Text>
-
-        <AddressAutocomplete placeholder="Tapez ici votre adresse" onAddressSelected={onAddressSelected} excludeCities />
-
+        <AddressAutocomplete
+          label=""
+          nativeInputProps={{ placeholder: 'Tapez ici votre adresse' }}
+          defaultValue={defaultAddress || ''}
+          onClear={() => {
+            setSelectedGeoAddress(undefined);
+          }}
+          onSelect={onAddressSelected}
+          excludeCities
+        />
         <Box display="flex" alignItems="center" justifyContent="end">
           {formState === 'eligibilitySubmissionError' && (
             <Box textColor="#c00">
