@@ -246,7 +246,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       right: 130, // to display the total price without being cut (4 digits + unit)
     },
     hAxis: {
-      title: 'Coût €TTC/logement par an',
+      title: 'Coût €TTC',
       minValue: 0,
       maxValue: maxCoutValue,
     },
@@ -332,7 +332,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
       {graphType === 'couts' && (
         <div ref={coutsRef}>
-          <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'}</Heading>
+          <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement)</Heading>
           <Chart
             chartType="BarChart"
             height="100%"
@@ -357,14 +357,14 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       )}
       {graphType === 'emissions' && (
         <>
-          <Heading as="h6">Émissions annuelles de CO2</Heading>
+          <Heading as="h6">Émissions annuelles de CO2 (par {perBuilding ? 'bâtiment' : 'logement'})</Heading>
           {typeDeBatiment === 'résidentiel' && (
             <SegmentedControl
               hideLegend
               small
               segments={[
                 {
-                  label: 'Par appartement',
+                  label: 'Par logement',
                   nativeInputProps: {
                     checked: !perBuilding,
                     onChange: () => setPerBuilding(false),
