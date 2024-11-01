@@ -1,4 +1,4 @@
-import { css, FlattenSimpleInterpolation, SimpleInterpolation } from 'styled-components';
+import { css, Interpolation } from 'styled-components';
 
 const breakpoints = {
   xs: 320,
@@ -10,7 +10,7 @@ const breakpoints = {
 };
 
 export type Breakpoint = keyof typeof breakpoints;
-export type BreakpointFunction = (...args: SimpleInterpolation[]) => FlattenSimpleInterpolation;
+export type BreakpointFunction = (...args: Interpolation<Record<string, unknown>>[]) => ReturnType<typeof css>;
 
 interface Media {
   xs: BreakpointFunction;
@@ -24,12 +24,9 @@ interface Media {
 const mediaQuery = (breakpoints: { [key in Breakpoint]: number }): Media => {
   return Object.keys(breakpoints).reduce((acc, label) => {
     const breakpoint = label as Breakpoint;
-    acc[breakpoint] = (...args: SimpleInterpolation[]) => css`
+    acc[breakpoint] = (...args: Interpolation<Record<string, unknown>>[]) => css`
       @media (min-width: ${breakpoints[breakpoint]}px) {
-        ${
-          // @ts-expect-error args is not correctly inferred for an unknown reason
-          css(...args)
-        }
+        ${css(...args)}
       }
     `;
     return acc;

@@ -1,6 +1,6 @@
 import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
-import styled, { IntrinsicElementsKeys } from 'styled-components';
+import styled from 'styled-components';
 
 import { type Breakpoint } from '@components/Theme/theme';
 
@@ -76,7 +76,7 @@ const StyledBox = styled.div<StyleProps>`
 `;
 
 export interface BoxProps extends StyleProps, SpacingProperties, HTMLAttributes<HTMLDivElement> {
-  as?: IntrinsicElementsKeys;
+  as?: React.ElementType;
   iconLeft?: FrIconClassName | RiIconClassName;
 }
 
