@@ -6,6 +6,7 @@ import Select from '@components/form/publicodes/Select';
 import { UrlStateAccordion as Accordion } from '@components/ui/Accordion';
 import Link from '@components/ui/Link';
 
+import SelectClimatisation from './SelectClimatisation';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDuBatimentTechnicienFormProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -30,8 +31,8 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
         orientation="horizontal"
         help={`"Non" implique que la consommation d'eau chaude sanitaire n'est pas à inclure dans la simulation.`}
       />
-      <RadioInput name="Inclure la climatisation" label="Inclure la climatisation" small orientation="horizontal" />
-      <RadioInput name="type de production de froid" label="type de production de froid" small orientation="horizontal" />
+
+      <SelectClimatisation />
 
       <Accordion label="Informations générales">
         <Input name="degré jours unifié spécifique chaud" label="degré jours unifié spécifique chaud" iconId="fr-icon-temp-cold-fill" />
