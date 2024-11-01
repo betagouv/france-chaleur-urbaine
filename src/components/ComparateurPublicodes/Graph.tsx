@@ -162,6 +162,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
   const [perBuilding, setPerBuilding] = useQueryState('perBuilding', parseAsBoolean.withDefault(false));
   const inclusClimatisation = engine.getField('Inclure la climatisation');
   const typeDeProductionDeFroid = engine.getField('type de production de froid');
+  const typeDeBatiment = engine.getField('type de bâtiment');
 
   const getLabel = (typeInstallation: (typeof modesDeChauffage)[number]) => {
     let suffix = '';
@@ -356,26 +357,28 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       {graphType === 'emissions' && (
         <>
           <Heading as="h6">Émissions annuelles de CO2</Heading>
-          <SegmentedControl
-            hideLegend
-            small
-            segments={[
-              {
-                label: 'Par appartement',
-                nativeInputProps: {
-                  checked: !perBuilding,
-                  onChange: () => setPerBuilding(false),
+          {typeDeBatiment === 'résidentiel' && (
+            <SegmentedControl
+              hideLegend
+              small
+              segments={[
+                {
+                  label: 'Par appartement',
+                  nativeInputProps: {
+                    checked: !perBuilding,
+                    onChange: () => setPerBuilding(false),
+                  },
                 },
-              },
-              {
-                label: 'Par bâtiment',
-                nativeInputProps: {
-                  checked: perBuilding,
-                  onChange: () => setPerBuilding(true),
+                {
+                  label: 'Par bâtiment',
+                  nativeInputProps: {
+                    checked: perBuilding,
+                    onChange: () => setPerBuilding(true),
+                  },
                 },
-              },
-            ]}
-          />
+              ]}
+            />
+          )}
           <Chart
             chartType="BarChart"
             height="100%"
