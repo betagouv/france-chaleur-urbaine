@@ -8,15 +8,17 @@ import Autocomplete from './Autocomplete';
 export type AddressAutocompleteProps = Omit<
   React.ComponentProps<typeof Autocomplete>,
   'children' | 'getOptionValue' | 'fetchFn' | 'onSelect'
-> & { onSelect: (option: SuggestionItem) => void };
+> & { onSelect: (option: SuggestionItem) => void; excludeCities?: boolean };
 
-const AddressAutocomplete = ({ nativeInputProps, onSelect, onClear, ...props }: AddressAutocompleteProps) => {
+const AddressAutocomplete = ({ nativeInputProps, onSelect, excludeCities, onClear, ...props }: AddressAutocompleteProps) => {
   // const [address, setAddress] = React.useState<Awaited<ReturnType<typeof fetchOptions>>[number]>();
   const { suggestionService } = useServices();
   const fetchOptions = async (query: string) => {
     const suggestions = await suggestionService.fetchSuggestions(query, { limit: '10' });
-
-    return suggestions.features;
+    const features = excludeCities
+      ? suggestions.features.filter((feature) => feature.properties.type !== 'municipality')
+      : suggestions.features;
+    return features;
   };
 
   return (
