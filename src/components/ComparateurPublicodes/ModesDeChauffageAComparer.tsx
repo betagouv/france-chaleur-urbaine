@@ -102,24 +102,6 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       />
       <Separator />
       <Checkbox small options={(['Radiateur électrique individuel'] satisfies ModeDeChauffage[]).map(createOptionProps)} />
-      {inclusClimatisation && (
-        <>
-          <Separator />
-          <Checkbox
-            small
-            options={(['Réseaux de froid'] satisfies ModeDeChauffage[]).map(createOptionProps)}
-            state={nearestReseauDeFroid ? 'success' : 'default'}
-            stateRelatedMessage={
-              nearestReseauDeFroid ? (
-                <span>
-                  Disponible à <strong>{nearestReseauDeFroid.distance}</strong>m du bâtiment
-                </span>
-              ) : undefined
-            }
-          />
-          <Checkbox small options={(['Groupe froid'] satisfies ModeDeChauffage[]).map(createOptionProps)} />
-        </>
-      )}
     </div>
   );
 };

@@ -24,6 +24,8 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
     hasModeDeChauffage('Gaz sans condensation collectif');
   const hasFioul = hasModeDeChauffage('Fioul individuel') || hasModeDeChauffage('Fioul collectif');
   const hasGranules = hasModeDeChauffage('Chaudière à granulés collective') || hasModeDeChauffage('Poêle à granulés individuel');
+  const utiliseReseauDeFroid =
+    engine.getField('type de production de froid') === 'Réseau de froid' && engine.getField('Inclure la climatisation') === 'oui';
 
   return (
     <div {...props}>
@@ -145,7 +147,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
             <Input name="Paramètres économiques . Fioul . TICPE" label="TICPE" />
           </Accordion>
         )}
-        {hasModeDeChauffage('Réseaux de froid') && (
+        {utiliseReseauDeFroid && (
           <Accordion label="Réseaux de froid">
             <Input name="Paramètres économiques . Réseaux froid . Coût" label="Coût" />
             <Input name="Paramètres économiques . Réseaux froid . Part fixe" label="Part fixe" />
@@ -289,7 +291,7 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
           <Input name="Investissement x frais de raccordement au réseaux x RCU" label="Frais de raccordement au réseaux" />
         </UrlStateAccordion>
       )}
-      {hasModeDeChauffage('Réseaux de froid') && (
+      {utiliseReseauDeFroid && (
         <UrlStateAccordion label="Réseaux de froid">
           <Input name="ratios . RFU Rendement sous station" label="Rendement sous station" nativeInputProps={{ min: 0.001 }} />
           <Input name="ratios . RFU Conso auxiliaire" label="Consommation auxiliaire" help="Consommation des pompes de circulation." />
