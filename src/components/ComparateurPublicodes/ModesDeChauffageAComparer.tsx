@@ -1,13 +1,14 @@
 import React from 'react';
 
 import Checkbox from '@components/form/dsfr/Checkbox';
-import Select from '@components/form/publicodes/Select';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import { LocationInfoResponse } from '@pages/api/location-infos';
 
 import { Separator, Title } from './ComparateurPublicodes.style';
 import { ModeDeChauffage, modesDeChauffage } from './modes-de-chauffage';
 import { Disclaimer, modalDisclaimer } from './Placeholder';
+import SelectClimatisation from './SelectClimatisation';
+import SelectProductionECS from './SelectProductionECS';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ModesDeChauffageAComparerFormProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -24,7 +25,6 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   nearestReseauDeChaleur,
   ...props
 }) => {
-  const productionECS = engine.getField('Production eau chaude sanitaire');
   const inclusClimatisation = engine.getField('Inclure la climatisation');
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
 
@@ -47,12 +47,10 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
         </a>
       </p>
 
-      {productionECS && (
-        <>
-          <Title>Eau Chaude Sanitaire</Title>
-          {productionECS && <Select name="type de production ECS" label="Type de production ECS" />}
-        </>
-      )}
+      <Title>Eau Chaude Sanitaire</Title>
+      <SelectProductionECS />
+      <Title>Climatisation</Title>
+      <SelectClimatisation />
       <Title>Modes de chauffage et de refroidissement</Title>
 
       <Checkbox

@@ -4,8 +4,6 @@ import Input from '@components/form/publicodes/Input';
 import RadioInput from '@components/form/publicodes/Radio';
 import Select from '@components/form/publicodes/Select';
 
-import SelectClimatisation from './SelectClimatisation';
-import SelectProductionECS from './SelectProductionECS';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDuBatimentGrandPublicFormProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -71,8 +69,6 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
           />
         </>
       )}
-      <SelectProductionECS />
-      <SelectClimatisation />
     </div>
   );
 };
