@@ -21,6 +21,8 @@ fileignoreconfig:
   checksum: 16e789ab1bc1176ccb8f5b6dae275ec6639232884fda51da6ffd7708908f281a
 - filename: src/services/tiles.config.ts
   checksum: 89f40d731f653c30750c61467b1d4727965805280e2d2888dd0cc29e8accf6cf
+- filename: next-env.d.ts
+  checksum: b563f4f5bf2247d4c48cc40a801a15d77b7b8481873c48a3edcf9c3b0302e531
 scopeconfig:
 - scope: node
 allowed_patterns:
