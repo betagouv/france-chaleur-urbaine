@@ -31,6 +31,7 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
         help={`"Non" implique que la consommation d'eau chaude sanitaire n'est pas à inclure dans la simulation.`}
       />
       <RadioInput name="Inclure la climatisation" label="Inclure la climatisation" small orientation="horizontal" />
+      <RadioInput name="type de production de froid" label="type de production de froid" small orientation="horizontal" />
 
       <Accordion label="Informations générales">
         <Input name="degré jours unifié spécifique chaud" label="degré jours unifié spécifique chaud" iconId="fr-icon-temp-cold-fill" />
