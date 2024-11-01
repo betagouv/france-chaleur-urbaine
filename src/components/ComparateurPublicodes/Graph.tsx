@@ -108,7 +108,7 @@ const emissionsCO2GraphColumnNames = [
 ];
 const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.map(getColumn).flat();
 
-const useFixLegendOpacity = (coutsRef: React.RefObject<HTMLDivElement>) => {
+const useFixLegendOpacity = (coutsRef?: React.RefObject<HTMLDivElement | null>) => {
   React.useEffect(() => {
     if (!coutsRef?.current) {
       return;

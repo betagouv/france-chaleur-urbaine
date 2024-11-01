@@ -876,12 +876,14 @@ function CarteFrance(props: CarteFranceProps) {
       )}
 
       {/* Attach the tooltip to the body so that the tooltip does not get truncated when overflowing */}
-      {createPortal(
-        <Tooltip visible={tooltipInfos.visible} x={tooltipInfos.x} y={tooltipInfos.y}>
-          {tooltipInfos.content}
-        </Tooltip>,
-        document.body
-      )}
+      {
+        createPortal(
+          <Tooltip visible={tooltipInfos.visible} x={tooltipInfos.x} y={tooltipInfos.y}>
+            {tooltipInfos.content}
+          </Tooltip>,
+          document.body
+        ) as React.ReactPortal
+      }
     </WrapperDiv>
   );
 }

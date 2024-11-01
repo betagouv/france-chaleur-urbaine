@@ -26,7 +26,7 @@ const mediaQuery = (breakpoints: { [key in Breakpoint]: number }): Media => {
     const breakpoint = label as Breakpoint;
     acc[breakpoint] = (...args: Interpolation<Record<string, unknown>>[]) => css`
       @media (min-width: ${breakpoints[breakpoint]}px) {
-        ${css(...args)}
+        ${css(...(args as Parameters<typeof css>))}
       }
     `;
     return acc;
