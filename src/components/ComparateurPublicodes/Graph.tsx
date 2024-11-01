@@ -144,7 +144,7 @@ const formatPrecisionRange = (value: number) => {
 const formatEmissionsCO2 = (value: number) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
 
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
-  const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+  const { items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
 
@@ -161,26 +161,21 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
   const [perBuilding, setPerBuilding] = useQueryState('perBuilding', parseAsBoolean.withDefault(false));
   const inclusClimatisation = engine.getField('Inclure la climatisation');
-
-  const filterDisplayableModesDeChauffage = (typeInstallation: (typeof modesDeChauffage)[number]) => {
-    if (!hasModeDeChauffage(typeInstallation.label)) {
-      return false;
-    }
-
-    if (!inclusClimatisation && typeInstallation.seulementFroid) {
-      return false;
-    }
-    return true;
-  };
+  const typeDeProductionDeFroid = engine.getField('type de production de froid');
 
   const getLabel = (typeInstallation: (typeof modesDeChauffage)[number]) => {
-    return typeInstallation.reversible && inclusClimatisation ? `${typeInstallation.label} (chauffage + froid)` : typeInstallation.label;
+    let suffix = '';
+    if (inclusClimatisation) {
+      suffix = typeInstallation.reversible ? ' (chauffage + froid)' : ` + ${typeDeProductionDeFroid}`;
+    }
+
+    return `${typeInstallation.label}${suffix}`;
   };
 
   let maxCoutValue = 3000;
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
-    ...modesDeChauffage.filter(filterDisplayableModesDeChauffage).flatMap((typeInstallation) => {
+    ...modesDeChauffage.flatMap((typeInstallation) => {
       const amountP1Abo = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1abo`);
       const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
       const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
@@ -263,7 +258,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
-    ...modesDeChauffage.filter(filterDisplayableModesDeChauffage).flatMap((typeInstallation) => {
+    ...modesDeChauffage.flatMap((typeInstallation) => {
       const amounts = [
         ...getRow({
           title: "Scope 1 : Production directe d'énergie",
