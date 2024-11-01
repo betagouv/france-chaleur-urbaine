@@ -23,7 +23,7 @@ export type ButtonProps = DsfrButtonProps & RemoveDollar<StyledButtonProps>;
 
 const Button: React.FC<ButtonProps> = ({ children, iconId, full, loading, ...props }) => {
   return (
-    <StyledButton iconId={(loading ? 'ri-loader-3-line' : iconId) as any} $full={full} $loading={loading} {...props}>
+    <StyledButton iconId={loading ? 'ri-loader-3-line' : (iconId as any)} $full={full} $loading={loading} {...props}>
       {children}
     </StyledButton>
   );

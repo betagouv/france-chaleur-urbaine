@@ -31,27 +31,4 @@ export class DemandsService {
       throw new ServiceError(e);
     }
   }
-
-  async export(): Promise<any> {
-    try {
-      return await this.httpClient.post(`/api/demands`).then(async (response) => {
-        const a = document.createElement('a');
-        a.download = 'demands_fcu.xlsx';
-
-        const byteCharacters = window.atob(response.data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        a.href = URL.createObjectURL(new Blob([byteArray]));
-        a.addEventListener('click', () => {
-          setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
-        });
-        a.click();
-      });
-    } catch (e) {
-      throw new ServiceError(e);
-    }
-  }
 }

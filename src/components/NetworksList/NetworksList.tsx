@@ -3,6 +3,7 @@ import Input from '@codegouvfr/react-dsfr/Input';
 import { useGridApiRef } from '@mui/x-data-grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import XLSX from 'xlsx';
 
 import { reseauxDeChaleurFilters } from '@components/Map/map-layers';
 import ReseauxDeChaleurFilters, { ReseauxDeChaleurFiltersProps } from '@components/ReseauxDeChaleurFilters';
@@ -12,6 +13,7 @@ import Icon from '@components/ui/Icon';
 import { ColumnDef, Table } from '@components/ui/Table';
 import Text from '@components/ui/Text';
 import useReseauxDeChaleurFilters, { type Filters } from '@hooks/useReseauxDeChaleurFilters';
+import { downloadFile } from '@utils/browser';
 import { Interval } from '@utils/interval';
 import { gestionnairesFilters, useServices } from 'src/services';
 import { filtresEnergies } from 'src/services/Map/map-configuration';
@@ -147,6 +149,144 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
   });
 }
 
+const formatPercentage = (value?: number | string) =>
+  value ? ((value as number) / 100).toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 1 }) : undefined;
+
+const formatNumber = (value?: number | string) => (value ? (value as number).toFixed(1) : undefined);
+
+const formatPrice = (value?: number | string) =>
+  value ? (value as number).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }) : undefined;
+
+const exportColumns: {
+  field: keyof NetworkToCompare;
+  columnName: string;
+  precision?: number;
+}[] = [
+  {
+    field: 'nom_reseau',
+    columnName: 'Nom du réseau',
+  },
+  {
+    field: 'reseaux classes',
+    columnName: 'Réseau classé',
+  },
+  {
+    field: 'Identifiant reseau',
+    columnName: 'Identifiant',
+  },
+  {
+    field: 'communes',
+    columnName: 'Communes',
+  },
+  {
+    field: 'Gestionnaire',
+    columnName: 'Gestionnaire',
+  },
+  {
+    field: 'Taux EnR&R',
+    columnName: 'Taux EnR&R (%)',
+    precision: 1,
+  },
+  {
+    field: 'contenu CO2 ACV',
+    columnName: 'Contenu CO2 ACV (gCO2/kWh)',
+  },
+  {
+    field: 'contenu CO2',
+    columnName: 'Contenu CO2 (gCO2/kWh)',
+  },
+  {
+    field: 'PM',
+    columnName: 'Prix moyen (€TTC/MWh)',
+  },
+  {
+    field: 'annee_creation',
+    columnName: 'Année de construction',
+  },
+  {
+    field: 'livraisons_totale_MWh',
+    columnName: 'Livraisons de chaleur annuelles (GWh)',
+    precision: 1,
+  },
+  {
+    field: 'energie_ratio_biomasse',
+    columnName: 'Biomasse (%)',
+    precision: 1,
+  },
+  {
+    field: 'energie_ratio_geothermie',
+    columnName: 'Géothermie (%)',
+    precision: 1,
+  },
+  {
+    field: 'energie_ratio_uve',
+    columnName: 'UVE (%)',
+    precision: 1,
+  },
+  {
+    field: 'energie_ratio_chaleurIndustrielle',
+    columnName: 'Chaleur industrielle (%)',
+    precision: 1,
+  },
+  {
+    field: 'energie_ratio_solaireThermique',
+    columnName: 'Solaire thermique (%)',
+    precision: 1,
+  },
+  {
+    field: 'energie_ratio_pompeAChaleur',
+    columnName: 'Pompe à chaleur (%)',
+    precision: 1,
+  },
+  {
+    field: 'energie_ratio_gaz',
+    columnName: 'Gaz (%)',
+    precision: 1,
+  },
+  {
+    field: 'energie_ratio_fioul',
+    columnName: 'Fioul (%)',
+    precision: 1,
+  },
+];
+const exportAsXLSX = (allNetworks: NetworkToCompare[]) => {
+  const workbook = XLSX.utils.book_new();
+
+  const data: Record<string, any>[] = [];
+
+  allNetworks.forEach((network) => {
+    const row: Record<string, any> = {};
+
+    exportColumns.forEach((col) => {
+      let value = network[col.field];
+      if (Array.isArray(value)) {
+        value = value.join(',');
+      } else if (typeof value === 'boolean') {
+        value = value ? 'Oui' : 'Non';
+      } else if (typeof value === 'number') {
+        value = parseFloat(value.toFixed(typeof col.precision === 'number' ? col.precision : 0));
+      } else {
+        value = value?.toString();
+      }
+
+      row[col.columnName] = value;
+    });
+
+    data.push(row);
+  });
+
+  const generalSheet = XLSX.utils.json_to_sheet(data);
+
+  XLSX.utils.book_append_sheet(workbook, generalSheet, 'Général et Mix Énergétique');
+
+  // Create a Blob from the XLSX workbook
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+
+  downloadFile(url, `${new Date().toISOString().split('T')[0]}_reseauxDeChaleur.xlsx`);
+};
+
 const NetworksList = () => {
   const { networksService } = useServices();
   const tableApiRef = useGridApiRef();
@@ -262,7 +402,7 @@ const NetworksList = () => {
         minWidth: 130,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.PM ? Math.round(params.row.PM) : ''}</Text>,
+        renderCell: (params) => <Text>{formatPrice(params.row.PM)}</Text>,
       },
       {
         field: 'annee_creation',
@@ -286,7 +426,7 @@ const NetworksList = () => {
         minWidth: 180,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.livraisons_totale_MWh ? params.row.livraisons_totale_MWh.toFixed(1) : ''}</Text>,
+        renderCell: (params) => <Text>{formatNumber(params.row.livraisons_totale_MWh)}</Text>,
       },
       {
         field: 'energie_ratio_biomasse',
@@ -294,7 +434,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_biomasse ? params.row.energie_ratio_biomasse.toFixed(1) : 0}%</Text>,
+        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_biomasse)}</Text>,
       },
       {
         field: 'energie_ratio_geothermie',
@@ -302,7 +442,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_geothermie ? params.row.energie_ratio_geothermie.toFixed(1) : 0}%</Text>,
+        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_geothermie)}</Text>,
       },
       {
         field: 'energie_ratio_uve',
@@ -310,7 +450,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_uve ? params.row.energie_ratio_uve.toFixed(1) : 0}%</Text>,
+        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_uve)}</Text>,
       },
       {
         field: 'energie_ratio_chaleurIndustrielle',
@@ -318,9 +458,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => (
-          <Text>{params.row.energie_ratio_chaleurIndustrielle ? params.row.energie_ratio_chaleurIndustrielle.toFixed(1) : 0}%</Text>
-        ),
+        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_chaleurIndustrielle)}</Text>,
       },
       {
         field: 'energie_ratio_solaireThermique',
@@ -328,9 +466,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => (
-          <Text>{params.row.energie_ratio_solaireThermique ? params.row.energie_ratio_solaireThermique.toFixed(1) : 0}%</Text>
-        ),
+        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_solaireThermique)}</Text>,
       },
       {
         field: 'energie_ratio_pompeAChaleur',
@@ -338,9 +474,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => (
-          <Text>{params.row.energie_ratio_pompeAChaleur ? params.row.energie_ratio_pompeAChaleur.toFixed(1) : 0}%</Text>
-        ),
+        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_pompeAChaleur)}</Text>,
       },
       {
         field: 'energie_ratio_gaz',
@@ -348,7 +482,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_gaz ? params.row.energie_ratio_gaz.toFixed(1) : 0}%</Text>,
+        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_gaz)}</Text>,
       },
       {
         field: 'energie_ratio_fioul',
@@ -356,7 +490,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row.energie_ratio_fioul ? params.row.energie_ratio_fioul.toFixed(1) : 0}%</Text>,
+        renderCell: (params) => <Text>{formatPercentage(params.row.energie_ratio_fioul)}</Text>,
       },
     ],
     []
@@ -445,6 +579,14 @@ const NetworksList = () => {
             >
               <Icon size="md" name="fr-icon-filter-line" color="var(--text-action-high-blue-france)" />
               Tous les filtres ({countFilters('reseauxDeChaleur')})
+            </Button>
+            <Button
+              disabled={!filteredNetworks.length}
+              onClick={() => exportAsXLSX(filteredNetworks)}
+              iconId="fr-icon-file-download-line"
+              iconPosition="right"
+            >
+              Exporter
             </Button>
             <Input
               label="Rechercher"
