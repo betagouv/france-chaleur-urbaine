@@ -52,7 +52,7 @@ const StyledBox = styled.div<StyleProps>`
   border: ${({ border }) => border};
   box-shadow: ${({ boxShadow }) => boxShadow};
   background-color: ${({ backgroundColor }) =>
-    backgroundColor ? (backgroundColor?.startsWith('#') ? backgroundColor : `var(--${backgroundColor})`) : undefined}};
+    backgroundColor ? (backgroundColor?.startsWith('#') ? backgroundColor : `var(--${backgroundColor})`) : undefined};
   font-size: ${({ fontSize }) => fontSize};
   color: ${({ textColor }) => (textColor ? (textColor.startsWith('#') ? textColor : `var(--${textColor})`) : undefined)};
   text-align: ${({ textAlign }) => textAlign};
