@@ -146,7 +146,7 @@ const InternalMap = ({
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
-  const switcherControlRef = useRef<MapboxStyleSwitcherControl>();
+  const switcherControlRef = useRef<MapboxStyleSwitcherControl>(null);
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);

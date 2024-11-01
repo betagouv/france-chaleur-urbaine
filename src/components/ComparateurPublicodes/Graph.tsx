@@ -101,7 +101,7 @@ const emissionsCO2GraphColumnNames = [
 ];
 const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.map(getColumn).flat();
 
-const useFixLegendOpacity = (coutsRef: React.RefObject<HTMLDivElement>) => {
+const useFixLegendOpacity = (coutsRef?: React.RefObject<HTMLDivElement | null>) => {
   React.useEffect(() => {
     if (!coutsRef?.current) {
       return;
@@ -145,7 +145,7 @@ const formatEmissionsCO2 = (value: number) => `${value.toLocaleString('fr-FR', {
 
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
-  const coutsRef = useRef<HTMLDivElement>(null);
+  const coutsRef = useRef<HTMLDivElement | null>(null);
   useFixLegendOpacity(coutsRef);
 
   const coutGraphColumnNames = proMode

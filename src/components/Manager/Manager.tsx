@@ -32,7 +32,7 @@ type MapCenterLocation = {
 const Manager = () => {
   const { demandsService } = useServices();
   const tableApiRef = useGridApiRef();
-  const mapRef = useRef<MapRef>() as MutableRefObject<MapRef>;
+  const mapRef = useRef<MapRef>(null) as MutableRefObject<MapRef>;
 
   const [loading, setLoading] = useState(true);
   const [demands, setDemands] = useState<Demand[]>([]);

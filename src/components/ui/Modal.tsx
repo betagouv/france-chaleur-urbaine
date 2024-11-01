@@ -42,6 +42,6 @@ const Modal = ({ modal, size, ...props }: ModalProps) => {
 };
 
 // Dynamically import Modal to optimize loading
-export default dynamic(() => Promise.resolve(Modal), { ssr: false });
+export default dynamic(() => Promise.resolve(Modal as React.ComponentType<ModalProps>), { ssr: false });
 
 export const createModal = createdDSFRModal;
