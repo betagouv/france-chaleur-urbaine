@@ -6,6 +6,7 @@ export const Container = styled.div<{
   display: none;
   width: max-content;
   position: absolute;
+  white-space: pre-line;
   ${({ position }) => {
     switch (position) {
       case 'right':
