@@ -40,7 +40,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
       )}
       <Input
         name="surface logement type tertiaire"
-        label="Surface"
+        label="Surface moyenne d'un appartement"
         nativeInputProps={{
           inputMode: 'numeric',
           maxLength: 6,
@@ -61,6 +61,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
           <Input
             name="nombre de logements dans l'immeuble concerné"
             label="Nombre de logements dans l'immeuble concerné"
+            help="Utilisé pour le calcul des coûts par logement et émissions par logement. Par simplification, tous les logements d'un même immeuble sont considérés identiques."
             nativeInputProps={{
               inputMode: 'numeric',
               maxLength: 5,

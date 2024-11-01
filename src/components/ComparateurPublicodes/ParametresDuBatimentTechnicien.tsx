@@ -92,7 +92,7 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
               name="nombre de logements dans l'immeuble concerné"
               label="Nombre de logements dans l'immeuble concerné"
               hideUnit
-              help="Par simplification, tous les logements d'un même immeuble sont considérés identiques."
+              help="Utilisé pour le calcul des coûts par logement et émissions par logement. Par simplification, tous les logements d'un même immeuble sont considérés identiques."
               nativeInputProps={{
                 inputMode: 'numeric',
                 maxLength: 5,
