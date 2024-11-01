@@ -1,15 +1,14 @@
 import { createNextDsfrIntegrationApi } from '@codegouvfr/react-dsfr/next-pagesdir';
+import isPropValid from '@emotion/is-prop-valid';
 import '@reach/combobox/styles.css';
 import { useLocalStorageValue } from '@react-hookz/web';
 import Link from 'next/link';
 import React from 'react';
-import { createGlobalStyle, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
+import { createGlobalStyle, ThemeProvider as StyledComponentsThemeProvider, StyleSheetManager } from 'styled-components';
 import { createEmotionSsrAdvancedApproach } from 'tss-react/next/pagesDir';
 
 import { MuiDsfrThemeProvider } from './MuiDsfrThemeProvider';
 import theme from './theme';
-
-import './theme.d';
 
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
   interface RegisterLink {
@@ -169,6 +168,17 @@ const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-c
     }
   }
 `;
+// https://styled-components.com/docs/faqs#shouldforwardprop-is-no-longer-provided-by-default
+// This is to keep the same behavior as in styled-components v4
+// FIXME all props in styled-components should be modified to transient ones (with $)
+function shouldForwardProp(propName: string, target: any): boolean {
+  if (typeof target === 'string') {
+    // For HTML elements, forward the prop if it is a valid HTML attribute
+    return isPropValid(propName);
+  }
+  // For other elements, forward all props
+  return true;
+}
 
 const useLightTheme = () => {
   // React DSFR is forcing by default scheme in local storage
@@ -187,11 +197,13 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <StyledComponentsThemeProvider theme={theme}>
-      <MuiDsfrThemeProvider>
-        <AppGlobalStyle />
-        <DsfrFixUp />
-        {children}
-      </MuiDsfrThemeProvider>
+      <StyleSheetManager shouldForwardProp={shouldForwardProp} enableVendorPrefixes>
+        <MuiDsfrThemeProvider>
+          <AppGlobalStyle />
+          <DsfrFixUp />
+          {children}
+        </MuiDsfrThemeProvider>
+      </StyleSheetManager>
     </StyledComponentsThemeProvider>
   );
 }
