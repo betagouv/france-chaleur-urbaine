@@ -8,6 +8,7 @@ import React from 'react';
 
 import AddressAutocomplete from '@components/form/dsfr/AddressAutocompleteInput';
 import { FormProvider } from '@components/form/publicodes/FormProvider';
+import Label from '@components/form/publicodes/Label';
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Button from '@components/ui/Button';
@@ -145,7 +146,12 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 }
               >
                 <AddressAutocomplete
-                  label="Adresse"
+                  label={
+                    <Label
+                      label="Adresse"
+                      help="Pour le moment, l’adresse est utilisée uniquement pour évaluer la proximité aux réseaux de chaleur et froid et la zone climatique, et non pour récupérer les caractéristiques du bâtiment"
+                    ></Label>
+                  }
                   state={addressError ? 'error' : undefined}
                   stateRelatedMessage={
                     addressError ? 'Désolé, nous n’avons pas trouvé la ville associée à cette adresse, essayez avec une autre' : undefined
