@@ -173,10 +173,14 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     return `${typeInstallation.label}${suffix}`;
   };
 
+  const modesDeChauffageFiltres = modesDeChauffage.filter((modeDeChauffage) =>
+    typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true
+  );
+
   let maxCoutValue = 3000;
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
-    ...modesDeChauffage.flatMap((typeInstallation) => {
+    ...modesDeChauffageFiltres.flatMap((typeInstallation) => {
       const amountP1Abo = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1abo`);
       const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
       const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
@@ -259,7 +263,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
-    ...modesDeChauffage.flatMap((typeInstallation) => {
+    ...modesDeChauffageFiltres.flatMap((typeInstallation) => {
       const amounts = [
         ...getRow({
           title:

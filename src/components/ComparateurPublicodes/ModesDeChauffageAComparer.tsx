@@ -27,6 +27,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   ...props
 }) => {
   const inclusClimatisation = engine.getField('Inclure la climatisation');
+  const typeDeBatiment = engine.getField('type de bâtiment');
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
 
   const createOptionProps = (label: ModeDeChauffage) => ({
@@ -71,7 +72,9 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Separator />
       <Checkbox
         small
-        options={(['Poêle à granulés individuel', 'Chaudière à granulés collective'] satisfies ModeDeChauffage[]).map(createOptionProps)}
+        options={(['Poêle à granulés individuel', 'Chaudière à granulés collective'] satisfies ModeDeChauffage[])
+          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('individuel')))
+          .map(createOptionProps)}
       />
       <Separator />
       <Checkbox
@@ -83,7 +86,9 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             'Gaz à condensation collectif',
             'Gaz sans condensation collectif',
           ] satisfies ModeDeChauffage[]
-        ).map(createOptionProps)}
+        )
+          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('individuel')))
+          .map(createOptionProps)}
       />
       <Separator />
       <Checkbox small options={(['Fioul individuel', 'Fioul collectif'] satisfies ModeDeChauffage[]).map(createOptionProps)} />
@@ -99,7 +104,9 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             'PAC air/eau individuelle',
             'PAC air/eau collective',
           ] satisfies ModeDeChauffage[]
-        ).map(createOptionProps)}
+        )
+          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('individuelle')))
+          .map(createOptionProps)}
       />
       <Separator />
       <Checkbox small options={(['Radiateur électrique individuel'] satisfies ModeDeChauffage[]).map(createOptionProps)} />
