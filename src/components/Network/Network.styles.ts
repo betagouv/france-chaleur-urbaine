@@ -42,25 +42,6 @@ export const Colmun = styled.div`
   gap: 16px;
 `;
 
-export const BoxContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  > div {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    ${HoverableIconContainer} {
-      top: -2px;
-    }
-  }
-`;
-
-export const AddressContent = styled.div`
-  text-align: right;
-`;
-
 export const MapContainer = styled.div`
   height: 655px;
 `;

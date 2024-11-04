@@ -1,9 +1,14 @@
+import { ReactElement } from 'react';
+
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
+import Accordion from '@components/ui/Accordion';
+import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
+import Tooltip from '@components/ui/Tooltip';
 import { isDefined } from '@utils/core';
-import { getConso } from 'src/services/Map/conso';
+import { formatMWh, prettyFormatNumber } from '@utils/strings';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { Network } from 'src/types/Summary/Network';
 
@@ -11,17 +16,7 @@ import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
 import EligibilityTestBox from './EligibilityTestBox';
 import EnergiesChart from './EnergiesChart';
-import {
-  AddressContent,
-  BlueBox,
-  BoxContent,
-  BoxIcon,
-  BoxSection,
-  Colmun,
-  InformationsComplementairesBox,
-  MapContainer,
-  Title,
-} from './Network.styles';
+import { BlueBox, BoxIcon, BoxSection, Colmun, InformationsComplementairesBox, MapContainer, Title } from './Network.styles';
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;
@@ -88,149 +83,218 @@ const NetworkPanel = ({
             {(!displayBlocks || displayBlocks.includes('performances')) && (
               <BlueBox>
                 <h3>Performances environnementales</h3>
-                {!isCold && (
-                  <BoxContent>
-                    <div>
-                      <b>Taux d’EnR&R</b>
-                    </div>
-                    <div>{isDefined(network['Taux EnR&R']) ? `${network['Taux EnR&R']}%` : 'Non connu'}</div>
-                  </BoxContent>
-                )}
-                <BoxContent>
-                  <div>
-                    <b>Contenu CO2 ACV</b>
-                    <HoverableIcon iconName="ri-information-fill" position="bottom-centered">
-                      ACV : en analyse du cycle de vie (émissions directes et indirectes).
-                    </HoverableIcon>
-                  </div>
-                  <div>{isDefined(network['contenu CO2 ACV']) ? `${network['contenu CO2 ACV'] * 1000} g CO2/kWh` : 'Non connu'}</div>
-                </BoxContent>
-                <BoxContent>
-                  <div>
-                    <b>Contenu CO2</b>
-                    <HoverableIcon iconName="ri-information-fill" position="bottom-centered">
-                      Émissions directes
-                    </HoverableIcon>
-                  </div>
-                  <div>{isDefined(network['contenu CO2']) ? `${network['contenu CO2'] * 1000} g CO2/kWh` : 'Non connu'}</div>
-                </BoxContent>
+                <Text size="sm" fontStyle="italic" mb="2w">
+                  Données réglementaires,{' '}
+                  <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" target="_blank" rel="noreferrer noopener">
+                    arrêté du 5 juillet 2024
+                  </a>{' '}
+                  portant sur l’année 2022, ou la moyenne des années 2020, 2021 et 2022.
+                </Text>
+                {!isCold && <Property label="Taux d’EnR&R" value={network['Taux EnR&R']} unit="%" />}
+                <Property
+                  label="Contenu CO2 ACV"
+                  value={network['contenu CO2 ACV']}
+                  formatter={formatCO2}
+                  tooltip="ACV : en analyse du cycle de vie (émissions directes et indirectes)."
+                />
+                <Property label="Contenu CO2" value={network['contenu CO2']} formatter={formatCO2} tooltip="Émissions directes" />
               </BlueBox>
             )}
+
             {(!displayBlocks || displayBlocks.includes('techniques')) && (
               <BoxSection>
                 <h3>Caractéristiques techniques</h3>
-                <BoxContent>
-                  <div>
-                    <b>Livraisons totales de {isCold ? 'froid' : 'chaleur'}</b>
-                  </div>
-                  <div>{getConso(network.livraisons_totale_MWh)}</div>
-                </BoxContent>
-                <BoxContent>
-                  <div className="fr-ml-2w">dont résidentiel</div>
-                  <div>{getConso(network.livraisons_residentiel_MWh)}</div>
-                </BoxContent>
-                <BoxContent>
-                  <div className="fr-ml-2w">dont tertiaire</div>
-                  <div>{getConso(network.livraisons_tertiaire_MWh)}</div>
-                </BoxContent>
-                <BoxContent>
-                  <div>
-                    <b>Points de livraison</b>
-                  </div>
-                  <div>{network.nb_pdl ? network.nb_pdl : 'Non connu'}</div>
-                </BoxContent>
-                <BoxContent>
-                  <div>
-                    <b>
-                      Longueur réseau
-                      {!isCold && ' (aller)'}
-                    </b>
-                  </div>
-                  <div>{network.longueur_reseau ? `${network.longueur_reseau} km` : 'Non connu'}</div>
-                </BoxContent>
-                <BoxContent>
-                  <div>
-                    <BoxIcon>
-                      <span>
-                        <b>Rendement</b>
-                      </span>
-                      <HoverableIcon iconName="ri-information-fill" position="bottom-centered">
-                        Rapport entre l'énergie thermique livrée aux abonnés l'énergie thermique injectée dans le réseau.
-                      </HoverableIcon>
-                    </BoxIcon>
-                  </div>
-                  <div>{network['Rend%'] === null ? 'Non connu' : `${Math.round(Number(network['Rend%']))} %`}</div>
-                </BoxContent>
+                <Property
+                  label="Année de création du réseau"
+                  value={network.annee_creation}
+                  formatter={(f) => `${f}`} /* disable number formatting */
+                />
+
+                <Text fontStyle="italic" underline mt="2w">
+                  Données pour l'année 2023
+                </Text>
+                <Property label="Points de livraison" value={network.nb_pdl} />
+                <Property
+                  label={`Livraisons totales de ${isCold ? 'froid' : 'chaleur'}`}
+                  value={network.livraisons_totale_MWh}
+                  formatter={formatMWh}
+                />
+                <Accordion label="Voir le détail par secteur">
+                  <Property label="Résidentiel" value={network.livraisons_residentiel_MWh} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Tertiaire" value={network.livraisons_tertiaire_MWh} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Agriculture" value={network.livraisons_agriculture_MWh} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Industrie" value={network.livraisons_industrie_MWh} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Autres" value={network.livraisons_autre_MWh} formatter={formatMWh} simpleLabel skipEmpty />
+                </Accordion>
+
+                <Property
+                  label={`Production totale de ${isCold ? 'froid' : 'chaleur'}`}
+                  value={network.production_totale_MWh}
+                  formatter={formatMWh}
+                />
+                <Accordion label="Voir le détail par type d’énergie">
+                  <Property label="Gaz naturel" value={network.prod_MWh_gaz_naturel} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Charbon" value={network.prod_MWh_charbon} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property
+                    label="Fioul domestique"
+                    value={network.prod_MWh_fioul_domestique}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property label="Fioul lourd" value={network.prod_MWh_fioul_lourd} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="GPL" value={network.prod_MWh_GPL} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Biomasse solide" value={network.prod_MWh_biomasse_solide} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property
+                    label="Déchets internes"
+                    value={network.prod_MWh_dechets_internes}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property label="UIOM" value={network.prod_MWh_UIOM} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Biogaz" value={network.prod_MWh_biogaz} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Géothermie" value={network.prod_MWh_geothermie} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="PAC" value={network.prod_MWh_PAC} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property
+                    label="Solaire thermique"
+                    value={network.prod_MWh_solaire_thermique}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property
+                    label="Chaleur industiel"
+                    value={network.prod_MWh_chaleur_industiel}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property
+                    label="Autre chaleur récupérée"
+                    value={network.prod_MWh_autre_chaleur_recuperee}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property
+                    label="Chaudières électriques"
+                    value={network.prod_MWh_chaudieres_electriques}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property label="Autres" value={network.prod_MWh_autres} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Autres ENR" value={network.prod_MWh_autres_ENR} formatter={formatMWh} simpleLabel skipEmpty />
+                </Accordion>
+
+                <Property label="Puissance totale installée" value={network.puissance_MW_totale} formatter={formatMWh} />
+                <Accordion label="Voir le détail par type d’énergie">
+                  <Property label="Gaz naturel" value={network.puissance_MW_gaz_naturel} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Charbon" value={network.puissance_MW_charbon} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property
+                    label="Fioul domestique"
+                    value={network.puissance_MW_fioul_domestique}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property label="Fioul lourd" value={network.puissance_MW_fioul_lourd} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="GPL" value={network.puissance_MW_GPL} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property
+                    label="Biomasse solide"
+                    value={network.puissance_MW_biomasse_solide}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property
+                    label="Déchets internes"
+                    value={network.puissance_MW_dechets_internes}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property label="UIOM" value={network.puissance_MW_UIOM} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Biogaz" value={network.puissance_MW_biogaz} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Géothermie" value={network.puissance_MW_geothermie} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="PAC" value={network.puissance_MW_PAC} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property
+                    label="Solaire thermique"
+                    value={network.puissance_MW_solaire_thermique}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property
+                    label="Chaleur industiel"
+                    value={network.puissance_MW_chaleur_industiel}
+                    formatter={formatMWh}
+                    simpleLabel
+                    skipEmpty
+                  />
+                  <Property
+                    label="Autre chaleur récupérée"
+                    value={network.puissance_MW_autre_chaleur_recuperee}
+                    formatter={formatMWh}
+                    skipEmpty
+                  />
+                  <Property
+                    label="Chaudières électriques"
+                    value={network.puissance_MW_chaudieres_electriques}
+                    formatter={formatMWh}
+                    skipEmpty
+                  />
+                  <Property label="Autres" value={network.puissance_MW_autres} formatter={formatMWh} skipEmpty />
+                  <Property label="Autres ENR" value={network.puissance_MW_autres_ENR} formatter={formatMWh} skipEmpty />
+                </Accordion>
+
+                <Property label="Contenu CO2 (non réglementaire)" value={network.contenu_CO2_2023_tmp} formatter={formatCO2} />
+                <Property label="Contenu CO2 ACV (non réglementaire)" value={network.contenu_CO2_ACV_2023_tmp} formatter={formatCO2} />
+
+                <Text fontStyle="italic" mt="2w">
+                  <Text as="span" underline>
+                    Données pour l'année 2022
+                  </Text>
+                  &nbsp;(en attente de la diffusion par la FEDENE des données 2023)
+                </Text>
+
+                <Property
+                  label="Rendement"
+                  value={network['Rend%']}
+                  unit="%"
+                  tooltip="Rapport entre l'énergie thermique livrée aux abonnés l'énergie thermique injectée dans le réseau."
+                />
                 {!isCold && (
-                  <BoxContent>
-                    <div>
-                      <BoxIcon>
-                        <span>
-                          <b>Développement du réseau</b>
-                        </span>
-                        <HoverableIcon iconName="ri-information-fill" position="bottom-centered">
-                          Ratio entre le nombre de nouveaux abonnés en 2022 et le nombre total d'abonnés en 2021
-                        </HoverableIcon>
-                      </BoxIcon>
-                    </div>
-                    <div>{network['Dev_reseau%'] === null ? 'Non connu' : `${network['Dev_reseau%']} %`}</div>
-                  </BoxContent>
+                  <Property
+                    label="Développement du réseau"
+                    value={network['Dev_reseau%']}
+                    unit="%"
+                    tooltip="Ratio entre le nombre de nouveaux abonnés en 2022 et le nombre total d'abonnés en 2021."
+                  />
                 )}
-                <br />
-                <BoxContent>
-                  <div>
-                    <b>Année de création du réseau</b>
-                  </div>
-                  <div>{network.annee_creation ? network.annee_creation : 'Non connu'}</div>
-                </BoxContent>
+
+                <Text fontStyle="italic" mt="2w">
+                  <Text as="span" underline>
+                    Données pour l'année 2021
+                  </Text>
+                  &nbsp;(ces données ne sont plus actualisées avec le même niveau de précision)
+                </Text>
+                <Property label={`Longueur du réseau${!isCold && ' (aller)'}`} value={network.longueur_reseau} unit="km" />
                 {!isCold && (
                   <>
-                    <BoxContent>
-                      <div>
-                        <b>Fluide caloporteur - eau chaude</b>
-                      </div>
-                      <div>
-                        {network['eau_chaude'] === null
-                          ? 'Non connu'
-                          : !isNaN(Number.parseFloat(network['eau_chaude']))
-                          ? `${Math.round(Number.parseFloat(network['eau_chaude']))} %`
-                          : `${network['eau_chaude']}`.toLowerCase() === 'oui'
-                          ? 'Oui'
-                          : 'Non'}
-                      </div>
-                    </BoxContent>
-                    <BoxContent>
-                      <div>
-                        <b>Fluide caloporteur - eau surchauffée</b>
-                      </div>
-                      <div>
-                        {network['eau_surchauffee'] === null
-                          ? 'Non connu'
-                          : !isNaN(Number.parseFloat(network['eau_surchauffee']))
-                          ? `${Math.round(Number.parseFloat(network['eau_surchauffee']))} %`
-                          : `${network['eau_surchauffee']}`.toLowerCase() === 'oui'
-                          ? 'Oui'
-                          : 'Non'}
-                      </div>
-                    </BoxContent>
-                    <BoxContent>
-                      <div>
-                        <b>Fluide caloporteur - vapeur</b>
-                      </div>
-                      <div>
-                        {network['vapeur'] === null
-                          ? 'Non connu'
-                          : !isNaN(Number.parseFloat(network['vapeur']))
-                          ? `${Math.round(Number.parseFloat(network['vapeur']))} %`
-                          : `${network['vapeur']}`.toLowerCase() === 'oui'
-                          ? 'Oui'
-                          : 'Non'}
-                      </div>
-                    </BoxContent>
+                    <Property label="Fluide caloporteur - eau chaude" value={network.eau_chaude} formatter={numberBooleanFormatter} />
+                    <Property
+                      label="Fluide caloporteur - eau surchauffée"
+                      value={network.eau_surchauffee}
+                      formatter={numberBooleanFormatter}
+                    />
+                    <Property label="Fluide caloporteur - vapeur" value={network.vapeur} formatter={numberBooleanFormatter} />
                   </>
                 )}
               </BoxSection>
             )}
+
             {!isCold && (!displayBlocks || displayBlocks.includes('tarifs')) && (
               <BoxSection>
                 <BoxIcon>
@@ -244,65 +308,53 @@ const NetworkPanel = ({
                     </h3>
                   </span>
                 </BoxIcon>
+
+                <Text fontStyle="italic" mb="2w">
+                  <Text as="span" underline>
+                    Données pour l'année 2022
+                  </Text>
+                  &nbsp;(en attente de la diffusion par la FEDENE des données 2023)
+                </Text>
                 {network.PM || network.PM_L || network.PM_T || network['PV%'] || network['PF%'] ? (
                   <>
-                    {network.PM && (
+                    {isDefined(network.PM) && <Property label="Prix moyen de la chaleur" value={network.PM} unit="€TTC/MWh" round />}
+                    {(isDefined(network.PM_L) || isDefined(network.PM_T)) && (
                       <>
-                        <BoxContent>
-                          <div>
-                            <b>Prix moyen de la chaleur</b>
-                          </div>
-                          <div>{Math.round(network.PM)} €TTC/MWh</div>
-                        </BoxContent>
                         <br />
+                        <b>Prix moyen par catégorie d'abonnés</b>
+                        {isDefined(network.PM_L) && (
+                          <Property
+                            label={<Box ml="2w">Logements</Box>}
+                            value={network.PM_L}
+                            unit="€TTC/MWh"
+                            round
+                            tooltip="Prix moyen pour une copropriété de 30 lots avec une consommation de 300 MWh/an"
+                          />
+                        )}
+                        {isDefined(network.PM_T) && (
+                          <Property
+                            label={<Box ml="2w">Tertiaire</Box>}
+                            value={network.PM_T}
+                            unit="€TTC/MWh"
+                            round
+                            tooltip="Prix moyen pour une surface de 1000m² avec une consommation de 1500 MWh/an"
+                          />
+                        )}
                       </>
                     )}
-                    {(network.PM_L || network.PM_T) && (
+                    {(isDefined(network['PV%']) || isDefined(network['PF%'])) && (
                       <>
-                        <div>
-                          <b>Prix moyen par catégorie d'abonnés</b>
-                        </div>
-                        {network.PM_L && (
-                          <BoxContent>
-                            <div className="fr-ml-2w">
-                              <span>Logements</span>
-                              <HoverableIcon iconName="ri-information-fill" position="bottom-centered">
-                                Prix moyen pour une copropriété de 30 lots avec une consommation de 300 MWh/an
-                              </HoverableIcon>
-                            </div>
-                            <div>{Math.round(network.PM_L)} €TTC/MWh</div>
-                          </BoxContent>
-                        )}
-                        {network.PM_T && (
-                          <BoxContent>
-                            <div className="fr-ml-2w">
-                              <span>Tertiaire</span>
-                              <HoverableIcon iconName="ri-information-fill" position="bottom-centered">
-                                Prix moyen pour une surface de 1000m² avec une consommation de 1500 MWh/an
-                              </HoverableIcon>
-                            </div>
-                            <div>{Math.round(network.PM_T)} €TTC/MWh</div>
-                          </BoxContent>
-                        )}
                         <br />
-                      </>
-                    )}
-                    {(network['PV%'] || network['PF%']) && (
-                      <>
-                        <div>
-                          <b>Poids respectifs des parts fixe et variable</b>
-                        </div>
-                        {network['PV%'] && (
-                          <BoxContent>
-                            <div className="fr-ml-2w">% de la part variable (fonction des consommations)</div>
-                            <div>{network['PV%']}%</div>
-                          </BoxContent>
+                        <b>Poids respectifs des parts fixe et variable</b>
+                        {isDefined(network['PV%']) && (
+                          <Property
+                            label={<Box ml="2w">% de la part variable (fonction des consommations)</Box>}
+                            value={network['PV%']}
+                            unit="%"
+                          />
                         )}
-                        {network['PF%'] && (
-                          <BoxContent>
-                            <div className="fr-ml-2w"> % de la part fixe (abonnement)</div>
-                            <div>{network['PF%']}%</div>
-                          </BoxContent>
+                        {isDefined(network['PF%']) && (
+                          <Property label={<Box ml="2w">% de la part fixe (abonnement)</Box>} value={network['PF%']} unit="%" />
                         )}
                       </>
                     )}
@@ -312,49 +364,22 @@ const NetworkPanel = ({
                 )}
               </BoxSection>
             )}
+
             {(!displayBlocks || displayBlocks.includes('contacts')) && (
               <BoxSection>
                 <h3>Contacts</h3>
-                <BoxContent>
-                  <div>
-                    <b>Maître d'Ouvrage</b>
-                  </div>
-                  <div>{network.MO}</div>
-                </BoxContent>
-                <BoxContent>
-                  <div>
-                    <b>Adresse</b>
-                  </div>
-                  <AddressContent>
-                    {network.adresse_mo && network.adresse_mo !== '0' && (
-                      <>
-                        {network.adresse_mo}
-                        <br />
-                      </>
-                    )}
-                    {network.CP_MO && network.CP_MO !== '0' && network.CP_MO !== '00000' && network.CP_MO}{' '}
-                    {network.ville_mo && network.ville_mo !== '0' && network.ville_mo}
-                  </AddressContent>
-                </BoxContent>
-                <br />
-                <BoxContent>
-                  <div>
-                    <b>Gestionnaire</b>
-                  </div>
-                  <div>{network.Gestionnaire}</div>
-                </BoxContent>
-                {network.website_gestionnaire && network.website_gestionnaire.trim() !== 'NON' && (
-                  <BoxContent>
-                    <div>
-                      <b>Site Internet</b>
-                    </div>
-                    <div>
-                      <a href={getFullURL(network.website_gestionnaire)} target="_blank" rel="noopener noreferrer">
-                        {network.website_gestionnaire}
-                      </a>
-                    </div>
-                  </BoxContent>
-                )}
+                <Property label="Maître d'Ouvrage" value={network.MO} />
+                <Property label="Adresse" value={network.adresse_mo} />
+                <Property label="Gestionnaire" value={network.Gestionnaire} />
+                <Property
+                  label="Site Internet"
+                  value={network.website_gestionnaire}
+                  formatter={(url) => (
+                    <Link href={getFullURL(url)} isExternal>
+                      {url}
+                    </Link>
+                  )}
+                />
               </BoxSection>
             )}
           </Colmun>
@@ -417,46 +442,35 @@ const NetworkPanel = ({
           </Colmun>
         )}
       </div>
+
       {(!displayBlocks || displayBlocks.includes('sources')) && (
         <p className="fr-mt-4w fr-hint-text">
-          <>
-            Sources : Enquête annuelle des réseaux de chaleur et de froid (EARCF), édition 2023 portant sur l’année 2022, réalisée par la
-            Fedene Réseaux de chaleur et de froid avec le concours de l’association AMORCE, sous tutelle du service des données et études
-            statistiques (SDES) du ministère de la transition écologique.
-            {isCold ? (
-              <>
-                {' '}
-                Excepté pour les “Performances environnementales" : la source est l’
-                <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" target="_blank" rel="noreferrer noopener">
-                  Arrêté du 5 juillet 2024
-                </a>{' '}
-                (DPE) réalisé sur la base des données portant sur l'année 2022 ou sur une moyenne 2020-2021-2022
-                <br />
-                <br />
-              </>
-            ) : (
-              <>
-                <br />
-                Excepté pour les éléments suivants :
-                <ul>
-                  <li>
-                    "Performances environnementales" : la source est l’
-                    <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" target="_blank" rel="noreferrer noopener">
-                      Arrêté du 5 juillet 2024
-                    </a>{' '}
-                    (DPE) réalisé sur la base des données portant sur l'année 2022 ou sur une moyenne 2020-2021-2022
-                  </li>
-                  <li>
-                    le fluide caloporteur pour les réseaux utilisant différents types de fluides, et la longueur des réseaux : la source est
-                    l'EARCF portant sur l'année 2021 (France Chaleur Urbaine ne disposant pas de données du même niveau de précision sur
-                    2022)
-                  </li>
-                </ul>
-              </>
-            )}
-            <img src="/logo-fedene.svg" alt="logo fedene" height="50px" className="fr-mr-2w" />
-            <img src="/logo-amorce.svg" alt="logo amorce" height="50px" />
-          </>
+          <Box>
+            Sources : L’ensemble des données sont extraites des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le
+            concours de l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la
+            transition écologique.
+          </Box>
+          <ul>
+            <li>
+              Données 2023 :{' '}
+              <Link
+                href="https://www.statistiques.developpement-durable.gouv.fr/catalogue?page=datafile&datafileRid=5f93b3f9-8d0f-414c-ad35-51db742c421c"
+                isExternal
+              >
+                données locales de l’énergie diffusées par le SDES
+              </Link>
+            </li>
+            <li>
+              Données 2022 :{' '}
+              <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2023/" isExternal>
+                bibliothèque de données de la Fedene Réseaux de chaleur et de froid
+              </Link>
+            </li>
+            <li>Données 2021 : ViaSeva.</li>
+          </ul>
+
+          <img src="/logo-fedene.svg" alt="logo fedene" height="50px" className="fr-mr-2w" />
+          <img src="/logo-amorce.svg" alt="logo amorce" height="50px" />
         </p>
       )}
     </>
@@ -464,3 +478,45 @@ const NetworkPanel = ({
 };
 
 export default NetworkPanel;
+
+interface PopupPropertyProps<T> {
+  label: string | ReactElement;
+  value: T | undefined;
+  unit?: string; // overridden by the formatter if present
+  round?: boolean;
+  formatter?: (value: T) => string | ReactElement;
+  tooltip?: string | ReactElement;
+  simpleLabel?: boolean;
+  skipEmpty?: boolean;
+}
+const Property = <T,>({ label, value, unit, formatter, tooltip, round, simpleLabel, skipEmpty }: PopupPropertyProps<T>) =>
+  ((skipEmpty && isDefined(value) && value !== 0) || !skipEmpty) && (
+    <Box display="flex" justifyContent="space-between">
+      <Box display="flex">
+        {typeof label === 'string' ? simpleLabel ? label : <strong>{label}</strong> : label}
+        {tooltip && (
+          <Tooltip
+            title={tooltip}
+            iconProps={{
+              className: 'fr-ml-1w',
+            }}
+          />
+        )}
+      </Box>
+      <div>
+        {isDefined(value)
+          ? isDefined(formatter)
+            ? formatter(value)
+            : `${typeof value === 'number' ? prettyFormatNumber(value, round ? 0 : undefined) : value} ${unit ?? ''}`
+          : 'Non connu'}
+      </div>
+    </Box>
+  );
+
+function numberBooleanFormatter(value: string): string | ReactElement {
+  return !isNaN(Number.parseFloat(value)) ? `${Math.round(Number.parseFloat(value))} %` : value.toLowerCase() === 'oui' ? 'Oui' : 'Non';
+}
+
+function formatCO2(co2kg: number): string {
+  return `${Math.round(co2kg * 1000)} g CO2/kWh`;
+}
