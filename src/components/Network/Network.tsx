@@ -479,7 +479,7 @@ const NetworkPanel = ({
 
 export default NetworkPanel;
 
-interface PopupPropertyProps<T> {
+interface PropertyProps<T> {
   label: string | ReactElement;
   value: T | undefined;
   unit?: string; // overridden by the formatter if present
@@ -489,7 +489,7 @@ interface PopupPropertyProps<T> {
   simpleLabel?: boolean;
   skipEmpty?: boolean;
 }
-const Property = <T,>({ label, value, unit, formatter, tooltip, round, simpleLabel, skipEmpty }: PopupPropertyProps<T>) =>
+const Property = <T,>({ label, value, unit, formatter, tooltip, round, simpleLabel, skipEmpty }: PropertyProps<T>) =>
   ((skipEmpty && isDefined(value) && value !== 0) || !skipEmpty) && (
     <Box display="flex" justifyContent="space-between">
       <Box display="flex">
