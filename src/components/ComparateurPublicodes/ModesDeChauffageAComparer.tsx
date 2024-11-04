@@ -1,6 +1,8 @@
 import React from 'react';
 
 import Checkbox from '@components/form/dsfr/Checkbox';
+import Icon from '@components/ui/Icon';
+import Text from '@components/ui/Text';
 import useArrayQueryState from '@hooks/useArrayQueryState';
 import { LocationInfoResponse } from '@pages/api/location-infos';
 
@@ -16,7 +18,6 @@ type ModesDeChauffageAComparerFormProps = React.HTMLAttributes<HTMLDivElement> &
   nearestReseauDeChaleur?: LocationInfoResponse['nearestReseauDeChaleur'];
   nearestReseauDeFroid?: LocationInfoResponse['nearestReseauDeFroid'];
 };
-
 const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps> = ({
   children,
   className,
@@ -40,12 +41,14 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   return (
     <div {...props}>
       <Disclaimer />
-      <p className="fr-text--sm">
-        Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer, en notant que{' '}
-        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--sm">
-          tous les modes de chauffage ne sont pas valables pour toutes les situations
+      <p className="fr-text--sm">Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer.</p>
+      <Text size="xs" color="warning">
+        <Icon name="fr-icon-info-line" size="xs" /> Les modes de chauffage et de refroidissement sont interchangeables, mais certains modes
+        sont plus adaptés pour certains bâtiments.{' '}
+        <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs">
+          En savoir plus
         </a>
-      </p>
+      </Text>
 
       <Title>Eau Chaude Sanitaire</Title>
       <SelectProductionECS />
