@@ -59,6 +59,13 @@ Une partie des données est stockées dans [Airtable](https://airtable.com/), l'
 1. Copier la base de données `FCU Prod` vers `FCU Dev <ton prenom>` (Cocher uniquement `Duplicate records`)
 2. Récupérer les API Keys et les modifier dans le fichier `.env.local`
 
+### Kysely
+
+Certaines requêtes à la base de données sont générées par [Kysely](https://github.com/koskimas/kysely) à partir de [le fichier `src/db/kysely/database.d.ts`](src/db/kysely/database.d.ts).
+Celui-ci doit être généré à partir de la base de données à chaque fois que celle-ci est modifiée 
+
+- `yarn db:verify` pour voir si des modifications ont été faites à la base de données sans avoir été généré le fichier `src/db/kysely/database.ts`
+- `yarn db:sync` pour générer le fichier `src/db/kysely/database.ts` à partir de la base de données
 
 ## Développement avec Publicodes
 
