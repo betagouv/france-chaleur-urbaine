@@ -142,149 +142,163 @@ const NetworkPanel = ({
                   value={network.production_totale_MWh}
                   formatter={formatMWh}
                 />
-                <Accordion label="Voir le détail par type d’énergie">
-                  <Property label="Gaz naturel" value={network.prod_MWh_gaz_naturel} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="Charbon" value={network.prod_MWh_charbon} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property
-                    label="Fioul domestique"
-                    value={network.prod_MWh_fioul_domestique}
-                    formatter={formatMWh}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property label="Fioul lourd" value={network.prod_MWh_fioul_lourd} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="GPL" value={network.prod_MWh_GPL} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="Biomasse solide" value={network.prod_MWh_biomasse_solide} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property
-                    label="Déchets internes"
-                    value={network.prod_MWh_dechets_internes}
-                    formatter={formatMWh}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property label="UIOM" value={network.prod_MWh_UIOM} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="Biogaz" value={network.prod_MWh_biogaz} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="Géothermie" value={network.prod_MWh_geothermie} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="PAC" value={network.prod_MWh_PAC} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property
-                    label="Solaire thermique"
-                    value={network.prod_MWh_solaire_thermique}
-                    formatter={formatMWh}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property
-                    label="Chaleur industiel"
-                    value={network.prod_MWh_chaleur_industiel}
-                    formatter={formatMWh}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property
-                    label="Autre chaleur récupérée"
-                    value={network.prod_MWh_autre_chaleur_recuperee}
-                    formatter={formatMWh}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property
-                    label="Chaudières électriques"
-                    value={network.prod_MWh_chaudieres_electriques}
-                    formatter={formatMWh}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property label="Autres" value={network.prod_MWh_autres} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="Autres ENR" value={network.prod_MWh_autres_ENR} formatter={formatMWh} simpleLabel skipEmpty />
-                </Accordion>
+                {!isCold && (
+                  <Accordion label="Voir le détail par type d’énergie">
+                    <Property label="Gaz naturel" value={network.prod_MWh_gaz_naturel} formatter={formatMWh} simpleLabel skipEmpty />
+                    <Property label="Charbon" value={network.prod_MWh_charbon} formatter={formatMWh} simpleLabel skipEmpty />
+                    <Property
+                      label="Fioul domestique"
+                      value={network.prod_MWh_fioul_domestique}
+                      formatter={formatMWh}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property label="Fioul lourd" value={network.prod_MWh_fioul_lourd} formatter={formatMWh} simpleLabel skipEmpty />
+                    <Property label="GPL" value={network.prod_MWh_GPL} formatter={formatMWh} simpleLabel skipEmpty />
+                    <Property
+                      label="Biomasse solide"
+                      value={network.prod_MWh_biomasse_solide}
+                      formatter={formatMWh}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property
+                      label="Déchets internes"
+                      value={network.prod_MWh_dechets_internes}
+                      formatter={formatMWh}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property label="UIOM" value={network.prod_MWh_UIOM} formatter={formatMWh} simpleLabel skipEmpty />
+                    <Property label="Biogaz" value={network.prod_MWh_biogaz} formatter={formatMWh} simpleLabel skipEmpty />
+                    <Property label="Géothermie" value={network.prod_MWh_geothermie} formatter={formatMWh} simpleLabel skipEmpty />
+                    <Property label="PAC" value={network.prod_MWh_PAC} formatter={formatMWh} simpleLabel skipEmpty />
+                    <Property
+                      label="Solaire thermique"
+                      value={network.prod_MWh_solaire_thermique}
+                      formatter={formatMWh}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property
+                      label="Chaleur industiel"
+                      value={network.prod_MWh_chaleur_industiel}
+                      formatter={formatMWh}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property
+                      label="Autre chaleur récupérée"
+                      value={network.prod_MWh_autre_chaleur_recuperee}
+                      formatter={formatMWh}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property
+                      label="Chaudières électriques"
+                      value={network.prod_MWh_chaudieres_electriques}
+                      formatter={formatMWh}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property label="Autres" value={network.prod_MWh_autres} formatter={formatMWh} simpleLabel skipEmpty />
+                    <Property label="Autres ENR" value={network.prod_MWh_autres_ENR} formatter={formatMWh} simpleLabel skipEmpty />
+                  </Accordion>
+                )}
 
                 <Property label="Puissance totale installée" value={network.puissance_MW_totale} formatter={formatMW} />
-                <Accordion label="Voir le détail par type d’énergie">
-                  <Property label="Gaz naturel" value={network.puissance_MW_gaz_naturel} formatter={formatMW} simpleLabel skipEmpty />
-                  <Property label="Charbon" value={network.puissance_MW_charbon} formatter={formatMW} simpleLabel skipEmpty />
-                  <Property
-                    label="Fioul domestique"
-                    value={network.puissance_MW_fioul_domestique}
-                    formatter={formatMW}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property label="Fioul lourd" value={network.puissance_MW_fioul_lourd} formatter={formatMW} simpleLabel skipEmpty />
-                  <Property label="GPL" value={network.puissance_MW_GPL} formatter={formatMW} simpleLabel skipEmpty />
-                  <Property
-                    label="Biomasse solide"
-                    value={network.puissance_MW_biomasse_solide}
-                    formatter={formatMW}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property
-                    label="Déchets internes"
-                    value={network.puissance_MW_dechets_internes}
-                    formatter={formatMW}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property label="UIOM" value={network.puissance_MW_UIOM} formatter={formatMW} simpleLabel skipEmpty />
-                  <Property label="Biogaz" value={network.puissance_MW_biogaz} formatter={formatMW} simpleLabel skipEmpty />
-                  <Property label="Géothermie" value={network.puissance_MW_geothermie} formatter={formatMW} simpleLabel skipEmpty />
-                  <Property label="PAC" value={network.puissance_MW_PAC} formatter={formatMW} simpleLabel skipEmpty />
-                  <Property
-                    label="Solaire thermique"
-                    value={network.puissance_MW_solaire_thermique}
-                    formatter={formatMW}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property
-                    label="Chaleur industiel"
-                    value={network.puissance_MW_chaleur_industiel}
-                    formatter={formatMW}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property
-                    label="Autre chaleur récupérée"
-                    value={network.puissance_MW_autre_chaleur_recuperee}
-                    formatter={formatMW}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property
-                    label="Chaudières électriques"
-                    value={network.puissance_MW_chaudieres_electriques}
-                    formatter={formatMW}
-                    simpleLabel
-                    skipEmpty
-                  />
-                  <Property label="Autres" value={network.puissance_MW_autres} formatter={formatMW} simpleLabel skipEmpty />
-                  <Property label="Autres ENR" value={network.puissance_MW_autres_ENR} formatter={formatMW} simpleLabel skipEmpty />
-                </Accordion>
+                {!isCold && (
+                  <Accordion label="Voir le détail par type d’énergie">
+                    <Property label="Gaz naturel" value={network.puissance_MW_gaz_naturel} formatter={formatMW} simpleLabel skipEmpty />
+                    <Property label="Charbon" value={network.puissance_MW_charbon} formatter={formatMW} simpleLabel skipEmpty />
+                    <Property
+                      label="Fioul domestique"
+                      value={network.puissance_MW_fioul_domestique}
+                      formatter={formatMW}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property label="Fioul lourd" value={network.puissance_MW_fioul_lourd} formatter={formatMW} simpleLabel skipEmpty />
+                    <Property label="GPL" value={network.puissance_MW_GPL} formatter={formatMW} simpleLabel skipEmpty />
+                    <Property
+                      label="Biomasse solide"
+                      value={network.puissance_MW_biomasse_solide}
+                      formatter={formatMW}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property
+                      label="Déchets internes"
+                      value={network.puissance_MW_dechets_internes}
+                      formatter={formatMW}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property label="UIOM" value={network.puissance_MW_UIOM} formatter={formatMW} simpleLabel skipEmpty />
+                    <Property label="Biogaz" value={network.puissance_MW_biogaz} formatter={formatMW} simpleLabel skipEmpty />
+                    <Property label="Géothermie" value={network.puissance_MW_geothermie} formatter={formatMW} simpleLabel skipEmpty />
+                    <Property label="PAC" value={network.puissance_MW_PAC} formatter={formatMW} simpleLabel skipEmpty />
+                    <Property
+                      label="Solaire thermique"
+                      value={network.puissance_MW_solaire_thermique}
+                      formatter={formatMW}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property
+                      label="Chaleur industiel"
+                      value={network.puissance_MW_chaleur_industiel}
+                      formatter={formatMW}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property
+                      label="Autre chaleur récupérée"
+                      value={network.puissance_MW_autre_chaleur_recuperee}
+                      formatter={formatMW}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property
+                      label="Chaudières électriques"
+                      value={network.puissance_MW_chaudieres_electriques}
+                      formatter={formatMW}
+                      simpleLabel
+                      skipEmpty
+                    />
+                    <Property label="Autres" value={network.puissance_MW_autres} formatter={formatMW} simpleLabel skipEmpty />
+                    <Property label="Autres ENR" value={network.puissance_MW_autres_ENR} formatter={formatMW} simpleLabel skipEmpty />
+                  </Accordion>
+                )}
 
                 <Property label="Contenu CO2 (non réglementaire)" value={network.contenu_CO2_2023_tmp} formatter={formatCO2} />
                 <Property label="Contenu CO2 ACV (non réglementaire)" value={network.contenu_CO2_ACV_2023_tmp} formatter={formatCO2} />
 
-                <Text size="sm" fontStyle="italic" my="2w">
-                  <Text as="span" underline>
-                    Données pour l'année 2022
-                  </Text>
-                  &nbsp;(en attente de la diffusion par la FEDENE des données 2023)
-                </Text>
-
-                <Property
-                  label="Rendement"
-                  value={network['Rend%']}
-                  round
-                  unit="%"
-                  tooltip="Rapport entre l'énergie thermique livrée aux abonnés l'énergie thermique injectée dans le réseau."
-                />
                 {!isCold && (
-                  <Property
-                    label="Développement du réseau"
-                    value={network['Dev_reseau%']}
-                    unit="%"
-                    tooltip="Ratio entre le nombre de nouveaux abonnés en 2022 et le nombre total d'abonnés en 2021."
-                  />
+                  <>
+                    <Text size="sm" fontStyle="italic" my="2w">
+                      <Text as="span" underline>
+                        Données pour l'année 2022
+                      </Text>
+                      &nbsp;(en attente de la diffusion par la FEDENE des données 2023)
+                    </Text>
+
+                    <Property
+                      label="Rendement"
+                      value={network['Rend%']}
+                      round
+                      unit="%"
+                      tooltip="Rapport entre l'énergie thermique livrée aux abonnés l'énergie thermique injectée dans le réseau."
+                    />
+                    {!isCold && (
+                      <Property
+                        label="Développement du réseau"
+                        value={network['Dev_reseau%']}
+                        unit="%"
+                        tooltip="Ratio entre le nombre de nouveaux abonnés en 2022 et le nombre total d'abonnés en 2021."
+                      />
+                    )}
+                  </>
                 )}
 
                 <Text size="sm" fontStyle="italic" my="2w">
@@ -501,12 +515,14 @@ const NetworkPanel = ({
                 données locales de l’énergie diffusées par le SDES
               </Link>
             </li>
-            <li>
-              Données 2022 :{' '}
-              <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2023/" isExternal>
-                bibliothèque de données de la Fedene Réseaux de chaleur et de froid
-              </Link>
-            </li>
+            {!isCold && (
+              <li>
+                Données 2022 :{' '}
+                <Link href="https://fedene.fr/ressource/bibliotheque-de-donnees-des-reseaux-de-chaleur-et-de-froid-2023/" isExternal>
+                  bibliothèque de données de la Fedene Réseaux de chaleur et de froid
+                </Link>
+              </li>
+            )}
             <li>Données 2021 : ViaSeva.</li>
           </ul>
 

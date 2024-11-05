@@ -129,6 +129,7 @@ const conversionConfigReseauxDeFroid = {
   longueur_reseau: TypeNumber,
   nb_pdl: TypeNumber,
   production_totale_MWh: TypeNumber,
+  puissance_totale_MW: TypeNumber,
   livraisons_totale_MWh: TypeNumber,
   livraisons_residentiel_MWh: TypeNumber,
   livraisons_tertiaire_MWh: TypeNumber,
