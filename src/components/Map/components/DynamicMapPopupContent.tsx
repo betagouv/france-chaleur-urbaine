@@ -5,7 +5,7 @@ import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import { isDefined } from '@utils/core';
-import { formatMWh, prettyFormatNumber } from '@utils/strings';
+import { formatMWhAn, prettyFormatNumber } from '@utils/strings';
 import { BatimentRaccordeReseauxChaleurFroid } from 'src/types/layers/BatimentRaccordeReseauxChaleurFroid';
 import { BesoinsEnChaleur, BesoinsEnChaleurIndustrieCommunes } from 'src/types/layers/BesoinsEnChaleur';
 import { CommuneFortPotentielPourCreationReseauxChaleur } from 'src/types/layers/CommuneFortPotentielPourCreationReseauxChaleur';
@@ -174,8 +174,8 @@ const ZonePotentielChaudPopupContent = ({
     <section>
       <PopupTitle className="fr-mr-3w">Zone à {fortChaud ? ' fort' : ''} potentiel</PopupTitle>
       <PopupProperty label="Nombre de bâtiments “intéressants”" value={zonePotentielChaud.bat_imp} />
-      <PopupProperty label="Besoins en chauffage" value={zonePotentielChaud.chauf_mwh} formatter={formatMWh} />
-      <PopupProperty label="Besoins en eau chaude sanitaire" value={zonePotentielChaud.ecs_mwh} formatter={formatMWh} />
+      <PopupProperty label="Besoins en chauffage" value={zonePotentielChaud.chauf_mwh} formatter={formatMWhAn} />
+      <PopupProperty label="Besoins en eau chaude sanitaire" value={zonePotentielChaud.ecs_mwh} formatter={formatMWhAn} />
       <PopupProperty
         label="Part du secteur tertiaire"
         value={zonePotentielChaud.part_ter}
@@ -193,9 +193,9 @@ const BesoinsEnChaleurPopupContent = ({ besoinsEnChaleur }: { besoinsEnChaleur: 
   return (
     <section>
       <PopupTitle className="fr-mr-3w">Besoins en chaleur et froid</PopupTitle>
-      <PopupProperty label="Besoins en chauffage" value={besoinsEnChaleur.CHAUF_MWH} formatter={formatMWh} />
-      <PopupProperty label="Besoins en eau chaude sanitaire" value={besoinsEnChaleur.ECS_MWH} formatter={formatMWh} />
-      <PopupProperty label="Besoins en froid" value={besoinsEnChaleur.FROID_MWH} formatter={formatMWh} />
+      <PopupProperty label="Besoins en chauffage" value={besoinsEnChaleur.CHAUF_MWH} formatter={formatMWhAn} />
+      <PopupProperty label="Besoins en eau chaude sanitaire" value={besoinsEnChaleur.ECS_MWH} formatter={formatMWhAn} />
+      <PopupProperty label="Besoins en froid" value={besoinsEnChaleur.FROID_MWH} formatter={formatMWhAn} />
       <PopupProperty label="Part tertiaire de la surface des bâtiments" value={besoinsEnChaleur.PART_TER} unit="%" />
       <PopupProperty label="Surface de plancher" value={besoinsEnChaleur.SDP_M2} unit="m²" />
       <PopupProperty label="Identifiant BD TOPO" value={besoinsEnChaleur.IDBATIMENT} />
@@ -218,15 +218,15 @@ const BesoinsEnChaleurIndustrieCommunesPopupContent = ({
       <PopupProperty
         label="Besoin en chaleur et froid pour les process"
         value={besoinsEnChaleurIndustrieCommunes.conso_proc}
-        formatter={formatMWh}
+        formatter={formatMWhAn}
       />
       <PopupProperty
         label="Besoins en chaleur pour le chauffage des locaux"
         value={besoinsEnChaleurIndustrieCommunes.conso_loca}
-        formatter={formatMWh}
+        formatter={formatMWhAn}
       />
-      <PopupProperty label="Autres besoins" value={besoinsEnChaleurIndustrieCommunes.conso_autr} formatter={formatMWh} />
-      <PopupProperty label="Besoins totaux = tous usages" value={besoinsEnChaleurIndustrieCommunes.conso_tot} formatter={formatMWh} />
+      <PopupProperty label="Autres besoins" value={besoinsEnChaleurIndustrieCommunes.conso_autr} formatter={formatMWhAn} />
+      <PopupProperty label="Besoins totaux = tous usages" value={besoinsEnChaleurIndustrieCommunes.conso_tot} formatter={formatMWhAn} />
       <PopupProperty label="Source" value="Cerema" />
     </section>
   );
@@ -370,12 +370,12 @@ const CommuneFortPotentielPourCreationReseauxChaleurPopupContent = ({
       <PopupProperty
         label="Besoins en chauffage sur les zones à fort potentiel (cumul)"
         value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_chauf_mwh}
-        formatter={formatMWh}
+        formatter={formatMWhAn}
       />
       <PopupProperty
         label="Besoins en ECS sur les zones à fort potentiel (cumul)"
         value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_ecs_mwh}
-        formatter={formatMWh}
+        formatter={formatMWhAn}
       />
       <PopupProperty
         label="Nombre de zones d’opportunité à fort potentiel"
@@ -408,7 +408,7 @@ const BatimentRaccordeReseauxChaleurFroidPopupContent = ({
       <PopupProperty
         label={`Consommation de ${batimentRaccordeReseauxChaleurFroid.filiere === 'C' ? 'chaleur' : 'froid'}`}
         value={batimentRaccordeReseauxChaleurFroid.conso}
-        formatter={formatMWh}
+        formatter={formatMWhAn}
       />
       <PopupProperty label="Secteur" value={secteurBatimentRaccordeToLabels[batimentRaccordeReseauxChaleurFroid.code_grand_secteur]} />
       <strong>Identifiant du réseau&nbsp;:</strong>&nbsp;

@@ -9,7 +9,7 @@ import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
 import { isDefined } from '@utils/core';
-import { formatMWh, prettyFormatNumber } from '@utils/strings';
+import { formatMW, formatMWh, prettyFormatNumber } from '@utils/strings';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { Network } from 'src/types/Summary/Network';
 
@@ -120,7 +120,7 @@ const NetworkPanel = ({
                   formatter={(f) => `${f}`} /* disable number formatting */
                 />
 
-                <Text fontStyle="italic" underline mt="2w">
+                <Text size="sm" fontStyle="italic" underline my="2w">
                   Données pour l'année 2023
                 </Text>
                 <Property label="Points de livraison" value={network.nb_pdl} />
@@ -198,73 +198,73 @@ const NetworkPanel = ({
                   <Property label="Autres ENR" value={network.prod_MWh_autres_ENR} formatter={formatMWh} simpleLabel skipEmpty />
                 </Accordion>
 
-                <Property label="Puissance totale installée" value={network.puissance_MW_totale} formatter={formatMWh} />
+                <Property label="Puissance totale installée" value={network.puissance_MW_totale} formatter={formatMW} />
                 <Accordion label="Voir le détail par type d’énergie">
-                  <Property label="Gaz naturel" value={network.puissance_MW_gaz_naturel} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="Charbon" value={network.puissance_MW_charbon} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Gaz naturel" value={network.puissance_MW_gaz_naturel} formatter={formatMW} simpleLabel skipEmpty />
+                  <Property label="Charbon" value={network.puissance_MW_charbon} formatter={formatMW} simpleLabel skipEmpty />
                   <Property
                     label="Fioul domestique"
                     value={network.puissance_MW_fioul_domestique}
-                    formatter={formatMWh}
+                    formatter={formatMW}
                     simpleLabel
                     skipEmpty
                   />
-                  <Property label="Fioul lourd" value={network.puissance_MW_fioul_lourd} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="GPL" value={network.puissance_MW_GPL} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Fioul lourd" value={network.puissance_MW_fioul_lourd} formatter={formatMW} simpleLabel skipEmpty />
+                  <Property label="GPL" value={network.puissance_MW_GPL} formatter={formatMW} simpleLabel skipEmpty />
                   <Property
                     label="Biomasse solide"
                     value={network.puissance_MW_biomasse_solide}
-                    formatter={formatMWh}
+                    formatter={formatMW}
                     simpleLabel
                     skipEmpty
                   />
                   <Property
                     label="Déchets internes"
                     value={network.puissance_MW_dechets_internes}
-                    formatter={formatMWh}
+                    formatter={formatMW}
                     simpleLabel
                     skipEmpty
                   />
-                  <Property label="UIOM" value={network.puissance_MW_UIOM} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="Biogaz" value={network.puissance_MW_biogaz} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="Géothermie" value={network.puissance_MW_geothermie} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="PAC" value={network.puissance_MW_PAC} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="UIOM" value={network.puissance_MW_UIOM} formatter={formatMW} simpleLabel skipEmpty />
+                  <Property label="Biogaz" value={network.puissance_MW_biogaz} formatter={formatMW} simpleLabel skipEmpty />
+                  <Property label="Géothermie" value={network.puissance_MW_geothermie} formatter={formatMW} simpleLabel skipEmpty />
+                  <Property label="PAC" value={network.puissance_MW_PAC} formatter={formatMW} simpleLabel skipEmpty />
                   <Property
                     label="Solaire thermique"
                     value={network.puissance_MW_solaire_thermique}
-                    formatter={formatMWh}
+                    formatter={formatMW}
                     simpleLabel
                     skipEmpty
                   />
                   <Property
                     label="Chaleur industiel"
                     value={network.puissance_MW_chaleur_industiel}
-                    formatter={formatMWh}
+                    formatter={formatMW}
                     simpleLabel
                     skipEmpty
                   />
                   <Property
                     label="Autre chaleur récupérée"
                     value={network.puissance_MW_autre_chaleur_recuperee}
-                    formatter={formatMWh}
+                    formatter={formatMW}
                     simpleLabel
                     skipEmpty
                   />
                   <Property
                     label="Chaudières électriques"
                     value={network.puissance_MW_chaudieres_electriques}
-                    formatter={formatMWh}
+                    formatter={formatMW}
                     simpleLabel
                     skipEmpty
                   />
-                  <Property label="Autres" value={network.puissance_MW_autres} formatter={formatMWh} simpleLabel skipEmpty />
-                  <Property label="Autres ENR" value={network.puissance_MW_autres_ENR} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Autres" value={network.puissance_MW_autres} formatter={formatMW} simpleLabel skipEmpty />
+                  <Property label="Autres ENR" value={network.puissance_MW_autres_ENR} formatter={formatMW} simpleLabel skipEmpty />
                 </Accordion>
 
                 <Property label="Contenu CO2 (non réglementaire)" value={network.contenu_CO2_2023_tmp} formatter={formatCO2} />
                 <Property label="Contenu CO2 ACV (non réglementaire)" value={network.contenu_CO2_ACV_2023_tmp} formatter={formatCO2} />
 
-                <Text fontStyle="italic" mt="2w">
+                <Text size="sm" fontStyle="italic" my="2w">
                   <Text as="span" underline>
                     Données pour l'année 2022
                   </Text>
@@ -287,7 +287,7 @@ const NetworkPanel = ({
                   />
                 )}
 
-                <Text fontStyle="italic" mt="2w">
+                <Text size="sm" fontStyle="italic" my="2w">
                   <Text as="span" underline>
                     Données pour l'année 2021
                   </Text>
