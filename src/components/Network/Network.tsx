@@ -1,9 +1,10 @@
+import { fr } from '@codegouvfr/react-dsfr';
 import { ReactElement } from 'react';
 
-import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Map from '@components/Map/Map';
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
@@ -16,7 +17,7 @@ import ClassedNetwork from './ClassedNetwork';
 import ColdNetwork from './ColdNetwork';
 import EligibilityTestBox from './EligibilityTestBox';
 import EnergiesChart from './EnergiesChart';
-import { BlueBox, BoxIcon, BoxSection, Colmun, InformationsComplementairesBox, MapContainer, Title } from './Network.styles';
+import { BoxSection, InformationsComplementairesBox } from './Network.styles';
 
 const getFullURL = (link: string) => {
   return link.startsWith('http://') || link.startsWith('https://') ? link : `https://${link}`;
@@ -55,34 +56,41 @@ const NetworkPanel = ({
   return (
     <>
       {(!displayBlocks || displayBlocks.includes('titre')) && (
-        <div className="fr-mb-4w">
-          <Title>
+        <Box mb="4w">
+          <Heading as="h1" color="blue-france">
             {network.nom_reseau ?? 'Nom inconnu'} ({network['Identifiant reseau']})
-          </Title>
+          </Heading>
           {network['reseaux classes'] && (
-            <div className="fr-mt-1w">
+            <Box mt="1w">
               <ClassedNetwork externalLinks={externalLinks} />
-            </div>
+            </Box>
           )}
           {isCold && (
-            <div className="fr-mt-1w">
+            <Box mt="1w">
               <ColdNetwork />
-            </div>
+            </Box>
           )}
-          <Text mt="1w" legacyColor="lightblue" size="sm">
+          <Text mt="1w" size="sm">
             Vous êtes la collectivité ou l’exploitant de ce réseau et vous souhaitez ajouter ou modifier des informations ?
             <Link href={`/reseaux/modifier?reseau=${network['Identifiant reseau']}`} className="fr-ml-1w">
               Cliquez ici
             </Link>
           </Text>
-        </div>
+        </Box>
       )}
       <div className="fr-grid-row fr-grid-row--gutters">
         {hasFirstColumn(isCold, displayBlocks) && (
-          <Colmun className={hasSecondColumn(isCold, displayBlocks) ? 'fr-col-12 fr-col-lg-6' : 'fr-col-12'}>
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap="16px"
+            className={hasSecondColumn(isCold, displayBlocks) ? 'fr-col-12 fr-col-lg-6' : 'fr-col-12'}
+          >
             {(!displayBlocks || displayBlocks.includes('performances')) && (
-              <BlueBox>
-                <h3>Performances environnementales</h3>
+              <Box p="4w" textColor="white" backgroundColor="#4550e5">
+                <Heading as="h3" legacyColor="white">
+                  Performances environnementales
+                </Heading>
                 <Text size="sm" fontStyle="italic" mb="2w">
                   Données réglementaires,{' '}
                   <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" target="_blank" rel="noreferrer noopener">
@@ -98,12 +106,14 @@ const NetworkPanel = ({
                   tooltip="ACV : en analyse du cycle de vie (émissions directes et indirectes)."
                 />
                 <Property label="Contenu CO2" value={network['contenu CO2']} formatter={formatCO2} tooltip="Émissions directes" />
-              </BlueBox>
+              </Box>
             )}
 
             {(!displayBlocks || displayBlocks.includes('techniques')) && (
               <BoxSection>
-                <h3>Caractéristiques techniques</h3>
+                <Heading as="h3" color="blue-france">
+                  Caractéristiques techniques
+                </Heading>
                 <Property
                   label="Année de création du réseau"
                   value={network.annee_creation}
@@ -237,16 +247,18 @@ const NetworkPanel = ({
                     label="Autre chaleur récupérée"
                     value={network.puissance_MW_autre_chaleur_recuperee}
                     formatter={formatMWh}
+                    simpleLabel
                     skipEmpty
                   />
                   <Property
                     label="Chaudières électriques"
                     value={network.puissance_MW_chaudieres_electriques}
                     formatter={formatMWh}
+                    simpleLabel
                     skipEmpty
                   />
-                  <Property label="Autres" value={network.puissance_MW_autres} formatter={formatMWh} skipEmpty />
-                  <Property label="Autres ENR" value={network.puissance_MW_autres_ENR} formatter={formatMWh} skipEmpty />
+                  <Property label="Autres" value={network.puissance_MW_autres} formatter={formatMWh} simpleLabel skipEmpty />
+                  <Property label="Autres ENR" value={network.puissance_MW_autres_ENR} formatter={formatMWh} simpleLabel skipEmpty />
                 </Accordion>
 
                 <Property label="Contenu CO2 (non réglementaire)" value={network.contenu_CO2_2023_tmp} formatter={formatCO2} />
@@ -262,6 +274,7 @@ const NetworkPanel = ({
                 <Property
                   label="Rendement"
                   value={network['Rend%']}
+                  round
                   unit="%"
                   tooltip="Rapport entre l'énergie thermique livrée aux abonnés l'énergie thermique injectée dans le réseau."
                 />
@@ -280,7 +293,7 @@ const NetworkPanel = ({
                   </Text>
                   &nbsp;(ces données ne sont plus actualisées avec le même niveau de précision)
                 </Text>
-                <Property label={`Longueur du réseau${!isCold && ' (aller)'}`} value={network.longueur_reseau} unit="km" />
+                <Property label={`Longueur du réseau${!isCold ? ' (aller)' : ''}`} value={network.longueur_reseau} unit="km" />
                 {!isCold && (
                   <>
                     <Property label="Fluide caloporteur - eau chaude" value={network.eau_chaude} formatter={numberBooleanFormatter} />
@@ -297,17 +310,14 @@ const NetworkPanel = ({
 
             {!isCold && (!displayBlocks || displayBlocks.includes('tarifs')) && (
               <BoxSection>
-                <BoxIcon>
-                  <span>
-                    <h3>
-                      Informations tarifaires
-                      <HoverableIcon iconSize="md" iconName="ri-information-fill" position="top-centered">
-                        La comparaison avec le prix des autres énergies n’est pertinente qu’en coût global annuel, en intégrant les coûts
-                        d’exploitation, de maintenance et d’investissement, amortis sur la durée de vie des installations.
-                      </HoverableIcon>
-                    </h3>
-                  </span>
-                </BoxIcon>
+                <Heading as="h3" color="blue-france">
+                  Informations tarifaires
+                  <Tooltip
+                    title="La comparaison avec le prix des autres énergies n’est pertinente qu’en coût global annuel, en intégrant les coûts
+                    d’exploitation, de maintenance et d’investissement, amortis sur la durée de vie des installations."
+                    iconProps={{ size: 'sm', className: 'fr-ml-1w' }}
+                  />
+                </Heading>
 
                 <Text fontStyle="italic" mb="2w">
                   <Text as="span" underline>
@@ -367,9 +377,28 @@ const NetworkPanel = ({
 
             {(!displayBlocks || displayBlocks.includes('contacts')) && (
               <BoxSection>
-                <h3>Contacts</h3>
+                <Heading as="h3" color="blue-france">
+                  Contacts
+                </Heading>
                 <Property label="Maître d'Ouvrage" value={network.MO} />
-                <Property label="Adresse" value={network.adresse_mo} />
+                <Box display="flex" justifyContent="space-between">
+                  <Box display="flex">
+                    <strong>Adresse</strong>
+                  </Box>
+                  <Box textAlign="right">
+                    {isDefined(network.adresse_mo) ? (
+                      <>
+                        {network.adresse_mo}
+                        <br />
+                      </>
+                    ) : (
+                      ''
+                    )}
+                    {isDefined(network.CP_MO) ? network.CP_MO : ''} {isDefined(network.ville_mo) ? network.ville_mo : ''}
+                  </Box>
+                </Box>
+
+                <br />
                 <Property label="Gestionnaire" value={network.Gestionnaire} />
                 <Property
                   label="Site Internet"
@@ -382,22 +411,30 @@ const NetworkPanel = ({
                 />
               </BoxSection>
             )}
-          </Colmun>
+          </Box>
         )}
+
         {hasSecondColumn(isCold, displayBlocks) && (
-          <Colmun className={hasFirstColumn(isCold, displayBlocks) ? 'fr-col-12 fr-col-lg-6' : 'fr-col-12'}>
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap="16px"
+            className={hasFirstColumn(isCold, displayBlocks) ? 'fr-col-12 fr-col-lg-6' : 'fr-col-12'}
+          >
             {(!displayBlocks || displayBlocks.includes('formulaire_eligibilite')) && !isCold && network.has_trace && (
               <EligibilityTestBox networkId={network['Identifiant reseau']} />
             )}
 
             {(!displayBlocks || displayBlocks.includes('informations')) && network.informationsComplementaires && (
               <InformationsComplementairesBox>
-                <h3>Informations complémentaires</h3>
+                <Heading as="h3" color="blue-france">
+                  Informations complémentaires
+                </Heading>
                 {network.informationsComplementaires
                   .split('\n')
                   .map((line, index) => (line === '' ? <br key={index} /> : <Text key={index}>{line}</Text>))}
                 {network.fichiers.length > 0 && (
-                  <div className="fr-mt-2w">
+                  <Box mt="2w">
                     {network.fichiers.map((fichier, index) => (
                       <Link
                         key={index}
@@ -410,21 +447,25 @@ const NetworkPanel = ({
                         {fichier.filename}
                       </Link>
                     ))}
-                  </div>
+                  </Box>
                 )}
                 <Text size="sm" legacyColor="lightgrey" fontStyle="italic" mt="4w">
                   Informations fournies par la collectivité ou l’exploitant
                 </Text>
               </InformationsComplementairesBox>
             )}
+
             {!isCold && (!displayBlocks || displayBlocks.includes('energies')) && (
               <BoxSection>
-                <h3>Mix énergétique</h3>
+                <Heading as="h3" color="blue-france">
+                  Mix énergétique
+                </Heading>
                 <EnergiesChart network={network} />
               </BoxSection>
             )}
+
             {(!displayBlocks || displayBlocks.includes('map')) && (
-              <MapContainer>
+              <Box height="655px">
                 <Map
                   noPopup
                   initialCenter={[network.lon, network.lat]}
@@ -437,14 +478,14 @@ const NetworkPanel = ({
                     reseauxDeFroid: true,
                   })}
                 />
-              </MapContainer>
+              </Box>
             )}
-          </Colmun>
+          </Box>
         )}
       </div>
 
       {(!displayBlocks || displayBlocks.includes('sources')) && (
-        <p className="fr-mt-4w fr-hint-text">
+        <Box mt="4w" className={fr.cx('fr-hint-text')}>
           <Box>
             Sources : L’ensemble des données sont extraites des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le
             concours de l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la
@@ -471,7 +512,7 @@ const NetworkPanel = ({
 
           <img src="/logo-fedene.svg" alt="logo fedene" height="50px" className="fr-mr-2w" />
           <img src="/logo-amorce.svg" alt="logo amorce" height="50px" />
-        </p>
+        </Box>
       )}
     </>
   );

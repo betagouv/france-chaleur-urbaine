@@ -1,17 +1,15 @@
-import { Container } from './ColdNetwork.styles';
+import Box from '@components/ui/Box';
 
 const ColdNetwork = () => {
   return (
-    <Container>
+    <Box display="flex" alignItems="center" gap="8px">
       <img src="/icons/cold-network.svg" alt="" width={53} height={53} />
-      <div>
-        <b>
-          RÉSEAU
-          <br />
-          DE FROID
-        </b>
-      </div>
-    </Container>
+      <b>
+        RÉSEAU
+        <br />
+        DE FROID
+      </b>
+    </Box>
   );
 };
 
