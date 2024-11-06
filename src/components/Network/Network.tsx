@@ -587,7 +587,7 @@ interface PropertyProps<T> {
 }
 const Property = <T,>({ label, value, unit, formatter, tooltip, round, simpleLabel, skipEmpty }: PropertyProps<T>) =>
   ((skipEmpty && isDefined(value) && value !== 0) || !skipEmpty) && (
-    <Box display="flex" justifyContent="space-between">
+    <Box display="flex" justifyContent="space-between" alignItems="center" gap="8px">
       <Box display="flex" alignItems="center">
         {typeof label === 'string' ? simpleLabel ? label : <strong>{label}</strong> : label}
         {tooltip && (
@@ -603,16 +603,16 @@ const Property = <T,>({ label, value, unit, formatter, tooltip, round, simpleLab
         {isDefined(value)
           ? isDefined(formatter)
             ? formatter(value)
-            : `${typeof value === 'number' ? prettyFormatNumber(value, round ? 0 : undefined) : value} ${unit ?? ''}`
+            : `${typeof value === 'number' ? prettyFormatNumber(value, round ? 0 : undefined) : value} ${unit ?? ''}`
           : 'Non connu'}
       </div>
     </Box>
   );
 
 function numberBooleanFormatter(value: string): string | ReactElement {
-  return !isNaN(Number.parseFloat(value)) ? `${Math.round(Number.parseFloat(value))} %` : value.toLowerCase() === 'oui' ? 'Oui' : 'Non';
+  return !isNaN(Number.parseFloat(value)) ? `${Math.round(Number.parseFloat(value))} %` : value.toLowerCase() === 'oui' ? 'Oui' : 'Non';
 }
 
 function formatCO2(co2kg: number): string {
-  return `${Math.round(co2kg * 1000)} gCO2/kWh`;
+  return `${Math.round(co2kg * 1000)} gCO2/kWh`;
 }
