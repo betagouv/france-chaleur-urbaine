@@ -300,8 +300,8 @@ const NetworkPanel = ({
                     </Accordion>
                   )}
 
-                  <Property label="Contenu CO2 (non réglementaire)" value={network.contenu_CO2_2023_tmp} formatter={formatCO2} />
                   <Property label="Contenu CO2 ACV (non réglementaire)" value={network.contenu_CO2_ACV_2023_tmp} formatter={formatCO2} />
+                  <Property label="Contenu CO2 (non réglementaire)" value={network.contenu_CO2_2023_tmp} formatter={formatCO2} />
                 </Box>
 
                 {!isCold && (
@@ -608,5 +608,5 @@ function numberBooleanFormatter(value: string): string | ReactElement {
 }
 
 function formatCO2(co2kg: number): string {
-  return `${Math.round(co2kg * 1000)} g CO2/kWh`;
+  return `${Math.round(co2kg * 1000)} gCO2/kWh`;
 }
