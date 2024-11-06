@@ -42,7 +42,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
       )}
       <Input
         name="surface logement type tertiaire"
-        label="Surface moyenne d'un appartement"
+        label={typeBatiment === 'tertiaire' ? 'Surface moyenne' : "Surface moyenne d'un appartement"}
         nativeInputProps={{
           inputMode: 'numeric',
           maxLength: 6,

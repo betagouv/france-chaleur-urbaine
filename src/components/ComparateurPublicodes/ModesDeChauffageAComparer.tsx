@@ -44,8 +44,8 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Disclaimer />
       <p className="fr-text--sm">Sélectionnez les modes de chauffage et de refroidissement que vous souhaitez comparer.</p>
       <Text size="xs" color="warning">
-        <Icon name="fr-icon-info-line" size="xs" /> Les modes de chauffage et de refroidissement sont interchangeables, mais certains modes
-        sont plus adaptés pour certains bâtiments.{' '}
+        <Icon name="fr-icon-info-line" size="xs" /> Tous les modes de chauffage et de refroidissement ne sont pas interchangeables, mais
+        certains modes sont plus adaptés pour certains bâtiments.{' '}
         <a href="#" onClick={() => modalDisclaimer.open()} className="fr-link fr-text--xs">
           En savoir plus
         </a>

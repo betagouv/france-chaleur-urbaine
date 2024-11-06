@@ -317,7 +317,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           hideLegend
           segments={[
             {
-              label: 'Coûts du chauffage',
+              label: 'Coûts',
               nativeInputProps: {
                 checked: graphType === 'couts',
                 onChange: () => setGraphType('couts'),

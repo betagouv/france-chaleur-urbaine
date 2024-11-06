@@ -79,6 +79,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const [nearestReseauDeChaleur, setNearestReseauDeChaleur] = React.useState<LocationInfoResponse['nearestReseauDeChaleur']>();
   const [addressError, setAddressError] = React.useState<boolean>(false);
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
+  const inclureLaClimatisation = engine.getField('Inclure la climatisation');
 
   const [selectedTabId, setSelectedTabId] = useQueryState(
     'tabId',
@@ -262,55 +263,71 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 )}
               </Box>
               <Results>
-                {nearestReseauDeChaleur && (
+                {!loading && (
                   <Alert
-                    className="fr-mb-2w"
+                    className="fr-mb-2w fr-text--sm"
                     description={
-                      <>
-                        Le réseau de chaleur{' '}
-                        <Link
-                          href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
-                          isExternal
-                        >
-                          <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
-                        </Link>{' '}
-                        est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
-                        {lngLat && (
-                          <div className="fr-text--xs">
-                            <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
-                              <strong>Visualiser sur la carte</strong>
-                            </Link>
-                          </div>
-                        )}
-                      </>
+                      nearestReseauDeChaleur ? (
+                        <>
+                          Le réseau de chaleur{' '}
+                          <Link
+                            href={`/reseaux/${nearestReseauDeChaleur['Identifiant reseau']}?address=${encodeURIComponent(
+                              address as string
+                            )}`}
+                            isExternal
+                          >
+                            <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
+                          </Link>{' '}
+                          est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
+                          {lngLat && (
+                            <div className="fr-text--xs">
+                              <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
+                                <strong>Visualiser sur la carte</strong>
+                              </Link>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          En l'absence d'un <strong>réseau de chaleur</strong> à proximité, les simulations se basent sur le réseau de
+                          chaleur français moyen
+                        </>
+                      )
                     }
-                    severity="info"
+                    severity={nearestReseauDeChaleur ? 'info' : 'warning'}
                     small
                   />
                 )}
-                {nearestReseauDeFroid && (
+                {!loading && inclureLaClimatisation && (
                   <Alert
-                    className="fr-mb-2w"
+                    className="fr-mb-2w fr-text--sm"
                     description={
-                      <>
-                        Le réseau de froid{' '}
-                        <Link
-                          href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
-                          isExternal
-                        >
-                          <strong>{nearestReseauDeFroid.nom_reseau}</strong>
-                        </Link>{' '}
-                        est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
-                        {lngLat && (
-                          <div className="fr-text--xs">
-                            <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
-                              <strong>Visualiser sur la carte</strong>
-                            </Link>
-                          </div>
-                        )}
-                      </>
+                      nearestReseauDeFroid ? (
+                        <>
+                          Le réseau de froid{' '}
+                          <Link
+                            href={`/reseaux/${nearestReseauDeFroid['Identifiant reseau']}?address=${encodeURIComponent(address as string)}`}
+                            isExternal
+                          >
+                            <strong>{nearestReseauDeFroid.nom_reseau}</strong>
+                          </Link>{' '}
+                          est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
+                          {lngLat && (
+                            <div className="fr-text--xs">
+                              <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
+                                <strong>Visualiser sur la carte</strong>
+                              </Link>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          En l'absence d'un <strong>réseau de froid</strong> à proximité, les simulations se basent sur le réseau de froid
+                          français moyen
+                        </>
+                      )
                     }
-                    severity="info"
+                    severity={nearestReseauDeFroid ? 'info' : 'warning'}
                     small
                   />
                 )}
