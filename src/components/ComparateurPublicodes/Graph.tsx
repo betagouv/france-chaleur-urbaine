@@ -144,7 +144,7 @@ const formatPrecisionRange = (value: number) => {
 const formatEmissionsCO2 = (value: number) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
 
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
-  const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+  const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
 
@@ -308,7 +308,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     },
   });
 
-  const chartHeight = selectedModesDeChauffage.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
+  const chartHeight = modesDeChauffageFiltres.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
   return (
     <div className={cx(className)} {...props}>
