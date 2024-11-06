@@ -328,22 +328,24 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
           </Section>
         </FormProvider>
       </div>
-      <Box backgroundColor="blue-france-975-75">
-        <Box py="5w" className="fr-container">
-          <Heading size="h3" color="blue-france" mb="0">
-            Une suggestion ou une remarque&nbsp;?
-          </Heading>
-          <Box display="flex" my="2w">
-            <FCUArrowIcon />
-            <Text size="lg" ml="1w">
-              Faites nous part de vos retours et suggestions sur ce comparateur
-            </Text>
+      {!loading && (
+        <Box backgroundColor="blue-france-975-75">
+          <Box py="5w" className="fr-container">
+            <Heading size="h3" color="blue-france" mb="0">
+              Une suggestion ou une remarque&nbsp;?
+            </Heading>
+            <Box display="flex" my="2w">
+              <FCUArrowIcon />
+              <Text size="lg" ml="1w">
+                Faites nous part de vos retours et suggestions sur ce comparateur
+              </Text>
+            </Box>
+            <Link variant="secondary" href="/contact?reason=comparateur">
+              Nous contacter
+            </Link>
           </Box>
-          <Link variant="secondary" href="/contact?reason=comparateur">
-            Nous contacter
-          </Link>
         </Box>
-      </Box>
+      )}
     </>
   );
 };
