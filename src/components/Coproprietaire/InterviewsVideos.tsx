@@ -9,6 +9,7 @@ const videos = [
   'https://www.youtube.com/embed/2mO97aF1T4c',
   'https://www.youtube.com/embed/wieL5MpMtnE',
   'https://www.youtube.com/embed/eDnhC9l5pWI',
+  'https://www.youtube.com/embed/c2Qgctn9SVY',
 ];
 
 const InterviewsVideos = () => {

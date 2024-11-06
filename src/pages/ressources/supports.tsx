@@ -263,6 +263,12 @@ const videos: InfographieItemProps[] = [
     eventKey: 'Vidéo',
   },
   {
+    label: '"Les ambassadeurs du chauffage urbain" 6',
+    imgUrl: 'https://img.youtube.com/vi/c2Qgctn9SVY/maxresdefault.jpg', // pas réussi à avoir l'image hqdefault sans bandes noires en haut et en bas
+    linkUrl: 'https://www.youtube.com/watch?v=c2Qgctn9SVY',
+    eventKey: 'Vidéo',
+  },
+  {
     label: 'Ochôde explique la géothermie',
     imgUrl:
       'https://i.ytimg.com/vi/ebUNfVsXBIQ/hqdefault.jpg?sqp=-oaymwE2CNACELwBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARgaIGUoWjAP&rs=AOn4CLC52Akpiu6WOi8r1kNZf8OQyyg3lQ',
