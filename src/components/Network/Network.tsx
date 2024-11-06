@@ -206,7 +206,7 @@ const NetworkPanel = ({
                   </Accordion>
                 )}
 
-                <Property label="Puissance totale installée" value={network.puissance_MW_totale} formatter={formatMW} />
+                <Property label="Puissance totale installée" value={network.puissance_totale_MW} formatter={formatMW} />
                 {!isCold && (
                   <Accordion label="Voir le détail par type d’énergie">
                     <Property label="Gaz naturel" value={network.puissance_MW_gaz_naturel} formatter={formatMW} simpleLabel skipEmpty />

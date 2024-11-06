@@ -80,7 +80,7 @@ const conversionConfigReseauxDeChaleur = {
   livraisons_industrie_MWh: TypeNumber,
   livraisons_agriculture_MWh: TypeNumber,
   livraisons_autre_MWh: TypeNumber,
-  puissance_MW_totale: TypeNumber,
+  puissance_totale_MW: TypeNumber,
   puissance_MW_gaz_naturel: TypeNumber,
   puissance_MW_charbon: TypeNumber,
   puissance_MW_fioul_domestique: TypeNumber,

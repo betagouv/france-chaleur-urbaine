@@ -50,7 +50,7 @@ export interface Network {
   prod_MWh_autres: number;
   prod_MWh_autres_ENR: number;
   production_totale_MWh: number;
-  puissance_MW_totale: number;
+  puissance_totale_MW: number;
   puissance_MW_gaz_naturel: number;
   puissance_MW_charbon: number;
   puissance_MW_fioul_domestique: number;
