@@ -61,7 +61,7 @@ function Text({
   const computedStyle: CSSProperties = {
     fontSize: fontSize ?? 'inherit',
     lineHeight: lineHeight ?? 'inherit',
-    fontStyle: fontStyle ?? 'normal',
+    fontStyle: fontStyle ?? 'inherit',
     color: color ? `var(--text-default-${color})` : legacyColor ? legacyColors[legacyColor] : undefined,
     textAlign: textAlign,
     cursor: cursor,

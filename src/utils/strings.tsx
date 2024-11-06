@@ -30,17 +30,17 @@ export function ratioToHex(ratio: number): string {
   return `${hex.length === 1 ? '0' : ''}${hex}`;
 }
 
-export function formatMWh(value: number): ReactElement {
+function formatNumberWithUnit(value: number, unitSuffix: string): ReactElement {
   let unit: string;
 
   if (value >= 1e6) {
     value /= 1e6;
-    unit = 'TWh/an';
+    unit = `T${unitSuffix}`;
   } else if (value >= 1e3) {
     value /= 1e3;
-    unit = 'GWh/an';
+    unit = `G${unitSuffix}`;
   } else {
-    unit = 'MWh/an';
+    unit = `M${unitSuffix}`;
   }
 
   return (
@@ -48,6 +48,18 @@ export function formatMWh(value: number): ReactElement {
       {value.toPrecision(3)}&nbsp;{unit}
     </>
   );
+}
+
+export function formatMW(value: number): ReactElement {
+  return formatNumberWithUnit(value, 'W');
+}
+
+export function formatMWh(value: number): ReactElement {
+  return formatNumberWithUnit(value, 'Wh');
+}
+
+export function formatMWhAn(value: number): ReactElement {
+  return formatNumberWithUnit(value, 'Wh/an');
 }
 
 export function formatMWhString(value: number): string {

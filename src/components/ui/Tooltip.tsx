@@ -10,6 +10,7 @@ type TooltipProps = Omit<MUITooltipProps, 'children'> &
 
 const StyledIcon = styled(Icon)`
   align-self: start;
+  line-height: 1em !important;
 `;
 
 const DSFRLikeStyledTooltip = styled(({ className, ...props }: MUITooltipProps) => (

@@ -1,20 +1,19 @@
 import Link from 'next/link';
 
-import { Container, Separator } from './ClassedNetwork.styles';
+import Box from '@components/ui/Box';
+import Divider from '@components/ui/Divider';
 
 const ClassedNetwork = ({ externalLinks }: { externalLinks?: boolean }) => {
   return (
-    <Container>
+    <Box display="flex" alignItems="center">
       <img src="/icons/classed-network.svg" alt="" width={60} height={60} />
-      <div>
-        <b>
-          RESEAU
-          <br />
-          CLASSÉ
-        </b>
-      </div>
-      <Separator />
-      <div>
+      <b>
+        RÉSEAU
+        <br />
+        CLASSÉ
+      </b>
+      <Divider vertical="56px" />
+      <Box>
         Une obligation de raccordement s'applique
         <br />
         pour certains bâtiments (
@@ -26,8 +25,8 @@ const ClassedNetwork = ({ externalLinks }: { externalLinks?: boolean }) => {
           En savoir plus
         </Link>
         )
-      </div>
-    </Container>
+      </Box>
+    </Box>
   );
 };
 
