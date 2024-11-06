@@ -17,6 +17,7 @@ type ModesDeChauffageAComparerFormProps = React.HTMLAttributes<HTMLDivElement> &
   engine: SimulatorEngine;
   nearestReseauDeChaleur?: LocationInfoResponse['nearestReseauDeChaleur'];
   nearestReseauDeFroid?: LocationInfoResponse['nearestReseauDeFroid'];
+  advancedMode?: boolean;
 };
 const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps> = ({
   children,
@@ -24,12 +25,12 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
   engine,
   nearestReseauDeFroid,
   nearestReseauDeChaleur,
+  advancedMode,
   ...props
 }) => {
   const inclusClimatisation = engine.getField('Inclure la climatisation');
   const typeDeBatiment = engine.getField('type de bâtiment');
   const { has: hasModeDeChauffage, toggle: toggleModeDeChauffage } = useArrayQueryState<ModeDeChauffage>('modes-de-chauffage');
-
   const createOptionProps = (label: ModeDeChauffage) => ({
     label:
       modesDeChauffage.find((mode) => mode.label === label)?.reversible && inclusClimatisation ? `${label} (chauffage + froid)` : label,
@@ -50,13 +51,19 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
           En savoir plus
         </a>
       </Text>
-
-      <Title>Eau Chaude Sanitaire</Title>
-      <SelectProductionECS />
-      <Title>Climatisation</Title>
-      <SelectClimatisation />
-      <Title>Modes de chauffage et de refroidissement</Title>
-
+      {
+        // in advanced mode, fields are shown at the previous step to be able to fine tune its info
+        !advancedMode && (
+          <>
+            <Title>Eau Chaude Sanitaire</Title>
+            <SelectProductionECS />
+            <Title>Climatisation</Title>
+            <SelectClimatisation />
+          </>
+        )
+      }
+      {/* This is because the Text component has a weird 0 bottom border */}
+      <div className="fr-mt-4w" />
       <Checkbox
         small
         options={(['Réseaux de chaleur'] satisfies ModeDeChauffage[]).map(createOptionProps)}

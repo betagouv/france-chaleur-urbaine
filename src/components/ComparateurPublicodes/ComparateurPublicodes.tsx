@@ -81,6 +81,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const [nearestReseauDeFroid, setNearestReseauDeFroid] = React.useState<LocationInfoResponse['nearestReseauDeFroid']>();
   const inclureLaClimatisation = engine.getField('Inclure la climatisation');
 
+  const advancedMode = displayMode === 'technicien';
   const [selectedTabId, setSelectedTabId] = useQueryState(
     'tabId',
     parseAsStringLiteral(simulatorTabs.map((tab) => tab.tabId)).withDefault(defaultTabId ?? 'batiment')
@@ -110,12 +111,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
 
   const isAddressSelected = engine.getField('code département') !== undefined;
 
-  const results =
-    isAddressSelected && !!modesDeChauffage ? (
-      <Graph engine={engine} advancedMode={displayMode === 'technicien'} />
-    ) : (
-      <ResultsNotAvailable />
-    );
+  const results = isAddressSelected && !!modesDeChauffage ? <Graph engine={engine} advancedMode={advancedMode} /> : <ResultsNotAvailable />;
 
   return (
     <>
@@ -129,7 +125,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 labelPosition="left"
                 inputTitle="Mode Pro"
                 showCheckedHint={false}
-                checked={displayMode === 'technicien'}
+                checked={advancedMode}
                 className={fr.cx('fr-mt-0')}
                 onChange={(checked) => {
                   const newValue = checked ? 'technicien' : 'grand public';
@@ -247,14 +243,15 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                     engine={engine}
                     nearestReseauDeChaleur={nearestReseauDeChaleur}
                     nearestReseauDeFroid={nearestReseauDeFroid}
+                    advancedMode={advancedMode}
                   />
-                  {displayMode === 'technicien' && (
+                  {advancedMode && (
                     <Button onClick={() => setSelectedTabId(simulatorTabs[2].tabId)} full disabled={!modesDeChauffage} className="fr-mt-2w">
                       Continuer
                     </Button>
                   )}
                 </Accordion>
-                {displayMode === 'technicien' && (
+                {advancedMode && (
                   <Accordion
                     expanded={selectedTabId === simulatorTabs[2].tabId}
                     onExpandedChange={(expanded) => (expanded ? setSelectedTabId(simulatorTabs[2].tabId) : setSelectedTabId(null))}
