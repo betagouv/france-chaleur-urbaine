@@ -19,7 +19,7 @@ export default handleRouteErrors(async (req, res) => {
     fileId: z.string(),
   });
 
-  const [network] = await AirtableDB('FCU - Réseaux de chaleur - 2023') // FIXME arranger sans 2023
+  const [network] = await AirtableDB('FCU - Réseaux de chaleur')
     .select({
       fields: ['fichiers'],
       filterByFormula: `{Identifiant reseau} = '${networkId}'`,
