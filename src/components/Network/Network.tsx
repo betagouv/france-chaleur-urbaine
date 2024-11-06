@@ -338,7 +338,7 @@ const NetworkPanel = ({
                   />
                 </Heading>
 
-                <Text fontStyle="italic" mb="2w">
+                <Text size="sm" fontStyle="italic" mb="2w">
                   <Text as="span" underline>
                     Données pour l'année 2022
                   </Text>
