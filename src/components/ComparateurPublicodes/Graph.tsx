@@ -94,10 +94,17 @@ const getRow = ({ title, amount, color, bordered, valueFormatter }: TooltipProps
   getTooltip({ title, amount, color, bordered, valueFormatter }),
 ];
 
+const popupTexts = {
+  scope1:
+    "Émissions liées aux combustibles utilisés pour la production d'énergie, et réalisées directement sur le lieu de la consommation (scope 1)",
+  scope2: "Émissions liées à l'utilisation d'énergie non produite sur le site de consommation (scope 2)",
+  scope3: "Émissions liées à la fabrication des équipements, et non directement à la production d'énergie (scope 3)",
+};
+
 const emissionsCO2GraphColumnNames = [
-  'Émissions directes',
-  "Émissions indirectes - production d'énergie",
-  'Émissions indirectes - matériel',
+  `Émissions directes - ${popupTexts.scope1}`,
+  `Émissions indirectes (production d'énergie) - ${popupTexts.scope2}`,
+  `Émissions indirectes (matériel) - ${popupTexts.scope3}`,
 ];
 const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.map(getColumn).flat();
 
