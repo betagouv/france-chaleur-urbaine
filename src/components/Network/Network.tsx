@@ -201,7 +201,7 @@ const NetworkPanel = ({
                         skipEmpty
                       />
                       <Property
-                        label="Chaleur industiel"
+                        label="Chaleur industrielle"
                         value={network.prod_MWh_chaleur_industiel}
                         formatter={formatMWh}
                         simpleLabel
@@ -275,7 +275,7 @@ const NetworkPanel = ({
                         skipEmpty
                       />
                       <Property
-                        label="Chaleur industiel"
+                        label="Chaleur industrielle"
                         value={network.puissance_MW_chaleur_industiel}
                         formatter={formatMW}
                         simpleLabel
