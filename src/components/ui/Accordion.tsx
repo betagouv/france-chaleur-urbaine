@@ -15,6 +15,7 @@ const StyledAccordion = styled(DsfrAccordion)<{
   $disabled?: boolean;
 }>`
   ${({ $small, $simple, $bordered, $closeable, $disabled }) => css`
+    overflow: visible;
     ${$disabled &&
     css`
       opacity: 0.5;
