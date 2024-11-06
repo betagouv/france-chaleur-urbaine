@@ -140,6 +140,8 @@ const NetworkPanel = ({
                     }
                     simple
                     small
+                    bordered
+                    className="fr-pt-0"
                   >
                     <Property label="Résidentiel" value={network.livraisons_residentiel_MWh} formatter={formatMWh} simpleLabel skipEmpty />
                     <Property label="Tertiaire" value={network.livraisons_tertiaire_MWh} formatter={formatMWh} simpleLabel skipEmpty />
@@ -163,6 +165,8 @@ const NetworkPanel = ({
                       }
                       simple
                       small
+                      bordered
+                      className="fr-pt-0"
                     >
                       <Property label="Gaz naturel" value={network.prod_MWh_gaz_naturel} formatter={formatMWh} simpleLabel skipEmpty />
                       <Property label="Charbon" value={network.prod_MWh_charbon} formatter={formatMWh} simpleLabel skipEmpty />
@@ -237,6 +241,8 @@ const NetworkPanel = ({
                       }
                       simple
                       small
+                      bordered
+                      className="fr-pt-0"
                     >
                       <Property label="Gaz naturel" value={network.puissance_MW_gaz_naturel} formatter={formatMW} simpleLabel skipEmpty />
                       <Property label="Charbon" value={network.puissance_MW_charbon} formatter={formatMW} simpleLabel skipEmpty />
