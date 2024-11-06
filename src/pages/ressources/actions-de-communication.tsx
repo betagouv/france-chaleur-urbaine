@@ -13,7 +13,7 @@ const ActionsDeCommunicationPage = () => {
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>
-            <Heading size="h1" color="blue-france">
+            <Heading as="h1" color="blue-france">
               Nos actions de communication
             </Heading>
             <Text size="lg" mb="3w">
@@ -29,14 +29,14 @@ const ActionsDeCommunicationPage = () => {
       </Box>
 
       <Box pt="10w" pb="4w" className="fr-container">
-        <Heading size="h2" color="blue-france" center>
+        <Heading as="h2" color="blue-france" center>
           Campagnes publicitaires locales
         </Heading>
       </Box>
 
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
-          <Heading size="h5" color="blue-france" mb="6w" center>
+          <Heading as="h5" color="blue-france" mb="6w" center>
             Comment organiser une campagne avec France Chaleur Urbaine&nbsp;?
           </Heading>
           <Box display="flex" gap="48px">
@@ -88,7 +88,31 @@ const ActionsDeCommunicationPage = () => {
       <Box pt="6w" className="fr-container">
         <Box className="fr-grid-row fr-grid-row--gutters">
           <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
-            <Heading size="h3" color="blue-france" mb="0">
+            <Heading as="h3" color="blue-france" mb="0">
+              Amiens
+            </Heading>
+            <Text size="xs" legacyColor="lightgrey">
+              <span className="fr-icon--sm fr-icon-arrow-right-line fr-mr-1w" />
+              Octobre 2024
+            </Text>
+            <Text size="lg">
+              Le réseau de chaleur d'Amiens s'étend et se verdit : 25 km de réseaux de chaleur sont aujourd’hui en construction qui
+              viendront s’ajouter aux 50 km existants, et en 2025, le taux d'énergies renouvelables et de récupération du réseau devrait
+              atteindre 72%. La campagne d’affichage accompagnée par France Chaleur Urbaine a permis de valoriser les efforts de
+              développement du réseau réalisés par la ville d’Amiens et son délégataire Amiens Energie, mais aussi de sensibiliser et
+              informer les Amiénois sur ce mode de chauffage.
+            </Text>
+          </Box>
+          <Box className="fr-col fr-col-12 fr-col-lg-6">
+            <Slideshow images={['/img/campagnes_amiens_1.webp']} />
+          </Box>
+        </Box>
+      </Box>
+
+      <Box pt="10w" className="fr-container">
+        <Box className="fr-grid-row fr-grid-row--gutters">
+          <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
+            <Heading as="h3" color="blue-france" mb="0">
               Réseaux Evos à Strasbourg
             </Heading>
             <Text size="xs" legacyColor="lightgrey">
@@ -118,7 +142,7 @@ const ActionsDeCommunicationPage = () => {
       <Box pt="10w" className="fr-container">
         <Box className="fr-grid-row fr-grid-row--gutters">
           <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
-            <Heading size="h3" color="blue-france" mb="0">
+            <Heading as="h3" color="blue-france" mb="0">
               Fresnes
             </Heading>
             <Text size="xs" legacyColor="lightgrey">
@@ -149,7 +173,7 @@ const ActionsDeCommunicationPage = () => {
       <Box pt="10w" className="fr-container">
         <Box className="fr-grid-row fr-grid-row--gutters">
           <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
-            <Heading size="h3" color="blue-france" mb="0">
+            <Heading as="h3" color="blue-france" mb="0">
               Charleville-Mézières
             </Heading>
             <Text size="xs" legacyColor="lightgrey">
@@ -180,7 +204,7 @@ const ActionsDeCommunicationPage = () => {
       <Box py="10w" className="fr-container">
         <Box className="fr-grid-row fr-grid-row--gutters">
           <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
-            <Heading size="h3" color="blue-france" mb="0">
+            <Heading as="h3" color="blue-france" mb="0">
               Bordeaux
             </Heading>
             <Text size="xs" legacyColor="lightgrey">
