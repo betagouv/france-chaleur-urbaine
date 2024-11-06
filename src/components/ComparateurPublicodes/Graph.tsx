@@ -144,7 +144,7 @@ const formatPrecisionRange = (value: number) => {
 const formatEmissionsCO2 = (value: number) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
 
 const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
-  const { items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+  const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
 
@@ -173,8 +173,8 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     return `${typeInstallation.label}${suffix}`;
   };
 
-  const modesDeChauffageFiltres = modesDeChauffage.filter((modeDeChauffage) =>
-    typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true
+  const modesDeChauffageFiltres = modesDeChauffage.filter(
+    (modeDeChauffage) => hasModeDeChauffage(modeDeChauffage.label) && (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
   );
 
   let maxCoutValue = 3000;
