@@ -36,15 +36,17 @@ export const ComparateurPublicodesTitle = () => {
 };
 
 export const Logos = ({ size, withFCU = true, ...props }: React.ComponentProps<typeof Box> & { size?: 'sm'; withFCU?: boolean }) => {
+  const height = size === 'sm' ? '40px' : '60px';
   return (
-    <Box display="flex" gap={size === 'sm' ? '8px' : '16px'} flexDirection="row" alignItems="center" flexWrap="wrap" {...props}>
-      <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={size === 'sm' ? '60px' : '80px'} className="fr-mr-2w" />
-      <img src="/logo-amorce.svg" alt="logo amorce" height={size === 'sm' ? '37px' : '50px'} />
+    <Box display="flex" gap={size === 'sm' ? '16px' : '32px'} flexDirection="row" alignItems="center" flexWrap="wrap" my="2w" {...props}>
+      <img src="/logo-HEAT_COOL.png" alt="logo life Heat & Cool" height={height} className="fr-mr-2w" />
+      <img src="/logo-amorce.svg" alt="logo amorce" height={height} />
+      <img src="/logo-elcimai.png" alt="logo elcimaï" height={height} className="fr-mr-2w" />
       {withFCU && (
         <img
           src="/logo-fcu.png"
           alt="logo france chaleur urbaine"
-          height={size === 'sm' ? '60px' : '80px'}
+          height={height}
           style={{
             margin: '0 0 0 20px', // Balance visually the logos
           }}
