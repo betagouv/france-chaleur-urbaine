@@ -1,5 +1,5 @@
 import { SegmentedControl } from '@codegouvfr/react-dsfr/SegmentedControl';
-import { useQueryState } from 'nuqs';
+import { parseAsBoolean, useQueryState } from 'nuqs';
 import React, { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
@@ -18,7 +18,7 @@ import { type SimulatorEngine } from './useSimulatorEngine';
 const precisionDisplay = 10 / 100;
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
-  proMode?: boolean;
+  advancedMode?: boolean;
 };
 
 const estimatedRowHeightPx = 56;
@@ -70,7 +70,7 @@ const getBarStyle = (color: string, { bordered }: { bordered?: boolean } = {}) =
   `color: ${color}; stroke-color: ${color}; stroke-opacity: 1; stroke-width: 1;${bordered ? 'fill-opacity: 0.1;' : ''}`;
 
 interface TooltipProps {
-  title: string;
+  title: React.ReactNode;
   color: string;
   amount: number;
   bordered?: boolean;
@@ -81,7 +81,7 @@ const getTooltip = ({ title, amount, color, bordered, valueFormatter }: TooltipP
   ReactDOMServer.renderToString(
     <GraphTooltip>
       <span style={bordered ? { border: `2px solid ${color}` } : { backgroundColor: color }}></span>
-      <span>{title}</span>
+      <div style={{ maxWidth: '300px', lineHeight: '1.25rem', fontSize: '0.875rem', margin: '2px 0' }}>{title}</div>
       <strong style={{ whiteSpace: 'nowrap' }}>{valueFormatter(amount)}</strong>
     </GraphTooltip>
   );
@@ -94,10 +94,17 @@ const getRow = ({ title, amount, color, bordered, valueFormatter }: TooltipProps
   getTooltip({ title, amount, color, bordered, valueFormatter }),
 ];
 
+const popupTexts = {
+  scope1:
+    "Émissions liées aux combustibles utilisés pour la production d'énergie, et réalisées directement sur le lieu de la consommation (scope 1)",
+  scope2: "Émissions liées à l'utilisation d'énergie non produite sur le site de consommation (scope 2)",
+  scope3: "Émissions liées à la fabrication des équipements, et non directement à la production d'énergie (scope 3)",
+};
+
 const emissionsCO2GraphColumnNames = [
-  "Scope 1 : Production directe d'énergie",
-  "Scope 2 : Production indirecte d'énergie",
-  'Scope 3 : Émissions indirectes',
+  `Émissions directes - ${popupTexts.scope1}`,
+  `Émissions indirectes (production d'énergie) - ${popupTexts.scope2}`,
+  `Émissions indirectes (matériel) - ${popupTexts.scope3}`,
 ];
 const emissionsCO2GraphColumns = emissionsCO2GraphColumnNames.map(getColumn).flat();
 
@@ -143,43 +150,44 @@ const formatPrecisionRange = (value: number) => {
 
 const formatEmissionsCO2 = (value: number) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
 
-const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
-  const { has: hasModeDeChauffage, items: selectedModesDeChauffage } = useArrayQueryState('modes-de-chauffage');
+const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props }) => {
+  const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
 
-  const coutGraphColumnNames = proMode
+  const coutGraphColumnNames = advancedMode
     ? ['P1 abo', 'P1 conso', 'P1 ECS', "P1'", 'P1 conso froid', 'P2', 'P3', 'P4 moins aides', 'aides']
     : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', 'Aides'];
 
   const coutGraphColumns = coutGraphColumnNames.map(getColumn).flat();
 
-  const coutGraphColors = proMode
+  const coutGraphColors = advancedMode
     ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP1Consofroid, colorP2, colorP3, colorP4SansAides, colorP4Aides]
     : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
   const [graphType, setGraphType] = useQueryState('graph', { defaultValue: 'couts' });
+  const [perBuilding, setPerBuilding] = useQueryState('perBuilding', parseAsBoolean.withDefault(false));
   const inclusClimatisation = engine.getField('Inclure la climatisation');
-
-  const filterDisplayableModesDeChauffage = (typeInstallation: (typeof modesDeChauffage)[number]) => {
-    if (!hasModeDeChauffage(typeInstallation.label)) {
-      return false;
-    }
-
-    if (!inclusClimatisation && typeInstallation.seulementFroid) {
-      return false;
-    }
-    return true;
-  };
+  const typeDeProductionDeFroid = engine.getField('type de production de froid');
+  const typeDeBatiment = engine.getField('type de bâtiment');
 
   const getLabel = (typeInstallation: (typeof modesDeChauffage)[number]) => {
-    return typeInstallation.reversible && inclusClimatisation ? `${typeInstallation.label} (chauffage + froid)` : typeInstallation.label;
+    let suffix = '';
+    if (inclusClimatisation) {
+      suffix = typeInstallation.reversible ? ' (chauffage + froid)' : ` + ${typeDeProductionDeFroid}`;
+    }
+
+    return `${typeInstallation.label}${suffix}`;
   };
+
+  const modesDeChauffageFiltres = modesDeChauffage.filter(
+    (modeDeChauffage) => hasModeDeChauffage(modeDeChauffage.label) && (typeDeBatiment === 'tertiaire' ? modeDeChauffage.tertiaire : true)
+  );
 
   let maxCoutValue = 3000;
   const coutGraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...coutGraphColumns, { role: 'annotation' }],
-    ...modesDeChauffage.filter(filterDisplayableModesDeChauffage).flatMap((typeInstallation) => {
+    ...modesDeChauffageFiltres.flatMap((typeInstallation) => {
       const amountP1Abo = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1abo`);
       const amountP1Conso = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1conso`);
       const amountP1ECS = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P1ECS`);
@@ -190,7 +198,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
       const amountAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`);
 
-      const amounts = proMode
+      const amounts = advancedMode
         ? [
             ...getRow({ title: 'P1 abo', amount: amountP1Abo, color: colorP1Abo, valueFormatter: formatPrecisionRange }),
             ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso, valueFormatter: formatPrecisionRange }),
@@ -249,34 +257,37 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       right: 130, // to display the total price without being cut (4 digits + unit)
     },
     hAxis: {
-      title: 'Coût €TTC/logement par an',
+      title: 'Coût €TTC',
       minValue: 0,
       maxValue: maxCoutValue,
     },
     colors: coutGraphColors,
   });
 
-  let maxEmissionsCO2Value = 5000;
+  const nbAppartements = perBuilding ? engine.getFieldAsNumber(`nombre de logements dans l'immeuble concerné`) : 1;
+
+  let maxEmissionsCO2Value = 5000 * nbAppartements;
 
   const emissionsCO2GraphData = [
     ['Mode de chauffage', { role: 'annotation' }, ...emissionsCO2GraphColumns, { type: 'string', role: 'annotation' }],
-    ...modesDeChauffage.filter(filterDisplayableModesDeChauffage).flatMap((typeInstallation) => {
+    ...modesDeChauffageFiltres.flatMap((typeInstallation) => {
       const amounts = [
         ...getRow({
-          title: "Scope 1 : Production directe d'énergie",
-          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`),
+          title:
+            "Émissions liées aux combustibles utilisés pour la production d'énergie, et réalisées directement sur le lieu de la consommation (scope 1)",
+          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 1`) * nbAppartements,
           color: colorScope1,
           valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
-          title: "Scope 2 : Production indirecte d'énergie",
-          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`),
+          title: "Émissions liées à l'utilisation d'énergie non produite sur le site de consommation (scope 2)",
+          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 2`) * nbAppartements,
           color: colorScope2,
           valueFormatter: formatEmissionsCO2,
         }),
         ...getRow({
-          title: 'Scope 3 : Émissions indirectes',
-          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`),
+          title: "Émissions liées à la fabrication des équipements, et non directement à la production d'énergie (scope 3)",
+          amount: engine.getFieldAsNumber(`env . Installation x ${typeInstallation.emissionsCO2PublicodesKey} . Scope 3`) * nbAppartements,
           color: colorScope3,
           valueFormatter: formatEmissionsCO2,
         }),
@@ -304,7 +315,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
     },
   });
 
-  const chartHeight = selectedModesDeChauffage.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
+  const chartHeight = modesDeChauffageFiltres.length * estimatedRowHeightPx + estimatedBaseGraphHeightPx;
 
   return (
     <div className={cx(className)} {...props}>
@@ -313,7 +324,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
           hideLegend
           segments={[
             {
-              label: 'Coûts du chauffage',
+              label: 'Coûts',
               nativeInputProps: {
                 checked: graphType === 'couts',
                 onChange: () => setGraphType('couts'),
@@ -332,7 +343,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
 
       {graphType === 'couts' && (
         <div ref={coutsRef}>
-          <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'}</Heading>
+          <Heading as="h6">Coût global annuel chauffage{inclusClimatisation && ' et froid'} (par logement)</Heading>
           <Chart
             chartType="BarChart"
             height="100%"
@@ -357,7 +368,29 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       )}
       {graphType === 'emissions' && (
         <>
-          <Heading as="h6">Émissions annuelles de CO2</Heading>
+          <Heading as="h6">Émissions annuelles de CO2 (par {perBuilding ? 'bâtiment' : 'logement'})</Heading>
+          {typeDeBatiment === 'résidentiel' && (
+            <SegmentedControl
+              hideLegend
+              small
+              segments={[
+                {
+                  label: 'Par logement',
+                  nativeInputProps: {
+                    checked: !perBuilding,
+                    onChange: () => setPerBuilding(false),
+                  },
+                },
+                {
+                  label: 'Par bâtiment',
+                  nativeInputProps: {
+                    checked: perBuilding,
+                    onChange: () => setPerBuilding(true),
+                  },
+                },
+              ]}
+            />
+          )}
           <Chart
             chartType="BarChart"
             height="100%"

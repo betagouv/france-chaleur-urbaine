@@ -6,6 +6,9 @@ import Select from '@components/form/publicodes/Select';
 import { UrlStateAccordion as Accordion } from '@components/ui/Accordion';
 import Link from '@components/ui/Link';
 
+import { Title } from './ComparateurPublicodes.style';
+import SelectClimatisation from './SelectClimatisation';
+import SelectProductionECS from './SelectProductionECS';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type ParametresDuBatimentTechnicienFormProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -20,17 +23,13 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
 }) => {
   const typeBatiment = engine.getField('type de bâtiment');
   const productionECS = engine.getField('Production eau chaude sanitaire');
+  const typeDeProductionECS = engine.getField('type de production ECS');
+  const inclureLaClimatisation = engine.getField('Inclure la climatisation');
 
   return (
     <div {...props}>
-      <RadioInput
-        name="Production eau chaude sanitaire"
-        label="Production eau chaude sanitaire"
-        small
-        orientation="horizontal"
-        help={`"Non" implique que la consommation d'eau chaude sanitaire n'est pas à inclure dans la simulation.`}
-      />
-      <RadioInput name="Inclure la climatisation" label="Inclure la climatisation" small orientation="horizontal" />
+      <SelectProductionECS />
+      <SelectClimatisation />
 
       <Accordion label="Informations générales">
         <Input name="degré jours unifié spécifique chaud" label="degré jours unifié spécifique chaud" iconId="fr-icon-temp-cold-fill" />
@@ -108,13 +107,6 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
           </>
         )}
 
-        {productionECS && (
-          <Select
-            name="type de production ECS"
-            label="Type de production ECS"
-            help={`"Avec équipement de chauffage" signifie que l'eau chaude sanitaire est produite à partir du même équipement que le chauffage. "chauffe-eau électrique" signifie que pour tous les modes de chauffage, l'eau chaude sanitaire sera produite avec un chauffe-eau électrique.`}
-          />
-        )}
         <Input
           name="Part de la surface à climatiser"
           label="Part de la surface à climatiser"
@@ -137,8 +129,10 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
 
       <Accordion label="Besoins calculés">
         <Input name="consommation spécifique chauffage" label="consommation spécifique chauffage" />
-        <Input name="consommation spécifique ECS" label="consommation spécifique ECS" />
-        <Input name="consommation spécifique climatisation" label="consommation spécifique climatisation par habitant" />
+        {productionECS && <Input name="consommation spécifique ECS" label="consommation spécifique ECS" />}
+        {inclureLaClimatisation && (
+          <Input name="consommation spécifique climatisation" label="consommation spécifique climatisation par habitant" />
+        )}
         <Input
           name="besoins chauffage par appartement"
           label="besoins chauffage par appartement"
@@ -157,18 +151,22 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
             </>
           }
         />
-        <Input
-          name="besoins eau chaude sanitaire par appartement"
-          label="besoins eau chaude sanitaire par appartement"
-          placeholderPrecision={0}
-          help={"Si connue, l'utilisateur peut rentrer ici la consommation d'eau chaude sanitaire de son logement (énergie utile)."}
-        />
-        <Input
-          name="besoins en climatisation par appartement"
-          label="besoins en climatisation par appartement"
-          placeholderPrecision={0}
-          help="Les besoins en climatisation sont rarement connus et difficiles à estimer, ils sont très variables en fonction de l'usage et des caractéristiques d'implantation du logement (comme l'exposition par exemple)."
-        />
+        {productionECS && (
+          <Input
+            name="besoins eau chaude sanitaire par appartement"
+            label="besoins eau chaude sanitaire par appartement"
+            placeholderPrecision={0}
+            help={"Si connue, l'utilisateur peut rentrer ici la consommation d'eau chaude sanitaire de son logement (énergie utile)."}
+          />
+        )}
+        {inclureLaClimatisation && (
+          <Input
+            name="besoins en climatisation par appartement"
+            label="besoins en climatisation par appartement"
+            placeholderPrecision={0}
+            help="Les besoins en climatisation sont rarement connus et difficiles à estimer, ils sont très variables en fonction de l'usage et des caractéristiques d'implantation du logement (comme l'exposition par exemple)."
+          />
+        )}
       </Accordion>
 
       <Accordion label="Calcul puissance" help="Le calcul de la puissance permet de dimensionner les installations nécessaires.">
@@ -195,8 +193,9 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
         />
       </Accordion>
 
-      <Accordion label="Calcul ECS">
-        <Accordion label="Chauffe-eau électrique à accumulation">
+      {productionECS && (
+        <Accordion label="Calcul ECS">
+          <Title>Chauffe-eau électrique à accumulation</Title>
           <Input
             name="ratios . CHAUF EAU ELEC Rendement stockage ballon"
             label="Rendement stockage ballon"
@@ -207,33 +206,42 @@ const ParametresDuBatimentTechnicienForm: React.FC<ParametresDuBatimentTechnicie
             label="Durée de vie"
             help="Durée de vie estimée des équipements de production de chaleur."
           />
+          {typeDeProductionECS === 'Solaire thermique' && (
+            <>
+              <Title>Chauffe-eau solaire avec appoint électrique"</Title>
+              <Input
+                name="ratios . CHAUF EAU SOLAIRE Rendement stockage ballon"
+                label="Rendement stockage ballon"
+                help="Une partie de l'énergie stockée dans les ballons est perdue."
+              />
+              <Input
+                name="ratios . CHAUF EAU SOLAIRE Durée de vie"
+                label="Durée de vie"
+                help="Durée de vie estimée des équipements de production de chaleur."
+              />
+              <Input
+                name="ratios . CHAUF EAU SOLAIRE Part du solaire dans la production d'ECS"
+                label="Part du solaire dans la production d'ECS"
+              />
+            </>
+          )}
         </Accordion>
-        <Accordion label="Chauffe-eau solaire avec appoint électrique">
-          <Input
-            name="ratios . CHAUF EAU SOLAIRE Rendement stockage ballon"
-            label="Rendement stockage ballon"
-            help="Une partie de l'énergie stockée dans les ballons est perdue."
-          />
-          <Input
-            name="ratios . CHAUF EAU SOLAIRE Durée de vie"
-            label="Durée de vie"
-            help="Durée de vie estimée des équipements de production de chaleur."
-          />
-          <Input
-            name="ratios . CHAUF EAU SOLAIRE Part du solaire dans la production d'ECS"
-            label="Part du solaire dans la production d'ECS"
-          />
-        </Accordion>
-      </Accordion>
+      )}
 
-      <Accordion label="Puissance totale des installations">
-        <Input
-          name="Puissance installation x Capacité chauffe eau électrique à accumulation"
-          label="Capacité chauffe eau électrique à accumulation"
-        />
-        <Input name="Puissance installation x Capacité chauffe eau solaire" label="Capacité chauffe eau solaire" />
-        <Input name="surface de panneau nécessaire" label="Surface de panneau nécessaire" />
-      </Accordion>
+      {productionECS && (
+        <Accordion label="Puissance totale des installations">
+          <Input
+            name="Puissance installation x Capacité chauffe eau électrique à accumulation"
+            label="Capacité chauffe eau électrique à accumulation"
+          />
+          {typeDeProductionECS === 'Solaire thermique' && (
+            <>
+              <Input name="Puissance installation x Capacité chauffe eau solaire" label="Capacité chauffe eau solaire" />
+              <Input name="surface de panneau nécessaire" label="Surface de panneau nécessaire" />
+            </>
+          )}
+        </Accordion>
+      )}
     </div>
   );
 };

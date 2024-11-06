@@ -1,13 +1,15 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { FormEvent, useState } from 'react';
+import { useQueryState } from 'nuqs';
+import React, { FormEvent, useState } from 'react';
 
 import Input from '@components/form/dsfr/Input';
 import { submitToAirtable } from '@helpers/airtable';
 import { Airtable } from 'src/types/enum/Airtable';
 
 const ContactForm = () => {
+  const [defaultReason] = useQueryState('reason');
   const [sent, setSent] = useState(false);
   const [name, setName] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -15,6 +17,12 @@ const ContactForm = () => {
   const [email, setEmail] = useState('');
   const [reason, setReason] = useState('');
   const [message, setMessage] = useState('');
+
+  React.useEffect(() => {
+    if (defaultReason) {
+      setReason(defaultReason);
+    }
+  }, [defaultReason]);
 
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,6 +97,14 @@ const ContactForm = () => {
                 label: 'Faire une suggestion pour le site',
               },
               { value: 'probleme', label: 'Signaler un problème sur le site' },
+              ...(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true'
+                ? [
+                    {
+                      value: 'comparateur',
+                      label: 'Faire un retour sur le comparateur',
+                    },
+                  ]
+                : []),
               { value: 'autre', label: 'Autre' },
             ]}
             nativeSelectProps={{

@@ -26,7 +26,6 @@ const OutilsPage = () => {
           </Box>
         </Box>
       </Box>
-
       <Box py="5w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           Test d’adresses en masse
@@ -41,7 +40,6 @@ const OutilsPage = () => {
           Accéder
         </Link>
       </Box>
-
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="0">
@@ -58,7 +56,6 @@ const OutilsPage = () => {
           </Link>
         </Box>
       </Box>
-
       <Box py="5w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           API
@@ -73,7 +70,6 @@ const OutilsPage = () => {
           Accéder
         </Link>
       </Box>
-
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="0">
@@ -90,7 +86,6 @@ const OutilsPage = () => {
           </Link>
         </Box>
       </Box>
-
       <Box py="5w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           Simulateur d’aides
@@ -105,7 +100,26 @@ const OutilsPage = () => {
         <Link variant="secondary" href="/professionnels#simulateur-aide">
           Accéder
         </Link>
-
+      </Box>
+      {process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true' && (
+        <Box backgroundColor="blue-france-975-75">
+          <Box py="5w" className="fr-container">
+            <Heading size="h3" color="blue-france" mb="0">
+              Comparateur de performances
+            </Heading>
+            <Box display="flex" my="2w">
+              <FCUArrowIcon />
+              <Text size="lg" ml="1w">
+                Comparer les coûts et les émissions de CO2 des modes de chauffage et de refroidissement
+              </Text>
+            </Box>
+            <Link variant="secondary" href="/outils/comparateur-performances">
+              Accéder
+            </Link>
+          </Box>
+        </Box>
+      )}
+      <Box py="5w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0" mt="8w">
           Simulateur de CO2
         </Heading>
@@ -119,7 +133,6 @@ const OutilsPage = () => {
           Accéder
         </Link>
       </Box>
-
       <Box backgroundColor="blue-france-975-75">
         <Box py="5w" className="fr-container">
           <Heading size="h3" color="blue-france" mb="0">
@@ -136,7 +149,6 @@ const OutilsPage = () => {
           </Link>
         </Box>
       </Box>
-
       <Box py="5w" className="fr-container">
         <Heading size="h3" color="blue-france" mb="0">
           Liste des réseaux de chaleur

@@ -23,7 +23,11 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
       <RadioInput name="type de bâtiment" small orientation="horizontal" />
       {typeBatiment === 'résidentiel' && (
         <>
-          <Select name="méthode résidentiel" label="Méthode de calcul pour les besoins en chauffage et refroidissement" />
+          <Select
+            name="méthode résidentiel"
+            label="Méthode de calcul pour les besoins en chauffage et refroidissement"
+            help="Les normes thermiques permettent une estimation des besoins de chaleur plus précise que les DPE. Elles peuvent être estimées par l'année de construction ou de rénovation du logement."
+          />
           {engine.getField('méthode résidentiel') === 'DPE' && <Select name="DPE" label="DPE" />}
           {engine.getField('méthode résidentiel') === 'Normes thermiques et âge du bâtiment' && (
             <Select name="normes thermiques et âge du bâtiment" label="Normes thermiques et âge du bâtiment" />
@@ -38,7 +42,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
       )}
       <Input
         name="surface logement type tertiaire"
-        label="Surface"
+        label={typeBatiment === 'tertiaire' ? 'Surface moyenne' : "Surface moyenne d'un appartement"}
         nativeInputProps={{
           inputMode: 'numeric',
           maxLength: 6,
@@ -50,6 +54,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
           <Input
             name="Nombre d'habitants moyen par appartement"
             label="Nombre d'habitants moyen par appartement"
+            help="Le nombre d'habitants permet d'estimer la consommation d'eau chaude sanitaire du logement."
             nativeInputProps={{
               inputMode: 'numeric',
               maxLength: 2,
@@ -59,6 +64,7 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
           <Input
             name="nombre de logements dans l'immeuble concerné"
             label="Nombre de logements dans l'immeuble concerné"
+            help="Par simplification, tous les logements d'un même immeuble sont considérés identiques."
             nativeInputProps={{
               inputMode: 'numeric',
               maxLength: 5,
@@ -68,8 +74,6 @@ const ParametresDuBatimentGrandPublicForm: React.FC<ParametresDuBatimentGrandPub
           />
         </>
       )}
-      <RadioInput name="Production eau chaude sanitaire" label="Production eau chaude sanitaire" small orientation="horizontal" />
-      <RadioInput name="Inclure la climatisation" label="Inclure la climatisation" small orientation="horizontal" />
     </div>
   );
 };

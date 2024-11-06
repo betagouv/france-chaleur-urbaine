@@ -38,7 +38,7 @@
     "talisman:add-exception": "node-talisman -i -g pre-commit"
   },
   "dependencies": {
-    "@betagouv/france-chaleur-urbaine-publicodes": "^0.22.0",
+    "@betagouv/france-chaleur-urbaine-publicodes": "^1.0.0",
     "@codegouvfr/react-dsfr": "^1.13.6",
     "@commander-js/extra-typings": "^12.1.0",
     "@emotion/react": "^11.11.4",

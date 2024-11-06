@@ -1,6 +1,10 @@
 fileignoreconfig:
 - filename: .env
-  checksum: e8f5d8f19f7b7ff64ad92a1644fd9c0039ab9e02eaa684c7c158002459286465
+  checksum: 81233fa2ce97469feae7a0b794fff052255307f658a9a5cdd7cfe54bc40fef36
+  ignore_detectors: [filename, filesize]
+- filename: src/environment.d.ts
+  checksum: a0c6fb3486317a731796fbb2bffb74762b8428aeaadb37b1c061662e798077b4
+  ignore_detectors: [filename, filesize]
 - filename: next.config.js
   checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
 - filename: scripts/addUser.ts

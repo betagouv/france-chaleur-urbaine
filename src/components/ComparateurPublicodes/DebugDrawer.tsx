@@ -52,8 +52,6 @@ const DebugTable = styled(Table)`
   }
 `;
 
-const modesDeChauffageSansGroupeFroid = modesDeChauffage.filter((m) => m.label !== 'Groupe froid');
-
 const DebugDrawer = ({ engine }: DebugDrawerProps) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -150,7 +148,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 'Total sans aides',
                 'Total avec aides',
               ]}
-              data={modesDeChauffageSansGroupeFroid.map((m) => [
+              data={modesDeChauffage.map((m) => [
                 m.label,
                 roundNumber(`Bilan x ${m.coutPublicodeKey} . P1abo`),
                 roundNumber(`Bilan x ${m.coutPublicodeKey} . P1conso`),
@@ -220,7 +218,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 'Total investissement avec ballon  ECS à accumulation (€)',
                 'Total investissement ballon ECS solaire (panneaux inclus) (€)',
               ]}
-              data={modesDeChauffageSansGroupeFroid.map((m) => [
+              data={modesDeChauffage.map((m) => [
                 m.label,
                 roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Investissement équipement Total`),
                 roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Investissement équipement par logement type tertiaire`),
@@ -241,7 +239,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 'Coût combustible pour ballon ECS à accumulation (P1 ECS) €TTC/an',
                 'Coût combustible pour ballon ECS solaire (P1 ECS) €TTC/an',
               ]}
-              data={modesDeChauffageSansGroupeFroid.map((m) => [
+              data={modesDeChauffage.map((m) => [
                 m.label,
                 roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Coût du combustible abonnement`),
                 roundNumber(`Calcul Eco . ${m.coutPublicodeKey} . Coût du combustible consommation`),
@@ -260,7 +258,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 'Par logement/tertiaire - Petit entretien (P2) €TTC/an',
                 'Par logement/tertiaire - Gros entretien (P3) €TTC/an',
               ]}
-              data={modesDeChauffageSansGroupeFroid.map((m) => [
+              data={modesDeChauffage.map((m) => [
                 m.label,
                 roundNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${m.coutPublicodeKey} . petit entretien P2`),
                 roundNumber(`Calcul Eco . P2 P3 Coût de l'entretien . ${m.coutPublicodeKey} . gros entretien P3`),
@@ -273,7 +271,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
               caption="Montant des aides par logement/tertiaire"
               headers={['Installation', "Ma prime renov' (€)", 'Coup de pouce (€)', 'CEE (€)', 'Coût total des aides (€)']}
               data={[
-                ...modesDeChauffageSansGroupeFroid.map((m) => [
+                ...modesDeChauffage.map((m) => [
                   m.label,
                   roundNumber(`Calcul Eco . Montant des aides par logement tertiaire . ${m.coutPublicodeKey} . Ma prime renov'`),
                   roundNumber(`Calcul Eco . Montant des aides par logement tertiaire . ${m.coutPublicodeKey} . Coup de pouce`),
@@ -312,7 +310,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 'Gamme de puissance existante (kW)',
               ]}
               // impossible de factoriser encore car certaines règles n'existent pas
-              // data={modesDeChauffageSansGroupeFroid.map((m) => [
+              // data={modesDeChauffage.map((m) => [
               //   m.label,
               //   roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . puissance nécessaire équipement chauffage`),
               //   roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . puissance nécessaire pour ECS avec équipement`),
@@ -486,7 +484,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 "Consommation d'électricité (kWh/an)",
                 "Appoint d'éléctricité (kWh/an)",
               ]}
-              data={modesDeChauffageSansGroupeFroid.map((m) => [
+              data={modesDeChauffage.map((m) => [
                 m.label,
                 bool(`Installation x ${m.emissionsCO2PublicodesKey} . besoin d'installation supplémentaire pour produire l'ECS`),
                 roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . volume du ballon ECS`),
@@ -503,7 +501,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 'Consommation combustible froid',
                 'Consommation auxiliaire (kWh elec/an)',
               ]}
-              data={modesDeChauffageSansGroupeFroid.map((m) => [
+              data={modesDeChauffage.map((m) => [
                 m.label,
                 roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . consommation combustible chaleur`),
                 roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . consommation combustible froid`),
@@ -518,7 +516,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 'Consommation combustible hors électricité',
                 "Consommation d'électricité lié au chauffage/refroidissement et à la production d'ECS (kWh/an)",
               ]}
-              data={modesDeChauffageSansGroupeFroid.map((m) => [
+              data={modesDeChauffage.map((m) => [
                 m.label,
                 roundNumber(`Installation x ${m.emissionsCO2PublicodesKey} . consommation combustible hors électricité`),
                 roundNumber(
@@ -542,7 +540,7 @@ const DebugDrawer = ({ engine }: DebugDrawerProps) => {
                 'Scope 3',
                 'Total des émissions',
               ]}
-              data={modesDeChauffageSansGroupeFroid.map((m) => [
+              data={modesDeChauffage.map((m) => [
                 m.label,
                 bool(`Installation x ${m.emissionsCO2PublicodesKey} . besoin d'installation supplémentaire pour produire l'ECS`),
                 roundNumber(`env . Installation x ${m.emissionsCO2PublicodesKey} . besoins de chauffage et ECS si même équipement`),
