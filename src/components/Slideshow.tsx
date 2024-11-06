@@ -26,7 +26,7 @@ const Slideshow = ({ images }: SlideshowProps) => {
         }}
       />
 
-      <nav role="navigation" className="fr-pagination fr-mt-1w" aria-label="Pagination">
+      <nav role="navigation" className={`fr-pagination fr-mt-1 ${images.length <= 1 ? 'fcu-hidden' : ''}`} aria-label="Pagination">
         <ul className="fr-pagination__list">
           <li>
             <a

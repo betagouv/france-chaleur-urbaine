@@ -84,6 +84,9 @@ export const AppGlobalStyle = createGlobalStyle`
     --legacy-darker-blue: #ccd2fc;
     --background-light: #060504;
   }
+  .fcu-hidden {
+    visibility: hidden;
+  }
 `;
 
 const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
