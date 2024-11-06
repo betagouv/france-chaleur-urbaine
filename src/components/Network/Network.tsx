@@ -5,6 +5,7 @@ import Map from '@components/Map/Map';
 import Accordion from '@components/ui/Accordion';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
@@ -130,7 +131,16 @@ const NetworkPanel = ({
                     value={network.livraisons_totale_MWh}
                     formatter={formatMWh}
                   />
-                  <Accordion label="Voir le détail par secteur">
+                  <Accordion
+                    label={
+                      <>
+                        <Icon name="fr-icon-list-unordered" size="sm" mr="1w" />
+                        Détail par secteur
+                      </>
+                    }
+                    simple
+                    small
+                  >
                     <Property label="Résidentiel" value={network.livraisons_residentiel_MWh} formatter={formatMWh} simpleLabel skipEmpty />
                     <Property label="Tertiaire" value={network.livraisons_tertiaire_MWh} formatter={formatMWh} simpleLabel skipEmpty />
                     <Property label="Agriculture" value={network.livraisons_agriculture_MWh} formatter={formatMWh} simpleLabel skipEmpty />
@@ -144,7 +154,16 @@ const NetworkPanel = ({
                     formatter={formatMWh}
                   />
                   {!isCold && (
-                    <Accordion label="Voir le détail par type d’énergie">
+                    <Accordion
+                      label={
+                        <>
+                          <Icon name="fr-icon-list-unordered" size="sm" mr="1w" />
+                          Détail par type d’énergie
+                        </>
+                      }
+                      simple
+                      small
+                    >
                       <Property label="Gaz naturel" value={network.prod_MWh_gaz_naturel} formatter={formatMWh} simpleLabel skipEmpty />
                       <Property label="Charbon" value={network.prod_MWh_charbon} formatter={formatMWh} simpleLabel skipEmpty />
                       <Property
@@ -209,7 +228,16 @@ const NetworkPanel = ({
 
                   <Property label="Puissance totale installée" value={network.puissance_totale_MW} formatter={formatMW} />
                   {!isCold && (
-                    <Accordion label="Voir le détail par type d’énergie">
+                    <Accordion
+                      label={
+                        <>
+                          <Icon name="fr-icon-list-unordered" size="sm" mr="1w" />
+                          Détail par type d’énergie
+                        </>
+                      }
+                      simple
+                      small
+                    >
                       <Property label="Gaz naturel" value={network.puissance_MW_gaz_naturel} formatter={formatMW} simpleLabel skipEmpty />
                       <Property label="Charbon" value={network.puissance_MW_charbon} formatter={formatMW} simpleLabel skipEmpty />
                       <Property
