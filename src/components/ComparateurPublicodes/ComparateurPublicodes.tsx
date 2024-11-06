@@ -111,7 +111,11 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   const isAddressSelected = engine.getField('code département') !== undefined;
 
   const results =
-    isAddressSelected && !!modesDeChauffage ? <Graph engine={engine} proMode={displayMode === 'technicien'} /> : <ResultsNotAvailable />;
+    isAddressSelected && !!modesDeChauffage ? (
+      <Graph engine={engine} advancedMode={displayMode === 'technicien'} />
+    ) : (
+      <ResultsNotAvailable />
+    );
 
   return (
     <>

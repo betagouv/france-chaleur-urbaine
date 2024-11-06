@@ -18,7 +18,7 @@ import { type SimulatorEngine } from './useSimulatorEngine';
 const precisionDisplay = 10 / 100;
 type GraphProps = React.HTMLAttributes<HTMLDivElement> & {
   engine: SimulatorEngine;
-  proMode?: boolean;
+  advancedMode?: boolean;
 };
 
 const estimatedRowHeightPx = 56;
@@ -143,18 +143,18 @@ const formatPrecisionRange = (value: number) => {
 
 const formatEmissionsCO2 = (value: number) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`;
 
-const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) => {
+const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props }) => {
   const { has: hasModeDeChauffage } = useArrayQueryState('modes-de-chauffage');
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
 
-  const coutGraphColumnNames = proMode
+  const coutGraphColumnNames = advancedMode
     ? ['P1 abo', 'P1 conso', 'P1 ECS', "P1'", 'P1 conso froid', 'P2', 'P3', 'P4 moins aides', 'aides']
     : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', 'Aides'];
 
   const coutGraphColumns = coutGraphColumnNames.map(getColumn).flat();
 
-  const coutGraphColors = proMode
+  const coutGraphColors = advancedMode
     ? [colorP1Abo, colorP1Conso, colorP1ECS, colorP1prime, colorP1Consofroid, colorP2, colorP3, colorP4SansAides, colorP4Aides]
     : [colorP1Abo, colorP1Conso, colorP1prime, colorP4SansAides, colorP4Aides];
 
@@ -191,7 +191,7 @@ const Graph: React.FC<GraphProps> = ({ proMode, engine, className, ...props }) =
       const amountP4SansAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . P4 moins aides`);
       const amountAides = engine.getFieldAsNumber(`Bilan x ${typeInstallation.coutPublicodeKey} . aides`);
 
-      const amounts = proMode
+      const amounts = advancedMode
         ? [
             ...getRow({ title: 'P1 abo', amount: amountP1Abo, color: colorP1Abo, valueFormatter: formatPrecisionRange }),
             ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso, valueFormatter: formatPrecisionRange }),
