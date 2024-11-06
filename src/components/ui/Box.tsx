@@ -17,6 +17,7 @@ type StyleProps = {
   gap?: CSSProperties['gap'];
   flex?: boolean;
   border?: CSSProperties['border'];
+  borderLeft?: CSSProperties['borderLeft'];
   boxShadow?: CSSProperties['boxShadow'];
   backgroundColor?: CSSProperties['backgroundColor'];
   fontSize?: CSSProperties['fontSize'];
@@ -50,6 +51,7 @@ const StyledBox = styled.div<StyleProps>`
   gap: ${({ gap }) => gap};
   flex: ${({ flex }) => (flex !== undefined ? (flex ? 1 : 0) : undefined)};
   border: ${({ border }) => border};
+  border-left: ${({ borderLeft }) => borderLeft};
   box-shadow: ${({ boxShadow }) => boxShadow};
   background-color: ${({ backgroundColor }) =>
     backgroundColor ? (backgroundColor?.startsWith('#') ? backgroundColor : `var(--${backgroundColor})`) : undefined}};
@@ -98,6 +100,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       gap={props.gap}
       flex={props.flex}
       border={props.border}
+      borderLeft={props.borderLeft}
       boxShadow={props.boxShadow}
       backgroundColor={props.backgroundColor}
       fontSize={props.fontSize}
