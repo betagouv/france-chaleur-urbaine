@@ -588,7 +588,7 @@ interface PropertyProps<T> {
 const Property = <T,>({ label, value, unit, formatter, tooltip, round, simpleLabel, skipEmpty }: PropertyProps<T>) =>
   ((skipEmpty && isDefined(value) && value !== 0) || !skipEmpty) && (
     <Box display="flex" justifyContent="space-between">
-      <Box display="flex">
+      <Box display="flex" alignItems="center">
         {typeof label === 'string' ? simpleLabel ? label : <strong>{label}</strong> : label}
         {tooltip && (
           <Tooltip
