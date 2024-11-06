@@ -263,7 +263,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                 )}
               </Box>
               <Results>
-                {!loading && (
+                {!loading && address && (
                   <Alert
                     className="fr-mb-2w fr-text--sm"
                     description={
@@ -298,7 +298,7 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                     small
                   />
                 )}
-                {!loading && inclureLaClimatisation && (
+                {!loading && inclureLaClimatisation && address && (
                   <Alert
                     className="fr-mb-2w fr-text--sm"
                     description={
