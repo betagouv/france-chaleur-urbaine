@@ -79,6 +79,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
         legendTitle={legendTitle}
         filtersVisible={selectedTabId.subTabId === 'filtres'}
         setFiltersVisible={setReseauxFiltersVisible}
+        isIframeContext
       />
     );
   }
