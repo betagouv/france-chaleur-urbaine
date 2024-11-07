@@ -2,8 +2,8 @@ import Image from 'next/image';
 import { PropsWithChildren } from 'react';
 
 import SimplePage from '@components/shared/page/SimplePage';
-import Slideshow from '@components/Slideshow';
 import Box from '@components/ui/Box';
+import CardHorizontal from '@components/ui/CardHorizontal';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 
@@ -85,142 +85,71 @@ const ActionsDeCommunicationPage = () => {
         </Box>
       </Box>
 
-      <Box pt="6w" className="fr-container">
-        <Box className="fr-grid-row fr-grid-row--gutters">
-          <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
-            <Heading as="h3" color="blue-france" mb="0">
-              Amiens
-            </Heading>
-            <Text size="xs" legacyColor="lightgrey">
-              <span className="fr-icon--sm fr-icon-arrow-right-line fr-mr-1w" />
-              Octobre 2024
-            </Text>
-            <Text size="lg">
-              Le réseau de chaleur d'Amiens s'étend et se verdit : 25 km de réseaux de chaleur sont aujourd’hui en construction qui
+      <CardHorizontal
+        ville="Amiens"
+        date="Octobre 2024"
+        description="Le réseau de chaleur d'Amiens s'étend et se verdit : 25 km de réseaux de chaleur sont aujourd’hui en construction qui
               viendront s’ajouter aux 50 km existants, et en 2025, le taux d'énergies renouvelables et de récupération du réseau devrait
               atteindre 72%. La campagne d’affichage accompagnée par France Chaleur Urbaine a permis de valoriser les efforts de
               développement du réseau réalisés par la ville d’Amiens et son délégataire Amiens Energie, mais aussi de sensibiliser et
-              informer les Amiénois sur ce mode de chauffage.
-            </Text>
-          </Box>
-          <Box className="fr-col fr-col-12 fr-col-lg-6">
-            <Slideshow images={['/img/campagnes_amiens_1.webp']} />
-          </Box>
-        </Box>
-      </Box>
+              informer les Amiénois sur ce mode de chauffage."
+        images={['/img/campagnes_amiens_1.webp']}
+      />
 
-      <Box pt="10w" className="fr-container">
-        <Box className="fr-grid-row fr-grid-row--gutters">
-          <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
-            <Heading as="h3" color="blue-france" mb="0">
-              Réseaux Evos à Strasbourg
-            </Heading>
-            <Text size="xs" legacyColor="lightgrey">
-              <span className="fr-icon--sm fr-icon-arrow-right-line fr-mr-1w" />
-              Janvier 2024
-            </Text>
-            <Text size="lg">
-              Porter à 80% le taux d’énergies renouvelables du réseau EVOS, aujourd’hui alimenté exclusivement au gaz, est le défi que
+      <CardHorizontal
+        ville="Réseaux Evos à Strasbourg"
+        date="Janvier 2024"
+        description="Porter à 80% le taux d’énergies renouvelables du réseau EVOS, aujourd’hui alimenté exclusivement au gaz, est le défi que
               s’engagent à relever l’Eurométropole de Strasbourg et son délégataire ENGIE Solutions. Grâce à ce projet, les abonnés et
               futurs abonnés vont bénéficier d’un chauffage écologique et de tarifs plus stables et compétitifs. France Chaleur Urbaine
-              accompagne EVOS pour permettre au réseau de gagner en notoriété positive.
-            </Text>
-          </Box>
-          <Box className="fr-col fr-col-12 fr-col-lg-6">
-            <Slideshow
-              images={[
-                '/img/campagnes_strasbourg_1.webp',
-                '/img/campagnes_strasbourg_2.webp',
-                '/img/campagnes_strasbourg_3.webp',
-                '/img/campagnes_strasbourg_4.webp',
-              ]}
-            />
-          </Box>
-        </Box>
-      </Box>
+              accompagne EVOS pour permettre au réseau de gagner en notoriété positive."
+        images={[
+          '/img/campagnes_strasbourg_1.webp',
+          '/img/campagnes_strasbourg_2.webp',
+          '/img/campagnes_strasbourg_3.webp',
+          '/img/campagnes_strasbourg_4.webp',
+        ]}
+      />
 
-      <Box pt="10w" className="fr-container">
-        <Box className="fr-grid-row fr-grid-row--gutters">
-          <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
-            <Heading as="h3" color="blue-france" mb="0">
-              Fresnes
-            </Heading>
-            <Text size="xs" legacyColor="lightgrey">
-              <span className="fr-icon--sm fr-icon-arrow-right-line fr-mr-1w" />
-              Décembre 2023
-            </Text>
-            <Text size="lg">
-              Pour atteindre 100% de logements collectifs raccordés et un taux d'énergies renouvelables de 80%, la ville de Fresnes a décidé
+      <CardHorizontal
+        ville="Fresnes"
+        date="Décembre 2023"
+        description="Pour atteindre 100% de logements collectifs raccordés et un taux d'énergies renouvelables de 80%, la ville de Fresnes a décidé
               de créer plus de 5 km d’extension de son réseau, et de réaliser une nouvelle installation géothermique. France Chaleur Urbaine
               a accompagné la ville et son délégataire Coriance dans une campagne de communication multi-supports&nbsp;: publicité pour le
               journal communal, affiches pour abribus et espaces d’affichage de la ville, ainsi qu’une petite vidéo pédagogique pour
-              expliquer la géothermie aux plus jeunes.
-            </Text>
-          </Box>
-          <Box className="fr-col fr-col-12 fr-col-lg-6">
-            <Slideshow
-              images={[
-                '/img/campagnes_fresnes_1.webp',
-                '/img/campagnes_fresnes_2.webp',
-                '/img/campagnes_fresnes_3.webp',
-                '/img/campagnes_fresnes_4.webp',
-              ]}
-            />
-          </Box>
-        </Box>
-      </Box>
+              expliquer la géothermie aux plus jeunes."
+        images={[
+          '/img/campagnes_fresnes_1.webp',
+          '/img/campagnes_fresnes_2.webp',
+          '/img/campagnes_fresnes_3.webp',
+          '/img/campagnes_fresnes_4.webp',
+        ]}
+      />
 
-      <Box pt="10w" className="fr-container">
-        <Box className="fr-grid-row fr-grid-row--gutters">
-          <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
-            <Heading as="h3" color="blue-france" mb="0">
-              Charleville-Mézières
-            </Heading>
-            <Text size="xs" legacyColor="lightgrey">
-              <span className="fr-icon--sm fr-icon-arrow-right-line fr-mr-1w" />
-              Octobre 2023
-            </Text>
-            <Text size="lg">
-              De juillet 2023 à décembre 2024, le réseau de chaleur de Charleville-Mézières est étendu sur plus de 13 km. Cette période de
+      <CardHorizontal
+        ville="Charleville-Mézières"
+        date="Octobre 2023"
+        description="De juillet 2023 à décembre 2024, le réseau de chaleur de Charleville-Mézières est étendu sur plus de 13 km. Cette période de
               travaux est un moment clé pour faire connaître le chauffage urbain et convaincre de nouveaux prospects de se raccorder. France
               Chaleur Urbaine a réalisé pour la ville et son délégataire Dalkia des visuels pour le journal communal, les bâches travaux, et
               de l’affichage sur abribus. Grâce à un relai actif par la collectivité, cette campagne a généré plus de 50 demandes de
-              raccordement en 2 mois.
-            </Text>
-          </Box>
-          <Box className="fr-col fr-col-12 fr-col-lg-6">
-            <Slideshow
-              images={[
-                '/img/campagnes_charleville-mezieres_1.webp',
-                '/img/campagnes_charleville-mezieres_2.webp',
-                '/img/campagnes_charleville-mezieres_3.webp',
-                '/img/campagnes_charleville-mezieres_4.webp',
-              ]}
-            />
-          </Box>
-        </Box>
-      </Box>
+              raccordement en 2 mois."
+        images={[
+          '/img/campagnes_charleville-mezieres_1.webp',
+          '/img/campagnes_charleville-mezieres_2.webp',
+          '/img/campagnes_charleville-mezieres_3.webp',
+          '/img/campagnes_charleville-mezieres_4.webp',
+        ]}
+      />
 
-      <Box py="10w" className="fr-container">
-        <Box className="fr-grid-row fr-grid-row--gutters">
-          <Box display="flex" flexDirection="column" gap="16px" className="fr-col fr-col-12 fr-col-lg-6">
-            <Heading as="h3" color="blue-france" mb="0">
-              Bordeaux
-            </Heading>
-            <Text size="xs" legacyColor="lightgrey">
-              <span className="fr-icon--sm fr-icon-arrow-right-line fr-mr-1w" />
-              Mars 2023
-            </Text>
-            <Text size="lg">
-              En mars 2023, France Chaleur Urbaine réalise sa première campagne d’affichage sur abribus, pour valoriser les réseaux de
-              Bordeaux Métropole. 166 affiches sont installées sur Bordeaux rive droite, pendant une semaine.
-            </Text>
-          </Box>
-          <Box className="fr-col fr-col-12 fr-col-lg-6">
-            <Slideshow images={['/img/campagnes_bordeaux_1.webp', '/img/campagnes_bordeaux_2.webp', '/img/campagnes_bordeaux_3.webp']} />
-          </Box>
-        </Box>
-      </Box>
+      <CardHorizontal
+        ville="Bordeaux"
+        date="Mars 2023"
+        description="En mars 2023, France Chaleur Urbaine réalise sa première campagne d’affichage sur abribus, pour valoriser les réseaux de
+              Bordeaux Métropole. 166 affiches sont installées sur Bordeaux rive droite, pendant une semaine."
+        images={['/img/campagnes_bordeaux_1.webp', '/img/campagnes_bordeaux_2.webp', '/img/campagnes_bordeaux_3.webp']}
+      />
     </SimplePage>
   );
 };
