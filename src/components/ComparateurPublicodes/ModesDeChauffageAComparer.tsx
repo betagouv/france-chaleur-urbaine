@@ -79,9 +79,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <Checkbox
         small
         options={(['Poêle à granulés individuel', 'Chaudière à granulés collective'] satisfies ModeDeChauffage[])
-          .filter((modeDeChauffage) =>
-            typeDeBatiment === 'résidentiel' ? modeDeChauffage.includes('individuel') : modeDeChauffage.includes('collective')
-          )
+          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('collective')))
           .map(createOptionProps)}
       />
       <Separator />
@@ -95,18 +93,14 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             'Gaz sans condensation collectif',
           ] satisfies ModeDeChauffage[]
         )
-          .filter((modeDeChauffage) =>
-            typeDeBatiment === 'résidentiel' ? modeDeChauffage.includes('individuel') : modeDeChauffage.includes('collectif')
-          )
+          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('collectif')))
           .map(createOptionProps)}
       />
       <Separator />
       <Checkbox
         small
         options={(['Fioul individuel', 'Fioul collectif'] satisfies ModeDeChauffage[])
-          .filter((modeDeChauffage) =>
-            typeDeBatiment === 'résidentiel' ? modeDeChauffage.includes('individuel') : modeDeChauffage.includes('collective')
-          )
+          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('collective')))
           .map(createOptionProps)}
       />
       <Separator />
@@ -122,9 +116,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
             'PAC air/eau collective',
           ] satisfies ModeDeChauffage[]
         )
-          .filter((modeDeChauffage) =>
-            typeDeBatiment === 'résidentiel' ? modeDeChauffage.includes('individuelle') : modeDeChauffage.includes('collective')
-          )
+          .filter((modeDeChauffage) => (typeDeBatiment === 'résidentiel' ? true : modeDeChauffage.includes('collective')))
           .map(createOptionProps)}
       />
       <Separator />
