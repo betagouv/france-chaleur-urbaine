@@ -32,9 +32,16 @@ interface SimpleMapLegendProps {
   legendTitle?: string;
   filtersVisible: boolean;
   setFiltersVisible: (visible: boolean) => void;
+  isIframeContext?: boolean;
 }
 
-const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setFiltersVisible, legendTitle, ...props }) => {
+const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({
+  filtersVisible,
+  setFiltersVisible,
+  legendTitle,
+  isIframeContext,
+  ...props
+}) => {
   const { mapConfiguration, toggleLayer, countFilters } = useFCUMap();
   const nbFilters = countFilters('reseauxDeChaleur');
 
@@ -123,16 +130,18 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
               }}
             />
           </Box>
-          <Button
-            onClick={() => setFiltersVisible(true)}
-            priority="tertiary"
-            className="fr-mb-2w fr-ml-3w"
-            iconId="ri-filter-line"
-            size="small"
-            disabled={!mapConfiguration.reseauxDeChaleur.show}
-          >
-            Tous les filtres ({nbFilters})
-          </Button>
+          {!isIframeContext && (
+            <Button
+              onClick={() => setFiltersVisible(true)}
+              priority="tertiary"
+              className="fr-mb-2w fr-ml-3w"
+              iconId="ri-filter-line"
+              size="small"
+              disabled={!mapConfiguration.reseauxDeChaleur.show}
+            >
+              Tous les filtres ({nbFilters})
+            </Button>
+          )}
         </>
       )}
 
@@ -317,30 +326,31 @@ const MapLegendReseaux: React.FC<SimpleMapLegendProps> = ({ filtersVisible, setF
           </Box>
         </>
       )}
+      {!isIframeContext && (
+        <Box mt="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
+          <Link
+            variant="primary"
+            href="/contribution"
+            className="fr-btn--tertiary d-flex"
+            style={{ width: '100%', justifyContent: 'center' }}
+          >
+            <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
+            Contribuer
+          </Link>
 
-      <Box mt="4w" display="flex" flexDirection="column" alignItems="stretch" justifyContent="center" gap="8px">
-        <Link
-          variant="primary"
-          href="/contribution"
-          className="fr-btn--tertiary d-flex"
-          style={{ width: '100%', justifyContent: 'center' }}
-        >
-          <Icon name="fr-icon-heart-line" size="sm" mr="1v" />
-          Contribuer
-        </Link>
-
-        <Link
-          isExternal
-          variant="primary"
-          href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
-          eventKey="Téléchargement|Tracés|carte"
-          className="fr-btn--tertiary d-flex"
-          mx="auto"
-          style={{ width: '100%', justifyContent: 'center' }}
-        >
-          Télécharger les tracés
-        </Link>
-      </Box>
+          <Link
+            isExternal
+            variant="primary"
+            href="https://www.data.gouv.fr/fr/datasets/traces-des-reseaux-de-chaleur-et-de-froid/"
+            eventKey="Téléchargement|Tracés|carte"
+            className="fr-btn--tertiary d-flex"
+            mx="auto"
+            style={{ width: '100%', justifyContent: 'center' }}
+          >
+            Télécharger les tracés
+          </Link>
+        </Box>
+      )}
     </Box>
   );
 };
