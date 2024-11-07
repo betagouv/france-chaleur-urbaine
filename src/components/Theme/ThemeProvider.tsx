@@ -84,7 +84,7 @@ export const AppGlobalStyle = createGlobalStyle`
     --legacy-darker-blue: #ccd2fc;
     --background-light: #060504;
   }
-  .fcu-hidden {
+  .fcu-invisible {
     visibility: hidden;
   }
 `;

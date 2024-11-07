@@ -1,4 +1,7 @@
+import { fr } from '@codegouvfr/react-dsfr';
 import React, { useState } from 'react';
+
+import cx from '@utils/cx';
 
 import Box from './ui/Box';
 import Icon from './ui/Icon';
@@ -18,7 +21,7 @@ const Slideshow = ({ images }: SlideshowProps) => {
       <img
         src={images[visibleSlideIndex]}
         alt=""
-        className="fr-responsive-img"
+        className={fr.cx('fr-responsive-img')}
         loading="lazy"
         style={{
           maxHeight: '350px',
@@ -26,11 +29,15 @@ const Slideshow = ({ images }: SlideshowProps) => {
         }}
       />
 
-      <nav role="navigation" className={`fr-pagination fr-mt-1 ${images.length <= 1 ? 'fcu-hidden' : ''}`} aria-label="Pagination">
-        <ul className="fr-pagination__list">
+      <nav
+        role="navigation"
+        className={cx(fr.cx('fr-pagination', 'fr-mt-1w'), { 'fcu-invisible': images.length <= 1 })}
+        aria-label="Pagination"
+      >
+        <ul className={fr.cx('fr-pagination__list')}>
           <li>
             <a
-              className="fr-pagination__link"
+              className={fr.cx('fr-pagination__link')}
               role="link"
               href="#"
               onClick={(e) => {
@@ -42,10 +49,10 @@ const Slideshow = ({ images }: SlideshowProps) => {
               Précédent
             </a>
           </li>
-          <li className="fr-col" aria-hidden />
+          <li className={fr.cx('fr-col')} aria-hidden />
           <li>
             <a
-              className="fr-pagination__link"
+              className={fr.cx('fr-pagination__link')}
               role="link"
               href="#"
               onClick={(e) => {
