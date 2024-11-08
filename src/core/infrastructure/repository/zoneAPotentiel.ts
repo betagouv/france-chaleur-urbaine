@@ -39,6 +39,13 @@ export const getCommunePotentiel = async (codeInsee: string) => {
   const sumChaufMwh = zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.chauf_mwh || 0), 0);
   const sumECSMwh = zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.ecs_mwh || 0), 0);
 
+  const reseauxExistants = await db
+    .selectFrom('reseaux_de_chaleur')
+    .leftJoin('ign_communes', 'ign_communes.insee_com', sql`${codeInsee}` as any)
+    .where(sql`ST_Intersects(reseaux_de_chaleur.geom, ign_communes.geom)` as any)
+    .selectAll()
+    .execute();
+
   // Adjusting bounds for better map display
   const adjustedBounds: Bounds = commune?.bounds
     ? [
@@ -51,10 +58,11 @@ export const getCommunePotentiel = async (codeInsee: string) => {
 
   return {
     ...commune,
-    longitude: commune?.longitude,
-    latitude: commune?.latitude,
+    longitude: commune?.longitude || null,
+    latitude: commune?.latitude || null,
     nbZonesAFortPotentiel: zonesAFortPotentiel.length,
     nbZonesAPotentiel: zonesAPotentiel.length,
+    nbReseauxExistants: reseauxExistants.length,
     besoinsChauffage: sumChaufMwh,
     besoinsECS: sumECSMwh,
     bounds: adjustedBounds, // Adjusted bounds for better map display
