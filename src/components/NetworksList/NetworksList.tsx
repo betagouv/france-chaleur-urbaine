@@ -10,6 +10,7 @@ import ReseauxDeChaleurFilters, { ReseauxDeChaleurFiltersProps } from '@componen
 import Box from '@components/ui/Box';
 import Drawer from '@components/ui/Drawer';
 import Icon from '@components/ui/Icon';
+import Link from '@components/ui/Link';
 import { ColumnDef, Table } from '@components/ui/Table';
 import Text from '@components/ui/Text';
 import useReseauxDeChaleurFilters, { type Filters } from '@hooks/useReseauxDeChaleurFilters';
@@ -646,13 +647,14 @@ const NetworksList = () => {
           />
         </Box>
         <Text size="xs" className="fr-hint-text" mt="2w">
-          Sources : Enquête annuelle des réseaux de chaleur et de froid (EARCF), édition 2023 portant sur l’année 2022, réalisée par la
-          Fedene Réseaux de chaleur et de froid avec le concours de l’association AMORCE, sous tutelle du service des données et études
-          statistiques (SDES) du ministère de la transition écologique. Excepté pour les taux EnR&R et contenus CO2 : la source est l’
-          <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" target="_blank" rel="noreferrer noopener">
-            Arrêté du 5 juillet 2024
-          </a>{' '}
-          (DPE) réalisé sur la base des données portant sur l'année 2022 ou sur une moyenne 2020-2021-2022.
+          Sources : L’ensemble des données sont extraites des enquêtes réalisées par la Fedene Réseaux de chaleur et de froid avec le
+          concours de l’association AMORCE, sous tutelle du service des données et études statistiques (SDES) du ministère de la transition
+          écologique. L'année considérée varie en fonction de la disponibilité actuelle des données. Livraisons et mix énergétique : 2023.
+          Données tarifaires : 2022. Taux ENRR et contenu CO2 (direct et ACV) : 2022 ou moyenne 2020-2021-2022, sur la base de l'
+          <Link href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049925781" isExternal>
+            arrêté DPE du 5 juillet 2024
+          </Link>
+          .
         </Text>
       </Box>
     </NetworksListContainer>
