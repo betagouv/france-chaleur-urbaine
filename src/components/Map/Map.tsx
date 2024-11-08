@@ -97,6 +97,7 @@ type MapProps = {
   enabledLegendFeatures?: MapLegendFeature[];
   withLegend?: boolean;
   withBorder?: boolean;
+  withPins?: boolean;
   legendTitle?: string;
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
@@ -128,6 +129,7 @@ const InternalMap = ({
   enabledLegendFeatures,
   withCenterPin,
   noPopup,
+  withPins = true,
   legendLogoOpt,
   popupType = MapPopupType.DEFAULT,
   pinsList,
@@ -670,7 +672,8 @@ const InternalMap = ({
             {popupInfos && (
               <MapPopup latitude={popupInfos.latitude} longitude={popupInfos.longitude} content={popupInfos.content} type={popupType} />
             )}
-            {markersList.length > 0 &&
+            {withPins &&
+              markersList.length > 0 &&
               markersList.map((marker: MapMarkerInfos) => (
                 <MapMarker
                   key={marker.id}
