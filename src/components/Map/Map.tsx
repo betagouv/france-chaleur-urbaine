@@ -5,7 +5,7 @@ import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
 import { LayerSpecification, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import { parseAsString, useQueryStates } from 'nuqs';
+import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
@@ -135,7 +135,7 @@ const InternalMap = ({
   pinsList,
   initialCenter,
   initialZoom,
-  bounds,
+  bounds: defaultBounds,
   geolocDisabled,
   withFCUAttribution,
   persistViewStateInURL,
@@ -505,11 +505,12 @@ const InternalMap = ({
     }
   }, []);
 
-  const [, setQuery] = useQueryStates({
+  const [{ bounds: boundsInQuery }, setQuery] = useQueryStates({
     coord: parseAsString,
     zoom: parseAsString,
+    bounds: parseAsJson(),
   });
-
+  const bounds = boundsInQuery || defaultBounds;
   // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
   useDebouncedEffect(
     () => {
@@ -520,6 +521,7 @@ const InternalMap = ({
         {
           coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
           zoom: viewState.zoom.toFixed(2),
+          bounds: null, // reset bounds as they are just meant to be used on load of the map
         },
         {
           shallow: true,
@@ -551,7 +553,7 @@ const InternalMap = ({
 
     const map = mapRef.current?.getMap();
 
-    map?.flyTo({ center, zoom, essential: true });
+    map?.flyTo({ center, zoom, essential: true, duration: 1000 });
   }, [JSON.stringify(bounds), mapRef.current]);
 
   const isRouterReady = useRouterReady();
