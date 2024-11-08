@@ -88,6 +88,7 @@
     "maplibre-gl": "^4.7.0",
     "next": "^15.0.2",
     "next-auth": "^4.24.5",
+    "next-nprogress-bar": "^2.3.14",
     "next-sitemap": "^4.2.3",
     "nodemailer": "^6.9.9",
     "nuqs": "^1.17.7",
