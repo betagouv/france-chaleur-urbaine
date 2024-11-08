@@ -105,6 +105,7 @@ type MapProps = {
   pinsList?: MapMarkerInfos[];
   initialCenter?: Point;
   initialZoom?: number;
+  bounds?: [number, number, number, number];
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
@@ -132,6 +133,7 @@ const InternalMap = ({
   pinsList,
   initialCenter,
   initialZoom,
+  bounds,
   geolocDisabled,
   withFCUAttribution,
   persistViewStateInURL,
@@ -525,6 +527,30 @@ const InternalMap = ({
     [viewState],
     500
   );
+
+  const mapViewportFitPadding = 50; // px
+  const headerHeight = 56; // px
+  const mapViewportWidth =
+    typeof window !== 'undefined' ? window.innerWidth - (withLegend && !legendCollapsed ? legendWidth : 0) - mapViewportFitPadding : 0;
+  const mapViewportHeight = typeof window !== 'undefined' ? window.innerHeight - headerHeight - mapViewportFitPadding : 0;
+
+  useEffect(() => {
+    if (!bounds) {
+      return;
+    }
+    const { center, zoom } = geoViewport.viewport(
+      bounds, // bounds
+      [mapViewportWidth, mapViewportHeight], // dimensions
+      1, // min zoom
+      20, // max zoom
+      512, // tile size for MVT
+      true // allow decimals in zoom
+    );
+
+    const map = mapRef.current?.getMap();
+
+    map?.flyTo({ center, zoom, essential: true });
+  }, [JSON.stringify(bounds), mapRef.current]);
 
   const isRouterReady = useRouterReady();
   if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {
