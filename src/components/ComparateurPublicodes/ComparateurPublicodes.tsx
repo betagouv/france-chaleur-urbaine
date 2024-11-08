@@ -280,6 +280,12 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                             <strong>{nearestReseauDeChaleur.nom_reseau}</strong>
                           </Link>{' '}
                           est à <strong>{nearestReseauDeChaleur.distance}m</strong> de votre adresse.
+                          {!nearestReseauDeChaleur?.PM && (
+                            <Text color="warning" my="1v" size="xs">
+                              Attention toutefois, en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix
+                              de la chaleur moyen des réseaux français.
+                            </Text>
+                          )}
                           {lngLat && (
                             <div className="fr-text--xs">
                               <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
@@ -313,6 +319,10 @@ const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
                             <strong>{nearestReseauDeFroid.nom_reseau}</strong>
                           </Link>{' '}
                           est à <strong>{nearestReseauDeFroid.distance}m</strong> de votre adresse.
+                          <Text color="warning" my="1v" size="xs">
+                            Attention toutefois, en l'absence de données tarifaires pour ce réseau, les simulations se basent sur le prix du
+                            froid moyen des réseaux français.
+                          </Text>
                           {lngLat && (
                             <div className="fr-text--xs">
                               <Link isExternal href={`/carte?coord=${lngLat.join(',')}&zoom=17`} className="fr-block">
