@@ -11,6 +11,7 @@ import { SWRConfig, SWRConfiguration } from 'swr';
 import { ConsentBanner } from '@components/ConsentBanner';
 import '@components/Map/StyleSwitcher/styles.css';
 import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@components/Theme/ThemeProvider';
+import { NotifierContainer } from '@core/notification';
 import { usePreserveScroll } from '@hooks/usePreserveScroll';
 import { HeatNetworkService, ServicesContext, SuggestionService } from 'src/services';
 import { AdminService } from 'src/services/admin';
@@ -72,6 +73,7 @@ function App({
   return (
     <ThemeProvider>
       <ConsentBanner />
+      <NotifierContainer />
       <ServicesContext.Provider
         value={{
           suggestionService: new SuggestionService(axiosHttpClient),

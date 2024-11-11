@@ -100,6 +100,7 @@
     "react": "^19.0.0-rc-603e6108-20241029",
     "react-dom": "^19.0.0-rc-603e6108-20241029",
     "react-google-charts": "^4.0.1",
+    "react-hot-toast": "^2.4.1",
     "react-loader-spinner": "^6.1.0",
     "react-map-gl": "^7.1.7",
     "rehype": "^12.0.1",
