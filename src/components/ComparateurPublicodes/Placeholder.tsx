@@ -24,9 +24,10 @@ export const ComparateurPublicodesTitle = () => {
       <Logos size="sm" withFCU={false} />
       <div className="fr-text--sm fr-mt-2w">
         Cet outil de comparaison de modes de chauffage et de refroidissement a pour objectif de comparer en quelques minutes des
-        configurations de chauffage et de refroidissement sur les plans techniques, économiques et environnementaux. Il ne remplace en aucun
-        cas une étude de faisabilité technico-économique et ne peut s'adapter aux situations particulières avec les hypothèses
-        préconfigurées. Ces hypothèses représentent des configurations types, elles sont donc sujets à des incertitudes importantes.{' '}
+        configurations de chauffage et de refroidissement sur les plans techniques, économiques et environnementaux.{' '}
+        <strong>Il ne remplace en aucun cas une étude de faisabilité technico-économique menée par un bureau d’études</strong> et ne peut
+        s'adapter aux situations particulières avec les hypothèses préconfigurées. Ces hypothèses représentent des configurations types,
+        elles sont donc sujets à des incertitudes importantes.{' '}
         <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
           Voir l’explication détaillée
         </a>
