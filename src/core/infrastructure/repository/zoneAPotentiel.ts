@@ -36,6 +36,10 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     zonesAPotentielPromise,
   ]);
 
+  if (!commune) {
+    return null;
+  }
+
   const sumChaufMwh = zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.chauf_mwh || 0), 0);
   const sumECSMwh = zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.ecs_mwh || 0), 0);
 
