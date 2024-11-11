@@ -6,7 +6,7 @@ import { LayerSpecification, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
   AttributionControl,
@@ -99,6 +99,10 @@ type MapProps = {
   withBorder?: boolean;
   withPins?: boolean;
   legendTitle?: string;
+  components?: {
+    legend?: React.ReactNode;
+  };
+  legendCollapsed?: boolean;
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
   noPopup?: boolean;
@@ -126,6 +130,8 @@ const InternalMap = ({
   withLegend,
   withBorder,
   legendTitle,
+  components,
+  legendCollapsed: defaultLegendCollapsed,
   enabledLegendFeatures,
   withCenterPin,
   noPopup,
@@ -154,8 +160,9 @@ const InternalMap = ({
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
+
   useEffect(() => {
-    setLegendCollapsed(window.innerWidth < 992);
+    setLegendCollapsed(defaultLegendCollapsed || window.innerWidth < 992);
     return () => {
       setMapRef(null);
       setMapDraw(null);
@@ -630,7 +637,7 @@ const InternalMap = ({
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
               <LegendContainer>
-                <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
+                {components?.legend ?? <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />}
               </LegendContainer>
               {!withoutLogo && (
                 <LegendLogoList>
@@ -689,7 +696,7 @@ const InternalMap = ({
                 />
               ))}
           </MapReactGL>
-          {withLegend && (
+          {withLegend && !components?.legend && (
             <MapSearchWrapper legendCollapsed={legendCollapsed}>
               <MapSearchInputWrapper>
                 <Title>Rechercher une adresse</Title>
