@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-const STORED_KEY = '__FCU:App__';
+import { STORED_KEY } from './useLocalStorage';
 
 type PersistedStateOption = {
   beforeStorage?: (arg: any) => void;
   keyPrefix?: string;
 };
 
+/**
+ * Use useLocalStorage instead as this one generates errors
+ * @deprecated
+ */
 function usePersistedState<T>(
   name: string,
   defaultValue: T,
@@ -27,6 +31,7 @@ function usePersistedState<T>(
   useEffect(() => {
     try {
       const storedValue = window.localStorage.getItem(key);
+
       if (storedValue !== null) setValue(JSON.parse(storedValue));
     } catch (err) {
       console.error(err);
