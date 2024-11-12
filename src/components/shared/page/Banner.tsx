@@ -1,7 +1,9 @@
-import { usePathname, useRouter } from 'next/navigation';
+import { fr } from '@codegouvfr/react-dsfr';
+import { usePathname } from 'next/navigation';
 import React from 'react';
 import styled from 'styled-components';
 
+import Link from '@components/ui/Link';
 import NoticeRemovable from '@components/ui/NoticeRemovable';
 
 const NoticeRemovableSticky = styled(NoticeRemovable)`
@@ -12,29 +14,22 @@ const NoticeRemovableSticky = styled(NoticeRemovable)`
 `;
 
 const Banner: React.FC = () => {
-  const router = useRouter();
   const currentUrl = usePathname();
 
   if (
-    process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true' &&
-    currentUrl &&
-    !currentUrl?.startsWith('/outils/comparateur-performances')
+    process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR !== 'true' ||
+    !currentUrl ||
+    currentUrl?.startsWith('/outils/comparateur-performances')
   ) {
-    return (
-      <NoticeRemovableSticky
-        className="fr-text--sm"
-        style={{ textAlign: 'center' }}
-        keyName="comparateur"
-        onClick={() => {
-          router.push('/outils/comparateur-performances');
-        }}
-      >
-        Comparez les coûts et les emissions de CO2 des différents modes de chauffage, accédez à notre nouveau comparateur
-      </NoticeRemovableSticky>
-    );
+    return null;
   }
 
-  return null;
+  return (
+    <NoticeRemovableSticky className={fr.cx('fr-text--sm')} style={{ textAlign: 'center' }} keyName="comparateur">
+      Comparez les coûts et les émissions de CO2 des différents modes de chauffage,{' '}
+      <Link href="/outils/comparateur-performances">accédez à notre nouveau comparateur</Link>
+    </NoticeRemovableSticky>
+  );
 };
 
 export default Banner;
