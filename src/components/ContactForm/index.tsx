@@ -97,14 +97,10 @@ const ContactForm = () => {
                 label: 'Faire une suggestion pour le site',
               },
               { value: 'probleme', label: 'Signaler un problème sur le site' },
-              ...(process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR === 'true'
-                ? [
-                    {
-                      value: 'comparateur',
-                      label: 'Faire un retour sur le comparateur',
-                    },
-                  ]
-                : []),
+              {
+                value: 'comparateur',
+                label: 'Faire un retour sur le comparateur',
+              },
               { value: 'autre', label: 'Autre' },
             ]}
             nativeSelectProps={{
