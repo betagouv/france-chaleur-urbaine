@@ -20,6 +20,7 @@ type UseFCUMapResult = {
   setMapConfiguration: React.Dispatch<React.SetStateAction<MapConfiguration>>;
   mapConfiguration: MapConfiguration;
   toggleLayer: (property: MapConfigurationProperty<boolean>) => void;
+  updateProperty: <T>(property: MapConfigurationProperty<T>, value: T) => void;
   updateScaleInterval: (property: MapConfigurationProperty<Interval>) => (interval: Interval) => void;
 } & ReturnType<typeof useReseauxDeChaleurFilters> &
   (
@@ -82,6 +83,11 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
     setMapConfiguration({ ...mapConfiguration });
   };
 
+  const updateProperty: UseFCUMapResult['updateProperty'] = (property, value) => {
+    setProperty(mapConfiguration, property, value);
+    setMapConfiguration({ ...mapConfiguration });
+  };
+
   const updateScaleInterval: UseFCUMapResult['updateScaleInterval'] = (property) => (interval) => {
     setProperty(mapConfiguration, property, interval);
     setMapConfiguration({ ...mapConfiguration });
@@ -95,6 +101,7 @@ export const FCUMapContextProvider: React.FC<React.PropsWithChildren<{ initialMa
     mapConfiguration,
     setMapConfiguration,
     toggleLayer,
+    updateProperty,
     updateScaleInterval,
     ...reseauxDeChaleurFilters,
   };
