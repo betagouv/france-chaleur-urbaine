@@ -14,6 +14,7 @@ import Text from '@components/ui/Text';
 import { deleteFetchJSON } from '@utils/network';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 
+import Banner from './Banner';
 import { StyledHeader } from './SimplePage.styles';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
@@ -360,6 +361,7 @@ const PageHeader = (props: PageHeaderProps) => {
 
   return (
     <>
+      <Banner />
       <StyledHeader
         $isFullScreenMode={isFullScreenMode}
         brandTop={
