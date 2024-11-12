@@ -1,115 +1,127 @@
+import { useToggle } from '@react-hookz/web';
+import styled from 'styled-components';
+
 import Checkbox from '@components/form/dsfr/Checkbox';
 import { besoinsEnChaleurIntervals } from '@components/Map/map-layers';
 import useFCUMap from '@components/Map/MapProvider';
-import Box from '@components/ui/Box';
-import Link from '@components/ui/Link';
+import Accordion from '@components/ui/Accordion';
+import Box, { BoxProps } from '@components/ui/Box';
 import Text from '@components/ui/Text';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
 
 import IconPolygon from './IconPolygon';
-import { Title } from './SimpleMapLegend.style';
 
-function VillesPotentielMapLegend() {
+const StyledBox = styled(Box)`
+  ${({ theme }) => theme.media.lg`
+    min-width: 230px;
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+    overflow: auto;
+    position: absolute;
+    z-index: 1;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+`}
+`;
+
+function VillesPotentielMapLegend(props?: BoxProps) {
   const { mapConfiguration, toggleLayer } = useFCUMap();
+  const [legendShown, toggleLegend] = useToggle(true);
 
   return (
-    <Box mt="2w" px="2w" style={{ overflow: 'auto' }}>
-      <Title>Légende</Title>
-      <Checkbox
-        className="fr-mt-4w"
-        small
-        options={[
-          {
-            label: (
-              <Box display="flex" gap="4px" alignItems="center">
-                <IconPolygon
-                  stroke={
-                    besoinsEnChaleurIntervals[
-                      besoinsEnChaleurIntervals.length - 3 // lighter color
-                    ].color
-                  }
-                  fillOpacity={0.7}
-                />
-                <Text
-                  as="label"
-                  htmlFor="besoinsEnChaleur"
-                  fontSize="14px"
-                  lineHeight="18px"
-                  className="fr-col"
-                  fontWeight="bold"
-                  cursor="pointer"
-                  pt="1v"
-                  px="1v"
-                >
-                  Besoins en chaleur
-                </Text>
-              </Box>
-            ),
-            nativeInputProps: {
-              name: 'besoinsEnChaleur',
-              checked: mapConfiguration.besoinsEnChaleur,
-              onChange: () => toggleLayer('besoinsEnChaleur'),
+    <StyledBox {...props}>
+      <Accordion small label="Légende" onExpandedChange={toggleLegend} expanded={legendShown} style={{ paddingBottom: '0' }}>
+        <Checkbox
+          small
+          className="fr-mt-1w fr-ml-1v"
+          options={[
+            {
+              label: (
+                <Box display="flex" gap="4px" alignItems="center">
+                  <IconPolygon
+                    stroke={
+                      besoinsEnChaleurIntervals[
+                        besoinsEnChaleurIntervals.length - 3 // lighter color
+                      ].color
+                    }
+                    fillOpacity={0.7}
+                  />
+                  <Text
+                    as="label"
+                    htmlFor="besoinsEnChaleur"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Besoins en chaleur
+                  </Text>
+                </Box>
+              ),
+              nativeInputProps: {
+                name: 'besoinsEnChaleur',
+                checked: mapConfiguration.besoinsEnChaleur,
+                onChange: () => toggleLayer('besoinsEnChaleur'),
+              },
             },
-          },
-          {
-            label: (
-              <Box display="flex" gap="4px" alignItems="center">
-                <IconPolygon stroke={themeDefZonePotentielFortChaud.fill.color} fillOpacity={themeDefZonePotentielFortChaud.fill.opacity} />
+            {
+              label: (
+                <Box display="flex" gap="4px" alignItems="center">
+                  <IconPolygon
+                    stroke={themeDefZonePotentielFortChaud.fill.color}
+                    fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
+                  />
 
-                <Text
-                  as="label"
-                  htmlFor="zonesPotentielFortChaud"
-                  fontSize="14px"
-                  lineHeight="18px"
-                  className="fr-col"
-                  fontWeight="bold"
-                  cursor="pointer"
-                  pt="1v"
-                  px="1v"
-                >
-                  Zones à fort potentiel
-                </Text>
-              </Box>
-            ),
-            nativeInputProps: {
-              name: 'zonesPotentielFortChaud',
-              checked: mapConfiguration.zonesOpportunite.zonesPotentielFortChaud,
-              onChange: () => toggleLayer('zonesOpportunite.zonesPotentielFortChaud'),
+                  <Text
+                    as="label"
+                    htmlFor="zonesPotentielFortChaud"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Zones à fort potentiel
+                  </Text>
+                </Box>
+              ),
+              nativeInputProps: {
+                name: 'zonesPotentielFortChaud',
+                checked: mapConfiguration.zonesOpportunite.zonesPotentielFortChaud,
+                onChange: () => toggleLayer('zonesOpportunite.zonesPotentielFortChaud'),
+              },
             },
-          },
-          {
-            label: (
-              <Box display="flex" gap="4px" alignItems="center">
-                <IconPolygon stroke={themeDefZonePotentielChaud.fill.color} fillOpacity={themeDefZonePotentielChaud.fill.opacity} />
-                <Text
-                  as="label"
-                  htmlFor="zonesPotentielChaud"
-                  fontSize="14px"
-                  lineHeight="18px"
-                  className="fr-col"
-                  fontWeight="bold"
-                  cursor="pointer"
-                  pt="1v"
-                  px="1v"
-                >
-                  Zones à potentiel
-                </Text>
-              </Box>
-            ),
-            nativeInputProps: {
-              name: 'zonesPotentielChaud',
-              checked: mapConfiguration.zonesOpportunite.zonesPotentielChaud,
-              onChange: () => toggleLayer('zonesOpportunite.zonesPotentielChaud'),
+            {
+              label: (
+                <Box display="flex" gap="4px" alignItems="center">
+                  <IconPolygon stroke={themeDefZonePotentielChaud.fill.color} fillOpacity={themeDefZonePotentielChaud.fill.opacity} />
+                  <Text
+                    as="label"
+                    htmlFor="zonesPotentielChaud"
+                    fontSize="14px"
+                    lineHeight="18px"
+                    className="fr-col"
+                    cursor="pointer"
+                    pt="1v"
+                    px="1v"
+                  >
+                    Zones à potentiel
+                  </Text>
+                </Box>
+              ),
+              nativeInputProps: {
+                name: 'zonesPotentielChaud',
+                checked: mapConfiguration.zonesOpportunite.zonesPotentielChaud,
+                onChange: () => toggleLayer('zonesOpportunite.zonesPotentielChaud'),
+              },
             },
-          },
-        ]}
-      />
-      <Box fontSize={'10px'} textAlign="right" mt="2w">
-        <Link href="https://reseaux-chaleur.cerema.fr/cartographie-nationale-besoins-chaleur-froid" isExternal>
-          Source: Cerema, projet EnRezo.
-        </Link>
-      </Box>
-    </Box>
+          ]}
+        />
+      </Accordion>
+    </StyledBox>
   );
 }
 

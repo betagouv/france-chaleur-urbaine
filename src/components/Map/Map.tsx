@@ -6,7 +6,7 @@ import { LayerSpecification, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
 import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
-import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
   AttributionControl,
@@ -25,6 +25,7 @@ import Link from '@components/ui/Link';
 import Tooltip from '@components/ui/Tooltip';
 import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
+import cx from '@utils/cx';
 import { useServices } from 'src/services';
 import { trackEvent } from 'src/services/analytics';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
@@ -99,9 +100,6 @@ type MapProps = {
   withBorder?: boolean;
   withPins?: boolean;
   legendTitle?: string;
-  components?: {
-    legend?: React.ReactNode;
-  };
   legendCollapsed?: boolean;
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
@@ -120,17 +118,16 @@ type MapProps = {
 const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
   return (
     <FCUMapContextProvider initialMapConfiguration={initialMapConfiguration}>
-      <InternalMap {...props} />
+      <FullyFeaturedMap {...props} />
     </FCUMapContextProvider>
   );
 };
 
-const InternalMap = ({
+export const FullyFeaturedMap = ({
   withoutLogo,
   withLegend,
   withBorder,
   legendTitle,
-  components,
   legendCollapsed: defaultLegendCollapsed,
   enabledLegendFeatures,
   withCenterPin,
@@ -146,7 +143,9 @@ const InternalMap = ({
   withFCUAttribution,
   persistViewStateInURL,
   mapRef: mapRefParam,
-}: MapProps) => {
+  className,
+  ...props
+}: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
   const router = useRouter();
   const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap();
 
@@ -617,7 +616,7 @@ const InternalMap = ({
   return (
     <>
       <MapStyle legendCollapsed={!withLegend || legendCollapsed} isDrawing={isDrawing} withBorder={withBorder} />
-      <div className="map-wrap">
+      <div className={cx('map-wrap', className)} {...props}>
         {withLegend && (
           <>
             <CollapseLegend
@@ -636,9 +635,7 @@ const InternalMap = ({
               </Tooltip>
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
-              <LegendContainer>
-                {components?.legend ?? <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />}
-              </LegendContainer>
+              <LegendContainer>{<SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />}</LegendContainer>
               {!withoutLogo && (
                 <LegendLogoList>
                   <LegendLogoLink href="https://france-chaleur-urbaine.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">
@@ -696,7 +693,7 @@ const InternalMap = ({
                 />
               ))}
           </MapReactGL>
-          {withLegend && !components?.legend && (
+          {withLegend && (
             <MapSearchWrapper legendCollapsed={legendCollapsed}>
               <MapSearchInputWrapper>
                 <Title>Rechercher une adresse</Title>
