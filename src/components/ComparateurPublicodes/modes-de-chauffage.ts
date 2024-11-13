@@ -1,6 +1,6 @@
 export const modesDeChauffage = [
   {
-    label: 'Réseaux de chaleur',
+    label: 'Réseau de chaleur',
     emissionsCO2PublicodesKey: 'Réseaux de chaleur x Collectif',
     coutPublicodeKey: 'Réseaux de chaleur',
     reversible: false,

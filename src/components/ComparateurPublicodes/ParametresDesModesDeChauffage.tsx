@@ -52,8 +52,8 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
       </Accordion>
 
       <Accordion label="Combustibles (P1)">
-        {hasModeDeChauffage('Réseaux de chaleur') && (
-          <Accordion label="Réseaux de chaleur">
+        {hasModeDeChauffage('Réseau de chaleur') && (
+          <Accordion label="Réseau de chaleur">
             <Input name="Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part abonnement" label="Tarification R2 (Part fixe)" />
             <Input
               name="Calcul Eco . Coût d'achat du combustible . Chaleur RCU x Part consommation"
@@ -257,8 +257,8 @@ const ParametresDesModesDeChauffageForm: React.FC<ParametresDesModesDeChauffageF
 
       <Title mt="4w">Paramètres techniques par mode de chauffage et de refroidissement</Title>
 
-      {hasModeDeChauffage('Réseaux de chaleur') && (
-        <UrlStateAccordion label="Réseaux de chaleur">
+      {hasModeDeChauffage('Réseau de chaleur') && (
+        <UrlStateAccordion label="Réseau de chaleur">
           <Input
             name="ratios . RCU Rendement sous station chauffage"
             label="Rendement sous-station chauffage"
