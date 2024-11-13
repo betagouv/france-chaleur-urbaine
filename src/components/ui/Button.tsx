@@ -60,11 +60,11 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <StyledButton
-      onClick={onClick as any /** FIXME */}
+      onClick={onClick as any /** FIXME cause incompatibility with DSFR Button */}
       iconId={loading ? 'ri-loader-3-line' : (iconId as any) /** FIXME */}
       $full={full}
       $loading={loading}
-      type={type as any /** FIXME */}
+      type={type as any /** FIXME cause incompatibility with DSFR Button */}
       {...props}
     >
       {children}
