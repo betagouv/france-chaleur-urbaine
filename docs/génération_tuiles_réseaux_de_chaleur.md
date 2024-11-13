@@ -35,45 +35,12 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres -c "COPY (
               'energie_ratio_solaireThermique', \"energie_ratio_solaireThermique\",
               'energie_ratio_pompeAChaleur', \"energie_ratio_pompeAChaleur\",
               'energie_ratio_gaz', \"energie_ratio_gaz\",
-              'energie_ratio_fioul', \"energie_ratio_fioul\",
-              'energie_majoritaire', CASE
-                  WHEN energie_max_ratio = \"energie_ratio_biomasse\" THEN 'biomasse'
-                  WHEN energie_max_ratio = \"energie_ratio_geothermie\" THEN 'geothermie'
-                  WHEN energie_max_ratio = \"energie_ratio_uve\" THEN 'uve'
-                  WHEN energie_max_ratio = \"energie_ratio_chaleurIndustrielle\" THEN 'chaleurIndustrielle'
-                  WHEN energie_max_ratio = \"energie_ratio_solaireThermique\" THEN 'solaireThermique'
-                  WHEN energie_max_ratio = \"energie_ratio_pompeAChaleur\" THEN 'pompeAChaleur'
-                  WHEN energie_max_ratio = \"energie_ratio_gaz\" THEN 'gaz'
-                  WHEN energie_max_ratio = \"energie_ratio_fioul\" THEN 'fioul'
-                  WHEN energie_max_ratio = \"energie_ratio_autresEnr\" THEN 'autresEnr'
-                  WHEN energie_max_ratio = \"energie_ratio_chaufferiesElectriques\" THEN 'chaufferiesElectriques'
-                  WHEN energie_max_ratio = \"energie_ratio_charbon\" THEN 'charbon'
-                  WHEN energie_max_ratio = \"energie_ratio_gpl\" THEN 'gpl'
-                  WHEN energie_max_ratio = \"energie_ratio_autreChaleurRecuperee\" THEN 'autreChaleurRecuperee'
-                  WHEN energie_max_ratio = \"energie_ratio_biogaz\" THEN 'biogaz'
-                  ELSE NULL
-                END
+              'energie_ratio_fioul', \"energie_ratio_fioul\"
             )
         ) AS feature
         FROM (
           SELECT
-            *,
-            greatest(
-              \"energie_ratio_biomasse\",
-              \"energie_ratio_geothermie\",
-              \"energie_ratio_uve\",
-              \"energie_ratio_chaleurIndustrielle\",
-              \"energie_ratio_solaireThermique\",
-              \"energie_ratio_pompeAChaleur\",
-              \"energie_ratio_gaz\",
-              \"energie_ratio_fioul\",
-              \"energie_ratio_autresEnr\",
-              \"energie_ratio_chaufferiesElectriques\",
-              \"energie_ratio_charbon\",
-              \"energie_ratio_gpl\",
-              \"energie_ratio_autreChaleurRecuperee\",
-              \"energie_ratio_biogaz\"
-            ) as \"energie_max_ratio\"
+            *
           FROM (
             SELECT
               *,

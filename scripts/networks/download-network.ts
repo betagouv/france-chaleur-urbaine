@@ -6,15 +6,15 @@ import db from 'src/db';
 import base from 'src/db/airtable';
 import { DatabaseTileInfo, tilesInfo, DatabaseSourceId } from 'src/services/tiles.config';
 
-const TypeArray: unique symbol = Symbol('array');
-const TypeBool: unique symbol = Symbol('bool');
-const TypeJSONArray: unique symbol = Symbol('json');
-const TypeNumber: unique symbol = Symbol('number');
-const TypePercentage: unique symbol = Symbol('percentage');
-const TypeString: unique symbol = Symbol('string');
-const TypeStringToArray: unique symbol = Symbol('array');
+export const TypeArray: unique symbol = Symbol('array');
+export const TypeBool: unique symbol = Symbol('bool');
+export const TypeJSONArray: unique symbol = Symbol('json');
+export const TypeNumber: unique symbol = Symbol('number');
+export const TypePercentage: unique symbol = Symbol('percentage');
+export const TypeString: unique symbol = Symbol('string');
+export const TypeStringToArray: unique symbol = Symbol('array');
 
-type Type =
+export type Type =
   | typeof TypeArray
   | typeof TypeBool
   | typeof TypeJSONArray
@@ -32,7 +32,7 @@ const conversionConfigReseauxDeChaleur = {
   'reseaux classes': TypeBool,
   has_PDP: TypeBool,
   nom_reseau: TypeString,
-  communes: TypeStringToArray,
+  // communes: TypeStringToArray,
   MO: TypeString,
   Gestionnaire: TypeString,
   'Taux EnR&R': TypeNumber,
@@ -114,7 +114,7 @@ const conversionConfigReseauxDeFroid = {
   //has_trace: TypeBool,
   'Taux EnR&R': TypeNumber,
   Gestionnaire: TypeString,
-  communes: TypeStringToArray,
+  // communes: TypeStringToArray,
   contenu_CO2_2023_tmp: TypeNumber,
   contenu_CO2_ACV_2023_tmp: TypeNumber,
   'contenu CO2': TypeNumber,
@@ -146,7 +146,7 @@ const conversionConfigReseauxDeFroid = {
 const conversionConfigAutres = {
   mise_en_service: TypeString,
   gestionnaire: TypeString,
-  communes: TypeStringToArray,
+  // communes: TypeStringToArray,
   is_zone: TypeBool,
 } as const;
 
@@ -154,6 +154,35 @@ const conversionConfigAutres = {
  * Synchronise les données d'une table réseau dans Airtable vers la table correspondante dans Postgres.
  */
 export const downloadNetwork = async (table: DatabaseSourceId) => {
+  const tileInfo = tilesInfo[table] as DatabaseTileInfo;
+  if (!tileInfo || !tileInfo.airtable) {
+    throw new Error(`${table} not managed`);
+  }
+  const networksAirtable = await base(tileInfo.airtable).select().all();
+
+  const logger = parentLogger.child({
+    table: table,
+    count: networksAirtable.length,
+  });
+  const startTime = Date.now();
+  logger.info('start network update');
+  await Promise.all(
+    networksAirtable.map(async (network) => {
+      if (network.get('id_fcu')) {
+        await db(tileInfo.table).update(convertEntityFromAirtableToPostgres(table, network)).where('id_fcu', network.get('id_fcu'));
+      }
+    })
+  );
+  logger.info('end network update', {
+    duration: Date.now() - startTime,
+  });
+};
+
+/**
+ * Synchronise les données d'une table réseau dans Airtable vers la table correspondante dans Postgres (identique downloadNetwork)
+ * Met également à jour certains champs côté airtable (spécifiques à chaque table).
+ */
+export const downloadUpdateNetwork = async (table: DatabaseSourceId) => {
   const tileInfo = tilesInfo[table] as DatabaseTileInfo;
   if (!tileInfo || !tileInfo.airtable) {
     throw new Error(`${table} not managed`);
@@ -270,7 +299,7 @@ function convertEntityFromAirtableToPostgres(type: DatabaseSourceId, airtableNet
 /**
  * Convertit et corrige le potentiel mauvais typage côté Airtable.
  */
-function convertAirtableValue(value: any, type: Type) {
+export function convertAirtableValue(value: any, type: Type) {
   switch (type) {
     case TypeArray:
       return value instanceof Array ? value : [];
@@ -288,5 +317,7 @@ function convertAirtableValue(value: any, type: Type) {
       return value !== undefined && value !== null && value !== 'NULL' ? value : null;
     case TypeStringToArray:
       return value !== undefined && value !== null && value !== 'NULL' ? value.split(',') : [];
+    default:
+      throw new Error(`invalid type ${type}`);
   }
 }
