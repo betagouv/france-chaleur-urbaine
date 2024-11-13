@@ -65,7 +65,7 @@ const ModesDeChauffageAComparerForm: React.FC<ModesDeChauffageAComparerFormProps
       <div className="fr-mt-4w" />
       <Checkbox
         small
-        options={(['Réseaux de chaleur'] satisfies ModeDeChauffage[]).map(createOptionProps)}
+        options={(['Réseau de chaleur'] satisfies ModeDeChauffage[]).map(createOptionProps)}
         state={nearestReseauDeChaleur ? 'success' : 'default'}
         stateRelatedMessage={
           nearestReseauDeChaleur ? (
