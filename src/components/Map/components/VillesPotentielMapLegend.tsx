@@ -13,10 +13,9 @@ import IconPolygon from './IconPolygon';
 
 const StyledBox = styled(Box)`
   ${({ theme }) => theme.media.lg`
-    min-width: 230px;
+    min-width: 240px;
     margin-left: 0.5rem;
     margin-top: 0.5rem;
-    overflow: auto;
     position: absolute;
     z-index: 1;
     background-color: white;

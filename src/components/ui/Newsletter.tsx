@@ -117,6 +117,7 @@ const StyledFrFollow = styled.div`
     width: auto;
     height: auto;
     overflow: visible;
+    white-space: normal;
   }
   .fr-messages-group {
     display: none;
