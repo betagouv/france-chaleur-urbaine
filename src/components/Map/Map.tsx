@@ -584,14 +584,9 @@ export const FullyFeaturedMap = ({
     initialViewState.zoom = parseFloat(router.query.zoom as string) ?? mapSettings.defaultZoom;
   }
 
-  // initial fit on bbox
+  // initial fit on bbox deprecated
   if (router.query.bbox) {
     const bbox = (router.query.bbox as string).split(',').map((n) => Number.parseFloat(n)) as [number, number, number, number];
-
-    const mapViewportFitPadding = 50; // px
-    const headerHeight = 56; // px
-    const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? legendWidth : 0) - mapViewportFitPadding;
-    const mapViewportHeight = window.innerHeight - headerHeight - mapViewportFitPadding;
 
     const { center, zoom } = geoViewport.viewport(
       bbox, // bounds

@@ -10,8 +10,6 @@ export const getCommunePotentiel = async (codeInsee: string) => {
       'insee_com',
       'insee_dep',
       'nom',
-      sql`ST_X(ST_Transform(ST_Centroid(geom), 4326))::numeric`.$castTo<number>().as('longitude'), // Longitude transformed to WGS84
-      sql`ST_Y(ST_Transform(ST_Centroid(geom), 4326))::numeric`.$castTo<number>().as('latitude'), // Latitude transformed to WGS84
       sql`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geom'), // Geometry transformed to WGS84 as JSON object
       sql`
       ARRAY[
@@ -52,8 +50,6 @@ export const getCommunePotentiel = async (codeInsee: string) => {
 
   return {
     ...commune,
-    longitude: commune?.longitude || null,
-    latitude: commune?.latitude || null,
     nbZonesAFortPotentiel: zonesAFortPotentiel.length,
     nbZonesAPotentiel: zonesAPotentiel.length,
     nbReseauxExistants: reseauxExistants.length,
