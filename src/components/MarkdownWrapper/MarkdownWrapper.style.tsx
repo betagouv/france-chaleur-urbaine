@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
+import { legacyColors } from '@components/ui/helpers/colors';
 import { TrackingEvent, trackEvent } from 'src/services/analytics';
 
 export const isExternalLink = (href: string) => href && href.search(/(^http)|(^mailto)|(^\/documentation)/) >= 0;
@@ -17,47 +18,49 @@ export const MarkdownWrapperStyled = styled.div.attrs<MarkdownWrapperStyledProps
     theme.media.lg`
       padding: 0 3rem;
     `}
-  h1,
-  h2 {
-    color: var(--legacy-darker-blue);
-  }
-  h3,
-  h4 {
-    color: #4550e5;
-  }
-  h5,
-  h6 {
-    color: var(--bf500);
-  }
-  h1 + h1,
-  h2 + h2,
-  h3 + h3,
-  h4 + h4,
-  h5 + h5,
-  h6 + h6 {
-    margin-top: calc(-1rem + 0.25rem);
-  }
-
-  p {
-    font-size: inherit;
-    line-height: inherit;
-  }
-
-  em {
-    color: #4550e5;
-    font-style: normal;
-    strong {
-      font-size: 14px;
+  ${({ color }) => css`
+    h1,
+    h2 {
+      color: ${color || 'var(--legacy-darker-blue)'};
     }
-  }
-  strong {
-    color: #4550e5;
+    h3,
+    h4 {
+      color: ${color || legacyColors.lightblue};
+    }
+    h5,
+    h6 {
+      color: ${color || 'var(--bf500)'};
+    }
+    h1 + h1,
+    h2 + h2,
+    h3 + h3,
+    h4 + h4,
+    h5 + h5,
+    h6 + h6 {
+      margin-top: calc(-1rem + 0.25rem);
+    }
+
+    p {
+      font-size: inherit;
+      line-height: inherit;
+    }
 
     em {
-      color: #293173;
+      color: ${color || legacyColors.lightblue};
       font-style: normal;
+      strong {
+        font-size: 14px;
+      }
     }
-  }
+    strong {
+      color: ${color || legacyColors.lightblue};
+
+      em {
+        color: ${color || '#293173'};
+        font-style: normal;
+      }
+    }
+  `}
 `;
 
 type ExtraEventType = {
@@ -110,7 +113,7 @@ export const CounterItem = styled.div`
   width: 3.15em;
   height: 3.15em;
   border-radius: 100%;
-  background-color: #4550e5;
+  background-color: ${legacyColors.lightblue};
 
   float: left;
   margin: -0.4em 0.6em -0.2em 0em;
@@ -150,7 +153,7 @@ export const Cartridge = styled.div<{ themeColor: string }>`
         case 'color':
         case 'blue': {
           return css`
-            background-color: #4550e5;
+            background-color: ${legacyColors.lightblue};
             color: #fff;
           `;
         }
@@ -158,20 +161,20 @@ export const Cartridge = styled.div<{ themeColor: string }>`
           return css`
             border: 1px solid #d2d4f0;
             background-color: white;
-            color: #4550e5;
+            color: ${legacyColors.lightblue};
           `;
         }
         case 'yellow': {
           return css`
             background-color: #efc73f;
-            color: #4550e5;
+            color: ${legacyColors.lightblue};
           `;
         }
         case 'grey': {
           return css`
             background-color: #f9f8f6;
             border: 1px solid #e7e7e7;
-            color: #4550e5;
+            color: ${legacyColors.lightblue};
           `;
         }
       }
@@ -186,7 +189,7 @@ const CheckItemFCU = css`
   display: flex;
   align-items: center;
 
-  color: #4550e5;
+  color: ${legacyColors.lightblue};
 
   &::before {
     content: '';
@@ -194,7 +197,7 @@ const CheckItemFCU = css`
     padding-top: 0.15rem;
     margin-right: 0.5rem;
     margin-bottom: 4px;
-    color: #4550e5;
+    color: ${legacyColors.lightblue};
     padding: 0;
     line-height: 1;
 
@@ -215,7 +218,7 @@ const CheckItemDefault = styled.div.attrs({
   justify-content: flex-start;
   align-items: flex-start;
 
-  color: #4550e5;
+  color: ${legacyColors.lightblue};
 
   &::before {
     display: block;
@@ -263,7 +266,7 @@ export const WhiteCheckItem = styled.div`
 const CountPuce = styled.div`
   display: inline-block;
   margin-right: 8px;
-  background-color: #4550e5;
+  background-color: ${legacyColors.lightblue};
   color: white;
   width: 23px;
   height: 23px;
@@ -341,7 +344,7 @@ export const KnowMoreLink = styled.a.attrs(({ href }) => ({
 }))`
   --link-underline: none;
   text-decoration: none;
-  color: #4550e5;
+  color: ${legacyColors.lightblue};
   display: inline-block;
   margin-left: -0.4em;
   font-size: 0.8em;
