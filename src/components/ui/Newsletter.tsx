@@ -1,14 +1,19 @@
+import { useToggle } from '@react-hookz/web';
 import React, { ReactNode, useContext, useState } from 'react';
+import styled from 'styled-components';
 
+import Checkbox from '@components/form/dsfr/Checkbox';
 import cx from '@utils/cx';
 
 import AsyncButton, { type AsyncButtonProps } from './AsyncButton';
-
 type NewsletterContextType = {
   email: string;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
   setError: React.Dispatch<React.SetStateAction<string | null>>;
   error: string | null;
+  withCheckbox?: boolean;
+  checked: boolean;
+  toggleChecked: () => void;
   handleSignUp: () => Promise<any>;
 };
 
@@ -17,6 +22,9 @@ const NewsletterContext = React.createContext<NewsletterContextType>({
   setEmail: () => '',
   setError: () => '',
   error: null,
+  checked: false,
+  withCheckbox: false,
+  toggleChecked: () => null,
   handleSignUp: async () => null,
 });
 
@@ -49,10 +57,10 @@ export const NewsletterButton: React.FC<Omit<AsyncButtonProps, 'disabled' | 'onC
   title = "S'abonner",
   ...props
 }) => {
-  const { handleSignUp, error } = useContext(NewsletterContext);
+  const { handleSignUp, error, withCheckbox, checked } = useContext(NewsletterContext);
 
   return (
-    <AsyncButton disabled={!!error} onClick={handleSignUp} title={title} {...props}>
+    <AsyncButton disabled={!!error || (withCheckbox && !checked)} onClick={handleSignUp} title={title} {...props}>
       {children}
     </AsyncButton>
   );
@@ -73,20 +81,61 @@ type NewsletterSectionProps = React.HTMLAttributes<HTMLDivElement> & {
   subtitle?: string;
   buttonText?: string;
   inputlabel?: string;
+  checkboxLabel?: string;
 };
+
+export const NewsletterCheckbox = ({
+  label = 'Je souhaite recevoir des informations',
+  className,
+}: {
+  label?: string;
+  className?: string;
+}) => {
+  const { checked, toggleChecked, withCheckbox } = useContext(NewsletterContext);
+
+  if (!withCheckbox) {
+    return null;
+  }
+  return (
+    <Checkbox
+      small
+      options={[
+        {
+          label,
+          nativeInputProps: { checked, onChange: toggleChecked },
+        },
+      ]}
+      className={className}
+    />
+  );
+};
+
+const StyledFrFollow = styled.div`
+  .fr-label {
+    /* DSFR is hiding them for some reason */
+    position: relative;
+    width: auto;
+    height: auto;
+    overflow: visible;
+  }
+  .fr-messages-group {
+    display: none;
+  }
+`;
 
 export const NewsletterSection: React.FC<NewsletterSectionProps> = ({
   title = '',
   subtitle = '',
   buttonText = "S'abonner",
   inputlabel = '',
+  checkboxLabel = '',
   className,
   ...props
 }) => {
-  const { error } = useContext(NewsletterContext);
+  const { error, withCheckbox } = useContext(NewsletterContext);
 
   return (
-    <div className={cx('fr-follow', className)} {...props}>
+    <StyledFrFollow className={cx('fr-follow', className)} {...props}>
       <div className="fr-container">
         <div className="fr-grid-row">
           <div className="fr-col-12">
@@ -98,7 +147,7 @@ export const NewsletterSection: React.FC<NewsletterSectionProps> = ({
               <div>
                 <div className={cx('fr-input-group', { 'fr-input-group--error': !!error })}>
                   <label htmlFor="newsletter-email" className="fr-label">
-                    {inputlabel}
+                    {inputlabel || ''}
                   </label>
                   <div className="fr-input-wrap fr-input-wrap--addon">
                     <NewsletterInput />
@@ -106,6 +155,7 @@ export const NewsletterSection: React.FC<NewsletterSectionProps> = ({
                   </div>
                 </div>
                 <NewsletterError />
+                {withCheckbox && <NewsletterCheckbox className="fr-mt-2w" label={checkboxLabel} />}
                 <p id="newsletter-email-hint-text" className="fr-hint-text">
                   En renseignant votre adresse électronique, vous acceptez d’être recontacté par courriel.
                 </p>
@@ -114,17 +164,19 @@ export const NewsletterSection: React.FC<NewsletterSectionProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </StyledFrFollow>
   );
 };
 
 type NewsletterProps = {
   onSignUp: (email: string) => Promise<void>;
   children: ReactNode;
+  withCheckbox?: boolean;
 };
 
-const Newsletter: React.FC<NewsletterProps> = ({ onSignUp, children }) => {
+const Newsletter: React.FC<NewsletterProps> = ({ onSignUp, children, withCheckbox }) => {
   const [email, setEmail] = useState<string>('');
+  const [checked, toggleChecked] = useToggle(false);
   const [error, setError] = useState<string | null>(null);
 
   const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -142,7 +194,11 @@ const Newsletter: React.FC<NewsletterProps> = ({ onSignUp, children }) => {
     }
   }, [email, onSignUp]);
 
-  return <NewsletterContext.Provider value={{ email, setEmail, error, handleSignUp, setError }}>{children}</NewsletterContext.Provider>;
+  return (
+    <NewsletterContext.Provider value={{ email, setEmail, error, checked, withCheckbox, toggleChecked, handleSignUp, setError }}>
+      {children}
+    </NewsletterContext.Provider>
+  );
 };
 
 export default Newsletter;
