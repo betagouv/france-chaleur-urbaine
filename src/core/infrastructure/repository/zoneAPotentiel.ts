@@ -50,16 +50,6 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     .selectAll()
     .execute();
 
-  // Adjusting bounds for better map display
-  const adjustedBounds: Bounds = commune?.bounds
-    ? [
-        commune?.bounds[0] - 0.01, // Min Longitude (Bottom-Left) with a bit of padding
-        commune?.bounds[1] - 0.01, // Min Latitude (Bottom-Left) with a bit of padding
-        commune?.bounds[2] + 0.01, // Max Longitude (Top-Right) with a bit of padding
-        commune?.bounds[3] + 0.01, // Max Latitude (Top-Right) with a bit of padding
-      ]
-    : [0, 0, 0, 0];
-
   return {
     ...commune,
     longitude: commune?.longitude || null,
@@ -69,6 +59,6 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     nbReseauxExistants: reseauxExistants.length,
     besoinsChauffage: sumChaufMwh,
     besoinsECS: sumECSMwh,
-    bounds: adjustedBounds, // Adjusted bounds for better map display
+    bounds: commune?.bounds,
   };
 };
