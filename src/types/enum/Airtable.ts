@@ -2,6 +2,7 @@ export enum Airtable {
   UTILISATEURS = 'FCU - Utilisateurs',
   RELANCE = 'FCU - Utilisateurs relance',
   CONTACT = 'FCU - Formulaire de contact',
+  COMMUNES_SANS_RESEAU = 'FCU - Formulaire communes sans reseau',
   NEWSLETTER = 'FCU - Newsletter',
   CONTRIBUTION = 'FCU - Contribution',
   CONNEXION = 'FCU - Connexion espace gestionnaire',

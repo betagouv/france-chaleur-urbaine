@@ -107,6 +107,14 @@ export default handleRouteErrors(async function PostRecords(req: NextApiRequest)
       return;
     }
 
+    case Airtable.COMMUNES_SANS_RESEAU: {
+      const { id }: any = await AirtableDB(Airtable.COMMUNES_SANS_RESEAU).create(values);
+      logger.info('create airtable record commune sans reseau', {
+        id,
+      });
+      return;
+    }
+
     default:
       throw new BadRequestError('Type not recognized');
   }
