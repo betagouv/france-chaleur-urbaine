@@ -10,7 +10,6 @@ export const getCommunePotentiel = async (codeInsee: string) => {
       'insee_com',
       'insee_dep',
       'nom',
-      sql`ST_AsGeoJSON(ST_Transform(geom, 4326))::json`.as('geom'), // Geometry transformed to WGS84 as JSON object
       sql`
       ARRAY[
         ST_XMin(ST_Transform(ST_Envelope(geom), 4326)), -- Min Longitude (Bottom-Left)
@@ -24,9 +23,17 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     ])
     .executeTakeFirst();
 
-  const zonesAFortPotentielPromise = db.selectFrom('zone_a_potentiel_fort_chaud').where('code_com_i', '=', codeInsee).selectAll().execute();
+  const zonesAFortPotentielPromise = db
+    .selectFrom('zone_a_potentiel_fort_chaud')
+    .where('code_com_i', '=', codeInsee)
+    .select(['chauf_mwh', 'ecs_mwh'])
+    .execute();
 
-  const zonesAPotentielPromise = db.selectFrom('zone_a_potentiel_chaud').where('code_com_i', '=', codeInsee).selectAll().execute();
+  const zonesAPotentielPromise = db
+    .selectFrom('zone_a_potentiel_chaud')
+    .where('code_com_i', '=', codeInsee)
+    .select(['chauf_mwh', 'ecs_mwh'])
+    .execute();
 
   const [commune, zonesAFortPotentiel, zonesAPotentiel] = await Promise.all([
     communePromise,
@@ -38,9 +45,6 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     return null;
   }
 
-  const sumChaufMwh = zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.chauf_mwh || 0), 0);
-  const sumECSMwh = zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.ecs_mwh || 0), 0);
-
   const reseauxExistants = await db
     .selectFrom('reseaux_de_chaleur')
     .leftJoin('ign_communes', 'ign_communes.insee_com', sql`${codeInsee}` as any)
@@ -50,11 +54,17 @@ export const getCommunePotentiel = async (codeInsee: string) => {
 
   return {
     ...commune,
-    nbZonesAFortPotentiel: zonesAFortPotentiel.length,
-    nbZonesAPotentiel: zonesAPotentiel.length,
+    zonesAFortPotentiel: {
+      nb: zonesAFortPotentiel.length,
+      chauffage: zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.chauf_mwh || 0), 0),
+      ecs: zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.ecs_mwh || 0), 0),
+    },
+    zonesAPotentiel: {
+      nb: zonesAPotentiel.length,
+      chauffage: zonesAPotentiel.reduce((sum, zone) => sum + +(zone.chauf_mwh || 0), 0),
+      ecs: zonesAPotentiel.reduce((sum, zone) => sum + +(zone.ecs_mwh || 0), 0),
+    },
     nbReseauxExistants: reseauxExistants.length,
-    besoinsChauffage: sumChaufMwh,
-    besoinsECS: sumECSMwh,
     bounds: commune?.bounds,
   };
 };
