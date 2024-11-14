@@ -32,7 +32,7 @@
     "db:new": "knex migrate:make",
     "db:revert": "knex migrate:rollback",
     "db:revert:one": "knex migrate:down",
-    "db:sync": "kysely-codegen --out-file ./src/db/kysely/database.ts --env-file=\"./.env.local\" --log-level=\"error\"",
+    "db:sync": "kysely-codegen --out-file ./src/db/kysely/database.ts --env-file=\"./.env.local\" --log-level=\"error\" --exclude-pattern=\"(public.spatial_ref_sys|topology.*|tiger.*|public.geography_columns|public.geometry_columns)\" && prettier --write ./src/db/kysely/database.ts",
     "db:verify": "yarn db:introspect --verify",
     "scalingo-postbuild": "yarn build && next-sitemap",
     "predev": "only-include-used-icons",
