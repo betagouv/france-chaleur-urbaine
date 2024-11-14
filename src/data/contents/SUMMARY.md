@@ -1,6 +1,10 @@
 # Table of contents
 
-* [Page](README.md)
+* [Estimer en quelques clics la densité thermique linéaire d'un futur réseau](README.md)
+* [Informer les gestionnaires de bâtiments tertiaires sur les réseaux de chaleur](informer-les-gestionnaires-de-batiments-tertiaires-sur-les-reseaux-de-chaleur.md)
+* [Informer les copropriétés sur les réseaux de chaleur](informer-les-coproprietes-sur-les-reseaux-de-chaleur.md)
+* [Les réseaux de chaleur en région : focus sur l'Île-de-France](les-reseaux-de-chaleur-en-region-focus-sur-lile-de-france.md)
+* [La carte France Chaleur Urbaine s'enrichit !](la-carte-france-chaleur-urbaine-senrichit.md)
 * [Une campagne de communication sur la ville d'Amiens](une-campagne-de-communication-sur-la-ville-damiens.md)
 * [De nouveaux schémas directeurs disponibles sur France Chaleur Urbaine](de-nouveaux-schemas-directeurs-disponibles-sur-france-chaleur-urbaine.md)
 * [Les réseaux de chaleur en région : focus sur le Centre-Val de Loire](les-reseaux-de-chaleur-en-region-focus-sur-le-centre-val-de-loire.md)
@@ -8,7 +12,7 @@
 * [Nouveau réseau national des "Initiateurs de réseaux de chaleur et de froid"](nouveau-reseau-national-des-initiateurs-de-reseaux-de-chaleur-et-de-froid.md)
 * [La carte France Chaleur Urbaine se refait une beauté](<README (34).md>)
 * [Les réseaux de chaleur en région : focus sur la Bretagne](les-reseaux-de-chaleur-en-region-focus-sur-la-bretagne.md)
-* [La carte France Chaleur Urbaine s'enrichit !](la-carte-france-chaleur-urbaine-senrichit.md)
+* [La carte France Chaleur Urbaine s'enrichit !](la-carte-france-chaleur-urbaine-senrichit-1.md)
 * [Les réseaux de chaleur en région : focus sur les Pays de la Loire](<README (33).md>)
 * [Les réseaux de chaleur en région : focus sur la Nouvelle-Aquitaine](les-reseaux-de-chaleur-en-region-focus-sur-la-nouvelle-aquitaine.md)
 * [Les réseaux de chaleur en région : focus sur l'Occitanie](<README (32).md>)
