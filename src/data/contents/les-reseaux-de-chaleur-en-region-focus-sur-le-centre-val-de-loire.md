@@ -6,4 +6,6 @@
 \
 📈 Un nombre qui devrait continuer d'augmenter... Parmi les gros projets en cours, on peut par exemple citer deux nouveaux réseaux qui alimenteront dans les prochaines années Tours nord et le sud de Tours, venant s'ajouter aux 5 réseaux dont dispose déjà la métropole de Tours.\
 \
-🤓 Les réseaux de chaleur de Centre Val de Loire en quelques chiffres clés et exemples, c'est ici ! 👇
+🤓 Les réseaux de chaleur de Centre-Val de Loire en quelques chiffres clés et exemples, c'est ici ! 👇
+
+<figure><img src=".gitbook/assets/FCU_centrevaldeloire.jpg" alt=""><figcaption></figcaption></figure>

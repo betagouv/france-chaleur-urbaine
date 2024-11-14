@@ -6,4 +6,6 @@
 \
 France Chaleur Urbaine œuvre donc à les centraliser et les rendre facilement accessibles ! Cette action est rendue possible grâce l'ADEME, qui accompagne la réalisation des schémas directeurs et les transmet à France Chaleur Urbaine pour diffusion. La diffusion directe des schémas directeurs à France Chaleur Urbaine par les collectivités reste également possible : n'hésitez pas à y contribuer (bouton contribuer sur la carte).\
 \
-👉 Pour retrouver les schémas directeurs, rendez-vous sur la fiche du réseau concerné (plus d'informations en commentaire).\
+👉 Pour retrouver les schémas directeurs, rendez-vous sur la fiche du réseau concerné (plus d'informations en commentaire).
+
+<figure><img src=".gitbook/assets/16 (3).jpg" alt=""><figcaption></figcaption></figure>

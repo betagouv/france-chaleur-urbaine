@@ -6,4 +6,9 @@
 \
 🛠 Et les réseaux de chaleur continuent de se développer en Ile-de-France ! De nombreux nouveaux réseaux géothermiques sont notamment en cours de création, à Malakoff, Epinay-sur-Seine et Villetaneuse, Garges-lès-Gonesse, Pantin - Le Pré-Saint-Gervais - Les Lilas, Châtenay-Malabry...\
 \
-Les réseaux de chaleur franciliens en quelques chiffres clés et exemples, c'est ici ! 👇\
+Les réseaux de chaleur franciliens en quelques chiffres clés et exemples, c'est ici ! 👇
+
+\
+
+
+<figure><img src=".gitbook/assets/FCU_iledefrance.jpg" alt=""><figcaption></figcaption></figure>

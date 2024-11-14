@@ -5,3 +5,5 @@
 ❓ Qu'est-ce qu'un réseau de chaleur, pourquoi et comment s'y raccorder, quelles sont les aides financières mobilisables ? \
 \
 👉 Retrouvez les réponses à toutes ces questions dans le replay : [https://www.arc-copro.tv/](https://www.arc-copro.tv/)
+
+<figure><img src=".gitbook/assets/46.jpg" alt=""><figcaption></figcaption></figure>

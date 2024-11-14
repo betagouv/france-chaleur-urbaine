@@ -11,4 +11,6 @@ La carte France Chaleur Urbaine, consultée par 10 000 visiteurs par mois en moy
 \
 🙏 Merci à tous nos contributeurs : collectivités, acteurs locaux, opérateurs des réseaux, ADEME...\
 \
-Vous souhaitez ajouter un tracé ou un périmètre de développement prioritaire sur la carte, ou encore télécharger l'ensemble des tracés et données ? Retrouvez tous les liens en commentaire !
+Vous souhaitez ajouter un tracé ou un périmètre de développement prioritaire sur la carte, ou encore télécharger l'ensemble des tracés et données ? N'hésitez pas à [contribuer](https://france-chaleur-urbaine.beta.gouv.fr/contribution) !
+
+<figure><img src=".gitbook/assets/FCU_carte_oct.jpg" alt=""><figcaption></figcaption></figure>
