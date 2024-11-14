@@ -49,7 +49,7 @@ const Popover = ({ children }: { children: ReactNode }) => {
 
 const PopoverTrigger = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger>>(
   ({ children, ...props }, forwardedRef) => {
-    const localRef = useRef<HTMLButtonElement>(null);
+    const localRef = useRef<HTMLButtonElement | null>(null);
     const { setWidth, setHeight } = useContext(PopoverMeasurementsContext);
     const measurements = useDimensions(localRef);
 

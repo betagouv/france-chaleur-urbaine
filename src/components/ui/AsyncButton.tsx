@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 
 import Button, { type ButtonProps } from './Button';
 
-type AsyncButtonProps = Omit<ButtonProps, 'onClick' | 'loading'> & {
+export type AsyncButtonProps = Omit<ButtonProps, 'onClick' | 'loading'> & {
   onClick: () => Promise<any>;
 };
 
@@ -16,7 +16,7 @@ const AsyncButton = ({ children, onClick, disabled, ...props }: AsyncButtonProps
     } finally {
       setLoading(false);
     }
-  }, [loading]);
+  }, [loading, onClick]);
 
   return (
     <Button

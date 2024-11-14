@@ -72,6 +72,7 @@ const MarkdownWrapper: React.FC<{
   className?: string;
   style?: React.CSSProperties;
   withPadding?: boolean;
+  color?: string;
 }> = ({ children, value, id, className, ...props }) => {
   const [md, setMd]: [string, (s: string) => void] = useState('');
 

@@ -1,6 +1,6 @@
 import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
-import styled, { IntrinsicElementsKeys } from 'styled-components';
+import styled from 'styled-components';
 
 import { type Breakpoint } from '@components/Theme/theme';
 
@@ -54,7 +54,7 @@ const StyledBox = styled.div<StyleProps>`
   border-left: ${({ borderLeft }) => borderLeft};
   box-shadow: ${({ boxShadow }) => boxShadow};
   background-color: ${({ backgroundColor }) =>
-    backgroundColor ? (backgroundColor?.startsWith('#') ? backgroundColor : `var(--${backgroundColor})`) : undefined}};
+    backgroundColor ? (backgroundColor?.startsWith('#') ? backgroundColor : `var(--${backgroundColor})`) : undefined};
   font-size: ${({ fontSize }) => fontSize};
   color: ${({ textColor }) => (textColor ? (textColor.startsWith('#') ? textColor : `var(--${textColor})`) : undefined)};
   text-align: ${({ textAlign }) => textAlign};
@@ -76,7 +76,7 @@ const StyledBox = styled.div<StyleProps>`
 `;
 
 export interface BoxProps extends StyleProps, SpacingProperties, HTMLAttributes<HTMLDivElement> {
-  as?: IntrinsicElementsKeys;
+  as?: React.ElementType;
   iconLeft?: FrIconClassName | RiIconClassName;
 }
 

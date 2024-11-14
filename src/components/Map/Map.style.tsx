@@ -15,6 +15,7 @@ export const MapStyle: any = createGlobalStyle<{
 }>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
     .map-wrap {
       position: relative;
+      overflow: hidden;
       display: flex;
       width: 100%;
       height: 100%;

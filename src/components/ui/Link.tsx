@@ -24,6 +24,7 @@ interface LinkProps extends SpacingProperties {
   isExternal?: boolean;
   title?: string;
   style?: React.CSSProperties;
+  onClick?: () => void;
 }
 
 /**
@@ -42,6 +43,7 @@ function Link({
   variant = 'text',
   isExternal = false,
   title,
+  onClick,
   ...props
 }: PropsWithChildren<LinkProps>) {
   // when the href contains an anchor, use a classic link which works best with scrolling
@@ -54,6 +56,7 @@ function Link({
         if (eventKey) {
           trackEvent(eventKey, eventPayload?.split(',').map((v) => v.trim()));
         }
+        onClick?.();
       }}
       className={`${className} ${linkVariantToClass[variant]} ${spacingsToClasses(props)}`}
       target={isExternal ? '_blank' : undefined}

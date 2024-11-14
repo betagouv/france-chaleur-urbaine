@@ -5,7 +5,7 @@ import { useDebouncedEffect, useLocalStorageValue } from '@react-hookz/web';
 import { LayerSpecification, MapLibreEvent } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useRouter } from 'next/router';
-import { parseAsString, useQueryStates } from 'nuqs';
+import { parseAsJson, parseAsString, useQueryStates } from 'nuqs';
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import MapReactGL, {
@@ -25,9 +25,11 @@ import Link from '@components/ui/Link';
 import Tooltip from '@components/ui/Tooltip';
 import { useContactFormFCU } from '@hooks';
 import useRouterReady from '@hooks/useRouterReady';
+import cx from '@utils/cx';
 import { useServices } from 'src/services';
 import { trackEvent } from 'src/services/analytics';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
+import { BoundingBox } from 'src/types/Coords';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
 import { MapMarkerInfos, MapPopupType } from 'src/types/MapComponentsInfos';
 import { Point } from 'src/types/Point';
@@ -97,7 +99,9 @@ type MapProps = {
   enabledLegendFeatures?: MapLegendFeature[];
   withLegend?: boolean;
   withBorder?: boolean;
+  withPins?: boolean;
   legendTitle?: string;
+  legendCollapsed?: boolean;
   legendLogoOpt?: TypeLegendLogo;
   withCenterPin?: boolean;
   noPopup?: boolean;
@@ -105,6 +109,7 @@ type MapProps = {
   pinsList?: MapMarkerInfos[];
   initialCenter?: Point;
   initialZoom?: number;
+  bounds?: BoundingBox;
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
@@ -114,29 +119,34 @@ type MapProps = {
 const Map = ({ initialMapConfiguration, ...props }: MapProps) => {
   return (
     <FCUMapContextProvider initialMapConfiguration={initialMapConfiguration}>
-      <InternalMap {...props} />
+      <FullyFeaturedMap {...props} />
     </FCUMapContextProvider>
   );
 };
 
-const InternalMap = ({
+export const FullyFeaturedMap = ({
   withoutLogo,
   withLegend,
   withBorder,
   legendTitle,
+  legendCollapsed: defaultLegendCollapsed,
   enabledLegendFeatures,
   withCenterPin,
   noPopup,
+  withPins = true,
   legendLogoOpt,
   popupType = MapPopupType.DEFAULT,
   pinsList,
   initialCenter,
   initialZoom,
+  bounds: defaultBounds,
   geolocDisabled,
   withFCUAttribution,
   persistViewStateInURL,
   mapRef: mapRefParam,
-}: MapProps) => {
+  className,
+  ...props
+}: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
   const router = useRouter();
   const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap();
 
@@ -146,12 +156,13 @@ const InternalMap = ({
   const [soughtAddressesVisible, setSoughtAddressesVisible] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0);
   const mapRef = useRef<MapRef>(null);
-  const switcherControlRef = useRef<MapboxStyleSwitcherControl>();
+  const switcherControlRef = useRef<MapboxStyleSwitcherControl>(null);
   const [markersList, setMarkersList] = useState<MapMarkerInfos[]>([]);
 
   const [legendCollapsed, setLegendCollapsed] = useState(true);
+
   useEffect(() => {
-    setLegendCollapsed(window.innerWidth < 992);
+    setLegendCollapsed(defaultLegendCollapsed || window.innerWidth < 992);
     return () => {
       setMapRef(null);
       setMapDraw(null);
@@ -501,11 +512,12 @@ const InternalMap = ({
     }
   }, []);
 
-  const [, setQuery] = useQueryStates({
+  const [{ bounds: boundsInQuery }, setQuery] = useQueryStates({
     coord: parseAsString,
     zoom: parseAsString,
+    bounds: parseAsJson(),
   });
-
+  const bounds = boundsInQuery || defaultBounds;
   // store the view state in the URL (e.g. /carte?coord=2.3429253,48.7998120&zoom=11.36)
   useDebouncedEffect(
     () => {
@@ -516,6 +528,7 @@ const InternalMap = ({
         {
           coord: `${viewState.longitude.toFixed(7)},${viewState.latitude.toFixed(7)}`,
           zoom: viewState.zoom.toFixed(2),
+          bounds: null, // reset bounds as they are just meant to be used on load of the map
         },
         {
           shallow: true,
@@ -525,6 +538,25 @@ const InternalMap = ({
     [viewState],
     500
   );
+
+  const mapViewportFitPadding = 50; // px
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!bounds || !map) {
+      return;
+    }
+    const { center, zoom } = geoViewport.viewport(
+      bounds, // bounds
+      [map.getCanvas().clientWidth - 2 * mapViewportFitPadding, map.getCanvas().clientHeight - 2 * mapViewportFitPadding], // dimensions
+      1, // min zoom
+      20, // max zoom
+      512, // tile size for MVT
+      true // allow decimals in zoom
+    );
+
+    map.flyTo({ center, zoom, essential: true, duration: 1000 });
+  }, [JSON.stringify(bounds), mapRef.current]);
 
   const isRouterReady = useRouterReady();
   if (!isRouterReady || !isMapConfigurationInitialized(mapConfiguration)) {
@@ -548,14 +580,14 @@ const InternalMap = ({
     initialViewState.zoom = parseFloat(router.query.zoom as string) ?? mapSettings.defaultZoom;
   }
 
-  // initial fit on bbox
+  // initial fit on bbox deprecated
   if (router.query.bbox) {
-    const bbox = (router.query.bbox as string).split(',').map((n) => Number.parseFloat(n)) as [number, number, number, number];
-
-    const mapViewportFitPadding = 50; // px
     const headerHeight = 56; // px
-    const mapViewportWidth = window.innerWidth - (withLegend && !legendCollapsed ? legendWidth : 0) - mapViewportFitPadding;
-    const mapViewportHeight = window.innerHeight - headerHeight - mapViewportFitPadding;
+    const mapViewportWidth =
+      typeof window !== 'undefined' ? window.innerWidth - (withLegend && !legendCollapsed ? legendWidth : 0) - mapViewportFitPadding : 0;
+    const mapViewportHeight = typeof window !== 'undefined' ? window.innerHeight - headerHeight - mapViewportFitPadding : 0;
+
+    const bbox = (router.query.bbox as string).split(',').map((n) => Number.parseFloat(n)) as BoundingBox;
 
     const { center, zoom } = geoViewport.viewport(
       bbox, // bounds
@@ -580,7 +612,7 @@ const InternalMap = ({
   return (
     <>
       <MapStyle legendCollapsed={!withLegend || legendCollapsed} isDrawing={isDrawing} withBorder={withBorder} />
-      <div className="map-wrap">
+      <div className={cx('map-wrap', className)} {...props}>
         {withLegend && (
           <>
             <CollapseLegend
@@ -599,9 +631,7 @@ const InternalMap = ({
               </Tooltip>
             </CollapseLegend>
             <LegendSideBar legendCollapsed={legendCollapsed}>
-              <LegendContainer>
-                <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
-              </LegendContainer>
+              <LegendContainer>{<SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />}</LegendContainer>
               {!withoutLogo && (
                 <LegendLogoList>
                   <LegendLogoLink href="https://france-chaleur-urbaine.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">
@@ -644,7 +674,8 @@ const InternalMap = ({
             {popupInfos && (
               <MapPopup latitude={popupInfos.latitude} longitude={popupInfos.longitude} content={popupInfos.content} type={popupType} />
             )}
-            {markersList.length > 0 &&
+            {withPins &&
+              markersList.length > 0 &&
               markersList.map((marker: MapMarkerInfos) => (
                 <MapMarker
                   key={marker.id}
