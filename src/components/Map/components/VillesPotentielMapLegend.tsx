@@ -45,16 +45,7 @@ function VillesPotentielMapLegend(props?: BoxProps) {
                     }
                     fillOpacity={0.7}
                   />
-                  <Text
-                    as="label"
-                    htmlFor="besoinsEnChaleur"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
+                  <Text fontSize="14px" lineHeight="18px" className="fr-col" cursor="pointer" pt="1v" px="1v">
                     Besoins en chaleur
                   </Text>
                 </Box>
@@ -73,16 +64,7 @@ function VillesPotentielMapLegend(props?: BoxProps) {
                     fillOpacity={themeDefZonePotentielFortChaud.fill.opacity}
                   />
 
-                  <Text
-                    as="label"
-                    htmlFor="zonesPotentielFortChaud"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
+                  <Text fontSize="14px" lineHeight="18px" className="fr-col" cursor="pointer" pt="1v" px="1v">
                     Zones à fort potentiel
                   </Text>
                 </Box>
@@ -97,16 +79,7 @@ function VillesPotentielMapLegend(props?: BoxProps) {
               label: (
                 <Box display="flex" gap="4px" alignItems="center">
                   <IconPolygon stroke={themeDefZonePotentielChaud.fill.color} fillOpacity={themeDefZonePotentielChaud.fill.opacity} />
-                  <Text
-                    as="label"
-                    htmlFor="zonesPotentielChaud"
-                    fontSize="14px"
-                    lineHeight="18px"
-                    className="fr-col"
-                    cursor="pointer"
-                    pt="1v"
-                    px="1v"
-                  >
+                  <Text fontSize="14px" lineHeight="18px" className="fr-col" cursor="pointer" pt="1v" px="1v">
                     Zones à potentiel
                   </Text>
                 </Box>
