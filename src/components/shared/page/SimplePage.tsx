@@ -142,12 +142,6 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
         },
       },
       {
-        text: 'Pas encore de réseau ? Testez votre potentiel',
-        linkProps: {
-          href: '/collectivites-et-exploitants/potentiel-creation-reseau',
-        },
-      },
-      {
         text: 'Communiquez sur votre réseau',
         linkProps: {
           href: '/collectivites-et-exploitants#communiquer',
@@ -163,6 +157,12 @@ const publicNavigationMenu: MainNavigationProps.Item[] = [
         text: 'Développez votre réseau grâce aux données',
         linkProps: {
           href: '/collectivites-et-exploitants#developper',
+        },
+      },
+      {
+        text: 'Pas encore de réseau ? Testez votre potentiel',
+        linkProps: {
+          href: '/collectivites-et-exploitants/potentiel-creation-reseau',
         },
       },
     ],
