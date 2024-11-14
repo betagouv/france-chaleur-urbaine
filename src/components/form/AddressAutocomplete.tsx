@@ -24,8 +24,6 @@ const AddressAutocomplete = ({
   limit = 10,
   ...props
 }: AddressAutocompleteProps) => {
-  // const [address, setAddress] = React.useState<Awaited<ReturnType<typeof fetchOptions>>[number]>();
-
   const { suggestionService } = useServices();
   const fetchOptions = async (query: string) => {
     const params: Parameters<typeof suggestionService.fetchSuggestions>[1] = { limit: limit.toString() };
@@ -46,12 +44,10 @@ const AddressAutocomplete = ({
       minCharThreshold={3} // API BAN
       fetchFn={fetchOptions}
       onSelect={(address) => {
-        // setAddress(address);
         onSelect(address);
       }}
       getOptionValue={(option) => (onlyCities ? `${option.properties.city}, ${option.properties.postcode}` : option.properties.label)}
       onClear={() => {
-        // setAddress(undefined);
         onClear?.();
       }}
       nativeInputProps={{
