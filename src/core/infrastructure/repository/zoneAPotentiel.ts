@@ -1,6 +1,5 @@
 import { db, sql } from 'src/db/kysely';
-
-type Bounds = [number, number, number, number];
+import { BoundingBox } from 'src/types/Coords';
 
 export const getCommunePotentiel = async (codeInsee: string) => {
   const communePromise = db
@@ -12,13 +11,13 @@ export const getCommunePotentiel = async (codeInsee: string) => {
       'nom',
       sql`
       ARRAY[
-        ST_XMin(ST_Transform(ST_Envelope(geom), 4326)), -- Min Longitude (Bottom-Left)
-        ST_YMin(ST_Transform(ST_Envelope(geom), 4326)), -- Min Latitude (Bottom-Left)
-        ST_XMax(ST_Transform(ST_Envelope(geom), 4326)), -- Max Longitude (Top-Right)
-        ST_YMax(ST_Transform(ST_Envelope(geom), 4326))  -- Max Latitude (Top-Right)
+        ST_XMin(ST_Transform(geom, 4326)), -- Min Longitude (Bottom-Left)
+        ST_YMin(ST_Transform(geom, 4326)), -- Min Latitude (Bottom-Left)
+        ST_XMax(ST_Transform(geom, 4326)), -- Max Longitude (Top-Right)
+        ST_YMax(ST_Transform(geom, 4326))  -- Max Latitude (Top-Right)
       ]::numeric[]
     `
-        .$castTo<Bounds>()
+        .$castTo<BoundingBox>()
         .as('bounds'),
     ])
     .executeTakeFirst();

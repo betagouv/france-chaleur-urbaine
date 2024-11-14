@@ -29,6 +29,7 @@ import cx from '@utils/cx';
 import { useServices } from 'src/services';
 import { trackEvent } from 'src/services/analytics';
 import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
+import { BoundingBox } from 'src/types/Coords';
 import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
 import { MapMarkerInfos, MapPopupType } from 'src/types/MapComponentsInfos';
 import { Point } from 'src/types/Point';
@@ -108,7 +109,7 @@ type MapProps = {
   pinsList?: MapMarkerInfos[];
   initialCenter?: Point;
   initialZoom?: number;
-  bounds?: [number, number, number, number];
+  bounds?: BoundingBox;
   geolocDisabled?: boolean;
   withFCUAttribution?: boolean;
   persistViewStateInURL?: boolean;
@@ -545,21 +546,20 @@ export const FullyFeaturedMap = ({
   const mapViewportHeight = typeof window !== 'undefined' ? window.innerHeight - headerHeight - mapViewportFitPadding : 0;
 
   useEffect(() => {
-    if (!bounds) {
+    const map = mapRef.current?.getMap();
+    if (!bounds || !map) {
       return;
     }
     const { center, zoom } = geoViewport.viewport(
       bounds, // bounds
-      [mapViewportWidth, mapViewportHeight], // dimensions
+      [map.getCanvas().clientWidth - 2 * mapViewportFitPadding, map.getCanvas().clientHeight - 2 * mapViewportFitPadding], // dimensions
       1, // min zoom
       20, // max zoom
       512, // tile size for MVT
       true // allow decimals in zoom
     );
 
-    const map = mapRef.current?.getMap();
-
-    map?.flyTo({ center, zoom, essential: true, duration: 1000 });
+    map.flyTo({ center, zoom, essential: true, duration: 1000 });
   }, [JSON.stringify(bounds), mapRef.current]);
 
   const isRouterReady = useRouterReady();
