@@ -28,13 +28,7 @@ const NewsletterContext = React.createContext<NewsletterContextType>({
   handleSignUp: async () => null,
 });
 
-export const NewsletterInput = ({
-  className,
-  placeholder = 'Votre adresse électronique (ex. nom@domaine.fr)',
-}: {
-  className?: string;
-  placeholder?: string;
-}) => {
+export const NewsletterInput = ({ className }: { className?: string }) => {
   const { email, setEmail, error, setError } = useContext(NewsletterContext);
 
   return (
@@ -42,7 +36,7 @@ export const NewsletterInput = ({
       className={cx('fr-input', { 'fr-input--error': !!error }, className)}
       type="email"
       autoComplete="email"
-      placeholder={placeholder}
+      placeholder="Votre adresse mail"
       value={email}
       onChange={(e) => {
         setError('');
