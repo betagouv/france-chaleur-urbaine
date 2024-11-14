@@ -34,22 +34,23 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     .select(['chauf_mwh', 'ecs_mwh'])
     .execute();
 
-  const [commune, zonesAFortPotentiel, zonesAPotentiel] = await Promise.all([
+  const nbReseauxExistantsPromise = db
+    .selectFrom('reseaux_de_chaleur')
+    .leftJoin('ign_communes', 'ign_communes.insee_com', sql`${codeInsee}` as any)
+    .where(sql`ST_Intersects(reseaux_de_chaleur.geom, ign_communes.geom)` as any)
+    .select(sql`COUNT(*)` as any)
+    .executeTakeFirst() as Promise<{ count: number }>;
+
+  const [commune, zonesAFortPotentiel, zonesAPotentiel, { count: nbReseauxExistants }] = await Promise.all([
     communePromise,
     zonesAFortPotentielPromise,
     zonesAPotentielPromise,
+    nbReseauxExistantsPromise,
   ]);
 
   if (!commune) {
     return null;
   }
-
-  const reseauxExistants = await db
-    .selectFrom('reseaux_de_chaleur')
-    .leftJoin('ign_communes', 'ign_communes.insee_com', sql`${codeInsee}` as any)
-    .where(sql`ST_Intersects(reseaux_de_chaleur.geom, ign_communes.geom)` as any)
-    .selectAll()
-    .execute();
 
   return {
     ...commune,
@@ -63,7 +64,7 @@ export const getCommunePotentiel = async (codeInsee: string) => {
       chauffage: zonesAPotentiel.reduce((sum, zone) => sum + +(zone.chauf_mwh || 0), 0),
       ecs: zonesAPotentiel.reduce((sum, zone) => sum + +(zone.ecs_mwh || 0), 0),
     },
-    nbReseauxExistants: reseauxExistants.length,
+    nbReseauxExistants: Number(nbReseauxExistants) || 0,
     bounds: commune?.bounds,
   };
 };
