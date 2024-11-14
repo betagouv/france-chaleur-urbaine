@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/webi.jpg
+coverY: 0
+---
+
 # Informer les gestionnaires de bâtiments tertiaires sur les réseaux de chaleur
 
 🏢 Après notre intervention auprès des copropriétés, nous avons proposé un webinaire dédié au raccordement aux réseaux de chaleur des bâtiments tertiaire le mardi 12 novembre, co-organisé avec l'ADEME.\

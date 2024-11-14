@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/FCUliste_cover.jpg
+coverY: 0
+---
+
 # La liste des réseaux de chaleur
 
 📢 Encore du nouveau sur France Chaleur Urbaine ! Vous pouvez désormais accéder en un clic à la liste des réseaux de chaleur et les filtrer en fonction de différents critères : région, taux d’énergies renouvelables et de récupération, contenu en CO2, prix moyen de la chaleur, livraisons annuelles ou encore année de construction. Des filtres avancés vous permettent également de repérer des réseaux de chaleur avec un mix énergétique comparable.\

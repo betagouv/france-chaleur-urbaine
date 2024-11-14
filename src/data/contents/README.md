@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/dlt.jpg
+coverY: 0
+---
+
 # Estimer en quelques clics la densité thermique linéaire d'un futur réseau
 
 Avec France Chaleur Urbaine, estimer en quelques clics la densité thermique linéaire d'un futur réseau, c'est possible !\

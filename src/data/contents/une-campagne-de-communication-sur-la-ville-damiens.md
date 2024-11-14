@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/amiens.jpg
+coverY: 0
+---
+
 # Une campagne de communication sur la ville d'Amiens
 
 💡 En ce début de saison de chauffe, c'est le moment idéal pour mettre en lumière les réseaux de chaleur ! Nous sommes ravis d'avoir eu l'opportunité d'accompagner la ville d'Amiens et son délégataire [Amiens Énergies](https://www.rezomee.fr/amiens-energies/) dans la mise en place d'une campagne de communication. Depuis quelques jours, les affiches ci-dessous sont visibles à travers toute la ville.\

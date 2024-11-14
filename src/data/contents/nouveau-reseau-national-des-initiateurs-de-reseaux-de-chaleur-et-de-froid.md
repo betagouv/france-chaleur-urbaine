@@ -1,4 +1,5 @@
 ---
+cover: .gitbook/assets/FCU_ini_cover.jpg
 coverY: 0
 ---
 

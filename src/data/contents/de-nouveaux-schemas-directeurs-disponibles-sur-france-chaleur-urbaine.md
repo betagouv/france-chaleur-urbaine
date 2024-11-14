@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/SD.jpg
+coverY: 0
+---
+
 # De nouveaux schémas directeurs disponibles sur France Chaleur Urbaine
 
 📑 Les schémas directeurs de 16 réseaux de chaleur de la région Pays de la Loire sont en ligne sur France Chaleur Urbaine : réseaux de Nantes Métropole, Angers Loire Métropole, Le Mans Ville et métropole, Laval, Saumur, Saint Julien de Concelles. Ils viennent s'ajouter aux schémas des 45 réseaux franciliens déjà disponibles depuis quelques mois.\
