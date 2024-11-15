@@ -2,6 +2,11 @@ import Header from '@codegouvfr/react-dsfr/Header';
 import styled, { css } from 'styled-components';
 
 export const StyledHeader = styled(Header)<{ $isFullScreenMode: boolean }>`
+  // keep the logo within good size
+  .fr-header__operator .fr-responsive-img {
+    max-width: 5rem !important;
+  }
+
   ${({ $isFullScreenMode }) =>
     $isFullScreenMode
       ? css`
