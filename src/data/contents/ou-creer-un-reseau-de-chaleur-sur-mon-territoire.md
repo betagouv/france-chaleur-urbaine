@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteZone.jpg
-coverY: 0
----
-
 # Où créer un réseau de chaleur sur mon territoire ?
 
 🔎 Où créer un réseau de chaleur sur mon territoire, quelles énergies mobiliser ? Le projet EnRezo porté par le Cerema apporte aux collectivités un premier niveau de réponse à ces interrogations, en identifiant les zones favorables pour la création de réseaux de chaleur, et les gisements d'énergies renouvelables et de récupération qui peuvent les alimenter.\

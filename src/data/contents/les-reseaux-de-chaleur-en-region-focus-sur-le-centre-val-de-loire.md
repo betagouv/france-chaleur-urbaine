@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/CVL.jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur le Centre-Val de Loire
 
 🚴‍♂️ Pour notre tour de France des réseaux de chaleur en région, nous partons aujourd'hui pour la [Région Centre-Val de Loire](https://www.centre-valdeloire.fr/).\

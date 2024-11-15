@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/paysdelaloire.jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur les Pays de la Loire
 
 🚴‍♂️ Aujourd'hui, notre tour de France des réseaux de chaleur en région nous emmène en [Région Pays de la Loire](https://www.paysdelaloire.fr/).\

@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignett592.jpg
-coverY: 0
----
-
 # 592 réseaux classés
 
 📃 La liste des réseaux de chaleur qui satisfont aux critères du classement a été mise à jour par un arrêté en date du 22 décembre 2023, entré en vigueur au 1er janvier 2024. Pour ces réseaux, le classement intervient de plein droit, sauf si la collectivité s'y oppose par délibération motivée.\

@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/friday.jpg
-coverY: 0
----
-
 # Black Friday, Green Friday
 
 💸 Black Friday, Green Friday, et si on conciliait les deux ? Avec les réseaux de chaleur, le chauffage est moins cher et plus vert !\

@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/guidecolt.jpg
-coverY: 0
----
-
 # Un guide pour les collectivités
 
 📢 Nous avons le grand plaisir de vous partager notre [guide complet et détaillé à destination des collectivités](https://france-chaleur-urbaine.beta.gouv.fr/documentation/FCU\_guide\_collectivites.pdf).\

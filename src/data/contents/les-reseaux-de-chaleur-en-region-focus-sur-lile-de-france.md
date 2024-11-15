@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/idf.jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur l'Île-de-France
 
 🚴‍♂️ Pour terminer notre tour de France des réseaux de chaleur, nous vous emmenons en [Région Île-de-France](https://www.iledefrance.fr/).

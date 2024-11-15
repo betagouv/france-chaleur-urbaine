@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignette-enquete.jpg
-coverY: 0
----
-
 # Une enquête IFOP pour France Chaleur Urbaine
 
 ### Un levier incontournable de la transition énergétique encore mal connu

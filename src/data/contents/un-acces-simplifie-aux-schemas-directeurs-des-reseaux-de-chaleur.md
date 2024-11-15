@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/5 (3).jpg
-coverY: 0
----
-
 # Un accès simplifié aux schémas directeurs des réseaux de chaleur
 
 Comment avoir de la visibilité sur les développements futurs d'un réseau de chaleur ?\

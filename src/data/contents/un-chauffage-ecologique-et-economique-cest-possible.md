@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/7 (2).jpg
-coverY: 0
----
-
 # Un chauffage écologique et économique ? C'est possible !
 
 🌍 Ce qui est bon pour la planète est-il toujours mauvais pour le porte-monnaie ? C'est une croyance largement répandue, mais pas toujours justifiée... Et c'est l'objet de notre infographie sur les idées reçues qui circulent sur les réseaux de chaleur cette semaine.\

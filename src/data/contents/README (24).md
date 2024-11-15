@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteBiomasse.jpg
-coverY: 0
----
-
 # Les chaudières biomasse ne contribuent pas à la déforestation
 
 🌿 La biomasse fait souvent l'objet de débats... enflammés ! Peut-on vraiment la considérer comme une énergie renouvelable ? Y en aura-t-il assez pour tous les usages dans les prochaines années ? Est-elle vraiment locale ? Son utilisation en chaufferie ne contribue-t-elle pas au phénomène de déforestation ? C'est à cette dernière question que nous nous attaquons aujourd'hui, avec la seconde infographie de notre série sur les idées reçues.\

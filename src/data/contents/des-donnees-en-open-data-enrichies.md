@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/3 (4).jpg
-coverY: 0
----
-
 # Des données en open data enrichies
 
 📢 L'open data France Chaleur Urbaine s'enrichit !\

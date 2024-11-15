@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/Optimiser-vignette.jpg
-coverY: 0
----
-
 # Optimiser son réseau de chaleur
 
 Les réseaux de chaleur doivent rester compétitifs et s'adapter à des besoins et des exigences qui évoluent. Leur modernisation et l'amélioration de leurs performances passent par la mise en œuvre de différentes techniques d'optimisation, qui permettent par exemple de limiter les pertes thermiques ou encore de réduire les consommations électriques associées au fonctionnement du réseau.\

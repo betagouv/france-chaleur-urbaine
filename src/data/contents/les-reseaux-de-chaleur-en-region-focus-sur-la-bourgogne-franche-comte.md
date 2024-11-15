@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/17 (3).jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur la Bourgogne-Franche-Comté
 
 🚴‍♂️ La 4ème étape de notre tour de France des réseaux de chaleur nous amène en [Région Bourgogne-Franche-Comté](https://www.bourgognefranchecomte.fr/).\

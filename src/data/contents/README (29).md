@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/11 (2).jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur la Normandie
 
 🚴‍♂️ Nous prenons un peu d'avance sur le Tour de France et vous embarquons dès à présent dans un tour de France des réseaux de chaleur de nos régions...\

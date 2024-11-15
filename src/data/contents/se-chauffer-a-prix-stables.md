@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/10 (1).jpg
-coverY: 0
----
-
 # Se chauffer à prix stables
 
 💰 Un chauffage à prix stables ? C'est possible avec les réseaux de chaleur !

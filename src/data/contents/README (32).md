@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/occitanie.jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur l'Occitanie
 
 🚴‍♂️ Nous prolongeons le Tour de France, avec la septième étape de notre tour de France des réseaux de chaleur en région. Direction la [région Occitanie / Pyrénées-Méditerranée](https://www.laregion.fr/)  !\

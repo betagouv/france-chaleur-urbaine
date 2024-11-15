@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/9 (3).jpg
-coverY: 0
----
-
 # Deux idées reçues sur la géothermie
 
 ♨ La géothermie constitue une source de chaleur inépuisable disponible 365 jours par an, connue depuis des millénaires. Une énergie idéale pour décarboner le chauffage des bâtiments, notamment via les réseaux de chaleur qui constituent l'un des seuls moyens de valoriser la chaleur des nappes profondes.\

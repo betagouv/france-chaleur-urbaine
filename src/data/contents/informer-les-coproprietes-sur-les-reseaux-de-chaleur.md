@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/arc.jpg
-coverY: 0
----
-
 # Informer les copropriétés sur les réseaux de chaleur
 
 📺 Pour informer les copropriétés sur les réseaux de chaleur, nous sommes heureux d'être intervenus lors de la journée d'émissions proposée par l'Association des responsables de copropriétés (ARC) sur sa web télé le mercredi 6 novembre !\

@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/enquete2.jpg
-coverY: 0
----
-
 # Enquête 2023 des réseaux de chaleur et de froid
 
 Comment évoluent les réseaux de chaleur français ? Ils poursuivent leur décarbonation et confirment le rôle majeur qu'ils ont à jouer dans la transition énergétique\

@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignettefroid.jpg
-coverY: 0
----
-
 # Les réseaux de froid
 
 ❄️ Les réseaux de froid, vous connaissez ?\

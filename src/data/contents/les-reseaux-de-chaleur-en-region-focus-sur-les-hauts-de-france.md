@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/12 (3).jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur les Hauts-de-France
 
 🚲 Pour la deuxième étape de notre tour de France des réseaux de chaleur, direction les [Hauts-de-France](https://www.hautsdefrance.fr/) !\

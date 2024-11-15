@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/05.jpg
-coverY: 0
----
-
 # Un plan national d'action pour la géothermie
 
 &#x20;Augmenter la part des énergies renouvelables dans les réseaux de chaleur ? C'est un enjeu crucial, qui passera notamment par le développement de la géothermie profonde.

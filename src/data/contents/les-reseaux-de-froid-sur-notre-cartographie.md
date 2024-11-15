@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignettefroid-art.jpg
-coverY: 0
----
-
 # Les réseaux de froid sur notre cartographie
 
 En cette période de fortes chaleurs, découvrez la [cartographie des réseaux de froid](https://france-chaleur-urbaine.beta.gouv.fr/carte) France Chaleur Urbaine !

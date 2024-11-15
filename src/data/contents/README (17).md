@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteochod.jpg
-coverY: 0
----
-
 # La géothermie expliquée aux enfants
 
 📽 Pour accompagner la ville de Fresnes dans son souhait de faire découvrir la géothermie aux plus jeunes, nous avons réalisé une petite vidéo à destination des 7-10 ans. L'objectif ? Leur faire comprendre en 1min30 le principe et les atouts de cette énergie propre.\

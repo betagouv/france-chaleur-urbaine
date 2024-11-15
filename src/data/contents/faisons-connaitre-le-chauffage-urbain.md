@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/04.jpg
-coverY: 0
----
-
 # Faisons connaître le chauffage urbain !
 
 📣 Promouvoir les réseaux de chaleur auprès du grand public ? C'est un défi que France Chaleur Urbaine relève !\

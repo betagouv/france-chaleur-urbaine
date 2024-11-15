@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/FCU_ini_cover.jpg
-coverY: 0
----
-
 # Nouveau réseau national des "Initiateurs de réseaux de chaleur et de froid"
 
 Vous êtes agent ou élu d'une collectivité territoriale, ou animateur territorial du Fonds Chaleur ADEME ?\

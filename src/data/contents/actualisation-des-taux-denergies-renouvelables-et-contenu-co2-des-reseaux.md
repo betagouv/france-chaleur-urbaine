@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/19 (2).jpg
-coverY: 0
----
-
 # Actualisation des taux d'énergies renouvelables et contenu CO2 des réseaux
 
 🔎 Vous recherchez les valeurs réglementaires à utiliser pour le taux d'énergies renouvelables et de récupération et le contenu CO2 d'un réseau de chaleur ou de froid ? Retrouvez sur la carte et les fiches par réseau France Chaleur Urbaine les valeurs du dernier "arrêté DPE", en date du 5 juillet 2024.\

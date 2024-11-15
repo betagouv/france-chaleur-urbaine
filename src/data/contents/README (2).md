@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/19 (1).jpg
-coverY: 0
----
-
 # La biomasse
 
 🤓 N° 2 dans notre série sur les énergies renouvelables et de récupération qui alimentent les réseaux de chaleur : la biomasse, qui reste la principale source d'énergie renouvelable dans notre pays.&#x20;

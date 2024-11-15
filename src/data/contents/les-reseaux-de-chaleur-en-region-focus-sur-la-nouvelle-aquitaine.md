@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/nouvelleaquitaine.jpg
-coverY: 0
----
-
 # Les réseaux de chaleur en région : focus sur la Nouvelle-Aquitaine
 
 🚴‍♂️ Pour notre nouvelle étape du tour de France des réseaux de chaleur en région, direction la [Région Nouvelle-Aquitaine](https://www.nouvelle-aquitaine.fr/) !\

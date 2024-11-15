@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignette-collectivite.jpg
-coverY: 0
----
-
 # Les chiffres de l'enquête IFOP 3
 
 Toujours grâce à [l'enquête IFOP](https://france-chaleur-urbaine.beta.gouv.fr/documentation/enquete\_IFOP.pdf\*) pour France Chaleur Urbaine sur les copropriétaires et les réseaux de chaleur, on découvre que ce sont bien les collectivités qui sont identifiées comme la porte d'entrée pour obtenir des informations.

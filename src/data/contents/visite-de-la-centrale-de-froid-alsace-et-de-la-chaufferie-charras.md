@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/vignetteCharras.jpg
-coverY: 0
----
-
 # Visite de la centrale de froid Alsace et de la chaufferie Charras
 
 Outre leurs atouts écologiques et économiques, les réseaux de chaleur et de froid présentent également l'avantage de pouvoir être alimentés par des installations de production parfaitement intégrées à leur environnement, y compris en milieu urbain dense.\

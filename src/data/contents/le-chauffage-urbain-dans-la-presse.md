@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/12.jpg
-coverY: 0
----
-
 # Le chauffage urbain dans la presse
 
 👉 À retrouver dans le journal [Le Particulier (Particulier et Finances Editions)](https://www.linkedin.com/company/particulier-et-finances-editions-pfe-/) ce mois-ci : un article bien documenté intitulé "Les réseaux de chaleur, une alternative face à la flambée des prix de l'énergie"\

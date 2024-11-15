@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/13.jpg
-coverY: 0
----
-
 # Les syndics et France Chaleur Urbaine
 
 Les syndics ont un rôle à jouer dans la transition énergétique des copropriétés !\
