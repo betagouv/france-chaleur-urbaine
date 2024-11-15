@@ -3162,7 +3162,7 @@ export interface ZoneAPotentielFortChaudTiles {
 
 export interface ZoneDeDeveloppementPrioritaire {
   geom: string | null;
-  id: Int8;
+  id_fcu: Int8;
 }
 
 export interface ZoneDeDeveloppementPrioritaireTiles {
