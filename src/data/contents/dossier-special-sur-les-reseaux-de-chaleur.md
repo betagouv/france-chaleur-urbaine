@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/06.jpg
+coverY: 0
+---
+
 # Dossier spécial sur les réseaux de chaleur
 
 [Construction21 - France](https://www.linkedin.com/company/construction21-france/) consacre un dossier spécial sur le thème des [#RéseauChaleurFroid](https://www.linkedin.com/feed/hashtag/?keywords=r%C3%A9seauchaleurfroid\&highlightedUpdateUrns=urn%3Ali%3Aactivity%3A7023643684474621952) décarbonés, auquel nous sommes heureux d'avoir pu contribuer. 😃🙏

@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/vignetteAnnecy.jpg
+coverY: 0
+---
+
 # Visite du réseau de froid d'Annecy
 
 Après notre infographie sur les réseaux de froid, direction Annecy (74) pour un exemple en images, avec la visite du premier réseau de chaleur et de froid alimenté par un lac en France.

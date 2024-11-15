@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/15 (1).jpg
+coverY: 0
+---
+
 # Les réseaux de chaleur en région : focus sur la Provence-Alpes-Côte d'Azur
 
 🚴‍♂️ Pour la sixième étape de notre tour de France des réseaux de chaleur, nous partons en [Région Sud - Provence-Alpes-Côte d'Azur](https://www.maregionsud.fr/).\

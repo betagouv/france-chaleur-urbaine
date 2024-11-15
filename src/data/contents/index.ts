@@ -6,6 +6,7 @@ import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-d
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
 import actualisationTauxEnergiesRenouvelablesEtContenuCO2DesReseaux from './actualisation-des-taux-denergies-renouvelables-et-contenu-co2-des-reseaux.md';
 import combienCouteRaccordement from './combien-coute-un-raccordement.md';
+import nouveauSchemasDirecteurs from './de-nouveaux-schemas-directeurs-disponibles-sur-france-chaleur-urbaine.md';
 import donneesOpenDataEnrichies from './des-donnees-en-open-data-enrichies.md';
 import desObligationsDePartageDeDonnees from './des-obligations-de-partage-de-donnees-a-fcu-au-titre-du-fonds-chaleur.md';
 import desReseauxVertueux from './des-reseaux-vertueux.md';
@@ -16,7 +17,11 @@ import faisonsConnaitreLeChauffageUrbain from './faisons-connaitre-le-chauffage-
 import franceChaleurUrbainePourBureauxEtudes from './france-chaleur-urbaine-pour-les-bureaux-detudes.md';
 import franceChaleurUrbaineSeConstruitAvecSesUsagers from './france-chaleur-urbaine-se-construit-avec-ses-usagers.md';
 import identifierZonesImplantationsSolaireThermique from './identifier-des-zones-dimplantation-pour-le-solaire-thermique.md';
-import laCarteFCUSEnrichit from './la-carte-france-chaleur-urbaine-senrichit.md';
+import informerLesCoproprietes from './informer-les-coproprietes-sur-les-reseaux-de-chaleur.md';
+import informerGestionnairesTertiaires from './informer-les-gestionnaires-de-batiments-tertiaires-sur-les-reseaux-de-chaleur.md';
+import laCarteFCUSEnrichit from './la-carte-france-chaleur-urbaine-senrichit-1.md';
+import carteFranceEnrichit from './la-carte-france-chaleur-urbaine-senrichit.md';
+import listeDesReseauxDeChaleur from './la-liste-des-reseaux-de-chaleur.md';
 import lappelAProjets1Ville1ReseauDeLademeEstRelance from './lappel-a-projets-1-ville-1-reseau-de-lademe-est-relance.md';
 import leChauffageLePlusEconomiquePourLhabitatCollectif from './le-chauffage-le-plus-economique-pour-lhabitat-collectif.md';
 import leChauffageUrbainDansLaPresse from './le-chauffage-urbain-dans-la-presse.md';
@@ -28,8 +33,10 @@ import lesReseauxDeChaleurRegionBourgogneFrancheComte from './les-reseaux-de-cha
 import lesReseauxDeChaleurRegionBretagne from './les-reseaux-de-chaleur-en-region-focus-sur-la-bretagne.md';
 import lesReseauxDeChaleurRegionNouvelleAquitaine from './les-reseaux-de-chaleur-en-region-focus-sur-la-nouvelle-aquitaine.md';
 import lesReseauxDeChaleurRegionAuvergneRhoneAlpes from './les-reseaux-de-chaleur-en-region-focus-sur-lauvergne-rhone-alpes.md';
+import reseauxDeChaleurEnRegionCentreValDeLoire from './les-reseaux-de-chaleur-en-region-focus-sur-le-centre-val-de-loire.md';
 import lesReseauxDeChaleurRegionGrandEst from './les-reseaux-de-chaleur-en-region-focus-sur-le-grand-est.md';
 import lesReseauxDeChaleurRegionHautsDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-les-hauts-de-france.md';
+import reseauxDeChaleurEnRegionIleDeFrance from './les-reseaux-de-chaleur-en-region-focus-sur-lile-de-france.md';
 import lesReseauxDeFroidSurNotreCartographie from './les-reseaux-de-froid-sur-notre-cartographie.md';
 import lesReseauxLesPlusEcologiquesSontLesPlusEconomiques from './les-reseaux-les-plus-ecologiques-sont-les-plus-economiques.md';
 import lesSyndicsEtFranceChaleurUrbaine from './les-syndics-et-france-chaleur-urbaine.md';
@@ -37,6 +44,7 @@ import ileDeFranceChampionGeorthermieProfonde from './lile-de-france-championne-
 import notreCampagneCharlevilleMezieres from './notre-campagne-sur-charleville-mezieres.md';
 import notreCampagneFresnes from './notre-campagne-sur-fresnes.md';
 import notreCampagneStrasbourg from './notre-campagne-sur-strasbourg.md';
+import nouveauReseauNationalInitiateurs from './nouveau-reseau-national-des-initiateurs-de-reseaux-de-chaleur-et-de-froid.md';
 import ouCreerReseauChaleurSurMonTerritoire from './ou-creer-un-reseau-de-chaleur-sur-mon-territoire.md';
 import page_2 from './page-2.md';
 import partENRDansConsommationsChaleur from './part-des-enr-and-r-dans-nos-consommations-de-chaleur.md';
@@ -78,6 +86,7 @@ import readme_30 from './README (30).md';
 import readme_31 from './README (31).md';
 import readme_32 from './README (32).md';
 import readme_33 from './README (33).md';
+import readme_34 from './README (34).md';
 import readme_4_1 from './README (4) (1).md';
 import readme_4 from './README (4).md';
 import readme_5 from './README (5).md';
@@ -91,6 +100,7 @@ import accesSimplifieSchemasDirecteursReseauxChaleur from './un-acces-simplifie-
 import chauffageEcologiqueEconomiquePossible from './un-chauffage-ecologique-et-economique-cest-possible.md';
 import unGuidePourLesExploitants from './un-guide-pour-les-exploitants.md';
 import unPlanNationalDactionPourLaGeothermie from './un-plan-national-daction-pour-la-geothermie.md';
+import uneCampagneDeCommunicationAmiens from './une-campagne-de-communication-sur-la-ville-damiens.md';
 import uneEmissionPedagogiqueReseauChaleur from './une-emission-pedagogique-sur-les-reseaux-de-chaleur.md';
 import uneEnqueteIfopPourFranceChaleurUrbaine from './une-enquete-ifop-pour-france-chaleur-urbaine.md';
 import visiteCentraleFroidAlsaceChaufferieCharras from './visite-de-la-centrale-de-froid-alsace-et-de-la-chaufferie-charras.md';
@@ -103,10 +113,90 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/webi.jpg',
+    title: 'Informer les gestionnaires de bâtiments tertiaires sur les réseaux de chaleur',
+    slug: 'informer-les-gestionnaires-de-batiments-tertiaires-sur-les-reseaux-de-chaleur',
+    content: importFile(informerGestionnairesTertiaires),
+    publishedDate: new Date('2024-11-13'),
+    themes: ['Réseaux de chaleur', 'Réglementation'],
+  },
+  {
+    image: '/contents/dlt.jpg',
+    title: "Estimer en quelques clics la densité thermique linéaire d'un futur réseau",
+    slug: 'estimer-en-quelques-clics-la-densite-thermique-lineaire-dun-futur-reseau',
+    content: importFile(readme),
+    publishedDate: new Date('2024-11-12'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données'],
+  },
+  {
+    image: '/contents/arc.jpg',
+    title: 'Informer les copropriétés sur les réseaux de chaleur',
+    slug: 'informer-les-coproprietes-sur-les-reseaux-de-chaleur',
+    content: importFile(informerLesCoproprietes),
+    publishedDate: new Date('2024-11-07'),
+    themes: ['Réseaux de chaleur'],
+  },
+  {
+    image: '/contents/idf.jpg',
+    title: "Les réseaux de chaleur en région : focus sur l'Île-de-France",
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-lile-de-france',
+    content: importFile(reseauxDeChaleurEnRegionIleDeFrance),
+    publishedDate: new Date('2024-10-30'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/carto.jpg',
+    title: "La carte France Chaleur Urbaine s'enrichit !",
+    slug: 'la-carte-france-chaleur-urbaine-senrichit-1',
+    content: importFile(carteFranceEnrichit),
+    publishedDate: new Date('2024-10-28'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données'],
+  },
+  {
+    image: '/contents/amiens.jpg',
+    title: "Une campagne de communication sur la ville d'Amiens",
+    slug: 'une-campagne-de-communication-sur-la-ville-damiens',
+    content: importFile(uneCampagneDeCommunicationAmiens),
+    publishedDate: new Date('2024-10-22'),
+    themes: ['Réseaux de chaleur', 'Communication'],
+  },
+  {
+    image: '/contents/SD.jpg',
+    title: 'De nouveaux schémas directeurs disponibles sur France Chaleur Urbaine',
+    slug: 'de-nouveaux-schemas-directeurs-disponibles-sur-france-chaleur-urbaine',
+    content: importFile(nouveauSchemasDirecteurs),
+    publishedDate: new Date('2024-10-21'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données', 'ENR&R'],
+  },
+  {
+    image: '/contents/CVL.jpg',
+    title: 'Les réseaux de chaleur en région : focus sur le Centre-Val de Loire',
+    slug: 'les-reseaux-de-chaleur-en-region-focus-sur-le-centre-val-de-loire',
+    content: importFile(reseauxDeChaleurEnRegionCentreValDeLoire),
+    publishedDate: new Date('2024-10-18'),
+    themes: ['Réseaux de chaleur', 'Infographie'],
+  },
+  {
+    image: '/contents/FCUliste_cover.jpg',
+    title: 'La liste des réseaux de chaleur',
+    slug: 'la-liste-des-reseaux-de-chaleur',
+    content: importFile(listeDesReseauxDeChaleur),
+    publishedDate: new Date('2024-10-15'),
+    themes: ['Réseaux de chaleur', 'Cartographie et données', 'ENR&R'],
+  },
+  {
+    image: '/contents/FCU_ini_cover.jpg',
+    title: 'Nouveau réseau national des "Initiateurs de réseaux de chaleur et de froid"',
+    slug: 'nouveau-reseau-national-des-initiateurs-de-reseaux-de-chaleur-et-de-froid',
+    content: importFile(nouveauReseauNationalInitiateurs),
+    publishedDate: new Date('2024-10-07'),
+    themes: ['Réseaux de chaleur', 'Réseaux de froid'],
+  },
+  {
     image: '/contents/27.jpg',
     title: 'La carte France Chaleur Urbaine se refait une beauté',
     slug: 'la-carte-france-chaleur-urbaine-se-refait-une-beaute',
-    content: importFile(readme),
+    content: importFile(readme_34),
     publishedDate: new Date('2024-10-03'),
     themes: ['Cartographie et données', 'Réseaux de chaleur', 'Réseaux de froid'],
   },
@@ -247,7 +337,7 @@ export const articles: Article[] = [
     themes: ['Réseaux de chaleur'],
   },
   {
-    image: '/contents/Capture d’écran 2024-06-11 à 10.21.48.png',
+    image: '/contents/Capture d’écran 2024-06-11 à 10.21.48.png',
     title: 'Une émission pédagogique sur les réseaux de chaleur',
     slug: 'une-emission-pedagogique-sur-les-reseaux-de-chaleur',
     content: importFile(uneEmissionPedagogiqueReseauChaleur),

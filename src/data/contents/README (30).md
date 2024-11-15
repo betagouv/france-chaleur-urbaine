@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/21 (1).jpg
+coverY: 0
+---
+
 # Identifier les besoins en chaleur des bâtiments
 
 📢 Nouveauté sur France Chaleur Urbaine : retrouvez les besoins en chaleur des bâtiments, modélisés par le [Cerema](https://www.cerema.fr/fr) dans le cadre du projet [EnRezo](https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo) !\

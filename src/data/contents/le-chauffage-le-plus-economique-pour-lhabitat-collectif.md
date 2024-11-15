@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/03.jpg
+coverY: 0
+---
+
 # Le chauffage le plus économique pour l'habitat collectif
 
 💸 Le chauffage urbain constitue en moyenne la solution de chauffage la plus compétitive pour les logements collectifs !\

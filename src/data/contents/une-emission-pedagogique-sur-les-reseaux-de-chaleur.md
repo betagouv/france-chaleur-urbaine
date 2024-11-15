@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/Capture d’écran 2024-06-11 à 10.21.48.png
+coverY: 0
+---
+
 # Une émission pédagogique sur les réseaux de chaleur
 
 🎥Le 25 avril 2024, ENGIE Solutions organisait son "Live Chaud", une émission innovante au format pédagogique entièrement consacrée aux réseaux de chaleur.

@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/8 (3).jpg
+coverY: 0
+---
+
 # Deux idées reçues sur l'énergie solaire
 
 🍃 En France quand on parle énergies renouvelables, on pense tout de suite éoliennes et photovoltaïque... Au point d'en oublier parfois que les énergies renouvelables, c'est aussi pour la production de chaleur, et pas uniquement pour la production d'électricité.\
@@ -6,4 +11,4 @@
 \
 👋N'hésitez pas à partager largement dans vos réseaux !
 
-<figure><img src=".gitbook/assets/4 (2).jpg" alt=""><figcaption></figcaption></figure>
+{% file src=".gitbook/assets/4 (2).jpg" %}

@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/def-enr.jpg
+coverY: 0
+---
+
 # Définir des zones d'accélération des énergies renouvelables
 
 🎯 La loi d'accélération de la production d'énergies renouvelables promulguée en mars 2023 réaffirme le rôle crucial des collectivités territoriales et prévoit qu'elles définissent des zones d'accélération où elles souhaitent voir s'implanter prioritairement des projets d'énergies renouvelables.

@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/vignettePDP.jpg
+coverY: 0
+---
+
 # Le classement des réseaux : quel bilan ?
 
 Le classement automatique des réseaux de chaleur : sur le terrain, où en est-on ?\

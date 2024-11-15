@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/vignetteObjectif.jpg
+coverY: 0
+---
+
 # 80% d'énergies renouvelables et de récupération
 
 🌿 80% d'énergies renouvelables et de récupération dans les réseaux de chaleur en 2035, vous y croyez ? Nous, oui !\

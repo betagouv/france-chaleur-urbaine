@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/2000Vignette.jpg
+coverY: 0
+---
+
 # 2000 demandes
 
 🎉 Aujourd’hui nous avons atteint les 2000 demandes de mise en relation avec un gestionnaire de réseau de chaleur déposées sur France Chaleur Urbaine ! Rien qu'au mois d'octobre 2023, 198 demandes ont été déposées, soit 3,5 fois plus qu'en octobre 2022.\
@@ -12,4 +17,4 @@
 \
 Cette évolution reflète la montée en puissance de France Chaleur Urbaine, mais aussi un intérêt croissant pour les réseaux de chaleur de la part du grand public et des professionnels, dont nous ne pouvons que nous féliciter ! 👏
 
-![](/contents/2000.jpg)\
+![](.gitbook/assets/2000.jpg)\

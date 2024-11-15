@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/4 (3).jpg
+coverY: 0
+---
+
 # Identifier des zones d'implantation pour le solaire thermique
 
 ☀️ Les friches et parkings de plus de 500 m² susceptibles d'accueillir des centrales solaires sont maintenant diffusés sur la carte France Chaleur Urbaine.\

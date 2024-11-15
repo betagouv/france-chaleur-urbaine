@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/solaire.jpg
+coverY: 0
+---
+
 # Le solaire thermique
 
 🤓 N°4 dans notre série sur les énergies renouvelables et de récupération qui alimentent les réseaux de chaleur : le solaire thermique.

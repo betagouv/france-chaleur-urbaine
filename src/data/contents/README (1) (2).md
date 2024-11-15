@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/objectif.jpg
+coverY: 0
+---
+
 # Préparation de la loi de programmation sur l'énergie et le climat
 
 Quelle place pour les réseaux de chaleur dans la politique énergétique française ?

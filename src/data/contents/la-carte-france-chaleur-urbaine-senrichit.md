@@ -1,13 +1,21 @@
+---
+cover: .gitbook/assets/carto.jpg
+coverY: 0
+---
+
 # La carte France Chaleur Urbaine s'enrichit !
 
 🗺 Chaque mois, la carte France Chaleur Urbaine s'enrichit !\
 \
-🤝 Grâce aux contributions des collectivités et acteurs locaux, des opérateurs des réseaux et de l'ADEME, elle compte désormais 828 tracés de réseaux de chaleur et de froid en service, 60 réseaux de chaleur en construction et 145 périmètres de développement prioritaire.\
+👉 Ce mois-ci c’est notamment au tour des réseaux de [ForestEner](https://forestener.fr/), [CRAM](https://cram.fr/), du [SIEL Territoire d'énergie Loire](https://www.te42.fr/) et de la [Communauté d'agglomération Arlysère](https://www.arlysere.fr/) de voir leurs tracés compléter la carte. Des réseaux en cours de création ont aussi été ajoutés, notamment à Saint-Junien, Saverne, Doullens, Pont-Audemer, Châtenay-Malabry...\
 \
-🔎 La carte France Chaleur Urbaine est consultée par 10 000 visiteurs par mois, particuliers et professionnels : fournir une donnée la plus à jour et exhaustive possible contribue au développement efficace des réseaux !\
+La carte France Chaleur Urbaine, consultée par 10 000 visiteurs par mois en moyenne, compte désormais :\
+✔ 821 tracés de réseaux de chaleur et 35 réseaux de froid en service,\
+✔ 65 réseaux de chaleur en construction,\
+✔ 157 périmètres de développement prioritaire.\
 \
-📢 Vous souhaitez ajouter un tracé, une zone de construction ou un périmètre de développement prioritaire sur la carte ? La contribution est libre ! Vous pouvez aussi librement télécharger l'ensemble des tracés et données. Retrouvez tous les liens en commentaire.\
+🙏 Merci à tous nos contributeurs : collectivités, acteurs locaux, opérateurs des réseaux, ADEME...\
 \
-Ce mois-ci, les ajouts portent notamment sur les territoires suivants : [Toulouse Métropole](https://metropole.toulouse.fr/), [Métropole de Lyon](https://www.grandlyon.com/), [Be](https://www.besancon.fr/)[sançon](https://www.besancon.fr/), [Grand Poitiers Communauté Urbaine](https://www.grandpoitiers.fr/), [Thonon-les-Bains](https://www.ville-thonon.fr/), [Epernay](https://epernay.fr/), [Remiremont](https://www.remiremont.fr/), [Pau](https://www.pau.fr/), [Meylan](https://www.meylan.fr/), [Bourganeuf](https://bourganeuf.fr/), [Roanne](https://www.aggloroanne.fr/site-officiel-roannais-agglomeration-et-ville-de-roanne-3.html), [Créteil](https://www.ville-creteil.fr/), [Mayenne](https://www.ville-mayenne.fr/)...
+Vous souhaitez ajouter un tracé ou un périmètre de développement prioritaire sur la carte, ou encore télécharger l'ensemble des tracés et données ? N'hésitez pas à [contribuer](https://france-chaleur-urbaine.beta.gouv.fr/contribution) !
 
-<figure><img src=".gitbook/assets/FCU_carte_sept.jpg" alt=""><figcaption></figcaption></figure>
+<figure><img src=".gitbook/assets/FCU_carte_oct.jpg" alt=""><figcaption></figcaption></figure>
