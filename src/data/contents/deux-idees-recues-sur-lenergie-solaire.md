@@ -11,4 +11,4 @@ coverY: 0
 \
 👋N'hésitez pas à partager largement dans vos réseaux !
 
-{% file src=".gitbook/assets/4 (2).jpg" %}
+<figure><img src=".gitbook/assets/4 (2).jpg" alt=""><figcaption></figcaption></figure>
