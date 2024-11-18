@@ -594,29 +594,29 @@ const trackingEvents = {
   'Outils|Simulation coût raccordement': {
     matomo: ['Outils', 'Simulation coût raccordement'],
   },
-  'Villes Potentiel|Réseau Existant|Visite': {
-    matomo: ['Villes Potentiel', 'Réseau Existant', 'Visite'],
+  'Villes Potentiel - Visites|Réseau Existant': {
+    matomo: ['Villes Potentiel - Visites', 'Réseau Existant'],
   },
-  'Villes Potentiel|Réseau Existant|Demande': {
-    matomo: ['Villes Potentiel', 'Réseau Existant', 'Demande'],
+  'Villes Potentiel - Demandes|Réseau Existant': {
+    matomo: ['Villes Potentiel - Demandes', 'Réseau Existant'],
   },
-  'Villes Potentiel|Fort Potentiel|Visite': {
-    matomo: ['Villes Potentiel', 'Fort Potentiel', 'Visite'],
+  'Villes Potentiel - Visites|Fort Potentiel': {
+    matomo: ['Villes Potentiel - Visites', 'Fort Potentiel'],
   },
-  'Villes Potentiel|Fort Potentiel|Demande': {
-    matomo: ['Villes Potentiel', 'Fort Potentiel', 'Demande'],
+  'Villes Potentiel - Demandes|Fort Potentiel': {
+    matomo: ['Villes Potentiel - Demandes', 'Fort Potentiel'],
   },
-  'Villes Potentiel|Potentiel|Visite': {
-    matomo: ['Villes Potentiel', 'Potentiel', 'Visite'],
+  'Villes Potentiel - Visites|Potentiel': {
+    matomo: ['Villes Potentiel - Visites', 'Potentiel'],
   },
-  'Villes Potentiel|Potentiel|Demande': {
-    matomo: ['Villes Potentiel', 'Potentiel', 'Demande'],
+  'Villes Potentiel - Demandes|Potentiel': {
+    matomo: ['Villes Potentiel - Demandes', 'Potentiel'],
   },
-  'Villes Potentiel|Sans Potentiel|Visite': {
-    matomo: ['Villes Potentiel', 'Sans Potentiel', 'Visite'],
+  'Villes Potentiel - Visites|Sans Potentiel': {
+    matomo: ['Villes Potentiel - Visites', 'Sans Potentiel'],
   },
-  'Villes Potentiel|Sans Potentiel|Demande': {
-    matomo: ['Villes Potentiel', 'Sans Potentiel', 'Demande'],
+  'Villes Potentiel - Demandes|Sans Potentiel': {
+    matomo: ['Villes Potentiel - Demandes', 'Sans Potentiel'],
   },
   Vidéo: {
     matomo: ['Vidéo'],
