@@ -17,6 +17,11 @@ export const Container = styled.div`
   margin: auto;
 `;
 
+export const Form = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
 export const FormWarningMessage = styled.div<{ show?: boolean }>`
   font-weight: bold;
   padding: 0.2em 0 0.2em 1em;
