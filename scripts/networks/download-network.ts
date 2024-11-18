@@ -182,7 +182,7 @@ export const downloadNetwork = async (table: DatabaseSourceId) => {
  * Synchronise les données d'une table réseau dans Airtable vers la table correspondante dans Postgres (identique downloadNetwork)
  * Met également à jour certains champs côté airtable (spécifiques à chaque table).
  */
-export const downloadUpdateNetwork = async (table: DatabaseSourceId) => {
+export const downloadAndUpdateNetwork = async (table: DatabaseSourceId) => {
   const tileInfo = tilesInfo[table] as DatabaseTileInfo;
   if (!tileInfo || !tileInfo.airtable) {
     throw new Error(`${table} not managed`);

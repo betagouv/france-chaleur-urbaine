@@ -9,7 +9,7 @@ import { DatabaseTileInfo, DatabaseSourceId, tilesInfo, zDatabaseSourceId } from
 import { KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
-import { downloadNetwork, downloadUpdateNetwork } from './networks/download-network';
+import { downloadNetwork, downloadAndUpdateNetwork } from './networks/download-network';
 import { generateTilesFromGeoJSON } from './networks/generate-tiles';
 import { applyGeometryUpdates } from './networks/geometry-updates';
 import { importMvtDirectory } from './networks/import-mvt-directory';
@@ -48,10 +48,10 @@ program
   });
 
 program
-  .command('download-update-network')
+  .command('download-and-update-network')
   .argument('<network-id>', 'Network id', validateNetworkId)
   .action(async (table) => {
-    await downloadUpdateNetwork(table);
+    await downloadAndUpdateNetwork(table);
   });
 
 program
@@ -130,7 +130,7 @@ program
   .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
   .argument('[withIndex]', 'With index', (v) => !!v, false)
   .action(async (table, zoomMin, zoomMax, withIndex) => {
-    await downloadUpdateNetwork(table);
+    await downloadAndUpdateNetwork(table);
     await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
     await fillTiles(table, zoomMin, zoomMax, withIndex);
   });
