@@ -10,4 +10,4 @@ Rezomee, c'est la plateforme qui centralise toute l'information sur l'ensemble d
 \
 La carte France Chaleur Urbaine, un outil ergonomique et librement réutilisable pour faire connaître les réseaux de chaleur !
 
-![](<.gitbook/assets/Intégration de la carto France Chaleur Urbaine dans l'app Rezomee.jpg>)
+![](<.gitbook/assets/Intégration de la carto France Chaleur Urbaine dans l'app Rezomee.jpg>)
