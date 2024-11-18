@@ -39,6 +39,7 @@ const useContactFormFCU = () => {
     const { address, heatingType } = data;
     setAddressData(data as AddressDataType);
     setShowWarning(!!(address && !heatingType));
+    setLoadingStatus('idle');
   }, []);
 
   const handleOnFetchAddress = ({ address }: { address: any }, fromMap?: boolean) => {
