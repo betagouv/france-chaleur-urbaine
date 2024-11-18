@@ -6,4 +6,4 @@
 \
 🎯 Le développement des énergies renouvelables ne pourra se faire sans une meilleure compréhension de celles-ci par le grand public, indispensable pour améliorer leur acceptabilité. Vous souhaitez y contribuer ? N'hésitez pas à partager largement cette série autour de vous !
 
-{% file src=".gitbook/assets/3 (3).jpg" %}
+<figure><img src=".gitbook/assets/3 (3).jpg" alt=""><figcaption></figcaption></figure>
