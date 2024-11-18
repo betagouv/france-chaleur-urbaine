@@ -7,7 +7,7 @@ export const Container = styled.div`
   position: sticky;
   margin: -32px auto 0 auto;
   top: 0px;
-  padding: 8px;
+  padding: 16px;
   background-color: var(--background-default-grey);
   display: flex;
   flex-wrap: wrap;
