@@ -594,6 +594,30 @@ const trackingEvents = {
   'Outils|Simulation coût raccordement': {
     matomo: ['Outils', 'Simulation coût raccordement'],
   },
+  'Villes Potentiel|Réseau Existant|Visite': {
+    matomo: ['Villes Potentiel', 'Réseau Existant', 'Visite'],
+  },
+  'Villes Potentiel|Réseau Existant|Demande': {
+    matomo: ['Villes Potentiel', 'Réseau Existant', 'Demande'],
+  },
+  'Villes Potentiel|Fort Potentiel|Visite': {
+    matomo: ['Villes Potentiel', 'Fort Potentiel', 'Visite'],
+  },
+  'Villes Potentiel|Fort Potentiel|Demande': {
+    matomo: ['Villes Potentiel', 'Fort Potentiel', 'Demande'],
+  },
+  'Villes Potentiel|Potentiel|Visite': {
+    matomo: ['Villes Potentiel', 'Potentiel', 'Visite'],
+  },
+  'Villes Potentiel|Potentiel|Demande': {
+    matomo: ['Villes Potentiel', 'Potentiel', 'Demande'],
+  },
+  'Villes Potentiel|Sans Potentiel|Visite': {
+    matomo: ['Villes Potentiel', 'Sans Potentiel', 'Visite'],
+  },
+  'Villes Potentiel|Sans Potentiel|Demande': {
+    matomo: ['Villes Potentiel', 'Sans Potentiel', 'Demande'],
+  },
   Vidéo: {
     matomo: ['Vidéo'],
   },
