@@ -19,15 +19,20 @@
 5. Modifier le index.ts pour ajouter les nouveaux articles dans *articles*
     - Les 4 champs sont obligatoires
     - Pour *slug*, convertir *title* en kebab case
-    - Il faudra peut-être modifier les anciens si le nom du *content* a changé 
+    - Il faudra peut-être modifier les anciens si le nom du *content* a changé
 <br/><br/>
 
 6. Dans les nouveaux .md ou ceux qui ont été modifiés, supprimer le header <br/>
-Exemple : 
+Exemple :
 ```
  ---
  cover: .gitbook/assets/24.jpg
  coverY: 0
  ---
 ```
- 
+
+
+:warning: Nouveau script pour supprimer le frontmatter (mais on espère améliorer l'intégration avec gitbook ou autre...) :
+```sh
+./scripts/clean-gitbook-actus.sh
+```

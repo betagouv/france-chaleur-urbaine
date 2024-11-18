@@ -7,3 +7,5 @@
 Les réseaux de chaleur de la Nouvelle Aquitaine en chiffres clés et exemples, c'est ci-dessous ! 👇
 
 <figure><img src=".gitbook/assets/FCU_Nouvelle-Aquitaine.jpg" alt=""><figcaption></figcaption></figure>
+
+\

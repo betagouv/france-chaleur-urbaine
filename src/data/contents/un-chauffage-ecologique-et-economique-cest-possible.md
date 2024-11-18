@@ -7,3 +7,4 @@
 🤝 Enfin, au-delà du prix payé par l'usager, les réseaux de chaleur sont générateurs d'emploi local, non délocalisable. Pour les collectivités, ils constituent un moyen de valoriser les ressources présentes sur le  territoire notamment la chaleur fatale qui serait autrement perdue, et de gagner en indépendance énergétique.
 
 <figure><img src=".gitbook/assets/5 (2).jpg" alt=""><figcaption></figcaption></figure>
+

@@ -12,4 +12,4 @@
 \
 Cette évolution reflète la montée en puissance de France Chaleur Urbaine, mais aussi un intérêt croissant pour les réseaux de chaleur de la part du grand public et des professionnels, dont nous ne pouvons que nous féliciter ! 👏
 
-![](/contents/2000.jpg)\
+![](.gitbook/assets/2000.jpg)\

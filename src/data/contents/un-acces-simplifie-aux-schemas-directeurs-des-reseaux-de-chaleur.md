@@ -10,10 +10,10 @@ Simplifier l'accès aux schémas directeurs est une demande forte qui nous est r
 \
 📢 Pour répondre à ce besoin, nous avons le plaisir de vous annoncer la mise en ligne des schémas directeurs de 44 réseaux franciliens. Une diffusion rendue possible grâce à la transmission des documents par l'[ADEME Ile-de-France](https://www.ademe.fr/direction-regionale/ile-de-france/), qui accompagne financièrement et techniquement la réalisation des schémas directeurs.... Et que nous espérons généraliser rapidement à l'échelle nationale !\
 \
-N'hésitez pas à [contribuer](https://france-chaleur-urbaine.beta.gouv.fr/reseaux/modifier) à cette diffusion en ajoutant les schémas directeurs dont vous disposez.
+N'hésitez pas à [contribuer](https://france-chaleur-urbaine.beta.gouv.fr/reseaux/modifier) à cette diffusion en ajoutant les schémas directeurs dont vous disposez.\
 
 
-_Les schémas directeurs sont diffusés sur les fiches par réseau, accessibles depuis la_ [_cartographie_](https://france-chaleur-urbaine.beta.gouv.fr/carte) _en cliquant sur un réseau puis sur "Voir la fiche du réseau"._\
+_Les schémas directeurs sont diffusés sur les fiches par réseau, accessibles depuis la_ [_cartographie_](https://france-chaleur-urbaine.beta.gouv.fr/carte) _en cliquant sur un réseau puis sur "Voir plus d'informations"._\
 \
 _Lien d'accès direct vers les fiches :_ [_https://france-chaleur-urbaine.beta.gouv.fr/reseaux/9106C_](https://france-chaleur-urbaine.beta.gouv.fr/reseaux/9106C)\
 _(en remplaçant l'identifiant SNCU indiqué dans le lien par celui du réseau souhaité)_

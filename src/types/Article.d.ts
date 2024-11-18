@@ -4,5 +4,17 @@ export interface Article {
   image: string;
   content: string;
   publishedDate: Date;
-  themes: string[];
+  themes: Theme[];
 }
+
+type Theme =
+  | 'Réseaux de chaleur'
+  | 'Réglementation'
+  | 'Cartographie et données'
+  | 'Infographie'
+  | 'Communication'
+  | 'ENR&R'
+  | 'Réseaux de froid'
+  | 'Prix'
+  | 'Autre'
+  | 'Reportage';
