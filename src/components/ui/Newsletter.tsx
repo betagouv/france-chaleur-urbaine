@@ -1,6 +1,6 @@
 import { useToggle } from '@react-hookz/web';
 import React, { ReactNode, useContext, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import Checkbox from '@components/form/dsfr/Checkbox';
 import cx from '@utils/cx';
@@ -76,6 +76,7 @@ type NewsletterSectionProps = React.HTMLAttributes<HTMLDivElement> & {
   buttonText?: string;
   inputlabel?: string;
   checkboxLabel?: string;
+  backgroundColor?: string;
 };
 
 export const NewsletterCheckbox = ({
@@ -104,7 +105,11 @@ export const NewsletterCheckbox = ({
   );
 };
 
-const StyledFrFollow = styled.div`
+const StyledFrFollow = styled.div<{ $backgroundColor?: string }>`
+  ${({ $backgroundColor }) => css`
+    background-color: ${$backgroundColor?.startsWith('#') ? $backgroundColor : `var(--${$backgroundColor})`};
+  `}
+
   .fr-label {
     /* DSFR is hiding them for some reason */
     position: relative;
@@ -125,12 +130,13 @@ export const NewsletterSection: React.FC<NewsletterSectionProps> = ({
   inputlabel = '',
   checkboxLabel = '',
   className,
+  backgroundColor,
   ...props
 }) => {
   const { error, withCheckbox } = useContext(NewsletterContext);
 
   return (
-    <StyledFrFollow className={cx('fr-follow', className)} {...props}>
+    <StyledFrFollow className={cx('fr-follow', className)} $backgroundColor={backgroundColor} {...props}>
       <div className="fr-container">
         <div className="fr-grid-row">
           <div className="fr-col-12">

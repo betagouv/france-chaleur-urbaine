@@ -1,6 +1,8 @@
 import { db, sql } from 'src/db/kysely';
 import { BoundingBox } from 'src/types/Coords';
 
+type TypeCommune = 'Réseau Existant' | 'Fort Potentiel' | 'Potentiel' | 'Sans Potentiel';
+
 export const getCommunePotentiel = async (codeInsee: string) => {
   const communePromise = db
     .selectFrom('ign_communes')
@@ -52,7 +54,7 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     return null;
   }
 
-  return {
+  const result = {
     ...commune,
     zonesAFortPotentiel: {
       nb: zonesAFortPotentiel.length,
@@ -67,4 +69,15 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     nbReseauxExistants: Number(nbReseauxExistants) || 0,
     bounds: commune?.bounds,
   };
+
+  const type: TypeCommune =
+    result.nbReseauxExistants > 0
+      ? 'Réseau Existant'
+      : result.zonesAFortPotentiel.nb > 0
+      ? 'Fort Potentiel'
+      : result.zonesAPotentiel.nb > 0
+      ? 'Potentiel'
+      : 'Sans Potentiel';
+
+  return { ...result, type };
 };
