@@ -1,15 +1,16 @@
-import { Button } from '@codegouvfr/react-dsfr/Button';
+import AddressAutocomplete from '@components/addressAutocomplete';
+import { EligibilityFormContact, EligibilityFormMessageConfirmation, type EnergyInputsLabelsType } from '@components/EligibilityForm';
+import { CheckEligibilityFormLabel, SelectEnergy } from '@components/EligibilityForm/components';
+import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
+import MarkdownWrapper from '@components/MarkdownWrapper';
+import Slice from '@components/Slice';
+import Box from '@components/ui/Box';
+import Button from '@components/ui/Button';
+import Link from '@components/ui/Link';
+import Modal, { createModal } from '@components/ui/Modal';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import AddressAutocomplete from '@/components/addressAutocomplete';
-import { EligibilityFormContact, EligibilityFormMessageConfirmation, type EnergyInputsLabelsType } from '@/components/EligibilityForm';
-import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
-import MarkdownWrapper from '@/components/MarkdownWrapper';
-import Slice from '@/components/Slice';
-import Box from '@/components/ui/Box';
-import Link from '@/components/ui/Link';
 import useContactFormFCU from '@/hooks/useContactFormFCU';
 import { useServices } from '@/services';
 import { AnalyticsFormId } from '@/services/analytics';
@@ -23,8 +24,6 @@ import {
   FormLabel,
   FormWarningMessage,
   HeadSliceContainer,
-  Loader,
-  LoaderWrapper,
   PageBody,
   PageTitle,
   Separator,
@@ -48,7 +47,12 @@ type HeadBannerType = {
   withWrapper?: (form: React.ReactElement) => React.ReactElement;
 };
 
-const HeadSlice = ({
+const eligibilityTestModal = createModal({
+  id: 'eligibility-test-modal',
+  isOpenedByDefault: false,
+});
+
+const HeadSliceForm = ({
   bg,
   bgPos,
   checkEligibility,
@@ -72,6 +76,7 @@ const HeadSlice = ({
     handleOnFetchAddress,
     handleOnSuccessAddress,
     handleOnSubmitContact,
+    handleResetFormContact,
   } = useContactFormFCU();
 
   const { heatNetworkService } = useServices();
@@ -171,22 +176,18 @@ const HeadSlice = ({
 
             <FormWarningMessage show={!!(address && geoAddress && !heatingType)}>{warningMessage}</FormWarningMessage>
 
-            {eligibilityError ? (
+            {eligibilityError && (
               <Box textColor="#c00">
                 Une erreur est survenue. Veuillez réessayer ou bien <Link href="/contact">contacter le support</Link>.
               </Box>
-            ) : (
-              <LoaderWrapper show={!showWarning && loadingStatus === 'loading'}>
-                <Loader color="#fff" />
-              </LoaderWrapper>
             )}
 
             <Buttons>
               <Button
-                type="button"
                 size="large"
                 disabled={!address || !geoAddress || !heatingType || (loadingStatus === 'loading' && !eligibilityError)}
                 onClick={testAddress}
+                loading={loadingStatus === 'loading'}
               >
                 Tester cette adresse
               </Button>
@@ -231,6 +232,7 @@ const HeadSlice = ({
 
   return (
     <>
+      <SliceContactFormStyle />
       {withWrapper ? (
         withWrapper(WrappedChild)
       ) : (
@@ -240,22 +242,22 @@ const HeadSlice = ({
           </HeadSliceContainer>
         </Slice>
       )}
-
-      <SliceContactFormStyle />
-
-      <div ref={EligibilityFormContactRef}>
-        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${contactReady && !messageReceived ? 'active' : ''}`}>
-          {address && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
-        </Slice>
-
-        <Slice padding={5} theme="grey" className={`slice-contact-form-wrapper ${messageReceived ? 'active' : ''}`}>
-          <EligibilityFormMessageConfirmation addressData={addressData} />
-        </Slice>
-
+      <Modal
+        modal={eligibilityTestModal}
+        title=""
+        open={contactReady}
+        size="custom"
+        onClose={handleResetFormContact}
+        loading={loadingStatus === 'loading'}
+      >
+        <div ref={EligibilityFormContactRef}>
+          {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
+          {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
+        </div>
         {!externBulkForm && withBulkEligibility && <BulkEligibilitySlice displayBulkEligibility={displayBulkEligibility} />}
-      </div>
+      </Modal>
     </>
   );
 };
 
-export default HeadSlice;
+export default HeadSliceForm;
