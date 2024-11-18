@@ -2955,7 +2955,7 @@ export interface ReseauxDeChaleur {
   contenu_CO2_2023_tmp: number | null;
   contenu_CO2_ACV_2023_tmp: number | null;
   CP_MO: string | null;
-  departement: number | null;
+  departement: string | null;
   'Dev_reseau%': number | null;
   eau_chaude: string | null;
   eau_surchauffee: string | null;
@@ -3051,7 +3051,7 @@ export interface ReseauxDeFroid {
   contenu_CO2_2023_tmp: number | null;
   contenu_CO2_ACV_2023_tmp: number | null;
   CP_MO: string | null;
-  departement: number | null;
+  departement: string | null;
   fichiers: Json | null;
   geom: string | null;
   Gestionnaire: string | null;
@@ -3162,7 +3162,7 @@ export interface ZoneAPotentielFortChaudTiles {
 
 export interface ZoneDeDeveloppementPrioritaire {
   geom: string | null;
-  id: Int8;
+  id_fcu: Int8;
 }
 
 export interface ZoneDeDeveloppementPrioritaireTiles {

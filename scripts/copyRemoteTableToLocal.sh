@@ -11,7 +11,7 @@ table=$2
 options=$3
 if [[ $env != "dev" && $env != "prod" ]]; then
   usage
-  exit 1+
+  exit 1
 fi
 
 if [[ "$table" = "" ]]; then

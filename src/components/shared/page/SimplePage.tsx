@@ -382,7 +382,7 @@ const PageHeader = (props: PageHeaderProps) => {
           title: "Revenir à l'accueil",
         }}
         operatorLogo={{
-          imgUrl: '/logo-fcu.png',
+          imgUrl: '/FCU_logo_Monogramme.svg',
           orientation: 'horizontal',
           alt: '',
         }}

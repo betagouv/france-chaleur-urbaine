@@ -13,7 +13,7 @@ const base = new Airtable({ apiKey: process.env.AIRTABLE_KEY_API }).base(process
 
 export default base;
 
-type AirtableTable = `${AirtableTableEnum}`;
+export type AirtableTable = `${AirtableTableEnum}`;
 
 export const AirtableDB = (table: AirtableTable): Table<FieldSet> => {
   return base(table);

@@ -5,15 +5,15 @@ Processus légèrement différent du fill-tiles classique étant donné qu'on a 
 ```sh
 # générer un fichier geojson depuis la table reseaux_de_chaleur
 psql postgres://postgres:postgres_fcu@localhost:5432/postgres -c "COPY (
-    SELECT jsonb_build_object(
+    SELECT json_build_object(
         'type',     'FeatureCollection',
-        'features', jsonb_agg(feature)
+        'features', json_agg(feature)
     )
     FROM (
-        SELECT jsonb_build_object(
+        SELECT json_build_object(
             'id',         id_fcu,
             'type',       'Feature',
-            'geometry',   ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom,4326)))::jsonb,
+            'geometry',   ST_AsGeoJSON(ST_ForcePolygonCCW(ST_Transform(geom,4326)))::json,
             'properties', json_build_object(
               'id_fcu', \"id_fcu\",
               'Taux EnR&R', \"Taux EnR&R\",
@@ -35,45 +35,12 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres -c "COPY (
               'energie_ratio_solaireThermique', \"energie_ratio_solaireThermique\",
               'energie_ratio_pompeAChaleur', \"energie_ratio_pompeAChaleur\",
               'energie_ratio_gaz', \"energie_ratio_gaz\",
-              'energie_ratio_fioul', \"energie_ratio_fioul\",
-              'energie_majoritaire', CASE
-                  WHEN energie_max_ratio = \"energie_ratio_biomasse\" THEN 'biomasse'
-                  WHEN energie_max_ratio = \"energie_ratio_geothermie\" THEN 'geothermie'
-                  WHEN energie_max_ratio = \"energie_ratio_uve\" THEN 'uve'
-                  WHEN energie_max_ratio = \"energie_ratio_chaleurIndustrielle\" THEN 'chaleurIndustrielle'
-                  WHEN energie_max_ratio = \"energie_ratio_solaireThermique\" THEN 'solaireThermique'
-                  WHEN energie_max_ratio = \"energie_ratio_pompeAChaleur\" THEN 'pompeAChaleur'
-                  WHEN energie_max_ratio = \"energie_ratio_gaz\" THEN 'gaz'
-                  WHEN energie_max_ratio = \"energie_ratio_fioul\" THEN 'fioul'
-                  WHEN energie_max_ratio = \"energie_ratio_autresEnr\" THEN 'autresEnr'
-                  WHEN energie_max_ratio = \"energie_ratio_chaufferiesElectriques\" THEN 'chaufferiesElectriques'
-                  WHEN energie_max_ratio = \"energie_ratio_charbon\" THEN 'charbon'
-                  WHEN energie_max_ratio = \"energie_ratio_gpl\" THEN 'gpl'
-                  WHEN energie_max_ratio = \"energie_ratio_autreChaleurRecuperee\" THEN 'autreChaleurRecuperee'
-                  WHEN energie_max_ratio = \"energie_ratio_biogaz\" THEN 'biogaz'
-                  ELSE NULL
-                END
+              'energie_ratio_fioul', \"energie_ratio_fioul\"
             )
         ) AS feature
         FROM (
           SELECT
-            *,
-            greatest(
-              \"energie_ratio_biomasse\",
-              \"energie_ratio_geothermie\",
-              \"energie_ratio_uve\",
-              \"energie_ratio_chaleurIndustrielle\",
-              \"energie_ratio_solaireThermique\",
-              \"energie_ratio_pompeAChaleur\",
-              \"energie_ratio_gaz\",
-              \"energie_ratio_fioul\",
-              \"energie_ratio_autresEnr\",
-              \"energie_ratio_chaufferiesElectriques\",
-              \"energie_ratio_charbon\",
-              \"energie_ratio_gpl\",
-              \"energie_ratio_autreChaleurRecuperee\",
-              \"energie_ratio_biogaz\"
-            ) as \"energie_max_ratio\"
+            *
           FROM (
             SELECT
               *,
@@ -98,7 +65,7 @@ psql postgres://postgres:postgres_fcu@localhost:5432/postgres -c "COPY (
 ) TO STDOUT" | sed -e 's/\\\\"/\\"/g' > reseaux_de_chaleur.geojson
 
 # générer les tuiles à partir du fichier geojson
-yarn cli generate-tiles-from-file reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles
+yarn cli generate-tiles-from-file reseaux_de_chaleur.geojson reseaux_de_chaleur_tiles 0 14
 
 # synchronisation avec la BDD de dev ou prod
 ./scripts/copyLocalTableToRemote.sh dev reseaux_de_chaleur_tiles --data-only

@@ -15,7 +15,7 @@
 3. Mise à jour des données sur les réseaux depuis Airtable
     - Si la table des réseaux a été mise à jour lors de l'étape précédente : `yarn cli update-networks network`
     - Sinon
-        - `yarn cli download-network network`
+        - `yarn cli download-update-network network`
     - Normalement ce script complète la table *zones_et_reseaux_en_construction* et regénère la table *zones_et_reseaux_en_construction_tiles*
     - /!\\ Note : pour les **réseaux de chaleur**, il faut [générer les tuiles différemment](./génération_tuiles_réseaux_de_chaleur.md).
 

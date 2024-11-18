@@ -88,3 +88,30 @@ export function cloneDeep(source: any): any {
     throw new Error(`unknown object type: ${objectType}`);
   }
 }
+
+/**
+ * Extrait un sous-ensemble de propriétés spécifiques d'un objet.
+ *
+ * @param obj L'objet source à partir duquel les propriétés seront extraites.
+ * @param keys Un tableau contenant les clés des propriétés à sélectionner.
+ * @returns Un nouvel objet ne contenant que les propriétés spécifiées.
+ */
+export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+  const result = {} as Pick<T, K>;
+  keys.forEach((key) => {
+    if (key in obj) {
+      result[key] = obj[key];
+    }
+  });
+  return result;
+}
+
+/**
+ * Vérifie si un objet est vide (ne contient aucune propriété).
+ *
+ * @param obj L'objet à tester.
+ * @returns `true` si l'objet est vide, sinon `false`.
+ */
+export function isEmptyObject(obj: object): boolean {
+  return Object.keys(obj).length === 0;
+}

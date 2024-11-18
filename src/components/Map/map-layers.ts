@@ -525,7 +525,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/zoneDP/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
+        maxzoom: 14,
       },
       layers: [
         {
@@ -550,7 +550,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/futurNetwork/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
+        maxzoom: 14,
       },
       layers: [
         {
@@ -937,7 +937,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/network/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
+        maxzoom: 14,
       },
       layers: [
         {
@@ -995,7 +995,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/coldNetwork/{z}/{x}/{y}`],
-        maxzoom: tileSourcesMaxZoom,
+        maxzoom: 14,
       },
       layers: [
         {

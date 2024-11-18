@@ -9,9 +9,11 @@ import { DatabaseTileInfo, DatabaseSourceId, tilesInfo, zDatabaseSourceId } from
 import { KnownAirtableBase, knownAirtableBases } from './airtable/bases';
 import { createModificationsReseau } from './airtable/create-modifications-reseau';
 import { fetchBaseSchema } from './airtable/dump-schema';
-import { downloadNetwork } from './networks/download-network';
+import { downloadNetwork, downloadAndUpdateNetwork } from './networks/download-network';
 import { generateTilesFromGeoJSON } from './networks/generate-tiles';
+import { applyGeometryUpdates } from './networks/geometry-updates';
 import { importMvtDirectory } from './networks/import-mvt-directory';
+import { syncPostgresToAirtable } from './networks/sync-pg-to-airtable';
 import { upsertFixedSimulateurData } from './simulateur/import';
 import { fillTiles } from './utils/tiles';
 
@@ -46,10 +48,17 @@ program
   });
 
 program
+  .command('download-and-update-network')
+  .argument('<network-id>', 'Network id', validateNetworkId)
+  .action(async (table) => {
+    await downloadAndUpdateNetwork(table);
+  });
+
+program
   .command('fill-tiles')
   .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
-  .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
-  .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
+  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
+  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
   .argument('[withIndex]', 'With index', (v) => !!v, false)
   .action(async (table, zoomMin, zoomMax, withIndex) => {
     await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
@@ -86,8 +95,8 @@ program
   .command('generate-tiles-from-file')
   .argument('<fileName>', 'input file (format GeoJSON)')
   .argument('<destinationTable>', 'Destination table')
-  .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
-  .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
+  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
+  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
   .action(async (fileName, destinationTable, zoomMin, zoomMax) => {
     const geojson = JSON.parse(await readFile(fileName, 'utf8'));
 
@@ -117,13 +126,37 @@ program
 program
   .command('update-networks')
   .argument('<network-id>', 'Network id', (v) => zDatabaseSourceId.parse(v))
-  .argument('[zoomMin]', 'Minimum zoom', parseInt, 0)
-  .argument('[zoomMax]', 'Maximum zoom', parseInt, 17)
+  .argument('[zoomMin]', 'Minimum zoom', (v) => parseInt(v), 0)
+  .argument('[zoomMax]', 'Maximum zoom', (v) => parseInt(v), 17)
   .argument('[withIndex]', 'With index', (v) => !!v, false)
   .action(async (table, zoomMin, zoomMax, withIndex) => {
-    await downloadNetwork(table);
+    await downloadAndUpdateNetwork(table);
     await db((tilesInfo[table] as DatabaseTileInfo).tiles).delete();
     await fillTiles(table, zoomMin, zoomMax, withIndex);
+  });
+
+program
+  .command('apply-geometry-updates')
+  .option('--dry-run', 'Run the command in dry-run mode', false)
+  .action(async ({ dryRun }) => {
+    try {
+      await applyGeometryUpdates(dryRun);
+    } catch (err) {
+      console.error('err', err);
+      process.exit(2);
+    }
+  });
+
+program
+  .command('sync-postgres-to-airtable')
+  .option('--dry-run', 'Run the command in dry-run mode', false)
+  .action(async ({ dryRun }) => {
+    try {
+      await syncPostgresToAirtable(dryRun);
+    } catch (err) {
+      console.error('err', err);
+      process.exit(2);
+    }
   });
 
 program

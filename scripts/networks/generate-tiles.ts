@@ -1,7 +1,9 @@
-import { logger } from '@helpers/logger';
 import geojsonvt from 'geojson-vt';
-import { processInParallel } from 'src/types/async';
 import vtpbf from 'vt-pbf';
+
+import { logger } from '@helpers/logger';
+import { processInParallel } from 'src/types/async';
+
 import db from '../../src/db';
 
 const QUERY_PARALLELISM = 50; // max queries in //
@@ -15,12 +17,7 @@ const globalY13Max = 3100;
 /**
  * Generate tiles from GeoJSON data and store them in a postgres table
  */
-export const generateTilesFromGeoJSON = async (
-  geojson: GeoJSON.GeoJSON,
-  destinationTable: string,
-  zoomMin: number,
-  zoomMax: number
-) => {
+export const generateTilesFromGeoJSON = async (geojson: GeoJSON.GeoJSON, destinationTable: string, zoomMin: number, zoomMax: number) => {
   const startTime = Date.now();
   logger.info('start generating vector tiles');
   const tiles = geojsonvt(geojson, {
@@ -34,26 +31,20 @@ export const generateTilesFromGeoJSON = async (
     const startTime = Date.now();
     logger.info('start level', { zLevel: z });
 
-    await processInParallel(
-      getCoordinatesGenerator(z),
-      QUERY_PARALLELISM,
-      async ({ x, y, z }) => {
-        const tile = tiles.getTile(z, x, y);
-        if (tile) {
-          await db(destinationTable)
-            .insert({
-              x,
-              y,
-              z,
-              tile: Buffer.from(
-                vtpbf.fromGeojsonVt({ layer: tile }, { version: 2 })
-              ),
-            })
-            .onConflict(['x', 'y', 'z'])
-            .ignore();
-        }
+    await processInParallel(getCoordinatesGenerator(z), QUERY_PARALLELISM, async ({ x, y, z }) => {
+      const tile = tiles.getTile(z, x, y);
+      if (tile) {
+        await db(destinationTable)
+          .insert({
+            x,
+            y,
+            z,
+            tile: Buffer.from(vtpbf.fromGeojsonVt({ layer: tile }, { version: 2 })),
+          })
+          .onConflict(['x', 'y', 'z'])
+          .ignore();
       }
-    );
+    });
 
     logger.info('finished level', {
       zLevel: z,

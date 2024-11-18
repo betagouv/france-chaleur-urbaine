@@ -1,15 +1,18 @@
-import db from 'src/db';
+import { db, sql } from 'src/db/kysely';
 
 const isInPDP = async (lat: number, lon: number): Promise<boolean> => {
-  const pdp = await db('zone_de_developpement_prioritaire')
-    .select('id')
+  const pdp = await db
+    .selectFrom('zone_de_developpement_prioritaire')
+    .select('id_fcu')
     .where(
-      db.raw(`ST_WITHIN(
-    ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
-    ST_Transform(geom, 2154)
-  )`)
+      sql.raw<boolean>(`
+        ST_WITHIN(
+          ST_Transform('SRID=4326;POINT(${lon} ${lat})'::geometry, 2154),
+          geom
+        )
+      `)
     )
-    .first();
+    .executeTakeFirst();
 
   return pdp !== undefined;
 };
