@@ -133,10 +133,9 @@ function ModalCarteFrance() {
         modal={modal}
         title=""
         size="custom"
-        open={modalOpened}
+        open={modalOpened as boolean}
         onClose={() => {
-          console.log('onClose');
-          toggleModal(null);
+          toggleModal(false);
         }}
       >
         {!statsData || !mapSourceData || !dataByArea ? (
