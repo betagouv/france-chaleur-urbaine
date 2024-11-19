@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 
 import Map from '@components/Map/Map';
 import Accordion from '@components/ui/Accordion';
-import Box from '@components/ui/Box';
+import Box, { BoxProps } from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
@@ -461,6 +461,12 @@ const NetworkPanel = ({
                       {url}
                     </Link>
                   )}
+                  valueRenderer={(v) => (
+                    <Box textAlign="right" overflow="hidden">
+                      {v}
+                    </Box>
+                  )}
+                  flexWrap="wrap"
                 />
               </BoxSection>
             )}
@@ -575,7 +581,7 @@ const NetworkPanel = ({
 
 export default NetworkPanel;
 
-interface PropertyProps<T> {
+type PropertyProps<T> = {
   label: string | ReactElement;
   value: T | undefined;
   unit?: string; // overridden by the formatter if present
@@ -584,10 +590,22 @@ interface PropertyProps<T> {
   tooltip?: string | ReactElement;
   simpleLabel?: boolean;
   skipEmpty?: boolean;
-}
-const Property = <T,>({ label, value, unit, formatter, tooltip, round, simpleLabel, skipEmpty }: PropertyProps<T>) =>
+  valueRenderer?: (valueContent: string | ReactElement) => ReactElement;
+} & BoxProps;
+const Property = <T,>({
+  label,
+  value,
+  unit,
+  formatter,
+  tooltip,
+  round,
+  simpleLabel,
+  skipEmpty,
+  valueRenderer = (valueContent: string | ReactElement) => <Box textAlign="right">{valueContent}</Box>,
+  ...props
+}: PropertyProps<T>) =>
   ((skipEmpty && isDefined(value) && value !== 0) || !skipEmpty) && (
-    <Box display="flex" justifyContent="space-between" alignItems="center" gap="8px">
+    <Box display="flex" justifyContent="space-between" alignItems="center" columnGap="8px" {...props}>
       <Box display="flex" alignItems="center">
         {typeof label === 'string' ? simpleLabel ? label : <strong>{label}</strong> : label}
         {tooltip && (
@@ -599,13 +617,13 @@ const Property = <T,>({ label, value, unit, formatter, tooltip, round, simpleLab
           />
         )}
       </Box>
-      <div>
-        {isDefined(value)
+      {valueRenderer(
+        isDefined(value)
           ? isDefined(formatter)
             ? formatter(value)
             : `${typeof value === 'number' ? prettyFormatNumber(value, round ? 0 : undefined) : value} ${unit ?? ''}`
-          : 'Non connu'}
-      </div>
+          : 'Non connu'
+      )}
     </Box>
   );
 
