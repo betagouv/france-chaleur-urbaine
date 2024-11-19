@@ -139,24 +139,14 @@ program
   .command('apply-geometry-updates')
   .option('--dry-run', 'Run the command in dry-run mode', false)
   .action(async ({ dryRun }) => {
-    try {
-      await applyGeometryUpdates(dryRun);
-    } catch (err) {
-      console.error('err', err);
-      process.exit(2);
-    }
+    await applyGeometryUpdates(dryRun);
   });
 
 program
   .command('sync-postgres-to-airtable')
   .option('--dry-run', 'Run the command in dry-run mode', false)
   .action(async ({ dryRun }) => {
-    try {
-      await syncPostgresToAirtable(dryRun);
-    } catch (err) {
-      console.error('err', err);
-      process.exit(2);
-    }
+    await syncPostgresToAirtable(dryRun);
   });
 
 program
@@ -174,7 +164,14 @@ program
   });
 });
 
-program.parse();
+(async () => {
+  try {
+    await program.parseAsync();
+  } catch (err) {
+    console.error('command error', err);
+    process.exit(2);
+  }
+})();
 
 function validateKnownAirtableBase(value: string): KnownAirtableBase {
   if (!(value in knownAirtableBases)) {
