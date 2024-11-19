@@ -131,45 +131,50 @@ export enum AnalyticsFormId {
  * List of all events tracked by analytics tools.
  */
 const trackingEvents = {
-  'Carto|Ajouter un segment': {
-    matomo: ['Carto', 'Ajouter un segment'],
+  // outils
+  'Carto|Mesure de distance|Tracé terminé': {
+    matomo: ['Carto', 'Mesure de distance', 'Tracé terminé'],
   },
-  'Carto|Densité recu': {
-    matomo: ['Carto', 'Densité recu'],
+  'Carto|Mesure de distance|Ajouter un tracé': {
+    matomo: ['Carto', 'Mesure de distance', 'Ajouter un tracé'],
   },
-  'Carto|Donées recues': {
-    matomo: ['Carto', 'Donées recues'],
+  'Carto|Mesure de distance|Supprimer un tracé': {
+    matomo: ['Carto', 'Mesure de distance', 'Supprimer un tracé'],
   },
-  'Carto|Définir un tracé': {
-    matomo: ['Carto', 'Définir un tracé'],
+  'Carto|Extraction données batiments|Zone terminée': {
+    matomo: ['Carto', 'Extraction données batiments', 'Zone terminée'],
   },
-  'Carto|Définir une zone': {
-    matomo: ['Carto', 'Définir une zone'],
+  'Carto|Extraction données batiments|Effacer': {
+    matomo: ['Carto', 'Extraction données batiments', 'Effacer'],
   },
+  'Carto|Extraction données batiments|Exporter les données': {
+    matomo: ['Carto', 'Extraction données batiments', 'Exporter les données'],
+  },
+  'Carto|Densité thermique linéaire|Tracé terminé': {
+    matomo: ['Carto', 'Densité thermique linéaire', 'Tracé terminé'],
+  },
+  'Carto|Densité thermique linéaire|Ajouter un segment': {
+    matomo: ['Carto', 'Densité thermique linéaire', 'Ajouter un segment'],
+  },
+  'Carto|Densité thermique linéaire|Effacer': {
+    matomo: ['Carto', 'Densité thermique linéaire', 'Effacer'],
+  },
+  'Carto|Densité thermique linéaire|Exporter le tracé': {
+    matomo: ['Carto', 'Densité thermique linéaire', 'Exporter le tracé'],
+  },
+
+  'Carto|ouverture popup potentiels de raccordement': {
+    matomo: ['Carto', 'ouverture popup potentiels de raccordement'],
+  },
+
   'Carto|Légende|Ouvre': {
     matomo: ['Carto', 'Légende', 'Ouvre'],
   },
   'Carto|Légende|Ferme': {
     matomo: ['Carto', 'Légende', 'Ferme'],
   },
-  'Carto|Supprimer un segment': {
-    matomo: ['Carto', 'Supprimer un segment'],
-  },
-  'Carto|Tracé défini': {
-    matomo: ['Carto', 'Tracé défini'],
-  },
-  'Carto|Tracé mis à jour': {
-    matomo: ['Carto', 'Tracé mis à jour'],
-  },
-  'Carto|Zone définie': {
-    matomo: ['Carto', 'Zone définie'],
-  },
-  'Carto|Zone mise à jour': {
-    matomo: ['Carto', 'Zone mise à jour'],
-  },
-  'Carto|ouverture popup potentiels de raccordement': {
-    matomo: ['Carto', 'ouverture popup potentiels de raccordement'],
-  },
+
+  // couches de la carte
   'Carto|Réseaux chaleur|Active': {
     matomo: ['Carto', 'Réseaux chaleur', 'Active'],
   },
@@ -341,6 +346,8 @@ const trackingEvents = {
   'Carto|Zones à potentiel fort chaud|Désactive': {
     matomo: ['Carto', 'Zones à potentiel fort chaud', 'Désactive'],
   },
+
+  // formulaire d'éligibilité
   'Eligibilité|Formulaire de contact éligible - Carte - Envoi': {
     matomo: ['Eligibilité', 'Formulaire de contact éligible - Carte - Envoi'],
     google: '47QiCKeh6c0ZELGIqf89', // Contact > Formulaire envoyé - Eligible
@@ -426,6 +433,8 @@ const trackingEvents = {
     facebook: 'Formulaire de test - Envoi',
     linkedin: 5492674,
   },
+
+  // téléchargements
   'Téléchargement|Guide FCU|coproprietaire': {
     matomo: ['Téléchargement', 'Guide FCU', 'coproprietaire'],
   },

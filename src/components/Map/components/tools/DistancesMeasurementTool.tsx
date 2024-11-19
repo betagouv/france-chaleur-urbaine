@@ -14,6 +14,7 @@ import Box from '@components/ui/Box';
 import Divider from '@components/ui/Divider';
 import Text from '@components/ui/Text';
 import { formatDistance } from '@utils/geo';
+import { trackEvent } from 'src/services/analytics';
 
 import { MeasureFeature, MeasureLabelFeature } from './measure';
 import MesureFeatureListItem from './MeasureFeatureListItem';
@@ -56,6 +57,7 @@ const DistancesMeasurementTool: React.FC = () => {
         },
       ];
     });
+    trackEvent('Carto|Mesure de distance|Tracé terminé');
   };
 
   const onDrawRender = () => {
@@ -180,6 +182,7 @@ const DistancesMeasurementTool: React.FC = () => {
       }
       return updatedFeatures;
     });
+    trackEvent('Carto|Mesure de distance|Supprimer un tracé');
   }
 
   const drawingFeaturePointCounts = (mapDraw?.getAll().features[0] as MeasureFeature)?.geometry.coordinates.length ?? 0;
@@ -219,7 +222,15 @@ const DistancesMeasurementTool: React.FC = () => {
           </Button>
         )}
         {showAddButton && (
-          <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLayersLoaded}>
+          <Button
+            priority="secondary"
+            iconId="fr-icon-add-line"
+            onClick={() => {
+              trackEvent('Carto|Mesure de distance|Ajouter un tracé');
+              startMeasurement();
+            }}
+            disabled={!mapLayersLoaded}
+          >
             Ajouter un tracé
           </Button>
         )}
