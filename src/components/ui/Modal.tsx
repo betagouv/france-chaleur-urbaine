@@ -35,12 +35,6 @@ export const StyledModal = styled.div<{ customSize?: boolean }>`
         width: 100% !important;
       }
     `}
-  .fr-modal__header {
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 3;
-  }
 `;
 
 /**
