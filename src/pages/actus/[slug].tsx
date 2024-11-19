@@ -52,7 +52,7 @@ const ActualitePage = () => {
   const content = lines.slice(1).join('\n');
 
   return (
-    <SimplePage currentPage="/ressources" title={title}>
+    <SimplePage currentPage="/actus" title={title}>
       <Box className="fr-container fr-mb-n2w fr-mb-md-n4w">
         <Breadcrumb
           currentPageLabel={title}

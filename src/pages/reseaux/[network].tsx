@@ -13,7 +13,7 @@ const PageReseau = ({ network }: { network: Network }) => {
   }
 
   return (
-    <SimplePage currentPage="/carte" mode="public-fullscreen">
+    <SimplePage currentPage="/reseaux" mode="public-fullscreen">
       <Slice>
         <Breadcrumb
           currentPageLabel={network['Identifiant reseau']}
@@ -59,7 +59,7 @@ export const getStaticProps: GetStaticProps<{
   return {
     redirect: {
       permanent: false,
-      destination: '/carte',
+      destination: '/reseaux',
     },
   };
 };
