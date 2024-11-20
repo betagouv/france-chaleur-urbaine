@@ -20,6 +20,7 @@ import { downloadObject } from '@utils/browser';
 import { formatAsISODate } from '@utils/date';
 import { formatDistance } from '@utils/geo';
 import { useServices } from 'src/services';
+import { trackEvent } from 'src/services/analytics';
 
 import { MeasureFeature, MeasureLabelFeature } from './measure';
 import { Title } from '../SimpleMapLegend.style';
@@ -91,6 +92,7 @@ const LinearHeatDensityTool: React.FC = () => {
 
     try {
       setIsLoading(true);
+      trackEvent('Carto|Densité thermique linéaire|Tracé terminé');
       const rawDensite = await heatNetworkService.getLinearHeatDensity(features.map((feature) => feature.geometry.coordinates));
       const densite: LinearHeatDensity = {
         longueurTotale: Math.round(rawDensite.longueurTotale * 1000),
@@ -227,12 +229,14 @@ const LinearHeatDensityTool: React.FC = () => {
     mapDraw.changeMode('draw_line_string');
     setIsDrawing(true);
     setFeatures([]);
+    trackEvent('Carto|Densité thermique linéaire|Effacer');
   };
   function exportDrawing() {
     if (!mapDraw) {
       return;
     }
     downloadObject(features, `FCU_export_tracé_${formatAsISODate(new Date())}.geojson`, 'application/geo+json');
+    trackEvent('Carto|Densité thermique linéaire|Exporter le tracé');
   }
 
   const drawingFeaturePointCounts = (mapDraw?.getAll().features[0] as MeasureFeature)?.geometry.coordinates.length ?? 0;
@@ -332,7 +336,15 @@ const LinearHeatDensityTool: React.FC = () => {
           </Button>
         )}
         {showAddButton && (
-          <Button priority="secondary" iconId="fr-icon-add-line" onClick={startMeasurement} disabled={!mapLayersLoaded || isLoading}>
+          <Button
+            priority="secondary"
+            iconId="fr-icon-add-line"
+            onClick={() => {
+              trackEvent('Carto|Densité thermique linéaire|Ajouter un segment');
+              startMeasurement();
+            }}
+            disabled={!mapLayersLoaded || isLoading}
+          >
             Ajouter un segment
           </Button>
         )}

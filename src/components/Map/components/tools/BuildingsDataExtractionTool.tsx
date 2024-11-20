@@ -15,6 +15,7 @@ import Text from '@components/ui/Text';
 import { validatePolygonGeometry } from '@utils/geo';
 import { clientConfig } from 'src/client-config';
 import { useServices } from 'src/services';
+import { trackEvent } from 'src/services/analytics';
 import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
 import { GasSummary } from 'src/types/Summary/Gas';
 
@@ -77,6 +78,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
 
     try {
       setIsLoading(true);
+      trackEvent('Carto|Extraction données batiments|Zone terminée');
       const rawSummary = await heatNetworkService.summary(area);
       const summary: BuildingsDataExtractSummary = {
         batimentsChauffageCollectifFioul: {
@@ -205,6 +207,7 @@ const BuildingsDataExtractionTool: React.FC = () => {
   };
 
   const exportSummary = async () => {
+    trackEvent('Carto|Extraction données batiments|Exporter les données');
     await heatNetworkService.downloadSummary(features[0].geometry.coordinates[0], EXPORT_FORMAT.CSV);
   };
 
@@ -311,7 +314,15 @@ const BuildingsDataExtractionTool: React.FC = () => {
         )}
 
         {showClearButton && (
-          <Button priority="secondary" iconId="fr-icon-delete-bin-line" className="btn-full-width" onClick={clearSummary}>
+          <Button
+            priority="secondary"
+            iconId="fr-icon-delete-bin-line"
+            className="btn-full-width"
+            onClick={() => {
+              trackEvent('Carto|Extraction données batiments|Effacer');
+              clearSummary();
+            }}
+          >
             Effacer
           </Button>
         )}
