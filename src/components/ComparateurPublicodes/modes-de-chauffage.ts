@@ -5,6 +5,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Réseaux de chaleur',
     reversible: false,
     tertiaire: true,
+    type: ['individuel', 'collectif'],
   },
   {
     label: 'Poêle à granulés individuel',
@@ -12,6 +13,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Poêle à granulés indiv',
     reversible: false,
     tertiaire: false,
+    type: ['individuel'],
   },
   {
     label: 'Chaudière à granulés collective',
@@ -19,6 +21,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Chaudière à granulés coll',
     reversible: false,
     tertiaire: true,
+    type: ['collectif'],
   },
   {
     label: 'Gaz à condensation individuel',
@@ -26,6 +29,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Gaz indiv avec cond',
     reversible: false,
     tertiaire: false,
+    type: ['individuel'],
   },
   {
     label: 'Gaz sans condensation individuel',
@@ -33,6 +37,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Gaz indiv sans cond',
     reversible: false,
     tertiaire: false,
+    type: ['individuel'],
   },
   {
     label: 'Gaz à condensation collectif',
@@ -40,6 +45,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Gaz coll avec cond',
     reversible: false,
     tertiaire: true,
+    type: ['collectif'],
   },
   {
     label: 'Gaz sans condensation collectif',
@@ -47,6 +53,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Gaz coll sans cond',
     reversible: false,
     tertiaire: true,
+    type: ['collectif'],
   },
   {
     label: 'Fioul individuel',
@@ -54,6 +61,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Fioul indiv',
     reversible: false,
     tertiaire: false,
+    type: ['individuel'],
   },
   {
     label: 'Fioul collectif',
@@ -61,6 +69,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Fioul coll',
     reversible: false,
     tertiaire: true,
+    type: ['collectif'],
   },
   {
     label: 'PAC air/air individuelle',
@@ -68,6 +77,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-air indiv',
     reversible: true,
     tertiaire: false,
+    type: ['individuel'],
   },
   {
     label: 'PAC air/air collective',
@@ -75,6 +85,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-air coll',
     reversible: true,
     tertiaire: true,
+    type: ['collectif'],
   },
   {
     label: 'PAC air/eau individuelle',
@@ -82,6 +93,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-eau indiv',
     reversible: true,
     tertiaire: false,
+    type: ['individuel'],
   },
   {
     label: 'PAC air/eau collective',
@@ -89,6 +101,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC air-eau coll',
     reversible: true,
     tertiaire: true,
+    type: ['collectif'],
   },
   {
     label: 'PAC eau/eau individuelle',
@@ -96,6 +109,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC eau-eau indiv',
     reversible: false,
     tertiaire: false,
+    type: ['individuel'],
   },
   {
     label: 'PAC eau/eau collective',
@@ -103,6 +117,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'PAC eau-eau coll',
     reversible: false,
     tertiaire: true,
+    type: ['collectif'],
   },
   {
     label: 'Radiateur électrique individuel',
@@ -110,6 +125,7 @@ export const modesDeChauffage = [
     coutPublicodeKey: 'Radiateur électrique',
     reversible: false,
     tertiaire: true,
+    type: ['individuel'],
   },
 ] as const;
 
