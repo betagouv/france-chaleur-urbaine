@@ -160,6 +160,7 @@ const HeadSliceForm = ({
             {formLabel ? <FormLabel>{formLabel}</FormLabel> : undefined}
             <CheckEligibilityFormLabel>
               <SelectEnergy
+                className="fr-mb-2w"
                 name="heatingType"
                 selectOptions={energyInputsDefaultLabels}
                 onChange={setHeatingType}
