@@ -121,6 +121,7 @@ const AddressTestForm: React.FC<CheckEligibilityFormProps> = ({
       <CheckEligibilityFormLabel colored={colored}>
         <SelectEnergy
           label={heatingLabel}
+          className="fr-mb-0"
           name="heatingType"
           selectOptions={energyInputsLabels}
           onChange={setHeatingType}
