@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-import { PagesProgressBar as ProgressBar } from 'next-nprogress-bar';
+// use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
+import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { SWRConfig, SWRConfiguration } from 'swr';
 
 import { ConsentBanner } from '@components/ConsentBanner';
@@ -116,7 +117,7 @@ function App({
 
         <SWRConfig value={swrConfig}>
           <SessionProvider session={pageProps.session}>
-            <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} shallowRouting />
+            <ProgressBar height="4px" color={fr.colors.decisions.background.active.blueFrance.default} />
             <Component {...pageProps} />
           </SessionProvider>
         </SWRConfig>
