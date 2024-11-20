@@ -38,6 +38,7 @@ type StyleProps = {
   gridTemplateColumns?: CSSProperties['gridTemplateColumns'];
   columnGap?: CSSProperties['columnGap'];
   cursor?: CSSProperties['cursor'];
+  overflow?: CSSProperties['overflow'];
 };
 
 const StyledBox = styled.div<StyleProps>`
@@ -72,6 +73,7 @@ const StyledBox = styled.div<StyleProps>`
   grid-template-columns: ${({ gridTemplateColumns }) => gridTemplateColumns};
   column-gap: ${({ columnGap }) => columnGap};
   cursor: ${({ cursor }) => cursor};
+  overflow: ${({ overflow }) => overflow};
   :
 `;
 
@@ -120,6 +122,7 @@ function Box(props: PropsWithChildren<BoxProps>) {
       gridTemplateColumns={props.gridTemplateColumns}
       columnGap={props.columnGap}
       cursor={props.cursor}
+      overflow={props.overflow}
       className={`${className ?? ''} ${props.fontWeight ? `fr-text--${props.fontWeight}` : ''} ${props.iconLeft ?? ''} ${spacingsToClasses(
         props
       )}`}
