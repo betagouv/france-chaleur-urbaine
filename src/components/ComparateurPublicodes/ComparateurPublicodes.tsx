@@ -43,7 +43,7 @@ type ComparateurPublicodesProps = React.HTMLAttributes<HTMLDivElement> & {
 
 export type TabId = (typeof simulatorTabs)[number]['tabId'];
 
-const addresseToPublicodesRules = {
+export const addresseToPublicodesRules = {
   'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2'],
   'caractéristique réseau de chaleur . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2 ACV'],
   'caractéristique réseau de chaleur . livraisons totales': (infos) => infos.nearestReseauDeChaleur?.['livraisons_totale_MWh'],
