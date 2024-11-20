@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const CityContainer = styled.div`
   .sticky-form-title {
-    color: #2731b1;
+    color: black;
   }
 `;
 export const Image = styled.img`
