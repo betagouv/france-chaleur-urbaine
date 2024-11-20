@@ -22,14 +22,3 @@ export const NetworkContainer = styled.div`
     min-height: 500px;
   }
 `;
-
-export const NetworkColumn = styled.div`
-  ${({ theme }) => theme.media.md`
-    :nth-child(even) {
-      padding-left: 16px;
-    }
-    :nth-child(odd) {
-      padding-right: 16px;
-    }
-  `}
-`;

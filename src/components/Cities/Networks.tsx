@@ -8,7 +8,7 @@ import WrappedText from '@components/WrappedText/WrappedText';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
 import { Network } from 'src/types/Summary/Network';
 
-import { NetworkContainer, NetworkColumn } from './Networks.styles';
+import { NetworkContainer } from './Networks.styles';
 
 type NetworksData = {
   isClassed: boolean;
@@ -20,7 +20,7 @@ type NetworksData = {
 const Networks = ({ networksData, network, cityCoord }: { networksData: NetworksData; network?: Network; cityCoord: [number, number] }) => {
   return (
     <NetworkContainer>
-      <NetworkColumn className="fr-col-md-6 fr-col-12">
+      <div className="fr-col-md-6 fr-col-12">
         {networksData.gestionnaires && <WrappedText body={`::arrow-item[${networksData.gestionnaires}]`} />}
         {networksData.isClassed && (
           <>
@@ -53,8 +53,8 @@ const Networks = ({ networksData, network, cityCoord }: { networksData: Networks
             </Slice>
           </>
         )}
-      </NetworkColumn>
-      <NetworkColumn className="fr-col-md-6 fr-col-12">
+      </div>
+      <div className="fr-col-md-6 fr-col-12">
         <Map
           noPopup
           withCenterPin
@@ -67,7 +67,7 @@ const Networks = ({ networksData, network, cityCoord }: { networksData: Networks
             filtreIdentifiantReseau: networksData.identifiant ? [networksData.identifiant] : [],
           })}
         />
-      </NetworkColumn>
+      </div>
     </NetworkContainer>
   );
 };
