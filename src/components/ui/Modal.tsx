@@ -48,10 +48,11 @@ const Modal = ({ modal, size, onOpen, loading, onClose, open, ...props }: ModalP
     onConceal: () => {
       // On first load, React DSFR is launching an onConceal event
       // This is incompatible with the onClose event when modal is opened by default
-      if (isFirstLoad) {
+      if (isFirstLoad && !previousOpen) {
         setIsFirstLoad(false);
         return;
       }
+      setIsFirstLoad(false);
       onClose?.();
     },
   });
