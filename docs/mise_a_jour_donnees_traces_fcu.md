@@ -53,15 +53,13 @@ Contient des dumps PG de plusieurs tables avec des noms différents :
 
 ## Étapes récupération des changements
 
-
 ```sql
--- si besoin de clean
+-- supprimer les tables comme les vues en dépendent et que le script copyRemoteTableToLocal ne fait pas de cascade
 DROP TABLE public.reseaux_de_chaleur cascade;
 DROP TABLE public.reseaux_de_froid cascade;
 DROP TABLE public.zone_de_developpement_prioritaire cascade;
 DROP TABLE public.zones_et_reseaux_en_construction cascade;
 ```
-
 
 ```sh
 # au préalable, récupérer les données à jour depuis la prod
@@ -72,12 +70,6 @@ DROP TABLE public.zones_et_reseaux_en_construction cascade;
 ```
 
 ```sql
--- arranger la colonne departement
-alter table reseaux_de_chaleur drop column departement;
-alter table reseaux_de_froid drop column departement;
-alter table reseaux_de_chaleur add column departement text;
-alter table reseaux_de_froid add column departement text;
-
 -- copie pour backup si l'application des changements se passe mal
 CREATE TABLE wip_traces.backup_reseaux_de_chaleur AS TABLE public.reseaux_de_chaleur;
 CREATE TABLE wip_traces.backup_reseaux_de_froid AS TABLE public.reseaux_de_froid;
@@ -97,21 +89,30 @@ INSERT INTO public.zones_et_reseaux_en_construction SELECT * FROM wip_traces.bac
 
 ```sh
 # extraction de l'archive de Sébastien
-unzip export_table_fcu_071124.zip -d export_sebastien
+unzip export_fcu.zip -d export_sebastien
 cd $_
 
 # transformation des fichiers pour utiliser le schéma wip_traces
-sed -i 's/public\./wip_traces\./g; s/geom wip_traces/geom public/g;' reseaux_de_chaleur reseaux_de_froid reseaux_de_froid_sans_traces reseaux_sans_traces zones_de_developpement_prioritaire zones_et_reseaux_en_construction
+sed -i 's/public\./wip_traces\./g; s/geom wip_traces/geom public/g;' *.sql
+
+# nettoyage mot clé postgres 17 non reconnu en 16
+sed -i '/transaction_timeout/d' *.sql
 
 # import des données
 psql postgres://postgres:postgres_fcu@localhost:5432 -c "drop schema if exists wip_traces cascade"
 psql postgres://postgres:postgres_fcu@localhost:5432 -c "create schema if not exists wip_traces"
-psql postgres://postgres:postgres_fcu@localhost:5432 -v ON_ERROR_STOP=1 -f reseaux_de_chaleur -f reseaux_de_froid -f reseaux_de_froid_sans_traces -f reseaux_sans_traces -f zones_de_developpement_prioritaire -f zones_et_reseaux_en_construction
-```
 
-```sql
--- construction de tables agrégées pour les réseaux de chaleur et froid car elles sont séparées selon leur geom (limitation qgis)
-DROP VIEW IF EXISTS wip_traces.reseaux_de_chaleur;
+# import des données
+psql postgres://postgres:postgres_fcu@localhost:5432 \
+  -f reseaux_de_chaleur.sql \
+  -f reseaux_de_chaleur_sans_traces.sql \
+  -f reseaux_de_froid.sql \
+  -f reseaux_de_froid_sans_traces.sql \
+  -f zones_de_developpement_prioritaire.sql \
+  -f zones_et_reseaux_en_construction.sql
+
+# construction de tables agrégées pour les réseaux de chaleur et froid car elles sont séparées selon leur geom (limitation qgis)
+psql postgres://postgres:postgres_fcu@localhost:5432 <<EOF
 CREATE OR REPLACE VIEW wip_traces.reseaux_de_chaleur AS
 SELECT
   id_fcu,
@@ -127,7 +128,7 @@ SELECT
   "Identifiant reseau",
   communes,
   false as has_trace
-FROM wip_traces.reseaux_sans_traces_full;
+FROM wip_traces.reseaux_de_chaleur_sans_traces_full;
 CREATE OR REPLACE VIEW wip_traces.reseaux_de_froid AS
 SELECT
   id_fcu,
@@ -144,7 +145,10 @@ SELECT
   communes,
   false as has_trace
 FROM wip_traces.reseaux_de_froid_sans_traces_full;
+EOF
+```
 
+```sql
 -- création d'un index pour réduire la géométrie des communes à 150m pour déduire les communes des réseaux et éviter les limites
 CREATE INDEX IF NOT EXISTS ign_communes_geom_buffer_150m_idx ON public.ign_communes USING gist(st_buffer(geom, -150));
 
