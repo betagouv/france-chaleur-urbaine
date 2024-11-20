@@ -1,15 +1,23 @@
 import { createModal as createdDSFRModal } from '@codegouvfr/react-dsfr/Modal';
+import { useIsModalOpen as useIsDSFRModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
+import { usePrevious } from '@react-hookz/web';
 import dynamic from 'next/dynamic';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import styled, { css } from 'styled-components';
 
-export { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
+import Loader from './Loader';
+export const useIsModalOpen = useIsDSFRModalOpen;
 
 type CreateModal = ReturnType<typeof createdDSFRModal>;
 type ModalProps = Omit<React.ComponentProps<CreateModal['Component']>, 'size'> & {
   modal: CreateModal;
   size?: React.ComponentProps<CreateModal['Component']>['size'] | 'custom';
+} & {
+  onClose?: NonNullable<Parameters<typeof useIsDSFRModalOpen>[1]>['onDisclose'];
+  onOpen?: NonNullable<Parameters<typeof useIsDSFRModalOpen>[1]>['onConceal'];
+  open?: boolean;
+  loading?: boolean;
 };
 
 export const StyledModal = styled.div<{ customSize?: boolean }>`
@@ -32,10 +40,44 @@ export const StyledModal = styled.div<{ customSize?: boolean }>`
 /**
  * Create a modal within a portal that is rendered outside the components tree.
  */
-const Modal = ({ modal, size, ...props }: ModalProps) => {
+const Modal = ({ modal, size, onOpen, loading, onClose, open, ...props }: ModalProps) => {
+  const [isFirstLoad, setIsFirstLoad] = React.useState(true);
+  const previousOpen = usePrevious(open);
+  const isOpened = useIsModalOpen(modal, {
+    onDisclose: onOpen,
+    onConceal: () => {
+      // On first load, React DSFR is launching an onConceal event
+      // This is incompatible with the onClose event when modal is opened by default
+      if (isFirstLoad) {
+        setIsFirstLoad(false);
+        return;
+      }
+      onClose?.();
+    },
+  });
+
+  React.useEffect(() => {
+    if (!modal || open === previousOpen) {
+      return;
+    }
+
+    if (open && !isOpened) {
+      setTimeout(() => {
+        // modal might not be initialized yet, this is a hack to make sure it is
+        modal.open();
+      }, 0);
+    } else if (!open && isOpened) {
+      setTimeout(() => {
+        // modal might not be initialized yet, this is a hack to make sure it is
+        modal.close();
+      }, 0);
+    }
+  }, [open, modal, isOpened, previousOpen]);
+
   return createPortal(
     <StyledModal customSize={size === 'custom'}>
       <modal.Component size={size !== 'custom' ? size : undefined} {...props} />
+      {loading && <Loader size="lg" />}
     </StyledModal>,
     document.body
   );

@@ -5,10 +5,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
 import Box from '@components/ui/Box';
-import Modal, { useIsModalOpen } from '@components/ui/Modal';
+import Modal from '@components/ui/Modal';
 import Text from '@components/ui/Text';
 import Tooltip from '@components/ui/Tooltip';
-import useInitialSearchParam from '@hooks/useInitialSearchParam';
+import useQueryFlag from '@hooks/useQueryFlag';
 import { fetchJSON } from '@utils/network';
 import { prettyFormatNumber } from '@utils/strings';
 import { trackEvent } from 'src/services/analytics';
@@ -52,18 +52,7 @@ const modal = createModal({
 });
 
 function ModalCarteFrance() {
-  // Ouvre la modale de la carte quand potentiels-de-raccordement est dans l'URL
-  const shouldOpenModalAtStart = useInitialSearchParam('potentiels-de-raccordement') !== null;
-  useEffect(() => {
-    if (shouldOpenModalAtStart) {
-      // timeout needed to make it work
-      setTimeout(() => {
-        modal.open();
-      });
-    }
-  }, []);
-
-  const isOpen = useIsModalOpen(modal);
+  const [modalOpened, toggleModal] = useQueryFlag('potentiels-de-raccordement');
   const [area, setArea] = useState<Area>('national');
   const [distanceReseau, setDistanceReseau] = useState<DistanceReseau>('100m');
   const [modeBatimentLogement, setModeBatimentLogement] = useState<BatimentLogement>('logements');
@@ -89,10 +78,10 @@ function ModalCarteFrance() {
         departemental: statsParDepartement,
       });
     }
-    if (isOpen && !statsData) {
+    if (modalOpened && !statsData) {
       fetchStats();
     }
-  }, [isOpen]);
+  }, [modalOpened]);
 
   const { areaMode, areaIdPropertyName, mapSourceData } = getAreaToMapConfig(area, statsData);
 
@@ -133,14 +122,22 @@ function ModalCarteFrance() {
         className="fr-mx-auto"
         onClick={() => {
           trackEvent('Carto|ouverture popup potentiels de raccordement');
-          modal.open();
+          toggleModal(true);
         }}
       >
         <Image src="/img/icon-france.png" alt="" width="19" height="19" />
         Potentiel de densification
       </PotentielsRaccordementButton>
 
-      <Modal modal={modal} title="" size="custom">
+      <Modal
+        modal={modal}
+        title=""
+        size="custom"
+        open={modalOpened as boolean}
+        onClose={() => {
+          toggleModal(false);
+        }}
+      >
         {!statsData || !mapSourceData || !dataByArea ? (
           <SpinnerWrapper>
             <Oval height={60} width={60} />
@@ -327,7 +324,7 @@ function ModalCarteFrance() {
                   }}
                   // because when the modal is closed, it is only hidden and hover effects remain active
                   // thus we need to explicitly disable them when the modal is closed
-                  enableHover={isOpen}
+                  enableHover={modalOpened}
                 />
 
                 <LegendSourceLine>
