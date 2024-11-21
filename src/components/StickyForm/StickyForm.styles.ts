@@ -38,11 +38,6 @@ export const Title = styled.div`
   font-weight: 600;
 `;
 
-export const Form = styled.div`
-  position: relative;
-  width: 100%;
-`;
-
 export const Close = styled.div`
   position: absolute;
   cursor: pointer;
