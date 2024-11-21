@@ -66,7 +66,6 @@ const HeadSliceForm = ({
   withWrapper,
 }: HeadBannerType) => {
   const {
-    EligibilityFormContactRef,
     addressData,
     contactReady,
     showWarning,
@@ -251,7 +250,7 @@ const HeadSliceForm = ({
         onClose={handleResetFormContact}
         loading={loadingStatus === 'loading'}
       >
-        <div ref={EligibilityFormContactRef}>
+        <div>
           {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
           {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
         </div>
