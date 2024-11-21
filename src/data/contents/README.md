@@ -12,13 +12,4 @@ Nous sommes très heureux d'avoir pu **présenter France Chaleur Urbaine à la m
 ✔ des **copropriétaires, bailleurs sociaux, gestionnaires de bâtiments tertiaires**, en les aidant à raccorder leurs bâtiments ;\
 ✔ des **collectivités et opérateurs**, en les accompagnant dans le développement de leurs réseaux.
 
-<div>
-
 <figure><img src=".gitbook/assets/FCU_salon-maires-1.jpg" alt=""><figcaption></figcaption></figure>
-
- 
-
-<figure><img src=".gitbook/assets/FCU_salon-maires-2.jpg" alt=""><figcaption></figcaption></figure>
-
-</div>
-
