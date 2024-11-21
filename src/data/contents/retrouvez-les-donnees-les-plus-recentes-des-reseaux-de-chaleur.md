@@ -9,7 +9,7 @@ coverY: 0
 \
 Il y a une semaine étaient annoncés les résultats de la dernière enquête annuelle des réseaux de chaleur et de froid, portant sur l'année 2023. Une [enquête réalisée par la FEDENE](https://fedene.fr/enquete-annuelle-des-reseaux-de-chaleur-froid-2024/) avec le concours de l'[Association Amorce](https://amorce.asso.fr/), sous tutelle du service données et études statistiques (SDES) du ministère de la transition écologique.\
 \
-👉 Dès à présent, les données techniques des réseaux ont été actualisées sur les fiches par réseau et la page "liste des réseaux" de France Chaleur Urbaine, sur la base des données de l'enquête mises en open-data par le SDES. Sont ainsi disponibles pour 2023, pour chaque réseau :\
+👉 Dès à présent, les données techniques des réseaux ont été actualisées sur les fiches par réseau et la page "[liste des réseaux](https://france-chaleur-urbaine.beta.gouv.fr/reseaux)" de France Chaleur Urbaine, sur la base des données de l'enquête mises en open-data par le SDES. Sont ainsi disponibles pour 2023, pour chaque réseau :\
 ✔ le mix énergétique,\
 ✔ les productions et puissances, avec le détail par type d'énergie,\
 ✔ les livraisons de chaleur, avec le détail par secteur.\
