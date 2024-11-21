@@ -11,4 +11,6 @@ Il y a une semaine étaient annoncés les résultats de la dernière enquête an
 \
 Les informations tarifaires et autres indicateurs du classement (rendement, développement du réseau...) seront mis à jour dans un second temps. Les données réglementaires (taux ENRR et contenu CO2) seront également actualisées lors de la parution du prochain arrêté DPE.\
 \
-🙂 France Chaleur Urbaine, une source de données fiable et à jour pour accompagner le développement des réseaux de chaleur !\
+🙂 France Chaleur Urbaine, une source de données fiable et à jour pour accompagner le développement des réseaux de chaleur !
+
+<figure><img src=".gitbook/assets/FCU_donneesrecentes (1).jpg" alt=""><figcaption></figcaption></figure>

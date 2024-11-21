@@ -21,3 +21,13 @@ La programmation pluriannuelle de l’énergie récemment mise en consultation v
 **Un accompagnement tout au long de la vie du réseau**
 
 Au-delà de la création de nouveaux réseaux de chaleur, il existe un **réel enjeu à développer les réseaux en service**, en multipliant les raccordements. **France Chaleur Urbaine est aussi aux côtés des collectivités dans cette phase**, avec un [ensemble de services gratuits](https://france-chaleur-urbaine.beta.gouv.fr/collectivites-et-exploitants/potentiel-creation-reseau) mis à leur disposition (données et outils pour faire connaître et planifier le développement du réseau, accompagnement dans la réalisation de campagnes de communication…).
+
+<div>
+
+<figure><img src=".gitbook/assets/FCU_villlessansreseau_1.jpg" alt=""><figcaption></figcaption></figure>
+
+ 
+
+<figure><img src=".gitbook/assets/FCU_villlessansreseau_2.jpg" alt=""><figcaption></figcaption></figure>
+
+</div>
