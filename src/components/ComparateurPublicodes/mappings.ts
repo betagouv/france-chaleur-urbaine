@@ -1,3 +1,7 @@
+import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+
+import { LocationInfoResponse } from '@/pages/api/location-infos';
+
 export const modesDeChauffage = [
   {
     label: 'Réseau de chaleur',
@@ -135,3 +139,22 @@ export const modesDeChauffage = [
 ] as const;
 
 export type ModeDeChauffage = (typeof modesDeChauffage)[number]['label'];
+
+export const addresseToPublicodesRules = {
+  'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2'],
+  'caractéristique réseau de chaleur . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2 ACV'],
+  'caractéristique réseau de chaleur . livraisons totales': (infos) => infos.nearestReseauDeChaleur?.['livraisons_totale_MWh'],
+  'caractéristique réseau de chaleur . part fixe': (infos) => infos.nearestReseauDeChaleur?.['PF%'],
+  'caractéristique réseau de chaleur . part variable': (infos) => infos.nearestReseauDeChaleur?.['PV%'],
+  'caractéristique réseau de chaleur . prix moyen': (infos) => infos.nearestReseauDeChaleur?.['PM'],
+  'caractéristique réseau de chaleur . production totale': (infos) => infos.nearestReseauDeChaleur?.['production_totale_MWh'],
+  'caractéristique réseau de chaleur . taux EnRR': (infos) => infos.nearestReseauDeChaleur?.['Taux EnR&R'],
+
+  'caractéristique réseau de froid . contenu CO2': (infos) => infos.nearestReseauDeFroid?.['contenu CO2'],
+  'caractéristique réseau de froid . contenu CO2 ACV': (infos) => infos.nearestReseauDeFroid?.['contenu CO2 ACV'],
+  'caractéristique réseau de froid . livraisons totales': (infos) => infos.nearestReseauDeFroid?.['livraisons_totale_MWh'],
+  'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid?.['production_totale_MWh'],
+
+  'code département': (infos) => `'${infos.infosVille.departement_id}'`,
+  'température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
+} as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;

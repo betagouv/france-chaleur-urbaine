@@ -1,4 +1,3 @@
-import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { fr } from '@codegouvfr/react-dsfr';
 import ToggleSwitch from '@codegouvfr/react-dsfr/ToggleSwitch';
 import Drawer from '@mui/material/Drawer';
@@ -29,6 +28,7 @@ import { ObjectEntries } from '@/utils/typescript';
 import { FloatingButton, Results, Section, Simulator } from './ComparateurPublicodes.style';
 import DebugDrawer from './DebugDrawer';
 import Graph from './Graph';
+import { addresseToPublicodesRules } from './mappings';
 import ModesDeChauffageAComparer from './ModesDeChauffageAComparer';
 import ParametresDesModesDeChauffage from './ParametresDesModesDeChauffage';
 import ParametresDuBatimentGrandPublic from './ParametresDuBatimentGrandPublic';
@@ -42,25 +42,6 @@ type ComparateurPublicodesProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 export type TabId = (typeof simulatorTabs)[number]['tabId'];
-
-export const addresseToPublicodesRules = {
-  'caractéristique réseau de chaleur . contenu CO2': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2'],
-  'caractéristique réseau de chaleur . contenu CO2 ACV': (infos) => infos.nearestReseauDeChaleur?.['contenu CO2 ACV'],
-  'caractéristique réseau de chaleur . livraisons totales': (infos) => infos.nearestReseauDeChaleur?.['livraisons_totale_MWh'],
-  'caractéristique réseau de chaleur . part fixe': (infos) => infos.nearestReseauDeChaleur?.['PF%'],
-  'caractéristique réseau de chaleur . part variable': (infos) => infos.nearestReseauDeChaleur?.['PV%'],
-  'caractéristique réseau de chaleur . prix moyen': (infos) => infos.nearestReseauDeChaleur?.['PM'],
-  'caractéristique réseau de chaleur . production totale': (infos) => infos.nearestReseauDeChaleur?.['production_totale_MWh'],
-  'caractéristique réseau de chaleur . taux EnRR': (infos) => infos.nearestReseauDeChaleur?.['Taux EnR&R'],
-
-  'caractéristique réseau de froid . contenu CO2': (infos) => infos.nearestReseauDeFroid?.['contenu CO2'],
-  'caractéristique réseau de froid . contenu CO2 ACV': (infos) => infos.nearestReseauDeFroid?.['contenu CO2 ACV'],
-  'caractéristique réseau de froid . livraisons totales': (infos) => infos.nearestReseauDeFroid?.['livraisons_totale_MWh'],
-  'caractéristique réseau de froid . production totale': (infos) => infos.nearestReseauDeFroid?.['production_totale_MWh'],
-
-  'code département': (infos) => `'${infos.infosVille.departement_id}'`,
-  'température de référence chaud commune': (infos) => +infos.infosVille.temperature_ref_altitude_moyenne,
-} as const satisfies Partial<Record<DottedName, (infos: LocationInfoResponse) => any>>;
 
 const ComparateurPublicodes: React.FC<ComparateurPublicodesProps> = ({
   children,

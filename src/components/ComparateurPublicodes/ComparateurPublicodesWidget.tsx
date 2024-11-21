@@ -9,8 +9,7 @@ import { LocationInfoResponse } from '@pages/api/location-infos';
 import { postFetchJSON } from '@utils/network';
 import { ObjectEntries } from '@utils/typescript';
 
-import { addresseToPublicodesRules } from './ComparateurPublicodes';
-import { modesDeChauffage } from './modes-de-chauffage';
+import { addresseToPublicodesRules, modesDeChauffage } from './mappings';
 import { simulatorTabs } from './Placeholder';
 import useSimulatorEngine from './useSimulatorEngine';
 
