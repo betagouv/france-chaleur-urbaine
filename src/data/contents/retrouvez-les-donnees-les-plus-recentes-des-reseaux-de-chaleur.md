@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/cover_donnees.jpg
+coverY: 0
+---
+
 # Retrouvez les données les plus récentes des réseaux de chaleur
 
 📢 Retrouvez les données les plus récentes des réseaux de chaleur et de froid sur France Chaleur Urbaine !\

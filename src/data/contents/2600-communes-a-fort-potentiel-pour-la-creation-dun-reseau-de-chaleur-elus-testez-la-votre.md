@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/cover_villessansreseau.jpg
+coverY: 0
+---
+
 # 2600 communes à fort potentiel pour la création d'un réseau de chaleur : élus, testez la vôtre !
 
 **Un outil simple et innovant pour valoriser le potentiel des territoires**
