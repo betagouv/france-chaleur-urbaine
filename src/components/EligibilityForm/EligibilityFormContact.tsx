@@ -149,6 +149,7 @@ const EligibilityFormContact = ({ addressData, cardMode, onSubmit }: Eligibility
                   <Map
                     withCenterPin
                     withoutLogo
+                    withSoughtAddresses={false}
                     initialCenter={addressData.geoAddress?.geometry.coordinates}
                     initialMapConfiguration={createMapConfiguration({
                       reseauxDeChaleur: {
