@@ -116,12 +116,12 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
-    image: '/contents/cover_donnees.jpg',
-    title: 'Retrouvez les données les plus récentes des réseaux de chaleur',
-    slug: 'retrouvez-les-donnees-les-plus-recentes-des-reseaux-de-chaleur',
-    content: importFile(retrouvezDonneesRecentes),
+    image: '/contents/cover_ministre.jpg',
+    title: "Présentation de France Chaleur Urbaine à la ministre déléguée chargée de l'Énergie",
+    slug: 'presentation-de-france-chaleur-urbaine-a-la-ministre-deleguee-chargee-de-lenergie',
+    content: importFile(readme_36),
     publishedDate: new Date('2024-11-20'),
-    themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Cartographie et données'],
+    themes: ['Réseaux de chaleur', 'Communication'],
   },
   {
     image: '/contents/cover_villessansreseau.jpg',
@@ -132,12 +132,12 @@ export const articles: Article[] = [
     themes: ['Réseaux de chaleur'],
   },
   {
-    image: '/contents/cover_ministre.jpg',
-    title: "Présentation de France Chaleur Urbaine à la ministre déléguée chargée de l'Énergie",
-    slug: 'presentation-de-france-chaleur-urbaine-a-la-ministre-deleguee-chargee-de-lenergie',
-    content: importFile(readme_36),
+    image: '/contents/cover_donnees.jpg',
+    title: 'Retrouvez les données les plus récentes des réseaux de chaleur',
+    slug: 'retrouvez-les-donnees-les-plus-recentes-des-reseaux-de-chaleur',
+    content: importFile(retrouvezDonneesRecentes),
     publishedDate: new Date('2024-11-15'),
-    themes: ['Réseaux de chaleur', 'Communication'],
+    themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Cartographie et données'],
   },
   {
     image: '/contents/webi.jpg',
