@@ -1,16 +1,8 @@
----
-cover: .gitbook/assets/dlt.jpg
-coverY: 0
----
+# Présentation de France Chaleur Urbaine à la ministre déléguée chargée de l'Énergie
 
-# Estimer en quelques clics la densité thermique linéaire d'un futur réseau
+Nous sommes très heureux d'avoir pu **présenter France Chaleur Urbaine à la ministre déléguée chargée de l'Énergie Olga Givernet**, au [Salon des Maires et des collectivités](https://www.salondesmaires.com/le-salon-des-maires-et-des-collectivites/). Un grand merci pour votre écoute attentive Madame la Ministre ! 🙏 Merci également à la Direction générale de l’énergie et du climat de nous avoir donné cette opportunité.
 
-Avec France Chaleur Urbaine, estimer en quelques clics la densité thermique linéaire d'un futur réseau, c'est possible !\
 \
-💡 Pour évaluer la pertinence de créer un nouveau réseau de chaleur ou d'étendre un réseau existant, la densité thermique linéaire est un paramètre clé à étudier. Elle correspond au rapport entre la quantité de chaleur livrée et la longueur de canalisations à déployer. Un seuil critique de 1,5 MWh par mètre linéaire est généralement retenu, notamment pour bénéficier des aides du [Fonds Chaleur ADEME](https://fondschaleur.ademe.fr/).\
-\
-🔧 Déjà proposé sur la base des consommations réelles de gaz, le calcul de la densité thermique linéaire sur France Chaleur Urbaine est aujourd'hui également réalisé sur la base des besoins en chaleur des bâtiments, modélisés par le Cerema dans le cadre du [projet EnRezo](https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo) : une donnée estimative mais qui présente l'avantage d'être disponible pour l'ensemble des bâtiments.\
-\
-👉 Concrètement comment faire ? Je clique sur l'onglet [Outils](https://france-chaleur-urbaine.beta.gouv.fr/carte?tabId=outils) dans la légende de la carte et je définis mon futur tracé. Le résultat s'affiche instantanément ! Je peux également exporter mon projet de tracé.
-
-<figure><img src=".gitbook/assets/FCU_densite-thermique.jpg" alt=""><figcaption></figcaption></figure>
+🎯 France Chaleur Urbaine contribue à l'atteinte des objectifs de développement des réseaux de chaleur en France en offrant des outils et services simples et concrets qui **facilitent le passage à l'action**. Il répond aux besoins de l'ensemble des parties prenantes et notamment :\
+✔ des **copropriétaires, bailleurs sociaux, gestionnaires de bâtiments tertiaires**, en les aidant à raccorder leurs bâtiments ;\
+✔ des **collectivités et opérateurs**, en les accompagnant dans le développement de leurs réseaux.
