@@ -57,7 +57,7 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
   }, [coords, city, cityCode]);
 
   const modesDeChauffageToDisplay = modesDeChauffage
-    .filter(({ type }) => (type as any).includes('collectif'))
+    .filter(({ type, label }) => (type as any).includes('collectif') && !label.includes('PAC'))
     .map((typeInstallation) => ({
       id: typeInstallation.label,
       label: typeInstallation.label,
