@@ -72,13 +72,13 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
       flex: 3,
     },
     {
-      headerName: 'Cout annuel chauffage',
+      headerName: 'Coût annuel chauffage',
       flex: 2,
       field: 'bilan',
       renderCell: ({ value }) => value.toLocaleString('fr-FR', { currency: 'EUR', maximumFractionDigits: 0, style: 'currency' }),
     },
     {
-      headerName: 'Emissions CO2',
+      headerName: 'Émissions CO2',
       flex: 2,
       field: 'emissionsCO2',
       renderCell: ({ value }) => `${value.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} kgCO2e`,
