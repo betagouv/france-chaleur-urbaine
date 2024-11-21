@@ -66,7 +66,7 @@ const OutilsPage = () => {
             Intégrer l’API du test d’adresse ou des réseaux
           </Text>
         </Box>
-        <Link variant="secondary" href="https://api.gouv.fr/les-api/api-france-chaleur-urbaine" isExternal>
+        <Link variant="secondary" href="https://www.data.gouv.fr/fr/dataservices/api-france-chaleur-urbaine/" isExternal>
           Accéder
         </Link>
       </Box>
