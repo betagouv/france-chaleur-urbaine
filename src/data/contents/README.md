@@ -13,3 +13,5 @@ Nous sommes très heureux d'avoir pu **présenter France Chaleur Urbaine à la m
 ✔ des **collectivités et opérateurs**, en les accompagnant dans le développement de leurs réseaux.
 
 <figure><img src=".gitbook/assets/FCU_salon-maires-1.jpg" alt=""><figcaption></figcaption></figure>
+
+<figure><img src=".gitbook/assets/FCU_salon-maires-2b.jpg" alt=""><figcaption></figcaption></figure>
