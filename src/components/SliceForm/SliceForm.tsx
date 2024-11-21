@@ -1,11 +1,12 @@
 import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@components/EligibilityForm';
 import { FormLabel } from '@components/HeadSliceForm/HeadSliceForm.style';
 import Slice from '@components/Slice';
+import Box from '@components/ui/Box';
 import Loader from '@components/ui/Loader';
 import Modal, { createModal } from '@components/ui/Modal';
 import { useContactFormFCU } from '@hooks';
 
-import { Container, Form, FormWarningMessage, SliceContactFormStyle } from './SliceForm.style';
+import { Container, FormWarningMessage, SliceContactFormStyle } from './SliceForm.style';
 
 const eligibilityTestModal = createModal({
   id: 'eligibility-test-slice-form-modal',
@@ -14,7 +15,6 @@ const eligibilityTestModal = createModal({
 
 const SliceForm = ({ title, colored }: { title?: string; colored?: boolean }) => {
   const {
-    EligibilityFormContactRef,
     addressData,
     contactReady,
     showWarning,
@@ -53,10 +53,10 @@ const SliceForm = ({ title, colored }: { title?: string; colored?: boolean }) =>
         onClose={handleResetFormContact}
         loading={loadingStatus === 'loading'}
       >
-        <Form ref={EligibilityFormContactRef}>
+        <Box position="relative" width="100%">
           {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
           {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
-        </Form>
+        </Box>
       </Modal>
     </>
   );

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
@@ -10,8 +10,6 @@ import { type FormDemandCreation } from '@/types/Summary/Demand';
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 
 const useContactFormFCU = () => {
-  const EligibilityFormContactRef = useRef<null | HTMLDivElement>(null);
-
   const [addressData, setAddressData] = useState<AddressDataType>({});
   const [contactReady, setContactReady] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
@@ -21,19 +19,6 @@ const useContactFormFCU = () => {
   const [mtm_campaign] = useURLParamOrLocalStorage('mtm_campaign', 'mtm_campaign', null, parseAsString);
   const [mtm_kwd] = useURLParamOrLocalStorage('mtm_kwd', 'mtm_kwd', null, parseAsString);
   const [mtm_source] = useURLParamOrLocalStorage('mtm_source', 'mtm_source', null, parseAsString);
-
-  const timeoutScroller = useCallback(
-    (delai: number, callback?: () => void) =>
-      window.setTimeout(() => {
-        EligibilityFormContactRef.current?.scrollIntoView({
-          behavior: 'smooth',
-        });
-        if (callback) {
-          callback();
-        }
-      }, delai),
-    []
-  );
 
   const handleOnChangeAddress = useCallback((data: AddressDataType) => {
     const { address, heatingType } = data;
@@ -49,24 +34,19 @@ const useContactFormFCU = () => {
     trackEvent(`Eligibilité|Formulaire de test${fromMap ? ' - Carte' : ''} - Envoi`, address);
   };
 
-  const handleOnSuccessAddress = useCallback(
-    (data: AddressDataType, fromMap?: boolean, dontNotify?: boolean) => {
-      const { address, heatingType, eligibility } = data;
-      if (!dontNotify) {
-        trackEvent(
-          `Eligibilité|Formulaire de test${fromMap ? ' - Carte' : ''} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
-          address || 'Adresse indefini'
-        );
-      }
-      setAddressData(data);
-      if (address && heatingType) {
-        setContactReady(true);
-        const scrollTimer = timeoutScroller(500, () => setLoadingStatus('loaded'));
-        return () => window.clearTimeout(scrollTimer);
-      }
-    },
-    [timeoutScroller]
-  );
+  const handleOnSuccessAddress = useCallback((data: AddressDataType, fromMap?: boolean, dontNotify?: boolean) => {
+    const { address, heatingType, eligibility } = data;
+    if (!dontNotify) {
+      trackEvent(
+        `Eligibilité|Formulaire de test${fromMap ? ' - Carte' : ''} - Adresse ${eligibility?.isEligible ? 'É' : 'Iné'}ligible`,
+        address || 'Adresse indefini'
+      );
+    }
+    setAddressData(data);
+    if (address && heatingType) {
+      setContactReady(true);
+    }
+  }, []);
 
   const handleOnSubmitContact = useCallback(
     async (data?: AddressDataType, fromMap?: boolean) => {
@@ -132,16 +112,14 @@ const useContactFormFCU = () => {
         `Eligibilité|Formulaire de contact ${eligibility?.isEligible ? 'é' : 'iné'}ligible${fromMap ? ' - Carte' : ''} - Envoi`,
         address
       );
-      const scrollTimer = timeoutScroller(500);
       setAddressData({
         ...addressData,
         ...data,
         airtableId: id,
       });
       setMessageReceived(true);
-      return () => window.clearTimeout(scrollTimer);
     },
-    [addressData, timeoutScroller]
+    [addressData]
   );
 
   const handleResetFormContact = useCallback(() => {
@@ -154,7 +132,6 @@ const useContactFormFCU = () => {
   }, []);
 
   return {
-    EligibilityFormContactRef,
     addressData,
     contactReady,
     showWarning,

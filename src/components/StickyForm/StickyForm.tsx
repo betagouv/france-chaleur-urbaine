@@ -1,10 +1,11 @@
 import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@components/EligibilityForm';
 import { FormWarningMessage, SliceContactFormStyle } from '@components/HeadSliceForm/HeadSliceForm.style';
+import Box from '@components/ui/Box';
 import Loader from '@components/ui/Loader';
 import Modal, { createModal } from '@components/ui/Modal';
 import { useContactFormFCU } from '@hooks';
 
-import { Container, Form, Title } from './StickyForm.styles';
+import { Container, Title } from './StickyForm.styles';
 
 const eligibilityTestModal = createModal({
   id: 'eligibility-test-sticky-form-modal',
@@ -13,7 +14,6 @@ const eligibilityTestModal = createModal({
 
 const StickyForm = ({ title }: { title?: string }) => {
   const {
-    EligibilityFormContactRef,
     addressData,
     contactReady,
     showWarning,
@@ -46,10 +46,10 @@ const StickyForm = ({ title }: { title?: string }) => {
         onClose={handleResetFormContact}
         loading={loadingStatus === 'loading'}
       >
-        <Form ref={EligibilityFormContactRef}>
+        <Box position="relative" width="100%">
           {contactReady && !messageReceived && <EligibilityFormContact addressData={addressData} onSubmit={handleOnSubmitContact} />}
           {messageReceived && <EligibilityFormMessageConfirmation addressData={addressData} />}
-        </Form>
+        </Box>
       </Modal>
     </>
   );
