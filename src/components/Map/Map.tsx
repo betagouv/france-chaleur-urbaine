@@ -415,18 +415,20 @@ export const FullyFeaturedMap = ({
   }, [router.query, heatNetworkService]);
 
   useEffect(() => {
-    if (mapRef.current && initialCenter) {
-      if (withCenterPin) {
-        const newMarker = {
-          id: getAddressId(initialCenter),
-          latitude: initialCenter[1],
-          longitude: initialCenter[0],
-        };
-        setMarkersList([newMarker]);
-      }
-      jumpTo({ coordinates: initialCenter, zoom: initialZoom });
+    if (!mapRef.current || !initialCenter) {
+      return;
     }
-  }, [initialCenter, jumpTo, withCenterPin]);
+
+    if (withCenterPin) {
+      const newMarker = {
+        id: getAddressId(initialCenter),
+        latitude: initialCenter[1],
+        longitude: initialCenter[0],
+      };
+      setMarkersList([newMarker]);
+    }
+    jumpTo({ coordinates: initialCenter, zoom: initialZoom });
+  }, [initialCenter, jumpTo, withCenterPin, mapRef.current]);
 
   useEffect(() => {
     if (!router.isReady) {
