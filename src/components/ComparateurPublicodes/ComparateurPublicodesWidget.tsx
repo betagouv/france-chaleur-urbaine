@@ -3,7 +3,6 @@ import React from 'react';
 
 import { FormProvider } from '@components/form/publicodes/FormProvider';
 import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
 import { Table, type ColumnDef } from '@components/ui/Table';
 import { LocationInfoResponse } from '@pages/api/location-infos';
 import { postFetchJSON } from '@utils/network';
@@ -105,7 +104,17 @@ const ComparateurPublicodesWidget: React.FC<ComparateurPublicodesWidgetProps> = 
         />
         <div className={fr.cx('fr-text--sm', 'fr-mt-2w')} style={{ textAlign: 'right', fontStyle: 'italic' }}>
           Accéder au{' '}
-          <Link href={`/outils/comparateur-performances?address=${encodeURIComponent(address as string)}`}>comparateur complet</Link>
+          <a
+            href={`/outils/comparateur-performances?address=${encodeURIComponent(
+              address as string
+            )}&modes-de-chauffage=${encodeURIComponent(
+              modesDeChauffageToDisplay.map(({ label }) => label).join(',')
+            )}&tabId=modes-de-chauffage`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            comparateur complet
+          </a>
         </div>
       </FormProvider>
     </div>
