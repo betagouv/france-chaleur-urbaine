@@ -12,7 +12,6 @@ const EligibilityContactForm: React.FC<{
   onSubmit?: (data?: Record<string, any>) => void;
 }> = ({ fullAddress, onSubmit }) => {
   const {
-    EligibilityFormContactRef,
     addressData,
     contactReady,
     messageReceived,
@@ -55,7 +54,7 @@ const EligibilityContactForm: React.FC<{
       </ContactFormWrapper>
 
       <EligibilityContactFormStyle />
-      <div ref={EligibilityFormContactRef}>
+      <div>
         <ContactFormWrapper active={contactReady && !messageReceived}>
           <EligibilityFormContact addressData={addressData} onSubmit={handleSubmitForm} cardMode />
           {contactFormError && (
