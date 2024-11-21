@@ -91,7 +91,7 @@ const ActualitePage = () => {
       </Box>
 
       <ArticleContentWrapper pt="5w" pb="10w" className="fr-container">
-        <MarkdownWrapper value={content} />
+        <MarkdownWrapper value={content} color="black" />
       </ArticleContentWrapper>
     </SimplePage>
   );
