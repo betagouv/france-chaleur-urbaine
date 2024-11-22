@@ -2,6 +2,7 @@ import { Article } from 'src/types/Article';
 
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
 import demandes from './2000-demandes.md';
+import communesAFortPotentiel from './2600-communes-a-fort-potentiel-pour-la-creation-dun-reseau-de-chaleur-elus-testez-la-votre.md';
 import objectifRaccordementAtteignableReseauxExistants from './30-de-lobjectif-de-raccordement-2035-atteignable-sur-les-reseaux-existants.md';
 import reseauxDeChaleurClasses from './636-reseaux-de-chaleur-classes.md';
 import actualisationTauxEnergiesRenouvelablesEtContenuCO2DesReseaux from './actualisation-des-taux-denergies-renouvelables-et-contenu-co2-des-reseaux.md';
@@ -87,6 +88,8 @@ import readme_31 from './README (31).md';
 import readme_32 from './README (32).md';
 import readme_33 from './README (33).md';
 import readme_34 from './README (34).md';
+import readme_35 from './README (35).md';
+import readme_36 from './README (36).md';
 import readme_4_1 from './README (4) (1).md';
 import readme_4 from './README (4).md';
 import readme_5 from './README (5).md';
@@ -94,7 +97,7 @@ import readme_6 from './README (6).md';
 import readme_7 from './README (7).md';
 import readme_8 from './README (8).md';
 import readme_9 from './README (9).md';
-import readme from './README.md';
+import retrouvezDonneesRecentes from './retrouvez-les-donnees-les-plus-recentes-des-reseaux-de-chaleur.md';
 import seChaufferAPrixStables from './se-chauffer-a-prix-stables.md';
 import accesSimplifieSchemasDirecteursReseauxChaleur from './un-acces-simplifie-aux-schemas-directeurs-des-reseaux-de-chaleur.md';
 import chauffageEcologiqueEconomiquePossible from './un-chauffage-ecologique-et-economique-cest-possible.md';
@@ -113,6 +116,30 @@ const importFile = (file: string) => {
 
 export const articles: Article[] = [
   {
+    image: '/contents/cover_ministre.jpg',
+    title: "Présentation de France Chaleur Urbaine à la ministre déléguée chargée de l'Énergie",
+    slug: 'presentation-de-france-chaleur-urbaine-a-la-ministre-deleguee-chargee-de-lenergie',
+    content: importFile(readme_36),
+    publishedDate: new Date('2024-11-20'),
+    themes: ['Réseaux de chaleur', 'Communication'],
+  },
+  {
+    image: '/contents/cover_villessansreseau.jpg',
+    title: "2600 communes à fort potentiel pour la création d'un réseau de chaleur : élus, testez la vôtre !",
+    slug: '2600-communes-a-fort-potentiel-pour-la-creation-dun-reseau-de-chaleur-elus-testez-la-votre',
+    content: importFile(communesAFortPotentiel),
+    publishedDate: new Date('2024-11-18'),
+    themes: ['Réseaux de chaleur'],
+  },
+  {
+    image: '/contents/cover_donnees.jpg',
+    title: 'Retrouvez les données les plus récentes des réseaux de chaleur',
+    slug: 'retrouvez-les-donnees-les-plus-recentes-des-reseaux-de-chaleur',
+    content: importFile(retrouvezDonneesRecentes),
+    publishedDate: new Date('2024-11-15'),
+    themes: ['Réseaux de chaleur', 'Réseaux de froid', 'Cartographie et données'],
+  },
+  {
     image: '/contents/webi.jpg',
     title: 'Informer les gestionnaires de bâtiments tertiaires sur les réseaux de chaleur',
     slug: 'informer-les-gestionnaires-de-batiments-tertiaires-sur-les-reseaux-de-chaleur',
@@ -124,7 +151,7 @@ export const articles: Article[] = [
     image: '/contents/dlt.jpg',
     title: "Estimer en quelques clics la densité thermique linéaire d'un futur réseau",
     slug: 'estimer-en-quelques-clics-la-densite-thermique-lineaire-dun-futur-reseau',
-    content: importFile(readme),
+    content: importFile(readme_35),
     publishedDate: new Date('2024-11-12'),
     themes: ['Réseaux de chaleur', 'Cartographie et données'],
   },

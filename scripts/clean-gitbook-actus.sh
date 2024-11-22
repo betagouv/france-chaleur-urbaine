@@ -8,4 +8,4 @@ while IFS= read -r fichier; do
     sed -i '1{/^$/d}' "$fichier"
     sed -i '1{/^$/d}' "$fichier"
     echo "Frontmatter supprimé de : $fichier"
-done < <(find "src/data/contents" -type f -name "*.md")
+done < <(find "src/data/contents" -maxdepth 1 -type f -name "*.md")
