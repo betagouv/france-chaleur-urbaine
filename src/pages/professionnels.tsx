@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Image from 'next/image';
 
 import LastArticles from '@components/Articles/LastArticles';
@@ -30,14 +29,10 @@ const conseillerCards = {
 
 const Professionnels = () => {
   return (
-    <SimplePage title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique">
-      <Head>
-        <meta
-          name="description"
-          content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
-        />
-      </Head>
-
+    <SimplePage
+      title="Le chauffage urbain pour les professionels"
+      description="Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, syndics, etc, Faites un choix d'avenir et compétitif avec le chauffage urbain"
+    >
       <HeadSliceForm
         checkEligibility
         withBulkEligibility

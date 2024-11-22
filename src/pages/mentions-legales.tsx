@@ -42,7 +42,10 @@ const StyledMarkdown = styled(MarkdownWrapper)`
 
 function LegalMentions() {
   return (
-    <SimplePage title="Mentions légales : France Chaleur Urbaine">
+    <SimplePage
+      title="Mentions légales"
+      description="France Chaleur Urbaine est un service numérique de l’administration qui vise à faciliter et multiplier les raccordements aux réseaux de chaleur"
+    >
       <div className="fr-container fr-mt-2w">
         <div className="fr-grid-row">
           <div className="fr-col-12">

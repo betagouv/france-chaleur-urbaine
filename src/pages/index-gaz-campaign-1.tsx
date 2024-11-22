@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Image from 'next/image';
 
 import AvantagesChauffageUrbain from '@components/GenericContent/AvantagesChauffageUrbain';
@@ -15,14 +14,10 @@ import Text from '@components/ui/Text';
 
 export default function Home() {
   return (
-    <SimplePage title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique">
-      <Head>
-        <meta
-          name="description"
-          content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
-        />
-      </Head>
-
+    <SimplePage
+      title="Changez votre chaudière gaz pour le chauffage urbain"
+      description="Stabilité des tarifs, Amélioration de l'étiquette DPE, Faibles émissions de gaz à effet de serre"
+    >
       <HeadSliceForm
         checkEligibility
         withWrapper={(form) => (

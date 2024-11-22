@@ -3,7 +3,10 @@ import SimplePage from '@components/shared/page/SimplePage';
 
 const CommuniqueDePresseJune23Page = () => {
   return (
-    <SimplePage>
+    <SimplePage
+      title="Communiqué de presse - Juin 2023"
+      description="Un levier incontournable de la transition énergétique encore mal connu"
+    >
       <PressJune23 />
     </SimplePage>
   );

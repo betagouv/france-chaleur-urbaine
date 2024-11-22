@@ -6,7 +6,10 @@ import Slice from '@components/Slice';
 
 const PressJanuary24 = () => {
   return (
-    <SimplePage>
+    <SimplePage
+      title="Communiqué de presse - Janvier 2024"
+      description="Près de 30% des logements à raccorder au chauffage urbain d’ici 2035 identifiés par France Chaleur Urbaine"
+    >
       <Container>
         <Slice padding={4}>
           <MarkdownWrapper

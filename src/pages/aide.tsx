@@ -220,7 +220,7 @@ const faqItems: FaqItem[] = [
 
 const AidePage = () => {
   return (
-    <SimplePage title="Aide : France Chaleur Urbaine" mode="authenticated">
+    <SimplePage title="Aide" mode="authenticated">
       <div className="fr-container fr-mt-4w fr-mb-8w">
         <h1>Bienvenue sur l’espace gestionnaire de France Chaleur Urbaine !</h1>
         <p>Vous trouverez ci-dessous les réponses aux questions qui nous sont les plus fréquemment posées.</p>
