@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Image from 'next/image';
 
 import LastArticles from '@components/Articles/LastArticles';
@@ -28,14 +27,10 @@ const coproprietaireCards = {
 
 export default function Home() {
   return (
-    <SimplePage title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique">
-      <Head>
-        <meta
-          name="description"
-          content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
-        />
-      </Head>
-
+    <SimplePage
+      title="Accélerer le développement du chauffage urbain"
+      description="Développez le chauffage urbain avec les réseaux de chaleur, valorisant les énergies renouvelables pour une distribution durable et efficace."
+    >
       <HeadSliceForm
         checkEligibility
         withWrapper={(form) => (
@@ -120,7 +115,7 @@ export default function Home() {
         <Box className="fr-container">
           <ResponsiveRow>
             <Box flex>
-              <Heading as="h4" color="blue-france">
+              <Heading as="h3" size="h4" color="blue-france">
                 Un exemple de cas concret
               </Heading>
 
@@ -163,7 +158,7 @@ export default function Home() {
             </Box>
 
             <Box flex>
-              <Heading as="h4" color="blue-france">
+              <Heading as="h3" size="h4" color="blue-france">
                 Les témoignages
               </Heading>
               <Text size="lg" mb="2w">

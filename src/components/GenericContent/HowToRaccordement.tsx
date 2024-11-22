@@ -16,7 +16,7 @@ const HowToRaccordement = ({ downloadLinkPos }: { downloadLinkPos?: DownloadLink
       </Heading>
       <ResponsiveRow mt="10w">
         <Box flex>
-          <Heading as="h4" legacyColor="white" mb="4w">
+          <Heading as="h3" size="h4" legacyColor="white" mb="4w">
             France Chaleur Urbaine est un service public qui vous met en lien avec le gestionnaire du réseau de chaleur
           </Heading>
 
