@@ -26,10 +26,10 @@ type SimplePageProps = {
   currentPage?: string;
 } & SEOProps;
 
-const SimplePage = ({ mode, currentPage, children, ...props }: SimplePageProps) => {
+const SimplePage = ({ mode, currentPage, children, noIndex, ...props }: SimplePageProps) => {
   return (
     <>
-      <SEO {...props} />
+      <SEO noIndex={mode === 'authenticated' ? true : noIndex} {...props} />
       <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
 
       {children}
