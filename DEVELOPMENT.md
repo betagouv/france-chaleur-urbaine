@@ -2,7 +2,7 @@
 
 ## API
 
-Un schéma OpenAPI a été initialisé manuellement en yaml à partir du [Swagger Editor](https://editor-next.swagger.io/), et sera référencé depuis l'[Annuaire des API](https://api.gouv.fr/).
+Un schéma OpenAPI a été initialisé manuellement en yaml à partir du [Swagger Editor](https://editor-next.swagger.io/), et est référencé depuis la [plateforme data.gouv.fr](https://www.data.gouv.fr/fr/dataservices/api-france-chaleur-urbaine/).
 Il se trouve dans `public/openapi-schema.yaml`.
 
 Voici les routes publiques qui y sont présentes :
