@@ -609,6 +609,12 @@ const trackingEvents = {
   'Villes Potentiel - Demandes|Réseau Existant': {
     matomo: ['Villes Potentiel - Demandes', 'Réseau Existant'],
   },
+  'Villes Potentiel - Visites|Réseau Futur': {
+    matomo: ['Villes Potentiel - Visites', 'Réseau Futur'],
+  },
+  'Villes Potentiel - Demandes|Réseau Futur': {
+    matomo: ['Villes Potentiel - Demandes', 'Réseau Futur'],
+  },
   'Villes Potentiel - Visites|Fort Potentiel': {
     matomo: ['Villes Potentiel - Visites', 'Fort Potentiel'],
   },

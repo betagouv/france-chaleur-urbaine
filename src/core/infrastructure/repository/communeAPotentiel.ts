@@ -1,7 +1,7 @@
 import { db, sql } from 'src/db/kysely';
 import { BoundingBox } from 'src/types/Coords';
 
-type TypeCommune = 'Réseau Existant' | 'Fort Potentiel' | 'Potentiel' | 'Sans Potentiel';
+type TypeCommune = 'Réseau Existant' | 'Réseau Futur' | 'Fort Potentiel' | 'Potentiel' | 'Sans Potentiel';
 
 export const getCommunePotentiel = async (codeInsee: string) => {
   const communePromise = db
@@ -38,16 +38,24 @@ export const getCommunePotentiel = async (codeInsee: string) => {
 
   const nbReseauxExistantsPromise = db
     .selectFrom('reseaux_de_chaleur')
-    .leftJoin('ign_communes', 'ign_communes.insee_com', sql`${codeInsee}` as any)
-    .where(sql`ST_Intersects(reseaux_de_chaleur.geom, ign_communes.geom)` as any)
-    .select(sql`COUNT(*)` as any)
-    .executeTakeFirst() as Promise<{ count: number }>;
+    .leftJoin('ign_communes', (join) => join.on('ign_communes.insee_com', '=', codeInsee))
+    .where(sql<boolean>`ST_Intersects(reseaux_de_chaleur.geom, st_buffer(ign_communes.geom, -150))`)
+    .select(db.fn.countAll<number>().as('count'))
+    .executeTakeFirstOrThrow();
 
-  const [commune, zonesAFortPotentiel, zonesAPotentiel, { count: nbReseauxExistants }] = await Promise.all([
+  const nbReseauxFutursPromise = db
+    .selectFrom('zones_et_reseaux_en_construction')
+    .leftJoin('ign_communes', (join) => join.on('ign_communes.insee_com', '=', codeInsee))
+    .where(sql<boolean>`ST_Intersects(zones_et_reseaux_en_construction.geom, st_buffer(ign_communes.geom, -150))`)
+    .select(db.fn.countAll<number>().as('count'))
+    .executeTakeFirstOrThrow();
+
+  const [commune, zonesAFortPotentiel, zonesAPotentiel, { count: nbReseauxExistants }, { count: nbReseauxFuturs }] = await Promise.all([
     communePromise,
     zonesAFortPotentielPromise,
     zonesAPotentielPromise,
     nbReseauxExistantsPromise,
+    nbReseauxFutursPromise,
   ]);
 
   if (!commune) {
@@ -66,13 +74,16 @@ export const getCommunePotentiel = async (codeInsee: string) => {
       chauffage: zonesAPotentiel.reduce((sum, zone) => sum + +(zone.chauf_mwh || 0), 0),
       ecs: zonesAPotentiel.reduce((sum, zone) => sum + +(zone.ecs_mwh || 0), 0),
     },
-    nbReseauxExistants: Number(nbReseauxExistants) || 0,
+    nbReseauxExistants: +nbReseauxExistants,
+    nbReseauxFuturs: +nbReseauxFuturs,
     bounds: commune?.bounds,
   };
 
   const type: TypeCommune =
     result.nbReseauxExistants > 0
       ? 'Réseau Existant'
+      : result.nbReseauxFuturs > 0
+      ? 'Réseau Futur'
       : result.zonesAFortPotentiel.nb > 0
       ? 'Fort Potentiel'
       : result.zonesAPotentiel.nb > 0
