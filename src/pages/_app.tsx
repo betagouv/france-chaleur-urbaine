@@ -1,5 +1,6 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import type { AppProps } from 'next/app';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -9,7 +10,6 @@ import { SessionProvider } from 'next-auth/react';
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
 import { SWRConfig, SWRConfiguration } from 'swr';
 
-import { ConsentBanner } from '@components/ConsentBanner';
 import '@components/Map/StyleSwitcher/styles.css';
 import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@components/Theme/ThemeProvider';
 import { NotifierContainer } from '@core/notification';
@@ -23,6 +23,10 @@ import { axiosHttpClient } from 'src/services/http';
 import { NetworksService } from 'src/services/networks';
 import { PasswordService } from 'src/services/password';
 
+const ConsentBanner = dynamic(
+  () => import('@components/ConsentBanner').then((module) => module.ConsentBanner),
+  { ssr: false } // Disable server side as it
+);
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
   interface RegisterLink {
     Link: typeof Link;
