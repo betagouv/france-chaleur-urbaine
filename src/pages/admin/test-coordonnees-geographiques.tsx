@@ -30,10 +30,12 @@ export default function TestCoordinatesPage() {
 
     if (file.size > 15728640) {
       setErrorMessage('Le fichier ne doit pas dépasser 15Mo.');
+      setCoordinates([]);
       return;
     }
     if (!file.name.toLocaleLowerCase().endsWith('.csv')) {
       setErrorMessage('Seuls les fichiers CSV sont reconnus');
+      setCoordinates([]);
       return;
     }
     setInputFileName(file.name);
@@ -55,10 +57,12 @@ export default function TestCoordinatesPage() {
         const columnNames = results.meta.fields!.map((f) => f.toLocaleLowerCase());
         if (!longitudeColumnNameCandidates.some((candidate) => columnNames.some((c) => c === candidate))) {
           setErrorMessage(`Aucune colonne longitude trouvée (${longitudeColumnNameCandidates.join(',')})`);
+          setCoordinates([]);
           return;
         }
         if (!latitudeColumnNameCandidates.some((candidate) => columnNames.some((c) => c === candidate))) {
           setErrorMessage(`Aucune colonne latitude trouvée (${latitudeColumnNameCandidates.join(',')})`);
+          setCoordinates([]);
           return;
         }
         setCoordinates(results.data);
