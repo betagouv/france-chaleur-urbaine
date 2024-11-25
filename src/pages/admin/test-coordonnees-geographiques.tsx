@@ -9,7 +9,7 @@ import AsyncButton from '@components/ui/AsyncButton';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
-import { notify } from '@core/notification';
+import { notify, toastErrors } from '@core/notification';
 import { withPermission } from '@helpers/ssr/withPermission';
 import { downloadFile } from '@utils/browser';
 import { postFetchJSON } from '@utils/network';
@@ -66,7 +66,7 @@ export default function TestCoordinatesPage() {
     });
   };
 
-  const testCoordinatesEligibility = async () => {
+  const testCoordinatesEligibility = toastErrors(async () => {
     if (coordinates.length === 0) {
       return;
     }
@@ -79,7 +79,7 @@ export default function TestCoordinatesPage() {
     const inputFileNameWithoutExtension = inputFileName.slice(0, -4);
     downloadFile(URL.createObjectURL(blob), `${inputFileNameWithoutExtension}_avec_résultats_éligibilité_fcu.csv`);
     notify('success', "Le test s'est bien déroulé. Le fichier résultat a été téléchargé.");
-  };
+  });
 
   return (
     <SimplePage title="France Chaleur Urbaine - Test de coordonnées géographiques" mode="authenticated">
