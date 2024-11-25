@@ -103,7 +103,7 @@ export default function TestCoordinatesPage() {
           automatiquement détectées si elles ont des noms de colonnes parmi [{longitudeColumnNameCandidates.join(', ')}] et [
           {latitudeColumnNameCandidates.join(', ')}] respectivement.
         </Text>
-        <Text mb="2w">Le test dure en général environ une dizaine de secondes pour 1000 coordonnées.</Text>
+        <Text mb="2w">Le test dure en général environ une vingtaine de secondes pour 1000 coordonnées.</Text>
 
         <Upload
           label="Choisissez un fichier .csv :"
