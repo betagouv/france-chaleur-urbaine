@@ -1,3 +1,4 @@
+import { fr } from '@codegouvfr/react-dsfr';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import styled from 'styled-components';
@@ -82,7 +83,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
         simple
         small
       >
-        {filtresEnergies.map((filtreEnergie) => (
+        {filtresEnergies.map((filtreEnergie, index) => (
           <RangeFilter
             loading={loading}
             small
@@ -92,6 +93,7 @@ const ReseauxDeChaleurFilters: React.FC<ReseauxDeChaleurFiltersProps> = ({ regio
             value={filters?.reseauxDeChaleur?.[`energie_ratio_${filtreEnergie.confKey}`]}
             onChange={(interval) => updateFilter(`reseauxDeChaleur.energie_ratio_${filtreEnergie.confKey}`, interval)}
             unit="%"
+            className={fr.cx(index > 0 ? 'fr-mt-2w' : null)}
           />
         ))}
       </UrlStateAccordion>
