@@ -30,7 +30,10 @@ const articlesReseauxDeFroid: ArticleItemProps[] = Object.entries(coldNetworks).
 
 const ArticlesPage = () => {
   return (
-    <SimplePage title="Nos articles - France Chaleur Urbaine">
+    <SimplePage
+      title="Nos articles sur la chaleur urbaine"
+      description="Retrouvez les réponses à toutes vos questions sur les réseaux de chaleur et de froid."
+    >
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>

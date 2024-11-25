@@ -22,6 +22,7 @@ export type Document = {
   title: string;
   altTitle?: string;
   description: ReactNode;
+  seoDescription: ReactNode;
   content: ReactNode;
 };
 
@@ -39,6 +40,7 @@ export const issues: Record<string, Document> = {
         </b>
       </>
     ),
+    seoDescription: 'Découvrez ce qu’est un réseau de chaleur et ses avantages pour l’environnement et les bâtiments.',
     content: <Network />,
   },
   'energies-vertes': {
@@ -49,6 +51,7 @@ export const issues: Record<string, Document> = {
         Les réseaux de chaleur français sont alimentés en moyenne à <b>62 % par des énergies renouvelables et de récupération locales.</b>
       </>
     ),
+    seoDescription: 'Apprenez comment les réseaux de chaleur utilisent des énergies vertes pour réduire l’impact environnemental.',
     content: <GreenEnergies />,
   },
   atouts: {
@@ -59,6 +62,7 @@ export const issues: Record<string, Document> = {
         environnementaux, sanitaires, économiques et sociaux...
       </>
     ),
+    seoDescription: 'Découvrez les nombreux avantages des réseaux de chaleur pour l’environnement et l’économie.',
     content: <Strengths />,
   },
   livraisons: {
@@ -69,12 +73,14 @@ export const issues: Record<string, Document> = {
         <b>avec environ 5 % des besoins en chaleur du pays couverts</b> par les réseaux.
       </>
     ),
+    seoDescription: 'Analyse des livraisons de chaleur en France et leur contribution au chauffage national.',
     content: <Livraisons />,
   },
   histoire: {
     title: 'Quand et comment le chauffage urbain s’est-il développé en France ?',
     description:
       'Les premiers réseaux de chaleur français ont vu le jour au début du 20ème siècle, où ils apparaissent  comme un moyen de lutter contre les nuisances du chauffage au charbon et au bois individuel (approvisionnement, pollution, incendies...).',
+    seoDescription: 'Explorez l’histoire du chauffage urbain en France et son évolution depuis le 20ème siècle.',
     content: <History />,
   },
   role: {
@@ -87,6 +93,7 @@ export const issues: Record<string, Document> = {
         constituent un levier efficace pour réduire ces émissions.
       </>
     ),
+    seoDescription: 'Découvrez comment les réseaux de chaleur jouent un rôle clé dans la transition énergétique en France.',
     content: <Role />,
   },
 };
@@ -95,6 +102,7 @@ export const understandings: Record<string, Document> = {
   faisabilite: {
     title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
     description: 'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
+    seoDescription: 'Découvrez les critères techniques déterminant la faisabilité d’un raccordement.',
     content: <Feasability />,
   },
   avantages: {
@@ -105,6 +113,7 @@ export const understandings: Record<string, Document> = {
         au fioul et <b>51 %</b> par rapport à un chauffage au gaz. Et ce n'est pas le seul avantage !
       </>
     ),
+    seoDescription: 'Réduisez vos émissions de GES de 64 % (fioul) ou 51 % (gaz) en vous raccordant.',
     content: <Advantages />,
   },
   'cout-raccordement': {
@@ -116,6 +125,7 @@ export const understandings: Record<string, Document> = {
         compétitif.
       </>
     ),
+    seoDescription: 'Le coût du raccordement peut être réduit grâce à des aides financières.',
     content: <CoutRaccordement />,
   },
   aides: {
@@ -128,12 +138,14 @@ export const understandings: Record<string, Document> = {
         réduire significativement le coût du raccordement à un réseau de chaleur.
       </>
     ),
+    seoDescription: 'Le coup de pouce chauffage réduit le coût de raccordement depuis septembre 2022.',
     content: <Helps />,
   },
   financement: {
     title: 'Financer le raccordement de sa copropriété dans le cadre d’une rénovation globale',
     description:
       'Lorsque le raccordement au réseau de chaleur s’intègre dans des travaux de rénovation globale, des aides complémentaires au "Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires" sont mobilisables.',
+    seoDescription: 'Des aides complémentaires peuvent financer le raccordement dans une rénovation globale.',
     content: <Fundings />,
   },
   facture: {
@@ -143,12 +155,14 @@ export const understandings: Record<string, Document> = {
         En raccordant mon immeuble à un réseau de chaleur, je bénéficie d’une <b>facture plus stable qu’avec un autre mode de chauffage.</b>
       </>
     ),
+    seoDescription: 'Profitez d’une facture plus stable en raccordant votre immeuble à un réseau.',
     content: <Bill />,
   },
   'reseau-classe': {
     title: 'Qu’est-ce qu’un réseau classé ?',
     description:
       'Le classement d’un réseau instaure une obligation de raccordement pour certains bâtiments, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire.',
+    seoDescription: 'Le classement d’un réseau peut rendre le raccordement obligatoire dans certaines zones.',
     content: <ClassedNetwork />,
   },
   prioritaire: {
@@ -158,6 +172,7 @@ export const understandings: Record<string, Document> = {
         Quels bâtiments sont concernés par <b>l’obligation de raccordement ?</b>
       </>
     ),
+    seoDescription: 'Quels bâtiments sont concernés par l’obligation de raccordement ?',
     content: <Priority />,
   },
 };
@@ -171,12 +186,14 @@ export const growths: Record<string, Document> = {
         plus souvent concédée à des <b>opérateurs</b>, via des délégations de service public.
       </>
     ),
+    seoDescription: 'Les collectivités lancent les réseaux, souvent gérés par des opérateurs en délégation.',
     content: <Actors />,
   },
   etat: {
     title: 'L’État investit dans les réseaux de chaleur',
     altTitle: "Par quels dispositifs financiers l'État soutient-il les réseaux de chaleur ?",
     description: 'Plusieurs dispositifs financiers sont mis en place par l’État pour accompagner le développement des réseaux de chaleur.',
+    seoDescription: 'L’État soutient le développement des réseaux avec plusieurs dispositifs financiers.',
     content: <State />,
   },
 };
@@ -186,6 +203,23 @@ export const coldNetworks: Record<string, Document> = {
     title: 'Découvrir les réseaux de froid',
     description:
       'Un réseau de froid est constitué de canalisations souterraines qui permettent d’acheminer du froid vers un ensemble de bâtiments, avec une efficacité énergétique supérieure aux systèmes individuels ou collectifs centraux habituels. Les réseaux de froid sont majoritairement utilisés pour la climatisation des bâtiments tertiaires.',
+    seoDescription: 'Les réseaux de froid offrent une climatisation efficace pour les bâtiments tertiaires.',
     content: <ColdNetwork />,
   },
+};
+
+export const ressourceKeys = [
+  ...Object.keys(coldNetworks),
+  ...Object.keys(growths),
+  ...Object.keys(issues),
+  ...Object.keys(understandings),
+];
+
+export const getRessource = (ressourceKey: keyof typeof ressourceKeys) => {
+  return (
+    issues[ressourceKey as keyof typeof issues] ||
+    understandings[ressourceKey as keyof typeof understandings] ||
+    growths[ressourceKey as keyof typeof growths] ||
+    coldNetworks[ressourceKey as keyof typeof coldNetworks]
+  );
 };

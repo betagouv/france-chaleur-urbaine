@@ -9,7 +9,10 @@ import Text from '@components/ui/Text';
 
 const OutilsPage = () => {
   return (
-    <SimplePage title="Nos outils - France Chaleur Urbaine">
+    <SimplePage
+      title="Nos outils"
+      description="Tests d'adresses, iframes, API, téléchargement de données, simulateur d'aides, de CO2, fiches par réseau"
+    >
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>
