@@ -19,12 +19,7 @@ type HoverConfig = {
 
 const hoverConfigs: HoverConfig[] = [
   {
-    layer: 'reseauxDeChaleur-avec-trace-classe',
-    source: 'network',
-    sourceLayer: 'layer',
-  },
-  {
-    layer: 'reseauxDeChaleur-avec-trace-nonclasse',
+    layer: 'reseauxDeChaleur-avec-trace',
     source: 'network',
     sourceLayer: 'layer',
   },
@@ -114,8 +109,7 @@ const clickEvents: {
 }[] = [
   { layer: 'zonesPotentielChaud', key: 'zonesPotentielChaud' },
   { layer: 'zonesPotentielFortChaud', key: 'zonesPotentielFortChaud' },
-  { layer: 'reseauxDeChaleur-avec-trace-classe', key: 'network' },
-  { layer: 'reseauxDeChaleur-avec-trace-nonclasse', key: 'network' },
+  { layer: 'reseauxDeChaleur-avec-trace', key: 'network' },
   { layer: 'reseauxDeChaleur-sans-trace', key: 'network' },
   { layer: 'reseauxDeFroid-avec-trace', key: 'coldNetwork' },
   { layer: 'reseauxDeFroid-sans-trace', key: 'coldNetwork' },

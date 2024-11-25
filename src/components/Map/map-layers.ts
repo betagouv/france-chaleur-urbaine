@@ -11,6 +11,7 @@ import {
   StyleSetterOptions,
 } from 'maplibre-gl';
 
+import { isDefined } from '@utils/core';
 import { intervalsEqual } from '@utils/interval';
 import { formatMWhString } from '@utils/strings';
 import { gestionnairesFilters } from 'src/services';
@@ -352,8 +353,7 @@ type CustomLayerSpecification = LayerSpecification & {
 };
 
 export type LayerId =
-  | 'reseauxDeChaleur-avec-trace-classe'
-  | 'reseauxDeChaleur-avec-trace-nonclasse'
+  | 'reseauxDeChaleur-avec-trace'
   | 'reseauxDeChaleur-sans-trace'
   | 'reseauxEnConstruction-zone'
   | 'reseauxEnConstruction-trace'
@@ -941,7 +941,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       },
       layers: [
         {
-          id: 'reseauxDeChaleur-avec-trace-classe',
+          id: 'reseauxDeChaleur-avec-trace',
           source: 'network',
           'source-layer': 'layer',
           minzoom: tileLayersMinZoom,
@@ -949,22 +949,6 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           filter: [
             'all',
             ['==', ['get', 'has_trace'], true],
-            ['==', ['get', 'reseaux classes'], true],
-            ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
-            ...buildFiltreGestionnaire(config.filtreGestionnaire),
-            ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
-          ],
-        },
-        {
-          id: 'reseauxDeChaleur-avec-trace-nonclasse',
-          source: 'network',
-          'source-layer': 'layer',
-          minzoom: tileLayersMinZoom,
-          ...outlineLayerStyle,
-          filter: [
-            'all',
-            ['==', ['get', 'has_trace'], true],
-            ['==', ['get', 'reseaux classes'], false],
             ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
             ...buildFiltreGestionnaire(config.filtreGestionnaire),
             ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
@@ -1200,8 +1184,7 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
   setLayerVisibility('reseauxEnConstruction-trace', config.reseauxEnConstruction);
   setLayerVisibility('reseauxEnConstruction-zone', config.reseauxEnConstruction);
   setLayerVisibility('consommationsGaz', config.consommationsGaz.show);
-  setLayerVisibility('reseauxDeChaleur-avec-trace-classe', config.reseauxDeChaleur.show);
-  setLayerVisibility('reseauxDeChaleur-avec-trace-nonclasse', !config.reseauxDeChaleur.isClassed && config.reseauxDeChaleur.show);
+  setLayerVisibility('reseauxDeChaleur-avec-trace', config.reseauxDeChaleur.show);
   setLayerVisibility('reseauxDeChaleur-sans-trace', config.reseauxDeChaleur.show);
   setLayerVisibility('batimentsRaccordesReseauxChaleur', config.batimentsRaccordesReseauxChaleur);
   setLayerVisibility('batimentsRaccordesReseauxFroid', config.batimentsRaccordesReseauxFroid);
@@ -1304,18 +1287,9 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
     ]
   );
 
-  map.setFilter('reseauxDeChaleur-avec-trace-classe', [
+  map.setFilter('reseauxDeChaleur-avec-trace', [
     'all',
     ['==', ['get', 'has_trace'], true],
-    ['==', ['get', 'reseaux classes'], true],
-    ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
-    ...buildFiltreGestionnaire(config.filtreGestionnaire),
-    ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
-  ]);
-  map.setFilter('reseauxDeChaleur-avec-trace-nonclasse', [
-    'all',
-    ['==', ['get', 'has_trace'], true],
-    ['==', ['get', 'reseaux classes'], false],
     ...buildReseauxDeChaleurFilters(config.reseauxDeChaleur),
     ...buildFiltreGestionnaire(config.filtreGestionnaire),
     ...buildFiltreIdentifiantReseau(config.filtreIdentifiantReseau),
@@ -1407,6 +1381,7 @@ export type ReseauxDeChaleurLimits = Record<(typeof reseauxDeChaleurFilters)[num
  */
 function buildReseauxDeChaleurFilters(conf: MapConfiguration['reseauxDeChaleur']): ExpressionSpecification[] {
   return [
+    ...(isDefined(conf.isClassed) ? [['==', ['get', 'reseaux classes'], conf.isClassed] satisfies ExpressionSpecification] : []),
     ...(conf.energieMobilisee && conf.energieMobilisee.length > 0
       ? conf.energieMobilisee.map(
           (energie) => ['>', ['coalesce', ['get', `energie_ratio_${energie}`]], 0] satisfies ExpressionSpecification
