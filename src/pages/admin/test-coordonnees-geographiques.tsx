@@ -1,6 +1,5 @@
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
 import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
 import Papa from 'papaparse';
 import { ChangeEvent, useState } from 'react';
 
@@ -11,10 +10,10 @@ import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 import { notify } from '@core/notification';
+import { withPermission } from '@helpers/ssr/withPermission';
 import { downloadFile } from '@utils/browser';
 import { postFetchJSON } from '@utils/network';
 import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from 'src/shared/bulk-eligibility-coordinates';
-import { USER_ROLE } from 'src/types/enum/UserRole';
 
 export default function TestCoordinatesPage() {
   const [coordinates, setCoordinates] = useState<Record<string, any>>([]);
@@ -121,26 +120,4 @@ export default function TestCoordinatesPage() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const userSession = await getSession(context);
-
-  if (!userSession) {
-    return {
-      redirect: {
-        destination: '/connexion',
-        permanent: false,
-      },
-    };
-  }
-
-  if (userSession.user.role !== USER_ROLE.ADMIN) {
-    return {
-      redirect: {
-        destination: '/gestionnaire',
-        permanent: false,
-      },
-    };
-  }
-
-  return { props: {} };
-};
+export const getServerSideProps: GetServerSideProps = withPermission('admin');
