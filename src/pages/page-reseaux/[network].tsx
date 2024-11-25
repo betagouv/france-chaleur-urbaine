@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 import NetworkPanel from '@components/Network/Network';
+import SEO from '@components/SEO';
 import { getColdNetwork, getNetwork } from '@core/infrastructure/repository/network';
 import { Network } from 'src/types/Summary/Network';
 
@@ -29,13 +30,18 @@ const PageReseau = ({ network }: { network: Network }) => {
     displayBlocks = blocs;
   }
 
-  return <NetworkPanel network={network} displayBlocks={displayBlocks} externalLinks />;
+  return (
+    <>
+      <SEO noIndex />
+      <NetworkPanel network={network} displayBlocks={displayBlocks} externalLinks />
+    </>
+  );
 };
 
 export async function getStaticPaths() {
   return {
-    paths: [],
-    fallback: true,
+    paths: [], // No need to generate static pages for those as they are used as iframes
+    fallback: 'blocking',
   };
 }
 
