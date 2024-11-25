@@ -6,12 +6,18 @@ import { Session, getServerSession } from 'next-auth';
 import { ZodRawShape, z } from 'zod';
 
 import { nextAuthOptions } from '@pages/api/auth/[...nextauth]';
-import { BadRequestError } from 'src/services/errors';
 import { USER_ROLE } from 'src/types/enum/UserRole';
 
 import { parentLogger } from './logger';
 
 const FormidableError = (formidableErrors as any).default;
+
+export class BadRequestError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'BadRequestError';
+  }
+}
 
 /**
  * Valide un objet selon un schéma zod.

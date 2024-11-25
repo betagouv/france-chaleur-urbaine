@@ -4,8 +4,7 @@ import { z } from 'zod';
 
 import { getEligilityStatus } from '@core/infrastructure/repository/addresseInformation';
 import { logger } from '@helpers/logger';
-import { handleRouteErrors, requirePostMethod } from '@helpers/server';
-import { BadRequestError } from 'src/services/errors';
+import { BadRequestError, handleRouteErrors, requirePostMethod } from '@helpers/server';
 import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from 'src/shared/bulk-eligibility-coordinates';
 
 const zBulkEligibilityCoordinates = z.union([
