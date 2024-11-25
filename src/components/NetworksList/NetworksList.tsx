@@ -15,6 +15,7 @@ import { ColumnDef, Table } from '@components/ui/Table';
 import Text from '@components/ui/Text';
 import useReseauxDeChaleurFilters, { type Filters } from '@hooks/useReseauxDeChaleurFilters';
 import { downloadFile } from '@utils/browser';
+import { isDefined } from '@utils/core';
 import { Interval } from '@utils/interval';
 import { gestionnairesFilters, useServices } from 'src/services';
 import { filtresEnergies } from 'src/services/Map/map-configuration';
@@ -151,12 +152,12 @@ export function filterReseauxDeChaleur(reseauxDeChaleur: NetworkToCompare[], fil
 }
 
 const formatPercentage = (value?: number | string) =>
-  value ? ((value as number) / 100).toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 1 }) : undefined;
+  isDefined(value) ? ((value as number) / 100).toLocaleString('fr-FR', { style: 'percent', maximumFractionDigits: 1 }) : undefined;
 
-const formatNumber = (value?: number | string) => (value ? (value as number).toFixed(1) : undefined);
+const formatNumber = (value?: number | string) => (isDefined(value) ? (value as number).toFixed(1) : undefined);
 
 const formatPrice = (value?: number | string) =>
-  value ? (value as number).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }) : undefined;
+  isDefined(value) ? value.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }) : undefined;
 
 const exportColumns: {
   field: keyof NetworkToCompare;
@@ -360,7 +361,7 @@ const NetworksList = () => {
         minWidth: 110,
         sortable: true,
         align: 'right',
-        renderCell: (params) => <Text>{params.row['Taux EnR&R'] ? `${params.row['Taux EnR&R']}%` : undefined}</Text>,
+        renderCell: (params) => <Text>{isDefined(params.row['Taux EnR&R']) ? `${params.row['Taux EnR&R']}%` : undefined}</Text>,
       },
       {
         field: 'contenu CO2 ACV',
