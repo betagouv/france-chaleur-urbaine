@@ -40,16 +40,12 @@ export default function TestCoordinatesPage() {
     }
     setInputFileName(file.name);
 
-    // pb avec la dernière ligne
     Papa.parse(file, {
       header: true,
       dynamicTyping: true,
       complete(results) {
         if (results.errors.length > 0) {
           console.error('parsing errors:', results.errors);
-        }
-        if (results.errors.length === 1 && results.errors[0].code === 'TooFewFields') {
-          results.data = results.data.slice(0, -1);
         }
         if (isDevModeEnabled()) {
           console.info('parsing results', results);
@@ -65,6 +61,15 @@ export default function TestCoordinatesPage() {
           setCoordinates([]);
           return;
         }
+
+        // remove lines that have errors
+        results.errors
+          .filter((error) => error.type === 'FieldMismatch')
+          .toReversed() // reverse indexes because we will modify data inplace
+          .forEach((error) => {
+            results.data.splice(error.row as number, 1);
+          });
+
         setCoordinates(results.data);
       },
     });

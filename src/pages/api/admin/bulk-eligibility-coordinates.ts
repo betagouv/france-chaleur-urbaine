@@ -7,6 +7,15 @@ import { logger } from '@helpers/logger';
 import { BadRequestError, handleRouteErrors, requirePostMethod } from '@helpers/server';
 import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from 'src/shared/bulk-eligibility-coordinates';
 
+export const config = {
+  api: {
+    responseLimit: false,
+    bodyParser: {
+      sizeLimit: '15mb',
+    },
+  },
+};
+
 const zBulkEligibilityCoordinates = z.union([
   z
     .object({
