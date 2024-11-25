@@ -1,6 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
-import { HeaderProps, HeaderQuickAccessItem } from '@codegouvfr/react-dsfr/Header';
 import MainNavigation, { MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -8,6 +7,7 @@ import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
 
 import { FooterConsentManagementItem } from '@components/ConsentBanner';
+import { HeaderProps, HeaderQuickAccessItem } from '@components/dsfr/Header';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
