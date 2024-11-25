@@ -235,7 +235,14 @@ const LinearHeatDensityTool: React.FC = () => {
     if (!mapDraw) {
       return;
     }
-    downloadObject(features, `FCU_export_tracé_${formatAsISODate(new Date())}.geojson`, 'application/geo+json');
+    downloadObject(
+      {
+        type: 'FeatureCollection',
+        features,
+      },
+      `FCU_export_tracé_${formatAsISODate(new Date())}.geojson`,
+      'application/geo+json'
+    );
     trackEvent('Carto|Densité thermique linéaire|Exporter le tracé');
   }
 
