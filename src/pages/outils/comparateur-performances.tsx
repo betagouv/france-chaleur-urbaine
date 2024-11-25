@@ -13,7 +13,11 @@ const ComparateurPublicodes = dynamic(() => import('@components/ComparateurPubli
 
 const SimulateurPage: React.FC<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ query }) => {
   return (
-    <SimplePage title="Comparateur des performances des modes de chauffage et de refroidissement : France Chaleur Urbaine">
+    <SimplePage
+      noIndex={process.env.NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR !== 'true'}
+      title="Comparateur des performances des modes de chauffage et de refroidissement"
+      description="Comparez le coût et les émissions de CO2 des réseaux de chaleur, fioul, gaz et électricité pour votre adresse et vos caractéristiques"
+    >
       <ComparateurPublicodes tabId={query.tabId} displayMode={query.displayMode} />
     </SimplePage>
   );
