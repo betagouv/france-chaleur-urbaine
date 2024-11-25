@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Advantages from '@components/Coproprietaire/Advantages';
 import CoproGuide from '@components/Coproprietaire/CoproGuide';
@@ -21,34 +21,24 @@ import Dispositifs, { DispositifsData } from './Dispositifs';
 import Header from './Header';
 import Networks from './Networks';
 
-const City = ({ city }: { city: string }) => {
+const City = ({ city }: { city: keyof typeof citiesData }) => {
   const [network, setNetwork] = useState<Network>();
   const { heatNetworkService } = useServices();
-  const cityData = citiesData[city.toLowerCase()];
-  const [isUniqueNetwork, setIsUniqueNetwork] = useState<boolean>(false);
-
-  const getNetworkFromDB = useCallback(
-    async (identifiant: string): Promise<void> => {
-      if (!identifiant) {
-        return;
-      }
-
-      const networkData = await heatNetworkService.findByIdentifiant(identifiant);
-      if (networkData) {
-        setNetwork(networkData);
-      }
-    },
-    [heatNetworkService]
-  );
+  const cityData = citiesData[city];
+  const hasUniqueNetwork = !!cityData.networksData?.identifiant;
 
   useEffect(() => {
-    if (cityData && cityData.networksData.identifiant) {
-      setIsUniqueNetwork(true);
-      if (!network) {
-        getNetworkFromDB(cityData.networksData.identifiant);
-      }
+    if (hasUniqueNetwork && !network) {
+      const getNetworkFromDB = async (identifiant: string): Promise<void> => {
+        const networkData = await heatNetworkService.findByIdentifiant(identifiant);
+        if (networkData) {
+          setNetwork(networkData);
+        }
+      };
+
+      getNetworkFromDB(cityData.networksData?.identifiant as string);
     }
-  }, [cityData, getNetworkFromDB, network]);
+  }, [cityData, network]);
 
   return (
     <CityContainer>
@@ -59,8 +49,7 @@ const City = ({ city }: { city: string }) => {
           <Box p="4w" className="fr-container">
             <Box color="blue-france">
               <Heading as="h2" color="blue-france">
-                {isUniqueNetwork ? 'Votre réseau de chaleur ' : 'Vos réseaux de chaleur '}
-                {city === 'strasbourg' ? 'sur ' : 'à '}
+                {hasUniqueNetwork ? `Votre réseau de chaleur ${cityData.preposition} ` : `Vos réseaux de chaleur ${cityData.preposition} `}
                 <Text fontWeight="bold" legacyColor="lightblue" display="inline">
                   {cityData.nameNetwork}
                 </Text>
@@ -108,7 +97,7 @@ const City = ({ city }: { city: string }) => {
                   city={city}
                   nameNetwork={cityData.nameNetwork}
                   allClassed={cityData.networksData?.allClassed}
-                  isUniqueNetwork={isUniqueNetwork}
+                  isUniqueNetwork={hasUniqueNetwork}
                   hasDevelopmentPerimeter={cityData.networksData?.hasDevelopmentPerimeter}
                 />
               </ResponsiveRow>
