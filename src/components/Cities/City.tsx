@@ -55,7 +55,9 @@ const City = ({ city }: { city: keyof typeof citiesData }) => {
                 </Text>
               </Heading>
               <Box mb="4w">
-                <Text legacyColor="darkblue">{cityData.description}</Text>
+                <Text as="div" legacyColor="darkblue">
+                  {cityData.description}
+                </Text>
               </Box>
             </Box>
             {cityData.networksData && (
