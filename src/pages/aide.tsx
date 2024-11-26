@@ -1,9 +1,9 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { GetServerSideProps } from 'next';
-import { getSession } from 'next-auth/react';
 
 import SimplePage from '@components/shared/page/SimplePage';
 import Accordion from '@components/ui/Accordion';
+import { withAuthentication } from '@helpers/ssr/withAuthentication';
 
 type FaqItem = {
   title: string;
@@ -247,17 +247,4 @@ const AidePage = () => {
 
 export default AidePage;
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const userSession = await getSession(context);
-
-  if (!userSession) {
-    return {
-      redirect: {
-        destination: '/connexion',
-        permanent: false,
-      },
-    };
-  }
-
-  return { props: {} };
-};
+export const getServerSideProps: GetServerSideProps = withAuthentication();

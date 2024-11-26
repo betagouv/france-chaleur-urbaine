@@ -4,9 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { closestNetwork, getConso, getDistanceToNetwork, getNbLogement } from '@core/infrastructure/repository/addresseInformation';
 import { getGestionnaires, getToRelanceDemand } from '@core/infrastructure/repository/manager';
 import { logger } from '@helpers/logger';
-import { handleRouteErrors, requirePostMethod } from '@helpers/server';
+import { BadRequestError, handleRouteErrors, requirePostMethod } from '@helpers/server';
 import base, { AirtableDB } from 'src/db/airtable';
-import { BadRequestError } from 'src/services/errors';
 import { Airtable } from 'src/types/enum/Airtable';
 
 export default handleRouteErrors(async function PostRecords(req: NextApiRequest) {

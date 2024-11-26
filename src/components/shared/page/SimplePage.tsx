@@ -263,9 +263,20 @@ const authenticatedNavigationMenu: MainNavigationProps.Item[] = [
 const adminNavigationMenu: MainNavigationProps.Item[] = [
   {
     text: 'Administration',
-    linkProps: {
-      href: '/admin',
-    },
+    menuLinks: [
+      {
+        text: 'Admin',
+        linkProps: {
+          href: '/admin',
+        },
+      },
+      {
+        text: 'Test de coordonnées géographiques',
+        linkProps: {
+          href: '/admin/test-coordonnees-geographiques',
+        },
+      },
+    ],
   },
 ];
 
