@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 import Manager from '@components/Manager/Manager';
 import SimplePage from '@components/shared/page/SimplePage';
-import { withPermission } from '@helpers/ssr/withPermission';
+import { withAuthentication } from '@helpers/ssr/withAuthentication';
 
 export default function Gestionnaire(): JSX.Element {
   const { data: session } = useSession();
@@ -21,4 +21,4 @@ export default function Gestionnaire(): JSX.Element {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withPermission();
+export const getServerSideProps: GetServerSideProps = withAuthentication();

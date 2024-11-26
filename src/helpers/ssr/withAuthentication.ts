@@ -3,7 +3,7 @@ import { getSession } from 'next-auth/react';
 
 import { USER_ROLE } from 'src/types/enum/UserRole';
 
-export const withPermission = (role?: `${USER_ROLE}`): GetServerSideProps => {
+export const withAuthentication = (role?: `${USER_ROLE}`): GetServerSideProps => {
   return async (context) => {
     const userSession = await getSession(context);
 

@@ -10,7 +10,7 @@ import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 import { notify, toastErrors } from '@core/notification';
-import { withPermission } from '@helpers/ssr/withPermission';
+import { withAuthentication } from '@helpers/ssr/withAuthentication';
 import { downloadFile } from '@utils/browser';
 import { postFetchJSON } from '@utils/network';
 import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from 'src/shared/bulk-eligibility-coordinates';
@@ -129,4 +129,4 @@ export default function TestCoordinatesPage() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = withPermission('admin');
+export const getServerSideProps: GetServerSideProps = withAuthentication('admin');

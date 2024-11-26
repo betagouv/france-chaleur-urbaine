@@ -3,7 +3,7 @@ import { GetServerSideProps } from 'next';
 
 import SimplePage from '@components/shared/page/SimplePage';
 import Accordion from '@components/ui/Accordion';
-import { withPermission } from '@helpers/ssr/withPermission';
+import { withAuthentication } from '@helpers/ssr/withAuthentication';
 
 type FaqItem = {
   title: string;
@@ -247,4 +247,4 @@ const AidePage = () => {
 
 export default AidePage;
 
-export const getServerSideProps: GetServerSideProps = withPermission();
+export const getServerSideProps: GetServerSideProps = withAuthentication();
