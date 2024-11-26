@@ -5,6 +5,7 @@ export interface Article {
   content: string;
   publishedDate: Date;
   themes: Theme[];
+  abstract: string;
 }
 
 type Theme =

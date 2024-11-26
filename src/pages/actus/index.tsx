@@ -35,7 +35,10 @@ const ActualitesPage = () => {
   }, [selectedThemes]);
 
   return (
-    <SimplePage title="Nos actualités - France Chaleur Urbaine">
+    <SimplePage
+      title="Les actualités sur la chaleur urbaine"
+      description="Cartographie et données, Communication, ENR&R, Infographie, Prix, Reportage, Réglementation, Réseaux de chaleur, Réseaux de froid, ..."
+    >
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>
@@ -81,7 +84,7 @@ const ActualitesPage = () => {
                 <Card
                   background
                   border
-                  desc={getArticleAbstract(article.content)}
+                  desc={article.abstract}
                   enlargeLink
                   imageAlt=""
                   imageUrl={article.image}
@@ -119,20 +122,3 @@ const ActualitesPage = () => {
 };
 
 export default ActualitesPage;
-
-const markdownLinksRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-
-/**
- * Get the abstract of an article (markdown). Skip the title.
- */
-function getArticleAbstract(content: string): string {
-  const line = (
-    content
-      .split('\n')
-      .slice(1)
-      .find((line) => line !== '' && !line.startsWith('#')) ?? ''
-  )
-    .replaceAll(markdownLinksRegex, (match, title) => title)
-    .replaceAll(/[\\_*]/g, '');
-  return line.length < 150 ? line : `${line.substring(0, 150)}...`;
-}

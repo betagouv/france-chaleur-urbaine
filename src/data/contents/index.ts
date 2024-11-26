@@ -114,7 +114,24 @@ const importFile = (file: string) => {
   return file.replaceAll('.gitbook/assets/', '/contents/');
 };
 
-export const articles: Article[] = [
+const markdownLinksRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+/**
+ * Get the abstract of an article (markdown). Skip the title.
+ */
+function getArticleAbstract(content: string): string {
+  const line = (
+    content
+      .split('\n')
+      .slice(1)
+      .find((line) => line !== '' && !line.startsWith('#')) ?? ''
+  )
+    .replaceAll(markdownLinksRegex, (match, title) => title)
+    .replaceAll(/[\\_*]/g, '');
+  return line.length < 150 ? line : `${line.substring(0, 150)}...`;
+}
+
+export const articles = [
   {
     image: '/contents/cover_ministre.jpg',
     title: "Présentation de France Chaleur Urbaine à la ministre déléguée chargée de l'Énergie",
@@ -987,6 +1004,6 @@ export const articles: Article[] = [
     publishedDate: new Date('2023-03-27'),
     themes: ['Réseaux de chaleur'],
   },
-];
+].map((article) => ({ ...article, abstract: getArticleAbstract(article.content) })) as Article[];
 
 export const getArticle = (slug: string) => articles.find((article) => article.slug === slug);
