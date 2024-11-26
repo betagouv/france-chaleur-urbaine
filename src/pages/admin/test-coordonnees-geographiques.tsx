@@ -90,6 +90,8 @@ export default function TestCoordinatesPage() {
     notify('success', "Le test s'est bien déroulé. Le fichier résultat a été téléchargé.");
   });
 
+  const estimatedWaitTimeMinutes = Math.max(1, Math.round(((coordinates.length / 1000) * 20) / 60));
+
   return (
     <SimplePage title="France Chaleur Urbaine - Test de coordonnées géographiques" mode="authenticated">
       <Box py="4w" className="fr-container">
@@ -103,7 +105,15 @@ export default function TestCoordinatesPage() {
           automatiquement détectées si elles ont des noms de colonnes parmi [{longitudeColumnNameCandidates.join(', ')}] et [
           {latitudeColumnNameCandidates.join(', ')}] respectivement.
         </Text>
-        <Text mb="2w">Le test dure en général environ une vingtaine de secondes pour 1000 coordonnées.</Text>
+        <Text mb="2w">
+          Le test dure en général environ une vingtaine de secondes pour 1000 coordonnées.{' '}
+          {coordinates.length > 0 && (
+            <>
+              Ici, {coordinates.length} coordonnées ont été détectées et le test devrait durer environ {estimatedWaitTimeMinutes} minute
+              {estimatedWaitTimeMinutes > 1 && 's'}.
+            </>
+          )}
+        </Text>
         <Text mb="2w">
           Si le temps d'attente dépasse 1 minute, le test ne fonctionnera pas. C'est une limitation de l'hébergeur. Dans ce cas, faire appel
           à un développeur directement.
