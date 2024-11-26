@@ -54,7 +54,8 @@ export default handleRouteErrors(
     const longitudeColumnName = findLongitudeColumnName(coords);
     const latitudeColumnName = findLatitudeColumnName(coords);
 
-    // we need to send a response within 1 minute otherwise Scalingo will timeout
+    // we need to send a response within 30 seconds otherwise Scalingo will timeout
+    // but it will eventually timeout after 1 minute...
     res.status(200).flushHeaders();
 
     // process in parallel to avoid database timeouts
