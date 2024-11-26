@@ -7,11 +7,11 @@ dotenv.config();
 export default {
   client: 'pg',
   connection: addApplicationName(process.env.DATABASE_URL as string),
-  acquireConnectionTimeout: 10000,
   migrations: {
     tableName: 'knex_migrations',
     directory: './src/db/migrations',
   },
+  acquireConnectionTimeout: 30000,
   pool: {
     idleTimeoutMillis: 10000,
     min: 0,
@@ -19,12 +19,8 @@ export default {
   },
 } satisfies Knex.Config;
 
-function addApplicationName(
-  connectionString: string | undefined
-): string | undefined {
+function addApplicationName(connectionString: string | undefined): string | undefined {
   return connectionString === undefined
     ? undefined
-    : `${connectionString}${
-        connectionString.includes('?') ? '&' : '?'
-      }application_name=FCU-API`;
+    : `${connectionString}${connectionString.includes('?') ? '&' : '?'}application_name=FCU-API`;
 }
