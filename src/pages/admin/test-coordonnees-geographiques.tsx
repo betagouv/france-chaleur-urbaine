@@ -104,6 +104,10 @@ export default function TestCoordinatesPage() {
           {latitudeColumnNameCandidates.join(', ')}] respectivement.
         </Text>
         <Text mb="2w">Le test dure en général environ une vingtaine de secondes pour 1000 coordonnées.</Text>
+        <Text mb="2w">
+          Si le temps d'attente dépasse 1 minute, le test ne fonctionnera pas. C'est une limitation de l'hébergeur. Dans ce cas, faire appel
+          à un développeur directement.
+        </Text>
 
         <Upload
           label="Choisissez un fichier .csv :"
