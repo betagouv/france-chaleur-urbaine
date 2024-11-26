@@ -12,7 +12,7 @@ export const MapStyle: any = createGlobalStyle<{
   legendCollapsed: boolean;
   isDrawing: boolean;
   withBorder: boolean;
-}>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+}>` /* TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738 */
     .map-wrap {
       position: relative;
       overflow: hidden;

@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle } from 'styled-components';
 
-export const AddressAutocompleteGlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+export const AddressAutocompleteGlobalStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738 */
   .light-theme .fr-input {
     transition: box-shadow .5s ease;
     color: #000074;
