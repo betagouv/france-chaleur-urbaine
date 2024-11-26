@@ -37,7 +37,6 @@ import { StoredAddress } from 'src/types/StoredAddress';
 import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
 
 import CardSearchDetails from './components/CardSearchDetails';
-import { type MapLegendFeature } from './components/MapLegendReseaux';
 import MapMarker from './components/MapMarker';
 import MapPopup from './components/MapPopup';
 import MapSearchForm from './components/MapSearchForm';
@@ -47,7 +46,13 @@ import { useBuildingsDataExtractionLayers } from './components/tools/BuildingsDa
 import { useDistancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';
 import { useLinearHeatDensityLayers } from './components/tools/LinearHeatDensityTool';
 import { useMapClickHandlers, useMapHoverEffects } from './map-hover';
-import { applyMapConfigurationToLayers, buildInternalMapLayers, buildMapLayers, layerSymbolsImagesURLs } from './map-layers';
+import {
+  MapLegendFeature,
+  applyMapConfigurationToLayers,
+  buildInternalMapLayers,
+  buildMapLayers,
+  layerSymbolsImagesURLs,
+} from './map-layers';
 import {
   CollapseLegend,
   CollapseLegendLabel,

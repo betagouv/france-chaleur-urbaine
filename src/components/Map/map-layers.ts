@@ -91,6 +91,47 @@ export const layerSymbolsImagesURLs = [
 
 type LayerSymbolImage = (typeof layerSymbolsImagesURLs)[number]['key'];
 
+export const selectableLayers = [
+  {
+    label: 'Les réseaux de chaleur existants',
+    key: 'reseau_chaleur',
+  },
+  {
+    label: 'Les réseaux de chaleur en construction',
+    key: 'futur_reseau',
+  },
+  {
+    label: 'Les périmètres de développement prioritaire',
+    key: 'pdp',
+  },
+  {
+    label: 'Les réseaux de froid',
+    key: 'reseau_froid',
+  },
+] as const;
+
+export type LegendURLKey = (typeof selectableLayers)[number]['key'];
+
+export const mapLegendFeatures = [
+  'reseauxDeChaleur',
+  'reseauxDeFroid',
+  'reseauxEnConstruction',
+  'zonesDeDeveloppementPrioritaire',
+  'batimentsRaccordesReseauxChaleur',
+  'batimentsRaccordesReseauxFroid',
+] as const;
+
+export type MapLegendFeature = (typeof mapLegendFeatures)[number];
+
+export const legendURLKeyToLegendFeature: Record<LegendURLKey | string, MapLegendFeature> = {
+  reseau_chaleur: 'reseauxDeChaleur',
+  futur_reseau: 'reseauxEnConstruction',
+  reseau_froid: 'reseauxDeFroid',
+  pdp: 'zonesDeDeveloppementPrioritaire',
+  raccordementsChaud: 'batimentsRaccordesReseauxChaleur',
+  raccordementsFroid: 'batimentsRaccordesReseauxFroid',
+};
+
 export const LegendDeskData = {
   energy: {
     min: 10,

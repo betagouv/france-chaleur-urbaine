@@ -1,8 +1,8 @@
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
-import { LegendURLKey, selectableLayers } from '@pages/map';
+import { LegendURLKey, selectableLayers } from '@components/Map/map-layers';
 import { Coords } from 'src/types/Coords';
 import { SuggestionItem } from 'src/types/Suggestions';
 

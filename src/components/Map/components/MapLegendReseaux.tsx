@@ -1,7 +1,7 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useMemo } from 'react';
 
-import { batimentsRaccordesLayerMaxOpacity } from '@components/Map/map-layers';
+import { batimentsRaccordesLayerMaxOpacity, MapLegendFeature, mapLegendFeatures } from '@components/Map/map-layers';
 import useFCUMap from '@components/Map/MapProvider';
 import ReseauxDeChaleurFilters from '@components/ReseauxDeChaleurFilters';
 import Box from '@components/ui/Box';
@@ -13,17 +13,6 @@ import Tooltip from '@components/ui/Tooltip';
 import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
 
 import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
-
-export const mapLegendFeatures = [
-  'reseauxDeChaleur',
-  'reseauxDeFroid',
-  'reseauxEnConstruction',
-  'zonesDeDeveloppementPrioritaire',
-  'batimentsRaccordesReseauxChaleur',
-  'batimentsRaccordesReseauxFroid',
-] as const;
-
-export type MapLegendFeature = (typeof mapLegendFeatures)[number];
 
 // TODO thos should be fine tuned to decouple more the map configuration from the legend
 // but for now it's enough
