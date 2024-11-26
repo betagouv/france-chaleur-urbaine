@@ -1,3 +1,4 @@
+import { isDefined } from '@utils/core';
 import db from 'src/db';
 import { NetworkToCompare } from 'src/types/Summary/Network';
 
@@ -87,9 +88,9 @@ export const getNetworks = async (): Promise<NetworkToCompare[]> => {
     return {
       id: network.id_fcu,
       ...network,
-      livraisons_totale_MWh: network['livraisons_totale_MWh'] / 1000,
-      'contenu CO2 ACV': network['contenu CO2 ACV'] * 1000,
-      'contenu CO2': network['contenu CO2'] * 1000,
+      livraisons_totale_MWh: isDefined(network['livraisons_totale_MWh']) ? network['livraisons_totale_MWh'] / 1000 : null,
+      'contenu CO2 ACV': isDefined(network['contenu CO2 ACV']) ? network['contenu CO2 ACV'] * 1000 : null,
+      'contenu CO2': isDefined(network['contenu CO2']) ? network['contenu CO2'] * 1000 : null,
     } as NetworkToCompare;
   });
 };
