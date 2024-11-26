@@ -611,12 +611,12 @@ export const FullyFeaturedMap = ({
 
   return (
     <>
-      <MapStyle legendCollapsed={!withLegend || legendCollapsed} isDrawing={isDrawing} withBorder={withBorder} />
+      <MapStyle $legendCollapsed={!withLegend || legendCollapsed} isDrawing={isDrawing} withBorder={withBorder} />
       <div className={cx('map-wrap', className)} {...props}>
         {withLegend && (
           <>
             <CollapseLegend
-              legendCollapsed={legendCollapsed}
+              $legendCollapsed={legendCollapsed}
               onClick={() => {
                 trackEvent(`Carto|Légende|${legendCollapsed ? 'Ouvre' : 'Ferme'}`);
                 setLegendCollapsed(!legendCollapsed);
@@ -630,8 +630,10 @@ export const FullyFeaturedMap = ({
                 </CollapseLegendLabel>
               </Tooltip>
             </CollapseLegend>
-            <LegendSideBar legendCollapsed={legendCollapsed}>
-              <LegendContainer>{<SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />}</LegendContainer>
+            <LegendSideBar $legendCollapsed={legendCollapsed}>
+              <LegendContainer>
+                <SimpleMapLegend legendTitle={legendTitle} enabledFeatures={enabledLegendFeatures} />
+              </LegendContainer>
               {!withoutLogo && (
                 <LegendLogoList>
                   <LegendLogoLink href="https://france-chaleur-urbaine.beta.gouv.fr/" target="_blank" rel="noopener noreferrer">
@@ -690,7 +692,7 @@ export const FullyFeaturedMap = ({
               ))}
           </MapReactGL>
           {withLegend && (
-            <MapSearchWrapper legendCollapsed={legendCollapsed}>
+            <MapSearchWrapper $legendCollapsed={legendCollapsed}>
               <MapSearchInputWrapper>
                 <Title>Rechercher une adresse</Title>
                 <MapSearchForm onAddressSelect={onAddressSelectHandle} />

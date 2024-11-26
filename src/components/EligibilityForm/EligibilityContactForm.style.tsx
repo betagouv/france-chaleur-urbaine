@@ -1,4 +1,4 @@
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, css } from 'styled-components';
 
 export const EligibilityContactFormStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738 */
   .slice-contact-form-wrapper {
@@ -19,8 +19,12 @@ export const Container = styled.div`
 `;
 
 export const ContactFormWrapper = styled.div<{ active: boolean }>`
-  ${({ active }) => !active && 'overflow: hidden;'}
-  max-height: ${({ active }) => (active ? '500vh' : '0px')};
+  ${({ active }) =>
+    !active &&
+    css`
+      overflow: hidden;
+    `}
+  max-height: ${({ active }) => (active ? css`500vh` : css`0px`)};
   transition: max-height 1s ease;
   .fr-btn,
   .fr-input,
