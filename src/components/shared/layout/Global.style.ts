@@ -131,7 +131,7 @@ export const GlobalStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types
     align-items: center;
     h3 {
       color: #000074 !important;
-      margin: 0
+      margin: 0;
     }
   }
 
@@ -151,7 +151,7 @@ export const GlobalStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types
       color: #000074 !important;
     }
     b {
-      color: #4550E5
+      color: #4550E5;
     }
     ${({ theme }) => theme.media.lg`
       padding-left: 64px;
