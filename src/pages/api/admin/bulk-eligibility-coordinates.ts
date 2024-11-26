@@ -1,4 +1,3 @@
-import type { NextApiRequest } from 'next';
 import pLimit from 'p-limit';
 import { z } from 'zod';
 
@@ -43,7 +42,7 @@ const limit = pLimit(QUERY_PARALLELISM);
 export type BulkEligibilityCoordinates = z.infer<typeof zBulkEligibilityCoordinates>;
 
 export default handleRouteErrors(
-  async (req: NextApiRequest) => {
+  async (req, res) => {
     requirePostMethod(req);
     const coordinatesArray = await z.array(zBulkEligibilityCoordinates).parseAsync(req.body);
     logger.info('bulk-eligibility-coordinates', {
@@ -55,6 +54,9 @@ export default handleRouteErrors(
     const longitudeColumnName = findLongitudeColumnName(coords);
     const latitudeColumnName = findLatitudeColumnName(coords);
 
+    // we need to send a response within 1 minute otherwise Scalingo will timeout
+    res.status(200).flushHeaders();
+
     // process in parallel to avoid database timeouts
     const results = await Promise.all(
       coordinatesArray.map((coordinates) =>
@@ -64,7 +66,8 @@ export default handleRouteErrors(
         }))
       )
     );
-    return results;
+
+    res.send(results);
   },
   {
     requireAuthentication: ['admin'],
