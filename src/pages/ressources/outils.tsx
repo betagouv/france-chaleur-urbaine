@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import styled from 'styled-components';
 
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import { FCUArrowIcon } from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 
@@ -171,18 +171,3 @@ const OutilsPage = () => {
 };
 
 export default OutilsPage;
-
-export const FCUArrowIcon = styled.div`
-  width: 24px;
-  height: 24px;
-
-  &::before {
-    content: '';
-    width: 24px;
-    height: 24px;
-    display: block;
-    background-image: url('/icons/picto-arrow.svg');
-    background-size: 1em;
-    font-size: 24px;
-  }
-`;
