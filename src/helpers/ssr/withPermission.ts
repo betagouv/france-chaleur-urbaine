@@ -10,7 +10,7 @@ export const withPermission = (role?: `${USER_ROLE}`): GetServerSideProps => {
     if (!userSession) {
       return {
         redirect: {
-          destination: '/connexion',
+          destination: `/connexion?notify=error:${encodeURIComponent('Vous devez être connecté pour accéder à cette page')}`,
           permanent: false,
         },
       };
