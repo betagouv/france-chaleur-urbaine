@@ -13,7 +13,7 @@ import Link from '@components/ui/Link';
 import { formatUnit } from '@helpers/publicodes/usePublicodesEngine';
 import { clientConfig } from 'src/client-config';
 
-import { modesDeChauffage } from './modes-de-chauffage';
+import { modesDeChauffage } from './mappings';
 import { type SimulatorEngine } from './useSimulatorEngine';
 
 type DebugDrawerProps = {

@@ -23,7 +23,6 @@ export default function InfosCoproPage() {
           content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
         />
       </Head>
-
       <GlobalStyle />
       <HeadSliceForm
         bg="/img/banner_infos-copro.png"
