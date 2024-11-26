@@ -35,7 +35,20 @@ const ActualitePage: React.FC<{ article: Article }> = ({ article }) => {
   const content = lines.slice(1).join('\n');
 
   return (
-    <SimplePage currentPage="/actus" title={title} description={article.abstract}>
+    <SimplePage
+      currentPage="/actus"
+      title={title}
+      description={article.abstract}
+      microdata={[
+        {
+          '@type': 'NewsArticle',
+          headline: title,
+          description: article.abstract,
+          image: [article.image],
+          datePublished: new Date(article?.publishedDate).toISOString(),
+        },
+      ]}
+    >
       <Box className="fr-container fr-mb-n2w fr-mb-md-n4w">
         <Breadcrumb
           currentPageLabel={title}
