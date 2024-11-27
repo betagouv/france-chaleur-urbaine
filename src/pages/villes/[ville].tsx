@@ -14,8 +14,8 @@ const PageVille: React.FC<ComponentProps> = ({ cityData, network }) => {
       title={`Chauffage urbain à ${cityData.name}`}
       description={
         cityData.networksData.identifiant
-          ? `Découvrez votre réseau de chaleur ${cityData.preposition} ${cityData.name}, une solution écologique et économique`
-          : `Découvrez vos réseaux de chaleur ${cityData.preposition} ${cityData.name}, une solution écologique et économique`
+          ? `Découvrez votre réseau de chaleur ${cityData.preposition} ${cityData.nameNetwork}, une solution écologique et économique`
+          : `Découvrez vos réseaux de chaleur ${cityData.preposition} ${cityData.nameNetwork}, une solution écologique et économique`
       }
     >
       <GlobalStyle />
