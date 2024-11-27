@@ -144,7 +144,6 @@ const SEO: React.FC<SEOProps> = ({
       {noIndex && <meta key="robots" name="robots" content="noindex" />}
 
       <link key="canonical" rel="canonical" href={currentAbsoluteUrl} />
-      <meta key="og:type" property="og:type" content={type} />
       <meta key="theme-color" name="theme-color" content={colors.primary} />
 
       <title>{titleWithSuffix}</title>
@@ -157,6 +156,7 @@ const SEO: React.FC<SEOProps> = ({
       <link key="shortcut icon" rel="shortcut icon" href="/favicons/favicon.ico" type="image/x-icon" />
 
       {/* OPENGRAPH https://ogp.me/ */}
+      <meta key="og:type" property="og:type" content={type} />
       <meta key="og:site_name" property="og:site_name" content={websiteName} />
       <meta key="og:title" property="og:title" content={titleWithSuffix} />
       <meta key="og:url" property="og:url" content={`${websiteUrl}${currentUrl}`} />
