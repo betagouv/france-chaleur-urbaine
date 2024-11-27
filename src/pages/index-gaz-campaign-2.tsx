@@ -14,6 +14,7 @@ import Text from '@components/ui/Text';
 export default function Home() {
   return (
     <SimplePage
+      noIndex
       title="Changez votre chaudière gaz pour le chauffage urbain"
       description="Stabilité des tarifs, Amélioration de l'étiquette DPE, Faibles émissions de gaz à effet de serre"
     >
