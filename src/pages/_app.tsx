@@ -24,7 +24,7 @@ import { PasswordService } from 'src/services/password';
 
 const ConsentBanner = dynamic(
   () => import('@components/ConsentBanner').then((module) => module.ConsentBanner),
-  { ssr: false } // Disable server side as it
+  { ssr: false } // Disable server side as it injects server side a hidden modal with a H1 which might affect SEO
 );
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {
   interface RegisterLink {
