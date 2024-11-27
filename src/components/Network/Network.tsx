@@ -519,7 +519,7 @@ const NetworkPanel = ({
                 <Heading as="h3" color="blue-france">
                   Mix énergétique
                 </Heading>
-                <EnergiesChart network={network} />
+                {isDefined(network.production_totale_MWh) ? <EnergiesChart network={network} /> : <Text>Non connu</Text>}
               </BoxSection>
             )}
 
