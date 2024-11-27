@@ -23,7 +23,10 @@ const ChauffageUrbain = () => {
   const aidesRef = useRef<null | HTMLHeadingElement>(null);
   const subventionRef = useRef<null | HTMLHeadingElement>(null);
   return (
-    <SimplePage>
+    <SimplePage
+      title="Découvrez les réseaux de chaleur"
+      description="Toutes les informations dont vous avez besoin sur les réseaux de chaleur"
+    >
       <Header
         title="Découvrez les réseaux de chaleur"
         description="Toutes les informations dont vous avez besoin sur les réseaux de chaleur"
