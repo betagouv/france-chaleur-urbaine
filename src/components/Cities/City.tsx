@@ -21,10 +21,10 @@ import Dispositifs, { DispositifsData } from './Dispositifs';
 import Header from './Header';
 import Networks from './Networks';
 
-const City = ({ city }: { city: keyof typeof citiesData }) => {
+const City = ({ citySlug }: { citySlug: keyof typeof citiesData }) => {
   const [network, setNetwork] = useState<Network>();
   const { heatNetworkService } = useServices();
-  const cityData = citiesData[city];
+  const cityData = citiesData[citySlug];
   const hasUniqueNetwork = !!cityData.networksData?.identifiant;
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const City = ({ city }: { city: keyof typeof citiesData }) => {
     <CityContainer>
       {cityData && (
         <>
-          <Header city={cityData.name} bannerSrc={`/img/banner_ville_${city}.jpg`} />
+          <Header city={cityData.name} bannerSrc={`/img/banner_ville_${citySlug}.jpg`} />
           <StickyForm title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`} />
           <Box p="4w" className="fr-container">
             <Box color="blue-france">
@@ -96,7 +96,7 @@ const City = ({ city }: { city: keyof typeof citiesData }) => {
             <Box p="8w" backgroundColor="#f9f8f6">
               <ResponsiveRow className="fr-container">
                 <ClassedNetworks
-                  city={city}
+                  city={citySlug}
                   nameNetwork={cityData.nameNetwork}
                   allClassed={cityData.networksData?.allClassed}
                   isUniqueNetwork={hasUniqueNetwork}
@@ -111,10 +111,10 @@ const City = ({ city }: { city: keyof typeof citiesData }) => {
               <br />
               auxquels vous avez droit sur {cityData.name}
             </Heading>
-            {city === 'paris' && (
+            {citySlug === 'paris' && (
               <Box p="4w">
                 <Dispositifs
-                  city={city}
+                  city={citySlug}
                   dispositifsTitle={cityData.dispositifsTitle}
                   dispositifs={cityData.dispositifs as DispositifsData[]}
                 />
@@ -130,10 +130,10 @@ const City = ({ city }: { city: keyof typeof citiesData }) => {
                 simulatorDisclaimerLegacyColor="white"
               />
             </Box>
-            {city !== 'paris' && cityData.dispositifs && (
+            {citySlug !== 'paris' && cityData.dispositifs && (
               <Box p="4w">
                 <Dispositifs
-                  city={city}
+                  city={citySlug}
                   dispositifsTitle={cityData.dispositifsTitle}
                   dispositifs={cityData.dispositifs as DispositifsData[]}
                 />

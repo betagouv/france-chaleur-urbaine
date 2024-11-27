@@ -18,7 +18,7 @@ const PageVille: React.FC<ComponentProps> = ({ cityData }) => {
       }
     >
       <GlobalStyle />
-      <City city={cityData.slug} />
+      <City citySlug={cityData.slug} />
     </SimplePage>
   );
 };
