@@ -49,4 +49,21 @@ const Icon = forwardRef(function Icon(
     />
   );
 });
+
+// FIXME moved here for refactor but should be replaced by a common icon
+export const FCUArrowIcon = styled.div`
+  width: 24px;
+  height: 24px;
+
+  &::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    display: block;
+    background-image: url('/icons/picto-arrow.svg');
+    background-size: 1em;
+    font-size: 24px;
+  }
+`;
+
 export default Icon;

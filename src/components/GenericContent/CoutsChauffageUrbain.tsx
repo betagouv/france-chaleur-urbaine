@@ -14,7 +14,7 @@ const CoutsChauffageUrbain = () => {
       </Heading>
 
       <Box mt="10w">
-        <Heading as="h4" color="blue-france">
+        <Heading as="h3" size="h4" color="blue-france">
           Le coût du raccordement
         </Heading>
         <Text>
@@ -35,7 +35,7 @@ const CoutsChauffageUrbain = () => {
         </Box>
       </Box>
 
-      <Heading as="h4" color="blue-france" mt="10w">
+      <Heading as="h3" size="h4" color="blue-france" mt="10w">
         Le coût de la chaleur
       </Heading>
       <ResponsiveRow>

@@ -4,7 +4,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 });
 const { withSentryConfig } = require('@sentry/nextjs');
 const helmet = require('helmet');
-const isGithubCI = process.env.NODE_ENV === 'production' && process.env.CI;
+const isGithubCI = process.env.NODE_ENV === 'production' && process.env.GITHUB_CI === 'true';
 
 const csp = {
   ...helmet.contentSecurityPolicy.getDefaultDirectives(),

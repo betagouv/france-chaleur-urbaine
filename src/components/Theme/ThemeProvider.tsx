@@ -88,7 +88,7 @@ export const AppGlobalStyle = createGlobalStyle`
   }
 `;
 
-const DsfrFixUp: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+const DsfrFixUp: any = createGlobalStyle` /* TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738 */
   input[type="checkbox"], input[type="radio"] {
     width: 13px;
     height: 13px;

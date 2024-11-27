@@ -16,6 +16,7 @@ export default function Campagnes2024Page() {
     <SimplePage
       title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique"
       currentPage="/"
+      noIndex
     >
       <Head>
         <meta

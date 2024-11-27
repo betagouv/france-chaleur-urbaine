@@ -5,6 +5,7 @@ import { useQueryState } from 'nuqs';
 import RangeFilter from '@components/form/dsfr/RangeFilter';
 import {
   LegendDeskData,
+  MapLegendFeature,
   besoinsEnChaleurIndustrieCommunesIntervals,
   besoinsEnChaleurIntervals,
   besoinsEnFroidIntervals,
@@ -27,7 +28,7 @@ import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/
 import { communesFortPotentielPourCreationReseauxChaleurInterval, defaultMapConfiguration } from 'src/services/Map/map-configuration';
 
 import IconPolygon from './IconPolygon';
-import MapLegendReseaux, { type MapLegendFeature } from './MapLegendReseaux';
+import MapLegendReseaux from './MapLegendReseaux';
 import ModalCarteFrance from './ModalCarteFrance';
 import ScaleLegend from './ScaleLegend';
 import {

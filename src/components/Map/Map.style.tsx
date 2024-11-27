@@ -4,35 +4,41 @@ import Box from '@components/ui/Box';
 
 export const mapControlZindex = 0;
 
-export const mapMediumMedia = '@media (max-width: 1250px) ';
+export const mapMediumMedia = '@media (max-width: 1250px)';
 
 export const legendWidth = 350;
 
 export const MapStyle: any = createGlobalStyle<{
-  legendCollapsed: boolean;
+  $legendCollapsed: boolean;
   isDrawing: boolean;
   withBorder: boolean;
-}>` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+}>` /* TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738 */
     .map-wrap {
       position: relative;
       overflow: hidden;
       display: flex;
       width: 100%;
       height: 100%;
-      border: ${({ withBorder }) => (withBorder ? '1px solid #c3c3c3' : undefined)}
+      border: ${({ withBorder }) => (withBorder ? css`1px solid #c3c3c3` : undefined)};
     }
 
     .map, .maplibregl-map {
       position: absolute !important;
-      left: ${({ legendCollapsed }) => (legendCollapsed ? '0px' : `${legendWidth}px`)};
-      width: ${({ legendCollapsed }) => (legendCollapsed ? '100%' : `calc(100% - ${legendWidth}px) !important`)};
+      left: ${({ $legendCollapsed }) =>
+        $legendCollapsed
+          ? css`0px`
+          : css`
+              ${legendWidth}px
+            `};
+      width: ${({ $legendCollapsed }) => ($legendCollapsed ? css`100%` : css`calc(100% - ${legendWidth}px) !important`)};
 
       ${({ isDrawing }) =>
         isDrawing &&
-        `
-      .maplibregl-canvas {
-        cursor: crosshair;
-      }`}
+        css`
+          .maplibregl-canvas {
+            cursor: crosshair;
+          }
+        `}
     }
 
     .popup-map-layer {
@@ -113,17 +119,17 @@ export const MapStyle: any = createGlobalStyle<{
 // --------------------------
 
 export const LegendSideBar = styled.div<{
-  legendCollapsed: boolean;
+  $legendCollapsed: boolean;
 }>`
   z-index: ${mapControlZindex + 2};
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
-  ${({ legendCollapsed }) =>
-    legendCollapsed &&
+  ${({ $legendCollapsed }) =>
+    $legendCollapsed &&
     css`
-      // not visible so that collapsiblebox can be rendered and compute their height
+      /* not visible so that collapsiblebox can be rendered and compute their height */
       position: absolute;
       left: -150%;
     `}
@@ -150,9 +156,10 @@ export const CollapseLegendLabel = styled.label`
   align-items: center;
   gap: 12px;
 `;
-export const CollapseLegend = styled.button<{ legendCollapsed: boolean }>`
+
+export const CollapseLegend = styled.button<{ $legendCollapsed: boolean }>`
   position: absolute;
-  left: ${({ legendCollapsed }) => (legendCollapsed ? '-1px' : `calc(${legendWidth}px - 1px)`)};
+  left: ${({ $legendCollapsed }) => ($legendCollapsed ? css`-1px` : css`calc(${legendWidth}px - 1px)`)};
   animation: slide-in-left 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   top: calc(50% - 50px);
   background-color: var(--background-flat-blue-france);
@@ -225,11 +232,11 @@ export const MapSearchInputWrapper = styled(Box)`
 `;
 
 export const MapSearchWrapper = styled.div<{
-  legendCollapsed?: boolean;
+  $legendCollapsed?: boolean;
 }>`
   position: absolute;
   background: var(--background-default-grey);
-  padding: 10px;
+  padding: 12px;
   top: 0;
   left: 0;
   right: 0;
@@ -237,7 +244,6 @@ export const MapSearchWrapper = styled.div<{
   background: #fff;
   margin: 20px 10vw;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  padding: 12px;
   font-size: 13px;
   line-height: 2;
   outline: none;
@@ -257,5 +263,5 @@ export const MapSearchWrapper = styled.div<{
     }
   `}
 
-  ${({ legendCollapsed, theme }) => !legendCollapsed && theme.media.lg`left: ${legendWidth}px;`}
+  ${({ $legendCollapsed, theme }) => !$legendCollapsed && theme.media.lg`left: ${legendWidth}px;`}
 `;

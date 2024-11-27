@@ -15,7 +15,11 @@ export default function Gestionnaire(): JSX.Element {
   }, [session]);
 
   return (
-    <SimplePage title="France Chaleur Urbaine - Espace gestionnaire" mode="authenticated">
+    <SimplePage
+      title="Espace gestionnaire"
+      description="Votre tableau de bord pour la gestion des demandes des réseaux de chaleur"
+      mode="authenticated"
+    >
       <Manager />
     </SimplePage>
   );

@@ -9,7 +9,10 @@ import Text from '@components/ui/Text';
 
 const ActionsDeCommunicationPage = () => {
   return (
-    <SimplePage title="Nos actions de communication - France Chaleur Urbaine">
+    <SimplePage
+      title="Nos actions de communication sur la chaleur urbaine"
+      description="Nous aidons les collectivités et les exploitants à faire la promotion du chauffage urbain"
+    >
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>

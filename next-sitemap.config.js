@@ -1,25 +1,14 @@
-const ressources = [
-  'reseau',
-  'energies-vertes',
-  'atouts',
-  'livraisons',
-  'histoire',
-  'role',
-  'faisabilite',
-  'avantages',
-  'aides',
-  'financement',
-  'facture',
-  'prioritaire',
-  'acteurs',
-  'etat',
-  'supports',
-  'reseau-de-froid',
-  'reseau-classe',
+const highPriorityPages = [
+  '/',
+  '/professionnels',
+  '/collectivites-et-exploitants',
+  '/collectivites-et-exploitants/potentiel-creation-reseau',
+  '/carte',
+  /\/actus(\/.*)?/i,
+  /\/ressources(\/.*)?/i,
+  /\/reseaux(\/.*)?/i,
+  /\/villes(\/.*)?/i,
 ];
-
-// Category pages, homepage, top landing pages
-const highPriorityPages = ['/', '/professionnels', '/collectivites-et-exploitants', '/carte', '/actus', '/ressources/articles'];
 
 // Pages that are not as important like outdated content or utility-type pages
 const lowPriorityPages = [
@@ -35,7 +24,19 @@ const lowPriorityPages = [
 ];
 
 function getPagePriority(/** @type {string} */ path) {
-  return highPriorityPages.includes(path) ? 1 : lowPriorityPages.includes(path) ? 0.3 : 0.7;
+  const isHighPriority = highPriorityPages.some((entry) => (typeof entry === 'string' ? entry === path : entry.test(path)));
+
+  if (isHighPriority) {
+    return 1;
+  }
+
+  const isLowPriority = lowPriorityPages.some((entry) => entry === path);
+
+  if (isLowPriority) {
+    return 0.3;
+  }
+
+  return 0.7;
 }
 
 // Page that should not be indexed by Google because there is no point
@@ -67,14 +68,6 @@ const excludedPages = [
 module.exports = {
   siteUrl: process.env.NEXTAUTH_URL || 'https://example.com',
   generateRobotsTxt: true, // (optional)
-  additionalPaths: () => {
-    return ressources.map((key) => ({
-      loc: `/ressources/${key}`,
-      priority: 0.7,
-      lastmod: new Date().toISOString(),
-      changefreq: 'daily',
-    }));
-  },
   exclude: excludedPages,
   transform: (config, path) => {
     return {
@@ -84,5 +77,4 @@ module.exports = {
       lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
     };
   },
-  // ...other options
 };

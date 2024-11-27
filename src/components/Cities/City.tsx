@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import Advantages from '@components/Coproprietaire/Advantages';
 import CoproGuide from '@components/Coproprietaire/CoproGuide';
 import Informations from '@components/Coproprietaire/Informations';
@@ -12,7 +10,6 @@ import Text from '@components/ui/Text';
 import WrappedText from '@components/WrappedText';
 import userExperience from '@data/villes/user-experience';
 import citiesData from '@data/villes/villes';
-import { useServices } from 'src/services';
 import { Network } from 'src/types/Summary/Network';
 
 import { CityContainer, VideoGuideColumn } from './City.styles';
@@ -21,52 +18,28 @@ import Dispositifs, { DispositifsData } from './Dispositifs';
 import Header from './Header';
 import Networks from './Networks';
 
-const City = ({ city }: { city: string }) => {
-  const [network, setNetwork] = useState<Network>();
-  const { heatNetworkService } = useServices();
-  const cityData = citiesData[city.toLowerCase()];
-  const [isUniqueNetwork, setIsUniqueNetwork] = useState<boolean>(false);
-
-  const getNetworkFromDB = useCallback(
-    async (identifiant: string): Promise<void> => {
-      if (!identifiant) {
-        return;
-      }
-
-      const networkData = await heatNetworkService.findByIdentifiant(identifiant);
-      if (networkData) {
-        setNetwork(networkData);
-      }
-    },
-    [heatNetworkService]
-  );
-
-  useEffect(() => {
-    if (cityData && cityData.networksData.identifiant) {
-      setIsUniqueNetwork(true);
-      if (!network) {
-        getNetworkFromDB(cityData.networksData.identifiant);
-      }
-    }
-  }, [cityData, getNetworkFromDB, network]);
+const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; network?: Network }) => {
+  const cityData = citiesData[citySlug];
+  const hasUniqueNetwork = !!cityData.networksData?.identifiant;
 
   return (
     <CityContainer>
       {cityData && (
         <>
-          <Header city={cityData.name} bannerSrc={`/img/banner_ville_${city}.jpg`} />
+          <Header city={cityData.name} bannerSrc={`/img/banner_ville_${citySlug}.jpg`} />
           <StickyForm title={`Votre bâtiment est-il raccordable au réseau de chaleur de ${cityData.name} ?`} />
           <Box p="4w" className="fr-container">
             <Box color="blue-france">
               <Heading as="h2" color="blue-france">
-                {isUniqueNetwork ? 'Votre réseau de chaleur ' : 'Vos réseaux de chaleur '}
-                {city === 'strasbourg' ? 'sur ' : 'à '}
+                {hasUniqueNetwork ? `Votre réseau de chaleur ${cityData.preposition} ` : `Vos réseaux de chaleur ${cityData.preposition} `}
                 <Text fontWeight="bold" legacyColor="lightblue" display="inline">
                   {cityData.nameNetwork}
                 </Text>
               </Heading>
               <Box mb="4w">
-                <Text legacyColor="darkblue">{cityData.description}</Text>
+                <Text as="div" legacyColor="darkblue">
+                  {cityData.description}
+                </Text>
               </Box>
             </Box>
             {cityData.networksData && (
@@ -105,10 +78,10 @@ const City = ({ city }: { city: string }) => {
             <Box p="8w" backgroundColor="#f9f8f6">
               <ResponsiveRow className="fr-container">
                 <ClassedNetworks
-                  city={city}
+                  city={citySlug}
                   nameNetwork={cityData.nameNetwork}
                   allClassed={cityData.networksData?.allClassed}
-                  isUniqueNetwork={isUniqueNetwork}
+                  isUniqueNetwork={hasUniqueNetwork}
                   hasDevelopmentPerimeter={cityData.networksData?.hasDevelopmentPerimeter}
                 />
               </ResponsiveRow>
@@ -120,10 +93,10 @@ const City = ({ city }: { city: string }) => {
               <br />
               auxquels vous avez droit sur {cityData.name}
             </Heading>
-            {city === 'paris' && (
+            {citySlug === 'paris' && (
               <Box p="4w">
                 <Dispositifs
-                  city={city}
+                  city={citySlug}
                   dispositifsTitle={cityData.dispositifsTitle}
                   dispositifs={cityData.dispositifs as DispositifsData[]}
                 />
@@ -139,10 +112,10 @@ const City = ({ city }: { city: string }) => {
                 simulatorDisclaimerLegacyColor="white"
               />
             </Box>
-            {city !== 'paris' && cityData.dispositifs && (
+            {citySlug !== 'paris' && cityData.dispositifs && (
               <Box p="4w">
                 <Dispositifs
-                  city={city}
+                  city={citySlug}
                   dispositifsTitle={cityData.dispositifsTitle}
                   dispositifs={cityData.dispositifs as DispositifsData[]}
                 />

@@ -4,7 +4,8 @@ import Tertiaire from '@components/Tertiaire';
 export default function DecretTertiairePage() {
   return (
     <SimplePage
-      title="Décret tertiaire : atteignez vos objectifs de perfomance énergétique en raccordant votre bâtiment au chauffage urbain"
+      title="Décret tertiaire et chauffage urbain: atteignez vos objectifs de performance énergétique"
+      description="Jusqu’à 23 % de réduction de consommations d’énergie comptabilisée ! En application de l’arrêté du 13 avril 2022 relatif aux obligations d’actions de réduction des consommations d’énergie finale dans des bâtiments à usage tertiaire."
       currentPage="/professionnels"
     >
       <Tertiaire alt />

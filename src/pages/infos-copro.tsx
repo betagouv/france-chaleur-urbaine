@@ -1,5 +1,3 @@
-import Head from 'next/head';
-
 import Advantages from '@components/Coproprietaire/Advantages';
 import Interviews from '@components/Coproprietaire/Interviews';
 import HeadSliceForm from '@components/HeadSliceForm';
@@ -14,16 +12,10 @@ import { comparatifRcu } from '@data/coproprietaire';
 export default function InfosCoproPage() {
   return (
     <SimplePage
-      title="France Chaleur Urbaine : Une solution numérique qui facilite le raccordement à un chauffage économique et écologique"
+      title="Le chauffage urbain pour les coprpriétaires"
+      description="Maitrisez vos factures en vous raccordant à un réseau de chaleur"
       currentPage="/"
     >
-      <Head>
-        <meta
-          name="description"
-          content="Un réseau de chaleur est un système de distribution de chaleur produite de façon centralisée qui permet de desservir un grand nombre d’usagers (bâtiments tertiaires publics ou privés, copropriétés, logements sociaux,...). Un des atouts majeurs des réseaux de chaleur est de permettre de mobiliser les énergies renouvelables présentes sur le territoire, difficilement distribuables autrement."
-        />
-      </Head>
-
       <GlobalStyle />
       <HeadSliceForm
         bg="/img/banner_infos-copro.png"

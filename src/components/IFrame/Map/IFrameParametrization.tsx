@@ -2,7 +2,7 @@ import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { useMemo, useState } from 'react';
 
 import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
-import { LegendURLKey, selectableLayers } from '@pages/map';
+import { LegendURLKey, selectableLayers } from '@components/Map/map-layers';
 import { SuggestionItem } from 'src/types/Suggestions';
 
 import { AddressContainer, Container, IFrame } from './IFrameParametrization.styles';

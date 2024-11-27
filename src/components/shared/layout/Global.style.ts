@@ -2,11 +2,11 @@ import { createGlobalStyle } from 'styled-components';
 
 import { SliceBody } from '@components/Slice/Slice.style';
 
-export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738
+export const GlobalStyle: any = createGlobalStyle` /* TODO: Wait Fix from @types/styled-component : https://github.com/styled-components/styled-components/issues/3738 */
   .user-experience-description {
     position: relative;
     margin-top: 32px;
-    
+
     ${({ theme }) => theme.media.lg`
       padding-left: 5.75em;
     `}
@@ -31,7 +31,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
   .fcuSolutionForFuturBody,
   .fcuSolutionForFuturFooter {
     text-align: center;
-    
+
     ${({ theme }) => theme.media.lg`
       padding: 0 7rem;
     `}
@@ -53,7 +53,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     flex-direction: column;
     margin-top: 1rem;
     gap: 32px;
-    
+
     ${({ theme }) => theme.media.lg`
       margin-top: 3rem;
       justify-content: space-between;
@@ -90,7 +90,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
       justify-content: space-between;
       width: auto;
       max-width: none;
-      
+
       .rcu-comparatif-image-legend {
         margin: 1rem 1rem 0 1rem;
         text-align: center;
@@ -100,7 +100,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
         }
       }
     }
-    
+
     .rcu-comparatif-image {
       flex-grow: 1;
       background-color: white;
@@ -131,7 +131,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
     align-items: center;
     h3 {
       color: #000074 !important;
-      margin: 0
+      margin: 0;
     }
   }
 
@@ -151,7 +151,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
       color: #000074 !important;
     }
     b {
-      color: #4550E5
+      color: #4550E5;
     }
     ${({ theme }) => theme.media.lg`
       padding-left: 64px;
@@ -204,7 +204,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
         line-height: 1.5;
       }
     }
-    
+
     .presentation-rcu-tertiaire-cartridges {
       display: flex;
       gap: 16px;
@@ -223,7 +223,7 @@ export const GlobalStyle: any = createGlobalStyle` // TODO: Wait Fix from @types
       display: flex;
       gap: 32px;
       align-items: center;
-      
+
       strong {
         display: block;
         font-size: 4.2em;

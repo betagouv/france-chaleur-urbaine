@@ -11,7 +11,7 @@ const ObligationRaccordement = () => {
       </Heading>
       <ResponsiveRow mt="10w">
         <Box flex>
-          <Heading as="h4" color="blue-france">
+          <Heading as="h3" size="h4" color="blue-france">
             Les réseaux classés
           </Heading>
           <Text size="lg">

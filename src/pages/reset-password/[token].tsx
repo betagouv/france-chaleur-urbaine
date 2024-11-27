@@ -6,7 +6,7 @@ import SimplePage from '@components/shared/page/SimplePage';
 export default function ResetPasswordPage(): JSX.Element {
   const { query } = useRouter();
   return (
-    <SimplePage title="Réinitialisation du mot de passe - France Chaleur Urbaine">
+    <SimplePage title="Réinitialisation du mot de passe" noIndex>
       <NewPasswordForm token={query.token as string} />
     </SimplePage>
   );

@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 
 import Heating from '@components/Ressources/Contents/DistrictHeating';
-import Header from '@components/Ressources/Header';
 import { StickyWrapper } from '@components/Ressources/Ressource.styles';
 import { Description, Title } from '@components/Ressources/RessourceContent.styles';
 import SimplePage from '@components/shared/page/SimplePage';
@@ -17,11 +16,11 @@ const ChauffageUrbain = () => {
   const accompagnementRef = useRef<null | HTMLHeadingElement>(null);
   const aidesRef = useRef<null | HTMLHeadingElement>(null);
   return (
-    <SimplePage currentPage="/">
-      <Header
-        title="Découvrez le chauffage urbain"
-        description="Changez pour un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !"
-      />
+    <SimplePage
+      currentPage="/"
+      title="Découvrez le chauffage urbain"
+      description="Changez pour un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !"
+    >
       <StickyForm />
       <StickyWrapper>
         <Slice>

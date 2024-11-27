@@ -62,7 +62,11 @@ const Carte = () => {
   });
 
   return (
-    <SimplePage title="Carte des réseaux : France Chaleur Urbaine" mode="public-fullscreen">
+    <SimplePage
+      title="Carte interactive des réseaux de chaleur en France"
+      mode="public-fullscreen"
+      description="Naviguez et identifiez les opportunités de raccordement pour un chauffage économique et écologique près de chez vous."
+    >
       <MapWrapper>
         <Map withoutLogo withLegend initialMapConfiguration={initialMapConfiguration} persistViewStateInURL />
       </MapWrapper>

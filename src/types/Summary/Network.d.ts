@@ -1,6 +1,7 @@
 export interface Network {
   id_fcu: string;
   'Taux EnR&R': number;
+  communes: string[];
   Gestionnaire: string;
   'Identifiant reseau': string;
   has_trace: boolean;

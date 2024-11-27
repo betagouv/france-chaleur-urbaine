@@ -5,7 +5,7 @@ import Heading from '@components/ui/Heading';
 
 function contact() {
   return (
-    <SimplePage title="Contact : France Chaleur Urbaine">
+    <SimplePage title="Contactez-nous" description="Contactez nous pour toute question sur le chauffage urbain">
       <Box py="4w" className="fr-container">
         <Heading as="h1" color="blue-france">
           Nous contacter

@@ -6,7 +6,7 @@ import Text from '@components/ui/Text';
 const ReduireImpact = () => {
   return (
     <Box className="fr-container">
-      <Heading as="h5" legacyColor="white">
+      <Heading as="h2" size="h5" legacyColor="white">
         Réduire l'impact écologique et économique de son chauffage
       </Heading>
       <Text mt="3w">Le chauffage urbain, une solution pour les copropriétés</Text>

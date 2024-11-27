@@ -1,13 +1,14 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
-import { HeaderProps, HeaderQuickAccessItem } from '@codegouvfr/react-dsfr/Header';
 import MainNavigation, { MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
-import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
+import React from 'react';
 
 import { FooterConsentManagementItem } from '@components/ConsentBanner';
+import { HeaderProps, HeaderQuickAccessItem } from '@components/dsfr/Header';
+import SEO, { SEOProps } from '@components/SEO';
 import Box from '@components/ui/Box';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
@@ -19,23 +20,19 @@ import { StyledHeader } from './SimplePage.styles';
 
 type PageMode = 'public' | 'public-fullscreen' | 'authenticated';
 
-interface SimplePageProps {
-  title?: string;
+type SimplePageProps = {
   children: React.ReactNode;
   mode?: PageMode;
   currentPage?: string;
-}
+} & SEOProps;
 
-const SimplePage = (props: SimplePageProps) => {
+const SimplePage = ({ mode, currentPage, children, noIndex, ...props }: SimplePageProps) => {
   return (
     <>
-      {props.title && (
-        <Head>
-          <title>{props.title}</title>
-        </Head>
-      )}
-      <PageHeader mode={props.mode ?? 'public'} currentPage={props.currentPage} />
-      {props.children}
+      <SEO noIndex={mode === 'authenticated' ? true : noIndex} {...props} />
+      <PageHeader mode={mode ?? 'public'} currentPage={currentPage} />
+
+      {children}
       <PageFooter />
     </>
   );

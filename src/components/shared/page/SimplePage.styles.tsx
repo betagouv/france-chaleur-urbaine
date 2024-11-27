@@ -1,5 +1,6 @@
-import Header from '@codegouvfr/react-dsfr/Header';
 import styled, { css } from 'styled-components';
+
+import Header from '@components/dsfr/Header';
 
 export const StyledHeader = styled(Header)<{ $isFullScreenMode: boolean }>`
   // keep the logo within good size

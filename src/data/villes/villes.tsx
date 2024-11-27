@@ -2,14 +2,47 @@ import { WhiteArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.styl
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 
-interface citiesDataFormat {
-  [index: string]: any;
-}
+export type City = 'paris' | 'grenoble' | 'lyon' | 'aix-en-provence' | 'metz' | 'nantes' | 'bordeaux' | 'strasbourg' | 'rennes' | 'dijon';
 
-const citiesData: citiesDataFormat = {
+export type Dispositif = {
+  title?: string;
+  description: React.ReactNode;
+  link?: {
+    title: string;
+    href: string;
+    target?: string;
+  };
+  img?: {
+    alt: string;
+    src: string;
+  };
+};
+
+export type CityData = {
+  slug: string;
+  name: string;
+  nameNetwork: string;
+  preposition: string;
+  description: React.ReactNode;
+  coord: [number, number];
+  networksData?: {
+    isClassed: boolean;
+    allClassed?: boolean;
+    hasDevelopmentPerimeter?: boolean;
+    identifiant?: string;
+    heatedPlaces?: string;
+    gestionnaires?: string;
+  };
+  dispositifsTitle?: string;
+  dispositifs?: Dispositif[];
+};
+
+const citiesData: Record<City, CityData> = {
   paris: {
+    slug: 'paris',
     name: 'Paris',
     nameNetwork: 'Paris',
+    preposition: 'à',
     description: (
       <>
         Mis en service en 1927, le réseau de chaleur parisien est l'un des premiers réseaux créés en France. Il s'est progressivement étendu
@@ -45,6 +78,7 @@ const citiesData: citiesDataFormat = {
     coord: [2.347, 48.859],
     networksData: {
       isClassed: true,
+      allClassed: true,
       hasDevelopmentPerimeter: true,
       identifiant: '7501C',
       heatedPlaces: '425 000',
@@ -99,8 +133,10 @@ const citiesData: citiesDataFormat = {
     ],
   },
   grenoble: {
+    slug: 'grenoble',
     name: 'Grenoble',
     nameNetwork: 'Grenoble-Alpes Métropole',
+    preposition: 'à',
     description: (
       <>
         Le réseau de chauffage urbain de Grenoble-Alpes Métropole est l’un des réseaux les plus importants en France et présente un taux
@@ -130,14 +166,17 @@ const citiesData: citiesDataFormat = {
     coord: [5.7243, 45.182081],
     networksData: {
       isClassed: true,
+      allClassed: true,
       hasDevelopmentPerimeter: true,
       identifiant: '3802C',
       heatedPlaces: '100 000',
     },
   },
   lyon: {
+    slug: 'lyon',
     name: 'Lyon',
     nameNetwork: 'Lyon',
+    preposition: 'à',
     description: (
       <>
         <strong>
@@ -176,6 +215,7 @@ const citiesData: citiesDataFormat = {
     coord: [4.835, 45.758],
     networksData: {
       isClassed: true,
+      allClassed: true,
       hasDevelopmentPerimeter: true,
       identifiant: '6905C',
       heatedPlaces: '45 000',
@@ -214,8 +254,10 @@ const citiesData: citiesDataFormat = {
     ],
   },
   'aix-en-provence': {
+    slug: 'aix-en-provence',
     name: 'Aix-en-Provence',
     nameNetwork: 'Aix-en-Provence',
+    preposition: 'à',
     description: (
       <>
         <strong>
@@ -247,13 +289,16 @@ const citiesData: citiesDataFormat = {
     coord: [5.406124, 43.541369],
     networksData: {
       isClassed: true,
+      allClassed: true,
       identifiant: '1317C',
       heatedPlaces: '9500',
     },
   },
   metz: {
+    slug: 'metz',
     name: 'Metz',
     nameNetwork: 'Metz',
+    preposition: 'à',
     description: (
       <>
         <strong>Le réseau de chauffage urbain de l’Eurométropole de Metz est l’un des plus importants de France.</strong> Il représente
@@ -276,20 +321,23 @@ const citiesData: citiesDataFormat = {
         <Link href="https://collectivite.fr/le-ban-saint-martin" isExternal>
           Ban-Saint-Martin
         </Link>
-        ), ...).
+        ), …).
       </>
     ),
     coord: [6.194897, 49.108385],
     networksData: {
       isClassed: true,
+      allClassed: true,
       hasDevelopmentPerimeter: true,
       identifiant: '5701C',
       heatedPlaces: '48 000',
     },
   },
   nantes: {
+    slug: 'nantes',
     name: 'Nantes',
     nameNetwork: 'Nantes Métropole',
+    preposition: 'à',
     description: (
       <>
         La métropole compte à ce jour{' '}
@@ -313,12 +361,15 @@ const citiesData: citiesDataFormat = {
     coord: [-1.555335, 47.239367],
     networksData: {
       isClassed: true,
+      allClassed: true,
       gestionnaires: `Les réseaux sont gérés par **Idex** et **Engie**`,
     },
   },
   bordeaux: {
+    slug: 'bordeaux',
     name: 'Bordeaux',
     nameNetwork: 'Bordeaux Métropole',
+    preposition: 'à',
     description: (
       <>
         La Métropole bordelaise compte de nombreux réseaux de chaleur, qui desservent notamment <strong>les Hauts de Garonne</strong> (
@@ -354,6 +405,7 @@ const citiesData: citiesDataFormat = {
     coord: [-0.587877, 44.851895],
     networksData: {
       isClassed: true,
+      allClassed: true,
       hasDevelopmentPerimeter: true,
       gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Mixéner, ENGIE, Dalkia...**)`,
     },
@@ -378,8 +430,10 @@ const citiesData: citiesDataFormat = {
     ],
   },
   strasbourg: {
+    slug: 'strasbourg',
     name: 'Strasbourg',
     nameNetwork: "l'Eurométropole de Strasbourg",
+    preposition: 'sur',
     description: (
       <>
         Le territoire de l’Eurométropole de Strasbourg comporte plusieurs réseaux de chaleur.{' '}
@@ -408,12 +462,15 @@ const citiesData: citiesDataFormat = {
     coord: [7.761454, 48.579831],
     networksData: {
       isClassed: true,
+      allClassed: true,
       gestionnaires: `Les réseaux présents sur la métropole sont gérés par différents opérateurs : **ENGIE, Strasbourg Centre Energies, R-CUA...**`,
     },
   },
   rennes: {
+    slug: 'rennes',
     name: 'Rennes',
     nameNetwork: 'Rennes Métropole',
+    preposition: 'à',
     description: (
       <>
         Cinq réseaux de chauffage urbain sont en service sur le territoire de Rennes Métropole :
@@ -462,6 +519,7 @@ const citiesData: citiesDataFormat = {
     coord: [-1.68365, 48.110899],
     networksData: {
       isClassed: true,
+      allClassed: true,
       hasDevelopmentPerimeter: true,
       gestionnaires: `Les réseaux sont gérés **soit directement en régie** par la Métropole, **soit par des opérateurs privés** dans le cadre de délégations de service public (**Dalkia, ENGIE, SOGEX**)`,
     },
@@ -485,8 +543,10 @@ const citiesData: citiesDataFormat = {
     ],
   },
   dijon: {
+    slug: 'dijon',
     name: 'Dijon',
     nameNetwork: 'Dijon',
+    preposition: 'à',
     description: (
       <>
         Dijon comporte <strong>2 réseaux de chaleur interconnectés</strong> :
@@ -510,6 +570,7 @@ const citiesData: citiesDataFormat = {
     ),
     coord: [5.034852, 47.331938],
     networksData: {
+      allClassed: false,
       isClassed: false,
       gestionnaires: `Les réseaux sont gérés par **Dijon Energies (Dalkia)** et **Sodien (Coriance)**`,
     },

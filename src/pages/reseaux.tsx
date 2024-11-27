@@ -8,7 +8,7 @@ import Text from '@components/ui/Text';
 
 function ListeReseaux() {
   return (
-    <SimplePage title="Liste des réseaux - France Chaleur Urbaine">
+    <SimplePage title="Liste des réseaux de chaleur" description="Filtrez les réseaux de chaleur selon les critères de votre choix">
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>

@@ -34,7 +34,7 @@ function Satisfaction() {
   };
 
   return (
-    <SimplePage>
+    <SimplePage noIndex>
       <Slice padding={8}>
         {satisfaction ? (
           <>

@@ -4,6 +4,7 @@ declare global {
       IS_REVIEW_APP: 'true' | 'false';
       NODE_ENV: 'development' | 'production';
       NEXT_PUBLIC_FLAG_ENABLE_COMPARATEUR?: 'true' | 'false';
+      GITHUB_CI?: 'true';
     }
   }
 }

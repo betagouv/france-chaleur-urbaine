@@ -1,15 +1,18 @@
 import Image from 'next/image';
-import styled from 'styled-components';
 
 import SimplePage from '@components/shared/page/SimplePage';
 import Box from '@components/ui/Box';
 import Heading from '@components/ui/Heading';
+import { FCUArrowIcon } from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Text from '@components/ui/Text';
 
 const OutilsPage = () => {
   return (
-    <SimplePage title="Nos outils - France Chaleur Urbaine">
+    <SimplePage
+      title="Nos outils"
+      description="Tests d'adresses, iframes, API, téléchargement de données, simulateur d'aides, de CO2, fiches par réseau"
+    >
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">
           <Box flex>
@@ -168,18 +171,3 @@ const OutilsPage = () => {
 };
 
 export default OutilsPage;
-
-export const FCUArrowIcon = styled.div`
-  width: 24px;
-  height: 24px;
-
-  &::before {
-    content: '';
-    width: 24px;
-    height: 24px;
-    display: block;
-    background-image: url('/icons/picto-arrow.svg');
-    background-size: 1em;
-    font-size: 24px;
-  }
-`;

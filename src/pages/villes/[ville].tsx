@@ -3,36 +3,61 @@ import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import City from '@components/Cities/City';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
 import SimplePage from '@components/shared/page/SimplePage';
+import { getNetwork } from '@core/infrastructure/repository/network';
 import citiesData from '@data/villes/villes';
 
 type ComponentProps = InferGetStaticPropsType<typeof getStaticProps>;
 
-const PageVille: React.FC<ComponentProps> = ({ ville }) => {
+const PageVille: React.FC<ComponentProps> = ({ cityData, network }) => {
   return (
-    <SimplePage>
+    <SimplePage
+      title={`Chauffage urbain à ${cityData.name}`}
+      description={
+        cityData.networksData.identifiant
+          ? `Découvrez votre réseau de chaleur ${cityData.preposition} ${cityData.nameNetwork}, une solution écologique et économique`
+          : `Découvrez vos réseaux de chaleur ${cityData.preposition} ${cityData.nameNetwork}, une solution écologique et économique`
+      }
+    >
       <GlobalStyle />
-      <City city={ville} />
+      <City citySlug={cityData.slug} network={network} />
     </SimplePage>
   );
 };
 
-export default PageVille;
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const ville = (params?.ville as string)?.toLowerCase();
+  // description is a react component sent from server and thus will make static rendering fail so remove it from the fields
+  // Another solution could be to convert it to a string on server with ReactDOM or use Markdown string
+  const { description, ...cityData } = citiesData[ville as keyof typeof citiesData] || {};
 
-export const getStaticProps = ((context) => {
-  const ville = context.params?.ville as string | undefined;
-
-  if (!ville || !citiesData[ville.toLowerCase()]) {
+  if (!cityData.slug) {
     return {
       notFound: true,
     };
   }
+  let network: Awaited<ReturnType<typeof getNetwork>> | null = null;
 
-  return { props: { ville } };
-}) satisfies GetStaticProps;
+  if (cityData.networksData?.identifiant && process.env.GITHUB_CI !== 'true') {
+    network = await getNetwork(cityData.networksData?.identifiant);
+  }
 
-export const getStaticPaths: GetStaticPaths = () => {
   return {
-    paths: Object.keys(citiesData).map((ville) => ({ params: { ville } })),
-    fallback: 'blocking',
+    props: {
+      cityData: JSON.parse(JSON.stringify(cityData)) as typeof cityData,
+      network,
+    },
   };
 };
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const paths = Object.keys(citiesData).map((city) => ({
+    params: { ville: city },
+  }));
+
+  return {
+    paths,
+    fallback: false,
+  };
+};
+
+export default PageVille;

@@ -3,7 +3,11 @@ import Statistics from '@components/Statistics/StatisticsV1';
 
 function Statistiques() {
   return (
-    <SimplePage title="Statistiques - France Chaleur Urbaine">
+    <SimplePage
+      noIndex
+      title="Statistiques sur les réseaux de chaleur urbain"
+      description="Raccordements, tonnes de C02 potentiellement économisées, test d'adresse, etc"
+    >
       <Statistics />
     </SimplePage>
   );
