@@ -381,7 +381,7 @@ export const articles = [
     themes: ['Réseaux de chaleur'],
   },
   {
-    image: '/contents/Capture d’écran 2024-06-11 à 10.21.48.png',
+    image: '/contents/capture-ecran-240611.png',
     title: 'Une émission pédagogique sur les réseaux de chaleur',
     slug: 'une-emission-pedagogique-sur-les-reseaux-de-chaleur',
     content: importFile(uneEmissionPedagogiqueReseauChaleur),
