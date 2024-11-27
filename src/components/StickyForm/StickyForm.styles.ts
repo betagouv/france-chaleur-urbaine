@@ -1,11 +1,11 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
-export const Container = styled.div<{ $marginTop?: string }>`
+export const Container = styled.div`
   max-width: 1275px;
   max-height: 100vh;
   overflow: auto;
   position: sticky;
-  margin: ${({ $marginTop }) => $marginTop ?? css`-32px`} auto 0 auto;
+  margin: -32px auto 0 auto;
   top: 0px;
   padding: 8px;
   background-color: var(--background-default-grey);

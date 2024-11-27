@@ -5,6 +5,8 @@ import useSWR from 'swr';
 import Graph from '@components/Graph';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
 import Slice from '@components/Slice';
+import Box from '@components/ui/Box';
+import Heading from '@components/ui/Heading';
 import statistics from '@data/statistics';
 import { fetchJSON } from '@utils/network';
 import { MatomoMonthStat } from 'src/services/matomo_types';
@@ -252,9 +254,11 @@ const Statistics = () => {
 
   return (
     <Container>
-      <Slice padding={2}>
-        <h1>Nos Statistiques</h1>
-      </Slice>
+      <Box py="4w" className="fr-container">
+        <Heading as="h1" color="blue-france">
+          Nos statistiques
+        </Heading>
+      </Box>
       <Slice>
         <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
           <Column className="fr-col-md-8 fr-col-12">
