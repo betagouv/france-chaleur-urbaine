@@ -1,3 +1,4 @@
+// Source: https://github.com/codegouvfr/react-dsfr/blob/fcc1fe8b51e0946252121834e400efb6151e77fd/src/Header/Header.tsx - Change L187
 /* eslint-disable no-inner-declarations */
 
 import { fr } from '@codegouvfr/react-dsfr/fr';
