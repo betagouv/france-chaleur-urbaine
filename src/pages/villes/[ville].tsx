@@ -3,11 +3,12 @@ import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import City from '@components/Cities/City';
 import { GlobalStyle } from '@components/shared/layout/Global.style';
 import SimplePage from '@components/shared/page/SimplePage';
+import { getNetwork } from '@core/infrastructure/repository/network';
 import citiesData from '@data/villes/villes';
 
 type ComponentProps = InferGetStaticPropsType<typeof getStaticProps>;
 
-const PageVille: React.FC<ComponentProps> = ({ cityData }) => {
+const PageVille: React.FC<ComponentProps> = ({ cityData, network }) => {
   return (
     <SimplePage
       title={`Chauffage urbain à ${cityData.name}`}
@@ -18,7 +19,7 @@ const PageVille: React.FC<ComponentProps> = ({ cityData }) => {
       }
     >
       <GlobalStyle />
-      <City citySlug={cityData.slug} />
+      <City citySlug={cityData.slug} network={network} />
     </SimplePage>
   );
 };
@@ -34,10 +35,16 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       notFound: true,
     };
   }
+  let network: Awaited<ReturnType<typeof getNetwork>> | null = null;
+
+  if (cityData.networksData?.identifiant && process.env.GITHUB_CI !== 'true') {
+    network = await getNetwork(cityData.networksData?.identifiant);
+  }
 
   return {
     props: {
       cityData: JSON.parse(JSON.stringify(cityData)) as typeof cityData,
+      network,
     },
   };
 };

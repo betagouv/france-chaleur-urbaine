@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import Advantages from '@components/Coproprietaire/Advantages';
 import CoproGuide from '@components/Coproprietaire/CoproGuide';
 import Informations from '@components/Coproprietaire/Informations';
@@ -12,7 +10,6 @@ import Text from '@components/ui/Text';
 import WrappedText from '@components/WrappedText';
 import userExperience from '@data/villes/user-experience';
 import citiesData from '@data/villes/villes';
-import { useServices } from 'src/services';
 import { Network } from 'src/types/Summary/Network';
 
 import { CityContainer, VideoGuideColumn } from './City.styles';
@@ -21,24 +18,9 @@ import Dispositifs, { DispositifsData } from './Dispositifs';
 import Header from './Header';
 import Networks from './Networks';
 
-const City = ({ citySlug }: { citySlug: keyof typeof citiesData }) => {
-  const [network, setNetwork] = useState<Network>();
-  const { heatNetworkService } = useServices();
+const City = ({ citySlug, network }: { citySlug: keyof typeof citiesData; network?: Network }) => {
   const cityData = citiesData[citySlug];
   const hasUniqueNetwork = !!cityData.networksData?.identifiant;
-
-  useEffect(() => {
-    if (hasUniqueNetwork && !network) {
-      const getNetworkFromDB = async (identifiant: string): Promise<void> => {
-        const networkData = await heatNetworkService.findByIdentifiant(identifiant);
-        if (networkData) {
-          setNetwork(networkData);
-        }
-      };
-
-      getNetworkFromDB(cityData.networksData?.identifiant as string);
-    }
-  }, [cityData, network]);
 
   return (
     <CityContainer>
