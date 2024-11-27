@@ -253,10 +253,10 @@ const Statistics = () => {
   return (
     <Container>
       <Slice padding={2}>
-        <h2> Statistiques</h2>
+        <h1>Nos Statistiques</h1>
       </Slice>
       <Slice>
-        <StatisticsSliceContainer>
+        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer>
               <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
@@ -303,7 +303,7 @@ const Statistics = () => {
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
-        <StatisticsSliceContainer>
+        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
@@ -351,7 +351,7 @@ const Statistics = () => {
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
-        <StatisticsSliceContainer>
+        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
@@ -390,7 +390,7 @@ const Statistics = () => {
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
-        <StatisticsSliceContainer>
+        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
@@ -417,7 +417,7 @@ const Statistics = () => {
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
-        <StatisticsSliceContainer>
+        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
@@ -450,7 +450,7 @@ const Statistics = () => {
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
-        <StatisticsSliceContainer>
+        <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
           <Column className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
