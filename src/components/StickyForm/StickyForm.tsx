@@ -7,7 +7,7 @@ import { useContactFormFCU } from '@hooks';
 
 import { Close, Container, Form, Title } from './StickyForm.styles';
 
-const StickyForm = ({ title }: { title?: string }) => {
+const StickyForm = ({ title, marginTop }: { title?: string; marginTop?: string }) => {
   const {
     EligibilityFormContactRef,
     addressData,
@@ -24,7 +24,7 @@ const StickyForm = ({ title }: { title?: string }) => {
   } = useContactFormFCU();
 
   return (
-    <Container>
+    <Container $marginTop={marginTop}>
       <Title className="sticky-form-title">{title || 'Votre bâtiment est-il raccordable à un réseau de chaleur ?'}</Title>
       <EligibilityFormAddress onChange={handleOnChangeAddress} onFetch={handleOnFetchAddress} onSuccess={handleOnSuccessAddress} />
       {showWarning && <FormWarningMessage show>{warningMessage}</FormWarningMessage>}
