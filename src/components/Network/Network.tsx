@@ -539,6 +539,11 @@ const NetworkPanel = ({
                 />
               </Box>
             )}
+            {(!displayBlocks || displayBlocks.includes('communes')) && (
+              <Box fontStyle="italic" fontSize="12px">
+                Commune{network.communes.length > 1 ? 's' : ''} d'implantation : {network.communes.join(', ')}
+              </Box>
+            )}
           </Box>
         )}
       </div>

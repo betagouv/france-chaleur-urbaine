@@ -6,6 +6,7 @@ export const getNetwork = (id: string): Promise<Network> =>
     .select(
       'Taux EnR&R',
       'Identifiant reseau',
+      'communes',
       'has_trace',
       'Gestionnaire',
       'contenu CO2',
@@ -88,6 +89,7 @@ export const getColdNetwork = (id: string): Promise<Network> =>
     .select(
       'Taux EnR&R',
       'Identifiant reseau',
+      'communes',
       'Gestionnaire',
       'contenu CO2',
       'contenu CO2 ACV',
