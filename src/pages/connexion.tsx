@@ -6,7 +6,7 @@ import SimplePage from '@components/shared/page/SimplePage';
 
 export default function ConnectionPage(props: LoginFormProps): JSX.Element {
   return (
-    <SimplePage title="Connexion">
+    <SimplePage title="Espace gestionnaire">
       <LoginForm {...props} />
     </SimplePage>
   );
