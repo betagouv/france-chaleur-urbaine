@@ -13,7 +13,6 @@ import { MatomoMonthStat } from 'src/services/matomo_types';
 import { STAT_LABEL } from 'src/types/enum/MatomoStats';
 
 import {
-  Column,
   ColumnContainer,
   Container,
   GraphsWrapper,
@@ -261,7 +260,7 @@ const Statistics = () => {
       </Box>
       <Slice>
         <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <Column className="fr-col-md-8 fr-col-12">
+          <div className="fr-col-md-8 fr-col-12">
             <ColumnContainer>
               <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
               <NumberContainer>
@@ -288,8 +287,8 @@ const Statistics = () => {
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>
-          </Column>
-          <Column className="fr-col-md-4 fr-col-12">
+          </div>
+          <div className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
               <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
               <NumberContainer>
@@ -303,12 +302,12 @@ const Statistics = () => {
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>
-          </Column>
+          </div>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <Column className="fr-col-md-8 fr-col-12">
+          <div className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
                 <Graph
@@ -320,8 +319,8 @@ const Statistics = () => {
                 />
               </GraphsWrapper>
             </ColumnContainer>
-          </Column>
-          <Column className="fr-col-md-4 fr-col-12">
+          </div>
+          <div className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
               <NumberContainer>
                 <NumberBlock>
@@ -351,12 +350,12 @@ const Statistics = () => {
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>
-          </Column>
+          </div>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <Column className="fr-col-md-8 fr-col-12">
+          <div className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
                 <Graph
@@ -368,8 +367,8 @@ const Statistics = () => {
                 />
               </GraphsWrapper>
             </ColumnContainer>
-          </Column>
-          <Column className="fr-col-md-4 fr-col-12">
+          </div>
+          <div className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
               <NumberContainer>
                 <NumberBlock>
@@ -390,12 +389,12 @@ const Statistics = () => {
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>
-          </Column>
+          </div>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <Column className="fr-col-md-8 fr-col-12">
+          <div className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
                 <Graph
@@ -407,8 +406,8 @@ const Statistics = () => {
                 />
               </GraphsWrapper>
             </ColumnContainer>
-          </Column>
-          <Column className="fr-col-md-4 fr-col-12">
+          </div>
+          <div className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
               <NumberContainer>
                 <NumberBlock>
@@ -417,12 +416,12 @@ const Statistics = () => {
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>
-          </Column>
+          </div>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <Column className="fr-col-md-8 fr-col-12">
+          <div className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
                 <Graph
@@ -434,8 +433,8 @@ const Statistics = () => {
                 />
               </GraphsWrapper>
             </ColumnContainer>
-          </Column>
-          <Column className="fr-col-md-4 fr-col-12">
+          </div>
+          <div className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
               <LastActuDate>Au {statistics.lastActu} :</LastActuDate>
               <NumberContainer>
@@ -450,12 +449,12 @@ const Statistics = () => {
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>
-          </Column>
+          </div>
         </StatisticsSliceContainer>
       </Slice>
       <Slice>
         <StatisticsSliceContainer className="fr-grid-row fr-grid-row--gutters">
-          <Column className="fr-col-md-8 fr-col-12">
+          <div className="fr-col-md-8 fr-col-12">
             <ColumnContainer padding="1rem">
               <GraphsWrapper>
                 <Graph
@@ -467,8 +466,8 @@ const Statistics = () => {
                 />
               </GraphsWrapper>
             </ColumnContainer>
-          </Column>
-          <Column className="fr-col-md-4 fr-col-12">
+          </div>
+          <div className="fr-col-md-4 fr-col-12">
             <ColumnContainer>
               <NumberContainer>
                 <NumberBlock>
@@ -477,7 +476,7 @@ const Statistics = () => {
                 </NumberBlock>
               </NumberContainer>
             </ColumnContainer>
-          </Column>
+          </div>
         </StatisticsSliceContainer>
       </Slice>
     </Container>

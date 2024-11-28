@@ -449,6 +449,7 @@ const PageFooter = () => (
       orientation: 'horizontal',
       alt: '',
     }}
+    license=""
     partnersLogos={{
       main: {
         alt: 'DRIEAT',

@@ -10,7 +10,6 @@ const maxDescriptionLength = 160;
 
 const websiteUrl = process.env.NEXT_PUBLIC_MAP_ORIGIN;
 const websiteName = 'France Chaleur Urbaine';
-const websiteNameShort = 'FCU';
 const defaultTitle = 'Accélérons les raccordements aux réseaux de chaleur';
 const defaultDescription =
   'Une solution de chauffage écologique et économique exploitant des énergies renouvelables et de récupération locales.';
@@ -74,18 +73,8 @@ export type SEOProps = {
 };
 
 const getTitleWithSuffix = (title: string): string => {
-  const suffixLong = `${title} - ${websiteName}`;
-  const suffixShort = `${title} - ${websiteNameShort}`;
-
-  if (suffixLong.length <= maxTitleLength) {
-    return suffixLong;
-  }
-
-  if (suffixShort.length <= maxTitleLength) {
-    return suffixShort;
-  }
-
-  return title;
+  const titleWithSuffix = `${title} - ${websiteName}`;
+  return titleWithSuffix.length <= maxTitleLength ? titleWithSuffix : title;
 };
 
 const SEO: React.FC<SEOProps> = ({

@@ -6,7 +6,7 @@ import SimplePage from '@components/shared/page/SimplePage';
 
 const RessourcePage = ({ ressource, ressourceName }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
-    <SimplePage currentPage="/ressources" title={ressource.title} description={ressource.seoDescription}>
+    <SimplePage currentPage="/ressources" title={ressource.seoTitle || ressource.title} description={ressource.seoDescription}>
       <Ressource ressourceKey={ressourceName} />
     </SimplePage>
   );

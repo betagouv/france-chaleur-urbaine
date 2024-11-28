@@ -294,7 +294,7 @@ export const ArrowPuce = styled.div`
   &::before {
     margin-bottom: 0;
     font-size: 24px;
-    margin-top: -8px;
+    margin-top: -10px;
     background-image: url('/icons/picto-arrow.svg');
   }
 `;

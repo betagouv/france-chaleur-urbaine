@@ -22,7 +22,8 @@ export type Document = {
   title: string;
   altTitle?: string;
   description: ReactNode;
-  seoDescription: ReactNode;
+  seoDescription: string;
+  seoTitle?: string;
   content: ReactNode;
 };
 
@@ -102,6 +103,7 @@ export const understandings: Record<string, Document> = {
   faisabilite: {
     title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
     description: 'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
+    seoTitle: 'Quels critères pour se raccorder à un réseau de chaleur ?',
     seoDescription: 'Découvrez les critères techniques déterminant la faisabilité d’un raccordement.',
     content: <Feasability />,
   },
@@ -113,6 +115,7 @@ export const understandings: Record<string, Document> = {
         au fioul et <b>51 %</b> par rapport à un chauffage au gaz. Et ce n'est pas le seul avantage !
       </>
     ),
+    seoTitle: 'Comparatif chauffage urbain vs. chaudière gaz ou fioul',
     seoDescription: 'Réduisez vos émissions de GES de 64 % (fioul) ou 51 % (gaz) en vous raccordant.',
     content: <Advantages />,
   },
@@ -162,6 +165,7 @@ export const understandings: Record<string, Document> = {
     title: 'Qu’est-ce qu’un réseau classé ?',
     description:
       'Le classement d’un réseau instaure une obligation de raccordement pour certains bâtiments, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire.',
+    seoTitle: 'Obligations de raccordement aux réseaux de chaleur',
     seoDescription: 'Le classement d’un réseau peut rendre le raccordement obligatoire dans certaines zones.',
     content: <ClassedNetwork />,
   },
@@ -186,6 +190,7 @@ export const growths: Record<string, Document> = {
         plus souvent concédée à des <b>opérateurs</b>, via des délégations de service public.
       </>
     ),
+    seoTitle: 'Quels sont les principaux acteurs des réseaux de chaleur ?',
     seoDescription: 'Les collectivités lancent les réseaux, souvent gérés par des opérateurs en délégation.',
     content: <Actors />,
   },

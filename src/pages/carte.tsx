@@ -63,7 +63,7 @@ const Carte = () => {
 
   return (
     <SimplePage
-      title="Carte interactive des réseaux de chaleur en France"
+      title="Carte nationale des réseaux de chaleur et de froid en France"
       mode="public-fullscreen"
       description="Naviguez et identifiez les opportunités de raccordement pour un chauffage économique et écologique près de chez vous."
     >
