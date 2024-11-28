@@ -155,12 +155,12 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
 
-  const titleForAides =
+  const tooltipAides =
     'Aides perçues par l’usager (CEE et MPR). Les aides du Fonds chaleur sont incluses dans le R2 et non perceptibles directement par l’usager.';
 
   const coutGraphColumnNames = advancedMode
-    ? ['P1 abonnement', 'P1 consommation', 'P1 ECS', "P1'", 'P1 consommation froid', 'P2', 'P3', 'P4 moins aides', titleForAides]
-    : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', titleForAides];
+    ? ['P1 abonnement', 'P1 consommation', 'P1 ECS', "P1'", 'P1 consommation froid', 'P2', 'P3', 'P4 moins aides', 'Aides']
+    : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', 'Aides'];
 
   const coutGraphColumns = coutGraphColumnNames.map(getColumn).flat();
 
@@ -204,13 +204,13 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
       const amounts = advancedMode
         ? [
             ...getRow({
-              title: 'P1 abonnement (R2 du réseau de chaleur)',
+              title: `P1 abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
               valueFormatter: formatPrecisionRange,
             }),
             ...getRow({
-              title: 'P1 consommation (R1 du réseau de chaleur)',
+              title: `P1 consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso,
               color: colorP1Conso,
               valueFormatter: formatPrecisionRange,
@@ -232,7 +232,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
               valueFormatter: formatPrecisionRange,
             }),
             ...getRow({
-              title: titleForAides,
+              title: tooltipAides,
               amount: amountAides,
               color: colorP4Aides,
               bordered: true,
@@ -241,13 +241,13 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
           ]
         : [
             ...getRow({
-              title: 'Abonnement (R2 du réseau de chaleur)',
+              title: `Abonnement${typeInstallation.label === 'Réseau de chaleur' ? ' (R2 du réseau de chaleur)' : ''}`,
               amount: amountP1Abo,
               color: colorP1Abo,
               valueFormatter: formatPrecisionRange,
             }),
             ...getRow({
-              title: 'Consommation (R1 du réseau de chaleur)',
+              title: `Consommation${typeInstallation.label === 'Réseau de chaleur' ? ' (R1 du réseau de chaleur)' : ''}`,
               amount: amountP1Conso + amountP1ECS,
               color: colorP1Conso,
               valueFormatter: formatPrecisionRange,
@@ -265,7 +265,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
               valueFormatter: formatPrecisionRange,
             }),
             ...getRow({
-              title: titleForAides,
+              title: tooltipAides,
               amount: amountAides,
               color: colorP4Aides,
               bordered: true,
