@@ -3,6 +3,7 @@ import { readFile } from 'fs/promises';
 import { InvalidArgumentError, createCommand } from '@commander-js/extra-typings';
 
 import { logger } from '@helpers/logger';
+import { saveStatsInDB } from 'src/cron_jobs/saveStatsInDB';
 import db from 'src/db';
 import { DatabaseTileInfo, DatabaseSourceId, tilesInfo, zDatabaseSourceId } from 'src/services/tiles.config';
 
@@ -155,6 +156,15 @@ program
   .argument('<filepath>', 'Path to the Amorce file')
   .action(async (filepath) => {
     await upsertFixedSimulateurData(filepath);
+  });
+
+program
+  .command('update-monthly-stats')
+  .description('Update the table matomo_stats used by the stats page. Data come from Matomo and Airtable.')
+  .argument('[start-date]', 'Format : YYYY-MM-DD')
+  .argument('[end-date]', 'Format : YYYY-MM-DD')
+  .action(async (startDate, endDate) => {
+    await saveStatsInDB(startDate, endDate);
   });
 
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
