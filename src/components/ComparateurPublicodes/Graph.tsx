@@ -155,9 +155,12 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
   const coutsRef = useRef<HTMLDivElement>(null);
   useFixLegendOpacity(coutsRef);
 
+  const titleForAides =
+    'Aides perçues par l’usager (CEE et MPR). Les aides du Fonds chaleur sont incluses dans le R2 et non perceptibles directement par l’usager.';
+
   const coutGraphColumnNames = advancedMode
-    ? ['P1 abonnement', 'P1 consommation', 'P1 ECS', "P1'", 'P1 consommation froid', 'P2', 'P3', 'P4 moins aides', 'aides']
-    : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', 'Aides'];
+    ? ['P1 abonnement', 'P1 consommation', 'P1 ECS', "P1'", 'P1 consommation froid', 'P2', 'P3', 'P4 moins aides', titleForAides]
+    : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', titleForAides];
 
   const coutGraphColumns = coutGraphColumnNames.map(getColumn).flat();
 
@@ -218,7 +221,13 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
               color: colorP4SansAides,
               valueFormatter: formatPrecisionRange,
             }),
-            ...getRow({ title: 'aides', amount: amountAides, color: colorP4Aides, bordered: true, valueFormatter: formatPrecisionRange }),
+            ...getRow({
+              title: titleForAides,
+              amount: amountAides,
+              color: colorP4Aides,
+              bordered: true,
+              valueFormatter: formatPrecisionRange,
+            }),
           ]
         : [
             ...getRow({ title: 'Abonnement', amount: amountP1Abo, color: colorP1Abo, valueFormatter: formatPrecisionRange }),
@@ -240,7 +249,13 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
               color: colorP4SansAides,
               valueFormatter: formatPrecisionRange,
             }),
-            ...getRow({ title: 'Aides', amount: amountAides, color: colorP4Aides, bordered: true, valueFormatter: formatPrecisionRange }),
+            ...getRow({
+              title: titleForAides,
+              amount: amountAides,
+              color: colorP4Aides,
+              bordered: true,
+              valueFormatter: formatPrecisionRange,
+            }),
           ];
 
       const totalAmountWithAides = (amounts.filter((amount) => !Number.isNaN(+amount)) as number[]).reduce(
