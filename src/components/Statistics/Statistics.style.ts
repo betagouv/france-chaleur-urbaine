@@ -16,17 +16,6 @@ export const StatisticsSliceContainer = styled.div`
   margin-bottom: 16px;
 `;
 
-export const Column = styled.div`
-  ${({ theme }) => theme.media.md`
-    :nth-child(even) {
-      padding-left: 1rem;
-    }
-    :nth-child(odd) {
-      padding-right: 1rem;
-    }
-  `}
-`;
-
 export const ColumnContainer = styled.div<{
   padding?: string;
 }>`
