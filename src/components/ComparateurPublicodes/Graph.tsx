@@ -203,8 +203,18 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
 
       const amounts = advancedMode
         ? [
-            ...getRow({ title: 'P1 abonnement', amount: amountP1Abo, color: colorP1Abo, valueFormatter: formatPrecisionRange }),
-            ...getRow({ title: 'P1 consommation', amount: amountP1Conso, color: colorP1Conso, valueFormatter: formatPrecisionRange }),
+            ...getRow({
+              title: 'P1 abonnement (R2 du réseau de chaleur)',
+              amount: amountP1Abo,
+              color: colorP1Abo,
+              valueFormatter: formatPrecisionRange,
+            }),
+            ...getRow({
+              title: 'P1 consommation (R1 du réseau de chaleur)',
+              amount: amountP1Conso,
+              color: colorP1Conso,
+              valueFormatter: formatPrecisionRange,
+            }),
             ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter: formatPrecisionRange }),
             ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter: formatPrecisionRange }),
             ...getRow({
@@ -230,9 +240,14 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
             }),
           ]
         : [
-            ...getRow({ title: 'Abonnement', amount: amountP1Abo, color: colorP1Abo, valueFormatter: formatPrecisionRange }),
             ...getRow({
-              title: 'Consommation',
+              title: 'Abonnement (R2 du réseau de chaleur)',
+              amount: amountP1Abo,
+              color: colorP1Abo,
+              valueFormatter: formatPrecisionRange,
+            }),
+            ...getRow({
+              title: 'Consommation (R1 du réseau de chaleur)',
               amount: amountP1Conso + amountP1ECS,
               color: colorP1Conso,
               valueFormatter: formatPrecisionRange,

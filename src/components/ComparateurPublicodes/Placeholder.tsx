@@ -31,6 +31,11 @@ export const ComparateurPublicodesTitle = () => {
         <a href="#" onClick={() => modalDescription.open()} className="fr-link fr-text--sm">
           Voir l’explication détaillée
         </a>
+        <p className="fr-text--sm fr-mt-1w">
+          Les données utilisées par le comparateur portent sur l'année 2023, sauf pour les prix des réseaux de chaleur où l'année de
+          référence est 2022, dans l'attente de la publication des données 2023. Les valeurs de l'ensemble des paramètres utilisés pour les
+          calculs sont modifiables dans le mode avancé.
+        </p>
       </div>
     </div>
   );
