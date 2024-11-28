@@ -115,7 +115,7 @@ const useFixLegendOpacity = (coutsRef?: React.RefObject<HTMLDivElement | null>) 
     }
 
     const applyChanges = () => {
-      const legendBox = coutsRef?.current?.querySelector('g g:last-child rect:last-child');
+      const legendBox = coutsRef?.current?.querySelector('g g:last-child > rect:last-child');
 
       if (legendBox) {
         legendBox.setAttribute('fill-opacity', '0.1');
