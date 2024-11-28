@@ -57,6 +57,7 @@ export const issues: Record<string, Document> = {
   },
   atouts: {
     title: 'Un mode de chauffage aux multiples atouts',
+    seoTitle: 'Les atouts des réseaux de chaleur (chauffage urbain)',
     description: (
       <>
         Se chauffer par un réseau de chaleur, c’est adopter un <b>mode de chauffage fiable</b> qui présente des bénéfices à la fois
@@ -68,6 +69,7 @@ export const issues: Record<string, Document> = {
   },
   livraisons: {
     title: 'Que représentent les livraisons de chaleur par les réseaux en France ?',
+    seoTitle: 'Livraisons de chaleur par les réseaux en France ',
     description: (
       <>
         Au niveau européen, la France ne se place qu’en 20ème position en termes de recours aux réseaux de chaleur,{' '}
@@ -79,6 +81,7 @@ export const issues: Record<string, Document> = {
   },
   histoire: {
     title: 'Quand et comment le chauffage urbain s’est-il développé en France ?',
+    seoTitle: 'Quand le chauffage urbain s’est-il développé en France ?',
     description:
       'Les premiers réseaux de chaleur français ont vu le jour au début du 20ème siècle, où ils apparaissent  comme un moyen de lutter contre les nuisances du chauffage au charbon et au bois individuel (approvisionnement, pollution, incendies...).',
     seoDescription: 'Explorez l’histoire du chauffage urbain en France et son évolution depuis le 20ème siècle.',
@@ -86,6 +89,7 @@ export const issues: Record<string, Document> = {
   },
   role: {
     title: 'Un rôle clé dans la transition énergétique',
+    seoTitle: 'Rôle du chauffage urbain dans la transition énergétique',
     altTitle: 'Quel est le rôle du chauffage urbain dans la transition énergétique ?',
     description: (
       <>
@@ -121,6 +125,7 @@ export const understandings: Record<string, Document> = {
   },
   'cout-raccordement': {
     title: 'Combien coûte un raccordement ?',
+    seoTitle: 'Combien coûte un raccordement à un réseau de chaleur ?',
     description: (
       <>
         Le raccordement d’un bâtiment à un réseau de chaleur présente un coût non négligeable. Toutefois, des aides permettent de le réduire
@@ -134,6 +139,7 @@ export const understandings: Record<string, Document> = {
   aides: {
     title:
       'Le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires : une aide financière conséquente pour se raccorder',
+    seoTitle: 'Aides pour se raccorder à un réseau de chaleur - CEE',
     altTitle: 'Quelles aides financières pour se raccorder ?',
     description: (
       <>
@@ -146,6 +152,7 @@ export const understandings: Record<string, Document> = {
   },
   financement: {
     title: 'Financer le raccordement de sa copropriété dans le cadre d’une rénovation globale',
+    seoTitle: 'Financer un raccordement au chauffage urbain (copropriété)',
     description:
       'Lorsque le raccordement au réseau de chaleur s’intègre dans des travaux de rénovation globale, des aides complémentaires au "Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires" sont mobilisables.',
     seoDescription: 'Des aides complémentaires peuvent financer le raccordement dans une rénovation globale.',
@@ -171,6 +178,7 @@ export const understandings: Record<string, Document> = {
   },
   prioritaire: {
     title: 'Mon bâtiment est situé dans le périmètre de développement prioritaire',
+    seoTitle: 'Chauffage urbain, obligations de raccordement - réseau classé',
     description: (
       <>
         Quels bâtiments sont concernés par <b>l’obligation de raccordement ?</b>

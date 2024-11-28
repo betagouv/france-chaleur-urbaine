@@ -36,7 +36,7 @@ const ActualitesPage = () => {
 
   return (
     <SimplePage
-      title="Les actualités sur la chaleur urbaine"
+      title="Nos actualités sur le chauffage urbain"
       description="Cartographie et données, Communication, ENR&R, Infographie, Prix, Reportage, Réglementation, Réseaux de chaleur, Réseaux de froid, ..."
     >
       <Box backgroundColor="blue-cumulus-950-100">

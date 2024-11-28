@@ -49,7 +49,7 @@ function Contribution() {
   };
 
   return (
-    <SimplePage title="Contribuer à notre carte des réseaux de chaleur urbain">
+    <SimplePage title="Contribuer à notre carte des réseaux de chaleur urbains">
       <Slice
         padding={4}
         header={`## Vous souhaitez contribuer à notre carte en ajoutant des données ou en nous signalant une erreur ? C'est possible ! Complétez le formulaire ci-dessous :`}

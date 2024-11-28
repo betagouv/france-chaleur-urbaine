@@ -164,7 +164,7 @@ function ModifierReseauxPage() {
 
   return (
     <SimplePage
-      title="Modification de page réseau de chaleur"
+      title="Modifier la fiche d'un réseau sur France Chaleur Urbaine"
       description="Aidez-nous en nous signalant des informations erronées ou incomplètes sur la fiche du réseau de chaleur"
       currentPage="/ressources/outils"
     >

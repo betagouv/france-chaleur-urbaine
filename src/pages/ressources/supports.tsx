@@ -301,7 +301,7 @@ const guides: InfographieItemProps[] = [
 const SupportsPage = () => {
   return (
     <SimplePage
-      title="Nos supports pédagogiques sur la chaleur urbaine"
+      title="Nos supports pédagogiques sur les réseaux de chaleur"
       description="Comprendre simplement et rapidement les enjeux liés aux réseaux de chaleur ou mieux connaître notre service."
     >
       <Box backgroundColor="blue-cumulus-950-100">

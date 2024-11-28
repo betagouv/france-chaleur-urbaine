@@ -5,7 +5,7 @@ function Statistiques() {
   return (
     <SimplePage
       noIndex
-      title="Statistiques sur les réseaux de chaleur urbain"
+      title="Statistiques de France Chaleur Urbaine"
       description="Raccordements, tonnes de C02 potentiellement économisées, test d'adresse, etc"
     >
       <Statistics />
