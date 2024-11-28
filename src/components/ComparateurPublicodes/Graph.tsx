@@ -156,7 +156,7 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
   useFixLegendOpacity(coutsRef);
 
   const coutGraphColumnNames = advancedMode
-    ? ['P1 abo', 'P1 conso', 'P1 ECS', "P1'", 'P1 conso froid', 'P2', 'P3', 'P4 moins aides', 'aides']
+    ? ['P1 abonnement', 'P1 consommation', 'P1 ECS', "P1'", 'P1 consommation froid', 'P2', 'P3', 'P4 moins aides', 'aides']
     : ['Abonnement', 'Consommation', 'Maintenance', 'Investissement', 'Aides'];
 
   const coutGraphColumns = coutGraphColumnNames.map(getColumn).flat();
@@ -200,11 +200,16 @@ const Graph: React.FC<GraphProps> = ({ advancedMode, engine, className, ...props
 
       const amounts = advancedMode
         ? [
-            ...getRow({ title: 'P1 abo', amount: amountP1Abo, color: colorP1Abo, valueFormatter: formatPrecisionRange }),
-            ...getRow({ title: 'P1 conso', amount: amountP1Conso, color: colorP1Conso, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: 'P1 abonnement', amount: amountP1Abo, color: colorP1Abo, valueFormatter: formatPrecisionRange }),
+            ...getRow({ title: 'P1 consommation', amount: amountP1Conso, color: colorP1Conso, valueFormatter: formatPrecisionRange }),
             ...getRow({ title: 'P1 ECS', amount: amountP1ECS, color: colorP1ECS, valueFormatter: formatPrecisionRange }),
             ...getRow({ title: "P1'", amount: amountP1prime, color: colorP1prime, valueFormatter: formatPrecisionRange }),
-            ...getRow({ title: "P1'", amount: amountP1Consofroid, color: colorP1Consofroid, valueFormatter: formatPrecisionRange }),
+            ...getRow({
+              title: 'P1 consommation froid',
+              amount: amountP1Consofroid,
+              color: colorP1Consofroid,
+              valueFormatter: formatPrecisionRange,
+            }),
             ...getRow({ title: 'P2', amount: amountP2, color: colorP2, valueFormatter: formatPrecisionRange }),
             ...getRow({ title: 'P3', amount: amountP3, color: colorP3, valueFormatter: formatPrecisionRange }),
             ...getRow({
