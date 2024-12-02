@@ -2,6 +2,7 @@ import { Kysely, PostgresDialect } from 'kysely';
 import { Pool, types } from 'pg';
 export { sql } from 'kysely';
 export * from './database';
+import '../'; // permet d'importer les variables d'env correctement
 
 import { type DB as Database } from './database';
 
