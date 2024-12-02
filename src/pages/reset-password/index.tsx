@@ -6,7 +6,7 @@ import SimplePage from '@components/shared/page/SimplePage';
 
 export default function ResetPasswordPage(): JSX.Element {
   return (
-    <SimplePage title="Oubli de mot de passe" description="Réinitialisez votre mot de passe">
+    <SimplePage title="Oubli de mot de passe" description="Réinitialisez le mot de passe de votre compte sur France Chaleur Urbaine.">
       <ResetPasswordForm />
     </SimplePage>
   );

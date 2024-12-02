@@ -165,7 +165,7 @@ function ModifierReseauxPage() {
   return (
     <SimplePage
       title="Modifier la fiche d'un réseau sur France Chaleur Urbaine"
-      description="Aidez-nous en nous signalant des informations erronées ou incomplètes sur la fiche du réseau de chaleur"
+      description="Complétez les informations disponibles pour faire connaître votre réseau de chaleur."
       currentPage="/ressources/outils"
     >
       <Box py="4w" className="fr-container">

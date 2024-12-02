@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <SimplePage
       title="Développer le chauffage urbain"
-      description="Développez le chauffage urbain avec les réseaux de chaleur, valorisant les énergies renouvelables pour une distribution durable et efficace."
+      description="Vérifiez si votre bâtiment est raccordable à un réseau de chaleur, un mode de chauffage écologique à prix maîtrisés."
     >
       <HeadSliceForm
         checkEligibility

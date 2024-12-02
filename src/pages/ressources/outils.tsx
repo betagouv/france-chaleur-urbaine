@@ -11,7 +11,7 @@ const OutilsPage = () => {
   return (
     <SimplePage
       title="Nos outils"
-      description="Tests d'adresses, iframes, API, téléchargement de données, simulateur d'aides, de CO2, fiches par réseau"
+      description="Testez en masse l'éligibilité de vos bâtiments aux réseaux de chaleur, estimez le coût du raccordement et les aides disponibles, téléchargez les données…"
     >
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">

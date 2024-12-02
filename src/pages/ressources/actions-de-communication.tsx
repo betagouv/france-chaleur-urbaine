@@ -11,7 +11,7 @@ const ActionsDeCommunicationPage = () => {
   return (
     <SimplePage
       title="Nos actions de communication sur la chaleur urbaine"
-      description="Nous aidons les collectivités et les exploitants à faire la promotion du chauffage urbain"
+      description="France Chaleur Urbaine aide les collectivités à faire connaître et valoriser leurs réseaux de chaleur sur leur territoire."
     >
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">

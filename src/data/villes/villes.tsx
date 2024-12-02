@@ -42,7 +42,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'paris',
     name: 'Paris',
     nameNetwork: 'Paris',
-    preposition: 'à',
+    preposition: 'de ',
     description: (
       <>
         Mis en service en 1927, le réseau de chaleur parisien est l'un des premiers réseaux créés en France. Il s'est progressivement étendu
@@ -136,7 +136,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'grenoble',
     name: 'Grenoble',
     nameNetwork: 'Grenoble-Alpes Métropole',
-    preposition: 'à',
+    preposition: 'de ',
     description: (
       <>
         Le réseau de chauffage urbain de Grenoble-Alpes Métropole est l’un des réseaux les plus importants en France et présente un taux
@@ -176,7 +176,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'lyon',
     name: 'Lyon',
     nameNetwork: 'Lyon',
-    preposition: 'à',
+    preposition: 'de ',
     description: (
       <>
         <strong>
@@ -257,7 +257,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'aix-en-provence',
     name: 'Aix-en-Provence',
     nameNetwork: 'Aix-en-Provence',
-    preposition: 'à',
+    preposition: 'd’',
     description: (
       <>
         <strong>
@@ -298,7 +298,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'metz',
     name: 'Metz',
     nameNetwork: 'Metz',
-    preposition: 'à',
+    preposition: 'de ',
     description: (
       <>
         <strong>Le réseau de chauffage urbain de l’Eurométropole de Metz est l’un des plus importants de France.</strong> Il représente
@@ -337,7 +337,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'nantes',
     name: 'Nantes',
     nameNetwork: 'Nantes Métropole',
-    preposition: 'à',
+    preposition: 'de ',
     description: (
       <>
         La métropole compte à ce jour{' '}
@@ -369,7 +369,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'bordeaux',
     name: 'Bordeaux',
     nameNetwork: 'Bordeaux Métropole',
-    preposition: 'à',
+    preposition: 'de ',
     description: (
       <>
         La Métropole bordelaise compte de nombreux réseaux de chaleur, qui desservent notamment <strong>les Hauts de Garonne</strong> (
@@ -433,7 +433,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'strasbourg',
     name: 'Strasbourg',
     nameNetwork: "l'Eurométropole de Strasbourg",
-    preposition: 'sur',
+    preposition: 'de ',
     description: (
       <>
         Le territoire de l’Eurométropole de Strasbourg comporte plusieurs réseaux de chaleur.{' '}
@@ -470,7 +470,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'rennes',
     name: 'Rennes',
     nameNetwork: 'Rennes Métropole',
-    preposition: 'à',
+    preposition: 'de ',
     description: (
       <>
         Cinq réseaux de chauffage urbain sont en service sur le territoire de Rennes Métropole :
@@ -546,7 +546,7 @@ const citiesData: Record<City, CityData> = {
     slug: 'dijon',
     name: 'Dijon',
     nameNetwork: 'Dijon',
-    preposition: 'à',
+    preposition: 'de ',
     description: (
       <>
         Dijon comporte <strong>2 réseaux de chaleur interconnectés</strong> :

@@ -65,7 +65,7 @@ const Carte = () => {
     <SimplePage
       title="Carte nationale des réseaux de chaleur et de froid en France"
       mode="public-fullscreen"
-      description="Naviguez et identifiez les opportunités de raccordement pour un chauffage économique et écologique près de chez vous."
+      description="Découvrez la carte de référence des réseaux de chaleur et de froid, identifiez les opportunités de raccordement pour votre bâtiment."
     >
       <MapWrapper>
         <Map withoutLogo withLegend initialMapConfiguration={initialMapConfiguration} persistViewStateInURL />

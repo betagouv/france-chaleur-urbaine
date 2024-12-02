@@ -42,7 +42,10 @@ const StyledMarkdown = styled(MarkdownWrapper)`
 
 function PrivacyPolicy() {
   return (
-    <SimplePage title="Politique de confidentialité" description="Service de l’état, nous traitons vos données personnelles avec respect">
+    <SimplePage
+      title="Politique de confidentialité"
+      description="Politique de protection des données personnelles de la plateforme France Chaleur Urbaine"
+    >
       <div className="fr-container fr-mt-2w">
         <div className="fr-grid-row">
           <div className="fr-col-12">
