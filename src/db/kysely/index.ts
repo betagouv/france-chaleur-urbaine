@@ -1,9 +1,18 @@
 import { Kysely, PostgresDialect } from 'kysely';
-import { Pool } from 'pg';
+import { Pool, types } from 'pg';
 export { sql } from 'kysely';
 export * from './database';
+import '../'; // permet d'importer les variables d'env correctement
 
-import { type DB as Database } from './database'; // this is the Database interface we defined earlier
+import { type DB as Database } from './database';
+
+// Automatically convert postgres number fields from string to javascript numbers.
+types.setTypeParser(types.builtins.INT2, (value) => parseInt(value));
+types.setTypeParser(types.builtins.INT4, (value) => parseInt(value));
+types.setTypeParser(types.builtins.INT8, (value) => parseInt(value));
+types.setTypeParser(types.builtins.FLOAT4, (value) => parseFloat(value));
+types.setTypeParser(types.builtins.FLOAT8, (value) => parseFloat(value));
+types.setTypeParser(types.builtins.NUMERIC, (value) => parseFloat(value));
 
 const dialect = new PostgresDialect({
   pool: new Pool({ connectionString: process.env.DATABASE_URL }),

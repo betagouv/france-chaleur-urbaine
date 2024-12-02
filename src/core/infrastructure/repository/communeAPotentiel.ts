@@ -66,16 +66,16 @@ export const getCommunePotentiel = async (codeInsee: string) => {
     ...commune,
     zonesAFortPotentiel: {
       nb: zonesAFortPotentiel.length,
-      chauffage: zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.chauf_mwh || 0), 0),
-      ecs: zonesAFortPotentiel.reduce((sum, zone) => sum + +(zone.ecs_mwh || 0), 0),
+      chauffage: zonesAFortPotentiel.reduce((sum, zone) => sum + (zone.chauf_mwh ?? 0), 0),
+      ecs: zonesAFortPotentiel.reduce((sum, zone) => sum + (zone.ecs_mwh ?? 0), 0),
     },
     zonesAPotentiel: {
       nb: zonesAPotentiel.length,
-      chauffage: zonesAPotentiel.reduce((sum, zone) => sum + +(zone.chauf_mwh || 0), 0),
-      ecs: zonesAPotentiel.reduce((sum, zone) => sum + +(zone.ecs_mwh || 0), 0),
+      chauffage: zonesAPotentiel.reduce((sum, zone) => sum + (zone.chauf_mwh ?? 0), 0),
+      ecs: zonesAPotentiel.reduce((sum, zone) => sum + (zone.ecs_mwh ?? 0), 0),
     },
-    nbReseauxExistants: +nbReseauxExistants,
-    nbReseauxFuturs: +nbReseauxFuturs,
+    nbReseauxExistants: nbReseauxExistants,
+    nbReseauxFuturs: nbReseauxFuturs,
     bounds: commune?.bounds,
   };
 
