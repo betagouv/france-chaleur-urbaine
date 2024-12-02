@@ -20,7 +20,7 @@ const ChauffageUrbain = () => {
     <SimplePage
       currentPage="/"
       title="Découvrez le chauffage urbain"
-      description="Changez pour un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !"
+      description="Remplacez votre chaudière gaz ou fioul par un chauffage écologique à prix compétitif déjà adopté par 6 millions de Français !"
     >
       <Header
         title="Découvrez le chauffage urbain"

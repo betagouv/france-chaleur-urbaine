@@ -44,7 +44,7 @@ function LegalMentions() {
   return (
     <SimplePage
       title="Mentions légales"
-      description="France Chaleur Urbaine est un service numérique de l’administration qui vise à faciliter et multiplier les raccordements aux réseaux de chaleur"
+      description="France Chaleur Urbaine est un service du Ministère de la transition écologique qui vise à faciliter et multiplier les raccordements aux réseaux de chaleur."
     >
       <div className="fr-container fr-mt-2w">
         <div className="fr-grid-row">

@@ -41,7 +41,8 @@ export const issues: Record<string, Document> = {
         </b>
       </>
     ),
-    seoDescription: 'Découvrez ce qu’est un réseau de chaleur et ses avantages pour l’environnement et les bâtiments.',
+    seoDescription:
+      'Un réseau de chaleur est un système de chauffage à l’échelle d’une ville ou d’un quartier, qui permet de mobiliser des énergies renouvelables locales.',
     content: <Network />,
   },
   'energies-vertes': {
@@ -52,7 +53,7 @@ export const issues: Record<string, Document> = {
         Les réseaux de chaleur français sont alimentés en moyenne à <b>62 % par des énergies renouvelables et de récupération locales.</b>
       </>
     ),
-    seoDescription: 'Apprenez comment les réseaux de chaleur utilisent des énergies vertes pour réduire l’impact environnemental.',
+    seoDescription: 'Les réseaux de chaleur, un mode de chauffage écologique exploitant des énergies renouvelables et de récupération.',
     content: <GreenEnergies />,
   },
   atouts: {
@@ -64,7 +65,7 @@ export const issues: Record<string, Document> = {
         environnementaux, sanitaires, économiques et sociaux...
       </>
     ),
-    seoDescription: 'Découvrez les nombreux avantages des réseaux de chaleur pour l’environnement et l’économie.',
+    seoDescription: 'Découvrez les nombreux avantages des réseaux de chaleur : environnement, économie, emploi, santé…',
     content: <Strengths />,
   },
   livraisons: {
@@ -98,7 +99,8 @@ export const issues: Record<string, Document> = {
         constituent un levier efficace pour réduire ces émissions.
       </>
     ),
-    seoDescription: 'Découvrez comment les réseaux de chaleur jouent un rôle clé dans la transition énergétique en France.',
+    seoDescription:
+      'Les réseaux de chaleur, un levier efficace pour accélérer la décarbonation du bâtiment et atteindre la neutralité carbone en 2050.',
     content: <Role />,
   },
 };
@@ -108,7 +110,7 @@ export const understandings: Record<string, Document> = {
     title: 'Qu’est-ce qui détermine la faisabilité du raccordement ?',
     description: 'La faisabilité d’un raccordement dépend de certains critères techniques préalables.',
     seoTitle: 'Quels critères pour se raccorder à un réseau de chaleur ?',
-    seoDescription: 'Découvrez les critères techniques déterminant la faisabilité d’un raccordement.',
+    seoDescription: 'Découvrez les critères techniques déterminant la faisabilité d’un raccordement au chauffage urbain.',
     content: <Feasability />,
   },
   avantages: {
@@ -120,12 +122,13 @@ export const understandings: Record<string, Document> = {
       </>
     ),
     seoTitle: 'Comparatif chauffage urbain vs. chaudière gaz ou fioul',
-    seoDescription: 'Réduisez vos émissions de GES de 64 % (fioul) ou 51 % (gaz) en vous raccordant.',
+    seoDescription:
+      'Stabilisez le montant de votre facture de chauffage, réduisez vos émissions de gaz à effet de serre de 51 % (gaz) à 64 % (fioul).',
     content: <Advantages />,
   },
   'cout-raccordement': {
     title: 'Combien coûte un raccordement ?',
-    seoTitle: 'Combien coûte un raccordement à un réseau de chaleur ?',
+    seoTitle: 'Des aides financières permettent de réduire significativement les coûts de raccordement au chauffage urbain.',
     description: (
       <>
         Le raccordement d’un bâtiment à un réseau de chaleur présente un coût non négligeable. Toutefois, des aides permettent de le réduire
@@ -147,7 +150,8 @@ export const understandings: Record<string, Document> = {
         réduire significativement le coût du raccordement à un réseau de chaleur.
       </>
     ),
-    seoDescription: 'Le coup de pouce chauffage réduit le coût de raccordement depuis septembre 2022.',
+    seoDescription:
+      'Le coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires : une aide conséquente pour réduire les coûts de raccordement.',
     content: <Helps />,
   },
   financement: {
@@ -155,7 +159,8 @@ export const understandings: Record<string, Document> = {
     seoTitle: 'Financer un raccordement au chauffage urbain (copropriété)',
     description:
       'Lorsque le raccordement au réseau de chaleur s’intègre dans des travaux de rénovation globale, des aides complémentaires au "Coup de pouce chauffage des bâtiments résidentiels collectifs et tertiaires" sont mobilisables.',
-    seoDescription: 'Des aides complémentaires peuvent financer le raccordement dans une rénovation globale.',
+    seoDescription:
+      'Financer le raccordement d’une copropriété à un réseau de chaleur dans le cadre d’une rénovation globale : subventions disponibles.',
     content: <Fundings />,
   },
   facture: {
@@ -165,7 +170,7 @@ export const understandings: Record<string, Document> = {
         En raccordant mon immeuble à un réseau de chaleur, je bénéficie d’une <b>facture plus stable qu’avec un autre mode de chauffage.</b>
       </>
     ),
-    seoDescription: 'Profitez d’une facture plus stable en raccordant votre immeuble à un réseau.',
+    seoDescription: 'Profitez d’une facture de chauffage plus stable en raccordant votre immeuble à un réseau de chaleur.',
     content: <Bill />,
   },
   'reseau-classe': {
@@ -173,7 +178,8 @@ export const understandings: Record<string, Document> = {
     description:
       'Le classement d’un réseau instaure une obligation de raccordement pour certains bâtiments, dans une zone autour du réseau qualifiée de périmètre de développement prioritaire.',
     seoTitle: 'Obligations de raccordement aux réseaux de chaleur',
-    seoDescription: 'Le classement d’un réseau peut rendre le raccordement obligatoire dans certaines zones.',
+    seoDescription:
+      'Vous changez votre chaudière gaz ou fioul ? Vérifiez si votre bâtiment est concerné par une obligation de raccordement au chauffage urbain.',
     content: <ClassedNetwork />,
   },
   prioritaire: {
@@ -184,7 +190,8 @@ export const understandings: Record<string, Document> = {
         Quels bâtiments sont concernés par <b>l’obligation de raccordement ?</b>
       </>
     ),
-    seoDescription: 'Quels bâtiments sont concernés par l’obligation de raccordement ?',
+    seoDescription:
+      'Mon bâtiment est-il concerné par une obligation de raccordement à un réseau de chaleur ? (procédure de classement des réseaux).',
     content: <Priority />,
   },
 };
@@ -199,14 +206,14 @@ export const growths: Record<string, Document> = {
       </>
     ),
     seoTitle: 'Quels sont les principaux acteurs des réseaux de chaleur ?',
-    seoDescription: 'Les collectivités lancent les réseaux, souvent gérés par des opérateurs en délégation.',
+    seoDescription: 'Les réseaux de chaleur, un service public de distribution de la chaleur porté par les collectivités locales.',
     content: <Actors />,
   },
   etat: {
     title: 'L’État investit dans les réseaux de chaleur',
     altTitle: "Par quels dispositifs financiers l'État soutient-il les réseaux de chaleur ?",
     description: 'Plusieurs dispositifs financiers sont mis en place par l’État pour accompagner le développement des réseaux de chaleur.',
-    seoDescription: 'L’État soutient le développement des réseaux avec plusieurs dispositifs financiers.',
+    seoDescription: 'L’État soutient le développement des réseaux de chaleur, notamment via le Fonds Chaleur opéré par l’ADEME.',
     content: <State />,
   },
 };
@@ -216,7 +223,8 @@ export const coldNetworks: Record<string, Document> = {
     title: 'Découvrir les réseaux de froid',
     description:
       'Un réseau de froid est constitué de canalisations souterraines qui permettent d’acheminer du froid vers un ensemble de bâtiments, avec une efficacité énergétique supérieure aux systèmes individuels ou collectifs centraux habituels. Les réseaux de froid sont majoritairement utilisés pour la climatisation des bâtiments tertiaires.',
-    seoDescription: 'Les réseaux de froid offrent une climatisation efficace pour les bâtiments tertiaires.',
+    seoDescription:
+      'Les réseaux de froid offrent une climatisation efficace, avec des rendements énergétiques élevés, principalement pour les bâtiments tertiaires.',
     content: <ColdNetwork />,
   },
 };

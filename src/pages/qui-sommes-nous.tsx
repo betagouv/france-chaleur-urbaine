@@ -6,7 +6,7 @@ const QuiSommesNous = () => {
     <SimplePage
       title="Qu'est-ce que France Chaleur Urbaine ?"
       noTitleSuffix
-      description="Service gratuit proposé par l’État qui promeut le chauffage urbain"
+      description="Un service de l'Etat pour accélérer le développement du chauffage urbain, un mode de chauffage écologique et local."
     >
       <Us />
     </SimplePage>

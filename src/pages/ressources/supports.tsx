@@ -302,7 +302,7 @@ const SupportsPage = () => {
   return (
     <SimplePage
       title="Nos supports pédagogiques sur les réseaux de chaleur"
-      description="Comprendre simplement et rapidement les enjeux liés aux réseaux de chaleur ou mieux connaître notre service."
+      description="Comprendre de façon simple et rapide les réseaux de chaleur, via des supports accessibles à tous : fonctionnement, atouts, état des lieux, enjeux…"
     >
       <Box backgroundColor="blue-cumulus-950-100">
         <Box display="flex" gap="16px" maxWidth="1000px" mx="auto" pt="8w" px="2w">

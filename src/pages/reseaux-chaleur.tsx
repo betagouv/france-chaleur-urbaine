@@ -25,7 +25,7 @@ const ChauffageUrbain = () => {
   return (
     <SimplePage
       title="Découvrez les réseaux de chaleur"
-      description="Toutes les informations dont vous avez besoin sur les réseaux de chaleur"
+      description="Tout savoir sur les réseaux de chaleur, un mode de chauffage mobilisant des énergies renouvelables et de récupération locales, à prix compétitifs."
     >
       <Header
         title="Découvrez les réseaux de chaleur"

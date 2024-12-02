@@ -31,7 +31,7 @@ const Professionnels = () => {
   return (
     <SimplePage
       title="Le chauffage urbain pour les professionels"
-      description="Gestionnaires de bâtiments tertiaires, bailleurs sociaux, bureaux d’étude, syndics, etc, Faites un choix d'avenir et compétitif avec le chauffage urbain"
+      description="Gestionnaires tertiaires, bailleurs sociaux, bureaux d’études, syndics : découvrez tous nos outils pour raccorder vos bâtiments au chauffage urbain."
     >
       <HeadSliceForm
         checkEligibility

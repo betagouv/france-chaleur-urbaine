@@ -49,7 +49,10 @@ function Contribution() {
   };
 
   return (
-    <SimplePage title="Contribuer à notre carte des réseaux de chaleur urbains">
+    <SimplePage
+      title="Contribuer à notre carte des réseaux de chaleur urbains"
+      description="France Chaleur Urbaine recense les tracés et données des réseaux de chaleur et de froid."
+    >
       <Slice
         padding={4}
         header={`## Vous souhaitez contribuer à notre carte en ajoutant des données ou en nous signalant une erreur ? C'est possible ! Complétez le formulaire ci-dessous :`}
