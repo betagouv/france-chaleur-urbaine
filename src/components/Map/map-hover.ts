@@ -156,6 +156,22 @@ const clickEvents: {
     layer: 'enrrMobilisables-unites-d-incineration',
     key: 'enrrMobilisables-unites-d-incineration',
   },
+  {
+    layer: 'enrrMobilisables-thalassothermie',
+    key: '*',
+  },
+  {
+    layer: 'installationsGeothermieProfonde',
+    key: '*',
+  },
+  {
+    layer: 'installationsGeothermieSurfaceEchangeursFermes',
+    key: '*',
+  },
+  {
+    layer: 'installationsGeothermieSurfaceEchangeursOuverts',
+    key: '*',
+  },
 ];
 
 type UseMapClickEffectsProps = {

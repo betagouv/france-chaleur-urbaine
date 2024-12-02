@@ -39,12 +39,15 @@ export const databaseSourceIds = [
   'demands', // demandes d'éligibilité
   'gas', // consommations de gaz
   'energy', // batiments collectifs chauffés au fioul / gas
-  // TODO supprimer après déploiement en prod de batimentsRaccordesReseauxChaleurFroid
-  'raccordements', // bâtiments raccordés
   'batimentsRaccordesReseauxChaleurFroid',
   'enrrMobilisables',
   'enrrMobilisables-friches',
   'enrrMobilisables-parkings',
+  'enrrMobilisables-zonesGeothermieProfonde',
+  'enrrMobilisables-thalassothermie',
+  'installationsGeothermieProfonde',
+  'installationsGeothermieSurfaceEchangeursOuverts',
+  'installationsGeothermieSurfaceEchangeursFermes',
   'zonesPotentielChaud',
   'zonesPotentielFortChaud',
   'besoinsEnChaleur',
@@ -99,16 +102,6 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
     table: Airtable.UTILISATEURS,
     properties: ['Mode de chauffage', 'Adresse', 'Type de chauffage', 'Structure'],
     sourceLayer: 'demands',
-  },
-  // TODO supprimer après déploiement en prod de batimentsRaccordesReseauxChaleurFroid
-  raccordements: {
-    source: 'database',
-    table: 'batiments_raccordes_rdc',
-    tiles: 'raccordements_tiles',
-    id: 'fid',
-    extraWhere: (query) => query.whereLike('ID', '%C'),
-    properties: ['fid', 'ADRESSE', 'CONSO', 'PDL', 'ID'],
-    sourceLayer: 'raccordements',
   },
   // https://www.notion.so/D-veloppement-e8399345919442748735de25865ebe4a?pvs=4#122c2b5c414b80838207d4f930c68cd7
   batimentsRaccordesReseauxChaleurFroid: {
@@ -252,6 +245,56 @@ export const tilesInfo: Record<DatabaseSourceId, TileInfo> = {
   'enrrMobilisables-parkings': {
     source: 'database',
     tiles: 'enrr_mobilisables_parkings_tiles',
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  'enrrMobilisables-zonesGeothermieProfonde': {
+    source: 'database',
+    tiles: 'enrr_mobilisables_zones_geothermie_profonde_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  'enrrMobilisables-thalassothermie': {
+    source: 'database',
+    tiles: 'enrr_mobilisables_thalassothermie_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  installationsGeothermieProfonde: {
+    source: 'database',
+    tiles: 'installations_geothermie_profonde_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  installationsGeothermieSurfaceEchangeursFermes: {
+    source: 'database',
+    tiles: 'installations_geothermie_surface_echangeurs_fermes_tiles',
+    compressedTiles: true,
+    table: '', // useless
+    properties: [], // useless
+    sourceLayer: '', // useless
+    id: '', // useless
+    extraWhere: (query) => query, // useless
+  },
+  installationsGeothermieSurfaceEchangeursOuverts: {
+    source: 'database',
+    tiles: 'installations_geothermie_surface_echangeurs_ouverts_tiles',
+    compressedTiles: true,
     table: '', // useless
     properties: [], // useless
     sourceLayer: '', // useless

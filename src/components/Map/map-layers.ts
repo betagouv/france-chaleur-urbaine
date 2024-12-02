@@ -37,6 +37,18 @@ import { linearHeatDensityLayers } from './components/tools/LinearHeatDensityToo
 import {
   communesFortPotentielPourCreationReseauxChaleurLayerColor,
   communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+  enrrMobilisablesGeothermieProfondeLayerColor,
+  enrrMobilisablesGeothermieProfondeLayerOpacity,
+  enrrMobilisablesThalassothermieLayerColor,
+  enrrMobilisablesThalassothermieLayerOpacity,
+  installationsGeothermieProfondeLayerColor,
+  installationsGeothermieProfondeLayerOpacity,
+  installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
+  installationsGeothermieSurfaceEchangeursFermesOpacity,
+  installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
+  installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
+  installationsGeothermieSurfaceEchangeursOuvertsOpacity,
+  installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
 } from './map-styles';
 
 export const tileSourcesMaxZoom = 17;
@@ -415,6 +427,11 @@ export type LayerId =
   | 'enrrMobilisables-friches-contour'
   | 'enrrMobilisables-parkings'
   | 'enrrMobilisables-parkings-contour'
+  | 'enrrMobilisables-thalassothermie'
+  | 'enrrMobilisables-zonesGeothermieProfonde'
+  | 'installationsGeothermieProfonde'
+  | 'installationsGeothermieSurfaceEchangeursFermes'
+  | 'installationsGeothermieSurfaceEchangeursOuverts'
   | 'zonesPotentielChaud'
   | 'zonesPotentielChaud-contour'
   | 'zonesPotentielFortChaud'
@@ -447,6 +464,29 @@ const zoomOpacityTransitionAt10: DataDrivenPropertyValueSpecification<number> = 
 // pouvoir construire les layers selon les filtres
 export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecification[] {
   return [
+    {
+      sourceId: 'enrrMobilisables-zonesGeothermieProfonde',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/enrrMobilisables-zonesGeothermieProfonde/{z}/{x}/{y}`],
+        minzoom: 5,
+        maxzoom: 11,
+      },
+      layers: [
+        {
+          id: 'enrrMobilisables-zonesGeothermieProfonde',
+          source: 'enrrMobilisables-zonesGeothermieProfonde',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'fill',
+          paint: {
+            'fill-color': enrrMobilisablesGeothermieProfondeLayerColor,
+            'fill-opacity': enrrMobilisablesGeothermieProfondeLayerOpacity,
+          },
+        },
+      ],
+    },
+
     // ---------------------------
     // --- zonesPotentielChaud ---
     // ---------------------------
@@ -784,6 +824,29 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
           paint: {
             'line-color': themeDefSolaireThermiqueParkings.color,
             'line-width': 2,
+          },
+        },
+      ],
+    },
+
+    {
+      sourceId: 'enrrMobilisables-thalassothermie',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/enrrMobilisables-thalassothermie/{z}/{x}/{y}`],
+        minzoom: 6,
+        maxzoom: 12,
+      },
+      layers: [
+        {
+          id: 'enrrMobilisables-thalassothermie',
+          source: 'enrrMobilisables-thalassothermie',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'fill',
+          paint: {
+            'fill-color': enrrMobilisablesThalassothermieLayerColor,
+            'fill-opacity': enrrMobilisablesThalassothermieLayerOpacity,
           },
         },
       ],
@@ -1147,6 +1210,86 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
     },
 
     {
+      sourceId: 'installationsGeothermieProfonde',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/installationsGeothermieProfonde/{z}/{x}/{y}`],
+        minzoom: 6,
+        maxzoom: 6,
+      },
+      layers: [
+        {
+          id: 'installationsGeothermieProfonde',
+          source: 'installationsGeothermieProfonde',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'circle',
+          paint: {
+            'circle-color': installationsGeothermieProfondeLayerColor,
+            'circle-radius': 8,
+            'circle-opacity': installationsGeothermieProfondeLayerOpacity,
+          },
+        },
+      ],
+    },
+    {
+      sourceId: 'installationsGeothermieSurfaceEchangeursFermes',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/installationsGeothermieSurfaceEchangeursFermes/{z}/{x}/{y}`],
+        minzoom: 5,
+        maxzoom: 10,
+      },
+      layers: [
+        {
+          id: 'installationsGeothermieSurfaceEchangeursFermes',
+          source: 'installationsGeothermieSurfaceEchangeursFermes',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'circle',
+          paint: {
+            'circle-color': [
+              'case',
+              ['==', ['get', 'statut_inst'], 'Déclaré'],
+              installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
+              installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
+            ],
+            'circle-radius': 8,
+            'circle-opacity': installationsGeothermieSurfaceEchangeursFermesOpacity,
+          },
+        },
+      ],
+    },
+    {
+      sourceId: 'installationsGeothermieSurfaceEchangeursOuverts',
+      source: {
+        type: 'vector',
+        tiles: [`${location.origin}/api/map/installationsGeothermieSurfaceEchangeursOuverts/{z}/{x}/{y}`],
+        minzoom: 5,
+        maxzoom: 10,
+      },
+      layers: [
+        {
+          id: 'installationsGeothermieSurfaceEchangeursOuverts',
+          source: 'installationsGeothermieSurfaceEchangeursOuverts',
+          'source-layer': 'layer',
+          minzoom: tileLayersMinZoom,
+          type: 'circle',
+          paint: {
+            'circle-color': [
+              'case',
+              ['==', ['get', 'statut_inst'], 'Déclaré'],
+              installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
+              installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
+            ],
+            'circle-radius': 8,
+            'circle-opacity': installationsGeothermieSurfaceEchangeursOuvertsOpacity,
+          },
+        },
+      ],
+    },
+
+    {
       sourceId: 'communesFortPotentielPourCreationReseauxChaleur',
       source: {
         type: 'vector',
@@ -1266,6 +1409,11 @@ export function applyMapConfigurationToLayers(map: FCUMap, config: MapConfigurat
     'enrrMobilisables-parkings-contour',
     config.enrrMobilisablesSolaireThermique.show && config.enrrMobilisablesSolaireThermique.showParkings
   );
+  setLayerVisibility('enrrMobilisables-thalassothermie', config.enrrMobilisablesThalassothermie);
+  setLayerVisibility('enrrMobilisables-zonesGeothermieProfonde', config.enrrMobilisablesGeothermieProfonde);
+  setLayerVisibility('installationsGeothermieProfonde', config.installationsGeothermieProfonde);
+  setLayerVisibility('installationsGeothermieSurfaceEchangeursFermes', config.installationsGeothermieSurfaceEchangeursFermes);
+  setLayerVisibility('installationsGeothermieSurfaceEchangeursOuverts', config.installationsGeothermieSurfaceEchangeursOuverts);
   setLayerVisibility('zonesPotentielChaud', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud);
   setLayerVisibility('zonesPotentielChaud-contour', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielChaud);
   setLayerVisibility('zonesPotentielFortChaud', config.zonesOpportunite.show && config.zonesOpportunite.zonesPotentielFortChaud);

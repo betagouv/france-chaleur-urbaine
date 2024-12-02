@@ -86,3 +86,13 @@ export interface SolaireThermiqueParking {
   st_length_shape_: number;
   surfm2: number;
 }
+
+export interface Thalassothermie {
+  fid: number;
+  nature: 'Port' | 'Gare maritime';
+  importance: string;
+  toponyme: string;
+  nature_det: 'Port de plaisance' | 'Halte fluviale' | 'Port de commerce' | ' ' | 'Port de pêche' | 'Bassin' | 'Dégrad';
+  SHAPE__Length: number;
+  SHAPE__Area: number;
+}
