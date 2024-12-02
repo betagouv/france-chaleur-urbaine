@@ -5,7 +5,7 @@ import NetworkPanel from '@components/Network/Network';
 import SimplePage from '@components/shared/page/SimplePage';
 import Slice from '@components/Slice/Slice';
 import { getColdNetwork, getNetwork } from '@core/infrastructure/repository/network';
-import db from 'src/db';
+import { db } from 'src/db/kysely';
 import { Network } from 'src/types/Summary/Network';
 
 const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>) => {
@@ -14,7 +14,9 @@ const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>)
       currentPage="/reseaux"
       mode="public-fullscreen"
       title={network.nom_reseau}
-      description={`Réseau de chaleur géré par ${network.Gestionnaire}, créé en ${network.annee_creation}`}
+      description={`Réseau de ${network['Identifiant reseau']?.includes('F') ? 'froid' : 'chaleur'} géré par ${
+        network.Gestionnaire
+      }, créé en ${network.annee_creation}`}
     >
       <Slice>
         <Breadcrumb
@@ -42,10 +44,15 @@ const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>)
 export const getStaticPaths: GetStaticPaths = async () => {
   const networks = process.env.GITHUB_CI
     ? []
-    : await db('reseaux_de_chaleur').whereNotNull('Identifiant reseau').select('Identifiant reseau');
+    : await db
+        .selectFrom('reseaux_de_chaleur')
+        .select('Identifiant reseau')
+        .where('Identifiant reseau', 'is not', null)
+        .union(db.selectFrom('reseaux_de_froid').select('Identifiant reseau').where('Identifiant reseau', 'is not', null))
+        .execute();
 
   return {
-    paths: networks.map((network) => ({ params: { network: network['Identifiant reseau'] } })),
+    paths: networks.map((network) => ({ params: { network: network['Identifiant reseau'] ?? undefined } })),
     fallback: false,
   };
 };
