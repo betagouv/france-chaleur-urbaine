@@ -12,6 +12,8 @@ fileignoreconfig:
   checksum: d419b5985798e502ec36c7e2d9a7137ed253a39a282f79b668c402d19260878f
 - filename: scripts/addUser.ts
   checksum: 0a177922ce629d11306b8137997bbd761a547af145dedacd98d9ecc883d763d8
+- filename: scripts/airtable/dump-schema.ts
+  checksum: 7d66cbc8b1d44a8fd12d27e6e703d5293fb497c35e8a20c35a07c9221d7c4904
 - filename: src/components/ComparateurPublicodes/DebugDrawer.tsx
   checksum: 5e675d6da8d48880b27b4f45242dfb2ee0e30c93cf2f59f4f1795ddbef87b83f
 - filename: src/components/Map/Map.tsx

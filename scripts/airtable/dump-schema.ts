@@ -1,7 +1,10 @@
 import { writeFile } from 'fs/promises';
+
 import camelCase from 'camelcase';
-import { KnownAirtableBase, knownAirtableBases } from './bases';
+
 import { listTables } from 'src/db/airtable';
+
+import { KnownAirtableBase, knownAirtableBases } from './bases';
 
 export async function fetchBaseSchema(base: KnownAirtableBase) {
   console.info("Fetching Airtable tables starting with 'FCU - '...");
@@ -12,11 +15,7 @@ export async function fetchBaseSchema(base: KnownAirtableBase) {
     return `export interface ${slugifyAirtableTableName(table.name)} {
 ${table.fields
   .map((field: any) => {
-    const fieldName = /^[a-zA-ZÀ-Ÿ_]+$/i.test(field.name)
-      ? field.name
-      : field.name.includes("'")
-      ? `"${field.name}"`
-      : `'${field.name}'`;
+    const fieldName = /^[a-zA-ZÀ-Ÿ_]+$/i.test(field.name) ? field.name : field.name.includes("'") ? `"${field.name}"` : `'${field.name}'`;
     const fieldType = airtableTypeToTypeScriptType(field.type);
     return `  ${fieldName}: ${fieldType};`;
   })
@@ -26,9 +25,7 @@ ${table.fields
   });
 
   await writeFile('src/types/airtable-types.d.ts', typescriptTypes.join('\n'));
-  console.info(
-    'Airtable types were written to => src/types/airtable-types.d.ts'
-  );
+  console.info('Airtable types were written to => src/types/airtable-types.d.ts');
 }
 
 function slugifyAirtableTableName(name: string): string {

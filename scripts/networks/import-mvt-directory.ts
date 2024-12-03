@@ -1,6 +1,7 @@
-import { logger } from '@helpers/logger';
 import { readFile, readdir, stat } from 'fs/promises';
 import { join } from 'path';
+
+import { logger } from '@helpers/logger';
 import db from 'src/db';
 import { processInParallel } from 'src/types/async';
 
@@ -9,10 +10,7 @@ const QUERY_PARALLELISM = 50; // max queries in //
 /**
  * Generate tiles from GeoJSON data and store them in a postgres table
  */
-export const importMvtDirectory = async (
-  basePath: string,
-  destinationTable: string
-) => {
+export const importMvtDirectory = async (basePath: string, destinationTable: string) => {
   const startTime = Date.now();
 
   const zoomLevels = await listDirectoryEntries(basePath, 'dir');
@@ -20,16 +18,10 @@ export const importMvtDirectory = async (
   const tiles: { x: number; y: number; z: number; path: string }[] = [];
   await Promise.all(
     zoomLevels.map(async (zoomLevel) => {
-      const columns = await listDirectoryEntries(
-        join(basePath, zoomLevel),
-        'dir'
-      );
+      const columns = await listDirectoryEntries(join(basePath, zoomLevel), 'dir');
       await Promise.all(
         columns.map(async (column) => {
-          const rows = await listDirectoryEntries(
-            join(basePath, zoomLevel, column),
-            'file'
-          );
+          const rows = await listDirectoryEntries(join(basePath, zoomLevel, column), 'file');
           rows.forEach((row) => {
             tiles.push({
               x: Number.parseInt(column),
@@ -71,20 +63,14 @@ export const importMvtDirectory = async (
   });
 };
 
-async function listDirectoryEntries(
-  basePath: string,
-  type: 'dir' | 'file'
-): Promise<string[]> {
+async function listDirectoryEntries(basePath: string, type: 'dir' | 'file'): Promise<string[]> {
   const entries = await readdir(basePath);
   const subEntries: string[] = [];
 
   await Promise.all(
     entries.map(async (name) => {
       const fileStats = await stat(join(basePath, name));
-      if (
-        (type === 'dir' && fileStats.isDirectory()) ||
-        (type === 'file' && fileStats.isFile())
-      ) {
+      if ((type === 'dir' && fileStats.isDirectory()) || (type === 'file' && fileStats.isFile())) {
         subEntries.push(name);
       }
     })
