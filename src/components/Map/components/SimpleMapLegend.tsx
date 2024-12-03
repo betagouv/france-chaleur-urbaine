@@ -880,7 +880,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 name="enrrMobilisablesGeothermieProfonde"
                 checked={mapConfiguration.enrrMobilisablesGeothermieProfonde}
                 onChange={() => toggleLayer('enrrMobilisablesGeothermieProfonde')}
-                trackingEvent="Carto|Demandes de raccordement" // FIXME
+                trackingEvent="Carto|Zones géothermie profonde"
               />
 
               <IconPolygon
@@ -1006,7 +1006,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 name="enrrMobilisablesThalassothermie"
                 checked={mapConfiguration.enrrMobilisablesThalassothermie}
                 onChange={() => toggleLayer('enrrMobilisablesThalassothermie')}
-                trackingEvent="Carto|Demandes de raccordement" // FIXME
+                trackingEvent="Carto|Thalassothermie"
               />
 
               <IconPolygon stroke={enrrMobilisablesThalassothermieLayerColor} fillOpacity={enrrMobilisablesThalassothermieLayerOpacity} />
@@ -1046,7 +1046,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 name="installationsGeothermieProfonde"
                 checked={mapConfiguration.installationsGeothermieProfonde}
                 onChange={() => toggleLayer('installationsGeothermieProfonde')}
-                trackingEvent="Carto|Demandes de raccordement" // FIXME
+                trackingEvent="Carto|Installations géothermie profonde"
               />
 
               <Box
@@ -1088,7 +1088,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               name="installationsGeothermieSurfaceEchangeursOuverts"
               checked={mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts}
               layerName="installationsGeothermieSurfaceEchangeursOuverts"
-              trackingEvent="Carto|ENR&R Mobilisables" // FIXME
+              trackingEvent="Carto|Installations géothermie surface ouverts"
               label={
                 <>
                   <Box flex>Géothermie de surface sur échangeurs ouverts (nappe)</Box>
@@ -1136,7 +1136,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
               name="installationsGeothermieSurfaceEchangeursFermes"
               checked={mapConfiguration.installationsGeothermieSurfaceEchangeursFermes}
               layerName="installationsGeothermieSurfaceEchangeursFermes"
-              trackingEvent="Carto|ENR&R Mobilisables" // FIXME
+              trackingEvent="Carto|Installations géothermie surface fermés"
               label={
                 <>
                   <Box flex>Géothermie de surface sur échangeurs fermés (sonde)</Box>

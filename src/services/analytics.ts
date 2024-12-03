@@ -316,6 +316,12 @@ const trackingEvents = {
   "Carto|Unités d'incinération|Désactive": {
     matomo: ['Carto', "Unités d'incinération", 'Désactive'],
   },
+  'Carto|Zones géothermie profonde|Active': {
+    matomo: ['Carto', 'Zones géothermie profonde', 'Active'],
+  },
+  'Carto|Zones géothermie profonde|Désactive': {
+    matomo: ['Carto', 'Zones géothermie profonde', 'Désactive'],
+  },
   'Carto|Solaire thermique - friches|Active': {
     matomo: ['Carto', 'Solaire thermique - friches', 'Active'],
   },
@@ -327,6 +333,30 @@ const trackingEvents = {
   },
   'Carto|Solaire thermique - parkings|Désactive': {
     matomo: ['Carto', 'Solaire thermique - parkings', 'Désactive'],
+  },
+  'Carto|Thalassothermie|Active': {
+    matomo: ['Carto', 'Thalassothermie', 'Active'],
+  },
+  'Carto|Thalassothermie|Désactive': {
+    matomo: ['Carto', 'Thalassothermie', 'Désactive'],
+  },
+  'Carto|Installations géothermie profonde|Active': {
+    matomo: ['Carto', 'Installations géothermie profonde', 'Active'],
+  },
+  'Carto|Installations géothermie profonde|Désactive': {
+    matomo: ['Carto', 'Installations géothermie profonde', 'Désactive'],
+  },
+  'Carto|Installations géothermie surface fermés|Active': {
+    matomo: ['Carto', 'Installations géothermie surface fermés', 'Active'],
+  },
+  'Carto|Installations géothermie surface fermés|Désactive': {
+    matomo: ['Carto', 'Installations géothermie surface fermés', 'Désactive'],
+  },
+  'Carto|Installations géothermie surface ouverts|Active': {
+    matomo: ['Carto', 'Installations géothermie surface ouverts', 'Active'],
+  },
+  'Carto|Installations géothermie surface ouverts|Désactive': {
+    matomo: ['Carto', 'Installations géothermie surface ouverts', 'Désactive'],
   },
   "Carto|Zones d'opportunité|Active": {
     matomo: ['Carto', "Zones d'opportunité", 'Active'],
