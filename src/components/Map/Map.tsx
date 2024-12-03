@@ -24,6 +24,7 @@ import Icon from '@components/ui/Icon';
 import Link from '@components/ui/Link';
 import Tooltip from '@components/ui/Tooltip';
 import { useContactFormFCU } from '@hooks';
+import useDevMode from '@hooks/useDevMode';
 import useRouterReady from '@hooks/useRouterReady';
 import cx from '@utils/cx';
 import { useServices } from 'src/services';
@@ -152,6 +153,7 @@ export const FullyFeaturedMap = ({
   className,
   ...props
 }: MapProps & React.HTMLAttributes<HTMLDivElement>) => {
+  const { devModeEnabled, toggleDevMode } = useDevMode();
   const router = useRouter();
   const { setMapRef, setMapDraw, isDrawing, mapConfiguration, mapLayersLoaded, setMapLayersLoaded } = useFCUMap();
 
@@ -189,6 +191,13 @@ export const FullyFeaturedMap = ({
     }
     setMapRef(mapRef?.current);
   }, [mapRef.current]);
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (map) {
+      map.showTileBoundaries = devModeEnabled;
+    }
+  }, [mapRef.current?.getMap(), devModeEnabled]);
 
   const { value: soughtAddresses, set: setSoughtAddresses } = useLocalStorageValue<StoredAddress[], StoredAddress[], true>(
     'mapSoughtAddresses',
@@ -734,6 +743,17 @@ export const FullyFeaturedMap = ({
               )}
             </MapSearchWrapper>
           )}
+
+          {/* Enable dev mode on click */}
+          <Box
+            position="absolute"
+            top="0"
+            right="0"
+            width="8px"
+            height="8px"
+            backgroundColor={devModeEnabled ? '#00aa00' : undefined}
+            onClick={() => toggleDevMode()}
+          />
         </MapProvider>
       </div>
     </>

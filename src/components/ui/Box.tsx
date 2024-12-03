@@ -27,6 +27,10 @@ type StyleProps = {
   textAlign?: CSSProperties['textAlign'];
   textWrap?: CSSProperties['textWrap'];
   position?: CSSProperties['position'];
+  top?: CSSProperties['top'];
+  right?: CSSProperties['right'];
+  bottom?: CSSProperties['bottom'];
+  left?: CSSProperties['left'];
   borderRadius?: CSSProperties['borderRadius'];
   width?: CSSProperties['width'];
   minWidth?: CSSProperties['minWidth'];
@@ -63,6 +67,10 @@ const StyledBox = styled.div<StyleProps>`
   text-align: ${({ textAlign }) => textAlign};
   text-wrap: ${({ textWrap }) => textWrap};
   position: ${({ position }) => position};
+  top: ${({ top }) => top};
+  right: ${({ right }) => right};
+  bottom: ${({ bottom }) => bottom};
+  left: ${({ left }) => left};
   border-radius: ${({ borderRadius }) => borderRadius};
   width: ${({ width }) => width};
   min-width: ${({ minWidth }) => minWidth};
@@ -113,6 +121,10 @@ function Box(props: PropsWithChildren<BoxProps>) {
       textAlign={props.textAlign}
       textWrap={props.textWrap}
       position={props.position}
+      top={props.top}
+      right={props.right}
+      bottom={props.bottom}
+      left={props.left}
       borderRadius={props.borderRadius}
       width={props.width}
       minWidth={props.minWidth}
