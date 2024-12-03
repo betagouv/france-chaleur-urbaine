@@ -4,7 +4,7 @@ import { MapRef } from 'react-map-gl/maplibre';
 
 import Hoverable from '@components//Hoverable';
 import HoverableIcon from '@components/Hoverable/HoverableIcon';
-import Map from '@components/Map';
+import Map from '@components/Map/Map';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { Table, type ColumnDef } from '@components/ui/Table';

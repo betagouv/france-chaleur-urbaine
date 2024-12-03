@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import Map from '@components/Map';
+import Map from '@components/Map/Map';
 import { fullscreenHeaderHeight, tabHeaderHeight } from '@components/shared/layout/MainLayout.data';
 import SimplePage from '@components/shared/page/SimplePage';
 import useInitialSearchParam from '@hooks/useInitialSearchParam';
