@@ -8,6 +8,7 @@ import Map from '@components/Map/Map';
 import Box from '@components/ui/Box';
 import Icon from '@components/ui/Icon';
 import { Table, type ColumnDef } from '@components/ui/Table';
+import { isDefined } from '@utils/core';
 import { useServices } from 'src/services';
 import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
 import { createMapConfiguration } from 'src/services/Map/map-configuration';
@@ -128,7 +129,8 @@ const Manager = () => {
     [demands, demandsService]
   );
 
-  const refreshMapPins = useCallback(() => {
+  // refresh map pins when filteredDemands change and center the map on the first demand
+  useEffect(() => {
     const addressList = filteredDemands.map<MapMarkerInfos>((demand) => ({
       id: demand.id,
       latitude: demand.Latitude,
@@ -147,10 +149,6 @@ const Manager = () => {
       });
     }
   }, [filteredDemands]);
-
-  useEffect(() => {
-    refreshMapPins();
-  }, [filteredDemands, refreshMapPins]);
 
   const demandRowsParams: ColumnDef<Demand>[] = useMemo(
     () => [
@@ -299,7 +297,7 @@ const Manager = () => {
   return (
     <Container>
       <ManagerHeader demands={demands} setFilteredDemands={onFilterUpdate} />
-      {demands.length > 0 ? (
+      {demands.length > 0 && isDefined(mapCenterLocation) ? (
         <ManagerContainer>
           <TableContainer mapCollapsed={mapCollapsed}>
             {filteredDemands.length > 0 ? (
@@ -332,8 +330,8 @@ const Manager = () => {
                 <Map
                   noPopup
                   withoutLogo
-                  initialCenter={mapCenterLocation?.center}
-                  initialZoom={mapCenterLocation?.zoom}
+                  initialCenter={mapCenterLocation.center}
+                  initialZoom={mapCenterLocation.zoom}
                   initialMapConfiguration={createMapConfiguration({
                     reseauxDeChaleur: {
                       show: true,
