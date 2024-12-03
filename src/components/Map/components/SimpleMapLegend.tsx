@@ -1105,7 +1105,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 </>
               }
             >
-              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts} ml="1w" mr="1w" px="1w">
+              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts} mx="1w">
                 <Box display="flex">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor}
@@ -1153,7 +1153,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 </>
               }
             >
-              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursFermes} ml="1w" mr="1w">
+              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursFermes} mx="1w">
                 <Box display="flex">
                   <Box
                     backgroundColor={installationsGeothermieSurfaceEchangeursFermesRealiseeColor}
