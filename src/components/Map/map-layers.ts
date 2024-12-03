@@ -834,7 +834,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/enrrMobilisables-thalassothermie/{z}/{x}/{y}`],
-        minzoom: 6,
+        minzoom: 5,
         maxzoom: 12,
       },
       layers: [
@@ -1214,7 +1214,7 @@ export function buildMapLayers(config: MapConfiguration): MapSourceLayersSpecifi
       source: {
         type: 'vector',
         tiles: [`${location.origin}/api/map/installationsGeothermieProfonde/{z}/{x}/{y}`],
-        minzoom: 6,
+        minzoom: 5,
         maxzoom: 6,
       },
       layers: [
