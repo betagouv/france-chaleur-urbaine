@@ -11,14 +11,17 @@ import Heading from '@components/ui/Heading';
 import Text from '@components/ui/Text';
 import { notify, toastErrors } from '@core/notification';
 import { withAuthentication } from '@helpers/ssr/withAuthentication';
+import { chunk } from '@utils/array';
 import { downloadFile } from '@utils/browser';
+import { isDefined } from '@utils/core';
 import { postFetchJSON } from '@utils/network';
 import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from 'src/shared/bulk-eligibility-coordinates';
 
 export default function TestCoordinatesPage() {
-  const [coordinates, setCoordinates] = useState<Record<string, any>>([]);
+  const [coordinates, setCoordinates] = useState<Record<string, any>[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [inputFileName, setInputFileName] = useState('');
+  const [progress, setProgress] = useState<number | null>(null);
 
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     setErrorMessage('');
@@ -40,7 +43,7 @@ export default function TestCoordinatesPage() {
     }
     setInputFileName(file.name);
 
-    Papa.parse(file, {
+    Papa.parse<Record<string, any>>(file, {
       header: true,
       dynamicTyping: true,
       complete(results) {
@@ -80,8 +83,18 @@ export default function TestCoordinatesPage() {
       return;
     }
 
-    const results = await postFetchJSON('/api/admin/bulk-eligibility-coordinates', coordinates);
-    const csvContent = Papa.unparse(results);
+    setProgress(0);
+    const allResults = [];
+    // on découpe les données pour éviter que les requêtes ne dépassent 1 minute qui est le temps maximum côté Scalingo
+    const chunks = chunk(coordinates, 200);
+    for (const [index, chunk] of chunks.entries()) {
+      const batchResults = await postFetchJSON('/api/admin/bulk-eligibility-coordinates', chunk);
+      allResults.push(...batchResults);
+      setProgress(index / chunks.length);
+    }
+    setProgress(null);
+
+    const csvContent = Papa.unparse(allResults);
     const blob = new Blob([csvContent], {
       type: 'text/csv',
     });
@@ -114,10 +127,6 @@ export default function TestCoordinatesPage() {
             </>
           )}
         </Text>
-        <Text mb="2w">
-          Si le temps d'attente dépasse 1 minute, le test ne fonctionnera pas. C'est une limitation de l'hébergeur. Dans ce cas, faire appel
-          à un développeur directement.
-        </Text>
 
         <Upload
           label="Choisissez un fichier .csv :"
@@ -138,6 +147,8 @@ export default function TestCoordinatesPage() {
         >
           Tester l'éligibilité du fichier
         </AsyncButton>
+        <br />
+        {isDefined(progress) && <progress value={progress} />}
       </Box>
     </SimplePage>
   );
