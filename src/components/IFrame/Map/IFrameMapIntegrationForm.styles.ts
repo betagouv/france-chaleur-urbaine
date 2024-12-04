@@ -11,3 +11,8 @@ export const StyledIFrameLink = styled(IFrameLink)`
   color: #000074;
   word-break: break-all;
 `;
+
+export const AddressContainer = styled.div`
+  margin-top: 16px;
+  max-width: 500px;
+`;
