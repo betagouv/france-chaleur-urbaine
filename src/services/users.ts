@@ -3,11 +3,10 @@ import bcrypt from 'bcryptjs';
 import { type ApiNetwork } from '@/pages/api/v1/users/[key]';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
+import { sendInscriptionEmail } from '@/server/email';
 import { type ApiAccount } from '@/types/ApiAccount';
 import { Airtable } from '@/types/enum/Airtable';
 import { USER_ROLE } from '@/types/enum/UserRole';
-
-import { sendInscriptionEmail } from './email';
 
 export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwork[]) => {
   //Users from tab "GESTIONNAIRES_API" where the new users from outside API are saved

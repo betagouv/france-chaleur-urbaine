@@ -53,7 +53,7 @@ const send = (
 };
 
 export const sendNewDemands = async (email: string, demands: number): Promise<void> => {
-  const html = await ejs.renderFile('./src/services/email/views/new-demands.ejs', {
+  const html = await ejs.renderFile('./src/server/email/views/new-demands.ejs', {
     demands,
     link: `${process.env.NEXTAUTH_URL}/connexion`,
   });
@@ -62,7 +62,7 @@ export const sendNewDemands = async (email: string, demands: number): Promise<vo
 };
 
 export const sendOldDemands = async (email: string): Promise<void> => {
-  const html = await ejs.renderFile('./src/services/email/views/old-demands.ejs', {
+  const html = await ejs.renderFile('./src/server/email/views/old-demands.ejs', {
     link: `${process.env.NEXTAUTH_URL}/connexion`,
   });
 
@@ -70,7 +70,7 @@ export const sendOldDemands = async (email: string): Promise<void> => {
 };
 
 export const sendInscriptionEmail = async (email: string): Promise<void> => {
-  const html = await ejs.renderFile('./src/services/email/views/inscription.ejs', {
+  const html = await ejs.renderFile('./src/server/email/views/inscription.ejs', {
     link: process.env.NEXTAUTH_URL,
   });
 
@@ -78,7 +78,7 @@ export const sendInscriptionEmail = async (email: string): Promise<void> => {
 };
 
 export const sendResetPasswordEmail = async (email: string, token: string): Promise<void> => {
-  const html = await ejs.renderFile('./src/services/email/views/password.ejs', {
+  const html = await ejs.renderFile('./src/server/email/views/password.ejs', {
     link: `${process.env.NEXTAUTH_URL}/reset-password/${token}`,
   });
 
@@ -86,7 +86,7 @@ export const sendResetPasswordEmail = async (email: string, token: string): Prom
 };
 
 export const sendBulkEligibilityResult = async (id: string, email: string, attachment: Attachment): Promise<void> => {
-  const html = await ejs.renderFile('./src/services/email/views/bulk-eligibility.ejs', {
+  const html = await ejs.renderFile('./src/server/email/views/bulk-eligibility.ejs', {
     link: `${process.env.NEXTAUTH_URL}/carte?id=${id}`,
   });
 
@@ -98,7 +98,7 @@ export const sendBulkEligibilityErrorAdmin = async (emails: string | undefined, 
     return;
   }
 
-  const html = await ejs.renderFile('./src/services/email/views/bulk-eligibility-error-admin.ejs', {
+  const html = await ejs.renderFile('./src/server/email/views/bulk-eligibility-error-admin.ejs', {
     user,
   });
 
@@ -106,13 +106,13 @@ export const sendBulkEligibilityErrorAdmin = async (emails: string | undefined, 
 };
 
 export const sendBulkEligibilityError = async (email: string): Promise<void> => {
-  const html = await ejs.renderFile('./src/services/email/views/bulk-eligibility-error.ejs');
+  const html = await ejs.renderFile('./src/server/email/views/bulk-eligibility-error.ejs');
 
   return send([email], '[France Chaleur Urbaine] Erreur lors de votre test', html);
 };
 
 export const sendRelanceMail = async (demand: Demand, id: string): Promise<void> => {
-  const html = await ejs.renderFile('./src/services/email/views/relance.ejs', {
+  const html = await ejs.renderFile('./src/server/email/views/relance.ejs', {
     firstName: demand.Prénom,
     date: new Date(demand['Date demandes']).toLocaleDateString('fr-FR', {
       year: 'numeric',
@@ -137,7 +137,7 @@ export const sendManagerEmail = async (
   cc: string[],
   replyTo: string
 ): Promise<void> => {
-  const html = await ejs.renderFile('./src/services/email/views/manager-email.ejs', {
+  const html = await ejs.renderFile('./src/server/email/views/manager-email.ejs', {
     content: body,
     signature: signature,
   });
