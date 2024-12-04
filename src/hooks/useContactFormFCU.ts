@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 
 import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
-import { formatDataToAirtable, submitToAirtable } from '@/server/helpers/airtable';
+import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
 import { trackEvent } from '@/services/analytics';
 import { AddressDataType } from '@/types/AddressData';
 import { Airtable } from '@/types/enum/Airtable';

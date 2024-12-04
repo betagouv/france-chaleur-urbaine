@@ -7,7 +7,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import Input from '@/components/form/dsfr/Input';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice';
-import { submitToAirtable } from '@/server/helpers/airtable';
+import { submitToAirtable } from '@/services/airtable';
 import { updateRelanceAnswer } from '@/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
 

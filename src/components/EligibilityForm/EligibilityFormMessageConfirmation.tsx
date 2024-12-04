@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import Input from '@/components/form/dsfr/Input';
 import MarkdownWrapper from '@/components/MarkdownWrapper';
-import { updateAirtable } from '@/server/helpers/airtable';
+import { updateAirtable } from '@/services/airtable';
 import { AddressDataType } from '@/types/AddressData';
 import { Airtable } from '@/types/enum/Airtable';
 

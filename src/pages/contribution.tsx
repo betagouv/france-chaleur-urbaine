@@ -5,7 +5,7 @@ import { ReactNode, useState } from 'react';
 import ContributionForm from '@/components/ContributionForm/ContributionForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice';
-import { submitToAirtable } from '@/server/helpers/airtable';
+import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
 
 type ResultType = {

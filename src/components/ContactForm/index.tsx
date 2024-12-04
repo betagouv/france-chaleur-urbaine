@@ -5,7 +5,7 @@ import { useQueryState } from 'nuqs';
 import React, { FormEvent, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
-import { submitToAirtable } from '@/server/helpers/airtable';
+import { submitToAirtable } from '@/services/airtable';
 import { Airtable } from '@/types/enum/Airtable';
 
 const ContactForm = () => {
