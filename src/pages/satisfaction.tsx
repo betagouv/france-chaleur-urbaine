@@ -7,8 +7,8 @@ import { type FormEvent, useEffect, useState } from 'react';
 import Input from '@/components/form/dsfr/Input';
 import SimplePage from '@/components/shared/page/SimplePage';
 import Slice from '@/components/Slice';
+import { updateRelanceAnswer } from '@/server/services/manager';
 import { submitToAirtable } from '@/services/airtable';
-import { updateRelanceAnswer } from '@/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
 
 function Satisfaction() {
