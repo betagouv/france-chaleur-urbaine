@@ -7,9 +7,9 @@ import EligibilityContactForm from '@/components/EligibilityForm/EligibilityCont
 import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
 import Modal, { createModal, useIsModalOpen } from '@/components/ui/Modal';
-import { getReadableDistance } from '@/services/Map/distance';
 import { type Point } from '@/types/Point';
 import { type StoredAddress } from '@/types/StoredAddress';
+import { getReadableDistance } from '@/utils/geo';
 
 import { ContactFormButtonWrapper, ContactFormWrapper, MessageConfirmBox, SearchedAddress } from './CardSearchDetails.style';
 

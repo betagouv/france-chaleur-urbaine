@@ -1,4 +1,4 @@
-import { type DatabaseSourceId } from '@/services/tiles.config';
+import { type DatabaseSourceId } from '@/server/services/tiles.config';
 
 import { fillTiles } from './utils/tiles';
 
