@@ -1,4 +1,4 @@
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+import { type GetStaticPaths, type GetStaticProps, type InferGetStaticPropsType } from 'next';
 
 import City from '@/components/Cities/City';
 import { GlobalStyle } from '@/components/shared/layout/Global.style';

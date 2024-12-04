@@ -1,6 +1,6 @@
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, type ReactNode, useContext } from 'react';
 
-import usePublicodesEngine from '@/components/ComparateurPublicodes/usePublicodesEngine';
+import type usePublicodesEngine from '@/components/ComparateurPublicodes/usePublicodesEngine';
 
 export type UseEngine = ReturnType<typeof usePublicodesEngine<string | any>>;
 export type FormContextType = { engine: UseEngine };

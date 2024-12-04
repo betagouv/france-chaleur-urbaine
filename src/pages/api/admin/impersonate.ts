@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { JWT, decode, encode } from 'next-auth/jwt';
+import { type JWT, decode, encode } from 'next-auth/jwt';
 import { z } from 'zod';
 
 import { logger } from '@/server/helpers/logger';

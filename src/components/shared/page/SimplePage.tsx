@@ -1,14 +1,14 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { Footer } from '@codegouvfr/react-dsfr/Footer';
-import MainNavigation, { MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
+import MainNavigation, { type MainNavigationProps } from '@codegouvfr/react-dsfr/MainNavigation';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
 import React from 'react';
 
 import { FooterConsentManagementItem } from '@/components/ConsentBanner';
-import { HeaderProps, HeaderQuickAccessItem } from '@/components/dsfr/Header';
-import SEO, { SEOProps } from '@/components/SEO';
+import { type HeaderProps, HeaderQuickAccessItem } from '@/components/dsfr/Header';
+import SEO, { type SEOProps } from '@/components/SEO';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';

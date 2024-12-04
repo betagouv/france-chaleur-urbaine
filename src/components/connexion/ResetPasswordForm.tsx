@@ -1,6 +1,6 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { FormEvent, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import { useServices } from '@/services';

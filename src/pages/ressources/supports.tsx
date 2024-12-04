@@ -6,7 +6,7 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
-import { TrackingEvent } from '@/services/analytics';
+import { type TrackingEvent } from '@/services/analytics';
 
 const infographies: InfographieItemProps[] = [
   {

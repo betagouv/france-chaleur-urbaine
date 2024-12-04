@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '@/server/db';
 import { getExport } from '@/server/services/addresseInformation';
 import { withCors } from '@/services/api/cors';
-import { ErrorResponse } from '@/types/ErrorResponse';
+import { type ErrorResponse } from '@/types/ErrorResponse';
 
 const bulkEligibilitygibilityStatus = async (
   req: NextApiRequest,

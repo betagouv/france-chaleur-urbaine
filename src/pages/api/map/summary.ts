@@ -1,7 +1,7 @@
 import turfArea from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import turfLength from '@turf/length';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { type NextApiRequest, type NextApiResponse } from 'next';
 import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';

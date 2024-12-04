@@ -1,5 +1,5 @@
 import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { type GetStaticPaths, type GetStaticProps } from 'next';
 import styled from 'styled-components';
 
 import MarkdownWrapper from '@/components/MarkdownWrapper';
@@ -8,7 +8,7 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Text from '@/components/ui/Text';
 import { articles, getArticle } from '@/data/contents';
-import { Article } from '@/types/Article';
+import { type Article } from '@/types/Article';
 
 const ArticleContentWrapper = styled(Box)`
   img {

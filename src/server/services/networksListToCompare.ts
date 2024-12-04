@@ -1,5 +1,5 @@
 import db from '@/server/db';
-import { NetworkToCompare } from '@/types/Summary/Network';
+import { type NetworkToCompare } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 
 export const getNetworks = async (): Promise<NetworkToCompare[]> => {

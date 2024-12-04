@@ -1,10 +1,10 @@
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import AddressAutocomplete from '@/components/addressAutocomplete/AddressAutocomplete';
-import { LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
-import { Coords } from '@/types/Coords';
-import { SuggestionItem } from '@/types/Suggestions';
+import { type LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
+import { type Coords } from '@/types/Coords';
+import { type SuggestionItem } from '@/types/Suggestions';
 
 import { AddressContainer, DivQuestionCenterMap, StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
 

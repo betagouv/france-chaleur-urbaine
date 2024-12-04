@@ -1,12 +1,12 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import { Session } from 'next-auth';
+import type Link from 'next/link';
+import { type Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
-import { SWRConfig, SWRConfiguration } from 'swr';
+import { SWRConfig, type SWRConfiguration } from 'swr';
 
 import '@/components/Map/StyleSwitcher/styles.css';
 import SEO from '@/components/SEO';

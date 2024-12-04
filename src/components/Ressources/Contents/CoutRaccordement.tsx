@@ -1,5 +1,5 @@
 import Highlight from '@codegouvfr/react-dsfr/Highlight';
-import { ComponentProps } from 'react';
+import { type ComponentProps } from 'react';
 import Chart from 'react-google-charts';
 
 import Box from '@/components/ui/Box';

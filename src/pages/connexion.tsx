@@ -1,7 +1,7 @@
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
-import { LoginForm, LoginFormProps } from '@/components/connexion/LoginForm';
+import { LoginForm, type LoginFormProps } from '@/components/connexion/LoginForm';
 import SimplePage from '@/components/shared/page/SimplePage';
 
 export default function ConnectionPage(props: LoginFormProps): JSX.Element {

@@ -1,4 +1,4 @@
-import { ENERGY_USED } from '../enum/EnergyType';
+import { type ENERGY_USED } from '../enum/EnergyType';
 
 export interface EnergySummary {
   id: number;

@@ -1,6 +1,6 @@
 import Card from '@codegouvfr/react-dsfr/Card';
 import Image from 'next/image';
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import { coldNetworks, growths, issues, understandings } from '@/components/Ressources/config';
 import SimplePage from '@/components/shared/page/SimplePage';

@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 
 export interface HttpClient {
   get<T>(url: string): Promise<T>;

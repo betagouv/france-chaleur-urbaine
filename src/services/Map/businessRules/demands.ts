@@ -1,4 +1,4 @@
-import { Demand } from '@/types/Summary/Demand';
+import { type Demand } from '@/types/Summary/Demand';
 
 export const themeDefDemands: any = {
   fill: { color: '#FFFFFF', size: 4 },

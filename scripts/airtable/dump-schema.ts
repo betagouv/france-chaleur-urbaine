@@ -4,7 +4,7 @@ import camelCase from 'camelcase';
 
 import { listTables } from '@/server/db/airtable';
 
-import { KnownAirtableBase, knownAirtableBases } from './bases';
+import { type KnownAirtableBase, knownAirtableBases } from './bases';
 
 export async function fetchBaseSchema(base: KnownAirtableBase) {
   console.info("Fetching Airtable tables starting with 'FCU - '...");

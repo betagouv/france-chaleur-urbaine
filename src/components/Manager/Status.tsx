@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import { Demand } from '@/types/Summary/Demand';
+import { type Demand } from '@/types/Summary/Demand';
 
 import { StatusSelect } from './Status.styles';
 

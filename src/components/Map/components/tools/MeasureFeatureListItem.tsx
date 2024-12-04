@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Box from '@/components/ui/Box';
 import { formatDistance } from '@/utils/geo';
 
-import { MeasureFeature } from './measure';
+import { type MeasureFeature } from './measure';
 
 type MesureFeatureListItemProps = {
   feature: MeasureFeature;

@@ -1,5 +1,5 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Accordion from '@/components/ui/Accordion';

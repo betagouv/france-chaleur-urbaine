@@ -1,14 +1,14 @@
 import {
-  CircleLayerSpecification,
-  DataDrivenPropertyValueSpecification,
-  ExpressionInputType,
-  ExpressionSpecification,
-  FilterSpecification,
-  LayerSpecification,
-  LineLayerSpecification,
-  Map,
-  SourceSpecification,
-  StyleSetterOptions,
+  type CircleLayerSpecification,
+  type DataDrivenPropertyValueSpecification,
+  type ExpressionInputType,
+  type ExpressionSpecification,
+  type FilterSpecification,
+  type LayerSpecification,
+  type LineLayerSpecification,
+  type Map,
+  type SourceSpecification,
+  type StyleSetterOptions,
 } from 'maplibre-gl';
 
 import { gestionnairesFilters } from '@/services';
@@ -23,10 +23,10 @@ import {
 import { arrColorFromDefBuildingsDpeEnergy } from '@/services/Map/businessRules/buildings';
 import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from '@/services/Map/businessRules/enrrMobilisables';
 import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from '@/services/Map/businessRules/zonePotentielChaud';
-import { MapConfiguration, filtresEnergies, percentageMaxInterval } from '@/services/Map/map-configuration';
-import { SourceId } from '@/services/tiles.config';
+import { type MapConfiguration, filtresEnergies, percentageMaxInterval } from '@/services/Map/map-configuration';
+import { type SourceId } from '@/services/tiles.config';
 import { ENERGY_TYPE, ENERGY_USED } from '@/types/enum/EnergyType';
-import { Network } from '@/types/Summary/Network';
+import { type Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { intervalsEqual } from '@/utils/interval';
 import { formatMWhString } from '@/utils/strings';

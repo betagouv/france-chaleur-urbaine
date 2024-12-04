@@ -1,5 +1,5 @@
-import { Airtable } from '@/types/enum/Airtable';
-import { AirtableDemandCreation, FormDemandCreation } from '@/types/Summary/Demand';
+import { type Airtable } from '@/types/enum/Airtable';
+import { type AirtableDemandCreation, type FormDemandCreation } from '@/types/Summary/Demand';
 
 const formatHeatingEnergyToAirtable: (heatingEnergy: string) => string = (heatingEnergy) => {
   switch (heatingEnergy) {

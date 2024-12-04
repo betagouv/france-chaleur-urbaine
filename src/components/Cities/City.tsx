@@ -10,11 +10,11 @@ import Text from '@/components/ui/Text';
 import WrappedText from '@/components/WrappedText';
 import userExperience from '@/data/villes/user-experience';
 import citiesData from '@/data/villes/villes';
-import { Network } from '@/types/Summary/Network';
+import { type Network } from '@/types/Summary/Network';
 
 import { CityContainer, VideoGuideColumn } from './City.styles';
 import ClassedNetworks from './ClassedNetworks';
-import Dispositifs, { DispositifsData } from './Dispositifs';
+import Dispositifs, { type DispositifsData } from './Dispositifs';
 import Header from './Header';
 import Networks from './Networks';
 

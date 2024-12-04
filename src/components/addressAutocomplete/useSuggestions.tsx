@@ -2,7 +2,7 @@ import { useIsMounted } from '@react-hookz/web';
 import { useState } from 'react';
 
 import { useServices } from '@/services';
-import { SuggestionItem } from '@/types/Suggestions';
+import { type SuggestionItem } from '@/types/Suggestions';
 import debounce from '@/utils/debounce';
 
 enum Status {

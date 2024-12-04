@@ -1,16 +1,16 @@
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import type MapboxDraw from '@mapbox/mapbox-gl-draw';
 import React, { createContext, useContext } from 'react';
-import { MapRef } from 'react-map-gl/maplibre';
+import { type MapRef } from 'react-map-gl/maplibre';
 
 import useReseauxDeChaleurFilters from '@/hooks/useReseauxDeChaleurFilters';
 import {
   defaultMapConfiguration,
-  MapConfiguration,
-  MapConfigurationProperty,
-  MaybeEmptyMapConfiguration,
+  type MapConfiguration,
+  type MapConfigurationProperty,
+  type MaybeEmptyMapConfiguration,
 } from '@/services/Map/map-configuration';
 import { deepMergeObjects, isDefined, setProperty, toggleBoolean } from '@/utils/core';
-import { Interval } from '@/utils/interval';
+import { type Interval } from '@/utils/interval';
 
 type UseFCUMapResult = {
   setMapRef: React.Dispatch<React.SetStateAction<MapRef | null>>;

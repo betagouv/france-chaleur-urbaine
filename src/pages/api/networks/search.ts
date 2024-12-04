@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { clientConfig } from '@/client-config';
 import db from '@/server/db';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
-import { Network } from '@/types/Summary/Network';
+import { type Network } from '@/types/Summary/Network';
 
 const selectedNetworkFields = [
   'id_fcu',

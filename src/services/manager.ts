@@ -4,8 +4,8 @@ import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { getAllNewDemands, getAllStaledDemandsSince, getAllToRelanceDemands, getToRelanceDemand } from '@/server/services/manager';
 import { Airtable } from '@/types/enum/Airtable';
-import { Demand } from '@/types/Summary/Demand';
-import { User } from '@/types/User';
+import { type Demand } from '@/types/Summary/Demand';
+import { type User } from '@/types/User';
 
 import { sendNewDemands, sendOldDemands, sendRelanceMail } from './email';
 

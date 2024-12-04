@@ -1,4 +1,4 @@
-import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { useDebouncedEffect } from '@react-hookz/web';
 import React from 'react';
 

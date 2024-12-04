@@ -5,7 +5,7 @@ import { tileSourcesMaxZoom } from '@/components/Map/map-layers';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 
-import { AirtableTileInfo, DatabaseSourceId, tilesInfo } from './tiles.config';
+import { type AirtableTileInfo, type DatabaseSourceId, tilesInfo } from './tiles.config';
 
 const debug = !!(process.env.API_DEBUG_MODE || null);
 

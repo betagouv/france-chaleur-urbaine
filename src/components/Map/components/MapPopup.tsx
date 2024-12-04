@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Popup } from 'react-map-gl/maplibre';
 
 import { MapPopupType } from '@/types/MapComponentsInfos';
-import { Point } from '@/types/Point';
+import { type Point } from '@/types/Point';
 
 import DynamicPopupContent, { isDynamicPopupContent } from './DynamicMapPopupContent';
 import MapPopupContent, { ViasevaPopupContent } from './MapPopupContent';

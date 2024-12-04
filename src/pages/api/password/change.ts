@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { NextApiRequest } from 'next';
+import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import db from '@/server/db';

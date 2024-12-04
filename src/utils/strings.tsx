@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 export function prettyFormatNumber(number: number | null | undefined, precision?: number): string | null {
   return typeof number === 'number'

@@ -12,14 +12,14 @@ import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
-import { NetworkEligibilityStatus } from '@/server/services/addresseInformation';
+import { type NetworkEligibilityStatus } from '@/server/services/addresseInformation';
 import { useServices } from '@/services';
 import { formatDataToAirtable, submitToAirtable } from '@/services/airtable';
 import { trackEvent } from '@/services/analytics';
 import { getReadableDistance } from '@/services/Map/distance';
 import { Airtable } from '@/types/enum/Airtable';
-import { SuggestionItem } from '@/types/Suggestions';
-import { ContactFormInfos, FormDemandCreation } from '@/types/Summary/Demand';
+import { type SuggestionItem } from '@/types/Suggestions';
+import { type ContactFormInfos, type FormDemandCreation } from '@/types/Summary/Demand';
 import { workMinimum } from '@/utils/time';
 
 type FormState = 'idle' | 'loadingEligibility' | 'eligibilitySubmissionError' | 'sendingDemand' | 'demandCreated' | 'demandSubmissionError';

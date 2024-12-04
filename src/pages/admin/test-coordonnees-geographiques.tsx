@@ -1,7 +1,7 @@
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 import Papa from 'papaparse';
-import { ChangeEvent, useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import AsyncButton from '@/components/ui/AsyncButton';

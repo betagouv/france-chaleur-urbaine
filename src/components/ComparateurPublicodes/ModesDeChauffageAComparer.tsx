@@ -4,10 +4,10 @@ import Checkbox from '@/components/form/dsfr/Checkbox';
 import Icon from '@/components/ui/Icon';
 import Text from '@/components/ui/Text';
 import useArrayQueryState from '@/hooks/useArrayQueryState';
-import { LocationInfoResponse } from '@/pages/api/location-infos';
+import { type LocationInfoResponse } from '@/pages/api/location-infos';
 
 import { Separator, Title } from './ComparateurPublicodes.style';
-import { ModeDeChauffage, modesDeChauffage } from './modes-de-chauffage';
+import { type ModeDeChauffage, modesDeChauffage } from './modes-de-chauffage';
 import { Disclaimer, modalDisclaimer } from './Placeholder';
 import SelectClimatisation from './SelectClimatisation';
 import SelectProductionECS from './SelectProductionECS';

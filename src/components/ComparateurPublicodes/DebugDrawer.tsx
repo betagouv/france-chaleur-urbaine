@@ -1,7 +1,7 @@
-import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Button from '@codegouvfr/react-dsfr/Button';
 import Table from '@codegouvfr/react-dsfr/Table';
-import { Drawer, Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
+import { Drawer, Tooltip, tooltipClasses, type TooltipProps } from '@mui/material';
 import { utils } from 'publicodes';
 import { useState } from 'react';
 import styled from 'styled-components';

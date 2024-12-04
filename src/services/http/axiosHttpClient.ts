@@ -1,6 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 
-import { HttpClient } from './HttpClient';
+import { type HttpClient } from './HttpClient';
 
 class AxiosHttpClient implements HttpClient {
   async get<T>(url: string): Promise<T> {

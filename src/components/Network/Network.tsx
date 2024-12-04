@@ -1,16 +1,16 @@
 import { fr } from '@codegouvfr/react-dsfr';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 
 import Map from '@/components/Map/Map';
 import Accordion from '@/components/ui/Accordion';
-import Box, { BoxProps } from '@/components/ui/Box';
+import Box, { type BoxProps } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 import Tooltip from '@/components/ui/Tooltip';
 import { createMapConfiguration } from '@/services/Map/map-configuration';
-import { Network } from '@/types/Summary/Network';
+import { type Network } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 import { formatMW, formatMWh, prettyFormatNumber } from '@/utils/strings';
 

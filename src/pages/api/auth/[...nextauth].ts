@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import nextAuth, { AuthOptions, Session } from 'next-auth';
+import nextAuth, { type AuthOptions, type Session } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import db from '@/server/db';

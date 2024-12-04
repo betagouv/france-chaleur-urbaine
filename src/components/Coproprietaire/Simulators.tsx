@@ -2,7 +2,7 @@ import { WhiteArrowPuce } from '@/components/MarkdownWrapper/MarkdownWrapper.sty
 import Simulator from '@/components/Ressources/Contents/Simulator';
 import Box, { ResponsiveRow } from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
-import { LegacyColor } from '@/components/ui/helpers/colors';
+import { type LegacyColor } from '@/components/ui/helpers/colors';
 import Link from '@/components/ui/Link';
 import Text from '@/components/ui/Text';
 

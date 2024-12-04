@@ -1,5 +1,5 @@
 import formidable from 'formidable';
-import { NextApiRequest } from 'next';
+import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import { clientConfig } from '@/client-config';

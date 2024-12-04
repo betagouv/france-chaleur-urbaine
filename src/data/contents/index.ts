@@ -1,4 +1,4 @@
-import { Article } from '@/types/Article';
+import { type Article } from '@/types/Article';
 
 import reseauxACreerOuEtendre from './1600-reseaux-a-creer-ou-etendre.md';
 import demandes from './2000-demandes.md';

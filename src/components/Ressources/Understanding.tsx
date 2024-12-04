@@ -1,4 +1,4 @@
-import { Document, understandings } from './config';
+import { type Document, understandings } from './config';
 import { CardContainer, UnderstandingCard, UnderstandingCards } from './Understanding.styles';
 
 const Understanding = ({ cards }: { cards?: Record<string, Document> }) => {

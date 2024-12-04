@@ -1,4 +1,4 @@
-import { MouseEventHandler, SyntheticEvent, useEffect, useRef, useState } from 'react';
+import { type MouseEventHandler, type SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { Tooltip, WrapperDiv } from './CarteFrance.style';

@@ -1,7 +1,7 @@
-import Airtable, { FieldSet, Table } from 'airtable';
+import Airtable, { type FieldSet, type Table } from 'airtable';
 import dotenv from 'dotenv';
 
-import { Airtable as AirtableTableEnum } from '@/types/enum/Airtable';
+import { type Airtable as AirtableTableEnum } from '@/types/enum/Airtable';
 
 export type { FieldSet } from 'airtable';
 export type { QueryParams } from 'airtable/lib/query_params';

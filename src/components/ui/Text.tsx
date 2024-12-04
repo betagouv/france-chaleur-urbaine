@@ -1,7 +1,7 @@
-import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
+import { type CSSProperties, type HTMLAttributes, type PropsWithChildren } from 'react';
 
-import { LegacyColor, legacyColors } from './helpers/colors';
-import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
+import { type LegacyColor, legacyColors } from './helpers/colors';
+import { type SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type TextType = 'h6' | 'label' | 'p' | 'div' | 'span' | 'strong' | 'blockquote';
 type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'lead';

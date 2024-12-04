@@ -3,7 +3,7 @@ import { createModal } from '@codegouvfr/react-dsfr/Modal';
 import { useIsModalOpen } from '@codegouvfr/react-dsfr/Modal/useIsModalOpen';
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { useSession } from 'next-auth/react';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import Input from '@/components/form/dsfr/Input';
@@ -12,7 +12,7 @@ import Modal from '@/components/ui/Modal';
 import emailsContentList from '@/data/manager/manager-emails-content';
 import emailsList from '@/data/manager/manager-emails-list';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import { Demand } from '@/types/Summary/Demand';
+import { type Demand } from '@/types/Summary/Demand';
 
 const ModalContentWrapper = styled.div`
   margin-top: -3em;

@@ -1,4 +1,4 @@
-import { GasSummary } from './Gas';
+import { type GasSummary } from './Gas';
 
 export type Densite = {
   size: number;

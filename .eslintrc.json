@@ -42,7 +42,7 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/ban-types": "warn",
     "no-empty-function": "off",
-    "@typescript-eslint/no-empty-function": ["error"],
+    "@typescript-eslint/no-empty-function": ["error", { "allow": [] }],
     "no-unused-vars": "off",
     "@typescript-eslint/no-namespace": "warn",
     "@typescript-eslint/no-unused-vars": [
@@ -54,6 +54,7 @@
         "caughtErrorsIgnorePattern": "^ignore"
       }
     ],
+    "@typescript-eslint/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "off",
     "react/jsx-uses-react": "off",

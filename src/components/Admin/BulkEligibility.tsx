@@ -7,7 +7,7 @@ import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import { Table, type ColumnDef } from '@/components/ui/Table';
 import { useServices } from '@/services';
-import { EligibilityDemand } from '@/types/EligibilityDemand';
+import { type EligibilityDemand } from '@/types/EligibilityDemand';
 
 import DownloadButton from './DownloadButton';
 import { TableContainer } from './Users.styles';

@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 import { signOut, useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
