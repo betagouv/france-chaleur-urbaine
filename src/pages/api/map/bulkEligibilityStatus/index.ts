@@ -8,10 +8,10 @@ import * as yup from 'yup';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
+import { sendBulkEligibilityError, sendBulkEligibilityErrorAdmin, sendBulkEligibilityResult } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { getEligilityStatus, getExport } from '@/server/services/addresseInformation';
 import { withCors } from '@/services/api/cors';
-import { sendBulkEligibilityError, sendBulkEligibilityErrorAdmin, sendBulkEligibilityResult } from '@/services/email';
 import { Airtable } from '@/types/enum/Airtable';
 
 const version = 8;

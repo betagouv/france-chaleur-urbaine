@@ -3,8 +3,8 @@ import z from 'zod';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
+import { sendManagerEmail } from '@/server/email';
 import { handleRouteErrors, invalidRouteError, validateObjectSchema } from '@/server/helpers/server';
-import { sendManagerEmail } from '@/services/email';
 import { Airtable } from '@/types/enum/Airtable';
 import { zAirtableRecordId } from '@/utils/validation';
 

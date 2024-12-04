@@ -4,9 +4,9 @@ import { z } from 'zod';
 
 import db from '@/server/db';
 import { AirtableDB } from '@/server/db/airtable';
+import { sendResetPasswordEmail } from '@/server/email';
 import { logger } from '@/server/helpers/logger';
 import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
-import { sendResetPasswordEmail } from '@/services/email';
 import { Airtable } from '@/types/enum/Airtable';
 
 const reset = handleRouteErrors(async (req: NextApiRequest) => {
