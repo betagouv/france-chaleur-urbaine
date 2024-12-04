@@ -2,8 +2,8 @@ import * as Sentry from '@sentry/node';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
-import { bulkFetchRangeFromMatomo } from '@/services/matomo';
-import { type MatomoActionMetrics, type MatomoPageMetrics, type MatomoUniqueVisitorsMetrics } from '@/services/matomo_types';
+import { bulkFetchRangeFromMatomo } from '@/server/services/matomo';
+import { type MatomoActionMetrics, type MatomoPageMetrics, type MatomoUniqueVisitorsMetrics } from '@/server/services/matomo_types';
 import { Airtable } from '@/types/enum/Airtable';
 import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
 

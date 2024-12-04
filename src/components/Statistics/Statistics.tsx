@@ -8,7 +8,7 @@ import Slice from '@/components/Slice';
 import Box from '@/components/ui/Box';
 import Heading from '@/components/ui/Heading';
 import statistics from '@/data/statistics';
-import { type MatomoMonthStat } from '@/services/matomo_types';
+import { type MatomoMonthStat } from '@/server/services/matomo_types';
 import { STAT_LABEL } from '@/types/enum/MatomoStats';
 import { fetchJSON } from '@/utils/network';
 
