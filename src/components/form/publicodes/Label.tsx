@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Infobulle from '@components/ui/Infobulle';
-import { upperCaseFirstChar } from '@utils/strings';
+import Infobulle from '@/components/ui/Infobulle';
+import { upperCaseFirstChar } from '@/utils/strings';
 
 type LabelProps = React.HTMLAttributes<HTMLSpanElement> & {
   label?: React.ReactNode;

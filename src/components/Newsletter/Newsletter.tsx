@@ -1,10 +1,10 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { FormEvent, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
-import { submitToAirtable } from '@helpers/airtable';
-import { Airtable } from 'src/types/enum/Airtable';
+import { submitToAirtable } from '@/services/airtable';
+import { Airtable } from '@/types/enum/Airtable';
 
 import { Container, Email } from './Newsletter.styles';
 

@@ -1,11 +1,11 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { getAllDemands } from '@core/infrastructure/repository/manager';
-import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@helpers/server';
-import db from 'src/db';
-import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PERIOD } from 'src/types/enum/MatomoStats';
-import { Demand } from 'src/types/Summary/Demand';
+import db from '@/server/db';
+import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
+import { getAllDemands } from '@/server/services/manager';
+import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PERIOD } from '@/types/enum/MatomoStats';
+import { type Demand } from '@/types/Summary/Demand';
 
 type CalcResult = {
   date?: string;

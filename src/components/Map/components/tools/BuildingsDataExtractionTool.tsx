@@ -1,23 +1,23 @@
 import Alert from '@codegouvfr/react-dsfr/Alert';
 import Button from '@codegouvfr/react-dsfr/Button';
-import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import { type DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
 import { useKeyboardEvent } from '@react-hookz/web';
 import turfArea from '@turf/area';
 import { atom, useAtom } from 'jotai';
-import { GeoJSONSource } from 'maplibre-gl';
+import { type GeoJSONSource } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
-import { MapSourceLayersSpecification } from '@components/Map/map-layers';
-import useFCUMap from '@components/Map/MapProvider';
-import Box from '@components/ui/Box';
-import Text from '@components/ui/Text';
-import { validatePolygonGeometry } from '@utils/geo';
-import { clientConfig } from 'src/client-config';
-import { useServices } from 'src/services';
-import { trackEvent } from 'src/services/analytics';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
-import { GasSummary } from 'src/types/Summary/Gas';
+import { clientConfig } from '@/client-config';
+import { type MapSourceLayersSpecification } from '@/components/Map/map-layers';
+import useFCUMap from '@/components/Map/MapProvider';
+import Box from '@/components/ui/Box';
+import Text from '@/components/ui/Text';
+import { useServices } from '@/services';
+import { trackEvent } from '@/services/analytics';
+import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import { type GasSummary } from '@/types/Summary/Gas';
+import { validatePolygonGeometry } from '@/utils/geo';
 
 import { Title } from '../SimpleMapLegend.style';
 

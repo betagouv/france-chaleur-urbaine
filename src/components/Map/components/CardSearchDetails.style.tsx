@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-import Accordion from '@components/ui/Accordion';
+import Accordion from '@/components/ui/Accordion';
 
 const eligibleStyle = {
   color: '#000000',

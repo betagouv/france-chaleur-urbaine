@@ -1,7 +1,7 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import React, { useState } from 'react';
 
-import cx from '@utils/cx';
+import cx from '@/utils/cx';
 
 import Box from './ui/Box';
 import Icon from './ui/Icon';

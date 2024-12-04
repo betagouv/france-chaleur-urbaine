@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import db from 'src/db';
+import db from '@/server/db';
 
 import AmorceFileReader from './AmorceFileReader';
 import sousZoneClimatiques from './sous-zones-climatiques.json';

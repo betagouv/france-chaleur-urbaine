@@ -1,5 +1,5 @@
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import Slice from '@components/Slice';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import Slice from '@/components/Slice';
 
 import { Container, Image } from './index.styles';
 

@@ -1,13 +1,13 @@
-import { AxiosResponse } from 'axios';
+import { type AxiosResponse } from 'axios';
 
-import { NetworkEligibilityStatus } from '@core/infrastructure/repository/addresseInformation';
-import { RawLinearHeatDensity } from '@pages/api/linear-heat-density';
-import { HttpClient } from 'src/services/http';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
-import { HeatNetworksResponse } from 'src/types/HeatNetworksResponse';
-import { SuggestionItem } from 'src/types/Suggestions';
-import { Summary } from 'src/types/Summary';
-import { Network } from 'src/types/Summary/Network';
+import { type RawLinearHeatDensity } from '@/pages/api/linear-heat-density';
+import { type NetworkEligibilityStatus } from '@/server/services/addresseInformation';
+import { type HttpClient } from '@/services/http';
+import { type EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import { type HeatNetworksResponse } from '@/types/HeatNetworksResponse';
+import { type SuggestionItem } from '@/types/Suggestions';
+import { type Summary } from '@/types/Summary';
+import { type Network } from '@/types/Summary/Network';
 
 import { ServiceError } from './errors';
 

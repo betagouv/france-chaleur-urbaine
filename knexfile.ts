@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { Knex } from 'knex';
+import type { Knex } from 'knex';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();

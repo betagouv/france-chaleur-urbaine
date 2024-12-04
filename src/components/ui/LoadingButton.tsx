@@ -1,5 +1,5 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 //import { ButtonProps } from '@codegouvfr/react-dsfr/Button';
 import { Oval } from 'react-loader-spinner';
 import styled from 'styled-components';

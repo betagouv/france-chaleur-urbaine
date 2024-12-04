@@ -3,13 +3,13 @@ import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import RadioButtons from '@codegouvfr/react-dsfr/RadioButtons';
 import Select from '@codegouvfr/react-dsfr/SelectNext';
 import { Field, useFormikContext } from 'formik';
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 
-import Input from '@components/form/formik/input';
-import Box from '@components/ui/Box';
-import Text from '@components/ui/Text';
+import Input from '@/components/form/formik/input';
+import Box from '@/components/ui/Box';
+import Text from '@/components/ui/Text';
 
 const InputWraper = styled(Box)`
   opacity: 1;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import MarkdownWrapper from '@components/MarkdownWrapper';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
 
 import { ClassedNetworksColumn } from './ClassedNetworks.styles';
 

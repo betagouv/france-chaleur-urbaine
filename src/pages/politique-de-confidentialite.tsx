@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import SimplePage from '@components/shared/page/SimplePage';
-import { privacyPolicy } from '@data';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import SimplePage from '@/components/shared/page/SimplePage';
+import privacyPolicy from '@/data/fcu-privacy-policy';
 
 const StyledMarkdown = styled(MarkdownWrapper)`
   margin-bottom: 2em;

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
-import Box from '@components/ui/Box';
-import Divider from '@components/ui/Divider';
+import Box from '@/components/ui/Box';
+import Divider from '@/components/ui/Divider';
 
 const ClassedNetwork = ({ externalLinks }: { externalLinks?: boolean }) => {
   return (

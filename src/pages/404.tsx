@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-import SimplePage from '@components/shared/page/SimplePage';
-import Heading from '@components/ui/Heading';
-import Text from '@components/ui/Text';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 // import { Container } from '@codegouvfr/react-dsfr/Con';
 
 export default function Custom404() {

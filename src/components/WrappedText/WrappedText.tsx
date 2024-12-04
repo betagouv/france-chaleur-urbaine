@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
-import MarkdownWrapper from '@components/MarkdownWrapper';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
 
 import { Container, ImageContainer, TextContainer } from './WrappedText.style';
 

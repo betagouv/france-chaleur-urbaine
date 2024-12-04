@@ -15,10 +15,10 @@
 */
 
 import * as PopoverPrimitive from '@radix-ui/react-popover';
-import { createContext, forwardRef, ReactNode, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { createContext, forwardRef, type ReactNode, useContext, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import useDimensions from '@hooks/useDimensions';
+import useDimensions from '@/hooks/useDimensions';
 
 type Measurements = {
   width?: number;

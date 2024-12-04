@@ -1,12 +1,12 @@
 import type { NextApiRequest } from 'next';
 import z from 'zod';
 
-import { handleRouteErrors, invalidRouteError, validateObjectSchema } from '@helpers/server';
-import { zAirtableRecordId } from '@utils/validation';
-import db from 'src/db';
-import base from 'src/db/airtable';
-import { sendManagerEmail } from 'src/services/email';
-import { Airtable } from 'src/types/enum/Airtable';
+import db from '@/server/db';
+import base from '@/server/db/airtable';
+import { sendManagerEmail } from '@/server/email';
+import { handleRouteErrors, invalidRouteError, validateObjectSchema } from '@/server/helpers/server';
+import { Airtable } from '@/types/enum/Airtable';
+import { zAirtableRecordId } from '@/utils/validation';
 
 const zManagerEmail = {
   emailContent: z.object({

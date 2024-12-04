@@ -1,7 +1,7 @@
-import IframeWrapper from '@components/IframeWrapper';
-import Map from '@components/Map/Map';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
-import { MapPopupType } from 'src/types/MapComponentsInfos';
+import IframeWrapper from '@/components/IframeWrapper';
+import Map from '@/components/Map/Map';
+import { createMapConfiguration } from '@/services/Map/map-configuration';
+import { MapPopupType } from '@/types/MapComponentsInfos';
 
 const DalkiaMap = () => {
   return (

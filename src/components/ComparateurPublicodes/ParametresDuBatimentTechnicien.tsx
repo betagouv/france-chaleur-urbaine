@@ -1,10 +1,10 @@
 import React from 'react';
 
-import Input from '@components/form/publicodes/Input';
-import RadioInput from '@components/form/publicodes/Radio';
-import Select from '@components/form/publicodes/Select';
-import { UrlStateAccordion as Accordion } from '@components/ui/Accordion';
-import Link from '@components/ui/Link';
+import Input from '@/components/form/publicodes/Input';
+import RadioInput from '@/components/form/publicodes/Radio';
+import Select from '@/components/form/publicodes/Select';
+import { UrlStateAccordion as Accordion } from '@/components/ui/Accordion';
+import Link from '@/components/ui/Link';
 
 import { Title } from './ComparateurPublicodes.style';
 import SelectClimatisation from './SelectClimatisation';

@@ -1,6 +1,6 @@
-import { deepMergeObjects } from '@utils/core';
-import { Interval } from '@utils/interval';
-import { DeepPartial, FlattenKeys } from '@utils/typescript';
+import { deepMergeObjects } from '@/utils/core';
+import { type Interval } from '@/utils/interval';
+import { type DeepPartial, type FlattenKeys } from '@/utils/typescript';
 
 type FiltreEnergie = {
   label: string;

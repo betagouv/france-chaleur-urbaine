@@ -1,5 +1,5 @@
-import SimplePage from '@components/shared/page/SimplePage';
-import Tertiaire from '@components/Tertiaire';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Tertiaire from '@/components/Tertiaire';
 
 export default function DecretTertiairePage() {
   return (

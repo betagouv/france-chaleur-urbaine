@@ -1,9 +1,9 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { getNetwork } from '@core/infrastructure/repository/network';
-import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@helpers/server';
-import { withCors } from 'src/services/api/cors';
+import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
+import { getNetwork } from '@/server/services/network';
+import { withCors } from '@/services/api/cors';
 
 const eligibilityStatus = handleRouteErrors(async (req: NextApiRequest) => {
   requireGetMethod(req);

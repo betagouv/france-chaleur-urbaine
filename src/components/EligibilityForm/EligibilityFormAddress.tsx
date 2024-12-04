@@ -1,12 +1,12 @@
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import AddressAutocomplete from '@components/addressAutocomplete';
-import Box from '@components/ui/Box';
-import Link from '@components/ui/Link';
-import { useServices } from 'src/services';
-import { AddressDataType } from 'src/types/AddressData';
-import { SuggestionItem } from 'src/types/Suggestions';
+import AddressAutocomplete from '@/components/addressAutocomplete';
+import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
+import { useServices } from '@/services';
+import { type AddressDataType } from '@/types/AddressData';
+import { type SuggestionItem } from '@/types/Suggestions';
 
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 

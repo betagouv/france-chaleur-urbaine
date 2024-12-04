@@ -1,28 +1,28 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import { type DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
 import { useKeyboardEvent } from '@react-hookz/web';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
 import { atom, useAtom } from 'jotai';
-import { GeoJSONSource } from 'maplibre-gl';
+import { type GeoJSONSource } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
-import { MapSourceLayersSpecification } from '@components/Map/map-layers';
-import useFCUMap from '@components/Map/MapProvider';
-import Box from '@components/ui/Box';
-import Divider from '@components/ui/Divider';
-import Text from '@components/ui/Text';
-import Tooltip from '@components/ui/Tooltip';
-import { PointDeConsommation } from '@pages/api/linear-heat-density';
-import { downloadObject } from '@utils/browser';
-import { formatAsISODate } from '@utils/date';
-import { formatDistance } from '@utils/geo';
-import { useServices } from 'src/services';
-import { trackEvent } from 'src/services/analytics';
+import { type MapSourceLayersSpecification } from '@/components/Map/map-layers';
+import useFCUMap from '@/components/Map/MapProvider';
+import Box from '@/components/ui/Box';
+import Divider from '@/components/ui/Divider';
+import Text from '@/components/ui/Text';
+import Tooltip from '@/components/ui/Tooltip';
+import { type PointDeConsommation } from '@/pages/api/linear-heat-density';
+import { useServices } from '@/services';
+import { trackEvent } from '@/services/analytics';
+import { downloadObject } from '@/utils/browser';
+import { formatAsISODate } from '@/utils/date';
+import { formatDistance } from '@/utils/geo';
 
-import { MeasureFeature, MeasureLabelFeature } from './measure';
+import { type MeasureFeature, type MeasureLabelFeature } from './measure';
 import { Title } from '../SimpleMapLegend.style';
 
 export const linearHeatDensityLinesSourceId = 'linear-heat-density-lines';

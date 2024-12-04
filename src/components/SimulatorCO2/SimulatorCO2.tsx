@@ -1,8 +1,8 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
-import { ReactNode, useCallback, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Text from '@components/ui/Text';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Text from '@/components/ui/Text';
 
 import { TypeEnergy, TypeSurf, dataEnergy, getConso, getEconomy, getEmissionCO2, getPercentGasReduct } from './SimulatorCO2.businessRule';
 import { dataSimulator, dataSimulatorTertiaire } from './SimulatorCO2.data';

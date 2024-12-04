@@ -1,5 +1,5 @@
-import { HeatNetworksResponse } from './HeatNetworksResponse';
-import { SuggestionItem } from './Suggestions';
+import { type HeatNetworksResponse } from './HeatNetworksResponse';
+import { type SuggestionItem } from './Suggestions';
 
 export type AvailableHeating = 'collectif' | 'individuel' | undefined;
 export type AvailableStructure = 'Tertiaire' | 'Copropriété' | undefined;

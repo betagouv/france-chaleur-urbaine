@@ -1,13 +1,13 @@
-import { MapGeoJSONFeature, MapLayerMouseEvent } from 'maplibre-gl';
+import { type MapGeoJSONFeature, type MapLayerMouseEvent } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
-import { MapMouseEvent, MapRef } from 'react-map-gl/maplibre';
+import { type MapMouseEvent, type MapRef } from 'react-map-gl/maplibre';
 
-import { SourceId } from 'src/services/tiles.config';
-import { MapPopupInfos } from 'src/types/MapComponentsInfos';
+import { isDevModeEnabled } from '@/hooks/useDevMode';
+import { type SourceId } from '@/server/services/tiles.config';
+import { type MapPopupInfos } from '@/types/MapComponentsInfos';
 
-import { isDevModeEnabled } from './components/DevModeIcon';
 import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
-import { LayerId } from './map-layers';
+import { type LayerId } from './map-layers';
 
 let hoveredStateId: MapGeoJSONFeature['id'] | null = null;
 

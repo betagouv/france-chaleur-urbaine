@@ -1,5 +1,5 @@
-import base from 'src/db/airtable';
-import { Airtable } from 'src/types/enum/Airtable';
+import base from '@/server/db/airtable';
+import { Airtable } from '@/types/enum/Airtable';
 
 const updateDemands = async () => {
   try {

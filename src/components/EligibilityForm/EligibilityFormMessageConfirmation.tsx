@@ -1,14 +1,14 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
-import { FormEvent, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import styled from 'styled-components';
 
-import Input from '@components/form/dsfr/Input';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import { updateAirtable } from '@helpers/airtable';
-import { AddressDataType } from 'src/types/AddressData';
-import { Airtable } from 'src/types/enum/Airtable';
+import Input from '@/components/form/dsfr/Input';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import { updateAirtable } from '@/services/airtable';
+import { type AddressDataType } from '@/types/AddressData';
+import { Airtable } from '@/types/enum/Airtable';
 
 import { ContactFormEligibilityResult } from './components';
 

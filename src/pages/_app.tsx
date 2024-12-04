@@ -1,29 +1,29 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import type { AppProps } from 'next/app';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import { Session } from 'next-auth';
+import type Link from 'next/link';
+import { type Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 // use AppProgressBar instead of PagesProgressBar on purpose as it handles better the query params ignoring
 import { AppProgressBar as ProgressBar } from 'next-nprogress-bar';
-import { SWRConfig, SWRConfiguration } from 'swr';
+import { SWRConfig, type SWRConfiguration } from 'swr';
 
-import '@components/Map/StyleSwitcher/styles.css';
-import SEO from '@components/SEO';
-import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@components/Theme/ThemeProvider';
-import { NotifierContainer } from '@core/notification';
-import { usePreserveScroll } from '@hooks/usePreserveScroll';
-import { HeatNetworkService, ServicesContext, SuggestionService } from 'src/services';
-import { AdminService } from 'src/services/admin';
-import { useAnalytics } from 'src/services/analytics';
-import { DemandsService } from 'src/services/demands';
-import { ExportService } from 'src/services/export';
-import { axiosHttpClient } from 'src/services/http';
-import { NetworksService } from 'src/services/networks';
-import { PasswordService } from 'src/services/password';
+import '@/components/Map/StyleSwitcher/styles.css';
+import SEO from '@/components/SEO';
+import ThemeProvider, { augmentDocumentWithEmotionCache, dsfrDocumentApi } from '@/components/Theme/ThemeProvider';
+import { NotifierContainer } from '@/core/notification';
+import { usePreserveScroll } from '@/hooks/usePreserveScroll';
+import { HeatNetworkService, ServicesContext, SuggestionService } from '@/services';
+import { AdminService } from '@/services/admin';
+import { useAnalytics } from '@/services/analytics';
+import { DemandsService } from '@/services/demands';
+import { ExportService } from '@/services/export';
+import { axiosHttpClient } from '@/services/http';
+import { NetworksService } from '@/services/networks';
+import { PasswordService } from '@/services/password';
 
 const ConsentBanner = dynamic(
-  () => import('@components/ConsentBanner').then((module) => module.ConsentBanner),
+  () => import('@/components/ConsentBanner').then((module) => module.ConsentBanner),
   { ssr: false } // Disable server side as it injects server side a hidden modal with a H1 which might affect SEO
 );
 declare module '@codegouvfr/react-dsfr/next-pagesdir' {

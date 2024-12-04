@@ -1,17 +1,17 @@
-import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import Button from '@codegouvfr/react-dsfr/Button';
 import Table from '@codegouvfr/react-dsfr/Table';
-import { Drawer, Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
+import { Drawer, Tooltip, tooltipClasses, type TooltipProps } from '@mui/material';
 import { utils } from 'publicodes';
 import { useState } from 'react';
 import styled from 'styled-components';
 
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Icon from '@components/ui/Icon';
-import Link from '@components/ui/Link';
-import { formatUnit } from '@helpers/publicodes/usePublicodesEngine';
-import { clientConfig } from 'src/client-config';
+import { clientConfig } from '@/client-config';
+import { formatUnit } from '@/components/ComparateurPublicodes/usePublicodesEngine';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
 
 import { modesDeChauffage } from './modes-de-chauffage';
 import { type SimulatorEngine } from './useSimulatorEngine';

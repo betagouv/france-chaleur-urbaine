@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import Icon from '@components/ui/Icon';
+import Icon from '@/components/ui/Icon';
 
 const videos = [
   'https://www.youtube.com/embed/zsOgW8sIByc',

@@ -1,10 +1,10 @@
-import { Knex } from 'knex';
+import { type Knex } from 'knex';
 import { createLogger, format, transports } from 'winston';
 
-import db from 'src/db';
-import { AirtableDB, AirtableTable } from 'src/db/airtable';
+import db from '@/server/db';
+import { AirtableDB, type AirtableTable } from '@/server/db/airtable';
 
-import { Type, TypeBool, TypeString } from './download-network';
+import { type Type, TypeBool, TypeString } from './download-network';
 
 // pour juste logger et ne pas faire les opérations
 let globalDryRun = false;

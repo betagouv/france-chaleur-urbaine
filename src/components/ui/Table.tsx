@@ -3,7 +3,7 @@ import { Pagination, type PaginationProps } from '@codegouvfr/react-dsfr/Paginat
 import LinearProgress from '@mui/material/LinearProgress';
 import {
   DataGrid,
-  GridValidRowModel,
+  type GridValidRowModel,
   gridPageCountSelector,
   gridPaginationModelSelector,
   useGridApiContext,

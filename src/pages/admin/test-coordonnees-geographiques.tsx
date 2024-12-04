@@ -1,21 +1,21 @@
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 import Papa from 'papaparse';
-import { ChangeEvent, useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 
-import { isDevModeEnabled } from '@components/Map/components/DevModeIcon';
-import SimplePage from '@components/shared/page/SimplePage';
-import AsyncButton from '@components/ui/AsyncButton';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Text from '@components/ui/Text';
-import { notify, toastErrors } from '@core/notification';
-import { withAuthentication } from '@helpers/ssr/withAuthentication';
-import { chunk } from '@utils/array';
-import { downloadFile } from '@utils/browser';
-import { isDefined } from '@utils/core';
-import { postFetchJSON } from '@utils/network';
-import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from 'src/shared/bulk-eligibility-coordinates';
+import SimplePage from '@/components/shared/page/SimplePage';
+import AsyncButton from '@/components/ui/AsyncButton';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
+import { notify, toastErrors } from '@/core/notification';
+import { isDevModeEnabled } from '@/hooks/useDevMode';
+import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
+import { latitudeColumnNameCandidates, longitudeColumnNameCandidates } from '@/shared/bulk-eligibility-coordinates';
+import { chunk } from '@/utils/array';
+import { downloadFile } from '@/utils/browser';
+import { isDefined } from '@/utils/core';
+import { postFetchJSON } from '@/utils/network';
 
 export default function TestCoordinatesPage() {
   const [coordinates, setCoordinates] = useState<Record<string, any>[]>([]);

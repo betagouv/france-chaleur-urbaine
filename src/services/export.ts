@@ -1,6 +1,6 @@
-import { downloadFile } from '@utils/browser';
-import { HttpClient } from 'src/services/http';
-import { exportsParams } from 'src/types/Export';
+import { type HttpClient } from '@/services/http';
+import { exportsParams } from '@/types/Export';
+import { downloadFile } from '@/utils/browser';
 
 import { ServiceError } from './errors';
 

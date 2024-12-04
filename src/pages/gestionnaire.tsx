@@ -1,10 +1,10 @@
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 import { signOut, useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
-import Manager from '@components/Manager/Manager';
-import SimplePage from '@components/shared/page/SimplePage';
-import { withAuthentication } from '@helpers/ssr/withAuthentication';
+import Manager from '@/components/Manager/Manager';
+import SimplePage from '@/components/shared/page/SimplePage';
+import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
 
 export default function Gestionnaire(): JSX.Element {
   const { data: session } = useSession();

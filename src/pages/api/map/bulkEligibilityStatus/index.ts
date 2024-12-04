@@ -6,13 +6,13 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { v4 as uuidv4 } from 'uuid';
 import * as yup from 'yup';
 
-import { getEligilityStatus, getExport } from '@core/infrastructure/repository/addresseInformation';
-import { logger } from '@helpers/logger';
-import db from 'src/db';
-import base from 'src/db/airtable';
-import { withCors } from 'src/services/api/cors';
-import { sendBulkEligibilityError, sendBulkEligibilityErrorAdmin, sendBulkEligibilityResult } from 'src/services/email';
-import { Airtable } from 'src/types/enum/Airtable';
+import db from '@/server/db';
+import base from '@/server/db/airtable';
+import { sendBulkEligibilityError, sendBulkEligibilityErrorAdmin, sendBulkEligibilityResult } from '@/server/email';
+import { logger } from '@/server/helpers/logger';
+import { getEligilityStatus, getExport } from '@/server/services/addresseInformation';
+import { withCors } from '@/services/api/cors';
+import { Airtable } from '@/types/enum/Airtable';
 
 const version = 8;
 

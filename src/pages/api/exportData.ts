@@ -1,12 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next/types';
+import { type NextApiRequest, type NextApiResponse } from 'next/types';
 import * as yup from 'yup';
 
-import { getSpreadSheet } from '@core/infrastructure/repository/export';
-import { getDemands } from '@core/infrastructure/repository/manager';
-import { handleRouteErrors, requireAuthentication, requirePostMethod } from '@helpers/server';
-import { EXPORT_FORMAT } from 'src/types/enum/ExportFormat';
-import { USER_ROLE } from 'src/types/enum/UserRole';
-import { exportsParams } from 'src/types/Export';
+import { handleRouteErrors, requireAuthentication, requirePostMethod } from '@/server/helpers/server';
+import { getSpreadSheet } from '@/server/services/export';
+import { getDemands } from '@/server/services/manager';
+import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
+import { USER_ROLE } from '@/types/enum/UserRole';
+import { exportsParams } from '@/types/Export';
 
 import { getObsoleteUsers } from './admin/exportObsoleteUsers';
 

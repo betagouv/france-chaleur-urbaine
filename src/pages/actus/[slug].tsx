@@ -1,14 +1,14 @@
 import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { type GetStaticPaths, type GetStaticProps } from 'next';
 import styled from 'styled-components';
 
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import SimplePage from '@components/shared/page/SimplePage';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Text from '@components/ui/Text';
-import { articles, getArticle } from '@data/contents';
-import { Article } from 'src/types/Article';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
+import { articles, getArticle } from '@/data/contents';
+import { type Article } from '@/types/Article';
 
 const ArticleContentWrapper = styled(Box)`
   img {

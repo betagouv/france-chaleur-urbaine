@@ -1,5 +1,5 @@
-import Icon from '@components/ui/Icon';
-import { useServices } from 'src/services';
+import Icon from '@/components/ui/Icon';
+import { useServices } from '@/services';
 
 const DownloadButton = ({ id, inError }: { id: string; inError: boolean }) => {
   const { heatNetworkService } = useServices();

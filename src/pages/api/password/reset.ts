@@ -2,12 +2,12 @@ import jwt from 'jsonwebtoken';
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { logger } from '@helpers/logger';
-import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@helpers/server';
-import db from 'src/db';
-import { AirtableDB } from 'src/db/airtable';
-import { sendResetPasswordEmail } from 'src/services/email';
-import { Airtable } from 'src/types/enum/Airtable';
+import db from '@/server/db';
+import { AirtableDB } from '@/server/db/airtable';
+import { sendResetPasswordEmail } from '@/server/email';
+import { logger } from '@/server/helpers/logger';
+import { handleRouteErrors, requirePostMethod, validateObjectSchema } from '@/server/helpers/server';
+import { Airtable } from '@/types/enum/Airtable';
 
 const reset = handleRouteErrors(async (req: NextApiRequest) => {
   requirePostMethod(req);

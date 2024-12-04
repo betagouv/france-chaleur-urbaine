@@ -1,12 +1,12 @@
 import Link from 'next/link';
 
-import Map from '@components/Map/Map';
-import ClassedNetwork from '@components/Network/ClassedNetwork';
-import EnergiesChart from '@components/Network/EnergiesChart';
-import Slice from '@components/Slice';
-import WrappedText from '@components/WrappedText/WrappedText';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
-import { Network } from 'src/types/Summary/Network';
+import Map from '@/components/Map/Map';
+import ClassedNetwork from '@/components/Network/ClassedNetwork';
+import EnergiesChart from '@/components/Network/EnergiesChart';
+import Slice from '@/components/Slice';
+import WrappedText from '@/components/WrappedText/WrappedText';
+import { createMapConfiguration } from '@/services/Map/map-configuration';
+import { type Network } from '@/types/Summary/Network';
 
 import { NetworkContainer } from './Networks.styles';
 

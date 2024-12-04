@@ -2,14 +2,14 @@ import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
 
-import Map from '@components/Map/Map';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import Box from '@components/ui/Box';
-import Link from '@components/ui/Link';
-import { getReadableDistance } from 'src/services/Map/distance';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
-import { AddressDataType } from 'src/types/AddressData';
-import { ContactFormInfos } from 'src/types/Summary/Demand';
+import Map from '@/components/Map/Map';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
+import { createMapConfiguration } from '@/services/Map/map-configuration';
+import { type AddressDataType } from '@/types/AddressData';
+import { type ContactFormInfos } from '@/types/Summary/Demand';
+import { getReadableDistance } from '@/utils/geo';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
 import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';

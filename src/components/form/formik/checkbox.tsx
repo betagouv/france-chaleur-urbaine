@@ -1,7 +1,7 @@
 import { ErrorMessage } from 'formik';
 
-import { useFormInputAutoId } from '@hooks';
-import { _hasError } from '@utils/form-utils';
+import useFormInputAutoId from '@/hooks/useFormInputAutoId';
+import { _hasError } from '@/utils/form-utils';
 
 const Checkbox = ({ label, field, form, id, ...otherProps }: any) => {
   const hasError = _hasError(field.name, form);

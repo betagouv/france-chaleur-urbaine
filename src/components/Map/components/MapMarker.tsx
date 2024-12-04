@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Marker, Popup } from 'react-map-gl/maplibre';
 
-import { Point } from 'src/types/Point';
+import { type Point } from '@/types/Point';
 
 const markerOffset = [0, -12] as Point;
 const markerPopupOffset = [0, -22] as Point;

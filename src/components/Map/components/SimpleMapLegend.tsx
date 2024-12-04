@@ -2,15 +2,15 @@ import Button from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { useQueryState } from 'nuqs';
 
-import RangeFilter from '@components/form/dsfr/RangeFilter';
+import RangeFilter from '@/components/form/dsfr/RangeFilter';
 import {
   LegendDeskData,
-  MapLegendFeature,
+  type MapLegendFeature,
   besoinsEnChaleurIndustrieCommunesIntervals,
   besoinsEnChaleurIntervals,
   besoinsEnFroidIntervals,
   energyLayerMaxOpacity,
-} from '@components/Map/map-layers';
+} from '@/components/Map/map-layers';
 import {
   communesFortPotentielPourCreationReseauxChaleurLayerColor,
   communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
@@ -24,18 +24,18 @@ import {
   installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
   installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
   installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
-} from '@components/Map/map-styles';
-import useFCUMap from '@components/Map/MapProvider';
-import { UrlStateAccordion } from '@components/ui/Accordion';
-import Box from '@components/ui/Box';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
-import Tooltip from '@components/ui/Tooltip';
-import { trackEvent } from 'src/services/analytics';
-import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from 'src/services/Map/businessRules';
-import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
-import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
-import { communesFortPotentielPourCreationReseauxChaleurInterval, defaultMapConfiguration } from 'src/services/Map/map-configuration';
+} from '@/components/Map/map-styles';
+import useFCUMap from '@/components/Map/MapProvider';
+import { UrlStateAccordion } from '@/components/ui/Accordion';
+import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
+import Tooltip from '@/components/ui/Tooltip';
+import { trackEvent } from '@/services/analytics';
+import { themeDefBuildings, themeDefDemands, themeDefEnergy, themeDefTypeGas } from '@/services/Map/businessRules';
+import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from '@/services/Map/businessRules/enrrMobilisables';
+import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from '@/services/Map/businessRules/zonePotentielChaud';
+import { communesFortPotentielPourCreationReseauxChaleurInterval, defaultMapConfiguration } from '@/services/Map/map-configuration';
 
 import IconPolygon from './IconPolygon';
 import MapLegendReseaux from './MapLegendReseaux';
@@ -44,8 +44,8 @@ import ScaleLegend from './ScaleLegend';
 import {
   DeactivatableBox,
   SingleCheckbox,
-  TabId,
-  TabObject,
+  type TabId,
+  type TabObject,
   TabScrollablePart,
   Tabs,
   Title,

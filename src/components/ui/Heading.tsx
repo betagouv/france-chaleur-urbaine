@@ -1,7 +1,7 @@
-import { CSSProperties, PropsWithChildren } from 'react';
+import { type CSSProperties, type PropsWithChildren } from 'react';
 
-import { LegacyColor, legacyColors } from './helpers/colors';
-import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
+import { type LegacyColor, legacyColors } from './helpers/colors';
+import { type SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type HeadingType = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 type HeadingSize = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';

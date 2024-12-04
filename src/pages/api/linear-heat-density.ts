@@ -1,10 +1,10 @@
 import { multiLineString } from '@turf/helpers';
 import turfLength from '@turf/length';
-import { NextApiRequest } from 'next';
+import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@helpers/server';
-import db from 'src/db';
+import db from '@/server/db';
+import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
 
 export type PointDeConsommation = {
   conso_nb: number;

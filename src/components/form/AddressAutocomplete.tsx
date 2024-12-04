@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { useServices } from 'src/services';
-import { SuggestionItem } from 'src/types/Suggestions';
+import { useServices } from '@/services';
+import { type SuggestionItem } from '@/types/Suggestions';
 
 import Autocomplete from './Autocomplete';
 

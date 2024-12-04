@@ -1,6 +1,6 @@
-import IframeWrapper from '@components/IframeWrapper';
-import Map from '@components/Map/Map';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
+import IframeWrapper from '@/components/IframeWrapper';
+import Map from '@/components/Map/Map';
+import { createMapConfiguration } from '@/services/Map/map-configuration';
 
 const CharlevilleMezieresMap = () => {
   return (

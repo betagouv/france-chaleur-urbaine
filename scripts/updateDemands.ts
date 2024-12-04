@@ -1,12 +1,6 @@
-import {
-  closestNetwork,
-  getConso,
-  getConsoById,
-  getNbLogement,
-  getNbLogementById,
-} from '../src/core/infrastructure/repository/addresseInformation';
-import base from '../src/db/airtable';
-import { Airtable } from '../src/types/enum/Airtable';
+import base from '@/server/db/airtable';
+import { closestNetwork, getConso, getConsoById, getNbLogement, getNbLogementById } from '@/server/services/addresseInformation';
+import { Airtable } from '@/types/enum/Airtable';
 
 const updateDemands = async () => {
   try {

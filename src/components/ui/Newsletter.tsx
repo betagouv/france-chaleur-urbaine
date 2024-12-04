@@ -1,9 +1,9 @@
 import { useToggle } from '@react-hookz/web';
-import React, { ReactNode, useContext, useState } from 'react';
+import React, { type ReactNode, useContext, useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import Checkbox from '@components/form/dsfr/Checkbox';
-import cx from '@utils/cx';
+import Checkbox from '@/components/form/dsfr/Checkbox';
+import cx from '@/utils/cx';
 
 import AsyncButton, { type AsyncButtonProps } from './AsyncButton';
 type NewsletterContextType = {

@@ -1,7 +1,7 @@
 import { styled } from '@mui/material';
-import { default as MUITooltip, TooltipProps as MUITooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import { default as MUITooltip, type TooltipProps as MUITooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 
-import Icon, { IconProps } from './Icon';
+import Icon, { type IconProps } from './Icon';
 
 type TooltipProps = Omit<MUITooltipProps, 'children'> &
   Partial<Pick<MUITooltipProps, 'children'>> & {

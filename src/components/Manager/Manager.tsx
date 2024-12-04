@@ -1,20 +1,20 @@
-import { GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
-import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MapRef } from 'react-map-gl/maplibre';
+import { type GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
+import { type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type MapRef } from 'react-map-gl/maplibre';
 
-import Hoverable from '@components//Hoverable';
-import HoverableIcon from '@components/Hoverable/HoverableIcon';
-import Map from '@components/Map/Map';
-import Box from '@components/ui/Box';
-import Icon from '@components/ui/Icon';
-import { Table, type ColumnDef } from '@components/ui/Table';
-import { isDefined } from '@utils/core';
-import { useServices } from 'src/services';
-import { displayModeDeChauffage } from 'src/services/Map/businessRules/demands';
-import { createMapConfiguration } from 'src/services/Map/map-configuration';
-import { MapMarkerInfos } from 'src/types/MapComponentsInfos';
-import { Point } from 'src/types/Point';
-import { Demand } from 'src/types/Summary/Demand';
+import Hoverable from '@/components//Hoverable';
+import HoverableIcon from '@/components/Hoverable/HoverableIcon';
+import Map from '@/components/Map/Map';
+import Box from '@/components/ui/Box';
+import Icon from '@/components/ui/Icon';
+import { Table, type ColumnDef } from '@/components/ui/Table';
+import { useServices } from '@/services';
+import { displayModeDeChauffage } from '@/services/Map/businessRules/demands';
+import { createMapConfiguration } from '@/services/Map/map-configuration';
+import { type MapMarkerInfos } from '@/types/MapComponentsInfos';
+import { type Point } from '@/types/Point';
+import { type Demand } from '@/types/Summary/Demand';
+import { isDefined } from '@/utils/core';
 
 import AdditionalInformation from './AdditionalInformation';
 import Comment from './Comment';

@@ -1,7 +1,7 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import React, { useId } from 'react';
 
-import cx from '@utils/cx';
+import cx from '@/utils/cx';
 
 export type FieldWrapperProps = React.HTMLAttributes<HTMLDivElement> & {
   fieldId?: string;

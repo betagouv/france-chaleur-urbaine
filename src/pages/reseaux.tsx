@@ -1,10 +1,10 @@
 import Image from 'next/image';
 
-import NetworksList from '@components/NetworksList/NetworksList';
-import SimplePage from '@components/shared/page/SimplePage';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Text from '@components/ui/Text';
+import NetworksList from '@/components/NetworksList/NetworksList';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 
 function ListeReseaux() {
   return (

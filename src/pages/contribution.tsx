@@ -1,12 +1,12 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { useRouter } from 'next/router';
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
-import ContributionForm from '@components/ContributionForm/ContributionForm';
-import SimplePage from '@components/shared/page/SimplePage';
-import Slice from '@components/Slice';
-import { submitToAirtable } from '@helpers/airtable';
-import { Airtable } from 'src/types/enum/Airtable';
+import ContributionForm from '@/components/ContributionForm/ContributionForm';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Slice from '@/components/Slice';
+import { submitToAirtable } from '@/services/airtable';
+import { Airtable } from '@/types/enum/Airtable';
 
 type ResultType = {
   type: 'success' | 'error';

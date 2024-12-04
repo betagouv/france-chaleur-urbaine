@@ -1,7 +1,7 @@
-import { HTMLAttributes } from 'react';
+import { type HTMLAttributes } from 'react';
 
 import Box from './Box';
-import { SpacingProperties } from './helpers/spacings';
+import { type SpacingProperties } from './helpers/spacings';
 
 interface DividerProps extends SpacingProperties, HTMLAttributes<HTMLDivElement> {
   vertical?: string;

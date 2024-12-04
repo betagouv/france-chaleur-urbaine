@@ -1,15 +1,15 @@
 import Image from 'next/image';
 
-import ComparatifChauffage from '@components/GenericContent/ComparatifChauffages';
-import CoutsChauffageUrbain from '@components/GenericContent/CoutsChauffageUrbain';
-import HowToRaccordement from '@components/GenericContent/HowToRaccordement';
-import ObligationRaccordement from '@components/GenericContent/ObligationRaccordement';
-import SimplePage from '@components/shared/page/SimplePage';
-import StickyForm from '@components/StickyForm/StickyForm';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
+import ComparatifChauffage from '@/components/GenericContent/ComparatifChauffages';
+import CoutsChauffageUrbain from '@/components/GenericContent/CoutsChauffageUrbain';
+import HowToRaccordement from '@/components/GenericContent/HowToRaccordement';
+import ObligationRaccordement from '@/components/GenericContent/ObligationRaccordement';
+import SimplePage from '@/components/shared/page/SimplePage';
+import StickyForm from '@/components/StickyForm/StickyForm';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
 
 export default function Home() {
   return (

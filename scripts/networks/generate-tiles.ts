@@ -1,10 +1,9 @@
 import geojsonvt from 'geojson-vt';
 import vtpbf from 'vt-pbf';
 
-import { logger } from '@helpers/logger';
-import { processInParallel } from 'src/types/async';
-
-import db from '../../src/db';
+import db from '@/server/db';
+import { logger } from '@/server/helpers/logger';
+import { processInParallel } from '@/types/async';
 
 const QUERY_PARALLELISM = 50; // max queries in //
 

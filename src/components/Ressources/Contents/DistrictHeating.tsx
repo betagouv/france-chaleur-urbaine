@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { MutableRefObject } from 'react';
+import { type MutableRefObject } from 'react';
 
-import Infographie from '@components/Infographie';
-import TrackedVideo from '@components/TrackedVideo/TrackedVideo';
+import Infographie from '@/components/Infographie';
+import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';
 
 import { Subtitle } from './Contents.styles';
 import { Container, WithImage, WithVideo } from './DistrictHeating.styles';
