@@ -1,8 +1,8 @@
-import { User } from '@/types/User';
+import { type User } from '@/types/User';
 
-import { ExportColumn } from './ExportColumn';
-import { Demand } from './Summary/Demand';
-import { NetworkToCompare } from './Summary/Network';
+import { type ExportColumn } from './ExportColumn';
+import { type Demand } from './Summary/Demand';
+import { type NetworkToCompare } from './Summary/Network';
 
 export const networksToCompareExportColumns: ExportColumn<NetworkToCompare>[] = [
   {

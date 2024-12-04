@@ -6,7 +6,7 @@ import EnergiesChart from '@/components/Network/EnergiesChart';
 import Slice from '@/components/Slice';
 import WrappedText from '@/components/WrappedText/WrappedText';
 import { createMapConfiguration } from '@/services/Map/map-configuration';
-import { Network } from '@/types/Summary/Network';
+import { type Network } from '@/types/Summary/Network';
 
 import { NetworkContainer } from './Networks.styles';
 

@@ -2,7 +2,7 @@ import XLSX from 'xlsx';
 
 import db from '@/server/db';
 import { EXPORT_FORMAT } from '@/types/enum/ExportFormat';
-import { CityNetwork, HeatNetwork } from '@/types/HeatNetworksResponse';
+import { type CityNetwork, type HeatNetwork } from '@/types/HeatNetworksResponse';
 
 import isInPDP from './pdp';
 

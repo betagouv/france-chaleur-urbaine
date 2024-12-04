@@ -1,4 +1,4 @@
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+import { type GetStaticPaths, type GetStaticProps, type InferGetStaticPropsType } from 'next';
 
 import { getRessource, ressourceKeys } from '@/components/Ressources/config';
 import Ressource from '@/components/Ressources/Ressource';

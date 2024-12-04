@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MutableRefObject } from 'react';
+import { type MutableRefObject } from 'react';
 
 import Infographie from '@/components/Infographie';
 import TrackedVideo from '@/components/TrackedVideo/TrackedVideo';

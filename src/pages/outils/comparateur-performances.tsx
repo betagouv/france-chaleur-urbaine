@@ -1,4 +1,4 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { type GetServerSideProps, type InferGetServerSidePropsType } from 'next';
 import dynamic from 'next/dynamic';
 import React from 'react';
 

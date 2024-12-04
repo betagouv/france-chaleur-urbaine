@@ -1,14 +1,14 @@
 import Button from '@codegouvfr/react-dsfr/Button';
-import { DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
+import { type DrawCreateEvent } from '@mapbox/mapbox-gl-draw';
 import { useKeyboardEvent } from '@react-hookz/web';
 import center from '@turf/center';
 import { lineString, points } from '@turf/helpers';
 import length from '@turf/length';
 import { atom, useAtom } from 'jotai';
-import { GeoJSONSource } from 'maplibre-gl';
+import { type GeoJSONSource } from 'maplibre-gl';
 import { Fragment, useEffect, useRef } from 'react';
 
-import { MapSourceLayersSpecification } from '@/components/Map/map-layers';
+import { type MapSourceLayersSpecification } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import Box from '@/components/ui/Box';
 import Divider from '@/components/ui/Divider';
@@ -16,7 +16,7 @@ import Text from '@/components/ui/Text';
 import { trackEvent } from '@/services/analytics';
 import { formatDistance } from '@/utils/geo';
 
-import { MeasureFeature, MeasureLabelFeature } from './measure';
+import { type MeasureFeature, type MeasureLabelFeature } from './measure';
 import MesureFeatureListItem from './MeasureFeatureListItem';
 import { Title } from '../SimpleMapLegend.style';
 

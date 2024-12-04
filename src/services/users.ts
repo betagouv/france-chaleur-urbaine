@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
 
-import { ApiNetwork } from '@/pages/api/v1/users/[key]';
+import { type ApiNetwork } from '@/pages/api/v1/users/[key]';
 import db from '@/server/db';
 import base from '@/server/db/airtable';
-import { ApiAccount } from '@/types/ApiAccount';
+import { type ApiAccount } from '@/types/ApiAccount';
 import { Airtable } from '@/types/enum/Airtable';
 import { USER_ROLE } from '@/types/enum/UserRole';
 

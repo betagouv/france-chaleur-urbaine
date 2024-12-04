@@ -1,12 +1,15 @@
-import { Knex } from 'knex';
+import { type Knex } from 'knex';
 import { z } from 'zod';
 
-import { buildingsDataExtractionPolygonsSourceId } from '@/components/Map/components/tools/BuildingsDataExtractionTool';
+import { type buildingsDataExtractionPolygonsSourceId } from '@/components/Map/components/tools/BuildingsDataExtractionTool';
 import {
-  distancesMeasurementLabelsSourceId,
-  distancesMeasurementLinesSourceId,
+  type distancesMeasurementLabelsSourceId,
+  type distancesMeasurementLinesSourceId,
 } from '@/components/Map/components/tools/DistancesMeasurementTool';
-import { linearHeatDensityLabelsSourceId, linearHeatDensityLinesSourceId } from '@/components/Map/components/tools/LinearHeatDensityTool';
+import {
+  type linearHeatDensityLabelsSourceId,
+  type linearHeatDensityLinesSourceId,
+} from '@/components/Map/components/tools/LinearHeatDensityTool';
 import { Airtable } from '@/types/enum/Airtable';
 
 type BasicTileInfo = {

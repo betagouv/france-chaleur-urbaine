@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node';
-import { NextApiRequest } from 'next';
+import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import db from '@/server/db';

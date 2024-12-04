@@ -1,7 +1,7 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useMemo } from 'react';
 
-import { batimentsRaccordesLayerMaxOpacity, MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
+import { batimentsRaccordesLayerMaxOpacity, type MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
 import useFCUMap from '@/components/Map/MapProvider';
 import ReseauxDeChaleurFilters from '@/components/ReseauxDeChaleurFilters';
 import Box from '@/components/ui/Box';

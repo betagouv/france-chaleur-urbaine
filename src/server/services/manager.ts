@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
-import { User } from 'next-auth';
+import { type User } from 'next-auth';
 
 import db from '@/server/db';
 import base from '@/server/db/airtable';
 import { invalidPermissionsError } from '@/server/helpers/server';
 import { Airtable } from '@/types/enum/Airtable';
 import { USER_ROLE } from '@/types/enum/UserRole';
-import { Demand } from '@/types/Summary/Demand';
+import { type Demand } from '@/types/Summary/Demand';
 
 import { gestionnairesPerCity, gestionnairesPerDepartment, gestionnairesPerNetwork } from './gestionnaires.config';
 

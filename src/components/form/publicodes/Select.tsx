@@ -1,4 +1,4 @@
-import { DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
+import { type DottedName } from '@betagouv/france-chaleur-urbaine-publicodes';
 import { Select as DSFRSelect } from '@codegouvfr/react-dsfr/SelectNext';
 import React from 'react';
 

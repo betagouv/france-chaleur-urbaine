@@ -1,4 +1,4 @@
-import { Document } from './config';
+import { type Document } from './config';
 import { Container, Description, Title } from './RessourceContent.styles';
 
 const RessourceContent = ({ content }: { content: Document }) => {

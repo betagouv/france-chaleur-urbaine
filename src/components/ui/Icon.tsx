@@ -1,8 +1,8 @@
-import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
-import { CSSProperties, forwardRef, HTMLAttributes, Ref } from 'react';
+import { type FrIconClassName, type RiIconClassName } from '@codegouvfr/react-dsfr';
+import { type CSSProperties, forwardRef, type HTMLAttributes, type Ref } from 'react';
 import styled from 'styled-components';
 
-import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
+import { type SpacingProperties, spacingsToClasses } from './helpers/spacings';
 
 type StyledIconProps = {
   cursor?: CSSProperties['cursor'];

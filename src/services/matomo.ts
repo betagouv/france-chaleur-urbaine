@@ -1,4 +1,4 @@
-import { MatomoErrorResult } from './matomo_types';
+import { type MatomoErrorResult } from './matomo_types';
 
 const MATOMO_URL = process.env.NEXT_PUBLIC_MATOMO_URL;
 const MATOMO_TOKEN = process.env.MATOMO_TOKEN;

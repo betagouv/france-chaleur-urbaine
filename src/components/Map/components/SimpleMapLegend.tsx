@@ -5,7 +5,7 @@ import { useQueryState } from 'nuqs';
 import RangeFilter from '@/components/form/dsfr/RangeFilter';
 import {
   LegendDeskData,
-  MapLegendFeature,
+  type MapLegendFeature,
   besoinsEnChaleurIndustrieCommunesIntervals,
   besoinsEnChaleurIntervals,
   besoinsEnFroidIntervals,
@@ -44,8 +44,8 @@ import ScaleLegend from './ScaleLegend';
 import {
   DeactivatableBox,
   SingleCheckbox,
-  TabId,
-  TabObject,
+  type TabId,
+  type TabObject,
   TabScrollablePart,
   Tabs,
   Title,

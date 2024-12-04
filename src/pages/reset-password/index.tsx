@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
 import ResetPasswordForm from '@/components/connexion/ResetPasswordForm';

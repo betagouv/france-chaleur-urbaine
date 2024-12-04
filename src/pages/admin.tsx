@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 
 import BulkEligibility from '@/components/Admin/BulkEligibility';
 import UserImpersonation from '@/components/Admin/UserImpersonation';

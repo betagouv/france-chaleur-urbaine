@@ -1,6 +1,6 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Demand } from '@/types/Summary/Demand';
+import { type Demand } from '@/types/Summary/Demand';
 import debounce from '@/utils/debounce';
 
 import { TextAreaInput } from './Comment.styles';

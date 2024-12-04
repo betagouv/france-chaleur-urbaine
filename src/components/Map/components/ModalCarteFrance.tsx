@@ -13,7 +13,7 @@ import { trackEvent } from '@/services/analytics';
 import { fetchJSON } from '@/utils/network';
 import { prettyFormatNumber } from '@/utils/strings';
 
-import CarteFrance, { DataByArea } from './CarteFrance';
+import CarteFrance, { type DataByArea } from './CarteFrance';
 import {
   BigBlueNumber,
   BigGreyNumber,

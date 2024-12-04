@@ -1,11 +1,11 @@
 import Link from 'next/link';
 
 import { getConso } from '@/services/Map/conso';
-import { DemandSummary } from '@/types/Summary/Demand';
-import { EnergySummary } from '@/types/Summary/Energy';
-import { FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
-import { GasSummary } from '@/types/Summary/Gas';
-import { NetworkSummary } from '@/types/Summary/Network';
+import { type DemandSummary } from '@/types/Summary/Demand';
+import { type EnergySummary } from '@/types/Summary/Energy';
+import { type FuturNetworkSummary } from '@/types/Summary/FuturNetwork';
+import { type GasSummary } from '@/types/Summary/Gas';
+import { type NetworkSummary } from '@/types/Summary/Network';
 import { isDefined } from '@/utils/core';
 
 import { objTypeEnergy } from '../map-layers';

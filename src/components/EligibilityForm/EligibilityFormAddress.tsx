@@ -5,8 +5,8 @@ import AddressAutocomplete from '@/components/addressAutocomplete';
 import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import { useServices } from '@/services';
-import { AddressDataType } from '@/types/AddressData';
-import { SuggestionItem } from '@/types/Suggestions';
+import { type AddressDataType } from '@/types/AddressData';
+import { type SuggestionItem } from '@/types/Suggestions';
 
 import { CheckEligibilityFormLabel, SelectEnergy } from './components';
 

@@ -1,6 +1,6 @@
 import { multiLineString } from '@turf/helpers';
 import turfLength from '@turf/length';
-import { NextApiRequest } from 'next';
+import { type NextApiRequest } from 'next';
 import { z } from 'zod';
 
 import db from '@/server/db';

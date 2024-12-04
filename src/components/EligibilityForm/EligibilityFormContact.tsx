@@ -8,8 +8,8 @@ import Box from '@/components/ui/Box';
 import Link from '@/components/ui/Link';
 import { getReadableDistance } from '@/services/Map/distance';
 import { createMapConfiguration } from '@/services/Map/map-configuration';
-import { AddressDataType } from '@/types/AddressData';
-import { ContactFormInfos } from '@/types/Summary/Demand';
+import { type AddressDataType } from '@/types/AddressData';
+import { type ContactFormInfos } from '@/types/Summary/Demand';
 
 import { ContactForm, ContactFormContentWrapper, ContactFormResultMessage, ContactFormWrapper, ContactMapResult } from './components';
 import { bordeauxMetropoleCityCodes, getEligibilityResult } from './EligibilityResults';

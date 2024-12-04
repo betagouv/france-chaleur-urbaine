@@ -6,7 +6,7 @@ import AsyncButton from '@/components/ui/AsyncButton';
 import Box from '@/components/ui/Box';
 import { useServices } from '@/services';
 import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
-import { Demand } from '@/types/Summary/Demand';
+import { type Demand } from '@/types/Summary/Demand';
 
 import { Filter, Filters } from './ManagerHeader.styles';
 

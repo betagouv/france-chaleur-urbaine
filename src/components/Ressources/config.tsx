@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import Actors from './Contents/Actors';
 import Advantages from './Contents/Advantages';

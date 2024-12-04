@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { AirtableDB } from '@/server/db/airtable';
 import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
-import { NetworkAttachment } from '@/types/Summary/Network';
+import { type NetworkAttachment } from '@/types/Summary/Network';
 
 export const config = {
   api: {

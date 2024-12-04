@@ -4,12 +4,12 @@
 'use client';
 
 import { fr } from '@codegouvfr/react-dsfr';
-import Checkbox, { CheckboxProps } from '@codegouvfr/react-dsfr/Checkbox';
+import Checkbox, { type CheckboxProps } from '@codegouvfr/react-dsfr/Checkbox';
 import React, { forwardRef, memo, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import styled from 'styled-components';
 import type { Equals } from 'tsafe';
 import { assert } from 'tsafe/assert';
-import { Parameters } from 'tsafe/Parameters';
+import { type Parameters } from 'tsafe/Parameters';
 import { symToStr } from 'tsafe/symToStr';
 
 import Box from '@/components/ui/Box';

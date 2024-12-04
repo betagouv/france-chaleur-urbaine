@@ -1,6 +1,6 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { useRouter } from 'next/router';
-import { ReactNode, useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import ContributionForm from '@/components/ContributionForm/ContributionForm';
 import SimplePage from '@/components/shared/page/SimplePage';

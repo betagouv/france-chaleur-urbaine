@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Chart from 'react-google-charts';
 
-import { Network } from '@/types/Summary/Network';
+import { type Network } from '@/types/Summary/Network';
 
 type GraphLegend = {
   position?: string;

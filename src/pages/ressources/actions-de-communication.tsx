@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 
 import SimplePage from '@/components/shared/page/SimplePage';
 import Slideshow from '@/components/Slideshow';

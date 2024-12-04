@@ -1,4 +1,4 @@
-import { usePublicodesFormContext } from './FormProvider';
+import { type usePublicodesFormContext } from './FormProvider';
 
 export const getOptions = (engine: ReturnType<typeof usePublicodesFormContext>['engine'], name: string): string[] => {
   const rule = engine.getRule(name);

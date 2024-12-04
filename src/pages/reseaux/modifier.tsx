@@ -3,7 +3,7 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { RadioButtons } from '@codegouvfr/react-dsfr/RadioButtons';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 import { clientConfig } from '@/client-config';
 import Input from '@/components/form/dsfr/Input';
@@ -14,8 +14,8 @@ import Heading from '@/components/ui/Heading';
 import Icon from '@/components/ui/Icon';
 import LoadingButton from '@/components/ui/LoadingButton';
 import Text from '@/components/ui/Text';
-import { ModificationReseau } from '@/pages/api/modification-reseau';
-import { NetworkSearchResult } from '@/pages/api/networks/search';
+import { type ModificationReseau } from '@/pages/api/modification-reseau';
+import { type NetworkSearchResult } from '@/pages/api/networks/search';
 import { postFetchJSON } from '@/utils/network';
 import { sleep } from '@/utils/time';
 

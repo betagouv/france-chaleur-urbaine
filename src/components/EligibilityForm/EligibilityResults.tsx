@@ -1,5 +1,5 @@
-import { AvailableHeating } from '@/types/AddressData';
-import { HeatNetworksResponse } from '@/types/HeatNetworksResponse';
+import { type AvailableHeating } from '@/types/AddressData';
+import { type HeatNetworksResponse } from '@/types/HeatNetworksResponse';
 
 // 3 rue du petit bois 78370 Plaisir
 const closeCollectif = {

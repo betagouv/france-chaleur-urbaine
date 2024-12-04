@@ -8,8 +8,8 @@ import Box from '@/components/ui/Box';
 import Icon from '@/components/ui/Icon';
 import Modal, { createModal, useIsModalOpen } from '@/components/ui/Modal';
 import { getReadableDistance } from '@/services/Map/distance';
-import { Point } from '@/types/Point';
-import { StoredAddress } from '@/types/StoredAddress';
+import { type Point } from '@/types/Point';
+import { type StoredAddress } from '@/types/StoredAddress';
 
 import { ContactFormButtonWrapper, ContactFormWrapper, MessageConfirmBox, SearchedAddress } from './CardSearchDetails.style';
 

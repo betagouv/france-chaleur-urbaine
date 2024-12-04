@@ -6,7 +6,7 @@ import AddressAutocomplete from '@/components/addressAutocomplete';
 import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
 import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
 import { AnalyticsFormId } from '@/services/analytics';
-import { SuggestionItem } from '@/types/Suggestions';
+import { type SuggestionItem } from '@/types/Suggestions';
 
 import { Container, Form, Header } from './Eligibility.styles';
 

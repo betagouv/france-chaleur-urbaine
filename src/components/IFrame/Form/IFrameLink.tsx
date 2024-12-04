@@ -1,4 +1,4 @@
-import { HTMLAttributes, useState } from 'react';
+import { type HTMLAttributes, useState } from 'react';
 
 import Box from '@/components/ui/Box';
 

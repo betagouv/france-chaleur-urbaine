@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next/types';
+import { type NextApiRequest, type NextApiResponse } from 'next/types';
 import * as yup from 'yup';
 
 import { handleRouteErrors, requireAuthentication, requirePostMethod } from '@/server/helpers/server';

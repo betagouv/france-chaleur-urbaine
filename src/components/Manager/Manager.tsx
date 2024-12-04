@@ -1,6 +1,6 @@
-import { GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
-import { MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MapRef } from 'react-map-gl/maplibre';
+import { type GridRowSelectionModel, useGridApiRef } from '@mui/x-data-grid';
+import { type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type MapRef } from 'react-map-gl/maplibre';
 
 import Hoverable from '@/components//Hoverable';
 import HoverableIcon from '@/components/Hoverable/HoverableIcon';
@@ -11,9 +11,9 @@ import { Table, type ColumnDef } from '@/components/ui/Table';
 import { useServices } from '@/services';
 import { displayModeDeChauffage } from '@/services/Map/businessRules/demands';
 import { createMapConfiguration } from '@/services/Map/map-configuration';
-import { MapMarkerInfos } from '@/types/MapComponentsInfos';
-import { Point } from '@/types/Point';
-import { Demand } from '@/types/Summary/Demand';
+import { type MapMarkerInfos } from '@/types/MapComponentsInfos';
+import { type Point } from '@/types/Point';
+import { type Demand } from '@/types/Summary/Demand';
 import { isDefined } from '@/utils/core';
 
 import AdditionalInformation from './AdditionalInformation';

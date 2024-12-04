@@ -1,4 +1,4 @@
-import { ExpressionInputType } from 'maplibre-gl';
+import { type ExpressionInputType } from 'maplibre-gl';
 
 export const themeDefBuildings = {
   colors: {

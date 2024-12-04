@@ -1,8 +1,8 @@
 import { Alert } from '@codegouvfr/react-dsfr/Alert';
 import { Button } from '@codegouvfr/react-dsfr/Button';
-import { GetServerSideProps } from 'next';
+import { type GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 
 import Input from '@/components/form/dsfr/Input';
 import SimplePage from '@/components/shared/page/SimplePage';

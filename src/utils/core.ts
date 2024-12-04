@@ -1,4 +1,4 @@
-import { FlattenKeys } from './typescript';
+import { type FlattenKeys } from './typescript';
 
 export function isDefined<Type>(value: Type | undefined | null): value is Type {
   return value !== undefined && value !== null;

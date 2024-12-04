@@ -4,7 +4,7 @@ import ejs from 'ejs';
 //@ts-ignore: type not official
 import nodemailer from 'nodemailer';
 
-import { Demand } from '@/types/Summary/Demand';
+import { type Demand } from '@/types/Summary/Demand';
 
 dotenv.config({ path: '.env.local' });
 dotenv.config();

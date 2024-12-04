@@ -1,4 +1,4 @@
-import { Coords } from '../Coords';
+import { type Coords } from '../Coords';
 
 export type DemandSummary = {
   id: string;

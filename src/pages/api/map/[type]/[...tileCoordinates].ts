@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { type NextApiRequest, type NextApiResponse } from 'next';
 import zod from 'zod';
 
 import { handleRouteErrors, validateObjectSchema } from '@/server/helpers/server';
