@@ -261,12 +261,6 @@ export const Tabs = styled(DsfrTabs)`
   }
 `;
 
-interface SingleCheckboxProps {
-  name: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  trackingEvent?: LegendTrackingEvent;
-}
 type TrackableCheckableAccordionProps = Omit<
   CheckableAccordionProps.Uncontrolled<React.ReactNode>,
   'small' | 'classes' | 'checked' | 'onCheck' | 'showToggle'
@@ -301,6 +295,13 @@ export const TrackableCheckableAccordion = ({ children, layerName, name, trackin
     </StyledCheckableAccordion>
   );
 };
+
+interface SingleCheckboxProps {
+  name: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  trackingEvent?: LegendTrackingEvent;
+}
 
 /**
  * Offre une checkbox DSFR fonctionnant de manière séparée de son label.

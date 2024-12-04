@@ -97,11 +97,16 @@ export type MapConfiguration = {
     showDatacenters: boolean;
     showInstallationsElectrogenes: boolean;
   };
+  enrrMobilisablesGeothermieProfonde: boolean;
   enrrMobilisablesSolaireThermique: {
     show: boolean;
     showFriches: boolean;
     showParkings: boolean;
   };
+  enrrMobilisablesThalassothermie: boolean;
+  installationsGeothermieProfonde: boolean;
+  installationsGeothermieSurfaceEchangeursOuverts: boolean;
+  installationsGeothermieSurfaceEchangeursFermes: boolean;
   zonesOpportunite: {
     show: boolean;
     zonesPotentielChaud: boolean;
@@ -193,11 +198,16 @@ export const emptyMapConfiguration: EmptyMapConfiguration = {
     showStationsDEpuration: true,
     showUnitesDIncineration: true,
   },
+  enrrMobilisablesGeothermieProfonde: false,
   enrrMobilisablesSolaireThermique: {
     show: false,
     showFriches: true,
     showParkings: true,
   },
+  enrrMobilisablesThalassothermie: false,
+  installationsGeothermieProfonde: false,
+  installationsGeothermieSurfaceEchangeursOuverts: false,
+  installationsGeothermieSurfaceEchangeursFermes: false,
   zonesOpportunite: {
     show: false,
     zonesPotentielChaud: true,

@@ -14,6 +14,16 @@ import {
 import {
   communesFortPotentielPourCreationReseauxChaleurLayerColor,
   communesFortPotentielPourCreationReseauxChaleurLayerOpacity,
+  enrrMobilisablesGeothermieProfondeLayerColor,
+  enrrMobilisablesGeothermieProfondeLayerOpacity,
+  enrrMobilisablesThalassothermieLayerColor,
+  enrrMobilisablesThalassothermieLayerOpacity,
+  installationsGeothermieProfondeLayerColor,
+  installationsGeothermieProfondeLayerOpacity,
+  installationsGeothermieSurfaceEchangeursFermesDeclareeColor,
+  installationsGeothermieSurfaceEchangeursFermesRealiseeColor,
+  installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor,
+  installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor,
 } from '@components/Map/map-styles';
 import useFCUMap from '@components/Map/MapProvider';
 import { UrlStateAccordion } from '@components/ui/Accordion';
@@ -840,7 +850,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 </Box>
                 <Box display="flex">
                   <SingleCheckbox
-                    name="showInstallationsElectrogenes"
+                    name="installationsElectrogenes"
                     checked={mapConfiguration.enrrMobilisablesChaleurFatale.showInstallationsElectrogenes}
                     onChange={() => toggleLayer('enrrMobilisablesChaleurFatale.showInstallationsElectrogenes')}
                     trackingEvent="Carto|Installations électrogènes"
@@ -850,7 +860,7 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
 
                   <Text
                     as="label"
-                    htmlFor="showInstallationsElectrogenes"
+                    htmlFor="installationsElectrogenes"
                     fontSize="14px"
                     lineHeight="18px"
                     className="fr-col"
@@ -864,6 +874,52 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>
+
+            <Box display="flex" alignItems="center" my="2w">
+              <SingleCheckbox
+                name="enrrMobilisablesGeothermieProfonde"
+                checked={mapConfiguration.enrrMobilisablesGeothermieProfonde}
+                onChange={() => toggleLayer('enrrMobilisablesGeothermieProfonde')}
+                trackingEvent="Carto|Zones géothermie profonde"
+              />
+
+              <IconPolygon
+                stroke={enrrMobilisablesGeothermieProfondeLayerColor}
+                fillOpacity={enrrMobilisablesGeothermieProfondeLayerOpacity}
+              />
+
+              <Text
+                as="label"
+                htmlFor="enrrMobilisablesGeothermieProfonde"
+                fontSize="14px"
+                lineHeight="18px"
+                className="fr-col"
+                cursor="pointer"
+                pl="1w"
+                mt="1v"
+              >
+                Géothermie profonde
+              </Text>
+              <Tooltip
+                title={
+                  <>
+                    Gisements potentiels ou prouvés de géothermie profonde en France pour la production de chaleur, issus de la compilation
+                    des connaissances géologiques et hydrogéologiques dans les bassins géologiques français.
+                    <br />
+                    Source :{' '}
+                    <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                      BRGM
+                    </Link>
+                  </>
+                }
+                iconProps={{
+                  color: 'var(--text-action-high-blue-france)',
+                }}
+              />
+              {/* spacer */}
+              <Box width="32px" />
+            </Box>
+
             <TrackableCheckableAccordion
               name="enrrMobilisablesSolaireThermique"
               checked={mapConfiguration.enrrMobilisablesSolaireThermique.show}
@@ -943,6 +999,186 @@ function SimpleMapLegend({ legendTitle, enabledFeatures }: SimpleMapLegendProps)
                   >
                     Parkings
                   </Text>
+                </Box>
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
+
+            <Box display="flex" alignItems="center" my="2w">
+              <SingleCheckbox
+                name="enrrMobilisablesThalassothermie"
+                checked={mapConfiguration.enrrMobilisablesThalassothermie}
+                onChange={() => toggleLayer('enrrMobilisablesThalassothermie')}
+                trackingEvent="Carto|Thalassothermie"
+              />
+
+              <IconPolygon stroke={enrrMobilisablesThalassothermieLayerColor} fillOpacity={enrrMobilisablesThalassothermieLayerOpacity} />
+
+              <Text
+                as="label"
+                htmlFor="enrrMobilisablesThalassothermie"
+                fontSize="14px"
+                lineHeight="18px"
+                className="fr-col"
+                cursor="pointer"
+                pl="1w"
+                mt="1v"
+              >
+                Thalassothermie
+              </Text>
+              <Tooltip
+                title={
+                  <>
+                    Données mises à disposition par le projet{' '}
+                    <Link href="https://reseaux-chaleur.cerema.fr/espace-documentaire/enrezo" isExternal>
+                      EnRezo
+                    </Link>{' '}
+                    du Cerema.
+                  </>
+                }
+                iconProps={{
+                  color: 'var(--text-action-high-blue-france)',
+                }}
+              />
+              {/* spacer */}
+              <Box width="32px" />
+            </Box>
+          </UrlStateAccordion>
+
+          <UrlStateAccordion label="Installations existantes" small>
+            <Box display="flex" alignItems="center" my="2w">
+              <SingleCheckbox
+                name="installationsGeothermieProfonde"
+                checked={mapConfiguration.installationsGeothermieProfonde}
+                onChange={() => toggleLayer('installationsGeothermieProfonde')}
+                trackingEvent="Carto|Installations géothermie profonde"
+              />
+
+              <Box
+                backgroundColor={installationsGeothermieProfondeLayerColor}
+                opacity={installationsGeothermieProfondeLayerOpacity}
+                borderRadius="50%"
+                minHeight="16px"
+                minWidth="16px"
+              />
+
+              <Text
+                as="label"
+                htmlFor="installationsGeothermieProfonde"
+                fontSize="14px"
+                lineHeight="18px"
+                className="fr-col"
+                cursor="pointer"
+                pl="1w"
+                mt="1v"
+              >
+                Géothermie profonde
+              </Text>
+              <Tooltip
+                title={
+                  <>
+                    Source :{' '}
+                    <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                      BRGM
+                    </Link>
+                  </>
+                }
+                iconProps={{
+                  color: 'var(--text-action-high-blue-france)',
+                }}
+              />
+              {/* spacer */}
+              <Box width="32px" />
+            </Box>
+
+            <TrackableCheckableAccordion
+              name="installationsGeothermieSurfaceEchangeursOuverts"
+              checked={mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts}
+              layerName="installationsGeothermieSurfaceEchangeursOuverts"
+              trackingEvent="Carto|Installations géothermie surface ouverts"
+              label={
+                <>
+                  <Box flex>Géothermie de surface sur échangeurs ouverts (nappe)</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Source :{' '}
+                        <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                          BRGM
+                        </Link>
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursOuverts} mx="1w">
+                <Box display="flex" alignItems="center">
+                  <Box
+                    backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsRealiseeColor}
+                    height="10px"
+                    width="10px"
+                    borderRadius="50%"
+                    mr="1w"
+                  />
+
+                  <Text size="sm">Installation réalisée</Text>
+                </Box>
+                <Box display="flex" alignItems="center">
+                  <Box
+                    backgroundColor={installationsGeothermieSurfaceEchangeursOuvertsDeclareeColor}
+                    height="10px"
+                    width="10px"
+                    borderRadius="50%"
+                    mr="1w"
+                  />
+
+                  <Text size="sm">Installation déclarée</Text>
+                </Box>
+              </DeactivatableBox>
+            </TrackableCheckableAccordion>
+            <TrackableCheckableAccordion
+              name="installationsGeothermieSurfaceEchangeursFermes"
+              checked={mapConfiguration.installationsGeothermieSurfaceEchangeursFermes}
+              layerName="installationsGeothermieSurfaceEchangeursFermes"
+              trackingEvent="Carto|Installations géothermie surface fermés"
+              label={
+                <>
+                  <Box flex>Géothermie de surface sur échangeurs fermés (sonde)</Box>
+                  <Tooltip
+                    title={
+                      <>
+                        Source :{' '}
+                        <Link href="https://www.geothermies.fr/espace-cartographique" isExternal>
+                          BRGM
+                        </Link>
+                      </>
+                    }
+                  />
+                </>
+              }
+            >
+              <DeactivatableBox disabled={!mapConfiguration.installationsGeothermieSurfaceEchangeursFermes} mx="1w">
+                <Box display="flex" alignItems="center">
+                  <Box
+                    backgroundColor={installationsGeothermieSurfaceEchangeursFermesRealiseeColor}
+                    height="10px"
+                    width="10px"
+                    borderRadius="50%"
+                    mr="1w"
+                  />
+
+                  <Text size="sm">Installation réalisée</Text>
+                </Box>
+                <Box display="flex" alignItems="center">
+                  <Box
+                    backgroundColor={installationsGeothermieSurfaceEchangeursFermesDeclareeColor}
+                    height="10px"
+                    width="10px"
+                    borderRadius="50%"
+                    mr="1w"
+                  />
+
+                  <Text size="sm">Installation déclarée</Text>
                 </Box>
               </DeactivatableBox>
             </TrackableCheckableAccordion>

@@ -8,6 +8,11 @@ import { isDefined } from '@utils/core';
 import { formatMWhAn, prettyFormatNumber } from '@utils/strings';
 import { BatimentRaccordeReseauxChaleurFroid } from 'src/types/layers/BatimentRaccordeReseauxChaleurFroid';
 import { BesoinsEnChaleur, BesoinsEnChaleurIndustrieCommunes } from 'src/types/layers/BesoinsEnChaleur';
+import {
+  InstallationGeothermieProfonde,
+  InstallationGeothermieSurfaceEchangeursFermes,
+  InstallationGeothermieSurfaceEchangeursOuverts,
+} from 'src/types/layers/brgm';
 import { CommuneFortPotentielPourCreationReseauxChaleur } from 'src/types/layers/CommuneFortPotentielPourCreationReseauxChaleur';
 import {
   Datacenter,
@@ -16,6 +21,7 @@ import {
   SolaireThermiqueFriche,
   SolaireThermiqueParking,
   StationDEpuration,
+  Thalassothermie,
   UniteDIncineration,
 } from 'src/types/layers/enrr_mobilisables';
 import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
@@ -33,6 +39,10 @@ export const layersWithDynamicContentPopup = [
   'enrrMobilisables-unites-d-incineration',
   'enrrMobilisables-friches',
   'enrrMobilisables-parkings',
+  'enrrMobilisables-thalassothermie',
+  'installationsGeothermieProfonde',
+  'installationsGeothermieSurfaceEchangeursFermes',
+  'installationsGeothermieSurfaceEchangeursOuverts',
   'besoinsEnChaleur',
   'besoinsEnFroid',
   'besoinsEnChaleurIndustrieCommunes',
@@ -50,10 +60,22 @@ export function isDynamicPopupContent(content: any): content is DynamicPopupCont
 export type DynamicPopupContentType =
   | ZonePotentielChaudPopupContentType
   | ENRRMobilisablePopupContentType
+  | InstallationGeothermieProfondePopupContentType
+  | InstallationGeothermieSurfacePopupContentType
   | BesoinsEnChaleurPopupContentType
   | BesoinsEnChaleurIndustrieCommunesPopupContentType
   | CommuneFortPotentielPourCreationReseauxChaleurPopupContentType
   | BatimentRaccordeReseauxChaleurFroidPopupContentType;
+
+type InstallationGeothermieProfondePopupContentType = {
+  type: 'installationsGeothermieProfonde';
+  properties: InstallationGeothermieProfonde;
+};
+
+type InstallationGeothermieSurfacePopupContentType = {
+  type: 'installationsGeothermieSurfaceEchangeursFermes' | 'installationsGeothermieSurfaceEchangeursOuverts';
+  properties: InstallationGeothermieSurfaceEchangeursFermes | InstallationGeothermieSurfaceEchangeursOuverts;
+};
 
 type BesoinsEnChaleurPopupContentType = {
   type: 'besoinsEnChaleur' | 'besoinsEnFroid';
@@ -87,7 +109,8 @@ type ENRRMobilisablePopupContentType =
   | ENRRMobilisableStationsDEpurationPopupContentType
   | ENRRMobilisableUniteDIncinerationPopupContentType
   | ENRRMobilisableFrichePopupContentType
-  | ENRRMobilisableParkingPopupContentType;
+  | ENRRMobilisableParkingPopupContentType
+  | ENRRMobilisableThalassothermiePopupContentType;
 
 type ENRRMobilisableDatacenterPopupContentType = {
   type: 'enrrMobilisables-datacenter';
@@ -117,6 +140,10 @@ type ENRRMobilisableParkingPopupContentType = {
   type: 'enrrMobilisables-parkings';
   properties: SolaireThermiqueParking;
 };
+type ENRRMobilisableThalassothermiePopupContentType = {
+  type: 'enrrMobilisables-thalassothermie';
+  properties: Thalassothermie;
+};
 
 /**
  * Return the corresponding popup content depending on the content type
@@ -141,6 +168,13 @@ const DynamicPopupContent = ({ content }: { content: DynamicPopupContentType }) 
       return <ENRRMobilisableSolaireThermiqueFrichePopupContent friche={content.properties} />;
     case 'enrrMobilisables-parkings':
       return <ENRRMobilisableSolaireThermiqueParkingPopupContent parking={content.properties} />;
+    case 'enrrMobilisables-thalassothermie':
+      return <ENRRMobilisableThalassothermiePopupContent thalassothermie={content.properties} />;
+    case 'installationsGeothermieProfonde':
+      return <InstallationGeothermieProfondePopupContent installationGeothermieProfonde={content.properties} />;
+    case 'installationsGeothermieSurfaceEchangeursFermes':
+    case 'installationsGeothermieSurfaceEchangeursOuverts':
+      return <InstallationGeothermieSurfacePopupContent installationGeothermieSurface={content.properties} />;
     case 'besoinsEnChaleur':
     case 'besoinsEnFroid':
       return <BesoinsEnChaleurPopupContent besoinsEnChaleur={content.properties} />;
@@ -358,6 +392,64 @@ const ENRRMobilisableSolaireThermiqueParkingPopupContent = ({ parking }: { parki
   );
 };
 
+const ENRRMobilisableThalassothermiePopupContent = ({ thalassothermie }: { thalassothermie: Thalassothermie }) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">{thalassothermie.toponyme}</PopupTitle>
+      <PopupProperty label="Nature" value={thalassothermie.nature} />
+      {thalassothermie.nature_det !== ' ' && <PopupProperty label="Nature détaillée" value={thalassothermie.nature_det} />}
+      <PopupProperty label="Source" value="Recensement des infrastructures portuaires issues de la BDTOPO" />
+    </section>
+  );
+};
+
+const InstallationGeothermieProfondePopupContent = ({
+  installationGeothermieProfonde,
+}: {
+  installationGeothermieProfonde: InstallationGeothermieProfonde;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">{installationGeothermieProfonde.Site}</PopupTitle>
+      <PopupProperty label="Type" value={installationGeothermieProfonde.Type_exploitation} />
+      <PopupProperty label="Utilisation" value={installationGeothermieProfonde.Utilisation} />
+      <PopupProperty
+        label="Énergie géothermale annuelle produite "
+        value={installationGeothermieProfonde.Energie_géothermale_annuelle_produite}
+        unit="MWh"
+      />
+      <PopupProperty
+        label="Nombre d'équivalents logement chauffés"
+        value={installationGeothermieProfonde.Nombre_équivalents_logements_chauffés}
+      />
+      <Box>
+        <Link href={`https://sybase.brgm.fr/fiche-operation/${installationGeothermieProfonde.Id_du_site}`} isExternal>
+          Fiche technique de l'installation
+        </Link>
+      </Box>
+      <PopupProperty label="Source" value="BRGM" />
+    </section>
+  );
+};
+
+const InstallationGeothermieSurfacePopupContent = ({
+  installationGeothermieSurface,
+}: {
+  installationGeothermieSurface: InstallationGeothermieSurfaceEchangeursFermes | InstallationGeothermieSurfaceEchangeursOuverts;
+}) => {
+  return (
+    <section>
+      <PopupTitle className="fr-mr-3w">{installationGeothermieSurface.nom_instal}</PopupTitle>
+      <PopupProperty label="Catégorie réglementaire" value={installationGeothermieSurface.categ_gth} />
+      <PopupProperty label="Usage(s) de l'énergie produite" value={installationGeothermieSurface.usage_gth} />
+      <PopupProperty label="Nombre d'ouvrages raccordés" value={installationGeothermieSurface.nombre_ouv} />
+      <PopupProperty label="Puissance thermique délivrée" value={installationGeothermieSurface.p_pac} unit="kW" />
+      <PopupProperty label="Statut" value={installationGeothermieSurface.statut_inst} />
+      <PopupProperty label="Source" value="BRGM" />
+    </section>
+  );
+};
+
 const CommuneFortPotentielPourCreationReseauxChaleurPopupContent = ({
   communeFortPotentielPourCreationReseauxChaleur,
 }: {
@@ -377,11 +469,7 @@ const CommuneFortPotentielPourCreationReseauxChaleurPopupContent = ({
         value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_ecs_mwh}
         formatter={formatMWhAn}
       />
-      <PopupProperty
-        label="Nombre de zones d’opportunité à fort potentiel"
-        value={communeFortPotentielPourCreationReseauxChaleur.zones_fort_potentiel_total}
-      />
-      <PopupProperty label="Source" value="IGN - Cerema" />
+      <PopupProperty label="Source" value="BRGM" />
     </section>
   );
 };
