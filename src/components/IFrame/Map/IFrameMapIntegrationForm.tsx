@@ -6,8 +6,7 @@ import { LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
 import { Coords } from '@/types/Coords';
 import { SuggestionItem } from '@/types/Suggestions';
 
-import { DivQuestionCenterMap, StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
-import { AddressContainer } from './IFrameParametrization.styles';
+import { AddressContainer, DivQuestionCenterMap, StyledIFrameLink } from './IFrameMapIntegrationForm.styles';
 
 const IFrameMapIntegrationForm = ({ label }: { label?: ReactNode }) => {
   const [coords, setCoords] = useState<Coords | null>(null);
