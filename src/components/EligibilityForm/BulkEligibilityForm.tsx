@@ -3,8 +3,8 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { Upload } from '@codegouvfr/react-dsfr/Upload';
 import { ChangeEvent, FormEvent, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
-import { useServices } from 'src/services';
+import Input from '@/components/form/dsfr/Input';
+import { useServices } from '@/services';
 
 import { Container } from './BulkEligibilityForm.styles';
 

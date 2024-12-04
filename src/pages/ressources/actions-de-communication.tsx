@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import { PropsWithChildren } from 'react';
 
-import SimplePage from '@components/shared/page/SimplePage';
-import Slideshow from '@components/Slideshow';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Text from '@components/ui/Text';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Slideshow from '@/components/Slideshow';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 
 const ActionsDeCommunicationPage = () => {
   return (

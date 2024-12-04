@@ -2,19 +2,19 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import AddressAutocomplete from '@components/addressAutocomplete';
-import { EligibilityFormContact, EligibilityFormMessageConfirmation, EnergyInputsLabelsType } from '@components/EligibilityForm';
-import { CheckEligibilityFormLabel, SelectEnergy } from '@components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import Slice from '@components/Slice';
-import Box from '@components/ui/Box';
-import Link from '@components/ui/Link';
-import { useContactFormFCU } from '@hooks';
-import { useServices } from 'src/services';
-import { AnalyticsFormId } from 'src/services/analytics';
-import { AvailableHeating } from 'src/types/AddressData';
-import { SuggestionItem } from 'src/types/Suggestions';
+import AddressAutocomplete from '@/components/addressAutocomplete';
+import { EligibilityFormContact, EligibilityFormMessageConfirmation, EnergyInputsLabelsType } from '@/components/EligibilityForm';
+import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
+import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import Slice from '@/components/Slice';
+import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
+import useContactFormFCU from '@/hooks/useContactFormFCU';
+import { useServices } from '@/services';
+import { AnalyticsFormId } from '@/services/analytics';
+import { AvailableHeating } from '@/types/AddressData';
+import { SuggestionItem } from '@/types/Suggestions';
 
 import BulkEligibilitySlice from './BulkEligibilitySlice';
 import {

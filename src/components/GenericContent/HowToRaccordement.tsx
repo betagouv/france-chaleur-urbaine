@@ -1,10 +1,10 @@
 import Image from 'next/image';
 
-import { WhiteArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
+import { WhiteArrowPuce } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
 
 type DownloadLinkPos = 'right' | 'left';
 

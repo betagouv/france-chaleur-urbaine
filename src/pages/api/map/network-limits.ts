@@ -1,7 +1,7 @@
 import type { NextApiRequest } from 'next';
 
-import { handleRouteErrors, requireGetMethod } from '@helpers/server';
-import db from 'src/db';
+import db from '@/server/db';
+import { handleRouteErrors, requireGetMethod } from '@/server/helpers/server';
 
 export default handleRouteErrors(async (req: NextApiRequest) => {
   requireGetMethod(req);

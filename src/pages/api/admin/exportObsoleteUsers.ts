@@ -1,4 +1,4 @@
-import db from 'src/db';
+import db from '@/server/db';
 
 export const getObsoleteUsers = async (): Promise<any[]> => {
   const today = new Date();

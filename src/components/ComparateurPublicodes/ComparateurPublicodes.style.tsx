@@ -1,8 +1,8 @@
 import Button from '@codegouvfr/react-dsfr/Button';
 import styled, { css } from 'styled-components';
 
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
 
 export const Section = styled(Box).attrs({ as: 'section' })`
   margin: 32px 0;

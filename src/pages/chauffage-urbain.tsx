@@ -1,12 +1,12 @@
 import { useRef } from 'react';
 
-import Heating from '@components/Ressources/Contents/DistrictHeating';
-import Header from '@components/Ressources/Header';
-import { StickyWrapper } from '@components/Ressources/Ressource.styles';
-import { Description, Title } from '@components/Ressources/RessourceContent.styles';
-import SimplePage from '@components/shared/page/SimplePage';
-import Slice from '@components/Slice';
-import StickyForm from '@components/StickyForm/StickyForm';
+import Heating from '@/components/Ressources/Contents/DistrictHeating';
+import Header from '@/components/Ressources/Header';
+import { StickyWrapper } from '@/components/Ressources/Ressource.styles';
+import { Description, Title } from '@/components/Ressources/RessourceContent.styles';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Slice from '@/components/Slice';
+import StickyForm from '@/components/StickyForm/StickyForm';
 
 const ChauffageUrbain = () => {
   const chauffageUrbainRef = useRef<null | HTMLHeadingElement>(null);

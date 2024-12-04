@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import styled from 'styled-components';
 
-import Box from '@components/ui/Box';
-import Text from '@components/ui/Text';
+import Box from '@/components/ui/Box';
+import Text from '@/components/ui/Text';
 
 const IsClassedTag = styled(Text)`
   color: var(--text-default-info);

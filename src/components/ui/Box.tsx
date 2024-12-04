@@ -2,7 +2,7 @@ import { FrIconClassName, RiIconClassName } from '@codegouvfr/react-dsfr';
 import { CSSProperties, HTMLAttributes, PropsWithChildren } from 'react';
 import styled from 'styled-components';
 
-import { type Breakpoint } from '@components/Theme/theme';
+import { type Breakpoint } from '@/components/Theme/theme';
 
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 

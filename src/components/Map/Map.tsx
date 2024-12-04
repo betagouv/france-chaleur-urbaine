@@ -18,24 +18,24 @@ import MapReactGL, {
   ScaleControl,
 } from 'react-map-gl/maplibre';
 
-import Accordion from '@components/ui/Accordion';
-import Box from '@components/ui/Box';
-import Icon from '@components/ui/Icon';
-import Link from '@components/ui/Link';
-import Tooltip from '@components/ui/Tooltip';
-import { useContactFormFCU } from '@hooks';
-import useDevMode from '@hooks/useDevMode';
-import useRouterReady from '@hooks/useRouterReady';
-import cx from '@utils/cx';
-import { useServices } from 'src/services';
-import { trackEvent } from 'src/services/analytics';
-import { MapConfiguration, isMapConfigurationInitialized } from 'src/services/Map/map-configuration';
-import { BoundingBox } from 'src/types/Coords';
-import { AddressDetail, HandleAddressSelect } from 'src/types/HeatNetworksResponse';
-import { MapMarkerInfos, MapPopupType } from 'src/types/MapComponentsInfos';
-import { Point } from 'src/types/Point';
-import { StoredAddress } from 'src/types/StoredAddress';
-import { TypeLegendLogo } from 'src/types/TypeLegendLogo';
+import Accordion from '@/components/ui/Accordion';
+import Box from '@/components/ui/Box';
+import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
+import Tooltip from '@/components/ui/Tooltip';
+import useContactFormFCU from '@/hooks/useContactFormFCU';
+import useDevMode from '@/hooks/useDevMode';
+import useRouterReady from '@/hooks/useRouterReady';
+import { useServices } from '@/services';
+import { trackEvent } from '@/services/analytics';
+import { MapConfiguration, isMapConfigurationInitialized } from '@/services/Map/map-configuration';
+import { BoundingBox } from '@/types/Coords';
+import { AddressDetail, HandleAddressSelect } from '@/types/HeatNetworksResponse';
+import { MapMarkerInfos, MapPopupType } from '@/types/MapComponentsInfos';
+import { Point } from '@/types/Point';
+import { StoredAddress } from '@/types/StoredAddress';
+import { TypeLegendLogo } from '@/types/TypeLegendLogo';
+import cx from '@/utils/cx';
 
 import CardSearchDetails from './components/CardSearchDetails';
 import MapMarker from './components/MapMarker';

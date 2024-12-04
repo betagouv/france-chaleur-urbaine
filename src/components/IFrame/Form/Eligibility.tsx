@@ -2,11 +2,11 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { useState } from 'react';
 
-import AddressAutocomplete from '@components/addressAutocomplete';
-import { CheckEligibilityFormLabel, SelectEnergy } from '@components/EligibilityForm/components';
-import { energyInputsDefaultLabels } from '@components/EligibilityForm/EligibilityFormAddress';
-import { AnalyticsFormId } from 'src/services/analytics';
-import { SuggestionItem } from 'src/types/Suggestions';
+import AddressAutocomplete from '@/components/addressAutocomplete';
+import { CheckEligibilityFormLabel, SelectEnergy } from '@/components/EligibilityForm/components';
+import { energyInputsDefaultLabels } from '@/components/EligibilityForm/EligibilityFormAddress';
+import { AnalyticsFormId } from '@/services/analytics';
+import { SuggestionItem } from '@/types/Suggestions';
 
 import { Container, Form, Header } from './Eligibility.styles';
 

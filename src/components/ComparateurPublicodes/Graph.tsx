@@ -4,11 +4,11 @@ import React, { useRef } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Chart from 'react-google-charts';
 
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import useArrayQueryState from '@hooks/useArrayQueryState';
-import { deepMergeObjects } from '@utils/core';
-import cx from '@utils/cx';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import useArrayQueryState from '@/hooks/useArrayQueryState';
+import { deepMergeObjects } from '@/utils/core';
+import cx from '@/utils/cx';
 
 import { ChartPlaceholder, GraphTooltip } from './ComparateurPublicodes.style';
 import { modesDeChauffage } from './modes-de-chauffage';

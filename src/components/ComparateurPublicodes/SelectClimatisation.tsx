@@ -1,7 +1,7 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import React from 'react';
 
-import { usePublicodesFormContext } from '@components/form/publicodes/FormProvider';
+import { usePublicodesFormContext } from '@/components/form/publicodes/FormProvider';
 
 export type SelectClimatisation = Omit<React.ComponentProps<typeof Select>, 'label' | 'options' | 'nativeSelectProps'>;
 

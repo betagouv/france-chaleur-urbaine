@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
-import debounce from '@utils/debounce';
-import { Demand } from 'src/types/Summary/Demand';
+import Input from '@/components/form/dsfr/Input';
+import { Demand } from '@/types/Summary/Demand';
+import debounce from '@/utils/debounce';
 
 import { Container } from './AdditionalInformation.styles';
 

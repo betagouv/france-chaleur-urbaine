@@ -1,9 +1,9 @@
 import { readFile, readdir, stat } from 'fs/promises';
 import { join } from 'path';
 
-import { logger } from '@helpers/logger';
-import db from 'src/db';
-import { processInParallel } from 'src/types/async';
+import db from '@/server/db';
+import { logger } from '@/server/helpers/logger';
+import { processInParallel } from '@/types/async';
 
 const QUERY_PARALLELISM = 50; // max queries in //
 

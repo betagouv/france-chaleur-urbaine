@@ -5,19 +5,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
-import NetworkSearchInput from '@components/Network/NetworkSearchInput';
-import SimplePage from '@components/shared/page/SimplePage';
-import Box from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Icon from '@components/ui/Icon';
-import LoadingButton from '@components/ui/LoadingButton';
-import Text from '@components/ui/Text';
-import { ModificationReseau } from '@pages/api/modification-reseau';
-import { NetworkSearchResult } from '@pages/api/networks/search';
-import { postFetchJSON } from '@utils/network';
-import { sleep } from '@utils/time';
-import { clientConfig } from 'src/client-config';
+import { clientConfig } from '@/client-config';
+import Input from '@/components/form/dsfr/Input';
+import NetworkSearchInput from '@/components/Network/NetworkSearchInput';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Box from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
+import LoadingButton from '@/components/ui/LoadingButton';
+import Text from '@/components/ui/Text';
+import { ModificationReseau } from '@/pages/api/modification-reseau';
+import { NetworkSearchResult } from '@/pages/api/networks/search';
+import { postFetchJSON } from '@/utils/network';
+import { sleep } from '@/utils/time';
 
 type FormState = Omit<ModificationReseau, 'fichiers'> & {
   fichiers: File[];

@@ -4,14 +4,14 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { Oval } from 'react-loader-spinner';
 
-import Box from '@components/ui/Box';
-import Modal from '@components/ui/Modal';
-import Text from '@components/ui/Text';
-import Tooltip from '@components/ui/Tooltip';
-import useQueryFlag from '@hooks/useQueryFlag';
-import { fetchJSON } from '@utils/network';
-import { prettyFormatNumber } from '@utils/strings';
-import { trackEvent } from 'src/services/analytics';
+import Box from '@/components/ui/Box';
+import Modal from '@/components/ui/Modal';
+import Text from '@/components/ui/Text';
+import Tooltip from '@/components/ui/Tooltip';
+import useQueryFlag from '@/hooks/useQueryFlag';
+import { trackEvent } from '@/services/analytics';
+import { fetchJSON } from '@/utils/network';
+import { prettyFormatNumber } from '@/utils/strings';
 
 import CarteFrance, { DataByArea } from './CarteFrance';
 import {

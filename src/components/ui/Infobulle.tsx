@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Hoverable, { HoverableProps } from '@components/Hoverable';
-import Icon, { IconProps } from '@components/ui/Icon';
+import Hoverable, { HoverableProps } from '@/components/Hoverable';
+import Icon, { IconProps } from '@/components/ui/Icon';
 
 type InfobulleProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'size'> & {
   name?: IconProps['name'];

@@ -1,22 +1,22 @@
 import Image from 'next/image';
 
-import LastArticles from '@components/Articles/LastArticles';
-import InterviewsVideos from '@components/Coproprietaire/InterviewsVideos';
-import AvantagesChauffageUrbain from '@components/GenericContent/AvantagesChauffageUrbain';
-import CoutsChauffageUrbain from '@components/GenericContent/CoutsChauffageUrbain';
-import HowToRaccordement from '@components/GenericContent/HowToRaccordement';
-import ObligationRaccordement from '@components/GenericContent/ObligationRaccordement';
-import ReduireImpact from '@components/GenericContent/ReduireImpact';
-import HeadSliceForm from '@components/HeadSliceForm';
-import Partners from '@components/Partners/Partners';
-import { issues, understandings } from '@components/Ressources/config';
-import Understanding from '@components/Ressources/Understanding';
-import SimplePage from '@components/shared/page/SimplePage';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Icon from '@components/ui/Icon';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
+import LastArticles from '@/components/Articles/LastArticles';
+import InterviewsVideos from '@/components/Coproprietaire/InterviewsVideos';
+import AvantagesChauffageUrbain from '@/components/GenericContent/AvantagesChauffageUrbain';
+import CoutsChauffageUrbain from '@/components/GenericContent/CoutsChauffageUrbain';
+import HowToRaccordement from '@/components/GenericContent/HowToRaccordement';
+import ObligationRaccordement from '@/components/GenericContent/ObligationRaccordement';
+import ReduireImpact from '@/components/GenericContent/ReduireImpact';
+import HeadSliceForm from '@/components/HeadSliceForm';
+import Partners from '@/components/Partners/Partners';
+import { issues, understandings } from '@/components/Ressources/config';
+import Understanding from '@/components/Ressources/Understanding';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
 
 const coproprietaireCards = {
   reseau: issues.reseau,

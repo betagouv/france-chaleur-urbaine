@@ -1,8 +1,8 @@
-import { StyledIFrameLink } from '@components/IFrame/Map/IFrameMapIntegrationForm.styles';
-import MarkdownWrapper from '@components/MarkdownWrapper';
-import { Container, Image } from '@components/Press/index.styles';
-import SimplePage from '@components/shared/page/SimplePage';
-import Slice from '@components/Slice';
+import { StyledIFrameLink } from '@/components/IFrame/Map/IFrameMapIntegrationForm.styles';
+import MarkdownWrapper from '@/components/MarkdownWrapper';
+import { Container, Image } from '@/components/Press/index.styles';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Slice from '@/components/Slice';
 
 const PressJanuary24 = () => {
   return (

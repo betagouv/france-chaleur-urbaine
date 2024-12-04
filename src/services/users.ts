@@ -1,13 +1,13 @@
 import bcrypt from 'bcryptjs';
 
-import { ApiNetwork } from '@pages/api/v1/users/[key]';
-import { ApiAccount } from 'src/types/ApiAccount';
-import { Airtable } from 'src/types/enum/Airtable';
-import { USER_ROLE } from 'src/types/enum/UserRole';
+import { ApiNetwork } from '@/pages/api/v1/users/[key]';
+import db from '@/server/db';
+import base from '@/server/db/airtable';
+import { ApiAccount } from '@/types/ApiAccount';
+import { Airtable } from '@/types/enum/Airtable';
+import { USER_ROLE } from '@/types/enum/UserRole';
 
 import { sendInscriptionEmail } from './email';
-import db from '../db';
-import base from '../db/airtable';
 
 export const upsertUsersFromApi = async (account: ApiAccount, networks: ApiNetwork[]) => {
   //Users from tab "GESTIONNAIRES_API" where the new users from outside API are saved

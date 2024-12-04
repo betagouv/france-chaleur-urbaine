@@ -1,10 +1,10 @@
 import Image from 'next/image';
 
-import SimulateurCoutRaccordement from '@components/Ressources/Contents/SimulateurCoutRaccordement';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
+import SimulateurCoutRaccordement from '@/components/Ressources/Contents/SimulateurCoutRaccordement';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
 
 const CoutsChauffageUrbain = () => {
   return (

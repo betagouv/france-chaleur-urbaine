@@ -2,10 +2,10 @@ import { MapGeoJSONFeature, MapLayerMouseEvent } from 'maplibre-gl';
 import { useEffect, useState } from 'react';
 import { MapMouseEvent, MapRef } from 'react-map-gl/maplibre';
 
-import { SourceId } from 'src/services/tiles.config';
-import { MapPopupInfos } from 'src/types/MapComponentsInfos';
+import { isDevModeEnabled } from '@/hooks/useDevMode';
+import { SourceId } from '@/services/tiles.config';
+import { MapPopupInfos } from '@/types/MapComponentsInfos';
 
-import { isDevModeEnabled } from './components/DevModeIcon';
 import { layersWithDynamicContentPopup } from './components/DynamicMapPopupContent';
 import { LayerId } from './map-layers';
 

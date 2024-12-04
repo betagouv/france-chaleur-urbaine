@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import db from 'src/db';
-import { ApiAccount } from 'src/types/ApiAccount';
+import db from '@/server/db';
+import { ApiAccount } from '@/types/ApiAccount';
 
 export const apiUser = async (req: NextApiRequest, res: NextApiResponse): Promise<ApiAccount | null> => {
   const { key } = req.query;

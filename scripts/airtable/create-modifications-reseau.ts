@@ -1,4 +1,5 @@
-import { createTable } from 'src/db/airtable';
+import { createTable } from '@/server/db/airtable';
+
 import { KnownAirtableBase, knownAirtableBases } from './bases';
 
 /**

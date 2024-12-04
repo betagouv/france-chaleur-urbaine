@@ -1,12 +1,12 @@
 import { Breadcrumb } from '@codegouvfr/react-dsfr/Breadcrumb';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 
-import NetworkPanel from '@components/Network/Network';
-import SimplePage from '@components/shared/page/SimplePage';
-import Slice from '@components/Slice/Slice';
-import { getColdNetwork, getNetwork } from '@core/infrastructure/repository/network';
-import { db } from 'src/db/kysely';
-import { Network } from 'src/types/Summary/Network';
+import NetworkPanel from '@/components/Network/Network';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Slice from '@/components/Slice/Slice';
+import { db } from '@/server/db/kysely';
+import { getColdNetwork, getNetwork } from '@/server/services/network';
+import { Network } from '@/types/Summary/Network';
 
 const PageReseau = ({ network }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (

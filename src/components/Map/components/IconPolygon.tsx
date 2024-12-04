@@ -1,5 +1,5 @@
-import { SpacingProperties, spacingsToClasses } from '@components/ui/helpers/spacings';
-import { ratioToHex } from '@utils/strings';
+import { SpacingProperties, spacingsToClasses } from '@/components/ui/helpers/spacings';
+import { ratioToHex } from '@/utils/strings';
 
 interface IconPolygonProps extends SpacingProperties {
   stroke: `#${string}`;

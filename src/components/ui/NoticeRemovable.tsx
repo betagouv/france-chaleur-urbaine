@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useLocalStorage } from '@hooks';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 import Notice, { type NoticeProps } from './Notice';
 

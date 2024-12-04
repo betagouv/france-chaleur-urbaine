@@ -3,13 +3,13 @@ import { Button } from '@codegouvfr/react-dsfr/Button';
 import Image from 'next/image';
 import { memo, useCallback, useMemo } from 'react';
 
-import EligibilityContactForm from '@components/EligibilityForm/EligibilityContactForm';
-import Box from '@components/ui/Box';
-import Icon from '@components/ui/Icon';
-import Modal, { createModal, useIsModalOpen } from '@components/ui/Modal';
-import { getReadableDistance } from 'src/services/Map/distance';
-import { Point } from 'src/types/Point';
-import { StoredAddress } from 'src/types/StoredAddress';
+import EligibilityContactForm from '@/components/EligibilityForm/EligibilityContactForm';
+import Box from '@/components/ui/Box';
+import Icon from '@/components/ui/Icon';
+import Modal, { createModal, useIsModalOpen } from '@/components/ui/Modal';
+import { getReadableDistance } from '@/services/Map/distance';
+import { Point } from '@/types/Point';
+import { StoredAddress } from '@/types/StoredAddress';
 
 import { ContactFormButtonWrapper, ContactFormWrapper, MessageConfirmBox, SearchedAddress } from './CardSearchDetails.style';
 

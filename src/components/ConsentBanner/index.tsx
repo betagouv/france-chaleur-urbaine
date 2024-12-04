@@ -3,8 +3,8 @@
 import { createConsentManagement } from '@codegouvfr/react-dsfr/consentManagement';
 import { useRouter } from 'next/router';
 
-import { clientConfig } from 'src/client-config';
-import { iframedPaths } from 'src/services/iframe';
+import { clientConfig } from '@/client-config';
+import { iframedPaths } from '@/services/iframe';
 
 import FacebookScript from './FacebookScript';
 import GoogleTagsScript from './GoogleTagsScript';

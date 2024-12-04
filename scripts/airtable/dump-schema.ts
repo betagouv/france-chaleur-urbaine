@@ -2,7 +2,7 @@ import { writeFile } from 'fs/promises';
 
 import camelCase from 'camelcase';
 
-import { listTables } from 'src/db/airtable';
+import { listTables } from '@/server/db/airtable';
 
 import { KnownAirtableBase, knownAirtableBases } from './bases';
 

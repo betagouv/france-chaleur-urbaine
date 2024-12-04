@@ -1,13 +1,13 @@
 import * as Sentry from '@sentry/node';
 
-import db from 'src/db';
-import base from 'src/db/airtable';
-import { bulkFetchRangeFromMatomo } from 'src/services/matomo';
-import { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from 'src/services/matomo_types';
-import { Airtable } from 'src/types/enum/Airtable';
-import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from 'src/types/enum/MatomoStats';
+import db from '@/server/db';
+import base from '@/server/db/airtable';
+import { bulkFetchRangeFromMatomo } from '@/services/matomo';
+import { MatomoActionMetrics, MatomoPageMetrics, MatomoUniqueVisitorsMetrics } from '@/services/matomo_types';
+import { Airtable } from '@/types/enum/Airtable';
+import { STAT_KEY, STAT_LABEL, STAT_METHOD, STAT_PARAMS, STAT_PERIOD } from '@/types/enum/MatomoStats';
 
-import '../../sentry.node.config';
+import '@root/sentry.node.config';
 
 const DATA_ACTION_STATS: string[] = [
   STAT_LABEL.FORM_TEST_CARTE_UNELIGIBLE,

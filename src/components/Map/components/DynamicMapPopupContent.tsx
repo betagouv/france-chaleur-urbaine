@@ -1,19 +1,17 @@
 import { ReactElement } from 'react';
 import styled from 'styled-components';
 
-import Box from '@components/ui/Box';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
-import { isDefined } from '@utils/core';
-import { formatMWhAn, prettyFormatNumber } from '@utils/strings';
-import { BatimentRaccordeReseauxChaleurFroid } from 'src/types/layers/BatimentRaccordeReseauxChaleurFroid';
-import { BesoinsEnChaleur, BesoinsEnChaleurIndustrieCommunes } from 'src/types/layers/BesoinsEnChaleur';
+import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
+import { BatimentRaccordeReseauxChaleurFroid } from '@/types/layers/BatimentRaccordeReseauxChaleurFroid';
+import { BesoinsEnChaleur, BesoinsEnChaleurIndustrieCommunes } from '@/types/layers/BesoinsEnChaleur';
 import {
   InstallationGeothermieProfonde,
   InstallationGeothermieSurfaceEchangeursFermes,
   InstallationGeothermieSurfaceEchangeursOuverts,
-} from 'src/types/layers/brgm';
-import { CommuneFortPotentielPourCreationReseauxChaleur } from 'src/types/layers/CommuneFortPotentielPourCreationReseauxChaleur';
+} from '@/types/layers/brgm';
+import { CommuneFortPotentielPourCreationReseauxChaleur } from '@/types/layers/CommuneFortPotentielPourCreationReseauxChaleur';
 import {
   Datacenter,
   Industrie,
@@ -23,8 +21,10 @@ import {
   StationDEpuration,
   Thalassothermie,
   UniteDIncineration,
-} from 'src/types/layers/enrr_mobilisables';
-import { ZonePotentielChaud } from 'src/types/layers/ZonePotentielChaud';
+} from '@/types/layers/enrr_mobilisables';
+import { ZonePotentielChaud } from '@/types/layers/ZonePotentielChaud';
+import { isDefined } from '@/utils/core';
+import { formatMWhAn, prettyFormatNumber } from '@/utils/strings';
 
 import { LayerId } from '../map-layers';
 import { PopupTitle, PopupType } from '../Map.style';

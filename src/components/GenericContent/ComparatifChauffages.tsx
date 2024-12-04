@@ -1,9 +1,9 @@
 import Image from 'next/image';
 
-import { ArrowPuce } from '@components/MarkdownWrapper/MarkdownWrapper.style';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Text from '@components/ui/Text';
+import { ArrowPuce } from '@/components/MarkdownWrapper/MarkdownWrapper.style';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Text from '@/components/ui/Text';
 
 const ComparatifChauffage = () => {
   return (

@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { getExport } from '@core/infrastructure/repository/addresseInformation';
-import db from 'src/db';
-import { withCors } from 'src/services/api/cors';
-import { ErrorResponse } from 'src/types/ErrorResponse';
+import db from '@/server/db';
+import { getExport } from '@/server/services/addresseInformation';
+import { withCors } from '@/services/api/cors';
+import { ErrorResponse } from '@/types/ErrorResponse';
 
 const bulkEligibilitygibilityStatus = async (
   req: NextApiRequest,

@@ -8,13 +8,13 @@ import { atom, useAtom } from 'jotai';
 import { GeoJSONSource } from 'maplibre-gl';
 import { Fragment, useEffect, useRef } from 'react';
 
-import { MapSourceLayersSpecification } from '@components/Map/map-layers';
-import useFCUMap from '@components/Map/MapProvider';
-import Box from '@components/ui/Box';
-import Divider from '@components/ui/Divider';
-import Text from '@components/ui/Text';
-import { formatDistance } from '@utils/geo';
-import { trackEvent } from 'src/services/analytics';
+import { MapSourceLayersSpecification } from '@/components/Map/map-layers';
+import useFCUMap from '@/components/Map/MapProvider';
+import Box from '@/components/ui/Box';
+import Divider from '@/components/ui/Divider';
+import Text from '@/components/ui/Text';
+import { trackEvent } from '@/services/analytics';
+import { formatDistance } from '@/utils/geo';
 
 import { MeasureFeature, MeasureLabelFeature } from './measure';
 import MesureFeatureListItem from './MeasureFeatureListItem';

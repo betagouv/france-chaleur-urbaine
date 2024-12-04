@@ -1,5 +1,5 @@
-import { getCommunePotentiel } from '@core/infrastructure/repository/communeAPotentiel';
-import { AirtableDB } from 'src/db/airtable';
+import { AirtableDB } from '@/server/db/airtable';
+import { getCommunePotentiel } from '@/server/services/communeAPotentiel';
 
 /**
  * Complète l'onglet airtable FCU - Formulaire communes sans reseau avec le type, nombre de zones, besoins en chauffage et ECS.

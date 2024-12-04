@@ -1,5 +1,6 @@
+import { DatabaseSourceId } from '@/services/tiles.config';
+
 import { fillTiles } from './utils/tiles';
-import { DatabaseSourceId } from '../src/services/tiles.config';
 
 if (process.argv.length !== 5 && process.argv.length !== 6) {
   console.info('Usage: npx tsx scripts/fillTiles.ts table zoomMin zoomMax [index]');

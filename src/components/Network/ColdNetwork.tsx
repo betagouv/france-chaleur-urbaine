@@ -1,4 +1,4 @@
-import Box from '@components/ui/Box';
+import Box from '@/components/ui/Box';
 
 const ColdNetwork = () => {
   return (

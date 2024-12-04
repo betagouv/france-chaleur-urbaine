@@ -1,8 +1,8 @@
 import type { NextApiRequest } from 'next';
 import { z } from 'zod';
 
-import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@helpers/server';
-import db from 'src/db';
+import db from '@/server/db';
+import { handleRouteErrors, requireGetMethod, validateObjectSchema } from '@/server/helpers/server';
 
 type DPE = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'N';
 

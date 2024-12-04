@@ -17,19 +17,8 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@utils/*": ["src/utils/*"],
-      "@helpers/*": ["src/helpers/*"],
-      "@hooks": ["src/hooks"],
-      "@hooks/*": ["src/hooks/*"],
-      "@components/*": ["src/components/*"],
-      "@data": ["src/data"],
-      "@data/*": ["src/data/*"],
-      "@constants": ["src/constants"],
-      "@pages/*": ["src/pages/*"],
-      "@public/*": ["public/*"],
-      "@libs/*": ["src/libs/*"],
-      "@styles/*": ["src/styles/*"],
-      "@core/*": ["src/core/*"]
+      "@/*": ["src/*"],
+      "@root/*": ["*"]
     },
     "incremental": true
   },

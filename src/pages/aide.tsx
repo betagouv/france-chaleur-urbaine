@@ -1,9 +1,9 @@
 import { fr } from '@codegouvfr/react-dsfr';
 import { GetServerSideProps } from 'next';
 
-import SimplePage from '@components/shared/page/SimplePage';
-import Accordion from '@components/ui/Accordion';
-import { withAuthentication } from '@helpers/ssr/withAuthentication';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Accordion from '@/components/ui/Accordion';
+import { withAuthentication } from '@/server/helpers/ssr/withAuthentication';
 
 type FaqItem = {
   title: string;

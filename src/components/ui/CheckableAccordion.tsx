@@ -12,9 +12,9 @@ import { assert } from 'tsafe/assert';
 import { Parameters } from 'tsafe/Parameters';
 import { symToStr } from 'tsafe/symToStr';
 
-import Box from '@components/ui/Box';
-import useArrayQueryState from '@hooks/useArrayQueryState';
-import cx from '@utils/cx';
+import Box from '@/components/ui/Box';
+import useArrayQueryState from '@/hooks/useArrayQueryState';
+import cx from '@/utils/cx';
 
 // import { useConstCallback } from "./tools/powerhooks/useConstCallback";
 /** https://stackoverflow.com/questions/65890278/why-cant-usecallback-always-return-the-same-ref */

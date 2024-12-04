@@ -1,5 +1,5 @@
-import { db, sql } from 'src/db/kysely';
-import { BoundingBox } from 'src/types/Coords';
+import { db, sql } from '@/server/db/kysely';
+import { BoundingBox } from '@/types/Coords';
 
 type TypeCommune = 'Réseau Existant' | 'Réseau Futur' | 'Fort Potentiel' | 'Potentiel' | 'Sans Potentiel';
 

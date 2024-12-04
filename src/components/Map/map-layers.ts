@@ -11,10 +11,7 @@ import {
   StyleSetterOptions,
 } from 'maplibre-gl';
 
-import { isDefined } from '@utils/core';
-import { intervalsEqual } from '@utils/interval';
-import { formatMWhString } from '@utils/strings';
-import { gestionnairesFilters } from 'src/services';
+import { gestionnairesFilters } from '@/services';
 import {
   themeDefBuildings,
   themeDefDemands,
@@ -22,14 +19,17 @@ import {
   themeDefHeatNetwork,
   themeDefTypeGas,
   themeDefZoneDP,
-} from 'src/services/Map/businessRules';
-import { arrColorFromDefBuildingsDpeEnergy } from 'src/services/Map/businessRules/buildings';
-import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from 'src/services/Map/businessRules/enrrMobilisables';
-import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from 'src/services/Map/businessRules/zonePotentielChaud';
-import { MapConfiguration, filtresEnergies, percentageMaxInterval } from 'src/services/Map/map-configuration';
-import { SourceId } from 'src/services/tiles.config';
-import { ENERGY_TYPE, ENERGY_USED } from 'src/types/enum/EnergyType';
-import { Network } from 'src/types/Summary/Network';
+} from '@/services/Map/businessRules';
+import { arrColorFromDefBuildingsDpeEnergy } from '@/services/Map/businessRules/buildings';
+import { themeDefSolaireThermiqueFriches, themeDefSolaireThermiqueParkings } from '@/services/Map/businessRules/enrrMobilisables';
+import { themeDefZonePotentielChaud, themeDefZonePotentielFortChaud } from '@/services/Map/businessRules/zonePotentielChaud';
+import { MapConfiguration, filtresEnergies, percentageMaxInterval } from '@/services/Map/map-configuration';
+import { SourceId } from '@/services/tiles.config';
+import { ENERGY_TYPE, ENERGY_USED } from '@/types/enum/EnergyType';
+import { Network } from '@/types/Summary/Network';
+import { isDefined } from '@/utils/core';
+import { intervalsEqual } from '@/utils/interval';
+import { formatMWhString } from '@/utils/strings';
 
 import { buildingsDataExtractionLayers } from './components/tools/BuildingsDataExtractionTool';
 import { distancesMeasurementLayers } from './components/tools/DistancesMeasurementTool';

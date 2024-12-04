@@ -1,9 +1,9 @@
 import { Checkbox } from '@codegouvfr/react-dsfr/Checkbox';
 import { useMemo, useState } from 'react';
 
-import AddressAutocomplete from '@components/addressAutocomplete/AddressAutocomplete';
-import { LegendURLKey, selectableLayers } from '@components/Map/map-layers';
-import { SuggestionItem } from 'src/types/Suggestions';
+import AddressAutocomplete from '@/components/addressAutocomplete/AddressAutocomplete';
+import { LegendURLKey, selectableLayers } from '@/components/Map/map-layers';
+import { SuggestionItem } from '@/types/Suggestions';
 
 import { AddressContainer, Container, IFrame } from './IFrameParametrization.styles';
 import IFrameLink from '../Form/IFrameLink';

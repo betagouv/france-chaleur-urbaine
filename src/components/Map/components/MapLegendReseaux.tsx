@@ -1,16 +1,16 @@
 import { Button } from '@codegouvfr/react-dsfr/Button';
 import { useMemo } from 'react';
 
-import { batimentsRaccordesLayerMaxOpacity, MapLegendFeature, mapLegendFeatures } from '@components/Map/map-layers';
-import useFCUMap from '@components/Map/MapProvider';
-import ReseauxDeChaleurFilters from '@components/ReseauxDeChaleurFilters';
-import Box from '@components/ui/Box';
-import Divider from '@components/ui/Divider';
-import Icon from '@components/ui/Icon';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
-import Tooltip from '@components/ui/Tooltip';
-import { themeDefHeatNetwork, themeDefZoneDP } from 'src/services/Map/businessRules';
+import { batimentsRaccordesLayerMaxOpacity, MapLegendFeature, mapLegendFeatures } from '@/components/Map/map-layers';
+import useFCUMap from '@/components/Map/MapProvider';
+import ReseauxDeChaleurFilters from '@/components/ReseauxDeChaleurFilters';
+import Box from '@/components/ui/Box';
+import Divider from '@/components/ui/Divider';
+import Icon from '@/components/ui/Icon';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
+import Tooltip from '@/components/ui/Tooltip';
+import { themeDefHeatNetwork, themeDefZoneDP } from '@/services/Map/businessRules';
 
 import { LegendFilters, SingleCheckbox, TabScrollablePart, Title } from './SimpleMapLegend.style';
 

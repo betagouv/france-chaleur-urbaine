@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
 
-import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@components/EligibilityForm';
-import Box from '@components/ui/Box';
-import Link from '@components/ui/Link';
-import { useContactFormFCU } from '@hooks';
+import { EligibilityFormAddress, EligibilityFormContact, EligibilityFormMessageConfirmation } from '@/components/EligibilityForm';
+import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
+import useContactFormFCU from '@/hooks/useContactFormFCU';
 
 import { ContactFormWrapper, EligibilityContactFormStyle } from './EligibilityContactForm.style';
 

@@ -6,14 +6,14 @@ import { useRouter } from 'next/router';
 import { signOut, useSession } from 'next-auth/react';
 import React from 'react';
 
-import { FooterConsentManagementItem } from '@components/ConsentBanner';
-import { HeaderProps, HeaderQuickAccessItem } from '@components/dsfr/Header';
-import SEO, { SEOProps } from '@components/SEO';
-import Box from '@components/ui/Box';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
-import { deleteFetchJSON } from '@utils/network';
-import { USER_ROLE } from 'src/types/enum/UserRole';
+import { FooterConsentManagementItem } from '@/components/ConsentBanner';
+import { HeaderProps, HeaderQuickAccessItem } from '@/components/dsfr/Header';
+import SEO, { SEOProps } from '@/components/SEO';
+import Box from '@/components/ui/Box';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
+import { USER_ROLE } from '@/types/enum/UserRole';
+import { deleteFetchJSON } from '@/utils/network';
 
 import Banner from './Banner';
 import { StyledHeader } from './SimplePage.styles';

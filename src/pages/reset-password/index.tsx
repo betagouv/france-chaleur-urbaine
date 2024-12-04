@@ -1,8 +1,8 @@
 import { GetServerSideProps } from 'next';
 import { getSession } from 'next-auth/react';
 
-import ResetPasswordForm from '@components/connexion/ResetPasswordForm';
-import SimplePage from '@components/shared/page/SimplePage';
+import ResetPasswordForm from '@/components/connexion/ResetPasswordForm';
+import SimplePage from '@/components/shared/page/SimplePage';
 
 export default function ResetPasswordPage(): JSX.Element {
   return (

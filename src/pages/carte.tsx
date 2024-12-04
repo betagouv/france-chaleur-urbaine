@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 
-import Map from '@components/Map/Map';
-import { fullscreenHeaderHeight, tabHeaderHeight } from '@components/shared/layout/MainLayout.data';
-import SimplePage from '@components/shared/page/SimplePage';
-import useInitialSearchParam from '@hooks/useInitialSearchParam';
-import { setProperty } from '@utils/core';
-import { MapConfigurationProperty, createMapConfiguration, defaultMapConfiguration } from 'src/services/Map/map-configuration';
+import Map from '@/components/Map/Map';
+import { fullscreenHeaderHeight, tabHeaderHeight } from '@/components/shared/layout/MainLayout.data';
+import SimplePage from '@/components/shared/page/SimplePage';
+import useInitialSearchParam from '@/hooks/useInitialSearchParam';
+import { MapConfigurationProperty, createMapConfiguration, defaultMapConfiguration } from '@/services/Map/map-configuration';
+import { setProperty } from '@/utils/core';
 
 const MapWrapper = styled.div`
   height: calc(100vh - ${tabHeaderHeight});

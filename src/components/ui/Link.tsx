@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import { PropsWithChildren } from 'react';
 
-import { TrackingEvent, trackEvent } from 'src/services/analytics';
+import { TrackingEvent, trackEvent } from '@/services/analytics';
 
 import { SpacingProperties, spacingsToClasses } from './helpers/spacings';
 

@@ -1,11 +1,11 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { formatDataToAirtable, submitToAirtable } from '@helpers/airtable';
-import useURLParamOrLocalStorage, { parseAsString } from '@hooks/useURLParamOrLocalStorage';
-import { trackEvent } from 'src/services/analytics';
-import { AddressDataType } from 'src/types/AddressData';
-import { Airtable } from 'src/types/enum/Airtable';
-import { FormDemandCreation } from 'src/types/Summary/Demand';
+import useURLParamOrLocalStorage, { parseAsString } from '@/hooks/useURLParamOrLocalStorage';
+import { formatDataToAirtable, submitToAirtable } from '@/server/helpers/airtable';
+import { trackEvent } from '@/services/analytics';
+import { AddressDataType } from '@/types/AddressData';
+import { Airtable } from '@/types/enum/Airtable';
+import { FormDemandCreation } from '@/types/Summary/Demand';
 
 const warningMessage = "N'oubliez pas d'indiquer votre type de chauffage.";
 

@@ -1,8 +1,7 @@
 import bcrypt from 'bcryptjs';
 
-import { USER_ROLE } from 'src/types/enum/UserRole';
-
-import db from '../src/db';
+import db from '@/server/db';
+import { USER_ROLE } from '@/types/enum/UserRole';
 
 const roles = Object.values(USER_ROLE);
 const addUser = async (email: string, password: string, role: USER_ROLE, gestionnaire: string) => {

@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { User } from 'next-auth';
 
-import { invalidPermissionsError } from '@helpers/server';
-import db from 'src/db';
-import base from 'src/db/airtable';
-import { Airtable } from 'src/types/enum/Airtable';
-import { USER_ROLE } from 'src/types/enum/UserRole';
-import { Demand } from 'src/types/Summary/Demand';
+import db from '@/server/db';
+import base from '@/server/db/airtable';
+import { invalidPermissionsError } from '@/server/helpers/server';
+import { Airtable } from '@/types/enum/Airtable';
+import { USER_ROLE } from '@/types/enum/UserRole';
+import { Demand } from '@/types/Summary/Demand';
 
 import { gestionnairesPerCity, gestionnairesPerDepartment, gestionnairesPerNetwork } from './gestionnaires.config';
 

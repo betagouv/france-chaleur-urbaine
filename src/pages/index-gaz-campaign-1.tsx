@@ -1,16 +1,16 @@
 import Image from 'next/image';
 
-import AvantagesChauffageUrbain from '@components/GenericContent/AvantagesChauffageUrbain';
-import ComparatifChauffage from '@components/GenericContent/ComparatifChauffages';
-import CoutsChauffageUrbain from '@components/GenericContent/CoutsChauffageUrbain';
-import HowToRaccordement from '@components/GenericContent/HowToRaccordement';
-import ObligationRaccordement from '@components/GenericContent/ObligationRaccordement';
-import HeadSliceForm from '@components/HeadSliceForm';
-import SimplePage from '@components/shared/page/SimplePage';
-import Box, { ResponsiveRow } from '@components/ui/Box';
-import Heading from '@components/ui/Heading';
-import Link from '@components/ui/Link';
-import Text from '@components/ui/Text';
+import AvantagesChauffageUrbain from '@/components/GenericContent/AvantagesChauffageUrbain';
+import ComparatifChauffage from '@/components/GenericContent/ComparatifChauffages';
+import CoutsChauffageUrbain from '@/components/GenericContent/CoutsChauffageUrbain';
+import HowToRaccordement from '@/components/GenericContent/HowToRaccordement';
+import ObligationRaccordement from '@/components/GenericContent/ObligationRaccordement';
+import HeadSliceForm from '@/components/HeadSliceForm';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Box, { ResponsiveRow } from '@/components/ui/Box';
+import Heading from '@/components/ui/Heading';
+import Link from '@/components/ui/Link';
+import Text from '@/components/ui/Text';
 
 export default function Home() {
   return (

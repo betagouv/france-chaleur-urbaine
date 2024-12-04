@@ -1,5 +1,5 @@
-import db from 'src/db';
-import { Network } from 'src/types/Summary/Network';
+import db from '@/server/db';
+import { Network } from '@/types/Summary/Network';
 
 export const getNetwork = (id: string): Promise<Network> =>
   db('reseaux_de_chaleur')

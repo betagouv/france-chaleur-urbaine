@@ -4,12 +4,12 @@ import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
-import SimplePage from '@components/shared/page/SimplePage';
-import Slice from '@components/Slice';
-import { submitToAirtable } from '@helpers/airtable';
-import { updateRelanceAnswer } from 'src/services/manager';
-import { Airtable } from 'src/types/enum/Airtable';
+import Input from '@/components/form/dsfr/Input';
+import SimplePage from '@/components/shared/page/SimplePage';
+import Slice from '@/components/Slice';
+import { submitToAirtable } from '@/server/helpers/airtable';
+import { updateRelanceAnswer } from '@/services/manager';
+import { Airtable } from '@/types/enum/Airtable';
 
 function Satisfaction() {
   const router = useRouter();

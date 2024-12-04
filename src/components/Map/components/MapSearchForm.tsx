@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@components/form/dsfr/AddressAutocompleteInput';
-import Link from '@components/ui/Link';
-import { useServices } from 'src/services';
-import { HandleAddressSelect } from 'src/types/HeatNetworksResponse';
+import AddressAutocomplete, { type AddressAutocompleteInputProps } from '@/components/form/dsfr/AddressAutocompleteInput';
+import Link from '@/components/ui/Link';
+import { useServices } from '@/services';
+import { HandleAddressSelect } from '@/types/HeatNetworksResponse';
 
 const MapSearchForm = ({ onAddressSelect }: { onAddressSelect?: HandleAddressSelect }) => {
   const [eligibilityError, setEligibilityError] = useState(false);

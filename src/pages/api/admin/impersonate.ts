@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { JWT, decode, encode } from 'next-auth/jwt';
 import { z } from 'zod';
 
-import { logger } from '@helpers/logger';
+import { logger } from '@/server/helpers/logger';
 import {
   handleRouteErrors,
   invalidPermissionsError,
@@ -10,7 +10,7 @@ import {
   requireAuthentication,
   requireDeleteMethod,
   validateObjectSchema,
-} from '@helpers/server';
+} from '@/server/helpers/server';
 
 export default handleRouteErrors(async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'DELETE') {

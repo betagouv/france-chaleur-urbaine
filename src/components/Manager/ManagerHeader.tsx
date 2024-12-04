@@ -1,12 +1,12 @@
 import { Select } from '@codegouvfr/react-dsfr/SelectNext';
 import { useEffect, useState } from 'react';
 
-import Input from '@components/form/dsfr/Input';
-import AsyncButton from '@components/ui/AsyncButton';
-import Box from '@components/ui/Box';
-import { useServices } from 'src/services';
-import { DEMANDE_STATUS } from 'src/types/enum/DemandSatus';
-import { Demand } from 'src/types/Summary/Demand';
+import Input from '@/components/form/dsfr/Input';
+import AsyncButton from '@/components/ui/AsyncButton';
+import Box from '@/components/ui/Box';
+import { useServices } from '@/services';
+import { DEMANDE_STATUS } from '@/types/enum/DemandSatus';
+import { Demand } from '@/types/Summary/Demand';
 
 import { Filter, Filters } from './ManagerHeader.styles';
 

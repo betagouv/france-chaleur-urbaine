@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle, css } from 'styled-components';
 
-import Box from '@components/ui/Box';
+import Box from '@/components/ui/Box';
 
 export const mapControlZindex = 0;
 

@@ -1,9 +1,9 @@
 import { diff } from 'deep-object-diff';
 
-import { parentLogger } from '@helpers/logger';
-import { isEmptyObject, pick } from '@utils/core';
-import db from 'src/db';
-import base, { AirtableDB } from 'src/db/airtable';
+import db from '@/server/db';
+import base, { AirtableDB } from '@/server/db/airtable';
+import { parentLogger } from '@/server/helpers/logger';
+import { isEmptyObject, pick } from '@/utils/core';
 
 import { convertAirtableValue } from './download-network';
 import { tableConfigs } from './geometry-updates';
