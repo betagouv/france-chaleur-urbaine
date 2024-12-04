@@ -23,8 +23,11 @@ async function main() {
             await AirtableDB('FCU - Formulaire communes sans reseau').update(record.id, {
               Type: commune.type,
               NbZonesFortPotentiel: commune.zonesAFortPotentiel.nb,
-              BesoinsEnChauffage: commune.zonesAFortPotentiel.chauffage || commune.zonesAPotentiel.chauffage,
-              BesoinsEnECS: commune.zonesAFortPotentiel.ecs || commune.zonesAPotentiel.ecs,
+              BesoinsEnChauffageZonesFortPotentiel: commune.zonesAFortPotentiel.chauffage,
+              BesoinsEnECSZonesFortPotentiel: commune.zonesAFortPotentiel.ecs,
+              NbZonesPotentiel: commune.zonesAPotentiel.nb,
+              BesoinsEnChauffageZonesPotentiel: commune.zonesAPotentiel.chauffage,
+              BesoinsEnECSZonesPotentiel: commune.zonesAPotentiel.ecs,
             });
           })
         );
